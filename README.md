@@ -53,7 +53,7 @@ Bug tracker
 
 Have a bug or enhancement idea? Please create an issue here on GitHub if you want just notify to us! 
 
-https://github.com/nhnopensource/ngrinder_controller/issues
+https://github.com/nhnopensource/ngrinder/issues
 
 Our official bug tracker is following. You can monitor our development status.
 
