@@ -14,11 +14,7 @@
 		<m2eclipse.wtp.contextRoot>/ngrinder-agent</m2eclipse.wtp.contextRoot>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>com.nhncorp</groupId>
-			<artifactId>ngrinder-core</artifactId>
-			<version>3.0</version>
-		</dependency>
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>

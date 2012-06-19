@@ -6,7 +6,7 @@
 		<artifactId>ngrinder</artifactId>
 		<groupId>com.nhncorp</groupId>
 		<version>3.0</version>
-		<relativePath>..</relativePath>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>ngrinder-controller</artifactId>
 	<name>ngrinder-controller</name>
@@ -22,6 +22,12 @@
 			<groupId>com.nhncorp</groupId>
 			<artifactId>ngrinder-core</artifactId>
 			<version>3.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.freemarker</groupId>
+			<artifactId>freemarker</artifactId>
+			<version>2.3.18</version>
 		</dependency>
 
 		<dependency>
@@ -97,12 +103,12 @@
 			<version>2.0.1</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>cubrid</groupId>
 			<artifactId>cubrid-jdbc</artifactId>
-			<version>8.4.0.2027</version>
+			<version>8.4.0.2928</version>
 		</dependency>
+
 		<dependency>
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>
@@ -176,8 +182,6 @@
 					<wtpapplicationxml>true</wtpapplicationxml>
 					<wtpversion>2.0</wtpversion>
 					<additionalProjectFacets>
-						<jst.java>5.0</jst.java>
-						<jpt.jpa>1.0</jpt.jpa>
 					</additionalProjectFacets>
 				</configuration>
 			</plugin>

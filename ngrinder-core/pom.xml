@@ -5,7 +5,28 @@
 		<artifactId>ngrinder</artifactId>
 		<groupId>com.nhncorp</groupId>
 		<version>3.0</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>ngrinder-core</artifactId>
-	<name>ngrinder-core</name>
+	<packaging>jar</packaging>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+					<additionalProjectnatures>
+						<projectnature>
+							org.eclipse.m2e.core.maven2Nature
+						</projectnature>
+					</additionalProjectnatures>
+					<additionalBuildcommands>
+						<buildcommand>
+							org.eclipse.m2e.core.maven2Builder
+						</buildcommand>
+					</additionalBuildcommands>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

@@ -11,6 +11,19 @@
 		<module>ngrinder-controller</module>
 		<module>ngrinder-core</module>
 	</modules>
+
+	<repositories>
+		<repository>
+			<id>cubrid.release.repository</id>
+			<url>http://maven.cubrid.org</url>
+		</repository>
+		<repository>
+			<id>springsource-repo</id>
+			<name>SpringSource Repository</name>
+			<url>http://repo.springsource.org/release</url>
+		</repository>
+	</repositories>
+
 	<properties>
 		<spring.version>3.1.1.RELEASE</spring.version>
 		<jdk-version>1.6</jdk-version>
