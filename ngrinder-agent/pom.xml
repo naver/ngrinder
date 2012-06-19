@@ -81,7 +81,6 @@
 					<wtpversion>2.0</wtpversion>
 					<additionalProjectFacets>
 						<jst.java>5.0</jst.java>
-						<jpt.jpa>1.0</jpt.jpa>
 					</additionalProjectFacets>
 				</configuration>
 			</plugin>
