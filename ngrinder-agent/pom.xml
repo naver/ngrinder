@@ -5,7 +5,7 @@
 		<artifactId>ngrinder</artifactId>
 		<groupId>com.nhncorp</groupId>
 		<version>3.0</version>
-		<relativePath>..</relativePath>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>ngrinder-agent</artifactId>
 	<name>ngrinder-agent</name>
