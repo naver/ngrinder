@@ -5,15 +5,87 @@
 		<artifactId>ngrinder</artifactId>
 		<groupId>com.nhncorp</groupId>
 		<version>3.0</version>
+		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>ngrinder-agent</artifactId>
 	<name>ngrinder-agent</name>
-	
+	<packaging>war</packaging>
+	<properties>
+		<m2eclipse.wtp.contextRoot>/ngrinder-agent</m2eclipse.wtp.contextRoot>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>com.nhncorp</groupId>
 			<artifactId>ngrinder-core</artifactId>
 			<version>3.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.2.1</version>
+
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-logging</artifactId>
+					<groupId>commons-logging</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
+
+	<build>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+					<additionalProjectnatures>
+						<projectnature>
+							org.springframework.ide.eclipse.core.springnature
+						</projectnature>
+						<projectnature>
+							org.eclipse.m2e.core.maven2Nature
+						</projectnature>
+					</additionalProjectnatures>
+					<additionalBuildcommands>
+						<buildcommand>
+							org.springframework.ide.eclipse.core.springbuilder
+						</buildcommand>
+						<buildcommand>
+							org.eclipse.m2e.core.maven2Builder
+						</buildcommand>
+					</additionalBuildcommands>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>true</downloadJavadocs>
+					<wtpmanifest>true</wtpmanifest>
+					<wtpapplicationxml>true</wtpapplicationxml>
+					<wtpversion>2.0</wtpversion>
+					<additionalProjectFacets>
+						<jst.java>5.0</jst.java>
+						<jpt.jpa>1.0</jpt.jpa>
+					</additionalProjectFacets>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>

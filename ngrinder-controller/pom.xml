@@ -6,13 +6,15 @@
 		<artifactId>ngrinder</artifactId>
 		<groupId>com.nhncorp</groupId>
 		<version>3.0</version>
+		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>ngrinder-controller</artifactId>
 	<name>ngrinder-controller</name>
-
+	<packaging>war</packaging>
 	<properties>
 		<!-- BDS Deploy Path -->
 		<webappdir>${project.basedir}/src/main/webapp</webappdir>
+		<m2eclipse.wtp.contextRoot>/ngrinder-controller</m2eclipse.wtp.contextRoot>
 	</properties>
 
 	<repositories>
@@ -71,11 +73,7 @@
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
+
 
 		<dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
@@ -158,5 +156,49 @@
 				<directory>src/test/resources</directory>
 			</testResource>
 		</testResources>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+					<additionalProjectnatures>
+						<projectnature>
+							org.springframework.ide.eclipse.core.springnature
+						</projectnature>
+						<projectnature>
+							org.eclipse.m2e.core.maven2Nature
+						</projectnature>
+					</additionalProjectnatures>
+					<additionalBuildcommands>
+						<buildcommand>
+							org.springframework.ide.eclipse.core.springbuilder
+						</buildcommand>
+						<buildcommand>
+							org.eclipse.m2e.core.maven2Builder
+						</buildcommand>
+					</additionalBuildcommands>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>true</downloadJavadocs>
+					<wtpmanifest>true</wtpmanifest>
+					<wtpapplicationxml>true</wtpapplicationxml>
+					<wtpversion>2.0</wtpversion>
+					<additionalProjectFacets>
+						<jst.java>5.0</jst.java>
+						<jpt.jpa>1.0</jpt.jpa>
+					</additionalProjectFacets>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${jdk-version}</source>
+					<target>${jdk-version}</target>
+					<encoding>${source-encoding}</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+
 	</build>
 </project>
