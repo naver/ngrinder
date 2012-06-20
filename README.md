@@ -1,3 +1,5 @@
+
+
 nGrinder 
 ========
 
@@ -5,12 +7,14 @@ It is the platform of stress tests which enables you to execute script creation,
 
 To get started, checkout http://www.nhnopensource.org/ngrinder_document!
 
-ngrinder consists of two major components. 
+nGrinder consists of two major components. 
 
-* ngrinder controller is a web application which let performance tester create test script and configure test run
-* ngrinder agent is a virtual user generator which makes loads. 
+* nGrinder controller is a web application which let performance tester create test script and configure test run
+* nGrinder agent is a virtual user generator which makes loads. 
 
-Currently ngrinder depends on Cubrid(http://www.cubrid.org) for database layer. 
+Currently nGrinder depends on CUBRID(http://www.cubrid.org) for database layer. 
+
+* nGrinder is now being developed. It'll be released around October, 2012.
  
 Features
 --------
@@ -71,7 +75,7 @@ Copyright and license
 
 BDS License 
 
-nGrinder (http://www.nhnopensource.org/ngrinder)
+nGrinder (http://www.cubrid.org/wiki_ngrinder)
 
 Copyright (c) 2011 NHN Business Platform
 All rights reserved.
