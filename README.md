@@ -11,7 +11,7 @@ ngrinder consists of two major components.
 * ngrinder agent is a virtual user generator which makes loads. 
 
 Currently ngrinder depends on Cubrid(http://www.cubrid.org) for database layer. 
-
+ 
 Features
 --------
 
@@ -27,7 +27,7 @@ Quick Start
  * http://www.youtube.com/user/ngrinderdev
 
 * You can also find the installation guide in the following.
- * http://www.nhnopensource.org/ngrinder_document
+ * http://www.cubrid.org/wiki_ngrinder
 
 * How to clone the repo 
  * 'git clone git://github.com/nhnopensource/ngrinder.git'
