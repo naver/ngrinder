@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="nGrinder : ngrinder 3.0 - enterprise level performance testing solution" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>nGrinder</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/nhnopensource/ngrinder">View on GitHub</a>
+
+          <h1 id="project_title">nGrinder</h1>
+          <h2 id="project_tagline">ngrinder 3.0 - enterprise level performance testing solution</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/nhnopensource/ngrinder/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/nhnopensource/ngrinder/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>nGrinder </h1>
+
+<p>It is the platform of stress tests which enables you to execute script creation, test execution, monitoring, and result report generator simultaneously. The opensource nGrinder offers easy ways to conduct stress tests by eliminating inconveniences and providing integrated environments.</p>
+
+<p>To get started, checkout <a href="http://www.nhnopensource.org/ngrinder_document">http://www.nhnopensource.org/ngrinder_document</a>!</p>
+
+<p>nGrinder consists of two major components. </p>
+
+<ul>
+<li>nGrinder controller is a web application which let performance tester create test script and configure test run</li>
+<li>nGrinder agent is a virtual user generator which makes loads. </li>
+</ul><p>Currently nGrinder depends on CUBRID(<a href="http://www.cubrid.org">http://www.cubrid.org</a>) for database layer. </p>
+
+<ul>
+<li>nGrinder is now being developed. It'll be released around October, 2012.</li>
+</ul><h2>Features</h2>
+
+<ul>
+<li>Use Jython script to create scenario and generating stress in JVM. </li>
+<li>Provide web-based interface for project management, monitoring, result management and report management. </li>
+<li>Enable to monitor the state of agents generating stress and target machines receiving stress</li>
+<li>Enable to inquire past test results by saving test history and provide absolute link to share with those who do not have private account. </li>
+<li>Enable to converse image and csv from original results. </li>
+</ul><h2>Quick Start</h2>
+
+<ul>
+<li>
+<p>You can find out usage videos in the following location</p>
+
+<ul>
+<li><a href="http://www.youtube.com/user/ngrinderdev">http://www.youtube.com/user/ngrinderdev</a></li>
+</ul>
+</li>
+<li>
+<p>You can also find the installation guide in the following.</p>
+
+<ul>
+<li><a href="http://www.cubrid.org/wiki_ngrinder">http://www.cubrid.org/wiki_ngrinder</a></li>
+</ul>
+</li>
+<li>
+<p>How to clone the repo </p>
+
+<ul>
+<li>'git clone git://github.com/nhnopensource/ngrinder.git'</li>
+</ul>
+</li>
+</ul><h2>Versioning</h2>
+
+<p>For transparency and insight into our release cycle, and for striving to maintain backward compatibility, Bootstrap will be maintained under the Semantic Versioning guidelines as much as possible.</p>
+
+<p>Releases will be numbered with the follow format:</p>
+
+<p><code>&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;</code></p>
+
+<p>And constructed with the following guidelines:</p>
+
+<ul>
+<li>Breaking backward compatibility bumps the major (and resets the minor and patch)</li>
+<li>New additions without breaking backward compatibility bumps the minor (and resets the patch)</li>
+<li>Bug fixes and misc changes bumps the patch</li>
+</ul><h2>Bug tracker</h2>
+
+<p>Have a bug or enhancement idea? Please create an issue here on GitHub if you want just notify to us! </p>
+
+<p><a href="https://github.com/nhnopensource/ngrinder/issues">https://github.com/nhnopensource/ngrinder/issues</a></p>
+
+<p>Our official bug tracker is following. You can monitor our development status.</p>
+
+<p><a href="http://jira.cubrid.org/browse/NGRINDER">http://jira.cubrid.org/browse/NGRINDER</a></p>
+
+<h2>Contributing</h2>
+
+<p>Please make all pull requests against master branches.</p>
+
+<h2>Copyright and license</h2>
+
+<p>BDS License </p>
+
+<p>nGrinder (<a href="http://www.cubrid.org/wiki_ngrinder">http://www.cubrid.org/wiki_ngrinder</a>)</p>
+
+<p>Copyright (c) 2011 NHN Business Platform
+All rights reserved.</p>
+
+<p>Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met: </p>
+
+<pre><code>* Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above
+  copyright notice, this list of conditions and the following
+  disclaimer in the documentation and/or other materials provided
+  with the distribution.
+* Neither the names of the copyright holders nor the names of the
+  contributors may be used to endorse or promote products derived
+  from this software without specific prior written permission.
+</code></pre>
+
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGE.</p>
+
+<p>nGrinder includes the softwares and libraries as follows. 
+See the folder LICENCE for license and copyright details for each.</p>
+
+<ul>
+<li>Grinder</li>
+<li>jQuery</li>
+<li>jUnit</li>
+<li>iBatis</li>
+<li>jfreechart</li>
+<li>Apache Commons</li>
+<li>JSON simple</li>
+<li>Apache log4j</li>
+<li>EditArea</li>
+<li>JOFC2</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">nGrinder maintained by <a href="https://github.com/nhnopensource">nhnopensource</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
