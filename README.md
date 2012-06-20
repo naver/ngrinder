@@ -71,7 +71,7 @@ Copyright and license
 
 BDS License 
 
-nGrinder (http://www.nhnopensource.org/ngrinder)
+nGrinder (http://www.cubrid.org/wiki_ngrinder)
 
 Copyright (c) 2011 NHN Business Platform
 All rights reserved.
