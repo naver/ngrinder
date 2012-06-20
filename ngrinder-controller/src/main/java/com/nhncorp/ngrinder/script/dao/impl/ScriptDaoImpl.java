@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -38,7 +39,8 @@ import com.nhncorp.ngrinder.script.util.ScriptUtil;
 @Repository
 public class ScriptDaoImpl implements ScriptDao {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ScriptDaoImpl.class);
+	private static final Logger LOG = LoggerFactory
+			.getLogger(ScriptDaoImpl.class);
 
 	// private final Map<Long, Script> scriptsCache = new
 	// ConcurrentHashMap<Long, Script>();
@@ -58,7 +60,8 @@ public class ScriptDaoImpl implements ScriptDao {
 			for (File scriptDir : scriptDirs) {
 				long id = 0;
 				try {
-					id = Long.valueOf(scriptDir.getName().substring(NGrinderConstants.SCRIPT_PREFIX.length()));
+					id = Long.valueOf(scriptDir.getName().substring(
+							NGrinderConstants.SCRIPT_PREFIX.length()));
 				} catch (NumberFormatException e) {
 					continue;
 				}
@@ -107,10 +110,12 @@ public class ScriptDaoImpl implements ScriptDao {
 
 		int i = 0;
 		for (Script script : scriptCache) {
-			if (script.getFileName().contains(searchStr) || script.getTags().contains(searchStr)
+			if (script.getFileName().contains(searchStr)
+					|| script.getTags().contains(searchStr)
 					|| script.getLastModifiedUser().contains(searchStr)) {
 				i++;
-				if (i > (pageable.getOffset() - pageable.getPageSize()) && i <= pageable.getOffset())
+				if (i > (pageable.getOffset() - pageable.getPageSize())
+						&& i <= pageable.getOffset())
 					scripts.add(script);
 			}
 		}
@@ -125,7 +130,8 @@ public class ScriptDaoImpl implements ScriptDao {
 		if (null == script) {
 
 			String scriptPath = ScriptUtil.getScriptPath(id);
-			String scriptPropertiesPath = scriptPath + NGrinderConstants.SCRIPT_PROPERTIES;
+			String scriptPropertiesPath = scriptPath
+					+ NGrinderConstants.SCRIPT_PROPERTIES;
 
 			FileInputStream fis = null;
 			ObjectInputStream ois = null;
@@ -139,16 +145,8 @@ public class ScriptDaoImpl implements ScriptDao {
 			} catch (ClassNotFoundException e) {
 				LOG.error("Cast the class to Script failed.", e);
 			} finally {
-				try {
-					if (null != fis) {
-						fis.close();
-					}
-					if (null != fis) {
-						ois.close();
-					}
-				} catch (IOException e) {
-					LOG.error("InputStream close failed.", e);
-				}
+				IOUtils.closeQuietly(fis);
+				IOUtils.closeQuietly(ois);
 			}
 		}
 
@@ -164,7 +162,8 @@ public class ScriptDaoImpl implements ScriptDao {
 		}
 		String scriptPath = ScriptUtil.getScriptPath(script.getId());
 
-		String scriptPropertiesPath = scriptPath + NGrinderConstants.SCRIPT_PROPERTIES;
+		String scriptPropertiesPath = scriptPath
+				+ NGrinderConstants.SCRIPT_PROPERTIES;
 		FileOutputStream fos = null;
 		ObjectOutputStream oos = null;
 		try {
@@ -175,16 +174,8 @@ public class ScriptDaoImpl implements ScriptDao {
 		} catch (IOException e) {
 			LOG.error("Serialize Script bean failed.", e);
 		} finally {
-			try {
-				if (null != fos) {
-					fos.close();
-				}
-				if (null != oos) {
-					oos.close();
-				}
-			} catch (IOException e) {
-				LOG.error("OutputStream close failed.", e);
-			}
+			IOUtils.closeQuietly(fos);
+			IOUtils.closeQuietly(oos);
 		}
 	}
 
