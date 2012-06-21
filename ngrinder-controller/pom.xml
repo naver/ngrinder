@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>ngrinder</artifactId>
 		<groupId>com.nhncorp</groupId>
-		<version>3.0</version>
+		<version>${ngrinder.version}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>ngrinder-controller</artifactId>
@@ -17,11 +17,29 @@
 		<m2eclipse.wtp.contextRoot>/ngrinder-controller</m2eclipse.wtp.contextRoot>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>atlassian.maven.repo</id>
+			<name>atlassian.maven.repo</name>
+			<url>http://maven.atlassian.com/public</url>
+		</repository>
+	</repositories>
+
+
 	<dependencies>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+
+
 		<dependency>
 			<groupId>com.nhncorp</groupId>
 			<artifactId>ngrinder-core</artifactId>
-			<version>3.0</version>
+			<version>${ngrinder.version}</version>
 		</dependency>
 
 		<dependency>
@@ -97,16 +115,17 @@
 			<version>1.6.12</version>
 		</dependency>
 
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.0.1</version>
-		</dependency>
 
+		<!-- database driver -->
 		<dependency>
 			<groupId>cubrid</groupId>
 			<artifactId>cubrid-jdbc</artifactId>
 			<version>8.4.0.2928</version>
+		</dependency>
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+			<version>3.7.2</version>
 		</dependency>
 
 		<dependency>
@@ -124,6 +143,12 @@
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 			<version>2.2.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.atlassian.plugins</groupId>
+			<artifactId>atlassian-plugins-main</artifactId>
+			<version>RELEASE</version>
 		</dependency>
 
 	</dependencies>
@@ -182,13 +207,12 @@
 							org.eclipse.m2e.core.maven2Builder
 						</buildcommand>
 					</additionalBuildcommands>
+					
 					<downloadSources>true</downloadSources>
 					<downloadJavadocs>true</downloadJavadocs>
 					<wtpmanifest>true</wtpmanifest>
 					<wtpapplicationxml>true</wtpapplicationxml>
 					<wtpversion>2.0</wtpversion>
-					<additionalProjectFacets>
-					</additionalProjectFacets>
 				</configuration>
 			</plugin>
 

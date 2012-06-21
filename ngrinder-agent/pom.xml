@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>ngrinder</artifactId>
 		<groupId>com.nhncorp</groupId>
-		<version>3.0</version>
+		<version>${ngrinder.version}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>ngrinder-agent</artifactId>
@@ -90,9 +90,6 @@
 					<wtpmanifest>true</wtpmanifest>
 					<wtpapplicationxml>true</wtpapplicationxml>
 					<wtpversion>2.0</wtpversion>
-					<additionalProjectFacets>
-						<jst.java>5.0</jst.java>
-					</additionalProjectFacets>
 				</configuration>
 			</plugin>
 		</plugins>

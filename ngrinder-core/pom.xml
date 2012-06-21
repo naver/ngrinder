@@ -4,10 +4,11 @@
 	<parent>
 		<artifactId>ngrinder</artifactId>
 		<groupId>com.nhncorp</groupId>
-		<version>3.0</version>
+		<version>${ngrinder.version}</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>ngrinder-core</artifactId>
+	<name>ngrinder-core</name>
 	<packaging>jar</packaging>
 	<build>
 		<plugins>
