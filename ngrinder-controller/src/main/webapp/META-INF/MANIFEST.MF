@@ -1,23 +1,31 @@
 Manifest-Version: 1.0
-Class-Path: freemarker-2.3.18.jar spring-data-jpa-1.0.3.RELEASE.jar sp
- ring-data-commons-core-1.1.0.RELEASE.jar spring-beans-3.1.1.RELEASE.j
- ar slf4j-api-1.6.1.jar jcl-over-slf4j-1.6.4.jar aspectjrt-1.6.12.jar 
- spring-context-3.1.1.RELEASE.jar spring-aop-3.1.1.RELEASE.jar aopalli
- ance-1.0.jar spring-asm-3.1.1.RELEASE.jar spring-core-3.1.1.RELEASE.j
- ar spring-expression-3.1.1.RELEASE.jar spring-orm-3.1.1.RELEASE.jar s
- pring-jdbc-3.1.1.RELEASE.jar spring-tx-3.1.1.RELEASE.jar spring-webmv
- c-3.1.1.RELEASE.jar spring-context-support-3.1.1.RELEASE.jar spring-w
- eb-3.1.1.RELEASE.jar hibernate-jpa-2.0-api-1.0.0.Final.jar hibernate-
- entitymanager-4.0.1.Final.jar jboss-transaction-api_1.1_spec-1.0.0.Fi
- nal.jar dom4j-1.6.1.jar xml-apis-1.0.b2.jar hibernate-core-4.0.1.Fina
- l.jar commons-collections-3.2.1.jar antlr-2.7.7.jar jboss-logging-3.1
- .0.CR2.jar javassist-3.15.0-GA.jar hibernate-commons-annotations-4.0.
- 1.Final.jar aspectjweaver-1.6.12.jar commons-io-2.0.1.jar cubrid-jdbc
- -8.4.0.2928.jar commons-dbcp-1.4.jar commons-pool-1.5.4.jar cglib-2.2
- .2.jar asm-3.3.1.jar logback-classic-1.0.0.jar logback-core-1.0.0.jar
-  grinder-3.9.1.jar grinder-dcr-agent-3.9.1.jar grinder-http-3.9.1.jar
-  grinder-core-3.9.1.jar jedit-syntax-2.2.2.jar picocontainer-2.13.6.j
- ar jython-2.2.1.jar clojure-1.3.0.jar grinder-httpclient-3.9.1.jar gr
- inder-xmlbeans-3.9.1.jar jsr173-1.0.jar xmlbeans-2.5.0.jar stax-api-1
- .0.1.jar json-simple-1.1.jar
+Class-Path: activation-1.1.jar antlr-2.7.7.jar aopalliance-1.0.jar asm
+ -3.3.1.jar aspectjrt-1.6.12.jar aspectjweaver-1.6.12.jar atlassian-ev
+ ent-2.2.0-m1.jar atlassian-plugins-core-2.13.0-m2.jar atlassian-plugi
+ ns-main-2.13.0-m2.jar atlassian-plugins-osgi-2.13.0-m2.jar atlassian-
+ plugins-osgi-events-2.13.0-m2.jar atlassian-util-concurrent-0.0.12.ja
+ r bndlib-1.43.0-atlassian-1.jar cglib-2.2.2.jar cglib-nodep-2.1_3.jar
+  clojure-1.3.0.jar commons-collections-3.2.jar commons-dbcp-1.4.jar c
+ ommons-fileupload-1.2.1.jar commons-io-2.0.1.jar commons-lang-2.6.jar
+  commons-pool-1.5.4.jar cubrid-jdbc-8.4.0.2928.jar dom4j-1.6.1.jar fr
+ eemarker-2.3.18.jar grinder-3.9.1.jar grinder-core-3.9.1.jar grinder-
+ dcr-agent-3.9.1.jar grinder-http-3.9.1.jar grinder-httpclient-3.9.1.j
+ ar grinder-xmlbeans-3.9.1.jar guava-10.0.1.jar hibernate-commons-anno
+ tations-4.0.1.Final.jar hibernate-core-4.0.1.Final.jar hibernate-enti
+ tymanager-4.0.1.Final.jar hibernate-jpa-2.0-api-1.0.0.Final.jar javas
+ sist-3.15.0-GA.jar jboss-logging-3.1.0.CR2.jar jboss-transaction-api_
+ 1.1_spec-1.0.0.Final.jar jcip-annotations-1.0.jar jcl-over-slf4j-1.6.
+ 4.jar jedit-syntax-2.2.2.jar jms-1.1.jar json-simple-1.1.jar jsr173-1
+ .0.jar jsr305-1.3.9.jar jython-2.2.1.jar log4j-1.2.15.jar logback-cla
+ ssic-1.0.0.jar logback-core-1.0.0.jar mail-1.4.jar multitenant-core-1
+ .0-m14.jar ngrinder-core.jar org.apache.felix.framework-3.0.2.jar pac
+ kage-scanner-0.9.5.jar picocontainer-2.13.6.jar servlet-api-2.3.jar s
+ lf4j-api-1.6.4.jar spring-aop-3.1.1.RELEASE.jar spring-asm-3.1.1.RELE
+ ASE.jar spring-beans-3.1.1.RELEASE.jar spring-context-3.1.1.RELEASE.j
+ ar spring-context-support-3.1.1.RELEASE.jar spring-core-3.1.1.RELEASE
+ .jar spring-data-commons-core-1.1.0.RELEASE.jar spring-data-jpa-1.0.3
+ .RELEASE.jar spring-expression-3.1.1.RELEASE.jar spring-jdbc-3.1.1.RE
+ LEASE.jar spring-orm-3.1.1.RELEASE.jar spring-tx-3.1.1.RELEASE.jar sp
+ ring-web-3.1.1.RELEASE.jar spring-webmvc-3.1.1.RELEASE.jar sqlite-jdb
+ c-3.7.2.jar stax-api-1.0.1.jar xml-apis-1.0.b2.jar xmlbeans-2.5.0.jar
 
