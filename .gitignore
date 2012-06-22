@@ -1,3 +1,5 @@
+.cachedir
+.grinder_logs
 .externalToolBuilders
 .settings
 .project
