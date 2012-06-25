@@ -31,6 +31,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.servlet.ServletContext;
 
+import org.apache.commons.lang.StringUtils;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,10 +68,10 @@ public class PluginManager implements ServletContextAware {
 	private ServletContext servletContext;
 
 	private static final int PLUGIN_UPDATE_FREQUENCY = 60;
+
 	@Autowired
 	private Config infra;
 
-	@SuppressWarnings("rawtypes")
 	@PostConstruct
 	public void init() {
 
@@ -88,17 +89,7 @@ public class PluginManager implements ServletContextAware {
 		DefaultModuleDescriptorFactory modules = new DefaultModuleDescriptorFactory(new DefaultHostContainer());
 		String packagename = "com.nhncorp";
 
-		final Reflections reflections = new Reflections(packagename);
-
-		Set<Class<? extends AbstractModuleDescriptor>> pluginDescriptors = reflections
-				.getSubTypesOf(AbstractModuleDescriptor.class);
-		for (Class<? extends AbstractModuleDescriptor> pluginDescriptor : pluginDescriptors) {
-			PluginDescriptor pluginDescriptorAnnotation = pluginDescriptor.getAnnotation(PluginDescriptor.class);
-			modules.addModuleDescriptor(pluginDescriptorAnnotation.value(), pluginDescriptor);
-			LOG.info("plugin descriptor " + pluginDescriptor.getName() + " with " + pluginDescriptorAnnotation.value()
-					+ " is initiated.");
-
-		}
+		initPluginDescriptor(modules, packagename);
 
 		// Determine which service objects to expose to plugins
 		HostComponentProvider host = new HostComponentProvider() {
@@ -118,6 +109,31 @@ public class PluginManager implements ServletContextAware {
 		plugins.start();
 		for (Runnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(Runnable.class)) {
 			runnable.run();
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	protected void initPluginDescriptor(DefaultModuleDescriptorFactory modules, String packagename) {
+		final Reflections reflections = new Reflections(packagename);
+
+		Set<Class<? extends AbstractModuleDescriptor>> pluginDescriptors = reflections
+				.getSubTypesOf(AbstractModuleDescriptor.class);
+
+		for (Class<? extends AbstractModuleDescriptor> pluginDescriptor : pluginDescriptors) {
+			PluginDescriptor pluginDescriptorAnnotation = pluginDescriptor.getAnnotation(PluginDescriptor.class);
+			if (pluginDescriptorAnnotation == null) {
+				LOG.error("plugin descriptor " + pluginDescriptor.getName()
+						+ " doesn't have PluginDescriptor annotation. Skip..");
+			}
+			if (StringUtils.isEmpty(pluginDescriptorAnnotation.value())) {
+				LOG.error("plugin descriptor " + pluginDescriptor.getName()
+						+ " doesn't have corresponding plugin key. Skip..");
+			} else {
+				modules.addModuleDescriptor(pluginDescriptorAnnotation.value(), pluginDescriptor);
+				LOG.info("plugin descriptor " + pluginDescriptor.getName() + " with "
+						+ pluginDescriptorAnnotation.value() + " is initiated.");
+			}
+
 		}
 	}
 
