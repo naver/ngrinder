@@ -1,5 +1,7 @@
 package com.nhncorp.ngrinder.core.model;
 
+import static com.nhncorp.ngrinder.core.util.Preconditions.checkNotNull;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
@@ -19,7 +21,7 @@ public class Home {
 	private final File directory;
 
 	public Home(File directory) {
-		directory.mkdirs();
+		checkNotNull(directory, "directory should not be null").mkdir();
 		if (!directory.canWrite()) {
 			throw new ConfigurationException(String.format(" ngrinder home directory %s is not writable.", directory),
 					null);
@@ -53,7 +55,7 @@ public class Home {
 
 	public Properties getProperties(String confFileName) {
 		try {
-			FileSystemResource propertyResource = new FileSystemResource(new File(directory, confFileName));
+			FileSystemResource propertyResource = new FileSystemResource(getSubFile(confFileName));
 			return PropertiesLoaderUtils.loadProperties(propertyResource);
 		} catch (IOException e) {
 			throw new RuntimeException(e);

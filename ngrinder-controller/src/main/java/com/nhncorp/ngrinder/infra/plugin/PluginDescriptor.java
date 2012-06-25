@@ -22,21 +22,29 @@
  */
 package com.nhncorp.ngrinder.infra.plugin;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
-import com.atlassian.plugin.module.ContainerManagedPlugin;
 
 /**
- * Plugin Descriptor for OnTestStartModule.
- * 
- * The plugin should be constructed by implementing {@link OnTestStartRunnable}
+ * Plugin descriptor annotation which marks the corresponding plugin setting key
+ * on the {@link AbstractModuleDescriptor}
  * 
  * @author JunHo Yoon
+ * @since 3.0
  */
-
-@PluginDescriptor("on-test-start")
-@SuppressWarnings("deprecation")
-public class OnTestStartModuleDescriptor extends AbstractModuleDescriptor<OnTestStartRunnable> {
-	public OnTestStartRunnable getModule() {
-		return ((ContainerManagedPlugin) getPlugin()).getContainerAccessor().createBean(getModuleClass());
-	}
+@Target({ ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface PluginDescriptor {
+	/**
+	 * Plugin Descriptor Key
+	 * 
+	 * @return
+	 */
+	String value();
 }

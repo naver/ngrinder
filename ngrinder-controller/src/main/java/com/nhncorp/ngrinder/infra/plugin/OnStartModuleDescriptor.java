@@ -30,6 +30,7 @@ import com.atlassian.plugin.module.ContainerManagedPlugin;
  * 
  * @author JunHo Yoon
  */
+@PluginDescriptor("on-start")
 @SuppressWarnings("deprecation")
 public class OnStartModuleDescriptor extends AbstractModuleDescriptor<Runnable> {
 	public Runnable getModule() {

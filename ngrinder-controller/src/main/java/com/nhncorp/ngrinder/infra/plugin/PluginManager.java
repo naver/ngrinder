@@ -24,16 +24,21 @@
 package com.nhncorp.ngrinder.infra.plugin;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.servlet.ServletContext;
 
+import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.ServletContextAware;
 
 import com.atlassian.plugin.DefaultModuleDescriptorFactory;
+import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
 import com.atlassian.plugin.hostcontainer.DefaultHostContainer;
 import com.atlassian.plugin.main.AtlassianPlugins;
 import com.atlassian.plugin.main.PluginsConfiguration;
@@ -56,6 +61,8 @@ import com.nhncorp.ngrinder.infra.config.Config;
 @OnlyRuntimeComponent
 public class PluginManager implements ServletContextAware {
 
+	private static final Logger LOG = LoggerFactory.getLogger(PluginManager.class);
+
 	private AtlassianPlugins plugins;
 	private ServletContext servletContext;
 
@@ -63,6 +70,7 @@ public class PluginManager implements ServletContextAware {
 	@Autowired
 	private Config infra;
 
+	@SuppressWarnings("rawtypes")
 	@PostConstruct
 	public void init() {
 
@@ -78,9 +86,19 @@ public class PluginManager implements ServletContextAware {
 		// This 'on-start' module is used throughout this guide as an example
 		// only
 		DefaultModuleDescriptorFactory modules = new DefaultModuleDescriptorFactory(new DefaultHostContainer());
+		String packagename = "com.nhncorp";
 
-		modules.addModuleDescriptor("on-start", OnStartModuleDescriptor.class);
-		modules.addModuleDescriptor("on-test-start", OnTestStartModuleDescriptor.class);
+		final Reflections reflections = new Reflections(packagename);
+
+		Set<Class<? extends AbstractModuleDescriptor>> pluginDescriptors = reflections
+				.getSubTypesOf(AbstractModuleDescriptor.class);
+		for (Class<? extends AbstractModuleDescriptor> pluginDescriptor : pluginDescriptors) {
+			PluginDescriptor pluginDescriptorAnnotation = pluginDescriptor.getAnnotation(PluginDescriptor.class);
+			modules.addModuleDescriptor(pluginDescriptorAnnotation.value(), pluginDescriptor);
+			LOG.info("plugin descriptor " + pluginDescriptor.getName() + " with " + pluginDescriptorAnnotation.value()
+					+ " is initiated.");
+
+		}
 
 		// Determine which service objects to expose to plugins
 		HostComponentProvider host = new HostComponentProvider() {

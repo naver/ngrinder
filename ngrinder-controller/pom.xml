@@ -49,6 +49,18 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.9.8</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>12.0</version>
+		</dependency>
+
+
+		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-jpa</artifactId>
 			<version>1.0.3.RELEASE</version>
@@ -207,7 +219,7 @@
 							org.eclipse.m2e.core.maven2Builder
 						</buildcommand>
 					</additionalBuildcommands>
-					
+
 					<downloadSources>true</downloadSources>
 					<downloadJavadocs>true</downloadJavadocs>
 					<wtpmanifest>true</wtpmanifest>
