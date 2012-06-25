@@ -31,7 +31,7 @@ public final class ScriptUtil {
 		StringBuilder sb = new StringBuilder();
 		sb.append(NGrinderConstants.PATH_SCRIPT);
 		sb.append(File.separator);
-		sb.append(NGrinderConstants.SCRIPT_PREFIX);
+		sb.append(NGrinderConstants.PREFIX_SCRIPT);
 		sb.append(id);
 		sb.append(File.separator);
 
@@ -77,7 +77,7 @@ public final class ScriptUtil {
 		StringBuilder sb = new StringBuilder();
 		sb.append(NGrinderConstants.PATH_SCRIPT);
 		sb.append(File.separator);
-		sb.append(NGrinderConstants.SCRIPT_PREFIX);
+		sb.append(NGrinderConstants.PREFIX_SCRIPT);
 		sb.append(id);
 		sb.append(File.separator);
 
@@ -223,6 +223,12 @@ public final class ScriptUtil {
 		} catch (IOException e) {
 			LOG.error("Write script file failed.", e);
 		}
+	}
+
+	public static void deleteScriptLibrary(long scriptId, String libraryName) {
+		String scriptPath = ScriptUtil.getScriptPath(scriptId);
+		String scriptLibFilePath = scriptPath + NGrinderConstants.PATH_LIB + File.separator + libraryName;
+		FileUtils.deleteQuietly(new File(scriptLibFilePath));
 	}
 
 }

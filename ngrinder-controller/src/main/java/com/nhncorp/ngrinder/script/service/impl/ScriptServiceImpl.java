@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -30,8 +31,8 @@ public class ScriptServiceImpl implements ScriptService {
 	private ScriptDao scriptDao;
 
 	@Override
-	public List<Script> getScripts(String searchStr, Pageable pageable) {
-		List<Script> scripts = scriptDao.getScripts(searchStr, pageable);
+	public Page<Script> getScripts(String searchStr, Pageable pageable) {
+		Page<Script> scripts = scriptDao.getScripts(searchStr, pageable);
 		return scripts;
 	}
 
@@ -42,8 +43,8 @@ public class ScriptServiceImpl implements ScriptService {
 			ScriptUtil.getContent(script);
 			script.setCacheContent(ScriptUtil.getScriptCache(id));
 			script.setLibrarys(ScriptUtil.getScriptLib(id));
+			script.setHistoryFileNames(this.getHistoryFileName(id));
 		}
-
 		return script;
 	}
 
@@ -75,8 +76,7 @@ public class ScriptServiceImpl implements ScriptService {
 		ScriptUtil.deleteScript(id);
 	}
 
-	@Override
-	public List<String> getHistoryFileName(long id) {
+	private List<String> getHistoryFileName(long id) {
 		List<String> historyFileNames = ScriptUtil.getHistoryFileNames(id);
 		return historyFileNames;
 	}
@@ -89,6 +89,11 @@ public class ScriptServiceImpl implements ScriptService {
 	@Override
 	public void saveLibrary(long scriptId, Library library) {
 		ScriptUtil.saveScriptLibrary(scriptId, library);
+	}
+
+	@Override
+	public void deleteLibrary(long scriptId, String libraryName) {
+		ScriptUtil.deleteScriptLibrary(scriptId, libraryName);
 	}
 
 }

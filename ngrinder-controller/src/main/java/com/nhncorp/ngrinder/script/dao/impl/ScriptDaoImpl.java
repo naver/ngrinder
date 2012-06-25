@@ -17,6 +17,8 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -39,8 +41,7 @@ import com.nhncorp.ngrinder.script.util.ScriptUtil;
 @Repository
 public class ScriptDaoImpl implements ScriptDao {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(ScriptDaoImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ScriptDaoImpl.class);
 
 	// private final Map<Long, Script> scriptsCache = new
 	// ConcurrentHashMap<Long, Script>();
@@ -60,8 +61,7 @@ public class ScriptDaoImpl implements ScriptDao {
 			for (File scriptDir : scriptDirs) {
 				long id = 0;
 				try {
-					id = Long.valueOf(scriptDir.getName().substring(
-							NGrinderConstants.SCRIPT_PREFIX.length()));
+					id = Long.valueOf(scriptDir.getName().substring(NGrinderConstants.PREFIX_SCRIPT.length()));
 				} catch (NumberFormatException e) {
 					continue;
 				}
@@ -73,11 +73,42 @@ public class ScriptDaoImpl implements ScriptDao {
 	}
 
 	@Override
-	public List<Script> getScripts(String searchStr, Pageable pageable) {
-		List<Script> scripts = new ArrayList<Script>();
+	public Page<Script> getScripts(String searchStr, Pageable pageable) {
+		Page<Script> page = null;
 
+		List<Script> scripts = new ArrayList<Script>();
 		List<Script> scriptCache = ScriptsCache.getInstance().get();
-		final Sort sort = pageable.getSort();
+
+		if (null == pageable) {
+
+			page = new PageImpl<Script>(scriptCache, pageable, scriptCache.size());
+
+		} else {
+
+			final Sort sort = pageable.getSort();
+
+			this.sortScripts(scriptCache, sort);
+
+			int i = 0;
+			for (Script script : scriptCache) {
+				if (null == searchStr
+						|| (script.getFileName().contains(searchStr) || script.getTags().toString().contains(searchStr) || script
+								.getLastModifiedUser().contains(searchStr))) {
+					i++;
+					if (i > (pageable.getOffset() - pageable.getPageSize()) && i <= pageable.getOffset())
+						scripts.add(script);
+				}
+			}
+			page = new PageImpl<Script>(scripts, pageable, scriptCache.size());
+
+		}
+		return page;
+	}
+
+	private void sortScripts(List<Script> scripts, final Sort sort) {
+		if (null == sort) {
+			return;
+		}
 		Comparator<Script> comparator = new Comparator<Script>() {
 
 			@Override
@@ -90,36 +121,23 @@ public class ScriptDaoImpl implements ScriptDao {
 					String property = order.getProperty();
 					Object o1 = ReflectionUtil.getFieldValue(s1, property);
 					Object o2 = ReflectionUtil.getFieldValue(s2, property);
-					if (o1 instanceof String) {
-						String c1 = (String) o1;
-						String c2 = (String) o2;
-						result = c1.compareToIgnoreCase(c2);
-						if (0 != result) {
-							if (direction == Direction.DESC) {
-								result = -result;
-							}
-							break;
+
+					String c1 = null != o1 ? o1.toString() : "";
+					String c2 = null != o2 ? o2.toString() : "";
+
+					result = c1.compareToIgnoreCase(c2);
+					if (0 != result) {
+						if (direction == Direction.DESC) {
+							result = -result;
 						}
+						break;
 					}
 				}
 				return result;
 			}
 
 		};
-		Collections.sort(scriptCache, comparator);
-
-		int i = 0;
-		for (Script script : scriptCache) {
-			if (script.getFileName().contains(searchStr)
-					|| script.getTags().contains(searchStr)
-					|| script.getLastModifiedUser().contains(searchStr)) {
-				i++;
-				if (i > (pageable.getOffset() - pageable.getPageSize())
-						&& i <= pageable.getOffset())
-					scripts.add(script);
-			}
-		}
-		return scripts;
+		Collections.sort(scripts, comparator);
 	}
 
 	@Override
@@ -130,8 +148,7 @@ public class ScriptDaoImpl implements ScriptDao {
 		if (null == script) {
 
 			String scriptPath = ScriptUtil.getScriptPath(id);
-			String scriptPropertiesPath = scriptPath
-					+ NGrinderConstants.SCRIPT_PROPERTIES;
+			String scriptPropertiesPath = scriptPath + NGrinderConstants.SCRIPT_PROPERTIES;
 
 			FileInputStream fis = null;
 			ObjectInputStream ois = null;
@@ -139,7 +156,7 @@ public class ScriptDaoImpl implements ScriptDao {
 				fis = new FileInputStream(new File(scriptPropertiesPath));
 				ois = new ObjectInputStream(fis);
 				script = (Script) ois.readObject();
-				ScriptsCache.getInstance().put(id, script);
+				ScriptsCache.getInstance().put(script);
 			} catch (IOException e) {
 				LOG.error("Deserialize Script bean failed.", e);
 			} catch (ClassNotFoundException e) {
@@ -162,15 +179,14 @@ public class ScriptDaoImpl implements ScriptDao {
 		}
 		String scriptPath = ScriptUtil.getScriptPath(script.getId());
 
-		String scriptPropertiesPath = scriptPath
-				+ NGrinderConstants.SCRIPT_PROPERTIES;
+		String scriptPropertiesPath = scriptPath + NGrinderConstants.SCRIPT_PROPERTIES;
 		FileOutputStream fos = null;
 		ObjectOutputStream oos = null;
 		try {
 			fos = new FileOutputStream(scriptPropertiesPath);
 			oos = new ObjectOutputStream(fos);
 			oos.writeObject(script);
-			ScriptsCache.getInstance().put(script.getId(), script);
+			ScriptsCache.getInstance().put(script);
 		} catch (IOException e) {
 			LOG.error("Serialize Script bean failed.", e);
 		} finally {

@@ -29,14 +29,29 @@ public final class ScriptsCache {
 
 	private final List<Script> scriptsList = new ArrayList<Script>();
 
+	// private final Map<Tag, List<Script>> tagScriptsMap = new HashMap<Tag,
+	// List<Script>>();
+
 	// private final ThreadLocal<List<Script>> scripts = new
 	// ThreadLocal<List<Script>>();
 
-	public void put(long id, Script script) {
-		scriptsMap.put(id, script);
+	public void put(Script script) {
+		scriptsMap.put(script.getId(), script);
 
 		scriptsList.remove(script);
 		scriptsList.add(script);
+
+		// if (null != script.getTags()) {
+		// for (Tag tag : script.getTags()) {
+		// List<Script> scripts = tagScriptsMap.get(tag);
+		// if (null == scripts) {
+		// scripts = new ArrayList<Script>();
+		// }
+		// scripts.remove(script);
+		// scripts.add(script);
+		// tagScriptsMap.put(tag, scripts);
+		// }
+		// }
 	}
 
 	public Script get(long id) {

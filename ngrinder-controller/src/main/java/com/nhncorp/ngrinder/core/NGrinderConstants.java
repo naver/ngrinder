@@ -13,17 +13,19 @@ public final class NGrinderConstants {
 	// script
 	public static final String PATH_SCRIPT = getWebRoot() + "scripts";
 
-	public static final String SCRIPT_PREFIX = "s_";
+	public static final String PREFIX_SCRIPT = "s_";
 
-	public static final String PATH_LIB = "lib";
+	public static final String PATH_LIB = "libs";
 
-	public static final String PATH_LOG = "log";
+	public static final String PREFIX_USER = "u_";
 
-	public static final String PATH_REPORT = "report";
+	public static final String PATH_LOG = "logs";
+
+	public static final String PATH_REPORT = "reports";
 
 	public static final String PATH_IMAGES = "images";
 
-	public static final String PATH_HISTORY = "history";
+	public static final String PATH_HISTORY = "histories";
 
 	public static final String PATH_CACHE = "cache";
 
@@ -44,6 +46,8 @@ public final class NGrinderConstants {
 		String path = NGrinderConstants.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		if (path.indexOf("WEB-INF") > 0) {
 			path = path.substring(0, path.indexOf("WEB-INF/classes"));
+		} else if (path.indexOf("classes") > 0) {
+			path = path.substring(0, path.indexOf("classes"));
 		}
 		return path;
 	}

@@ -40,6 +40,8 @@ public class Script extends BaseModel {
 
 	private transient String cacheContent;
 
+	private transient List<String> historyFileNames;
+
 	// private ScriptType type;
 
 	private boolean share = false;
@@ -163,6 +165,14 @@ public class Script extends BaseModel {
 
 	public void setCacheContent(String cacheContent) {
 		this.cacheContent = cacheContent;
+	}
+
+	public List<String> getHistoryFileNames() {
+		return historyFileNames;
+	}
+
+	public void setHistoryFileNames(List<String> historyFileNames) {
+		this.historyFileNames = historyFileNames;
 	}
 
 	public boolean isShare() {

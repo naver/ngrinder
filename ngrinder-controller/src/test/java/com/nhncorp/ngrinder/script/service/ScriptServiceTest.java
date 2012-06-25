@@ -15,6 +15,7 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -98,7 +99,7 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
 		scriptService.saveScript(script);
 
-		List<String> historyFileNames = scriptService.getHistoryFileName(script.getId());
+		List<String> historyFileNames = scriptService.getScript(script.getId()).getHistoryFileNames();
 		Assert.assertNotNull(historyFileNames);
 		Assert.assertFalse(historyFileNames.isEmpty());
 		Script scriptNew = scriptService.getScript(script.getId(), historyFileNames.get(0));
@@ -148,12 +149,12 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 		Order order2 = new Order(Direction.DESC, "testURL");
 		Sort sort = new Sort(order1, order2);
 		Pageable pageable = new PageRequest(2, 2, sort);
-		List<Script> scripts = scriptService.getScripts("wangwu", pageable);
+		Page<Script> scripts = scriptService.getScripts("wangwu", pageable);
 
 		Assert.assertNotNull(scripts);
-		Assert.assertEquals(2, scripts.size());
-		Assert.assertEquals(scripts.get(0).getFileName(), "d.py");
-		Assert.assertEquals(scripts.get(1).getFileName(), "e.py");
+		Assert.assertEquals(2, scripts.getContent().size());
+		Assert.assertEquals(scripts.getContent().get(0).getFileName(), "d.py");
+		Assert.assertEquals(scripts.getContent().get(1).getFileName(), "e.py");
 	}
 
 	@Test
@@ -166,13 +167,13 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 		Order order2 = new Order(Direction.DESC, "testURL");
 		Sort sort = new Sort(order1, order2);
 		Pageable pageable = new PageRequest(5, 15, sort);
-		List<Script> scripts = scriptService.getScripts("lisi", pageable);
+		Page<Script> scripts = scriptService.getScripts("lisi", pageable);
 
 		long endSearch = new Date().getTime();
 		System.out.println(endSearch - startSearch);
 
 		Assert.assertNotNull(scripts);
-		Assert.assertEquals(15, scripts.size());
+		Assert.assertEquals(15, scripts.getContent().size());
 	}
 
 	private void testGetScriptsPerformance2() {

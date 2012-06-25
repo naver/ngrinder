@@ -28,19 +28,31 @@ public class TestResult extends BaseEntity {
 
 	private Date startTime;
 
-	private long interval;
+	// private long interval;
 
 	private Date endTime;
 
 	private long duration;
 
-	private int process;
+	private int processNum;
 
-	private int thread;
+	private int threadNum;
 
-	private int agent;
+	private int agentNum;
 
 	// private List<String> agents;
+
+	private int tests;
+
+	private int errors;
+
+	private Double meanTestTime;
+
+	private Double testTimeStandardDeviation;
+
+	private Double tps;
+
+	private Double peakTps;
 
 	// other...
 

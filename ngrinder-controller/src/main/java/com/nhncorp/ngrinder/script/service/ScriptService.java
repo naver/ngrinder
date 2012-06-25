@@ -1,7 +1,6 @@
 package com.nhncorp.ngrinder.script.service;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.nhncorp.ngrinder.script.model.Library;
@@ -9,7 +8,7 @@ import com.nhncorp.ngrinder.script.model.Script;
 
 public interface ScriptService {
 
-	List<Script> getScripts(String searchStr, Pageable pageable);
+	Page<Script> getScripts(String searchStr, Pageable pageable);
 
 	Script getScript(long id);
 
@@ -17,11 +16,11 @@ public interface ScriptService {
 
 	void saveScript(Script script);
 
-	void saveLibrary(long scriptId, Library Library);
+	void saveLibrary(long scriptId, Library library);
+
+	void deleteLibrary(long scriptId, String libraryName);
 
 	void deleteScript(long id);
-
-	List<String> getHistoryFileName(long id);
 
 	void autoSave(long id, String content);
 

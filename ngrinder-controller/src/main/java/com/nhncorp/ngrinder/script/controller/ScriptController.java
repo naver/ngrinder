@@ -1,8 +1,7 @@
 package com.nhncorp.ngrinder.script.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,7 +24,7 @@ public class ScriptController extends NGrinderBaseController {
 
 	@RequestMapping("/list")
 	public String getAllScripts() {
-		List<Script> scripts = scriptService.getScripts(null, null);
+		Page<Script> scripts = scriptService.getScripts(null, null);
 		System.out.println(scripts);
 		return null;
 	}
@@ -44,21 +43,8 @@ public class ScriptController extends NGrinderBaseController {
 		return null;
 	}
 
-	@RequestMapping("/history")
-	public String getScriptHistoryName(@RequestParam long id) {
-		List<String> historyFileNames = scriptService.getHistoryFileName(id);
-		System.out.println(historyFileNames);
-		return null;
-	}
-
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public String createScript(@RequestParam Script script) {
-		scriptService.saveScript(script);
-		return null;
-	}
-
-	@RequestMapping(value = "/update", method = RequestMethod.POST)
-	public String updateScript(@RequestParam Script script) {
 		scriptService.saveScript(script);
 		return null;
 	}

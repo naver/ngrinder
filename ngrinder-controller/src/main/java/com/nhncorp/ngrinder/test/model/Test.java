@@ -1,12 +1,13 @@
 package com.nhncorp.ngrinder.test.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.nhncorp.ngrinder.core.model.BaseEntity;
+import com.nhncorp.ngrinder.core.model.BaseModel;
 import com.nhncorp.ngrinder.script.model.Script;
 
 /**
@@ -17,13 +18,16 @@ import com.nhncorp.ngrinder.script.model.Script;
  */
 @Entity
 @Table(name = "TB_TEST")
-public class Test extends BaseEntity {
+public class Test extends BaseModel {
 
 	private static final long serialVersionUID = 5412910510490091114L;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "SCRIPT_ID")
-	private Script script;
+	// @ManyToOne(fetch = FetchType.LAZY)
+	// @JoinColumn(name = "SCRIPT_ID")
+	private transient Script script;
+
+	@Column(name = "SCRIPT_ID111111", nullable = false)
+	private long scriptId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "TEST_PARAMS_ID")
@@ -37,6 +41,14 @@ public class Test extends BaseEntity {
 
 	public void setScript(Script script) {
 		this.script = script;
+	}
+
+	public long getScriptId() {
+		return scriptId;
+	}
+
+	public void setScriptId(long scriptId) {
+		this.scriptId = scriptId;
 	}
 
 	public TestParams getParams() {
