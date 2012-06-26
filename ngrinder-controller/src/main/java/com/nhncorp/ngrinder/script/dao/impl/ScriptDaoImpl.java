@@ -79,29 +79,33 @@ public class ScriptDaoImpl implements ScriptDao {
 		List<Script> scripts = new ArrayList<Script>();
 		List<Script> scriptCache = ScriptsCache.getInstance().get();
 
-		if (null == pageable) {
-
-			page = new PageImpl<Script>(scriptCache, pageable, scriptCache.size());
-
-		} else {
-
+		if (null != pageable) {
 			final Sort sort = pageable.getSort();
-
 			this.sortScripts(scriptCache, sort);
-
-			int i = 0;
-			for (Script script : scriptCache) {
-				if (null == searchStr
-						|| (script.getFileName().contains(searchStr) || script.getTags().toString().contains(searchStr) || script
-								.getLastModifiedUser().contains(searchStr))) {
-					i++;
-					if (i > (pageable.getOffset() - pageable.getPageSize()) && i <= pageable.getOffset())
-						scripts.add(script);
-				}
-			}
-			page = new PageImpl<Script>(scripts, pageable, scriptCache.size());
-
 		}
+
+		if (null != searchStr) {
+			searchStr = searchStr.toLowerCase();
+		}
+
+		int i = 0;
+		for (Script script : scriptCache) {
+			if (null != searchStr && !script.getFileName().toLowerCase().contains(searchStr)
+					&& !script.getTags().toString().toLowerCase().contains(searchStr)
+					&& !script.getLastModifiedUser().toLowerCase().contains(searchStr)) {
+				continue;
+			}
+
+			i++;
+			if (null != pageable && (i <= (pageable.getOffset() - pageable.getPageSize()) || i > pageable.getOffset())) {
+				continue;
+			}
+
+			scripts.add(script);
+		}
+
+		page = new PageImpl<Script>(scripts, pageable, scriptCache.size());
+
 		return page;
 	}
 

@@ -22,6 +22,13 @@ public class Tag extends BaseEntity {
 
 	private static final long serialVersionUID = -418147255758574079L;
 
+	public Tag() {
+	}
+
+	public Tag(String name) {
+		this.name = name;
+	}
+
 	@ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
 	private List<Script> scripts;
 
@@ -30,7 +37,7 @@ public class Tag extends BaseEntity {
 
 	@Override
 	public String toString() {
-		return "Tag [name=" + name + "]";
+		return name;
 	}
 
 	public List<Script> getScripts() {

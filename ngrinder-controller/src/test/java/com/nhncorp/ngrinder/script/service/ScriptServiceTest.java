@@ -30,6 +30,8 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
 	private static List<Script> scripts = new ArrayList<Script>();
 
+	private int countNum = 0;
+
 	@Autowired
 	private ScriptService scriptService;
 
@@ -42,12 +44,12 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
 	@Test
 	public void testSaveScript() {
-		this.saveScript();
+		this.saveScript("save");
 	}
 
 	@Test
 	public void testUpdateScript() {
-		Script script = this.saveScript();
+		Script script = this.saveScript("update");
 		long id = script.getId();
 		script = new Script();
 		script.setId(id);
@@ -74,7 +76,7 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
 	@Test
 	public void testGetScript() {
-		Script script = this.saveScript();
+		Script script = this.saveScript("get");
 		Script scriptNew = scriptService.getScript(script.getId());
 
 		Assert.assertEquals(script, scriptNew);
@@ -82,7 +84,7 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
 	@Test
 	public void testGetHistoryScript() {
-		Script script = this.saveScript();
+		Script script = this.saveScript("getHistory");
 		long id = script.getId();
 		script = new Script();
 		script.setId(id);
@@ -108,12 +110,17 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
 	@Test
 	public void testDeleteScript() {
-		Script script = this.saveScript();
+		Page<Script> scriptPage = scriptService.getScripts(null, null);
+
+		Script script = this.saveScript("delete");
 		scriptService.deleteScript(script.getId());
 
-		Script scriptNew = scriptService.getScript(script.getId());
+		Page<Script> scriptPage2 = scriptService.getScripts(null, null);
+		Assert.assertEquals(scriptPage.getTotalElements(), scriptPage2.getTotalElements());
 
+		Script scriptNew = scriptService.getScript(script.getId());
 		Assert.assertNull(scriptNew);
+
 		scripts.remove(script);
 	}
 
@@ -121,27 +128,27 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 	public void testGetScripts() {
 		this.clearScript();
 
-		Script script = this.saveScript();
+		Script script = this.saveScript("1");
 		script.setFileName("e.py");
 		script.setTestURL("v.baidu.com");
 		script.setLastModifiedUser("wangwu");
 
-		Script script2 = this.saveScript();
+		Script script2 = this.saveScript("2");
 		script2.setFileName("d.py");
 		script2.setTestURL("w.baidu.com");
 		script2.setLastModifiedUser("wangwu");
 
-		Script script3 = this.saveScript();
+		Script script3 = this.saveScript("3");
 		script3.setFileName("c.py");
 		script3.setTestURL("x.baidu.com");
 		script3.setLastModifiedUser("wangwu");
 
-		Script script4 = this.saveScript();
+		Script script4 = this.saveScript("4");
 		script4.setFileName("b.py");
 		script4.setTestURL("y.baidu.com");
 		script4.setLastModifiedUser("wangwu");
 
-		Script script5 = this.saveScript();
+		Script script5 = this.saveScript("5");
 		script5.setFileName("a.py");
 		script5.setTestURL("z.baidu.com");
 
@@ -149,7 +156,7 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 		Order order2 = new Order(Direction.DESC, "testURL");
 		Sort sort = new Sort(order1, order2);
 		Pageable pageable = new PageRequest(2, 2, sort);
-		Page<Script> scripts = scriptService.getScripts("wangwu", pageable);
+		Page<Script> scripts = scriptService.getScripts("WANGWU", pageable);
 
 		Assert.assertNotNull(scripts);
 		Assert.assertEquals(2, scripts.getContent().size());
@@ -157,7 +164,7 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 		Assert.assertEquals(scripts.getContent().get(1).getFileName(), "e.py");
 	}
 
-	@Test
+	@Test(timeout = 5000)
 	public void testGetScriptsPerformance() {
 		this.testGetScriptsPerformance2();
 
@@ -167,7 +174,7 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 		Order order2 = new Order(Direction.DESC, "testURL");
 		Sort sort = new Sort(order1, order2);
 		Pageable pageable = new PageRequest(5, 15, sort);
-		Page<Script> scripts = scriptService.getScripts("lisi", pageable);
+		Page<Script> scripts = scriptService.getScripts("LISI", pageable);
 
 		long endSearch = new Date().getTime();
 		System.out.println(endSearch - startSearch);
@@ -186,7 +193,7 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 				@Override
 				public Void call() throws Exception {
 					for (int i = 0; i < 10; i++) {
-						saveScript();
+						saveScript("_" + ++countNum);
 					}
 					return null;
 				}
@@ -207,18 +214,21 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 		System.out.println(endInsert - startInsert);
 	}
 
-	private Script saveScript() {
+	private Script saveScript(String key) {
+		if (null == key) {
+			key = "";
+		}
 		Script script = new Script();
-		script.setContent("testScript");
+		script.setContent("testScript" + key);
 		script.setCreateDate(new Date());
 		script.setCreateUser("zhangsan");
-		script.setDescription("test");
-		script.setFileName("testScript.py");
+		script.setDescription("test" + key);
+		script.setFileName("testScript" + key + ".py");
 		script.setFileSize(123);
 		script.setLastModifiedDate(new Date());
 		script.setLastModifiedUser("lisi");
 		script.setShare(false);
-		script.setTestURL("www.baidu.com");
+		script.setTestURL("www.baidu.com" + key);
 
 		Tag tag1 = new Tag();
 		tag1.setName("ngrinder");
