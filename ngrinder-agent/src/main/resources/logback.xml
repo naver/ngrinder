@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/2002/xmlspec/dtd/2.10/xmlspec.dtd">
 
 <configuration>
 
@@ -9,7 +8,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="com.nhncorp" level="DEBUG" additivity="false">
+	<logger name="com.nhncorp" level="INFO" additivity="false">
 		<appender-ref ref="console" />
 	</logger>
 
