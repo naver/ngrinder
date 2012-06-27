@@ -10,6 +10,13 @@
 	<artifactId>ngrinder-core</artifactId>
 	<name>ngrinder-core</name>
 	<packaging>jar</packaging>
+	<dependencies>
+		<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.0-api</artifactId>
+			<version>1.0.0.Final</version>
+		</dependency>
+	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
