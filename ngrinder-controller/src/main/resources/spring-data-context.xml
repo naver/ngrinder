@@ -10,8 +10,7 @@
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
         ">
 
-	<jpa:repositories base-package="com.nhncorp.ngrinder.**.dao"
-		repository-impl-postfix="Impl" />
+	<jpa:repositories base-package="com.nhncorp.ngrinder" />
 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="emf" />

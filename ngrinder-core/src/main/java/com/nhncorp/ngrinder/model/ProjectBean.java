@@ -1,26 +1,40 @@
 package com.nhncorp.ngrinder.model;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import com.nhncorp.ngrinder.util.DateUtil;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import net.grinder.common.GrinderProperties;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
+import com.nhncorp.ngrinder.core.model.BaseModel;
+import com.nhncorp.ngrinder.util.DateUtil;
 
 /**
  * The Class Project.
  * 
  */
-public class ProjectBean {
+@Entity
+@Table(name = "project")
+@AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "project_id")) })
+public class ProjectBean extends BaseModel {
+	/**
+	 * UUID
+	 */
+	private static final long serialVersionUID = 1369809450686098944L;
 
-	private Integer id;
-
+	@Column(name = "project_name")
 	private String name;
 
+	@Column(length = 2048)
 	private String description;
-
-	private Date lastModifiedDate;
 
 	private Date lastTestTime;
 
@@ -33,13 +47,16 @@ public class ProjectBean {
 	private int collectSampleCount;
 
 	/** the target host to test */
+	@Column(length = 256)
 	private String targetHosts;
 
 	/** The shared user list. */
-	private List<NGrinderUserBean> sharedUserList;
+	/** private List<NGrinderUserBean> sharedUserList; */
 
 	/** The shared user id list. */
-	private List<String> sharedUserId;
+	/**
+	 * private List<String> sharedUserId;
+	 */
 
 	/** The operation code. */
 	private String operation;
@@ -58,41 +75,21 @@ public class ProjectBean {
 	/** The threshold code */
 	private String threshold;
 
-	/** used by /etc/hosts */
-	private String hostsIp;
-
-	/** used by /etc/hosts */
-	private String hostsDomain;
+	/**
+	 * used by /etc/hosts
+	 * 
+	 * Comma Separated host mapping like
+	 * www.helloworld.com:10.98.223.22,www.helloworld2.com:10.22.22.33
+	 */
+	private String hostsMapping;
 
 	// default script name to run test
 	private String scriptName;
 
-	// default script id to run test
-	// private Integer scriptId;
-
 	private long duration;
 
-	// private String userId;
-
-	// private int vuser;
-
+	@Transient
 	private GrinderProperties grinderProperties;
-
-	// public int getVuser() {
-	// return vuser;
-	// }
-	//
-	// public void setVuser(int vuser) {
-	// this.vuser = vuser;
-	// }
-
-	// public String getUserId() {
-	// return userId;
-	// }
-	//
-	// public void setUserId(String userId) {
-	// this.userId = userId;
-	// }
 
 	public long getDuration() {
 		return duration;
@@ -146,16 +143,8 @@ public class ProjectBean {
 		return description;
 	}
 
-	public Integer getId() {
-		return id;
-	}
-
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-
 	public String getLastModifiedDateToStr() {
-		return DateUtil.formatDate(lastModifiedDate, "yyyy-MM-dd  HH:mm:ss");
+		return DateUtil.formatDate(getLastModifiedDate(), "yyyy-MM-dd  HH:mm:ss");
 	}
 
 	public String getName() {
@@ -164,14 +153,6 @@ public class ProjectBean {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
 	}
 
 	public void setName(String name) {
@@ -200,14 +181,6 @@ public class ProjectBean {
 
 	public void setOperation(String operation) {
 		this.operation = operation;
-	}
-
-	public List<NGrinderUserBean> getSharedUserList() {
-		return sharedUserList;
-	}
-
-	public void setSharedUserList(List<NGrinderUserBean> sharedUserList) {
-		this.sharedUserList = sharedUserList;
 	}
 
 	public int getResultNum() {
@@ -242,30 +215,6 @@ public class ProjectBean {
 		this.threshold = threshold;
 	}
 
-	public List<String> getSharedUserId() {
-		return sharedUserId == null ? new ArrayList<String>() : sharedUserId;
-	}
-
-	public void setSharedUserId(List<String> sharedUserId) {
-		this.sharedUserId = sharedUserId;
-	}
-
-	public String getHostsIp() {
-		return hostsIp;
-	}
-
-	public void setHostsIp(String hostsIp) {
-		this.hostsIp = hostsIp;
-	}
-
-	public String getHostsDomain() {
-		return hostsDomain;
-	}
-
-	public void setHostsDomain(String hostsDomain) {
-		this.hostsDomain = hostsDomain;
-	}
-
 	public void setOwner(String owner) {
 		this.owner = owner;
 	}
@@ -284,7 +233,15 @@ public class ProjectBean {
 
 	@Override
 	public String toString() {
-		return "ProjectBean [name=" + name + "]";
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.DEFAULT_STYLE);
+	}
+
+	public String getHostsMapping() {
+		return hostsMapping;
+	}
+
+	public void setHostsMapping(String hostsMapping) {
+		this.hostsMapping = hostsMapping;
 	}
 
 }
