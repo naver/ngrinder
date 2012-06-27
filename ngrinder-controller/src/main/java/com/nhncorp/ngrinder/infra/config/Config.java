@@ -87,7 +87,7 @@ public class Config {
 	private Home resolveHome() {
 		String userHomeFromEnv = System.getenv("NGRINDER_HOME");
 		String userHomeFromProperty = System.getProperty("ngrinder.home");
-		if (StringUtils.isNotEmpty(userHomeFromEnv) && StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
+		if (StringUtils.isNotEmpty(userHomeFromEnv) && !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
 			logger.warn("The path to ngrinder-home is ambiguous:");
 			logger.warn("    System Environment:  NGRINDER_HOME=" + userHomeFromEnv);
 			logger.warn("    Java Sytem Property:  ngrinder.home=" + userHomeFromProperty);

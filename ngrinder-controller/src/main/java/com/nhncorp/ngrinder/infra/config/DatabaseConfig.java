@@ -45,12 +45,12 @@ public class DatabaseConfig {
 	private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
 
 	@Autowired
-	private Config setup;
+	private Config config;
 
 	@Bean(name = "dataSource", destroyMethod = "close")
 	public BasicDataSource dataSource() {
 		BasicDataSource dataSource = new BasicDataSource();
-		PropertiesWrapper databaseProperties = setup.getDatabaseProperties();
+		PropertiesWrapper databaseProperties = config.getDatabaseProperties();
 		Database database = Database.getDatabase(databaseProperties.getProperty("database", "sqlite",
 				"[FATAL] Database type is not sepecfied. In default, use sqlite."));
 		database.setup(dataSource, databaseProperties);
@@ -63,12 +63,12 @@ public class DatabaseConfig {
 		emf.setDataSource(dataSource());
 		emf.setPersistenceUnitName("ngrinder");
 		HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
-		PropertiesWrapper databaseProperties = setup.getDatabaseProperties();
+		PropertiesWrapper databaseProperties = config.getDatabaseProperties();
 		Database database = Database.getDatabase(databaseProperties.getProperty("database", "sqlite",
 				"[FATAL] Database type is not sepecfied. In default, use sqlite."));
 
 		hibernateJpaVendorAdapter.setDatabasePlatform(database.getDialect());
-		hibernateJpaVendorAdapter.setShowSql(false);
+		hibernateJpaVendorAdapter.setShowSql(true);
 		hibernateJpaVendorAdapter.setGenerateDdl(true);
 		emf.setJpaVendorAdapter(hibernateJpaVendorAdapter);
 		emf.setPackagesToScan("com.nhncorp.ngrinder.**.model");

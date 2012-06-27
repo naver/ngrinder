@@ -46,7 +46,7 @@ import cubrid.jdbc.driver.CUBRIDDriver;
 public enum Database {
 
 	// SQLite
-	sqlite(JDBC.class, SQLiteDialect.class, "jdbc:sqlite:%s/nforge.sqlite3") {
+	sqlite(JDBC.class, SQLiteDialect.class, "jdbc:sqlite:%s/ngrinder.sqlite3") {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
 
@@ -57,6 +57,7 @@ public enum Database {
 		}
 	},
 
+	
 	// CUBRID
 	cubrid(CUBRIDDriver.class, CUBRIDDialect.class, "jdbc:CUBRID:%s:::?charset=utf-8") {
 		@Override
