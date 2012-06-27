@@ -106,6 +106,6 @@
 	<mvc:resources mapping="/img/**" location="/img/" />
 	<mvc:resources mapping="/js/**" location="/js/" />
 	<mvc:resources mapping="/chart/**" location="/chart/" />
-	<mvc:resources mapping="/editarea/**" location="/editarea/" />
+	<mvc:resources mapping="/plugins/**" location="/plugins/" />
 
 </beans>

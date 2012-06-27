@@ -41,6 +41,9 @@ public final class NGrinderConstants {
 	public static final String JS_EXTENTION = ".js";
 
 	public static final String P_GRINDERPROPERTIES = "grinder.properties";
+	
+	public static final String JSON_SUCCESS = "success";
+	public static final String JSON_MESSAGE = "message";
 
 	public static String getWebRoot() {
 		String path = NGrinderConstants.class.getProtectionDomain().getCodeSource().getLocation().getPath();

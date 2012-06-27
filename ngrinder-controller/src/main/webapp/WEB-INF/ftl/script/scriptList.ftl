@@ -8,150 +8,89 @@
 		<meta name="author" content="AlexQin">
 
 		<link rel="shortcut icon" href="favicon.ico"/>
-		<link href="/css/bootstrap.css" rel="stylesheet">
+		<link href="${Request.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
+		<link href="${Request.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
+		<link href="${Request.getContextPath()}/plugins/datatables/css/demo_table.css" rel="stylesheet">
+		<link href="${Request.getContextPath()}/plugins/datatables/css/demo_page.css" rel="stylesheet">
+		<link href="${Request.getContextPath()}/plugins/datatables/css/demo_table_jui.css" rel="stylesheet">
+		<link href="${Request.getContextPath()}/plugins/google_code_prettify/prettify.css" rel="stylesheet">
 		<style>
 			body {
 				padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
 			}
-			table .td_left {
-				text-align: left;
-			}
+			.table th, .table td {text-align: center;}
+			table.display thead th {padding: 3px 10px}
+			table.display tbody .left {text-align: left}
 		</style>
-		<link href="/css/bootstrap-responsive.css" rel="stylesheet">
-		<link href="/plugins/sort/style.css" rel="stylesheet">
-		<link href="/plugins/google_code_prettify/prettify.css" rel="stylesheet">
 		
-		<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-		<!--[if lt IE 9]>
-		  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-		<![endif]-->
+		<input type="hidden" id="contextPath" value="${Request.getContextPath()}">
+		<#setting number_format="computer">
 	</head>
 
 	<body>
-    <div class="navbar navbar-fixed-top">
-		<div class="navbar-inner">
-			<div class="container">
-				<a class="brand" href="#" style="padding:0 20px"><img src="/img/logo_ngrinder_a_header.png" alt="nGrinder"></img></a>
-				<div class="nav-collapse">
-					<ul class="nav">
-					  <li class="active"><a href="#">Monitoring</a></li>
-					  <li><a href="#about">Load Test</a></li>
-					  <li><a href="#contact">Script</a></li>
-					  <li><a href="#contact">Alert</a></li>
-					</ul>
-					<ul class="nav pull-right">
-						<li><a href="#">Login</a></li>
-						<li class="divider-vertical"></li>
-						<li class="dropdown"><a href="#">Help</a></li>
-					</ul>
-				</div><!--/.nav-collapse -->
-			</div>
-		</div>
-    </div>
+    <#include "../common/navigator.ftl">
 	<div class="container">
 		<div class="row">
 			<div class="span10 offset1">
-				<div class="tabbable">
-					<ul class="nav nav-tabs" id="homeTab">
-					  <li><a href="#monitoringContent" data-toggle="tab">Monitoring</a></li>
-					  <li><a href="#loadTestContent" data-toggle="tab">Load Test</a></li>
-					  <li><a href="#scriptListContent" data-toggle="tab">Script</a></li>
-					  <li><a href="#alertContent" data-toggle="tab">Alert</a></li>
-					</ul>
-					<div class="tab-content">
-						<div class="tab-pane" id="monitoringContent">
-							Monitoring
-						</div>
-						<div class="tab-pane" id="loadTestContent">
-							Load Test
-						</div>
-						<div class="tab-pane" id="alertContent">
-							Alert
-						</div>
-						<div class="tab-pane" id="scriptListContent">
-							<div class="row">
-								<div class="span10">
-									<a class="btn" href="#createScriptModal" id="createBtn" data-toggle="modal">
-										<i class="icon-file"></i>
-										Create a script
-									</a>
-									<a class="btn" href="#uploadScriptModal" id="uploadBtn" data-toggle="modal">
-										<i class="icon-upload"></i>
-										Upload script or resources
-									</a>
-									<a class="btn pull-right" href="javascript:void(0);" id="downloadBtn">
-										<i class="icon-download"></i>
-										Download selected script or resources
-									</a>
-								</div>
-							</div>
-							<div class="well form-inline" style="padding:5px;margin:5px 0">
-								<!--<legend>introduction</legend>-->
-								<input type="text" class="input-medium search-query" placeholder="Keywords">
-								<button type="submit" class="btn">Search</button>
-								<label class="checkbox pull-right" style="position:relative;top:5px">
-									<input type="checkbox" id="onlyMineCkb"> See only my script
-								</label>
-							</div>
-							<table class="table table-striped table-condensed tablesorter" id="scriptTable" style="border-collapse:separate;">
-								<thead>
-									<tr>
-										<th><input type="checkbox" class="checkbox" value=""></th>
-										<th>ID</th>
-										<th type="1">Script File Name</th>
-										<th type="2">Last Test Date</th>
-										<th type="3">Last Modified Date</th>
-										<th type="4">Size</th>
-										<th>Download</th>
-										<th>Del</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-										<td><input type="checkbox" value=""></td>
-										<td>1111</td>
-										<td class="td_left"><a href="#">fff.py</a></td>
-										<td>2012-05-01 10:10:10</td>
-										<td>2012-06-01 10:10:10</td>
-										<td>9KB</td>
-										<td><a href="#"><i class="icon-download-alt"></i></a></td>
-										<td><a href="#"><i class="icon-remove"></i></a></td>
-									</tr>
-									<tr>
-										<td><input type="checkbox" value=""></td>
-										<td>1111</td>
-										<td class="td_left"><a href="#">ggg.py</a></td>
-										<td>2012-05-01 10:10:10</td>
-										<td>2012-06-01 10:10:10</td>
-										<td>10KB</td>
-										<td><a href="#"><i class="icon-download-alt"></i></a></td>
-										<td><a href="#"><i class="icon-remove"></i></a></td>
-									</tr>
-									<tr>
-										<td><input type="checkbox" value=""></td>
-										<td>1111</td>
-										<td class="td_left"><a href="#">aaa.py</a></td>
-										<td>2012-05-01 10:10:10</td>
-										<td>2012-06-01 10:10:10</td>
-										<td>11KB</td>
-										<td><a href="#"><i class="icon-download-alt"></i></a></td>
-										<td><a href="#"><i class="icon-remove"></i></a></td>
-									</tr>
-								</tbody>
-							</table>
-							<div class="pagination pagination-centered">
-							  <ul>
-								<li class="disabled"><a href="#">Prev</a></li>
-								<li class="active"><a href="#">1</a></li>
-								<li><a href="#">2</a></li>
-								<li><a href="#">3</a></li>
-								<li><a href="#">4</a></li>
-								<li><a href="#">Next</a></li>
-							  </ul>
-							</div>
-						</div>
+				<div class="row">
+					<div class="span10">
+						<a class="btn" href="#createScriptModal" id="createBtn" data-toggle="modal">
+							<i class="icon-file"></i>
+							Create a script
+						</a>
+						<a class="btn" href="#uploadScriptModal" id="uploadBtn" data-toggle="modal">
+							<i class="icon-upload"></i>
+							Upload script or resources
+						</a>
+						<a class="btn pull-right" href="javascript:void(0);" id="downloadBtn">
+							<i class="icon-download"></i>
+							Download selected script or resources
+						</a>
 					</div>
 				</div>
+				<div class="well form-inline" style="padding:5px;margin:10px 0">
+					<!--<legend>introduction</legend>-->
+					<input type="text" class="input-medium search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
+					<button type="submit" class="btn" id="searchBtn">Search</button>
+					<label class="checkbox pull-right" style="position:relative;top:5px">
+						<input type="checkbox" id="onlyMineCkb" <#if isOwner>checked</#if>> See only my script
+					</label>
+				</div>
+				<table class="table table-striped display" id="scriptTable">
+					<thead>
+						<tr>
+							<th class="center"><input type="checkbox" class="checkbox noClick" value=""></th>
+							<th>Script File Name</th>
+							<th>Last Test Date</th>
+							<th>Last Modified Date</th>
+							<th>Size(KB)</th>
+							<th class="noClick">Download</th>
+							<th class="noClick">Del</th>
+						</tr>
+					</thead>
+					<tbody>
+						<#assign scriptList = result.content/>
+						<#if scriptList?has_content>
+						<#list scriptList as script>
+						<tr>
+							<td><input type="checkbox" value="${script.id}"></td>
+							<td class="left"><a href="${Request.getContextPath()}/script/detail?id=${script.id}" target="_self">${script.fileName}</a></td>
+							<td><#if script.lastTestDate?exists>${script.lastTestDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
+							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
+							<td></td>
+							<td><a href="javascript:void(0);"><i class="icon-download-alt" sid="${script.id}"></i></a></td>
+							<td><a href="javascript:void(0);"><i class="icon-remove" sid="${script.id}"></i></a></td>
+						</tr>
+						</#list>
+						<#else>
+							<tr>
+								<td colspan="8">
+									No data to display.
+								</td>
+							</tr>
+						</#if>
+					</tbody>
+				</table>
 			</div>
 		</div>
 
@@ -161,21 +100,20 @@
 				<h3>Create a script</h3>
 			</div>
 			<div class="modal-body">
-				<form class="form-horizontal" style="margin-bottom:0">
+				<form class="form-horizontal" style="margin-bottom:0" method="post" target="_self" id="createForm" action="${Request.getContextPath()}/script/detail">
 					<fieldset>
 						<div class="control-group">
 							<label for="scriptNameInput" class="control-label">Script Name</label>
 							<div class="controls">
-							  <input type="text" id="scriptNameInput">
-							  <span class="help-inline">Introduction</span>
+							  <input type="text" id="scriptNameInput" name="fileName">
+							  <span class="help-inline"></span>
 							</div>
 						</div>
 						<div class="control-group">
 							<label for="languageSelect" class="control-label">Language</label>
 							<div class="controls">
-								<select id="languageSelect">
-									<option value="0">PythonScript</option>
-									<option value="1">JavaScript</option>
+								<select id="languageSelect" name="language">
+									<option value="py">PythonScript</option>
 								</select>
 							  <span class="help-inline"></span>
 							</div>
@@ -183,7 +121,7 @@
 						<div class="control-group">
 							<label for="urlInput" class="control-label">URL to be tested</label>
 							<div class="controls">
-							  <input type="text" id="urlInput">
+							  <input type="text" id="urlInput" name="testURL">
 							  <span class="help-inline"></span>
 							</div>
 						</div>					
@@ -202,33 +140,33 @@
 				<h3>Upload a JavaScript or Selenium File</h3>
 			</div>
 			<div class="modal-body">
-				<form class="form-horizontal" style="margin-bottom:0">
+				<form class="form-horizontal" style="margin-bottom:0" method="post" target="_self" action="${Request.getContextPath()}/script/upload" id="uploadForm">
 					<fieldset>
-						<div class="control-group warning">
-							<label for="upScriptNameInput" class="control-label">Name</label>
-							<div class="controls">
-							  <input type="text" class="input-small" id="upScriptNameInput">
+						<div class="control-group">
+							<label for="upScriptNameInput" class="control-label control-label-small">Name</label>
+							<div class="controls controls-small">
+							  <input type="text" id="upScriptNameInput" name="fileName">
 							  <span class="help-inline"></span>
 							</div>
 						</div>
 						<div class="control-group">
-							<label for="discriptionInput" class="control-label">Description</label>
-							<div class="controls">
-							  <input type="text" disabled id="discriptionInput" placeholder="Contents">
+							<label for="discriptionInput" class="control-label control-label-small">Description</label>
+							<div class="controls controls-small">
+							  <input type="text" id="discriptionInput" name="description">
 							  <span class="help-inline"></span>
 							</div>
 						</div>
 						<div class="control-group">
-							<label for="tagsInput" class="control-label">Tags</label>
-							<div class="controls">
-								<span class="uneditable-input">Contents</span>
-								<input type="hidden" id="tagsInput" value="Contents">
+							<label for="tagsInput" class="control-label control-label-small">Tags</label>
+							<div class="controls controls-small">
+								<input type="text" id="tagsInput" name="scriptTags">
+								<span class="help-inline"></span>
 							</div>
 						</div>
 						<div class="control-group">
-							<label for="fileInput" class="control-label">File</label>
-							<div class="controls">
-							  <input type="file" class="input-file" id="fileInput">
+							<label for="fileInput" class="control-label control-label-small">File</label>
+							<div class="controls controls-small">
+							  <input type="file" class="input-file" id="fileInput" name="uploadFile">
 							  <span class="help-inline"></span>
 							</div>
 						</div>					
@@ -241,38 +179,94 @@
 		</div>
 	</div>
 
-	<script src="/js/jquery-1.7.2.min.js"></script>
-	<script src="/js/bootstrap.min.js"></script>
-	<script src="/plugins/sort/tablesorter.min.js"></script>
-	<script src="/plugins/google_code_prettify/prettify.js"></script>
+	<script src="${Request.getContextPath()}/js/jquery-1.7.2.min.js"></script>
+	<script src="${Request.getContextPath()}/js/bootstrap.min.js"></script>
+	<script src="${Request.getContextPath()}/js/utils.js"></script>
+	<script src="${Request.getContextPath()}/plugins/datatables/js/jquery.dataTables.min.js"></script>
+	<script src="${Request.getContextPath()}/plugins/google_code_prettify/prettify.js"></script>
 	<script>
 		$(document).ready(function() {
-			$("#homeTab a:first").tab('show');
-			
-			$('a[data-toggle="tab"]').on('shown', function(e) {
-				alert("current tab: " + e.target + "\nlast tab: " + e.relatedTarget);
-			});
+			$("#n_script").addClass("active");
 
-			$("table#scriptTable").tablesorter({ 
-				sortList: [[2,0]], 
-				headers: {0: {sorter: false}, 1: {sorter: false}, 6: {sorter: false}, 7: {sorter: false}} 
+			$("table#scriptTable").dataTable({
+				"bFilter": false,
+				"bLengthChange": false,
+				"bInfo": false,
+				"iDisplayLength": 15,
+				"aaSorting": [[1, "asc"]],
+				"aoColumns": [{ "asSorting": []}, null, null, null, null, {"asSorting": []}, { "asSorting": []}],
+				//"oLanguage": {"sLengthMenu": "每页显示 _MENU_ 条记录","sZeroRecords": "抱歉， 没有找到","sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据","sInfoEmpty": "没有数据","sInfoFiltered": "(从 _MAX_ 条数据中检索)","oPaginate": {"sFirst": "首页","sPrevious": "前一页","sNext": "后一页","sLast": "尾页"},"sZeroRecords": "没有检索到数据"},
+				"sPaginationType": "full_numbers"
 			});
+			
+			$(".noClick").off('click');
+			
 			$("#createBtn2").on('click', function() {
-				$('#createScriptModal').modal('hide');
+				var $elem = $("#scriptNameInput");
+				if (checkSimpleNameByObj($elem)) {
+					cleanErrMsg($elem);
+				} else {
+					showErrMsg($elem, "Script name not correct.");
+					return;
+				}
+				
+				$elem = $("#urlInput");
+				if (checkEmpty($elem)) {
+					showErrMsg($elem, "Descripition can't be empyt.")
+					return;
+				} else {
+					cleanErrMsg($elem);
+				}
+				
+				document.forms.createForm.submit();
 			});
+			
 			$("#uploadBtn2").on('click', function() {
-				$('#uploadScriptModal').modal('hide');
-			});				
+				var $elem = $("#upScriptNameInput");
+				if (checkSimpleNameByObj($elem)) {
+					cleanErrMsg($elem);
+				} else {
+					showErrMsg($elem, "Script name not correct.");
+					return;
+				}
+				
+				$elem = $("#discriptionInput");
+				if (checkEmpty($elem)) {
+					showErrMsg($elem, "Descripition can't be empyt.")
+					return;
+				} else {
+					cleanErrMsg($elem);
+				}
+				
+				$elem = $("#tagsInput");
+				if (checkEmpty($elem)) {
+					showErrMsg($elem, "Tags can't be empyt.");
+					return;
+				} else {
+					cleanErrMsg($elem);
+				}
+				
+				$elem = $("#fileInput");
+				if (checkEmpty($elem)) {
+					showErrMsg($elem, "Please set a file.");
+					return;
+				} else {
+					cleanErrMsg($elem);
+				}
+				
+				document.forms.uploadForm.submit();
+			});
+						
 			$("#downloadBtn").on('click', function() {
 			
 			});
-			$("table.tablesorter th.header").on('click', function() {
-				var $this = $(this);
-				alert($this.attr("type") + " " + $this.hasClass('headerSortUp'));
-			});
 			
+			$("#searchBtn").on('click', function() {
+				searchScriptList();
+			});
+
 			$("#onlyMineCkb").on('click', function() {
-				alert($(this)[0].checked);
+				searchScriptList();
 			});
 			
 			$("td input").on("click", function() {
@@ -294,7 +288,26 @@
 					});
 				}
 			});
+			
+			$("i.icon-remove").on('click', function() {
+				if (confirm("Do you want to delete this script?")) {
+					document.location.href = "${Request.getContextPath()}/script/delete?id=" + $(this).attr("sid");
+				}
+			});
+			
+			$("i.icon-download-alt").on('click', function() {
+				
+			});
 		});
+		
+		function searchScriptList() {
+			var isOwner = 0;
+			if ($("#onlyMineCkb")[0].checked) {
+				isOwner = 1;
+			}
+			
+			document.location.href = "${Request.getContextPath()}/script/list?keywords=" + $("#searchText").val() + "&isOwner=" + isOwner;
+		}
 	</script>
 	</body>
 </html>

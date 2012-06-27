@@ -31,6 +31,8 @@ public class Script extends BaseModel {
 	private long fileSize;
 
 	private String testURL;
+	
+	private String language;
 
 	private transient byte[] contentBytes;
 
@@ -51,6 +53,8 @@ public class Script extends BaseModel {
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SCRIPT_TAG", joinColumns = @JoinColumn(name = "SCRIPT_ID"), inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
 	private List<Tag> tags = new ArrayList<Tag>();
+	
+	private String tagsString;
 
 	private Date lastTestDate;
 
@@ -217,6 +221,22 @@ public class Script extends BaseModel {
 
 	public void setLibrarys(List<Library> librarys) {
 		this.librarys = librarys;
+	}
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
+
+	public String getTagsString() {
+		return tagsString;
+	}
+
+	public void setTagsString(String tagsString) {
+		this.tagsString = tagsString;
 	}
 
 }

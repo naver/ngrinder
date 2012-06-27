@@ -127,7 +127,12 @@ public final class ScriptUtil {
 				FileUtils.writeStringToFile(new File(scriptFilePath), script.getContent(),
 						NGrinderConstants.ENCODE_UTF8);
 			} else {
-				FileUtils.writeByteArrayToFile(new File(scriptFilePath), script.getContentBytes());
+				byte[] content = script.getContentBytes();
+				if (null == content) {
+					content = "".getBytes();
+				}
+				
+				FileUtils.writeByteArrayToFile(new File(scriptFilePath), content);
 			}
 		} catch (IOException e) {
 			LOG.error("Write script file failed.", e);
