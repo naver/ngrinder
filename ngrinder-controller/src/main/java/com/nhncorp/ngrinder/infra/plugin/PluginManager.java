@@ -70,7 +70,7 @@ public class PluginManager implements ServletContextAware {
 	private static final int PLUGIN_UPDATE_FREQUENCY = 60;
 
 	@Autowired
-	private Config infra;
+	private Config config;
 
 	@PostConstruct
 	public void init() {
@@ -96,7 +96,7 @@ public class PluginManager implements ServletContextAware {
 			public void provide(ComponentRegistrar reg) {
 			}
 		};
-		Home home = infra.getHome();
+		Home home = config.getHome();
 
 		// Construct the configuration
 		PluginsConfiguration config = new PluginsConfigurationBuilder().pluginDirectory(home.getSubFile("plugins"))
@@ -107,6 +107,7 @@ public class PluginManager implements ServletContextAware {
 		// Start the plugin framework
 		plugins = new AtlassianPlugins(config);
 		plugins.start();
+		
 		for (Runnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(Runnable.class)) {
 			runnable.run();
 		}
