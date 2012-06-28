@@ -1,6 +1,7 @@
 package com.nhncorp.ngrinder.script.controller;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -16,11 +17,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.nhncorp.ngrinder.core.controller.NGrinderBaseController;
+import com.nhncorp.ngrinder.core.util.FileUtil;
 import com.nhncorp.ngrinder.core.util.JSONUtil;
 import com.nhncorp.ngrinder.script.model.Library;
 import com.nhncorp.ngrinder.script.model.Script;
 import com.nhncorp.ngrinder.script.service.LibraryService;
 import com.nhncorp.ngrinder.script.service.ScriptService;
+import com.nhncorp.ngrinder.script.util.ScriptUtil;
 
 @Controller
 @RequestMapping("/script")
@@ -31,25 +34,27 @@ public class ScriptController extends NGrinderBaseController {
 
 	@Autowired
 	private ScriptService scriptService;
-
+	
 	@Autowired
 	private LibraryService libraryService;
-
+	
 	@RequestMapping("/list")
-	public String getAllScripts(ModelMap model, @RequestParam(required = false) String keywords,
-			@RequestParam(required = false) boolean isOwner) { // "fileName"
-
+	public String getAllScripts(ModelMap model,
+			@RequestParam(required = false) String keywords, 
+			@RequestParam(required = false) boolean isOwner) { //"fileName"
+		
 		Page<Script> scripts = scriptService.getScripts(keywords, null);
-
+		
 		model.addAttribute("result", scripts);
 		model.addAttribute("keywords", keywords);
 		model.addAttribute("isOwner", isOwner);
-
+		
 		return "script/scriptList";
 	}
 
 	@RequestMapping("/detail")
-	public String getScript(ModelMap model, Script script, @RequestParam(required = false) Long id,
+	public String getScript(ModelMap model, Script script, 
+			@RequestParam(required = false) Long id,
 			@RequestParam(required = false) String historyFileName) {
 		if (null == id) {
 			scriptService.saveScript(script);
@@ -64,7 +69,7 @@ public class ScriptController extends NGrinderBaseController {
 			}
 			model.addAttribute("result", obj);
 		}
-
+		
 		return "script/scriptEditor";
 	}
 
@@ -78,12 +83,13 @@ public class ScriptController extends NGrinderBaseController {
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public String createScript(ModelMap model, Script script) {
 		scriptService.saveScript(script);
-
+		
 		return getScript(model, script, script.getId(), null);
 	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public String uploadFiles(ModelMap model, Script script, @RequestParam("uploadFile") List<MultipartFile> scriptFiles) {
+	public String uploadFiles(ModelMap model, Script script, 
+			@RequestParam("uploadFile") List<MultipartFile> scriptFiles) {
 		for (MultipartFile file : scriptFiles) {
 			if (file.getName().toLowerCase().endsWith(".py")) {
 				script.setFileSize(file.getSize());
@@ -92,7 +98,7 @@ public class ScriptController extends NGrinderBaseController {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-
+				
 				scriptService.saveScript(script);
 			} else {
 				Library library = new Library();
@@ -103,32 +109,48 @@ public class ScriptController extends NGrinderBaseController {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-
+				
 				libraryService.saveLibrary(library);
 			}
 		}
-
+		
 		return getAllScripts(model, "", false);
 	}
 
 	@RequestMapping(value = "/delete")
 	public String deleteScript(ModelMap model, @RequestParam long id) {
 		scriptService.deleteScript(id);
-
+		
 		return getAllScripts(model, "", false);
 	}
-
+	
 	@RequestMapping(value = "/download")
-	public String downloadScript(HttpServletResponse response, @RequestParam long id) {
-
+	public String downloadScript(HttpServletResponse response, 
+			@RequestParam long id, @RequestParam String fileName) {
+		boolean success =
+			FileUtil.downloadFile(response, ScriptUtil.getScriptFilePath(id, fileName));
+		if (!success) {
+			response.setContentType("text/html;charset=utf-8");
+			PrintWriter writer = null;
+			try {
+				writer = response.getWriter();
+				writer.write("<script type=\"text/javascript\">alert('Download script error.')</script>");
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if (null != writer) {
+					writer.close();
+				}
+			}
+		}
+		
 		return null;
 	}
-
+	
 	@RequestMapping(value = "/autoSave")
-	public @ResponseBody
-	String autoSaveScript(@RequestParam long id, @RequestParam String content) {
+	public @ResponseBody String autoSaveScript(@RequestParam long id, @RequestParam String content) {
 		scriptService.autoSave(id, content);
-
+		
 		return JSONUtil.returnSuccess();
 	}
 }

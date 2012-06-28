@@ -1,7 +1,7 @@
 <div class="navbar navbar-fixed-top">
 	<div class="navbar-inner">
 		<div class="container">
-			<a class="brand" href="#" style="padding:0 20px"><img src="/img/logo_ngrinder_a_header.png" alt="nGrinder"></img></a>
+			<a class="brand" href="#" style="padding:0 20px"><img src="${Request.getContextPath()}/img/logo_ngrinder_a_header.png" alt="nGrinder"></img></a>
 			<div class="nav-collapse">
 				<ul class="nav">
 				  <li id="n_monitoring"><a href="#monitoring">Monitoring</a></li>

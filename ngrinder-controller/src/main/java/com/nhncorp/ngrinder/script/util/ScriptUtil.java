@@ -77,9 +77,7 @@ public final class ScriptUtil {
 	}
 
 	public static String getScriptFilePath(long scriptId, String ScriptName) {
-		String scriptPath = getScriptPath(scriptId);
-		String scriptFilePath = scriptPath + ScriptName;
-		return scriptFilePath;
+		return getScriptPath(scriptId) + ScriptName;
 	}
 
 	public static String getContent(Script script) {

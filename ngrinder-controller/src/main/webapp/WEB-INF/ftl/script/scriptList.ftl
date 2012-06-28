@@ -18,7 +18,7 @@
 			body {
 				padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
 			}
-			.table th, .table td {text-align: center;}
+			table th, table td {text-align: center;}
 			table.display thead th {padding: 3px 10px}
 			table.display tbody .left {text-align: left}
 		</style>
@@ -56,7 +56,7 @@
 						<input type="checkbox" id="onlyMineCkb" <#if isOwner>checked</#if>> See only my script
 					</label>
 				</div>
-				<table class="table table-striped display" id="scriptTable">
+				<table class="display" id="scriptTable" style="margin-bottom:10px;">
 					<thead>
 						<tr>
 							<th class="center"><input type="checkbox" class="checkbox noClick" value=""></th>
@@ -78,7 +78,7 @@
 							<td><#if script.lastTestDate?exists>${script.lastTestDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
 							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
 							<td></td>
-							<td><a href="javascript:void(0);"><i class="icon-download-alt" sid="${script.id}"></i></a></td>
+							<td><a href="javascript:void(0);"><i class="icon-download-alt" sid="${script.id}" sname="${script.fileName}"></i></a></td>
 							<td><a href="javascript:void(0);"><i class="icon-remove" sid="${script.id}"></i></a></td>
 						</tr>
 						</#list>
@@ -178,7 +178,11 @@
 			</div>
 		</div>
 	</div>
-
+	<form id="downloadForm" action="${Request.getContextPath()}/script/download" method="post" target="downloadFrame">
+		<input type="hidden" id="download_id" name="id">
+		<input type="hidden" id="download_name" name="fileName">
+	</form>
+	<iframe name="downloadFrame" style="display: none;"></iframe>
 	<script src="${Request.getContextPath()}/js/jquery-1.7.2.min.js"></script>
 	<script src="${Request.getContextPath()}/js/bootstrap.min.js"></script>
 	<script src="${Request.getContextPath()}/js/utils.js"></script>
@@ -194,7 +198,9 @@
 				"bInfo": false,
 				"iDisplayLength": 15,
 				"aaSorting": [[1, "asc"]],
+				"bProcessing": true,
 				"aoColumns": [{ "asSorting": []}, null, null, null, null, {"asSorting": []}, { "asSorting": []}],
+				//"bJQueryUI": true,
 				//"oLanguage": {"sLengthMenu": "每页显示 _MENU_ 条记录","sZeroRecords": "抱歉， 没有找到","sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据","sInfoEmpty": "没有数据","sInfoFiltered": "(从 _MAX_ 条数据中检索)","oPaginate": {"sFirst": "首页","sPrevious": "前一页","sNext": "后一页","sLast": "尾页"},"sZeroRecords": "没有检索到数据"},
 				"sPaginationType": "full_numbers"
 			});
@@ -296,7 +302,10 @@
 			});
 			
 			$("i.icon-download-alt").on('click', function() {
-				
+				var $elem = $(this);
+				$("#download_id").val($elem.attr("sid"));
+				$("#download_name").val($elem.attr("sname"));
+				document.forms.downloadForm.submit();
 			});
 		});
 		
