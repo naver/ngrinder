@@ -84,6 +84,21 @@ public final class ScriptUtil {
 		return sb.toString();
 	}
 
+	public static String getScriptFilePath(Script script) {
+		String scriptPath = ScriptUtil.getScriptPath(script.getId());
+		String scriptFilePath = null;
+		if (null != script) {
+			scriptFilePath = scriptPath + script.getFileName();
+		}
+		return scriptFilePath;
+	}
+
+	public static String getScriptLibFilePath(long scriptId, String libName) {
+		String scriptPath = ScriptUtil.getScriptPath(scriptId);
+		String scriptLibFilePath = scriptPath + NGrinderConstants.PATH_LIB + File.separator + libName;
+		return scriptLibFilePath;
+	}
+
 	public static String getContent(Script script) {
 		String scriptPath = ScriptUtil.getScriptPath(script.getId());
 		String content = null;
@@ -131,7 +146,7 @@ public final class ScriptUtil {
 				if (null == content) {
 					content = "".getBytes();
 				}
-				
+
 				FileUtils.writeByteArrayToFile(new File(scriptFilePath), content);
 			}
 		} catch (IOException e) {
@@ -222,7 +237,7 @@ public final class ScriptUtil {
 
 	public static void saveScriptLibrary(long scriptId, Library library) {
 		String scriptPath = ScriptUtil.getScriptPath(scriptId);
-		String scriptLibPath = scriptPath + NGrinderConstants.PATH_LIB;
+		String scriptLibPath = scriptPath + NGrinderConstants.PATH_LIB + File.separator + library.getFileName();
 		try {
 			FileUtils.writeByteArrayToFile(new File(scriptLibPath), library.getContentBytes());
 		} catch (IOException e) {
