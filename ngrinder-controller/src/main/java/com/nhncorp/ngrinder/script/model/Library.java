@@ -1,9 +1,6 @@
 package com.nhncorp.ngrinder.script.model;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.nhncorp.ngrinder.core.model.BaseEntity;
@@ -13,10 +10,6 @@ import com.nhncorp.ngrinder.core.model.BaseEntity;
 public class Library extends BaseEntity {
 
 	private static final long serialVersionUID = 4876896286845584908L;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "SCRIPT_ID")
-	private Script script;
 
 	private String fileName;
 
@@ -29,14 +22,6 @@ public class Library extends BaseEntity {
 	@Override
 	public String toString() {
 		return "Library [fileName=" + fileName + ", fileSize=" + fileSize + ", fileType=" + fileType + "]";
-	}
-
-	public Script getScript() {
-		return script;
-	}
-
-	public void setScript(Script script) {
-		this.script = script;
 	}
 
 	public String getFileName() {

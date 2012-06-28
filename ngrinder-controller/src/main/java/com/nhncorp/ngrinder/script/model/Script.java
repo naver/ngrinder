@@ -9,7 +9,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.nhncorp.ngrinder.core.model.BaseModel;
@@ -31,7 +30,7 @@ public class Script extends BaseModel {
 	private long fileSize;
 
 	private String testURL;
-	
+
 	private String language;
 
 	private transient byte[] contentBytes;
@@ -53,13 +52,10 @@ public class Script extends BaseModel {
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SCRIPT_TAG", joinColumns = @JoinColumn(name = "SCRIPT_ID"), inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
 	private List<Tag> tags = new ArrayList<Tag>();
-	
+
 	private String tagsString;
 
 	private Date lastTestDate;
-
-	@OneToMany(mappedBy = "script", fetch = FetchType.LAZY)
-	private List<Library> librarys;
 
 	@Override
 	public int hashCode() {
@@ -110,7 +106,7 @@ public class Script extends BaseModel {
 	@Override
 	public String toString() {
 		return "Script [fileName=" + fileName + ", fileSize=" + fileSize + ", testURL=" + testURL + ", share=" + share
-				+ ", description=" + description + ", tags=" + tags + ", librarys=" + librarys + "]";
+				+ ", description=" + description + ", tags=" + tags + "]";
 	}
 
 	public String getFileName() {
@@ -213,14 +209,6 @@ public class Script extends BaseModel {
 
 	public void setLastTestDate(Date lastTestDate) {
 		this.lastTestDate = lastTestDate;
-	}
-
-	public List<Library> getLibrarys() {
-		return librarys;
-	}
-
-	public void setLibrarys(List<Library> librarys) {
-		this.librarys = librarys;
 	}
 
 	public String getLanguage() {

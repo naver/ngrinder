@@ -1,6 +1,7 @@
 package com.nhncorp.ngrinder.script.dao.impl;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -55,18 +56,38 @@ public class ScriptDaoImpl implements ScriptDao {
 	@Override
 	public List<Script> findAll() {
 		List<Script> scripts = new ArrayList<Script>();
-		File root = new File(NGrinderConstants.PATH_SCRIPT);
-		File[] scriptDirs = root.listFiles();
-		if (null != scriptDirs && scriptDirs.length > 0) {
-			for (File scriptDir : scriptDirs) {
-				long id = 0;
-				try {
-					id = Long.valueOf(scriptDir.getName().substring(NGrinderConstants.PREFIX_SCRIPT.length()));
-				} catch (NumberFormatException e) {
-					continue;
+		File root = new File(NGrinderConstants.PATH_PROJECT);
+		File[] userDirs = root.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(File pathname) {
+				return pathname.getName().startsWith(NGrinderConstants.PREFIX_USER);
+			}
+
+		});
+		if (null != userDirs && userDirs.length > 0) {
+			for (File userDir : userDirs) {
+				File[] scriptDirs = userDir.listFiles(new FileFilter() {
+
+					@Override
+					public boolean accept(File pathname) {
+						return pathname.getName().startsWith(NGrinderConstants.PREFIX_SCRIPT);
+					}
+
+				});
+				if (null != scriptDirs && scriptDirs.length > 0) {
+					for (File scriptDir : scriptDirs) {
+						long id = 0;
+						try {
+							id = Long.valueOf(scriptDir.getName().substring(NGrinderConstants.PREFIX_SCRIPT.length()));
+						} catch (NumberFormatException e) {
+							continue;
+						}
+						Script script = this.findOne(id);
+						scripts.add(script);
+					}
 				}
-				Script script = this.findOne(id);
-				scripts.add(script);
+
 			}
 		}
 		return scripts;

@@ -10,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.nhncorp.ngrinder.script.dao.ScriptDao;
-import com.nhncorp.ngrinder.script.model.Library;
 import com.nhncorp.ngrinder.script.model.Script;
 import com.nhncorp.ngrinder.script.service.ScriptService;
 import com.nhncorp.ngrinder.script.util.ScriptUtil;
@@ -42,7 +41,6 @@ public class ScriptServiceImpl implements ScriptService {
 		if (null != script) {
 			ScriptUtil.getContent(script);
 			script.setCacheContent(ScriptUtil.getScriptCache(id));
-			script.setLibrarys(ScriptUtil.getScriptLib(id));
 			script.setHistoryFileNames(this.getHistoryFileName(id));
 		}
 		return script;
@@ -73,7 +71,7 @@ public class ScriptServiceImpl implements ScriptService {
 	@Override
 	public void deleteScript(long id) {
 		scriptDao.delete(id);
-		ScriptUtil.deleteScript(id);
+		ScriptUtil.deleteScriptFile(id);
 	}
 
 	private List<String> getHistoryFileName(long id) {
@@ -84,16 +82,6 @@ public class ScriptServiceImpl implements ScriptService {
 	@Override
 	public void autoSave(long id, String content) {
 		ScriptUtil.saveScriptCache(id, content);
-	}
-
-	@Override
-	public void saveLibrary(long scriptId, Library library) {
-		ScriptUtil.saveScriptLibrary(scriptId, library);
-	}
-
-	@Override
-	public void deleteLibrary(long scriptId, String libraryName) {
-		ScriptUtil.deleteScriptLibrary(scriptId, libraryName);
 	}
 
 }

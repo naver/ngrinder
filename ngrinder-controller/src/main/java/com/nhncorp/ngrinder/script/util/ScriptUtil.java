@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.nhncorp.ngrinder.core.NGrinderConstants;
-import com.nhncorp.ngrinder.script.model.Library;
 import com.nhncorp.ngrinder.script.model.Script;
+import com.nhncorp.ngrinder.user.util.UserUtil;
 
 /**
  * Script util
@@ -29,7 +29,9 @@ public final class ScriptUtil {
 
 	public static void createScriptPath(long id) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(NGrinderConstants.PATH_SCRIPT);
+		sb.append(NGrinderConstants.PATH_PROJECT);
+		sb.append(File.separator);
+		sb.append(UserUtil.getCurrentUser().getName());
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PREFIX_SCRIPT);
 		sb.append(id);
@@ -40,14 +42,6 @@ public final class ScriptUtil {
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}
-		dir = new File(scriptPath + NGrinderConstants.PATH_LIB);
-		if (!dir.exists()) {
-			dir.mkdir();
-		}
-		dir = new File(scriptPath + NGrinderConstants.PATH_CACHE);
-		if (!dir.exists()) {
-			dir.mkdir();
-		}
 		dir = new File(scriptPath + NGrinderConstants.PATH_LOG);
 		if (!dir.exists()) {
 			dir.mkdir();
@@ -57,10 +51,6 @@ public final class ScriptUtil {
 			dir.mkdir();
 		}
 		dir = new File(scriptPath + NGrinderConstants.PATH_HISTORY);
-		if (!dir.exists()) {
-			dir.mkdir();
-		}
-		dir = new File(scriptPath + NGrinderConstants.PATH_IMAGES);
 		if (!dir.exists()) {
 			dir.mkdir();
 		}
@@ -75,7 +65,9 @@ public final class ScriptUtil {
 	 */
 	public static String getScriptPath(long id) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(NGrinderConstants.PATH_SCRIPT);
+		sb.append(NGrinderConstants.PATH_PROJECT);
+		sb.append(File.separator);
+		sb.append(UserUtil.getCurrentUser().getName());
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PREFIX_SCRIPT);
 		sb.append(id);
@@ -84,23 +76,14 @@ public final class ScriptUtil {
 		return sb.toString();
 	}
 
-	public static String getScriptFilePath(Script script) {
-		String scriptPath = ScriptUtil.getScriptPath(script.getId());
-		String scriptFilePath = null;
-		if (null != script) {
-			scriptFilePath = scriptPath + script.getFileName();
-		}
+	public static String getScriptFilePath(long scriptId, String ScriptName) {
+		String scriptPath = getScriptPath(scriptId);
+		String scriptFilePath = scriptPath + ScriptName;
 		return scriptFilePath;
 	}
 
-	public static String getScriptLibFilePath(long scriptId, String libName) {
-		String scriptPath = ScriptUtil.getScriptPath(scriptId);
-		String scriptLibFilePath = scriptPath + NGrinderConstants.PATH_LIB + File.separator + libName;
-		return scriptLibFilePath;
-	}
-
 	public static String getContent(Script script) {
-		String scriptPath = ScriptUtil.getScriptPath(script.getId());
+		String scriptPath = getScriptPath(script.getId());
 		String content = null;
 		if (null != script) {
 			String scriptFilePath = scriptPath + script.getFileName();
@@ -116,7 +99,7 @@ public final class ScriptUtil {
 	}
 
 	public static String getHistoryContent(Script script, String historyName) {
-		String scriptPath = ScriptUtil.getScriptPath(script.getId());
+		String scriptPath = getScriptPath(script.getId());
 		String historyContent = null;
 		if (null != script) {
 			StringBuilder scriptHistoryFilePath = new StringBuilder(scriptPath);
@@ -135,7 +118,7 @@ public final class ScriptUtil {
 	}
 
 	public static void saveScriptFile(Script script) {
-		String scriptPath = ScriptUtil.getScriptPath(script.getId());
+		String scriptPath = getScriptPath(script.getId());
 		String scriptFilePath = scriptPath + script.getFileName();
 		try {
 			if (null != script.getContent()) {
@@ -155,7 +138,7 @@ public final class ScriptUtil {
 	}
 
 	public static void saveScriptHistoryFile(Script script) {
-		String scriptPath = ScriptUtil.getScriptPath(script.getId());
+		String scriptPath = getScriptPath(script.getId());
 		StringBuilder scriptHistoryFilePath = new StringBuilder(scriptPath);
 		scriptHistoryFilePath.append(NGrinderConstants.PATH_HISTORY).append(File.separator);
 		scriptHistoryFilePath.append(new Date().getTime());
@@ -167,8 +150,8 @@ public final class ScriptUtil {
 		}
 	}
 
-	public static void deleteScript(long id) {
-		String scriptPath = ScriptUtil.getScriptPath(id);
+	public static void deleteScriptFile(long id) {
+		String scriptPath = getScriptPath(id);
 		try {
 			FileUtils.deleteDirectory(new File(scriptPath));
 		} catch (IOException e) {
@@ -178,7 +161,7 @@ public final class ScriptUtil {
 
 	public static List<String> getHistoryFileNames(long id) {
 		List<String> historyFileNames = new ArrayList<String>();
-		String scriptPath = ScriptUtil.getScriptPath(id);
+		String scriptPath = getScriptPath(id);
 		StringBuilder scriptHistoryFilePath = new StringBuilder(scriptPath);
 		scriptHistoryFilePath.append(NGrinderConstants.PATH_HISTORY).append(File.separator);
 
@@ -191,7 +174,7 @@ public final class ScriptUtil {
 	}
 
 	public static void saveScriptCache(long id, String content) {
-		String scriptPath = ScriptUtil.getScriptPath(id);
+		String scriptPath = getScriptPath(id);
 		String scriptCachePath = scriptPath + NGrinderConstants.CACHE_NAME;
 		try {
 			FileUtils.writeStringToFile(new File(scriptCachePath), content, NGrinderConstants.ENCODE_UTF8);
@@ -201,7 +184,7 @@ public final class ScriptUtil {
 	}
 
 	public static String getScriptCache(long id) {
-		String scriptPath = ScriptUtil.getScriptPath(id);
+		String scriptPath = getScriptPath(id);
 		String scriptCachePath = scriptPath + NGrinderConstants.CACHE_NAME;
 		String content = null;
 		try {
@@ -213,42 +196,9 @@ public final class ScriptUtil {
 	}
 
 	public static void deleteScriptCache(long id) {
-		String scriptPath = ScriptUtil.getScriptPath(id);
+		String scriptPath = getScriptPath(id);
 		String scriptCachePath = scriptPath + NGrinderConstants.CACHE_NAME;
 		FileUtils.deleteQuietly(new File(scriptCachePath));
-	}
-
-	public static List<Library> getScriptLib(long id) {
-		List<Library> librarys = new ArrayList<Library>();
-
-		String scriptPath = ScriptUtil.getScriptPath(id);
-		String scriptLibPath = scriptPath + NGrinderConstants.PATH_LIB;
-
-		File libDir = new File(scriptLibPath);
-		File[] libFiles = libDir.listFiles();
-		for (File libFile : libFiles) {
-			Library library = new Library();
-			library.setFileName(libFile.getName());
-			library.setFileSize(libFile.length());
-			library.setFileType(libFile.getName().substring(libFile.getName().lastIndexOf('.') + 1));
-		}
-		return librarys;
-	}
-
-	public static void saveScriptLibrary(long scriptId, Library library) {
-		String scriptPath = ScriptUtil.getScriptPath(scriptId);
-		String scriptLibPath = scriptPath + NGrinderConstants.PATH_LIB + File.separator + library.getFileName();
-		try {
-			FileUtils.writeByteArrayToFile(new File(scriptLibPath), library.getContentBytes());
-		} catch (IOException e) {
-			LOG.error("Write script file failed.", e);
-		}
-	}
-
-	public static void deleteScriptLibrary(long scriptId, String libraryName) {
-		String scriptPath = ScriptUtil.getScriptPath(scriptId);
-		String scriptLibFilePath = scriptPath + NGrinderConstants.PATH_LIB + File.separator + libraryName;
-		FileUtils.deleteQuietly(new File(scriptLibFilePath));
 	}
 
 }

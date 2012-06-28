@@ -2,8 +2,10 @@ package com.nhncorp.ngrinder.script.dao;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.nhncorp.ngrinder.script.model.Script;
 
@@ -24,34 +26,18 @@ public final class ScriptsCache {
 		return INSTANCE;
 	}
 
-	// / CopyOnWriteArrayList / ConcurrentHashMap
+	// / CopyOnWriteArraySet / ConcurrentHashMap
 	private final Map<Long, Script> scriptsMap = new HashMap<Long, Script>();
 
-	private final List<Script> scriptsList = new ArrayList<Script>();
+	private final Set<Script> scriptSet = new HashSet<Script>();
 
-	// private final Map<Tag, List<Script>> tagScriptsMap = new HashMap<Tag,
-	// List<Script>>();
-
-	// private final ThreadLocal<List<Script>> scripts = new
-	// ThreadLocal<List<Script>>();
+	// private final Map<String, Set<Script>> userScriptsMap = new
+	// HashMap<String, Set<Script>>();
+	// private final Set<Script> sharedScriptSet = new HashSet<Script>();
 
 	public void put(Script script) {
 		scriptsMap.put(script.getId(), script);
-
-		scriptsList.remove(script);
-		scriptsList.add(script);
-
-		// if (null != script.getTags()) {
-		// for (Tag tag : script.getTags()) {
-		// List<Script> scripts = tagScriptsMap.get(tag);
-		// if (null == scripts) {
-		// scripts = new ArrayList<Script>();
-		// }
-		// scripts.remove(script);
-		// scripts.add(script);
-		// tagScriptsMap.put(tag, scripts);
-		// }
-		// }
+		scriptSet.add(script);
 	}
 
 	public Script get(long id) {
@@ -59,10 +45,10 @@ public final class ScriptsCache {
 	}
 
 	public List<Script> get() {
-		return new ArrayList<Script>(scriptsList);
+		return new ArrayList<Script>(scriptSet);
 	}
 
 	public void remove(long id) {
-		scriptsList.remove(scriptsMap.remove(id));
+		scriptSet.remove(scriptsMap.remove(id));
 	}
 }
