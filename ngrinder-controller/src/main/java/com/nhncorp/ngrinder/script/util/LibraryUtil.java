@@ -30,6 +30,7 @@ public class LibraryUtil {
 		StringBuilder sb = new StringBuilder();
 		sb.append(NGrinderConstants.PATH_PROJECT);
 		sb.append(File.separator);
+		sb.append(NGrinderConstants.PREFIX_USER);
 		sb.append(UserUtil.getCurrentUser().getName());
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PATH_LIB);
@@ -46,6 +47,7 @@ public class LibraryUtil {
 		StringBuilder sb = new StringBuilder();
 		sb.append(NGrinderConstants.PATH_PROJECT);
 		sb.append(File.separator);
+		sb.append(NGrinderConstants.PREFIX_USER);
 		sb.append(UserUtil.getCurrentUser().getName());
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PATH_LIB);
