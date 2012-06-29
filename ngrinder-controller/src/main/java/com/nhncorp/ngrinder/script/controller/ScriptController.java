@@ -23,6 +23,7 @@ import com.nhncorp.ngrinder.script.model.Library;
 import com.nhncorp.ngrinder.script.model.Script;
 import com.nhncorp.ngrinder.script.service.LibraryService;
 import com.nhncorp.ngrinder.script.service.ScriptService;
+import com.nhncorp.ngrinder.script.util.LibraryUtil;
 import com.nhncorp.ngrinder.script.util.ScriptUtil;
 
 @Controller
@@ -44,8 +45,10 @@ public class ScriptController extends NGrinderBaseController {
 			@RequestParam(required = false) boolean isOwner) { //"fileName"
 		
 		Page<Script> scripts = scriptService.getScripts(!isOwner, keywords, null);
+		List<Library> libraries = libraryService.getLibraries();
 		
-		model.addAttribute("result", scripts);
+		model.addAttribute("scripts", scripts);
+		model.addAttribute("libraries", libraries);
 		model.addAttribute("keywords", keywords);
 		model.addAttribute("isOwner", isOwner);
 		
@@ -117,14 +120,14 @@ public class ScriptController extends NGrinderBaseController {
 		return getAllScripts(model, "", false);
 	}
 
-	@RequestMapping(value = "/delete")
+	@RequestMapping(value = "/deleteScript")
 	public String deleteScript(ModelMap model, @RequestParam long id) {
 		scriptService.deleteScript(id);
 		
 		return getAllScripts(model, "", false);
 	}
 	
-	@RequestMapping(value = "/download")
+	@RequestMapping(value = "/downloadScript")
 	public String downloadScript(HttpServletResponse response, 
 			@RequestParam long id, @RequestParam String fileName) {
 		boolean success =
@@ -135,6 +138,35 @@ public class ScriptController extends NGrinderBaseController {
 			try {
 				writer = response.getWriter();
 				writer.write("<script type=\"text/javascript\">alert('Download script error.')</script>");
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if (null != writer) {
+					writer.close();
+				}
+			}
+		}
+		
+		return null;
+	}
+
+	@RequestMapping(value = "/deleteResource")
+	public String deleteResource(ModelMap model, @RequestParam String fileName) {
+		libraryService.deleteLibrary(fileName);
+		
+		return getAllScripts(model, "", false);
+	}
+
+	@RequestMapping(value = "/downloadResource")
+	public String downloadResource(HttpServletResponse response, @RequestParam String fileName) {
+		boolean success =
+			FileUtil.downloadFile(response, LibraryUtil.getLibFilePath(fileName));
+		if (!success) {
+			response.setContentType("text/html;charset=utf-8");
+			PrintWriter writer = null;
+			try {
+				writer = response.getWriter();
+				writer.write("<script type=\"text/javascript\">alert('Download library error.')</script>");
 			} catch (IOException e) {
 				e.printStackTrace();
 			} finally {

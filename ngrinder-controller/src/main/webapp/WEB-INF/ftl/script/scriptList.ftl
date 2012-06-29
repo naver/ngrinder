@@ -69,7 +69,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						<#assign scriptList = result.content/>
+						<#assign scriptList = scripts.content/>
 						<#if scriptList?has_content>
 						<#list scriptList as script>
 						<tr>
@@ -77,14 +77,45 @@
 							<td class="left"><a href="${Request.getContextPath()}/script/detail?id=${script.id}" target="_self">${script.fileName}</a></td>
 							<td><#if script.lastTestDate?exists>${script.lastTestDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
 							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
-							<td></td>
-							<td><a href="javascript:void(0);"><i class="icon-download-alt" sid="${script.id}" sname="${script.fileName}"></i></a></td>
-							<td><a href="javascript:void(0);"><i class="icon-remove" sid="${script.id}"></i></a></td>
+							<td>${(script.fileSize)!0}</td>
+							<td><a href="javascript:void(0);"><i class="icon-download-alt script-download" sid="${script.id}" sname="${script.fileName}"></i></a></td>
+							<td><a href="javascript:void(0);"><i class="icon-remove script-remove" sid="${script.id}"></i></a></td>
 						</tr>
 						</#list>
 						<#else>
 							<tr>
 								<td colspan="8">
+									No data to display.
+								</td>
+							</tr>
+						</#if>
+					</tbody>
+				</table>
+				<div class="page-header" style="margin:65px 0 10px; padding-bottom:5px;">
+					<h3>Resource List</h3>
+				</div>
+				<table class="display" id="resourceTable">
+					<thead>
+						<tr>
+							<th>Resource Name</th>
+							<th>Size(KB)</th>
+							<th class="noClick">Download</th>
+							<th class="noClick">Del</th>
+						</tr>
+					</thead>
+					<tbody>
+						<#if libraries?has_content>
+							<#list libraries as library>
+							<tr>
+								<td class="left">${library.fileName}</td>
+								<td>${(library.fileSize)!0}</td>
+								<td><a href="javascript:void(0);"><i class="icon-download-alt resource-download" sname="${library.fileName}"></i></a></td>
+								<td><a href="javascript:void(0);"><i class="icon-remove resource-remove" sname="${library.fileName}"></i></a></td>
+							</tr>
+							</#list>
+						<#else>
+							<tr>
+								<td colspan="4">
 									No data to display.
 								</td>
 							</tr>
@@ -178,7 +209,7 @@
 			</div>
 		</div>
 	</div>
-	<form id="downloadForm" action="${Request.getContextPath()}/script/download" method="post" target="downloadFrame">
+	<form id="downloadForm" method="post" target="downloadFrame">
 		<input type="hidden" id="download_id" name="id">
 		<input type="hidden" id="download_name" name="fileName">
 	</form>
@@ -191,19 +222,6 @@
 	<script>
 		$(document).ready(function() {
 			$("#n_script").addClass("active");
-
-			$("table#scriptTable").dataTable({
-				"bFilter": false,
-				"bLengthChange": false,
-				"bInfo": false,
-				"iDisplayLength": 15,
-				"aaSorting": [[1, "asc"]],
-				"bProcessing": true,
-				"aoColumns": [{ "asSorting": []}, null, null, null, null, {"asSorting": []}, { "asSorting": []}],
-				//"bJQueryUI": true,
-				//"oLanguage": {"sLengthMenu": "每页显示 _MENU_ 条记录","sZeroRecords": "抱歉， 没有找到","sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据","sInfoEmpty": "没有数据","sInfoFiltered": "(从 _MAX_ 条数据中检索)","oPaginate": {"sFirst": "首页","sPrevious": "前一页","sNext": "后一页","sLast": "尾页"},"sZeroRecords": "没有检索到数据"},
-				"sPaginationType": "full_numbers"
-			});
 			
 			$(".noClick").off('click');
 			
@@ -295,18 +313,61 @@
 				}
 			});
 			
-			$("i.icon-remove").on('click', function() {
-				if (confirm("Do you want to delete this script?")) {
-					document.location.href = "${Request.getContextPath()}/script/delete?id=" + $(this).attr("sid");
+			$("i.script-remove").on('click', function() {
+				if (confirm("Do you want to delete this script file?")) {
+					document.location.href = "${Request.getContextPath()}/script/deleteScript?id=" + $(this).attr("sid");
 				}
 			});
 			
-			$("i.icon-download-alt").on('click', function() {
+			$("i.script-download").on('click', function() {
 				var $elem = $(this);
 				$("#download_id").val($elem.attr("sid"));
 				$("#download_name").val($elem.attr("sname"));
+				document.forms.downloadForm.action = "${Request.getContextPath()}/script/downloadScript";
 				document.forms.downloadForm.submit();
 			});
+
+			$("i.resource-remove").on('click', function() {
+				if (confirm("Do you want to delete this resource file?")) {
+					document.location.href = "${Request.getContextPath()}/script/deleteResource?fileName=" + encodeURI($(this).attr("sname"));
+				}
+			});
+			
+			$("i.resource-download").on('click', function() {
+				var $elem = $(this);
+				$("#download_name").val($elem.attr("sname"));
+				document.forms.downloadForm.action = "${Request.getContextPath()}/script/downloadResource";
+				document.forms.downloadForm.submit();
+			});
+						
+			<#if scriptList?has_content>
+			$("#scriptTable").dataTable({
+				"bFilter": false,
+				"bLengthChange": false,
+				"bInfo": false,
+				"iDisplayLength": 10,
+				"aaSorting": [[1, "asc"]],
+				"bProcessing": true,
+				"aoColumns": [{ "asSorting": []}, null, null, null, null, {"asSorting": []}, { "asSorting": []}],
+				//"bJQueryUI": true,
+				//"oLanguage": {"sLengthMenu": "每页显示 _MENU_ 条记录","sZeroRecords": "抱歉， 没有找到","sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据","sInfoEmpty": "没有数据","sInfoFiltered": "(从 _MAX_ 条数据中检索)","oPaginate": {"sFirst": "首页","sPrevious": "前一页","sNext": "后一页","sLast": "尾页"},"sZeroRecords": "没有检索到数据"},
+				"sPaginationType": "full_numbers"
+			});
+			</#if>
+			
+			<#if libraries?has_content>
+			$("#resourceTable").dataTable({
+				"bFilter": false,
+				"bLengthChange": false,
+				"bInfo": false,
+				"bProcessing": true,
+				"aaSorting": [[0, "asc"]],
+				"aoColumns": [null, null, {"asSorting": []}, { "asSorting": []}],
+				"sScrollY": "200px",
+        		"bPaginate": false,
+       			"bScrollCollapse": true
+			});
+			</#if>
 		});
 		
 		function searchScriptList() {
