@@ -23,8 +23,10 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
 import com.nhncorp.ngrinder.NGrinderIocTransactionalTestBase;
+import com.nhncorp.ngrinder.core.model.User;
 import com.nhncorp.ngrinder.script.model.Script;
 import com.nhncorp.ngrinder.script.model.Tag;
+import com.nhncorp.ngrinder.user.util.UserUtil;
 
 public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
@@ -110,12 +112,12 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
 	@Test
 	public void testDeleteScript() {
-		Page<Script> scriptPage = scriptService.getScripts(null, null);
+		Page<Script> scriptPage = scriptService.getScripts(true, null, null);
 
 		Script script = this.saveScript("delete");
 		scriptService.deleteScript(script.getId());
 
-		Page<Script> scriptPage2 = scriptService.getScripts(null, null);
+		Page<Script> scriptPage2 = scriptService.getScripts(true, null, null);
 		Assert.assertEquals(scriptPage.getTotalElements(), scriptPage2.getTotalElements());
 
 		Script scriptNew = scriptService.getScript(script.getId());
@@ -126,37 +128,46 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
 	@Test
 	public void testGetScripts() {
+
 		this.clearScript();
+
+		User user = new User();
+		user.setId(123);
+		user.setName("tmp_user01");
+		UserUtil.setCurrentUser(user);
 
 		Script script = this.saveScript("1");
 		script.setFileName("e.py");
 		script.setTestURL("v.baidu.com");
-		script.setLastModifiedUser("wangwu");
 
 		Script script2 = this.saveScript("2");
 		script2.setFileName("d.py");
 		script2.setTestURL("w.baidu.com");
-		script2.setLastModifiedUser("wangwu");
 
 		Script script3 = this.saveScript("3");
 		script3.setFileName("c.py");
 		script3.setTestURL("x.baidu.com");
-		script3.setLastModifiedUser("wangwu");
 
 		Script script4 = this.saveScript("4");
 		script4.setFileName("b.py");
 		script4.setTestURL("y.baidu.com");
-		script4.setLastModifiedUser("wangwu");
+
+		User user2 = new User();
+		user2.setId(234);
+		user2.setName("tmp_user02");
+		UserUtil.setCurrentUser(user2);
 
 		Script script5 = this.saveScript("5");
 		script5.setFileName("a.py");
 		script5.setTestURL("z.baidu.com");
 
+		UserUtil.setCurrentUser(user);
+
 		Order order1 = new Order(Direction.ASC, "fileName");
 		Order order2 = new Order(Direction.DESC, "testURL");
 		Sort sort = new Sort(order1, order2);
 		Pageable pageable = new PageRequest(2, 2, sort);
-		Page<Script> scripts = scriptService.getScripts("WANGWU", pageable);
+		Page<Script> scripts = scriptService.getScripts(true, "USER01", pageable);
 
 		Assert.assertNotNull(scripts);
 		Assert.assertEquals(2, scripts.getContent().size());
@@ -166,6 +177,12 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
 	@Test(timeout = 5000)
 	public void testGetScriptsPerformance() {
+		
+		User user = new User();
+		user.setId(123);
+		user.setName("tmp_user03");
+		UserUtil.setCurrentUser(user);
+		
 		this.testGetScriptsPerformance2();
 
 		long startSearch = new Date().getTime();
@@ -174,7 +191,7 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 		Order order2 = new Order(Direction.DESC, "testURL");
 		Sort sort = new Sort(order1, order2);
 		Pageable pageable = new PageRequest(5, 15, sort);
-		Page<Script> scripts = scriptService.getScripts("LISI", pageable);
+		Page<Script> scripts = scriptService.getScripts(true, "USER03", pageable);
 
 		long endSearch = new Date().getTime();
 		System.out.println(endSearch - startSearch);
@@ -220,13 +237,9 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 		}
 		Script script = new Script();
 		script.setContent("testScript" + key);
-		script.setCreateDate(new Date());
-		script.setCreateUser("zhangsan");
 		script.setDescription("test" + key);
 		script.setFileName("testScript" + key + ".py");
 		script.setFileSize(123);
-		script.setLastModifiedDate(new Date());
-		script.setLastModifiedUser("lisi");
 		script.setShare(false);
 		script.setTestURL("www.baidu.com" + key);
 
@@ -243,6 +256,9 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 		script.addTag(tag2);
 		script.addTag(tag3);
 
+		// create
+		scriptService.saveScript(script);
+		// update
 		scriptService.saveScript(script);
 
 		scripts.add(script);

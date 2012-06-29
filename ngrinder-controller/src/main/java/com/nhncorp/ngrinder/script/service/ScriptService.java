@@ -7,7 +7,7 @@ import com.nhncorp.ngrinder.script.model.Script;
 
 public interface ScriptService {
 
-	Page<Script> getScripts(String searchStr, Pageable pageable);
+	Page<Script> getScripts(boolean share, String searchStr, Pageable pageable);
 
 	Script getScript(long id);
 

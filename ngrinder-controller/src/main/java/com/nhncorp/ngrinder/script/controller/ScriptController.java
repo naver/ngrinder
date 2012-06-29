@@ -43,7 +43,7 @@ public class ScriptController extends NGrinderBaseController {
 			@RequestParam(required = false) String keywords, 
 			@RequestParam(required = false) boolean isOwner) { //"fileName"
 		
-		Page<Script> scripts = scriptService.getScripts(keywords, null);
+		Page<Script> scripts = scriptService.getScripts(!isOwner, keywords, null);
 		
 		model.addAttribute("result", scripts);
 		model.addAttribute("keywords", keywords);

@@ -30,8 +30,8 @@ public class ScriptServiceImpl implements ScriptService {
 	private ScriptDao scriptDao;
 
 	@Override
-	public Page<Script> getScripts(String searchStr, Pageable pageable) {
-		Page<Script> scripts = scriptDao.getScripts(searchStr, pageable);
+	public Page<Script> getScripts(boolean share, String searchStr, Pageable pageable) {
+		Page<Script> scripts = scriptDao.getScripts(share, searchStr, pageable);
 		return scripts;
 	}
 

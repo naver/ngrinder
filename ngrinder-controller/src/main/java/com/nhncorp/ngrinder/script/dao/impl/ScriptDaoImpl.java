@@ -32,6 +32,7 @@ import com.nhncorp.ngrinder.script.dao.ScriptDao;
 import com.nhncorp.ngrinder.script.dao.ScriptsCache;
 import com.nhncorp.ngrinder.script.model.Script;
 import com.nhncorp.ngrinder.script.util.ScriptUtil;
+import com.nhncorp.ngrinder.user.util.UserUtil;
 
 /**
  * Script dao file implement
@@ -94,7 +95,7 @@ public class ScriptDaoImpl implements ScriptDao {
 	}
 
 	@Override
-	public Page<Script> getScripts(String searchStr, Pageable pageable) {
+	public Page<Script> getScripts(boolean share, String searchStr, Pageable pageable) {
 		Page<Script> page = null;
 
 		List<Script> scripts = new ArrayList<Script>();
@@ -111,6 +112,10 @@ public class ScriptDaoImpl implements ScriptDao {
 
 		int i = 0;
 		for (Script script : scriptCache) {
+			if (!(share && script.isShare()) && !script.getCreateUser().equals(UserUtil.getCurrentUser().getName())) {
+				continue;
+			}
+
 			if (null != searchStr && !script.getFileName().toLowerCase().contains(searchStr)
 					&& !script.getTags().toString().toLowerCase().contains(searchStr)
 					&& !script.getLastModifiedUser().toLowerCase().contains(searchStr)) {

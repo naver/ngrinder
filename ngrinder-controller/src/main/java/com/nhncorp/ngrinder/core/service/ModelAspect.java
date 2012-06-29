@@ -8,6 +8,7 @@ import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Service;
 
 import com.nhncorp.ngrinder.core.model.BaseModel;
+import com.nhncorp.ngrinder.user.util.UserUtil;
 
 /**
  * model aspect
@@ -28,12 +29,13 @@ public class ModelAspect {
 				BaseModel model = (BaseModel) object;
 				if (0 != model.getId()) {
 					model.setLastModifiedDate(new Date());
-					model.setLastModifiedUser("tmp_user2");
+					model.setLastModifiedUser(UserUtil.getCurrentUser().getName());
 				} else {
 					model.setCreateDate(new Date());
-					model.setCreateUser("tmp_user1");
+					model.setCreateUser(UserUtil.getCurrentUser().getName());
 				}
 			}
 		}
 	}
+
 }
