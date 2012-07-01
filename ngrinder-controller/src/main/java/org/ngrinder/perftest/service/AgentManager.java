@@ -24,8 +24,11 @@ package org.ngrinder.perftest.service;
 
 import java.util.concurrent.BlockingQueue;
 
+import org.springframework.stereotype.Component;
+
 import net.grinder.SingleConsole;
 
+@Component
 public class AgentManager {
 
 	// public BlockingQueue<Agent> getAgents(SingleConsole singleConsole,

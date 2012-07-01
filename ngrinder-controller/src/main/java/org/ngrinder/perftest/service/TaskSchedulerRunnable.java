@@ -45,11 +45,10 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * task scheduler
  * 
- * @author Liu Zhifei
- * 
- *         2012-3-21
+ * @author JunHo Yoon
+ * @since 3.0
  */
-@Service
+@Component
 @Transactional
 public class TaskSchedulerRunnable implements Runnable {
 

@@ -1,5 +1,8 @@
 package org.ngrinder.model;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.util.Date;
 /*
  * Copyright (C) 2012 - 2012 NHN Corporation
@@ -33,23 +36,24 @@ import javax.persistence.MappedSuperclass;
  * @date 2012-6-13
  */
 @MappedSuperclass
-public class BaseModel extends BaseEntity {
+public class BaseModel<M> extends BaseEntity {
 
 	private static final long serialVersionUID = -3876339828833595694L;
 
-	@Column(name = "CREATE_DATE", nullable = false, insertable = true, updatable = false)
+	@Column(name = "CREATE_DATE")
 	private Date createDate;
 
-	@Column(name = "CREATE_USER", nullable = false, insertable = true, updatable = false)
+	@Column(name = "CREATE_USER")
 	private String createUser;
 
-	@Column(name = "LAST_MODIFIED_DATE", nullable = false)
+	@Column(name = "LAST_MODIFIED_DATE")
 	private Date lastModifiedDate;
 
-	@Column(name = "LAST_MODIFIED_USER", nullable = false)
+	@Column(name = "LAST_MODIFIED_USER")
 	private String lastModifiedUser;
 
 	public Date getCreateDate() {
+
 		return createDate;
 	}
 
@@ -66,6 +70,7 @@ public class BaseModel extends BaseEntity {
 	}
 
 	public Date getLastModifiedDate() {
+
 		return lastModifiedDate;
 	}
 
@@ -79,5 +84,25 @@ public class BaseModel extends BaseEntity {
 
 	public void setLastModifiedUser(String lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public void merge(M source) {
+		try {
+			BeanInfo beanInfo = Introspector.getBeanInfo(getClass());
+			// Iterate over all the attributes
+			for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
+				// Only copy writable attributes
+				if (descriptor.getWriteMethod() != null) {
+					// Only copy values values where the source values is not
+					// null
+					Object defaultValue = descriptor.getReadMethod().invoke(source);
+					if (defaultValue != null) {
+						descriptor.getWriteMethod().invoke(this, defaultValue);
+					}
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
