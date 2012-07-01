@@ -10,7 +10,7 @@
 
 	<!-- Scans the classpath of this application for @Components to deploy as 
 		beans -->
-	<context:component-scan base-package="com.nhncorp.ngrinder" />
+	<context:component-scan base-package="org.ngrinder" />
 
 	<util:properties id="dataProps" location="classpath:/data.properties" />
 
