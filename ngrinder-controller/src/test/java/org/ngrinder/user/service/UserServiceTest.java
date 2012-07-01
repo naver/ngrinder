@@ -32,8 +32,8 @@ public class UserServiceTest extends NGrinderIocTransactionalTestBase {
 		User user = new User();
 		user.setUserId("hello");
 		user.setPsw("www");
-		String id = userService.saveUser(user);
-		assertThat(id, is("hello"));
+		user = userService.saveUser(user);
+		assertThat(user.getUserId(), is("hello"));
 	}
 
 	@Test
@@ -62,4 +62,24 @@ public class UserServiceTest extends NGrinderIocTransactionalTestBase {
 
 	}
 
+	@Test
+	public void testUpdateUser() {
+		User user = new User();
+		user.setUserId("hello");
+		user.setPsw("www");
+		Role userRole = new Role("service");
+
+		user.setRole(roleRepository.save(userRole));
+		user = userService.saveUser(user);
+
+		User user2 = new User();
+		user2.setUserId("hello");
+		user2.setPsw("www222");
+
+		userService.modifyUser(user2);
+		User userById = userService.getUserById("hello");
+		assertThat(userById.getPsw(), is("www222"));
+
+		assertThat(userById.getId(), is(user.getId()));
+	}
 }

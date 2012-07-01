@@ -102,8 +102,8 @@ public class UserService {
 	 * 
 	 * @return result
 	 */
-	public String saveUser(User user) {
-		return userRepository.save(user).getUserId();
+	public User saveUser(User user) {
+		return userRepository.save(user);
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class UserService {
 	 * @return result.
 	 */
 	public String modifyUser(User user) {
-		if (user.getUserId() == null || user.getRole() == null) {
+		if (user.getUserId() == null) {
 			throw new RuntimeException("Invalid user to update:" + user);
 		}
 
@@ -140,12 +140,14 @@ public class UserService {
 	/**
 	 * get user list by role.
 	 * 
-	 * @param paramMap
+	 * @param roleName
 	 * @return user list
 	 * @throws Exception
 	 */
 	public List<User> getUserListByRole(String roleName) {
 		Role role = roleRepository.findOneByName(roleName);
+		if (role == null)
+			return new ArrayList<User>();
 		return getUserListByRole(role);
 	}
 
