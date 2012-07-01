@@ -11,11 +11,11 @@ import net.grinder.util.Sleeper.ShutdownException;
 import net.grinder.util.SleeperImplementation;
 import net.grinder.util.StandardTimeAuthority;
 
+import org.ngrinder.manager.GrinderWrapper;
+import org.ngrinder.util.HudsonPluginConfig;
+import org.ngrinder.util.ReflectionUtil;
 import org.slf4j.Logger;
 
-import com.nhncorp.ngrinder.manager.GrinderWrapper;
-import com.nhncorp.ngrinder.util.HudsonPluginConfig;
-import com.nhncorp.ngrinder.util.ReflectionUtil;
 
 
 

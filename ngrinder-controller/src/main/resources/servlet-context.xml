@@ -96,11 +96,6 @@
 		</property>
 	</bean>
 
-	<!-- <mvc:interceptors> <mvc:interceptor> <mvc:mapping path="/project/**"/> 
-		<mvc:mapping path="/test/**"/> <mvc:mapping path="/help**"/> <mvc:mapping 
-		path="/reservation/**"/> <bean class="com.nhncorp.ngrinder.interceptor.TestRunningInterceptor" 
-		/> </mvc:interceptor> </mvc:interceptors> -->
-
 	<!-- resources exclusions from servlet mapping -->
 	<mvc:resources mapping="/css/**" location="/css/" />
 	<mvc:resources mapping="/img/**" location="/img/" />

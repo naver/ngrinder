@@ -1,12 +1,12 @@
 package net.grinder.engine.process;
 
 import org.junit.Test;
+import org.ngrinder.util.HudsonPluginConfig;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.net.SimpleSocketServer;
 
-import com.nhncorp.ngrinder.util.HudsonPluginConfig;
 
 public class WorkerProcessTest {
 

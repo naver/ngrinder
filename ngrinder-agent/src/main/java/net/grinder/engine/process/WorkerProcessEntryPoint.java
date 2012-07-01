@@ -30,13 +30,13 @@ import net.grinder.communication.CommunicationDefaults;
 import net.grinder.communication.StreamReceiver;
 import net.grinder.engine.messages.InitialiseGrinderMessage;
 
+import org.ngrinder.util.HudsonPluginConfig;
+import org.ngrinder.util.ReflectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.net.SocketAppender;
 
-import com.nhncorp.ngrinder.util.HudsonPluginConfig;
-import com.nhncorp.ngrinder.util.ReflectionUtil;
 
 /**
  * Entry point for processes launched by the agent. It is re-written for nGrinder

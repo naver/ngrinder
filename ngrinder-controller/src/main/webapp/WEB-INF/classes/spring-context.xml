@@ -12,7 +12,7 @@
 	<!-- Configures support for @Controllers -->
 	<mvc:annotation-driven />
  
-	<context:component-scan base-package="com.nhncorp.ngrinder.**.controller"
+	<context:component-scan base-package="org.ngrinder.**.controller"
 		use-default-filters="false">
 		<context:include-filter type="annotation"
 			expression="org.springframework.stereotype.Controller"></context:include-filter>
@@ -97,7 +97,7 @@
 			<mvc:mapping path="/test/**"/>
 			<mvc:mapping path="/help**"/>
 			<mvc:mapping path="/reservation/**"/>
-			<bean class="com.nhncorp.ngrinder.interceptor.TestRunningInterceptor" />
+			<bean class="org.ngrinder.interceptor.TestRunningInterceptor" />
 		</mvc:interceptor>
 	</mvc:interceptors>
 	 -->

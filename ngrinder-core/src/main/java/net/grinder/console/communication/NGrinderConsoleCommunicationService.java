@@ -2,13 +2,13 @@ package net.grinder.console.communication;
 
 import java.util.Map;
 
+import net.grinder.GrinderConstants;
 import net.grinder.common.processidentity.ProcessIdentity;
 import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.communication.ProcessStatusImplementation.AgentAndWorkers;
 
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.nhncorp.ngrinder.grinder.define.GrinderConstants;
 
 /**
  * This class is used to get worker and thread information from grinder.

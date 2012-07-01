@@ -16,11 +16,11 @@ import net.grinder.engine.common.EngineException;
 import net.grinder.engine.process.WorkerProcessEntryPoint;
 import net.grinder.util.Directory;
 
+import org.ngrinder.util.HudsonPluginConfig;
+import org.ngrinder.util.SystemProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nhncorp.ngrinder.util.HudsonPluginConfig;
-import com.nhncorp.ngrinder.util.SystemProperties;
 
 /**
  * Rewrite from original WorkerProcessCommandLine.

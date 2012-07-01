@@ -16,10 +16,10 @@
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	<listener>
-		<listener-class>com.nhncorp.ngrinder.listener.NGrinderHanitorAgent</listener-class>
+		<listener-class>org.ngrinder.listener.NGrinderHanitorAgent</listener-class>
 	</listener>
 	<listener>
-		<listener-class>com.nhncorp.ngrinder.listener.AgentInitDataListener</listener-class>
+		<listener-class>org.ngrinder.listener.AgentInitDataListener</listener-class>
 	</listener>
 	<servlet>
 		<servlet-name>appServlet</servlet-name>

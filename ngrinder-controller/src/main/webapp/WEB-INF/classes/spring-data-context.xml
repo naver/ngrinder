@@ -12,11 +12,11 @@
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
         ">
 
-	<jpa:repositories base-package="com.nhncorp.ngrinder.**.dao" repository-impl-postfix="Impl" />
+	<jpa:repositories base-package="org.ngrinder.**.dao" repository-impl-postfix="Impl" />
 	
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="dataSource" />
-        <property name="packagesToScan" value="com.nhncorp.ngrinder.**.model" />
+        <property name="packagesToScan" value="org.ngrinder.**.model" />
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
                 <property name="showSql" value="true" />
@@ -38,7 +38,7 @@
     
     <aop:config proxy-target-class="true">
         <aop:advisor id="transactionAdvisor" advice-ref="transactionAdvice"
-                     pointcut="execution(* com.nhncorp.ngrinder.**.service.*Service.*(..))"/>
+                     pointcut="execution(* org.ngrinder.**.service.*Service.*(..))"/>
     </aop:config>
 
     <tx:advice id="transactionAdvice" transaction-manager="transactionManager">
