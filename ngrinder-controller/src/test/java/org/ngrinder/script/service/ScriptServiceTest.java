@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.ngrinder.NGrinderIocTransactionalTestBase;
 import org.ngrinder.script.model.Script;
 import org.ngrinder.script.model.Tag;
+
 import org.ngrinder.user.model.User;
 import org.ngrinder.user.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,6 +179,7 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 	public void testGetScriptsPerformance() {
 
 		User user = new User();
+
 		user.setId(123);
 		user.setName("tmp_user03");
 		UserUtil.setCurrentUser(user);

@@ -27,6 +27,7 @@ public class UserUtil {
 	}
 
 	public static void setCurrentUser(User user) {
+
 		tmpUser = user;
 	}
 }

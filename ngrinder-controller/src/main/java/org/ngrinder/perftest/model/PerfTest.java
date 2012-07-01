@@ -73,7 +73,6 @@ public class PerfTest extends BaseModel {
 	private String targetHosts;
 
 	/** The shared user list. */
-	/** private List<User> sharedUserList; */
 
 	/** The shared user id list. */
 	/**
