@@ -3,6 +3,7 @@ package org.ngrinder.user.model;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -25,10 +26,16 @@ public class UserTest extends AbstractTransactionalJUnit4SpringContextTests {
 		User user = new User();
 		user.setName("MyName1");
 		user.setEmail("junoyoon@gmail.com");
+		user.setLastModifiedUser("hello");
+		user.setCreateUser("hello");
+
 		userRepository.save(user);
 		User user2 = new User();
 		user2.setName("MyName2");
 		user2.setEmail("junoyoon@paran.com");
+		user2.setLastModifiedUser("hello");
+		user2.setCreateUser("hello");
+
 		userRepository.save(user2);
 		System.out.println(user2);
 

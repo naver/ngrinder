@@ -1,6 +1,30 @@
+/*
+ * Copyright (C) 2012 - 2012 NHN Corporation
+ * All rights reserved.
+ *
+ * This file is part of The nGrinder software distribution. Refer to
+ * the file LICENSE which is part of The nGrinder distribution for
+ * licensing details. The nGrinder distribution is available on the
+ * Internet at http://nhnopensource.org/ngrinder
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package org.ngrinder.user.model;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -17,7 +41,7 @@ import org.springframework.data.jpa.domain.Specification;
  */
 @Entity
 @Table(name = "USER")
-public class User extends BaseModel {
+public class User extends BaseModel<User> {
 
 	/**
 	 * UUID
@@ -34,7 +58,8 @@ public class User extends BaseModel {
 
 	private String email;
 
-	private String role;
+	@ManyToOne(fetch = FetchType.EAGER)
+	private Role role;
 
 	private String description;
 
@@ -42,48 +67,18 @@ public class User extends BaseModel {
 
 	private String userLanguage;
 
-	/**
-	 * 부서장 여부
-	 */
-	private String deptBsYN;
-	private String deptCd;
-	private String empId;
 	private String mobilePhone;
 
 	public User() {
 
 	}
 
-	public User(String userId, String name, String password, String userRole) {
+	public User(String userId, String name, String password, Role role) {
 		this.userId = userId;
 		this.psw = password;
 		this.name = name;
-		this.role = userRole;
+		this.role = role;
 		isEnabled();
-	}
-
-	public String getDeptBsYN() {
-		return deptBsYN;
-	}
-
-	public void setDeptBsYN(String deptBsYN) {
-		this.deptBsYN = deptBsYN;
-	}
-
-	public String getDeptCd() {
-		return deptCd;
-	}
-
-	public void setDeptCd(String deptCd) {
-		this.deptCd = deptCd;
-	}
-
-	public String getEmpId() {
-		return empId;
-	}
-
-	public void setEmpId(String empId) {
-		this.empId = empId;
 	}
 
 	public String getMobilePhone() {
@@ -110,11 +105,11 @@ public class User extends BaseModel {
 		this.psw = password;
 	}
 
-	public String getRole() {
+	public Role getRole() {
 		return role;
 	}
 
-	public void setRole(String userRole) {
+	public void setRole(Role userRole) {
 		this.role = userRole;
 	}
 

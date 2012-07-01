@@ -20,35 +20,37 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.user.util;
+package org.ngrinder.user.model;
 
-import org.ngrinder.user.model.User;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-/**
- * user util
- * 
- * @author Tobi
- * @since
- * @date 2012-6-28
- */
-// TODO Related functions is not yet complete
-public class UserUtil {
+import org.ngrinder.model.BaseModel;
 
-	private static User tmpUser;
+@Entity
+@Table(name = "ROLE")
+public class Role extends BaseModel<Role> {
 
-	static {
-		User user = new User();
-		user.setId(987);
-		user.setName("default_tmp_user");
-		setCurrentUser(user);
-	}
+	/**
+	 * UUID
+	 */
+	private static final long serialVersionUID = 1L;
+	private String name;
 
-	public static User getCurrentUser() {
-		return tmpUser;
+	public Role() {
 
 	}
 
-	public static void setCurrentUser(User user) {
-		tmpUser = user;
+	public Role(String name) {
+		this.name = name;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 }

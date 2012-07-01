@@ -20,35 +20,14 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.user.util;
+package org.ngrinder.user.repository;
 
-import org.ngrinder.user.model.User;
+import org.ngrinder.user.model.Role;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-/**
- * user util
- * 
- * @author Tobi
- * @since
- * @date 2012-6-28
- */
-// TODO Related functions is not yet complete
-public class UserUtil {
+@Repository
+public interface RoleRepository extends JpaRepository<Role, Integer> {
 
-	private static User tmpUser;
-
-	static {
-		User user = new User();
-		user.setId(987);
-		user.setName("default_tmp_user");
-		setCurrentUser(user);
-	}
-
-	public static User getCurrentUser() {
-		return tmpUser;
-
-	}
-
-	public static void setCurrentUser(User user) {
-		tmpUser = user;
-	}
+	Role findOneByName(String roleName);
 }
