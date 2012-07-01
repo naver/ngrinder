@@ -52,7 +52,7 @@ public class TaskScheduler {
 
 	@PostConstruct
 	public void init() {
-		taskExecutor.scheduleAtFixedRate(getRunnable(), 1000, 1000, TimeUnit.MILLISECONDS);
+		//ftaskExecutor.scheduleAtFixedRate(getRunnable(), 1000, 1000, TimeUnit.MILLISECONDS);
 	}
 
 	@PreDestroy
