@@ -40,7 +40,7 @@ import org.springframework.data.jpa.domain.Specification;
  * @author Mavlarn, JunHo Yoon
  */
 @Entity
-@Table(name = "USER")
+@Table(name = "NUSER")
 public class User extends BaseModel<User> {
 
 	/**
