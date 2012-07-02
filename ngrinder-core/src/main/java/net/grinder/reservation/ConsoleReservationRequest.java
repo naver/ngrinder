@@ -1,19 +1,17 @@
 package net.grinder.reservation;
 
+import static org.ngrinder.common.util.Preconditions.checkTrue;
+
 import java.util.Set;
 
 import net.grinder.common.processidentity.AgentIdentity;
-import net.grinder.util.Precondition;
 
 public class ConsoleReservationRequest implements AgentProcessingListener {
 	private final Integer port;
 	private final Set<AgentReservationRequest> agentReserveRequests;
 
-	public ConsoleReservationRequest(int port,
-			Set<AgentReservationRequest> agentReserveRequests) {
-
-		Precondition.isTrue(port >= 6000 && port <= 7000,
-				"port should be b/w 6000~7000. But it is " + port);
+	public ConsoleReservationRequest(int port, Set<AgentReservationRequest> agentReserveRequests) {
+		checkTrue(port >= 6000 && port <= 7000, "port should be b/w 6000~7000. But it is " + port);
 		this.port = port;
 		this.agentReserveRequests = agentReserveRequests;
 	}

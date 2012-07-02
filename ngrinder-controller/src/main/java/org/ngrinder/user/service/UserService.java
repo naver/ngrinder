@@ -22,6 +22,9 @@
  */
 package org.ngrinder.user.service;
 
+import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -113,10 +116,8 @@ public class UserService {
 	 * @return result.
 	 */
 	public String modifyUser(User user) {
-		if (user.getUserId() == null) {
-			throw new RuntimeException("Invalid user to update:" + user);
-		}
-
+		checkNotNull(user, "user should be not null, when modifying user");
+		checkNotEmpty(user.getUserId(), "user id should be provided when modifying user");
 		User targetUser = userRepository.findOneByUserId(user.getUserId());
 		targetUser.merge(user);
 		userRepository.save(targetUser);

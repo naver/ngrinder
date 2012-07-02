@@ -1,10 +1,12 @@
 package net.grinder.reservation;
 
+import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
+import static org.ngrinder.common.util.Preconditions.checkNotZero;
+
 import java.util.HashSet;
 import java.util.Set;
 
 import net.grinder.common.processidentity.AgentIdentity;
-import net.grinder.util.Precondition;
 
 /**
  * Agent assign request information.
@@ -17,9 +19,8 @@ public class AgentReservationRequest {
 	private final Set<AgentIdentity> assignedAgents = new HashSet<AgentIdentity>();
 
 	public AgentReservationRequest(String category, int requiredAgentCount) {
-		Precondition.notEmpty(category, "category should not be emtpy");
-		Precondition.notZero(requiredAgentCount,
-				"required count of agents should be not 0.");
+		checkNotEmpty(category, "category should not be emtpy");
+		checkNotZero(requiredAgentCount, "required count of agents should be not 0.");
 		this.category = category;
 		this.requiredAgentCount = requiredAgentCount;
 	}

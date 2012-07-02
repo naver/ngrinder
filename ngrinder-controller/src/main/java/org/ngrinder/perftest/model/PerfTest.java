@@ -42,7 +42,7 @@ import org.ngrinder.model.BaseModel;
  */
 @Entity
 @Table(name = "perf_test")
-public class PerfTest extends BaseModel {
+public class PerfTest extends BaseModel<PerfTest> {
 
 	/**
 	 * UUID

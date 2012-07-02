@@ -224,6 +224,59 @@ public final class Preconditions {
 	 * 
 	 * @param reference
 	 *            an object reference
+	 * @param errorMsg
+	 * @return the non-null reference that was validated
+	 * @throws NullPointerException
+	 *             if {@code reference} is null
+	 */
+	public static String checkNotEmpty(String reference, String errorMsg) {
+		if (StringUtils.isEmpty(reference)) {
+			throw new NullPointerException(errorMsg);
+		}
+		return reference;
+	}
+
+	/**
+	 * Ensures that an object reference passed as a parameter to the calling
+	 * method is not 0.
+	 * 
+	 * @param reference
+	 *            an object reference
+	 * @param errorMsg
+	 * @return the non-null reference that was validated
+	 * @throws IllegalArgumentException
+	 *             if {@code condition} is not 0
+	 */
+	public static Integer checkNotZero(Integer reference, String errorMsg) {
+		if (reference == null || reference == 0) {
+			throw new IllegalArgumentException(errorMsg);
+		}
+		return reference;
+	}
+
+	/**
+	 * Ensures that an condition passed as a parameter is true
+	 * 
+	 * @param condition
+	 *            condition
+	 * @param errorMsg
+	 * @throws IllegalArgumentException
+	 *             if {@code condition} is false
+	 */
+
+	public static void checkTrue(boolean condition, String errorMsg) {
+		if (!condition) {
+			throw new IllegalArgumentException(errorMsg);
+		}
+
+	}
+
+	/**
+	 * Ensures that an object reference passed as a parameter to the calling
+	 * method is not null.
+	 * 
+	 * @param reference
+	 *            an object reference
 	 * @return the non-null reference that was validated
 	 * @throws NullPointerException
 	 *             if {@code reference} is null
