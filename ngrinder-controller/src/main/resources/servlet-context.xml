@@ -60,11 +60,10 @@
 	<!-- messages -->
 	<bean id="messageSource"
 		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-		<!-- <property name="basename" value="classpath:messages" /> -->
 		<property name="basenames">
 			<list>
-				<value>/WEB-INF/messages/messages</value>
-				<value>/WEB-INF/messages/errorMessages</value>
+				<value>classpath:messages</value>
+				<value>classpath:errorMessages</value>
 			</list>
 		</property>
 		<property name="defaultEncoding" value="UTF-8" />

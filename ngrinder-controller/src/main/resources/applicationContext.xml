@@ -14,7 +14,7 @@
 		beans -->
 	<context:component-scan base-package="org.ngrinder" />
 
-	<import resource="spring-data-context.xml" />
+	<import resource="applicationContext-springdata.xml" />
 	<import resource="applicationContext-security.xml" />
 
 </beans>

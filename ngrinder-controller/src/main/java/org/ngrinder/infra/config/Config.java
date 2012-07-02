@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
-
 /**
  * Spring component which is responsible to get the nGrinder config which is
  * stored ${NGRINDER_HOME}.
@@ -60,6 +59,7 @@ public class Config {
 	}
 
 	private Home home = null;
+	private PropertiesWrapper systemProperties;
 
 	@PostConstruct
 	public void init() {
@@ -67,6 +67,7 @@ public class Config {
 			home = resolveHome();
 			copyDefaultConfigurationFiles();
 			loadDatabaseProperties();
+			loadSystemProperties();
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while loading NGRINDER_HOME", e);
 		}
@@ -109,6 +110,13 @@ public class Config {
 
 	}
 
+	private void loadSystemProperties() {
+		checkNotNull(home);
+		Properties properties = home.getProperties("system.conf");
+		properties.put("NGRINDER_HOME", home.getDirectory().getAbsolutePath());
+		systemProperties = new PropertiesWrapper(properties);
+	}
+
 	public PropertiesWrapper getDatabaseProperties() {
 		checkNotNull(databaseProperties);
 		return databaseProperties;
@@ -116,6 +124,11 @@ public class Config {
 
 	public Home getHome() {
 		return this.home;
+	}
+
+	public PropertiesWrapper getSystemProperties() {
+		checkNotNull(systemProperties);
+		return systemProperties;
 	}
 
 }
