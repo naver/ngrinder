@@ -17,6 +17,6 @@
 			expression="org.ngrinder.infra.annotation.OnlyRuntimeComponent" />
 	</context:component-scan>
 
-	<import resource="spring-data-context.xml" />
+	<import resource="applicationContext-springdata.xml" />
 </beans>
 
