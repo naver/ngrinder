@@ -2,7 +2,7 @@
 <beans:beans xmlns="http://www.springframework.org/schema/security"
 	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd   
-        			http://www.springframework.org/schema/security   http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+        			    http://www.springframework.org/schema/security   http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
 	<beans:bean id="authenticatedVoter"
 		class="org.springframework.security.access.vote.AuthenticatedVoter" />
@@ -57,15 +57,12 @@
 	<http pattern="/chart/**" security="none" />
 	<http pattern="/editarea/**" security="none" />
 	<http pattern="/login" security="none" />
-	<http pattern="/hudsonTest/**" security="none" />
 	<!-- used for shared test report page -->
 	<http pattern="/test/report/**" security="none" />
 
 	<http entry-point-ref="authenticationProcessingFilterEntryPoint"
 		access-decision-manager-ref="accessDecisionManager">
-
-		<!--<intercept-url pattern="/test/report/chart" filters="none"/> -->
-		<!--<intercept-url pattern="/test/report/chart/**" filters="none"/> -->
+		<intercept-url pattern="/" access="permitAll" />
 		<intercept-url pattern="/home" access="A, U, S" />
 		<intercept-url pattern="/perftest/**" access="U, S" />
 		<intercept-url pattern="/help**" access="U, S" />

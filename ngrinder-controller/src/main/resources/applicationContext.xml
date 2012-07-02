@@ -16,6 +16,5 @@
 
 	<import resource="applicationContext-springdata.xml" />
 	<import resource="applicationContext-security.xml" />
-
 </beans>
 

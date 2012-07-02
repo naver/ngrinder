@@ -23,6 +23,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 @Controller
+@RequestMapping("/")
 public class HomeController extends NGrinderBaseController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HomeController.class);
@@ -32,7 +33,6 @@ public class HomeController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/home")
 	public String home(ModelMap model, HttpServletResponse response, HttpServletRequest request) {
-
 		String roles;
 		try {
 			// set local language
@@ -66,6 +66,12 @@ public class HomeController extends NGrinderBaseController {
 		} else {
 			throw new NGrinderRuntimeException("No User Language found!");
 		}
+	}
+
+	@RequestMapping(value = "/")
+	public String home1(ModelMap model) {
+		setLoginPageDate(model);
+		return "login";
 	}
 
 	@RequestMapping(value = "/login")
