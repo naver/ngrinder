@@ -38,7 +38,7 @@ public class UserUtil {
 
 	static {
 		User user = new User();
-		user.setId(987);
+		user.setId(987L);
 		user.setName("default_tmp_user");
 		setCurrentUser(user);
 	}

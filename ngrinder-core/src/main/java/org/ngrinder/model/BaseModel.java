@@ -36,7 +36,7 @@ import javax.persistence.MappedSuperclass;
  * @date 2012-6-13
  */
 @MappedSuperclass
-public class BaseModel<M> extends BaseEntity {
+public class BaseModel<M> extends BaseEntity<M> {
 
 	private static final long serialVersionUID = -3876339828833595694L;
 
@@ -53,7 +53,6 @@ public class BaseModel<M> extends BaseEntity {
 	private String lastModifiedUser;
 
 	public Date getCreateDate() {
-
 		return createDate;
 	}
 
@@ -86,23 +85,4 @@ public class BaseModel<M> extends BaseEntity {
 		this.lastModifiedUser = lastModifiedUser;
 	}
 
-	public void merge(M source) {
-		try {
-			BeanInfo beanInfo = Introspector.getBeanInfo(getClass());
-			// Iterate over all the attributes
-			for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
-				// Only copy writable attributes
-				if (descriptor.getWriteMethod() != null) {
-					// Only copy values values where the source values is not
-					// null
-					Object defaultValue = descriptor.getReadMethod().invoke(source);
-					if (defaultValue != null) {
-						descriptor.getWriteMethod().invoke(this, defaultValue);
-					}
-				}
-			}
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
 }

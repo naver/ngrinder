@@ -22,6 +22,9 @@ package org.ngrinder.model;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 
 import javax.persistence.Column;
@@ -40,19 +43,19 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @date 2012-6-13
  */
 @MappedSuperclass
-public class BaseEntity implements Serializable {
+public class BaseEntity<M> implements Serializable {
 
 	private static final long serialVersionUID = 8571113820348514692L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID", unique = true, nullable = false, insertable = true, updatable = false)
-	private long id;
+	private Long id;
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		if (this.id == 0) {
 			this.id = id;
 		}
@@ -63,4 +66,23 @@ public class BaseEntity implements Serializable {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.DEFAULT_STYLE);
 	}
 
+	public void merge(M source) {
+		try {
+			BeanInfo beanInfo = Introspector.getBeanInfo(getClass());
+			// Iterate over all the attributes
+			for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
+				// Only copy writable attributes
+				if (descriptor.getWriteMethod() != null) {
+					// Only copy values values where the source values is not
+					// null
+					Object defaultValue = descriptor.getReadMethod().invoke(source);
+					if (defaultValue != null) {
+						descriptor.getWriteMethod().invoke(this, defaultValue);
+					}
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 }

@@ -5,10 +5,15 @@ import javax.persistence.Table;
 
 import org.ngrinder.model.BaseEntity;
 
-
+/**
+ * Library entity
+ * 
+ * @author Liu Zhifei
+ * @since 3.0
+ */
 @Entity
 @Table(name = "LIBRARY")
-public class Library extends BaseEntity {
+public class Library extends BaseEntity<Library> {
 
 	private static final long serialVersionUID = 4876896286845584908L;
 

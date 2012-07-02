@@ -13,16 +13,15 @@ import javax.persistence.Table;
 
 import org.ngrinder.model.BaseModel;
 
-
 /**
  * Script entity
  * 
  * @author Liu Zhifei
- * @date 2012-6-13
+ * @since 3.0
  */
 @Entity
 @Table(name = "SCRIPT")
-public class Script extends BaseModel {
+public class Script extends BaseModel<Script> {
 
 	private static final long serialVersionUID = -2422243194192027508L;
 

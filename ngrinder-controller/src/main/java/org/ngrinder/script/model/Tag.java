@@ -10,16 +10,15 @@ import javax.persistence.Table;
 
 import org.ngrinder.model.BaseEntity;
 
-
 /**
- * tag eneity
+ * Tag entity
  * 
  * @author Liu Zhifei
- * @date 2012-6-13
+ * @since 3.0
  */
 @Entity
 @Table(name = "TAG")
-public class Tag extends BaseEntity {
+public class Tag extends BaseEntity<Tag> {
 	/** UUID */
 	private static final long serialVersionUID = -418147255758574079L;
 
