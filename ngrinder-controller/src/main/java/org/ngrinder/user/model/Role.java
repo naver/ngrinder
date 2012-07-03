@@ -22,19 +22,18 @@
  */
 package org.ngrinder.user.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.ngrinder.model.BaseModel;
 
 @Entity
-@Table(name = "ROLE")
-public class Role extends BaseModel<Role> {
-
-	/**
-	 * UUID
-	 */
-	private static final long serialVersionUID = 1L;
+@Table(name = "NROLE")
+public class Role  {
+	@Id
+	@Column(name = "role_id", unique = true, nullable = false, insertable = true, updatable = false)
+	private Long roleId;
 	private String name;
 
 	public Role() {
@@ -51,6 +50,15 @@ public class Role extends BaseModel<Role> {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+
+	public Long getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(Long roleId) {
+		this.roleId = roleId;
 	}
 
 }
