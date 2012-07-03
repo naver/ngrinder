@@ -46,6 +46,7 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
 	@Test
 	public void testSaveScript() {
+		System.out.println(UserUtil.getCurrentUser().getId());
 		this.saveScript("save");
 	}
 
@@ -180,7 +181,7 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
 		User user = new User();
 
-		user.setId(123L);
+		user.setId(345L);
 		user.setName("tmp_user03");
 		UserUtil.setCurrentUser(user);
 

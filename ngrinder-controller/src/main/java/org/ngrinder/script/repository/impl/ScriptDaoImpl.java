@@ -65,6 +65,13 @@ public class ScriptDaoImpl implements ScriptDao {
 		});
 		if (null != userDirs && userDirs.length > 0) {
 			for (File userDir : userDirs) {
+				long userId = 0;
+				try {
+					userId = Long.valueOf(userDir.getName().substring(NGrinderConstants.PREFIX_USER.length()));
+				} catch (NumberFormatException e) {
+					continue;
+				}
+
 				File[] scriptDirs = userDir.listFiles(new FileFilter() {
 
 					@Override
@@ -81,7 +88,7 @@ public class ScriptDaoImpl implements ScriptDao {
 						} catch (NumberFormatException e) {
 							continue;
 						}
-						Script script = this.findOne(id);
+						Script script = this.findOne(userId, id);
 						scripts.add(script);
 					}
 				}
@@ -167,14 +174,13 @@ public class ScriptDaoImpl implements ScriptDao {
 		Collections.sort(scripts, comparator);
 	}
 
-	@Override
-	public Script findOne(long id) {
+	private Script findOne(long userId, long id) {
 
 		Script script = ScriptsCache.getInstance().get(id);
 
 		if (null == script) {
 
-			String scriptPath = ScriptUtil.getScriptPath(id);
+			String scriptPath = ScriptUtil.getScriptPath(userId, id);
 			String scriptPropertiesPath = scriptPath + NGrinderConstants.SCRIPT_PROPERTIES;
 
 			FileInputStream fis = null;
@@ -199,8 +205,13 @@ public class ScriptDaoImpl implements ScriptDao {
 	}
 
 	@Override
+	public Script findOne(long id) {
+		return this.findOne(0, id);
+	}
+
+	@Override
 	public void save(Script script) {
-		if (script.getId() == 0) {
+		if (null == script.getId() || 0 == script.getId().longValue()) {
 			script.setId((long) script.hashCode());
 			ScriptUtil.createScriptPath(script.getId());
 		}

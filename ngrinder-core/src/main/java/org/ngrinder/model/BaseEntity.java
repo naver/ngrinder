@@ -56,7 +56,7 @@ public class BaseEntity<M> implements Serializable {
 	}
 
 	public void setId(Long id) {
-		if (this.id == 0) {
+		if (null == this.id) {
 			this.id = id;
 		}
 	}

@@ -48,7 +48,7 @@ public class ModelAspect {
 		for (Object object : joinPoint.getArgs()) {
 			if (object instanceof BaseModel) {
 				BaseModel<?> model = (BaseModel<?>) object;
-				if (0 != model.getId()) {
+				if (null != model.getId() && 0 != model.getId().longValue()) {
 					model.setLastModifiedDate(new Date());
 					model.setLastModifiedUser(UserUtil.getCurrentUser().getName());
 				} else {
