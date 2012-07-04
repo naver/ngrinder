@@ -46,6 +46,7 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
 	@Test
 	public void testSaveScript() {
+		System.out.println(UserUtil.getCurrentUser().getId());
 		this.saveScript("save");
 	}
 
@@ -178,12 +179,6 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 	@Test(timeout = 5000)
 	public void testGetScriptsPerformance() {
 
-		User user = new User();
-
-		user.setId(123L);
-		user.setName("tmp_user03");
-		UserUtil.setCurrentUser(user);
-
 		this.testGetScriptsPerformance2();
 
 		long startSearch = new Date().getTime();
@@ -192,7 +187,7 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 		Order order2 = new Order(Direction.DESC, "testURL");
 		Sort sort = new Sort(order1, order2);
 		Pageable pageable = new PageRequest(5, 15, sort);
-		Page<Script> scripts = scriptService.getScripts(true, "USER03", pageable);
+		Page<Script> scripts = scriptService.getScripts(true, "TMP_USER", pageable);
 
 		long endSearch = new Date().getTime();
 		System.out.println(endSearch - startSearch);

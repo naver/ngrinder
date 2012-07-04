@@ -31,7 +31,7 @@ public class LibraryUtil {
 		sb.append(NGrinderConstants.PATH_PROJECT);
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PREFIX_USER);
-		sb.append(UserUtil.getCurrentUser().getName());
+		sb.append(UserUtil.getCurrentUser().getId());
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PATH_LIB);
 		sb.append(File.separator);
@@ -48,7 +48,7 @@ public class LibraryUtil {
 		sb.append(NGrinderConstants.PATH_PROJECT);
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PREFIX_USER);
-		sb.append(UserUtil.getCurrentUser().getName());
+		sb.append(UserUtil.getCurrentUser().getId());
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PATH_LIB);
 		sb.append(File.separator);
