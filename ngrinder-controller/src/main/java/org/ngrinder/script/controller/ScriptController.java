@@ -121,8 +121,13 @@ public class ScriptController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = "/deleteScript")
-	public String deleteScript(ModelMap model, @RequestParam long id) {
-		scriptService.deleteScript(id);
+	public String deleteScript(ModelMap model, @RequestParam String ids) {
+		String[] idArr = ids.split(",");
+		long id = 0;
+		for (String idStr : idArr) {
+			id = Long.parseLong(idStr);
+			scriptService.deleteScript(id);
+		}
 		
 		return getAllScripts(model, "", false);
 	}

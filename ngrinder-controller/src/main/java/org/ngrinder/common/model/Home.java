@@ -91,6 +91,10 @@ public class Home {
 		return getSubFile("script");
 	}
 
+	public File getProjectDirectory() {
+		return getSubFile("project");
+	}
+
 	public File getPluginsDirectory() {
 		return getSubFile("plugins");
 	}
