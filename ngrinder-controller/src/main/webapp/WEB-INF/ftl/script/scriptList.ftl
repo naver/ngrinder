@@ -18,9 +18,11 @@
 			body {
 				padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
 			}
-			table th, table td {text-align: center;}
-			table.display thead th {padding: 3px 10px}
-			table.display tbody .left {text-align: left}
+			table th, table td {text-align:center;}
+			table.display thead th {padding:3px 10px}
+			table.display tbody .left {text-align:left}
+			table.ellipsis {table-layout:fixed}
+			table.ellipsis td.ellipsis {overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
 		</style>
 		
 		<input type="hidden" id="contextPath" value="${Request.getContextPath()}">
@@ -42,30 +44,41 @@
 							<i class="icon-upload"></i>
 							Upload script or resources
 						</a>
-						<a class="btn pull-right" href="javascript:void(0);" id="downloadBtn">
-							<i class="icon-download"></i>
-							Download selected script or resources
+						<a class="btn pull-right" href="javascript:void(0);" id="deleteBtn">
+							<i class="icon-remove"></i>
+							Delete selected scripts
 						</a>
 					</div>
 				</div>
 				<div class="well form-inline" style="padding:5px;margin:10px 0">
 					<!--<legend>introduction</legend>-->
-					<input type="text" class="input-medium search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
+					<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
 					<button type="submit" class="btn" id="searchBtn">Search</button>
 					<label class="checkbox pull-right" style="position:relative;top:5px">
 						<input type="checkbox" id="onlyMineCkb" <#if isOwner>checked</#if>> See only my script
 					</label>
 				</div>
-				<table class="display" id="scriptTable" style="margin-bottom:10px;">
+				<table class="display ellipsis" id="scriptTable" style="margin-bottom:10px;">
+					<colgroup>
+						<col width="30">
+						<col width="160">
+						<col>
+						<col width="170">
+						<col width="160">
+						<col width="100">
+						<col width="100">
+						<col width="80">
+					</colgroup>
 					<thead>
 						<tr>
-							<th class="center"><input type="checkbox" class="checkbox noClick" value=""></th>
+							<th class="center"><input type="checkbox" class="checkbox" value=""></th>
 							<th>Script File Name</th>
-							<th>Last Test Date</th>
+							<th class="noClick">Description</th>
 							<th>Last Modified Date</th>
+							<th>Last Modified By</th>
 							<th>Size(KB)</th>
+							<th class="noClick">Tags</th>
 							<th class="noClick">Download</th>
-							<th class="noClick">Del</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -75,11 +88,13 @@
 						<tr>
 							<td><input type="checkbox" value="${script.id}"></td>
 							<td class="left"><a href="${Request.getContextPath()}/script/detail?id=${script.id}" target="_self">${script.fileName}</a></td>
-							<td><#if script.lastTestDate?exists>${script.lastTestDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
+							<td class="left ellipsis" title="${(script.description)!}">${(script.description)!}</td>
 							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
+							<td>${(script.lastModifiedUser)!}</td>
 							<td>${(script.fileSize)!0}</td>
+							<td class="left ellipsis" title="${(script.tagsString)!}">${(script.tagsString)!}</td>
 							<td><a href="javascript:void(0);"><i class="icon-download-alt script-download" sid="${script.id}" sname="${script.fileName}"></i></a></td>
-							<td><a href="javascript:void(0);"><i class="icon-remove script-remove" sid="${script.id}"></i></a></td>
+							<!--<td><a href="javascript:void(0);"><i class="icon-remove script-remove" sid="${script.id}"></i></a></td>-->
 						</tr>
 						</#list>
 						<#else>
@@ -223,8 +238,6 @@
 		$(document).ready(function() {
 			$("#n_script").addClass("active");
 			
-			$(".noClick").off('click');
-			
 			$("#createBtn2").on('click', function() {
 				var $elem = $("#scriptNameInput");
 				if (checkSimpleNameByObj($elem)) {
@@ -281,8 +294,24 @@
 				document.forms.uploadForm.submit();
 			});
 						
-			$("#downloadBtn").on('click', function() {
-			
+			$("#deleteBtn").on('click', function() {
+				var ids = "";
+				var list = $("td input:checked");
+				if(list.length == 0) {
+					alert("Please select any scripts first.");
+					return;
+				}
+				if (confirm('Are you sure to delete the script(s)?')) {
+					var agentArray = [];
+					list.each(function() {
+						agentArray.push($(this).val());
+					});
+					ids = agentArray.join(",");
+					
+					alert(ids);
+					
+					//document.location.href = "${Request.getContextPath()}/script/deleteScript?ids=" + ids;
+				}
 			});
 			
 			$("#searchBtn").on('click', function() {
@@ -301,7 +330,7 @@
 				}
 			});
 			
-			$("th input").on('click', function() {
+			$("th input").on('click', function(event) {
 				if($(this)[0].checked) {
 					$("td input").each(function(){
 						$(this).attr("checked", "checked");
@@ -311,6 +340,8 @@
 						$(this).removeAttr("checked");
 					});
 				}
+				
+				event.stopImmediatePropagation();
 			});
 			
 			$("i.script-remove").on('click', function() {
@@ -342,18 +373,21 @@
 						
 			<#if scriptList?has_content>
 			$("#scriptTable").dataTable({
+				"bAutoWidth": false,
 				"bFilter": false,
 				"bLengthChange": false,
 				"bInfo": false,
 				"iDisplayLength": 10,
 				"aaSorting": [[1, "asc"]],
 				"bProcessing": true,
-				"aoColumns": [{ "asSorting": []}, null, null, null, null, {"asSorting": []}, { "asSorting": []}],
+				"aoColumns": [{ "asSorting": []}, null, { "asSorting": []}, null, null, null, {"asSorting": []}, { "asSorting": []}],
 				//"bJQueryUI": true,
 				//"oLanguage": {"sLengthMenu": "每页显示 _MENU_ 条记录","sZeroRecords": "抱歉， 没有找到","sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据","sInfoEmpty": "没有数据","sInfoFiltered": "(从 _MAX_ 条数据中检索)","oPaginate": {"sFirst": "首页","sPrevious": "前一页","sNext": "后一页","sLast": "尾页"},"sZeroRecords": "没有检索到数据"},
 				"sPaginationType": "full_numbers"
 			});
 			</#if>
+			
+			$(".noClick").off('click');
 			
 			<#if libraries?has_content>
 			$("#resourceTable").dataTable({
