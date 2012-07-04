@@ -37,7 +37,7 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 	@Autowired
 	private ScriptService scriptService;
 
-	//@After
+	@After
 	public void clearScript() {
 		for (Script script : scripts) {
 			scriptService.deleteScript(script.getId());
