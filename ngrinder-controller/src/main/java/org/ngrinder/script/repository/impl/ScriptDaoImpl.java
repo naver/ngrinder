@@ -48,7 +48,7 @@ public class ScriptDaoImpl implements ScriptDao {
 
 	@PostConstruct
 	public void init() {
-		// this.findAll();
+		this.findAll();
 	}
 
 	@Override
