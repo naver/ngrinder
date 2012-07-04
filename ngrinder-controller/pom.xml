@@ -267,8 +267,8 @@
 						</buildcommand>
 					</additionalBuildcommands>
 
-					<downloadSources>true</downloadSources>
-					<downloadJavadocs>true</downloadJavadocs>
+					<downloadSources>false</downloadSources>
+					<downloadJavadocs>false</downloadJavadocs>
 					<wtpmanifest>true</wtpmanifest>
 					<wtpapplicationxml>true</wtpapplicationxml>
 					<wtpversion>2.0</wtpversion>

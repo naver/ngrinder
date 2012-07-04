@@ -179,6 +179,11 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 	@Test(timeout = 5000)
 	public void testGetScriptsPerformance() {
 
+		User user = new User();
+		user.setId(987L);
+		user.setName("default_tmp_user");
+		UserUtil.setCurrentUser(user);
+
 		this.testGetScriptsPerformance2();
 
 		long startSearch = new Date().getTime();

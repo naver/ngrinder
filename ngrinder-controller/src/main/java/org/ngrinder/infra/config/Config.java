@@ -77,6 +77,7 @@ public class Config {
 		checkNotNull(home);
 		home.copyFrom(new ClassPathResource("ngrinder_home_template").getFile(), false);
 		home.makeSubPath("plugins");
+		home.makeSubPath("project");
 
 	}
 

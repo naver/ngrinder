@@ -67,8 +67,6 @@ public class LibraryServiceTest extends NGrinderIocTransactionalTestBase {
 	@Test
 	public void testgetLibraries2() {
 
-		this.saveLibrary("get4");
-
 		User user = new User();
 		user.setId(123L);
 		user.setName("tmp_user9");

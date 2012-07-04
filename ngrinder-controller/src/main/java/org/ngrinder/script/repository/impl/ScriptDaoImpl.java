@@ -13,8 +13,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.NGrinderConstants;
 import org.ngrinder.common.util.ReflectionUtil;
@@ -46,10 +44,10 @@ public class ScriptDaoImpl implements ScriptDao {
 	// private final Map<Long, Script> scriptsCache = new
 	// ConcurrentHashMap<Long, Script>();
 
-	@PostConstruct
-	public void init() {
-		this.findAll();
-	}
+	// @PostConstruct
+	// public void init() {
+	// this.findAll();
+	// }
 
 	@Override
 	public List<Script> findAll() {
