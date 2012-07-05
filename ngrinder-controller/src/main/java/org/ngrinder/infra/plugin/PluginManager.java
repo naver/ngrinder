@@ -33,12 +33,12 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.model.Home;
-import org.ngrinder.infra.annotation.OnlyRuntimeComponent;
 import org.ngrinder.infra.config.Config;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.context.ServletContextAware;
 
 import com.atlassian.plugin.DefaultModuleDescriptorFactory;
@@ -59,7 +59,7 @@ import com.atlassian.plugin.osgi.hostcomponents.HostComponentProvider;
  * @author JunHo Yoon
  * @since 3.0
  */
-@OnlyRuntimeComponent
+@Service
 public class PluginManager implements ServletContextAware {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PluginManager.class);
@@ -74,7 +74,9 @@ public class PluginManager implements ServletContextAware {
 
 	@PostConstruct
 	public void init() {
-
+		if (config.isTestMode()) {
+			return;
+		}
 		// waiting for sqlmap and grinder to start
 		// Determine which packages to expose to plugins
 		DefaultPackageScannerConfiguration scannerConfig = new DefaultPackageScannerConfiguration();

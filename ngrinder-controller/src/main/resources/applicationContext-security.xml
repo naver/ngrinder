@@ -47,7 +47,8 @@
 
 	<beans:bean id="authenticationProcessingFilterEntryPoint"
 		class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
-		<beans:property name="loginFormUrl" value="/login" />
+		<beans:constructor-arg name="loginFormUrl"
+			value="/login" />
 	</beans:bean>
 
 	<!-- static resource -->
@@ -91,7 +92,7 @@
 	</http>
 
 	<authentication-manager alias="authenticationManager">
-		<authentication-provider user-service-ref="ngrinderUserDetailsService" />
+		<authentication-provider ref="ngrinderAuthenticationProvider" />
 	</authentication-manager>
 
 </beans:beans>
