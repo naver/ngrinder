@@ -22,7 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.ModelMap;
 
-public class NGrinderBaseController {
+public class NGrinderBaseController implements GrinderConstants {
 
 	public static final String ERROR_PAGE = "errors/error";
 	@Autowired
@@ -43,7 +43,7 @@ public class NGrinderBaseController {
 			throw new AuthenticationCredentialsNotFoundException("Invalid athentication");
 		}
 		User user = (User) obj;
-		if (param.equals(GrinderConstants.P_USERID))
+		if (param.equals(P_USERID))
 			return user.getUserId();
 		else if (param.equals("role"))
 			return auth.getAuthorities().toString();

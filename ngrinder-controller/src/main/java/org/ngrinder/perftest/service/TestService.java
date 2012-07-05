@@ -20,30 +20,39 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.perftest.repository;
-
-import java.util.List;
+package org.ngrinder.perftest.service;
 
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
+import org.ngrinder.perftest.repository.PerfTestRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Service;
 
 /**
- * Performance Test Repository
- * 
- * @author junHo Yoon
- * @since 3.0
+ * Test Service Class.
+ *
+ * @author Mavlarn
+ * @since
  */
-public interface PerfTestRepository extends JpaRepository<PerfTest, Integer>, JpaSpecificationExecutor<PerfTest> {
-	Page<PerfTest> findAllByStatusAndCreateUserOrderByCreateDateAsc(Status status, String userId, Pageable pageable);
-
-	Page<PerfTest> findAllByCreateUserOrderByCreateDateAsc(String userId, Pageable pageable);
-
-	List<PerfTest> findAllByStatusOrderByCreateDateAsc(Status status);
+@Service
+public class TestService {
 	
-	Page<PerfTest> findAllByStatusOrderByCreateDateAsc(Status status, Pageable pageable);
+	@Autowired
+	private PerfTestRepository perfTestRepository;
+	
+	public Page<PerfTest> getTestList(String userId, boolean isFinished, Pageable pageable) {
+		if (isFinished) {
+			return perfTestRepository.findAllByStatusAndCreateUserOrderByCreateDateAsc(Status.FINISHED,
+					userId, pageable);
+		} else {
+			return perfTestRepository.findAllByCreateUserOrderByCreateDateAsc(userId, pageable);
+		}
+	}
+	
+	public PerfTest savePerfTest (PerfTest test) {
+		return perfTestRepository.save(test);
+	}
 
 }

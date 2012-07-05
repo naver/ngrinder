@@ -5,7 +5,7 @@ package org.ngrinder.common.constant;
  * The Class GrinderConstants.
  *
  */
-public final class GrinderConstants {
+public interface GrinderConstants {
 
 	/************************** web app ****************************/
 	public static final String WEB_APP_PATH = "web.app.path";
@@ -287,8 +287,4 @@ public final class GrinderConstants {
     
     public static final String CONFIGURATION_MAILPASSWORD = "mail_password";
     
-	/** Instantiates a new grinder constants. */
-	private GrinderConstants() {
-		super();
-	}
 }
