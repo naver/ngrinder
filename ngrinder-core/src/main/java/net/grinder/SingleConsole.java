@@ -14,6 +14,7 @@ import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.AllocateLowestNumber;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.ReflectionUtil;
+import net.grinder.util.thread.Condition;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,16 +28,19 @@ public class SingleConsole {
 
 	public final static Logger logger = LoggerFactory.getLogger(resources.getString("shortTitle"));
 
+	public Condition m_eventSyncCondition = new Condition();
+
 	public SingleConsole(String ip, int port) {
 		this(ip, port, ConsolePropertiesFactory.createEmptyConsoleProperties());
 	}
 
 	public SingleConsole(String ip, int port, ConsoleProperties consoleProperties) {
 		this.consoleProperties = consoleProperties;
+
 		try {
 			this.getConsoleProperties().setConsoleHost(ip);
 			this.getConsoleProperties().setConsolePort(port);
-			this.consoleFoundation = new ConsoleFoundationEx(resources, logger, consoleProperties);
+			this.consoleFoundation = new ConsoleFoundationEx(resources, logger, consoleProperties, m_eventSyncCondition);
 		} catch (GrinderException e) {
 			throw new RuntimeException(e);
 		}
@@ -47,13 +51,16 @@ public class SingleConsole {
 	}
 
 	public void start() {
-		thread = new Thread(new Runnable() {
-			public void run() {
-				consoleFoundation.run();
-			}
-		});
-		thread.setDaemon(true);
-		thread.start();
+		synchronized (m_eventSyncCondition) {
+			thread = new Thread(new Runnable() {
+				public void run() {
+					consoleFoundation.run();
+				}
+			});
+			thread.setDaemon(true);
+			thread.start();
+			m_eventSyncCondition.waitNoInterrruptException(10000);
+		}
 	}
 
 	/**
@@ -82,6 +89,7 @@ public class SingleConsole {
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) ReflectionUtil
 				.getFieldValue((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
 						"m_agentNumberMap");
+		System.out.println(agentIdentity);
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
 			public void objectAndNumber(Object object, int number) {
 				agentIdentities.add((AgentIdentity) object);

@@ -6,6 +6,7 @@ import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.engine.agent.Agent;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
+import net.grinder.util.thread.Condition;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,36 +27,33 @@ public class AgentControllerDaemon implements Agent {
 	private final GrinderProperties properties;
 	private final ListenerSupport<AgentShutDownListener> m_listeners = new ListenerSupport<AgentShutDownListener>();
 	private boolean forceToshutdown = false;
+	public Condition m_eventSyncCondition = new Condition();
+
 	public final static Logger logger = LoggerFactory.getLogger("agent controller daemon");
 
 	public AgentControllerDaemon() {
 		try {
-			properties = new GrinderProperties(
-					GrinderProperties.DEFAULT_PROPERTIES);
-			agent = new AgentController(logger);
+			properties = new GrinderProperties(GrinderProperties.DEFAULT_PROPERTIES);
+			agent = new AgentController(logger, m_eventSyncCondition);
 		} catch (GrinderException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	public void run() throws GrinderException {
-		run(null,
-				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+		run(null, AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 	}
 
 	public void run(int agentControllerServerPort) {
 		run(null, agentControllerServerPort);
 	}
 
-	public void run(String agentControllerServerHost,
-			int agentControllerServerPort) {
+	public void run(String agentControllerServerHost, int agentControllerServerPort) {
 		if (agentControllerServerHost != null) {
-			properties.setProperty(AGENT_CONTROLER_SERVER_HOST,
-					agentControllerServerHost);
+			properties.setProperty(AGENT_CONTROLER_SERVER_HOST, agentControllerServerHost);
 		}
 		if (agentControllerServerPort != 0) {
-			properties.setInt(AGENT_CONTROLER_SERVER_PORT,
-					agentControllerServerPort);
+			properties.setInt(AGENT_CONTROLER_SERVER_PORT, agentControllerServerPort);
 		}
 		run(properties);
 	}
@@ -69,13 +67,11 @@ public class AgentControllerDaemon implements Agent {
 						logger.info("agent controller daemon : started.");
 						getAgentController().run(grinderProperties);
 
-						getListeners().apply(
-								new Informer<AgentShutDownListener>() {
-									public void inform(
-											AgentShutDownListener listener) {
-										listener.shutdownAgent();
-									}
-								});
+						getListeners().apply(new Informer<AgentShutDownListener>() {
+							public void inform(AgentShutDownListener listener) {
+								listener.shutdownAgent();
+							}
+						});
 					} catch (Exception e) {
 						logger.info("agent controller daemon : crashed.", e);
 					}

@@ -20,22 +20,23 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.perftest.repository;
+package org.ngrinder.infra.plugin;
 
-import java.util.List;
-
-import org.ngrinder.perftest.model.PerfTest;
-import org.ngrinder.perftest.model.Status;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
+import com.atlassian.plugin.module.ContainerManagedPlugin;
 
 /**
- * Performance Test Repository
+ * Plugin Descriptor for OnTestStartModule.
  * 
- * @author junHo Yoon
- * @since 3.0
+ * The plugin should be constructed by implementing {@link OnTestStartRunnable}
+ * 
+ * @author JunHo Yoon
  */
-public interface PerfTestRepository extends JpaRepository<PerfTest, Integer>, JpaSpecificationExecutor<PerfTest> {
-	List<PerfTest> findAllByStatusOrderByCreateDateAsc(Status status);
 
+@PluginDescriptor("on-login")
+@SuppressWarnings("deprecation")
+public class OnLoginModuleDescriptor extends AbstractModuleDescriptor<OnLoginRunnable> {
+	public OnLoginRunnable getModule() {
+		return ((ContainerManagedPlugin) getPlugin()).getContainerAccessor().createBean(getModuleClass());
+	}
 }

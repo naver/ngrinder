@@ -20,22 +20,24 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.perftest.repository;
+package org.ngrinder.agent.repository;
 
-import java.util.List;
-
-import org.ngrinder.perftest.model.PerfTest;
-import org.ngrinder.perftest.model.Status;
+import org.ngrinder.agent.model.Agent;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
- * Performance Test Repository
+ * agent repository
  * 
- * @author junHo Yoon
- * @since 3.0
+ * @author Tobi
+ * @since
+ * @date 2012-7-5
  */
-public interface PerfTestRepository extends JpaRepository<PerfTest, Integer>, JpaSpecificationExecutor<PerfTest> {
-	List<PerfTest> findAllByStatusOrderByCreateDateAsc(Status status);
+public interface AgentRepository extends JpaRepository<Agent, Long> {
 
+	@Query("select a from Agent a where a.ip like :searchStr or a.region like :searchStr")
+	Page<Agent> getAgents(@Param("searchStr") String searchStr, Pageable pageable);
 }

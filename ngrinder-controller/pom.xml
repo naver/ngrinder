@@ -210,7 +210,7 @@
 			<artifactId>atlassian-plugins-main</artifactId>
 			<version>2.12.2</version>
 		</dependency>
-		
+			
 		<!-- Json convertion-->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
@@ -238,6 +238,7 @@
 		</profile>
 	</profiles>
 	<build>
+
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -291,6 +292,29 @@
 					<encoding>${source-encoding}</encoding>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.bsc.maven</groupId>
+				<artifactId>maven-processor-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>process</id>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<phase>generate-sources</phase>
+						<configuration>
+							<outputDirectory>src/main/generated/</outputDirectory>
+							<processors>
+								<processor>
+									org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor
+								</processor>
+							</processors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
+
 	</build>
 </project>

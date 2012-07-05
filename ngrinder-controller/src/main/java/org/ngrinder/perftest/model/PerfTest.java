@@ -30,18 +30,23 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import net.grinder.common.GrinderProperties;
 
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.model.BaseModel;
+import org.springframework.data.jpa.domain.Specification;
 
 /**
  * Peformance Test Entity
  * 
  */
 @Entity
-@Table(name = "perf_test")
+@Table(name = "PERF_TEST")
 public class PerfTest extends BaseModel<PerfTest> {
 
 	/**
@@ -72,13 +77,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(length = 256)
 	private String targetHosts;
 
-	/** The shared user list. */
-
-	/** The shared user id list. */
-	/**
-	 * private List<String> sharedUserId;
-	 */
-
 	/** The operation code. */
 	private String operation;
 
@@ -101,6 +99,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	private long duration;
 
+	private Integer agentCount;
 	@Transient
 	private GrinderProperties grinderProperties;
 
@@ -242,5 +241,24 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setStatus(Status status) {
 		this.status = status;
+	}
+
+	public Integer getAgentCount() {
+		return agentCount;
+	}
+
+	public void setAgentCount(Integer agentCount) {
+		this.agentCount = agentCount;
+	}
+
+	public static Specification<PerfTest> statusSetEqual(final Status... statuses) {
+		return new Specification<PerfTest>() {
+			@Override
+			
+			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				return cb.not(root.get("status").in((Object[]) statuses));
+			}
+		};
+
 	}
 }

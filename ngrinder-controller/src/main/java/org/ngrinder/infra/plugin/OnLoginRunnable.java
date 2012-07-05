@@ -20,22 +20,16 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.perftest.repository;
+package org.ngrinder.infra.plugin;
 
-import java.util.List;
-
-import org.ngrinder.perftest.model.PerfTest;
-import org.ngrinder.perftest.model.Status;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
- * Performance Test Repository
+ * Plugin extension for user authentication
  * 
- * @author junHo Yoon
+ * @author JunHo Yoon
  * @since 3.0
  */
-public interface PerfTestRepository extends JpaRepository<PerfTest, Integer>, JpaSpecificationExecutor<PerfTest> {
-	List<PerfTest> findAllByStatusOrderByCreateDateAsc(Status status);
-
+public interface OnLoginRunnable {
+	public UserDetails auth(Object principle, Object credidential)  ;
 }

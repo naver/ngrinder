@@ -20,22 +20,47 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.perftest.repository;
+package org.ngrinder.agent.service.impl;
 
-import java.util.List;
-
-import org.ngrinder.perftest.model.PerfTest;
-import org.ngrinder.perftest.model.Status;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.ngrinder.agent.model.Agent;
+import org.ngrinder.agent.repository.AgentRepository;
+import org.ngrinder.agent.service.AgentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 /**
- * Performance Test Repository
+ * agent service
  * 
- * @author junHo Yoon
- * @since 3.0
+ * @author Tobi
+ * @since
+ * @date 2012-7-5
  */
-public interface PerfTestRepository extends JpaRepository<PerfTest, Integer>, JpaSpecificationExecutor<PerfTest> {
-	List<PerfTest> findAllByStatusOrderByCreateDateAsc(Status status);
+@Service
+public class AgentServiceImpl implements AgentService {
+
+	@Autowired
+	private AgentRepository agentRepository;
+
+	@Override
+	public Page<Agent> getAgents(String searchStr, Pageable pageable) {
+		return agentRepository.getAgents("%" + searchStr + "%", pageable);
+	}
+
+	@Override
+	public Agent getAgent(long id) {
+		return agentRepository.findOne(id);
+	}
+
+	@Override
+	public void saveAgent(Agent agent) {
+		agentRepository.save(agent);
+	}
+
+	@Override
+	public void deleteAgent(long id) {
+		agentRepository.delete(id);
+	}
 
 }

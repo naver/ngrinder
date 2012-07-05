@@ -23,18 +23,36 @@
 package org.ngrinder.perftest.service;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import org.springframework.stereotype.Component;
-
+import net.grinder.AgentControllerServerDaemon;
 import net.grinder.SingleConsole;
+import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.util.thread.ExecutorFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 @Component
 public class AgentManager {
+	public final static Logger logger = LoggerFactory.getLogger(AgentManager.class.getName());
+	private final AgentControllerServerDaemon server = new AgentControllerServerDaemon(1011);
 
-	// public BlockingQueue<Agent> getAgents(SingleConsole singleConsole,
-	// Integer agentCount) {
-	// // TODO Auto-generated method stub
-	// return null;
-	// }
-
+	public BlockingQueue<AgentWrapper> getAgentWrappers(SingleConsole singleConsole, final Integer agentCount) {
+		final BlockingQueue<AgentWrapper> agentWrappers = new LinkedBlockingQueue<AgentWrapper>();
+		ExecutorService execService = ExecutorFactory.createThreadPool("agentRetriever", 1);
+		execService.submit(new Callable<Integer>() {
+			@Override
+			public Integer call() throws Exception {
+				for (AgentIdentity agentIdentity : server.getAllAvailableAgents()) {
+					// TODO
+				}
+				return null;
+			}
+		});
+		return agentWrappers;
+	}
 }

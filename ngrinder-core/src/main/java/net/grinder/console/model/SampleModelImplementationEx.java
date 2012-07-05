@@ -1,4 +1,3 @@
-
 package net.grinder.console.model;
 
 import java.util.Collection;
@@ -30,19 +29,19 @@ import net.grinder.statistics.TestStatisticsMap;
 import net.grinder.util.ListenerSupport;
 
 /**
- * Collate test reports into samples and distribute to listeners.
- *
+ * Collate test reports into samples and distribute to listeners. NHN Customized
+ * version
  * <p>
  * When notifying listeners of changes to the number of tests we send copies of
  * the new index arrays. This helps because most listeners are Swing dispatched
  * and so can't guarantee the model is in a reasonable state when they call
  * back.
  * </p>
- *
- * @author Philip Aston
- * @version $Revision: 4003 $
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
  */
-public final class NGrinderSampleModelImplementation implements SampleModel {
+public final class SampleModelImplementationEx implements SampleModel {
 
 	private final ConsoleProperties m_properties;
 	private final StatisticsServices m_statisticsServices;
@@ -56,8 +55,8 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 	private final String m_unknownTestString;
 
 	/**
-	 * The current test set. A TreeSet is used to maintain the test
-	 * order. Guarded by itself.
+	 * The current test set. A TreeSet is used to maintain the test order.
+	 * Guarded by itself.
 	 */
 	private final Set<Test> m_tests = new TreeSet<Test>();
 
@@ -74,25 +73,31 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 	/**
 	 * A {@link SampleAccumulator} for each test. Guarded by itself.
 	 */
-	private final Map<Test, SampleAccumulator> m_accumulators = Collections.synchronizedMap(new HashMap<Test, SampleAccumulator>());
+	private final Map<Test, SampleAccumulator> m_accumulators = Collections
+			.synchronizedMap(new HashMap<Test, SampleAccumulator>());
 
 	// Guarded by this.
 	private InternalState m_state;
 
 	/**
 	 * Creates a new <code>SampleModelImplementation</code> instance.
-	 *
-	 * @param properties The console properties.
-	 * @param statisticsServices Statistics services.
-	 * @param timer A timer.
-	 * @param resources Console resources.
-	 * @param errorHandler Error handler
-	 *
-	 * @exception GrinderException if an error occurs
+	 * 
+	 * @param properties
+	 *            The console properties.
+	 * @param statisticsServices
+	 *            Statistics services.
+	 * @param timer
+	 *            A timer.
+	 * @param resources
+	 *            Console resources.
+	 * @param errorHandler
+	 *            Error handler
+	 * 
+	 * @exception GrinderException
+	 *                if an error occurs
 	 */
-	public NGrinderSampleModelImplementation(ConsoleProperties properties,
-		StatisticsServices statisticsServices, Timer timer,
-		Resources resources, ErrorHandler errorHandler) throws GrinderException {
+	public SampleModelImplementationEx(ConsoleProperties properties, StatisticsServices statisticsServices,
+			Timer timer, Resources resources, ErrorHandler errorHandler) throws GrinderException {
 
 		m_properties = properties;
 		m_statisticsServices = statisticsServices;
@@ -109,22 +114,23 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 
 		m_periodIndex = indexMap.getLongIndex("period");
 
-		final StatisticExpressionFactory statisticExpressionFactory = m_statisticsServices.getStatisticExpressionFactory();
+		final StatisticExpressionFactory statisticExpressionFactory = m_statisticsServices
+				.getStatisticExpressionFactory();
 
 		m_tpsExpression = statisticsServices.getTPSExpression();
 
-		m_peakTPSExpression = statisticExpressionFactory.createPeak(
-			indexMap.getDoubleIndex("peakTPS"), m_tpsExpression);
+		m_peakTPSExpression = statisticExpressionFactory
+				.createPeak(indexMap.getDoubleIndex("peakTPS"), m_tpsExpression);
 
-		m_totalSampleAccumulator = new SampleAccumulator(m_peakTPSExpression,
-			m_periodIndex, m_statisticsServices.getStatisticsSetFactory());
+		m_totalSampleAccumulator = new SampleAccumulator(m_peakTPSExpression, m_periodIndex,
+				m_statisticsServices.getStatisticsSetFactory());
 
 		setInternalState(new WaitingForTriggerState());
 	}
 
 	/**
 	 * Get the expression for TPS.
-	 *
+	 * 
 	 * @return The TPS expression for this model.
 	 */
 	public StatisticExpression getTPSExpression() {
@@ -133,7 +139,7 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 
 	/**
 	 * Get the expression for peak TPS.
-	 *
+	 * 
 	 * @return The peak TPS expression for this model.
 	 */
 	public StatisticExpression getPeakTPSExpression() {
@@ -142,8 +148,9 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 
 	/**
 	 * Register new tests.
-	 *
-	 * @param tests The new tests.
+	 * 
+	 * @param tests
+	 *            The new tests.
 	 */
 	public void registerTests(Collection<Test> tests) {
 		// Need to copy collection, might be immutable.
@@ -169,9 +176,10 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 
 		synchronized (m_accumulators) {
 			for (Test test : newTests) {
-				m_accumulators.put(test, new SampleAccumulator(
-					m_peakTPSExpression, m_periodIndex,
-					m_statisticsServices.getStatisticsSetFactory()));
+				m_accumulators.put(
+						test,
+						new SampleAccumulator(m_peakTPSExpression, m_periodIndex, m_statisticsServices
+								.getStatisticsSetFactory()));
 			}
 
 			for (int i = 0; i < accumulatorArray.length; i++) {
@@ -179,8 +187,7 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 			}
 		}
 
-		final ModelTestIndex modelTestIndex = new ModelTestIndex(testArray,
-			accumulatorArray);
+		final ModelTestIndex modelTestIndex = new ModelTestIndex(testArray, accumulatorArray);
 		this.modelTestIndex = modelTestIndex;
 		m_listeners.apply(new ListenerSupport.Informer<Listener>() {
 			public void inform(Listener l) {
@@ -191,7 +198,7 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 
 	/**
 	 * Get the cumulative statistics for this model.
-	 *
+	 * 
 	 * @return The cumulative statistics.
 	 */
 	public StatisticsSet getTotalCumulativeStatistics() {
@@ -200,8 +207,9 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 
 	/**
 	 * Add a new model listener.
-	 *
-	 * @param listener The listener.
+	 * 
+	 * @param listener
+	 *            The listener.
 	 */
 	public void addModelListener(Listener listener) {
 		m_listeners.add(listener);
@@ -209,9 +217,11 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 
 	/**
 	 * Add a new sample listener for the specific test.
-	 *
-	 * @param test The test to add the sample listener for.
-	 * @param listener The sample listener.
+	 * 
+	 * @param test
+	 *            The test to add the sample listener for.
+	 * @param listener
+	 *            The sample listener.
 	 */
 	public void addSampleListener(Test test, SampleListener listener) {
 		final SampleAccumulator sampleAccumulator = m_accumulators.get(test);
@@ -223,8 +233,9 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 
 	/**
 	 * Add a new total sample listener.
-	 *
-	 * @param listener The sample listener.
+	 * 
+	 * @param listener
+	 *            The sample listener.
 	 */
 	public void addTotalSampleListener(SampleListener listener) {
 		m_totalSampleAccumulator.addSampleListener(listener);
@@ -232,9 +243,11 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 
 	/**
 	 * Reset the model.
-	 *
-	 * <p>This doesn't affect our internal state, just the statistics and
-	 * the listeners.</p>
+	 * 
+	 * <p>
+	 * This doesn't affect our internal state, just the statistics and the
+	 * listeners.
+	 * </p>
 	 */
 	public void reset() {
 
@@ -268,8 +281,9 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 
 	/**
 	 * Add a new test report.
-	 *
-	 * @param testStatisticsMap The new test statistics.
+	 * 
+	 * @param testStatisticsMap
+	 *            The new test statistics.
 	 */
 	public void addTestReport(TestStatisticsMap testStatisticsMap) {
 		getInternalState().newTestReport(testStatisticsMap);
@@ -277,7 +291,7 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 
 	/**
 	 * Get the current model state.
-	 *
+	 * 
 	 * @return The model state.
 	 */
 	public State getState() {
@@ -322,8 +336,7 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 		void newTestReport(TestStatisticsMap testStatisticsMap);
 	}
 
-	private abstract class AbstractInternalState 
-		implements InternalState, State {
+	private abstract class AbstractInternalState implements InternalState, State {
 
 		protected final boolean isActiveState() {
 			return getInternalState() == this;
@@ -376,7 +389,7 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 
 	private final class StoppedState extends AbstractInternalState {
 		public void newTestReport(TestStatisticsMap testStatisticsMap) {
-	        //nothing to do
+			// nothing to do
 		}
 
 		public String getDescription() {
@@ -404,8 +417,7 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 					final SampleAccumulator sampleAccumulator = m_accumulators.get(test);
 
 					if (sampleAccumulator == null) {
-						m_errorHandler.handleInformationMessage(m_unknownTestString
-							+ " " + test);
+						m_errorHandler.handleInformationMessage(m_unknownTestString + " " + test);
 					} else {
 						sampleAccumulator.addIntervalStatistics(statistics);
 
@@ -463,15 +475,16 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 
 				++msampleCount;
 
-				// I'm ignoring a minor race here: the model could have been stopped
+				// I'm ignoring a minor race here: the model could have been
+				// stopped
 				// after the task was started.
 				// We call setInternalState() even if the InternalState hasn't
 				// changed since we've altered the sample count.
 				if (getInternalState() instanceof StoppedState) {
-                    return;
-                }
-				
-                setInternalState(nextState());
+					return;
+				}
+
+				setInternalState(nextState());
 
 				m_listeners.apply(new ListenerSupport.Informer<Listener>() {
 					public void inform(Listener l) {
@@ -539,8 +552,7 @@ public final class NGrinderSampleModelImplementation implements SampleModel {
 		protected InternalState nextState() {
 			final int collectSampleCount = m_properties.getCollectSampleCount();
 
-			if (collectSampleCount != 0
-				&& getSampleCount() > collectSampleCount) {
+			if (collectSampleCount != 0 && getSampleCount() > collectSampleCount) {
 				return new StoppedState();
 			}
 

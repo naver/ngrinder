@@ -3,12 +3,9 @@ package org.ngrinder.user.model;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
-
-import org.ngrinder.user.model.User;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specifications;
