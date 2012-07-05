@@ -29,6 +29,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.ngrinder.infra.annotation.OnlyRuntimeComponent;
+import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,11 +50,18 @@ public class TaskScheduler {
 	private final ScheduledThreadPoolExecutor taskExecutor = new ScheduledThreadPoolExecutor(CORE_POOL_SIZE);
 
 	@Autowired
-	private TaskSchedulerRunnable runnable;
+	private Config config;
+
+	@Autowired
+	private TaskSchedulerRunnable runnable; 
 
 	@PostConstruct
 	public void init() {
-		taskExecutor.scheduleAtFixedRate(getRunnable(), 1000, 1000, TimeUnit.MILLISECONDS);
+		taskExecutor.scheduleAtFixedRate(getRunnable(), 1000, getFequency(), TimeUnit.MILLISECONDS);
+	}
+
+	protected int getFequency() {
+		return config.isTestMode() ? 60000 : 1000;
 	}
 
 	@PreDestroy

@@ -30,6 +30,7 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.model.Home;
@@ -121,6 +122,15 @@ public class Config {
 	public PropertiesWrapper getDatabaseProperties() {
 		checkNotNull(databaseProperties);
 		return databaseProperties;
+	}
+
+	/**
+	 * if there is testmode property in system.properties.. return true
+	 * 
+	 * @return
+	 */
+	public boolean isTestMode() {
+		return BooleanUtils.toBoolean(getSystemProperties().getProperty("testmode", "false"));
 	}
 
 	public Home getHome() {
