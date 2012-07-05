@@ -22,26 +22,45 @@
  */
 package org.ngrinder.user.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+/**
+ * JSON Bean
+ * 
+ * @author maoyb
+ * @since3.0
+ */
+public class JsonBean {
+	private String id;
 
+	private String pId;
 
-@Entity
-@Table(name = "NROLE")
-public class Role  {
-	@Id
-	@Column(name = "role_id", unique = true, nullable = false, insertable = true, updatable = false)
-	private Long roleId;
 	private String name;
 
-	public Role() {
+	private boolean open;
 
+	public JsonBean() {
 	}
 
-	public Role(String name) {
+	public JsonBean(String id, String pId, String name, boolean open) {
+		this.id = id;
+		this.pId = pId;
 		this.name = name;
+		this.open = open;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getpId() {
+		return pId;
+	}
+
+	public void setpId(String pId) {
+		this.pId = pId;
 	}
 
 	public String getName() {
@@ -51,14 +70,13 @@ public class Role  {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
 
-	public Long getRoleId() {
-		return roleId;
+	public boolean isOpen() {
+		return open;
 	}
 
-	public void setRoleId(Long roleId) {
-		this.roleId = roleId;
+	public void setOpen(boolean open) {
+		this.open = open;
 	}
 
 }

@@ -22,8 +22,9 @@
  */
 package org.ngrinder.user.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -58,7 +59,8 @@ public class User extends BaseModel<User> {
 
 	private String email;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.REFRESH }, optional = false)
+	@JoinColumn(name = "role_id")
 	private Role role;
 
 	private String description;
