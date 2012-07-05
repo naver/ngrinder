@@ -24,20 +24,22 @@ package org.ngrinder.user.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-
 @Entity
 @Table(name = "NROLE")
-public class Role  {
+public class Role {
 	@Id
-	@Column(name = "role_id", unique = true, nullable = false, insertable = true, updatable = false)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "role_id")
 	private Long roleId;
+
 	private String name;
 
 	public Role() {
-
 	}
 
 	public Role(String name) {
@@ -51,7 +53,6 @@ public class Role  {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
 
 	public Long getRoleId() {
 		return roleId;
