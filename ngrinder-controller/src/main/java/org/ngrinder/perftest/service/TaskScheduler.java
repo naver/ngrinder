@@ -28,21 +28,22 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.ngrinder.infra.annotation.OnlyRuntimeComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * task scheduler
  * 
  * @author Liu Zhifei
- * 
- *         2012-3-21
+ * @author JunHo Yoon
+ * @since 3.0
  */
-@Service
+@OnlyRuntimeComponent
 public class TaskScheduler {
 
+	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(TaskScheduler.class);
 	private static final int CORE_POOL_SIZE = 1;
 	private final ScheduledThreadPoolExecutor taskExecutor = new ScheduledThreadPoolExecutor(CORE_POOL_SIZE);
@@ -52,7 +53,7 @@ public class TaskScheduler {
 
 	@PostConstruct
 	public void init() {
-		//ftaskExecutor.scheduleAtFixedRate(getRunnable(), 1000, 1000, TimeUnit.MILLISECONDS);
+		taskExecutor.scheduleAtFixedRate(getRunnable(), 1000, 1000, TimeUnit.MILLISECONDS);
 	}
 
 	@PreDestroy

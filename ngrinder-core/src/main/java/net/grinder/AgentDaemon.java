@@ -20,8 +20,7 @@ public class AgentDaemon implements Agent {
 
 	public AgentDaemon() {
 		try {
-			properties = new GrinderProperties(
-					GrinderProperties.DEFAULT_PROPERTIES);
+			properties = new GrinderProperties(GrinderProperties.DEFAULT_PROPERTIES);
 			agent = new AgentImplementationEx(logger);
 		} catch (GrinderException e) {
 			throw new RuntimeException(e);
@@ -43,12 +42,10 @@ public class AgentDaemon implements Agent {
 
 	public void run(String consoleHost, int consolePort) {
 		if (consoleHost != null) {
-			getGrinderProperties().setProperty(GrinderProperties.CONSOLE_HOST,
-					consoleHost);
+			getGrinderProperties().setProperty(GrinderProperties.CONSOLE_HOST, consoleHost);
 		}
 		if (consolePort != 0) {
-			getGrinderProperties().setInt(GrinderProperties.CONSOLE_PORT,
-					consolePort);
+			getGrinderProperties().setInt(GrinderProperties.CONSOLE_PORT, consolePort);
 		}
 		thread = new Thread(new Runnable() {
 			public void run() {
@@ -56,16 +53,13 @@ public class AgentDaemon implements Agent {
 					try {
 						getAgentImplementationEx().run(getGrinderProperties());
 
-						getListeners().apply(
-								new Informer<AgentShutDownListener>() {
-									public void inform(
-											AgentShutDownListener listener) {
-										listener.shutdownAgent();
-									}
-								});
+						getListeners().apply(new Informer<AgentShutDownListener>() {
+							public void inform(AgentShutDownListener listener) {
+								listener.shutdownAgent();
+							}
+						});
 					} catch (GrinderException e) {
-						logger.error(
-								"while sleeping agent thread, error occurs", e);
+						logger.error("while sleeping agent thread, error occurs", e);
 					}
 					if (isForceToshutdown()) {
 						setForceToshutdown(false);
@@ -74,8 +68,7 @@ public class AgentDaemon implements Agent {
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
-						logger.error(
-								"while sleeping agent thread, error occurs", e);
+						logger.error("while sleeping agent thread, error occurs", e);
 					}
 				} while (true);
 			}
@@ -108,6 +101,7 @@ public class AgentDaemon implements Agent {
 				thread.join();
 			}
 		} catch (Exception e) {
+			logger.error("Error while shutdownning agent", e);
 			throw new RuntimeException(e);
 		}
 	}

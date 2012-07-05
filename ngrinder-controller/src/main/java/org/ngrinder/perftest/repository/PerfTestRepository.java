@@ -27,9 +27,15 @@ import java.util.List;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface PerfTestRepository extends JpaRepository<PerfTest, Integer> {
-
+/**
+ * Performance Test Repository
+ * 
+ * @author junHo Yoon
+ * @since 3.0
+ */
+public interface PerfTestRepository extends JpaRepository<PerfTest, Integer>, JpaSpecificationExecutor<PerfTest> {
 	List<PerfTest> findAllByStatusOrderByCreateDateAsc(Status status);
 
 }

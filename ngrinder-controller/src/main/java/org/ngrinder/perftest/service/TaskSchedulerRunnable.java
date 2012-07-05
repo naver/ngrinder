@@ -24,14 +24,10 @@ package org.ngrinder.perftest.service;
 
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import net.grinder.SingleConsole;
-import net.grinder.common.processidentity.AgentIdentity;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
@@ -39,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -70,22 +65,36 @@ public class TaskSchedulerRunnable implements Runnable {
 			return;
 		}
 		PerfTest performanceTest = runnablePerformanceTests.get(0);
-		performanceTest.setStatus(Status.TESTING);
-		performanceTestRepository.save(performanceTest);
+
 		doTest(performanceTest);
 	}
 
-	// TODO Auto-generated method stub
-	void doTest(PerfTest performanceTest) {
-		/**
-		 * SingleConsole singleConsole = consoleManager.getAvailableConsole();
-		 * BlockingQueue<Agent> agentQueues =
-		 * agentManager.getAgents(singleConsole,
-		 * performanceTest.getAgentCount()); while(agentQueues.poll(5000,
-		 * TimeUnit.MILLISECONDS) != null) { Agent.distributeFiles(); }
-		 * 
-		 * ToStringBuilder.reflectionToString(this, ToStringStyle.DEFAULT_STYLE)
-		 */
+	public void doTest(PerfTest perfTest) {
+		SingleConsole singleConsole = consoleManager.getAvailableConsole();
+		if (singleConsole == null) {
+			return;
+		}
+		singleConsole.start();
+		perfTest.setStatus(Status.WAITING_AGENT);
+		performanceTestRepository.save(perfTest);
+
+		BlockingQueue<AgentWrapper> agentQueues = agentManager
+				.getAgentWrappers(singleConsole, perfTest.getAgentCount());
+		int i = 0;
+		while (true) {
+			try {
+				i++;
+				AgentWrapper agentWrapper = agentQueues.poll(1000, TimeUnit.MILLISECONDS);
+				agentWrapper.distributeFiles();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			if (perfTest.getAgentCount() == i)
+				break;
+		}
+
+		perfTest.setStatus(Status.TESTING);
+		performanceTestRepository.save(perfTest);
 
 	}
 

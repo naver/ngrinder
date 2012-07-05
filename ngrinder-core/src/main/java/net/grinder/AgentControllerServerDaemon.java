@@ -1,20 +1,20 @@
 package net.grinder;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
+import net.grinder.console.communication.AgentProcessControl;
 import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.console.communication.ConsoleCommunication;
 import net.grinder.console.model.ConsoleProperties;
+import net.grinder.message.console.AgentControllerState;
 import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.agent.StopGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
-import net.grinder.util.AllocateLowestNumber;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.thread.Condition;
 
@@ -27,23 +27,22 @@ public class AgentControllerServerDaemon {
 	private AgentControllerServer agentControllerServer;
 	public final static Resources resources = new ResourcesImplementation(
 			"net.grinder.console.common.resources.Console");
+	public Condition m_eventSyncCondition = new Condition();
 
 	public Condition m_alive = new Condition();
-	public final static Logger logger = LoggerFactory.getLogger(resources
-			.getString("shortTitle"));
+	public final static Logger logger = LoggerFactory.getLogger(resources.getString("shortTitle"));
 
 	public AgentControllerServerDaemon(String ip, int port) {
 		this(ip, port, ConsolePropertiesFactory.createEmptyConsoleProperties());
 	}
 
-	public AgentControllerServerDaemon(String ip, int port,
-			ConsoleProperties consoleProperties) {
+	public AgentControllerServerDaemon(String ip, int port, ConsoleProperties consoleProperties) {
 		this.consoleProperties = consoleProperties;
 		try {
 			this.consoleProperties.setConsoleHost(ip);
 			this.consoleProperties.setConsolePort(port);
-			this.agentControllerServer = new AgentControllerServer(resources,
-					logger, consoleProperties);
+			this.agentControllerServer = new AgentControllerServer(resources, logger, consoleProperties,
+					m_eventSyncCondition);
 		} catch (GrinderException e) {
 			throw new RuntimeException(e);
 		}
@@ -59,7 +58,11 @@ public class AgentControllerServerDaemon {
 				startSync();
 			}
 		});
+		thread.setDaemon(true);
 		thread.start();
+		synchronized (m_eventSyncCondition) {
+			m_eventSyncCondition.waitNoInterrruptException(10000);
+		}
 	}
 
 	/**
@@ -73,7 +76,7 @@ public class AgentControllerServerDaemon {
 		try {
 			agentControllerServer.shutdown();
 			if (thread != null && thread.isAlive()) {
-				thread.join();
+				thread.join(10000);
 				thread = null;
 			}
 		} catch (Exception e) {
@@ -82,25 +85,17 @@ public class AgentControllerServerDaemon {
 	}
 
 	public int getAllAttachedAgentsCount() {
-		return ((AgentProcessControlImplementation) agentControllerServer
-				.getComponent(AgentProcessControlImplementation.class))
+		return ((AgentProcessControl) agentControllerServer.getComponent(AgentProcessControlImplementation.class))
 				.getNumberOfLiveAgents();
 	}
 
-	public List<AgentIdentity> getAllAvailableAgents() {
-		final List<AgentIdentity> agentIdentities = new ArrayList<AgentIdentity>();
-		AllocateLowestNumber agentIdentity = agentControllerServer
-				.getComponent(AgentProcessControlImplementation.class).m_agentNumberMap;
-		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
-			public void objectAndNumber(Object object, int number) {
-				agentIdentities.add((AgentIdentity) object);
-			}
-		});
+	public Set<AgentIdentity> getAllFreeAgents() {
+		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgents(
+				AgentControllerState.RUNNING, 0);
+	}
 
-		System.out.println(agentControllerServer.getComponent(
-				AgentProcessControlImplementation.class)
-				.getNumberOfLiveAgents());
-		return agentIdentities;
+	public Set<AgentIdentity> getAllAvailableAgents() {
+		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAllAgents();
 	}
 
 	/**
@@ -117,13 +112,10 @@ public class AgentControllerServerDaemon {
 	 * @param agentIdentity
 	 *            agent controller identity
 	 */
-	public void startAgent(GrinderProperties grinderProperties,
-			AgentIdentity agentIdentity) {
+	public void startAgent(GrinderProperties grinderProperties, AgentIdentity agentIdentity) {
 		logger.info("start agent of {}", agentIdentity);
-		getComponent(ConsoleCommunication.class).sendToAddressedAgents(
-				new AgentAddress(agentIdentity),
-				new StartGrinderMessage(grinderProperties, agentIdentity
-						.getNumber()));
+		getComponent(ConsoleCommunication.class).sendToAddressedAgents(new AgentAddress(agentIdentity),
+				new StartGrinderMessage(grinderProperties, agentIdentity.getNumber()));
 	}
 
 	/**
@@ -134,7 +126,7 @@ public class AgentControllerServerDaemon {
 	 */
 	public void stopAgent(AgentIdentity agentIdentity) {
 		logger.info("start agent of {}", agentIdentity);
-		getComponent(ConsoleCommunication.class).sendToAddressedAgents(
-				new AgentAddress(agentIdentity), new StopGrinderMessage());
+		getComponent(ConsoleCommunication.class).sendToAddressedAgents(new AgentAddress(agentIdentity),
+				new StopGrinderMessage());
 	}
 }

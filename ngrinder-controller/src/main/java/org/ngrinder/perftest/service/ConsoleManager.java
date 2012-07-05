@@ -22,20 +22,51 @@
  */
 package org.ngrinder.perftest.service;
 
-import org.springframework.stereotype.Component;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+
+import javax.annotation.PostConstruct;
 
 import net.grinder.SingleConsole;
 
+import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.springframework.stereotype.Component;
+
 @Component
 public class ConsoleManager {
+	private Queue<ConsoleEntry> consoleQueue = new ArrayDeque<ConsoleEntry>();
+	private List<ConsoleEntry> consoleInUse = new ArrayList<ConsoleEntry>();
+
+	@PostConstruct
+	public void init() {
+		for (int i = 0; i < 20; i++) {
+			consoleQueue.add(new ConsoleEntry(i + 12000));
+		}
+	}
 
 	public SingleConsole getAvailableConsole() {
-		return new SingleConsole(1011);
+		ConsoleEntry consoleEntry = consoleQueue.poll();
+		if (consoleEntry == null) {
+			throw new NGrinderRuntimeException("no console entry available");
+		}
+		getConsoleInUse().add(consoleEntry);
+		return new SingleConsole(consoleEntry.getPort());
 	}
 
 	public void returnBackConsole(SingleConsole console) {
-		console.shutdown();
-		console.getConsoleProperties().getConsoleHost();
-		console.getConsoleProperties().getConsolePort();
+		try {
+			console.shutdown();
+		} catch (Exception e) {
+		}
+		ConsoleEntry consoleEntry = new ConsoleEntry(console.getConsoleProperties().getConsolePort());
+		consoleQueue.add(consoleEntry);
+		getConsoleInUse().remove(consoleEntry);
 	}
+
+	public List<ConsoleEntry> getConsoleInUse() {
+		return consoleInUse;
+	}
+
 }

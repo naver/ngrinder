@@ -3,10 +3,12 @@ package net.grinder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.List;
+import java.util.Iterator;
+import java.util.Set;
 
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.messages.console.AgentAddress;
 
 import org.junit.After;
 import org.junit.Before;
@@ -17,13 +19,13 @@ public class AgentControllerTest {
 	AgentControllerDaemon agentControllerDaemon;
 	AgentControllerDaemon agentControllerDaemon2;
 	SingleConsole console1;
+	Set<AgentIdentity> allAvailableAgents;
 
 	public void sleep(long time) {
 		try {
 			Thread.sleep(time);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			new RuntimeException(e);
 		}
 	}
 
@@ -31,13 +33,15 @@ public class AgentControllerTest {
 	public void before() {
 		agentControllerServerDeamon = new AgentControllerServerDaemon(2022);
 		agentControllerServerDeamon.start();
-		sleep(1000);
 		agentControllerDaemon = new AgentControllerDaemon();
 		agentControllerDaemon.run(2022);
 
 		agentControllerDaemon2 = new AgentControllerDaemon();
 		agentControllerDaemon2.run(2022);
-		sleep(1000);
+		sleep(2000);
+		// Validate if all agents are well-attached.
+		allAvailableAgents = agentControllerServerDeamon.getAllAvailableAgents();
+		assertThat(allAvailableAgents.size(), is(2));
 	}
 
 	@After
@@ -56,15 +60,10 @@ public class AgentControllerTest {
 
 	@Test
 	public void testAgentStatus() throws InterruptedException {
-		List<AgentIdentity> allAvailableAgents = agentControllerServerDeamon.getAllAvailableAgents();
-		System.out.println(allAvailableAgents);
-		assertThat(allAvailableAgents.size(), is(2));
+
+		// Validate all agents are well attached even after restarting agent
+		// controller server
 		agentControllerServerDeamon.shutdown();
-		sleep(1000);
-
-		allAvailableAgents = agentControllerServerDeamon.getAllAvailableAgents();
-		assertThat(allAvailableAgents.size(), is(2));
-
 		agentControllerServerDeamon = new AgentControllerServerDaemon(2022);
 		agentControllerServerDeamon.start();
 		sleep(3000);
@@ -75,65 +74,86 @@ public class AgentControllerTest {
 
 	@Test
 	public void testStartAgent() {
-		List<AgentIdentity> allAvailableAgents = agentControllerServerDeamon.getAllAvailableAgents();
-		assertThat(allAvailableAgents.size(), is(2));
 
 		// Start Console
-		console1 = new SingleConsole(6372);
+		console1 = new SingleConsole(6374);
 		console1.start();
+
+		// Check there is no agents are attached.
 		assertThat(console1.getAllAttachedAgentsCount(), is(0));
 
-		sleep(1000);
+		// Make one agent connect to console1
 		GrinderProperties grinderProperties = new GrinderProperties();
-		grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, 6372);
-		agentControllerServerDeamon.startAgent(grinderProperties, allAvailableAgents.get(0));
-
-		sleep(3000);
+		grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, 6374);
+		AgentIdentity next = allAvailableAgents.iterator().next();
+		agentControllerServerDeamon.startAgent(grinderProperties, next);
+		sleep(2000);
 		assertThat(console1.getAllAttachedAgents().size(), is(1));
 
+		// Shutdown agent controller and see agent is detached as well
 		agentControllerServerDeamon.shutdown();
-		sleep(3000);
+		sleep(5000);
 		assertThat(console1.getAllAttachedAgentsCount(), is(0));
 
 	}
 
 	@Test
-	public void testStopAgent() {
-		List<AgentIdentity> allAvailableAgents = agentControllerServerDeamon.getAllAvailableAgents();
-		AgentIdentity agentIdentity = allAvailableAgents.get(0);
+	public void testStopAndStartAgentRepeatly() {
+		// Get one agent
+		AgentIdentity agentIdentity = allAvailableAgents.iterator().next();
 
+		// Start console
 		SingleConsole console1 = new SingleConsole(6372);
 		console1.start();
-		sleep(1000);
+
+		// Start one agent
 		GrinderProperties grinderProperties = new GrinderProperties();
 		grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, 6372);
-		agentControllerServerDeamon.startAgent(grinderProperties, agentIdentity);
-		sleep(2000);
-		agentControllerServerDeamon.stopAgent(agentIdentity);
-		sleep(2000);
-		agentControllerServerDeamon.stopAgent(agentIdentity);
-		sleep(2000);
 
+		agentControllerServerDeamon.startAgent(grinderProperties, agentIdentity);
+		sleep(3000);
+		assertThat(console1.getAllAttachedAgentsCount(), is(1));
+
+		// Stop that agent and see it's well disconnected
+		agentControllerServerDeamon.stopAgent(agentIdentity);
+		sleep(3000);
+		assertThat(console1.getAllAttachedAgentsCount(), is(0));
+
+		// Stop that agent and see it's well disconnected
+		agentControllerServerDeamon.stopAgent(agentIdentity);
+		sleep(3000);
+		assertThat(console1.getAllAttachedAgentsCount(), is(0));
+
+		agentControllerServerDeamon.startAgent(grinderProperties, agentIdentity);
+		sleep(100000);
+		assertThat(console1.getAllAttachedAgentsCount(), is(1));
+		sleep(5000);
 	}
 
 	@Test
 	public void testAgentControllerServerDaemonRecovery() {
+		sleep(2000);
 		// Connect all available agents
-		List<AgentIdentity> allAvailableAgents = agentControllerServerDeamon.getAllAvailableAgents();
+		Set<AgentIdentity> allAvailableAgents = agentControllerServerDeamon.getAllAvailableAgents();
 		assertThat(allAvailableAgents.size(), is(2));
 		SingleConsole console1 = new SingleConsole(6372);
 		console1.start();
-		sleep(1000);
+
 		GrinderProperties grinderProperties = new GrinderProperties();
 		grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, 6372);
-		agentControllerServerDeamon.startAgent(grinderProperties, allAvailableAgents.get(0));
-		agentControllerServerDeamon.startAgent(grinderProperties, allAvailableAgents.get(1));
+		Iterator<AgentIdentity> iterator = allAvailableAgents.iterator();
+		AgentIdentity next = iterator.next();
+		System.out.println(new AgentAddress(next));
+		AgentIdentity next2 = iterator.next();
+		System.out.println(next2.getNumber());
+		agentControllerServerDeamon.startAgent(grinderProperties, next);
+		agentControllerServerDeamon.startAgent(grinderProperties, next2);
 		sleep(1000);
 		assertThat(console1.getAllAttachedAgents().size(), is(2));
 
 		// Shutdown agent controller
 		agentControllerServerDeamon.shutdown();
-		sleep(3000);
+		sleep(5000);
 
 		assertThat(console1.getAllAttachedAgents().size(), is(0));
 
@@ -148,8 +168,8 @@ public class AgentControllerTest {
 		allAvailableAgents = agentControllerServerDeamon.getAllAvailableAgents();
 
 		// If we restart agents
-		agentControllerServerDeamon.startAgent(grinderProperties, allAvailableAgents.get(0));
-		agentControllerServerDeamon.startAgent(grinderProperties, allAvailableAgents.get(1));
+		agentControllerServerDeamon.startAgent(grinderProperties, next);
+		agentControllerServerDeamon.startAgent(grinderProperties, next2);
 		sleep(2000);
 
 		// They should be successfully attached into the existing console.
