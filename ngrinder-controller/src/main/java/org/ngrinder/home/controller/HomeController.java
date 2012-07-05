@@ -27,11 +27,11 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 public class HomeController extends NGrinderBaseController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HomeController.class);
-
+ 
 	@Autowired
 	private Config config;
 
-	@RequestMapping(value = "/home")
+	@RequestMapping(value = { "/home", "/" })
 	public String home(ModelMap model, HttpServletResponse response, HttpServletRequest request) {
 		String roles;
 		try {
@@ -47,10 +47,10 @@ public class HomeController extends NGrinderBaseController {
 		} else if (roles.indexOf("U") != -1) {
 			return "redirect:/project/list";
 		} else if (roles.indexOf("A") != -1 || roles.indexOf("S") != -1) {
-			return "redirect:/agent/list?page=1";
+			return "redirect:/project/list";
 		} else {
 			LOG.info("Invalid user role:{}", roles);
-			return "login";
+			return "login"; 
 		}
 	}
 
@@ -66,12 +66,6 @@ public class HomeController extends NGrinderBaseController {
 		} else {
 			throw new NGrinderRuntimeException("No User Language found!");
 		}
-	}
-
-	@RequestMapping(value = "/")
-	public String home1(ModelMap model) {
-		setLoginPageDate(model);
-		return "login";
 	}
 
 	@RequestMapping(value = "/login")
