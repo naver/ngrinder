@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-
 /**
  * Script service implement
  * 
@@ -57,7 +56,7 @@ public class ScriptServiceImpl implements ScriptService {
 
 	@Override
 	public void saveScript(Script script) {
-		if (0 != script.getId()) {
+		if (null != script.getId() && 0 != script.getId().longValue()) {
 			Script scriptOld = this.getScript(script.getId());
 			if (null != scriptOld) {
 				ScriptUtil.saveScriptHistoryFile(scriptOld);

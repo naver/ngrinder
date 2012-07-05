@@ -22,6 +22,13 @@
  */
 package org.ngrinder.common;
 
+import javax.annotation.PostConstruct;
+
+import org.ngrinder.infra.config.Config;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
 public final class NGrinderConstants {
 
 	private NGrinderConstants() {
@@ -48,7 +55,15 @@ public final class NGrinderConstants {
 	 */
 
 	// project
-	public static final String PATH_PROJECT = getWebRoot() + "project";
+	public static String PATH_PROJECT;
+
+	@Autowired
+	private Config config;
+
+	@PostConstruct
+	public void init() {
+		PATH_PROJECT = config.getHome().getProjectDirectory().getAbsolutePath();
+	}
 
 	public static final String PREFIX_USER = "u_";
 

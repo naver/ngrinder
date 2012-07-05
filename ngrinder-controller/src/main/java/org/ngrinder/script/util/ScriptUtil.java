@@ -13,7 +13,6 @@ import org.ngrinder.user.util.UserUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Script util
  * 
@@ -32,7 +31,7 @@ public final class ScriptUtil {
 		sb.append(NGrinderConstants.PATH_PROJECT);
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PREFIX_USER);
-		sb.append(UserUtil.getCurrentUser().getName());
+		sb.append(UserUtil.getCurrentUser().getId());
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PREFIX_SCRIPT);
 		sb.append(id);
@@ -58,18 +57,32 @@ public final class ScriptUtil {
 	}
 
 	/**
-	 * get the script path
+	 * get the script path by script id
 	 * 
 	 * @param scriptDirectory
 	 * @param id
 	 * @return the script file path
 	 */
 	public static String getScriptPath(long id) {
+		return ScriptUtil.getScriptPath(0, id);
+	}
+
+	/**
+	 * get the script path by user name &script id
+	 * 
+	 * @param userName
+	 * @param id
+	 * @return
+	 */
+	public static String getScriptPath(long userId, long id) {
+		if (0 == userId) {
+			userId = UserUtil.getCurrentUser().getId().longValue();
+		}
 		StringBuilder sb = new StringBuilder();
 		sb.append(NGrinderConstants.PATH_PROJECT);
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PREFIX_USER);
-		sb.append(UserUtil.getCurrentUser().getName());
+		sb.append(userId);
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PREFIX_SCRIPT);
 		sb.append(id);

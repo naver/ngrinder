@@ -20,43 +20,29 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.common.service;
+package org.ngrinder.script.repository;
 
-import java.util.Date;
-
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.ngrinder.model.BaseModel;
-import org.ngrinder.user.util.UserUtil;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
 
 /**
- * model aspect
+ * Script initialize, add script entities to cache
  * 
- * @author Liu Zhifei
- * @date 2012-6-19
+ * @author Tobi
+ * @since
+ * @date 2012-7-4
  */
-@Aspect
-@Service
-public class ModelAspect {
+@Component
+public class ScriptInitialize implements ApplicationListener<ContextRefreshedEvent> {
 
-	public static final String EXECUTION_SAVE = "execution(* org.ngrinder.**.service.*Service.save*(..))";
+	@Autowired
+	private ScriptDao scriptDao;
 
-	@Before(EXECUTION_SAVE)
-	public void beforeSave(JoinPoint joinPoint) {
-		for (Object object : joinPoint.getArgs()) {
-			if (object instanceof BaseModel) {
-				BaseModel<?> model = (BaseModel<?>) object;
-				if (null != model.getId() && 0 != model.getId().longValue()) {
-					model.setLastModifiedDate(new Date());
-					model.setLastModifiedUser(UserUtil.getCurrentUser().getName());
-				} else {
-					model.setCreateDate(new Date());
-					model.setCreateUser(UserUtil.getCurrentUser().getName());
-				}
-			}
-		}
+	@Override
+	public void onApplicationEvent(ContextRefreshedEvent event) {
+		scriptDao.findAll();
 	}
 
 }
