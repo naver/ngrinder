@@ -7,12 +7,6 @@
 		<meta name="description" content="nGrinder Test Result Detail">
 		<meta name="author" content="AlexQin">
 		<link rel="shortcut icon" href="favicon.ico"/>
-		 <script src="${Request.getContextPath()}/js/jquery-1.7.2.min.js"></script>
-		<link href="${Request.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-		<link href="${Request.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
-		<link href="${Request.getContextPath()}/plugins/datatables/css/demo_table.css" rel="stylesheet">
-		<script src="${Request.getContextPath()}/plugins/tree/jquery.ztree.all-3.2.js"></script>
-	    <link rel="stylesheet" href="${Request.getContextPath()}/plugins/tree/zTreeStyle.css" type="text/css">
 		<style>
 			body {
 				padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -25,24 +19,7 @@
 		
 			<script type="text/javascript">
 		
-						var setting = {
-							view: {
-								showLine: true,
-								showIcon : false
-							},
-							data: {
-								simpleData: {
-									enable: true
-								}
-							}
-						};
-		
-						var treeData = ${jsonStr}
-						
-						$(document).ready(function(){
-									$.fn.zTree.init($("#treeDemo"), setting, treeData);
-						});
-			
+				
 			</script>
 		
 	</head>
@@ -60,15 +37,11 @@
 																				<i class="icon-user"></i>
 																				Create User
 																</a>
-																<ul id="treeDemo" class="ztree"></ul>		
+																<#include "userTree.ftl">
 													</div>
 													
 													<div class="span7">
-														    <div class="row">
-																	<div class="span10">
-																			
-																		</div>	
-																	</div>
+														
 																
 																	<div class="well form-inline" style="padding:5px;margin:10px 0">
 																		<!--<legend>introduction</legend>-->
@@ -93,11 +66,11 @@
 																					  <tr>
 																							<td><input type="checkbox" value=""></td>
 																							<td class="center"><a href="${Request.getContextPath()}/user/detail?userId=${user.userId}" >${user.userName}</a></td>
-																							<td>2012-06-27</td>
+																							<td>${user.createDate?string("yyyy/MM/dd hh:mm:ss")}</td>
 																							<td>${user.description!}</td>
 																							<td>${user.role.name}</td>
-																							<td><a href="javascript:void(0);"><i class="icon-edit"></i></a></td>
-																							<td><a href="javascript:void(0);"><i class="icon-remove" ></i></a></td>
+																							<td><a href="${Request.getContextPath()}/user/detail?userId=${user.userId}"><i class="icon-edit"></i></a></td>
+																							<td><a href="${Request.getContextPath()}/user/delete?userId=${user.userId}"><i class="icon-remove" ></i></a></td>
 																						</tr>
 																						</#list>
 																			</tbody>

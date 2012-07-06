@@ -22,6 +22,8 @@
  */
 package org.ngrinder.user.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,7 +33,10 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "NROLE")
-public class Role {
+public class Role implements Serializable{
+
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "role_id")
