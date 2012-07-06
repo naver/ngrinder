@@ -5,8 +5,8 @@ import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.service.TestService;
 import org.ngrinder.script.model.Script;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,14 +24,21 @@ public class PerfTestController extends NGrinderBaseController {
 	@Autowired
 	private TestService testService;
 	
+	private static final int DEFAULT_TEST_PAGE_ZISE = 15;
+	
+	
 	@RequestMapping("/list")
 	public String getTestList(ModelMap model,
 			@RequestParam(required = false) String keywords, 
 			@RequestParam(required = false) boolean isFinished,
-			@RequestParam(required = true) PageRequest pageable) {
-		
+			@RequestParam(required = false) PageRequest pageable) {
+
+		if (pageable == null) {
+			pageable = new PageRequest(0, DEFAULT_TEST_PAGE_ZISE);
+		}
 		String currUserId = getCurrentUserInfo(P_USERID);
-		testService.getTestList(currUserId, isFinished, pageable);
+		Page<PerfTest> testList = testService.getTestList(currUserId, isFinished, pageable);
+		model.addAttribute("testListPage", testList);
 		
 		return "perftest/list";
 	}

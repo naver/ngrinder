@@ -22,7 +22,7 @@
 	</head>
 
 	<body>
-    	<#include "navigator.ftl">
+    	<#include "../common/navigator.ftl">
 		<div class="container">
 			<div class="row">
 				<div class="span10 offset1">
@@ -30,7 +30,7 @@
 						<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
 						<button type="submit" class="btn" id="searchBtn">Search</button>
 						<label class="checkbox pull-right">
-							<input type="checkbox" id="onlyFinished" <#if isFinished>checked</#if>> Finished
+							<input type="checkbox" id="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> Finished
 						</label>
 					</div>
 					<table class="display ellipsis" id="scriptTable" style="margin-bottom:10px;">
@@ -90,7 +90,7 @@
 						</tbody>
 					</table>
 				<!--content-->
-				<#include "copyright.ftl">
+				<!-- <#include "../common/copyright.ftl"> -->
 				</div>
 			</div>
 		</div>
