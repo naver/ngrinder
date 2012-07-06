@@ -52,11 +52,11 @@ public class TestServiceTest extends NGrinderIocTransactionalTestBase {
 	public void createTempTests () {
 		User user = new User();
 		user.setId(123L);
-		user.setName("TEST_USER");
+		user.setUserName("TEST_USER");
 		UserUtil.setCurrentUser(user);
 		
 		PerfTest test = new PerfTest();
-		test.setName("new Test1");
+		test.setTestName("new Test1");
 		test.setThreshold("D");
 		test.setDuration(120);
 		test.setIgnoreSampleCount(0);
@@ -66,7 +66,7 @@ public class TestServiceTest extends NGrinderIocTransactionalTestBase {
 		
 		test = new PerfTest();
 		test.setCreateUser("TEST_USER");
-		test.setName("new Test2");
+		test.setTestName("new Test2");
 		test.setStatus(Status.FINISHED);
 		test.setThreshold("D");
 		test.setDuration(120);
