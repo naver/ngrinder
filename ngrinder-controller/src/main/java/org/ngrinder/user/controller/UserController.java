@@ -34,7 +34,9 @@ import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.google.gson.Gson;
 
@@ -47,6 +49,7 @@ public class UserController extends NGrinderBaseController{
 
 	@Autowired
 	private UserService userService;
+	
 
 	@RequestMapping("/list")
 	public String getUserList(ModelMap model) {
@@ -63,7 +66,7 @@ public class UserController extends NGrinderBaseController{
 			JsonBean bean = new JsonBean(id, "all", id, true);
 			jList.add(bean);
 			for (User user : entry.getValue()) {
-				JsonBean leafBean = new JsonBean(user.getUserId(), id, user.getName(), true);
+				JsonBean leafBean = new JsonBean(user.getUserId(), id, user.getUserName(), true);
 				jList.add(leafBean);
 			}
 			userList.addAll(entry.getValue());
@@ -78,10 +81,20 @@ public class UserController extends NGrinderBaseController{
 	}
 
 	@RequestMapping("/detail")
-	public String getUserDetail() {
-
+	public String getUserDetail(ModelMap model,@RequestParam(required = false)  String userId) {
+		User user = userService.getUserById(userId);
+		
+		model.addAttribute("user", user);
 		return "user/userDetail";
 	}
+	
+	@RequestMapping("/save")
+	public String saveUserDetail(ModelMap model,@ModelAttribute("user") User user) {
+		userService.saveUser(user);
+		return "redirect:/user/list";
+	}
+	
+	
 	
 
 
