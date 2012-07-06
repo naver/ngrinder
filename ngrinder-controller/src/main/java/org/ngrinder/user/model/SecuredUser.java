@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,8 +12,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class SecuredUser extends User implements UserDetails {
 
 	private static final long serialVersionUID = 9160341654874660746L;
+	private final String userInfoProviderClass;
+	private String authProviderClass;
 
-	public SecuredUser(User user) {
+	public SecuredUser(User user, String userInfoProviderClass) {
+		this.userInfoProviderClass = userInfoProviderClass;
+		this.authProviderClass = StringUtils.defaultIfEmpty(user.getAuthProviderClass(), userInfoProviderClass);
 		setName(user.getName());
 		setUserId(user.getUserId());
 		setRole(user.getRole());
@@ -58,5 +63,22 @@ public class SecuredUser extends User implements UserDetails {
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+
+	public String getUserInfoProviderClass() {
+		return userInfoProviderClass;
+	}
+
+	public String getAuthProviderClass() {
+		return authProviderClass;
+	}
+
+	public User getUser() {
+		User user = new User();
+		user.setName(getName());
+		user.setUserId(getUserId());
+		user.setEmail(getEmail());
+		user.setRole(getRole());
+		return user;
 	}
 }

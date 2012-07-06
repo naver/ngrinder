@@ -23,6 +23,7 @@
 
 package org.ngrinder.infra.plugin;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -33,12 +34,12 @@ import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.model.Home;
+import org.ngrinder.infra.annotation.OnlyRuntimeComponent;
 import org.ngrinder.infra.config.Config;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.web.context.ServletContextAware;
 
 import com.atlassian.plugin.DefaultModuleDescriptorFactory;
@@ -59,7 +60,7 @@ import com.atlassian.plugin.osgi.hostcomponents.HostComponentProvider;
  * @author JunHo Yoon
  * @since 3.0
  */
-@Service
+@OnlyRuntimeComponent
 public class PluginManager implements ServletContextAware {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PluginManager.class);
@@ -74,9 +75,13 @@ public class PluginManager implements ServletContextAware {
 
 	@PostConstruct
 	public void init() {
-		if (config.isTestMode()) {
-			return;
+		// In case of test mode, no plugin is supported.
+		if (isPluginSupportEnabled()) {
+			initPluginFramework();
 		}
+	}
+
+	public void initPluginFramework() {
 		// waiting for sqlmap and grinder to start
 		// Determine which packages to expose to plugins
 		DefaultPackageScannerConfiguration scannerConfig = new DefaultPackageScannerConfiguration();
@@ -109,10 +114,14 @@ public class PluginManager implements ServletContextAware {
 		// Start the plugin framework
 		plugins = new AtlassianPlugins(config);
 		plugins.start();
-		
+
 		for (Runnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(Runnable.class)) {
 			runnable.run();
 		}
+	}
+
+	protected boolean isPluginSupportEnabled() {
+		return config.isPluginSupported();
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -136,12 +145,31 @@ public class PluginManager implements ServletContextAware {
 				LOG.info("plugin descriptor " + pluginDescriptor.getName() + " with "
 						+ pluginDescriptorAnnotation.value() + " is initiated.");
 			}
-
 		}
 	}
 
 	public <M> List<M> getEnabledModulesByClass(Class<M> moduleClass) {
-		return plugins.getPluginAccessor().getEnabledModulesByClass(moduleClass);
+		return getEnabledModulesByClass(moduleClass, null);
+	}
+
+	/**
+	 * Get plugins by module descriptor class and add the default plugin at a
+	 * head of returned plugins.
+	 * 
+	 * @param moduleClass
+	 * @param defaultPlugin
+	 * @return
+	 */
+	public <M> List<M> getEnabledModulesByClass(Class<M> moduleClass, M defaultPlugin) {
+		ArrayList<M> pluginClasses = new ArrayList<M>();
+		if (plugins == null) {
+			return pluginClasses;
+		}
+		if (defaultPlugin != null) {
+			pluginClasses.add(defaultPlugin);
+		}
+		pluginClasses.addAll(plugins.getPluginAccessor().getEnabledModulesByClass(moduleClass));
+		return pluginClasses;
 	}
 
 	@PreDestroy

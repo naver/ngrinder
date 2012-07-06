@@ -162,4 +162,15 @@ public class UserService {
 	private List<User> getUserListByRole(Role role) {
 		return userRepository.findAllByRole(role);
 	}
+
+	/**
+	 * Add normal user
+	 * 
+	 * @param user
+	 */
+	public void addUser(User user) {
+		Role findOneByName = roleRepository.findOneByName("U");
+		user.setRole(findOneByName);
+		userRepository.save(user);
+	}
 }

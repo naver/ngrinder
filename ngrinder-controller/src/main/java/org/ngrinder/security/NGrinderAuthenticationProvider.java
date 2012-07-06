@@ -1,6 +1,11 @@
 package org.ngrinder.security;
 
+import org.apache.commons.lang.StringUtils;
+import org.ngrinder.infra.plugin.OnLoginRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
+import org.ngrinder.user.model.SecuredUser;
+import org.ngrinder.user.model.User;
+import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,6 +27,8 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	@Autowired
 	private PluginManager pluginManager;
 
+	@Autowired
+	private DefaultLoginPlugin defaultLoginPlugin;
 	// ~ Instance fields
 	// ================================================================================================
 
@@ -31,6 +38,9 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 	@Autowired
 	private UserDetailsService userDetailsService;
+
+	@Autowired
+	private UserService userService;
 
 	// ~ Methods
 	// ========================================================================================================
@@ -52,13 +62,37 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		}
 
 		String presentedPassword = authentication.getCredentials().toString();
-
-		if (!passwordEncoder.isPasswordValid(userDetails.getPassword(), presentedPassword, salt)) {
-			logger.debug("Authentication failed: password does not match stored value");
-
-			throw new BadCredentialsException(messages.getMessage(
-					"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"), userDetails);
+		SecuredUser user = ((SecuredUser) userDetails);
+		boolean authorized = false;
+		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class,
+				defaultLoginPlugin)) {
+			// If no auth provider provided, defaultLoginPlugin is used to
+			// verify ID/PW
+			if (StringUtils.isEmpty(user.getAuthProviderClass()) && each.equals(defaultLoginPlugin)) {
+				each.authUser(passwordEncoder, user.getUserId(), user.getPassword(), presentedPassword, salt);
+				authorized = true;
+				break;
+			}
+			//
+			else if (each.getClass().getName().equals(user.getAuthProviderClass())) {
+				each.authUser(passwordEncoder, user.getUserId(), user.getPassword(), presentedPassword, salt);
+				authorized = true;
+				if (!DefaultLoginPlugin.class.getName().equals(user.getUserInfoProviderClass())) {
+					addNewUserInfoLocal(user);
+				}
+				break;
+			}
 		}
+		if (!authorized) {
+			throw new BadCredentialsException(messages.getMessage(
+					"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"), user.getUserId());
+		}
+
+	}
+
+	public void addNewUserInfoLocal(SecuredUser user) {
+		User userForLocalStore = user.getUser();
+		userService.addUser(userForLocalStore);
 	}
 
 	protected void doAfterPropertiesSet() throws Exception {
@@ -162,5 +196,13 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 	protected UserDetailsService getUserDetailsService() {
 		return userDetailsService;
+	}
+
+	public PluginManager getPluginManager() {
+		return pluginManager;
+	}
+
+	public void setPluginManager(PluginManager pluginManager) {
+		this.pluginManager = pluginManager;
 	}
 }

@@ -43,7 +43,6 @@ import org.springframework.data.jpa.domain.Specification;
 @Entity
 @Table(name = "NUSER")
 public class User extends BaseModel<User> {
-
 	/**
 	 * UUID
 	 */
@@ -55,7 +54,7 @@ public class User extends BaseModel<User> {
 
 	private String name;
 
-	private boolean enabled;
+	private boolean enabled = true;
 
 	private String email;
 
@@ -71,8 +70,11 @@ public class User extends BaseModel<User> {
 
 	private String mobilePhone;
 
-	public User() {
+	private boolean external = false;
 
+	private String authProviderClass;
+
+	public User() {
 	}
 
 	public User(String userId, String name, String password, Role role) {
@@ -183,4 +185,21 @@ public class User extends BaseModel<User> {
 			}
 		};
 	}
+
+	public boolean isExternal() {
+		return external;
+	}
+
+	public void setExternal(boolean external) {
+		this.external = external;
+	}
+
+	public String getAuthProviderClass() {
+		return authProviderClass;
+	}
+
+	public void setAuthProviderClass(String authProviderClass) {
+		this.authProviderClass = authProviderClass;
+	}
+
 }

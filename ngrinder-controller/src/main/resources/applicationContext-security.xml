@@ -63,7 +63,7 @@
 
 	<http entry-point-ref="authenticationProcessingFilterEntryPoint"
 		access-decision-manager-ref="accessDecisionManager">
-		<intercept-url pattern="/" access="permitAll" />
+		<intercept-url pattern="/" access="A, U, S" />
 		<intercept-url pattern="/home" access="A, U, S" />
 		<intercept-url pattern="/perftest/**" access="U, S" />
 		<intercept-url pattern="/help**" access="U, S" />

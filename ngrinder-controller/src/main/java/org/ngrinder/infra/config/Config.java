@@ -52,11 +52,11 @@ public class Config {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
 	private static final Logger logger = LoggerFactory.getLogger(Config.class);
 	private PropertiesWrapper databaseProperties;
-
+	
 	/**
 	 * Make it singleton
 	 */
-	private Config() {
+	Config() {
 	}
 
 	private Home home = null;
@@ -130,7 +130,20 @@ public class Config {
 	 * @return
 	 */
 	public boolean isTestMode() {
-		return BooleanUtils.toBoolean(getSystemProperties().getProperty("testmode", "false"));
+		return BooleanUtils.toBoolean(getSystemProperty("testmode", "false"));
+	}
+
+	/**
+	 * if there is testmode property in system.properties.. return true
+	 * 
+	 * @return
+	 */
+	public boolean isPluginSupported() {
+		return (BooleanUtils.toBoolean(getSystemProperty("pluginsupport", "true")) || !isTestMode());
+	}
+
+	String getSystemProperty(String key, String defaultValue) {
+		return getSystemProperties().getProperty(key, defaultValue);
 	}
 
 	public Home getHome() {

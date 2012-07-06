@@ -37,7 +37,7 @@ public class PropertiesWrapper {
 	private final Properties properties;
 	private final static Logger logger = LoggerFactory.getLogger(PropertiesWrapper.class);
 
-	private static final String DEFAULT_ERROR_MESSGAE = "The %s is not defined in conf file. Use %s instead.";
+	private static final String DEFAULT_ERROR_MESSGAE = "The {} is not defined in conf file. Use {} instead.";
 
 	public PropertiesWrapper(Properties properties) {
 		this.properties = properties;

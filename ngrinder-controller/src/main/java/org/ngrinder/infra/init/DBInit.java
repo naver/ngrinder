@@ -25,7 +25,11 @@ public class DBInit {
 	@PostConstruct
 	@Transactional
 	public void init() {
-		// If there is no users.. make admin and user
+		createDefaultUserIfNecessary();
+	}
+
+	private void createDefaultUserIfNecessary() {
+		// If there is no users.. make admin and user and U, S, A roles.
 		if (userRepository.count() == 0) {
 			User user = new User();
 			user.setUserId("admin");
@@ -34,7 +38,7 @@ public class DBInit {
 			userRole = roleRepository.save(userRole);
 			user.setRole(userRole);
 			userService.saveUser(user);
-			
+
 			User user2 = new User();
 			user2.setUserId("user");
 			user2.setPsw("user");
@@ -42,6 +46,9 @@ public class DBInit {
 			userRole2 = roleRepository.save(userRole2);
 			user2.setRole(userRole2);
 			userService.saveUser(user2);
+
+			Role superUser = new Role("S");
+			roleRepository.save(superUser);
 		}
 	}
 }

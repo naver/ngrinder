@@ -24,12 +24,13 @@ package org.ngrinder.infra.config;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 
 import org.junit.Test;
 import org.ngrinder.common.model.Home;
-import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -47,5 +48,29 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests {
 		File ngrinderHomeUnderUserHome = new File(System.getProperty("user.home"), ".ngrinder");
 		assertThat(home.getDirectory(), is(ngrinderHomeUnderUserHome));
 		assertThat(home.getPluginsDirectory(), is(new File(ngrinderHomeUnderUserHome, "plugins")));
+	}
+
+	@Test
+	public void testTestMode() {
+		Config spiedConfig = spy(config);
+		// When testmode false and pluginsupport is true, it should be true
+		when(spiedConfig.getSystemProperty("testmode", "false")).thenReturn("false");
+		when(spiedConfig.getSystemProperty("pluginsupport", "true")).thenReturn("false");
+		assertThat(spiedConfig.isPluginSupported(), is(true));
+
+		// When testmode true and pluginsupport is false, it should be false
+		when(spiedConfig.getSystemProperty("testmode", "false")).thenReturn("true");
+		when(spiedConfig.getSystemProperty("pluginsupport", "true")).thenReturn("false");
+		assertThat(spiedConfig.isPluginSupported(), is(false));
+
+		// When testmode false and pluginsupport is false, it should be false
+		when(spiedConfig.getSystemProperty("testmode", "false")).thenReturn("true");
+		when(spiedConfig.getSystemProperty("pluginsupport", "true")).thenReturn("false");
+		assertThat(spiedConfig.isPluginSupported(), is(false));
+
+		// When testmode true and pluginsupport is true, it should be false
+		when(spiedConfig.getSystemProperty("testmode", "false")).thenReturn("true");
+		when(spiedConfig.getSystemProperty("pluginsupport", "true")).thenReturn("true");
+		assertThat(spiedConfig.isPluginSupported(), is(true));
 	}
 }

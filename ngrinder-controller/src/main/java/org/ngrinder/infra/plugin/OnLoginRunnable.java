@@ -22,7 +22,7 @@
  */
 package org.ngrinder.infra.plugin;
 
-import org.springframework.security.core.userdetails.UserDetails;
+import org.ngrinder.user.model.SecuredUser;
 
 /**
  * Plugin extension for user authentication
@@ -31,5 +31,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * @since 3.0
  */
 public interface OnLoginRunnable {
-	public UserDetails auth(Object principle, Object credidential)  ;
+	public SecuredUser loadUser(String userId);
+
+	public boolean authUser(Object encoder, String principle, String encPass, String rawPass, Object salt);
 }
