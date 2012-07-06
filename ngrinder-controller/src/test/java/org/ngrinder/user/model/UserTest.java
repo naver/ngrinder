@@ -21,14 +21,14 @@ public class UserTest extends AbstractTransactionalJUnit4SpringContextTests {
 	@Test
 	public void testUser() {
 		User user = new User();
-		user.setName("MyName1");
+		user.setUserName("MyName1");
 		user.setEmail("junoyoon@gmail.com");
 		user.setLastModifiedUser("hello");
 		user.setCreateUser("hello");
 
 		userRepository.save(user);
 		User user2 = new User();
-		user2.setName("MyName2");
+		user2.setUserName("MyName2");
 		user2.setEmail("junoyoon@paran.com");
 		user2.setLastModifiedUser("hello");
 		user2.setCreateUser("hello");
