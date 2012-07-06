@@ -22,6 +22,7 @@
  */
 package org.ngrinder.agent.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.Agent;
 import org.ngrinder.agent.repository.AgentRepository;
 import org.ngrinder.agent.service.AgentService;
@@ -43,9 +44,14 @@ public class AgentServiceImpl implements AgentService {
 	@Autowired
 	private AgentRepository agentRepository;
 
+
 	@Override
 	public Page<Agent> getAgents(String searchStr, Pageable pageable) {
-		return agentRepository.getAgents("%" + searchStr + "%", pageable);
+		if (StringUtils.isBlank(searchStr)) {
+			searchStr = "";
+		}
+		searchStr = "%" + searchStr + "%";
+		return agentRepository.getAgents(searchStr, pageable);
 	}
 
 	@Override
