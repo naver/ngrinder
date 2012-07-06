@@ -42,7 +42,9 @@ import org.ngrinder.model.BaseModel;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
- * Peformance Test Entity
+ * Performance Test Entity
+ * Use Create user of BaseModel as test owner, use create date of BaseModel as create time,
+ * but the created time maybe not the test starting time.
  * 
  */
 @Entity
@@ -63,8 +65,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Enumerated(EnumType.STRING)
 	private Status status = Status.READY;
 
-	private Date lastTestTime;
-
 	/** The sample interval value, default to 1000ms */
 	private int sampleInterval = 1000;
 
@@ -73,25 +73,20 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	private int collectSampleCount;
 
+	/** the start time of this test */
+	private Date startTime;
+
+	/** the finish time of this test */
+	private Date finishTime;
+	
 	/** the target host to test */
 	@Column(length = 256)
 	private String targetHosts;
 
-	/** The operation code. */
-	private String operation;
-
-	/** The result amount. */
-	private int resultNum;
-
-	/** The shared code */
-	private boolean shared;
-
 	/** The send mail code */
 	private boolean sendMail;
 
-	private String owner;
-
-	/** The threshold code */
+	/** The threshold code, R for run count; D for duration */
 	private String threshold;
 
 	// default script name to run test
@@ -99,10 +94,46 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	private long duration;
 
-	private Integer agentCount;
+	private int runCount;
+
+	private int agentCount;
+	
 	@Transient
 	private GrinderProperties grinderProperties;
 
+
+	public String getTestName() {
+		return testName;
+	}
+
+	public void setTestName(String testName) {
+		this.testName = testName;
+	}
+
+	public Date getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(Date startTime) {
+		this.startTime = startTime;
+	}
+
+	public Date getFinishTime() {
+		return finishTime;
+	}
+
+	public void setFinishTime(Date finishTime) {
+		this.finishTime = finishTime;
+	}
+
+	public int getRunCount() {
+		return runCount;
+	}
+
+	public void setRunCount(int runCount) {
+		this.runCount = runCount;
+	}
+	
 	public long getDuration() {
 		return duration;
 	}
@@ -151,16 +182,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return DateUtil.formatDate(getLastModifiedDate(), "yyyy-MM-dd  HH:mm:ss");
 	}
 
-	public String getTestName() {
-		return testName;
-	}
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public void setTestName(String testName) {
-		this.testName = testName;
 	}
 
 	public String getTargetHosts() {
@@ -169,38 +193,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setTargetHosts(String theTarget) {
 		this.targetHosts = theTarget;
-	}
-
-	public Date getLastTestTime() {
-		return lastTestTime;
-	}
-
-	public void setLastTestTime(Date lastTestTime) {
-		this.lastTestTime = lastTestTime;
-	}
-
-	public String getOperation() {
-		return operation;
-	}
-
-	public void setOperation(String operation) {
-		this.operation = operation;
-	}
-
-	public int getResultNum() {
-		return resultNum;
-	}
-
-	public void setResultNum(int resultNum) {
-		this.resultNum = resultNum;
-	}
-
-	public boolean getShared() {
-		return shared;
-	}
-
-	public void setShared(boolean shared) {
-		this.shared = shared;
 	}
 
 	public boolean isSendMail() {
@@ -217,14 +209,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setThreshold(String threshold) {
 		this.threshold = threshold;
-	}
-
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
-
-	public String getOwner() {
-		return owner;
 	}
 
 	public void setGrinderProperties(GrinderProperties properties) {

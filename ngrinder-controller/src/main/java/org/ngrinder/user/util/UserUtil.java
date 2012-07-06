@@ -22,7 +22,11 @@
  */
 package org.ngrinder.user.util;
 
+import org.ngrinder.user.model.Role;
 import org.ngrinder.user.model.User;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * user util
@@ -31,24 +35,22 @@ import org.ngrinder.user.model.User;
  * @since
  * @date 2012-6-28
  */
-// TODO Related functions is not yet complete
 public class UserUtil {
 
-	private static User tmpUser;
-
-	static {
-		User user = new User();
-		user.setId(987L);
-		user.setUserName("default_tmp_user");
-		setCurrentUser(user);
-	}
-
 	public static User getCurrentUser() {
-		return tmpUser;
-
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth == null) {
+			throw new AuthenticationCredentialsNotFoundException("No athenticated");
+		}
+		Object obj = auth.getPrincipal();
+		if (!(obj instanceof User)) {
+			throw new AuthenticationCredentialsNotFoundException("Invalid athentication");
+		}
+		User user = (User) obj;
+		String roleName = auth.getAuthorities().toString();
+		//TODO: every time will create a Role object, should be improve.
+		user.setRole(new Role(roleName));
+		return user;
 	}
 
-	public static void setCurrentUser(User user) {
-		tmpUser = user;
-	}
 }
