@@ -20,35 +20,39 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.user.util;
+package org.ngrinder.perftest.service;
 
-import org.ngrinder.user.model.User;
+import org.ngrinder.perftest.model.PerfTest;
+import org.ngrinder.perftest.model.Status;
+import org.ngrinder.perftest.repository.PerfTestRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 /**
- * user util
- * 
- * @author Tobi
+ * Test Service Class.
+ *
+ * @author Mavlarn
  * @since
- * @date 2012-6-28
  */
-// TODO Related functions is not yet complete
-public class UserUtil {
-
-	private static User tmpUser;
-
-	static {
-		User user = new User();
-		user.setId(987L);
-		user.setUserName("default_tmp_user");
-		setCurrentUser(user);
+@Service
+public class TestService {
+	
+	@Autowired
+	private PerfTestRepository perfTestRepository;
+	
+	public Page<PerfTest> getTestList(String userId, boolean isFinished, Pageable pageable) {
+		if (isFinished) {
+			return perfTestRepository.findAllByStatusAndCreateUserOrderByCreateDateAsc(Status.FINISHED,
+					userId, pageable);
+		} else {
+			return perfTestRepository.findAllByCreateUserOrderByCreateDateAsc(userId, pageable);
+		}
+	}
+	
+	public PerfTest savePerfTest (PerfTest test) {
+		return perfTestRepository.save(test);
 	}
 
-	public static User getCurrentUser() {
-		return tmpUser;
-
-	}
-
-	public static void setCurrentUser(User user) {
-		tmpUser = user;
-	}
 }

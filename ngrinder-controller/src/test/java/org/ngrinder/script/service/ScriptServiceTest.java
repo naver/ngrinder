@@ -134,7 +134,7 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
 		User user = new User();
 		user.setId(123L);
-		user.setName("tmp_user01");
+		user.setUserName("tmp_user01");
 		UserUtil.setCurrentUser(user);
 
 		Script script = this.saveScript("1");
@@ -155,7 +155,7 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
 		User user2 = new User();
 		user2.setId(234L);
-		user2.setName("tmp_user02");
+		user2.setUserName("tmp_user02");
 		UserUtil.setCurrentUser(user2);
 
 		Script script5 = this.saveScript("5");
@@ -181,7 +181,7 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
 		User user = new User();
 		user.setId(987L);
-		user.setName("default_tmp_user");
+		user.setUserName("default_tmp_user");
 		UserUtil.setCurrentUser(user);
 
 		this.testGetScriptsPerformance2();

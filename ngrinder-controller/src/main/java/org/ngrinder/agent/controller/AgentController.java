@@ -27,6 +27,11 @@ import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,7 +58,10 @@ public class AgentController extends NGrinderBaseController {
 	@RequestMapping("/list")
 	public String getAgents(ModelMap model, @RequestParam(required = false) String keywords) {
 
-		Page<Agent> agents = agentService.getAgents(keywords, null);
+		Order order = new Order(Direction.DESC, "id");
+		Sort sort = new Sort(order);
+		Pageable pageable = new PageRequest(0, 1000, sort);
+		Page<Agent> agents = agentService.getAgents(keywords, pageable);
 
 		model.addAttribute("agents", agents);
 		model.addAttribute("keywords", keywords);
@@ -63,16 +71,14 @@ public class AgentController extends NGrinderBaseController {
 
 	@RequestMapping("/detail")
 	public String getAgent(ModelMap model, @RequestParam(required = false) Long id) {
-
 		Agent agent = agentService.getAgent(id);
-
-		model.addAttribute("result", agent);
+		model.addAttribute("agent", agent);
 		return "agent/agentDetail";
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public String createAgent(ModelMap model, Agent agent) {
-		agentService.saveAgent(agent);
+		System.out.println();
 
 		return getAgent(model, agent.getId());
 	}

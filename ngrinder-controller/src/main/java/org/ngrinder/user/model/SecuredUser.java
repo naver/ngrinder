@@ -18,7 +18,7 @@ public class SecuredUser extends User implements UserDetails {
 	public SecuredUser(User user, String userInfoProviderClass) {
 		this.userInfoProviderClass = userInfoProviderClass;
 		this.authProviderClass = StringUtils.defaultIfEmpty(user.getAuthProviderClass(), userInfoProviderClass);
-		setName(user.getName());
+		setUserName(user.getUserName());
 		setUserId(user.getUserId());
 		setRole(user.getRole());
 		setPsw(user.getPsw());
@@ -42,7 +42,7 @@ public class SecuredUser extends User implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return super.getName();
+		return super.getUserName();
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class SecuredUser extends User implements UserDetails {
 
 	public User getUser() {
 		User user = new User();
-		user.setName(getName());
+		user.setUserName(getUserName());
 		user.setUserId(getUserId());
 		user.setEmail(getEmail());
 		user.setRole(getRole());

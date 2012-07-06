@@ -50,10 +50,10 @@ public class ModelAspect {
 				BaseModel<?> model = (BaseModel<?>) object;
 				if (null != model.getId() && 0 != model.getId().longValue()) {
 					model.setLastModifiedDate(new Date());
-					model.setLastModifiedUser(UserUtil.getCurrentUser().getName());
+					model.setLastModifiedUser(UserUtil.getCurrentUser().getUserName());
 				} else {
 					model.setCreateDate(new Date());
-					model.setCreateUser(UserUtil.getCurrentUser().getName());
+					model.setCreateUser(UserUtil.getCurrentUser().getUserName());
 				}
 			}
 		}

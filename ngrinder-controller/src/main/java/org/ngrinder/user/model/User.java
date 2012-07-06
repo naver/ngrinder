@@ -52,7 +52,7 @@ public class User extends BaseModel<User> {
 
 	private String psw;
 
-	private String name;
+	private String userName;
 
 	private boolean enabled = true;
 
@@ -80,7 +80,7 @@ public class User extends BaseModel<User> {
 	public User(String userId, String name, String password, Role role) {
 		this.userId = userId;
 		this.psw = password;
-		this.name = name;
+		this.userName = name;
 		this.role = role;
 		isEnabled();
 	}
@@ -125,12 +125,13 @@ public class User extends BaseModel<User> {
 		this.userId = userId;
 	}
 
-	public String getName() {
-		return name;
+
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	public boolean isEnabled() {

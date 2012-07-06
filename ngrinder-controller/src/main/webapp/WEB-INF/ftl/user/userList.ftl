@@ -56,7 +56,7 @@
 					
 										<div class="row">
 													<div class="span3">
-																<a class="btn" href="#createScriptModal" id="createBtn" data-toggle="modal">
+																<a class="btn" href="${Request.getContextPath()}/user/detail" id="createBtn" data-toggle="modal">
 																				<i class="icon-user"></i>
 																				Create User
 																</a>
@@ -92,7 +92,7 @@
 																					<#list userList as user>
 																					  <tr>
 																							<td><input type="checkbox" value=""></td>
-																							<td class="center"><a href="${Request.getContextPath()}/user/detail"  target="_self">${user.name}</a></td>
+																							<td class="center"><a href="${Request.getContextPath()}/user/detail?userId=${user.userId}" >${user.userName}</a></td>
 																							<td>2012-06-27</td>
 																							<td>${user.description!}</td>
 																							<td>${user.role.name}</td>

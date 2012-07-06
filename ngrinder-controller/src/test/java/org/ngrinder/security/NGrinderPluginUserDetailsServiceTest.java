@@ -68,7 +68,7 @@ public class NGrinderPluginUserDetailsServiceTest extends NGrinderIocTransaction
 
 		// When user is return by plugin module.
 		User user = new User();
-		user.setName("hello");
+		user.setUserName("hello");
 		user.setUserId("hello");
 		user.setRole(new Role("S"));
 		when(mockLoginPlugin.loadUser(anyString())).thenReturn(

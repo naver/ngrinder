@@ -114,7 +114,7 @@ public class ScriptDaoImpl implements ScriptDao {
 
 		int i = 0;
 		for (Script script : scriptCache) {
-			if (!(share && script.isShare()) && !script.getCreateUser().equals(UserUtil.getCurrentUser().getName())) {
+			if (!(share && script.isShare()) && !script.getCreateUser().equals(UserUtil.getCurrentUser().getUserName())) {
 				continue;
 			}
 

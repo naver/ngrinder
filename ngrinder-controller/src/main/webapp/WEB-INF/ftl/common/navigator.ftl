@@ -5,7 +5,7 @@
 			<div class="nav-collapse">
 				<ul class="nav">
 				  <li id="n_monitoring"><a href="#monitoring">Monitoring</a></li>
-				  <li id="n_test"><a href="#about">Load Test</a></li>
+				  <li id="n_test"><a href="${Request.getContextPath()}/perftest/list">Load Test</a></li>
 				  <li id="n_script"><a href="${Request.getContextPath()}/script/list">Script</a></li>
 				  <li id="n_alert"><a href="#contact">Alert</a></li>
 				</ul>

@@ -55,7 +55,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private static final long serialVersionUID = 1369809450686098944L;
 
 	@Column(name = "name")
-	private String name;
+	private String testName;
 
 	@Column(length = 2048)
 	private String description;
@@ -151,16 +151,16 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return DateUtil.formatDate(getLastModifiedDate(), "yyyy-MM-dd  HH:mm:ss");
 	}
 
-	public String getName() {
-		return name;
+	public String getTestName() {
+		return testName;
 	}
 
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setTestName(String testName) {
+		this.testName = testName;
 	}
 
 	public String getTargetHosts() {
