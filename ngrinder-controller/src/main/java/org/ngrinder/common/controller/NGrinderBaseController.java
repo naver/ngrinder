@@ -12,14 +12,11 @@ import java.util.TimeZone;
 import net.grinder.common.GrinderProperties;
 
 import org.ngrinder.common.constant.GrinderConstants;
-import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.user.model.User;
+import org.ngrinder.user.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.ModelMap;
 
 public class NGrinderBaseController implements GrinderConstants {
@@ -34,19 +31,11 @@ public class NGrinderBaseController implements GrinderConstants {
 	 * @return
 	 */
 	public String getCurrentUserInfo(String param) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth == null) {
-			throw new AuthenticationCredentialsNotFoundException("No athenticated");
-		}
-		Object obj = auth.getPrincipal();
-		if (!(obj instanceof User)) {
-			throw new AuthenticationCredentialsNotFoundException("Invalid athentication");
-		}
-		User user = (User) obj;
+		User user = UserUtil.getCurrentUser();
 		if (param.equals(P_USERID))
 			return user.getUserId();
 		else if (param.equals("role"))
-			return auth.getAuthorities().toString();
+			return user.getRole().getName();
 		else if (param.equals("userLanguage"))
 			return user.getUserLanguage();
 		else if (param.equals("timeZone"))
@@ -56,19 +45,9 @@ public class NGrinderBaseController implements GrinderConstants {
 
 	}
 
-	public String setTimeZone(String timeZone) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-		if (auth != null) {
-			Object obj = auth.getPrincipal();
-			if (obj instanceof User) {
-				User user = (User) obj;
-				user.setTimeZone(timeZone);
-				return JSONUtil.returnSuccess();
-			}
-		}
-
-		return JSONUtil.returnError();
+	public void setTimeZone(String timeZone) {
+		User user = UserUtil.getCurrentUser();
+		user.setTimeZone(timeZone);
 	}
 
 	protected void setCurrentUserInfoForModel(ModelMap model) {

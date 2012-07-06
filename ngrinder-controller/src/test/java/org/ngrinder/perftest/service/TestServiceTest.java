@@ -30,8 +30,6 @@ import org.junit.Test;
 import org.ngrinder.NGrinderIocTransactionalTestBase;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
-import org.ngrinder.user.model.User;
-import org.ngrinder.user.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -50,10 +48,6 @@ public class TestServiceTest extends NGrinderIocTransactionalTestBase {
 	
 	@Before
 	public void createTempTests () {
-		User user = new User();
-		user.setId(123L);
-		user.setUserName("TEST_USER");
-		UserUtil.setCurrentUser(user);
 		
 		PerfTest test = new PerfTest();
 		test.setTestName("new Test1");

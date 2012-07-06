@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
+import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +90,8 @@ public class HomeController extends NGrinderBaseController {
 	@RequestMapping(value = "/changeTimeZone")
 	public @ResponseBody
 	String changeTimeZone(String timeZone) {
-		return setTimeZone(timeZone);
+		setTimeZone(timeZone);
+		return JSONUtil.returnSuccess();
 	}
 
 	@RequestMapping(value = "/allTimeZone")

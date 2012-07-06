@@ -10,9 +10,6 @@ import org.junit.After;
 import org.junit.Test;
 import org.ngrinder.NGrinderIocTransactionalTestBase;
 import org.ngrinder.script.model.Library;
-
-import org.ngrinder.user.model.User;
-import org.ngrinder.user.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class LibraryServiceTest extends NGrinderIocTransactionalTestBase {
@@ -67,10 +64,10 @@ public class LibraryServiceTest extends NGrinderIocTransactionalTestBase {
 	@Test
 	public void testgetLibraries2() {
 
-		User user = new User();
-		user.setId(123L);
-		user.setUserName("tmp_user9");
-		UserUtil.setCurrentUser(user);
+//		User user = new User();
+//		user.setId(123L);
+//		user.setUserName("tmp_user9");
+//		UserUtil.setCurrentUser(user);
 		List<Library> libraries = libraryService.getLibraries();
 
 		Assert.assertEquals(0, libraries.size());
