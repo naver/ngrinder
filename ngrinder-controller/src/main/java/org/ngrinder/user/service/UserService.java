@@ -68,8 +68,8 @@ public class UserService {
 	 * @param userName
 	 * @return user
 	 */
-	public User getUserByName(String userName) {
-		return userRepository.findOneByName(userName);
+	public User getUserByUserName(String userName) {
+		return userRepository.findOneByUserName(userName);
 	}
 
 	/**
@@ -106,6 +106,9 @@ public class UserService {
 	 * @return result
 	 */
 	public User saveUser(User user) {
+		user.setUserId(user.getUserName());
+		Role role = roleRepository.findOneByName(user.getRole().getName());
+		user.setRole(role);
 		return userRepository.save(user);
 	}
 

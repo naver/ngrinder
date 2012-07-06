@@ -13,7 +13,7 @@ public class SecuredUser extends User implements UserDetails {
 	private static final long serialVersionUID = 9160341654874660746L;
 
 	public SecuredUser(User user) {
-		setName(user.getName());
+		setUserName(user.getUserName());
 		setUserId(user.getUserId());
 		setRole(user.getRole());
 		setPsw(user.getPsw());
@@ -37,7 +37,7 @@ public class SecuredUser extends User implements UserDetails {
 
 	@Override
 	public String getUsername() {
-		return super.getName();
+		return super.getUserName();
 	}
 
 	@Override
