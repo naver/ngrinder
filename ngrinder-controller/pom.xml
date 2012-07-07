@@ -4,8 +4,8 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
+		<groupId>org.ngrinder</groupId>
 		<artifactId>ngrinder</artifactId>
-		<groupId>com.nhncorp</groupId>
 		<version>3.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
@@ -36,7 +36,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.nhncorp</groupId>
+			<groupId>org.ngrinder</groupId>
 			<artifactId>ngrinder-core</artifactId>
 			<version>${ngrinder.version}</version>
 		</dependency>
@@ -52,6 +52,13 @@
 			<artifactId>reflections</artifactId>
 			<version>0.9.8</version>
 		</dependency>
+
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache-core</artifactId>
+			<version>2.5.1</version>
+		</dependency>
+
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
@@ -210,8 +217,8 @@
 			<artifactId>atlassian-plugins-main</artifactId>
 			<version>2.12.2</version>
 		</dependency>
-			
-		<!-- Json convertion-->
+
+		<!-- Json convertion -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
