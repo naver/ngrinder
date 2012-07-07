@@ -1,10 +1,3 @@
-package org.ngrinder.model;
-
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-
 /*
  * Copyright (C) 2012 - 2012 NHN Corporation
  * All rights reserved.
@@ -27,6 +20,12 @@ import javax.persistence.MappedSuperclass;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package org.ngrinder.model;
+
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
 
 /**
  * Base Model

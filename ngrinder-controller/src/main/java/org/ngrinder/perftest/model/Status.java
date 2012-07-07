@@ -23,7 +23,7 @@
 package org.ngrinder.perftest.model;
 
 /**
- * Peformance Test Status
+ * Performance Test Status
  * 
  * @author JunHo Yoon
  * 

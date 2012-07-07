@@ -37,9 +37,8 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
 /**
  * Home class which enable you to easily access resources in Home directory.
  * 
- * @author junoyoon
+ * @author JunHo Yoon
  */
-
 public class Home implements NGrinderConstants {
 	private final File directory;
 
@@ -51,7 +50,11 @@ public class Home implements NGrinderConstants {
 		}
 		this.directory = directory;
 	}
-
+	
+	/**
+	 * Get home directory
+	 * @return
+	 */
 	public File getDirectory() {
 		return directory;
 	}

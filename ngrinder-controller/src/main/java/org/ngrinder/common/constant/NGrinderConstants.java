@@ -22,9 +22,7 @@
  */
 package org.ngrinder.common.constant;
 
-import org.springframework.stereotype.Component;
 
-@Component
 public interface NGrinderConstants {
 
 	public static final String START = "start";

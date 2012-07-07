@@ -33,8 +33,7 @@ import org.springframework.data.repository.query.Param;
  * agent repository
  * 
  * @author Tobi
- * @since
- * @date 2012-7-5
+ * @since 3.0
  */
 public interface AgentRepository extends JpaRepository<Agent, Long> {
 

@@ -1,5 +1,3 @@
-package org.ngrinder.model;
-
 /*
  * Copyright (C) 2012 - 2012 NHN Corporation
  * All rights reserved.
@@ -22,6 +20,9 @@ package org.ngrinder.model;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+package org.ngrinder.model;
+
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;

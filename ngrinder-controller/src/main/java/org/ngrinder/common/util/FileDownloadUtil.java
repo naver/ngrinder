@@ -37,9 +37,9 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FileUtil {
+public class FileDownloadUtil {
 
-	private static final Logger LOG = LoggerFactory.getLogger(FileUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(FileDownloadUtil.class);
 
 	public static boolean downloadFile(HttpServletResponse response, String desFilePath) {
 		File desFile = new File(desFilePath);

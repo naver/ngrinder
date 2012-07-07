@@ -31,8 +31,7 @@ import org.ngrinder.model.BaseEntity;
  * Agent model
  * 
  * @author Tobi
- * @since
- * @date 2012-7-5
+ * @since 3.0
  */
 @Entity
 @Table(name = "AGENT")

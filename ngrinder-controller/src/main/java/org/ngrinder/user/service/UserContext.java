@@ -30,11 +30,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * user util
+ * User Context which return current user;
  * 
  * @author Tobi
- * @since
- * @date 2012-6-28
+ * @author JunHo Yoon
+ * @since 3.0
  */
 @OnlyRuntimeComponent
 public class UserContext {

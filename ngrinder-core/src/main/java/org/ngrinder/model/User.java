@@ -29,9 +29,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 /**
- * The Class User.
+ * User managed by nGrinder.
  * 
- * @author Mavlarn, JunHo Yoon
+ * @author Mavlarn
+ * @author JunHo Yoon
  */
 @SuppressWarnings("serial")
 @Entity

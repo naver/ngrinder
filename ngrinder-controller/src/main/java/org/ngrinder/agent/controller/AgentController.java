@@ -42,8 +42,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * agent controller
  * 
  * @author Tobi
- * @since
- * @date 2012-7-5
+ * @since 3.0
  */
 @Controller
 @RequestMapping("/agent")
