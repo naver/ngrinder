@@ -9,6 +9,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+/**
+ * NGrinder customized {@link UserDetailsService}.
+ * 
+ * This resolve user 
+ * @author nhn
+ *
+ */
 @Service("ngrinderUserDetailsService")
 public class NGrinderUserDetailsService implements UserDetailsService {
 

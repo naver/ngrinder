@@ -38,11 +38,17 @@ public class SecuredUser implements UserDetails {
 		return roles;
 	}
 
+	/**
+	 * Return password
+	 */
 	@Override
 	public String getPassword() {
 		return user.getPassword();
 	}
 
+	/**
+	 * Return Username (Actually user id)
+	 */
 	@Override
 	public String getUsername() {
 		return user.getUserId();
