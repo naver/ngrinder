@@ -46,7 +46,7 @@ public class NGrinderBaseController implements GrinderConstants {
 		if (param.equals(P_USERID))
 			return user.getUserId();
 		else if (param.equals("role"))
-			return user.getRole().name();
+			return user.getRole().getShortName();
 		else if (param.equals("userLanguage"))
 			return user.getUserLanguage();
 		else if (param.equals("timeZone"))

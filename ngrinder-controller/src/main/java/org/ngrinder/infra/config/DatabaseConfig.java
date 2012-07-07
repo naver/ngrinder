@@ -22,8 +22,12 @@
  */
 package org.ngrinder.infra.config;
 
+import javax.persistence.Entity;
+
 import org.apache.commons.dbcp.BasicDataSource;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.util.PropertiesWrapper;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +45,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
  * @since 3.0
  */
 @Configuration
-public class DatabaseConfig {
-	@SuppressWarnings("unused")
+public class DatabaseConfig implements NGrinderConstants {
 	private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
 
 	@Autowired
@@ -73,11 +76,16 @@ public class DatabaseConfig {
 		hibernateJpaVendorAdapter.setGenerateDdl(true);
 
 		emf.setJpaVendorAdapter(hibernateJpaVendorAdapter);
-		emf.setPackagesToScan("org.ngrinder.**.model");
+		// To search entity packages from other jar files..
+		emf.setPackagesToScan("empty");
 		emf.setPersistenceUnitPostProcessors(new PersistenceUnitPostProcessor() {
 			@Override
 			public void postProcessPersistenceUnitInfo(MutablePersistenceUnitInfo pui) {
-				pui.addManagedClassName("org.ngrinder.model.User");
+				Reflections reflections = new Reflections(NGRINDER_DEFAULT_PACKAGE);
+				for (Class<?> each : reflections.getTypesAnnotatedWith(Entity.class)) {
+					logger.debug("Entity class {} is detected as the SpringData entity.", each.getName());
+					pui.addManagedClassName(each.getName());
+				}
 			}
 		});
 		return emf;
