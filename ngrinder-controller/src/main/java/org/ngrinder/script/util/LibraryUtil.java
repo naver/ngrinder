@@ -8,30 +8,31 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.common.NGrinderConstants;
 import org.ngrinder.script.model.Library;
-import org.ngrinder.user.util.UserUtil;
+import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Library util
  * 
  * @author Tobi
- * @since
- * @date 2012-6-28
+ * @since 3.0
  */
+@Component
 public class LibraryUtil {
-	private static final Logger LOG = LoggerFactory.getLogger(LibraryUtil.class);
+	private final Logger LOG = LoggerFactory.getLogger(LibraryUtil.class);
 
-	private LibraryUtil() {
-	}
+	@Autowired
+	private UserContext userContext;
 
-	public static void createLibraryPath() {
+	public void createLibraryPath() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(NGrinderConstants.PATH_PROJECT);
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PREFIX_USER);
-		sb.append(UserUtil.getCurrentUser().getId());
+		sb.append(userContext.getCurrentUser().getId());
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PATH_LIB);
 		sb.append(File.separator);
@@ -43,12 +44,12 @@ public class LibraryUtil {
 		}
 	}
 
-	public static String getLibraryPath() {
+	public String getLibraryPath() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(NGrinderConstants.PATH_PROJECT);
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PREFIX_USER);
-		sb.append(UserUtil.getCurrentUser().getId());
+		sb.append(userContext.getCurrentUser().getId());
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PATH_LIB);
 		sb.append(File.separator);
@@ -56,11 +57,11 @@ public class LibraryUtil {
 		return sb.toString();
 	}
 
-	public static String getLibFilePath(String libName) {
+	public String getLibFilePath(String libName) {
 		return getLibraryPath() + libName;
 	}
 
-	public static List<Library> getLibrary() {
+	public List<Library> getLibrary() {
 		List<Library> librarys = new ArrayList<Library>();
 
 		String libPath = getLibraryPath();
@@ -78,7 +79,7 @@ public class LibraryUtil {
 		return librarys;
 	}
 
-	public static void saveLibraryFile(Library library) {
+	public void saveLibraryFile(Library library) {
 		String libPath = getLibraryPath();
 		String libFilePath = libPath + library.getFileName();
 		try {
@@ -88,7 +89,7 @@ public class LibraryUtil {
 		}
 	}
 
-	public static void deleteLibraryFile(String libraryName) {
+	public void deleteLibraryFile(String libraryName) {
 		String libPath = getLibraryPath();
 		String libFilePath = libPath + libraryName;
 		FileUtils.deleteQuietly(new File(libFilePath));

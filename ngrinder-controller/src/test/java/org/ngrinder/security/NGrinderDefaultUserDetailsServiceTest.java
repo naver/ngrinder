@@ -6,13 +6,12 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.NGrinderIocTransactionalTestBase;
+import org.ngrinder.AbstractNGNinderTransactionalTest;
 import org.ngrinder.infra.plugin.MockPluginManager;
-import org.ngrinder.user.model.SecuredUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-public class NGrinderDefaultUserDetailsServiceTest extends NGrinderIocTransactionalTestBase {
+public class NGrinderDefaultUserDetailsServiceTest extends AbstractNGNinderTransactionalTest {
 	@Autowired
 	public MockPluginManager mockPluginManager;
 

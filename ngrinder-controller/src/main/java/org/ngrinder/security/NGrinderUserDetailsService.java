@@ -2,7 +2,6 @@ package org.ngrinder.security;
 
 import org.ngrinder.infra.plugin.OnLoginRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
-import org.ngrinder.user.model.SecuredUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UserDetails;

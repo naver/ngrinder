@@ -20,47 +20,36 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.user.model;
+package org.ngrinder.model;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
-import org.ngrinder.model.BaseModel;
-import org.springframework.data.jpa.domain.Specification;
 
 /**
  * The Class User.
  * 
  * @author Mavlarn, JunHo Yoon
  */
+@SuppressWarnings("serial")
 @Entity
 @Table(name = "NUSER")
 public class User extends BaseModel<User> {
-	/**
-	 * UUID
-	 */
-	private static final long serialVersionUID = 9067916343854745659L;
 
 	private String userId;
 
-	private String psw;
-
 	private String userName;
+
+	private String password;
 
 	private boolean enabled = true;
 
 	private String email;
 
-	@ManyToOne(cascade = { CascadeType.MERGE, CascadeType.REFRESH }, optional = false)
-	@JoinColumn(name = "role_id")
-	private Role role;
+	@Enumerated(EnumType.STRING)
+	private Role role = Role.USER;
 
 	private String description;
 
@@ -79,9 +68,8 @@ public class User extends BaseModel<User> {
 
 	public User(String userId, String name, String password, Role role) {
 		this.userId = userId;
-		this.psw = password;
+		this.password = password;
 		this.userName = name;
-		this.role = role;
 		isEnabled();
 	}
 
@@ -101,20 +89,20 @@ public class User extends BaseModel<User> {
 		this.description = description;
 	}
 
-	public String getPsw() {
-		return psw;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setPsw(String password) {
-		this.psw = password;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public Role getRole() {
 		return role;
 	}
 
-	public void setRole(Role userRole) {
-		this.role = userRole;
+	public void setRole(Role role) {
+		this.role = role;
 	}
 
 	public String getUserId() {
@@ -124,7 +112,6 @@ public class User extends BaseModel<User> {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-
 
 	public String getUserName() {
 		return userName;
@@ -164,27 +151,6 @@ public class User extends BaseModel<User> {
 
 	public void setUserLanguage(String userLanguage) {
 		this.userLanguage = userLanguage;
-	}
-
-	public static Specification<User> nameLike(final String query) {
-		return new Specification<User>() {
-
-			@Override
-			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb) {
-				String pattern = "%" + query + "%";
-				return cb.like(root.get("name").as(String.class), pattern);
-			}
-		};
-	}
-
-	public static Specification<User> emailLike(final String query) {
-		return new Specification<User>() {
-			@Override
-			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb) {
-				String pattern = "%" + query + "%";
-				return cb.like(root.get("email").as(String.class), pattern);
-			}
-		};
 	}
 
 	public boolean isExternal() {

@@ -15,18 +15,16 @@ import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.NGrinderIocTransactionalTestBase;
+import org.ngrinder.AbstractNGNinderTransactionalTest;
 import org.ngrinder.infra.plugin.OnLoginRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
-import org.ngrinder.user.model.Role;
-import org.ngrinder.user.model.SecuredUser;
-import org.ngrinder.user.model.User;
+import org.ngrinder.model.Role;
+import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-public class NGrinderPluginUserDetailsServiceTest extends NGrinderIocTransactionalTestBase {
+public class NGrinderPluginUserDetailsServiceTest extends AbstractNGNinderTransactionalTest {
 
 	@Autowired
 	public NGrinderAuthenticationProvider authProvider;
@@ -70,7 +68,7 @@ public class NGrinderPluginUserDetailsServiceTest extends NGrinderIocTransaction
 		User user = new User();
 		user.setUserName("hello");
 		user.setUserId("hello");
-		user.setRole(new Role("S"));
+		user.setRole(Role.SUPER_USER);
 		when(mockLoginPlugin.loadUser(anyString())).thenReturn(
 				new SecuredUser(user, mockLoginPlugin.getClass().getName()));
 		when(mockLoginPlugin.authUser(any(), anyString(), anyString(), anyString(), any())).thenReturn(true);
@@ -86,12 +84,10 @@ public class NGrinderPluginUserDetailsServiceTest extends NGrinderIocTransaction
 		assertThat(authProvider.authenticate(auth), notNullValue());
 
 		// And should be inserted into DB
-		
+
 		verify(authProvider, times(0)).addNewUserInfoLocal(any(SecuredUser.class));
 
 	}
 
-	@Test(expected = UsernameNotFoundException.class)
-	public void testUnknownUser() {
-	}
+	
 }

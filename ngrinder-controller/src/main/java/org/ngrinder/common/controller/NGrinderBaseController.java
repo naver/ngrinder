@@ -12,9 +12,10 @@ import java.util.TimeZone;
 import net.grinder.common.GrinderProperties;
 
 import org.ngrinder.common.constant.GrinderConstants;
+import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
-import org.ngrinder.user.model.User;
-import org.ngrinder.user.util.UserUtil;
+import org.ngrinder.user.service.UserContext;
+import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.ui.ModelMap;
@@ -25,17 +26,27 @@ public class NGrinderBaseController implements GrinderConstants {
 	@Autowired
 	private MessageSource messageSource;
 
+	@Autowired
+	private UserContext userContext;
+
+	@Autowired
+	private UserService userService;
+
+	public User getCurrentUser() {
+		return userContext.getCurrentUser();
+	}
+
 	/**
 	 * @param param
 	 *            userId or timeZone or userLanguage or role
 	 * @return
 	 */
 	public String getCurrentUserInfo(String param) {
-		User user = UserUtil.getCurrentUser();
+		User user = getCurrentUser();
 		if (param.equals(P_USERID))
 			return user.getUserId();
 		else if (param.equals("role"))
-			return user.getRole().getName();
+			return user.getRole().name();
 		else if (param.equals("userLanguage"))
 			return user.getUserLanguage();
 		else if (param.equals("timeZone"))
@@ -46,8 +57,9 @@ public class NGrinderBaseController implements GrinderConstants {
 	}
 
 	public void setTimeZone(String timeZone) {
-		User user = UserUtil.getCurrentUser();
+		User user = userContext.getCurrentUser();
 		user.setTimeZone(timeZone);
+		userService.saveUser(user);
 	}
 
 	protected void setCurrentUserInfoForModel(ModelMap model) {

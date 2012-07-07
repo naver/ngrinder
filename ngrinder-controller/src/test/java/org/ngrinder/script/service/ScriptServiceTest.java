@@ -14,10 +14,9 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Test;
-import org.ngrinder.NGrinderIocTransactionalTestBase;
+import org.ngrinder.AbstractNGNinderTransactionalTest;
 import org.ngrinder.script.model.Script;
 import org.ngrinder.script.model.Tag;
-import org.ngrinder.user.util.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +25,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
-public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
+public class ScriptServiceTest extends AbstractNGNinderTransactionalTest {
 
 	private static List<Script> scripts = new ArrayList<Script>();
 
@@ -44,7 +43,6 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
 	@Test
 	public void testSaveScript() {
-		System.out.println(UserUtil.getCurrentUser().getId());
 		this.saveScript("save");
 	}
 
@@ -55,13 +53,13 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 		script = new Script();
 		script.setId(id);
 		script.setContent("testUpdateScript");
-		script.setCreateDate(new Date());
-		script.setCreateUser("zhangsan");
+		script.setCreatedDate(new Date());
+		script.setCreatedUser(getUser("user"));
 		script.setDescription("test");
 		script.setFileName("testUpdateScript.py");
 		script.setFileSize(123);
 		script.setLastModifiedDate(new Date());
-		script.setLastModifiedUser("lisi");
+		script.setCreatedUser(getUser("user"));
 		script.setShare(false);
 		script.setTestURL("www.google.com");
 
@@ -90,13 +88,13 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 		script = new Script();
 		script.setId(id);
 		script.setContent("testNewScript  001");
-		script.setCreateDate(new Date());
-		script.setCreateUser("zhangsan");
+		script.setCreatedDate(new Date());
+		script.setCreatedUser(getUser("user"));
 		script.setDescription("test");
 		script.setFileName("testScript.py");
 		script.setFileSize(123);
 		script.setLastModifiedDate(new Date());
-		script.setLastModifiedUser("lisi");
+		script.setCreatedUser(getUser("user"));
 		script.setShare(false);
 		script.setTestURL("www.google.com");
 
@@ -127,16 +125,16 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 
 	@Test
 	public void testGetScripts() {
-		
+
 		this.clearScript();
-		
-		//TODO: need to modify.
-		//current user is set in Test Based class, if you want to test different script
-		//with different user, need to modify this.
-//		User user = new User();
-//		user.setId(123L);
-//		user.setUserName("tmp_user01");
-//		UserUtil.setCurrentUser(user);
+
+		// TODO: need to modify.
+		// current user is set in Test Based class, if you want to test different script
+		// with different user, need to modify this.
+		// User user = new User();
+		// user.setId(123L);
+		// user.setUserName("tmp_user01");
+		// UserUtil.setCurrentUser(user);
 
 		Script script = this.saveScript("1");
 		script.setFileName("e.py");
@@ -154,16 +152,16 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 		script4.setFileName("b.py");
 		script4.setTestURL("y.baidu.com");
 
-//		User user2 = new User();
-//		user2.setId(234L);
-//		user2.setUserName("tmp_user02");
-//		UserUtil.setCurrentUser(user2);
+		// User user2 = new User();
+		// user2.setId(234L);
+		// user2.setUserName("tmp_user02");
+		// UserUtil.setCurrentUser(user2);
 
 		Script script5 = this.saveScript("5");
 		script5.setFileName("a.py");
 		script5.setTestURL("z.baidu.com");
 
-//		UserUtil.setCurrentUser(user);
+		// UserUtil.setCurrentUser(user);
 
 		Order order1 = new Order(Direction.ASC, "fileName");
 		Order order2 = new Order(Direction.DESC, "testURL");
@@ -180,10 +178,10 @@ public class ScriptServiceTest extends NGrinderIocTransactionalTestBase {
 	@Test(timeout = 5000)
 	public void testGetScriptsPerformance() {
 
-//		User user = new User();
-//		user.setId(987L);
-//		user.setUserName("default_tmp_user");
-//		UserUtil.setCurrentUser(user);
+		// User user = new User();
+		// user.setId(987L);
+		// user.setUserName("default_tmp_user");
+		// UserUtil.setCurrentUser(user);
 
 		this.testGetScriptsPerformance2();
 

@@ -24,8 +24,8 @@ package org.ngrinder.user.repository;
 
 import java.util.List;
 
-import org.ngrinder.user.model.Role;
-import org.ngrinder.user.model.User;
+import org.ngrinder.model.Role;
+import org.ngrinder.model.User;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

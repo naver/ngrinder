@@ -24,6 +24,7 @@ package org.ngrinder.perftest.repository;
 
 import java.util.List;
 
+import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.springframework.data.domain.Page;
@@ -38,12 +39,12 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * @since 3.0
  */
 public interface PerfTestRepository extends JpaRepository<PerfTest, Integer>, JpaSpecificationExecutor<PerfTest> {
-	Page<PerfTest> findAllByStatusAndCreateUserOrderByCreateDateAsc(Status status, String userId, Pageable pageable);
+	Page<PerfTest> findAllByStatusAndCreatedUserOrderByCreatedDateAsc(Status status, User userId, Pageable pageable);
 
-	Page<PerfTest> findAllByCreateUserOrderByCreateDateAsc(String userId, Pageable pageable);
+	Page<PerfTest> findAllByCreatedUserOrderByCreatedDateAsc(User userId, Pageable pageable);
 
-	List<PerfTest> findAllByStatusOrderByCreateDateAsc(Status status);
-	
-	Page<PerfTest> findAllByStatusOrderByCreateDateAsc(Status status, Pageable pageable);
+	List<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status);
+
+	Page<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status, Pageable pageable);
 
 }

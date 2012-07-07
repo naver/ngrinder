@@ -8,11 +8,11 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Test;
-import org.ngrinder.NGrinderIocTransactionalTestBase;
+import org.ngrinder.AbstractNGNinderTransactionalTest;
 import org.ngrinder.script.model.Library;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class LibraryServiceTest extends NGrinderIocTransactionalTestBase {
+public class LibraryServiceTest extends AbstractNGNinderTransactionalTest {
 
 	private static Set<Library> libraries = new HashSet<Library>();
 

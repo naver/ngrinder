@@ -1,7 +1,6 @@
 package org.ngrinder.security;
 
 import org.ngrinder.infra.plugin.OnLoginRunnable;
-import org.ngrinder.user.model.SecuredUser;
 
 public class MockLoginPlugin implements OnLoginRunnable {
 

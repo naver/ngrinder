@@ -30,12 +30,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.ngrinder.user.model.Role;
-import org.ngrinder.user.model.User;
-import org.ngrinder.user.repository.RoleRepository;
+import org.ngrinder.model.Role;
+import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * The Class UserService.
@@ -47,9 +47,6 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
-
-	@Autowired
-	private RoleRepository roleRepository;
 
 	/**
 	 * get user by user id.
@@ -77,20 +74,20 @@ public class UserService {
 	 * 
 	 * @return user map.
 	 */
-	public Map<String, List<User>> getAllUserInGroup() {
+	public Map<Role, List<User>> getAllUserInGroup() {
 		List<User> users = userRepository.findAll();
-		Map<String, List<User>> rtnMap = new HashMap<String, List<User>>();
+		Map<Role, List<User>> rtnMap = new HashMap<Role, List<User>>();
 
 		for (User user : users) {
 			Role currRole = user.getRole();
 			List<User> userList = new ArrayList<User>();
 
-			if (!rtnMap.containsKey(currRole.getName())) {
+			if (!rtnMap.containsKey(currRole)) {
 				userList = new ArrayList<User>();
 				userList.add(user);
-				rtnMap.put(currRole.getName(), userList);
+				rtnMap.put(currRole, userList);
 			} else {
-				rtnMap.get(currRole.getName()).add(user);
+				rtnMap.get(currRole).add(user);
 			}
 		}
 
@@ -105,11 +102,19 @@ public class UserService {
 	 * 
 	 * @return result
 	 */
+	@Transactional
 	public User saveUser(User user) {
-		user.setUserId(user.getUserName());
-		Role role = roleRepository.findOneByName(user.getRole().getName());
-		user.setRole(role);
 		return userRepository.save(user);
+	}
+
+	/**
+	 * Add normal user
+	 * 
+	 * @param user
+	 */
+	public void saveUser(User user, Role role) {
+		user.setRole(role);
+		userRepository.save(user);
 	}
 
 	/**
@@ -123,8 +128,6 @@ public class UserService {
 		checkNotEmpty(user.getUserId(), "user id should be provided when modifying user");
 		User targetUser = userRepository.findOneByUserId(user.getUserId());
 		Long id = targetUser.getId();
-		Role role = roleRepository.findOneByName(user.getRole().getName());
-		user.setRole(role);
 		user.setId(id);
 		targetUser.merge(user);
 		userRepository.save(targetUser);
@@ -148,36 +151,12 @@ public class UserService {
 	/**
 	 * get user list by role.
 	 * 
-	 * @param roleName
-	 * @return user list
-	 * @throws Exception
-	 */
-	public List<User> getUserListByRole(String roleName) {
-		Role role = roleRepository.findOneByName(roleName);
-		if (role == null)
-			return new ArrayList<User>();
-		return getUserListByRole(role);
-	}
-
-	/**
-	 * get user list by role.
-	 * 
 	 * @param paramMap
 	 * @return user list
 	 * @throws Exception
 	 */
-	private List<User> getUserListByRole(Role role) {
+	public List<User> getUserListByRole(Role role) {
 		return userRepository.findAllByRole(role);
 	}
 
-	/**
-	 * Add normal user
-	 * 
-	 * @param user
-	 */
-	public void addUser(User user) {
-		Role findOneByName = roleRepository.findOneByName("U");
-		user.setRole(findOneByName);
-		userRepository.save(user);
-	}
 }

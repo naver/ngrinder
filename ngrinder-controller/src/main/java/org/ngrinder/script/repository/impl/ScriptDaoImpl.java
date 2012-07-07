@@ -20,9 +20,11 @@ import org.ngrinder.script.model.Script;
 import org.ngrinder.script.repository.ScriptDao;
 import org.ngrinder.script.repository.ScriptsCache;
 import org.ngrinder.script.util.ScriptUtil;
-import org.ngrinder.user.util.UserUtil;
+import org.ngrinder.user.service.UserContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -40,6 +42,12 @@ import org.springframework.stereotype.Repository;
 public class ScriptDaoImpl implements ScriptDao {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ScriptDaoImpl.class);
+
+	@Autowired
+	private UserContext userContext;
+
+	@Autowired
+	private ScriptUtil scriptUtil;
 
 	// private final Map<Long, Script> scriptsCache = new
 	// ConcurrentHashMap<Long, Script>();
@@ -114,13 +122,13 @@ public class ScriptDaoImpl implements ScriptDao {
 
 		int i = 0;
 		for (Script script : scriptCache) {
-			if (!(share && script.isShare()) && !script.getCreateUser().equals(UserUtil.getCurrentUser().getUserName())) {
+			if (!(share && script.isShare()) && !script.getCreatedUser().equals(userContext.getCurrentUser())) {
 				continue;
 			}
 
 			if (null != searchStr && !script.getFileName().toLowerCase().contains(searchStr)
 					&& !script.getTags().toString().toLowerCase().contains(searchStr)
-					&& !script.getLastModifiedUser().toLowerCase().contains(searchStr)) {
+					&& !script.getLastModifiedUser().getUserId().toLowerCase().contains(searchStr)) {
 				continue;
 			}
 
@@ -178,7 +186,7 @@ public class ScriptDaoImpl implements ScriptDao {
 
 		if (null == script) {
 
-			String scriptPath = ScriptUtil.getScriptPath(userId, id);
+			String scriptPath = scriptUtil.getScriptPath(userId, id);
 			String scriptPropertiesPath = scriptPath + NGrinderConstants.SCRIPT_PROPERTIES;
 
 			FileInputStream fis = null;
@@ -211,9 +219,9 @@ public class ScriptDaoImpl implements ScriptDao {
 	public void save(Script script) {
 		if (null == script.getId() || 0 == script.getId().longValue()) {
 			script.setId((long) script.hashCode());
-			ScriptUtil.createScriptPath(script.getId());
+			scriptUtil.createScriptPath(script.getId());
 		}
-		String scriptPath = ScriptUtil.getScriptPath(script.getId());
+		String scriptPath = scriptUtil.getScriptPath(script.getId());
 
 		String scriptPropertiesPath = scriptPath + NGrinderConstants.SCRIPT_PROPERTIES;
 		FileOutputStream fos = null;

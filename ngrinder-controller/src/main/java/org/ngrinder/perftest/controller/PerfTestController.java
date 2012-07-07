@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 @Controller
 @RequestMapping("/perftest")
 public class PerfTestController extends NGrinderBaseController {
@@ -23,10 +22,9 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@Autowired
 	private TestService testService;
-	
+
 	private static final int DEFAULT_TEST_PAGE_ZISE = 15;
-	
-	
+
 	@RequestMapping("/list")
 	public String getTestList(ModelMap model,
 			@RequestParam(required = false) String keywords, 
@@ -36,19 +34,16 @@ public class PerfTestController extends NGrinderBaseController {
 		if (pageable == null) {
 			pageable = new PageRequest(0, DEFAULT_TEST_PAGE_ZISE);
 		}
-		String currUserId = getCurrentUserInfo(P_USERID);
-		Page<PerfTest> testList = testService.getTestList(currUserId, isFinished, pageable);
+		Page<PerfTest> testList = testService.getTestList(getCurrentUser(), isFinished, pageable);
 		model.addAttribute("testListPage", testList);
 		
 		return "perftest/list";
 	}
 
 	@RequestMapping("/detail")
-	public String getScript(ModelMap model, Script script, 
-			@RequestParam(required = false) Long id,
+	public String getScript(ModelMap model, Script script, @RequestParam(required = false) Long id,
 			@RequestParam(required = false) String historyFileName) {
 
-		
 		return "perftest/detail";
 	}
 
@@ -59,11 +54,10 @@ public class PerfTestController extends NGrinderBaseController {
 		return "perftest/list";
 	}
 
-
 	@RequestMapping(value = "/delete")
 	public String deleteTestt(ModelMap model, @RequestParam String ids) {
 
 		return "perftest/list";
 	}
-	
+
 }

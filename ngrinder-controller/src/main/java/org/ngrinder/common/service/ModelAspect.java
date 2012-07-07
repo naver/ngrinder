@@ -28,7 +28,8 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.ngrinder.model.BaseModel;
-import org.ngrinder.user.util.UserUtil;
+import org.ngrinder.user.service.UserContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -43,17 +44,20 @@ public class ModelAspect {
 
 	public static final String EXECUTION_SAVE = "execution(* org.ngrinder.**.service.*Service.save*(..))";
 
+	@Autowired
+	private UserContext userContext;
+
 	@Before(EXECUTION_SAVE)
 	public void beforeSave(JoinPoint joinPoint) {
 		for (Object object : joinPoint.getArgs()) {
 			if (object instanceof BaseModel) {
 				BaseModel<?> model = (BaseModel<?>) object;
-				if (null != model.getId() && 0 != model.getId().longValue()) {
+				if (model.getId() != null) {
 					model.setLastModifiedDate(new Date());
-					model.setLastModifiedUser(UserUtil.getCurrentUser().getUserId());
+					model.setLastModifiedUser(userContext.getCurrentUser());
 				} else {
-					model.setCreateDate(new Date());
-					model.setCreateUser(UserUtil.getCurrentUser().getUserId());
+					model.setCreatedDate(new Date());
+					model.setCreatedUser(userContext.getCurrentUser());
 				}
 			}
 		}

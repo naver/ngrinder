@@ -28,6 +28,9 @@ public class ScriptServiceImpl implements ScriptService {
 	@Autowired
 	private ScriptDao scriptDao;
 
+	@Autowired
+	private ScriptUtil scriptUtil;
+
 	@Override
 	public Page<Script> getScripts(boolean share, String searchStr, Pageable pageable) {
 		Page<Script> scripts = scriptDao.getScripts(share, searchStr, pageable);
@@ -38,8 +41,8 @@ public class ScriptServiceImpl implements ScriptService {
 	public Script getScript(long id) {
 		Script script = scriptDao.findOne(id);
 		if (null != script) {
-			ScriptUtil.getContent(script);
-			script.setCacheContent(ScriptUtil.getScriptCache(id));
+			scriptUtil.getContent(script);
+			script.setCacheContent(scriptUtil.getScriptCache(id));
 			script.setHistoryFileNames(this.getHistoryFileName(id));
 		}
 		return script;
@@ -49,7 +52,7 @@ public class ScriptServiceImpl implements ScriptService {
 	public Script getScript(long id, String historyName) {
 		Script script = this.getScript(id);
 		if (null != script) {
-			ScriptUtil.getHistoryContent(script, historyName);
+			scriptUtil.getHistoryContent(script, historyName);
 		}
 		return script;
 	}
@@ -59,28 +62,28 @@ public class ScriptServiceImpl implements ScriptService {
 		if (null != script.getId() && 0 != script.getId().longValue()) {
 			Script scriptOld = this.getScript(script.getId());
 			if (null != scriptOld) {
-				ScriptUtil.saveScriptHistoryFile(scriptOld);
+				scriptUtil.saveScriptHistoryFile(scriptOld);
 			}
 		}
 		scriptDao.save(script);
-		ScriptUtil.saveScriptFile(script);
-		ScriptUtil.deleteScriptCache(script.getId());
+		scriptUtil.saveScriptFile(script);
+		scriptUtil.deleteScriptCache(script.getId());
 	}
 
 	@Override
 	public void deleteScript(long id) {
 		scriptDao.delete(id);
-		ScriptUtil.deleteScriptFile(id);
+		scriptUtil.deleteScriptFile(id);
 	}
 
 	private List<String> getHistoryFileName(long id) {
-		List<String> historyFileNames = ScriptUtil.getHistoryFileNames(id);
+		List<String> historyFileNames = scriptUtil.getHistoryFileNames(id);
 		return historyFileNames;
 	}
 
 	@Override
 	public void autoSave(long id, String content) {
-		ScriptUtil.saveScriptCache(id, content);
+		scriptUtil.saveScriptCache(id, content);
 	}
 
 }

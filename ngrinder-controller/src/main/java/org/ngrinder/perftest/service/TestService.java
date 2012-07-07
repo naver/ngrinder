@@ -22,6 +22,7 @@
  */
 package org.ngrinder.perftest.service;
 
+import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
@@ -32,26 +33,26 @@ import org.springframework.stereotype.Service;
 
 /**
  * Test Service Class.
- *
+ * 
  * @author Mavlarn
  * @since
  */
 @Service
 public class TestService {
-	
+
 	@Autowired
 	private PerfTestRepository perfTestRepository;
-	
-	public Page<PerfTest> getTestList(String userId, boolean isFinished, Pageable pageable) {
+
+	public Page<PerfTest> getTestList(User user, boolean isFinished, Pageable pageable) {
 		if (isFinished) {
-			return perfTestRepository.findAllByStatusAndCreateUserOrderByCreateDateAsc(Status.FINISHED,
-					userId, pageable);
+			return perfTestRepository.findAllByStatusAndCreatedUserOrderByCreatedDateAsc(Status.FINISHED, user,
+					pageable);
 		} else {
-			return perfTestRepository.findAllByCreateUserOrderByCreateDateAsc(userId, pageable);
+			return perfTestRepository.findAllByCreatedUserOrderByCreatedDateAsc(user, pageable);
 		}
 	}
-	
-	public PerfTest savePerfTest (PerfTest test) {
+
+	public PerfTest savePerfTest(PerfTest test) {
 		return perfTestRepository.save(test);
 	}
 

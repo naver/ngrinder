@@ -22,7 +22,7 @@
  */
 package org.ngrinder.infra.plugin;
 
-import org.ngrinder.user.model.SecuredUser;
+import org.ngrinder.security.SecuredUser;
 
 /**
  * Plugin extension for user authentication

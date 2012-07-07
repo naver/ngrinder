@@ -27,9 +27,10 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.NGrinderIocTransactionalTestBase;
+import org.ngrinder.AbstractNGNinderTransactionalTest;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
+import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,18 +38,17 @@ import org.springframework.data.domain.Pageable;
 
 /**
  * Class description.
- *
+ * 
  * @author Mavlarn
  * @since
  */
-public class TestServiceTest extends NGrinderIocTransactionalTestBase {
+public class TestServiceTest extends AbstractNGNinderTransactionalTest {
 
 	@Autowired
 	private TestService testService;
-	
+
 	@Before
-	public void createTempTests () {
-		
+	public void createTempTests() {
 		PerfTest test = new PerfTest();
 		test.setTestName("new Test1");
 		test.setThreshold("D");
@@ -57,9 +57,8 @@ public class TestServiceTest extends NGrinderIocTransactionalTestBase {
 		test.setTargetHosts("127.0.0.1");
 		test.setScriptName("test1.py");
 		testService.savePerfTest(test);
-		
+
 		test = new PerfTest();
-		test.setCreateUser("TEST_USER");
 		test.setTestName("new Test2");
 		test.setStatus(Status.FINISHED);
 		test.setThreshold("D");
@@ -68,15 +67,19 @@ public class TestServiceTest extends NGrinderIocTransactionalTestBase {
 		test.setTargetHosts("127.0.0.1");
 		test.setScriptName("test1.py");
 		testService.savePerfTest(test);
-		
+
 	}
-	
+
+	@Autowired
+	PerfTestRepository perfTestRepository;
+
 	@Test
-	public void testGetTestListAll () {
+	public void testGetTestListAll() {
+		System.out.println(perfTestRepository.findAll());
 		Pageable pageable = new PageRequest(0, 10);
-		Page<PerfTest> testList = testService.getTestList("TEST_USER", false, pageable);
+		Page<PerfTest> testList = testService.getTestList(getTestUser(), false, pageable);
 		assertThat(testList.getContent().size(), is(2));
-		testList = testService.getTestList("TEST_USER", true, pageable);
+		testList = testService.getTestList(getTestUser(), true, pageable);
 		assertThat(testList.getContent().size(), is(1));
 	}
 }

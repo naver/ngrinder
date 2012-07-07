@@ -9,9 +9,11 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.common.NGrinderConstants;
 import org.ngrinder.script.model.Script;
-import org.ngrinder.user.util.UserUtil;
+import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Script util
@@ -19,19 +21,20 @@ import org.slf4j.LoggerFactory;
  * @author Liu Zhifei
  * @date 2012-6-13
  */
+@Component
 public final class ScriptUtil {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ScriptUtil.class);
+	private final Logger LOG = LoggerFactory.getLogger(ScriptUtil.class);
 
-	private ScriptUtil() {
-	}
+	@Autowired
+	private UserContext userContext;
 
-	public static void createScriptPath(long id) {
+	public void createScriptPath(long id) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(NGrinderConstants.PATH_PROJECT);
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PREFIX_USER);
-		sb.append(UserUtil.getCurrentUser().getId());
+		sb.append(userContext.getCurrentUser().getId());
 		sb.append(File.separator);
 		sb.append(NGrinderConstants.PREFIX_SCRIPT);
 		sb.append(id);
@@ -63,8 +66,8 @@ public final class ScriptUtil {
 	 * @param id
 	 * @return the script file path
 	 */
-	public static String getScriptPath(long id) {
-		return ScriptUtil.getScriptPath(0, id);
+	public String getScriptPath(long id) {
+		return getScriptPath(0, id);
 	}
 
 	/**
@@ -74,9 +77,9 @@ public final class ScriptUtil {
 	 * @param id
 	 * @return
 	 */
-	public static String getScriptPath(long userId, long id) {
+	public String getScriptPath(long userId, long id) {
 		if (0 == userId) {
-			userId = UserUtil.getCurrentUser().getId().longValue();
+			userId = userContext.getCurrentUser().getId().longValue();
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append(NGrinderConstants.PATH_PROJECT);
@@ -91,11 +94,11 @@ public final class ScriptUtil {
 		return sb.toString();
 	}
 
-	public static String getScriptFilePath(long scriptId, String ScriptName) {
+	public String getScriptFilePath(long scriptId, String ScriptName) {
 		return getScriptPath(scriptId) + ScriptName;
 	}
 
-	public static String getContent(Script script) {
+	public String getContent(Script script) {
 		String scriptPath = getScriptPath(script.getId());
 		String content = null;
 		if (null != script) {
@@ -111,7 +114,7 @@ public final class ScriptUtil {
 		return content;
 	}
 
-	public static String getHistoryContent(Script script, String historyName) {
+	public String getHistoryContent(Script script, String historyName) {
 		String scriptPath = getScriptPath(script.getId());
 		String historyContent = null;
 		if (null != script) {
@@ -130,7 +133,7 @@ public final class ScriptUtil {
 		return historyContent;
 	}
 
-	public static void saveScriptFile(Script script) {
+	public void saveScriptFile(Script script) {
 		String scriptPath = getScriptPath(script.getId());
 		String scriptFilePath = scriptPath + script.getFileName();
 		try {
@@ -150,7 +153,7 @@ public final class ScriptUtil {
 		}
 	}
 
-	public static void saveScriptHistoryFile(Script script) {
+	public void saveScriptHistoryFile(Script script) {
 		String scriptPath = getScriptPath(script.getId());
 		StringBuilder scriptHistoryFilePath = new StringBuilder(scriptPath);
 		scriptHistoryFilePath.append(NGrinderConstants.PATH_HISTORY).append(File.separator);
@@ -163,7 +166,7 @@ public final class ScriptUtil {
 		}
 	}
 
-	public static void deleteScriptFile(long id) {
+	public void deleteScriptFile(long id) {
 		String scriptPath = getScriptPath(id);
 		try {
 			FileUtils.deleteDirectory(new File(scriptPath));
@@ -172,7 +175,7 @@ public final class ScriptUtil {
 		}
 	}
 
-	public static List<String> getHistoryFileNames(long id) {
+	public List<String> getHistoryFileNames(long id) {
 		List<String> historyFileNames = new ArrayList<String>();
 		String scriptPath = getScriptPath(id);
 		StringBuilder scriptHistoryFilePath = new StringBuilder(scriptPath);
@@ -186,7 +189,7 @@ public final class ScriptUtil {
 		return historyFileNames;
 	}
 
-	public static void saveScriptCache(long id, String content) {
+	public void saveScriptCache(long id, String content) {
 		String scriptPath = getScriptPath(id);
 		String scriptCachePath = scriptPath + NGrinderConstants.CACHE_NAME;
 		try {
@@ -196,7 +199,7 @@ public final class ScriptUtil {
 		}
 	}
 
-	public static String getScriptCache(long id) {
+	public String getScriptCache(long id) {
 		String scriptPath = getScriptPath(id);
 		String scriptCachePath = scriptPath + NGrinderConstants.CACHE_NAME;
 		String content = null;
@@ -208,7 +211,7 @@ public final class ScriptUtil {
 		return content;
 	}
 
-	public static void deleteScriptCache(long id) {
+	public void deleteScriptCache(long id) {
 		String scriptPath = getScriptPath(id);
 		String scriptCachePath = scriptPath + NGrinderConstants.CACHE_NAME;
 		FileUtils.deleteQuietly(new File(scriptCachePath));

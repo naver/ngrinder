@@ -30,8 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.persistenceunit.MutablePersistenceUnitInfo;
+import org.springframework.orm.jpa.persistenceunit.PersistenceUnitPostProcessor;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-
 
 /**
  * Dynamic datasource bean generator.
@@ -70,8 +71,15 @@ public class DatabaseConfig {
 		hibernateJpaVendorAdapter.setDatabasePlatform(database.getDialect());
 		hibernateJpaVendorAdapter.setShowSql(true);
 		hibernateJpaVendorAdapter.setGenerateDdl(true);
+
 		emf.setJpaVendorAdapter(hibernateJpaVendorAdapter);
 		emf.setPackagesToScan("org.ngrinder.**.model");
+		emf.setPersistenceUnitPostProcessors(new PersistenceUnitPostProcessor() {
+			@Override
+			public void postProcessPersistenceUnitInfo(MutablePersistenceUnitInfo pui) {
+				pui.addManagedClassName("org.ngrinder.model.User");
+			}
+		});
 		return emf;
 	}
 }

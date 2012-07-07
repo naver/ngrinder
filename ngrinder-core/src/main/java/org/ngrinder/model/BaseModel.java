@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+
 /*
  * Copyright (C) 2012 - 2012 NHN Corporation
  * All rights reserved.
@@ -38,36 +39,35 @@ public class BaseModel<M> extends BaseEntity<M> {
 
 	private static final long serialVersionUID = -3876339828833595694L;
 
-	@Column(name = "CREATE_DATE")
-	private Date createDate;
+	@Column(name = "CREATED_DATE")
+	private Date createdDate;
 
-	@Column(name = "CREATE_USER")
-	private String createUser;
+	@Column(name = "CREATED_USER")
+	private User createdUser;
 
 	@Column(name = "LAST_MODIFIED_DATE")
 	private Date lastModifiedDate;
 
 	@Column(name = "LAST_MODIFIED_USER")
-	private String lastModifiedUser;
+	private User lastModifiedUser;
 
-	public Date getCreateDate() {
-		return createDate;
+	public Date getCreatedDate() {
+		return createdDate;
 	}
 
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
 	}
 
-	public String getCreateUser() {
-		return createUser;
+	public User getCreatedUser() {
+		return createdUser;
 	}
 
-	public void setCreateUser(String createUser) {
-		this.createUser = createUser;
+	public void setCreatedUser(User createdUser) {
+		this.createdUser = createdUser;
 	}
 
 	public Date getLastModifiedDate() {
-
 		return lastModifiedDate;
 	}
 
@@ -75,11 +75,11 @@ public class BaseModel<M> extends BaseEntity<M> {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 
-	public String getLastModifiedUser() {
+	public User getLastModifiedUser() {
 		return lastModifiedUser;
 	}
 
-	public void setLastModifiedUser(String lastModifiedUser) {
+	public void setLastModifiedUser(User lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
 	}
 

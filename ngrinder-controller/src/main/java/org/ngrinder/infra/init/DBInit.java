@@ -2,9 +2,8 @@ package org.ngrinder.infra.init;
 
 import javax.annotation.PostConstruct;
 
-import org.ngrinder.user.model.Role;
-import org.ngrinder.user.model.User;
-import org.ngrinder.user.repository.RoleRepository;
+import org.ngrinder.model.Role;
+import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class DBInit {
 	@Autowired
 	private UserRepository userRepository;
-
-	@Autowired
-	private RoleRepository roleRepository;
 
 	@Autowired
 	private UserService userService;
@@ -33,22 +29,15 @@ public class DBInit {
 		if (userRepository.count() == 0) {
 			User user = new User();
 			user.setUserId("admin");
-			user.setPsw("admin");
-			Role userRole = new Role("A");
-			userRole = roleRepository.save(userRole);
-			user.setRole(userRole);
+			user.setPassword("admin");
+			user.setRole(Role.ADMIN);
 			userService.saveUser(user);
 
 			User user2 = new User();
 			user2.setUserId("user");
-			user2.setPsw("user");
-			Role userRole2 = new Role("U");
-			userRole2 = roleRepository.save(userRole2);
-			user2.setRole(userRole2);
+			user2.setPassword("user");
+			user2.setRole(Role.USER);
 			userService.saveUser(user2);
-
-			Role superUser = new Role("S");
-			roleRepository.save(superUser);
 		}
 	}
 }

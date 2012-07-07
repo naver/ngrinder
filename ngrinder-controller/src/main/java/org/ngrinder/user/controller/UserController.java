@@ -22,15 +22,15 @@
  */
 package org.ngrinder.user.controller;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.model.Role;
+import org.ngrinder.model.User;
 import org.ngrinder.user.model.JsonBean;
-import org.ngrinder.user.model.User;
 import org.ngrinder.user.service.UserService;
 import org.ngrinder.user.util.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,22 +40,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
-
-
 @Controller
 @RequestMapping("/user")
-public class UserController extends NGrinderBaseController{
-	
+public class UserController extends NGrinderBaseController {
 
 	@Autowired
 	private UserService userService;
-	
 
 	@RequestMapping("/list")
-	public String getUserList(ModelMap model,@RequestParam(required = false)  String roleName) {
-		
-		Map<String, List<User>> userMap = userService.getAllUserInGroup();
+	public String getUserList(ModelMap model, @RequestParam(required = false) String roleName) {
+
+		Map<Role, List<User>> userMap = userService.getAllUserInGroup();
 
 		List<JsonBean> jList = new ArrayList<JsonBean>();
 
@@ -63,25 +58,24 @@ public class UserController extends NGrinderBaseController{
 
 		JsonBean TopBean = new JsonBean("all", "0", "All Users", true);
 		jList.add(TopBean);
-		for (Map.Entry<String, List<User>> entry : userMap.entrySet()) {
-			String id = entry.getKey();
-			JsonBean bean = new JsonBean(id, "all", id, true);
+		for (Map.Entry<Role, List<User>> entry : userMap.entrySet()) {
+			Role id = entry.getKey();
+			JsonBean bean = new JsonBean(id.name(), "all", id.name(), true);
 			jList.add(bean);
 			for (User user : entry.getValue()) {
-				JsonBean leafBean = new JsonBean(user.getUserId(), id, user.getUserName(), true);
+				JsonBean leafBean = new JsonBean(user.getUserId(), id.name(), user.getUserName(), true);
 				jList.add(leafBean);
 			}
-			
-			if("all".equals(roleName)||roleName==null){
+
+			if ("all".equals(roleName) || roleName == null) {
 				userList.addAll(entry.getValue());
-			}else if(roleName.equals(id)){
+			} else if (roleName.equals(id)) {
 				userList.addAll(entry.getValue());
 			}
-			
+
 		}
 		model.addAttribute("userList", userList);
 
-		
 		String jsonStr = JSONUtil.toJson(jList);
 		model.addAttribute("jsonStr", jsonStr);
 
@@ -89,9 +83,9 @@ public class UserController extends NGrinderBaseController{
 	}
 
 	@RequestMapping("/detail")
-	public String getUserDetail(ModelMap model,@RequestParam(required = false)  String userId) {
-		
-		Map<String, List<User>> userMap = userService.getAllUserInGroup();
+	public String getUserDetail(ModelMap model, @RequestParam(required = false) String userId) {
+
+		Map<Role, List<User>> userMap = userService.getAllUserInGroup();
 
 		List<JsonBean> jList = new ArrayList<JsonBean>();
 
@@ -99,34 +93,31 @@ public class UserController extends NGrinderBaseController{
 
 		JsonBean TopBean = new JsonBean("all", "0", "All Users", true);
 		jList.add(TopBean);
-		for (Map.Entry<String, List<User>> entry : userMap.entrySet()) {
-			String id = entry.getKey();
-			JsonBean bean = new JsonBean(id, "all", id, true);
+		for (Map.Entry<Role, List<User>> entry : userMap.entrySet()) {
+			Role id = entry.getKey();
+			JsonBean bean = new JsonBean(id.name(), "all", id.name(), true);
 			jList.add(bean);
 			for (User user : entry.getValue()) {
-				JsonBean leafBean = new JsonBean(user.getUserId(), id, user.getUserName(), true);
+				JsonBean leafBean = new JsonBean(user.getUserId(), id.name(), user.getUserName(), true);
 				jList.add(leafBean);
 			}
 			userList.addAll(entry.getValue());
-			
+
 		}
 		model.addAttribute("userList", userList);
 
-		
 		String jsonStr = JSONUtil.toJson(jList);
 		model.addAttribute("jsonStr", jsonStr);
-		
-		
-		
+
 		User user = userService.getUserById(userId);
-		
+
 		model.addAttribute("user", user);
 		return "user/userDetail";
 	}
-	
+
 	@RequestMapping("/save")
-	public String saveOrUpdateUserDetail(ModelMap model,@ModelAttribute("user") User user) {
-		
+	public String saveOrUpdateUserDetail(ModelMap model, @ModelAttribute("user") User user) {
+
 		if (!StringUtils.isEmpty(user.getUserId())) {
 			userService.modifyUser(user);
 		} else {
@@ -134,14 +125,13 @@ public class UserController extends NGrinderBaseController{
 		}
 		return "redirect:/user/list";
 	}
-	
+
 	@RequestMapping("/delete")
-	public String deleteUser(ModelMap model,@RequestParam String userId) {
+	public String deleteUser(ModelMap model, @RequestParam String userId) {
 		List<String> list = new ArrayList<String>();
 		list.add(userId);
 		userService.deleteUsers(list);
 		return "redirect:/user/list";
 	}
-	
-	
+
 }

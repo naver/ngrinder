@@ -40,7 +40,8 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * Base Entity
  * 
  * @author Liu Zhifei
- * @date 2012-6-13
+ * @author JunHo Yoon
+ * @since 3.0
  */
 @MappedSuperclass
 public class BaseEntity<M> implements Serializable {
@@ -56,9 +57,7 @@ public class BaseEntity<M> implements Serializable {
 	}
 
 	public void setId(Long id) {
-		if (null == this.id) {
-			this.id = id;
-		}
+		this.id = id;
 	}
 
 	@Override

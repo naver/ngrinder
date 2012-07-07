@@ -8,19 +8,15 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.NGrinderIocTransactionalTestBase;
-import org.ngrinder.user.model.Role;
-import org.ngrinder.user.model.User;
-import org.ngrinder.user.repository.RoleRepository;
+import org.ngrinder.AbstractNGNinderTransactionalTest;
+import org.ngrinder.model.Role;
+import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class UserServiceTest extends NGrinderIocTransactionalTestBase {
+public class UserServiceTest extends AbstractNGNinderTransactionalTest {
 
 	@Autowired
 	private UserService userService;
-
-	@Autowired
-	private RoleRepository roleRepository;
 
 	@Before
 	public void before() {
@@ -31,33 +27,31 @@ public class UserServiceTest extends NGrinderIocTransactionalTestBase {
 	public void testUserCreation() {
 		User user = new User();
 		user.setUserId("hello");
-		user.setPsw("www");
+		user.setPassword("www");
 		user = userService.saveUser(user);
 		assertThat(user.getUserId(), is("hello"));
 	}
 
 	@Test
 	public void testGroupTest() {
+		userRepository.deleteAll();
 		User user = new User();
 		user.setUserId("hello");
-		user.setPsw("www");
-		Role userRole = new Role("service");
-
-		user.setRole(roleRepository.save(userRole));
+		user.setPassword("www");
+		user.setRole(Role.SUPER_USER);
 		userService.saveUser(user);
 
 		User user2 = new User();
 		user2.setUserId("hello2");
-		user2.setPsw("www2");
-		Role userRole2 = roleRepository.save(new Role("admin"));
-		user2.setRole(userRole2);
+		user2.setPassword("www2");
+		user2.setRole(Role.ADMIN);
 		userService.saveUser(user2);
 
-		Map<String, List<User>> allUserInGroup = userService.getAllUserInGroup();
+		Map<Role, List<User>> allUserInGroup = userService.getAllUserInGroup();
 
 		assertThat(allUserInGroup.size(), is(2));
 
-		List<User> userListByRole = userService.getUserListByRole("admin");
+		List<User> userListByRole = userService.getUserListByRole(Role.ADMIN);
 		assertThat(userListByRole.size(), is(1));
 
 	}
@@ -66,19 +60,17 @@ public class UserServiceTest extends NGrinderIocTransactionalTestBase {
 	public void testUpdateUser() {
 		User user = new User();
 		user.setUserId("hello");
-		user.setPsw("www");
-		Role userRole = new Role("service");
-
-		user.setRole(roleRepository.save(userRole));
+		user.setPassword("www");
+		user.setRole(Role.SUPER_USER);
 		user = userService.saveUser(user);
 
 		User user2 = new User();
 		user2.setUserId("hello");
-		user2.setPsw("www222");
-
+		user2.setPassword("www222");
+		user2.setRole(Role.USER);
 		userService.modifyUser(user2);
 		User userById = userService.getUserById("hello");
-		assertThat(userById.getPsw(), is("www222"));
+		assertThat(userById.getPassword(), is("www222"));
 
 		assertThat(userById.getId(), is(user.getId()));
 	}

@@ -7,11 +7,11 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.user.model.User;
+import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class DBInitTest extends org.ngrinder.NGrinderIocTransactionalTestBase {
+public class DBInitTest extends org.ngrinder.AbstractNGNinderTransactionalTest {
 	@Autowired
 	private DBInit dbInit;
 
@@ -31,8 +31,8 @@ public class DBInitTest extends org.ngrinder.NGrinderIocTransactionalTestBase {
 		// Two users should be exist
 		assertThat(users.size(), is(2));
 		assertThat(users.get(0).getUserId(), is("admin"));
-		assertThat(users.get(0).getPsw(), is("admin"));
+		assertThat(users.get(0).getPassword(), is("admin"));
 		assertThat(users.get(1).getUserId(), is("user"));
-		assertThat(users.get(1).getPsw(), is("user"));
+		assertThat(users.get(1).getPassword(), is("user"));
 	}
 }

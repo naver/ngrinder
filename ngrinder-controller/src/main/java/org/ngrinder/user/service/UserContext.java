@@ -20,10 +20,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.user.util;
+package org.ngrinder.user.service;
 
-import org.ngrinder.user.model.Role;
-import org.ngrinder.user.model.User;
+import org.ngrinder.infra.annotation.OnlyRuntimeComponent;
+import org.ngrinder.model.User;
+import org.ngrinder.security.SecuredUser;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,9 +36,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @since
  * @date 2012-6-28
  */
-public class UserUtil {
-
-	public static User getCurrentUser() {
+@OnlyRuntimeComponent
+public class UserContext {
+	public User getCurrentUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth == null) {
 			throw new AuthenticationCredentialsNotFoundException("No athenticated");
@@ -46,11 +47,7 @@ public class UserUtil {
 		if (!(obj instanceof User)) {
 			throw new AuthenticationCredentialsNotFoundException("Invalid athentication");
 		}
-		User user = (User) obj;
-		String roleName = auth.getAuthorities().toString();
-		//TODO: every time will create a Role object, should be improve.
-		user.setRole(new Role(roleName));
-		return user;
+		SecuredUser securedUser = (SecuredUser) obj;
+		return securedUser.getUser();
 	}
-
 }

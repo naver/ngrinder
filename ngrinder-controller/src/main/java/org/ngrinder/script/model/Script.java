@@ -61,7 +61,7 @@ public class Script extends BaseModel<Script> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((this.getCreateDate() == null) ? 0 : this.getCreateDate().hashCode());
+		result = prime * result + ((this.getCreatedDate() == null) ? 0 : this.getCreatedDate().hashCode());
 		result = prime * result + ((fileName == null) ? 0 : fileName.hashCode());
 		result = prime * result + ((testURL == null) ? 0 : testURL.hashCode());
 		return result;
@@ -79,11 +79,11 @@ public class Script extends BaseModel<Script> {
 			return false;
 		}
 		Script other = (Script) obj;
-		if (this.getCreateDate() == null) {
-			if (other.getCreateDate() != null) {
+		if (this.getCreatedDate() == null) {
+			if (other.getCreatedDate() != null) {
 				return false;
 			}
-		} else if (!this.getCreateDate().equals(other.getCreateDate())) {
+		} else if (!this.getCreatedDate().equals(other.getCreatedDate())) {
 			return false;
 		}
 		if (fileName == null) {

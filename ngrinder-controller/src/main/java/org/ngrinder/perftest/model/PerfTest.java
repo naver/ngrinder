@@ -37,14 +37,19 @@ import javax.persistence.criteria.Root;
 
 import net.grinder.common.GrinderProperties;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+import org.hibernate.ejb.criteria.predicate.BooleanExpressionPredicate;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.model.BaseModel;
+import org.ngrinder.model.Role;
+import org.ngrinder.model.User;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.domain.Specifications;
 
 /**
- * Performance Test Entity
- * Use Create user of BaseModel as test owner, use create date of BaseModel as create time,
- * but the created time maybe not the test starting time.
+ * Performance Test Entity Use Create user of BaseModel as test owner, use create date of BaseModel as create time, but
+ * the created time maybe not the test starting time.
  * 
  */
 @Entity
@@ -78,7 +83,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	/** the finish time of this test */
 	private Date finishTime;
-	
+
 	/** the target host to test */
 	@Column(length = 256)
 	private String targetHosts;
@@ -97,10 +102,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private int runCount;
 
 	private int agentCount;
-	
+
 	@Transient
 	private GrinderProperties grinderProperties;
-
 
 	public String getTestName() {
 		return testName;
@@ -133,7 +137,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public void setRunCount(int runCount) {
 		this.runCount = runCount;
 	}
-	
+
 	public long getDuration() {
 		return duration;
 	}
@@ -181,7 +185,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public String getLastModifiedDateToStr() {
 		return DateUtil.formatDate(getLastModifiedDate(), "yyyy-MM-dd  HH:mm:ss");
 	}
-
 
 	public void setDescription(String description) {
 		this.description = description;
@@ -238,11 +241,22 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public static Specification<PerfTest> statusSetEqual(final Status... statuses) {
 		return new Specification<PerfTest>() {
 			@Override
-			
 			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return cb.not(root.get("status").in((Object[]) statuses));
+				return root.get("status").in((Object[]) statuses);
 			}
 		};
+	}
 
+	public static Specification<PerfTest> createBy(final User user) {
+		return new Specification<PerfTest>() {
+			@Override
+			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				return cb.equal(root.get("createdUser"), user);
+			}
+		};
+	}
+
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 }

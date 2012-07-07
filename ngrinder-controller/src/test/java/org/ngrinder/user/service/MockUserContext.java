@@ -20,51 +20,42 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.user.model;
+package org.ngrinder.user.service;
 
-import java.io.Serializable;
+import javax.annotation.PostConstruct;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import org.ngrinder.infra.annotation.OnlyTestComponent;
+import org.ngrinder.model.User;
+import org.ngrinder.user.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@Entity
-@Table(name = "NROLE")
-public class Role implements Serializable{
+/**
+ * user util
+ * 
+ * @author Tobi
+ * @since
+ * @date 2012-6-28
+ */
+@OnlyTestComponent
+public class MockUserContext extends UserContext {
+	public static final String TEST_USER_ID = "TEST_USER";
 
-	private static final long serialVersionUID = 1L;
+	@Autowired
+	protected UserRepository userRepository;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "role_id")
-	private Long roleId;
-
-	private String name;
-
-	public Role() {
+	@PostConstruct
+	public void init() {
+		User user = userRepository.findOneByUserId(TEST_USER_ID);
+		if (user == null) {
+			user = new User();
+			user.setUserId(TEST_USER_ID);
+			user.setPassword("123");
+			user.setUserLanguage("en");
+			userRepository.save(user);
+		}
 	}
 
-	public Role(String name) {
-		this.name = name;
+	public User getCurrentUser() {
+		return userRepository.findOneByUserId(TEST_USER_ID);
 	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Long getRoleId() {
-		return roleId;
-	}
-
-	public void setRoleId(Long roleId) {
-		this.roleId = roleId;
-	}
-
 }

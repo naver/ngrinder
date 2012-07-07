@@ -100,7 +100,7 @@ public class TaskSchedulerRunnable implements Runnable {
 
 	@Transactional
 	List<PerfTest> getRunnablePerformanceTests() {
-		return this.performanceTestRepository.findAllByStatusOrderByCreateDateAsc(Status.READY);
+		return this.performanceTestRepository.findAllByStatusOrderByCreatedDateAsc(Status.READY);
 	}
 
 }
