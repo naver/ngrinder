@@ -16,8 +16,9 @@
 		<context:exclude-filter type="annotation"
 			expression="org.ngrinder.infra.annotation.OnlyTestComponent" />
 	</context:component-scan>
-
+	
 	<import resource="applicationContext-springdata.xml" />
 	<import resource="applicationContext-security.xml" />
+	<import resource="applicationContext-ehcache.xml"/>
 </beans>
 
