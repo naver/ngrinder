@@ -36,9 +36,10 @@ import javax.persistence.MappedSuperclass;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 
 /**
- * Base Entity
+ * Base Entity. This has long type ID field
  * 
  * @author Liu Zhifei
  * @author JunHo Yoon
@@ -63,9 +64,17 @@ public class BaseEntity<M> implements Serializable {
 
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.DEFAULT_STYLE);
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
+	/**
+	 * Merge source entity into current entity.
+	 * 
+	 * Only not null value is merged.
+	 * 
+	 * @param source
+	 *            merge source
+	 */
 	public void merge(M source) {
 		try {
 			BeanInfo beanInfo = Introspector.getBeanInfo(getClass());
@@ -82,7 +91,8 @@ public class BaseEntity<M> implements Serializable {
 				}
 			}
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new NGrinderRuntimeException(
+					"Exception occurs while merging entities from " + source + " to " + this, e);
 		}
 	}
 }

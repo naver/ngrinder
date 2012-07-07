@@ -28,10 +28,19 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 /**
- * Base Model
+ * Base Model which has following attribute
+ * <ul>
+ * <li>created_user
+ * <li>
+ * <li>created_date</li>
+ * <li>lastmodified_user
+ * <li>
+ * <li>lastmodified_date</li>
+ * </ul>
  * 
  * @author Liu Zhifei
- * @date 2012-6-13
+ * @author JunHo Yoon
+ * @since 3.0
  */
 @MappedSuperclass
 public class BaseModel<M> extends BaseEntity<M> {

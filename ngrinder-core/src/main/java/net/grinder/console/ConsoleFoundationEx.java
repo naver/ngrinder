@@ -32,6 +32,7 @@ import net.grinder.statistics.StatisticsSet;
 import net.grinder.util.StandardTimeAuthority;
 import net.grinder.util.thread.Condition;
 
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.Parameter;
@@ -138,7 +139,7 @@ public class ConsoleFoundationEx {
 	 */
 	public void run() {
 		if (m_shutdown) {
-			throw new RuntimeException("console can not run becaz it's shutdowned");
+			throw new NGrinderRuntimeException("console can not run becaz it's shutdowned");
 		}
 		m_container.start();
 

@@ -1,24 +1,25 @@
-// Copyright (C) 2001 - 2011 Philip Aston
-// All rights reserved.
-//
-// This file is part of The Grinder software distribution. Refer to
-// the file LICENSE which is part of The Grinder distribution for
-// licensing details. The Grinder distribution is available on the
-// Internet at http://grinder.sourceforge.net/
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-// COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-// OF THE POSSIBILITY OF SUCH DAMAGE.
-
+/*
+ * Copyright (C) 2012 - 2012 NHN Corporation
+ * All rights reserved.
+ *
+ * This file is part of The nGrinder software distribution. Refer to
+ * the file LICENSE which is part of The nGrinder distribution for
+ * licensing details. The nGrinder distribution is available on the
+ * Internet at http://nhnopensource.org/ngrinder
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package net.grinder.engine.communication;
 
 import net.grinder.communication.Message;
@@ -84,8 +85,7 @@ public final class AgentControllerServerListener {
 	 * 
 	 * @see #received
 	 */
-	public static final int ANY = START | RESET | STOP | SHUTDOWN | LOG_REPORT
-			| UPDATE_AGENT;
+	public static final int ANY = START | RESET | STOP | SHUTDOWN | LOG_REPORT | UPDATE_AGENT;
 
 	private final Condition m_notifyOnMessage;
 	private final Logger m_logger;
@@ -102,11 +102,9 @@ public final class AgentControllerServerListener {
 	 * @param notifyOnMessage
 	 *            An <code>Object</code> to notify when a message arrives.
 	 * @param logger
-	 *            A {@link net.grinder.common.Logger} to log received event
-	 *            messages to.
+	 *            A {@link net.grinder.common.Logger} to log received event messages to.
 	 */
-	public AgentControllerServerListener(Condition notifyOnMessage,
-			Logger logger) {
+	public AgentControllerServerListener(Condition notifyOnMessage, Logger logger) {
 		m_notifyOnMessage = notifyOnMessage;
 		m_logger = logger;
 	}
@@ -122,8 +120,7 @@ public final class AgentControllerServerListener {
 	 * Wait until any message is received.
 	 * 
 	 * <p>
-	 * After calling this method, the actual messages can be determined using
-	 * {@link #received}.
+	 * After calling this method, the actual messages can be determined using {@link #received}.
 	 * </p>
 	 * 
 	 */
@@ -139,16 +136,14 @@ public final class AgentControllerServerListener {
 	 * Check for messages matching the given mask.
 	 * 
 	 * <p>
-	 * After calling this method, the actual messages can be determined using
-	 * {@link #received}.
+	 * After calling this method, the actual messages can be determined using {@link #received}.
 	 * </p>
 	 * 
 	 * @param mask
 	 *            The messages to check for.
-	 * @return <code>true</code> if at least one message matches the
-	 *         <code>mask</code> parameter has been received since the last time
-	 *         the message was checked for, or if communications have been
-	 *         shutdown. <code>false</code> otherwise.
+	 * @return <code>true</code> if at least one message matches the <code>mask</code> parameter has been received since
+	 *         the last time the message was checked for, or if communications have been shutdown. <code>false</code>
+	 *         otherwise.
 	 */
 	public boolean checkForMessage(int mask) {
 		synchronized (this) {
@@ -178,13 +173,11 @@ public final class AgentControllerServerListener {
 	}
 
 	/**
-	 * Query the messages set up by the last {@link #checkForMessage} or
-	 * {@link #waitForMessage} call.
+	 * Query the messages set up by the last {@link #checkForMessage} or {@link #waitForMessage} call.
 	 * 
 	 * @param mask
 	 *            The messages to check for.
-	 * @return <code>true</code> if one or more of the received messages matches
-	 *         <code>mask</code>.
+	 * @return <code>true</code> if one or more of the received messages matches <code>mask</code>.
 	 */
 	public synchronized boolean received(int mask) {
 		return (m_lastMessagesReceived & mask) != 0;
@@ -206,43 +199,38 @@ public final class AgentControllerServerListener {
 	 * @param messageDispatcher
 	 *            The dispatcher.
 	 */
-	public void registerMessageHandlers(
-			MessageDispatchRegistry messageDispatcher) {
+	public void registerMessageHandlers(MessageDispatchRegistry messageDispatcher) {
 
-		messageDispatcher.set(StartGrinderMessage.class,
-				new AbstractMessageHandler<StartGrinderMessage>() {
-					public void handle(StartGrinderMessage message) {
-						m_logger.info("received a start agent message");
-						m_lastStartGrinderMessage = message;
-						setReceived(START);
-					}
-				});
+		messageDispatcher.set(StartGrinderMessage.class, new AbstractMessageHandler<StartGrinderMessage>() {
+			public void handle(StartGrinderMessage message) {
+				m_logger.info("received a start agent message");
+				m_lastStartGrinderMessage = message;
+				setReceived(START);
+			}
+		});
 
-		messageDispatcher.set(StopGrinderMessage.class,
-				new AbstractMessageHandler<StopGrinderMessage>() {
-					public void handle(StopGrinderMessage message) {
-						m_logger.info("received a stop agent message");
-						setReceived(STOP);
-					}
-				});
+		messageDispatcher.set(StopGrinderMessage.class, new AbstractMessageHandler<StopGrinderMessage>() {
+			public void handle(StopGrinderMessage message) {
+				m_logger.info("received a stop agent message");
+				setReceived(STOP);
+			}
+		});
 
-		messageDispatcher.set(UpdateAgentGrinderMessage.class,
-				new AbstractMessageHandler<UpdateAgentGrinderMessage>() {
-					public void handle(UpdateAgentGrinderMessage message) {
-						m_logger.info("received a update agent message");
-						m_lastUpdateAgentGrinderMessage = message;
-						setReceived(UPDATE_AGENT);
-					}
-				});
+		messageDispatcher.set(UpdateAgentGrinderMessage.class, new AbstractMessageHandler<UpdateAgentGrinderMessage>() {
+			public void handle(UpdateAgentGrinderMessage message) {
+				m_logger.info("received a update agent message");
+				m_lastUpdateAgentGrinderMessage = message;
+				setReceived(UPDATE_AGENT);
+			}
+		});
 
-		messageDispatcher.set(LogReportGrinderMessage.class,
-				new AbstractMessageHandler<LogReportGrinderMessage>() {
-					public void handle(LogReportGrinderMessage message) {
-						m_logger.info("received a log report message");
-						m_lastLogReportGrinderMessage = message;
-						setReceived(LOG_REPORT);
-					}
-				});
+		messageDispatcher.set(LogReportGrinderMessage.class, new AbstractMessageHandler<LogReportGrinderMessage>() {
+			public void handle(LogReportGrinderMessage message) {
+				m_logger.info("received a log report message");
+				m_lastLogReportGrinderMessage = message;
+				setReceived(LOG_REPORT);
+			}
+		});
 
 	}
 
@@ -259,8 +247,7 @@ public final class AgentControllerServerListener {
 		return m_lastLogReportGrinderMessage;
 	}
 
-	private abstract class AbstractMessageHandler<T extends Message> implements
-			Handler<T> {
+	private abstract class AbstractMessageHandler<T extends Message> implements Handler<T> {
 
 		public void shutdown() {
 			final boolean shutdown;

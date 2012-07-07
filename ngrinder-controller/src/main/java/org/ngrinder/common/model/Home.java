@@ -31,6 +31,7 @@ import java.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.ConfigurationException;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
@@ -50,9 +51,10 @@ public class Home implements NGrinderConstants {
 		}
 		this.directory = directory;
 	}
-	
+
 	/**
 	 * Get home directory
+	 * 
 	 * @return
 	 */
 	public File getDirectory() {
@@ -68,7 +70,7 @@ public class Home implements NGrinderConstants {
 				}
 			}
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new NGrinderRuntimeException("Fail to copy files from " + from.getAbsolutePath(), e);
 		}
 	}
 
@@ -84,7 +86,7 @@ public class Home implements NGrinderConstants {
 			FileSystemResource propertyResource = new FileSystemResource(getSubFile(confFileName));
 			return PropertiesLoaderUtils.loadProperties(propertyResource);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new NGrinderRuntimeException("Fail to load property file " + confFileName, e);
 		}
 	}
 

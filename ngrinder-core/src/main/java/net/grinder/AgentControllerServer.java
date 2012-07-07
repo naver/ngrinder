@@ -13,6 +13,7 @@ import net.grinder.engine.console.ErrorHandlerImplementation;
 import net.grinder.util.StandardTimeAuthority;
 import net.grinder.util.thread.Condition;
 
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.behaviors.Caching;
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ public class AgentControllerServer {
 
 	public void run() {
 		if (m_shutdown) {
-			throw new RuntimeException("console can not run becaz it's shutdowned");
+			throw new NGrinderRuntimeException("console can not run becaz it's shutdowned");
 		}
 		m_container.start();
 		m_container.getComponent(AgentProcessControlImplementation.class);

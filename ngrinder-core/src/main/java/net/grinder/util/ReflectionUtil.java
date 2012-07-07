@@ -1,3 +1,25 @@
+/*
+ * Copyright (C) 2012 - 2012 NHN Corporation
+ * All rights reserved.
+ *
+ * This file is part of The nGrinder software distribution. Refer to
+ * the file LICENSE which is part of The nGrinder distribution for
+ * licensing details. The nGrinder distribution is available on the
+ * Internet at http://nhnopensource.org/ngrinder
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package net.grinder.util;
 
 import java.lang.reflect.Field;
@@ -13,8 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class ReflectionUtil {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(ReflectionUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ReflectionUtil.class);
 
 	private ReflectionUtil() {
 	}
@@ -22,13 +43,11 @@ public final class ReflectionUtil {
 	/**
 	 * get object field value, bypassing getter method.
 	 */
-	public static Object getFieldValue(final Object object,
-			final String fieldName) {
+	public static Object getFieldValue(final Object object, final String fieldName) {
 		Field field = getDeclaredField(object, fieldName);
 
 		if (field == null) {
-			throw new IllegalArgumentException("Could not find field ["
-					+ fieldName + "] on target [" + object + "]");
+			throw new IllegalArgumentException("Could not find field [" + fieldName + "] on target [" + object + "]");
 		}
 
 		makeAccessible(field);
@@ -42,8 +61,7 @@ public final class ReflectionUtil {
 		return result;
 	}
 
-	private static Field getDeclaredField(final Object object,
-			final String fieldName) {
+	private static Field getDeclaredField(final Object object, final String fieldName) {
 		if (object == null) {
 			return null;
 		}
@@ -62,8 +80,7 @@ public final class ReflectionUtil {
 	}
 
 	private static void makeAccessible(final Field field) {
-		if (!Modifier.isPublic(field.getModifiers())
-				|| !Modifier.isPublic(field.getDeclaringClass().getModifiers())) {
+		if (!Modifier.isPublic(field.getModifiers()) || !Modifier.isPublic(field.getDeclaringClass().getModifiers())) {
 			field.setAccessible(true);
 		}
 	}
