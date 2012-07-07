@@ -22,6 +22,11 @@
 			<name>SpringSource Repository</name>
 			<url>http://repo.springsource.org/release</url>
 		</repository>
+		<repository>
+			<id>repository.jboss.org-public</id>
+			<name>JBoss repository</name>
+			<url>https://repository.jboss.org/nexus/content/groups/public</url>
+		</repository>
 	</repositories>
 
 	<properties>
@@ -99,13 +104,13 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		
+
 
 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
@@ -159,7 +164,7 @@
 		</plugins>
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
