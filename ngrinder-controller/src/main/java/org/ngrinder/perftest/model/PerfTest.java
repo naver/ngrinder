@@ -39,13 +39,10 @@ import net.grinder.common.GrinderProperties;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.hibernate.ejb.criteria.predicate.BooleanExpressionPredicate;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.model.BaseModel;
-import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.domain.Specifications;
 
 /**
  * Performance Test Entity Use Create user of BaseModel as test owner, use create date of BaseModel as create time, but

@@ -22,11 +22,11 @@
  */
 package org.ngrinder.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
-
 
 /**
  * The Class User.
@@ -38,8 +38,15 @@ import javax.persistence.Table;
 @Table(name = "NUSER")
 public class User extends BaseModel<User> {
 
+	/**
+	 * User Id
+	 */
+	@Column(unique = true, nullable = false)
 	private String userId;
 
+	/**
+	 * User Name e.g) Jone Dogh.
+	 */
 	private String userName;
 
 	private String password;

@@ -23,7 +23,7 @@
 package org.ngrinder.common.util;
 
 import org.json.simple.JSONObject;
-import org.ngrinder.common.NGrinderConstants;
+import org.ngrinder.common.constant.NGrinderConstants;
 
 
 

@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
@@ -38,7 +39,8 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
  * 
  * @author junoyoon
  */
-public class Home {
+
+public class Home implements NGrinderConstants {
 	private final File directory;
 
 	public Home(File directory) {
@@ -88,15 +90,15 @@ public class Home {
 	}
 
 	public File getScriptDirectory() {
-		return getSubFile("script");
+		return getSubFile(SCRIPT_PATH);
 	}
 
 	public File getProjectDirectory() {
-		return getSubFile("project");
+		return getSubFile(PROJECT_PATH);
 	}
 
 	public File getPluginsDirectory() {
-		return getSubFile("plugins");
+		return getSubFile(PLUGIN_PATH);
 	}
 
 }

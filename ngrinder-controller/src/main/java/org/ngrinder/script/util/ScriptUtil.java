@@ -7,7 +7,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.ngrinder.common.NGrinderConstants;
+import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.script.model.Script;
 import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
@@ -22,21 +23,24 @@ import org.springframework.stereotype.Component;
  * @date 2012-6-13
  */
 @Component
-public final class ScriptUtil {
+public final class ScriptUtil implements NGrinderConstants {
 
 	private final Logger LOG = LoggerFactory.getLogger(ScriptUtil.class);
 
 	@Autowired
 	private UserContext userContext;
 
+	@Autowired
+	private Config config;
+
 	public void createScriptPath(long id) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(NGrinderConstants.PATH_PROJECT);
+		sb.append(config.getHome().getProjectDirectory().getAbsolutePath());
 		sb.append(File.separator);
-		sb.append(NGrinderConstants.PREFIX_USER);
+		sb.append(PREFIX_USER);
 		sb.append(userContext.getCurrentUser().getId());
 		sb.append(File.separator);
-		sb.append(NGrinderConstants.PREFIX_SCRIPT);
+		sb.append(PREFIX_SCRIPT);
 		sb.append(id);
 		sb.append(File.separator);
 
@@ -45,15 +49,15 @@ public final class ScriptUtil {
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}
-		dir = new File(scriptPath + NGrinderConstants.PATH_LOG);
+		dir = new File(scriptPath + PATH_LOG);
 		if (!dir.exists()) {
 			dir.mkdir();
 		}
-		dir = new File(scriptPath + NGrinderConstants.PATH_REPORT);
+		dir = new File(scriptPath + PATH_REPORT);
 		if (!dir.exists()) {
 			dir.mkdir();
 		}
-		dir = new File(scriptPath + NGrinderConstants.PATH_HISTORY);
+		dir = new File(scriptPath + PATH_HISTORY);
 		if (!dir.exists()) {
 			dir.mkdir();
 		}
@@ -82,15 +86,14 @@ public final class ScriptUtil {
 			userId = userContext.getCurrentUser().getId().longValue();
 		}
 		StringBuilder sb = new StringBuilder();
-		sb.append(NGrinderConstants.PATH_PROJECT);
+		sb.append(config.getHome().getProjectDirectory().getAbsolutePath());
 		sb.append(File.separator);
-		sb.append(NGrinderConstants.PREFIX_USER);
+		sb.append(PREFIX_USER);
 		sb.append(userId);
 		sb.append(File.separator);
-		sb.append(NGrinderConstants.PREFIX_SCRIPT);
+		sb.append(PREFIX_SCRIPT);
 		sb.append(id);
 		sb.append(File.separator);
-
 		return sb.toString();
 	}
 
@@ -104,7 +107,7 @@ public final class ScriptUtil {
 		if (null != script) {
 			String scriptFilePath = scriptPath + script.getFileName();
 			try {
-				content = FileUtils.readFileToString(new File(scriptFilePath), NGrinderConstants.ENCODE_UTF8);
+				content = FileUtils.readFileToString(new File(scriptFilePath), ENCODE_UTF8);
 			} catch (IOException e) {
 				LOG.error("Failed to load script file content, path: " + scriptFilePath + ", error: " + e.getMessage(),
 						e);
@@ -119,11 +122,10 @@ public final class ScriptUtil {
 		String historyContent = null;
 		if (null != script) {
 			StringBuilder scriptHistoryFilePath = new StringBuilder(scriptPath);
-			scriptHistoryFilePath.append(NGrinderConstants.PATH_HISTORY).append(File.separator);
+			scriptHistoryFilePath.append(PATH_HISTORY).append(File.separator);
 			scriptHistoryFilePath.append(historyName);
 			try {
-				historyContent = FileUtils.readFileToString(new File(scriptHistoryFilePath.toString()),
-						NGrinderConstants.ENCODE_UTF8);
+				historyContent = FileUtils.readFileToString(new File(scriptHistoryFilePath.toString()), ENCODE_UTF8);
 			} catch (IOException e) {
 				LOG.error("Failed to load script file history content, path: " + scriptHistoryFilePath + ", error: "
 						+ e.getMessage(), e);
@@ -138,8 +140,7 @@ public final class ScriptUtil {
 		String scriptFilePath = scriptPath + script.getFileName();
 		try {
 			if (null != script.getContent()) {
-				FileUtils.writeStringToFile(new File(scriptFilePath), script.getContent(),
-						NGrinderConstants.ENCODE_UTF8);
+				FileUtils.writeStringToFile(new File(scriptFilePath), script.getContent(), ENCODE_UTF8);
 			} else {
 				byte[] content = script.getContentBytes();
 				if (null == content) {
@@ -156,11 +157,10 @@ public final class ScriptUtil {
 	public void saveScriptHistoryFile(Script script) {
 		String scriptPath = getScriptPath(script.getId());
 		StringBuilder scriptHistoryFilePath = new StringBuilder(scriptPath);
-		scriptHistoryFilePath.append(NGrinderConstants.PATH_HISTORY).append(File.separator);
+		scriptHistoryFilePath.append(PATH_HISTORY).append(File.separator);
 		scriptHistoryFilePath.append(new Date().getTime());
 		try {
-			FileUtils.writeStringToFile(new File(scriptHistoryFilePath.toString()), script.getContent(),
-					NGrinderConstants.ENCODE_UTF8);
+			FileUtils.writeStringToFile(new File(scriptHistoryFilePath.toString()), script.getContent(), ENCODE_UTF8);
 		} catch (IOException e) {
 			LOG.error("Write script history file failed.", e);
 		}
@@ -179,7 +179,7 @@ public final class ScriptUtil {
 		List<String> historyFileNames = new ArrayList<String>();
 		String scriptPath = getScriptPath(id);
 		StringBuilder scriptHistoryFilePath = new StringBuilder(scriptPath);
-		scriptHistoryFilePath.append(NGrinderConstants.PATH_HISTORY).append(File.separator);
+		scriptHistoryFilePath.append(PATH_HISTORY).append(File.separator);
 
 		File historyDir = new File(scriptHistoryFilePath.toString());
 		File[] historyFiles = historyDir.listFiles();
@@ -191,9 +191,9 @@ public final class ScriptUtil {
 
 	public void saveScriptCache(long id, String content) {
 		String scriptPath = getScriptPath(id);
-		String scriptCachePath = scriptPath + NGrinderConstants.CACHE_NAME;
+		String scriptCachePath = scriptPath + CACHE_NAME;
 		try {
-			FileUtils.writeStringToFile(new File(scriptCachePath), content, NGrinderConstants.ENCODE_UTF8);
+			FileUtils.writeStringToFile(new File(scriptCachePath), content, ENCODE_UTF8);
 		} catch (IOException e) {
 			LOG.error("Write script cache file failed.", e);
 		}
@@ -201,7 +201,7 @@ public final class ScriptUtil {
 
 	public String getScriptCache(long id) {
 		String scriptPath = getScriptPath(id);
-		String scriptCachePath = scriptPath + NGrinderConstants.CACHE_NAME;
+		String scriptCachePath = scriptPath + CACHE_NAME;
 		String content = null;
 		try {
 			content = FileUtils.readFileToString(new File(scriptCachePath));
@@ -213,7 +213,7 @@ public final class ScriptUtil {
 
 	public void deleteScriptCache(long id) {
 		String scriptPath = getScriptPath(id);
-		String scriptCachePath = scriptPath + NGrinderConstants.CACHE_NAME;
+		String scriptCachePath = scriptPath + CACHE_NAME;
 		FileUtils.deleteQuietly(new File(scriptCachePath));
 	}
 

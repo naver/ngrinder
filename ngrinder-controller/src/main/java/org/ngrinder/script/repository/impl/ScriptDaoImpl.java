@@ -14,14 +14,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.ngrinder.common.NGrinderConstants;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.util.ReflectionUtil;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.script.model.Script;
 import org.ngrinder.script.repository.ScriptDao;
 import org.ngrinder.script.repository.ScriptsCache;
 import org.ngrinder.script.util.ScriptUtil;
 import org.ngrinder.user.service.UserContext;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +36,24 @@ import org.springframework.stereotype.Repository;
 /**
  * Zhifei
  * 
- * @date 2012-6-13
+ * .ngrinder<br>
+ * |project<br>
+ * |--|u_username1<br>
+ * |--|--|s_scriptid1<br>
+ * |--|--|--|script.properties<br>
+ * |--|--|--|histories<br>
+ * |--|--|--|reports<br>
+ * |--|--|--|logs<br>
+ * |--|--|s_scriptid2<br>
+ * |--|--|libs<br>
+ * |--|u_username2<br>
+ * 
+ * 
+ * 
+ * @since 3.0
  */
 @Repository
-public class ScriptDaoImpl implements ScriptDao {
+public class ScriptDaoImpl implements ScriptDao, NGrinderConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ScriptDaoImpl.class);
 
@@ -49,23 +63,18 @@ public class ScriptDaoImpl implements ScriptDao {
 	@Autowired
 	private ScriptUtil scriptUtil;
 
-	// private final Map<Long, Script> scriptsCache = new
-	// ConcurrentHashMap<Long, Script>();
-
-	// @PostConstruct
-	// public void init() {
-	// this.findAll();
-	// }
+	@Autowired
+	private Config config;
 
 	@Override
 	public List<Script> findAll() {
 		List<Script> scripts = new ArrayList<Script>();
-		File root = new File(NGrinderConstants.PATH_PROJECT);
+		File root = config.getHome().getProjectDirectory();
 		File[] userDirs = root.listFiles(new FileFilter() {
 
 			@Override
 			public boolean accept(File pathname) {
-				return pathname.getName().startsWith(NGrinderConstants.PREFIX_USER);
+				return pathname.getName().startsWith(PREFIX_USER);
 			}
 
 		});
@@ -73,7 +82,7 @@ public class ScriptDaoImpl implements ScriptDao {
 			for (File userDir : userDirs) {
 				long userId = 0;
 				try {
-					userId = Long.valueOf(userDir.getName().substring(NGrinderConstants.PREFIX_USER.length()));
+					userId = Long.valueOf(userDir.getName().substring(PREFIX_USER.length()));
 				} catch (NumberFormatException e) {
 					continue;
 				}
@@ -82,7 +91,7 @@ public class ScriptDaoImpl implements ScriptDao {
 
 					@Override
 					public boolean accept(File pathname) {
-						return pathname.getName().startsWith(NGrinderConstants.PREFIX_SCRIPT);
+						return pathname.getName().startsWith(PREFIX_SCRIPT);
 					}
 
 				});
@@ -90,7 +99,7 @@ public class ScriptDaoImpl implements ScriptDao {
 					for (File scriptDir : scriptDirs) {
 						long id = 0;
 						try {
-							id = Long.valueOf(scriptDir.getName().substring(NGrinderConstants.PREFIX_SCRIPT.length()));
+							id = Long.valueOf(scriptDir.getName().substring(PREFIX_SCRIPT.length()));
 						} catch (NumberFormatException e) {
 							continue;
 						}
@@ -187,7 +196,7 @@ public class ScriptDaoImpl implements ScriptDao {
 		if (null == script) {
 
 			String scriptPath = scriptUtil.getScriptPath(userId, id);
-			String scriptPropertiesPath = scriptPath + NGrinderConstants.SCRIPT_PROPERTIES;
+			String scriptPropertiesPath = scriptPath + SCRIPT_PROPERTIES;
 
 			FileInputStream fis = null;
 			ObjectInputStream ois = null;
@@ -223,7 +232,7 @@ public class ScriptDaoImpl implements ScriptDao {
 		}
 		String scriptPath = scriptUtil.getScriptPath(script.getId());
 
-		String scriptPropertiesPath = scriptPath + NGrinderConstants.SCRIPT_PROPERTIES;
+		String scriptPropertiesPath = scriptPath + SCRIPT_PROPERTIES;
 		FileOutputStream fos = null;
 		ObjectOutputStream oos = null;
 		try {

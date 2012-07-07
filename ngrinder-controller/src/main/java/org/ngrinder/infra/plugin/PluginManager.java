@@ -33,6 +33,7 @@ import javax.annotation.PreDestroy;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.infra.annotation.OnlyRuntimeComponent;
 import org.ngrinder.infra.config.Config;
@@ -53,22 +54,19 @@ import com.atlassian.plugin.osgi.hostcomponents.ComponentRegistrar;
 import com.atlassian.plugin.osgi.hostcomponents.HostComponentProvider;
 
 /**
- * Plugin manager which is responsible to init the plugin infra. It mainly uses
- * atlassian plugin framework.
+ * Plugin manager which is responsible to init the plugin infra. It mainly uses atlassian plugin framework.
  * 
  * @see https://developer.atlassian.com/display/PLUGINFRAMEWORK/Plugin+Framework
  * @author JunHo Yoon
  * @since 3.0
  */
 @OnlyRuntimeComponent
-public class PluginManager implements ServletContextAware {
+public class PluginManager implements ServletContextAware, NGrinderConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PluginManager.class);
 
 	private AtlassianPlugins plugins;
 	private ServletContext servletContext;
-
-	private static final int PLUGIN_UPDATE_FREQUENCY = 60;
 
 	@Autowired
 	private Config config;
@@ -86,7 +84,9 @@ public class PluginManager implements ServletContextAware {
 		// Determine which packages to expose to plugins
 		DefaultPackageScannerConfiguration scannerConfig = new DefaultPackageScannerConfiguration();
 		scannerConfig.setServletContext(servletContext);
-		scannerConfig.getPackageIncludes().add("com.nhncorp.*");
+
+		// Expose current packages to the plugins
+		scannerConfig.getPackageIncludes().add("org.ngrinder.*");
 		scannerConfig.getPackageIncludes().add("org.apache.*");
 		scannerConfig.getPackageIncludes().add("net.grinder.*");
 
@@ -94,9 +94,7 @@ public class PluginManager implements ServletContextAware {
 		// This 'on-start' module is used throughout this guide as an example
 		// only
 		DefaultModuleDescriptorFactory modules = new DefaultModuleDescriptorFactory(new DefaultHostContainer());
-		String packagename = "com.nhncorp";
-
-		initPluginDescriptor(modules, packagename);
+		initPluginDescriptor(modules, NGRINDER_DEFAULT_PACKAGE);
 
 		// Determine which service objects to expose to plugins
 		HostComponentProvider host = new HostComponentProvider() {
@@ -106,7 +104,7 @@ public class PluginManager implements ServletContextAware {
 		Home home = config.getHome();
 
 		// Construct the configuration
-		PluginsConfiguration config = new PluginsConfigurationBuilder().pluginDirectory(home.getSubFile("plugins"))
+		PluginsConfiguration config = new PluginsConfigurationBuilder().pluginDirectory(home.getPluginsDirectory())
 				.packageScannerConfiguration(scannerConfig)
 				.hotDeployPollingFrequency(PLUGIN_UPDATE_FREQUENCY, TimeUnit.SECONDS).hostComponentProvider(host)
 				.moduleDescriptorFactory(modules).build();
@@ -115,6 +113,7 @@ public class PluginManager implements ServletContextAware {
 		plugins = new AtlassianPlugins(config);
 		plugins.start();
 
+		// Fistly start on start plugin
 		for (Runnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(Runnable.class)) {
 			runnable.run();
 		}
@@ -127,7 +126,6 @@ public class PluginManager implements ServletContextAware {
 	@SuppressWarnings("rawtypes")
 	protected void initPluginDescriptor(DefaultModuleDescriptorFactory modules, String packagename) {
 		final Reflections reflections = new Reflections(packagename);
-
 		Set<Class<? extends AbstractModuleDescriptor>> pluginDescriptors = reflections
 				.getSubTypesOf(AbstractModuleDescriptor.class);
 
@@ -148,17 +146,22 @@ public class PluginManager implements ServletContextAware {
 		}
 	}
 
+	/**
+	 * Get plugins by module descriptor class.
+	 * 
+	 * @param moduleClass
+	 * @return plugin list
+	 */
 	public <M> List<M> getEnabledModulesByClass(Class<M> moduleClass) {
 		return getEnabledModulesByClass(moduleClass, null);
 	}
 
 	/**
-	 * Get plugins by module descriptor class and add the default plugin at a
-	 * head of returned plugins.
+	 * Get plugins by module descriptor class. This method puts the given default plugin at a head of plugin list.
 	 * 
 	 * @param moduleClass
 	 * @param defaultPlugin
-	 * @return
+	 * @return plugin list
 	 */
 	public <M> List<M> getEnabledModulesByClass(Class<M> moduleClass, M defaultPlugin) {
 		ArrayList<M> pluginClasses = new ArrayList<M>();

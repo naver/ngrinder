@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.ngrinder.common.NGrinderConstants;
+import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.script.model.Library;
 import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
@@ -21,20 +22,23 @@ import org.springframework.stereotype.Component;
  * @since 3.0
  */
 @Component
-public class LibraryUtil {
+public class LibraryUtil implements NGrinderConstants {
 	private final Logger LOG = LoggerFactory.getLogger(LibraryUtil.class);
 
 	@Autowired
 	private UserContext userContext;
 
+	@Autowired
+	private Config config;
+
 	public void createLibraryPath() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(NGrinderConstants.PATH_PROJECT);
+		sb.append(config.getHome().getProjectDirectory().getAbsolutePath());
 		sb.append(File.separator);
-		sb.append(NGrinderConstants.PREFIX_USER);
+		sb.append(PREFIX_USER);
 		sb.append(userContext.getCurrentUser().getId());
 		sb.append(File.separator);
-		sb.append(NGrinderConstants.PATH_LIB);
+		sb.append(PATH_LIB);
 		sb.append(File.separator);
 
 		String libPath = sb.toString();
@@ -46,12 +50,12 @@ public class LibraryUtil {
 
 	public String getLibraryPath() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(NGrinderConstants.PATH_PROJECT);
+		sb.append(config.getHome().getProjectDirectory().getAbsolutePath());
 		sb.append(File.separator);
-		sb.append(NGrinderConstants.PREFIX_USER);
+		sb.append(PREFIX_USER);
 		sb.append(userContext.getCurrentUser().getId());
 		sb.append(File.separator);
-		sb.append(NGrinderConstants.PATH_LIB);
+		sb.append(PATH_LIB);
 		sb.append(File.separator);
 
 		return sb.toString();
