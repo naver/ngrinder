@@ -5,7 +5,6 @@ import javax.annotation.PostConstruct;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
-import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,9 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class DBInit {
 	@Autowired
 	private UserRepository userRepository;
-
-	@Autowired
-	private UserService userService;
 
 	@PostConstruct
 	@Transactional
@@ -31,13 +27,13 @@ public class DBInit {
 			user.setUserId("admin");
 			user.setPassword("admin");
 			user.setRole(Role.ADMIN);
-			userService.saveUser(user);
+			userRepository.save(user);
 
 			User user2 = new User();
 			user2.setUserId("user");
 			user2.setPassword("user");
 			user2.setRole(Role.USER);
-			userService.saveUser(user2);
+			userRepository.save(user2);
 		}
 	}
 }
