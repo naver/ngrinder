@@ -32,7 +32,7 @@ import javax.persistence.Table;
  * User managed by nGrinder.
  * 
  * @author Mavlarn
- * @author JunHo Yoon
+ * @since 3.0
  */
 @SuppressWarnings("serial")
 @Entity
@@ -57,6 +57,7 @@ public class User extends BaseModel<User> {
 	private String email;
 
 	@Enumerated(EnumType.STRING)
+	@Column(name = "role_name", nullable = false)
 	private Role role = Role.USER;
 
 	private String description;
