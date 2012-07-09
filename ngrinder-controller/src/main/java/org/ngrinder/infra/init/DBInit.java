@@ -27,16 +27,12 @@ public class DBInit {
 			adminUser.setUserId("admin");
 			adminUser.setPassword("admin");
 			adminUser.setRole(Role.ADMIN);
-			adminUser.setUserLanguage("en");
-			adminUser.setTimeZone("Asia/Shanghai");
 			userRepository.save(adminUser);
 
 			User generalUser = new User();
 			generalUser.setUserId("user");
 			generalUser.setPassword("user");
 			generalUser.setRole(Role.USER);
-			generalUser.setUserLanguage("en");
-			generalUser.setTimeZone("Asia/Shanghai");
 			userRepository.save(generalUser);
 		}
 	}

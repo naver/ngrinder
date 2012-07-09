@@ -46,7 +46,7 @@ public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswo
 		String language = (String) request.getParameter("native_language");
 		SecuredUser user = (SecuredUser) auth.getPrincipal();
 		user.setTimezone(timezone);
-		user.setUserLanguage(language);
+		user.getUser().setUserLanguage(language);
 		return auth;
 	}
 

@@ -44,8 +44,6 @@ public class SecuredUser implements UserDetails {
 	private final String userInfoProviderClass;
 	private String authProviderClass;
 	private final User user;
-	private String timezone;
-	private String userLanguage;
 
 	public SecuredUser(User user, String userInfoProviderClass) {
 		this.user = user;
@@ -106,21 +104,5 @@ public class SecuredUser implements UserDetails {
 
 	public User getUser() {
 		return user;
-	}
-
-	public String getUserLanguage() {
-		return userLanguage;
-	}
-
-	public void setUserLanguage(String userLanguage) {
-		this.userLanguage = userLanguage;
-	}
-
-	public String getTimezone() {
-		return timezone;
-	}
-
-	public void setTimezone(String timezone) {
-		this.timezone = timezone;
 	}
 }
