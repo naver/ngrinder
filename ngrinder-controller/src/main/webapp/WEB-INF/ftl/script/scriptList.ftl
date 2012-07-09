@@ -106,6 +106,7 @@
 						</#if>
 					</tbody>
 				</table>
+				<#if libraries?has_content>
 				<div class="page-header" style="margin:65px 0 10px; padding-bottom:5px;">
 					<h3>Resource List</h3>
 				</div>
@@ -119,24 +120,18 @@
 						</tr>
 					</thead>
 					<tbody>
-						<#if libraries?has_content>
-							<#list libraries as library>
-							<tr>
-								<td class="left">${library.fileName}</td>
-								<td>${(library.fileSize)!0}</td>
-								<td><a href="javascript:void(0);"><i class="icon-download-alt resource-download" sname="${library.fileName}"></i></a></td>
-								<td><a href="javascript:void(0);"><i class="icon-remove resource-remove" sname="${library.fileName}"></i></a></td>
-							</tr>
-							</#list>
-						<#else>
-							<tr>
-								<td colspan="4">
-									No data to display.
-								</td>
-							</tr>
-						</#if>
+						<#list libraries as library>
+						<tr>
+							<td class="left">${library.fileName}</td>
+							<td>${(library.fileSize)!0}</td>
+							<td><a href="javascript:void(0);"><i class="icon-download-alt resource-download" sname="${library.fileName}"></i></a></td>
+							<td><a href="javascript:void(0);"><i class="icon-remove resource-remove" sname="${library.fileName}"></i></a></td>
+						</tr>
+						</#list>
 					</tbody>
 				</table>
+				</#if>
+				<#include "../common/copyright.ftl">
 			</div>
 		</div>
 
@@ -308,9 +303,7 @@
 					});
 					ids = agentArray.join(",");
 					
-					alert(ids);
-					
-					//document.location.href = "${Request.getContextPath()}/script/deleteScript?ids=" + ids;
+					document.location.href = "${Request.getContextPath()}/script/deleteScript?ids=" + ids;
 				}
 			});
 			
