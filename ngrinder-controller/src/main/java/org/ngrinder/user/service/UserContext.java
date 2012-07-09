@@ -44,7 +44,7 @@ public class UserContext {
 			throw new AuthenticationCredentialsNotFoundException("No athenticated");
 		}
 		Object obj = auth.getPrincipal();
-		if (!(obj instanceof User)) {
+		if (!(obj instanceof SecuredUser)) {
 			throw new AuthenticationCredentialsNotFoundException("Invalid athentication");
 		}
 		SecuredUser securedUser = (SecuredUser) obj;

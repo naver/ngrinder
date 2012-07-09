@@ -23,17 +23,21 @@ public class DBInit {
 	private void createDefaultUserIfNecessary() {
 		// If there is no users.. make admin and user and U, S, A roles.
 		if (userRepository.count() == 0) {
-			User user = new User();
-			user.setUserId("admin");
-			user.setPassword("admin");
-			user.setRole(Role.ADMIN);
-			userRepository.save(user);
+			User adminUser = new User();
+			adminUser.setUserId("admin");
+			adminUser.setPassword("admin");
+			adminUser.setRole(Role.ADMIN);
+			adminUser.setUserLanguage("en");
+			adminUser.setTimeZone("Asia/Shanghai");
+			userRepository.save(adminUser);
 
-			User user2 = new User();
-			user2.setUserId("user");
-			user2.setPassword("user");
-			user2.setRole(Role.USER);
-			userRepository.save(user2);
+			User generalUser = new User();
+			generalUser.setUserId("user");
+			generalUser.setPassword("user");
+			generalUser.setRole(Role.USER);
+			generalUser.setUserLanguage("en");
+			generalUser.setTimeZone("Asia/Shanghai");
+			userRepository.save(generalUser);
 		}
 	}
 }
