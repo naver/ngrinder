@@ -29,14 +29,15 @@
                     <div class="row">
                         <div class="span10">
                             <h3>Agent Info</h3>
+                            <div class="btn-group" data-toggle="buttons-radio">
+                                <button class="btn btn-small" title="Connect this agent">Connect</button>
+                                <button class="btn btn-small" title="Disconnect this agent">Disconnect</button>
+                            </div>
+                            <button class="btn pull-right" title="Disconnect this agent" id="returnBtn">Return</button>
                         </div>
                     </div>
                     <div class="row">
                         <div class="span2">
-                        <div class="btn-group" data-toggle="buttons-radio">
-                                <button class="btn btn-small" title="Connect this agent">Connect</button>
-                                <button class="btn btn-small" title="Disconnect this agent">Disconnect</button>
-                            </div>
                             <table class="table table-bordered" style="border-top:#cccccc solid 1px">
 						    <tbody>
 						    <tr>
@@ -140,7 +141,9 @@
         <script src="${Request.getContextPath()}/js/utils.js"></script>
         <script>
             $(document).ready(function() {
-                
+                 $("#returnBtn").on('click', function() {
+                   history.back();
+                });
             });
         </script>
     </body>

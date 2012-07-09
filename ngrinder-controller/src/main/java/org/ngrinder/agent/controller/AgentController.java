@@ -77,12 +77,10 @@ public class AgentController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public String createAgent(ModelMap model, Agent agent) {
-		System.out.println();
-
 		return getAgent(model, agent.getId());
 	}
 
-	@RequestMapping(value = "/deleteScript")
+	@RequestMapping(value = "/delete")
 	public String deleteAgent(ModelMap model, @RequestParam String ids) {
 		String[] idArr = ids.split(",");
 		long id = 0;
@@ -90,7 +88,11 @@ public class AgentController extends NGrinderBaseController {
 			id = Long.parseLong(idStr);
 			agentService.deleteAgent(id);
 		}
+		return getAgents(model, "");
+	}
 
+	@RequestMapping(value = "/connect")
+	public String connectAgent(ModelMap model, @RequestParam String ids, @RequestParam boolean isConnect) {
 		return getAgents(model, "");
 	}
 
