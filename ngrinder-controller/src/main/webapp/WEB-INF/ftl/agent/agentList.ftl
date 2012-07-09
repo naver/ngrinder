@@ -40,7 +40,7 @@
                                 <input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
                                 <button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i>Search</button>
                             </div>
-			                <table class="table table-condensed" id="scriptTable" style="margin-bottom:10px;">
+			                <table class="table" id="scriptTable" style="margin-bottom:10px;">
 			                    <colgroup>
 			                        <col width="30">
 			                        <col width="100">
@@ -80,12 +80,12 @@
 			                            <td>${(agent.status)!}</td>
 			                            <td>
 											<div class="btn-group" data-toggle="buttons-radio">
-											    <button class="btn btn-small" title="Connect this agent">Connect</button>
-											    <button class="btn btn-small" title="Disconnect this agent">Disconnect</button>
+											    <a class="btn btn-mini" href="${Request.getContextPath()}/agent/connect?ids=${agent.id}&isConnect=true">Connect</a>
+											    <a class="btn btn-mini" href="${Request.getContextPath()}/agent/connect?ids=${agent.id}&isConnect=false">Disconnect</a>
 											</div>
 			                            </td>
 			                            <td>
-			                                <a href="javascript:void(0);" title="Delete this agent"><i class="icon-remove"></i></a>
+			                                <a href="${Request.getContextPath()}/agent/delete?ids=${agent.id}" title="Delete this agent"><i class="icon-remove"></i></a>
 			                            </td>
 			                        </tr>
 			                        </#list>
@@ -106,45 +106,26 @@
             </div>
         </div>
         <script src="${Request.getContextPath()}/js/jquery-1.7.2.min.js"></script>
-        <script src="${Request.getContextPath()}/js/jquery.form.js"></script>
         <script src="${Request.getContextPath()}/js/bootstrap.min.js"></script>
         <script src="${Request.getContextPath()}/js/utils.js"></script>
         <script>
             $(document).ready(function() {
-            
-                function showRequest(formData, jqForm, options) { 
-                    alert('About to submit: \n\n' ); 
-                    return true; 
-                } 
-                function showResponse(responseText, statusText)  { 
-                    alert('status: ' + statusText + '\n\nresponseText: \n' + responseText + 
-                        '\n\nThe output div should have already been updated with the responseText.'); 
-                } 
-                
-	            var options = { 
-			        //target:        '#output2',   // target element(s) to be updated with server response 
-			        beforeSubmit:  showRequest,  // pre-submit callback 
-			        success:       showResponse  // post-submit callback 
-			 
-			        // other available options: 
-			        //url:       url         // override for form's 'action' attribute 
-			        //type:      type        // 'get' or 'post', override for form's 'method' attribute 
-			        //dataType:  null        // 'xml', 'script', or 'json' (expected server response type) 
-			        //clearForm: true        // clear all form fields after successful submit 
-			        //resetForm: true        // reset the form after successful submit 
-			 
-			        // $.ajax options can be used here too, for example: 
-			        //timeout:   3000 
-			    }; 
-			    
-			    
-                $("#saveBtn").on('click', function() {
-	                document.forms.createForm.submit();
-	                //$('#createForm').ajaxSubmit(options); 
-	                //return false; 
-	            });
-                
+                $("#connectBtn").on('click', function() {
+                    var ids = "";
+                    var list = $("td input:checked");
+                    if(list.length == 0) {
+                        alert("Please select any agents first.");
+                        return;
+                    }
+                    var agentArray = [];
+                    list.each(function() {
+                        agentArray.push($(this).val());
+                    });
+                    ids = agentArray.join(",");
+                    document.location.href = "${Request.getContextPath()}/agent/connect?ids=" + ids + "&isConnect=true";
+                });
             });
+            
         </script>
     </body>
 </html>
