@@ -22,11 +22,14 @@
  */
 package org.ngrinder.security;
 
+import java.util.Date;
+
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.plugin.OnLoginRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
+import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +70,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	private UserDetailsService userDetailsService;
 
 	@Autowired
-	private UserService userService;
+	private UserRepository userRepository;
 
 	// ~ Methods
 	// ========================================================================================================
@@ -94,17 +97,16 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class,
 				defaultLoginPlugin)) {
-			if (isClassEqual(each.getClass(), user.getAuthProviderClass())) {
+			if (StringUtils.isEmpty(user.getAuthProviderClass())
+					&& isClassEqual(each.getClass(), defaultLoginPlugin.getClass().getName())) {
+				each.validateUser(user.getUsername(), user.getPassword(), presentedPassword, passwordEncoder, salt);
+				authorized = true;
+				break;
+			} else if (isClassEqual(each.getClass(), user.getAuthProviderClass())) {
 				each.validateUser(user.getUsername(), user.getPassword(), presentedPassword, passwordEncoder, salt);
 				authorized = true;
 				break;
 			}
-		}
-
-		// If It's the first time to login
-		// means.. If the user info provider is not defaultLoginPlugin..
-		if (!isClassEqual(defaultLoginPlugin.getClass(), user.getUserInfoProviderClass())) {
-
 		}
 
 		if (!authorized) {
@@ -112,6 +114,11 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 					"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"), user);
 		}
 
+		// If It's the first time to login
+		// means.. If the user info provider is not defaultLoginPlugin..
+		if (!isClassEqual(defaultLoginPlugin.getClass(), user.getUserInfoProviderClass())) {
+			addNewUserIntoLocal(user);
+		}
 	}
 
 	/**
@@ -128,10 +135,12 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	}
 
 	@Transactional
-	public void addNewUserInfoLocal(SecuredUser user) {
-		User userForLocalStore = user.getUser();
-		userForLocalStore.setRole(Role.USER);
-		userService.saveUser(userForLocalStore);
+	public void addNewUserIntoLocal(SecuredUser securedUser) {
+		User user = securedUser.getUser();
+		user.setAuthProviderClass(securedUser.getUserInfoProviderClass());
+		user.setRole(Role.USER);
+		user.setCreatedDate(new Date());
+		userRepository.save(user);
 	}
 
 	protected void doAfterPropertiesSet() throws Exception {
@@ -158,15 +167,18 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	}
 
 	/**
-	 * Sets the PasswordEncoder instance to be used to encode and validate passwords. If not set, the password will be
-	 * compared as plain text.
+	 * Sets the PasswordEncoder instance to be used to encode and validate
+	 * passwords. If not set, the password will be compared as plain text.
 	 * <p>
-	 * For systems which are already using salted password which are encoded with a previous release, the encoder should
-	 * be of type {@code org.springframework.security.authentication.encoding.PasswordEncoder} . Otherwise, the
-	 * recommended approach is to use {@code org.springframework.security.crypto.password.PasswordEncoder}.
+	 * For systems which are already using salted password which are encoded
+	 * with a previous release, the encoder should be of type
+	 * {@code org.springframework.security.authentication.encoding.PasswordEncoder}
+	 * . Otherwise, the recommended approach is to use
+	 * {@code org.springframework.security.crypto.password.PasswordEncoder}.
 	 * 
 	 * @param passwordEncoder
-	 *            must be an instance of one of the {@code PasswordEncoder} types.
+	 *            must be an instance of one of the {@code PasswordEncoder}
+	 *            types.
 	 */
 	public void setPasswordEncoder(Object passwordEncoder) {
 		Assert.notNull(passwordEncoder, "passwordEncoder cannot be null");
@@ -205,15 +217,18 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	}
 
 	/**
-	 * The source of salts to use when decoding passwords. <code>null</code> is a valid value, meaning the
-	 * <code>DaoAuthenticationProvider</code> will present <code>null</code> to the relevant
-	 * <code>PasswordEncoder</code>.
+	 * The source of salts to use when decoding passwords. <code>null</code> is
+	 * a valid value, meaning the <code>DaoAuthenticationProvider</code> will
+	 * present <code>null</code> to the relevant <code>PasswordEncoder</code>.
 	 * <p>
-	 * Instead, it is recommended that you use an encoder which uses a random salt and combines it with the password
-	 * field. This is the default approach taken in the {@code org.springframework.security.crypto.password} package.
+	 * Instead, it is recommended that you use an encoder which uses a random
+	 * salt and combines it with the password field. This is the default
+	 * approach taken in the
+	 * {@code org.springframework.security.crypto.password} package.
 	 * 
 	 * @param saltSource
-	 *            to use when attempting to decode passwords via the <code>PasswordEncoder</code>
+	 *            to use when attempting to decode passwords via the
+	 *            <code>PasswordEncoder</code>
 	 */
 	public void setSaltSource(SaltSource saltSource) {
 		this.saltSource = saltSource;

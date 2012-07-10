@@ -77,7 +77,7 @@ public class NGrinderPluginUserDetailsServiceTest extends AbstractNGNinderTransa
 		assertThat(authProvider.authenticate(auth), notNullValue());
 
 		// And should be inserted into DB
-		verify(authProvider, times(1)).addNewUserInfoLocal(any(SecuredUser.class));
+		verify(authProvider, times(1)).addNewUserIntoLocal(any(SecuredUser.class));
 
 		reset(authProvider);
 		// Then, Auth should be succeeded.
@@ -85,7 +85,7 @@ public class NGrinderPluginUserDetailsServiceTest extends AbstractNGNinderTransa
 
 		// And should be inserted into DB
 
-		verify(authProvider, times(0)).addNewUserInfoLocal(any(SecuredUser.class));
+		verify(authProvider, times(0)).addNewUserIntoLocal(any(SecuredUser.class));
 
 	}
 

@@ -30,6 +30,7 @@ public class DBInit {
 			adminUser.setPassword("admin");
 			adminUser.setRole(Role.ADMIN);
 			adminUser.setUserName("admin");
+			adminUser.setEmail("admin@nhn.com");
 			adminUser.setCreatedDate(new Date());
 			userRepository.save(adminUser);
 
@@ -38,6 +39,7 @@ public class DBInit {
 			generalUser.setPassword("user");
 			generalUser.setRole(Role.USER);
 			generalUser.setUserName("user");
+			adminUser.setEmail("user@nhn.com");
 			generalUser.setCreatedDate(new Date());
 			userRepository.save(generalUser);
 		}
