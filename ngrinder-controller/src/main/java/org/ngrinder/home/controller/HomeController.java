@@ -68,7 +68,7 @@ public class HomeController extends NGrinderBaseController {
 		if (roles == null) {
 			return "login";
 		} else if (roles.contains("A") || roles.contains("U")) {
-			return "redirect:/index";
+			return "index";
 		} else {
 			LOG.info("Invalid user role:{}", roles);
 			return "login";
