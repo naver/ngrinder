@@ -24,7 +24,7 @@ public class DBInit {
 
 	private void createDefaultUserIfNecessary() {
 		// If there is no users.. make admin and user and U, S, A roles.
-		if (userRepository.count() == 0) {
+		if (userRepository.count() < 2) {
 			User adminUser = new User();
 			adminUser.setUserId("admin");
 			adminUser.setPassword("admin");

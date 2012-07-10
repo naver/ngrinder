@@ -54,6 +54,7 @@ public class NGrinderPluginUserDetailsServiceTest extends AbstractNGNinderTransa
 		authProvider = spy(authProvider);
 
 		when(auth.getPrincipal()).thenReturn("hello");
+		when(auth.getName()).thenReturn("hello");
 		when(auth.getCredentials()).thenReturn("world");
 
 		when(manager.getEnabledModulesByClass(any(OnLoginRunnable.class.getClass()), any(OnLoginRunnable.class)))
@@ -80,11 +81,11 @@ public class NGrinderPluginUserDetailsServiceTest extends AbstractNGNinderTransa
 		verify(authProvider, times(1)).addNewUserIntoLocal(any(SecuredUser.class));
 
 		reset(authProvider);
+		when(mockLoginPlugin.loadUser("hello")).thenReturn(user);
 		// Then, Auth should be succeeded.
 		assertThat(authProvider.authenticate(auth), notNullValue());
 
-		// And should be inserted into DB
-
+		// And should not be inserted into DB
 		verify(authProvider, times(0)).addNewUserIntoLocal(any(SecuredUser.class));
 
 	}
