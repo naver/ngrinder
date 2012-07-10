@@ -56,8 +56,6 @@ public class Agent extends BaseEntity<Agent> {
 
 	private int status;
 
-	private String agentType;
-
 	private String region;
 
 	public String getIp() {
@@ -90,14 +88,6 @@ public class Agent extends BaseEntity<Agent> {
 
 	public void setStatus(int status) {
 		this.status = status;
-	}
-
-	public String getAgentType() {
-		return agentType;
-	}
-
-	public void setAgentType(String agentType) {
-		this.agentType = agentType;
 	}
 
 	public String getRegion() {

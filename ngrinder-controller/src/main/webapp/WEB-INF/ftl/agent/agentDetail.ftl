@@ -46,24 +46,17 @@
 						    <td>${(agent.ip)!}</td>
 						    </tr>
 						    <tr>
-						    <th>Agent Port</th>
+						    <th>Port</th>
 						    </tr>
                             <tr>
 						    <td>${(agent.appPort)!}</td>
 						    </tr>
 						    <tr>
-						    <th>Agent Name</th>
+						    <th>Name</th>
 						    </tr>
                             <tr>
 						    <td>${(agent.appName)!}</td>
 						    </tr>
-						    <tr>
-						    <th>Type</th>
-						    </tr>
-                            <tr>
-						    <td>${(agent.type)!}</td>
-						    </tr>
-						    <tr>
 						    <th>Region</th>
 						    </tr>
                             <tr>

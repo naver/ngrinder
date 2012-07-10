@@ -45,8 +45,8 @@
 			                        <tr>
 			                            <th class="center"><input type="checkbox" class="checkbox" value=""></th>
 			                            <th>IP | Domain</th>
-			                            <th>Agent Port</th>
-			                            <th>Agent Name</th>
+			                            <th>Port</th>
+			                            <th>Name</th>
 			                            <th>Region</th>
 			                            <th>Status</th>
 			                            <th></th>
