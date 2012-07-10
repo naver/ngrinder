@@ -54,7 +54,7 @@ public class AgentController extends NGrinderBaseController {
 	@Autowired
 	private AgentService agentService;
 
-	@RequestMapping("/list")
+	@RequestMapping({ "", "/", "/list" })
 	public String getAgents(ModelMap model, @RequestParam(required = false) String keywords) {
 
 		Order order = new Order(Direction.DESC, "id");
@@ -77,12 +77,10 @@ public class AgentController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public String createAgent(ModelMap model, Agent agent) {
-		System.out.println();
-
 		return getAgent(model, agent.getId());
 	}
 
-	@RequestMapping(value = "/deleteScript")
+	@RequestMapping(value = "/delete")
 	public String deleteAgent(ModelMap model, @RequestParam String ids) {
 		String[] idArr = ids.split(",");
 		long id = 0;
@@ -90,8 +88,6 @@ public class AgentController extends NGrinderBaseController {
 			id = Long.parseLong(idStr);
 			agentService.deleteAgent(id);
 		}
-
 		return getAgents(model, "");
 	}
-
 }

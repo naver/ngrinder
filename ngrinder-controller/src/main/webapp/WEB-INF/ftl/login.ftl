@@ -7,7 +7,7 @@
 <title>nGrinder ::  NHN Performance Center</title>
 <input type="hidden" id="contextPath" value="${Request.getContextPath()}"/>
 <link rel="stylesheet" type="text/css" href="${Request.getContextPath()}/css/ngrinder.css">
-<script language="javascript" type="text/javascript" src="${Request.getContextPath()}/js/jquery-1.7.min.js"></script>
+<script language="javascript" type="text/javascript" src="${Request.getContextPath()}/js/jquery-1.7.2.min.js"></script>
 <script language="javascript" type="text/javascript" src="${Request.getContextPath()}/js/utils.js"></script>
 <script language="javascript" type="text/javascript" src="${Request.getContextPath()}/js/i18n/i18nTool.js"></script>
 <#import "spring.ftl" as spring/>

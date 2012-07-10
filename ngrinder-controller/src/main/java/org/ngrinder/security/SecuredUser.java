@@ -46,14 +46,6 @@ public class SecuredUser implements UserDetails {
 	 */
 	private final String userInfoProviderClass;
 	private final User user;
-	/**
-	 * User timezone
-	 */
-	private String timezone;
-	/**
-	 * User language
-	 */
-	private String userLanguage;
 
 	/**
 	 * User instance used for SpringSecurity
@@ -126,21 +118,5 @@ public class SecuredUser implements UserDetails {
 
 	public User getUser() {
 		return user;
-	}
-
-	public String getUserLanguage() {
-		return userLanguage;
-	}
-
-	public void setUserLanguage(String userLanguage) {
-		this.userLanguage = userLanguage;
-	}
-
-	public String getTimezone() {
-		return timezone;
-	}
-
-	public void setTimezone(String timezone) {
-		this.timezone = timezone;
 	}
 }

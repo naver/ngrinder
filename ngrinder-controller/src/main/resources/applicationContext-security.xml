@@ -63,19 +63,14 @@
 
 	<http entry-point-ref="authenticationProcessingFilterEntryPoint"
 		access-decision-manager-ref="accessDecisionManager">
-		<intercept-url pattern="/" access="A, U, S" />
-		<intercept-url pattern="/home" access="A, U, S" />
-		<intercept-url pattern="/perftest/**" access="U, S" />
-		<intercept-url pattern="/help**" access="U, S" />
-		<intercept-url pattern="/script**" access="U, S" />
+		<intercept-url pattern="/" access="A, U" />
+		<intercept-url pattern="/home" access="A, U" />
+		<intercept-url pattern="/perftest/**" access="U" />
+		<intercept-url pattern="/help**" access="U" />
+		<intercept-url pattern="/script**" access="U" />
 
-		<!-- even test user can connect/disconnect agent -->
-		<intercept-url pattern="/agent/operation" access="A, U, S" />
-		<intercept-url pattern="/agent/operation/all" access="A, U, S" />
-		<intercept-url pattern="/agent/**" access="A, S" />
-		<intercept-url pattern="/option/**" access="A, S" />
-		<intercept-url pattern="/user/**" access="A, S" />
-		<intercept-url pattern="/chart/**" access="A, U, S" />
+		<intercept-url pattern="/agent/**" access="A" />
+		<intercept-url pattern="/u/**" access="A" />
 
 		<custom-filter ref="customFilter" position="FORM_LOGIN_FILTER" />
 

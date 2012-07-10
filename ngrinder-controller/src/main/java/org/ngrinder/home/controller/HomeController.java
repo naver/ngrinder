@@ -67,10 +67,8 @@ public class HomeController extends NGrinderBaseController {
 		}
 		if (roles == null) {
 			return "login";
-		} else if (roles.indexOf("U") != -1) {
-			return "redirect:/project/list";
-		} else if (roles.indexOf("A") != -1 || roles.indexOf("S") != -1) {
-			return "redirect:/project/list";
+		} else if (roles.contains("A") || roles.contains("U")) {
+			return "index";
 		} else {
 			LOG.info("Invalid user role:{}", roles);
 			return "login";

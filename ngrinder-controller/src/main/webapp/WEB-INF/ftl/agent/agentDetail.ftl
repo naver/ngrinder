@@ -26,17 +26,17 @@
         <div class="container">
             <div class="row">
                 <div class="span10 offset1">
-                    <div class="row">
-                        <div class="span10">
-                            <h3>Agent Info</h3>
+                    <div class="row" style="margin-bottom:10px;">
+                        <div class="span8">
+                           <h3>Agent Info</h3>
+                        </div>
+                        <div class="span2">
+                            <button class="btn pull-right" title="Return" id="returnBtn">Return</button>
+                            <button class="btn pull-right" title="Refresh monitor data" id="refreshBtn">Refresh</button>
                         </div>
                     </div>
                     <div class="row">
                         <div class="span2">
-                        <div class="btn-group" data-toggle="buttons-radio">
-                                <button class="btn btn-small" title="Connect this agent">Connect</button>
-                                <button class="btn btn-small" title="Disconnect this agent">Disconnect</button>
-                            </div>
                             <table class="table table-bordered" style="border-top:#cccccc solid 1px">
 						    <tbody>
 						    <tr>
@@ -140,7 +140,19 @@
         <script src="${Request.getContextPath()}/js/utils.js"></script>
         <script>
             $(document).ready(function() {
-                
+                $("#returnBtn").on('click', function() {
+                    history.back();
+                });
+                $("#refreshBtn").on('click', function() {
+                    $.ajax({
+                        url: "#",
+                        context: document.body,
+                        dataObject: {id: "001"},
+                        success: function(){
+                            alert("Refresh success!");
+                            }
+                    });
+                });
             });
         </script>
     </body>
