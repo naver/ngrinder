@@ -22,8 +22,13 @@
  */
 package org.ngrinder.security;
 
+import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
+
 import org.ngrinder.infra.plugin.OnLoginRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
+import org.ngrinder.model.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,12 +39,15 @@ import org.springframework.stereotype.Service;
 /**
  * NGrinder customized {@link UserDetailsService}.
  * 
- * This resolve user 
+ * This resolve user
+ * 
  * @author nhn
- *
+ * 
  */
 @Service("ngrinderUserDetailsService")
 public class NGrinderUserDetailsService implements UserDetailsService {
+
+	protected static final Logger logger = LoggerFactory.getLogger(NGrinderUserDetailsService.class);
 
 	@Autowired
 	private PluginManager pluginManager;
@@ -50,9 +58,19 @@ public class NGrinderUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException, DataAccessException {
 		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class, defaultPlugin)) {
-			SecuredUser user = each.loadUser(userId);
-			if (user != null) {
-				return user;
+			try {
+				User user = each.loadUser(userId);
+				if (user != null) {
+					checkNotEmpty(user.getUserId(), "User info's userId provided by " + each.getClass().getName()
+							+ " should not be empty");
+					checkNotEmpty(user.getUserName(), "User info's userName provided by " + each.getClass().getName()
+							+ " should not be empty");
+					checkNotEmpty(user.getEmail(), "User info's email provided by " + each.getClass().getName()
+							+ " should not be empty");
+					return new SecuredUser(user, each.getClass().getName());
+				}
+			} catch (NullPointerException e) {
+				logger.error("User Info retrieval is failed", e);
 			}
 		}
 		throw new UsernameNotFoundException(userId + " is not found.");

@@ -28,6 +28,8 @@ import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -41,10 +43,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 @Service("ngrinderAuthenticationProvider")
 public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
+
+	protected static final Logger logger = LoggerFactory.getLogger(NGrinderAuthenticationProvider.class);
 
 	@Autowired
 	private PluginManager pluginManager;
@@ -86,25 +91,22 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		String presentedPassword = authentication.getCredentials().toString();
 		SecuredUser user = ((SecuredUser) userDetails);
 		boolean authorized = false;
+
 		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class,
 				defaultLoginPlugin)) {
-			// If no auth provider provided, defaultLoginPlugin is used to
-			// verify ID/PW
-			if (StringUtils.isEmpty(user.getAuthProviderClass()) && each.equals(defaultLoginPlugin)) {
-				each.authUser(passwordEncoder, user.getUsername(), user.getPassword(), presentedPassword, salt);
+			if (isClassEqual(each.getClass(), user.getAuthProviderClass())) {
+				each.validateUser(user.getUsername(), user.getPassword(), presentedPassword, passwordEncoder, salt);
 				authorized = true;
-				break;
-			}
-			//
-			else if (each.getClass().getName().equals(user.getAuthProviderClass())) {
-				each.authUser(passwordEncoder, user.getUsername(), user.getPassword(), presentedPassword, salt);
-				authorized = true;
-				if (!DefaultLoginPlugin.class.getName().equals(user.getUserInfoProviderClass())) {
-					addNewUserInfoLocal(user);
-				}
 				break;
 			}
 		}
+
+		// If It's the first time to login
+		// means.. If the user info provider is not defaultLoginPlugin..
+		if (!isClassEqual(defaultLoginPlugin.getClass(), user.getUserInfoProviderClass())) {
+
+		}
+
 		if (!authorized) {
 			throw new BadCredentialsException(messages.getMessage(
 					"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"), user);
@@ -112,6 +114,20 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 	}
 
+	/**
+	 * Check if given clazz has the given clazzName
+	 * 
+	 * @param clazz
+	 *            class
+	 * @param clazzName
+	 *            classname which is checked aginst
+	 * @return true if same
+	 */
+	private boolean isClassEqual(Class<?> clazz, String clazzName) {
+		return clazz.getName().equals(clazzName);
+	}
+
+	@Transactional
 	public void addNewUserInfoLocal(SecuredUser user) {
 		User userForLocalStore = user.getUser();
 		userForLocalStore.setRole(Role.USER);

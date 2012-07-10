@@ -53,7 +53,7 @@ public class CUBRIDDialect extends Dialect {
 
 		registerColumnType(Types.BIT, "bit(8)");
 		registerColumnType(Types.BIGINT, "numeric(19,0)");
-		registerColumnType(Types.BOOLEAN, "smallint");
+		registerColumnType(Types.BOOLEAN, "char(2)");
 		registerColumnType(Types.SMALLINT, "smallint");
 		registerColumnType(Types.TINYINT, "smallint");
 		registerColumnType(Types.INTEGER, "integer");

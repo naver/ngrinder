@@ -54,7 +54,7 @@ public class AgentController extends NGrinderBaseController {
 	@Autowired
 	private AgentService agentService;
 
-	@RequestMapping("/list")
+	@RequestMapping({ "", "/", "/list" })
 	public String getAgents(ModelMap model, @RequestParam(required = false) String keywords) {
 
 		Order order = new Order(Direction.DESC, "id");
@@ -90,10 +90,4 @@ public class AgentController extends NGrinderBaseController {
 		}
 		return getAgents(model, "");
 	}
-
-	@RequestMapping(value = "/connect")
-	public String connectAgent(ModelMap model, @RequestParam String ids, @RequestParam boolean isConnect) {
-		return getAgents(model, "");
-	}
-
 }

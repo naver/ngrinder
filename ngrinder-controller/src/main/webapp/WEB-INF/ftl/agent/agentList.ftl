@@ -28,40 +28,27 @@
                 <div class="span10 offset1">
                     <div class="row">
                         <div class="span10">
-                            <a class="btn" href="#uploadScriptModal" id="connectBtn" data-toggle="modal">
-                                <i class="icon-ok-circle"></i>
-                                Connect
-                            </a>
-                            <a class="btn" href="#uploadScriptModal" id="disconnectBtn" data-toggle="modal">
-                                <i class="icon-remove-circle"></i>
-                                Disconnect
-                            </a>
-                            <div class="form-inline pull-right" >
-                                <input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
-                                <button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i>Search</button>
-                            </div>
+                            <h3>Agent List</h3>
+                            <input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
+                            <button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i>Search</button>
 			                <table class="table" id="scriptTable" style="margin-bottom:10px;">
 			                    <colgroup>
 			                        <col width="30">
+			                        <col width="150">
+			                        <col width="150">
+			                        <col width="150">
 			                        <col width="100">
-			                        <col width="110">
-			                        <col width="110">
-			                        <col width="60">
-			                        <col width="60">
-			                        <col width="60">
-			                        <col width="160">
+			                        <col width="80">
 			                        <col width="20">
 			                    </colgroup>
 			                    <thead>
 			                        <tr>
 			                            <th class="center"><input type="checkbox" class="checkbox" value=""></th>
 			                            <th>IP | Domain</th>
-			                            <th>Application Port</th>
-			                            <th>Application Name</th>
-			                            <th>Type</th>
+			                            <th>Port</th>
+			                            <th>Name</th>
 			                            <th>Region</th>
 			                            <th>Status</th>
-			                            <th class="noClick">Operation</th>
 			                            <th></th>
 			                            <th></th>
 			                        </tr>
@@ -75,15 +62,8 @@
 			                            <td class="left"><a href="${Request.getContextPath()}/agent/detail?id=${agent.id}" target="_self">${agent.ip}</a></td>
 			                            <td>${(agent.appPort)!}</td>
 			                            <td>${(agent.appName)!}</td>
-			                            <td>${(agent.type)!}</td>
 			                            <td>${(agent.region)!}</td>
 			                            <td>${(agent.status)!}</td>
-			                            <td>
-											<div class="btn-group" data-toggle="buttons-radio">
-											    <a class="btn btn-mini" href="${Request.getContextPath()}/agent/connect?ids=${agent.id}&isConnect=true">Connect</a>
-											    <a class="btn btn-mini" href="${Request.getContextPath()}/agent/connect?ids=${agent.id}&isConnect=false">Disconnect</a>
-											</div>
-			                            </td>
 			                            <td>
 			                                <a href="${Request.getContextPath()}/agent/delete?ids=${agent.id}" title="Delete this agent"><i class="icon-remove"></i></a>
 			                            </td>
@@ -123,6 +103,24 @@
                     });
                     ids = agentArray.join(",");
                     document.location.href = "${Request.getContextPath()}/agent/connect?ids=" + ids + "&isConnect=true";
+                });
+                $("#disconnectBtn").on('click', function() {
+                    var ids = "";
+                    var list = $("td input:checked");
+                    if(list.length == 0) {
+                        alert("Please select any agents first.");
+                        return;
+                    }
+                    var agentArray = [];
+                    list.each(function() {
+                        agentArray.push($(this).val());
+                    });
+                    ids = agentArray.join(",");
+                    document.location.href = "${Request.getContextPath()}/agent/connect?ids=" + ids + "&isConnect=false";
+                });
+                $("#searchBtn").on('click', function() {
+                    var keywords =  $("#searchText").val();
+                    document.location.href = "${Request.getContextPath()}/agent/list?keywords=" + keywords;
                 });
             });
             

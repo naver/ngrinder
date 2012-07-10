@@ -22,11 +22,11 @@
  */
 package org.ngrinder.security;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.ngrinder.infra.plugin.OnLoginRunnable;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -37,7 +37,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DefaultLoginPlugin implements OnLoginRunnable {
 
-	protected final Log logger = LogFactory.getLog(getClass());
+	protected static final Logger logger = LoggerFactory.getLogger(DefaultLoginPlugin.class);
 
 	@Autowired
 	private UserService userService;
@@ -45,24 +45,29 @@ public class DefaultLoginPlugin implements OnLoginRunnable {
 	protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
 	@Override
-	public SecuredUser loadUser(String userId) {
-		User userById = userService.getUserById(userId);
-		if (userById != null) {
-			return new SecuredUser(userById, getClass().getName());
+	public User loadUser(String userId) {
+		User user = userService.getUserById(userId);
+		if (user != null) {
+			return user;
 		}
 		return null;
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public boolean authUser(Object encoder, String principle, String encPass, String rawPass, Object salt) {
-		if (!((PasswordEncoder) encoder).isPasswordValid(encPass, rawPass, salt)) {
+	public boolean validateUser(String userId, String password, String encPass, Object encoder, Object salt) {
+		if (!((PasswordEncoder) encoder).isPasswordValid(encPass, password, salt)) {
 			logger.debug("Authentication failed: password does not match stored value");
 
 			throw new BadCredentialsException(messages.getMessage(
-					"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"), principle);
+					"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"), userId);
 		}
 		return false;
+	}
+
+	@Override
+	public void saveUser(User user) {
+		// Do nothing for default plugin
 	}
 
 }

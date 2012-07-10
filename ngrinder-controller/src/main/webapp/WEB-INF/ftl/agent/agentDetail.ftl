@@ -26,14 +26,13 @@
         <div class="container">
             <div class="row">
                 <div class="span10 offset1">
-                    <div class="row">
-                        <div class="span10">
-                            <h3>Agent Info</h3>
-                            <div class="btn-group" data-toggle="buttons-radio">
-                                <button class="btn btn-small" title="Connect this agent">Connect</button>
-                                <button class="btn btn-small" title="Disconnect this agent">Disconnect</button>
-                            </div>
-                            <button class="btn pull-right" title="Disconnect this agent" id="returnBtn">Return</button>
+                    <div class="row" style="margin-bottom:10px;">
+                        <div class="span8">
+                           <h3>Agent Info</h3>
+                        </div>
+                        <div class="span2">
+                            <button class="btn pull-right" title="Return" id="returnBtn">Return</button>
+                            <button class="btn pull-right" title="Refresh monitor data" id="refreshBtn">Refresh</button>
                         </div>
                     </div>
                     <div class="row">
@@ -47,24 +46,17 @@
 						    <td>${(agent.ip)!}</td>
 						    </tr>
 						    <tr>
-						    <th>Application Port</th>
+						    <th>Port</th>
 						    </tr>
                             <tr>
 						    <td>${(agent.appPort)!}</td>
 						    </tr>
 						    <tr>
-						    <th>Application Name</th>
+						    <th>Name</th>
 						    </tr>
                             <tr>
 						    <td>${(agent.appName)!}</td>
 						    </tr>
-						    <tr>
-						    <th>Type</th>
-						    </tr>
-                            <tr>
-						    <td>${(agent.type)!}</td>
-						    </tr>
-						    <tr>
 						    <th>Region</th>
 						    </tr>
                             <tr>
@@ -141,8 +133,18 @@
         <script src="${Request.getContextPath()}/js/utils.js"></script>
         <script>
             $(document).ready(function() {
-                 $("#returnBtn").on('click', function() {
-                   history.back();
+                $("#returnBtn").on('click', function() {
+                    history.back();
+                });
+                $("#refreshBtn").on('click', function() {
+                    $.ajax({
+                        url: "#",
+                        context: document.body,
+                        dataObject: {id: "001"},
+                        success: function(){
+                            alert("Refresh success!");
+                            }
+                    });
                 });
             });
         </script>

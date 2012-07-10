@@ -52,6 +52,7 @@
 																		      <div class="controls">
 																		        <input type="text" class="input-xlarge" id="userName" name="userName" rel="popover" value="${(user.userName)!}"  data-content="Enter your first and last name." data-original-title="Full Name">
 																		        <input type="hidden" id="userId" name="userId" value="${(user.userId)!}" >
+																		        <input type="hidden" id="id" name="id" value="${(user.id)!}" >
 																		      </div>
 																		</div>
 																		
@@ -60,9 +61,9 @@
 																			<label class="control-label" for="input01">User Role</label>
 																		      <div class="controls">
 																		        <select name="role.name" id="role.name" >
-																	            				<option value="U" <#if user?? && user.role.name=="U">selected="selected"</#if> >General</option>
-																				                <option value="A" <#if user?? && user.role.name=="A">selected="selected"</#if>  >Administrator</option>
-																				                <option value="S" <#if user?? && user.role.name=="S">selected="selected"</#if>  >Super</option>
+																	            				<option value="USER" <#if user?? && user.role=="USER">selected="selected"</#if> >General</option>
+																				                <option value="ADMIN" <#if user?? && user.role=="ADMIN">selected="selected"</#if>  >Administrator</option>
+																				                <option value="SUPER" <#if user?? && user.role=="SUPER">selected="selected"</#if>  >Super</option>
 																				</select>
 																		      </div>
 																		</div>
@@ -77,7 +78,7 @@
 																		<div class="control-group">
 																			<label class="control-label" for="input01">Descriptoin</label>
 																		      <div class="controls">
-																				<textarea cols="30" id="description" name="description" rows="5"  title="Description" class="tx_area" rel="popover"  style="resize:none;">${(user.descriptoin)!}</textarea>
+																				<textarea cols="30" id="description" name="description" rows="5"  title="Description" class="tx_area" rel="popover"  style="resize:none;">${(user.description)!}</textarea>
 			
 																		      </div>
 																		</div>
@@ -92,7 +93,7 @@
 																		<div class="control-group">
 																			<label class="control-label" for="input01">Password</label>
 																		      <div class="controls">
-																		        <input type="password" class="input-xlarge" id="psw" name="psw" rel="popover" value="${(user.psw)!}" data-content="6 characters or more! Be tricky" data-original-title="Password" >
+																		        <input type="password" class="input-xlarge" id="password" name="password" rel="popover" value="${(user.psw)!}" data-content="6 characters or more! Be tricky" data-original-title="Password" >
 																		       
 																		      </div>
 																		</div>
@@ -147,13 +148,13 @@
 													required:false,
 													number: true
 											},
-											psw:{
+											password:{
 												required:true,
 												minlength:4
 											},
 											cpwd:{
 												required:true,
-												equalTo: "#psw"
+												equalTo: "#password"
 											},
 											gender:"required"
 							},
@@ -163,7 +164,7 @@
 								required:"Enter your email address",
 								email:"Enter valid email address"
 							},
-							psw:{
+							password:{
 								required:"Enter your password",
 								minlength:"Password must be minimum 6 characters"
 							},

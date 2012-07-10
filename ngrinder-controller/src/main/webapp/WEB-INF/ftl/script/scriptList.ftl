@@ -181,7 +181,8 @@
 				<h3>Upload a JavaScript or Selenium File</h3>
 			</div>
 			<div class="modal-body">
-				<form class="form-horizontal" style="margin-bottom:0" method="post" target="_self" action="${Request.getContextPath()}/script/upload" id="uploadForm">
+				<form class="form-horizontal" style="margin-bottom:0" method="post" target="_self" action="${Request.getContextPath()}/script/upload"
+						id="uploadForm" enctype="multipart/form-data">
 					<fieldset>
 						<div class="control-group">
 							<label for="upScriptNameInput" class="control-label control-label-small">Name</label>

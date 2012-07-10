@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -41,16 +40,31 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class SecuredUser implements UserDetails {
 
 	private static final long serialVersionUID = 9160341654874660746L;
+
+	/**
+	 * Plugin class name from which {@link User} instance is provided.
+	 */
 	private final String userInfoProviderClass;
-	private String authProviderClass;
 	private final User user;
 
+	/**
+	 * User instance used for SpringSecurity
+	 * 
+	 * @param user
+	 *            real user info
+	 * @param userInfoProviderClass
+	 *            class name who provides the user info
+	 */
 	public SecuredUser(User user, String userInfoProviderClass) {
 		this.user = user;
 		this.userInfoProviderClass = userInfoProviderClass;
-		this.authProviderClass = StringUtils.defaultIfEmpty(user.getAuthProviderClass(), userInfoProviderClass);
 	}
 
+	/**
+	 * Return provided authorities. It returns one Role from {@link User} in the {@link GrantedAuthority} list.
+	 * 
+	 * @return {@link GrantedAuthority} list
+	 */
 	@Override
 	public Collection<GrantedAuthority> getAuthorities() {
 		List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>(1);
@@ -76,17 +90,17 @@ public class SecuredUser implements UserDetails {
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return true;
+		return user.isEnabled();
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return true;
+		return user.isEnabled();
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return true;
+		return user.isEnabled();
 	}
 
 	@Override
@@ -99,7 +113,7 @@ public class SecuredUser implements UserDetails {
 	}
 
 	public String getAuthProviderClass() {
-		return authProviderClass;
+		return user.getAuthProviderClass();
 	}
 
 	public User getUser() {
