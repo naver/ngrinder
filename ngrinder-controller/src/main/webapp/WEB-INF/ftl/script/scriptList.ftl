@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+`<!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="utf-8">
@@ -245,7 +245,7 @@
 				
 				$elem = $("#urlInput");
 				if (checkEmpty($elem)) {
-					showErrMsg($elem, "Descripition can't be empyt.")
+					showErrMsg($elem, "Descripition can't be empty.")
 					return;
 				} else {
 					cleanErrMsg($elem);
@@ -265,7 +265,7 @@
 				
 				$elem = $("#discriptionInput");
 				if (checkEmpty($elem)) {
-					showErrMsg($elem, "Descripition can't be empyt.")
+					showErrMsg($elem, "Descripition can't be empty.")
 					return;
 				} else {
 					cleanErrMsg($elem);
@@ -273,7 +273,7 @@
 				
 				$elem = $("#tagsInput");
 				if (checkEmpty($elem)) {
-					showErrMsg($elem, "Tags can't be empyt.");
+					showErrMsg($elem, "Tags can't be empty.");
 					return;
 				} else {
 					cleanErrMsg($elem);

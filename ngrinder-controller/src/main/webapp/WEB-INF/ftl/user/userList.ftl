@@ -32,7 +32,7 @@
 					<div class="span10 offset1">
 					
 										<div class="row">
-													<div class="span3">
+													<div class="span2">
 																<a class="btn" href="${Request.getContextPath()}/user/detail" id="createBtn" data-toggle="modal">
 																				<i class="icon-user"></i>
 																				Create User
@@ -40,12 +40,12 @@
 																<#include "userTree.ftl">
 													</div>
 													
-													<div class="span7">
+													<div class="span8">
 														
 																
-																	<div class="well form-inline" style="padding:5px;margin:10px 0">
+																	<div class="well form-inline" style="padding:5px;">
 																		<!--<legend>introduction</legend>-->
-																		<input type="text" class="input-medium search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
+																		<input type="text" class="input-medium search-query" placeholder="Keywords" id="searchText" value="${keywords!}" style="width:350px">
 																		<button type="submit" class="btn" id="searchBtn">Search</button>
 																	</div>
 																
@@ -66,7 +66,9 @@
 																					  <tr>
 																							<td><input type="checkbox" value=""></td>
 																							<td class="center"><a href="${Request.getContextPath()}/user/detail?userId=${user.userId}" >${user.userName}</a></td>
-																							<td>${user.createdDate?string("yyyy/MM/dd hh:mm:ss")}</td>
+																							<td>
+																								${user.createdDate!user.createdDate?string("yyyy/MM/dd hh:mm:ss")}
+																							</td>
 																							<td>${user.description!}</td>
 																							<td>${user.role}</td>
 																							<td><a href="${Request.getContextPath()}/user/detail?userId=${user.userId}"><i class="icon-edit"></i></a></td>

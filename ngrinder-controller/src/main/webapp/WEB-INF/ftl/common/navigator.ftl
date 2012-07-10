@@ -1,3 +1,5 @@
+<#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
+<#import "/spring.ftl" as spring />
 <div class="navbar navbar-fixed-top">
 	<div class="navbar-inner">
 		<div class="container">
@@ -6,7 +8,8 @@
 				<ul class="nav">
 				  <li id="n_test"><a href="${Request.getContextPath()}/perftest/list">Load Test</a></li>
 				  <li id="n_script"><a href="${Request.getContextPath()}/script/list">Script</a></li>
-				  <li id="n_test"><a href="${Request.getContextPath()}/user/list">User Manager</a></li>
+  			  	  <li id="n_user_manager"><a href="${Request.getContextPath()}/user/list">User Manager</a></li>
+
 				  <li id="n_alert"><a href="#contact">Alert</a></li>
 				</ul>
 				<ul class="nav pull-right">
