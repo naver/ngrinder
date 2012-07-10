@@ -34,6 +34,7 @@ public class UserTest extends AbstractNGNinderTransactionalTest {
 		user.setUserId("hello");
 		userRepository.save(user);
 		User user2 = new User();
+
 		user2.setUserId("hello2");
 		user2.setUserName("MyName2");
 		user2.setEmail("junoyoon@paran.com");
