@@ -62,7 +62,7 @@ public class AgentServiceTest extends AbstractNGNinderTransactionalTest {
 	public void testGetAgent() {
 		Agent agent = this.saveAgent("get");
 		Agent agent2 = agentService.getAgent(agent.getId());
-		Assert.assertEquals(agent.getAgentName(), agent2.getAgentName());
+		Assert.assertEquals(agent.getAppName(), agent2.getAppName());
 	}
 
 	@Test

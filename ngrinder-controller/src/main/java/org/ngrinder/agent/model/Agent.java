@@ -56,8 +56,6 @@ public class Agent extends BaseEntity<Agent> {
 
 	private int status;
 
-	private String agentName;
-
 	private String agentType;
 
 	private String region;
@@ -92,14 +90,6 @@ public class Agent extends BaseEntity<Agent> {
 
 	public void setStatus(int status) {
 		this.status = status;
-	}
-
-	public String getAgentName() {
-		return agentName;
-	}
-
-	public void setAgentName(String agentName) {
-		this.agentName = agentName;
 	}
 
 	public String getAgentType() {
