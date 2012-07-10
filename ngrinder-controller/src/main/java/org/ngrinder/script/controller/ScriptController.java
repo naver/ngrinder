@@ -116,29 +116,28 @@ public class ScriptController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public String uploadFiles(ModelMap model, Script script, @RequestParam("uploadFile") List<MultipartFile> scriptFiles) {
-		for (MultipartFile file : scriptFiles) {
-			if (file.getName().toLowerCase().endsWith(".py")) {
-				script.setFileSize(file.getSize());
-				try {
-					script.setContentBytes(file.getBytes());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-
-				scriptService.saveScript(script);
-			} else {
-				Library library = new Library();
-				library.setFileName(file.getName());
-				library.setFileSize(file.getSize());
-				try {
-					library.setContentBytes(file.getBytes());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-
-				libraryService.saveLibrary(library);
+	public String uploadFiles(ModelMap model, Script script,
+			@RequestParam("uploadFile") MultipartFile file) {
+		if (file.getName().toLowerCase().endsWith(".py")) {
+			script.setFileSize(file.getSize());
+			try {
+				script.setContentBytes(file.getBytes());
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
+
+			scriptService.saveScript(script);
+		} else {
+			Library library = new Library();
+			library.setFileName(file.getOriginalFilename());
+			library.setFileSize(file.getSize());
+			try {
+				library.setContentBytes(file.getBytes());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			libraryService.saveLibrary(library);
 		}
 
 		return getAllScripts(model, "", false);

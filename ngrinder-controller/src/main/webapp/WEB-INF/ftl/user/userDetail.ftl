@@ -60,9 +60,9 @@
 																			<label class="control-label" for="input01">User Role</label>
 																		      <div class="controls">
 																		        <select name="role.name" id="role.name" >
-																	            				<option value="U" <#if user?? && user.role.name=="U">selected="selected"</#if> >General</option>
-																				                <option value="A" <#if user?? && user.role.name=="A">selected="selected"</#if>  >Administrator</option>
-																				                <option value="S" <#if user?? && user.role.name=="S">selected="selected"</#if>  >Super</option>
+																	            				<option value="USER" <#if user?? && user.role=="USER">selected="selected"</#if> >General</option>
+																				                <option value="ADMIN" <#if user?? && user.role=="ADMIN">selected="selected"</#if>  >Administrator</option>
+																				                <option value="SUPER" <#if user?? && user.role=="SUPER">selected="selected"</#if>  >Super</option>
 																				</select>
 																		      </div>
 																		</div>
@@ -92,7 +92,7 @@
 																		<div class="control-group">
 																			<label class="control-label" for="input01">Password</label>
 																		      <div class="controls">
-																		        <input type="password" class="input-xlarge" id="psw" name="psw" rel="popover" value="${(user.psw)!}" data-content="6 characters or more! Be tricky" data-original-title="Password" >
+																		        <input type="password" class="input-xlarge" id="password" name="password" rel="popover" value="${(user.psw)!}" data-content="6 characters or more! Be tricky" data-original-title="Password" >
 																		       
 																		      </div>
 																		</div>
@@ -147,13 +147,13 @@
 													required:false,
 													number: true
 											},
-											psw:{
+											password:{
 												required:true,
 												minlength:4
 											},
 											cpwd:{
 												required:true,
-												equalTo: "#psw"
+												equalTo: "#password"
 											},
 											gender:"required"
 							},
@@ -163,7 +163,7 @@
 								required:"Enter your email address",
 								email:"Enter valid email address"
 							},
-							psw:{
+							password:{
 								required:"Enter your password",
 								minlength:"Password must be minimum 6 characters"
 							},

@@ -22,7 +22,7 @@
  */
 package org.ngrinder.infra.plugin;
 
-import org.ngrinder.security.SecuredUser;
+import org.ngrinder.model.User;
 
 /**
  * Plugin extension for user authentication
@@ -31,7 +31,28 @@ import org.ngrinder.security.SecuredUser;
  * @since 3.0
  */
 public interface OnLoginRunnable {
-	public SecuredUser loadUser(String userId);
+	/**
+	 * Load user by userId
+	 * 
+	 * @param userId
+	 * @return User instance
+	 */
+	public User loadUser(String userId);
 
-	public boolean authUser(Object encoder, String principle, String encPass, String rawPass, Object salt);
+
+	/**
+	 * Validate user by userId and password.
+	 * 
+	 * Against password can be provided by plugin. In such case encPass, encoder, salt might be null.
+	 * 
+	 * @param userId user providing id
+	 * @param password user providing password
+	 * @param encPass encrypted password
+	 * @param encoder encoder which encrypts password
+	 * @param salt salt of encoding
+	 * @return true is validated
+	 */
+	public boolean validateUser(String userId, String password, String encPass, Object encoder, Object salt);
+
+	public void saveUser(User user);
 }

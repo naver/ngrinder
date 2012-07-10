@@ -24,12 +24,22 @@ package org.ngrinder.model;
 
 /** Role of the User */
 public enum Role {
-	/** User */
+	/**
+	 * General user role who can create performance test entry
+	 */
 	USER("U"),
-	/** Admin */
+	/**
+	 * Admin user role who monitors tests
+	 */
 	ADMIN("A"),
-	/** Super User */
-	SUPER_USER("S");
+	/**
+	 * Super user role who set system settings and manage user account.
+	 */
+	SUPER_USER("S"),
+	/**
+	 * System user role. This is for the automatic batch
+	 */
+	SYSTEM_USER("SYSTEM");
 
 	private final String shortName;
 

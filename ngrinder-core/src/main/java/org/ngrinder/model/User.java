@@ -74,7 +74,7 @@ public class User extends BaseModel<User> {
 	@Column(name = "is_external")
 	private boolean external = false;
 
-	@Transient
+	/** Who provide the authentication */
 	private String authProviderClass;
 
 	public User() {
