@@ -13,21 +13,14 @@ import net.grinder.messages.console.AgentAddress;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.AbstractMuliGrinderTestBase;
 
-public class AgentControllerTest {
+public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 	AgentControllerServerDaemon agentControllerServerDeamon;
 	AgentControllerDaemon agentControllerDaemon;
 	AgentControllerDaemon agentControllerDaemon2;
 	SingleConsole console1;
 	Set<AgentIdentity> allAvailableAgents;
-
-	public void sleep(long time) {
-		try {
-			Thread.sleep(time);
-		} catch (InterruptedException e) {
-			new RuntimeException(e);
-		}
-	}
 
 	@Before
 	public void before() {

@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import java.security.Security;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class LocalManagedDnsTest {
@@ -22,7 +23,8 @@ public class LocalManagedDnsTest {
 	}
 
 	@Test
-	public void test2() throws UnknownHostException {
+	@Ignore("Only this test is avalible when we provide JVM options on test runner")
+	public void testCustomDNSLookup() throws UnknownHostException {
 		performLookup("www.google.com");
 		performLookup("www.google2.com");
 
