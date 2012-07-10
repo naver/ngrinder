@@ -8,8 +8,8 @@
 		<meta name="author" content="AlexQin">
 
 		<link rel="shortcut icon" href="favicon.ico"/>
-		<link href="${Request.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-		<link href="${Request.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
+		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
+		<link href="${req.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
 		
 		<style>
 			body {
@@ -17,7 +17,7 @@
 			}
 		</style>
 		
-		<input type="hidden" id="contextPath" value="${Request.getContextPath()}">
+		<input type="hidden" id="contextPath" value="${req.getContextPath()}">
 		<#setting number_format="computer">
 	</head>
 
@@ -37,9 +37,9 @@
 				</div>
 			</div>
 		</div>
-		<script src="${Request.getContextPath()}/js/jquery-1.7.2.min.js"></script>
-		<script src="${Request.getContextPath()}/js/bootstrap.min.js"></script>
-		<script src="${Request.getContextPath()}/js/utils.js"></script>
+		<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
+		<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
+		<script src="${req.getContextPath()}/js/utils.js"></script>
 		<script>
 			$(document).ready(function() {
 				

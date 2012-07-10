@@ -33,7 +33,7 @@
 					
 										<div class="row">
 													<div class="span2">
-																<a class="btn" href="${Request.getContextPath()}/user/detail" id="createBtn" data-toggle="modal">
+																<a class="btn" href="${req.getContextPath()}/user/detail" id="createBtn" data-toggle="modal">
 																				<i class="icon-user"></i>
 																				Create User
 																</a>
@@ -65,14 +65,14 @@
 																					<#list userList as user>
 																					  <tr>
 																							<td><input type="checkbox" value=""></td>
-																							<td class="center"><a href="${Request.getContextPath()}/user/detail?userId=${user.userId}" >${user.userName}</a></td>
+																							<td class="center"><a href="${req.getContextPath()}/user/detail?userId=${user.userId}" >${user.userName}</a></td>
 																							<td>
 																								${user.createdDate!user.createdDate?string("yyyy/MM/dd hh:mm:ss")}
 																							</td>
 																							<td>${user.description!}</td>
 																							<td>${user.role}</td>
-																							<td><a href="${Request.getContextPath()}/user/detail?userId=${user.userId}"><i class="icon-edit"></i></a></td>
-																							<td><a href="${Request.getContextPath()}/user/delete?userId=${user.userId}"><i class="icon-remove" ></i></a></td>
+																							<td><a href="${req.getContextPath()}/user/detail?userId=${user.userId}"><i class="icon-edit"></i></a></td>
+																							<td><a href="${req.getContextPath()}/user/delete?userId=${user.userId}"><i class="icon-remove" ></i></a></td>
 																						</tr>
 																						</#list>
 																			</tbody>

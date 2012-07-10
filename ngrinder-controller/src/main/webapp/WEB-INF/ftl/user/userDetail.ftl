@@ -28,7 +28,7 @@
 					
 					  <div class="row">
 								<div class="span2">
-																<a class="btn" href="${Request.getContextPath()}/user/detail" id="createBtn" data-toggle="modal">
+																<a class="btn" href="${req.getContextPath()}/user/detail" id="createBtn" data-toggle="modal">
 																				<i class="icon-user"></i>
 																				Create User
 																</a>
@@ -43,7 +43,7 @@
 												<button type="submit" class="btn" id="searchBtn">Search</button>
 											</div>
 
-											<form action="${Request.getContextPath()}/user/save"  class="form-horizontal" id="registerUserForm" method="POST">
+											<form action="${req.getContextPath()}/user/save"  class="form-horizontal" id="registerUserForm" method="POST">
 															  <fieldset>
 															    <legend>Registration</legend>
 															    
@@ -126,8 +126,8 @@
 				</div>	
 		  </div>
 	</body>
-		<script src="${Request.getContextPath()}/js/bootstrap.min.js"></script>
-		<script src="${Request.getContextPath()}/js/jquery.validate.js"></script>
+		<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
+		<script src="${req.getContextPath()}/js/jquery.validate.js"></script>
 	    <script type="text/javascript">
 	    
 	  $(document).ready(function(){

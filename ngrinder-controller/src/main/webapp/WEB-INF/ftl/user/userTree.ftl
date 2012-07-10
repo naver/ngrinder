@@ -1,8 +1,8 @@
-<script src="${Request.getContextPath()}/js/jquery-1.7.2.min.js"></script>
-<link href="${Request.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-<link href="${Request.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
-<script src="${Request.getContextPath()}/plugins/tree/jquery.ztree.all-3.2.js"></script>
-<link rel="stylesheet" href="${Request.getContextPath()}/plugins/tree/zTreeStyle.css" type="text/css">
+<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
+<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
+<link href="${req.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
+<script src="${req.getContextPath()}/plugins/tree/jquery.ztree.all-3.2.js"></script>
+<link rel="stylesheet" href="${req.getContextPath()}/plugins/tree/zTreeStyle.css" type="text/css">
 
 <script type="text/javascript">
 		
@@ -24,11 +24,11 @@
 						function zTreeOnClick(event, treeId, treeNode){
 										var nodeId = treeNode.id;
 										if(nodeId == 'A'||nodeId == 'U'||nodeId == 'S'){
-											    document.location.href ="${Request.getContextPath()}/user/list?roleName="+nodeId;
+											    document.location.href ="${req.getContextPath()}/user/list?roleName="+nodeId;
 										}else if(nodeId != 'all'){
-												document.location.href ="${Request.getContextPath()}/user/detail?userId="+nodeId;
+												document.location.href ="${req.getContextPath()}/user/detail?userId="+nodeId;
 										}else{
-												document.location.href ="${Request.getContextPath()}/user/list";
+												document.location.href ="${req.getContextPath()}/user/list";
 										}
 										
 						}

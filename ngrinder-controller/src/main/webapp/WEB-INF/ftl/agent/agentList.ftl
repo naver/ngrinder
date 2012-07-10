@@ -8,8 +8,8 @@
         <meta name="author" content="Tobi">
 
         <link rel="shortcut icon" href="favicon.ico"/>
-        <link href="${Request.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-        <link href="${Request.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
+        <link href="${req.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
         
         <style>
             body {
@@ -17,7 +17,7 @@
             }
         </style>
         
-        <input type="hidden" id="contextPath" value="${Request.getContextPath()}">
+        <input type="hidden" id="contextPath" value="${req.getContextPath()}">
         <#setting number_format="computer">
     </head>
 
@@ -59,13 +59,13 @@
 			                        <#list agentList as agent>
 			                        <tr>
 			                            <td><input type="checkbox" value="${agent.id}"></td>
-			                            <td class="left"><a href="${Request.getContextPath()}/agent/detail?id=${agent.id}" target="_self">${agent.ip}</a></td>
+			                            <td class="left"><a href="${req.getContextPath()}/agent/detail?id=${agent.id}" target="_self">${agent.ip}</a></td>
 			                            <td>${(agent.appPort)!}</td>
 			                            <td>${(agent.appName)!}</td>
 			                            <td>${(agent.region)!}</td>
 			                            <td>${(agent.status)!}</td>
 			                            <td>
-			                                <a href="${Request.getContextPath()}/agent/delete?ids=${agent.id}" title="Delete this agent"><i class="icon-remove"></i></a>
+			                                <a href="${req.getContextPath()}/agent/delete?ids=${agent.id}" title="Delete this agent"><i class="icon-remove"></i></a>
 			                            </td>
 			                        </tr>
 			                        </#list>
@@ -85,9 +85,9 @@
                 </div>
             </div>
         </div>
-        <script src="${Request.getContextPath()}/js/jquery-1.7.2.min.js"></script>
-        <script src="${Request.getContextPath()}/js/bootstrap.min.js"></script>
-        <script src="${Request.getContextPath()}/js/utils.js"></script>
+        <script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
+        <script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
+        <script src="${req.getContextPath()}/js/utils.js"></script>
         <script>
             $(document).ready(function() {
                 $("#connectBtn").on('click', function() {
@@ -102,7 +102,7 @@
                         agentArray.push($(this).val());
                     });
                     ids = agentArray.join(",");
-                    document.location.href = "${Request.getContextPath()}/agent/connect?ids=" + ids + "&isConnect=true";
+                    document.location.href = "${req.getContextPath()}/agent/connect?ids=" + ids + "&isConnect=true";
                 });
                 $("#disconnectBtn").on('click', function() {
                     var ids = "";
@@ -116,11 +116,11 @@
                         agentArray.push($(this).val());
                     });
                     ids = agentArray.join(",");
-                    document.location.href = "${Request.getContextPath()}/agent/connect?ids=" + ids + "&isConnect=false";
+                    document.location.href = "${req.getContextPath()}/agent/connect?ids=" + ids + "&isConnect=false";
                 });
                 $("#searchBtn").on('click', function() {
                     var keywords =  $("#searchText").val();
-                    document.location.href = "${Request.getContextPath()}/agent/list?keywords=" + keywords;
+                    document.location.href = "${req.getContextPath()}/agent/list?keywords=" + keywords;
                 });
             });
             

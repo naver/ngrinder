@@ -8,15 +8,15 @@
 		<meta name="author" content="AlexQin">
 
 		<link rel="shortcut icon" href="favicon.ico"/>
-		<link href="${Request.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-		<link href="${Request.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
+		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
+		<link href="${req.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
 		<style>
 			body {
 				padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
 			}
 		</style>
 		
-		<input type="hidden" id="contextPath" value="${Request.getContextPath()}">
+		<input type="hidden" id="contextPath" value="${req.getContextPath()}">
 		<#setting number_format="computer">
 	</head>
 
@@ -49,9 +49,9 @@
 
 	</div>
 
-	<script src="${Request.getContextPath()}/js/jquery-1.7.2.min.js"></script>
-	<script src="${Request.getContextPath()}/js/bootstrap.min.js"></script>
-	<script src="${Request.getContextPath()}/plugins/editarea/edit_area.js"></script>
+	<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
+	<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
+	<script src="${req.getContextPath()}/plugins/editarea/edit_area.js"></script>
 	
 	</body>
 </html>

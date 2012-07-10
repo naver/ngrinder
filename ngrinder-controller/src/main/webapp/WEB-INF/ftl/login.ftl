@@ -5,11 +5,11 @@
 <meta http-equiv="Content-Style-Type" content="text/css">
 
 <title>nGrinder ::  NHN Performance Center</title>
-<input type="hidden" id="contextPath" value="${Request.getContextPath()}"/>
-<link rel="stylesheet" type="text/css" href="${Request.getContextPath()}/css/ngrinder.css">
-<script language="javascript" type="text/javascript" src="${Request.getContextPath()}/js/jquery-1.7.2.min.js"></script>
-<script language="javascript" type="text/javascript" src="${Request.getContextPath()}/js/utils.js"></script>
-<script language="javascript" type="text/javascript" src="${Request.getContextPath()}/js/i18n/i18nTool.js"></script>
+<input type="hidden" id="contextPath" value="${req.getContextPath()}"/>
+<link rel="stylesheet" type="text/css" href="${req.getContextPath()}/css/ngrinder.css">
+<script language="javascript" type="text/javascript" src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
+<script language="javascript" type="text/javascript" src="${req.getContextPath()}/js/utils.js"></script>
+<script language="javascript" type="text/javascript" src="${req.getContextPath()}/js/i18n/i18nTool.js"></script>
 <#import "spring.ftl" as spring/>
 <link rel="shortcut icon" href="favicon.ico"/>
 <script language="javascript">
@@ -68,7 +68,7 @@
 	
 	function getAllLocation() {
 		if ($("#user_locale option:selected").val() == "all") {
-			$("#user_locale").load("${Request.getContextPath()}/allTimeZone");
+			$("#user_locale").load("${req.getContextPath()}/allTimeZone");
 		}
 	}
 </script>
@@ -76,9 +76,9 @@
 <body style="overflow-y:hidden;background-color:white">
 <#import "spring.ftl" as spring/>
 <div id="wrap" class="login_wrap">
-	<div class="logo"><img src="${Request.getContextPath()}/img/logo_ngrinder_a.png" width="400" height="106" alt="nGrinder"></div>
+	<div class="logo"><img src="${req.getContextPath()}/img/logo_ngrinder_a.png" width="400" height="106" alt="nGrinder"></div>
 	<div class="content">
-		<form action="${Request.getContextPath()}/form_Login" method="POST">
+		<form action="${req.getContextPath()}/form_Login" method="POST">
 		<fieldset>
 		<legend class="blind"><@spring.message "login.button"/></legend>
 		<div class="login">
@@ -86,7 +86,7 @@
 			<input type="text" class="id" name="j_username" id="j_username"><br>
 			<input type="password" class="password" name="j_password" id="j_password">			
 			</span>
-			<input id="loginBtn" type="image" src="${Request.getContextPath()}/img/login.gif" alt="Login" class="btn_lgn" width="60px" >
+			<input id="loginBtn" type="image" src="${req.getContextPath()}/img/login.gif" alt="Login" class="btn_lgn" width="60px" >
 		</div>
 		
 		<div class="prompt">

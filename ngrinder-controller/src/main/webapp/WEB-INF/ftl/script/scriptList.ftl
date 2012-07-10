@@ -1,4 +1,4 @@
-`<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="utf-8">
@@ -8,12 +8,12 @@
 		<meta name="author" content="AlexQin">
 
 		<link rel="shortcut icon" href="favicon.ico"/>
-		<link href="${Request.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-		<link href="${Request.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
-		<link href="${Request.getContextPath()}/plugins/datatables/css/demo_table.css" rel="stylesheet">
-		<link href="${Request.getContextPath()}/plugins/datatables/css/demo_page.css" rel="stylesheet">
-		<link href="${Request.getContextPath()}/plugins/datatables/css/demo_table_jui.css" rel="stylesheet">
-		<link href="${Request.getContextPath()}/plugins/google_code_prettify/prettify.css" rel="stylesheet">
+		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
+		<link href="${req.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
+		<link href="${req.getContextPath()}/plugins/datatables/css/demo_table.css" rel="stylesheet">
+		<link href="${req.getContextPath()}/plugins/datatables/css/demo_page.css" rel="stylesheet">
+		<link href="${req.getContextPath()}/plugins/datatables/css/demo_table_jui.css" rel="stylesheet">
+		<link href="${req.getContextPath()}/plugins/google_code_prettify/prettify.css" rel="stylesheet">
 		<style>
 			body {
 				padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -25,7 +25,7 @@
 			table.ellipsis td.ellipsis {overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
 		</style>
 		
-		<input type="hidden" id="contextPath" value="${Request.getContextPath()}">
+		<input type="hidden" id="contextPath" value="${req.getContextPath()}">
 		<#setting number_format="computer">
 	</head>
 
@@ -87,7 +87,7 @@
 						<#list scriptList as script>
 						<tr>
 							<td><input type="checkbox" value="${script.id}"></td>
-							<td class="left"><a href="${Request.getContextPath()}/script/detail?id=${script.id}" target="_self">${script.fileName}</a></td>
+							<td class="left"><a href="${req.getContextPath()}/script/detail?id=${script.id}" target="_self">${script.fileName}</a></td>
 							<td class="left ellipsis" title="${(script.description)!}">${(script.description)!}</td>
 							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
 							<td>${(script.lastModifiedUser)!}</td>
@@ -141,7 +141,7 @@
 				<h3>Create a script</h3>
 			</div>
 			<div class="modal-body">
-				<form class="form-horizontal" style="margin-bottom:0" method="post" target="_self" id="createForm" action="${Request.getContextPath()}/script/detail">
+				<form class="form-horizontal" style="margin-bottom:0" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/detail">
 					<fieldset>
 						<div class="control-group">
 							<label for="scriptNameInput" class="control-label">Script Name</label>
@@ -181,7 +181,7 @@
 				<h3>Upload a JavaScript or Selenium File</h3>
 			</div>
 			<div class="modal-body">
-				<form class="form-horizontal" style="margin-bottom:0" method="post" target="_self" action="${Request.getContextPath()}/script/upload"
+				<form class="form-horizontal" style="margin-bottom:0" method="post" target="_self" action="${req.getContextPath()}/script/upload"
 						id="uploadForm" enctype="multipart/form-data">
 					<fieldset>
 						<div class="control-group">
@@ -225,11 +225,11 @@
 		<input type="hidden" id="download_name" name="fileName">
 	</form>
 	<iframe name="downloadFrame" style="display: none;"></iframe>
-	<script src="${Request.getContextPath()}/js/jquery-1.7.2.min.js"></script>
-	<script src="${Request.getContextPath()}/js/bootstrap.min.js"></script>
-	<script src="${Request.getContextPath()}/js/utils.js"></script>
-	<script src="${Request.getContextPath()}/plugins/datatables/js/jquery.dataTables.min.js"></script>
-	<script src="${Request.getContextPath()}/plugins/google_code_prettify/prettify.js"></script>
+	<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
+	<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
+	<script src="${req.getContextPath()}/js/utils.js"></script>
+	<script src="${req.getContextPath()}/plugins/datatables/js/jquery.dataTables.min.js"></script>
+	<script src="${req.getContextPath()}/plugins/google_code_prettify/prettify.js"></script>
 	<script>
 		$(document).ready(function() {
 			$("#n_script").addClass("active");
@@ -304,7 +304,7 @@
 					});
 					ids = agentArray.join(",");
 					
-					document.location.href = "${Request.getContextPath()}/script/deleteScript?ids=" + ids;
+					document.location.href = "${req.getContextPath()}/script/deleteScript?ids=" + ids;
 				}
 			});
 			
@@ -340,7 +340,7 @@
 			
 			$("i.script-remove").on('click', function() {
 				if (confirm("Do you want to delete this script file?")) {
-					document.location.href = "${Request.getContextPath()}/script/deleteScript?id=" + $(this).attr("sid");
+					document.location.href = "${req.getContextPath()}/script/deleteScript?id=" + $(this).attr("sid");
 				}
 			});
 			
@@ -348,20 +348,20 @@
 				var $elem = $(this);
 				$("#download_id").val($elem.attr("sid"));
 				$("#download_name").val($elem.attr("sname"));
-				document.forms.downloadForm.action = "${Request.getContextPath()}/script/downloadScript";
+				document.forms.downloadForm.action = "${req.getContextPath()}/script/downloadScript";
 				document.forms.downloadForm.submit();
 			});
 
 			$("i.resource-remove").on('click', function() {
 				if (confirm("Do you want to delete this resource file?")) {
-					document.location.href = "${Request.getContextPath()}/script/deleteResource?fileName=" + encodeURI($(this).attr("sname"));
+					document.location.href = "${req.getContextPath()}/script/deleteResource?fileName=" + encodeURI($(this).attr("sname"));
 				}
 			});
 			
 			$("i.resource-download").on('click', function() {
 				var $elem = $(this);
 				$("#download_name").val($elem.attr("sname"));
-				document.forms.downloadForm.action = "${Request.getContextPath()}/script/downloadResource";
+				document.forms.downloadForm.action = "${req.getContextPath()}/script/downloadResource";
 				document.forms.downloadForm.submit();
 			});
 						
@@ -404,7 +404,7 @@
 				isOwner = 1;
 			}
 			
-			document.location.href = "${Request.getContextPath()}/script/list?keywords=" + $("#searchText").val() + "&isOwner=" + isOwner;
+			document.location.href = "${req.getContextPath()}/script/list?keywords=" + $("#searchText").val() + "&isOwner=" + isOwner;
 		}
 	</script>
 	</body>
