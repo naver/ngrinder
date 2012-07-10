@@ -1,5 +1,7 @@
 package org.ngrinder.infra.init;
 
+import java.util.Date;
+
 import javax.annotation.PostConstruct;
 
 import org.ngrinder.model.Role;
@@ -27,12 +29,16 @@ public class DBInit {
 			adminUser.setUserId("admin");
 			adminUser.setPassword("admin");
 			adminUser.setRole(Role.ADMIN);
+			adminUser.setUserName("admin");
+			adminUser.setCreatedDate(new Date());
 			userRepository.save(adminUser);
 
 			User generalUser = new User();
 			generalUser.setUserId("user");
 			generalUser.setPassword("user");
 			generalUser.setRole(Role.USER);
+			generalUser.setUserName("user");
+			generalUser.setCreatedDate(new Date());
 			userRepository.save(generalUser);
 		}
 	}

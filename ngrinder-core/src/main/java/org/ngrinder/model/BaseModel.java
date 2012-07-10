@@ -25,6 +25,8 @@ package org.ngrinder.model;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
 /**
@@ -49,14 +51,16 @@ public class BaseModel<M> extends BaseEntity<M> {
 
 	@Column(name = "CREATED_DATE")
 	private Date createdDate;
-
-	@Column(name = "CREATED_USER")
+	
+	@ManyToOne
+	@JoinColumn(name = "CREATED_USER")
 	private User createdUser;
 
 	@Column(name = "LAST_MODIFIED_DATE")
 	private Date lastModifiedDate;
 
-	@Column(name = "LAST_MODIFIED_USER")
+	@ManyToOne
+	@JoinColumn(name = "LAST_MODIFIED_USER")
 	private User lastModifiedUser;
 
 	public Date getCreatedDate() {

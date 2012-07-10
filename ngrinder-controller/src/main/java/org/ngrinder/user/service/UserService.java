@@ -127,8 +127,6 @@ public class UserService {
 		checkNotNull(user, "user should be not null, when modifying user");
 		checkNotEmpty(user.getUserId(), "user id should be provided when modifying user");
 		User targetUser = userRepository.findOneByUserId(user.getUserId());
-		Long id = targetUser.getId();
-		user.setId(id);
 		targetUser.merge(user);
 		userRepository.save(targetUser);
 		return user.getUserId();

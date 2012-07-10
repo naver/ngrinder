@@ -52,6 +52,7 @@
 																		      <div class="controls">
 																		        <input type="text" class="input-xlarge" id="userName" name="userName" rel="popover" value="${(user.userName)!}"  data-content="Enter your first and last name." data-original-title="Full Name">
 																		        <input type="hidden" id="userId" name="userId" value="${(user.userId)!}" >
+																		        <input type="hidden" id="id" name="id" value="${(user.id)!}" >
 																		      </div>
 																		</div>
 																		
@@ -77,7 +78,7 @@
 																		<div class="control-group">
 																			<label class="control-label" for="input01">Descriptoin</label>
 																		      <div class="controls">
-																				<textarea cols="30" id="description" name="description" rows="5"  title="Description" class="tx_area" rel="popover"  style="resize:none;">${(user.descriptoin)!}</textarea>
+																				<textarea cols="30" id="description" name="description" rows="5"  title="Description" class="tx_area" rel="popover"  style="resize:none;">${(user.description)!}</textarea>
 			
 																		      </div>
 																		</div>
