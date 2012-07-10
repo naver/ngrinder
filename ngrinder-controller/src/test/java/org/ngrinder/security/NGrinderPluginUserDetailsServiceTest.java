@@ -68,10 +68,10 @@ public class NGrinderPluginUserDetailsServiceTest extends AbstractNGNinderTransa
 		User user = new User();
 		user.setUserName("hello");
 		user.setUserId("hello");
+		user.setEmail("helloworld@gmail.com");
 		user.setRole(Role.SUPER_USER);
-		when(mockLoginPlugin.loadUser(anyString())).thenReturn(
-				new SecuredUser(user, mockLoginPlugin.getClass().getName()));
-		when(mockLoginPlugin.authUser(any(), anyString(), anyString(), anyString(), any())).thenReturn(true);
+		when(mockLoginPlugin.loadUser(anyString())).thenReturn(user);
+		when(mockLoginPlugin.validateUser(anyString(), anyString(), anyString(), any(), any())).thenReturn(true);
 
 		// Then, Auth should be succeeded.
 		assertThat(authProvider.authenticate(auth), notNullValue());
@@ -89,5 +89,4 @@ public class NGrinderPluginUserDetailsServiceTest extends AbstractNGNinderTransa
 
 	}
 
-	
 }

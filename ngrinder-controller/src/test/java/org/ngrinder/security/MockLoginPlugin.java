@@ -1,17 +1,27 @@
 package org.ngrinder.security;
 
 import org.ngrinder.infra.plugin.OnLoginRunnable;
+import org.ngrinder.model.User;
 
 public class MockLoginPlugin implements OnLoginRunnable {
 
 	@Override
-	public SecuredUser loadUser(String userId) {
+	public User loadUser(String userId) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public boolean authUser(Object encoder, String principle, String encPass, String rawPass, Object salt) {
-		return true;
+	public boolean validateUser(String userId, String password, String encPass, Object encoder, Object salt) {
+		// TODO Auto-generated method stub
+		return false;
 	}
+
+	@Override
+	public void saveUser(User user) {
+		// TODO Auto-generated method stub
+
+	}
+
 
 }

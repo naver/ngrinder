@@ -69,6 +69,7 @@ public class User extends BaseModel<User> {
 
 	private boolean external = false;
 
+	/** Who provide the authentification */
 	private String authProviderClass;
 
 	public User() {
