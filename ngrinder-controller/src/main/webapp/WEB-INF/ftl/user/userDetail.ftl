@@ -79,8 +79,7 @@
 										<input type="text" class="input-xlarge" id="userName"
 											name="userName" rel="popover" value="${(user.userName)!}"
 											data-content="Enter your first and last name."
-											data-original-title="Full Name"> <input type="hidden"
-											id="userId" name="userId" value="${(user.userId)!}">
+											data-original-title="Full Name">
 									</div>
 								</div>
 
