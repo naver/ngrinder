@@ -5,6 +5,9 @@ import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.grinder.AgentDaemon.AgentShutDownListener;
+import net.grinder.util.thread.Condition;
+
 import org.ngrinder.common.util.ThreadUtil;
 
 abstract public class AbstractMuliGrinderTestBase {
@@ -17,15 +20,40 @@ abstract public class AbstractMuliGrinderTestBase {
 		ThreadUtil.sleep(milisecond);
 	}
 
+	/** Waiting condition */
+	public Condition condition = new Condition();
+
+	public final class AgentShutDownSynchronizeListener implements AgentShutDownListener {
+
+		private final Condition condition;
+
+		public AgentShutDownSynchronizeListener(Condition condition) {
+			this.condition = condition;
+
+		}
+
+		public void shutdownAgent() {
+			synchronized (condition) {
+				condition.notifyAll();
+			}
+		}
+	}
+
+	public void waitOnCondition(Condition codition, int timeout) {
+		synchronized (condition) {
+			condition.waitNoInterrruptException(2100);
+		}
+	}
+
 	/**
 	 * Returns a free port numbers on localhost, or less than give count entries if unable to find a free port.
 	 * 
 	 * @return a free port number on localhost, or less than give count entries if unable to find a free port
 	 */
-	public List<Integer> findFreePorts(int count) {
+	public List<Integer> getFreePorts(int count) {
 		List<Integer> ports = new ArrayList<Integer>();
 		for (int i = 0; i < count; i++) {
-			ports.add(findFreePort());
+			ports.add(getFreePort());
 		}
 		return ports;
 	}
@@ -35,7 +63,7 @@ abstract public class AbstractMuliGrinderTestBase {
 	 * 
 	 * @return a free port number on localhost, or -1 if unable to find a free port
 	 */
-	public int findFreePort() {
+	public int getFreePort() {
 		ServerSocket socket = null;
 		try {
 			socket = new ServerSocket(0);

@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 public class AgentDaemon implements Agent {
 	private final AgentImplementationEx agent;
-	private Thread thread;
+	private Thread thread = new Thread();
 	private GrinderProperties properties;
 	private final ListenerSupport<AgentShutDownListener> m_listeners = new ListenerSupport<AgentShutDownListener>();
 	private boolean forceToshutdown = false;
@@ -70,38 +70,40 @@ public class AgentDaemon implements Agent {
 		if (consolePort != 0) {
 			getGrinderProperties().setInt(GrinderProperties.CONSOLE_PORT, consolePort);
 		}
-		thread = new Thread(new Runnable() {
-			public void run() {
-				do {
-					try {
-						getAgentImplementationEx().run(getGrinderProperties());
-
-						getListeners().apply(new Informer<AgentShutDownListener>() {
-							public void inform(AgentShutDownListener listener) {
-								listener.shutdownAgent();
-							}
-						});
-					} catch (GrinderException e) {
-						logger.error("while sleeping agent thread, error occurs", e);
-					}
-					if (isForceToshutdown()) {
-						setForceToshutdown(false);
-						break;
-					}
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						logger.error("while sleeping agent thread, error occurs", e);
-					}
-				} while (true);
-			}
-		});
+		thread = new Thread(new AgentThreadRunnable(), "Agent conntected to port " + consolePort);
 		thread.setDaemon(true);
 		thread.start();
 	}
 
 	private GrinderProperties getGrinderProperties() {
 		return this.properties;
+	}
+
+	class AgentThreadRunnable implements Runnable {
+		public void run() {
+			do {
+				try {
+					getAgentImplementationEx().run(getGrinderProperties());
+
+					getListeners().apply(new Informer<AgentShutDownListener>() {
+						public void inform(AgentShutDownListener listener) {
+							listener.shutdownAgent();
+						}
+					});
+				} catch (GrinderException e) {
+					logger.error("while sleeping agent thread, error occurs", e);
+				}
+				if (isForceToshutdown()) {
+					setForceToshutdown(false);
+					break;
+				}
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					logger.error("while sleeping agent thread, error occurs", e);
+				}
+			} while (true);
+		}
 	}
 
 	public interface AgentShutDownListener {
@@ -124,7 +126,7 @@ public class AgentDaemon implements Agent {
 				thread.join();
 			}
 		} catch (Exception e) {
-			logger.error("Error while shutdownning agent", e);			
+			logger.error("Error while shutdownning agent", e);
 			throw new NGrinderRuntimeException("Exception occurs while shutting down AgentDaemon", e);
 
 		}

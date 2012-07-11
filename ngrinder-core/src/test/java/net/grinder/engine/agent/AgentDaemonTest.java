@@ -1,61 +1,50 @@
 package net.grinder.engine.agent;
 
+import net.grinder.AgentDaemon;
+import net.grinder.SingleConsole;
+import net.grinder.util.thread.Condition;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.AbstractMuliGrinderTestBase;
 
-import net.grinder.SingleConsole;
-import net.grinder.AgentDaemon;
-import net.grinder.AgentDaemon.AgentShutDownListener;
+public class AgentDaemonTest extends AbstractMuliGrinderTestBase {
 
-public class AgentDaemonTest {
-	private SingleConsole console2;
+	private SingleConsole console1;
+	private Integer consolePort;
 
 	@Before
 	public void before() {
-		console2 = new SingleConsole(1223);
-		console2.start();
+		consolePort = getFreePort();
+		console1 = new SingleConsole(consolePort);
+		console1.start();
 		sleep(1000);
 	}
 
 	@After
 	public void after() {
-		console2.shutdown();
-
+		console1.shutdown();
 	}
 
 	@Test
 	public void testDifferentPort() throws InterruptedException {
+		// Try to connect any port
 		AgentDaemon agent = new AgentDaemon();
-		agent.run(1223);
+		agent.run(getFreePort());
 		sleep(1000);
 	}
 
-	public void sleep(int howLong) {
-		try {
-			Thread.sleep(howLong);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	Condition condition = new Condition();
 
-	@Test
-	public void isDeadWell() {
+	@Test(timeout = 3000)
+	public void testIfAgentDeadWellWhenConsoleIsShutdowned() {
+		// After connecting agent daemon,
 		AgentDaemon agent = new AgentDaemon();
-		agent.run(1223);
-		agent.addListener(new AgentShutDownListener() {
-			public void shutdownAgent() {
-				System.out.println("WOW IT DEAD!!");
-			}
-		});
-		sleep(1000);
-		console2.shutdown();
-		sleep(5000);
-
-		console2 = new SingleConsole(1223);
-		console2.start();
-		System.out.println("Restart");
-		sleep(1000);
+		agent.run(console1.getConsolePort());
+		agent.addListener(new AgentShutDownSynchronizeListener(condition));
+		// Shutdown console
+		console1.shutdown();
+		waitOnCondition(condition, 2100);
 	}
 }
