@@ -45,7 +45,7 @@ import org.springframework.data.domain.Pageable;
 public class TestServiceTest extends AbstractNGNinderTransactionalTest {
 
 	@Autowired
-	private TestService testService;
+	private PerfTestService testService;
 
 	@Before
 	public void createTempTests() {
