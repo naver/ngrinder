@@ -47,7 +47,7 @@ public class UserServiceTest extends AbstractNGNinderTransactionalTest {
 		user2.setRole(Role.ADMIN);
 		userService.saveUser(user2);
 
-		Map<Role, List<User>> allUserInGroup = userService.getAllUserInGroup();
+		Map<Role, List<User>> allUserInGroup = userService.getUserInGroupFromList();
 
 		assertThat(allUserInGroup.size(), is(2));
 

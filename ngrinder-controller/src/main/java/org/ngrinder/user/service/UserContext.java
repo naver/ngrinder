@@ -38,6 +38,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 @OnlyRuntimeComponent
 public class UserContext {
+	
+	/**
+	 * Get current user object from context
+	 * @return
+	 */
 	public User getCurrentUser() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth == null) {
