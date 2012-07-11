@@ -1,1 +1,2 @@
-Powered by: NHN  Copyright © NHN
+<hr>
+<footer>Powered by: NHN / Copyright © NHN</footer>
