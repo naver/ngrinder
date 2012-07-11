@@ -25,7 +25,7 @@ package org.ngrinder.perftest.controller;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.service.TestService;
-import org.ngrinder.script.model.Script;
+import org.ngrinder.script.service.ScriptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,6 +45,9 @@ public class PerfTestController extends NGrinderBaseController {
 	@Autowired
 	private TestService testService;
 
+	@Autowired
+	private ScriptService scriptService;
+
 	private static final int DEFAULT_TEST_PAGE_ZISE = 15;
 
 	@RequestMapping("/list")
@@ -61,14 +64,16 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	@RequestMapping("/detail")
-	public String getScript(ModelMap model, Script script, @RequestParam(required = false) Long id,
-			@RequestParam(required = false) String historyFileName) {
-
+	public String getTestDetail(ModelMap model, @RequestParam long testId) {
+		PerfTest test = testService.getPerfTest(testId);
+		model.addAttribute("test", test);
+		model.addAttribute("scriptList", scriptService.getScripts(true, null, null));
+		
 		return "perftest/detail";
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String createTestt(ModelMap model, PerfTest test) {
+	public String createTest(ModelMap model, PerfTest test) {
 		testService.savePerfTest(test);
 
 		return "perftest/list";

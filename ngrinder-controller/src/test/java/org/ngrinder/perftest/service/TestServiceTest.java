@@ -65,7 +65,7 @@ public class TestServiceTest extends AbstractNGNinderTransactionalTest {
 		test.setDuration(120);
 		test.setIgnoreSampleCount(0);
 		test.setTargetHosts("127.0.0.1");
-		test.setScriptName("test1.py");
+		test.setScriptName("test2.py");
 		testService.savePerfTest(test);
 
 	}
@@ -82,4 +82,5 @@ public class TestServiceTest extends AbstractNGNinderTransactionalTest {
 		testList = testService.getTestList(getTestUser(), true, pageable);
 		assertThat(testList.getContent().size(), is(1));
 	}
+	
 }
