@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
@@ -70,11 +71,24 @@ public class UserService {
 	}
 
 	/**
-	 * get all users in group admin, general, and super user.
+	 * get all users by role.
 	 * 
 	 * @return user map.
 	 */
-	public Map<Role, List<User>> getAllUserInGroup() {
+	public List<User> getAllUserByRole(String roleName) {
+		if (StringUtils.isBlank(roleName)) {
+			return userRepository.findAll();
+		} else {
+			return userRepository.findAllByRole(getRole(roleName));
+		}
+	}
+
+	/**
+	 * get a map which containing user in group, 
+	 * @param users
+	 * @return
+	 */
+	public Map<Role, List<User>> getUserInGroupFromList() {
 		List<User> users = userRepository.findAll();
 		Map<Role, List<User>> rtnMap = new HashMap<Role, List<User>>();
 
@@ -90,7 +104,6 @@ public class UserService {
 				rtnMap.get(currRole).add(user);
 			}
 		}
-
 		return rtnMap;
 	}
 
@@ -157,4 +170,22 @@ public class UserService {
 		return userRepository.findAllByRole(role);
 	}
 
+	/**
+	 * get Role object based on role name
+	 * @param roleName
+	 * @return
+	 */
+	public Role getRole(String roleName) {
+		if (roleName.equals("ADMIN")) {
+			return Role.ADMIN;
+		} else if (roleName.equals("USER")) {
+			return Role.USER;
+		} else if (roleName.equals("SUPER")) {
+			return Role.SUPER_USER;
+		} else if (roleName.equals("SYSTEM_USER")) {
+			return Role.SYSTEM_USER;
+		} else {
+			return null;
+		}
+	}
 }
