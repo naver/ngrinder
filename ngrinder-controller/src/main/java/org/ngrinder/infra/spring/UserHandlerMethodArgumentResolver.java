@@ -20,39 +20,37 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.user.service;
+package org.ngrinder.infra.spring;
 
-import org.ngrinder.infra.annotation.OnlyRuntimeComponent;
 import org.ngrinder.model.User;
-import org.ngrinder.security.SecuredUser;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.ngrinder.user.service.UserContext;
+import org.springframework.core.MethodParameter;
+import org.springframework.web.bind.support.WebDataBinderFactory;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.method.support.ModelAndViewContainer;
 
-/**
- * User Context which return current user;
- * 
- * @author Tobi
- * @author JunHo Yoon
- * @since 3.0
- */
-@OnlyRuntimeComponent
-public class UserContext {
-	
-	/**
-	 * Get current user object from context
-	 * @return
-	 */
-	public User getCurrentUser() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth == null) {
-			throw new AuthenticationCredentialsNotFoundException("No athenticated");
-		}
-		Object obj = auth.getPrincipal();
-		if (!(obj instanceof SecuredUser)) {
-			throw new AuthenticationCredentialsNotFoundException("Invalid athentication");
-		}
-		SecuredUser securedUser = (SecuredUser) obj;
-		return securedUser.getUser();
+
+public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
+
+	private UserContext userContext;
+
+	@Override
+	public boolean supportsParameter(MethodParameter parameter) {
+		return parameter.getParameterType().equals(User.class);
+	}
+
+	@Override
+	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+		return getUserContext().getCurrentUser();
+	}
+
+	public UserContext getUserContext() {
+		return userContext;
+	}
+
+	public void setUserContext(UserContext userContext) {
+		this.userContext = userContext;
 	}
 }

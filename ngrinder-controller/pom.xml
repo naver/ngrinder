@@ -34,7 +34,7 @@
 			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- Servlet -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -42,7 +42,7 @@
 			<version>2.5</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
 			<artifactId>jsp-api</artifactId>
@@ -99,6 +99,7 @@
 			<artifactId>spring-context</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
@@ -248,40 +249,8 @@
 		</dependency>
 
 	</dependencies>
-	<profiles>
-		<profile>
-			<id>local</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<env>local</env>
-			</properties>
-		</profile>
 
-		<profile>
-			<id>dev</id>
-			<properties>
-				<env>dev</env>
-			</properties>
-		</profile>
-	</profiles>
 	<build>
-
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-			</resource>
-			<resource>
-				<directory>src/main/resources-${env}</directory>
-			</resource>
-		</resources>
-		<testResources>
-			<testResource>
-				<filtering>true</filtering>
-				<directory>src/test/resources</directory>
-			</testResource>
-		</testResources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

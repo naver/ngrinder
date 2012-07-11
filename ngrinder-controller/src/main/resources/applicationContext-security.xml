@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans:beans xmlns="http://www.springframework.org/schema/security"
-	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans:beans xmlns="http://www.springframework.org/schema/security" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd   
         			    http://www.springframework.org/schema/security   http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
-	<beans:bean id="authenticatedVoter"
-		class="org.springframework.security.access.vote.AuthenticatedVoter" />
+	<beans:bean id="authenticatedVoter" class="org.springframework.security.access.vote.AuthenticatedVoter" />
 
-	<beans:bean id="roleVoter"
-		class="org.springframework.security.access.vote.RoleVoter">
+	<beans:bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter">
 		<beans:property name="rolePrefix" value="" />
 	</beans:bean>
 
-	<beans:bean id="accessDecisionManager"
-		class="org.springframework.security.access.vote.AffirmativeBased">
+	<beans:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
 		<beans:constructor-arg name="decisionVoters">
 			<beans:list>
 				<beans:ref bean="roleVoter" />
@@ -23,13 +20,10 @@
 	</beans:bean>
 
 	<!-- custom-filter extends UsernamePasswordAuthenticationFilter -->
-	<beans:bean id="customFilter"
-		class="org.ngrinder.security.NgrinderUsernamePasswordAuthenticationFilter">
+	<beans:bean id="customFilter" class="org.ngrinder.security.NgrinderUsernamePasswordAuthenticationFilter">
 		<beans:property name="filterProcessesUrl" value="/form_Login" />
-		<beans:property name="authenticationSuccessHandler"
-			ref="loginLogAuthenticationSuccessHandler" />
-		<beans:property name="authenticationFailureHandler"
-			ref="simpleUrlAuthenticationFailureHandler" />
+		<beans:property name="authenticationSuccessHandler" ref="loginLogAuthenticationSuccessHandler" />
+		<beans:property name="authenticationFailureHandler" ref="simpleUrlAuthenticationFailureHandler" />
 		<beans:property name="authenticationManager" ref="authenticationManager"></beans:property>
 	</beans:bean>
 
@@ -40,15 +34,12 @@
 	</beans:bean>
 
 	<!-- FailureHandler -->
-	<beans:bean id="simpleUrlAuthenticationFailureHandler"
-		class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+	<beans:bean id="simpleUrlAuthenticationFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
 		<beans:property name="defaultFailureUrl" value="/login" />
 	</beans:bean>
 
-	<beans:bean id="authenticationProcessingFilterEntryPoint"
-		class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
-		<beans:constructor-arg name="loginFormUrl"
-			value="/login" />
+	<beans:bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+		<beans:constructor-arg name="loginFormUrl" value="/login" />
 	</beans:bean>
 
 	<!-- static resource -->
@@ -61,25 +52,22 @@
 	<!-- used for shared test report page -->
 	<http pattern="/test/report/**" security="none" />
 
-	<http entry-point-ref="authenticationProcessingFilterEntryPoint"
-		access-decision-manager-ref="accessDecisionManager">
+	<http entry-point-ref="authenticationProcessingFilterEntryPoint" access-decision-manager-ref="accessDecisionManager">
 		<intercept-url pattern="/" access="A, U" />
 		<intercept-url pattern="/home" access="A, U" />
-		<intercept-url pattern="/perftest/**" access="U" />
-		<intercept-url pattern="/help**" access="U" />
-		<intercept-url pattern="/script**" access="U" />
+		<intercept-url pattern="/perftest/**" access="A, U" />
+		<intercept-url pattern="/help**" access="A, U" />
+		<intercept-url pattern="/script**" access="A, U" />
 
 		<intercept-url pattern="/agent/**" access="A" />
 		<intercept-url pattern="/u/**" access="A" />
 
 		<custom-filter ref="customFilter" position="FORM_LOGIN_FILTER" />
 
-		<!-- logout to home, and then it will redirect to login. otherwise, there 
-			will be some ajax problem. -->
+		<!-- logout to home, and then it will redirect to login. otherwise, there will be some ajax problem. -->
 		<logout logout-success-url="/home" invalidate-session="true" />
 
-		<session-management invalid-session-url="/login"
-			session-fixation-protection="migrateSession">
+		<session-management invalid-session-url="/login" session-fixation-protection="migrateSession">
 		</session-management>
 
 		<remember-me key="ngrinder" />

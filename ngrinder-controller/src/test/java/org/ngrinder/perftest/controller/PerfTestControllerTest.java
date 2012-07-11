@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGNinderTransactionalTest;
 import org.ngrinder.perftest.model.PerfTest;
-import org.ngrinder.perftest.service.TestService;
+import org.ngrinder.perftest.service.PerfTestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.ui.ModelMap;
@@ -49,7 +49,7 @@ public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
 	private PerfTestController controller;
 	
 	@Autowired
-	private TestService testService;
+	private PerfTestService testService;
 
 	@Before
 	public void createTempTests() {
@@ -70,7 +70,7 @@ public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
 	@Test
 	public void testGetTestList() {
 		ModelMap model = new ModelMap();
-		controller.getTestList(model, null, false, null);
+		controller.getTestList(getTestUser(), model, null, false, null);
 		Page<PerfTest> testPage = (Page<PerfTest>)model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
 
@@ -85,7 +85,7 @@ public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
 	@SuppressWarnings("unchecked")
 	public void testGetTestDetail() {
 		ModelMap model = new ModelMap();
-		controller.getTestList(model, null, false, null);
+		controller.getTestList(getTestUser(), model, null, false, null);
 		Page<PerfTest> testPage = (Page<PerfTest>)model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
 		assertThat(testList.size(), is(1));

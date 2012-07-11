@@ -38,7 +38,7 @@ import org.springframework.stereotype.Service;
  * @since 3.0
  */
 @Service
-public class TestService {
+public class PerfTestService {
 
 	@Autowired
 	private PerfTestRepository perfTestRepository;

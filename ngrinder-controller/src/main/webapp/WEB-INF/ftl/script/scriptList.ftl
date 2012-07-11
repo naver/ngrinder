@@ -239,7 +239,7 @@
 				if (checkSimpleNameByObj($elem)) {
 					cleanErrMsg($elem);
 				} else {
-					showErrMsg($elem, "Script name not correct.");
+					showErrMsg($elem, "Script name is not correct.");
 					return;
 				}
 				

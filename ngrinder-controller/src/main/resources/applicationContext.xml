@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:aop="http://www.springframework.org/schema/aop"
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="
    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
@@ -10,15 +9,13 @@
 	<context:annotation-config />
 	<aop:aspectj-autoproxy />
 
-	<!-- Scans the classpath of this application for @Components to deploy as 
-		beans -->
+	<!-- Scans the classpath of this application for @Components to deploy as beans -->
 	<context:component-scan base-package="org.ngrinder">
-		<context:exclude-filter type="annotation"
-			expression="org.ngrinder.infra.annotation.OnlyTestComponent" />
+		<context:exclude-filter type="annotation" expression="org.ngrinder.infra.annotation.OnlyTestComponent" />
 	</context:component-scan>
-	
+
 	<import resource="applicationContext-springdata.xml" />
 	<import resource="applicationContext-security.xml" />
-	<import resource="applicationContext-ehcache.xml"/>
+	<import resource="applicationContext-ehcache.xml" />
 </beans>
 

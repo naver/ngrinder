@@ -69,7 +69,10 @@
 		<servlet-name>default</servlet-name>
 		<url-pattern>*.gif</url-pattern>
 	</servlet-mapping>
-
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.ico</url-pattern>
+	</servlet-mapping>
 	<filter>
 		<filter-name>encodingFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
