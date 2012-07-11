@@ -46,7 +46,6 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 @Controller
-@RequestMapping("/")
 public class HomeController extends NGrinderBaseController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HomeController.class);
