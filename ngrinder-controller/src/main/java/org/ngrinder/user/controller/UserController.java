@@ -40,6 +40,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.google.common.primitives.Longs;
+
 @Controller
 @RequestMapping("/user")
 public class UserController extends NGrinderBaseController {
@@ -100,7 +102,7 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping("/save")
 	public String saveOrUpdateUserDetail(ModelMap model, @ModelAttribute("user") User user) {
 
-		if (!StringUtils.isEmpty(user.getUserId())) {
+		if (user.getId() != null && user.getId() > 0) {
 			userService.modifyUser(user);
 		} else {
 			userService.saveUser(user);

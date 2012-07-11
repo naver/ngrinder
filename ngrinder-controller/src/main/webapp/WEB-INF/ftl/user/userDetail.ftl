@@ -62,10 +62,10 @@ table.display tbody .left {
 									<label class="control-label" for="input01">User Id</label>
 									<div class="controls">
 										<input type="text" class="input-xlarge" id="userId"
-											name="userName" rel="popover" value="${(user.userId)!}"
+											name="userId" rel="popover" value="${(user.userId)!}"
 											data-content="Enter User Id."
 											data-original-title="User Id"
-											<#if user.userId??>disabled</#if> >
+											<#if user?? && user.userId??>disabled</#if> >
 										<input type="hidden" id="id" name="id" value="${(user.id)!}">
 									</div>
 								</div>
