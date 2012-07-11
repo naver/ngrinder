@@ -1,32 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>nGrinder Script List</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="nGrinder Test Result Detail">
-<meta name="author" content="AlexQin">
-<link rel="shortcut icon" href="favicon.ico" />
+	<meta charset="utf-8">
+	<title>nGrinder Script List</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="nGrinder Test Result Detail">
+	<meta name="author" content="AlexQin">
+	<link rel="shortcut icon" href="favicon.ico" />
 
 
-<style>
-body {
-	padding-top: 60px;
-	/* 60px to make the container go all the way to the bottom of the topbar */
-}
-
-.table th,.table td {
-	text-align: center;
-}
-
-table.display thead th {
-	padding: 3px 10px
-}
-
-table.display tbody .left {
-	text-align: left
-}
-</style>
+	<style>
+		body {
+			padding-top: 60px;
+			/* 60px to make the container go all the way to the bottom of the topbar */
+		}
+		
+		.table th,.table td {
+			text-align: center;
+		}
+		
+		table.display thead th {
+			padding: 3px 10px
+		}
+		
+		table.display tbody .left {
+			text-align: left
+		}
+	</style>
+	<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
+	<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
+	<link href="${req.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
+	<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
 </head>
 
 <body>
@@ -170,7 +174,6 @@ table.display tbody .left {
 		</div>
 	</div>
 </body>
-<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
 <script src="${req.getContextPath()}/js/jquery.validate.js"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
