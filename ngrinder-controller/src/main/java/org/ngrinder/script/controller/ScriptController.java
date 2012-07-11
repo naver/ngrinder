@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.common.util.JSONUtil;
@@ -37,6 +38,8 @@ import org.ngrinder.script.service.LibraryService;
 import org.ngrinder.script.service.ScriptService;
 import org.ngrinder.script.util.LibraryUtil;
 import org.ngrinder.script.util.ScriptUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -51,8 +54,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/script")
 public class ScriptController extends NGrinderBaseController {
 
-	// private static final Logger LOG =
-	// LoggerFactory.getLogger(ScriptController.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ScriptController.class);
 
 	@Autowired
 	private ScriptService scriptService;
@@ -124,6 +126,7 @@ public class ScriptController extends NGrinderBaseController {
 				script.setContentBytes(file.getBytes());
 			} catch (IOException e) {
 				e.printStackTrace();
+				LOG.error(e.getMessage());
 			}
 
 			scriptService.saveScript(script);
@@ -167,9 +170,7 @@ public class ScriptController extends NGrinderBaseController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			} finally {
-				if (null != writer) {
-					writer.close();
-				}
+				IOUtils.closeQuietly(writer);
 			}
 		}
 
