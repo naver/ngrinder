@@ -11,37 +11,25 @@
 				  <li id="n_alert"><a href="#contact">Alert</a></li>
 				</ul>
 				
-				
 				<ul class="nav pull-right">
-					<li class="dropdown"><a href="#">Help</a></li>
-         		</ul>
-				
-
-				 
-				<@security.authorize ifAnyGranted="U, A, S">
-					<div class="btn-group pull-right">
-			            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-			              <i class="icon-user"></i>Username
-			              <span class="caret"></span>
-			            </a>
-			            <ul class="dropdown-menu"> 
-			              <li><a href="${req.getContextPath()}/user/profile">Profile</a></li>
-			              <li class="divider"></li>
-			              <li><a href="${req.getContextPath()}/logout">Sign Out</a></li>
-			            </ul> 
-	      		    </div>
-      		    </@security.authorize>
-      		    <@security.authorize ifAnyGranted="A, S">
-					<div class="btn-group pull-right">
-  			  	  		<a href="#" class="btn dropdown-toggle" data-toggle="dropdown">Admin <span class="caret"></span></a>
-  			  	  		<ul class="dropdown-menu">
+					<li class="dropdown">
+		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">UserName <b class="caret"></b></a>
+		            	<ul class="dropdown-menu">
+							<@security.authorize ifAnyGranted="U, A, S">
+		                	<li><a href="${req.getContextPath()}/user/profile">Profile</a></li>
+		                	<li class="divider"></li>
+			          		<li><a href="${req.getContextPath()}/logout">Sign Out</a></li>
+			            	</@security.authorize>
+			            	<@security.authorize ifAnyGranted="A, S">
 	               			<li><a href="${req.getContextPath()}/user/list">User Management</a></li>
 	               			<li><a href="${req.getContextPath()}/config/view">Test Default Options</a></li>
 			                <li><a href="${req.getContextPath()}/agent/list">Agent Management</a></li>
-			            </ul>
-					</div>
-  			  	</@security.authorize>
-      		    
+			            	</@security.authorize>
+		            	</ul>
+		            </li>
+					<li class="divider-vertical"></li>
+					<li class="dropdown"><a href="#">Help</a></li>
+         		</ul>      		    
 			</div>
 		</div>
 	</div>
