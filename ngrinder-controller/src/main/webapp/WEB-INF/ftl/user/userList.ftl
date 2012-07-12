@@ -73,7 +73,7 @@
 							<tbody>
 								<#list userList as user>
 								<tr>
-									<td><input type="checkbox" id="userCbox" <#if user.userId == "admin">disabled</#if> value="${user.userId}" /></td>
+									<td><input type="checkbox" id="user_info_check" <#if user.userId == "admin">disabled</#if> value="${user.userId}" /></td>
 									<td class="center"><a
 										href="${req.getContextPath()}/user/detail?userIds=${user.userId}">${user.userName}</a></td>
 									<td>
@@ -85,7 +85,7 @@
 										href="${req.getContextPath()}/user/detail?userId=${user.userId}"><i
 											class="icon-edit"></i></a></td>
 									<td><a
-										href="${req.getContextPath()}/user/delete?userId=${user.userId}"><i
+										href="${req.getContextPath()}/user/delete?userIds=${user.userId}"><i
 											class="icon-remove"></i></a></td>
 								</tr>
 								</#list>
@@ -109,7 +109,7 @@
 
 		<script type="text/javascript">
 				function deleteCheckedUsers() {
-					var list = $("input[id='userCbox']:checked");
+					var list = $("input[id='user_info_check']:checked");
 					if(list.length == 0) {
 						alert("Please select at least 1 user.");
 						return;
@@ -123,7 +123,7 @@
 					
 					var ids = checkedUser.join(",");
 					
-					if (!confirm("Do you want to delete user: "+ids)) {
+					if (!confirm("Do you want to delete user: "+ ids +" ?")) {
 						return;
 					}
 					
