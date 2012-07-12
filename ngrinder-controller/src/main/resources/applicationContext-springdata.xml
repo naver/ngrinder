@@ -11,12 +11,6 @@
 
 	<jpa:repositories base-package="org.ngrinder" />
 
-
-	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-		<property name="entityManagerFactory" ref="emf" />
-		<property name="dataSource" ref="dataSource" />
-	</bean>
-
 	<aop:config proxy-target-class="true">
 		<aop:advisor id="transactionAdvisor" advice-ref="transactionAdvice" pointcut="execution(* org.ngrinder.**.service.*Service.*(..))" />
 	</aop:config>
