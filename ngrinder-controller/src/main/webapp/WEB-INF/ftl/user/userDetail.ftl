@@ -167,8 +167,7 @@
 						</form>
 					</div>
 				</div>
-
-
+				<#include "../common/copyright.ftl">
 			</div>
 		</div>
 	</div>

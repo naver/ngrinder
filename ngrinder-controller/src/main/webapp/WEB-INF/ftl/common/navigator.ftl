@@ -18,7 +18,7 @@
 							<@security.authorize ifAnyGranted="U, A, S">
 		                	<li><a href="${req.getContextPath()}/user/profile">Profile</a></li>
 		                	<li class="divider"></li>
-			          		<li><a href="${req.getContextPath()}/logout">Sign Out</a></li>
+			          		<li><a href="${req.getContextPath()}/j_spring_security_logout">Sign Out</a></li>
 			            	</@security.authorize>
 			            	<@security.authorize ifAnyGranted="A, S">
 	               			<li><a href="${req.getContextPath()}/user/list">User Management</a></li>
