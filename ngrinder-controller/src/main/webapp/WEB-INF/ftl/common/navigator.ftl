@@ -3,7 +3,7 @@
 <div class="navbar navbar-fixed-top">
 	<div class="navbar-inner">
 		<div class="container">
-			<a class="brand" href="#" style="padding:5px 20px"><img src="${req.getContextPath()}/img/logo_ngrinder_a_header_inv.png" alt="nGrinder"></img></a>
+			<a class="brand" href="${req.getContextPath()}/home" style="padding:5px 20px"><img src="${req.getContextPath()}/img/logo_ngrinder_a_header_inv.png" alt="nGrinder"></img></a>
 			<div class="" style="height:auto">
 				<ul class="nav">
 				  <li id="n_test"><a href="${req.getContextPath()}/perftest/list">Load Test</a></li>
@@ -13,7 +13,7 @@
 				
 				<ul class="nav pull-right">
 					<li class="dropdown">
-		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">UserName <b class="caret"></b></a>
+		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">${(currentUser.userId)!}<b class="caret"></b></a>
 		            	<ul class="dropdown-menu">
 							<@security.authorize ifAnyGranted="U, A, S">
 		                	<li><a href="${req.getContextPath()}/user/profile">Profile</a></li>

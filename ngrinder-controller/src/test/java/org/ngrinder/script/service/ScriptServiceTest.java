@@ -129,7 +129,8 @@ public class ScriptServiceTest extends AbstractNGNinderTransactionalTest {
 		this.clearScript();
 
 		// TODO: need to modify.
-		// current user is set in Test Based class, if you want to test different script
+		// current user is set in Test Based class, if you want to test
+		// different script
 		// with different user, need to modify this.
 		// User user = new User();
 		// user.setId(123L);
@@ -167,12 +168,12 @@ public class ScriptServiceTest extends AbstractNGNinderTransactionalTest {
 		Order order2 = new Order(Direction.DESC, "testURL");
 		Sort sort = new Sort(order1, order2);
 		Pageable pageable = new PageRequest(2, 2, sort);
-		Page<Script> scripts = scriptService.getScripts(true, "USER01", pageable);
+		Page<Script> scripts = scriptService.getScripts(true, "TEST_USER", pageable);
 
 		Assert.assertNotNull(scripts);
 		Assert.assertEquals(2, scripts.getContent().size());
-		Assert.assertEquals(scripts.getContent().get(0).getFileName(), "d.py");
-		Assert.assertEquals(scripts.getContent().get(1).getFileName(), "e.py");
+		Assert.assertEquals("c.py", scripts.getContent().get(0).getFileName());
+		Assert.assertEquals("d.py", scripts.getContent().get(1).getFileName());
 	}
 
 	@Test(timeout = 5000)
@@ -191,7 +192,7 @@ public class ScriptServiceTest extends AbstractNGNinderTransactionalTest {
 		Order order2 = new Order(Direction.DESC, "testURL");
 		Sort sort = new Sort(order1, order2);
 		Pageable pageable = new PageRequest(5, 15, sort);
-		Page<Script> scripts = scriptService.getScripts(true, "TMP_USER", pageable);
+		Page<Script> scripts = scriptService.getScripts(true, "TEST_USER", pageable);
 
 		long endSearch = new Date().getTime();
 		System.out.println(endSearch - startSearch);
