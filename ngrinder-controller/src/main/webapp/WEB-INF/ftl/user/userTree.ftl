@@ -1,6 +1,3 @@
-<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
-<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-<link href="${req.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
 <script src="${req.getContextPath()}/plugins/tree/jquery.ztree.all-3.2.js"></script>
 <link rel="stylesheet" href="${req.getContextPath()}/plugins/tree/zTreeStyle.css" type="text/css">
 
@@ -23,7 +20,7 @@
 		
 						function zTreeOnClick(event, treeId, treeNode){
 										var nodeId = treeNode.id;
-										if(nodeId == 'A'||nodeId == 'U'||nodeId == 'S'){
+										if(nodeId == 'ADMIN'||nodeId == 'USER'||nodeId == 'SUPER'){
 											    document.location.href ="${req.getContextPath()}/user/list?roleName="+nodeId;
 										}else if(nodeId != 'all'){
 												document.location.href ="${req.getContextPath()}/user/detail?userId="+nodeId;

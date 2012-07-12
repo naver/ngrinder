@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
  * Test Service Class.
  * 
  * @author Mavlarn
- * @since
+ * @since 3.0
  */
 @Service
 public class PerfTestService {
@@ -56,4 +56,7 @@ public class PerfTestService {
 		return perfTestRepository.save(test);
 	}
 
+	public PerfTest getPerfTest(long testId) {
+		return perfTestRepository.findOne(testId);
+	}
 }

@@ -38,7 +38,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * @author junHo Yoon
  * @since 3.0
  */
-public interface PerfTestRepository extends JpaRepository<PerfTest, Integer>, JpaSpecificationExecutor<PerfTest> {
+public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSpecificationExecutor<PerfTest> {
 	Page<PerfTest> findAllByStatusAndCreatedUserOrderByCreatedDateAsc(Status status, User userId, Pageable pageable);
 
 	Page<PerfTest> findAllByCreatedUserOrderByCreatedDateAsc(User userId, Pageable pageable);
@@ -46,5 +46,4 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Integer>, Jp
 	List<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status);
 
 	Page<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status, Pageable pageable);
-
 }

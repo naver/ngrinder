@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.grinder.common.GrinderException;
+import net.grinder.common.UncheckedInterruptedException;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.ConsoleFoundationEx;
 import net.grinder.console.common.Resources;
@@ -50,6 +51,7 @@ import org.slf4j.LoggerFactory;
 public class SingleConsole {
 	private final ConsoleProperties consoleProperties;
 	private Thread thread;
+	private ThreadGroup threadGroup;
 	private ConsoleFoundationEx consoleFoundation;
 	public final static Resources resources = new ResourcesImplementation(
 			"net.grinder.console.common.resources.Console");
@@ -60,6 +62,10 @@ public class SingleConsole {
 
 	public SingleConsole(String ip, int port) {
 		this(ip, port, ConsolePropertiesFactory.createEmptyConsoleProperties());
+	}
+
+	public int getConsolePort() {
+		return this.getConsoleProperties().getConsolePort();
 	}
 
 	public SingleConsole(String ip, int port, ConsoleProperties consoleProperties) {
@@ -79,13 +85,20 @@ public class SingleConsole {
 		this("", port);
 	}
 
+	/**
+	 * Start console and wait until it's ready to get agent message.
+	 * 
+	 * @throws UncheckedInterruptedException
+	 *             occurs when console is not ready after 10 seconds.
+	 */
 	public void start() {
 		synchronized (m_eventSyncCondition) {
-			thread = new Thread(new Runnable() {
+			this.threadGroup = new ThreadGroup("SingleConsole ThreadGroup on port " + getConsolePort());
+			thread = new Thread(threadGroup, new Runnable() {
 				public void run() {
 					consoleFoundation.run();
 				}
-			});
+			}, "SingleConsole on port " + getConsolePort());
 			thread.setDaemon(true);
 			thread.start();
 			m_eventSyncCondition.waitNoInterrruptException(10000);
@@ -99,10 +112,22 @@ public class SingleConsole {
 		consoleFoundation.run();
 	}
 
+	/**
+	 * Shutdown console and wait until underlying console logic is stop to run.
+	 */
 	public void shutdown() {
 		try {
-			consoleFoundation.shutdown();
-			thread.join();
+			synchronized (this) {
+				consoleFoundation.shutdown();
+				if (thread != null) {
+					threadGroup.interrupt();
+					thread.join();
+					thread = null;
+					threadGroup = null;
+				}
+			}
+		} catch (InterruptedException e) {
+			throw new UncheckedInterruptedException(e);
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("Exception occurs while shutting down SingleConsole", e);
 		}

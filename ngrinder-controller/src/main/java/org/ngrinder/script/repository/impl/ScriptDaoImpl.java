@@ -154,7 +154,7 @@ public class ScriptDaoImpl implements ScriptDao, NGrinderConstants {
 
 		int i = 0;
 		for (Script script : scriptCache) {
-			if (!(share && script.isShare()) && !script.getCreatedUser().equals(userContext.getCurrentUser())) {
+			if (!(share && script.isShare()) && !userContext.getCurrentUser().equals(script.getCreatedUser())) {
 				continue;
 			}
 

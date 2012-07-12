@@ -23,10 +23,10 @@
 package org.ngrinder.user.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -50,34 +50,12 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping("/list")
 	public String getUserList(ModelMap model, @RequestParam(required = false) String roleName) {
 
-		Map<Role, List<User>> userMap = userService.getAllUserInGroup();
+		List<User> userList = userService.getAllUserByRole(roleName);
+		Map<Role, List<User>> userMap = userService.getUserInGroupFromList();
 
-		List<JsonBean> jList = new ArrayList<JsonBean>();
-
-		List<User> userList = new ArrayList<User>();
-
-		JsonBean TopBean = new JsonBean("all", "0", "All Users", true);
-		jList.add(TopBean);
-		for (Map.Entry<Role, List<User>> entry : userMap.entrySet()) {
-			Role id = entry.getKey();
-			JsonBean bean = new JsonBean(id.name(), "all", id.name(), true);
-			jList.add(bean);
-			for (User user : entry.getValue()) {
-				JsonBean leafBean = new JsonBean(user.getUserId(), id.name(), user.getUserName(), true);
-				jList.add(leafBean);
-			}
-
-			if ("all".equals(roleName) || roleName == null) {
-				userList.addAll(entry.getValue());
-			} else if (roleName.equals(id)) {
-				userList.addAll(entry.getValue());
-			}
-
-		}
+		List<JsonBean> jList = convertToUserGroupTree(userMap);
 		model.addAttribute("userList", userList);
-
-		String jsonStr = JSONUtil.toJson(jList);
-		model.addAttribute("jsonStr", jsonStr);
+		model.addAttribute("jsonStr", JSONUtil.toJson(jList));
 
 		return "user/userList";
 	}
@@ -85,11 +63,25 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping("/detail")
 	public String getUserDetail(ModelMap model, @RequestParam(required = false) String userId) {
 
-		Map<Role, List<User>> userMap = userService.getAllUserInGroup();
+		List<User> userList = userService.getAllUserByRole(null);
+		Map<Role, List<User>> userMap = userService.getUserInGroupFromList();
 
+		List<JsonBean> jList = convertToUserGroupTree(userMap);
+		model.addAttribute("userList", userList);
+		model.addAttribute("jsonStr", JSONUtil.toJson(jList));
+
+		User user = userService.getUserById(userId);
+
+		model.addAttribute("user", user);
+		return "user/userDetail";
+	}
+
+	/**
+	 * @param userMap
+	 * @return
+	 */
+	private List<JsonBean> convertToUserGroupTree(Map<Role, List<User>> userMap) {
 		List<JsonBean> jList = new ArrayList<JsonBean>();
-
-		List<User> userList = new ArrayList<User>();
 
 		JsonBean TopBean = new JsonBean("all", "0", "All Users", true);
 		jList.add(TopBean);
@@ -101,24 +93,14 @@ public class UserController extends NGrinderBaseController {
 				JsonBean leafBean = new JsonBean(user.getUserId(), id.name(), user.getUserName(), true);
 				jList.add(leafBean);
 			}
-			userList.addAll(entry.getValue());
-
 		}
-		model.addAttribute("userList", userList);
-
-		String jsonStr = JSONUtil.toJson(jList);
-		model.addAttribute("jsonStr", jsonStr);
-
-		User user = userService.getUserById(userId);
-
-		model.addAttribute("user", user);
-		return "user/userDetail";
+		return jList;
 	}
 
 	@RequestMapping("/save")
 	public String saveOrUpdateUserDetail(ModelMap model, @ModelAttribute("user") User user) {
 
-		if (!StringUtils.isEmpty(user.getUserId())) {
+		if (user.getId() != null && user.getId() > 0) {
 			userService.modifyUser(user);
 		} else {
 			userService.saveUser(user);
@@ -127,10 +109,10 @@ public class UserController extends NGrinderBaseController {
 	}
 
 	@RequestMapping("/delete")
-	public String deleteUser(ModelMap model, @RequestParam String userId) {
-		List<String> list = new ArrayList<String>();
-		list.add(userId);
-		userService.deleteUsers(list);
+	public String deleteUser(ModelMap model, @RequestParam String userIds) {
+		String[] ids = userIds.split(",");
+		ArrayList<String> aListNumbers = new ArrayList<String>(Arrays.asList(ids));
+		userService.deleteUsers(aListNumbers);
 		return "redirect:/user/list";
 	}
 

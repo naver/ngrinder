@@ -1,7 +1,10 @@
 package net.grinder.console;
 
+import static org.ngrinder.common.util.ReflectionUtil.getFieldValue;
+
 import java.util.Date;
 import java.util.Timer;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import net.grinder.common.GrinderException;
 import net.grinder.communication.MessageDispatchRegistry;
@@ -33,6 +36,7 @@ import net.grinder.util.StandardTimeAuthority;
 import net.grinder.util.thread.Condition;
 
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.ReflectionUtil;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.Parameter;
@@ -126,6 +130,9 @@ public class ConsoleFoundationEx {
 	 */
 	public void shutdown() {
 		m_shutdown = true;
+//		((ArrayBlockingQueue<Exception>) getFieldValue(
+//				getFieldValue(m_container.getComponent(ConsoleCommunication.class), "m_acceptor"), "m_exceptionQueue"))
+//				.offer(new Exception());
 
 		m_container.getComponent(ConsoleCommunication.class).shutdown();
 		m_timer.cancel();
@@ -134,8 +141,8 @@ public class ConsoleFoundationEx {
 	}
 
 	/**
-	 * Console message event loop. Dispatches communication messages
-	 * appropriately. Blocks until we are {@link #shutdown()}.
+	 * Console message event loop. Dispatches communication messages appropriately. Blocks until we are
+	 * {@link #shutdown()}.
 	 */
 	public void run() {
 		if (m_shutdown) {

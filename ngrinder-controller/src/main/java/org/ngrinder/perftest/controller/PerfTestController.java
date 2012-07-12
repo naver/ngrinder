@@ -23,9 +23,10 @@
 package org.ngrinder.perftest.controller;
 
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.service.PerfTestService;
-import org.ngrinder.script.model.Script;
+import org.ngrinder.script.service.ScriptService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,25 +46,29 @@ public class PerfTestController extends NGrinderBaseController {
 	@Autowired
 	private PerfTestService perfTestService;
 
+	@Autowired
+	private ScriptService scriptService;
+
 	private static final int DEFAULT_TEST_PAGE_ZISE = 15;
 
-	
 	@RequestMapping("/list")
-	public String getTestList(ModelMap model, @RequestParam(required = false) String keywords,
+	public String getTestList(User user, ModelMap model, @RequestParam(required = false) String keywords,
 			@RequestParam(required = false) boolean isFinished, @RequestParam(required = false) PageRequest pageable) {
 
 		if (pageable == null) {
 			pageable = new PageRequest(0, DEFAULT_TEST_PAGE_ZISE);
 		}
-		Page<PerfTest> testList = perfTestService.getTestList(getCurrentUser(), isFinished, pageable);
+		Page<PerfTest> testList = perfTestService.getTestList(user, isFinished, pageable);
 		model.addAttribute("testListPage", testList);
 		return "perftest/list";
 	}
 
 	@RequestMapping("/detail")
-	public String getScript(ModelMap model, Script script, @RequestParam(required = false) Long id,
-			@RequestParam(required = false) String historyFileName) {
-
+	public String getTestDetail(ModelMap model, @RequestParam long testId) {
+		PerfTest test = perfTestService.getPerfTest(testId);
+		model.addAttribute("test", test);
+		model.addAttribute("scriptList", scriptService.getScripts(true, null, null));
+		
 		return "perftest/detail";
 	}
 

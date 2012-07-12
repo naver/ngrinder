@@ -4,7 +4,6 @@ import java.util.Date;
 
 import javax.annotation.PostConstruct;
 
-import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;

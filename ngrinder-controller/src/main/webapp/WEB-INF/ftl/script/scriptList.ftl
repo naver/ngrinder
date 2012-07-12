@@ -7,7 +7,7 @@
 		<meta name="description" content="nGrinder Test Result Detail">
 		<meta name="author" content="AlexQin">
 
-		<link rel="shortcut icon" href="favicon.ico"/>
+		<link rel="shortcut icon" href="${req.getContextPath()}/favicon.ico"/>
 		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
 		<link href="${req.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
 		<link href="${req.getContextPath()}/plugins/datatables/css/demo_table.css" rel="stylesheet">

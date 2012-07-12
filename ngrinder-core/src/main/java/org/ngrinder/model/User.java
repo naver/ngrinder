@@ -183,4 +183,5 @@ public class User extends BaseModel<User> {
 		this.authProviderClass = authProviderClass;
 	}
 
+
 }

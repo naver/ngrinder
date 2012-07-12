@@ -8,14 +8,27 @@
 
 
 	<!-- Configures support for @Controllers -->
-	<mvc:annotation-driven />
+	<mvc:annotation-driven>
+		<mvc:argument-resolvers>
+			<bean class="org.ngrinder.infra.spring.UserHandlerMethodArgumentResolver">
+				<property name="userContext" ref="userContext" />
+			</bean>
+		</mvc:argument-resolvers>
+	</mvc:annotation-driven>
 
 	<!-- customization to search RequestMapping in the parent context -->
-	<bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
-		<property name="detectHandlersInAncestorContexts" value="true" />
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+		<property name="detectHandlerMethodsInAncestorContexts" value="true" />
+		<property name="interceptors">
+			<list>
+				<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+					<property name="paramName" value="lang" />
+				</bean>
+			</list>
+		</property>
 	</bean>
 
-	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+
 
 	<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
 		<property name="templateLoaderPath" value="/WEB-INF/ftl/" />
@@ -36,18 +49,7 @@
 		<property name="exposeSpringMacroHelpers" value="true" />
 	</bean>
 
-	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
-		<property name="order" value="2" />
-		<property name="exceptionMappings">
-			<props>
-				<prop key="java.lang.Exception">errors/error</prop>
-			</props>
-		</property>
-	</bean>
 
-	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator">
-		<property name="proxyTargetClass" value="true"></property>
-	</bean>
 
 	<!-- messages -->
 	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
@@ -60,9 +62,7 @@
 		<property name="defaultEncoding" value="UTF-8" />
 	</bean>
 
-	<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
-		<property name="paramName" value="lang" />
-	</bean>
+
 
 	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
 		<property name="defaultLocale" value="en" />
@@ -72,14 +72,6 @@
 		<property name="maxUploadSize" value="50000000" />
 		<property name="defaultEncoding" value="utf-8" />
 
-	</bean>
-
-	<bean id="handlerMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
-		<property name="interceptors">
-			<list>
-				<ref bean="localeChangeInterceptor" />
-			</list>
-		</property>
 	</bean>
 
 	<!-- resources exclusions from servlet mapping -->
