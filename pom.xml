@@ -27,6 +27,11 @@
 			<name>JBoss repository</name>
 			<url>https://repository.jboss.org/nexus/content/groups/public</url>
 		</repository>
+		<repository>
+			<id>svnkit-dav</id>
+			<name>svnkit-dav</name>
+			<url>http://maven.scm-manager.org/nexus/content/groups/public</url>
+		</repository>
 	</repositories>
 
 	<properties>

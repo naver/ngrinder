@@ -21,7 +21,7 @@
 				<@security.authorize ifAnyGranted="U, A, S">
 					<div class="btn-group pull-right">
 			            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-			              <i class="icon-user"></i>Username
+			              <i class="icon-user"></i>${currentUser.userName}
 			              <span class="caret"></span>
 			            </a>
 			            <ul class="dropdown-menu"> 

@@ -24,7 +24,7 @@
 		<beans:property name="filterProcessesUrl" value="/form_Login" />
 		<beans:property name="authenticationSuccessHandler" ref="loginLogAuthenticationSuccessHandler" />
 		<beans:property name="authenticationFailureHandler" ref="simpleUrlAuthenticationFailureHandler" />
-		<beans:property name="authenticationManager" ref="authenticationManager"></beans:property>
+		<beans:property name="authenticationManager" ref="authenticationManager" />
 	</beans:bean>
 
 	<!-- SuccessHandler -->
@@ -52,6 +52,12 @@
 	<!-- used for shared test report page -->
 	<http pattern="/test/report/**" security="none" />
 
+	<!-- used for svn access -->
+	<http realm="svn" pattern="/svn/**" access-decision-manager-ref="accessDecisionManager">
+		<http-basic />
+		<intercept-url pattern="/svn/**" access="A, U, S" />
+	</http>
+
 	<http entry-point-ref="authenticationProcessingFilterEntryPoint" access-decision-manager-ref="accessDecisionManager">
 		<intercept-url pattern="/" access="A, U" />
 		<intercept-url pattern="/home" access="A, U" />
@@ -67,12 +73,12 @@
 		<!-- logout to home, and then it will redirect to login. otherwise, there will be some ajax problem. -->
 		<logout logout-success-url="/home" invalidate-session="true" />
 
-		<session-management invalid-session-url="/login" session-fixation-protection="migrateSession">
-		</session-management>
+		<session-management invalid-session-url="/login" session-fixation-protection="migrateSession" />
 
 		<remember-me key="ngrinder" />
 
 	</http>
+
 
 	<authentication-manager alias="authenticationManager">
 		<authentication-provider ref="ngrinderAuthenticationProvider" />

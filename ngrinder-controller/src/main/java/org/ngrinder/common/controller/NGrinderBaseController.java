@@ -41,6 +41,7 @@ import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 public class NGrinderBaseController implements GrinderConstants {
 
@@ -54,8 +55,13 @@ public class NGrinderBaseController implements GrinderConstants {
 	@Autowired
 	private UserService userService;
 
+	@ModelAttribute
 	public User getCurrentUser() {
-		return userContext.getCurrentUser();
+		try {
+			return userContext.getCurrentUser();
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	/**
