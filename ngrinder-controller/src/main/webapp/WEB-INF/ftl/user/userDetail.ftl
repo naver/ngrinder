@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>nGrinder Script List</title>
+	<title>nGrinder User Detail</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="nGrinder Test Result Detail">
 	<meta name="author" content="AlexQin">
@@ -67,7 +67,7 @@
 									<div class="controls">
 										<input type="text" class="input-xlarge" id="userId"
 											name="userId" rel="popover" value="${(user.userId)!}"
-											data-content="Enter User Id."
+											data-content="User Id is a unique identifier and modified is forbidden  !"
 											data-original-title="User Id"
 											<#if user?? && user.userId??>disabled</#if> >
 										<input type="hidden" id="id" name="id" value="${(user.id)!}">

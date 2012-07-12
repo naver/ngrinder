@@ -23,10 +23,10 @@
 package org.ngrinder.user.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -39,8 +39,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import com.google.common.primitives.Longs;
 
 @Controller
 @RequestMapping("/user")
@@ -111,10 +109,10 @@ public class UserController extends NGrinderBaseController {
 	}
 
 	@RequestMapping("/delete")
-	public String deleteUser(ModelMap model, @RequestParam String userId) {
-		List<String> list = new ArrayList<String>();
-		list.add(userId);
-		userService.deleteUsers(list);
+	public String deleteUser(ModelMap model, @RequestParam String userIds) {
+		String[] ids = userIds.split(",");
+		ArrayList<String> aListNumbers = new ArrayList<String>(Arrays.asList(ids));
+		userService.deleteUsers(aListNumbers);
 		return "redirect:/user/list";
 	}
 

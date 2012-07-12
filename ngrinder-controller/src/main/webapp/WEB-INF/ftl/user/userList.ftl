@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>nGrinder Script List</title>
+	<title>nGrinder User List</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="nGrinder Test Result Detail">
 	<meta name="author" content="AlexQin">
@@ -73,9 +73,9 @@
 							<tbody>
 								<#list userList as user>
 								<tr>
-									<td><input type="checkbox" value=""></td>
+									<td><input type="checkbox" id="userCbox" <#if user.userId == "admin">disabled</#if> value="${user.userId}" /></td>
 									<td class="center"><a
-										href="${req.getContextPath()}/user/detail?userId=${user.userId}">${user.userName}</a></td>
+										href="${req.getContextPath()}/user/detail?userIds=${user.userId}">${user.userName}</a></td>
 									<td>
 										${user.createdDate!user.createdDate?string("yyyy/MM/dd
 										hh:mm:ss")}</td>
@@ -94,6 +94,11 @@
 
 					</div>
 				</div>
+				<div class="row">
+					<div class="span2 offset9">
+								<a href="javascript:deleteCheckedUsers()"><span class="label label-important">Delete</span></a>
+					</div>
+				</div>
 
 
 			</div>
@@ -101,5 +106,30 @@
 	</div>
 
 </body>
+
+		<script type="text/javascript">
+				function deleteCheckedUsers() {
+					var list = $("input[id='userCbox']:checked");
+					if(list.length == 0) {
+						alert("Please select at least 1 user.");
+						return;
+					}
+					var checkedUser = [];
+					var $elem;
+					list.each(function() {
+						$elem = $(this);
+						checkedUser.push($elem.val());
+					});
+					
+					var ids = checkedUser.join(",");
+					
+					if (!confirm("Do you want to delete user: "+ids)) {
+						return;
+					}
+					
+					document.location.href="${req.getContextPath()}/user/delete?userIds=" + ids;		
+				}
+				
+		</script>
 
 </html>
