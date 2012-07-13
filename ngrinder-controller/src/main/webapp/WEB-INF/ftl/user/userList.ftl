@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<title>nGrinder User List</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="nGrinder Test Result Detail">
+	<meta name="description" content="nGrinder User List">
 	<meta name="author" content="AlexQin">
 	<link rel="shortcut icon" href="favicon.ico" />
 	<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">

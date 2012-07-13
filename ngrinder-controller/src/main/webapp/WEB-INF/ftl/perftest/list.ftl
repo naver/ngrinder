@@ -2,9 +2,9 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>nGrinder Script List</title>
+		<title>nGrinder Performance Test List</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="nGrinder Test Result Detail">
+		<meta name="description" content="nGrinder Test Performance Test List">
 		<meta name="author" content="AlexQin">
 
 		<link rel="shortcut icon" href="favicon.ico"/>
@@ -41,7 +41,7 @@
 					<input type="checkbox" id="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> Finished
 				</label>
 			</div>
-					<table class="display table-striped" id="testTable" style="margin-bottom:10px;">
+			<table class="display table-striped" id="testTable" style="margin-bottom:10px;">
 				<colgroup>
 					<col width="30">
 					<col width="160">
@@ -106,6 +106,8 @@
 		<script src="${req.getContextPath()}/plugins/datatables/js/jquery.dataTables.min.js"></script>
 		<script>
 			$(document).ready(function() {
+				$("#n_test").addClass("active");
+				
 				$("#searchBtn").on('click', function() {
 					searchTestList();
 				});

@@ -1,100 +1,100 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<title>nGrinder Script List</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="nGrinder Test Result Detail">
-<meta name="author" content="AlexQin">
-
-<link rel="shortcut icon" href="favicon.ico" />
-<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-<style>
-body {
-	padding-top: 60px;
-	/* 60px to make the container go all the way to the bottom of the topbar */
-}
-
-.form-horizontal-1 .control-label {
-	width: 80px;
-	color: #666666;
-	font-family: Tahoma, applegothic, sans-serif;
-	font-size: 12px;
-	font-weight: bold;
-}
-
-.form-horizontal-1 .controls {
-	margin-left: 100px;
-}
-
-.form-horizontal-1 .controls a {
-	margin-left: 20px;
-}
-
-.form-horizontal-1 .controls input {
-	width: 720px;
-}
-
-.form-horizontal-2 .control-label {
-	width: 110px;
-	text-align: left;
-	color: #666666;
-	font-family: Tahoma, applegothic, sans-serif;
-	font-size: 12px;
-	font-weight: bold;
-}
-
-.form-horizontal-2 .controls {
-	margin-left: 130px;
-}
-
-.form-horizontal-3 {
-	margin-bottom: 0
-}
-
-.form-horizontal-3 .control-label {
-	width: 100px;
-	text-align: left;
-	color: #666666;
-	font-family: Tahoma, applegothic, sans-serif;
-	font-size: 12px;
-	font-weight: bold;
-}
-
-.form-horizontal-3 .controls {
-	margin-left: 115px;
-}
-
-div.div-host {
-	border: 1px solid #D6D6D6;
-	height: 80px;
-	margin-bottom: 8px;
-	overflow-y: scroll;
-	border-radius: 3px 3px 3px 3px;
-}
-
-div.div-host .host {
-	color: #666666;
-	display: inline-block;
-	margin: 7px;
-}
-
-.select-item {
-	width: 50px;
-}
-
-.control-label input {
-	vertical-align: top;
-	margin-left: 2px
-}
-
-.controls code {
-	vertical-align: middle;
-}
-</style>
-
-<input type="hidden" id="contextPath" value="${req.getContextPath()}">
-<#setting number_format="computer">
+	<meta charset="utf-8">
+	<title>nGrinder Performance Test Detail</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="nGrinder Performance Test Detail">
+	<meta name="author" content="AlexQin">
+	
+	<link rel="shortcut icon" href="favicon.ico" />
+	<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
+	<style>
+		body {
+			padding-top: 60px;
+			/* 60px to make the container go all the way to the bottom of the topbar */
+		}
+		
+		.form-horizontal-1 .control-label {
+			width: 80px;
+			color: #666666;
+			font-family: Tahoma, applegothic, sans-serif;
+			font-size: 12px;
+			font-weight: bold;
+		}
+		
+		.form-horizontal-1 .controls {
+			margin-left: 100px;
+		}
+		
+		.form-horizontal-1 .controls a {
+			margin-left: 20px;
+		}
+		
+		.form-horizontal-1 .controls input {
+			width: 720px;
+		}
+		
+		.form-horizontal-2 .control-label {
+			width: 110px;
+			text-align: left;
+			color: #666666;
+			font-family: Tahoma, applegothic, sans-serif;
+			font-size: 12px;
+			font-weight: bold;
+		}
+		
+		.form-horizontal-2 .controls {
+			margin-left: 130px;
+		}
+		
+		.form-horizontal-3 {
+			margin-bottom: 0
+		}
+		
+		.form-horizontal-3 .control-label {
+			width: 100px;
+			text-align: left;
+			color: #666666;
+			font-family: Tahoma, applegothic, sans-serif;
+			font-size: 12px;
+			font-weight: bold;
+		}
+		
+		.form-horizontal-3 .controls {
+			margin-left: 115px;
+		}
+		
+		div.div-host {
+			border: 1px solid #D6D6D6;
+			height: 80px;
+			margin-bottom: 8px;
+			overflow-y: scroll;
+			border-radius: 3px 3px 3px 3px;
+		}
+		
+		div.div-host .host {
+			color: #666666;
+			display: inline-block;
+			margin: 7px;
+		}
+		
+		.select-item {
+			width: 50px;
+		}
+		
+		.control-label input {
+			vertical-align: top;
+			margin-left: 2px
+		}
+		
+		.controls code {
+			vertical-align: middle;
+		}
+	</style>
+	
+	<input type="hidden" id="contextPath" value="${req.getContextPath()}">
+	<#setting number_format="computer">
 </head>
 
 <body>

@@ -2,9 +2,9 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>nGrinder Script List</title>
+        <title>nGrinder Agent Info</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="nGrinder Test Result Detail">
+        <meta name="description" content="nGrinder Agent Info">
         <meta name="author" content="AlexQin">
 
         <link rel="shortcut icon" href="favicon.ico"/>

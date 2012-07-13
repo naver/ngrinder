@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<title>nGrinder User Detail</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="nGrinder Test Result Detail">
+	<meta name="description" content="nGrinder User Detail">
 	<meta name="author" content="AlexQin">
 	
 	<link rel="shortcut icon" href="favicon.ico" />

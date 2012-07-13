@@ -2,9 +2,9 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>nGrinder Script Editor</title>
+		<title>nGrinder Test Report</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="nGrinder Test Result Detail">
+		<meta name="description" content="nGrinder Test Report">
 		<meta name="author" content="AlexQin">
 
 		<link rel="shortcut icon" href="${req.getContextPath()}/favicon.ico"/>
@@ -17,8 +17,8 @@
 			.form-horizontal-3 .controls span { margin-right:5px }
 			.form-horizontal-3 .controls strong { color: #6DAFCF; }
 			
-			.left { border-right: 2px solid #878988 }
-			div.chart { border: 1px solid #878988; height:195px; min-width:660px; margin-bottom:12px}
+			.left { border-right: 1px solid #878988 }
+			div.chart { border: 1px solid #878988; height:195px; min-width:615px; margin-bottom:12px}
 		</style>
 		
 		<input type="hidden" id="contextPath" value="${req.getContextPath()}">
@@ -38,7 +38,7 @@
 			</div>
 		</div>
 		<div class="row">
-			<div class="span3 left">
+			<div class="span4 left">
 				<select id="scriptSelect">
 					<option value="0">Performance</option>
 				</select>
@@ -130,7 +130,7 @@
 					</fieldset>
 				</div>
 			</div>
-			<div class="span9">
+			<div class="span7">
 				<div class="chart"></div>
 				<div class="chart"></div>
 				<div class="chart"></div>
