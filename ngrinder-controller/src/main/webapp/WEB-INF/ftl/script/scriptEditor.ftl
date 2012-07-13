@@ -79,6 +79,26 @@
 						</td>
 					</tr>
 				</table>
+<<<<<<< HEAD
+=======
+				
+				<div class="well form-inline" style="padding:5px;margin:5px 0">
+					<label class="label" for="tagsInput">
+						Tags
+					</label>
+					<input type="text" id="tagsInput" name="tagsString" value="${(result.tagsString)!}">&nbsp;&nbsp;
+					<label class="label" for="descInput">
+						Description
+					</label>
+					<input type="text" id="descInput" name="description" class="span6" style="width:600px" value="${(result.description)!}">
+				</div>
+				<a class="btn" href="javascript:void(0);" id="saveBtn">Save</a>
+				<a class="btn" href="javascript:void(0);" id="validateBtn">Validate Script</a>
+				<span class="help-inline" id="messageDiv"></span>
+				<div class="alert alert-info fade in" style="margin-top:5px;" id="autoSaveMsg"></div>
+				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre"></pre>
+				</form>			
+>>>>>>> 80995e49755b63e8ca56b00ee32714814ff1e72e
 			</div>
 			<a class="btn" href="javascript:void(0);" id="saveBtn">Save</a>
 			<a class="btn" href="javascript:void(0);" id="validateBtn">Validate Script</a>
