@@ -65,7 +65,7 @@
 					<label class="label" for="tagsInput">
 						Tags
 					</label>
-					<input type="text" id="tagsInput" name="tagStr" value="${(result.tagStr)!}">&nbsp;&nbsp;
+					<input type="text" id="tagsInput" name="tagsString" value="${(result.tagsString)!}">&nbsp;&nbsp;
 					<label class="label" for="descInput">
 						Description
 					</label>

@@ -90,7 +90,7 @@
 							<td class="left"><a href="${req.getContextPath()}/script/detail?id=${script.id}" target="_self">${script.fileName}</a></td>
 							<td class="left ellipsis" title="${(script.description)!}">${(script.description)!}</td>
 							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
-							<td>${(script.lastModifiedUser)!}</td>
+							<td>${(script.lastModifiedUser.userId)!}</td>
 							<td>${(script.fileSize)!0}</td>
 							<td class="left ellipsis" title="${(script.tagsString)!}">${(script.tagsString)!}</td>
 							<td><a href="javascript:void(0);"><i class="icon-download-alt script-download" sid="${script.id}" sname="${script.fileName}"></i></a></td>
