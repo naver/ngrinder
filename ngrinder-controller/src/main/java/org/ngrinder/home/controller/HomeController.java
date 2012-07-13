@@ -33,6 +33,7 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,16 +43,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 @Controller
+@SessionAttributes("currentUser")
 public class HomeController extends NGrinderBaseController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HomeController.class);
 
 	@Autowired
 	private Config config;
+
+	@Autowired
+	private UserContext userContext;
 
 	@RequestMapping(value = { "/home", "/" })
 	public String home(ModelMap model, HttpServletResponse response, HttpServletRequest request) {

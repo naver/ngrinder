@@ -85,4 +85,8 @@ public class PerfTestController extends NGrinderBaseController {
 		return "perftest/list";
 	}
 
+	@RequestMapping(value = "/report")
+	public String getReport(ModelMap model, @RequestParam long testId) {
+		return "perftest/report";
+	}
 }

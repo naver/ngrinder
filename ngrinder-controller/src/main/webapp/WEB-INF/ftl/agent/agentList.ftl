@@ -29,8 +29,10 @@
                     <div class="row">
                         <div class="span10">
                             <h3>Agent List</h3>
-                            <input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
-                            <button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i>Search</button>
+                            <div class="well form-inline" style="padding:5px;margin:10px 0">
+                                <input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
+                                <button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i>Search</button>
+                            </div>
 			                <table class="table" id="scriptTable" style="margin-bottom:10px;">
 			                    <colgroup>
 			                        <col width="30">

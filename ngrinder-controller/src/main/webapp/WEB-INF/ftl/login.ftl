@@ -78,7 +78,7 @@
 		
 		$("#user_locale").change(function() {
 			if ($("#user_locale option:selected").val() == "all") {
-				//$("#user_locale").load("${req.getContextPath()}/allTimeZone");
+				$("#user_locale").load("${req.getContextPath()}/allTimeZone");
 			}
 		});
 	});

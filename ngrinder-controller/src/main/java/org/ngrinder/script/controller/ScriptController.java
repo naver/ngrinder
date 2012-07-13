@@ -118,15 +118,13 @@ public class ScriptController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public String uploadFiles(ModelMap model, Script script,
-			@RequestParam("uploadFile") MultipartFile file) {
+	public String uploadFiles(ModelMap model, Script script, @RequestParam("uploadFile") MultipartFile file) {
 		if (file.getName().toLowerCase().endsWith(".py")) {
 			script.setFileSize(file.getSize());
 			try {
 				script.setContentBytes(file.getBytes());
 			} catch (IOException e) {
-				e.printStackTrace();
-				LOG.error(e.getMessage());
+				LOG.error(e.getMessage(), e);
 			}
 
 			scriptService.saveScript(script);
@@ -137,7 +135,7 @@ public class ScriptController extends NGrinderBaseController {
 			try {
 				library.setContentBytes(file.getBytes());
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOG.error(e.getMessage(), e);
 			}
 
 			libraryService.saveLibrary(library);
@@ -168,7 +166,7 @@ public class ScriptController extends NGrinderBaseController {
 				writer = response.getWriter();
 				writer.write("<script type=\"text/javascript\">alert('Download script error.')</script>");
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOG.error(e.getMessage(), e);
 			} finally {
 				IOUtils.closeQuietly(writer);
 			}
@@ -194,11 +192,9 @@ public class ScriptController extends NGrinderBaseController {
 				writer = response.getWriter();
 				writer.write("<script type=\"text/javascript\">alert('Download library error.')</script>");
 			} catch (IOException e) {
-				e.printStackTrace();
+				LOG.error(e.getMessage(), e);
 			} finally {
-				if (null != writer) {
-					writer.close();
-				}
+				IOUtils.closeQuietly(writer);
 			}
 		}
 
