@@ -57,13 +57,16 @@ public class NGrinderBaseController implements GrinderConstants {
 	private UserService userService;
 
 	@ModelAttribute("currentUser")
-	public User getCurrentUser() {
+	public User currentUser() {
 		try {
-			return userContext.getCurrentUser();
+			return getCurrentUser();
 		} catch (AuthenticationCredentialsNotFoundException e) {
-
 		}
-		return null;
+		return new User();
+	}
+	
+	public User getCurrentUser() {
+		return userContext.getCurrentUser();
 	}
 
 	/**

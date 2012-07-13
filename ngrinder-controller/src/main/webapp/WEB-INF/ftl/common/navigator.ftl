@@ -13,7 +13,7 @@
 				
 				<ul class="nav pull-right">
 					<li class="dropdown">
-		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">${(currentUser.userName)!}<b class="caret"></b></a>
+		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">${currentUser.userName}<b class="caret"></b></a>
 		            	<ul class="dropdown-menu">
 							<@security.authorize ifAnyGranted="U, A, S">
 		                	<li><a href="${req.getContextPath()}/user/profile">Profile</a></li>
@@ -21,6 +21,7 @@
 			          		<li><a href="${req.getContextPath()}/j_spring_security_logout">Sign Out</a></li>
 			            	</@security.authorize>
 			            	<@security.authorize ifAnyGranted="A, S">
+			            	<li class="divider"></li> 
 	               			<li><a href="${req.getContextPath()}/user/list">User Management</a></li>
 	               			<li><a href="${req.getContextPath()}/config/view">Test Default Options</a></li>
 			                <li><a href="${req.getContextPath()}/agent/list">Agent Management</a></li>

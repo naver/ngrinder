@@ -35,10 +35,14 @@ import javax.persistence.Transient;
  * @author Mavlarn
  * @since 3.0
  */
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "NUSER")
 public class User extends BaseModel<User> {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7398072895183814285L;
 
 	/**
 	 * User Id
@@ -212,6 +216,5 @@ public class User extends BaseModel<User> {
 	public void setAuthProviderClass(String authProviderClass) {
 		this.authProviderClass = authProviderClass;
 	}
-
 
 }
