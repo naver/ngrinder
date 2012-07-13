@@ -57,13 +57,16 @@
 					<fieldset>
 						<legend>Registration</legend>
 						<div class="control-group">
-							<label class="control-label">User Id</label>
+							<label class="control-label">User ID</label>
 							<div class="controls">
-								<input type="text" class="span4" id="userId"
-									name="userId" rel="popover" value="${(user.userId)!}"
+								<input type="text" class="span4" 
+								    rel="popover" value="${(user.userId)!}"
 									data-content="User Id is a unique identifier and modified is forbidden  !"
 									data-original-title="User Id"
 									<#if user?? && user.userId??>disabled</#if> >
+								<#if user?? && user.userId??>
+									<input type="hidden" id="userId" name="userId" value="${(user.userId)!}">
+								</#if>
 								<input type="hidden" id="id" name="id" value="${(user.id)!}">
 							</div>
 						</div>
@@ -81,12 +84,9 @@
 							<label class="control-label">User Role</label>
 							<div class="controls">
 								<select class="span4" name="role.name" id="role.name">
-									<option value="USER"<#if user?? &&
-										user.role=="USER">selected="selected"</#if> >General</option>
-									<option value="ADMIN"<#if user?? &&
-										user.role=="ADMIN">selected="selected"</#if> >Administrator</option>
-									<option value="SUPER"<#if user?? &&
-										user.role=="SUPER">selected="selected"</#if> >Super</option>
+									<option value="USER"<#if user?? &&	user.role=="USER">selected="selected"</#if> >General</option>
+									<option value="ADMIN"<#if user?? &&	user.role=="ADMIN">selected="selected"</#if> >Administrator</option>
+									<option value="SUPER"<#if user?? &&	user.role=="SUPER">selected="selected"</#if> >Super</option>
 								</select>
 							</div>
 						</div>
@@ -102,7 +102,7 @@
 						</div>
 
 						<div class="control-group">
-							<label class="control-label">Descriptoin</label>
+							<label class="control-label">Description</label>
 							<div class="controls">
 								<textarea cols="30" id="description" name="description"
 									rows="5" title="Description" class="tx_area span4" rel="popover"
