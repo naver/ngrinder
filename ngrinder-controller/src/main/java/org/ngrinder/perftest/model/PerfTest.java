@@ -73,6 +73,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/** ignoreSampleCount value, default to 0 */
 	private int ignoreSampleCount;
 
+	/** ignoreSampleCount value, default to 0, 0 means collect forever */
 	private int collectSampleCount;
 
 	/** the start time of this test */
@@ -99,6 +100,20 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private int runCount;
 
 	private int agentCount;
+	
+	/** process count to run test, will be set as a default value */
+	private int processes;
+	
+	private int initProcesses;
+
+	private int initSleepTime;
+
+	private int processIncrement;
+
+	private int processIncrementInterval;
+	
+	/** thread count to run test in one process, will be set as a default value */
+	private int threads;
 
 	@Transient
 	private GrinderProperties grinderProperties;
@@ -227,14 +242,66 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.status = status;
 	}
 
-	public Integer getAgentCount() {
+	public int getAgentCount() {
 		return agentCount;
 	}
 
-	public void setAgentCount(Integer agentCount) {
+	public void setAgentCount(int agentCount) {
 		this.agentCount = agentCount;
 	}
 
+	public int getProcesses() {
+		return processes;
+	}
+
+	public void setProcesses(int processes) {
+		this.processes = processes;
+	}
+
+	public int getInitProcesses() {
+		return initProcesses;
+	}
+
+	public void setInitProcesses(int initProcesses) {
+		this.initProcesses = initProcesses;
+	}
+
+	public int getInitSleepTime() {
+		return initSleepTime;
+	}
+
+	public void setInitSleepTime(int initSleepTime) {
+		this.initSleepTime = initSleepTime;
+	}
+
+	public int getProcessIncrement() {
+		return processIncrement;
+	}
+
+	public void setProcessIncrement(int processIncrement) {
+		this.processIncrement = processIncrement;
+	}
+
+	public int getProcessIncrementInterval() {
+		return processIncrementInterval;
+	}
+
+	public void setProcessIncrementInterval(int processIncrementInterval) {
+		this.processIncrementInterval = processIncrementInterval;
+	}
+
+	public int getThreads() {
+		return threads;
+	}
+
+	public void setThreads(int threads) {
+		this.threads = threads;
+	}
+
+	public int getVuser() {
+		return processes * threads * agentCount;
+	}
+	
 	public static Specification<PerfTest> statusSetEqual(final Status... statuses) {
 		return new Specification<PerfTest>() {
 			@Override

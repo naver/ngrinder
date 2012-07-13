@@ -64,16 +64,15 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	@RequestMapping("/detail")
-	public String getTestDetail(ModelMap model, @RequestParam long testId) {
-		PerfTest test = perfTestService.getPerfTest(testId);
+	public String getTestDetail(ModelMap model, @RequestParam(required = false)  Long id) {
+		PerfTest test = perfTestService.getPerfTest(id);
 		model.addAttribute("test", test);
-		model.addAttribute("scriptList", scriptService.getScripts(true, null, null));
-		
+		model.addAttribute("scriptList", scriptService.getScripts(true, null, null).getContent());
 		return "perftest/detail";
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String createTestt(ModelMap model, PerfTest test) {
+	public String saveTestt(ModelMap model, PerfTest test) {
 		perfTestService.savePerfTest(test);
 
 		return "perftest/list";

@@ -26,14 +26,27 @@
 		<div class="container">
 			<div class="row">
 				<div class="span10 offset1">
+					<div class="row">
+						<div class="span10">
+							<a class="btn" href="${req.getContextPath()}/perftest/detail" id="createBtn" data-toggle="modal">
+								<i class="icon-file"></i>
+								Create test
+							</a>
+							<a class="btn pull-right" href="javascript:void(0);" id="deleteBtn">
+								<i class="icon-remove"></i>
+								Delete selected tests
+							</a>
+						</div>
+					</div>
 					<div class="well form-inline" style="padding:5px;margin:10px 0">
+					
 						<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
 						<button type="submit" class="btn" id="searchBtn">Search</button>
-						<label class="checkbox pull-right">
+						<label class="checkbox pull-right" style="position:relative;top:5px">
 							<input type="checkbox" id="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> Finished
 						</label>
 					</div>
-					<table class="display ellipsis" id="scriptTable" style="margin-bottom:10px;">
+					<table class="display table-striped" id="testTable" style="margin-bottom:10px;">
 						<colgroup>
 							<col width="30">
 							<col width="160">
@@ -90,17 +103,50 @@
 						</tbody>
 					</table>
 				<!--content-->
-				<!-- <#include "../common/copyright.ftl"> -->
+				<#include "../common/copyright.ftl">
 				</div>
 			</div>
 		</div>
 		<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
 		<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
 		<script src="${req.getContextPath()}/js/utils.js"></script>
+		<script src="${req.getContextPath()}/plugins/datatables/js/jquery.dataTables.min.js"></script>
 		<script>
 			$(document).ready(function() {
+				$("#searchBtn").on('click', function() {
+					searchTestList();
+				});
+
+				$("#onlyFinished").on('click', function() {
+					searchTestList();
+				});
+				
+				<#if testList?has_content>
+				$("#testTable").dataTable({
+					"bAutoWidth": false,
+					"bFilter": false,
+					"bLengthChange": false,
+					"bInfo": false,
+					"iDisplayLength": 10,
+					"aaSorting": [[1, "asc"]],
+					"bProcessing": true,
+					"aoColumns": [{ "asSorting": []}, null, { "asSorting": []}, null, null, null, {"asSorting": []}, { "asSorting": []}],
+					//"bJQueryUI": true,
+					"sPaginationType": "full_numbers"
+				});
+				</#if>
 				
 			});
+			
+			function searchTestList() {
+				var isFinished = false;
+				if ($("#onlyFinished")[0].checked) {
+					isFinished = 1;
+				}
+				
+				document.location.href = "${req.getContextPath()}/perftest/list?keywords=" + $("#searchText").val() + "&isFinished=" + isFinished;
+			}
+			
 		</script>
 	</body>
 </html>
