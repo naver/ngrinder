@@ -67,7 +67,7 @@
 							</label>
 						</td>
 						<td>
-							<input type="text" id="tagsInput" name="tagStr" class="span4" value="${(result.tagStr)!}">&nbsp;&nbsp;
+							<input type="text" id="tagsInput" name="tagsString" class="span4" value="${(result.tagsString)!}">&nbsp;&nbsp;
 						</td>
 						<td>
 							<label class="label" for="descInput">
