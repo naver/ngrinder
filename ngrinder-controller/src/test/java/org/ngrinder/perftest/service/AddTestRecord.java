@@ -22,8 +22,6 @@
  */
 package org.ngrinder.perftest.service;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
@@ -43,7 +41,6 @@ public class AddTestRecord extends AbstractJUnit4SpringContextTests {
 	@Autowired
 	private PerfTestService testService;
 
-	@Before
 	public void createTempTests() {
 		PerfTest test = new PerfTest();
 		test.setTestName("new Test1");
@@ -75,7 +72,7 @@ public class AddTestRecord extends AbstractJUnit4SpringContextTests {
 	@Autowired
 	PerfTestRepository perfTestRepository;
 
-	@Test
+	//@Test
 	public void testGetTestListAll() {
 		createTempTests();
 		createTempTests();

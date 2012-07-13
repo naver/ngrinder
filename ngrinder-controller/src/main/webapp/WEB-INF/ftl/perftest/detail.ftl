@@ -2,15 +2,13 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>nGrinder Script List</title>
+<title>nGrinder Performance Test Detail</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="nGrinder Test Result Detail">
+<meta name="description" content="nGrinder Performance Test Detail">
 <meta name="author" content="AlexQin">
 
 <link rel="shortcut icon" href="favicon.ico" />
 <link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-<link href="${req.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
-
 <style>
 body {
 	padding-top: 60px;
@@ -102,27 +100,33 @@ div.div-host .host {
 <body>
 	<#include "../common/navigator.ftl">
 	<div class="container">
-		<div class="row">
-			<div class="span10 offset1">
+		<form id="testContentForm" action="${req.getContextPath()}/perftest/create" method="POST">
 				<div class="well">
 					<div class="row">
 						<div class="span10">
-							<div class="form-horizontal form-horizontal-1"
-								style="margin-bottom: 0">
+							<!-- not to pass test id, because test can not be modified.
+							<input type="hidden" id="testId" name="id" value="${(test.id)!}">
+							 -->
+							<input type="hidden" id="threshold" name="threshold" value="${(test.threshold)!"D"}">
+
+							<div class="form-horizontal form-horizontal-1" style="margin-bottom: 0">
 								<fieldset>
 									<div class="control-group">
-										<label for="testNameInput" class="control-label">Test Name</label>
+										<label for="testName" class="control-label">Test Name</label>
 										<div class="controls">
-											<input type="text" id="testName" value="${(test.testName)!}">
-											<a class="btn">Save</a>
-											<!--<span class="help-inline"></span>-->
+											<input type="text" id="testName" name="testName" value="${(test.testName)!}">
 										</div>
 									</div>
 									<div class="control-group" style="margin-bottom: 0">
-										<label for="descriptionInput" class="control-label">Description</label>
+										<label for="description" class="control-label">Description</label>
 										<div class="controls">
-											<input type="text" id="description"
-												value="${(test.description)!}"> <a class="btn">Save&Start</a>
+											<input type="text" id="description" name="description" value="${(test.description)!}">
+											<#if test??>
+												<button type="submit" class="btn">Clone&Start</a>
+											<#else>
+												<button type="submit" class="btn">Schedule&Start</a>
+											</#if>
+											
 										</div>
 									</div>
 								</fieldset>
@@ -152,20 +156,20 @@ div.div-host .host {
 												<div class="controls">
 													<div class="input-append">
 														<input type="text" class="input input-small"
-															id="agentCount" value="${(test.agentCount)!}" readonly>
+															id="agentCount" name="agentCount" value="${(test.agentCount)!}" readonly>
 														<button type="button" class="btn" id="agentSetBtn">Set</button>
 													</div>
 													<span class="label label-info pull-right">Vuser:${(test.vuser)!}</span>
 												</div>
 											</div>
 											<div class="control-group">
-												<label for="scriptSelect" class="control-label">Script</label>
+												<label for="scriptName" class="control-label">Script</label>
 												<div class="controls">
 													<select id="scriptName" name="scriptName">
 														<option>---</option>
 														<#if scriptList?size &gt; 0>
 															<#list scriptList as scriptItem>
-																<#if scriptItem.fileName == test.scriptName>
+																<#if test?? && scriptItem.fileName == test.scriptName>
 																	<#assign isSelected = "selected"/>
 																<#else>
 																	<#assign isSelected = ""/>
@@ -195,8 +199,9 @@ div.div-host .host {
 											<div class="control-group">
 												<label class="control-label"> <input type="radio"
 													id="durationChkbox"> Duration
-												</label> <input type="hidden" id="duration" name="duration"
-													value="${(test.duration)!}">
+												</label>
+												<input type="hidden" id="duration" name="duration"
+													value="${(test.duration)!0}">
 												<div class="controls">
 													<select class="select-item" id="dSelect"></select> : <select
 														class="select-item" id="hSelect"></select> : <select
@@ -206,30 +211,30 @@ div.div-host .host {
 												</div>
 											</div>
 											<div class="control-group">
-												<label for="runCntInput" class="control-label"> <input
+												<label for="runCount" class="control-label"> <input
 													type="radio" id="runcountChkbox"> Run Count
 												</label>
 												<div class="controls">
 													<input type="text" class="input input-small" id="runCount"
-														name="runCount">
+														name="runCount" value="${(test.runCount)!0}">
 												</div>
 											</div>
 											<div class="control-group">
-												<label for="ignoreInput" class="control-label">
+												<label for="ignoreSampleCount" class="control-label">
 													Ignore Count </label>
 												<div class="controls">
 													<input type="text" class="input input-small"
 														id="ignoreSampleCount" name="ignoreSampleCount"
-														value="${test.ignoreSampleCount}">
+														value="${(test.ignoreSampleCount)!0}">
 												</div>
 											</div>
 											<div class="control-group">
-												<label for="sapInTvlInput" class="control-label">
+												<label for="sampleInterval" class="control-label">
 													Sample Interval </label>
 												<div class="controls">
 													<input type="text" class="input input-small"
 														id="sampleInterval" name="sampleInterval"
-														value="${test.sampleInterval}">
+														value="${(test.sampleInterval)!1000}">
 													<code>MS</code>
 												</div>
 											</div>
@@ -238,32 +243,33 @@ div.div-host .host {
 								</div>
 								<div class="span5">
 									<div class="page-header">
-										<label class="checkbox" style="margin-bottom: 0"> <input
-											type="checkbox" id="rampupCheckbox">
-										<h4>Enable Ramp-Up</h4>
+										<label class="checkbox" style="margin-bottom: 0">
+											<input type="checkbox" id="rampupCheckbox">
+											<h4>Enable Ramp-Up</h4>
 										</label>
 									</div>
 									<table>
 										<tr>
+											<input type="hidden" id="processes" value="${(test.processes)!10}">
 											<td style="width: 50%">
 												<div class="form-horizontal form-horizontal-3">
 													<fieldset>
 														<div class="control-group">
-															<label for="initProcessInput" class="control-label">
+															<label for="initProcesses" class="control-label">
 																Inital Processes </label>
 															<div class="controls">
 																<input type="text" class="input input-mini"
 																	id="initProcesses" name="initProcesses"
-																	value="${test.initProcesses}">
+																	value="${(test.initProcesses)!1}">
 															</div>
 														</div>
 														<div class="control-group">
-															<label for="rampUpInput" class="control-label">
+															<label for="processIncrement" class="control-label">
 																Ramp-Up </label>
 															<div class="controls">
 																<input type="text" class="input input-mini"
 																	id="processIncrement" name="processIncrement"
-																	value="${test.processIncrement}">
+																	value="${(test.processIncrement)!1}">
 															</div>
 														</div>
 													</fieldset>
@@ -273,23 +279,23 @@ div.div-host .host {
 												<div class="form-horizontal form-horizontal-2">
 													<fieldset>
 														<div class="control-group">
-															<label for="initSleepTimeInput" class="control-label">
+															<label for="initSleepTime" class="control-label">
 																Inital Sleep Time </label>
 															<div class="controls">
 																<input type="text" class="input input-mini"
 																	id="initSleepTime" name="initSleepTime"
-																	value="${test.initSleepTime}">
+																	value="${(test.initSleepTime)!0}">
 																<code>MS</code>
 															</div>
 														</div>
 														<div class="control-group">
-															<label for="everyInput" class="control-label">
+															<label for="processIncrementInterval" class="control-label">
 																Processes Every </label>
 															<div class="controls">
 																<input type="text" class="input input-mini"
 																	id="processIncrementInterval"
 																	name="processIncrementInterval"
-																	value="${test.processIncrementInterval}">
+																	value="${(test.processIncrementInterval)!1}">
 																<code>MS</code>
 															</div>
 														</div>
@@ -308,11 +314,11 @@ div.div-host .host {
 						<div class="tab-pane" id="reportContent">not finished yet</div>
 					</div>
 				</div>
-				<!--content-->
-				<#include "../common/copyright.ftl">
-			</div>
+			</form>
+			<!--content-->
+			<#include "../common/copyright.ftl">
 		</div>
-	</div>
+
 	<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
 	<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
 	<script src="${req.getContextPath()}/js/jquery.gchart.pack.js"></script>
@@ -320,7 +326,7 @@ div.div-host .host {
 	<script src="${req.getContextPath()}/js/rampup.js"></script>
 	<script>
 			$(document).ready(function() {
-				
+								
 				if (${scriptList?size} == 0) {
 					alert ("User has not script yet! Please create a script first.");
 					document.location.href = "${req.getContextPath()}/script/list";
@@ -333,28 +339,71 @@ div.div-host .host {
 				});	
 							
 				$("#dSelect").append(getOption(100));
+				$("#dSelect").change(getDurationMS);
+				
 				$("#hSelect").append(getOption(24));
+				$("#hSelect").change(getDurationMS);
+				
 				$("#mSelect").append(getOption(60));
+				$("#mSelect").change(getDurationMS);
+				
 				$("#sSelect").append(getOption(60));
+				$("#sSelect").change(getDurationMS);
+				
+				//add toggle event to threshold
+				$("#runcountChkbox").change(function (){
+					if ($("#runcountChkbox").attr("checked") == "checked") {
+						$("#threshold").val("R");
+						$("#durationChkbox").removeAttr("checked");
+					}
+					});
+				$("#durationChkbox").change(function (){
+					if ($("#durationChkbox").attr("checked") == "checked") {
+						$("#threshold").val("D");
+						$("#runcountChkbox").removeAttr("checked");
+					}
+					});
 				
 				initThresholdChkBox();
 				initDuration();
 			});
 			
 			function initThresholdChkBox() {
-				if ("${test.threshold}" == "R") { //runcount
+				if ($("#testId").value == 0 || $("#threshold").value == "R") { //runcount
 					$("#runcountChkbox").attr("checked", "checked");
+					$("#durationChkbox").removeAttr("checked");
 				} else { //duration
-					$("#durationChkbox").attr("checked", "checked");					
+					$("#durationChkbox").attr("checked", "checked");
+					$("#runcountChkbox").removeAttr("checked");					
 				}
 			}
 			
 			function initDuration() {
-				
+				var duration = $("#duration").val();
+				var durationInSec = parseInt(duration / 1000);
+		        var durationD = parseInt(durationInSec /(60*60*24))
+		        var durationH = parseInt((durationInSec%(60*60*24))/3600);
+		        var durationM = parseInt((durationInSec%3600)/60);
+		        var durationS = durationInSec%60;
+				$("#dSelect").val(durationD);
+				$("#hSelect").val(durationH);
+				$("#mSelect").val(durationM);
+				$("#sSelect").val(durationS);
 			}
 			
-			function initRampup() {
-				
+			function getDurationMS() {
+				var durationD = parseInt($("#dSelect").val());     
+				var durationH = parseInt($("#hSelect").val());   
+				var durationM = parseInt($("#mSelect").val());   
+				var durationS = parseInt($("#sSelect").val());
+				var durationMs = (durationS + durationM * 60 + durationH * 3600 + durationD * 3600*24) * 1000;
+				$("#duration").val(durationMs);
+				return durationMs;
+			}
+			
+			function toggleThreshold() {
+				$("#runcountChkbox").toggle();
+				$("#durationChkbox").toggle();
 			}
 			
 			function getOption(cnt) {
@@ -366,6 +415,7 @@ div.div-host .host {
 				
 				return contents.join("\n");
 			}
+			
 		</script>
 </body>
 </html>

@@ -2,15 +2,13 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>nGrinder Script List</title>
+		<title>nGrinder Performance Test List</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="nGrinder Test Result Detail">
+		<meta name="description" content="nGrinder Performance Test List">
 		<meta name="author" content="AlexQin">
 
 		<link rel="shortcut icon" href="favicon.ico"/>
 		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-		<link href="${req.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
-		
 		<style>
 			body {
 				padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -25,9 +23,7 @@
     	<#include "../common/navigator.ftl">
 		<div class="container">
 			<div class="row">
-				<div class="span10 offset1">
-					<div class="row">
-						<div class="span10">
+				<div class="span12">
 							<a class="btn" href="${req.getContextPath()}/perftest/detail" id="createBtn" data-toggle="modal">
 								<i class="icon-file"></i>
 								Create test
@@ -41,7 +37,7 @@
 					<div class="well form-inline" style="padding:5px;margin:10px 0">
 					
 						<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
-						<button type="submit" class="btn" id="searchBtn">Search</button>
+						<button type="submit" class="btn" id="searchBtn" onclick="searchTestList();">Search</button>
 						<label class="checkbox pull-right" style="position:relative;top:5px">
 							<input type="checkbox" id="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> Finished
 						</label>
@@ -95,7 +91,7 @@
 							</#list>
 							<#else>
 								<tr>
-									<td colspan="8">
+									<td colspan="11">
 										No data to display.
 									</td>
 								</tr>
@@ -105,14 +101,14 @@
 				<!--content-->
 				<#include "../common/copyright.ftl">
 				</div>
-			</div>
-		</div>
 		<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
 		<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
 		<script src="${req.getContextPath()}/js/utils.js"></script>
 		<script src="${req.getContextPath()}/plugins/datatables/js/jquery.dataTables.min.js"></script>
 		<script>
 			$(document).ready(function() {
+				$("#n_test").addClass("active");
+				
 				$("#searchBtn").on('click', function() {
 					searchTestList();
 				});
@@ -143,7 +139,6 @@
 				if ($("#onlyFinished")[0].checked) {
 					isFinished = 1;
 				}
-				
 				document.location.href = "${req.getContextPath()}/perftest/list?keywords=" + $("#searchText").val() + "&isFinished=" + isFinished;
 			}
 			
