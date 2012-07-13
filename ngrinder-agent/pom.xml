@@ -12,6 +12,7 @@
 	<packaging>war</packaging>
 	<properties>
 		<m2eclipse.wtp.contextRoot>/ngrinder-agent</m2eclipse.wtp.contextRoot>
+		<maven.test.skip>true</maven.test.skip>
 	</properties>
 	<dependencies>
 
