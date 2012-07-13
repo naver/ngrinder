@@ -22,6 +22,8 @@
  */
 package org.ngrinder.infra.config;
 
+import java.util.Properties;
+
 import javax.persistence.Entity;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -89,6 +91,16 @@ public class DatabaseConfig implements NGrinderConstants {
 				}
 			}
 		});
+
+		Properties jpaProperties = new Properties();
+		jpaProperties.setProperty("hibernate.cache.use_second_level_cache", "true");
+		jpaProperties.setProperty("hibernate.cache.use_query_cache", "true");
+		// net.sf.ehcache.hibernate.EhCacheRegionFactory
+		jpaProperties.setProperty("hibernate.cache.region.factory_class",
+				"org.hibernate.cache.ehcache.EhCacheRegionFactory");
+		// jpaProperties.setProperty("hibernate.cache.provider_class",
+		// "org.hibernate.cache.EhCacheProvider");
+		emf.setJpaProperties(jpaProperties);
 		return emf;
 	}
 
