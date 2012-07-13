@@ -101,36 +101,36 @@ div.div-host .host {
 	<#include "../common/navigator.ftl">
 	<div class="container">
 		<form id="testContentForm" action="${req.getContextPath()}/perftest/create" method="POST">
-				<div class="well">
-					<div class="row">
-						<div class="span10">
-							<!-- not to pass test id, because test can not be modified.
-							<input type="hidden" id="testId" name="id" value="${(test.id)!}">
-							 -->
-							<input type="hidden" id="threshold" name="threshold" value="${(test.threshold)!"D"}">
+			<div class="well">
+				<div class="row">
+					<div class="span10">
+						<!-- not to pass test id, because test can not be modified.
+						<input type="hidden" id="testId" name="id" value="${(test.id)!}">
+						 -->
+						<input type="hidden" id="threshold" name="threshold" value="${(test.threshold)!"D"}">
 
-							<div class="form-horizontal form-horizontal-1" style="margin-bottom: 0">
-								<fieldset>
-									<div class="control-group">
-										<label for="testName" class="control-label">Test Name</label>
-										<div class="controls">
-											<input type="text" id="testName" name="testName" value="${(test.testName)!}">
-										</div>
+						<div class="form-horizontal form-horizontal-1" style="margin-bottom: 0">
+							<fieldset>
+								<div class="control-group">
+									<label for="testName" class="control-label">Test Name</label>
+									<div class="controls">
+										<input type="text" id="testName" name="testName" value="${(test.testName)!}">
 									</div>
-									<div class="control-group" style="margin-bottom: 0">
-										<label for="description" class="control-label">Description</label>
-										<div class="controls">
-											<input type="text" id="description" name="description" value="${(test.description)!}">
-											<#if test??>
-												<button type="submit" class="btn">Clone&Start</a>
-											<#else>
-												<button type="submit" class="btn">Schedule&Start</a>
-											</#if>
-											
-										</div>
+								</div>
+								<div class="control-group" style="margin-bottom: 0">
+									<label for="description" class="control-label">Description</label>
+									<div class="controls">
+										<input type="text" id="description" name="description" value="${(test.description)!}">
+										<#if test??>
+											<button type="submit" class="btn">Clone&Start</a>
+										<#else>
+											<button type="submit" class="btn">Schedule&Start</a>
+										</#if>
+										
 									</div>
-								</fieldset>
-							</div>
+								</div>
+							</fieldset>
+						</div>
 						</div>
 					</div>
 				</div>

@@ -9,7 +9,6 @@
 
 		<link rel="shortcut icon" href="${req.getContextPath()}/favicon.ico"/>
 		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-		<link href="${req.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
 		<style>
 			body {
 				padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
@@ -23,62 +22,70 @@
 	<body>
 	<#include "../common/navigator.ftl">
 	<div class="container">
-		<div class="row">
-			<div class="span10 offset1">
-				<form id="contentForm" method="post" target="_self">
-				<div class="well form-inline" style="padding:5px;margin:5px 0">
-					<label class="label" for="scriptNameInput">
-						Script Name
-					</label>
-					<input type="text" id="scriptNameInput" name="fileName" value="${(result.fileName)!}" readonly>
-					<input type="hidden" id="scriptId" name="id" value="${(result.id)!}">
-					<#if result.historyFileNames?has_content>
-					<div class="pull-right">
-					<label class="label" for="historySelect">
-						History
-					</label>
-					<select id="historySelect" name="historyFileName">
-						<option value="0">History List</option>
-						<#list result.historyFileNames as fileName>
-						<option value="${fileName}" <#if historyFileName?has_content && fileName == historyFileName>selected</#if>>${fileName}</option>
-						</#list>
-					</select>
-					<a class="btn" href="javascript:void(0);" id="compareBtn">Compare</a>
-					</div>
-					</#if>
+		<form id="contentForm" method="post" target="_self">
+			<div class="well form-inline" style="padding:5px;margin:5px 0">
+				<label class="label" for="scriptNameInput">
+					Script Name
+				</label>
+				<input type="text" id="scriptNameInput" name="fileName" value="${(result.fileName)!}" readonly>
+				<input type="hidden" id="scriptId" name="id" value="${(result.id)!}">
+				<#if result.historyFileNames?has_content>
+				<div class="pull-right">
+				<label class="label" for="historySelect">
+					History
+				</label>
+				<select id="historySelect" name="historyFileName">
+					<option value="0">History List</option>
+					<#list result.historyFileNames as fileName>
+					<option value="${fileName}" <#if historyFileName?has_content && fileName == historyFileName>selected</#if>>${fileName}</option>
+					</#list>
+				</select>
+				<a class="btn" href="javascript:void(0);" id="compareBtn">Compare</a>
 				</div>
-				<table style="border:none;width:100%">
-					<tr>
-						<td>
-							<div id="script_1" style="width:100%">
-								<textarea id="display_content" name="content" style="height:550px;width:100%;">${(result.content)!}</textarea>
-							</div>
-						</td>
-						<td>
-							<div id="script_2" style="width:100%">
-								<textarea id="display_content_2" style="height:550px;width:100%;">${(result.historyContent)!}</textarea>
-							</div>
-						</td>
-				</table>
-				
-				<div class="well form-inline" style="padding:5px;margin:5px 0">
-					<label class="label" for="tagsInput">
-						Tags
-					</label>
-					<input type="text" id="tagsInput" name="tagStr" value="${(result.tagStr)!}">&nbsp;&nbsp;
-					<label class="label" for="descInput">
-						Description
-					</label>
-					<input type="text" id="descInput" name="description" class="span6" style="width:600px" value="${(result.description)!}">
-				</div>
-				<a class="btn" href="javascript:void(0);" id="saveBtn">Save</a>
-				<a class="btn" href="javascript:void(0);" id="validateBtn">Validate Script</a>
-				<span class="help-inline" id="messageDiv"></span>
-				<div class="alert alert-info fade in" style="margin-top:5px;" id="autoSaveMsg"></div>
-				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre"></pre>
-				</form>			
+				</#if>
 			</div>
-		</div>
+			<table style="border:none;width:100%">
+				<tr>
+					<td>
+						<div id="script_1" style="width:100%">
+							<textarea id="display_content" name="content" style="height:550px;width:100%;">${(result.content)!}</textarea>
+						</div>
+					</td>
+					<td>
+						<div id="script_2" style="width:100%">
+							<textarea id="display_content_2" style="height:550px;width:100%;">${(result.historyContent)!}</textarea>
+						</div>
+					</td>
+			</table>
+			
+			<div class="well form-inline" style="padding:5px;margin:5px 0">
+				<table>
+					<tr>
+						<td widht="40px">
+							<label class="label" for="tagsInput">
+								Tags
+							</label>
+						</td>
+						<td>
+							<input type="text" id="tagsInput" name="tagsString" class="span4" value="${(result.tagsString)!}">&nbsp;&nbsp;
+						</td>
+						<td>
+							<label class="label" for="descInput">
+								Description
+							</label>
+						</td>
+						<td>
+							<input type="text" id="descInput" name="description" style="min-width:500px" value="${(result.description)!}">
+						</td>
+					</tr>
+				</table>
+			</div>
+			<a class="btn" href="javascript:void(0);" id="saveBtn">Save</a>
+			<a class="btn" href="javascript:void(0);" id="validateBtn">Validate Script</a>
+			<span class="help-inline" id="messageDiv"></span>
+			<div class="alert alert-info fade in" style="margin-top:5px;" id="autoSaveMsg"></div>
+			<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre"></pre>
+		</form>
 	</div>
 
 	<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>

@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

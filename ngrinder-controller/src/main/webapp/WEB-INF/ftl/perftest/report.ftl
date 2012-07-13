@@ -2,14 +2,13 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>nGrinder Script Editor</title>
+		<title>nGrinder Test Report</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="nGrinder Test Result Detail">
+		<meta name="description" content="nGrinder Test Report">
 		<meta name="author" content="AlexQin">
 
 		<link rel="shortcut icon" href="${req.getContextPath()}/favicon.ico"/>
 		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-		<link href="${req.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
 		<style>
 			.form-horizontal-3 { margin-bottom:0; margin-left:10px}
 			.form-horizontal-3 .control-label {width:100px;text-align:left;color: #666666; font-family: Tahoma,applegothic,sans-serif; font-size: 12px; font-weight:bold;}
@@ -18,8 +17,8 @@
 			.form-horizontal-3 .controls span { margin-right:5px }
 			.form-horizontal-3 .controls strong { color: #6DAFCF; }
 			
-			.left { border-right: 2px solid #878988 }
-			div.chart { border: 1px solid #878988; height:195px; min-width:660px; margin-bottom:12px}
+			.left { border-right: 1px solid #878988 }
+			div.chart { border: 1px solid #878988; height:195px; min-width:615px; margin-bottom:12px}
 		</style>
 		
 		<input type="hidden" id="contextPath" value="${req.getContextPath()}">
@@ -34,118 +33,114 @@
 	</ul>
 	<div class="container">
 		<div class="row">
-			<div class="span11 offset1">
-				<div class="row">
-					<div class="span10" style="margin-bottom:10px;">
-						<button class="btn btn-large pull-right"><i class="icon-download-alt"></i><strong>Download CSV</strong></button>
-					</div>
-				</div>
-				<div class="row">
-					<div class="span3 left">
-						<select id="scriptSelect">
-							<option value="0">Performance</option>
-						</select>
-						<div class="form-horizontal form-horizontal-3" style="margin-top:20px">
-							<fieldset>
-								<div class="control-group">
-									<label for="testNameInput" class="control-label">Vuser</label>
-									<div class="controls">
-										<strong>10</strong>
-									</div>
-								</div>
-								<div class="control-group">
-									<label for="testNameInput" class="control-label">Agents</label>
-									<div class="controls">
-										<span>1</span><a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
-									</div>
-								</div>
-								<div class="control-group">
-									<label for="testNameInput" class="control-label">Processes</label>
-									<div class="controls">
-										1
-									</div>
-								</div>
-								<div class="control-group">
-									<label for="testNameInput" class="control-label">Threads</label>
-									<div class="controls">
-										10
-									</div>
-								</div>
-								<hr>
-								<div class="control-group">
-									<label for="testNameInput" class="control-label">Target Hosts</label>
-									<div class="controls">
-										10.34.64.36
-									</div>
-								</div>
-								<hr>
-								<div class="control-group">
-									<label for="testNameInput" class="control-label">Duration</label>
-									<div class="controls">
-										00:00:02:19
-									</div>
-								</div>
-								<div class="control-group">
-									<label for="testNameInput" class="control-label">Ignore Count</label>
-									<div class="controls">
-										<span>0</span><code>sec</code>
-									</div>
-								</div>
-								<hr>
-								<div class="control-group">
-									<label for="testNameInput" class="control-label">Sample Interval</label>
-									<div class="controls">
-										<span>1000</span><code>ms</code>
-									</div>
-								</div>
-								<hr>
-								<div class="control-group">
-									<label for="testNameInput" class="control-label">Test Comment</label>
-									<div class="controls">
-										Copied
-									</div>
-								</div>
-								<hr>
-								<div class="control-group">
-									<label for="testNameInput" class="control-label">TPS</label>
-									<div class="controls">
-										<strong>Total 26.67</strong>
-									</div>
-								</div>
-								<div class="control-group">
-									<label for="testNameInput" class="control-label">Mean Time</label>
-									<div class="controls">
-										<span>316.5</span><code>ms</code>
-									</div>
-								</div>
-								<div class="control-group">
-									<label for="testNameInput" class="control-label">Peak TPS</label>
-									<div class="controls">
-										<strong>41</strong>
-									</div>
-								</div>
-								<div class="control-group">
-									<label for="testNameInput" class="control-label">Finished Tests</label>
-									<div class="controls">
-										3560
-									</div>
-								</div>
-							</fieldset>
+			<div class="span12" style="margin-bottom:10px;">
+				<button class="btn btn-large pull-right"><i class="icon-download-alt"></i><strong>Download CSV</strong></button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="span4 left">
+				<select id="scriptSelect">
+					<option value="0">Performance</option>
+				</select>
+				<div class="form-horizontal form-horizontal-3" style="margin-top:20px">
+					<fieldset>
+						<div class="control-group">
+							<label for="testNameInput" class="control-label">Vuser</label>
+							<div class="controls">
+								<strong>10</strong>
+							</div>
 						</div>
-					</div>
-					<div class="span7">
-						<div class="chart"></div>
-						<div class="chart"></div>
-						<div class="chart"></div>
-						<div class="chart"></div>
-						<!--
-						<img src="image01.jpg" height="210" width="800" border="0">
-						<img src="image01.jpg" height="210" width="800" border="0">
-						<img src="image01.jpg" height="210" width="800" border="0">
-						<img src="image01.jpg" height="210" width="800" border="0">
-						-->
-					</div>
+						<div class="control-group">
+							<label for="testNameInput" class="control-label">Agents</label>
+							<div class="controls">
+								<span>1</span><a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
+							</div>
+						</div>
+						<div class="control-group">
+							<label for="testNameInput" class="control-label">Processes</label>
+							<div class="controls">
+								1
+							</div>
+						</div>
+						<div class="control-group">
+							<label for="testNameInput" class="control-label">Threads</label>
+							<div class="controls">
+								10
+							</div>
+						</div>
+						<hr>
+						<div class="control-group">
+							<label for="testNameInput" class="control-label">Target Hosts</label>
+							<div class="controls">
+								10.34.64.36
+							</div>
+						</div>
+						<hr>
+						<div class="control-group">
+							<label for="testNameInput" class="control-label">Duration</label>
+							<div class="controls">
+								00:00:02:19
+							</div>
+						</div>
+						<div class="control-group">
+							<label for="testNameInput" class="control-label">Ignore Count</label>
+							<div class="controls">
+								<span>0</span><code>sec</code>
+							</div>
+						</div>
+						<hr>
+						<div class="control-group">
+							<label for="testNameInput" class="control-label">Sample Interval</label>
+							<div class="controls">
+								<span>1000</span><code>ms</code>
+							</div>
+						</div>
+						<hr>
+						<div class="control-group">
+							<label for="testNameInput" class="control-label">Test Comment</label>
+							<div class="controls">
+								Copied
+							</div>
+						</div>
+						<hr>
+						<div class="control-group">
+							<label for="testNameInput" class="control-label">TPS</label>
+							<div class="controls">
+								<strong>Total 26.67</strong>
+							</div>
+						</div>
+						<div class="control-group">
+							<label for="testNameInput" class="control-label">Mean Time</label>
+							<div class="controls">
+								<span>316.5</span><code>ms</code>
+							</div>
+						</div>
+						<div class="control-group">
+							<label for="testNameInput" class="control-label">Peak TPS</label>
+							<div class="controls">
+								<strong>41</strong>
+							</div>
+						</div>
+						<div class="control-group">
+							<label for="testNameInput" class="control-label">Finished Tests</label>
+							<div class="controls">
+								3560
+							</div>
+						</div>
+					</fieldset>
 				</div>
+			</div>
+			<div class="span7">
+				<div class="chart"></div>
+				<div class="chart"></div>
+				<div class="chart"></div>
+				<div class="chart"></div>
+				<!--
+				<img src="image01.jpg" height="210" width="800" border="0">
+				<img src="image01.jpg" height="210" width="800" border="0">
+				<img src="image01.jpg" height="210" width="800" border="0">
+				<img src="image01.jpg" height="210" width="800" border="0">
+				-->
 			</div>
 		</div>
 	</div>

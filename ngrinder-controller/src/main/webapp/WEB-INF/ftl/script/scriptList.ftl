@@ -9,7 +9,6 @@
 
 		<link rel="shortcut icon" href="${req.getContextPath()}/favicon.ico"/>
 		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-		<link href="${req.getContextPath()}/css/bootstrap-responsive.min.css" rel="stylesheet">
 		<link href="${req.getContextPath()}/plugins/datatables/css/demo_table.css" rel="stylesheet">
 		<link href="${req.getContextPath()}/plugins/datatables/css/demo_page.css" rel="stylesheet">
 		<link href="${req.getContextPath()}/plugins/datatables/css/demo_table_jui.css" rel="stylesheet">
@@ -33,107 +32,103 @@
     <#include "../common/navigator.ftl">
 	<div class="container">
 		<div class="row">
-			<div class="span10 offset1">
-				<div class="row">
-					<div class="span10">
-						<a class="btn" href="#createScriptModal" id="createBtn" data-toggle="modal">
-							<i class="icon-file"></i>
-							Create a script
-						</a>
-						<a class="btn" href="#uploadScriptModal" id="uploadBtn" data-toggle="modal">
-							<i class="icon-upload"></i>
-							Upload script or resources
-						</a>
-						<a class="btn pull-right" href="javascript:void(0);" id="deleteBtn">
-							<i class="icon-remove"></i>
-							Delete selected scripts
-						</a>
-					</div>
-				</div>
-				<div class="well form-inline" style="padding:5px;margin:10px 0">
-					<!--<legend>introduction</legend>-->
-					<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
-					<button type="submit" class="btn" id="searchBtn">Search</button>
-					<label class="checkbox pull-right" style="position:relative;top:5px">
-						<input type="checkbox" id="onlyMineCkb" <#if isOwner>checked</#if>> See only my script
-					</label>
-				</div>
-				<table class="display ellipsis" id="scriptTable" style="margin-bottom:10px;">
-					<colgroup>
-						<col width="30">
-						<col width="160">
-						<col>
-						<col width="170">
-						<col width="160">
-						<col width="100">
-						<col width="100">
-						<col width="80">
-					</colgroup>
-					<thead>
-						<tr>
-							<th class="center"><input type="checkbox" class="checkbox" value=""></th>
-							<th>Script File Name</th>
-							<th class="noClick">Description</th>
-							<th>Last Modified Date</th>
-							<th>Last Modified By</th>
-							<th>Size(KB)</th>
-							<th class="noClick">Tags</th>
-							<th class="noClick">Download</th>
-						</tr>
-					</thead>
-					<tbody>
-						<#assign scriptList = scripts.content/>
-						<#if scriptList?has_content>
-						<#list scriptList as script>
-						<tr>
-							<td><input type="checkbox" value="${script.id}"></td>
-							<td class="left"><a href="${req.getContextPath()}/script/detail?id=${script.id}" target="_self">${script.fileName}</a></td>
-							<td class="left ellipsis" title="${(script.description)!}">${(script.description)!}</td>
-							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
-							<td>${(script.lastModifiedUser)!}</td>
-							<td>${(script.fileSize)!0}</td>
-							<td class="left ellipsis" title="${(script.tagsString)!}">${(script.tagsString)!}</td>
-							<td><a href="javascript:void(0);"><i class="icon-download-alt script-download" sid="${script.id}" sname="${script.fileName}"></i></a></td>
-							<!--<td><a href="javascript:void(0);"><i class="icon-remove script-remove" sid="${script.id}"></i></a></td>-->
-						</tr>
-						</#list>
-						<#else>
-							<tr>
-								<td colspan="8">
-									No data to display.
-								</td>
-							</tr>
-						</#if>
-					</tbody>
-				</table>
-				<#if libraries?has_content>
-				<div class="page-header" style="margin:65px 0 10px; padding-bottom:5px;">
-					<h3>Resource List</h3>
-				</div>
-				<table class="display" id="resourceTable">
-					<thead>
-						<tr>
-							<th>Resource Name</th>
-							<th>Size(KB)</th>
-							<th class="noClick">Download</th>
-							<th class="noClick">Del</th>
-						</tr>
-					</thead>
-					<tbody>
-						<#list libraries as library>
-						<tr>
-							<td class="left">${library.fileName}</td>
-							<td>${(library.fileSize)!0}</td>
-							<td><a href="javascript:void(0);"><i class="icon-download-alt resource-download" sname="${library.fileName}"></i></a></td>
-							<td><a href="javascript:void(0);"><i class="icon-remove resource-remove" sname="${library.fileName}"></i></a></td>
-						</tr>
-						</#list>
-					</tbody>
-				</table>
-				</#if>
-				<#include "../common/copyright.ftl">
+			<div class="span12">
+				<a class="btn" href="#createScriptModal" id="createBtn" data-toggle="modal">
+					<i class="icon-file"></i>
+					Create a script
+				</a>
+				<a class="btn" href="#uploadScriptModal" id="uploadBtn" data-toggle="modal">
+					<i class="icon-upload"></i>
+					Upload script or resources
+				</a>
+				<a class="btn pull-right" href="javascript:void(0);" id="deleteBtn">
+					<i class="icon-remove"></i>
+					Delete selected scripts
+				</a>
 			</div>
 		</div>
+		<div class="well form-inline" style="padding:5px;margin:10px 0">
+			<!--<legend>introduction</legend>-->
+			<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
+			<button type="submit" class="btn" id="searchBtn">Search</button>
+			<label class="checkbox pull-right" style="position:relative;top:5px">
+				<input type="checkbox" id="onlyMineCkb" <#if isOwner>checked</#if>> See only my script
+			</label>
+		</div>
+		<table class="display ellipsis" id="scriptTable" style="margin-bottom:10px;">
+			<colgroup>
+				<col width="30">
+				<col width="160">
+				<col>
+				<col width="170">
+				<col width="160">
+				<col width="100">
+				<col width="100">
+				<col width="80">
+			</colgroup>
+			<thead>
+				<tr>
+					<th class="center"><input type="checkbox" class="checkbox" value=""></th>
+					<th>Script File Name</th>
+					<th class="noClick">Description</th>
+					<th>Last Modified Date</th>
+					<th>Last Modified By</th>
+					<th>Size(KB)</th>
+					<th class="noClick">Tags</th>
+					<th class="noClick">Download</th>
+				</tr>
+			</thead>
+			<tbody>
+				<#assign scriptList = scripts.content/>
+				<#if scriptList?has_content>
+				<#list scriptList as script>
+				<tr>
+					<td><input type="checkbox" value="${script.id}"></td>
+					<td class="left"><a href="${req.getContextPath()}/script/detail?id=${script.id}" target="_self">${script.fileName}</a></td>
+					<td class="left ellipsis" title="${(script.description)!}">${(script.description)!}</td>
+					<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
+					<td>${(script.lastModifiedUser.userId)!}</td>
+					<td>${(script.fileSize)!0}</td>
+					<td class="left ellipsis" title="${(script.tagsString)!}">${(script.tagsString)!}</td>
+					<td><a href="javascript:void(0);"><i class="icon-download-alt script-download" sid="${script.id}" sname="${script.fileName}"></i></a></td>
+					<!--<td><a href="javascript:void(0);"><i class="icon-remove script-remove" sid="${script.id}"></i></a></td>-->
+				</tr>
+				</#list>
+				<#else>
+					<tr>
+						<td colspan="8">
+							No data to display.
+						</td>
+					</tr>
+				</#if>
+			</tbody>
+		</table>
+		<#if libraries?has_content>
+		<div class="page-header" style="margin:65px 0 10px; padding-bottom:5px;">
+			<h3>Resource List</h3>
+		</div>
+		<table class="display" id="resourceTable">
+			<thead>
+				<tr>
+					<th>Resource Name</th>
+					<th>Size(KB)</th>
+					<th class="noClick">Download</th>
+					<th class="noClick">Del</th>
+				</tr>
+			</thead>
+			<tbody>
+				<#list libraries as library>
+				<tr>
+					<td class="left">${library.fileName}</td>
+					<td>${(library.fileSize)!0}</td>
+					<td><a href="javascript:void(0);"><i class="icon-download-alt resource-download" sname="${library.fileName}"></i></a></td>
+					<td><a href="javascript:void(0);"><i class="icon-remove resource-remove" sname="${library.fileName}"></i></a></td>
+				</tr>
+				</#list>
+			</tbody>
+		</table>
+		</#if>
+		<#include "../common/copyright.ftl">
 
 		<div class="modal fade" id="createScriptModal">
 			<div class="modal-header">

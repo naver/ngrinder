@@ -30,6 +30,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+
 public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
 	private UserContext userContext;
@@ -42,8 +43,7 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-		User user = getUserContext().getCurrentUser();
-		return user;
+		return getUserContext().getCurrentUser();
 	}
 
 	public UserContext getUserContext() {

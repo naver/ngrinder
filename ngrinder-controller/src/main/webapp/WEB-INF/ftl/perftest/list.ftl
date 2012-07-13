@@ -91,7 +91,7 @@
 							</#list>
 							<#else>
 								<tr>
-									<td colspan="11">
+									<td colspan="8">
 										No data to display.
 									</td>
 								</tr>
@@ -101,14 +101,14 @@
 				<!--content-->
 				<#include "../common/copyright.ftl">
 				</div>
+			</div>
+		</div>
 		<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
 		<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
 		<script src="${req.getContextPath()}/js/utils.js"></script>
 		<script src="${req.getContextPath()}/plugins/datatables/js/jquery.dataTables.min.js"></script>
 		<script>
 			$(document).ready(function() {
-				$("#n_test").addClass("active");
-				
 				$("#searchBtn").on('click', function() {
 					searchTestList();
 				});

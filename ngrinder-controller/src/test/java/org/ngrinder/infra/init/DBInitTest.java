@@ -16,20 +16,20 @@ public class DBInitTest extends org.ngrinder.AbstractNGNinderTransactionalTest {
 	private DBInit dbInit;
 
 	@Autowired
-	private UserRepository userRepository;
+	private UserRepository userReoRepository;
 
 	@Before
 	public void before() {
-		userRepository.deleteAll();
+		userReoRepository.deleteAll();
 	}
 
 	@Test
 	public void initUserDB() {
 		dbInit.init(); 
-		List<User> users = userRepository.findAll();
+		List<User> users = userReoRepository.findAll();
 		
 		// Two users should be exist
-		assertThat(users.size(), is(4));
+		assertThat(users.size(), is(2));
 		assertThat(users.get(0).getUserId(), is("admin"));
 		assertThat(users.get(0).getPassword(), is("admin"));
 		assertThat(users.get(1).getUserId(), is("user"));

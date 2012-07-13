@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2012 - 2012 NHN Corporation
  * All rights reserved.
@@ -160,6 +159,7 @@ public class ScriptDaoImpl implements ScriptDao, NGrinderConstants {
 
 			if (null != searchStr && !script.getFileName().toLowerCase().contains(searchStr)
 					&& !script.getTags().toString().toLowerCase().contains(searchStr)
+					&& !script.getTagsString().toLowerCase().contains(searchStr)
 					&& !script.getLastModifiedUser().getUserId().toLowerCase().contains(searchStr)) {
 				continue;
 			}
@@ -252,6 +252,10 @@ public class ScriptDaoImpl implements ScriptDao, NGrinderConstants {
 		if (null == script.getId() || 0 == script.getId().longValue()) {
 			script.setId((long) script.hashCode());
 			scriptUtil.createScriptPath(script.getId());
+		} else {
+			Script scriptOld = this.findOne(script.getId());
+			scriptOld.merge(script);
+			script = scriptOld;
 		}
 		String scriptPath = scriptUtil.getScriptPath(script.getId());
 
