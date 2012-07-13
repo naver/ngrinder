@@ -13,8 +13,8 @@
 				
 				<ul class="nav pull-right">
 					<li class="dropdown">
-		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">UserName <b class="caret"></b></a>
-		            	<ul class="dropdown-menu">
+		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">${currentUser.userName}<b class="caret"></b></a>
+		            	<ul class="dropdown-menu"> 
 							<@security.authorize ifAnyGranted="U, A, S">
 		                	<li><a href="${req.getContextPath()}/user/profile">Profile</a></li>
 		                	<li class="divider"></li>

@@ -40,7 +40,9 @@ import org.ngrinder.user.service.UserContext;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 public class NGrinderBaseController implements GrinderConstants {
 
@@ -54,8 +56,14 @@ public class NGrinderBaseController implements GrinderConstants {
 	@Autowired
 	private UserService userService;
 
+	@ModelAttribute("currentUser")
 	public User getCurrentUser() {
-		return userContext.getCurrentUser();
+		try {
+			return userContext.getCurrentUser();
+		} catch (AuthenticationCredentialsNotFoundException e) {
+
+		}
+		return null;
 	}
 
 	/**
