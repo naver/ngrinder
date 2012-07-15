@@ -116,7 +116,7 @@
 								<input type="text" class="span4" id="mobilePhone"
 									name="mobilePhone" rel="popover"
 									value="${(user.mobilePhone)!}"
-									data-content="Enter yourPhone number."
+									data-content="Enter your phone number."
 									data-original-title="Phone number">
 							</div>
 						</div>
