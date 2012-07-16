@@ -1,0 +1,7 @@
+- .
++ .java
++ .js
++ .css
++ .ftl
++ .xml
+= JSP/PHP:ftl,HTML:css 

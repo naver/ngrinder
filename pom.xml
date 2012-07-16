@@ -196,9 +196,17 @@
 				<version>3.0.2</version>
 				<configuration>
 					<includesTestSourceRoots>true</includesTestSourceRoots>
+					<encoding>${source-encoding}</encoding>
 					<generateHtml>true</generateHtml>
 					<generateXml>true</generateXml>
-					<jdk>1.6</jdk>
+					<jdk>${jdk-version}</jdk>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<configuration>
+					<encoding>${source-encoding}</encoding>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -244,8 +252,15 @@
 				<version>3.0.2</version>
 				<configuration>
 					<includesTestSourceRoots>true</includesTestSourceRoots>
-					<encoding>UTF-8</encoding>
-					<jdk>1.6</jdk>
+					<encoding>${source-encoding}</encoding>
+					<jdk>${jdk-version}</jdk>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<configuration>
+					<encoding>${source-encoding}</encoding>
 				</configuration>
 			</plugin>
 		</plugins>
