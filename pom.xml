@@ -208,6 +208,7 @@
 				<configuration>
 					<encoding>${source-encoding}</encoding>
 					<configLocation>checkstyle.xml</configLocation>
+					<excludes>**/test/java/**/*.java</excludes>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -262,6 +263,7 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<configuration>
 					<encoding>${source-encoding}</encoding>
+					<excludes>**/test/java/**/*.java</excludes>
 				</configuration>
 			</plugin>
 		</plugins>
