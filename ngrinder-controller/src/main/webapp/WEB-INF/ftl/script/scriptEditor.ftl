@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="utf-8">
+		<meta charset="utf-8" />
 		<title>nGrinder Script Editor</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="nGrinder Test Result Detail">
-		<meta name="author" content="AlexQin">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="description" content="nGrinder Test Result Detail" />
+		<meta name="author" content="AlexQin" />
 
 		<link rel="shortcut icon" href="${req.getContextPath()}/favicon.ico"/>
 		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
@@ -15,7 +15,7 @@
 			}
 		</style>
 		
-		<input type="hidden" id="contextPath" value="${req.getContextPath()}">
+		<input type="hidden" id="contextPath" value="${req.getContextPath()}" />
 		<#setting number_format="computer">
 	</head>
 
@@ -23,12 +23,17 @@
 	<#include "../common/navigator.ftl">
 	<div class="container">
 		<form id="contentForm" method="post" target="_self">
+			<a class="btn saveBtn" href="javascript:void(0);">Save</a>
+			<a class="btn" href="javascript:void(0);" id="validateTopBtn">Validate Script</a>
+			<a class="btn listBtn" href="javascript:void(0);">Go back</a>
+			<div class="alert alert-info fade in" style="margin-top:5px;" id="autoSaveMsgTop"></div>
+
 			<div class="well form-inline" style="padding:5px;margin:5px 0">
 				<label class="label" for="scriptNameInput">
 					Script Name
 				</label>
-				<input type="text" id="scriptNameInput" name="fileName" value="${(result.fileName)!}" readonly>
-				<input type="hidden" id="scriptId" name="id" value="${(result.id)!}">
+				<input type="text" id="scriptNameInput" name="fileName" value="${(result.fileName)!}" readonly="readonly" />
+				<input type="hidden" id="scriptId" name="id" value="${(result.id)!}" />
 				<#if result.historyFileNames?has_content>
 				<div class="pull-right">
 				<label class="label" for="historySelect">
@@ -80,10 +85,13 @@
 					</tr>
 				</table>
 			</div>
-			<a class="btn" href="javascript:void(0);" id="saveBtn">Save</a>
-			<a class="btn" href="javascript:void(0);" id="validateBtn">Validate Script</a>
+
+			<a class="btn saveBtn" href="javascript:void(0);">Save</a>
+			<a class="btn" href="javascript:void(0);" id="validateBottomBtn">Validate Script</a>
+			<a class="btn listBtn" href="javascript:void(0);">Go back</a>
+
 			<span class="help-inline" id="messageDiv"></span>
-			<div class="alert alert-info fade in" style="margin-top:5px;" id="autoSaveMsg"></div>
+			<div class="alert alert-info fade in" style="margin-top:5px;" id="autoSaveMsgBottom"></div>
 			<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre"></pre>
 		</form>
 	</div>
@@ -131,7 +139,8 @@
 	      		$('#script_2').show();
 	  		}
 	  		
-	  		$('#autoSaveMsg').fadeOut();
+	  		$('#autoSaveMsgTop').fadeOut();
+	  		$('#autoSaveMsgBottom').fadeOut();
 			
 			$("#compareBtn").on('click', function() {
 				if ($("#historySelect").val() == 0) {
@@ -142,51 +151,71 @@
 				document.forms.contentForm.action = "${req.getContextPath()}/script/detail";
 				document.forms.contentForm.submit();
 			});
-			
-			$("#saveBtn").on('click', function() {
+
+			$(".saveBtn").on('click', function() {
 				var scriptContent = editAreaLoader.getValue("display_content");
 				$('#display_content').val(scriptContent);
 				
 				document.forms.contentForm.action = "${req.getContextPath()}/script/save";
 				document.forms.contentForm.submit();
 			});
-			
-			$("#validateBtn").on('click', function() {
-				var scriptContent = editAreaLoader.getValue("display_content");
-				
-				$('#messageDiv').ajaxSend(function() {
-				  $(this).html("Validating script......");
-				});
-		
-				$.ajax({
-			  		url: "${req.getContextPath()}/script/validate",
-			    	async: true,
-					dataType:'json',
-					data: {'scriptContent': scriptContent},
-			    	success: function(res) {
-			    		if (res.success) {
-							var validationInfo = "";
-							$.each(res, function(i,item){
-								validationInfo = validationInfo + "\n" + item + "\n";
-							});
-							$('#messageDiv').html("");
-							$('#validateRsPre').text(validationInfo);
-			    		} else {
-			    			showMsg("Validation error:" + res.message);
-			    		}
-			    	},
-			    	error: function() {
-			    		showMsg("Validate Script error.");
-			    	}
-			  	});
+
+			$(".listBtn").on('click', function() {
+				if (!confirm("You are writting this script.\nAre you sure to cancel modified script and move the scripts list?")) {
+					return;
+				}
+
+				document.location.replace("${req.getContextPath()}/script/list");
+			});
+
+			$("#validateTopBtn").on('click', function() {
+				validateScript(true);
+			});
+
+			$("#validateBottomBtn").on('click', function() {
+				validateScript(false);
 			});
 		});
-		
-		function showMsg(message) {
-        	var $autoMsg = $('#autoSaveMsg');
+
+		function validateScript(isTopPosition) {
+			var scriptContent = editAreaLoader.getValue("display_content");
+			$('#messageDiv').ajaxSend(function() {
+			  $(this).html("Validating script......");
+			});
+
+			$.ajax({
+		  		url: "${req.getContextPath()}/script/validate",
+		    	async: true,
+				dataType:'json',
+				data: {'scriptContent': scriptContent},
+		    	success: function(res) {
+		    		if (res.success) {
+						var validationInfo = "";
+						$.each(res, function(i,item){
+							validationInfo = validationInfo + "\n" + item + "\n";
+						});
+						$('#messageDiv').html("");
+
+						if (isTopPosition)
+							$('#validateRsPreTop').text(validationInfo);
+						else
+							$('#validateRsPreBottom').text(validationInfo);
+		    		} else {
+		    			showMsg("Validation error:" + res.message, isTopPosition);
+		    		}
+		    	},
+		    	error: function() {
+		    		$('#messageDiv').html("");
+		    		showMsg("Validate Script error.", isTopPosition);
+		    	}
+		  	});
+		}
+
+		function showMsg(message, isTopPosition) {
+        	var $autoMsg = isTopPosition ? $('#autoSaveMsgTop') : $('#autoSaveMsgBottom');
         	$autoMsg.html(message);
         	$autoMsg.fadeIn("fast");
-        	
+
     		setTimeout(function(){$autoMsg.fadeOut('fast')}, 3000);
 		}
 		
@@ -221,16 +250,16 @@
 				data: {'id': ${(result.id)!0}, 'content': scriptContent},
 		        success: function(res) {
 		        	if (res.success) {
-		        		showMsg("Auto save script at " + new Date())
+		        		showMsg("Auto save script at " + new Date(), false)
 		        	} else {
-		        		showMsg(res.message);
+		        		showMsg(res.message, false);
 		        	}
 		        },
 		        timeout: function() {
-		        	showMsg("Auto save script is time out.");  
+		        	showMsg("Auto save script is time out.", false);  
 		        },
 		        error: function() {
-		        	showMsg("Auto save script is error.");  
+		        	showMsg("Auto save script is error.", false);  
 		        }
 			});
 			
