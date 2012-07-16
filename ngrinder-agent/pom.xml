@@ -76,7 +76,7 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<configuration>
 					<encoding>${source-encoding}</encoding>
-					<exclude>**/*.java</exclude>
+					<excludes>**/*.java</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -128,7 +128,7 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<configuration>
 					<encoding>${source-encoding}</encoding>
-					<exclude>**/*.java</exclude>
+					<excludes>**/*.java</excludes>
 				</configuration>
 			</plugin>
 		</plugins>

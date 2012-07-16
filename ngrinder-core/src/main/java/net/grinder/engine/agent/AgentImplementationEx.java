@@ -91,8 +91,6 @@ public class AgentImplementationEx implements Agent {
 	 * 
 	 * @param logger
 	 *            Logger.
-	 * @param alternateFile
-	 *            Alternative properties file, or <code>null</code>.
 	 * @param proceedWithoutConsole
 	 *            <code>true</code> => proceed if a console connection could not
 	 *            be made.
