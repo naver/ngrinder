@@ -9,62 +9,8 @@
 
 <link rel="shortcut icon" href="favicon.ico" />
 <link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
+<link href="${req.getContextPath()}/css/ngrinder.css" rel="stylesheet">
 <style>
-body {
-	padding-top: 60px;
-	/* 60px to make the container go all the way to the bottom of the topbar */
-}
-
-.form-horizontal-1 .control-label {
-	width: 80px;
-	color: #666666;
-	font-family: Tahoma, applegothic, sans-serif;
-	font-size: 12px;
-	font-weight: bold;
-}
-
-.form-horizontal-1 .controls {
-	margin-left: 100px;
-}
-
-.form-horizontal-1 .controls a {
-	margin-left: 20px;
-}
-
-.form-horizontal-1 .controls input {
-	width: 720px;
-}
-
-.form-horizontal-2 .control-label {
-	width: 110px;
-	text-align: left;
-	color: #666666;
-	font-family: Tahoma, applegothic, sans-serif;
-	font-size: 12px;
-	font-weight: bold;
-}
-
-.form-horizontal-2 .controls {
-	margin-left: 130px;
-}
-
-.form-horizontal-3 {
-	margin-bottom: 0
-}
-
-.form-horizontal-3 .control-label {
-	width: 100px;
-	text-align: left;
-	color: #666666;
-	font-family: Tahoma, applegothic, sans-serif;
-	font-size: 12px;
-	font-weight: bold;
-}
-
-.form-horizontal-3 .controls {
-	margin-left: 115px;
-}
-
 div.div-host {
 	border: 1px solid #D6D6D6;
 	height: 80px;
@@ -144,7 +90,7 @@ div.div-host .host {
 					<div class="tab-content">
 						<div class="tab-pane" id="testContent">
 							<div class="row">
-								<div class="span5">
+								<div class="span6">
 									<div class="page-header">
 										<h4>Load Test Detail</h4>
 									</div>
@@ -159,7 +105,7 @@ div.div-host .host {
 															id="agentCount" name="agentCount" value="${(test.agentCount)!}" readonly>
 														<button type="button" class="btn" id="agentSetBtn">Set</button>
 													</div>
-													<span class="label label-info pull-right">Vuser:${(test.vuser)!}</span>
+													<span class="label label-info pull-right">Vuser: ${(test.vuser)!0}</span>
 												</div>
 											</div>
 											<div class="control-group">
@@ -241,7 +187,7 @@ div.div-host .host {
 										</fieldset>
 									</div>
 								</div>
-								<div class="span5">
+								<div class="span6">
 									<div class="page-header">
 										<label class="checkbox" style="margin-bottom: 0">
 											<input type="checkbox" id="rampupCheckbox">
@@ -252,7 +198,7 @@ div.div-host .host {
 										<tr>
 											<input type="hidden" id="processes" value="${(test.processes)!10}">
 											<td style="width: 50%">
-												<div class="form-horizontal form-horizontal-3">
+												<div class="form-horizontal form-horizontal-2">
 													<fieldset>
 														<div class="control-group">
 															<label for="initProcesses" class="control-label">

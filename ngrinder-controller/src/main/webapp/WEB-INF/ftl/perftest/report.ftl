@@ -9,14 +9,12 @@
 
 		<link rel="shortcut icon" href="${req.getContextPath()}/favicon.ico"/>
 		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
+		<link href="${req.getContextPath()}/css/ngrinder.css" rel="stylesheet">
+		
 		<style>
-			.form-horizontal-3 { margin-bottom:0; margin-left:10px}
-			.form-horizontal-3 .control-label {width:100px;text-align:left;color: #666666; font-family: Tahoma,applegothic,sans-serif; font-size: 12px; font-weight:bold;}
-			.form-horizontal-3 .controls { margin-left:115px; margin-top:5px }
-			.form-horizontal-3 hr { margin:25px 10px 25px 0 }
-			.form-horizontal-3 .controls span { margin-right:5px }
-			.form-horizontal-3 .controls strong { color: #6DAFCF; }
-			
+			body {
+				padding-top: 0;
+			}	
 			.left { border-right: 1px solid #878988 }
 			div.chart { border: 1px solid #878988; height:195px; min-width:615px; margin-bottom:12px}
 		</style>

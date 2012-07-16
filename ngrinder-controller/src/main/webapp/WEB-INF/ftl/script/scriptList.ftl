@@ -12,17 +12,7 @@
 		<link href="${req.getContextPath()}/plugins/datatables/css/demo_table.css" rel="stylesheet">
 		<link href="${req.getContextPath()}/plugins/datatables/css/demo_page.css" rel="stylesheet">
 		<link href="${req.getContextPath()}/plugins/datatables/css/demo_table_jui.css" rel="stylesheet">
-		<link href="${req.getContextPath()}/plugins/google_code_prettify/prettify.css" rel="stylesheet">
-		<style>
-			body {
-				padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-			}
-			table th, table td {text-align:center;}
-			table.display thead th {padding:3px 10px}
-			table.display tbody .left {text-align:left}
-			table.ellipsis {table-layout:fixed}
-			table.ellipsis td.ellipsis {overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
-		</style>
+		<link href="${req.getContextPath()}/css/ngrinder.css" rel="stylesheet">
 		
 		<input type="hidden" id="contextPath" value="${req.getContextPath()}">
 		<#setting number_format="computer">
@@ -68,7 +58,7 @@
 			</colgroup>
 			<thead>
 				<tr>
-					<th class="center"><input type="checkbox" class="checkbox" value=""></th>
+					<th><input type="checkbox" class="checkbox" value=""></th>
 					<th>Script File Name</th>
 					<th class="noClick">Description</th>
 					<th>Last Modified Date</th>
@@ -103,6 +93,7 @@
 				</#if>
 			</tbody>
 		</table>
+		
 		<#if libraries?has_content>
 		<div class="page-header" style="margin:65px 0 10px; padding-bottom:5px;">
 			<h3>Resource List</h3>

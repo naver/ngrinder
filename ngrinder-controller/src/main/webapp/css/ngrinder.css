@@ -1,1 +1,90 @@
 @charset "utf-8";
+body {
+	padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+}
+
+.form-horizontal-1 .control-label {
+	width: 80px;
+	color: #666666;
+	font-family: Tahoma, applegothic, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.form-horizontal-1 .controls {
+	margin-left: 100px;
+}
+
+.form-horizontal-1 .controls a {
+	margin-left: 20px;
+}
+
+.form-horizontal-1 .controls input {
+	width: 720px;
+}
+
+.form-horizontal-2 .control-label {
+	width: 110px;
+	text-align: left;
+	color: #666666;
+	font-family: Tahoma, applegothic, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.form-horizontal-2 .controls {
+	margin-left: 130px;
+}
+
+.form-horizontal-3 {
+	margin-bottom: 0;
+	margin-left: 10px
+}
+
+.form-horizontal-3 .control-label {
+	width: 100px;
+	text-align: left;
+	color: #666666;
+	font-family: Tahoma, applegothic, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.form-horizontal-3 .controls {
+	margin-left: 115px;
+	margin-top: 5px
+}
+
+.form-horizontal-3 hr {
+	margin: 25px 10px 25px 0
+}
+
+.form-horizontal-3 .controls span {
+	margin-right: 5px
+}
+
+.form-horizontal-3 .controls strong {
+	color: #6DAFCF;
+}
+
+table th,table td {
+	text-align: center;
+}
+
+table.display thead th {
+	padding: 3px 10px
+}
+
+table.display tbody .left {
+	text-align: left
+}
+
+table.ellipsis {
+	table-layout: fixed
+}
+
+table.ellipsis td.ellipsis {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
