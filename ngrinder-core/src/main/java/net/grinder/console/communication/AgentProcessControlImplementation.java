@@ -37,7 +37,6 @@ import net.grinder.common.processidentity.ProcessIdentity;
 import net.grinder.communication.CommunicationException;
 import net.grinder.communication.MessageDispatchRegistry;
 import net.grinder.communication.MessageDispatchRegistry.AbstractHandler;
-import net.grinder.console.model.SampleModelImplementation;
 import net.grinder.message.console.AgentControllerProcessReportMessage;
 import net.grinder.message.console.AgentControllerState;
 import net.grinder.messages.agent.StartGrinderMessage;
@@ -140,14 +139,22 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	}
 
 	/**
-	 * Interface for listeners to {@link SampleModelImplementation}.
+	 * Interface for listeners to SampleModelImplementation.
 	 */
 	interface Listener extends EventListener {
+		/**
+		 * Update agent status.
+		 * 
+		 * @param agentMap
+		 *            agent map
+		 */
 		public void update(Map<AgentIdentity, AgentStatus> agentMap);
 	}
 
 	/**
-	 * Callers are responsible for synchronization.
+	 * Callers are   for synchronization.
+	 * 
+	 * @param purgableMap
 	 */
 	private void purge(Map<? extends ProcessIdentity, ? extends Purgable> purgableMap) {
 
@@ -212,6 +219,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 			setAgentProcessStatus(new UnknownAgentProcessReport(new AgentAddress(agentIdentity)));
 		}
 
+		@Override
 		public boolean shouldPurge() {
 			return m_agentReference.shouldPurge();
 		}
@@ -227,6 +235,12 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		}
 	}
 
+	/**
+	 * Add process control {@link Listener}.
+	 * 
+	 * @param listener
+	 *            listener to be added
+	 */
 	public void addListener(Listener listener) {
 		m_listeners.add(listener);
 	}
@@ -307,11 +321,16 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 	private static class UnknownAgentProcessReport extends AgentControllerProcessReportMessage {
 
-		/**
-		 * UUID
-		 */
+		/** UUID. */
 		private static final long serialVersionUID = -2758014000696737553L;
 
+		/**
+		 * Constructor.
+		 * 
+		 * @param address
+		 *            {@link AgentAddress} in which the agent process is not
+		 *            known.
+		 */
 		public UnknownAgentProcessReport(AgentAddress address) {
 			super(AgentControllerState.UNKNOWN);
 			try {
