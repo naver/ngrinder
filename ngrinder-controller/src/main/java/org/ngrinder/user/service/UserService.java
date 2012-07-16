@@ -22,7 +22,6 @@
  */
 package org.ngrinder.user.service;
 
-import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
@@ -34,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
+import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -187,5 +187,9 @@ public class UserService {
 		} else {
 			return null;
 		}
+	}
+	
+	public List<User> getUserListByKeyWord(String keyword) {
+		return userRepository.findAll(UserSpecification.nameLike(keyword));
 	}
 }

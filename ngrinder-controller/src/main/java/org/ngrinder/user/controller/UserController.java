@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -48,9 +49,18 @@ public class UserController extends NGrinderBaseController {
 	private UserService userService;
 
 	@RequestMapping("/list")
-	public String getUserList(ModelMap model, @RequestParam(required = false) String roleName) {
+	public String getUserList(ModelMap model,
+			@RequestParam(required = false) String roleName,
+			@RequestParam(required = false) String keywords) {
 
-		List<User> userList = userService.getAllUserByRole(roleName);
+		List<User> userList = null;
+		if (StringUtils.isEmpty(keywords)) {
+			userList = userService.getAllUserByRole(roleName);
+		}else{
+			userList = userService.getUserListByKeyWord(keywords);
+			model.put("keywords", keywords);
+		}
+		
 		Map<Role, List<User>> userMap = userService.getUserInGroupFromList();
 
 		List<JsonBean> jList = convertToUserGroupTree(userMap);
