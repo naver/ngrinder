@@ -15,6 +15,7 @@ ngrinder
     <property name="tabWidth" value="4"/>
     <module name="JavadocMethod">
       <property name="excludeScope" value="private"/>
+      <property name="allowMissingPropertyJavadoc" value="true"/>
     </module>
     <module name="JavadocType">
       <property name="excludeScope" value="private"/>
@@ -68,7 +69,10 @@ ngrinder
     <module name="LeftCurly"/>
     <module name="NeedBraces"/>
     <module name="RightCurly"/>
-    <module name="AvoidInlineConditionals"/>
+    <module name="AvoidInlineConditionals">
+      <property name="severity" value="ignore"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+    </module>
     <module name="DoubleCheckedLocking"/>
     <module name="EmptyStatement"/>
     <module name="EqualsHashCode"/>
@@ -91,7 +95,10 @@ ngrinder
     <module name="InterfaceIsType"/>
     <module name="VisibilityModifier"/>
     <module name="ArrayTypeStyle"/>
-    <module name="FinalParameters"/>
+    <module name="FinalParameters">
+      <property name="severity" value="ignore"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+    </module>
     <module name="TodoComment">
       <property name="severity" value="ignore"/>
       <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
@@ -104,6 +111,10 @@ ngrinder
     <module name="MethodLength">
       <property name="max" value="120"/>
     </module>
+    <module name="LineLengthExtended">
+      <property name="max" value="120"/>
+      <property name="tabWidth" value="4"/>
+    </module>
     <module name="DesignForExtension">
       <property name="severity" value="ignore"/>
       <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
@@ -111,6 +122,10 @@ ngrinder
     <module name="JavadocMethod">
       <property name="scope" value="public"/>
       <property name="logLoadErrors" value="false"/>
+    </module>
+    <module name="JavadocMethod">
+      <property name="allowMissingPropertyJavadoc" value="true"/>
+      <property name="suppressLoadErrors" value="true"/>
     </module>
   </module>
   <module name="JavadocPackage"/>
