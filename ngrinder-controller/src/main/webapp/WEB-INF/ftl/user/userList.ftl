@@ -43,11 +43,10 @@
 
 			<div class="span10">
 				<div class="well form-inline" style="padding: 5px;">
-					<!--<legend>introduction</legend>-->
 					<input type="text" class="input-medium search-query"
 						placeholder="Keywords" id="searchText" value="${keywords!}"
 						style="width: 350px">
-					<button type="submit" class="btn" id="searchBtn">Search</button>
+					<button type="submit" class="btn" id="search_user">Search</button>
 				</div>
 
 				<table class="table table-striped display" id="userTable">
@@ -97,6 +96,12 @@
 
 	<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
 	<script type="text/javascript">
+		$(document).ready(function(){
+			$("#search_user").on('click', function() {
+				document.location.href = "${req.getContextPath()}/user/list?keywords=" + $("#searchText").val() ;
+			});
+		});
+	
 		function deleteCheckedUsers() {
 			var list = $("input[id='user_info_check']:checked");
 			if(list.length == 0) {
