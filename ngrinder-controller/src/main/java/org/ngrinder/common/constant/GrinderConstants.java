@@ -7,16 +7,16 @@ package org.ngrinder.common.constant;
  */
 public interface GrinderConstants {
 
-	/************************** web app ****************************/
+	/************************** web app. ****************************/
 	public static final String WEB_APP_PATH = "web.app.path";
 	public static final String WEB_APP_HOST = "web.app.host";
 	public static final String WEB_APP_PORT = "web.app.port";
 	public static final String CONTEXT_PATH = "context.path";
 
-	/************************** user ****************************/
+	/************************** user. ****************************/
 	
 
-	/************************* agent ****************************/
+	/************************* agent. ****************************/
 	public static final String AGENT = "agent";
 	public static final String AGENT_IP = "agentIp";
 	public static final String AGENT_PORT = "agentPort";
@@ -34,15 +34,15 @@ public interface GrinderConstants {
 	public static final String AGENT_OPERATION_STOP = "stop";
 	
 
-	/*********************** hudson agent *************************/
+	/*********************** hudson agent. *************************/
 	public static final String HUDSON_HOST = "hudsonHost";
 	public static final String HUDSON_PORT = "hudsonPort";
 	
-	/************************* project **************************/
+	/************************* project. **************************/
 	public static final String P_PROJECTLIST = "projectList";
 
 	
-	/******************* grinder properties *********************/
+	/******************* grinder properties. *********************/
 	public static final String GRINDER_PROP_EXPECTUSER = "ngrinder.expectUsers";
 	public static final String GRINDER_PROP_FILETYPE = "ngrinder.fileType";
 	public static final String GRINDER_PROP_ETCHOSTS = "ngrinder.etcHosts";
@@ -53,7 +53,7 @@ public interface GrinderConstants {
 	public static final String GRINDER_PROP_RUNS = "grinder.runs";
 	
 
-	/******************** test running&result *******************/
+	/******************** test running&result.*******************/
 	public static final String REPORT_PATH_NAME = "report";
 	public static final String TEST_ID = "testId";
 	public static final String TEST_TIME = "time";	
@@ -78,11 +78,8 @@ public interface GrinderConstants {
 	
 	
 
-	/************************* script ***************************/
-	
-	
 
-	/********************** reservation *************************/
+	/********************** reservation. *************************/
 	public static final String RESERVATION_LIST = "reservList";
 
 	public static final String START = "start";
@@ -109,13 +106,13 @@ public interface GrinderConstants {
 	/** The Constant IMAGES_PATH_NAME. */
 	public static final String IMAGES_PATH_NAME = "images";
 	
-	/** The Constant P_MAXOPTION */
+	/** The Constant P_MAXOPTION.*/
 	public static final String P_MAXOPTION = "maxOption";
 	
-	/** The Constant REPORT_DATA_PATH */
+	/** The Constant REPORT_DATA_PATH.*/
 	public static final String REPORT_DATA_PATH = "data";
 
-	/** The Constant P_PROPERTIES */
+	/** The Constant P_PROPERTIES.*/
 	public static final String P_PROPERTIES = "properties";
 
 	/** The Constant P_COMMA. */
@@ -143,7 +140,7 @@ public interface GrinderConstants {
 	/** The Constant P_PROJECTID. */
 	public static final String P_PROJECTID = "projectId";
 	
-	/** The Constant P_OPERATION */
+	/** The Constant P_OPERATION.*/
 	public static final String P_OPERATION = "operation";
 	
 	/** The Constant P_VUSER. */
@@ -186,13 +183,13 @@ public interface GrinderConstants {
 	/** The Constant P_CMD. */
 	public static final String P_CMD = "cmd";
 	
-	/** The Constant P_SUBTABID */
+	/** The Constant P_SUBTABID.*/
 	public static final String P_SUBTABID = "subTabId";
 	
 	/** The Constant P_USERID. */
 	public static final String P_USERID = "userId";
 	
-	/** The Constant P_USERIDS */
+	/** The Constant P_USERIDS.*/
 	public static final String P_USERIDS = "userIds";
 
 	/** The Constant P_PROJECTNAME. */
@@ -266,7 +263,7 @@ public interface GrinderConstants {
 	/** The Constant P_GRINDERPROPERTIES. */
 	public static final String P_GRINDERPROPERTIES = "grinder.properties";
 
-    /** The Constant CURRENT_TEST */
+    /** The Constant CURRENT_TEST.*/
     public static final String CURRENT_TEST = "currentTest";
     
 	/** The Constant AGENT_BLOC_MODULE_NAME */
@@ -274,7 +271,7 @@ public interface GrinderConstants {
 	/** The Constant AGENT_MODULE_NAME */
 	//public static final String AGENT_MODULE_NAME = "";// grinderAgent
     
-    /** The Constant TIMEZONE_CHINA */
+    /** The Constant TIMEZONE_CHINA.*/
     public static final String TIMEZONE_CHINA = "Asia/Shanghai";
     
     public static final String CONFIGURATION_MAIL = "mail";

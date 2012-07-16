@@ -76,7 +76,10 @@ ngrinder
     <module name="DoubleCheckedLocking"/>
     <module name="EmptyStatement"/>
     <module name="EqualsHashCode"/>
-    <module name="HiddenField"/>
+    <module name="HiddenField">
+      <property name="severity" value="ignore"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+    </module>
     <module name="IllegalInstantiation"/>
     <module name="InnerAssignment"/>
     <module name="MagicNumber"/>
@@ -92,7 +95,10 @@ ngrinder
     </module>
     <module name="FinalClass"/>
     <module name="HideUtilityClassConstructor"/>
-    <module name="InterfaceIsType"/>
+    <module name="InterfaceIsType">
+      <property name="severity" value="ignore"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+    </module>
     <module name="VisibilityModifier"/>
     <module name="ArrayTypeStyle"/>
     <module name="FinalParameters">
@@ -121,11 +127,15 @@ ngrinder
     </module>
     <module name="JavadocMethod">
       <property name="scope" value="public"/>
+      <property name="allowMissingPropertyJavadoc" value="true"/>
       <property name="logLoadErrors" value="false"/>
     </module>
     <module name="JavadocMethod">
       <property name="allowMissingPropertyJavadoc" value="true"/>
       <property name="suppressLoadErrors" value="true"/>
+    </module>
+    <module name="JavadocType">
+      <property name="scope" value="public"/>
     </module>
   </module>
   <module name="JavadocPackage"/>

@@ -22,7 +22,12 @@
  */
 package org.ngrinder.common.constant;
 
-
+/**
+ * nGrinder specific contants.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
 public interface NGrinderConstants {
 
 	public static final String START = "start";
