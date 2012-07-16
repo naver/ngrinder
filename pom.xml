@@ -200,9 +200,6 @@
 					<generateHtml>true</generateHtml>
 					<generateXml>true</generateXml>
 					<jdk>${jdk-version}</jdk>
-					<excludes>
-						<exclude>**/ngrinder-agent/**/*.java</exclude>
-					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
