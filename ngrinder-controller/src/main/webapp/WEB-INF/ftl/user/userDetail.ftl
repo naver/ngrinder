@@ -59,14 +59,11 @@
 						<div class="control-group">
 							<label class="control-label">User ID</label>
 							<div class="controls">
-								<input type="text" class="span4" 
+								<input type="text" class="span4" id="userid" name="userId"
 								    rel="popover" value="${(user.userId)!}"
 									data-content="User Id is a unique identifier and modified is forbidden  !"
 									data-original-title="User Id"
 									<#if user?? && user.userId??>disabled</#if> >
-								<#if user?? && user.userId??>
-									<input type="hidden" id="userId" name="userId" value="${(user.userId)!}">
-								</#if>
 								<input type="hidden" id="id" name="id" value="${(user.id)!}">
 							</div>
 						</div>

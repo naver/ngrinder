@@ -138,8 +138,8 @@ public class UserService {
 	 */
 	public String modifyUser(User user) {
 		checkNotNull(user, "user should be not null, when modifying user");
-		checkNotEmpty(user.getUserId(), "user id should be provided when modifying user");
-		User targetUser = userRepository.findOneByUserId(user.getUserId());
+		checkNotNull(user.getId(), "user id should be provided when modifying user");
+		User targetUser = userRepository.findOne(user.getId());
 		targetUser.merge(user);
 		userRepository.save(targetUser);
 		return user.getUserId();
