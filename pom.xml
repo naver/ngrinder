@@ -207,6 +207,8 @@
 				<artifactId>maven-checkstyle-plugin</artifactId>
 				<configuration>
 					<encoding>${source-encoding}</encoding>
+					<configLocation>checkstyle.xml</configLocation>
+					<excludes>ngrinder-agent/**/*</excludes>
 				</configuration>
 			</plugin>
 		</plugins>
