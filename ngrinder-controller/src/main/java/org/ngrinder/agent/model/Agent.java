@@ -28,7 +28,7 @@ import javax.persistence.Table;
 import org.ngrinder.model.BaseEntity;
 
 /**
- * Agent model
+ * Agent model.
  * 
  * @author Tobi
  * @since 3.0
@@ -38,19 +38,20 @@ import org.ngrinder.model.BaseEntity;
 public class Agent extends BaseEntity<Agent> {
 
 	/**
-	 * UUID
+	 * UUID.
 	 */
 	private static final long serialVersionUID = 677610999461391813L;
 
+	/** Agent IP. */
 	private String ip;
 
 	/**
-	 * agent application port
+	 * agent application port.
 	 */
 	private int appPort;
 
 	/**
-	 * agent application name
+	 * agent application name.
 	 */
 	private String appName = "";
 

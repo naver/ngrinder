@@ -60,8 +60,15 @@ public class UserController extends NGrinderBaseController {
 		return "user/userList";
 	}
 
+	/**
+	 * Get user detail page.
+	 * 
+	 * @param model 
+	 * @param userId
+	 * @return view name
+	 */
 	@RequestMapping("/detail")
-	public String getUserDetail(ModelMap model, @RequestParam(required = false) String userId) {
+	public String getUserDetail(final ModelMap model, final @RequestParam(required = false) String userId) {
 
 		List<User> userList = userService.getAllUserByRole(null);
 		Map<Role, List<User>> userMap = userService.getUserInGroupFromList();

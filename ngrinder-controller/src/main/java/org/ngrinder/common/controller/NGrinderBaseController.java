@@ -47,6 +47,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class NGrinderBaseController implements GrinderConstants {
 
 	public static final String ERROR_PAGE = "errors/error";
+
+	protected static final int DEFAULT_PAGE_LIMIT = 20;
 	@Autowired
 	private MessageSource messageSource;
 
@@ -64,7 +66,7 @@ public class NGrinderBaseController implements GrinderConstants {
 		}
 		return new User();
 	}
-	
+
 	public User getCurrentUser() {
 		return userContext.getCurrentUser();
 	}

@@ -68,10 +68,9 @@
 						<tr>
 							<td><input type="checkbox" id="user_info_check" <#if user.userId == "admin">disabled</#if> value="${user.userId}" /></td>
 							<td class="center"><a
-										href="${req.getContextPath()}/user/detail?userId=${user.userId}">${user.userName}</a></td>
+										href="${req.getContextPath()}/user/detail?userId=${user.userId}">${user.userName!}</a></td>
 							<td>
-								${user.createdDate!user.createdDate?string("yyyy/MM/dd
-								hh:mm:ss")}</td>
+								${user.createdDate!user.createdDate?string("yyyy/MM/dd hh:mm:ss")}</td>
 							<td>${user.description!}</td>
 							<td>${user.role}</td>
 							<td><a

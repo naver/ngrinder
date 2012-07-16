@@ -53,7 +53,6 @@ public class HomeController extends NGrinderBaseController {
 	@Autowired
 	private Config config;
 
-
 	@RequestMapping(value = { "/home", "/" })
 	public String home(ModelMap model, HttpServletResponse response, HttpServletRequest request) {
 		String roles;
@@ -107,9 +106,9 @@ public class HomeController extends NGrinderBaseController {
 		return "help";
 	}
 
+	@ResponseBody
 	@RequestMapping(value = "/changeTimeZone")
-	public @ResponseBody
-	String changeTimeZone(String timeZone) {
+	public String changeTimeZone(String timeZone) {
 		setTimeZone(timeZone);
 		return JSONUtil.returnSuccess();
 	}

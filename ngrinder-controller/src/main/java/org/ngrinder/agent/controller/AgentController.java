@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
- * agent controller
+ * agent controller.
  * 
  * @author Tobi
  * @since 3.0
@@ -54,12 +54,21 @@ public class AgentController extends NGrinderBaseController {
 	@Autowired
 	private AgentService agentService;
 
+	/**
+	 * Get agenet list.
+	 * 
+	 * @param model
+	 *            model
+	 * @param keywords
+	 *            search keyword
+	 * @return viewName
+	 */
 	@RequestMapping({ "", "/", "/list" })
 	public String getAgents(ModelMap model, @RequestParam(required = false) String keywords) {
 
 		Order order = new Order(Direction.DESC, "id");
 		Sort sort = new Sort(order);
-		Pageable pageable = new PageRequest(0, 1000, sort);
+		Pageable pageable = new PageRequest(0, DEFAULT_PAGE_LIMIT, sort);
 		Page<Agent> agents = agentService.getAgents(keywords, pageable);
 
 		model.addAttribute("agents", agents);
@@ -68,6 +77,15 @@ public class AgentController extends NGrinderBaseController {
 		return "agent/agentList";
 	}
 
+	/**
+	 * Get agent detail info.
+	 * 
+	 * @param model
+	 *            model
+	 * @param id
+	 *            agent id
+	 * @return agent/agentDetail
+	 */
 	@RequestMapping("/detail")
 	public String getAgent(ModelMap model, @RequestParam(required = false) Long id) {
 		Agent agent = agentService.getAgent(id);
@@ -75,11 +93,29 @@ public class AgentController extends NGrinderBaseController {
 		return "agent/agentDetail";
 	}
 
+	/**
+	 * Create agent.
+	 * 
+	 * @param model
+	 *            model
+	 * @param agent
+	 *            agent model
+	 * @return agent/agentDetail
+	 */
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public String createAgent(ModelMap model, Agent agent) {
 		return getAgent(model, agent.getId());
 	}
 
+	/**
+	 * Delete agent.
+	 * 
+	 * @param model
+	 *            model
+	 * @param ids
+	 *            agent ids
+	 * @return agent/agentList
+	 */
 	@RequestMapping(value = "/delete")
 	public String deleteAgent(ModelMap model, @RequestParam String ids) {
 		String[] idArr = ids.split(",");
