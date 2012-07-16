@@ -70,7 +70,7 @@ public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
 	@Test
 	public void testGetTestList() {
 		ModelMap model = new ModelMap();
-		controller.getTestList(getTestUser(), model, null, false, null);
+		controller.getTestList(getTestUser(), model, false, null);
 		Page<PerfTest> testPage = (Page<PerfTest>)model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
 
@@ -85,7 +85,7 @@ public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
 	@SuppressWarnings("unchecked")
 	public void testGetTestDetail() {
 		ModelMap model = new ModelMap();
-		controller.getTestList(getTestUser(), model, null, false, null);
+		controller.getTestList(getTestUser(), model, false, null);
 		Page<PerfTest> testPage = (Page<PerfTest>)model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
 		assertThat(testList.size(), is(1));

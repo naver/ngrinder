@@ -68,4 +68,8 @@ public class PerfTestService {
 	public PerfTest getPerfTestCandiate() {
 		return perfTestRepository.findOneByStatusOrderByCreatedDateAsc(Status.READY);
 	}
+
+	public void deletePerfTest(long id) {
+		perfTestRepository.delete(id);
+	}
 }

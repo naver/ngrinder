@@ -58,7 +58,7 @@
 						</colgroup>
 						<thead>
 							<tr>
-								<th><input type="checkbox" class="checkbox" value=""></th>
+								<th><input id="chkboxAll" type="checkbox" class="checkbox" value=""></th>
 								<th>Status</th>
 								<th>Test Name</th>
 								<th>Script Name</th>
@@ -77,7 +77,8 @@
 							<#if testList?has_content>
 							<#list testList as test>
 							<tr>
-								<td>${test.id}</td>
+								<td><input type="checkbox" class="checkbox" value="${test.id}"></td>
+								<td>${test.status}</td>
 								<td class="left"><a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a></td>
 								<td>${test.scriptName}</td>
 								<td class="left ellipsis" title="${(test.description)!}">${(test.description)!}</td>
@@ -87,7 +88,7 @@
 								<td>${(test.errors)!0}</td>
 								<td>${(test.vusers)!0}</td>
 								<td>${(test.duration)!0}</td>
-								<td><a href="javascript:void(0);"><i class="icon-remove script-remove" sid="${test.id}"></i></a></td>
+								<td><a href="javascript:void(0);"><i class="icon-remove test-remove" sid="${test.id}"></i></a></td>
 							</tr>
 							</#list>
 							<#else>
@@ -99,8 +100,9 @@
 							</#if>
 						</tbody>
 					</table>
-				<!--content-->
-				<#include "../common/copyright.ftl">
+					<span class="help-inline" id="messageDiv"></span>
+					<!--content-->
+					<#include "../common/copyright.ftl">
 				</div>
 			</div>
 		</div>
@@ -110,6 +112,9 @@
 		<script src="${req.getContextPath()}/plugins/datatables/js/jquery.dataTables.min.js"></script>
 		<script>
 			$(document).ready(function() {
+				
+				var oTable;
+				
 				$("#n_test").addClass("active");
 				
 				$("#searchBtn").on('click', function() {
@@ -120,13 +125,43 @@
 					searchTestList();
 				});
 				
+				enableChkboxSelectAll();
+				
+				$("#deleteBtn").on('click', function() {
+					var ids = "";
+					var list = $("td input:checked");
+					if(list.length == 0) {
+						alert("Please select any tests first.");
+						return;
+					}
+					if (confirm('Are you sure to delete the test(s)?')) {
+						var idArray = [];
+						list.each(function() {
+							idArray.push($(this).val());
+						});
+						ids = idArray.join(",");
+						
+						var delUrl = "${req.getContextPath()}/perftest/deleteTests?ids=" + ids;
+						deleteTests(delUrl);
+					}
+				});
+				
+				$("i.test-remove").on('click', function() {
+					if (confirm("Do you want to delete this test?")) {
+						var delUrl = "${req.getContextPath()}/perftest/deleteTest?id=" + $(this).attr("sid");
+						deleteTests(delUrl);
+						var ooo = $(this).parent().parent().parent();
+						oTable.fnDeleteRow($(this).parent().parent().parent().get());
+					}
+				});
+				
 				<#if testList?has_content>
-				$("#testTable").dataTable({
+				oTable = $("#testTable").dataTable({
 					"bAutoWidth": false,
 					"bFilter": false,
 					"bLengthChange": false,
 					"bInfo": false,
-					"iDisplayLength": 10,
+					"iDisplayLength": 15,
 					"aaSorting": [[1, "asc"]],
 					"bProcessing": true,
 					"aoColumns": [{ "asSorting": []}, null, null, null, { "asSorting": []}, null, null, null, null, null, null, { "asSorting": []}],
@@ -143,6 +178,34 @@
 					isFinished = 1;
 				}
 				document.location.href = "${req.getContextPath()}/perftest/list?keywords=" + $("#searchText").val() + "&isFinished=" + isFinished;
+			}
+			
+			function deleteTests(delUrl) {
+				$.ajax({
+			  		url: delUrl,
+					dataType:'json',
+			    	success: function(res) {
+			    		if (res.success) {
+							$('#messageDiv').html("The test(s) deleted successfully.");
+							return true;
+			    		} else {
+			    			$('#messageDiv').html("test(s) deletion failed:" + res.message);
+							return false;
+			    		}
+			    	},
+			    	error: function() {
+			    		$('#messageDiv').html("");
+			    		showMsg($('#messageDiv'), "test(s) deletion failed!");
+						return false;
+			    	}
+			  	});
+			}
+			
+			function showMsg($megDiv, message) {
+	    		$('#messageDiv').html("");
+	        	$megDiv.html(message);
+	        	$megDiv.fadeIn("fast");
+	    		setTimeout(function(){$autoMsg.fadeOut('fast')}, 3000);
 			}
 			
 		</script>

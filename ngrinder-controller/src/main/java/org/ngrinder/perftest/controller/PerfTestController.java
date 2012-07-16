@@ -22,7 +22,9 @@
  */
 package org.ngrinder.perftest.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.service.PerfTestService;
@@ -35,6 +37,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/perftest")
@@ -49,15 +52,16 @@ public class PerfTestController extends NGrinderBaseController {
 	@Autowired
 	private ScriptService scriptService;
 
-	private static final int DEFAULT_TEST_PAGE_ZISE = 15;
+//	private static final int DEFAULT_TEST_PAGE_ZISE = 15;
 
 	@RequestMapping("/list")
-	public String getTestList(User user, ModelMap model, @RequestParam(required = false) String keywords,
-			@RequestParam(required = false) boolean isFinished, @RequestParam(required = false) PageRequest pageable) {
+	public String getTestList(User user, ModelMap model, @RequestParam(required = false) boolean isFinished,
+			@RequestParam(required = false) PageRequest pageable) {
 
-		if (pageable == null) {
-			pageable = new PageRequest(0, DEFAULT_TEST_PAGE_ZISE);
-		}
+		//not to paging on server side for now. Get all tests and paging/sorting in page.
+//		if (pageable == null) {
+//			pageable = new PageRequest(0, DEFAULT_TEST_PAGE_ZISE);
+//		}
 		Page<PerfTest> testList = perfTestService.getTestList(user, isFinished, pageable);
 		model.addAttribute("testListPage", testList);
 		return "perftest/list";
@@ -78,7 +82,7 @@ public class PerfTestController extends NGrinderBaseController {
 	public String saveTest(User user, ModelMap model, PerfTest test) {
 		perfTestService.savePerfTest(test);
 
-		return getTestList(user, model, null, false, null);
+		return getTestList(user, model, false, null);
 	}
 
 	@RequestMapping(value = "/clone", method = RequestMethod.POST)
@@ -89,10 +93,20 @@ public class PerfTestController extends NGrinderBaseController {
 		return "perftest/list";
 	}
 
-	@RequestMapping(value = "/delete")
-	public String deleteTestt(ModelMap model, @RequestParam String ids) {
+	@RequestMapping(value = "/deleteTest")
+	public @ResponseBody String deleteTest(ModelMap model, @RequestParam Long id) {
+		perfTestService.deletePerfTest(id);
+		return JSONUtil.returnSuccess();
+	}
 
-		return "perftest/list";
+	@RequestMapping(value = "/deleteTests")
+	public @ResponseBody String deleteTests(ModelMap model, @RequestParam String ids) {
+		String[] idList = StringUtils.split(ids, ",");
+		for (String idStr : idList) {
+			long id = Long.valueOf(idStr);
+			perfTestService.deletePerfTest(id);
+		}
+		return JSONUtil.returnSuccess();
 	}
 
 	@RequestMapping(value = "/report")
