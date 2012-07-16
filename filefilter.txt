@@ -4,5 +4,6 @@
 + .css
 + .ftl
 + .xml
+- /target/
 - ngrinder-agent
 = JSP/PHP:ftl,HTML:css 
