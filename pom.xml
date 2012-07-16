@@ -150,8 +150,30 @@
 		</dependency>
 
 	</dependencies>
-
-
+	<profiles>
+		<profile>
+			<id>klocwork</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.klocwork.ps</groupId>
+						<artifactId>kwmaven</artifactId>
+						<configuration>
+							<buildspec_filename>${KWINJECT_OUT_PATH}</buildspec_filename>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>validate</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<build>
 		<plugins>
 			<plugin>
@@ -166,6 +188,17 @@
 					<source>${jdk-version}</source>
 					<target>${jdk-version}</target>
 					<encoding>${source-encoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.atlassian.maven.plugins</groupId>
+				<artifactId>maven-clover2-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<includesTestSourceRoots>true</includesTestSourceRoots>
+					<generateHtml>true</generateHtml>
+					<generateXml>true</generateXml>
+					<jdk>1.6</jdk>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -203,4 +236,18 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>com.atlassian.maven.plugins</groupId>
+				<artifactId>maven-clover2-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<includesTestSourceRoots>true</includesTestSourceRoots>
+					<encoding>UTF-8</encoding>
+					<jdk>1.6</jdk>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>
