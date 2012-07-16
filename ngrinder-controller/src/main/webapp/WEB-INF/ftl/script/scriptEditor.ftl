@@ -9,11 +9,7 @@
 
 		<link rel="shortcut icon" href="${req.getContextPath()}/favicon.ico"/>
 		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-		<style>
-			body {
-				padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-			}
-		</style>
+		<link href="${req.getContextPath()}/css/ngrinder.css" rel="stylesheet">
 		
 		<input type="hidden" id="contextPath" value="${req.getContextPath()}" />
 		<#setting number_format="computer">

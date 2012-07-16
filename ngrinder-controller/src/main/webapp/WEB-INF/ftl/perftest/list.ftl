@@ -9,11 +9,10 @@
 
 		<link rel="shortcut icon" href="favicon.ico"/>
 		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-		<style>
-			body {
-				padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-			}
-		</style>
+		<link href="${req.getContextPath()}/plugins/datatables/css/demo_table.css" rel="stylesheet">
+		<link href="${req.getContextPath()}/plugins/datatables/css/demo_page.css" rel="stylesheet">
+		<link href="${req.getContextPath()}/plugins/datatables/css/demo_table_jui.css" rel="stylesheet">
+		<link href="${req.getContextPath()}/css/ngrinder.css" rel="stylesheet">
 		
 		<input type="hidden" id="contextPath" value="${req.getContextPath()}">
 		<#setting number_format="computer">
@@ -42,23 +41,25 @@
 							<input type="checkbox" id="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> Finished
 						</label>
 					</div>
-					<table class="display table-striped" id="testTable" style="margin-bottom:10px;">
+					<table class="display ellipsis" id="testTable" style="margin-bottom:10px;">
 						<colgroup>
 							<col width="30">
-							<col width="160">
-							<col width="160">
+							<col width="75">
+							<col width="100">
+							<col width="110">
 							<col>
-							<col width="170">
 							<col width="100">
-							<col width="100">
-							<col width="100">
-							<col width="100">
-							<col width="100">
-							<col width="80">
+							<col width="65">
+							<col width="105">
+							<col width="65">
+							<col width="75">
+							<col width="85">
+							<col width="40">
 						</colgroup>
 						<thead>
 							<tr>
-								<th class="center">ID</th>
+								<th><input type="checkbox" class="checkbox" value=""></th>
+								<th>Status</th>
 								<th>Test Name</th>
 								<th>Script Name</th>
 								<th class="noClick">Description</th>
@@ -91,7 +92,7 @@
 							</#list>
 							<#else>
 								<tr>
-									<td colspan="8">
+									<td colspan="11">
 										No data to display.
 									</td>
 								</tr>
@@ -109,6 +110,8 @@
 		<script src="${req.getContextPath()}/plugins/datatables/js/jquery.dataTables.min.js"></script>
 		<script>
 			$(document).ready(function() {
+				$("#n_test").addClass("active");
+				
 				$("#searchBtn").on('click', function() {
 					searchTestList();
 				});
@@ -126,7 +129,7 @@
 					"iDisplayLength": 10,
 					"aaSorting": [[1, "asc"]],
 					"bProcessing": true,
-					"aoColumns": [{ "asSorting": []}, null, { "asSorting": []}, null, null, null, {"asSorting": []}, { "asSorting": []}],
+					"aoColumns": [{ "asSorting": []}, null, null, null, { "asSorting": []}, null, null, null, null, null, null, { "asSorting": []}],
 					//"bJQueryUI": true,
 					"sPaginationType": "full_numbers"
 				});
