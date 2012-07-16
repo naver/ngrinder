@@ -22,19 +22,38 @@
  */
 package org.ngrinder.common.exception;
 
+/**
+ * Exception which will occurs there is no elements in sth.
+ * 
+ * @author JunHo Yoon
+ * 
+ */
 public class NoElementFoundException extends RuntimeException {
 
-	/** UUID */
+	/** UUID. */
 	private static final long serialVersionUID = 484963219098378067L;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param message
+	 *            message
+	 * @param t
+	 *            exception to be thrown
+	 */
 	public NoElementFoundException(String message, Throwable t) {
 		super(message, t);
 
 	}
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param message
+	 *            message
+	 */
 	public NoElementFoundException(String message) {
 		super(message);
-
 	}
 
 }

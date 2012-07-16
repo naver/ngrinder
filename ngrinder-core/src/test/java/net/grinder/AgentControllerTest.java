@@ -24,15 +24,17 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 
 	@Before
 	public void before() {
-		agentControllerServerDeamon = new AgentControllerServerDaemon(2022);
+		agentControllerServerDeamon = new AgentControllerServerDaemon(getFreePort());
 		agentControllerServerDeamon.start();
+		
 		agentControllerDaemon = new AgentControllerDaemon();
-		agentControllerDaemon.run(2022);
+		agentControllerDaemon.run(agentControllerServerDeamon.getPort());
 
 		agentControllerDaemon2 = new AgentControllerDaemon();
-		agentControllerDaemon2.run(2022);
+		agentControllerDaemon2.run(agentControllerServerDeamon.getPort());
 		sleep(2000);
 		// Validate if all agents are well-attached.
+		
 		allAvailableAgents = agentControllerServerDeamon.getAllAvailableAgents();
 		assertThat(allAvailableAgents.size(), is(2));
 	}
@@ -118,7 +120,7 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 		assertThat(console1.getAllAttachedAgentsCount(), is(0));
 
 		agentControllerServerDeamon.startAgent(grinderProperties, agentIdentity);
-		sleep(100000);
+		sleep(5000);
 		assertThat(console1.getAllAttachedAgentsCount(), is(1));
 		sleep(5000);
 	}
