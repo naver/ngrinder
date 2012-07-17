@@ -22,37 +22,40 @@
  */
 package org.ngrinder.common.util;
 
-import org.json.simple.JSONObject;
+import java.util.List;
+
 import org.ngrinder.common.constant.NGrinderConstants;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
-
-@SuppressWarnings("unchecked")
 public class JSONUtil {
 	
 	private static String successJson;
 	private static String errorJson;
 	
+	private static Gson gson = new Gson();
+	
 	static {
-		JSONObject rtnJson = new JSONObject();
-		rtnJson.put(NGrinderConstants.JSON_SUCCESS, true);
-		successJson = rtnJson.toJSONString();
-		rtnJson.put(NGrinderConstants.JSON_SUCCESS, false);
-		errorJson = rtnJson.toJSONString();
+		JsonObject rtnJson = new JsonObject();
+		rtnJson.addProperty(NGrinderConstants.JSON_SUCCESS, true);
+		successJson = rtnJson.toString();
+		rtnJson.addProperty(NGrinderConstants.JSON_SUCCESS, false);
+		errorJson = rtnJson.toString();
 	}
 	
 	public static String returnSuccess(String message) {
-		JSONObject rtnJson = new JSONObject();
-		rtnJson.put(NGrinderConstants.JSON_SUCCESS, true);
-		rtnJson.put(NGrinderConstants.JSON_MESSAGE, message);
-		return rtnJson.toJSONString();
+		JsonObject rtnJson = new JsonObject();
+		rtnJson.addProperty(NGrinderConstants.JSON_SUCCESS, true);
+		rtnJson.addProperty(NGrinderConstants.JSON_MESSAGE, message);
+		return rtnJson.toString();
 	}
 	
 	public static String returnError(String message) {
-		JSONObject rtnJson = new JSONObject();
-		rtnJson.put(NGrinderConstants.JSON_SUCCESS, false);
-		rtnJson.put(NGrinderConstants.JSON_MESSAGE, message);
-		return rtnJson.toJSONString();
+		JsonObject rtnJson = new JsonObject();
+		rtnJson.addProperty(NGrinderConstants.JSON_SUCCESS, false);
+		rtnJson.addProperty(NGrinderConstants.JSON_MESSAGE, message);
+		return rtnJson.toString();
 	}
 
 	public static String returnSuccess() {
@@ -61,6 +64,10 @@ public class JSONUtil {
 
 	public static String returnError() {
 		return errorJson;
+	}
+	
+	public static String toJson (List<?> list) {
+		return gson.toJson(list);
 	}
 
 }
