@@ -62,10 +62,10 @@
 						<div class="control-group">
 							<label class="control-label">User Role</label>
 							<div class="controls">
-								<select class="span4" name="role.name" id="role.name">
-									<option value="USER"<#if user?? &&	user.role=="USER">selected="selected"</#if> >General</option>
-									<option value="ADMIN"<#if user?? &&	user.role=="ADMIN">selected="selected"</#if> >Administrator</option>
-									<option value="SUPER"<#if user?? &&	user.role=="SUPER">selected="selected"</#if> >Super</option>
+								<select class="span4" name="role" id="role">
+									<#list roleSet as role>
+										<option value="${role}" <#if user?? &&	user.role==role>selected="selected"</#if>  >${role.fullName}</option>
+									</#list>
 								</select>
 							</div>
 						</div>

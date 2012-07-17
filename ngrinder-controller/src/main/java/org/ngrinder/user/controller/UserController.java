@@ -24,6 +24,7 @@ package org.ngrinder.user.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
@@ -86,6 +87,9 @@ public class UserController extends NGrinderBaseController {
 		List<JsonBean> jList = convertToUserGroupTree(userMap);
 		model.addAttribute("userList", userList);
 		model.addAttribute("jsonStr", JSONUtil.toJson(jList));
+		
+		EnumSet<Role> roleSet = EnumSet.allOf(Role.class); 
+		model.addAttribute("roleSet", roleSet);
 
 		User user = userService.getUserById(userId);
 
