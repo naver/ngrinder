@@ -100,6 +100,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private int runCount;
 
 	private int agentCount;
+
+	private int vuserPerAgent;
 	
 	private int processes;
 	
@@ -246,6 +248,20 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setAgentCount(int agentCount) {
 		this.agentCount = agentCount;
+	}
+
+	/**
+	 * @return the vuserPerAgent
+	 */
+	public int getVuserPerAgent() {
+		return vuserPerAgent;
+	}
+
+	/**
+	 * @param vuserPerAgent the vuserPerAgent to set
+	 */
+	public void setVuserPerAgent(int vuserPerAgent) {
+		this.vuserPerAgent = vuserPerAgent;
 	}
 
 	public int getProcesses() {

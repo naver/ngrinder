@@ -36,7 +36,7 @@
 					<div class="well form-inline" style="padding:5px;margin:10px 0">
 					
 						<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
-						<button type="submit" class="btn" id="searchBtn" onclick="searchTestList();">Search</button>
+						<button class="btn" id="clearBtn">Reset</button>
 						<label class="checkbox pull-right" style="position:relative;top:5px">
 							<input type="checkbox" id="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> Finished
 						</label>
@@ -111,17 +111,22 @@
 		<script src="${req.getContextPath()}/js/utils.js"></script>
 		<script src="${req.getContextPath()}/plugins/datatables/js/jquery.dataTables.min.js"></script>
 		<script>
+			var oTable;
+
 			$(document).ready(function() {
-				
-				var oTable;
 				
 				$("#n_test").addClass("active");
 				
-				$("#searchBtn").on('click', function() {
+				$("#searchText").change(function() {
 					searchTestList();
 				});
 
 				$("#onlyFinished").on('click', function() {
+					searchTestList();
+				});
+				
+				$("#clearBtn").on('click', function() {
+					$("#searchText").val("");
 					searchTestList();
 				});
 				
@@ -150,7 +155,6 @@
 					if (confirm("Do you want to delete this test?")) {
 						var delUrl = "${req.getContextPath()}/perftest/deleteTest?id=" + $(this).attr("sid");
 						deleteTests(delUrl);
-						var ooo = $(this).parent().parent().parent();
 						oTable.fnDeleteRow($(this).parent().parent().parent().get());
 					}
 				});
@@ -158,7 +162,7 @@
 				<#if testList?has_content>
 				oTable = $("#testTable").dataTable({
 					"bAutoWidth": false,
-					"bFilter": false,
+					"bFilter": true,
 					"bLengthChange": false,
 					"bInfo": false,
 					"iDisplayLength": 15,
@@ -177,7 +181,9 @@
 				if ($("#onlyFinished")[0].checked) {
 					isFinished = 1;
 				}
-				document.location.href = "${req.getContextPath()}/perftest/list?keywords=" + $("#searchText").val() + "&isFinished=" + isFinished;
+				var searchWords = $("#searchText").val();
+				oTable.fnFilter(searchWords);
+				//document.location.href = "${req.getContextPath()}/perftest/list?keywords=" + $("#searchText").val() + "&isFinished=" + isFinished;
 			}
 			
 			function deleteTests(delUrl) {
@@ -186,15 +192,14 @@
 					dataType:'json',
 			    	success: function(res) {
 			    		if (res.success) {
-							$('#messageDiv').html("The test(s) deleted successfully.");
+				    		showMsg($('#messageDiv'), "The test(s) deleted successfully.");
 							return true;
 			    		} else {
-			    			$('#messageDiv').html("test(s) deletion failed:" + res.message);
+				    		showMsg($('#messageDiv'), "test(s) deletion failed:" + res.message);
 							return false;
 			    		}
 			    	},
 			    	error: function() {
-			    		$('#messageDiv').html("");
 			    		showMsg($('#messageDiv'), "test(s) deletion failed!");
 						return false;
 			    	}

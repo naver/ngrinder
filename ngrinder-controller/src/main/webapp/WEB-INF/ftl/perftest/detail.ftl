@@ -54,6 +54,8 @@ div.div-host .host {
 						<input type="hidden" id="testId" name="id" value="${(test.id)!}">
 						 -->
 						<input type="hidden" id="threshold" name="threshold" value="${(test.threshold)!"D"}">
+						<input type="hidden" id="threads" name="threads" value="${(test.threads)!1}">
+						
 
 						<div class="form-horizontal form-horizontal-1" style="margin-bottom: 0">
 							<fieldset>
@@ -98,14 +100,23 @@ div.div-host .host {
 										style="margin-bottom: 0">
 										<fieldset>
 											<div class="control-group">
-												<label for="agentInput" class="control-label">Agent</label>
+												<label for="agentCount" class="control-label">Agent</label>
 												<div class="controls">
 													<div class="input-append">
 														<input type="text" class="input input-small"
-															id="agentCount" name="agentCount" value="${(test.agentCount)!}" readonly>
-														<button type="button" class="btn" id="agentSetBtn">Set</button>
+															id="agentCount" name="agentCount" value="${(test.agentCount)!}">
 													</div>
-													<span class="label label-info pull-right">Vuser: ${(test.vuser)!0}</span>
+												</div>
+											</div>
+											<div class="control-group">
+												<label for="vuserPerAgent" class="control-label">Vuser on every agent</label>
+												<div class="controls">
+													<div class="input-append">
+														<input type="text" class="input input-small"
+															id="vuserPerAgent" name="vuserPerAgent" value="${(test.vuserPerAgent)!}">
+													</div>
+													<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
+													<span class="badge badge-info pull-right">Vuser: ${vuserTotal}</span>
 												</div>
 											</div>
 											<div class="control-group">
@@ -275,7 +286,6 @@ div.div-host .host {
 								
 				if (${scriptList?size} == 0) {
 					alert ("User has not script yet! Please create a script first.");
-					document.location.href = "${req.getContextPath()}/script/list";
 					return;
 				}
 				$("#homeTab a:first").tab('show');
@@ -302,13 +312,41 @@ div.div-host .host {
 						$("#threshold").val("R");
 						$("#durationChkbox").removeAttr("checked");
 					}
-					});
+				});
 				$("#durationChkbox").change(function (){
 					if ($("#durationChkbox").attr("checked") == "checked") {
 						$("#threshold").val("D");
 						$("#runcountChkbox").removeAttr("checked");
 					}
-					});
+				});
+				
+				$("#agentCount").change (function() {
+					
+				});
+				
+				$("#vuserPerAgent").change (function() {
+					$.ajax({
+				  		url: "",
+						dataType:'json',
+				    	success: function(res) {
+				    		if (res.success) {
+					    		showMsg($('#messageDiv'), "The test(s) deleted successfully.");
+					    		var processCount = res.processCount;
+					    		var threadCount = res.threadCount;
+					    		$('#processes').val(processCount);
+					    		updateChart();
+								return true;
+				    		} else {
+					    		showMsg($('#messageDiv'), "test(s) deletion failed:" + res.message);
+								return false;
+				    		}
+				    	},
+				    	error: function() {
+				    		showMsg($('#messageDiv'), "test(s) deletion failed!");
+							return false;
+				    	}
+				  	});
+				});
 				
 				initThresholdChkBox();
 				initDuration();
