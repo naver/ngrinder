@@ -23,7 +23,7 @@
     <body>
         <#include "../common/navigator.ftl">
         <div class="container">
-        	<div class="page-header pageHeader">
+        	<div class="page-header pageHeader" style="margin-bottom: 10px">
 				<h3>Agent Management</h3>
 			</div>
             <div class="row">

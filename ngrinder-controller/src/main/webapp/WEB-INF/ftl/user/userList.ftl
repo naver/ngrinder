@@ -19,9 +19,6 @@
 	<#include "../common/navigator.ftl">
 
 	<div class="container">
-		<div class="page-header pageHeader" style="margin-bottom: 20px">
-			<h3>User Management</h3>
-		</div>
 		<div class="row">
 			<div class="span2">
 				<a class="btn" href="${req.getContextPath()}/user/detail"
@@ -31,6 +28,9 @@
 			</div>
 
 			<div class="span10">
+				<div class="page-header pageHeader">
+					<h3>User List</h3>
+				</div>
 				<div class="row">
 					<div class="span10">
 						<a href="javascript:deleteCheckedUsers()" class="btn btn-danger pull-right">
