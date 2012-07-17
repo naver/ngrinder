@@ -126,7 +126,9 @@ public class ScriptDaoImpl implements ScriptDao, NGrinderConstants {
 							continue;
 						}
 						Script script = this.findOne(userId, id);
-						scripts.add(script);
+						if (script != null) {
+							scripts.add(script);
+						}
 					}
 				}
 
@@ -249,7 +251,7 @@ public class ScriptDaoImpl implements ScriptDao, NGrinderConstants {
 
 	@Override
 	public void save(Script script) {
-		if (null == script.getId() || 0 == script.getId().longValue()) {
+		if (!script.exist()) {
 			script.setId((long) script.hashCode());
 			scriptUtil.createScriptPath(script.getId());
 		} else {

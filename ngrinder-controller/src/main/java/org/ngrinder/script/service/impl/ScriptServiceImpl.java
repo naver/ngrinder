@@ -24,6 +24,7 @@ package org.ngrinder.script.service.impl;
 
 import java.util.List;
 
+import org.ngrinder.common.util.EntityUtils;
 import org.ngrinder.script.model.Script;
 import org.ngrinder.script.repository.ScriptDao;
 import org.ngrinder.script.service.ScriptService;
@@ -81,7 +82,7 @@ public class ScriptServiceImpl implements ScriptService {
 
 	@Override
 	public void saveScript(Script script) {
-		if (null != script.getId() && 0 != script.getId().longValue()) {
+		if (EntityUtils.checkExist(script)) {
 			Script scriptOld = this.getScript(script.getId());
 			if (null != scriptOld) {
 				scriptUtil.saveScriptHistoryFile(scriptOld);
