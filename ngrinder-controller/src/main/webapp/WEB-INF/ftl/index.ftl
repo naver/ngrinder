@@ -51,7 +51,7 @@
 			  <p><a class="btn" href="#">View details &raquo;</a></p>
 			</div>
 		</div>
-		<#include "${req.getContextPath()}/common/copyright.ftl">
+		<#include "common/copyright.ftl">
 	</div>
 
 	<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>

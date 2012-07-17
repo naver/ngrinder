@@ -141,6 +141,7 @@
 				-->
 			</div>
 		</div>
+		<#include "../common/copyright.ftl">
 	</div>
 	<div class="modal fade" id="agentListModal">
 		<div class="modal-header">
@@ -154,6 +155,7 @@
 	
 	<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
 	<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
+	<script src="${req.getContextPath()}/js/utils.js"></script>
 	<script>
 		$(document).ready(function() {
 			

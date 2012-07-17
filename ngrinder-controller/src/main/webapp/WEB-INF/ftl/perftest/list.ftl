@@ -101,7 +101,7 @@
 					</table>
 					<span class="help-inline" id="messageDiv"></span>
 					<!--content-->
-					<#include "${req.getContextPath()}/common/copyright.ftl">
+					<#include "../common/copyright.ftl">
 				</div>
 			</div>
 		</div>

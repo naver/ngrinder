@@ -88,7 +88,7 @@
 				</table>
 			</div>
 		</div>
-		<#include "${req.getContextPath()}/common/copyright.ftl">
+		<#include "../common/copyright.ftl">
 	</div>
 
 	<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>

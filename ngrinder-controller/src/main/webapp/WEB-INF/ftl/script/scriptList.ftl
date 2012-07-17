@@ -80,7 +80,7 @@
 					<td>${(script.lastModifiedUser.userId)!}</td>
 					<td>${(script.fileSize)!0}</td>
 					<td class="left ellipsis" title="${(script.tagsString)!}">${(script.tagsString)!}</td>
-					<td><a href="javascript:void(0);"><i class="icon-download-alt script-download" sid="${script.id}" sname="${(script.fileName)!}"></i></a></td>
+					<td><a href="javascript:void(0);"><i class="icon-download-alt script-download" sid="${script.id}" sname="${script.fileName}"></i></a></td>
 					<!--<td><a href="javascript:void(0);"><i class="icon-remove script-remove" sid="${script.id}"></i></a></td>-->
 				</tr>
 				</#list>
@@ -119,7 +119,7 @@
 			</tbody>
 		</table>
 		</#if>
-		<#include "${req.getContextPath()}/common/copyright.ftl">
+		<#include "../common/copyright.ftl">
 
 		<div class="modal fade" id="createScriptModal">
 			<div class="modal-header">
