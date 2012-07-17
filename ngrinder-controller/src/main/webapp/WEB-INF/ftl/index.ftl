@@ -9,11 +9,8 @@
 
 		<link rel="shortcut icon" href="favicon.ico"/>
 		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
+		<link href="${req.getContextPath()}/css/ngrinder.css" rel="stylesheet">
 		<style>
-			body {
-				padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-			}
-			
 			.hero-unit p { margin-left:15px }
 			.control-label h2 { line-height:18px }
 			.controls a { margin-left:50px; }
@@ -54,10 +51,11 @@
 			  <p><a class="btn" href="#">View details &raquo;</a></p>
 			</div>
 		</div>
+		<#include "${req.getContextPath()}/common/copyright.ftl">
 	</div>
 
 	<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
 	<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
-	
+	<script src="${req.getContextPath()}/js/utils.js"></script>
 	</body>
 </html>

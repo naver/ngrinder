@@ -27,21 +27,20 @@
 								<i class="icon-file"></i>
 								Create test
 							</a>
-							<a class="btn pull-right" href="javascript:void(0);" id="deleteBtn">
+							<a class="btn btn-danger pull-right" href="javascript:void(0);" id="deleteBtn">
 								<i class="icon-remove"></i>
 								Delete selected tests
 							</a>
 						</div>
 					</div>
-					<div class="well form-inline" style="padding:5px;margin:10px 0">
-					
+					<div class="well form-inline searchBar">
 						<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
 						<button type="submit" class="btn" id="searchBtn" onclick="searchTestList();">Search</button>
 						<label class="checkbox pull-right" style="position:relative;top:5px">
 							<input type="checkbox" id="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> Finished
 						</label>
 					</div>
-					<table class="display ellipsis" id="testTable" style="margin-bottom:10px;">
+					<table class="display ellipsis jsTable" id="testTable">
 						<colgroup>
 							<col width="30">
 							<col width="75">
@@ -102,7 +101,7 @@
 					</table>
 					<span class="help-inline" id="messageDiv"></span>
 					<!--content-->
-					<#include "../common/copyright.ftl">
+					<#include "${req.getContextPath()}/common/copyright.ftl">
 				</div>
 			</div>
 		</div>
@@ -168,6 +167,8 @@
 					//"bJQueryUI": true,
 					"sPaginationType": "full_numbers"
 				});
+
+				removeClick();
 				</#if>
 				
 			});

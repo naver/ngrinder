@@ -1,6 +1,6 @@
 @charset "utf-8";
 body {
-	padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+	padding-top: 80px; /* 60px to make the container go all the way to the bottom of the topbar */
 }
 
 .form-horizontal-1 .control-label {
@@ -87,4 +87,22 @@ table.ellipsis td.ellipsis {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+}
+
+.container .searchBar {
+	padding:5px;
+	margin: 10px 0 20px
+}
+
+.container .jsTable {
+	margin-bottom:10px
+}
+.footDiv {
+	position: absolute;
+	top: 800px
+}
+
+.pageHeader {
+	margin: -10px 0 10px; 
+	padding-bottom: 5px
 }
