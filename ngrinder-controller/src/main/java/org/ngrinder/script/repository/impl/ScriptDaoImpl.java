@@ -127,9 +127,9 @@ public class ScriptDaoImpl implements ScriptDao, NGrinderConstants {
 						}
 						Script script = this.findOne(userId, id);
 						if (script != null) {
-							scripts.add(script);
-						}
+						scripts.add(script);
 					}
+				}
 				}
 
 			}
@@ -159,10 +159,13 @@ public class ScriptDaoImpl implements ScriptDao, NGrinderConstants {
 				continue;
 			}
 
-			if (null != searchStr && !script.getFileName().toLowerCase().contains(searchStr)
+			if (null != searchStr
+					&& !script.getFileName().toLowerCase().contains(searchStr)
 					&& !script.getTags().toString().toLowerCase().contains(searchStr)
-					&& !script.getTagsString().toLowerCase().contains(searchStr)
-					&& !script.getLastModifiedUser().getUserId().toLowerCase().contains(searchStr)) {
+					&& !(script.getTagsString() == null ? "" : script.getTagsString()).toLowerCase()
+							.contains(searchStr)
+					&& !(script.getLastModifiedUser() == null ? "" : script.getLastModifiedUser().getUserId())
+							.toLowerCase().contains(searchStr)) {
 				continue;
 			}
 
