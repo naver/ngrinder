@@ -66,6 +66,10 @@ public class BaseEntity<M> implements Serializable {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
+	
+	public boolean exist() {
+		return id != null && id.longValue() != 0;
+	}
 
 	/**
 	 * Merge source entity into current entity.

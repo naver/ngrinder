@@ -27,27 +27,34 @@ public enum Role {
 	/**
 	 * General user role who can create performance test entry
 	 */
-	USER("U"),
+	USER("U", "General"),
 	/**
 	 * Admin user role who monitors tests
 	 */
-	ADMIN("A"),
+	ADMIN("A", "Administrator"),
 	/**
 	 * Super user role who set system settings and manage user account.
 	 */
-	SUPER_USER("S"),
+	SUPER_USER("S", "Super"),
 	/**
 	 * System user role. This is for the automatic batch
 	 */
-	SYSTEM_USER("SYSTEM");
+	SYSTEM_USER("SYSTEM", "System User");
 
 	private final String shortName;
 
-	Role(String shortName) {
+	private final String fullName;
+
+	Role(String shortName, String fullName) {
 		this.shortName = shortName;
+		this.fullName = fullName;
 	}
 
 	public String getShortName() {
 		return shortName;
+	}
+
+	public String getFullName() {
+		return fullName;
 	}
 }

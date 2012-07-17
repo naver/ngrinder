@@ -20,22 +20,21 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.user.util;
+package org.ngrinder.common.util;
 
-import java.util.List;
+import org.ngrinder.model.BaseEntity;
 
-import com.google.gson.Gson;
-
-public class JSONUtil {
-
-	private static Gson gson;
-
-	static {
-		gson = new Gson();
-	}
-
-	public static String toJson(List<?> list) {
-		return gson.toJson(list);
+/**
+ * Class description.
+ *
+ * @author Mavlarn
+ * @since
+ */
+public class EntityUtils {
+	
+	@SuppressWarnings("rawtypes")
+	public static boolean checkExist(BaseEntity entity) {
+		return entity != null && entity.exist();
 	}
 
 }
