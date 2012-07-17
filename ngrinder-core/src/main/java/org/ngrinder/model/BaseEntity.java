@@ -67,6 +67,12 @@ public class BaseEntity<M> implements Serializable {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 	
+	/**
+	 * This function is used to check whether the entity id exist. It is not used to
+	 * check the entity existence in DB. It can be used to check the entity in controller,
+	 * which is passed from page. 
+	 * @return
+	 */
 	public boolean exist() {
 		return id != null && id.longValue() != 0;
 	}
