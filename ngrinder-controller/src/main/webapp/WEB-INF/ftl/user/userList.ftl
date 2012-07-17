@@ -8,6 +8,9 @@
 	<meta name="author" content="AlexQin">
 	<link rel="shortcut icon" href="favicon.ico" />
 	<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
+	<link href="${req.getContextPath()}/plugins/datatables/css/demo_table.css" rel="stylesheet">
+	<link href="${req.getContextPath()}/plugins/datatables/css/demo_page.css" rel="stylesheet">
+	<link href="${req.getContextPath()}/plugins/datatables/css/demo_table_jui.css" rel="stylesheet">
 	<link href="${req.getContextPath()}/css/ngrinder.css" rel="stylesheet">
 	<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
 </head>
@@ -25,21 +28,39 @@
 			</div>
 
 			<div class="span10">
-				<div class="well form-inline" style="padding: 5px;">
+				<div class="page-header pageHeader">
+					<h3>User List</h3>
+				</div>
+				<div class="row">
+					<div class="span10">
+						<a href="javascript:deleteCheckedUsers()" class="btn btn-danger pull-right">
+							<i class="icon-remove"></i>
+							Delete selected Users
+						</a>
+					</div>
+				</div>
+				<div class="well form-inline searchBar" style="padding: 5px;">
 					<input type="text" class="input-medium search-query"
 						placeholder="Keywords" id="searchText" value="${keywords!}"
 						style="width: 350px">
 					<button type="submit" class="btn" id="search_user">Search</button>
 				</div>
-
-				<table class="table table-striped display" id="userTable">
+				<table class="display ellipsis jsTable" id="userTable">
+					<colgroup>
+                        <col width="35">
+                        <col width="150">
+                        <col width="150">
+                        <col>
+                        <col width="110">
+                        <col width="50">
+                        <col width="50">
+                    </colgroup>
 					<thead>
 						<tr>
-							<th class="center"><input type="checkbox"
-								class="checkbox noClick" value=""></th>
+							<th><input type="checkbox" class="checkbox" value=""></th>
 							<th>User Name</th>
 							<th>Create Date</th>
-							<th>Description</th>
+							<th class="noClick">Description</th>
 							<th>Role</th>
 							<th class="noClick">Edit</th>
 							<th class="noClick">Del</th>
@@ -49,12 +70,12 @@
 						<#list userList as user>
 						<tr>
 							<td><input type="checkbox" id="user_info_check" <#if user.userId == "admin">disabled</#if> value="${user.userId}" /></td>
-							<td class="center"><a
+							<td class="left"><a
 										href="${req.getContextPath()}/user/detail?userId=${user.userId}">${user.userName!}</a></td>
 							<td>
-								${user.createdDate!user.createdDate?string("yyyy/MM/dd hh:mm:ss")}</td>
-							<td>${user.description!}</td>
-							<td>${user.role}</td>
+								${user.createdDate?string("yyyy/MM/dd HH:mm:ss")}</td>
+							<td class="left ellipsis">${user.description!}</td>
+							<td class="left">${user.role}</td>
 							<td><a
 								href="${req.getContextPath()}/user/detail?userId=${user.userId}"><i
 									class="icon-edit"></i></a></td>
@@ -65,24 +86,38 @@
 						</#list>
 					</tbody>
 				</table>
-
 			</div>
 		</div>
-		<div class="row">
-			<div class="span12">
-				<a href="javascript:deleteCheckedUsers()" class="btn btn-danger pull-right">Delete</a>
-			</div>
-		</div>
-
 		<#include "../common/copyright.ftl">
 	</div>
 
 	<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
+	<script src="${req.getContextPath()}/plugins/datatables/js/jquery.dataTables.min.js"></script>
+	<script src="${req.getContextPath()}/js/utils.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$("#search_user").on('click', function() {
 				document.location.href = "${req.getContextPath()}/user/list?keywords=" + $("#searchText").val() ;
 			});
+			
+			enableChkboxSelectAll();
+			
+		    <#if userList?has_content>
+			oTable = $("#userTable").dataTable({
+				"bAutoWidth": false,
+				"bFilter": false,
+				"bLengthChange": false,
+				"bInfo": false,
+				"iDisplayLength": 15,
+				"aaSorting": [[1, "asc"]],
+				"bProcessing": true,
+				"aoColumns": [{ "asSorting": []}, null, null, { "asSorting": []}, null, { "asSorting": []}, { "asSorting": []}],
+				//"bJQueryUI": true,
+				"sPaginationType": "full_numbers"
+			});
+			
+			removeClick();
+			</#if>
 		});
 	
 		function deleteCheckedUsers() {

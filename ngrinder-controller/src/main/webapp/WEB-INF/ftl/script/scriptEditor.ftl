@@ -90,11 +90,13 @@
 			<div class="alert alert-info fade in" style="margin-top:5px;" id="autoSaveMsgBottom"></div>
 			<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre"></pre>
 		</form>
+		<#include "../common/copyright.ftl">
 	</div>
 
 	<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
 	<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
 	<script src="${req.getContextPath()}/plugins/editarea/edit_area.js"></script>
+	<script src="${req.getContextPath()}/js/utils.js"></script>
 	<script>
 		$(document).ready(function() {
 			$("#n_script").addClass("active");

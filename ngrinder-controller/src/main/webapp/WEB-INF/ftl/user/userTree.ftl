@@ -18,14 +18,14 @@
 	};
 
 	function zTreeOnClick(event, treeId, treeNode){
-					var nodeId = treeNode.id;
-					if(nodeId == 'ADMIN'||nodeId == 'USER'||nodeId == 'SUPER'){
-						    document.location.href ="${req.getContextPath()}/user/list?roleName="+nodeId;
-					}else if(nodeId != 'all'){
-							document.location.href ="${req.getContextPath()}/user/detail?userId="+nodeId;
-					}else{
-							document.location.href ="${req.getContextPath()}/user/list";
-					}
+		var nodeId = treeNode.id;
+		if(nodeId == 'ADMIN'||nodeId == 'USER'||nodeId == 'SUPER'||nodeId == 'SUPER_USER' ||nodeId == 'SYSTEM_USER'){
+			    document.location.href ="${req.getContextPath()}/user/list?roleName="+nodeId;
+		}else if(nodeId != 'all'){
+				document.location.href ="${req.getContextPath()}/user/detail?userId="+nodeId;
+		}else{
+				document.location.href ="${req.getContextPath()}/user/list";
+		}
 					
 	}
 	

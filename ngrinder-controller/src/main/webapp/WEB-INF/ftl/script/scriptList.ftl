@@ -31,13 +31,13 @@
 					<i class="icon-upload"></i>
 					Upload script or resources
 				</a>
-				<a class="btn pull-right" href="javascript:void(0);" id="deleteBtn">
+				<a class="btn btn-danger pull-right" href="javascript:void(0);" id="deleteBtn">
 					<i class="icon-remove"></i>
 					Delete selected scripts
 				</a>
 			</div>
 		</div>
-		<div class="well form-inline" style="padding:5px;margin:10px 0">
+		<div class="well form-inline searchBar">
 			<!--<legend>introduction</legend>-->
 			<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
 			<button type="submit" class="btn" id="searchBtn">Search</button>
@@ -45,9 +45,9 @@
 				<input type="checkbox" id="onlyMineCkb" <#if isOwner>checked</#if>> See only my script
 			</label>
 		</div>
-		<table class="display ellipsis" id="scriptTable" style="margin-bottom:10px;">
+		<table class="display ellipsis jsTable" id="scriptTable">
 			<colgroup>
-				<col width="30">
+				<col width="35">
 				<col width="160">
 				<col>
 				<col width="170">
@@ -74,7 +74,7 @@
 				<#list scriptList as script>
 				<tr>
 					<td><input type="checkbox" value="${script.id}"></td>
-					<td class="left"><a href="${req.getContextPath()}/script/detail?id=${script.id}" target="_self">${script.fileName}</a></td>
+					<td class="left"><a href="${req.getContextPath()}/script/detail?id=${script.id}" target="_self">${(script.fileName)!"Cache Error"}</a></td>
 					<td class="left ellipsis" title="${(script.description)!}">${(script.description)!}</td>
 					<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
 					<td>${(script.lastModifiedUser.userId)!}</td>
@@ -302,27 +302,7 @@
 				searchScriptList();
 			});
 			
-			$("td input").on("click", function() {
-				if($("td input").size() == $("td input:checked").size()) {
-						$("th input").attr("checked", "checked");
-				} else {
-					$("th input").removeAttr("checked");
-				}
-			});
-			
-			$("th input").on('click', function(event) {
-				if($(this)[0].checked) {
-					$("td input").each(function(){
-						$(this).attr("checked", "checked");
-					});
-				} else {
-					$("td input").each(function() {
-						$(this).removeAttr("checked");
-					});
-				}
-				
-				event.stopImmediatePropagation();
-			});
+			enableChkboxSelectAll();
 			
 			$("i.script-remove").on('click', function() {
 				if (confirm("Do you want to delete this script file?")) {
@@ -367,7 +347,6 @@
 			});
 			</#if>
 			
-			$(".noClick").off('click');
 			
 			<#if libraries?has_content>
 			$("#resourceTable").dataTable({
@@ -382,6 +361,8 @@
        			"bScrollCollapse": true
 			});
 			</#if>
+
+			removeClick();
 		});
 		
 		function searchScriptList() {
