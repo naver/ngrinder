@@ -16,6 +16,7 @@
 	                required:false,
 	                number: true
 	            },
+	            <#if !(user?has_content)>
 	            password:{
 	                required:true,
 	                minlength:4
@@ -24,6 +25,7 @@
 	                required:true,
 	                equalTo: "#password"
 	            },
+	            </#if>
 	            gender:"required"
 	        },
 	        messages:{
@@ -32,6 +34,7 @@
 	                required:"Enter your email address",
 	                email:"Enter valid email address"
 	            },
+	          
 	            password:{
 	                required:"Enter your password",
 	                minlength:"Password must be minimum 6 characters"

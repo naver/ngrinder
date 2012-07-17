@@ -90,7 +90,11 @@ public class BaseEntity<M> implements Serializable {
 					// null
 					Object defaultValue = descriptor.getReadMethod().invoke(source);
 					if (defaultValue != null) {
-						descriptor.getWriteMethod().invoke(this, defaultValue);
+						if (defaultValue instanceof String
+								&& !"".equals(defaultValue)) {
+							descriptor.getWriteMethod().invoke(this,
+									defaultValue);
+						}
 					}
 				}
 			}

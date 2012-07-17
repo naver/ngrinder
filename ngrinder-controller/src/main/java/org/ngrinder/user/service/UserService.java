@@ -180,7 +180,7 @@ public class UserService {
 			return Role.ADMIN;
 		} else if (roleName.equals("USER")) {
 			return Role.USER;
-		} else if (roleName.equals("SUPER")) {
+		} else if (roleName.equals("SUPER_USER")) {
 			return Role.SUPER_USER;
 		} else if (roleName.equals("SYSTEM_USER")) {
 			return Role.SYSTEM_USER;
