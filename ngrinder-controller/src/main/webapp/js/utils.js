@@ -397,14 +397,28 @@ function removeClick() {
 	$(".noClick").off('click');
 }
 
-function showErrorMsg(message) {
+function showMsg(color, message) {
 	var $msgDiv = $('#messageDiv');
+	$msgDiv.addClass(color);
 	$msgDiv.html(message);
 	$msgDiv.fadeIn("fast");
 	setTimeout(function() {
 		$msgDiv.fadeOut('fast');
 		$msgDiv.html("");
+		$msgDiv.removeClass(color);
 	}, 3000);
+}
+
+function showSuccessMsg(message) {
+	showMsg("alert-success", message);
+}
+
+function showInfomation(message) {
+	showMsg("alert-info", message);
+}
+
+function showErrorMsg(message) {
+	showMsg("alert-error", message);
 }
 
 $(document).ready(function() {
