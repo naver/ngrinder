@@ -63,6 +63,11 @@ div.div-host .host {
 									<label for="testName" class="control-label">Test Name</label>
 									<div class="controls">
 										<input type="text" id="testName" name="testName" value="${(test.testName)!}">
+										<#if test??>
+											<button type="submit" class="btn">Clone&Start</a>
+										<#else>
+											<button type="submit" class="btn">Save&Start</a>
+										</#if>
 									</div>
 								</div>
 								<div class="control-group" style="margin-bottom: 0">
@@ -70,9 +75,9 @@ div.div-host .host {
 									<div class="controls">
 										<input type="text" id="description" name="description" value="${(test.description)!}">
 										<#if test??>
-											<button type="submit" class="btn">Clone&Start</a>
+											<button type="submit" class="btn">Clone&Schedule</a>
 										<#else>
-											<button type="submit" class="btn">Schedule&Start</a>
+											<button type="submit" class="btn">Save&Schedule</a>
 										</#if>
 										
 									</div>
@@ -86,7 +91,7 @@ div.div-host .host {
 					<ul class="nav nav-tabs" id="homeTab">
 						<li><a href="#testContent" data-toggle="tab">Test</a></li>
 						<#if test?? && test.status == "FINISHED">
-							<li><a href="#reportContent" data-toggle="tab">Report</a></li>
+							<li><a href="#reportContent" data-toggle="tab" id="reportLnk">Report</a></li>
 						</#if>
 					</ul>
 					<div class="tab-content">
@@ -202,7 +207,7 @@ div.div-host .host {
 									<div class="page-header">
 										<label class="checkbox" style="margin-bottom: 0">
 											<input type="checkbox" id="rampupCheckbox" <#if test?? && test.processes &gt; test.initProcesses>checked</#if> />
-											<h4>Enable Ramp-Up</h4>
+											<h4>Enable Ramp-Up</h4>(ramp-up chart for every agent)
 										</label>
 									</div>
 									<table>
@@ -267,7 +272,51 @@ div.div-host .host {
 								</div>
 							</div>
 						</div>
-						<div class="tab-pane" id="reportContent">not finished yet</div>
+						<div class="tab-pane" id="reportContent">
+							<div class="row">
+								<div class="span3">
+									<div class="form-horizontal form-horizontal-3"
+										style="margin-left: 20px">
+										<fieldset>
+											<div class="control-group">
+												<label for="agentInput" class="control-label control-label-1">TPS</label>
+												<div class="controls">
+													<span class="label label-info">Total ${(test.tps)!}</span>
+												</div>
+											</div>
+											<div class="control-group">
+												<label for="agentInput" class="control-label">Mean Time</label>
+												<div class="controls">
+													${(test.meanTestTime)!}
+													<code>MS</code>
+												</div>
+											</div>
+											<div class="control-group">
+												<label for="agentInput" class="control-label">Peak TPS</label>
+												<div class="controls">${(test.peakTps)!}</div>
+											</div>
+											<div class="control-group">
+												<label for="agentInput" class="control-label">Finished Tests</label>
+												<div class="controls">${(test.tests)!}</div>
+											</div>
+											<div class="control-group">
+												<label for="agentInput" class="control-label">Errors</label>
+												<div class="controls">${(test.errors)!}</div>
+											</div>
+										</fieldset>
+									</div>
+								</div>
+								<div class="span7">
+									<img src="" height="220" width="750" border="0">
+								</div>
+							</div>
+							<div class="row" style="margin-top: 10px;">
+								<div class="span10">
+									<a class="btn pull-right" target="_blank" href="#">Report in
+										Detail</a>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</form>
@@ -325,6 +374,10 @@ div.div-host .host {
 				
 				$("#vuserPerAgent").change (function() {
 					updateVuserPolicy ();
+				});
+				
+				$("#reportLnk").click(function () {
+					generateReportChart();
 				});
 				
 				initThresholdChkBox();
@@ -412,6 +465,10 @@ div.div-host .host {
 				}
 				
 				return contents.join("\n");
+			}
+			
+			function generateReportChart() {
+				showInformation("Generating TPS Chart...");
 			}
 			
 		</script>

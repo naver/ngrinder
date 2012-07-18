@@ -114,6 +114,20 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private int processIncrementInterval;
 	
 	private int threads;
+	
+	//followings are test result members
+    private int tests = 0;
+
+    private int errors = 0;
+
+    private double meanTestTime = 0;
+
+    private double testTimeStandardDeviation = 0;
+
+    private double tps = 0;
+
+    private double peakTps = 0;
+    
 
 	@Transient
 	private GrinderProperties grinderProperties;
@@ -250,16 +264,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.agentCount = agentCount;
 	}
 
-	/**
-	 * @return the vuserPerAgent
-	 */
 	public int getVuserPerAgent() {
 		return vuserPerAgent;
 	}
 
-	/**
-	 * @param vuserPerAgent the vuserPerAgent to set
-	 */
 	public void setVuserPerAgent(int vuserPerAgent) {
 		this.vuserPerAgent = vuserPerAgent;
 	}
@@ -304,16 +312,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.processIncrementInterval = processIncrementInterval;
 	}
 
-	/**
-	 * @return the threads
-	 */
 	public int getThreads() {
 		return threads;
 	}
 
-	/**
-	 * @param threads the threads to set
-	 */
 	public void setThreads(int threads) {
 		this.threads = threads;
 	}
@@ -334,6 +336,54 @@ public class PerfTest extends BaseModel<PerfTest> {
 				return cb.equal(root.get("createdUser"), user);
 			}
 		};
+	}
+
+	public int getTests() {
+		return tests;
+	}
+
+	public void setTests(int tests) {
+		this.tests = tests;
+	}
+
+	public int getErrors() {
+		return errors;
+	}
+
+	public void setErrors(int errors) {
+		this.errors = errors;
+	}
+
+	public Double getMeanTestTime() {
+		return meanTestTime;
+	}
+
+	public void setMeanTestTime(Double meanTestTime) {
+		this.meanTestTime = meanTestTime;
+	}
+
+	public Double getTestTimeStandardDeviation() {
+		return testTimeStandardDeviation;
+	}
+
+	public void setTestTimeStandardDeviation(Double testTimeStandardDeviation) {
+		this.testTimeStandardDeviation = testTimeStandardDeviation;
+	}
+
+	public Double getTps() {
+		return tps;
+	}
+
+	public void setTps(Double tps) {
+		this.tps = tps;
+	}
+
+	public Double getPeakTps() {
+		return peakTps;
+	}
+
+	public void setPeakTps(Double peakTps) {
+		this.peakTps = peakTps;
 	}
 
 	public String toString() {
