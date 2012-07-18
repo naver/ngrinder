@@ -413,7 +413,7 @@ function showSuccessMsg(message) {
 	showMsg("alert-success", message);
 }
 
-function showInfomation(message) {
+function showInformation(message) {
 	showMsg("alert-info", message);
 }
 
