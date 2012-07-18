@@ -41,6 +41,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/user")
@@ -136,5 +137,16 @@ public class UserController extends NGrinderBaseController {
 		userService.deleteUsers(aListNumbers);
 		return "redirect:/user/list";
 	}
+	
+	@RequestMapping("/checkUserId")
+	public @ResponseBody String checkUserId(ModelMap model, @RequestParam String userId) {
+		User user = userService.getUserById(userId);
+		if(user == null){
+			return JSONUtil.returnSuccess();
+		}else{
+			return JSONUtil.returnError();
+		}
+	}
+	
 
 }

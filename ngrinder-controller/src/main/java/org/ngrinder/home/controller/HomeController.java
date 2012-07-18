@@ -33,6 +33,7 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class HomeController extends NGrinderBaseController {
 
 	@Autowired
 	private Config config;
-
+	
 	@RequestMapping(value = { "/home", "/" })
 	public String home(ModelMap model, HttpServletResponse response, HttpServletRequest request) {
 		String roles;
@@ -119,4 +120,12 @@ public class HomeController extends NGrinderBaseController {
 
 		return "allTimeZone";
 	}
+	
+	@RequestMapping("/profile")
+	public String userProfile(ModelMap model, User user) {
+		model.addAttribute("user", user);
+		model.addAttribute("action", "profile");
+		return "user/userInfo";
+	}
+	
 }

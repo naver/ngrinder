@@ -1,6 +1,43 @@
 <script src="${req.getContextPath()}/js/jquery.validate.js"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
+		<#if !(user?has_content)>
+			$(".collapse").collapse();
+			$("#user_pw_head").attr("href","");
+			
+			$("#userName").click(function(){
+				var userId = $("#userId").val();
+				
+				if(userId != null && userId.length > 0){
+					$.ajax({
+						  url: "${req.getContextPath()}/user/checkUserId?userId="+userId,
+						  cache: false,
+						  success: function(data){
+	  						}
+					}); 
+				}
+						
+			});
+		</#if>
+		
+		
+		$('.collapse').on('hidden', function () {
+  			$("#password").removeClass("required");
+  			$("#cpwd").removeClass("required");
+  			$("#cpwd").attr("equalTo","");
+  			$("#password").val("");
+  			$("#cpwd").val("");
+		});
+		
+		$('.collapse').on('shown', function () {
+			
+  			$("#password").addClass("required");
+  			$("#cpwd").addClass("required");
+  			$("#cpwd").attr("equalTo","#password");
+
+		});
+		
+	
 		$('#registerUserForm input').hover(function() {
 	        $(this).popover('show')
 	    });
@@ -15,18 +52,7 @@
 	            mobilePhone:{
 	                required:false,
 	                number: true
-	            },
-	            <#if !(user?has_content)>
-	            password:{
-	                required:true,
-	                minlength:4
-	            },
-	            cpwd:{
-	                required:true,
-	                equalTo: "#password"
-	            },
-	            </#if>
-	            gender:"required"
+	            }
 	        },
 	        messages:{
 	            userName:"Enter your first and last name",
@@ -42,8 +68,7 @@
 	            cpwd:{
 	                required:"Enter confirm password",
 	                equalTo:"Password and Confirm Password must match"
-	            },
-	            gender:"Select Gender"
+	            }
 	        },
 	        errorClass: "help-inline",
 	        errorElement: "span",
@@ -56,17 +81,20 @@
 	        }
 	    });
 	});
+	
+
+	
+	
 </script>
 <form action="${req.getContextPath()}/user/save"
 	class="form-horizontal form-horizontal-2" id="registerUserForm" method="POST">
 	<fieldset>
-		<div class="page-header pageHeader">
-			<h3>User Infomation</h3>
-		</div>
+		
+		
 		<div class="control-group">
 			<label class="control-label">User ID</label>
 			<div class="controls">
-				<input type="text" class="span4" id="userid" name="userId"
+				<input type="text" class="span4" id="userId" name="userId"
 				    rel="popover" value="${(user.userId)!}"
 					data-content="User Id is a unique identifier and modified is forbidden  !"
 					data-original-title="User Id"
@@ -74,6 +102,7 @@
 				<input type="hidden" id="id" name="id" value="${(user.id)!}">
 			</div>
 		</div>
+		
 		<div class="control-group">
 			<label class="control-label">Name</label>
 			<div class="controls">
@@ -84,6 +113,7 @@
 			</div>
 		</div>
 
+		<#if !(action?has_content)>
 		<div class="control-group">
 			<label class="control-label">User Role</label>
 			<div class="controls">
@@ -94,6 +124,7 @@
 				</select>
 			</div>
 		</div>
+		</#if>
 
 		<div class="control-group">
 			<label class="control-label">Email</label>
@@ -114,7 +145,7 @@
 			</div>
 		</div>
 
-		<div class="control-group">
+		<div class="control-group" >
 			<label class="control-label">Phone number</label>
 			<div class="controls">
 				<input type="text" class="span4" id="mobilePhone"
@@ -124,26 +155,42 @@
 					data-original-title="Phone number">
 			</div>
 		</div>
+		
+  		<div class="control-group">
+		
+              <div class="accordion-heading"> 
+                <a class="accordion-toggle" data-toggle="collapse" href="#user_password_head" id="user_pw_head"> 
+                  User Password
+                </a> 
+              </div> 
+              
+              <div id="user_password_head" class="accordion-body collapse"> 
+	              <div class="accordion-inner"> 
+	            			 
+	            			<div class="control-group" >
+									<label class="control-label">Password</label>
+									<div class="controls">
+										<input type="password" class="span4" id="password"  minlength="4"
+											name="password" rel="popover" value="${(user.psw)!}"
+											data-content="4 characters or more! Be tricky"
+											data-original-title="Password">
+									</div>
+							</div>
+							
+							<div class="control-group" >
+									<label class="control-label">Confirm Password</label>
+									<div class="controls">
+										<input type="password" class="span4" id="cpwd" 
+											name="cpwd" rel="popover" value="${(user.psw)!}"
+											data-content="Re-enter your password for confirmation."
+											data-original-title="Re-Password">
+									</div>
+							</div>
+	            			 
+	              </div> 
+		 	  </div>
+		
 
-		<div class="control-group">
-			<label class="control-label">Password</label>
-			<div class="controls">
-				<input type="password" class="span4" id="password"
-					name="password" rel="popover" value="${(user.psw)!}"
-					data-content="6 characters or more! Be tricky"
-					data-original-title="Password">
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">Confirm
-				Password</label>
-			<div class="controls">
-				<input type="password" class="span4" id="cpwd"
-					name="cpwd" rel="popover" value="${(user.psw)!}"
-					data-content="Re-enter your password for confirmation."
-					data-original-title="Re-Password">
-			</div>
-		</div>
 		<div class="control-group">
 			<label class="control-label">
 				<button type="submit" class="btn btn-success" rel="tooltip">Save User</button>
@@ -151,3 +198,13 @@
 		</div>
 	</fieldset>
 </form>
+
+
+
+
+
+
+
+
+
+

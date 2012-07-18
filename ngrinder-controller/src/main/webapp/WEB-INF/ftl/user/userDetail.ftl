@@ -29,6 +29,9 @@
 			</div>
 
 			<div class="span10">
+				<div class="page-header pageHeader">
+					<h3>User Infomation</h3>
+				</div>
 				<#include "userInfo.ftl">
 			</div>
 		</div>

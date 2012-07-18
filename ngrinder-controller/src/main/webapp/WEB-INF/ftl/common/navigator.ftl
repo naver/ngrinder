@@ -16,7 +16,7 @@
 		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">${(currentUser.userId)!}<b class="caret"></b></a>
 		            	<ul class="dropdown-menu">
 							<@security.authorize ifAnyGranted="U, A, S">
-		                	<li><a href="${req.getContextPath()}/user/profile">Profile</a></li>
+		                	<li><a id="user_profile_id">Profile</a></li>
 		                	<li class="divider"/>
 			          		<li><a href="${req.getContextPath()}/j_spring_security_logout">Sign Out</a></li>
 			            	</@security.authorize>
@@ -36,5 +36,31 @@
 	</div>
 </div>
 <div class="alert messageDiv hidden" id="messageDiv">
-	Or "Validation message goes here........""Validation message goes here........""Validation message goes here........""Validation message goes here........""Validation message goes here........""Validation message goes here........""Validation message goes here........""Validation message goes here........"
+
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+			var url = "${req.getContextPath()}/profile";
+			$("#user_profile_id").on('click', function() {
+				$("#user_profile_modal").load(url, function(){
+					
+					$('#userProfileModal').modal('show')
+				});
+				
+			});
+	});
+</script>
+
+
+
+<div class="modal fade" id="userProfileModal">
+			<div class="modal-header">
+				<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
+				<h3>Your Profile</h3>
+			</div>
+			<div class="modal-body" id="user_profile_modal">
+			
+			</div>
+		</div>
 </div>

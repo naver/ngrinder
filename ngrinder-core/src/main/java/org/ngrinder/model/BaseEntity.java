@@ -34,6 +34,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -96,8 +97,9 @@ public class BaseEntity<M> implements Serializable {
 					// null
 					Object defaultValue = descriptor.getReadMethod().invoke(source);
 					if (defaultValue != null) {
-						if (defaultValue instanceof String
-								&& !"".equals(defaultValue)) {
+						if ((defaultValue instanceof String && StringUtils
+								.isNotBlank((String) defaultValue))
+								|| !(defaultValue instanceof String)) {
 							descriptor.getWriteMethod().invoke(this,
 									defaultValue);
 						}
