@@ -8,9 +8,9 @@
 		<meta name="author" content="AlexQin" />
 
 		<link rel="shortcut icon" href="${req.getContextPath()}/favicon.ico"/>
-		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-		<link href="${req.getContextPath()}/css/ngrinder.css" rel="stylesheet">
-		
+		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet"/>
+		<link href="${req.getContextPath()}/css/ngrinder.css" rel="stylesheet"/>
+
 		<input type="hidden" id="contextPath" value="${req.getContextPath()}" />
 		<#setting number_format="computer">
 	</head>
@@ -20,27 +20,29 @@
 	<div class="container">
 
 		<div class="row">
-			<div class="span10 offset1">
+			<div class="span12">
 				<form id="contentForm" method="post" target="_self">
 				<div class="well form-inline" style="padding:5px;margin:5px 0">
 					<label class="label" for="scriptNameInput">
 						Script Name
 					</label>
-					<input type="text" id="scriptNameInput" name="fileName" value="${(script.fileName)!}" readonly>
+					<input type="text" id="scriptNameInput" name="fileName" value="${(script.fileName)!}" readonly/>
 					<#if script.revisions?size != 0>
 					<div class="pull-right">
-					<label class="label" for="historySelect">
-						History
-					</label>
-					<select id="historySelect" name="historyFileName">
-						<option value="0">History List</option>
-						<#list script.revisions as revision>
-						<option value="${revision}">${revision}</option>
-						</#list>
-					</select>
-					<a class="btn" href="javascript:void(0);" id="compareBtn">Compare</a>
+						<label class="label" for="historySelect">
+							History
+						</label>
+						<select id="historySelect" name="historyFileName">
+							<option value="0">History List</option>
+							<#list script.revisions as revision>
+							<option value="${revision}">${revision}</option>
+							</#list>
+						</select>
+						<a class="btn" href="javascript:void(0);" id="compareBtn">Compare</a>
 					</div>
+					</#if>
 				</div>
+				</form>
 				
 			</div>
 			<table style="border:none;width:100%">
@@ -66,7 +68,6 @@
 							</label>
 						</td>
 						<td>
-<<<<<<< HEAD
 							<div id="script_1" style="width:100%">
 								<textarea id="display_content" name="content" style="height:550px;width:100%;">${script.content!}</textarea>
 							</div>

@@ -16,15 +16,15 @@
 		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">${(currentUser.userId)!}<b class="caret"></b></a>
 		            	<ul class="dropdown-menu">
 							<@security.authorize ifAnyGranted="U, A, S">
-		                	<li><a id="user_profile_id">Profile</a></li>
-		                	<li class="divider"/>
-			          		<li><a href="${req.getContextPath()}/j_spring_security_logout">Sign Out</a></li>
+			                	<li><a id="user_profile_id">Profile</a></li>
+			                	<li class="divider"/>
+				          		<li><a href="${req.getContextPath()}/j_spring_security_logout">Sign Out</a></li>
 			            	</@security.authorize>
 			            	<@security.authorize ifAnyGranted="A, S">
-			            	<li class="divider"/>
-	               			<li><a href="${req.getContextPath()}/user/list">User Management</a></li>
-	               			<li><a href="${req.getContextPath()}/config/view">Test Default Options</a></li>
-			                <li><a href="${req.getContextPath()}/agent/list">Agent Management</a></li>
+				            	<li class="divider"/>
+		               			<li><a href="${req.getContextPath()}/user/list">User Management</a></li>
+		               			<li><a href="${req.getContextPath()}/config/view">Test Default Options</a></li>
+				                <li><a href="${req.getContextPath()}/agent/list">Agent Management</a></li>
 			            	</@security.authorize>
 		            	</ul>
 		            </li>
@@ -39,20 +39,6 @@
 
 </div>
 
-<script type="text/javascript">
-	$(document).ready(function(){
-			var url = "${req.getContextPath()}/profile";
-			$("#user_profile_id").on('click', function() {
-				$("#user_profile_modal").load(url, function(){
-					
-					$('#userProfileModal').modal('show')
-				});
-				
-			});
-	});
-</script>
-
-
 
 <div class="modal fade" id="userProfileModal">
 			<div class="modal-header">
@@ -62,5 +48,16 @@
 			<div class="modal-body" id="user_profile_modal">
 			
 			</div>
-		</div>
+			
 </div>
+<script type="text/javascript">
+	$(document).ready(function(){
+			var url = "${req.getContextPath()}/profile";
+			$("#user_profile_id").on('click', function() {
+				$("#user_profile_modal").load(url, function(){
+					$('#userProfileModal').modal('show')
+				});
+				
+			});
+	});
+</script>
