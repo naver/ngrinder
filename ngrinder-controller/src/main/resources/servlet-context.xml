@@ -13,6 +13,7 @@
 			<bean class="org.ngrinder.infra.spring.UserHandlerMethodArgumentResolver">
 				<property name="userContext" ref="userContext" />
 			</bean>
+			<bean class="org.ngrinder.infra.spring.RemainedPathMethodArgumentResolver" />
 		</mvc:argument-resolvers>
 	</mvc:annotation-driven>
 

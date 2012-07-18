@@ -27,7 +27,12 @@
 	</repositories>
 
 	<dependencies>
-
+		<!-- Encoding Detection -->
+		<dependency>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<version>4.6</version>
+		</dependency>
 		<dependency>
 			<groupId>sonia.svnkit</groupId>
 			<artifactId>svnkit-dav</artifactId>
@@ -46,6 +51,13 @@
 			<version>4.8.1</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+			<version>1.4.1</version>
+			<scope>test</scope>
+		</dependency>
+
 
 		<!-- Servlet -->
 		<dependency>

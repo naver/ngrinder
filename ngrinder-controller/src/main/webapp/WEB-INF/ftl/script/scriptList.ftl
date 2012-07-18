@@ -54,9 +54,6 @@
 					<!--<legend>introduction</legend>-->
 					<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
 					<button type="submit" class="btn" id="searchBtn">Search</button>
-					<label class="checkbox pull-right" style="position:relative;top:5px">
-						<input type="checkbox" id="onlyMineCkb" <#if isOwner>checked</#if>> See only my script
-					</label>
 				</div>
 				<table class="display ellipsis" id="scriptTable" style="margin-bottom:10px;">
 					<colgroup>
@@ -82,55 +79,30 @@
 						</tr>
 					</thead>
 					<tbody>
-						<#assign scriptList = scripts.content/>
-						<#if scriptList?has_content>
-						<#list scriptList as script>
+						
+						<#list files as script>
 						<tr>
-							<td><input type="checkbox" value="${script.id}"></td>
-							<td class="left"><a href="${req.getContextPath()}/script/detail?id=${script.id}" target="_self">${script.fileName}</a></td>
+							<td><input type="checkbox" value="${script.fileName}"></td>
+							<td class="left">
+								<#if script.fileType.fileCategory.isEditable()>
+									<a href="${req.getContextPath()}/script/detail${script.path}" target="_self">${script.fileName}</a>
+								<#elseif script.fileType == "dir">
+									<a href="${req.getContextPath()}/script/list${script.path}" target="_self">${script.fileName}</a>
+								<#else>	
+									<a href="${req.getContextPath()}/svn/${currentUser.userId}${script.path}" target="_self">${script.fileName}</a>
+								</#if>
+								</td>
 							<td class="left ellipsis" title="${(script.description)!}">${(script.description)!}</td>
 							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
-							<td>${(script.lastModifiedUser)!}</td>
+							<td>${(script.lastModifiedUser.userName)!}</td>
 							<td>${(script.fileSize)!0}</td>
 							<td class="left ellipsis" title="${(script.tagsString)!}">${(script.tagsString)!}</td>
-							<td><a href="javascript:void(0);"><i class="icon-download-alt script-download" sid="${script.id}" sname="${script.fileName}"></i></a></td>
-							<!--<td><a href="javascript:void(0);"><i class="icon-remove script-remove" sid="${script.id}"></i></a></td>-->
+							<td><a href="javascript:void(0);"><i class="icon-download-alt script-download" spath="${script.path}" sname="${script.fileName}"></i></a></td>
 						</tr>
 						</#list>
-						<#else>
-							<tr>
-								<td colspan="8">
-									No data to display.
-								</td>
-							</tr>
-						</#if>
+						
 					</tbody>
 				</table>
-				<#if libraries?has_content>
-				<div class="page-header" style="margin:65px 0 10px; padding-bottom:5px;">
-					<h3>Resource List</h3>
-				</div>
-				<table class="display" id="resourceTable">
-					<thead>
-						<tr>
-							<th>Resource Name</th>
-							<th>Size(KB)</th>
-							<th class="noClick">Download</th>
-							<th class="noClick">Del</th>
-						</tr>
-					</thead>
-					<tbody>
-						<#list libraries as library>
-						<tr>
-							<td class="left">${library.fileName}</td>
-							<td>${(library.fileSize)!0}</td>
-							<td><a href="javascript:void(0);"><i class="icon-download-alt resource-download" sname="${library.fileName}"></i></a></td>
-							<td><a href="javascript:void(0);"><i class="icon-remove resource-remove" sname="${library.fileName}"></i></a></td>
-						</tr>
-						</#list>
-					</tbody>
-				</table>
-				</#if>
 				<#include "../common/copyright.ftl">
 			</div>
 		</div>
@@ -221,8 +193,7 @@
 		</div>
 	</div>
 	<form id="downloadForm" method="post" target="downloadFrame">
-		<input type="hidden" id="download_id" name="id">
-		<input type="hidden" id="download_name" name="fileName">
+		<input type="hidden" id="download_path" name="path">
 	</form>
 	<iframe name="downloadFrame" style="display: none;"></iframe>
 	<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
@@ -304,7 +275,7 @@
 					});
 					ids = agentArray.join(",");
 					
-					document.location.href = "${req.getContextPath()}/script/deleteScript?ids=" + ids;
+					document.location.href = "${req.getContextPath()}/script/delete/${currentPath}?filesString=" + ids;
 				}
 			});
 			
@@ -340,15 +311,13 @@
 			
 			$("i.script-remove").on('click', function() {
 				if (confirm("Do you want to delete this script file?")) {
-					document.location.href = "${req.getContextPath()}/script/deleteScript?id=" + $(this).attr("sid");
+					document.location.href = "${req.getContextPath()}/script/delete?filesString=" + $(this).attr("sid");
 				}
 			});
 			
 			$("i.script-download").on('click', function() {
 				var $elem = $(this);
-				$("#download_id").val($elem.attr("sid"));
-				$("#download_name").val($elem.attr("sname"));
-				document.forms.downloadForm.action = "${req.getContextPath()}/script/downloadScript";
+				document.forms.downloadForm.action = "${req.getContextPath()}/svn/" + $elem.attr("spath");
 				document.forms.downloadForm.submit();
 			});
 
@@ -399,12 +368,7 @@
 		});
 		
 		function searchScriptList() {
-			var isOwner = 0;
-			if ($("#onlyMineCkb")[0].checked) {
-				isOwner = 1;
-			}
-			
-			document.location.href = "${req.getContextPath()}/script/list?keywords=" + $("#searchText").val() + "&isOwner=" + isOwner;
+			document.location.href = "${req.getContextPath()}/script/search?query=" + $("#searchText").val();
 		}
 	</script>
 	</body>

@@ -33,6 +33,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
+import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -84,7 +85,8 @@ public class UserService {
 	}
 
 	/**
-	 * get a map which containing user in group, 
+	 * get a map which containing user in group,
+	 * 
 	 * @param users
 	 * @return
 	 */
@@ -117,7 +119,16 @@ public class UserService {
 	 */
 	@Transactional
 	public User saveUser(User user) {
-		return userRepository.save(user);
+		User createdUser = userRepository.save(user);
+		prepareUserEnv(user);
+		return createdUser;
+	}
+
+	@Autowired
+	private FileEntryService scriptService;
+
+	private void prepareUserEnv(User user) {
+		scriptService.prepare(user);
 	}
 
 	/**
@@ -172,6 +183,7 @@ public class UserService {
 
 	/**
 	 * get Role object based on role name
+	 * 
 	 * @param roleName
 	 * @return
 	 */

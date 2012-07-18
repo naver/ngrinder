@@ -26,7 +26,7 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.service.PerfTestService;
-import org.ngrinder.script.service.ScriptService;
+import org.ngrinder.script.service.FileEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -47,7 +47,7 @@ public class PerfTestController extends NGrinderBaseController {
 	private PerfTestService perfTestService;
 
 	@Autowired
-	private ScriptService scriptService;
+	private FileEntryService fileEntiryService;
 
 	private static final int DEFAULT_TEST_PAGE_ZISE = 15;
 
@@ -64,11 +64,11 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	@RequestMapping("/detail")
-	public String getTestDetail(ModelMap model, @RequestParam long testId) {
+	public String getTestDetail(User user, ModelMap model, @RequestParam long testId) {
 		PerfTest test = perfTestService.getPerfTest(testId);
 		model.addAttribute("test", test);
-		model.addAttribute("scriptList", scriptService.getScripts(true, null, null));
-		
+		model.addAttribute("scriptList", fileEntiryService.getFileEntries(user, ""));
+
 		return "perftest/detail";
 	}
 

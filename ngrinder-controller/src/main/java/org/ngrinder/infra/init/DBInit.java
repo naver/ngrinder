@@ -22,7 +22,7 @@ public class DBInit {
 		createDefaultUserIfNecessary();
 	}
 
-	private void createUser(String userId, String password, Role role, String userName, String email) {
+	public void createUser(String userId, String password, Role role, String userName, String email) {
 		if (userRepository.findOneByUserId(userId) == null) {
 			User adminUser = new User();
 			adminUser.setUserId(userId);

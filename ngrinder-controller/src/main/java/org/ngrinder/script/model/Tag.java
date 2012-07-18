@@ -45,7 +45,7 @@ public class Tag extends BaseEntity<Tag> {
 	private static final long serialVersionUID = -418147255758574079L;
 
 	@ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
-	private List<Script> scripts;
+	private List<FileEntry> scripts;
 
 	@Column(name = "name", nullable = false)
 	private String name;
@@ -62,11 +62,11 @@ public class Tag extends BaseEntity<Tag> {
 		return name;
 	}
 
-	public List<Script> getScripts() {
+	public List<FileEntry> getScripts() {
 		return scripts;
 	}
 
-	public void setScripts(List<Script> scripts) {
+	public void setScripts(List<FileEntry> scripts) {
 		this.scripts = scripts;
 	}
 

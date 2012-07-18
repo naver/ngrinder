@@ -30,17 +30,16 @@
 					<label class="label" for="scriptNameInput">
 						Script Name
 					</label>
-					<input type="text" id="scriptNameInput" name="fileName" value="${(result.fileName)!}" readonly>
-					<input type="hidden" id="scriptId" name="id" value="${(result.id)!}">
-					<#if result.historyFileNames?has_content>
+					<input type="text" id="scriptNameInput" name="fileName" value="${(script.fileName)!}" readonly>
+					<#if script.revisions?size != 0>
 					<div class="pull-right">
 					<label class="label" for="historySelect">
 						History
 					</label>
 					<select id="historySelect" name="historyFileName">
 						<option value="0">History List</option>
-						<#list result.historyFileNames as fileName>
-						<option value="${fileName}" <#if historyFileName?has_content && fileName == historyFileName>selected</#if>>${fileName}</option>
+						<#list script.revisions as revision>
+						<option value="${revision}">${revision}</option>
 						</#list>
 					</select>
 					<a class="btn" href="javascript:void(0);" id="compareBtn">Compare</a>
@@ -51,12 +50,12 @@
 					<tr>
 						<td>
 							<div id="script_1" style="width:100%">
-								<textarea id="display_content" name="content" style="height:550px;width:100%;">${(result.content)!}</textarea>
+								<textarea id="display_content" name="content" style="height:550px;width:100%;">${script.content!}</textarea>
 							</div>
 						</td>
 						<td>
 							<div id="script_2" style="width:100%">
-								<textarea id="display_content_2" style="height:550px;width:100%;">${(result.historyContent)!}</textarea>
+								<textarea id="display_content_2" style="height:550px;width:100%;"></textarea>
 							</div>
 						</td>
 				</table>
@@ -65,11 +64,11 @@
 					<label class="label" for="tagsInput">
 						Tags
 					</label>
-					<input type="text" id="tagsInput" name="tagStr" value="${(result.tagStr)!}">&nbsp;&nbsp;
+					<input type="text" id="tagsInput" name="tagStr" value="">&nbsp;&nbsp;
 					<label class="label" for="descInput">
 						Description
 					</label>
-					<input type="text" id="descInput" name="description" class="span6" style="width:600px" value="${(result.description)!}">
+					<input type="text" id="descInput" name="description" class="span6" style="width:600px" value="${(script.description)!}">
 				</div>
 				<a class="btn" href="javascript:void(0);" id="saveBtn">Save</a>
 				<a class="btn" href="javascript:void(0);" id="validateBtn">Validate Script</a>
@@ -88,7 +87,7 @@
 		$(document).ready(function() {
 			$("#n_script").addClass("active");
 			
-			editAreaLoader.baseURL = "../plugins/editarea/";
+			editAreaLoader.baseURL = "${req.getContextPath()}/plugins/editarea/";
 			
 			editAreaLoader.init({
 				id: "display_content"
@@ -117,7 +116,7 @@
 				,font_family: "verdana, monospace"
 			});
 			
-			if (${historyFileName!"0"} == "0") {
+			if ("0" == "0") {
 	      		$('#script_2').hide();
 	      		loadCache();
 	  		} else {
@@ -184,12 +183,7 @@
 		}
 		
 		function loadCache() {
-			var cacheContent = '${(result.cacheContent)!}';
-			if (cacheContent != "" && cacheContent != window.lastContent) {
-				if (confirm("Do you want to load cache content?")) {
-					editAreaLoader.setValue("display_content", cacheContent);
-				}
-			}
+			
 		}
 		
 		function listenEditArea() {
@@ -211,7 +205,7 @@
 				cache: false,
 				type: "POST",
 				dataType:'json',
-				data: {'id': ${(result.id)!0}, 'content': scriptContent},
+				data: {'id': ${(script.fileName)!0}, 'content': scriptContent},
 		        success: function(res) {
 		        	if (res.success) {
 		        		showMsg("Auto save script at " + new Date())

@@ -91,7 +91,7 @@ public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
 		assertThat(testList.size(), is(1));
 		
 		PerfTest test = testList.get(0);
-		controller.getTestDetail(model, test.getId());
+//		controller.getTestDetail(model, test.getId());
 	}
 
 	/**

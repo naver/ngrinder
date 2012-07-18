@@ -64,5 +64,6 @@ public interface NGrinderConstants {
 	public static final String PROJECT_PATH = "project";
 	public static final String PLUGIN_PATH = "plugins";
 	public static final String SCRIPT_PATH = "script";
+	public static final String USER_REPO_PATH = "repos";
 
 }

@@ -55,7 +55,7 @@ public class NGrinderBaseController implements GrinderConstants {
 	@Autowired
 	private UserService userService;
 
-	@ModelAttribute
+	@ModelAttribute("currentUser")
 	public User getCurrentUser() {
 		try {
 			return userContext.getCurrentUser();
