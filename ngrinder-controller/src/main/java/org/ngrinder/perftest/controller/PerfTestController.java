@@ -22,6 +22,9 @@
  */
 package org.ngrinder.perftest.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.util.JSONUtil;
@@ -91,6 +94,23 @@ public class PerfTestController extends NGrinderBaseController {
 		perfTestService.savePerfTest(test);
 
 		return "perftest/list";
+	}
+
+	/**
+	 * Calculate vuser assignment policy based on request vuser number. 
+	 * @param model
+	 * @param newVuser
+	 * @return
+	 */
+	@RequestMapping(value = "/updateVuser")
+	public @ResponseBody String updateVuser(ModelMap model, @RequestParam int newVuser) {
+		int threadCount = 2;
+		int processCount = newVuser / threadCount + newVuser % threadCount;
+		Map<String, Object> rtnMap = new HashMap<String, Object>(3);
+		rtnMap.put(JSON_SUCCESS, true);
+		rtnMap.put(PARAM_THREAD_COUNT, threadCount);
+		rtnMap.put(PARAM_PROCESS_COUNT, processCount);
+		return JSONUtil.toJson(rtnMap);
 	}
 
 	@RequestMapping(value = "/deleteTest")

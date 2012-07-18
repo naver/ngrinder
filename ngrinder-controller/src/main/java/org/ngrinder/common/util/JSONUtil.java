@@ -23,13 +23,14 @@
 package org.ngrinder.common.util;
 
 import java.util.List;
+import java.util.Map;
 
 import org.ngrinder.common.constant.NGrinderConstants;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-public class JSONUtil {
+public class JSONUtil implements NGrinderConstants{
 	
 	private static String successJson;
 	private static String errorJson;
@@ -38,23 +39,23 @@ public class JSONUtil {
 	
 	static {
 		JsonObject rtnJson = new JsonObject();
-		rtnJson.addProperty(NGrinderConstants.JSON_SUCCESS, true);
+		rtnJson.addProperty(JSON_SUCCESS, true);
 		successJson = rtnJson.toString();
-		rtnJson.addProperty(NGrinderConstants.JSON_SUCCESS, false);
+		rtnJson.addProperty(JSON_SUCCESS, false);
 		errorJson = rtnJson.toString();
 	}
 	
 	public static String returnSuccess(String message) {
 		JsonObject rtnJson = new JsonObject();
-		rtnJson.addProperty(NGrinderConstants.JSON_SUCCESS, true);
-		rtnJson.addProperty(NGrinderConstants.JSON_MESSAGE, message);
+		rtnJson.addProperty(JSON_SUCCESS, true);
+		rtnJson.addProperty(JSON_MESSAGE, message);
 		return rtnJson.toString();
 	}
 	
 	public static String returnError(String message) {
 		JsonObject rtnJson = new JsonObject();
-		rtnJson.addProperty(NGrinderConstants.JSON_SUCCESS, false);
-		rtnJson.addProperty(NGrinderConstants.JSON_MESSAGE, message);
+		rtnJson.addProperty(JSON_SUCCESS, false);
+		rtnJson.addProperty(JSON_MESSAGE, message);
 		return rtnJson.toString();
 	}
 
@@ -68,6 +69,10 @@ public class JSONUtil {
 	
 	public static String toJson (List<?> list) {
 		return gson.toJson(list);
+	}
+	
+	public static String toJson (Map<String, Object> map) {
+		return gson.toJson(map);
 	}
 
 }

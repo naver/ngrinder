@@ -24,17 +24,17 @@ function rampup(obj) {
 
 function disableRampup() {
 	$('#initProcesses').val($('#processes').val());
-	$('#initProcesses').attr("disabled", "disabled");
-	$('#initSleepTime').attr("disabled", "disabled");
-	$('#processIncrement').attr("disabled", "disabled");
-	$('#processIncrementInterval').attr("disabled", "disabled");
+	$('#initProcesses').attr("readonly", "readonly");
+	$('#initSleepTime').attr("readonly", "readonly");
+	$('#processIncrement').attr("readonly", "readonly");
+	$('#processIncrementInterval').attr("readonly", "readonly");
 }
 
 function enableRampup() {
-	$('#initProcesses').removeAttr("disabled");
-	$('#initSleepTime').removeAttr("disabled");
-	$('#processIncrement').removeAttr("disabled");
-	$('#processIncrementInterval').removeAttr("disabled");
+	$('#initProcesses').removeAttr("readonly");
+	$('#initSleepTime').removeAttr("readonly");
+	$('#processIncrement').removeAttr("readonly");
+	$('#processIncrementInterval').removeAttr("readonly");
 }
 
 function updateChart(){

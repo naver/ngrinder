@@ -54,8 +54,8 @@ div.div-host .host {
 						<input type="hidden" id="testId" name="id" value="${(test.id)!}">
 						 -->
 						<input type="hidden" id="threshold" name="threshold" value="${(test.threshold)!"D"}">
-						<input type="hidden" id="threads" name="threads" value="${(test.threads)!1}">
-						
+						<input type="hidden" id="threads" name="threads" value="${(test.threads)!0}">
+						<input type="hidden" id="processes" name="processes" value="${(test.processes)!0}">						
 
 						<div class="form-horizontal form-horizontal-1" style="margin-bottom: 0">
 							<fieldset>
@@ -116,7 +116,7 @@ div.div-host .host {
 															id="vuserPerAgent" name="vuserPerAgent" value="${(test.vuserPerAgent)!}">
 													</div>
 													<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
-													<span class="badge badge-info pull-right">Vuser: ${vuserTotal}</span>
+													<span class="badge badge-info pull-right" id="vuserTotal">Vuser: ${vuserTotal}</span>
 												</div>
 											</div>
 											<div class="control-group">
@@ -201,13 +201,12 @@ div.div-host .host {
 								<div class="span6">
 									<div class="page-header">
 										<label class="checkbox" style="margin-bottom: 0">
-											<input type="checkbox" id="rampupCheckbox">
+											<input type="checkbox" id="rampupCheckbox" <#if test?? && test.processes &gt; test.initProcesses>checked</#if> />
 											<h4>Enable Ramp-Up</h4>
 										</label>
 									</div>
 									<table>
 										<tr>
-											<input type="hidden" id="processes" value="${(test.processes)!10}">
 											<td style="width: 50%">
 												<div class="form-horizontal form-horizontal-2">
 													<fieldset>
@@ -217,7 +216,7 @@ div.div-host .host {
 															<div class="controls">
 																<input type="text" class="input input-mini"
 																	id="initProcesses" name="initProcesses"
-																	value="${(test.initProcesses)!1}">
+																	value="${(test.initProcesses)!0}" />
 															</div>
 														</div>
 														<div class="control-group">
@@ -283,7 +282,7 @@ div.div-host .host {
 	<script src="${req.getContextPath()}/js/rampup.js"></script>
 	<script>
 			$(document).ready(function() {
-								
+				$("#n_test").addClass("active"); 
 				if (${scriptList?size} == 0) {
 					alert ("User has not script yet! Please create a script first.");
 					return;
@@ -321,37 +320,52 @@ div.div-host .host {
 				});
 				
 				$("#agentCount").change (function() {
-					
+					updateVuserTotal ();
 				});
 				
 				$("#vuserPerAgent").change (function() {
-					$.ajax({
-				  		url: "",
-						dataType:'json',
-				    	success: function(res) {
-				    		if (res.success) {
-					    		showErrorMsg("The test(s) deleted successfully.");
-					    		var processCount = res.processCount;
-					    		var threadCount = res.threadCount;
-					    		$('#processes').val(processCount);
-					    		updateChart();
-								return true;
-				    		} else {
-					    		showErrorMsg("Test(s) deletion failed:" + res.message);
-								return false;
-				    		}
-				    	},
-				    	error: function() {
-				    		showErrorMsg("Test(s) deletion failed!");
-							return false;
-				    	}
-				  	});
+					updateVuserPolicy ();
 				});
 				
 				initThresholdChkBox();
 				initDuration();
 			});
 			
+			function updateVuserTotal () {
+				var agtCount = $("#agentCount").val();
+				var vcount = $("#vuserPerAgent").val();
+				$("#vuserTotal").text("Vuser:" + agtCount*vcount);
+			}
+			
+			function updateVuserPolicy() {
+				updateVuserTotal();
+				$('#messageDiv').ajaxSend(function() {
+					showInformation("Updating vuser policy from server...");
+				});
+
+				$.ajax({
+			  		url: "${req.getContextPath()}/perftest/updateVuser",
+					dataType:'json',
+					data: {'newVuser': $("#vuserPerAgent").val()},
+			    	success: function(res) {
+			    		if (res.success) {
+				    		var processCount = res.processCount;
+				    		var threadCount = res.threadCount;
+				    		$('#processes').val(processCount);
+				    		$('#threads').val(threadCount);
+				    		updateChart();
+							return true;
+			    		} else {
+				    		showErrorMsg("Update vuser failed:" + res.message);
+							return false;
+			    		}
+			    	},
+			    	error: function() {
+			    		showErrorMsg("Error!");
+						return false;
+			    	}
+			  	});
+			}
 			function initThresholdChkBox() {
 				if ($("#testId").value == 0 || $("#threshold").value == "R") { //runcount
 					$("#runcountChkbox").attr("checked", "checked");
