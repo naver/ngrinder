@@ -17,7 +17,7 @@
 		<style>
 			body {
 				padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-			}
+			  }
 			table th, table td {text-align:center;}
 			table.display thead th {padding:3px 10px}
 			table.display tbody .left {text-align:left}
@@ -42,13 +42,13 @@
 						</a>
 						<a class="btn" href="#uploadScriptModal" id="uploadBtn" data-toggle="modal">
 							<i class="icon-upload"></i>
-							Upload script or resources
+							 Upload script or resources
 						</a>
 						<a class="btn pull-right" href="javascript:void(0);" id="deleteBtn">
 							<i class="icon-remove"></i>
 							Delete selected scripts
 						</a>
-					</div>
+					</div> 
 				</div>
 				<div class="well form-inline" style="padding:5px;margin:10px 0">
 					<!--<legend>introduction</legend>-->
@@ -78,7 +78,7 @@
 							<th class="noClick">Download</th>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody> 
 						
 						<#list files as script>
 						<tr>

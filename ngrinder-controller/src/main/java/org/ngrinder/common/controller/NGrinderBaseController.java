@@ -33,19 +33,22 @@ import java.util.TimeZone;
 
 import net.grinder.common.GrinderProperties;
 
-import org.ngrinder.common.constant.GrinderConstants;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.user.service.UserContext;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-public class NGrinderBaseController implements GrinderConstants {
+public class NGrinderBaseController implements NGrinderConstants {
 
 	public static final String ERROR_PAGE = "errors/error";
+
+	protected static final int DEFAULT_PAGE_LIMIT = 20;
 	@Autowired
 	private MessageSource messageSource;
 
@@ -56,12 +59,16 @@ public class NGrinderBaseController implements GrinderConstants {
 	private UserService userService;
 
 	@ModelAttribute("currentUser")
-	public User getCurrentUser() {
+	public User currentUser() {
 		try {
-			return userContext.getCurrentUser();
-		} catch (Exception e) {
-			return null;
+			return getCurrentUser();
+		} catch (AuthenticationCredentialsNotFoundException e) {
 		}
+		return new User();
+	}
+
+	public User getCurrentUser() {
+		return userContext.getCurrentUser();
 	}
 
 	/**
@@ -71,13 +78,13 @@ public class NGrinderBaseController implements GrinderConstants {
 	 */
 	public String getCurrentUserInfo(String param) {
 		User user = getCurrentUser();
-		if (param.equals(P_USERID))
+		if (param.equals(PARAM_USERID))
 			return user.getUserId();
-		else if (param.equals("role"))
+		else if (param.equals(PARAM_ROLE))
 			return user.getRole().getShortName();
-		else if (param.equals("userLanguage"))
+		else if (param.equals(PARAM_USER_LANGUAGE))
 			return user.getUserLanguage();
-		else if (param.equals("timeZone"))
+		else if (param.equals(PARAM_TIMEZONE))
 			return user.getTimeZone();
 		else
 			return user.toString();
@@ -91,12 +98,12 @@ public class NGrinderBaseController implements GrinderConstants {
 	}
 
 	protected void setCurrentUserInfoForModel(ModelMap model) {
-		model.put(GrinderConstants.P_USERID, getCurrentUserInfo("userId"));
-		model.put("timeZone", getCurrentUserInfo("timeZone"));
+		model.put(PARAM_USERID, getCurrentUserInfo(PARAM_USERID));
+		model.put(PARAM_TIMEZONE, getCurrentUserInfo(PARAM_TIMEZONE));
 	}
 
 	protected void addMsgToModel(ModelMap model, String message) {
-		model.addAttribute(GrinderConstants.P_MESSAGE, message);
+		model.addAttribute(PARAM_MESSAGE, message);
 	}
 
 	protected int getOffSet(String userLocalId) {
@@ -144,8 +151,8 @@ public class NGrinderBaseController implements GrinderConstants {
 	protected Map<String, Object> getMessageMap(Object isSuccess, String message) {
 		Map<String, Object> result = new HashMap<String, Object>();
 
-		result.put(GrinderConstants.P_SUCCESS, isSuccess);
-		result.put(GrinderConstants.P_MESSAGE, message);
+		result.put(JSON_SUCCESS, isSuccess);
+		result.put(JSON_MESSAGE, message);
 
 		return result;
 	}

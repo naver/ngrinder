@@ -1,0 +1,9 @@
+<config>
+	<context-values>
+		<resource path="src/main/webapp/WEB-INF/ftl/common/paging.ftl">
+			<value key="req" object-class="sun.net.httpserver.Request"/>
+		</resource>
+	</context-values>
+	<macro-library>
+	</macro-library>
+</config>

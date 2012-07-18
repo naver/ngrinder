@@ -12,7 +12,7 @@
 	<artifactId>ngrinder-controller</artifactId>
 	<name>ngrinder-controller</name>
 	<packaging>war</packaging>
-	<properties>
+	<properties> 
 		<!-- BDS Deploy Path -->
 		<webappdir>${project.basedir}/src/main/webapp</webappdir>
 		<m2eclipse.wtp.contextRoot>/ngrinder-controller</m2eclipse.wtp.contextRoot>

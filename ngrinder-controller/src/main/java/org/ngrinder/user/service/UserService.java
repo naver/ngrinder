@@ -22,7 +22,6 @@
  */
 package org.ngrinder.user.service;
 
-import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
@@ -35,6 +34,7 @@ import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.repository.UserRepository;
+import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -149,8 +149,8 @@ public class UserService {
 	 */
 	public String modifyUser(User user) {
 		checkNotNull(user, "user should be not null, when modifying user");
-		checkNotEmpty(user.getUserId(), "user id should be provided when modifying user");
-		User targetUser = userRepository.findOneByUserId(user.getUserId());
+		checkNotNull(user.getId(), "user id should be provided when modifying user");
+		User targetUser = userRepository.findOne(user.getId());
 		targetUser.merge(user);
 		userRepository.save(targetUser);
 		return user.getUserId();
@@ -192,12 +192,16 @@ public class UserService {
 			return Role.ADMIN;
 		} else if (roleName.equals("USER")) {
 			return Role.USER;
-		} else if (roleName.equals("SUPER")) {
+		} else if (roleName.equals("SUPER_USER")) {
 			return Role.SUPER_USER;
 		} else if (roleName.equals("SYSTEM_USER")) {
 			return Role.SYSTEM_USER;
 		} else {
 			return null;
 		}
+	}
+	
+	public List<User> getUserListByKeyWord(String keyword) {
+		return userRepository.findAll(UserSpecification.nameLike(keyword));
 	}
 }

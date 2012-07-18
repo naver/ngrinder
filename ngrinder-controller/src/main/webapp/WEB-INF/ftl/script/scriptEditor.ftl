@@ -74,7 +74,7 @@
 				<a class="btn" href="javascript:void(0);" id="validateBtn">Validate Script</a>
 				<span class="help-inline" id="messageDiv"></span>
 				<div class="alert alert-info fade in" style="margin-top:5px;" id="autoSaveMsg"></div>
-				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre"></pre>
+				 <pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre"></pre>
 				</form>			
 			</div>
 		</div>

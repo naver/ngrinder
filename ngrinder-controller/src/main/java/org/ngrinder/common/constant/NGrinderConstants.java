@@ -22,7 +22,12 @@
  */
 package org.ngrinder.common.constant;
 
-
+/**
+ * nGrinder specific contants.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
 public interface NGrinderConstants {
 
 	public static final String START = "start";
@@ -65,5 +70,14 @@ public interface NGrinderConstants {
 	public static final String PLUGIN_PATH = "plugins";
 	public static final String SCRIPT_PATH = "script";
 	public static final String USER_REPO_PATH = "repos";
+	
+	// parameter constant, for parameter from page, and for key in map
+	public static final String PARAM_USERID = "userId";
+	public static final String PARAM_ROLE = "role";
+	public static final String PARAM_USER_LANGUAGE = "userLanguage";
+	public static final String PARAM_TIMEZONE = "timeZone";
+	public static final String PARAM_MESSAGE = "message";
+	public static final String PARAM_THREAD_COUNT = "threadCount";
+	public static final String PARAM_PROCESS_COUNT = "processCount";
 
 }
