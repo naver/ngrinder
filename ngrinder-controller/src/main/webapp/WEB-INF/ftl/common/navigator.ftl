@@ -35,3 +35,6 @@
 		</div>
 	</div>
 </div>
+<div class="alert alert-error messageDiv hidden" id="messageDiv">
+	Or "Validation message goes here........""Validation message goes here........""Validation message goes here........""Validation message goes here........""Validation message goes here........""Validation message goes here........""Validation message goes here........""Validation message goes here........"
+</div>

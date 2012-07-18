@@ -330,19 +330,19 @@ div.div-host .host {
 						dataType:'json',
 				    	success: function(res) {
 				    		if (res.success) {
-					    		showMsg($('#messageDiv'), "The test(s) deleted successfully.");
+					    		showErrorMsg("The test(s) deleted successfully.");
 					    		var processCount = res.processCount;
 					    		var threadCount = res.threadCount;
 					    		$('#processes').val(processCount);
 					    		updateChart();
 								return true;
 				    		} else {
-					    		showMsg($('#messageDiv'), "test(s) deletion failed:" + res.message);
+					    		showErrorMsg("Test(s) deletion failed:" + res.message);
 								return false;
 				    		}
 				    	},
 				    	error: function() {
-				    		showMsg($('#messageDiv'), "test(s) deletion failed!");
+				    		showErrorMsg("Test(s) deletion failed!");
 							return false;
 				    	}
 				  	});

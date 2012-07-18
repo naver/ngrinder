@@ -397,6 +397,16 @@ function removeClick() {
 	$(".noClick").off('click');
 }
 
+function showErrorMsg(message) {
+	var $msgDiv = $('#messageDiv');
+	$msgDiv.html(message);
+	$msgDiv.fadeIn("fast");
+	setTimeout(function() {
+		$msgDiv.fadeOut('fast');
+		$msgDiv.html("");
+	}, 3000);
+}
+
 $(document).ready(function() {
 	var $elem = $("#footDiv");
 	var i = $elem[0];

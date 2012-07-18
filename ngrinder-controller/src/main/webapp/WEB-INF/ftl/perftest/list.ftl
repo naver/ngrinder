@@ -99,7 +99,6 @@
 							</#if>
 						</tbody>
 					</table>
-					<span class="help-inline" id="messageDiv"></span>
 					<!--content-->
 					<#include "../common/copyright.ftl">
 				</div>
@@ -193,27 +192,19 @@
 					dataType:'json',
 			    	success: function(res) {
 			    		if (res.success) {
-				    		showMsg($('#messageDiv'), "The test(s) deleted successfully.");
+				    		showErrorMsg("The test(s) deleted successfully.");
 							return true;
 			    		} else {
-				    		showMsg($('#messageDiv'), "test(s) deletion failed:" + res.message);
+				    		showErrorMsg("Test(s) deletion failed:" + res.message);
 							return false;
 			    		}
 			    	},
 			    	error: function() {
-			    		showMsg($('#messageDiv'), "test(s) deletion failed!");
+			    		showErrorMsg("Test(s) deletion failed!");
 						return false;
 			    	}
 			  	});
 			}
-			
-			function showMsg($megDiv, message) {
-	    		$('#messageDiv').html("");
-	        	$megDiv.html(message);
-	        	$megDiv.fadeIn("fast");
-	    		setTimeout(function(){$autoMsg.fadeOut('fast')}, 3000);
-			}
-			
 		</script>
 	</body>
 </html>

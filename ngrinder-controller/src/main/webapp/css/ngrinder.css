@@ -106,3 +106,19 @@ table.ellipsis td.ellipsis {
 	margin: -10px 0 20px; 
 	padding-bottom: 5px
 }
+
+.messageDiv {
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+    left: 50%;
+    margin-left: -280px;
+    overflow: auto;
+    position: fixed;
+    top: 40%;
+    width: 540px;
+    z-index: 1050;
+    opacity:0.9;
+}
+
+.hidden {
+	display: none;
+}
