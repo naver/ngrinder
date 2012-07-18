@@ -23,7 +23,6 @@
 package org.ngrinder.script.model;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -39,13 +38,16 @@ import org.ngrinder.model.BaseModel;
  * Script entity
  * 
  * @author Liu Zhifei
+ * @author JunHo Yoon
  * @since 3.0
  */
 @Entity
 @Table(name = "SCRIPT")
-public class Script extends BaseModel<Script> {
+public class FileEntry extends BaseModel<FileEntry> {
 
 	private static final long serialVersionUID = -2422243194192027508L;
+
+	private FileType fileType;
 
 	private String fileName;
 
@@ -53,76 +55,26 @@ public class Script extends BaseModel<Script> {
 
 	private String testURL;
 
-	private String language;
-
-	private transient byte[] contentBytes;
-
 	private transient String content;
 
-	private transient String historyContent;
-
-	private transient String cacheContent;
-
-	private transient List<String> historyFileNames;
-
-	// private ScriptType type;
+	private transient List<Long> revisions;
 
 	private boolean share = false;
 
 	private String description;
 
+	private String encoding;
+
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SCRIPT_TAG", joinColumns = @JoinColumn(name = "SCRIPT_ID"), inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
 	private List<Tag> tags = new ArrayList<Tag>();
 
-	private String tagsString;
+	private byte[] contentBytes;
 
-	private Date lastTestDate;
+	private String path;
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((this.getCreatedDate() == null) ? 0 : this.getCreatedDate().hashCode());
-		result = prime * result + ((fileName == null) ? 0 : fileName.hashCode());
-		result = prime * result + ((testURL == null) ? 0 : testURL.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		Script other = (Script) obj;
-		if (this.getCreatedDate() == null) {
-			if (other.getCreatedDate() != null) {
-				return false;
-			}
-		} else if (!this.getCreatedDate().equals(other.getCreatedDate())) {
-			return false;
-		}
-		if (fileName == null) {
-			if (other.fileName != null) {
-				return false;
-			}
-		} else if (!fileName.equals(other.fileName)) {
-			return false;
-		}
-		if (testURL == null) {
-			if (other.testURL != null) {
-				return false;
-			}
-		} else if (!testURL.equals(other.testURL)) {
-			return false;
-		}
-		return true;
+	public String getPath() {
+		return path;
 	}
 
 	public String getFileName() {
@@ -167,30 +119,6 @@ public class Script extends BaseModel<Script> {
 		this.content = content;
 	}
 
-	public String getHistoryContent() {
-		return historyContent;
-	}
-
-	public void setHistoryContent(String historyContent) {
-		this.historyContent = historyContent;
-	}
-
-	public String getCacheContent() {
-		return cacheContent;
-	}
-
-	public void setCacheContent(String cacheContent) {
-		this.cacheContent = cacheContent;
-	}
-
-	public List<String> getHistoryFileNames() {
-		return historyFileNames;
-	}
-
-	public void setHistoryFileNames(List<String> historyFileNames) {
-		this.historyFileNames = historyFileNames;
-	}
-
 	public boolean isShare() {
 		return share;
 	}
@@ -219,28 +147,36 @@ public class Script extends BaseModel<Script> {
 		this.tags.add(tag);
 	}
 
-	public Date getLastTestDate() {
-		return lastTestDate;
+	public boolean isEditable() {
+		return fileType.getFileCategory().isEditable();
 	}
 
-	public void setLastTestDate(Date lastTestDate) {
-		this.lastTestDate = lastTestDate;
+	public FileType getFileType() {
+		return fileType;
 	}
 
-	public String getLanguage() {
-		return language;
+	public void setFileType(FileType fileType) {
+		this.fileType = fileType;
 	}
 
-	public void setLanguage(String language) {
-		this.language = language;
+	public List<Long> getRevisions() {
+		return revisions;
 	}
 
-	public String getTagsString() {
-		return tagsString;
+	public void setRevisions(List<Long> revisions) {
+		this.revisions = revisions;
 	}
 
-	public void setTagsString(String tagsString) {
-		this.tagsString = tagsString;
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public String getEncoding() {
+		return encoding;
+	}
+
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
 	}
 
 }

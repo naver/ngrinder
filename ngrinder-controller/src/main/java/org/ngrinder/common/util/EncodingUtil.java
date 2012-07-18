@@ -20,19 +20,39 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.script.service;
+package org.ngrinder.common.util;
 
-import java.util.List;
+import java.io.IOException;
+import java.nio.charset.Charset;
 
-import org.ngrinder.script.model.Library;
+import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
 
+/**
+ * Encoding detection utility from byte array
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
+public abstract class EncodingUtil {
 
-public interface LibraryService {
+	public static String getAutoDecodedString(byte[] data, String defaultEncoding) throws IOException {
+		return new String(data, detectEncoding(data, defaultEncoding));
+	}
 
-	List<Library> getLibraries();
-
-	void saveLibrary(Library library);
-
-	void deleteLibrary(String libraryName);
-
+	/**
+	 * 
+	 * @param data
+	 * @param defaultEncoding
+	 * @return encoding name;
+	 * @throws IOException
+	 */
+	public static String detectEncoding(byte[] data, String defaultEncoding) throws IOException {
+		CharsetDetector detector = new CharsetDetector();
+		detector.setText(data);
+		CharsetMatch cm = detector.detect();
+		String estimatedEncoding = cm.getName();
+		boolean isReliable = (true == Charset.isSupported(estimatedEncoding) && cm.getConfidence() >= 50);
+		return (isReliable) ? estimatedEncoding : defaultEncoding;
+	}
 }
