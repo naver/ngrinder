@@ -23,19 +23,24 @@
 	<div class="container">
 		<div class="row">
 			<div class="span12">
-
-						<a class="btn" href="#createScriptModal" id="createBtn" data-toggle="modal">
-							<i class="icon-file"></i>
-							Create a script
-						</a>
-						<a class="btn" href="#uploadScriptModal" id="uploadBtn" data-toggle="modal">
-							<i class="icon-upload"></i>
-							 Upload script or resources
-						</a>
-						<a class="btn pull-right" href="javascript:void(0);" id="deleteBtn">
-							<i class="icon-remove"></i>
-							Delete selected scripts
-						</a>
+				<a class="btn" href="#createScriptModal" id="createBtn" data-toggle="modal">
+					<i class="icon-file"></i>
+					Create a script
+				</a>
+				<a class="btn" href="#createFolderModal" id="folderBtn" data-toggle="modal">
+					<i class=" icon-folder-open"></i>
+					Create a folder
+				</a>
+				<a class="btn" href="#uploadScriptModal" id="uploadBtn" data-toggle="modal">
+					<i class="icon-upload"></i>
+					 Upload script or resources
+				</a>
+				
+				
+				<a class="btn  btn-danger pull-right" href="javascript:void(0);" id="deleteBtn">
+					<i class="icon-remove"></i>
+					Delete selected scripts
+				</a>
 
 				<div class="well form-inline" style="padding:5px;margin:10px 0">
 					<!--<legend>introduction</legend>-->
@@ -72,9 +77,9 @@
 							<td><input type="checkbox" value="${script.fileName}"></td>
 							<td class="left">
 								<#if script.fileType.fileCategory.isEditable()>
-									<a href="${req.getContextPath()}/script/detail${script.path}" target="_self">${script.fileName}</a>
+									<a href="${req.getContextPath()}/script/detail/${script.path}" target="_self">${script.fileName}</a>
 								<#elseif script.fileType == "dir">
-									<a href="${req.getContextPath()}/script/list${script.path}" target="_self">${script.fileName}</a>
+									<a href="${req.getContextPath()}/script/list/${script.path}" target="_self">${script.fileName}</a>
 								<#else>	
 									<a href="${req.getContextPath()}/svn/${currentUser.userId}${script.path}" target="_self">${script.fileName}</a>
 								</#if>
@@ -100,7 +105,7 @@
 				<h3>Create a script</h3>
 			</div>
 			<div class="modal-body">
-				<form class="form-horizontal" style="margin-bottom:0" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/detail">
+				<form class="form-horizontal" style="margin-bottom:0" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/create/${currentPath}">
 					<fieldset>
 						<div class="control-group">
 							<label for="scriptNameInput" class="control-label">Script Name</label>
@@ -110,10 +115,11 @@
 							</div>
 						</div>
 						<div class="control-group">
-							<label for="languageSelect" class="control-label">Language</label>
-							<div class="controls">
+							<label for="languageSelect" class="control-label">Type</label>
+							<div class="controls">						 
+							    <input type="hidden" name="type" value="script"/>
 								<select id="languageSelect" name="language">
-									<option value="py">PythonScript</option>
+									<option value="py">Python Script</option>
 								</select>
 							  <span class="help-inline"></span>
 							</div>
@@ -121,7 +127,7 @@
 						<div class="control-group">
 							<label for="urlInput" class="control-label">URL to be tested</label>
 							<div class="controls">
-							  <input type="text" id="urlInput" name="testURL">
+							  <input type="text" id="urlInput" name="testUrl"/>
 							  <span class="help-inline"></span>
 							</div>
 						</div>					
@@ -134,6 +140,33 @@
 				<a href="#createScriptModal" class="btn" id="cancelBtn" data-toggle="modal">Cancel</a>
 			</div>
 		</div>
+		
+		<div class="modal fade" id="createFolderModal">
+			<div class="modal-header">
+				<a class="close" data-dismiss="modal" id="createCloseBtn">&times;</a>
+				<h3>Create a folder</h3>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal" style="margin-bottom:0" method="post" target="_self" id="createFolderForm" action="${req.getContextPath()}/script/create/${currentPath}">
+					<fieldset>
+						<div class="control-group">
+							<label for="folderNameInput" class="control-label">Folder Name</label>
+							<div class="controls">
+							  <input type="hidden" name="type" value="folder"/>
+							  <input type="text" id="folderNameInput" name="folderName"/>
+							  <span class="help-inline"></span>
+							</div>
+						</div>					
+					</fieldset>
+				</form>
+			</div>
+			
+			<div class="modal-footer">
+				<a href="#" class="btn btn-primary" id="createFolderBtn">Create</a>
+				<a href="#createFolderModal" class="btn" id="cancelBtn" data-toggle="modal">Cancel</a>
+			</div>
+		</div>
+		
 		<div class="modal fade" id="uploadScriptModal">
 			<div class="modal-header">
 				<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
@@ -155,13 +188,6 @@
 							<div class="controls controls-small">
 							  <input type="text" id="discriptionInput" name="description">
 							  <span class="help-inline"></span>
-							</div>
-						</div>
-						<div class="control-group">
-							<label for="tagsInput" class="control-label control-label-small">Tags</label>
-							<div class="controls controls-small">
-								<input type="text" id="tagsInput" name="scriptTags">
-								<span class="help-inline"></span>
 							</div>
 						</div>
 						<div class="control-group">
@@ -199,7 +225,7 @@
 				
 				$elem = $("#urlInput");
 				if (checkEmpty($elem)) {
-					showErrMsg($elem, "Descripition can't be empty.")
+					showErrMsg($elem, "URL can't be empty.");
 					return;
 				} else {
 					cleanErrMsg($elem);
@@ -213,21 +239,13 @@
 				if (checkSimpleNameByObj($elem)) {
 					cleanErrMsg($elem);
 				} else {
-					showErrMsg($elem, "Script name not correct.");
+					showErrMsg($elem, "Script name is not correct.");
 					return;
 				}
 				
 				$elem = $("#discriptionInput");
 				if (checkEmpty($elem)) {
-					showErrMsg($elem, "Descripition can't be empty.")
-					return;
-				} else {
-					cleanErrMsg($elem);
-				}
-				
-				$elem = $("#tagsInput");
-				if (checkEmpty($elem)) {
-					showErrMsg($elem, "Tags can't be empty.");
+					showErrMsg($elem, "Description can't be empty.")
 					return;
 				} else {
 					cleanErrMsg($elem);
@@ -242,6 +260,17 @@
 				}
 				
 				document.forms.uploadForm.submit();
+			});
+			
+			$("#createFolderBtn").on('click', function() {
+				var $elem = $("#folderNameInput");
+				if (checkSimpleNameByObj($elem)) {
+					cleanErrMsg($elem);
+				} else {
+					showErrMsg($elem, "Script name not correct.");
+					return;
+				}
+				document.forms.createFolderForm.submit();
 			});
 						
 			$("#deleteBtn").on('click', function() {
@@ -294,7 +323,7 @@
 			
 			$("i.script-remove").on('click', function() {
 				if (confirm("Do you want to delete this script file?")) {
-					document.location.href = "${req.getContextPath()}/script/delete?filesString=" + $(this).attr("sid");
+					document.location.href = "${req.getContextPath()}/script/delete/${currentPath}?filesString=" + $(this).attr("sid");
 				}
 			});
 			
@@ -304,20 +333,7 @@
 				document.forms.downloadForm.submit();
 			});
 
-			$("i.resource-remove").on('click', function() {
-				if (confirm("Do you want to delete this resource file?")) {
-					document.location.href = "${req.getContextPath()}/script/deleteResource?fileName=" + encodeURI($(this).attr("sname"));
-				}
-			});
-			
-			$("i.resource-download").on('click', function() {
-				var $elem = $(this);
-				$("#download_name").val($elem.attr("sname"));
-				document.forms.downloadForm.action = "${req.getContextPath()}/script/downloadResource";
-				document.forms.downloadForm.submit();
-			});
-						
-			<#if scriptList?has_content>
+			<#if files?has_content>
 			$("#scriptTable").dataTable({
 				"bAutoWidth": false,
 				"bFilter": false,
@@ -335,19 +351,6 @@
 			
 			$(".noClick").off('click');
 			
-			<#if libraries?has_content>
-			$("#resourceTable").dataTable({
-				"bFilter": false,
-				"bLengthChange": false,
-				"bInfo": false,
-				"bProcessing": true,
-				"aaSorting": [[0, "asc"]],
-				"aoColumns": [null, null, {"asSorting": []}, { "asSorting": []}],
-				"sScrollY": "200px",
-        		"bPaginate": false,
-       			"bScrollCollapse": true
-			});
-			</#if>
 		});
 		
 		function searchScriptList() {

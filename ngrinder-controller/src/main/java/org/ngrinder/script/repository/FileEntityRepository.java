@@ -157,7 +157,7 @@ public class FileEntityRepository {
 							}
 							script.setPath("/" + dirEntry.getRelativePath());
 							script.setFileName(dirEntry.getName());
-
+							
 							// script.setPath(path + "/" + dirEntry.getRelativePath());
 							script.setDescription(dirEntry.getCommitMessage());
 

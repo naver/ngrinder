@@ -22,26 +22,26 @@
 		<div class="row">
 			<div class="span12">
 				<form id="contentForm" method="post" target="_self">
-				<div class="well form-inline" style="padding:5px;margin:5px 0">
-					<label class="label" for="scriptNameInput">
-						Script Name
-					</label>
-					<input type="text" id="scriptNameInput" name="fileName" value="${(script.fileName)!}" readonly/>
-					<#if script.revisions?size != 0>
-					<div class="pull-right">
-						<label class="label" for="historySelect">
-							History
+					<div class="well form-inline" style="padding:5px;margin:5px 0">
+						<label class="label" for="scriptNameInput">
+							Script Name
 						</label>
-						<select id="historySelect" name="historyFileName">
-							<option value="0">History List</option>
-							<#list script.revisions as revision>
-							<option value="${revision}">${revision}</option>
-							</#list>
-						</select>
-						<a class="btn" href="javascript:void(0);" id="compareBtn">Compare</a>
+						<input type="text" id="scriptNameInput" name="fileName" value="${file.fileName!}" readonly/>
+						<#if file.revision!?size != 0>
+						<div class="pull-right">
+							<label class="label" for="historySelect">
+								History
+							</label>
+							<select id="historySelect" name="historyFileName">
+								<option value="0">History List</option>
+								<#list file.revisions as revision>
+								<option value="${revision}">${revision}</option>
+								</#list>
+							</select>
+							<a class="btn" href="javascript:void(0);" id="compareBtn">Compare</a>
+						</div>
+						</#if>
 					</div>
-					</#if>
-				</div>
 				</form>
 				
 			</div>
@@ -49,58 +49,31 @@
 				<tr>
 					<td>
 						<div id="script_1" style="width:100%">
-							<textarea id="display_content" name="content" style="height:550px;width:100%;">${(result.content)!}</textarea>
+							<textarea id="display_content" name="content" style="height:550px;width:100%;">${(file.content)!}</textarea>
 						</div>
 					</td>
+					<#if oldfile!> 
 					<td>
 						<div id="script_2" style="width:100%">
-							<textarea id="display_content_2" style="height:550px;width:100%;">${(result.historyContent)!}</textarea>
+							<textarea id="display_content_2" style="height:550px;width:100%;">${(oldfile!?content!)}</textarea>
 						</div>
 					</td>
+					</#if>
 			</table>
 			
-			<div class="well form-inline" style="padding:5px;margin:5px 0">
-				<table>
-					<tr>
-						<td widht="40px">
-							<label class="label" for="tagsInput">
-								Tags
-							</label>
-						</td>
-						<td>
-							<div id="script_1" style="width:100%">
-								<textarea id="display_content" name="content" style="height:550px;width:100%;">${script.content!}</textarea>
-							</div>
-						</td>
-						<td>
-							<div id="script_2" style="width:100%">
-								<textarea id="display_content_2" style="height:550px;width:100%;"></textarea>
-							</div>
-
-						</td>
-						<td>
-							<input type="text" id="descInput" name="description" style="min-width:500px" value="${(result.description)!}">
-						</td>
-					</tr>
-				</table>
-
-				
+			
 				<div class="well form-inline" style="padding:5px;margin:5px 0">
-					<label class="label" for="tagsInput">
-						Tags
-					</label>
-					<input type="text" id="tagsInput" name="tagStr" value="">&nbsp;&nbsp;
 					<label class="label" for="descInput">
 						Description
 					</label>
-					<input type="text" id="descInput" name="description" class="span6" style="width:600px" value="${(script.description)!}">
+					<input type="text" id="descInput" name="description" class="span6" style="width:600px" value="${(file.description)!}">
 				</div>
 				<a class="btn" href="javascript:void(0);" id="saveBtn">Save</a>
 				<a class="btn" href="javascript:void(0);" id="validateBtn">Validate Script</a>
 				<span class="help-inline" id="messageDiv"></span>
 				<div class="alert alert-info fade in" style="margin-top:5px;" id="autoSaveMsg"></div>
 				 <pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre"></pre>
-				</form>			
+						
 
 			</div>
 
@@ -108,9 +81,6 @@
 			<a class="btn" href="javascript:void(0);" id="validateBottomBtn">Validate Script</a>
 			<a class="btn listBtn" href="javascript:void(0);">Go back</a>
 
-			<span class="help-inline" id="messageDiv"></span>
-			<div class="alert alert-info fade in" style="margin-top:5px;" id="autoSaveMsgBottom"></div>
-			<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre"></pre>
 		</form>
 		<#include "../common/copyright.ftl">
 	</div>

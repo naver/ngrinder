@@ -68,4 +68,8 @@ public enum FileType {
 		return fileCategory;
 	}
 
+	public boolean isEditable() {
+		return fileCategory.isEditable();
+	}
+
 }

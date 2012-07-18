@@ -41,23 +41,31 @@
 
 
 <div class="modal fade" id="userProfileModal">
-			<div class="modal-header">
-				<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
-				<h3>Your Profile</h3>
-			</div>
-			<div class="modal-body" id="user_profile_modal">
-			
-			</div>
-			
+	<div class="modal-header">
+		<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
+		<h3>My Profile</h3>
+	</div>
+	<div class="modal-body" id="user_profile_modal">
+		
+	</div>	
 </div>
 <script type="text/javascript">
-	$(document).ready(function(){
+	
+	var myProfile = function(){
 			var url = "${req.getContextPath()}/profile";
 			$("#user_profile_id").on('click', function() {
 				$("#user_profile_modal").load(url, function(){
 					$('#userProfileModal').modal('show')
 				});
-				
 			});
-	});
+	};
+	if(document.loaded) {
+	    myProfile();
+	} else {
+	    if (window.addEventListener) {  
+	        window.addEventListener('load', myProfile, false);
+	    } else {
+	        window.attachEvent('onload', myProfile);
+	    }
+	}
 </script>

@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.ngrinder.common.controller.NGrinderBaseController;
-import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
@@ -40,7 +39,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.common.base.Predicate;
@@ -64,9 +62,33 @@ public class ScriptController extends NGrinderBaseController {
 		return "script/scriptList";
 	}
 
+	@RequestMapping(value = "/create/**", params = "type=folder", method = RequestMethod.POST)
+	public String addFolder(User user, @RemainedPath String path, @RequestParam String folderName, ModelMap model) { // "fileName"
+		try {
+			fileEntryService.addFolder(user, path, folderName);
+		} catch (Exception e) {
+			return "error/errors";
+		}
+		return "redirect:/script/list/" + path;
+	}
+
+	@RequestMapping(value = "/create/**", params = "type=script", method = RequestMethod.POST)
+	public String getCreateForm(User user, @RemainedPath String path, @RequestParam String language,
+			@RequestParam String testUrl, @RequestParam String fileName, ModelMap model) { // "fileName"
+		if (fileEntryService.hasFileEntry(user, path + "/" + fileName)) {
+			return "error/duplicated";
+		}
+
+		model.addAttribute("file", fileEntryService.prepareNewEntry(user, path, fileName, language, testUrl));
+		return "script/scriptEditor";
+	}
+
 	@RequestMapping("/detail/**")
 	public String getDetail(User user, @RemainedPath String path, ModelMap model) { // "fileName"
 		FileEntry script = fileEntryService.getFileEntry(user, path);
+		if (!script.getFileType().isEditable()) {
+			return "error/errors";
+		}
 		model.addAttribute("script", script);
 		return "script/scriptEditor";
 	}
@@ -81,7 +103,7 @@ public class ScriptController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = "/search/**")
-	public String searchFileEntity(User user, final @RequestParam(required=true) String query, ModelMap model) {
+	public String searchFileEntity(User user, final @RequestParam(required = true) String query, ModelMap model) {
 		Collection<FileEntry> searchResult = Collections2.filter(fileEntryService.getAllFileEntries(user),
 				new Predicate<FileEntry>() {
 					@Override
@@ -116,10 +138,4 @@ public class ScriptController extends NGrinderBaseController {
 		return "redirect:/script/list" + path;
 	}
 
-	@RequestMapping(value = "/autosave/**")
-	public @ResponseBody
-	String autosave(User user, @RemainedPath String path, @RequestParam String content) {
-		fileEntryService.autosave(user, path, content);
-		return JSONUtil.returnSuccess();
-	}
 }

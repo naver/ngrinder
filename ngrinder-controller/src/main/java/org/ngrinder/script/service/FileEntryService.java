@@ -26,22 +26,35 @@ import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
+import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.repository.FileEntityRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNRevision;
+
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 
 /**
  * File entry service class. This class is responsible for creating user repo whenever user is created and connection
@@ -119,6 +132,27 @@ public class FileEntryService {
 		return fileEntityRepository.findOne(user, path, SVNRevision.HEAD);
 	}
 
+	public boolean hasFileEntry(User user, String path) {
+		try {
+			fileEntityRepository.findOne(user, path, SVNRevision.HEAD);
+		} catch (NGrinderRuntimeException e) {
+			if (e.getCause() instanceof SVNException) {
+				if (((SVNException) e.getCause()).getErrorMessage().getErrorCode().equals(SVNErrorCode.FS_NOT_FOUND))
+					return false;
+			}
+			throw e;
+		}
+		return true;
+	}
+
+	public void addFolder(User user, String path, String folderName) {
+		FileEntry entry = new FileEntry();
+		entry.setFileName(folderName);
+		entry.setPath(path + "/" + folderName);
+		entry.setFileType(FileType.DIR);
+		fileEntityRepository.save(user, entry, null);
+	}
+
 	/**
 	 * Get file entity for the given revision.
 	 * 
@@ -165,8 +199,48 @@ public class FileEntryService {
 		fileEntityRepository.delete(user, fileList.toArray(new String[] {}));
 	}
 
-	public void autosave(User user, String path, String content) {
-		// Not yet implementated.
+	/**
+	 * Create new FileEntry.
+	 * 
+	 * @param user
+	 * @param path
+	 * @param fileName
+	 * @param langauge
+	 * @param url
+	 * @return
+	 */
+	public FileEntry prepareNewEntry(User user, String path, String fileName, String langauge, String url) {
+		FileEntry fileEntry = new FileEntry();
+		fileEntry.setPath(path + "/" + fileName);
+		fileEntry.setFileType(FileType.getFileType(langauge));
+		fileEntry.setContent(loadFreeMarkerTemplate(user, url));
+		return fileEntry;
 	}
 
+	/**
+	 * Load freemarker template for quick test.
+	 * 
+	 * @param user
+	 * @param url
+	 * @return
+	 */
+	public String loadFreeMarkerTemplate(User user, String url) {
+
+		try {
+			Configuration freemarkerConfig = new Configuration();
+			ClassPathResource cpr = new ClassPathResource("template");
+			freemarkerConfig.setDirectoryForTemplateLoading(cpr.getFile());
+			freemarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
+			Template template = freemarkerConfig.getTemplate("script_template.ftl");
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("url", url);
+			map.put("user", user);
+			StringWriter writer = new StringWriter();
+			template.process(map, writer);
+			return writer.toString();
+		} catch (Exception e) {
+			LOG.error("Error while fetching template for quick start", e);
+		}
+		return "";
+	}
 }
