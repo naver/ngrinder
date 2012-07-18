@@ -12,6 +12,7 @@
 	<packaging>war</packaging>
 	<properties>
 		<m2eclipse.wtp.contextRoot>/ngrinder-agent</m2eclipse.wtp.contextRoot>
+		<maven.test.skip>true</maven.test.skip>
 	</properties>
 	<dependencies>
 
@@ -56,6 +57,29 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>com.atlassian.maven.plugins</groupId>
+				<artifactId>maven-clover2-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<includesTestSourceRoots>true</includesTestSourceRoots>
+					<encoding>${source-encoding}</encoding>
+					<generateHtml>true</generateHtml>
+					<generateXml>true</generateXml>
+					<jdk>${jdk-version}</jdk>
+					<excludes>
+						<exclude>**/*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<configuration>
+					<encoding>${source-encoding}</encoding>
+					<excludes>**/*.java</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
 				<configuration>
@@ -84,4 +108,29 @@
 			</plugin>
 		</plugins>
 	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>com.atlassian.maven.plugins</groupId>
+				<artifactId>maven-clover2-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<includesTestSourceRoots>true</includesTestSourceRoots>
+					<encoding>${source-encoding}</encoding>
+					<jdk>${jdk-version}</jdk>
+					<excludes>
+						<exclude>**/*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<configuration>
+					<encoding>${source-encoding}</encoding>
+					<excludes>**/*.java</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>

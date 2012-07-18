@@ -70,7 +70,7 @@ public interface NGrinderConstants {
 	public static final String PLUGIN_PATH = "plugins";
 	public static final String SCRIPT_PATH = "script";
 	public static final String USER_REPO_PATH = "repos";
-	
+
 	// parameter constant, for parameter from page, and for key in map
 	public static final String PARAM_USERID = "userId";
 	public static final String PARAM_ROLE = "role";

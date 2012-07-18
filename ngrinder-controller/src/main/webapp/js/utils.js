@@ -368,3 +368,71 @@ function getCookie(objName){//get cookie value
 	
 	return "";
 }
+
+function enableChkboxSelectAll() {
+	$("td input").on("click", function() {
+		if($("td input").size() == $("td input:checked").size()) {
+				$("th input").attr("checked", "checked");
+		} else {
+			$("th input").removeAttr("checked");
+		}
+	});
+	
+	$("th input").on('click', function(event) {
+		if($(this)[0].checked) {
+			$("td input").each(function(){
+				$(this).attr("checked", "checked");
+			});
+		} else {
+			$("td input").each(function() {
+				$(this).removeAttr("checked");
+			});
+		}
+		
+		event.stopImmediatePropagation();
+	});
+}
+
+function removeClick() {
+	$(".noClick").off('click');
+}
+
+function showMsg(color, message) {
+	var $msgDiv = $('#messageDiv');
+	$msgDiv.addClass(color);
+	$msgDiv.html(message);
+	$msgDiv.fadeIn("fast");
+	setTimeout(function() {
+		$msgDiv.fadeOut('fast');
+		$msgDiv.html("");
+		$msgDiv.removeClass(color);
+	}, 3000);
+}
+
+function showSuccessMsg(message) {
+	showMsg("alert-success", message);
+}
+
+function showInformation(message) {
+	showMsg("alert-info", message);
+}
+
+function showErrorMsg(message) {
+	showMsg("alert-error", message);
+}
+
+$(document).ready(function() {
+	var $elem = $("#footDiv");
+	var i = $elem[0];
+	if (i) {
+		var ll = i.offsetTop;
+		while(i == i.offsetParent){
+			ll += i.offsetTop;
+			i = i.offsetParent;
+		}
+		
+		if (ll < 800) {
+			$elem.addClass("footDiv");
+		}	
+	}
+});

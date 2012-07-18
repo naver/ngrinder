@@ -23,24 +23,25 @@
 package org.ngrinder.user.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.model.JsonBean;
 import org.ngrinder.user.service.UserService;
-import org.ngrinder.user.util.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import com.google.common.primitives.Longs;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/user")
@@ -50,9 +51,18 @@ public class UserController extends NGrinderBaseController {
 	private UserService userService;
 
 	@RequestMapping("/list")
-	public String getUserList(ModelMap model, @RequestParam(required = false) String roleName) {
+	public String getUserList(ModelMap model,
+			@RequestParam(required = false) String roleName,
+			@RequestParam(required = false) String keywords) {
 
-		List<User> userList = userService.getAllUserByRole(roleName);
+		List<User> userList = null;
+		if (StringUtils.isEmpty(keywords)) {
+			userList = userService.getAllUserByRole(roleName);
+		}else{
+			userList = userService.getUserListByKeyWord(keywords);
+			model.put("keywords", keywords);
+		}
+		
 		Map<Role, List<User>> userMap = userService.getUserInGroupFromList();
 
 		List<JsonBean> jList = convertToUserGroupTree(userMap);
@@ -62,8 +72,15 @@ public class UserController extends NGrinderBaseController {
 		return "user/userList";
 	}
 
+	/**
+	 * Get user detail page.
+	 * 
+	 * @param model 
+	 * @param userId
+	 * @return view name
+	 */
 	@RequestMapping("/detail")
-	public String getUserDetail(ModelMap model, @RequestParam(required = false) String userId) {
+	public String getUserDetail(final ModelMap model, final @RequestParam(required = false) String userId) {
 
 		List<User> userList = userService.getAllUserByRole(null);
 		Map<Role, List<User>> userMap = userService.getUserInGroupFromList();
@@ -71,6 +88,9 @@ public class UserController extends NGrinderBaseController {
 		List<JsonBean> jList = convertToUserGroupTree(userMap);
 		model.addAttribute("userList", userList);
 		model.addAttribute("jsonStr", JSONUtil.toJson(jList));
+		
+		EnumSet<Role> roleSet = EnumSet.allOf(Role.class); 
+		model.addAttribute("roleSet", roleSet);
 
 		User user = userService.getUserById(userId);
 
@@ -111,11 +131,22 @@ public class UserController extends NGrinderBaseController {
 	}
 
 	@RequestMapping("/delete")
-	public String deleteUser(ModelMap model, @RequestParam String userId) {
-		List<String> list = new ArrayList<String>();
-		list.add(userId);
-		userService.deleteUsers(list);
+	public String deleteUser(ModelMap model, @RequestParam String userIds) {
+		String[] ids = userIds.split(",");
+		ArrayList<String> aListNumbers = new ArrayList<String>(Arrays.asList(ids));
+		userService.deleteUsers(aListNumbers);
 		return "redirect:/user/list";
 	}
+	
+	@RequestMapping("/checkUserId")
+	public @ResponseBody String checkUserId(ModelMap model, @RequestParam String userId) {
+		User user = userService.getUserById(userId);
+		if(user == null){
+			return JSONUtil.returnSuccess();
+		}else{
+			return JSONUtil.returnError();
+		}
+	}
+	
 
 }

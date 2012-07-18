@@ -34,6 +34,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -66,6 +67,16 @@ public class BaseEntity<M> implements Serializable {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
+	
+	/**
+	 * This function is used to check whether the entity id exist. It is not used to
+	 * check the entity existence in DB. It can be used to check the entity in controller,
+	 * which is passed from page. 
+	 * @return
+	 */
+	public boolean exist() {
+		return id != null && id.longValue() != 0;
+	}
 
 	/**
 	 * Merge source entity into current entity.
@@ -86,7 +97,12 @@ public class BaseEntity<M> implements Serializable {
 					// null
 					Object defaultValue = descriptor.getReadMethod().invoke(source);
 					if (defaultValue != null) {
-						descriptor.getWriteMethod().invoke(this, defaultValue);
+						if ((defaultValue instanceof String && StringUtils
+								.isNotBlank((String) defaultValue))
+								|| !(defaultValue instanceof String)) {
+							descriptor.getWriteMethod().invoke(this,
+									defaultValue);
+						}
 					}
 				}
 			}

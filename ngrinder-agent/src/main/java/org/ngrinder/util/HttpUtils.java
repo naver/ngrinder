@@ -9,8 +9,6 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpConnectionManagerParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,8 +119,7 @@ public class HttpUtils {
 	@SuppressWarnings("rawtypes")
 	public static Map getAsMap(String str) {
 		try {
-			JSONObject json = (JSONObject)JSONValue.parse(str);
-			return json;
+			return null;
 		} catch (Exception e) {
 			LOG.error(e.getMessage(), e);
 			return null;

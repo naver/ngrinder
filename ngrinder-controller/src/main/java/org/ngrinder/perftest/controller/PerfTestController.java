@@ -22,7 +22,12 @@
  */
 package org.ngrinder.perftest.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.service.PerfTestService;
@@ -35,6 +40,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/perftest")
@@ -49,40 +55,86 @@ public class PerfTestController extends NGrinderBaseController {
 	@Autowired
 	private FileEntryService fileEntiryService;
 
-	private static final int DEFAULT_TEST_PAGE_ZISE = 15;
+	// private static final int DEFAULT_TEST_PAGE_ZISE = 15;
 
 	@RequestMapping("/list")
-	public String getTestList(User user, ModelMap model, @RequestParam(required = false) String keywords,
-			@RequestParam(required = false) boolean isFinished, @RequestParam(required = false) PageRequest pageable) {
+	public String getTestList(User user, ModelMap model, @RequestParam(required = false) boolean isFinished,
+			@RequestParam(required = false) PageRequest pageable) {
 
-		if (pageable == null) {
-			pageable = new PageRequest(0, DEFAULT_TEST_PAGE_ZISE);
-		}
+		// not to paging on server side for now. Get all tests and paging/sorting in page.
+		// if (pageable == null) {
+		// pageable = new PageRequest(0, DEFAULT_TEST_PAGE_ZISE);
+		// }
 		Page<PerfTest> testList = perfTestService.getTestList(user, isFinished, pageable);
 		model.addAttribute("testListPage", testList);
 		return "perftest/list";
 	}
 
 	@RequestMapping("/detail")
-	public String getTestDetail(User user, ModelMap model, @RequestParam long testId) {
-		PerfTest test = perfTestService.getPerfTest(testId);
+	public String getTestDetail(User user, ModelMap model, @RequestParam(required = false) Long id) {
+		PerfTest test = null;
+		if (id != null) {
+			test = perfTestService.getPerfTest(id);
+		}
 		model.addAttribute("test", test);
-		model.addAttribute("scriptList", fileEntiryService.getFileEntries(user, ""));
-
+		model.addAttribute("scriptList", fileEntiryService.getAllFileEntries(user));
 		return "perftest/detail";
 	}
 
-	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String createTestt(ModelMap model, PerfTest test) {
+	@RequestMapping(value = "/create", method = RequestMethod.POST)
+	public String saveTest(User user, ModelMap model, PerfTest test) {
+		perfTestService.savePerfTest(test);
+
+		return getTestList(user, model, false, null);
+	}
+
+	@RequestMapping(value = "/clone", method = RequestMethod.POST)
+	public String cloneTest(ModelMap model, PerfTest test) {
+		test.setId(null);
 		perfTestService.savePerfTest(test);
 
 		return "perftest/list";
 	}
 
-	@RequestMapping(value = "/delete")
-	public String deleteTestt(ModelMap model, @RequestParam String ids) {
-
-		return "perftest/list";
+	/**
+	 * Calculate vuser assignment policy based on request vuser number.
+	 * 
+	 * @param model
+	 * @param newVuser
+	 * @return
+	 */
+	@RequestMapping(value = "/updateVuser")
+	public @ResponseBody
+	String updateVuser(ModelMap model, @RequestParam int newVuser) {
+		int threadCount = 2;
+		int processCount = newVuser / threadCount + newVuser % threadCount;
+		Map<String, Object> rtnMap = new HashMap<String, Object>(3);
+		rtnMap.put(JSON_SUCCESS, true);
+		rtnMap.put(PARAM_THREAD_COUNT, threadCount);
+		rtnMap.put(PARAM_PROCESS_COUNT, processCount);
+		return JSONUtil.toJson(rtnMap);
 	}
 
+	@RequestMapping(value = "/deleteTest")
+	public @ResponseBody
+	String deleteTest(ModelMap model, @RequestParam Long id) {
+		perfTestService.deletePerfTest(id);
+		return JSONUtil.returnSuccess();
+	}
+
+	@RequestMapping(value = "/deleteTests")
+	public @ResponseBody
+	String deleteTests(ModelMap model, @RequestParam String ids) {
+		String[] idList = StringUtils.split(ids, ",");
+		for (String idStr : idList) {
+			long id = Long.valueOf(idStr);
+			perfTestService.deletePerfTest(id);
+		}
+		return JSONUtil.returnSuccess();
+	}
+
+	@RequestMapping(value = "/report")
+	public String getReport(ModelMap model, @RequestParam long testId) {
+		return "perftest/report";
+	}
 }

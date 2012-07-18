@@ -29,9 +29,10 @@ import net.grinder.statistics.TestStatisticsMap;
 import net.grinder.util.ListenerSupport;
 
 /**
- * Collate test reports into samples and distribute to listeners. NHN Customized
- * version
+ * Collate test reports into samples and distribute to listeners.
  * <p>
+ * NHN Customized version
+ * 
  * When notifying listeners of changes to the number of tests we send copies of
  * the new index arrays. This helps because most listeners are Swing dispatched
  * and so can't guarantee the model is in a reasonable state when they call
@@ -39,6 +40,7 @@ import net.grinder.util.ListenerSupport;
  * </p>
  * 
  * @author JunHo Yoon
+ * @author Mavlarn
  * @since 3.0
  */
 public final class SampleModelImplementationEx implements SampleModel {

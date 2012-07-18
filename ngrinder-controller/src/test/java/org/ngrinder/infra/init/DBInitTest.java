@@ -29,7 +29,7 @@ public class DBInitTest extends org.ngrinder.AbstractNGNinderTransactionalTest {
 		List<User> users = userReoRepository.findAll();
 		
 		// Two users should be exist
-		assertThat(users.size(), is(2));
+		assertThat(users.size(), is(4));
 		assertThat(users.get(0).getUserId(), is("admin"));
 		assertThat(users.get(0).getPassword(), is("admin"));
 		assertThat(users.get(1).getUserId(), is("user"));

@@ -7,7 +7,7 @@ $(document).ready(function() {
 	
 	rampup($rampupCheckbox[0]);
 	
-	$("#initProcessInput, #initSleepTimeInput, #rampUpInput, #everyInput").on("change", function() {
+	$("#initProcesses, #initSleepTime, #processIncrement, #processIncrementInterval").on("change", function() {
 		updateChart();
 	});
     
@@ -23,24 +23,25 @@ function rampup(obj) {
 }
 
 function disableRampup() {
-	$('#initProcessInput').attr("disabled", "disabled");
-	$('#initSleepTimeInput').attr("disabled", "disabled");
-	$('#rampUpInput').attr("disabled", "disabled");
-	$('#everyInput').attr("disabled", "disabled");
+	$('#initProcesses').val($('#processes').val());
+	$('#initProcesses').attr("readonly", "readonly");
+	$('#initSleepTime').attr("readonly", "readonly");
+	$('#processIncrement').attr("readonly", "readonly");
+	$('#processIncrementInterval').attr("readonly", "readonly");
 }
 
 function enableRampup() {
-	$('#initProcessInput').removeAttr("disabled");
-	$('#initSleepTimeInput').removeAttr("disabled");
-	$('#rampUpInput').removeAttr("disabled");
-	$('#everyInput').removeAttr("disabled");
+	$('#initProcesses').removeAttr("readonly");
+	$('#initSleepTime').removeAttr("readonly");
+	$('#processIncrement').removeAttr("readonly");
+	$('#processIncrementInterval').removeAttr("readonly");
 }
 
 function updateChart(){
-	var $processes = $('#proText');
-	var $processInc = $('#rampUpInput');
-	var $initialProcesses = $('#initProcessInput');
-	var $internalTime = $('#everyInput');
+	var $processes = $('#processes');
+	var $processInc = $('#processIncrement');
+	var $initialProcesses = $('#initProcesses');
+	var $internalTime = $('#processIncrementInterval');
 	
     var processes = parseInt($processes.val(), 10); 
     var processInc = parseInt($processInc.val(), 10);  
@@ -76,7 +77,7 @@ function updateChart(){
     	steps = 1;
     }
     
-    var initialSleepTime = parseInt($('#initSleepTimeInput').val());
+    var initialSleepTime = parseInt($('#initSleepTime').val());
     var curX = initialSleepTime;
     var curY = initialProcesses;
     var seriesArray = [];

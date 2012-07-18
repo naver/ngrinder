@@ -73,6 +73,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/** ignoreSampleCount value, default to 0 */
 	private int ignoreSampleCount;
 
+	/** ignoreSampleCount value, default to 0, 0 means collect forever */
 	private int collectSampleCount;
 
 	/** the start time of this test */
@@ -99,6 +100,34 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private int runCount;
 
 	private int agentCount;
+
+	private int vuserPerAgent;
+	
+	private int processes;
+	
+	private int initProcesses;
+
+	private int initSleepTime;
+
+	private int processIncrement;
+
+	private int processIncrementInterval;
+	
+	private int threads;
+	
+	//followings are test result members
+    private int tests = 0;
+
+    private int errors = 0;
+
+    private double meanTestTime = 0;
+
+    private double testTimeStandardDeviation = 0;
+
+    private double tps = 0;
+
+    private double peakTps = 0;
+    
 
 	@Transient
 	private GrinderProperties grinderProperties;
@@ -227,12 +256,68 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.status = status;
 	}
 
-	public Integer getAgentCount() {
+	public int getAgentCount() {
 		return agentCount;
 	}
 
-	public void setAgentCount(Integer agentCount) {
+	public void setAgentCount(int agentCount) {
 		this.agentCount = agentCount;
+	}
+
+	public int getVuserPerAgent() {
+		return vuserPerAgent;
+	}
+
+	public void setVuserPerAgent(int vuserPerAgent) {
+		this.vuserPerAgent = vuserPerAgent;
+	}
+
+	public int getProcesses() {
+		return processes;
+	}
+
+	public void setProcesses(int processes) {
+		this.processes = processes;
+	}
+
+	public int getInitProcesses() {
+		return initProcesses;
+	}
+
+	public void setInitProcesses(int initProcesses) {
+		this.initProcesses = initProcesses;
+	}
+
+	public int getInitSleepTime() {
+		return initSleepTime;
+	}
+
+	public void setInitSleepTime(int initSleepTime) {
+		this.initSleepTime = initSleepTime;
+	}
+
+	public int getProcessIncrement() {
+		return processIncrement;
+	}
+
+	public void setProcessIncrement(int processIncrement) {
+		this.processIncrement = processIncrement;
+	}
+
+	public int getProcessIncrementInterval() {
+		return processIncrementInterval;
+	}
+
+	public void setProcessIncrementInterval(int processIncrementInterval) {
+		this.processIncrementInterval = processIncrementInterval;
+	}
+
+	public int getThreads() {
+		return threads;
+	}
+
+	public void setThreads(int threads) {
+		this.threads = threads;
 	}
 
 	public static Specification<PerfTest> statusSetEqual(final Status... statuses) {
@@ -251,6 +336,54 @@ public class PerfTest extends BaseModel<PerfTest> {
 				return cb.equal(root.get("createdUser"), user);
 			}
 		};
+	}
+
+	public int getTests() {
+		return tests;
+	}
+
+	public void setTests(int tests) {
+		this.tests = tests;
+	}
+
+	public int getErrors() {
+		return errors;
+	}
+
+	public void setErrors(int errors) {
+		this.errors = errors;
+	}
+
+	public Double getMeanTestTime() {
+		return meanTestTime;
+	}
+
+	public void setMeanTestTime(Double meanTestTime) {
+		this.meanTestTime = meanTestTime;
+	}
+
+	public Double getTestTimeStandardDeviation() {
+		return testTimeStandardDeviation;
+	}
+
+	public void setTestTimeStandardDeviation(Double testTimeStandardDeviation) {
+		this.testTimeStandardDeviation = testTimeStandardDeviation;
+	}
+
+	public Double getTps() {
+		return tps;
+	}
+
+	public void setTps(Double tps) {
+		this.tps = tps;
+	}
+
+	public Double getPeakTps() {
+		return peakTps;
+	}
+
+	public void setPeakTps(Double peakTps) {
+		this.peakTps = peakTps;
 	}
 
 	public String toString() {

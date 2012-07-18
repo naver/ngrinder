@@ -81,6 +81,13 @@ public class TestServiceTest extends AbstractNGNinderTransactionalTest {
 		assertThat(testList.getContent().size(), is(2));
 		testList = testService.getTestList(getTestUser(), true, pageable);
 		assertThat(testList.getContent().size(), is(1));
+
+		//test with no paging
+		testList = testService.getTestList(getTestUser(), false, null);
+		assertThat(testList.getContent().size(), is(2));
+		testList = testService.getTestList(getTestUser(), true, null);
+		assertThat(testList.getContent().size(), is(1));
+		
 	}
 	
 }

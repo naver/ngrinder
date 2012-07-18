@@ -28,22 +28,60 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.message.console.AgentControllerState;
 
+/**
+ * AgentProcessControl interface.
+ * 
+ * This class is core of handling agent action.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ * 
+ */
 public interface AgentProcessControl {
 
 	/**
 	 * Signal the worker processes to start.
 	 * 
+	 * @param agents
+	 *            agent list to be started.
 	 * @param properties
 	 *            Properties that override the agent's local properties.
+	 * 
 	 */
-	public abstract void startAgent(Set<AgentIdentity> agents, GrinderProperties properties);
+	public void startAgent(Set<AgentIdentity> agents, GrinderProperties properties);
 
-	public abstract void stopAgent(AgentIdentity agentIdentity);
+	/**
+	 * Stop agent.
+	 * 
+	 * @param agentIdentity
+	 *            agent to be stopped
+	 * 
+	 */
+	public void stopAgent(AgentIdentity agentIdentity);
 
-	public abstract int getNumberOfLiveAgents();
+	/**
+	 * Get the number of agents.
+	 * 
+	 * @return avalable agent's count
+	 */
+	public int getNumberOfLiveAgents();
 
-	public abstract Set<AgentIdentity> getAgents(AgentControllerState state, int count);
+	/**
+	 * Get the agents for given state and count.
+	 * 
+	 * @param state
+	 *            current state of agent
+	 * @param count
+	 *            the count of agent to be get
+	 * @return agent list
+	 */
+	public Set<AgentIdentity> getAgents(AgentControllerState state, int count);
 
-	public abstract Set<AgentIdentity> getAllAgents();
+	/**
+	 * Get the all available agents.
+	 * 
+	 * @return agent list
+	 */
+	public Set<AgentIdentity> getAllAgents();
 
 }

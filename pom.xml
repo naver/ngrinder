@@ -123,13 +123,6 @@
 			<version>${spring.version}</version>
 		</dependency>
 
-
-		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-			<version>1.1</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
@@ -155,8 +148,30 @@
 		</dependency>
 
 	</dependencies>
-
-
+	<profiles>
+		<profile>
+			<id>klocwork</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.klocwork.ps</groupId>
+						<artifactId>kwmaven</artifactId>
+						<configuration>
+							<buildspec_filename>${KWINJECT_OUT_PATH}</buildspec_filename>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>validate</phase>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<build>
 		<plugins>
 			<plugin>
@@ -171,6 +186,27 @@
 					<source>${jdk-version}</source>
 					<target>${jdk-version}</target>
 					<encoding>${source-encoding}</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.atlassian.maven.plugins</groupId>
+				<artifactId>maven-clover2-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<includesTestSourceRoots>true</includesTestSourceRoots>
+					<encoding>${source-encoding}</encoding>
+					<generateHtml>true</generateHtml>
+					<generateXml>true</generateXml>
+					<jdk>${jdk-version}</jdk>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<configuration>
+					<encoding>${source-encoding}</encoding>
+					<configLocation>checkstyle.xml</configLocation>
+					<excludes>**/test/java/**/*.java</excludes>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -208,4 +244,26 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>com.atlassian.maven.plugins</groupId>
+				<artifactId>maven-clover2-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<includesTestSourceRoots>true</includesTestSourceRoots>
+					<encoding>${source-encoding}</encoding>
+					<jdk>${jdk-version}</jdk>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<configuration>
+					<encoding>${source-encoding}</encoding>
+					<excludes>**/test/java/**/*.java</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>

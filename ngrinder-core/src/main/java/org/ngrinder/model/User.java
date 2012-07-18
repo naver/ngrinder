@@ -35,20 +35,16 @@ import javax.persistence.Transient;
  * @author Mavlarn
  * @since 3.0
  */
-@SuppressWarnings("serial")
 @Entity
 @Table(name = "NUSER")
 public class User extends BaseModel<User> {
 
-	/**
-	 * User Id
-	 */
+	private static final long serialVersionUID = 7398072895183814285L;
+
+
 	@Column(unique = true, nullable = false)
 	private String userId;
 
-	/**
-	 * User Name e.g) Jone Dogh.
-	 */
 	private String userName;
 
 	private String password;
@@ -59,7 +55,7 @@ public class User extends BaseModel<User> {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "role_name", nullable = false)
-	private Role role = Role.USER;
+	private Role role ;
 
 	private String description;
 
@@ -85,6 +81,36 @@ public class User extends BaseModel<User> {
 		this.password = password;
 		this.userName = name;
 		isEnabled();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((userId == null) ? 0 : userId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		User other = (User) obj;
+		if (userId == null) {
+			if (other.userId != null) {
+				return false;
+			}
+		} else if (!userId.equals(other.userId)) {
+			return false;
+		}
+		return true;
 	}
 
 	public String getMobilePhone() {

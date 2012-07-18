@@ -16,64 +16,62 @@ import org.ngrinder.util.HudsonPluginConfig;
 import org.ngrinder.util.ReflectionUtil;
 import org.slf4j.Logger;
 
-
-
-
 public final class AgentDaemon implements Agent {
 
-  private final Logger m_logger;
-  private final long m_sleepTime;
-  private final Agent m_delegateAgent;
-  private final Sleeper m_sleeper;
-  private final Thread m_shutdownHook;
-  
-  private volatile boolean shutdown;
-  private Semaphore sem = new Semaphore(1);
+	private final Logger m_logger;
+	private final long m_sleepTime;
+	private final Agent m_delegateAgent;
+	private final Sleeper m_sleeper;
+	private final Thread m_shutdownHook;
 
-  /**
-   * Constructor for AgentDaemon.
-   *
-   * @param logger A Logger.
-   * @param sleepTime Time in milliseconds between connection attempts.
-   * @param agent Delegate Agent that we want to run.
-   */
-  public AgentDaemon(Logger logger, long sleepTime,  Agent agent) {
-    this(logger,
-         sleepTime,
-         agent,
-         new SleeperImplementation(new StandardTimeAuthority(), logger, 1, 0));
-  }
+	private volatile boolean shutdown;
+	private Semaphore sem = new Semaphore(1);
 
-  /**
-   * Package scope for unit tests.
-   */
-  AgentDaemon(Logger logger, long sleepTime, Agent agent, Sleeper sleeper) {
-    m_logger = logger;
-    m_delegateAgent = agent;
-    m_sleepTime = sleepTime;
-    m_sleeper = sleeper;
-    m_shutdownHook = new Thread(new ShutdownHook());
-    
-    shutdown = false;
-  }
-  
-  /**
-   * waiting for the agentImplementation thread to stop.
-   */
-  public void waitForStop() {
-	  try {
-		sem.acquire();
-		sem.release();
-	} catch (InterruptedException e) {
-		e.printStackTrace();
+	/**
+	 * Constructor for AgentDaemon.
+	 * 
+	 * @param logger
+	 *            A Logger.
+	 * @param sleepTime
+	 *            Time in milliseconds between connection attempts.
+	 * @param agent
+	 *            Delegate Agent that we want to run.
+	 */
+	public AgentDaemon(Logger logger, long sleepTime, Agent agent) {
+		this(logger, sleepTime, agent, new SleeperImplementation(new StandardTimeAuthority(), logger, 1, 0));
 	}
-  }
 
-  /**
-   * Start the agent.
-   *
-   * @throws GrinderException If an error occurs.
-   */
+	/**
+	 * Package scope for unit tests.
+	 */
+	AgentDaemon(Logger logger, long sleepTime, Agent agent, Sleeper sleeper) {
+		m_logger = logger;
+		m_delegateAgent = agent;
+		m_sleepTime = sleepTime;
+		m_sleeper = sleeper;
+		m_shutdownHook = new Thread(new ShutdownHook());
+
+		shutdown = false;
+	}
+
+	/**
+	 * waiting for the agentImplementation thread to stop.
+	 */
+	public void waitForStop() {
+		try {
+			sem.acquire();
+			sem.release();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Start the agent.
+	 * 
+	 * @throws GrinderException
+	 *             If an error occurs.
+	 */
 	public void run() throws GrinderException {
 
 		Runtime.getRuntime().addShutdownHook(m_shutdownHook);
@@ -83,16 +81,14 @@ public final class AgentDaemon implements Agent {
 				sem.acquire();
 				try {
 					m_delegateAgent.run();
-	
-					// reset m_alternateFile in AgentImplementation, to avoid it use
-					// previous properties file to run
-					URL url = GrinderWrapper.class
-							.getResource("/grinder.properties");
-					ReflectionUtil.setFieldValue(m_delegateAgent,
-							"m_alternateFile", new File(url.toURI()));
-	
-					// reset hudson config, otherwise, the agent will send the log
-					// to hudson always
+
+					// reset m_alternateFile in AgentImplementation, to avoid it
+					// use previous properties file to run
+					URL url = GrinderWrapper.class.getResource("/grinder.properties");
+					ReflectionUtil.setFieldValue(m_delegateAgent, "m_alternateFile", new File(url.toURI()));
+
+					// reset hudson config, otherwise, the agent will send the
+					// log to hudson always
 					HudsonPluginConfig.setHudsonHost(null);
 					HudsonPluginConfig.setHudsonPort(0);
 					HudsonPluginConfig.setNeedToHudson(false);
@@ -115,27 +111,27 @@ public final class AgentDaemon implements Agent {
 		}
 	}
 
-  /**
-   * Shut down the agent.
-   */
+	/**
+	 * Shut down the agent.
+	 */
 	public void shutdown() {
 		shutdown = true;
 		m_sleeper.shutdown();
 		m_delegateAgent.shutdown();
 	}
 
-  /**
-   * For unit tests.
-   *
-   * @return The shutdown hook.
-   */
-  Thread getShutdownHook() {
-    return m_shutdownHook;
-  }
+	/**
+	 * For unit tests.
+	 * 
+	 * @return The shutdown hook.
+	 */
+	Thread getShutdownHook() {
+		return m_shutdownHook;
+	}
 
-  private class ShutdownHook implements Runnable {
-    public void run() {
-      shutdown();
-    }
-  }
+	private class ShutdownHook implements Runnable {
+		public void run() {
+			shutdown();
+		}
+	}
 }

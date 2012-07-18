@@ -27,18 +27,46 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 /**
- * agent service
+ * agent service.
  * 
  * @author Tobi
  * @since 3.0
  */
 public interface AgentService {
 
+	/**
+	 * Get agents.
+	 * 
+	 * @param searchStr
+	 *            search keyword
+	 * @param pageable
+	 *            page
+	 * @return agent list
+	 */
 	Page<Agent> getAgents(String searchStr, Pageable pageable);
 
+	/**
+	 * Get a agent on given id.
+	 * 
+	 * @param id
+	 *            agent id
+	 * @return agent
+	 */
 	Agent getAgent(long id);
 
+	/**
+	 * Save agent.
+	 * 
+	 * @param agent
+	 *            saved agent
+	 */
 	void saveAgent(Agent agent);
 
+	/**
+	 * Delete agent.
+	 * 
+	 * @param id
+	 *            agent id to be deleted
+	 */
 	void deleteAgent(long id);
 }

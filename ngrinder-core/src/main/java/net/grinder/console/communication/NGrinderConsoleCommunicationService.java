@@ -32,16 +32,22 @@ import net.grinder.console.communication.ProcessStatusImplementation.AgentAndWor
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
- * This class is used to get worker and thread information from grinder. We add it in this package Because some class
- * like AgentAndWorkers can only be accessed within same package.
+ * This class is used to get worker and thread information from grinder. We add
+ * it in this package Because some class like AgentAndWorkers can only be
+ * accessed within same package.
  * 
  * @author Mavlarn
  * 
  */
-public class NGrinderConsoleCommunicationService {
+public final class NGrinderConsoleCommunicationService {
+
+	/** Constructor. */
+	private NGrinderConsoleCommunicationService() {
+
+	}
 
 	/**
-	 * Get number of running worker processes and threads
+	 * Get number of running worker processes and threads.
 	 * 
 	 * @param processControl
 	 *            - The process control of Grinder
@@ -70,6 +76,13 @@ public class NGrinderConsoleCommunicationService {
 		result.put(GrinderConstants.P_THREAD, threadNumber);
 	}
 
+	/**
+	 * Retrieve current live agents from {@link ProcessControl}.
+	 * 
+	 * @param processControl
+	 *            processControl instance from which the data will be retrieved.
+	 * @return available agent map
+	 */
 	@SuppressWarnings("unchecked")
 	public static Map<ProcessIdentity, AgentAndWorkers> getLiveAgents(ProcessControl processControl) {
 		ProcessStatusImplementation processStatusSet = (ProcessStatusImplementation) ReflectionTestUtils.getField(

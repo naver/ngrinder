@@ -32,7 +32,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
- * agent service
+ * agent service.
  * 
  * @author Tobi
  * @since 3.0
@@ -42,7 +42,6 @@ public class AgentServiceImpl implements AgentService {
 
 	@Autowired
 	private AgentRepository agentRepository;
-
 
 	@Override
 	public Page<Agent> getAgents(String searchStr, Pageable pageable) {

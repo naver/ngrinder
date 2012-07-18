@@ -22,18 +22,22 @@
  */
 package net.grinder.communication;
 
-public class AgentControllerCommunicationDefauts {
-	private AgentControllerCommunicationDefauts() {
-	}
+/**
+ * Default constant value for agent controller.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
+public abstract class AgentControllerCommunicationDefauts {
 
 	/** Default console host. Bind to all interfaces by default. */
 	public static final String DEFAULT_AGENT_CONTROLLER_SERVER_HOST = "";
 
 	/** Default console port. */
-	public static final int DEFAULT_AGENT_CONTROLLER_SERVER_PORT = 6370;
+	public static final int DEFAULT_AGENT_CONTROLLER_SERVER_PORT = 7001;
 
 	/** Minimum value for ports. */
-	public static final int MIN_PORT = 1;
+	public static final int MIN_PORT = 7000;
 
 	/** Maximum value for ports. */
 	public static final int MAX_PORT = 0xFFFF;

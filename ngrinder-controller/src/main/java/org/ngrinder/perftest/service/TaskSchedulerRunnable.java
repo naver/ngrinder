@@ -22,7 +22,6 @@
  */
 package org.ngrinder.perftest.service;
 
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -30,10 +29,10 @@ import net.grinder.SingleConsole;
 
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
-import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,12 +44,12 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component
 @Transactional
-public class TaskSchedulerRunnable implements Runnable {
+public class TaskSchedulerRunnable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(TaskSchedulerRunnable.class);
 
 	@Autowired
-	private PerfTestRepository performanceTestRepository;
+	private PerfTestService perfTestService;
 
 	@Autowired
 	private ConsoleManager consoleManager;
@@ -58,15 +57,13 @@ public class TaskSchedulerRunnable implements Runnable {
 	@Autowired
 	private AgentManager agentManager;
 
-	@Override
+	@Scheduled(fixedDelay = 5000)
 	public void run() {
-		List<PerfTest> runnablePerformanceTests = getRunnablePerformanceTests();
-		if (runnablePerformanceTests.isEmpty()) {
+		PerfTest runCandidate = perfTestService.getPerfTestCandiate();
+		if (runCandidate == null) {
 			return;
 		}
-		PerfTest performanceTest = runnablePerformanceTests.get(0);
-
-		doTest(performanceTest);
+		doTest(runCandidate);
 	}
 
 	public void doTest(PerfTest perfTest) {
@@ -76,7 +73,7 @@ public class TaskSchedulerRunnable implements Runnable {
 		}
 		singleConsole.start();
 		perfTest.setStatus(Status.WAITING_AGENT);
-		performanceTestRepository.save(perfTest);
+		perfTestService.savePerfTest(perfTest);
 
 		BlockingQueue<AgentWrapper> agentQueues = agentManager
 				.getAgentWrappers(singleConsole, perfTest.getAgentCount());
@@ -87,20 +84,14 @@ public class TaskSchedulerRunnable implements Runnable {
 				AgentWrapper agentWrapper = agentQueues.poll(1000, TimeUnit.MILLISECONDS);
 				agentWrapper.distributeFiles();
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				LOG.error("error occurs while distributing files", e);
 			}
 			if (perfTest.getAgentCount() == i)
 				break;
 		}
 
 		perfTest.setStatus(Status.TESTING);
-		performanceTestRepository.save(perfTest);
+		perfTestService.savePerfTest(perfTest);
 
 	}
-
-	@Transactional
-	List<PerfTest> getRunnablePerformanceTests() {
-		return this.performanceTestRepository.findAllByStatusOrderByCreatedDateAsc(Status.READY);
-	}
-
 }

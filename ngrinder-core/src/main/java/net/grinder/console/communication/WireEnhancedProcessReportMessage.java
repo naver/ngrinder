@@ -28,7 +28,22 @@ import net.grinder.communication.MessageDispatchRegistry.AbstractHandler;
 import net.grinder.message.console.AgentProcessPeformanceReportMessage;
 import net.grinder.util.ReflectionUtil;
 
+/**
+ * Wire ProcessReportMessage from agent to {@link ProcessControl} instance.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
 public class WireEnhancedProcessReportMessage {
+	/**
+	 * Constructor.
+	 * 
+	 * @param communication
+	 *            {@link ConsoleCommunication} instance from which messages come
+	 * @param processControl
+	 *            {@link ProcessControl} instance to which the agent status is
+	 *            updated
+	 */
 	public WireEnhancedProcessReportMessage(ConsoleCommunication communication, ProcessControl processControl) {
 
 		final MessageDispatchRegistry messageDispatch = communication.getMessageDispatchRegistry();
@@ -38,7 +53,6 @@ public class WireEnhancedProcessReportMessage {
 				new AbstractHandler<AgentProcessPeformanceReportMessage>() {
 					public void handle(AgentProcessPeformanceReportMessage message) throws CommunicationException {
 						m_processStatusSet.addAgentStatusReport(message);
-						System.out.println(message.getPerformance().getCpu());
 					}
 				});
 	}

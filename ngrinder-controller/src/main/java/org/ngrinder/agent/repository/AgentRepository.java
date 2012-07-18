@@ -30,13 +30,22 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 /**
- * agent repository
+ * agent repository.
  * 
  * @author Tobi
  * @since 3.0
  */
 public interface AgentRepository extends JpaRepository<Agent, Long> {
 
+	/**
+	 * Query agent based on region.
+	 * 
+	 * @param searchStr
+	 *            search keyword
+	 * @param pageable
+	 *            page
+	 * @return matching agents
+	 */
 	@Query("select a from Agent a where a.ip like :searchStr or a.region like :searchStr")
 	Page<Agent> getAgents(@Param("searchStr") String searchStr, Pageable pageable);
 }

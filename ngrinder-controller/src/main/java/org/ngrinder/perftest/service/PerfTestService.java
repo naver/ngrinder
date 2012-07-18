@@ -27,6 +27,8 @@ import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -52,11 +54,22 @@ public class PerfTestService {
 		}
 	}
 
+	@CacheEvict(value = "perfTest", allEntries = true)
 	public PerfTest savePerfTest(PerfTest test) {
 		return perfTestRepository.save(test);
 	}
 
+	@Cacheable(value = "perfTest")
 	public PerfTest getPerfTest(long testId) {
 		return perfTestRepository.findOne(testId);
+	}
+
+	@Cacheable(value = "perfTest")
+	public PerfTest getPerfTestCandiate() {
+		return perfTestRepository.findOneByStatusOrderByCreatedDateAsc(Status.READY);
+	}
+
+	public void deletePerfTest(long id) {
+		perfTestRepository.delete(id);
 	}
 }
