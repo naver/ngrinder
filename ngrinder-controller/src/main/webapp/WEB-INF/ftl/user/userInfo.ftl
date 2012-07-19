@@ -87,7 +87,7 @@
 	
 </script>
 <form action="${req.getContextPath()}/user/save"
-	class="form-horizontal form-horizontal-2" id="registerUserForm" method="POST">
+	class="form-horizontal form-horizontal-left" id="registerUserForm" method="POST">
 	<fieldset>
 		
 		
@@ -157,40 +157,36 @@
 		</div>
 		
   		<div class="control-group">
-		
               <div class="accordion-heading"> 
-                <a class="accordion-toggle" data-toggle="collapse" href="#user_password_head" id="user_pw_head"> 
+                <a class="accordion-toggle" data-toggle="collapse" href="#user_password_head" id="user_pw_head" style="padding: 8px 0"> 
                   User Password
                 </a> 
               </div> 
               
               <div id="user_password_head" class="accordion-body collapse"> 
-	              <div class="accordion-inner"> 
-	            			 
-	            			<div class="control-group" >
-									<label class="control-label">Password</label>
-									<div class="controls">
-										<input type="password" class="span4" id="password"  minlength="4"
-											name="password" rel="popover" value="${(user.psw)!}"
-											data-content="4 characters or more! Be tricky"
-											data-original-title="Password">
-									</div>
-							</div>
-							
-							<div class="control-group" >
-									<label class="control-label">Confirm Password</label>
-									<div class="controls">
-										<input type="password" class="span4" id="cpwd" 
-											name="cpwd" rel="popover" value="${(user.psw)!}"
-											data-content="Re-enter your password for confirmation."
-											data-original-title="Re-Password">
-									</div>
-							</div>
-	            			 
+	              <div class="accordion-inner" style="padding:9px 0"> 
+            			<div class="control-group" >
+								<label class="control-label">Password</label>
+								<div class="controls">
+									<input type="password" class="span4" id="password"  minlength="4"
+										name="password" rel="popover" value="${(user.psw)!}"
+										data-content="4 characters or more! Be tricky"
+										data-original-title="Password">
+								</div>
+						</div>
+						
+						<div class="control-group" >
+								<label class="control-label">Confirm Password</label>
+								<div class="controls">
+									<input type="password" class="span4" id="cpwd" 
+										name="cpwd" rel="popover" value="${(user.psw)!}"
+										data-content="Re-enter your password for confirmation."
+										data-original-title="Re-Password">
+								</div>
+						</div>
 	              </div> 
 		 	  </div>
-		
-
+		</div>
 		<div class="control-group">
 			<label class="control-label">
 				<button type="submit" class="btn btn-success" rel="tooltip">Save User</button>

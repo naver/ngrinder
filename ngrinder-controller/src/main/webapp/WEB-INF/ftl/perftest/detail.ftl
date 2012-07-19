@@ -2,7 +2,7 @@
 <html>
 <head>
 <title>nGrinder Performance Test Detail</title>
-<#include "../common/common/ftl">
+<#include "../common/common.ftl">
 <style>
 div.div-host {
 	border: 1px solid #D6D6D6;
@@ -107,7 +107,7 @@ div.div-host .host {
 												</div>
 											</div>
 											<div class="control-group">
-												<label for="vuserPerAgent" class="control-label">Vuser on every agent</label>
+												<label for="vuserPerAgent" class="control-label">Vuser per agent</label>
 												<div class="controls">
 													<div class="input-append">
 														<input type="text" class="input"
@@ -192,7 +192,7 @@ div.div-host .host {
 									<div class="page-header">
 										<label class="checkbox" style="margin-bottom: 0">
 											<input type="checkbox" id="rampupCheckbox" <#if test?? && test.processes &gt; test.initProcesses>checked</#if> />
-											<h4>Enable Ramp-Up</h4>(ramp-up chart for every agent)
+											<h4>Enable Ramp-Up <small>(ramp-up chart for every agent)</small></h4>
 										</label>
 									</div>
 									<table>
@@ -250,10 +250,10 @@ div.div-host .host {
 											</td>
 										</tr>
 									</table>
-									<div id="rampChart1" style="width: 460px; height: 315px;">
+									<div id="rampChart1" style="width: 460px; height: 355px;">
 									</div>
 									<div id="rampChart2"
-										style="width: 460px; height: 315px; display: none"></div>
+										style="width: 460px; height: 355px; display: none"></div>
 								</div>
 							</div>
 						</div>
@@ -368,6 +368,7 @@ div.div-host .host {
 					$(".div-host").empty();
 					$(".div-host").append(elemStr);
 					$("#addHostModal").modal("hide");
+					$("#addHostModal small").removeClass("errorColor");
 				});
 				
 				$("i.icon-remove-circle").live('click', function() {

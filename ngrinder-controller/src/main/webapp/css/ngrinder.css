@@ -62,6 +62,10 @@ body {
 	color: #6DAFCF;
 }
 
+.form-horizontal-left .control-label {
+	text-align: left;
+}
+
 .form-horizontal-modal .controls {
 	margin-left: 110px;
 }
