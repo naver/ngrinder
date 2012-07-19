@@ -26,13 +26,13 @@ import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
@@ -54,7 +54,6 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
-import freemarker.template.TemplateException;
 
 /**
  * File entry service class. This class is responsible for creating user repo whenever user is created and connection
@@ -242,5 +241,14 @@ public class FileEntryService {
 			LOG.error("Error while fetching template for quick start", e);
 		}
 		return "";
+	}
+
+	public String getSvnUrl(User user, String path) {
+		StringBuilder url = new StringBuilder( config.getSystemProperties().getProperty("http.url", "http://localhost"));
+		url.append("/svn/").append(user.getUserId());
+		if (StringUtils.isNotEmpty(path)) {
+			url.append(path.trim());
+		}
+		return url.toString();
 	}
 }

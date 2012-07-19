@@ -21,6 +21,12 @@
 	<body>
     <#include "../common/navigator.ftl">
 	<div class="container">
+		<#if svnUrl?has_content>
+			<div class="well form-inline searchBar">
+				svn URL : ${svnUrl}
+			</div>
+		</#if>
+
 		<div class="row">
 			<div class="span12">
 				<a class="btn" href="#createScriptModal" id="createBtn" data-toggle="modal">
