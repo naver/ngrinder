@@ -137,7 +137,7 @@
 					if (confirm("Do you want to delete this test?")) {
 						var delUrl = "${req.getContextPath()}/perftest/deleteTest?id=" + $(this).attr("sid");
 						deleteTests(delUrl);
-						oTable.fnDeleteRow($(this).parent().parent().parent().get());
+						oTable.fnDeleteRow($(this).parents('tr')[0]);
 					}
 				});
 				
