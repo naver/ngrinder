@@ -1,15 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
 <title>nGrinder Performance Test Detail</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="nGrinder Performance Test Detail">
-<meta name="author" content="AlexQin">
-
-<link rel="shortcut icon" href="favicon.ico" />
-<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-<link href="${req.getContextPath()}/css/ngrinder.css" rel="stylesheet">
+<#include "../common/common/ftl">
 <style>
 div.div-host {
 	border: 1px solid #D6D6D6;
@@ -108,7 +101,7 @@ div.div-host .host {
 												<label for="agentCount" class="control-label">Agent</label>
 												<div class="controls">
 													<div class="input-append">
-														<input type="text" class="input input-small"
+														<input type="text" class="input"
 															id="agentCount" name="agentCount" value="${(test.agentCount)!}">
 													</div>
 												</div>
@@ -117,7 +110,7 @@ div.div-host .host {
 												<label for="vuserPerAgent" class="control-label">Vuser on every agent</label>
 												<div class="controls">
 													<div class="input-append">
-														<input type="text" class="input input-small"
+														<input type="text" class="input"
 															id="vuserPerAgent" name="vuserPerAgent" value="${(test.vuserPerAgent)!}">
 													</div>
 													<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
@@ -145,16 +138,8 @@ div.div-host .host {
 											<div class="control-group">
 												<label class="control-label">Target Host</label>
 												<div class="controls">
-													<div class="div-host">
-														<p class="host">
-															1.1.1.1 <a href=""><i class="icon-remove-circle"></i></a>
-														</p>
-														<p class="host">
-															111.111.111.111-aaa.com <a href=""><i
-																class="icon-remove-circle"></i></a>
-														</p>
-													</div>
-													<button class="btn pull-right btn-mini">Add</button>
+													<div class="div-host"></div>
+													<a class="btn pull-right btn-mini" data-toggle="modal" href="#addHostModal">Add</a>
 												</div>
 											</div>
 											<hr>
@@ -177,7 +162,7 @@ div.div-host .host {
 													type="radio" id="runcountChkbox"> Run Count
 												</label>
 												<div class="controls">
-													<input type="text" class="input input-small" id="runCount"
+													<input type="text" class="input" id="runCount"
 														name="runCount" value="${(test.runCount)!0}">
 												</div>
 											</div>
@@ -185,7 +170,7 @@ div.div-host .host {
 												<label for="ignoreSampleCount" class="control-label">
 													Ignore Count </label>
 												<div class="controls">
-													<input type="text" class="input input-small"
+													<input type="text" class="input"
 														id="ignoreSampleCount" name="ignoreSampleCount"
 														value="${(test.ignoreSampleCount)!0}">
 												</div>
@@ -194,7 +179,7 @@ div.div-host .host {
 												<label for="sampleInterval" class="control-label">
 													Sample Interval </label>
 												<div class="controls">
-													<input type="text" class="input input-small"
+													<input type="text" class="input"
 														id="sampleInterval" name="sampleInterval"
 														value="${(test.sampleInterval)!1000}">
 													<code>MS</code>
@@ -323,25 +308,73 @@ div.div-host .host {
 			<!--content-->
 			<#include "../common/copyright.ftl">
 		</div>
-
-	<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
-	<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
+		<div class="modal fade" id="addHostModal">
+			<div class="modal-header">
+				<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
+				<h3>
+					Add Host
+					<small>Please input one option at least.</small>
+				</h3>
+			</div>
+			<div class="modal-body">
+				<div class="form-horizontal">
+					<fieldset>
+						<div class="control-group">
+							<label for="domainInput" class="control-label">Domain</label>
+							<div class="controls">
+							  <input type="text" id="domainInput">
+							  <span class="help-inline"></span>
+							</div>
+						</div>					
+						<div class="control-group">
+							<label for="ipInput" class="control-label">IP</label>
+							<div class="controls">
+							  <input type="text" id="ipInput">
+							  <span class="help-inline"></span>
+							</div>
+						</div>					
+					</fieldset>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<a class="btn btn-primary" id="addHostBtn">Add</a>
+			</div>
+		</div>
 	<script src="${req.getContextPath()}/js/jquery.gchart.pack.js"></script>
-	<script src="${req.getContextPath()}/js/utils.js"></script>
 	<script src="${req.getContextPath()}/js/rampup.js"></script>
 	<script>
 			$(document).ready(function() {
-				$("#n_test").addClass("active"); 
+				$("#n_test").addClass("active");
 				if (${scriptList?size} == 0) {
 					alert ("User has not script yet! Please create a script first.");
 					return;
 				}
-				$("#homeTab a:first").tab('show');
 				
-				$('a[data-toggle="tab"]').on('show', function(e) {
-					//alert("current tab: " + e.target + "\nlast tab: " + e.relatedTarget);
-				});	
-							
+				$("#homeTab a:first").tab('show');	
+				
+				$("#addHostBtn").on('click', function() {
+					var elemStr = "";
+					if (!checkEmptyByID("ipInput")) {
+						elemStr += hostItem("ipInput");
+					}
+					if (!checkEmptyByID("domainInput")) {
+						elemStr += hostItem("domainInput");
+					}
+					if (elemStr == "") {
+						$("#addHostModal small").addClass("errorColor");
+						return;
+					}
+					
+					$(".div-host").empty();
+					$(".div-host").append(elemStr);
+					$("#addHostModal").modal("hide");
+				});
+				
+				$("i.icon-remove-circle").live('click', function() {
+					var $elem = $(this).parents("p");
+					$elem.next("br").remove();
+					$elem.remove();
+				});			
 				$("#dSelect").append(getOption(100));
 				$("#dSelect").change(getDurationMS);
 				
@@ -353,7 +386,7 @@ div.div-host .host {
 				
 				$("#sSelect").append(getOption(60));
 				$("#sSelect").change(getDurationMS);
-				
+
 				//add toggle event to threshold
 				$("#runcountChkbox").change(function (){
 					if ($("#runcountChkbox").attr("checked") == "checked") {
@@ -368,7 +401,7 @@ div.div-host .host {
 					}
 				});
 				
-				$("#agentCount").change (function() {
+				$("#agentCount").change(function() {
 					updateVuserTotal ();
 				});
 				
@@ -457,6 +490,10 @@ div.div-host .host {
 				$("#durationChkbox").toggle();
 			}
 			
+			function hostItem(id) {
+				return "<p class=\"host\">" + $.trim($("#" + id).val()) + "<a href=\"javascript:void(0);\"><i class=\"icon-remove-circle\"></i></a></p><br>"
+			}
+			
 			function getOption(cnt) {
 				var contents = [];
 				
@@ -466,7 +503,7 @@ div.div-host .host {
 				
 				return contents.join("\n");
 			}
-			
+					
 			function generateReportChart() {
 				showInformation("Generating TPS Chart...");
 			}

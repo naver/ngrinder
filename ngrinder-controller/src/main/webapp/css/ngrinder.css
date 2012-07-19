@@ -1,39 +1,38 @@
 @charset "utf-8";
 body {
-	padding-top: 80px; /* 60px to make the container go all the way to the bottom of the topbar */
+	padding-top: 80px;
 }
 
-.form-horizontal-1 .control-label {
-	width: 80px;
+.form-horizontal .control-label {
 	color: #666666;
 	font-family: Tahoma, applegothic, sans-serif;
 	font-size: 12px;
 	font-weight: bold;
+}
+
+.form-horizontal-1 .control-label {
+	width: 80px;
 }
 
 .form-horizontal-1 .controls {
 	margin-left: 100px;
 }
 
-.form-horizontal-1 .controls a {
+.form-horizontal-1 .controls button {
 	margin-left: 20px;
 }
 
 .form-horizontal-1 .controls input {
-	width: 720px;
+	width: 500px;
 }
 
 .form-horizontal-2 .control-label {
 	width: 110px;
 	text-align: left;
-	color: #666666;
-	font-family: Tahoma, applegothic, sans-serif;
-	font-size: 12px;
-	font-weight: bold;
 }
 
 .form-horizontal-2 .controls {
-	margin-left: 130px;
+	margin-left: 120px;
 }
 
 .form-horizontal-3 {
@@ -44,10 +43,6 @@ body {
 .form-horizontal-3 .control-label {
 	width: 100px;
 	text-align: left;
-	color: #666666;
-	font-family: Tahoma, applegothic, sans-serif;
-	font-size: 12px;
-	font-weight: bold;
 }
 
 .form-horizontal-3 .controls {
@@ -65,6 +60,14 @@ body {
 
 .form-horizontal-3 .controls strong {
 	color: #6DAFCF;
+}
+
+.form-horizontal-modal .controls {
+	margin-left: 110px;
+}
+
+.form-horizontal-modal .control-label {
+	width: 100px;
 }
 
 table th,table td {
@@ -121,4 +124,8 @@ table.ellipsis td.ellipsis {
 
 .hidden {
 	display: none;
+}
+
+.errorColor {
+	color:red;
 }

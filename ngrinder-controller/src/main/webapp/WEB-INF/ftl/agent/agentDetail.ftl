@@ -1,18 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-8">
         <title>nGrinder Agent Info</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="nGrinder Agent Info">
-        <meta name="author" content="AlexQin">
-
-        <link rel="shortcut icon" href="favicon.ico"/>
-        <link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-        <link href="${req.getContextPath()}/css/ngrinder.css" rel="stylesheet">
-        
-        <input type="hidden" id="contextPath" value="${req.getContextPath()}">
-        <#setting number_format="computer">
+       	<#include "../common/common.ftl">
     </head>
 
     <body>
@@ -115,9 +105,6 @@
         	<#include "../common/copyright.ftl">
     	<!--content-->
         </div>
-        <script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
-        <script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
-        <script src="${req.getContextPath()}/js/utils.js"></script>
         <script>
             $(document).ready(function() {
                 $("#returnBtn").on('click', function() {
