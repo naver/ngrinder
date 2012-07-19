@@ -62,7 +62,7 @@ import freemarker.template.Template;
  * 
  * @author JunHo Yoon
  */
-@Service
+@Service 
 public class FileEntryService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileEntryService.class);
