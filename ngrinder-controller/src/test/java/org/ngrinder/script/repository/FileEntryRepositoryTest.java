@@ -1,4 +1,4 @@
-package org.ngrinder.script.service;
+package org.ngrinder.script.repository;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -6,8 +6,10 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGNinderTransactionalTest;
@@ -16,12 +18,13 @@ import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
+import org.ngrinder.script.service.MockFileEntityRepsotory;
 import org.ngrinder.script.util.CompressionUtil;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
-public class FileEntityRepositoryTest extends AbstractNGNinderTransactionalTest {
+public class FileEntryRepositoryTest extends AbstractNGNinderTransactionalTest {
 
 	@Autowired
 	public MockFileEntityRepsotory repo;
@@ -83,15 +86,28 @@ public class FileEntityRepositoryTest extends AbstractNGNinderTransactionalTest 
 	}
 
 	@Test
-	public void testPerfTest2() {
+	public void testPerfTest2() throws IOException {
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setContent("HELLO WORLD2");
 		fileEntry.setEncoding("UTF-8");
 		fileEntry.setPath("helloworld.txt");
 		fileEntry.setFileName("helloworld.txt");
+		fileEntry.setFileType(FileType.TXT);
 		fileEntry.setDescription("WOW");
 		User user = userService.getUserById("user1");
 		repo.save(user, fileEntry, fileEntry.getEncoding());
+		fileEntry.setPath("hello.zip");
+		fileEntry.setFileName("hello.zip");
+		fileEntry.setEncoding(null);
+		fileEntry.setFileType(FileType.UNKNOWN);
+		byte[] byteArray = IOUtils.toByteArray(new ClassPathResource("user1.zip").getInputStream());
+		fileEntry.setContentBytes(byteArray);
+		repo.save(user, fileEntry, null);
+		List<FileEntry> findAll = repo.findAll(user, "hello.zip");
+		assertThat(findAll.get(0).getFileSize(), is((long) byteArray.length));
+		// commit again
+		repo.save(user, fileEntry, null);
+		findAll = repo.findAll(user, "hello.zip");
+		assertThat(findAll.get(0).getFileSize(), is((long) byteArray.length));
 	}
-
 }

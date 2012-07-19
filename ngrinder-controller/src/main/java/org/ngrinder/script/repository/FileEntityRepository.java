@@ -251,10 +251,8 @@ public class FileEntityRepository {
 					editor.openFile(fileEntry.getPath(), -1);
 				}
 
-				// Only diff is applied on text
-				if (fileEntry.getFileType().isEditable()) {
-					editor.applyTextDelta(fileEntry.getPath(), null);
-				}
+				editor.applyTextDelta(fileEntry.getPath(), null);
+
 				// Calc diff
 				final SVNDeltaGenerator deltaGenerator = new SVNDeltaGenerator();
 				// If encoding is set, try to convert it content into given

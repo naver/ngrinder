@@ -25,6 +25,7 @@ package org.ngrinder.user.service;
 import javax.annotation.PostConstruct;
 
 import org.ngrinder.infra.annotation.OnlyTestComponent;
+import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,7 @@ public class MockUserContext extends UserContext {
 			user.setUserName("TEST_USER");
 			user.setPassword("123");
 			user.setUserLanguage("en");
+			user.setRole(Role.USER);
 			userRepository.save(user);
 		}
 	}
