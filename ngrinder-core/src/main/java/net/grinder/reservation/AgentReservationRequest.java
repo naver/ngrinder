@@ -52,7 +52,10 @@ public class AgentReservationRequest {
 	}
 
 	public boolean isSameCategory(String category) {
-		return category.equals(category);
+		if (this.category == null || category == null) {
+			return false;
+		}
+		return this.category.equals(category);
 	}
 
 	public void addAssignedAgent(AgentIdentity agentIdentity) {
