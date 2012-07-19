@@ -4,8 +4,10 @@
 		timeToLiveSeconds="1800" />
 	<cache name="users" maxElementsInMemory="100" eternal="false" overflowToDisk="false" timeToIdleSeconds="900"
 		timeToLiveSeconds="1800" />
-	<cache name="perfTest" maxElementsInMemory="100" eternal="false" overflowToDisk="false" timeToIdleSeconds="900"
+	<cache name="perftest" maxElementsInMemory="100" eternal="false" overflowToDisk="false" timeToIdleSeconds="900"
 		timeToLiveSeconds="1800" />
+	<cache name="perftestlist" maxElementsInMemory="100" eternal="false" overflowToDisk="false" timeToIdleSeconds="900"
+		timeToLiveSeconds="1800" />		
 	<cache name="file_entry_search_cache" maxElementsInMemory="100" eternal="false" overflowToDisk="false" timeToIdleSeconds="60"
 		timeToLiveSeconds="60" />
 
