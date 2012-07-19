@@ -41,10 +41,15 @@ public class User extends BaseModel<User> {
 
 	private static final long serialVersionUID = 7398072895183814285L;
 
-
+	/**
+	 * User Id
+	 */
 	@Column(unique = true, nullable = false)
 	private String userId;
 
+	/**
+	 * User Name e.g) Jone Dogh.
+	 */
 	private String userName;
 
 	private String password;

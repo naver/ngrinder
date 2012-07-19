@@ -15,6 +15,7 @@
  */
 package org.ngrinder.infra.spring;
 
+import org.ngrinder.common.util.PathUtil;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,9 +25,11 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerMapping;
+import org.tmatesoft.svn.core.internal.util.SVNURLUtil;
 
 /**
- * {@link WebArgumentResolver} which puts the PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE attribute to parameter with the
+ * {@link WebArgumentResolver} which puts the
+ * PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE attribute to parameter with the
  * RemainedPath annotation.
  * 
  * @author JunHo Yoon
@@ -47,9 +50,11 @@ public class RemainedPathMethodArgumentResolver implements HandlerMethodArgument
 		RequestMapping requestMappingOnMethod = parameter.getMethodAnnotation(RequestMapping.class);
 		RequestMapping requestMappingOnClass = getDeclaringClassRequestMapping(parameter);
 		String combine = pathMatcher.combine(requestMappingOnClass.value()[0], requestMappingOnMethod.value()[0]);
-		return pathMatcher.extractPathWithinPattern(combine, (String) webRequest.getAttribute(
-				HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE, NativeWebRequest.SCOPE_REQUEST));
+		return PathUtil.removePrependedSlash(pathMatcher.extractPathWithinPattern(combine, (String) webRequest.getAttribute(
+				HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE, NativeWebRequest.SCOPE_REQUEST)));
 	}
+
+	
 
 	@SuppressWarnings("unchecked")
 	protected RequestMapping getDeclaringClassRequestMapping(MethodParameter parameter) {
