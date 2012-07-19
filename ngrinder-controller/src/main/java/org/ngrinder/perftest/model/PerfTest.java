@@ -115,24 +115,24 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private int processIncrementInterval;
 
 	private int threads;
-	
-	//followings are test result members
-    private int tests = 0;
 
-    private int errors = 0;
+	// followings are test result members
+	private int tests = 0;
 
-    private double meanTestTime = 0;
+	private int errors = 0;
 
-    private double testTimeStandardDeviation = 0;
+	private double meanTestTime = 0;
 
-    private double tps = 0;
+	private double testTimeStandardDeviation = 0;
 
-    private double peakTps = 0;
-    
+	private double tps = 0;
+
+	private double peakTps = 0;
 
 	private int port;
 
 	private int testTrialCount;
+
 	@Transient
 	private GrinderProperties grinderProperties;
 
@@ -272,7 +272,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return vuserPerAgent;
 	}
 
-
 	public void setVuserPerAgent(int vuserPerAgent) {
 		this.vuserPerAgent = vuserPerAgent;
 	}
@@ -317,11 +316,17 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.processIncrementInterval = processIncrementInterval;
 	}
 
+	/**
+	 * @return the threads
+	 */
 	public int getThreads() {
 		return threads;
 	}
 
-
+	/**
+	 * @param threads
+	 *            the threads to set
+	 */
 	public void setThreads(int threads) {
 		this.threads = threads;
 	}
