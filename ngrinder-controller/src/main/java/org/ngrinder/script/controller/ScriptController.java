@@ -89,7 +89,7 @@ public class ScriptController extends NGrinderBaseController {
 	@RequestMapping("/detail/**")
 	public String getDetail(User user, @RemainedPath String path, ModelMap model) { // "fileName"
 		FileEntry script = fileEntryService.getFileEntry(user, path);
-		if (!script.getFileType().isEditable()) {
+		if (script == null || !script.getFileType().isEditable()) {
 			return "error/errors";
 		}
 		model.addAttribute("script", script);

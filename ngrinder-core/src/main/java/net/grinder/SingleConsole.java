@@ -148,11 +148,13 @@ public class SingleConsole implements Listener {
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) ReflectionUtil
 				.getFieldValue((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
 						"m_agentNumberMap");
-		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
-			public void objectAndNumber(Object object, int number) {
-				agentIdentities.add((AgentIdentity) object);
-			}
-		});
+		if (agentIdentity != null) { // TODO: I don't know to return which value (null or empty arraylist) if it has an null value.
+			agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
+				public void objectAndNumber(Object object, int number) {
+					agentIdentities.add((AgentIdentity) object);
+				}
+			});
+		}
 		return agentIdentities;
 	}
 
@@ -194,6 +196,10 @@ public class SingleConsole implements Listener {
 	}
 
 	public boolean isAllTestFinished() {
+		if (this.processReports == null) { // TODO: I don't know to return which value (true or false) if it has an null value.
+			return false;
+		}
+
 		for (ProcessReports processReport : this.processReports) {
 			//TODO
 		}

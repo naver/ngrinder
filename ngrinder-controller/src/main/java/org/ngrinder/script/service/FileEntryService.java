@@ -145,6 +145,10 @@ public class FileEntryService {
 	}
 
 	public void addFolder(User user, String path, String folderName) {
+		if (fileEntityRepository == null) { // TODO: I don't know it is needed to exit if it has a null.
+			return;
+		}
+
 		FileEntry entry = new FileEntry();
 		entry.setFileName(folderName);
 		entry.setPath(path + "/" + folderName);

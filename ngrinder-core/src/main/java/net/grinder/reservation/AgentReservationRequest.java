@@ -52,6 +52,9 @@ public class AgentReservationRequest {
 	}
 
 	public boolean isSameCategory(String category) {
+		if (category == null) {
+			return false;
+		}
 		return category.equals(category);
 	}
 
