@@ -117,7 +117,8 @@ public class FileEntityRepository {
 								script.setFileName(dirEntry.getName());
 							}
 
-							// script.setPath(path + "/" + dirEntry.getRelativePath());
+							// script.setPath(path + "/" +
+							// dirEntry.getRelativePath());
 							script.setCreatedDate(dirEntry.getDate());
 							script.setLastModifiedDate(dirEntry.getDate());
 							script.setDescription(dirEntry.getCommitMessage());
@@ -157,8 +158,9 @@ public class FileEntityRepository {
 							}
 							script.setPath("/" + dirEntry.getRelativePath());
 							script.setFileName(dirEntry.getName());
-							
-							// script.setPath(path + "/" + dirEntry.getRelativePath());
+
+							// script.setPath(path + "/" +
+							// dirEntry.getRelativePath());
 							script.setDescription(dirEntry.getCommitMessage());
 
 							script.setFileType(FileType.getFileType(FilenameUtils.getExtension(dirEntry.getName())));
@@ -245,10 +247,15 @@ public class FileEntityRepository {
 					// If it's modification
 					editor.openFile(fileEntry.getPath(), -1);
 				}
+
+				// Only diff is applied on text
+				if (fileEntry.getFileType().isEditable()) {
+					editor.applyTextDelta(fileEntry.getPath(), null);
+				}
 				// Calc diff
-				editor.applyTextDelta(fileEntry.getPath(), null);
 				final SVNDeltaGenerator deltaGenerator = new SVNDeltaGenerator();
-				// If encoding is set, try to convert it content into given encoding,
+				// If encoding is set, try to convert it content into given
+				// encoding,
 				// otherwise, just get bytes
 				bais = StringUtils.isEmpty(encoding) ? new ByteArrayInputStream(fileEntry.getContentBytes())
 						: new ByteArrayInputStream(fileEntry.getContent().getBytes(encoding));
@@ -257,12 +264,29 @@ public class FileEntityRepository {
 			// Finally push
 			editor.closeFile(fileEntry.getPath(), checksum);
 		} catch (Exception e) {
+			abortSVNEditorQuietly(editor);
 			LOG.error("Error while saving file to SVN", e);
 			throw new NGrinderRuntimeException("Error while saving file to SVN", e);
 		} finally {
 			closeSVNEditorQuietly(editor);
 			closeSVNClientManagerQuietly(svnClientManager);
 			IOUtils.closeQuietly(bais);
+		}
+	}
+
+	/**
+	 * Quietly close svn editor
+	 * 
+	 * @param editor
+	 *            editor to be closed.
+	 */
+	private void abortSVNEditorQuietly(ISVNEditor editor) {
+		if (editor == null) {
+			return;
+		}
+		try {
+			editor.abortEdit();
+		} catch (SVNException e) {
 		}
 	}
 
@@ -304,6 +328,7 @@ public class FileEntityRepository {
 				editor.deleteEntry(each, -1);
 			}
 		} catch (Exception e) {
+			abortSVNEditorQuietly(editor);
 			LOG.error("Error while deleting file from SVN", e);
 			throw new NGrinderRuntimeException("Error while deleting files from SVN", e);
 		} finally {
