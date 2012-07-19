@@ -55,11 +55,7 @@ div.div-host .host {
 							<div class="controls">
 								<input type="text" id="testName" name="testName" value="${(test.testName)!}">
 								<button type="submit" class="btn btn-success">
-									<#if test??>
-										Clone&Start
-									<#else>
-										Save&Start
-									</#if>
+									<#if test??>Clone<#else>Save</#if> & Start
 								</button>
 							</div>
 						</div>
@@ -68,11 +64,7 @@ div.div-host .host {
 							<div class="controls">
 								<input type="text" id="description" name="description" value="${(test.description)!}">
 								<button type="submit" class="btn btn-primary">
-									<#if test??>
-										Clone&Schedule
-									<#else>
-										Save&Schedule
-									</#if>
+									<#if test??>Clone<#else>Save</#if> & Schedule
 								</button>
 							</div>
 						</div>
@@ -93,8 +85,7 @@ div.div-host .host {
 								<div class="page-header">
 									<h4>Load Test Detail</h4>
 								</div>
-								<div class="form-horizontal form-horizontal-2"
-									style="margin-bottom: 0">
+								<div class="form-horizontal form-horizontal-2"> 
 									<fieldset>
 										<div class="control-group">
 											<label for="agentCount" class="control-label">Agent</label>
@@ -249,18 +240,15 @@ div.div-host .host {
 										</td>
 									</tr>
 								</table>
-								<div id="rampChart1" style="width: 460px; height: 355px;">
-								</div>
-								<div id="rampChart2"
-									style="width: 460px; height: 355px; display: none"></div>
+								<div id="rampChart1" class="rampChart"></div>
+								<div id="rampChart2" class="rampChart hidden"></div>
 							</div>
 						</div>
 					</div>
 					<div class="tab-pane" id="reportContent">
 						<div class="row">
 							<div class="span3">
-								<div class="form-horizontal form-horizontal-3"
-									style="margin-left: 20px">
+								<div class="form-horizontal form-horizontal-3" style="margin-left: 20px">
 									<fieldset>
 										<div class="control-group">
 											<label for="agentInput" class="control-label control-label-1">TPS</label>
@@ -296,8 +284,7 @@ div.div-host .host {
 						</div>
 						<div class="row" style="margin-top: 10px;">
 							<div class="span10">
-								<a class="btn pull-right" target="_blank" href="#">Report in
-									Detail</a>
+								<a class="btn pull-right" target="_blank" href="#">Report in Detail</a>
 							</div>
 						</div>
 					</div>

@@ -3,11 +3,15 @@ body {
 	padding-top: 80px;
 }
 
+.navbar .brand {
+	padding: 5px 20px
+}
+
 .form-horizontal .control-label {
 	color: #666666;
 	font-family: Tahoma, applegothic, sans-serif;
 	font-size: 12px;
-	font-weight: bold;
+	font-weight: bold
 }
 
 .form-horizontal-1 .control-label {
@@ -20,7 +24,7 @@ body {
 
 .form-horizontal-1 .controls button {
 	margin-left: 40px;
-	width: 120px;
+	width: 125px;
 }
 
 .form-horizontal-1 .controls input {
@@ -113,6 +117,11 @@ table.ellipsis td.ellipsis {
 .display th input {
 	margin-left: -10px
 }
+
+.modal-body form {
+	margin-bottom: 0
+}
+
 .footDiv {
 	position: absolute;
 	top: 800px
@@ -141,4 +150,14 @@ table.ellipsis td.ellipsis {
 
 .errorColor {
 	color:red;
+}
+
+#footDiv .footer {
+	text-align:center; 
+	margin-top:20px
+}
+
+.rampChart {
+	width: 460px; 
+	height: 355px
 }

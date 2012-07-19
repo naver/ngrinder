@@ -3,8 +3,8 @@
 <div class="navbar navbar-fixed-top">
 	<div class="navbar-inner">
 		<div class="container">
-			<a class="brand" href="${req.getContextPath()}/home" style="padding:5px 20px"><img src="${req.getContextPath()}/img/logo_ngrinder_a_header_inv.png" alt="nGrinder"></img></a>
-			<div class="" style="height:auto">
+			<a class="brand" href="${req.getContextPath()}/home"><img src="${req.getContextPath()}/img/logo_ngrinder_a_header_inv.png" alt="nGrinder"></img></a>
+			<div>
 				<ul class="nav">
 				  <li id="n_test"><a href="${req.getContextPath()}/perftest/list">Load Test</a></li>
 				  <li id="n_script"><a href="${req.getContextPath()}/script/list">Script</a></li>

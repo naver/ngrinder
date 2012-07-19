@@ -24,7 +24,7 @@
 					<div class="well form-inline searchBar">
 						<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
 						<button class="btn" id="clearBtn">Reset</button>
-						<label class="checkbox pull-right" style="position:relative;top:5px">
+						<label class="checkbox pull-right" style="position:relative; top:5px">
 							<input type="checkbox" id="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> Finished
 						</label>
 					</div>

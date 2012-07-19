@@ -30,10 +30,9 @@
 						</a>
 					</div>
 				</div>
-				<div class="well form-inline searchBar" style="padding: 5px;">
-					<input type="text" class="input-medium search-query"
-						placeholder="Keywords" id="searchText" value="${keywords!}"
-						style="width: 350px">
+				<div class="well form-inline searchBar">
+					<input type="text" class="input-medium search-query span4"
+						placeholder="Keywords" id="searchText" value="${keywords!}">
 					<button type="submit" class="btn" id="search_user">Search</button>
 				</div>
 				<table class="display ellipsis jsTable" id="userTable">

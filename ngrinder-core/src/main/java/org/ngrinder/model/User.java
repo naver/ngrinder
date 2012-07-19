@@ -60,7 +60,7 @@ public class User extends BaseModel<User> {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "role_name", nullable = false)
-	private Role role;
+	private Role role ;
 
 	private String description;
 
@@ -213,5 +213,6 @@ public class User extends BaseModel<User> {
 	public void setAuthProviderClass(String authProviderClass) {
 		this.authProviderClass = authProviderClass;
 	}
+
 
 }

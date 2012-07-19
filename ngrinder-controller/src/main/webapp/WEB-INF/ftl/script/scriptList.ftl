@@ -96,7 +96,7 @@
 				<h3>Create a script</h3>
 			</div>
 			<div class="modal-body">
-				<form class="form-horizontal" style="margin-bottom:0" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/create/${currentPath}">
+				<form class="form-horizontal" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/create/${currentPath}">
 					<fieldset>
 						<div class="control-group">
 							<label for="scriptNameInput" class="control-label">Script Name</label>
@@ -138,7 +138,7 @@
 				<h3>Create a folder</h3>
 			</div>
 			<div class="modal-body">
-				<form class="form-horizontal" style="margin-bottom:0" method="post" target="_self" id="createFolderForm" action="${req.getContextPath()}/script/create/${currentPath}">
+				<form class="form-horizontal" method="post" target="_self" id="createFolderForm" action="${req.getContextPath()}/script/create/${currentPath}">
 					<fieldset>
 						<div class="control-group">
 							<label for="folderNameInput" class="control-label">Folder Name</label>
@@ -164,7 +164,7 @@
 				<h3>Upload a JavaScript or Selenium File</h3>
 			</div>
 			<div class="modal-body">
-				<form class="form-horizontal" style="margin-bottom:0" method="post" target="_self" action="${req.getContextPath()}/script/upload"
+				<form class="form-horizontal" method="post" target="_self" action="${req.getContextPath()}/script/upload"
 						id="uploadForm" enctype="multipart/form-data">
 					<fieldset>
 						<div class="control-group">
