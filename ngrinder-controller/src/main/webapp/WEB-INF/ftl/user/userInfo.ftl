@@ -87,7 +87,7 @@
 	
 </script>
 <form action="${req.getContextPath()}/user/save"
-	class="form-horizontal form-horizontal-left" id="registerUserForm" method="POST">
+	class="form-horizontal form-horizontal-left" id="registerUserForm" style="margin-left:30px" method="POST">
 	<fieldset>
 		
 		
@@ -140,7 +140,7 @@
 			<label class="control-label">Description</label>
 			<div class="controls">
 				<textarea cols="30" id="description" name="description"
-					rows="5" title="Description" class="tx_area span4" rel="popover"
+					rows="3" title="Description" class="tx_area span4" rel="popover"
 					style="resize: none;">${(user.description)!}</textarea>
 			</div>
 		</div>
@@ -159,7 +159,7 @@
   		<div class="control-group">
               <div class="accordion-heading"> 
                 <a class="accordion-toggle" data-toggle="collapse" href="#user_password_head" id="user_pw_head" style="padding: 8px 0"> 
-                  User Password
+                  Change Password
                 </a> 
               </div> 
               
@@ -188,8 +188,8 @@
 		 	  </div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">
-				<button type="submit" class="btn btn-success" rel="tooltip">Save User</button>
+			<label class="control-label pull-right">
+				<button type="submit" class="btn btn-success " rel="tooltip">Save User</button>
 			</label>
 		</div>
 	</fieldset>

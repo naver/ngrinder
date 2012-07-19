@@ -9,12 +9,9 @@
 	<body>
     <#include "../common/navigator.ftl">
 	<div class="container">
-		<#if svnUrl?has_content>
-			<div class="well form-inline searchBar">
-				svn URL : ${svnUrl}
-			</div>
-		</#if>
-
+		
+		
+		
 		<div class="row">
 			<div class="span12">
 				<a class="btn" href="#createScriptModal" id="createBtn" data-toggle="modal">
@@ -39,6 +36,11 @@
 			<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
 			<button type="submit" class="btn" id="searchBtn">Search</button>
 		</div>
+			<#if svnUrl?has_content>
+				<div class="input-prepend input-append" style="margin-top:-20px"> 
+	               <span class="add-on"> &nbsp;&nbsp; SVN URL &nbsp; </span><input class="span10" id="prependedInput" type="text" value="${svnUrl}" readonly><button class="btn" type="button"><i class="icon-ok"></i> Copy </button>
+	        	</div> 
+        	</#if>		
 		<table class="display ellipsis jsTable" id="scriptTable">
 			<colgroup>
 				<col width="35">
