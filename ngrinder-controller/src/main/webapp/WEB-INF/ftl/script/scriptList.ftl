@@ -10,11 +10,10 @@
     <#include "../common/navigator.ftl">
 	<div class="container">
 		<#if svnUrl?has_content>
-			<div class="well form-inline searchBar">
+			<div class="well">
 				svn URL : ${svnUrl}
 			</div>
 		</#if>
-
 		<div class="row">
 			<div class="span12">
 				<a class="btn" href="#createScriptModal" id="createBtn" data-toggle="modal">
@@ -33,7 +32,8 @@
 					<i class="icon-remove"></i>
 					Delete selected scripts
 				</a>
-
+			</div>
+		</div>
 		<div class="well form-inline searchBar">
 			<!--<legend>introduction</legend>-->
 			<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
