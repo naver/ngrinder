@@ -11,19 +11,20 @@ body {
 }
 
 .form-horizontal-1 .control-label {
-	width: 80px;
+	width: 100px;
 }
 
 .form-horizontal-1 .controls {
-	margin-left: 100px;
+	margin-left: 130px;
 }
 
 .form-horizontal-1 .controls button {
-	margin-left: 20px;
+	margin-left: 40px;
+	width: 120px;
 }
 
 .form-horizontal-1 .controls input {
-	width: 500px;
+	width: 590px;
 }
 
 .form-horizontal-2 .control-label {
@@ -96,13 +97,21 @@ table.ellipsis td.ellipsis {
 	text-overflow: ellipsis;
 }
 
-.container .searchBar {
+.container .well {
 	padding:5px;
+	margin-bottom: 10px;
+}
+
+.container .searchBar {
 	margin: 10px 0 20px
 }
 
 .container .jsTable {
-	margin-bottom:10px
+	margin-bottom: 10px
+}
+
+.display th input {
+	margin-left: -10px
 }
 .footDiv {
 	position: absolute;
