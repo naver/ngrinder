@@ -58,7 +58,7 @@ public class PerfTestService {
 		}
 	}
 
-	@CacheEvict(value = "perfTest", allEntries = true)
+	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
 	public PerfTest savePerfTest(PerfTest test) {
 		checkNotNull(test);
 		return perfTestRepository.save(test);
@@ -71,28 +71,29 @@ public class PerfTestService {
 	 * @param status
 	 * @return
 	 */
-	@CacheEvict(value = "perfTest", allEntries = true)
+	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
 	public PerfTest savePerfTest(PerfTest test, Status status) {
 		checkNotNull(test);
 		test.setStatus(status);
 		return perfTestRepository.save(test);
 	}
 
-	@Cacheable(value = "perfTest")
+	@Cacheable(value = "perftest")
 	public PerfTest getPerfTest(long testId) {
 		return perfTestRepository.findOne(testId);
 	}
 
-	@Cacheable(value = "perfTest")
+	@Cacheable(value = "perftest")
 	public PerfTest getPerfTestCandiate() {
 		return perfTestRepository.findOneByStatusOrderByCreatedDateAsc(Status.READY);
 	}
 
-	@Cacheable(value = "perfTest")
+	@Cacheable(value = "perftestlist")
 	public List<PerfTest> getTestingPerfTest() {
 		return perfTestRepository.findAllByStatusOrderByCreatedDateAsc(Status.TESTING);
 	}
 
+	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
 	public void deletePerfTest(long id) {
 		perfTestRepository.delete(id);
 	}
