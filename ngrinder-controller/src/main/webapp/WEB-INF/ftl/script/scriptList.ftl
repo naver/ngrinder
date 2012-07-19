@@ -9,12 +9,6 @@
 	<body>
     <#include "../common/navigator.ftl">
 	<div class="container">
-		<#if svnUrl?has_content>
-			<div class="well form-inline searchBar">
-				svn URL : ${svnUrl}
-			</div>
-		</#if>
-
 		<div class="row">
 			<div class="span12">
 				<a class="btn" href="#createScriptModal" id="createBtn" data-toggle="modal">
@@ -33,12 +27,18 @@
 					<i class="icon-remove"></i>
 					Delete selected scripts
 				</a>
-
+			</div>
+		</div>
 		<div class="well form-inline searchBar">
 			<!--<legend>introduction</legend>-->
 			<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
 			<button type="submit" class="btn" id="searchBtn">Search</button>
 		</div>
+			<#if svnUrl?has_content>
+				<div class="input-prepend input-append" style="margin-top:-20px"> 
+	               <span class="add-on"> &nbsp;&nbsp; SVN URL &nbsp; </span><input class="span10" id="prependedInput" type="text" value="${svnUrl}" readonly><button class="btn" type="button"><i class="icon-ok"></i> Copy </button>
+	        	</div> 
+        	</#if>		
 		<table class="display ellipsis jsTable" id="scriptTable">
 			<colgroup>
 				<col width="35">
@@ -96,7 +96,7 @@
 				<h3>Create a script</h3>
 			</div>
 			<div class="modal-body">
-				<form class="form-horizontal" style="margin-bottom:0" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/create/${currentPath}">
+				<form class="form-horizontal" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/create/${currentPath}">
 					<fieldset>
 						<div class="control-group">
 							<label for="scriptNameInput" class="control-label">Script Name</label>
@@ -138,7 +138,7 @@
 				<h3>Create a folder</h3>
 			</div>
 			<div class="modal-body">
-				<form class="form-horizontal" style="margin-bottom:0" method="post" target="_self" id="createFolderForm" action="${req.getContextPath()}/script/create/${currentPath}">
+				<form class="form-horizontal" method="post" target="_self" id="createFolderForm" action="${req.getContextPath()}/script/create/${currentPath}">
 					<fieldset>
 						<div class="control-group">
 							<label for="folderNameInput" class="control-label">Folder Name</label>
@@ -164,7 +164,7 @@
 				<h3>Upload a JavaScript or Selenium File</h3>
 			</div>
 			<div class="modal-body">
-				<form class="form-horizontal" style="margin-bottom:0" method="post" target="_self" action="${req.getContextPath()}/script/upload"
+				<form class="form-horizontal" method="post" target="_self" action="${req.getContextPath()}/script/upload"
 						id="uploadForm" enctype="multipart/form-data">
 					<fieldset>
 						<div class="control-group">

@@ -92,7 +92,7 @@ function updateChart(){
     for(var step=1; step<=steps; step++){
         curY = curY + processInc;
         if (curY > processes) {
-        	curY = processes
+        	curY = processes;
         }
         seriesArray.push([curX, curY]);
     	curX = curX+internalTime;
@@ -113,7 +113,7 @@ function updateChart(){
 	var chartAxes = [jQuery.gchart.axis('bottom', 0, lastEle[1], 'red', 'right'), 
     				 jQuery.gchart.axis('right', 0, processes, 1, 'red', 'right')];
     
-    jQuery(curChartDiv).gchart( 
+    $(curChartDiv).gchart( 
                             {title:"Ramp-Up Chart",
                              type: 'lineXY',
                              backgroundColor: bgColor, 
@@ -122,8 +122,8 @@ function updateChart(){
                              axes:chartAxes
                             }
                 );
-    jQuery(oldChartDiv).css("display","none");          
-    jQuery(curChartDiv).css("display","block");         
+    $(oldChartDiv).addClass("hidden");
+    $(curChartDiv).removeClass("hidden");         
 }
 
 function checkRampUpForm() {

@@ -5,14 +5,36 @@
 			$(".collapse").collapse();
 			$("#user_pw_head").attr("href","");
 			
-			$("#userName").click(function(){
+				$("#userId").blur(function(){
 				var userId = $("#userId").val();
 				
+					var patrn = "^[a-zA-Z]{1}([a-zA-Z0-9]|[_]|[-]|[.]){0,19}$";
+						var rule = new RegExp(patrn);
+						if (!rule.test($.trim($("#userId").val()))) {
+								$("userId").parents('.control-group').addClass("error");
+								$("#userIdError_span_id").html("There were problems with userId.");
+								$("#userIdError_span_id").show();
+							return;
+					}
+					
+					
 				if(userId != null && userId.length > 0){
 					$.ajax({
 						  url: "${req.getContextPath()}/user/checkUserId?userId="+userId,
+								  async: false,
 						  cache: false,
-						  success: function(data){
+								  type: "GET",
+								  dataType:'json',
+								  success: function(res) {
+								  	  if(!res.success) {
+									  	$("userId").parents('.control-group').addClass("error");
+									  	$("#userIdError_span_id").html("This UserID is already taken.");
+									  	$("#userIdError_span_id").show();
+								  	  }else{
+								  	  	 $("userId").parents('.control-group').addClass("success");
+								  	  	 $("#userIdError_span_id").html("");
+								  	  	 $("#userIdError_span_id").hide();
+								  	  }
 	  						}
 					}); 
 				}
@@ -81,16 +103,11 @@
 	        }
 	    });
 	});
-	
-
-	
-	
 </script>
+
 <form action="${req.getContextPath()}/user/save"
-	class="form-horizontal form-horizontal-left" id="registerUserForm" method="POST">
+	class="form-horizontal form-horizontal-left" id="registerUserForm" style="margin-left:30px" method="POST">
 	<fieldset>
-		
-		
 		<div class="control-group">
 			<label class="control-label">User ID</label>
 			<div class="controls">
@@ -99,6 +116,7 @@
 					data-content="User Id is a unique identifier and modified is forbidden  !"
 					data-original-title="User Id"
 					<#if user?? && user.userId??>disabled</#if> >
+				<span id="userIdError_span_id" class="help-inline"> </span>
 				<input type="hidden" id="id" name="id" value="${(user.id)!}">
 			</div>
 		</div>
@@ -140,7 +158,7 @@
 			<label class="control-label">Description</label>
 			<div class="controls">
 				<textarea cols="30" id="description" name="description"
-					rows="5" title="Description" class="tx_area span4" rel="popover"
+					rows="3" title="Description" class="tx_area span4" rel="popover"
 					style="resize: none;">${(user.description)!}</textarea>
 			</div>
 		</div>
@@ -159,7 +177,7 @@
   		<div class="control-group">
               <div class="accordion-heading"> 
                 <a class="accordion-toggle" data-toggle="collapse" href="#user_password_head" id="user_pw_head" style="padding: 8px 0"> 
-                  User Password
+                  Change Password
                 </a> 
               </div> 
               
@@ -188,7 +206,7 @@
 		 	  </div>
 		</div>
 		<div class="control-group">
-			<label class="control-label">
+			<label class="control-label pull-right">
 				<button type="submit" class="btn btn-success" rel="tooltip">Save User</button>
 			</label>
 		</div>
