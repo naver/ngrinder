@@ -34,6 +34,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
@@ -56,8 +57,8 @@ import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 
 /**
- * File entry service class. This class is responsible for creating user repo whenever user is created and connection
- * b/w user and underlying svn.
+ * File entry service class. This class is responsible for creating user repo
+ * whenever user is created and connection b/w user and underlying svn.
  * 
  * @author JunHo Yoon
  */
@@ -70,6 +71,9 @@ public class FileEntryService {
 
 	@Autowired
 	private Config config;
+
+	@Autowired
+	private HttpContainerContext httpContainerContext;
 
 	/**
 	 * Create user svn repo.
@@ -244,10 +248,11 @@ public class FileEntryService {
 	}
 
 	public String getSvnUrl(User user, String path) {
-		StringBuilder url = new StringBuilder( config.getSystemProperties().getProperty("http.url", "http://localhost"));
+		String contextPath = httpContainerContext.getCurrentRequestUrlFromUserRequest();
+		StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url", contextPath));
 		url.append("/svn/").append(user.getUserId());
 		if (StringUtils.isNotEmpty(path)) {
-			url.append(path.trim());
+			url.append("/").append(path.trim());
 		}
 		return url.toString();
 	}
