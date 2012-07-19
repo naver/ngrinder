@@ -1,24 +1,45 @@
 <script src="${req.getContextPath()}/js/jquery.validate.js"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
-		<#if !(user?has_content)>
-			$(".collapse").collapse();
-			$("#user_pw_head").attr("href","");
-			
-			$("#userName").click(function(){
-				var userId = $("#userId").val();
+			<#if !(user?has_content)>
+				$(".collapse").collapse();
+				$("#user_pw_head").attr("href","");
 				
-				if(userId != null && userId.length > 0){
-					$.ajax({
-						  url: "${req.getContextPath()}/user/checkUserId?userId="+userId,
-						  cache: false,
-						  success: function(data){
-	  						}
-					}); 
-				}
-						
-			});
-		</#if>
+				$("#userId").blur(function(){
+					var userId = $("#userId").val();
+					
+					var patrn = "^[a-zA-Z]{1}([a-zA-Z0-9]|[_]|[-]|[.]){0,19}$";
+						var rule = new RegExp(patrn);
+						if (!rule.test($.trim($("#userId").val()))) {
+								$("userId").parents('.control-group').addClass("error");
+								$("#userIdError_span_id").html("There were problems with userId.");
+								$("#userIdError_span_id").show();
+							return;
+					}
+					
+					
+						if(userId != null && userId.length > 0){
+							$.ajax({
+								  url: "${req.getContextPath()}/user/checkUserId?userId="+userId,
+								  async: false,
+								  cache: false,
+								  type: "GET",
+								  dataType:'json',
+								  success: function(res) {
+								  	  if(!res.success) {
+									  	$("userId").parents('.control-group').addClass("error");
+									  	$("#userIdError_span_id").html("This UserID is already taken.");
+									  	$("#userIdError_span_id").show();
+								  	  }else{
+								  	  	 $("userId").parents('.control-group').addClass("success");
+								  	  	 $("#userIdError_span_id").html("");
+								  	  	 $("#userIdError_span_id").hide();
+								  	  }
+			  					  }
+							}); 
+						}
+				});
+			</#if>
 		
 		
 		$('.collapse').on('hidden', function () {
@@ -99,6 +120,7 @@
 					data-content="User Id is a unique identifier and modified is forbidden  !"
 					data-original-title="User Id"
 					<#if user?? && user.userId??>disabled</#if> >
+				<span id="userIdError_span_id" class="help-inline"> </span>
 				<input type="hidden" id="id" name="id" value="${(user.id)!}">
 			</div>
 		</div>
