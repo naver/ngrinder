@@ -54,9 +54,10 @@ import net.grinder.util.thread.Condition;
 import org.slf4j.Logger;
 
 /**
- * This is Agent Controller which handles agent start and stop
+ * Agent Controller which handles agent start and stop.
  * 
  * @author JunHo Yoon
+ * @since 3.0
  */
 public class AgentController implements Agent {
 
@@ -79,11 +80,7 @@ public class AgentController implements Agent {
 	 * @param logger
 	 *            Logger.
 	 * @param m_eventSyncCondition
-	 * @param alternateFile
-	 *            Alternative properties file, or <code>null</code>.
-	 * @param proceedWithoutConsole
-	 *            <code>true</code> => proceed if a console connection could not
-	 *            be made.
+	 * 
 	 * @throws GrinderException
 	 *             If an error occurs.
 	 */
@@ -177,18 +174,16 @@ public class AgentController implements Agent {
 					m_logger.info("agent started. waiting for agent controller signal");
 					System.out.println("Waiting for message!!!");
 					m_agentControllerServerListener.waitForMessage();
-					
+
 				}
 
-				
 				if (m_agentControllerServerListener.received(AgentControllerServerListener.START)) {
 					System.out.println("Start message!!!");
 					startMessage = m_agentControllerServerListener.getLastStartGrinderMessage();
 				} else if (m_agentControllerServerListener.received(AgentControllerServerListener.STOP)) {
-					startMessage = null;
 					agent.shutdown();
+					startMessage = null;
 					m_agentStart = false;
-					System.out.println("Shutting Down!!!");
 					m_agentControllerServerListener.discardMessages(AgentControllerServerListener.STOP);
 
 				} else if (m_agentControllerServerListener.received(AgentControllerServerListener.SHUTDOWN)) {
@@ -240,13 +235,19 @@ public class AgentController implements Agent {
 	 * Clean up resources.
 	 */
 	public void shutdown() {
-		if (m_timer != null)
+		if (m_timer != null) {
 			m_timer.cancel();
+		}
 		m_fanOutStreamSender.shutdown();
 		m_agentControllerServerListener.shutdown();
 		m_logger.info("finished");
 	}
 
+	/**
+	 * Get host name
+	 * 
+	 * @return host name
+	 */
 	private static String getHostName() {
 		try {
 			return InetAddress.getLocalHost().getHostName();

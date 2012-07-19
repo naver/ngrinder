@@ -22,11 +22,11 @@
  */
 package org.ngrinder.perftest.service;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 import net.grinder.SingleConsole;
 
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.slf4j.Logger;
@@ -37,16 +37,17 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * task scheduler
+ * perf test run scheduler.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
 @Component
 @Transactional
-public class TaskSchedulerRunnable {
+public class PerfTestRunnable implements NGrinderConstants {
 
-	private static final Logger LOG = LoggerFactory.getLogger(TaskSchedulerRunnable.class);
+	@SuppressWarnings("unused")
+	private static final Logger LOG = LoggerFactory.getLogger(PerfTestRunnable.class);
 
 	@Autowired
 	private PerfTestService perfTestService;
@@ -57,41 +58,76 @@ public class TaskSchedulerRunnable {
 	@Autowired
 	private AgentManager agentManager;
 
-	@Scheduled(fixedDelay = 5000)
-	public void run() {
+	/**
+	 * Scheduled method for test execution.
+	 */
+	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
+	@Transactional
+	public void startTest() {
 		PerfTest runCandidate = perfTestService.getPerfTestCandiate();
 		if (runCandidate == null) {
 			return;
 		}
+		// In case of too many trial, cancel running.
+		if (runCandidate.getTestTrialCount() > PERFTEST_MAXIMUM_TRIAL_COUNT) {
+			perfTestService.savePerfTest(runCandidate, Status.CANCELED);
+		}
 		doTest(runCandidate);
 	}
 
+	/**
+	 * Run given test.
+	 * 
+	 * @param perfTest
+	 *            perftest instance;
+	 */
 	public void doTest(PerfTest perfTest) {
 		SingleConsole singleConsole = consoleManager.getAvailableConsole();
-		if (singleConsole == null) {
-			return;
-		}
 		singleConsole.start();
-		perfTest.setStatus(Status.WAITING_AGENT);
-		perfTestService.savePerfTest(perfTest);
+		// increase trial count
+		perfTest.setTestTrialCount(perfTest.getTestTrialCount() + 1);
 
-		BlockingQueue<AgentWrapper> agentQueues = agentManager
-				.getAgentWrappers(singleConsole, perfTest.getAgentCount());
-		int i = 0;
-		while (true) {
-			try {
-				i++;
-				AgentWrapper agentWrapper = agentQueues.poll(1000, TimeUnit.MILLISECONDS);
-				agentWrapper.distributeFiles();
-			} catch (InterruptedException e) {
-				LOG.error("error occurs while distributing files", e);
-			}
-			if (perfTest.getAgentCount() == i)
-				break;
-		}
+		// Start agents
+		perfTestService.savePerfTest(perfTest, Status.WAITING_AGENT);
+		agentManager.runAgent(singleConsole, null, perfTest.getAgentCount());
+		singleConsole.waitUntilAgentConnected(perfTest.getAgentCount());
 
+		// Distribute files
+		perfTestService.savePerfTest(perfTest, Status.DISTRIBUTE_FILES);
+		singleConsole.distributeFiles();
+
+		// Run test
+		singleConsole.startTest(perfTest.getGrinderProperties());
 		perfTest.setStatus(Status.TESTING);
 		perfTestService.savePerfTest(perfTest);
-
 	}
+
+	/**
+	 * Scheduled method for test finish.
+	 */
+	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
+	@Transactional
+	public void finishTest() {
+		List<PerfTest> finishCandiate = perfTestService.getTestingPerfTest();
+		for (PerfTest each : finishCandiate) {
+			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
+			doFinish(each, consoleUsingPort);
+		}
+	}
+
+	/**
+	 * Finish test.
+	 * 
+	 * @param perfTest
+	 *            {@link PerfTest} to be finished
+	 * @param singleConsoleInUse
+	 *            {@link SingleConsole} which is being using for
+	 *            {@link PerfTest}
+	 */
+	public void doFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+		if (singleConsoleInUse.isAllTestFinished()) {
+			perfTestService.savePerfTest(perfTest, Status.FINISHED);
+		}
+	}
+
 }

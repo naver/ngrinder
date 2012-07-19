@@ -26,12 +26,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.grinder.common.GrinderException;
+import net.grinder.common.GrinderProperties;
 import net.grinder.common.UncheckedInterruptedException;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.ConsoleFoundationEx;
 import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
 import net.grinder.console.communication.ProcessControl;
+import net.grinder.console.communication.ProcessControl.Listener;
+import net.grinder.console.communication.ProcessControl.ProcessReports;
 import net.grinder.console.communication.ProcessControlImplementation;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.AllocateLowestNumber;
@@ -48,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author JunHo Yoon
  */
-public class SingleConsole {
+public class SingleConsole implements Listener {
 	private final ConsoleProperties consoleProperties;
 	private Thread thread;
 	private ThreadGroup threadGroup;
@@ -59,6 +62,7 @@ public class SingleConsole {
 	public final static Logger logger = LoggerFactory.getLogger(resources.getString("shortTitle"));
 
 	public Condition m_eventSyncCondition = new Condition();
+	private ProcessReports[] processReports;
 
 	public SingleConsole(String ip, int port) {
 		this(ip, port, ConsolePropertiesFactory.createEmptyConsoleProperties());
@@ -102,6 +106,7 @@ public class SingleConsole {
 			thread.setDaemon(true);
 			thread.start();
 			m_eventSyncCondition.waitNoInterrruptException(10000);
+			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
 		}
 	}
 
@@ -143,7 +148,6 @@ public class SingleConsole {
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) ReflectionUtil
 				.getFieldValue((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
 						"m_agentNumberMap");
-		System.out.println(agentIdentity);
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
 			public void objectAndNumber(Object object, int number) {
 				agentIdentities.add((AgentIdentity) object);
@@ -161,5 +165,38 @@ public class SingleConsole {
 
 	public ConsoleProperties getConsoleProperties() {
 		return consoleProperties;
+	}
+
+	public void startTest(GrinderProperties properties) {
+		properties.setInt(GrinderProperties.CONSOLE_PORT, getConsolePort());
+		getConsoleComponent(ProcessControl.class).startWorkerProcesses(properties);
+	}
+
+	public void distributeFiles() {
+
+	}
+
+	public void waitUntilAgentConnected(int size) {
+		int trial = 1;
+		while (trial++ < 3) {
+			if (this.processReports.length != size) {
+				m_eventSyncCondition.waitNoInterrruptException(10000);
+			} else {
+				return;
+			}
+		}
+	}
+
+	@Override
+	public void update(ProcessReports[] processReports) {
+		this.processReports = processReports;
+		m_eventSyncCondition.notifyAll();
+	}
+
+	public boolean isAllTestFinished() {
+		for (ProcessReports processReport : this.processReports) {
+			//TODO
+		}
+		return true;
 	}
 }

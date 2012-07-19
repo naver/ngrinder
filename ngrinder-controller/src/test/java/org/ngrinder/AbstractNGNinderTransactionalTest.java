@@ -39,5 +39,14 @@ abstract public class AbstractNGNinderTransactionalTest extends AbstractTransact
 	public User getTestUser() {
 		return getUser(MockUserContext.TEST_USER_ID);
 	}
+	
+	public void sleep(long miliseconds) {
+		try {
+			Thread.sleep(miliseconds);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 }

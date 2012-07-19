@@ -22,51 +22,167 @@
  */
 package org.ngrinder.perftest.service;
 
-import java.util.ArrayDeque;
+import java.io.Console;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
 import net.grinder.SingleConsole;
 
+import org.apache.commons.lang.math.NumberUtils;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.infra.config.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * Console manager class which is reponsible to console instance management.
+ * 
+ * @author JunHo Yoon
+ */
 @Component
 public class ConsoleManager {
-	private Queue<ConsoleEntry> consoleQueue = new ArrayDeque<ConsoleEntry>();
-	private List<ConsoleEntry> consoleInUse = new ArrayList<ConsoleEntry>();
+	private static final Logger LOG = LoggerFactory.getLogger(ConsoleManager.class);
+	private ArrayBlockingQueue<ConsoleEntry> consoleQueue;
+	private List<SingleConsole> consoleInUse = Collections.synchronizedList(new ArrayList<SingleConsole>());
 
+	@Autowired
+	private Config config;
+
+	private long maxWaitingMiliSecond;
+
+	/**
+	 * Prepare console queue.
+	 */
 	@PostConstruct
 	public void init() {
-		for (int i = 0; i < 20; i++) {
-			consoleQueue.add(new ConsoleEntry(i + 12000));
+		int consoleSize = getConsoleSize();
+		consoleQueue = new ArrayBlockingQueue<ConsoleEntry>(consoleSize);
+		for (int each : getAvailablePorts(consoleSize, getConsolePortBase())) {
+			consoleQueue.add(new ConsoleEntry(each));
 		}
+
+		maxWaitingMiliSecond = initMaxWaitingMiliSecond();
 	}
 
+	protected int getConsolePortBase() {
+		String consoleSizeString = config.getSystemProperties().getProperty("console.portbase",
+				String.valueOf(NGrinderConstants.CONSOLE_PORT_BASE));
+		return NumberUtils.toInt(consoleSizeString, NGrinderConstants.CONSOLE_PORT_BASE);
+	}
+
+	protected int getConsoleSize() {
+		String consoleSizeString = config.getSystemProperties().getProperty("console.size",
+				String.valueOf(NGrinderConstants.CONSOLE_SIZE));
+		return NumberUtils.toInt(consoleSizeString, NGrinderConstants.CONSOLE_SIZE);
+	}
+
+	/**
+	 * Timeout (in second).
+	 * 
+	 * @return 5000 second
+	 */
+	protected long initMaxWaitingMiliSecond() {
+		String consoleSizeString = config.getSystemProperties().getProperty("console.maxwaitingseconds",
+				String.valueOf(NGrinderConstants.CONSOLE_MAX_WAITING_MILLISECONDS));
+		return NumberUtils.toInt(consoleSizeString, NGrinderConstants.CONSOLE_MAX_WAITING_MILLISECONDS);
+	}
+
+	/**
+	 * Get available ports.
+	 * 
+	 * @param size
+	 *            port size
+	 * @param from
+	 *            port number starting from
+	 * @return port list
+	 */
+	private List<Integer> getAvailablePorts(int size, int from) {
+		List<Integer> ports = new ArrayList<Integer>();
+		for (int i = 0; i < size; i++) {
+			ports.add(from + i);
+		}
+		return ports;
+	}
+
+	/**
+	 * Get available console.
+	 * 
+	 * If there is no available console, it waits until available console is
+	 * returned back. If the specific time is elapsed, the timeout error occurs
+	 * and throw {@link NGrinderRuntimeException}. timeout can be adjusted by
+	 * overriding {@link #getMaxWaitingMiliSecond()}.
+	 * 
+	 * @return console
+	 */
 	public SingleConsole getAvailableConsole() {
-		ConsoleEntry consoleEntry = consoleQueue.poll();
-		if (consoleEntry == null) {
+		ConsoleEntry consoleEntry;
+		try {
+			consoleEntry = consoleQueue.poll(getMaxWaitingMiliSecond(), TimeUnit.MILLISECONDS);
+			if (consoleEntry == null) {
+				throw new NGrinderRuntimeException("no console entry available");
+			}
+			synchronized (this) {
+				SingleConsole singleConsole = new SingleConsole(consoleEntry.getPort());
+				getConsoleInUse().add(singleConsole);
+				return singleConsole;
+			}
+		} catch (InterruptedException e) {
 			throw new NGrinderRuntimeException("no console entry available");
 		}
-		getConsoleInUse().add(consoleEntry);
-		return new SingleConsole(consoleEntry.getPort());
 	}
 
+	/**
+	 * Return back console.
+	 * 
+	 * Duplicated returns is allowed.
+	 * 
+	 * @param console
+	 *            console which will be returned back.
+	 * 
+	 */
 	public void returnBackConsole(SingleConsole console) {
-		try {
-			console.shutdown();
-		} catch (Exception e) {
+		synchronized (this) {
+			try {
+				console.shutdown();
+			} catch (Exception e) {
+				LOG.error("Exception occurs while shuttdowning console in returnback process", e);
+			}
+			ConsoleEntry consoleEntry = new ConsoleEntry(console.getConsolePort());
+
+			if (!consoleQueue.contains(consoleEntry)) {
+				consoleQueue.add(consoleEntry);
+				getConsoleInUse().remove(console);
+			}
 		}
-		ConsoleEntry consoleEntry = new ConsoleEntry(console.getConsoleProperties().getConsolePort());
-		consoleQueue.add(consoleEntry);
-		getConsoleInUse().remove(consoleEntry);
 	}
 
-	public List<ConsoleEntry> getConsoleInUse() {
+	public List<SingleConsole> getConsoleInUse() {
 		return consoleInUse;
+	}
+
+	public Integer getAvailableConsoleSize() {
+		return consoleQueue.size();
+	}
+
+	public long getMaxWaitingMiliSecond() {
+		return maxWaitingMiliSecond;
+	}
+
+	public SingleConsole getConsoleUsingPort(int port) {
+		for (SingleConsole each : consoleInUse) {
+			if (each.getConsolePort() == port) {
+				return each;
+			}
+		}
+		return null;
 	}
 
 }

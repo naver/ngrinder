@@ -3,12 +3,10 @@ package net.grinder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.Iterator;
 import java.util.Set;
 
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
-import net.grinder.messages.console.AgentAddress;
 
 import org.junit.After;
 import org.junit.Before;
@@ -26,7 +24,7 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 	public void before() {
 		agentControllerServerDeamon = new AgentControllerServerDaemon(getFreePort());
 		agentControllerServerDeamon.start();
-		
+
 		agentControllerDaemon = new AgentControllerDaemon();
 		agentControllerDaemon.run(agentControllerServerDeamon.getPort());
 
@@ -34,7 +32,7 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 		agentControllerDaemon2.run(agentControllerServerDeamon.getPort());
 		sleep(2000);
 		// Validate if all agents are well-attached.
-		
+
 		allAvailableAgents = agentControllerServerDeamon.getAllAvailableAgents();
 		assertThat(allAvailableAgents.size(), is(2));
 	}
@@ -59,10 +57,11 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 		// Validate all agents are well attached even after restarting agent
 		// controller server
 		agentControllerServerDeamon.shutdown();
-		agentControllerServerDeamon = new AgentControllerServerDaemon(2022);
+		agentControllerServerDeamon = new AgentControllerServerDaemon(agentControllerServerDeamon.getPort());
 		agentControllerServerDeamon.start();
 		sleep(3000);
 
+		// all agent should be reattached
 		allAvailableAgents = agentControllerServerDeamon.getAllAvailableAgents();
 		assertThat(allAvailableAgents.size(), is(2));
 	}
@@ -71,7 +70,7 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 	public void testStartAgent() {
 
 		// Start Console
-		console1 = new SingleConsole(6374);
+		console1 = new SingleConsole(getFreePort());
 		console1.start();
 
 		// Check there is no agents are attached.
@@ -79,8 +78,8 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 
 		// Make one agent connect to console1
 		GrinderProperties grinderProperties = new GrinderProperties();
-		grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, 6374);
-		AgentIdentity next = allAvailableAgents.iterator().next();
+		grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, console1.getConsolePort());
+		AgentIdentity next = getAgentIdentity(allAvailableAgents, 0);
 		agentControllerServerDeamon.startAgent(grinderProperties, next);
 		sleep(2000);
 		assertThat(console1.getAllAttachedAgents().size(), is(1));
@@ -95,15 +94,15 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 	@Test
 	public void testStopAndStartAgentRepeatly() {
 		// Get one agent
-		AgentIdentity agentIdentity = allAvailableAgents.iterator().next();
+		AgentIdentity agentIdentity = getAgentIdentity(allAvailableAgents, 0);
 
 		// Start console
-		SingleConsole console1 = new SingleConsole(6372);
+		SingleConsole console1 = new SingleConsole(getFreePort());
 		console1.start();
 
 		// Start one agent
 		GrinderProperties grinderProperties = new GrinderProperties();
-		grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, 6372);
+		grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, console1.getConsolePort());
 
 		agentControllerServerDeamon.startAgent(grinderProperties, agentIdentity);
 		sleep(3000);
@@ -114,15 +113,15 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 		sleep(3000);
 		assertThat(console1.getAllAttachedAgentsCount(), is(0));
 
-		// Stop that agent and see it's well disconnected
+		// Stop that agent and see it's well disconnected again.
+		// It should be verified
 		agentControllerServerDeamon.stopAgent(agentIdentity);
-		sleep(3000);
+		sleep(5000);
 		assertThat(console1.getAllAttachedAgentsCount(), is(0));
 
 		agentControllerServerDeamon.startAgent(grinderProperties, agentIdentity);
 		sleep(5000);
 		assertThat(console1.getAllAttachedAgentsCount(), is(1));
-		sleep(5000);
 	}
 
 	@Test
@@ -135,14 +134,10 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 		console1.start();
 
 		GrinderProperties grinderProperties = new GrinderProperties();
-		grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, 6372);
-		Iterator<AgentIdentity> iterator = allAvailableAgents.iterator();
-		AgentIdentity next = iterator.next();
-		System.out.println(new AgentAddress(next));
-		AgentIdentity next2 = iterator.next();
-		System.out.println(next2.getNumber());
-		agentControllerServerDeamon.startAgent(grinderProperties, next);
-		agentControllerServerDeamon.startAgent(grinderProperties, next2);
+		grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, console1.getConsolePort());
+
+		agentControllerServerDeamon.startAgent(grinderProperties, getAgentIdentity(allAvailableAgents, 0));
+		agentControllerServerDeamon.startAgent(grinderProperties, getAgentIdentity(allAvailableAgents, 1));
 		sleep(1000);
 		assertThat(console1.getAllAttachedAgents().size(), is(2));
 
@@ -163,8 +158,8 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 		allAvailableAgents = agentControllerServerDeamon.getAllAvailableAgents();
 
 		// If we restart agents
-		agentControllerServerDeamon.startAgent(grinderProperties, next);
-		agentControllerServerDeamon.startAgent(grinderProperties, next2);
+		agentControllerServerDeamon.startAgent(grinderProperties, getAgentIdentity(allAvailableAgents, 0));
+		agentControllerServerDeamon.startAgent(grinderProperties, getAgentIdentity(allAvailableAgents, 1));
 		sleep(2000);
 
 		// They should be successfully attached into the existing console.

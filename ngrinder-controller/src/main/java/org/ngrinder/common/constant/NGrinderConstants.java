@@ -65,10 +65,31 @@ public interface NGrinderConstants {
 	public static final String NGRINDER_DEFAULT_PACKAGE = "org.ngrinder";
 	public static final int PLUGIN_UPDATE_FREQUENCY = 60;
 
+	/**
+	 * Initial console size.
+	 */
+	public static final int CONSOLE_SIZE = 10;
+	/**
+	 * Maximum waiting seconds until all agents are connected.
+	 */
+	public static final int CONSOLE_MAX_WAITING_MILLISECONDS = 5000;
+
+	/**
+	 * Performance test run frequency in milliseconds.
+	 */
+	public static final int PERFTEST_RUN_FREQUENCY_MILLISECONDS = 5000;
+
+	/**
+	 * Max trial count to run performance test.
+	 */
+	public static final int PERFTEST_MAXIMUM_TRIAL_COUNT = 3;
+	
 	// HOME_PATH
 	public static final String PROJECT_PATH = "project";
 	public static final String PLUGIN_PATH = "plugins";
 	public static final String SCRIPT_PATH = "script";
+	public static final int CONSOLE_PORT_BASE = 12000;
+
 	public static final String USER_REPO_PATH = "repos";
 
 	// parameter constant, for parameter from page, and for key in map
@@ -79,5 +100,6 @@ public interface NGrinderConstants {
 	public static final String PARAM_MESSAGE = "message";
 	public static final String PARAM_THREAD_COUNT = "threadCount";
 	public static final String PARAM_PROCESS_COUNT = "processCount";
+
 
 }

@@ -22,6 +22,10 @@
  */
 package org.ngrinder.perftest.service;
 
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
+import java.util.List;
+
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
@@ -56,6 +60,21 @@ public class PerfTestService {
 
 	@CacheEvict(value = "perfTest", allEntries = true)
 	public PerfTest savePerfTest(PerfTest test) {
+		checkNotNull(test);
+		return perfTestRepository.save(test);
+	}
+
+	/**
+	 * Save performance test with given status
+	 * 
+	 * @param test
+	 * @param status
+	 * @return
+	 */
+	@CacheEvict(value = "perfTest", allEntries = true)
+	public PerfTest savePerfTest(PerfTest test, Status status) {
+		checkNotNull(test);
+		test.setStatus(status);
 		return perfTestRepository.save(test);
 	}
 
@@ -67,6 +86,11 @@ public class PerfTestService {
 	@Cacheable(value = "perfTest")
 	public PerfTest getPerfTestCandiate() {
 		return perfTestRepository.findOneByStatusOrderByCreatedDateAsc(Status.READY);
+	}
+
+	@Cacheable(value = "perfTest")
+	public List<PerfTest> getTestingPerfTest() {
+		return perfTestRepository.findAllByStatusOrderByCreatedDateAsc(Status.TESTING);
 	}
 
 	public void deletePerfTest(long id) {

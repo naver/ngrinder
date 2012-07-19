@@ -1,5 +1,7 @@
 package net.grinder.engine.agent;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import net.grinder.AgentDaemon;
 import net.grinder.SingleConsole;
 import net.grinder.util.thread.Condition;
@@ -46,5 +48,31 @@ public class AgentDaemonTest extends AbstractMuliGrinderTestBase {
 		// Shutdown console
 		console1.shutdown();
 		waitOnCondition(condition, 2100);
+	}
+
+	@Test
+	public void testAgentReconnect() {
+		// After connecting agent daemon,
+		AgentDaemon agent = new AgentDaemon();
+		agent.run(console1.getConsolePort());
+		agent.addListener(new AgentShutDownSynchronizeListener(condition));
+		// Shutdown console
+		sleep(2000);
+		assertThat(console1.getAllAttachedAgentsCount(), is(1));
+
+		// shutdown twice
+		agent.shutdown();
+		sleep(3000);
+		assertThat(console1.getAllAttachedAgentsCount(), is(0));
+		agent.shutdown();
+		sleep(3000);
+		assertThat(console1.getAllAttachedAgentsCount(), is(0));
+
+		// Even shutdown twice, agent is well connected into console.
+		agent.run(console1.getConsolePort());
+		sleep(2000);
+
+		assertThat(console1.getAllAttachedAgentsCount(), is(1));
+
 	}
 }

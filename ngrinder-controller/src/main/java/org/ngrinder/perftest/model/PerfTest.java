@@ -45,8 +45,9 @@ import org.ngrinder.model.User;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
- * Performance Test Entity Use Create user of BaseModel as test owner, use create date of BaseModel as create time, but
- * the created time maybe not the test starting time.
+ * Performance Test Entity Use Create user of BaseModel as test owner, use
+ * create date of BaseModel as create time, but the created time maybe not the
+ * test starting time.
  * 
  */
 @Entity
@@ -102,9 +103,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private int agentCount;
 
 	private int vuserPerAgent;
-	
+
 	private int processes;
-	
+
 	private int initProcesses;
 
 	private int initSleepTime;
@@ -112,7 +113,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private int processIncrement;
 
 	private int processIncrementInterval;
-	
+
 	private int threads;
 	
 	//followings are test result members
@@ -129,6 +130,9 @@ public class PerfTest extends BaseModel<PerfTest> {
     private double peakTps = 0;
     
 
+	private int port;
+
+	private int testTrialCount;
 	@Transient
 	private GrinderProperties grinderProperties;
 
@@ -268,6 +272,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return vuserPerAgent;
 	}
 
+
 	public void setVuserPerAgent(int vuserPerAgent) {
 		this.vuserPerAgent = vuserPerAgent;
 	}
@@ -315,6 +320,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public int getThreads() {
 		return threads;
 	}
+
 
 	public void setThreads(int threads) {
 		this.threads = threads;
@@ -388,5 +394,21 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public int getTestTrialCount() {
+		return testTrialCount;
+	}
+
+	public void setTestTrialCount(int testTrialCount) {
+		this.testTrialCount = testTrialCount;
 	}
 }

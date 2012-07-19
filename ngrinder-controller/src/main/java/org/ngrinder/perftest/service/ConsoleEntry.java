@@ -23,6 +23,7 @@
 package org.ngrinder.perftest.service;
 
 public class ConsoleEntry {
+
 	private Integer port;
 
 	public ConsoleEntry(Integer port) {
@@ -35,6 +36,31 @@ public class ConsoleEntry {
 
 	public void setPort(Integer port) {
 		this.port = port;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((port == null) ? 0 : port.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ConsoleEntry other = (ConsoleEntry) obj;
+		if (port == null) {
+			if (other.port != null)
+				return false;
+		} else if (!port.equals(other.port))
+			return false;
+		return true;
 	}
 
 }
