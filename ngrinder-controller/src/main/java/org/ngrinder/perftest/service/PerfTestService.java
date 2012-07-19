@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -85,7 +86,9 @@ public class PerfTestService {
 
 	@Cacheable(value = "perftest")
 	public PerfTest getPerfTestCandiate() {
-		return perfTestRepository.findOneByStatusOrderByCreatedDateAsc(Status.READY);
+		Page<PerfTest> perfTest = perfTestRepository.findAllByStatusOrderByCreatedDateAsc(Status.TESTING,
+				new PageRequest(0, 1));
+		return (perfTest.getNumber() == 0) ? null : perfTest.getContent().get(0);
 	}
 
 	@Cacheable(value = "perftestlist")
