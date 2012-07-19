@@ -1,21 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="utf-8">
 		<title>nGrinder Script List</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="nGrinder Test Result Detail">
-		<meta name="author" content="AlexQin">
-
-		<link rel="shortcut icon" href="${req.getContextPath()}/favicon.ico"/>
-		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet"/>
-		<link href="${req.getContextPath()}/css/ngrinder.css" rel="stylesheet"/>
-		<link href="${req.getContextPath()}/plugins/datatables/css/demo_table.css" rel="stylesheet"/>
-		<link href="${req.getContextPath()}/plugins/datatables/css/demo_page.css" rel="stylesheet"/>
-		<link href="${req.getContextPath()}/plugins/datatables/css/demo_table_jui.css" rel="stylesheet/">
-
-		<input type="hidden" id="contextPath" value="${req.getContextPath()}">
-		<#setting number_format="computer">
+		<#include "../common/common.ftl">
+		<#include "../common/datatables.ftl">
 	</head>
 
 	<body>
@@ -39,45 +27,42 @@
 				</a>
 				<a class="btn" href="#uploadScriptModal" id="uploadBtn" data-toggle="modal">
 					<i class="icon-upload"></i>
-					 Upload script or resources
+					Upload script or resources
 				</a>
-				
-				
-				<a class="btn  btn-danger pull-right" href="javascript:void(0);" id="deleteBtn">
+				<a class="btn btn-danger pull-right" href="javascript:void(0);" id="deleteBtn">
 					<i class="icon-remove"></i>
 					Delete selected scripts
 				</a>
 
-				<div class="well form-inline" style="padding:5px;margin:10px 0">
-					<!--<legend>introduction</legend>-->
-					<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
-					<button type="submit" class="btn" id="searchBtn">Search</button>
-				</div>
-				<table class="display ellipsis" id="scriptTable" style="margin-bottom:10px;">
-					<colgroup>
-						<col width="30">
-						<col width="160">
-						<col>
-						<col width="170">
-						<col width="160">
-						<col width="100">
-						<col width="100">
-						<col width="80">
-					</colgroup>
-					<thead>
-						<tr>
-							<th class="center"><input type="checkbox" class="checkbox" value=""></th>
-							<th>Script File Name</th>
-							<th class="noClick">Description</th>
-							<th>Last Modified Date</th>
-							<th>Last Modified By</th>
-							<th>Size(KB)</th>
-							<th class="noClick">Tags</th>
-							<th class="noClick">Download</th>
-						</tr>
-					</thead>
-					<tbody> 
-						
+		<div class="well form-inline searchBar">
+			<!--<legend>introduction</legend>-->
+			<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
+			<button type="submit" class="btn" id="searchBtn">Search</button>
+		</div>
+		<table class="display ellipsis jsTable" id="scriptTable">
+			<colgroup>
+				<col width="35">
+				<col width="160">
+				<col>
+				<col width="170">
+				<col width="160">
+				<col width="100">
+				<col width="100">
+				<col width="80">
+			</colgroup>
+			<thead>
+				<tr>
+					<th><input type="checkbox" class="checkbox" value=""></th>
+					<th>Script File Name</th>
+					<th class="noClick">Description</th>
+					<th>Last Modified Date</th>
+					<th>Last Modified By</th>
+					<th>Size(KB)</th>
+					<th class="noClick">Tags</th>
+					<th class="noClick">Download</th>
+				</tr>
+			</thead>
+			<tbody>		
 						<#list files as script>
 						<tr>
 							<td><input type="checkbox" value="${script.fileName}"></td>
@@ -122,10 +107,10 @@
 						</div>
 						<div class="control-group">
 							<label for="languageSelect" class="control-label">Type</label>
-							<div class="controls">						 
-							    <input type="hidden" name="type" value="script"/>
+							<div class="controls">
+								<input type="hidden" name="type" value="script"/>
 								<select id="languageSelect" name="language">
-									<option value="py">Python Script</option>
+									<option value="py">PythonScript</option>
 								</select>
 							  <span class="help-inline"></span>
 							</div>
@@ -172,7 +157,7 @@
 				<a href="#createFolderModal" class="btn" id="cancelBtn" data-toggle="modal">Cancel</a>
 			</div>
 		</div>
-		
+	
 		<div class="modal fade" id="uploadScriptModal">
 			<div class="modal-header">
 				<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
@@ -183,26 +168,26 @@
 						id="uploadForm" enctype="multipart/form-data">
 					<fieldset>
 						<div class="control-group">
-							<label for="upScriptNameInput" class="control-label control-label-small">Name</label>
-							<div class="controls controls-small">
+							<label for="upScriptNameInput" class="control-label">Name</label>
+							<div class="controls">
 							  <input type="text" id="upScriptNameInput" name="fileName">
 							  <span class="help-inline"></span>
 							</div>
 						</div>
 						<div class="control-group">
-							<label for="discriptionInput" class="control-label control-label-small">Description</label>
-							<div class="controls controls-small">
+							<label for="discriptionInput" class="control-label">Description</label>
+							<div class="controls">
 							  <input type="text" id="discriptionInput" name="description">
 							  <span class="help-inline"></span>
 							</div>
 						</div>
 						<div class="control-group">
-							<label for="fileInput" class="control-label control-label-small">File</label>
-							<div class="controls controls-small">
+							<label for="fileInput" class="control-label">File</label>
+							<div class="controls">
 							  <input type="file" class="input-file" id="fileInput" name="uploadFile">
 							  <span class="help-inline"></span>
 							</div>
-						</div>					
+						</div>				
 					</fieldset>
 				</form>
 			</div>
@@ -211,11 +196,7 @@
 			</div>
 		</div>
 	</div>
-	
-	<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
-	<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
-	<script src="${req.getContextPath()}/js/utils.js"></script>
-	<script src="${req.getContextPath()}/plugins/datatables/js/jquery.dataTables.min.js"></script>
+
 	<script>
 		$(document).ready(function() {
 			$("#n_script").addClass("active");

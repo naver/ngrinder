@@ -1,21 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="utf-8">
 		<title>nGrinder Performance Test List</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="nGrinder Performance Test List">
-		<meta name="author" content="AlexQin">
-
-		<link rel="shortcut icon" href="favicon.ico"/>
-		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
-		<link href="${req.getContextPath()}/plugins/datatables/css/demo_table.css" rel="stylesheet">
-		<link href="${req.getContextPath()}/plugins/datatables/css/demo_page.css" rel="stylesheet">
-		<link href="${req.getContextPath()}/plugins/datatables/css/demo_table_jui.css" rel="stylesheet">
-		<link href="${req.getContextPath()}/css/ngrinder.css" rel="stylesheet">
-		
-		<input type="hidden" id="contextPath" value="${req.getContextPath()}">
-		<#setting number_format="computer">
+		<#include "../common/common.ftl">
+		<#include "../common/datatables.ftl">
 	</head>
 
 	<body>
@@ -104,10 +92,6 @@
 				</div>
 			</div>
 		</div>
-		<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
-		<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
-		<script src="${req.getContextPath()}/js/utils.js"></script>
-		<script src="${req.getContextPath()}/plugins/datatables/js/jquery.dataTables.min.js"></script>
 		<script>
 			var oTable;
 

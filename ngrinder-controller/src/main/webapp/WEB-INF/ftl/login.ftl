@@ -1,15 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta charset="utf-8">
-		<title>nGrinder Test</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="nGrinder Test Result Detail">
-		<meta name="author" content="AlexQin">
-
-		<!-- Le styles -->
-		<link rel="shortcut icon" href="favicon.ico"/>
-		<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
+		<title>nGrinder Login</title>
+		<#include "common/common.ftl">
 		<style>
 			body { overflow-y:hidden; background-color:white }
 			.content { height:635px; margin-top:30px; padding-top:30px; background-color:#f5f4f2 }
@@ -61,8 +54,6 @@
 	</div>
 </div>
 
-<script language="javascript" type="text/javascript" src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
-<script language="javascript" type="text/javascript" src="${req.getContextPath()}/js/utils.js"></script>
 <script language="javascript">
 	$.ajaxSetup({ cache: false });
 	$(function(){
