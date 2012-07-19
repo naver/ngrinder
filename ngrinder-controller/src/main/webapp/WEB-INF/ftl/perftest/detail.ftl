@@ -85,7 +85,7 @@ div.div-host .host {
 								<div class="page-header">
 									<h4>Load Test Detail</h4>
 								</div>
-								<div class="form-horizontal form-horizontal-2">
+								<div class="form-horizontal form-horizontal-2"> 
 									<fieldset>
 										<div class="control-group">
 											<label for="agentCount" class="control-label">Agent</label>
@@ -240,8 +240,7 @@ div.div-host .host {
 										</td>
 									</tr>
 								</table>
-								<div id="rampChart1" class="rampChart">
-								</div>
+								<div id="rampChart1" class="rampChart"></div>
 								<div id="rampChart2" class="rampChart hidden"></div>
 							</div>
 						</div>

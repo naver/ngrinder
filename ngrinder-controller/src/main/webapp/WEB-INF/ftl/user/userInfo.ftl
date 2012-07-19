@@ -1,13 +1,13 @@
 <script src="${req.getContextPath()}/js/jquery.validate.js"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
-		<#if !(user?has_content)>
-			$(".collapse").collapse();
-			$("#user_pw_head").attr("href","");
-			
-				$("#userId").blur(function(){
-				var userId = $("#userId").val();
+			<#if !(user?has_content)>
+				$(".collapse").collapse();
+				$("#user_pw_head").attr("href","");
 				
+				$("#userId").blur(function(){
+					var userId = $("#userId").val();
+					
 					var patrn = "^[a-zA-Z]{1}([a-zA-Z0-9]|[_]|[-]|[.]){0,19}$";
 						var rule = new RegExp(patrn);
 						if (!rule.test($.trim($("#userId").val()))) {
@@ -18,11 +18,11 @@
 					}
 					
 					
-				if(userId != null && userId.length > 0){
-					$.ajax({
-						  url: "${req.getContextPath()}/user/checkUserId?userId="+userId,
+						if(userId != null && userId.length > 0){
+							$.ajax({
+								  url: "${req.getContextPath()}/user/checkUserId?userId="+userId,
 								  async: false,
-						  cache: false,
+								  cache: false,
 								  type: "GET",
 								  dataType:'json',
 								  success: function(res) {
@@ -35,12 +35,11 @@
 								  	  	 $("#userIdError_span_id").html("");
 								  	  	 $("#userIdError_span_id").hide();
 								  	  }
-	  						}
-					}); 
-				}
-						
-			});
-		</#if>
+			  					  }
+							}); 
+						}
+				});
+			</#if>
 		
 		
 		$('.collapse').on('hidden', function () {
@@ -103,11 +102,16 @@
 	        }
 	    });
 	});
-</script>
+	
 
+	
+	
+</script>
 <form action="${req.getContextPath()}/user/save"
 	class="form-horizontal form-horizontal-left" id="registerUserForm" style="margin-left:30px" method="POST">
 	<fieldset>
+		
+		
 		<div class="control-group">
 			<label class="control-label">User ID</label>
 			<div class="controls">
@@ -207,7 +211,7 @@
 		</div>
 		<div class="control-group">
 			<label class="control-label pull-right">
-				<button type="submit" class="btn btn-success" rel="tooltip">Save User</button>
+				<button type="submit" class="btn btn-success " rel="tooltip">Save User</button>
 			</label>
 		</div>
 	</fieldset>
