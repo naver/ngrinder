@@ -29,7 +29,7 @@ import org.ngrinder.model.BaseEntity;
 
 @Entity
 @Table(name = "SystemMonitor")
-public class SystemDataModel extends BaseEntity<JavaDataModel> {
+public class SystemDataModel extends BaseEntity<SystemDataModel> {
 
 	private static final long serialVersionUID = 790334226137464982L;
 
