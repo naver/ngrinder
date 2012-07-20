@@ -20,66 +20,43 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.perftest.service;
+package org.ngrinder.monitor.controller;
+
+import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
+import org.ngrinder.monitor.controller.domain.MonitorRecoder;
+import org.ngrinder.monitor.share.domain.JavaInfo;
+import org.ngrinder.monitor.share.domain.SystemInfo;
 
 /**
- * Console information which contains console's characteristics for example
- * port.
+ * Class description.
  * 
- * @author JunHo Yoon
- * @since 3.0
- * 
+ * @author Tobi
+ * @since
+ * @date 2012-7-20
  */
-public class ConsoleEntry {
+public class MonitorRecoderDemo implements MonitorRecoder {
 
-	private Integer port;
+	@Override
+	public void before() {
+		System.out.println("before");
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param port
-	 *            port
-	 */
-	public ConsoleEntry(Integer port) {
-		this.port = port;
-	}
-
-	public Integer getPort() {
-		return port;
-	}
-
-	public void setPort(Integer port) {
-		this.port = port;
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((port == null) ? 0 : port.hashCode());
-		return result;
+	public void recoderJavaInfo(String key, JavaInfo javaInfo, MonitorAgentInfo agentInfo) {
+		System.out.println(key);
+		System.out.println(javaInfo);
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		ConsoleEntry other = (ConsoleEntry) obj;
-		if (port == null) {
-			if (other.port != null) {
-				return false;
-			}
-		} else if (!port.equals(other.port)) {
-			return false;
-		}
-		return true;
+	public void recoderSystemInfo(String key, SystemInfo systemInfo, MonitorAgentInfo agentInfo) {
+		System.out.println(key);
+		System.out.println(systemInfo);
+	}
+
+	@Override
+	public void after() {
+		System.out.println("after");
 	}
 
 }

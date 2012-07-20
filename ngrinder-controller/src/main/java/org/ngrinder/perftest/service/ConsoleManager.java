@@ -22,7 +22,6 @@
  */
 package org.ngrinder.perftest.service;
 
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,9 +42,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Console manager class which is reponsible to console instance management.
+ * Console manager class which is responsible to console instance management.
  * 
  * @author JunHo Yoon
+ * @since 3.0
  */
 @Component
 public class ConsoleManager {
@@ -176,6 +176,13 @@ public class ConsoleManager {
 		return maxWaitingMiliSecond;
 	}
 
+	/**
+	 * Get {@link SingleConsole} instance which uses the given port.
+	 * 
+	 * @param port
+	 *            port which will be checked against
+	 * @return {@link SingleConsole} instance if found. Otherwise, null
+	 */
 	public SingleConsole getConsoleUsingPort(int port) {
 		for (SingleConsole each : consoleInUse) {
 			if (each.getConsolePort() == port) {

@@ -32,6 +32,8 @@ import java.util.Set;
 
 import org.ngrinder.monitor.MonitorContext;
 import org.ngrinder.monitor.share.domain.JavaVirtualMachineInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import sun.jvmstat.monitor.HostIdentifier;
 import sun.jvmstat.monitor.MonitorException;
@@ -46,6 +48,9 @@ import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
 
 public class JVMUtils {
+
+	private static final Logger LOG = LoggerFactory.getLogger(JVMUtils.class);
+
 	public static final String LOCAL_CONNECTOR_ADDRESS = "com.sun.management.jmxremote.localConnectorAddress";
 
 	@SuppressWarnings("rawtypes")
@@ -86,6 +91,7 @@ public class JVMUtils {
 					address = ConnectorAddressLink.importFrom(vmid);
 					mvm.detach();
 				} catch (Exception x) {
+					LOG.error(x.getMessage(), x);
 				}
 				map.put((Integer) vmidObject, new JavaVirtualMachineInfo(vmid, name, attachable, address));
 			}
@@ -110,11 +116,14 @@ public class JVMUtils {
 						address = (String) vm.getAgentProperties().get(LOCAL_CONNECTOR_ADDRESS);
 						vm.detach();
 					} catch (AttachNotSupportedException x) {
+						LOG.error(x.getMessage(), x);
 					} catch (IOException x) {
+						LOG.error(x.getMessage(), x);
 					}
 					map.put(vmid, new JavaVirtualMachineInfo(vmid.intValue(), vmd.displayName(), attachable, address));
 				}
 			} catch (NumberFormatException e) {
+				LOG.error(e.getMessage(), e);
 			}
 		}
 

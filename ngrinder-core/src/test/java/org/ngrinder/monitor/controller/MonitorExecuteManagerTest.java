@@ -20,66 +20,27 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.perftest.service;
+package org.ngrinder.monitor.controller;
+
+import org.junit.Test;
+import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
 
 /**
- * Console information which contains console's characteristics for example
- * port.
+ * Class description.
  * 
- * @author JunHo Yoon
- * @since 3.0
- * 
+ * @author Tobi
+ * @since
+ * @date 2012-7-20
  */
-public class ConsoleEntry {
+public class MonitorExecuteManagerTest {
 
-	private Integer port;
-
-	/**
-	 * Constructor.
-	 * 
-	 * @param port
-	 *            port
-	 */
-	public ConsoleEntry(Integer port) {
-		this.port = port;
+	@Test
+	public void getMonitorData() {
+		MonitorAgentInfo[] agentInfo = new MonitorAgentInfo[1];
+		agentInfo[0] = MonitorAgentInfo.getAgentMonitor("127.0.0.1", 4096, new MonitorRecoderDemo());
+		MonitorExecuteManager monitorExecuteManager = new MonitorExecuteManager("127.0.0.1", 2, 1, agentInfo);
+		monitorExecuteManager.start();
+		ThreadUtil.sleep(10000);
 	}
-
-	public Integer getPort() {
-		return port;
-	}
-
-	public void setPort(Integer port) {
-		this.port = port;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((port == null) ? 0 : port.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		ConsoleEntry other = (ConsoleEntry) obj;
-		if (port == null) {
-			if (other.port != null) {
-				return false;
-			}
-		} else if (!port.equals(other.port)) {
-			return false;
-		}
-		return true;
-	}
-
 }

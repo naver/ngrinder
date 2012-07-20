@@ -42,6 +42,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+/**
+ * Performance Test Controller.
+ * 
+ * @author Mavlarn
+ * @author JunHo Yoon
+ */
 @Controller
 @RequestMapping("/perftest")
 public class PerfTestController extends NGrinderBaseController {
@@ -57,11 +63,25 @@ public class PerfTestController extends NGrinderBaseController {
 
 	// private static final int DEFAULT_TEST_PAGE_ZISE = 15;
 
+	/**
+	 * Get Performance test lists.
+	 * 
+	 * @param user
+	 *            user
+	 * @param model
+	 *            modelMap
+	 * @param isFinished
+	 *            only list finished project
+	 * @param pageable
+	 *            page
+	 * @return perftest/list
+	 */
 	@RequestMapping("/list")
 	public String getTestList(User user, ModelMap model, @RequestParam(required = false) boolean isFinished,
 			@RequestParam(required = false) PageRequest pageable) {
-
-		// not to paging on server side for now. Get all tests and paging/sorting in page.
+		// FIXME
+		// not to paging on server side for now. Get all tests and
+		// paging/sorting in page.
 		// if (pageable == null) {
 		// pageable = new PageRequest(0, DEFAULT_TEST_PAGE_ZISE);
 		// }
@@ -70,8 +90,19 @@ public class PerfTestController extends NGrinderBaseController {
 		return "perftest/list";
 	}
 
+	/**
+	 * Get performance test detail on give perf test id
+	 * 
+	 * @param user
+	 *            user
+	 * @param model
+	 *            model
+	 * @param id
+	 *            performance test id
+	 * @return "perftest/detail"
+	 */
 	@RequestMapping("/detail")
-	public String getTestDetail(User user, ModelMap model, @RequestParam(required = false) Long id) {
+	public String getTestDetail(User user, @RequestParam(required = false) Long id, ModelMap model) {
 		PerfTest test = null;
 		if (id != null) {
 			test = perfTestService.getPerfTest(id);
@@ -84,7 +115,6 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String saveTest(User user, ModelMap model, PerfTest test) {
 		perfTestService.savePerfTest(test);
-
 		return getTestList(user, model, false, null);
 	}
 
@@ -92,7 +122,6 @@ public class PerfTestController extends NGrinderBaseController {
 	public String cloneTest(ModelMap model, PerfTest test) {
 		test.setId(null);
 		perfTestService.savePerfTest(test);
-
 		return "perftest/list";
 	}
 
@@ -101,11 +130,12 @@ public class PerfTestController extends NGrinderBaseController {
 	 * 
 	 * @param model
 	 * @param newVuser
-	 * @return
+	 *            how many vusers whil be used.
+	 * @return JSON
 	 */
 	@RequestMapping(value = "/updateVuser")
 	public @ResponseBody
-	String updateVuser(ModelMap model, @RequestParam int newVuser) {
+	String updateVuser(@RequestParam int newVuser, ModelMap model) {
 		int threadCount = 2;
 		int processCount = newVuser / threadCount + newVuser % threadCount;
 		Map<String, Object> rtnMap = new HashMap<String, Object>(3);

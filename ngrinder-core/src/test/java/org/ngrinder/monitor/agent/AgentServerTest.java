@@ -34,18 +34,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.junit.Test;
+import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.monitor.MonitorConstants;
 
 public class AgentServerTest {
 	private static final Logger LOG = LoggerFactory.getLogger(AgentServerTest.class);
 
 	@Test
-	public void main() throws MalformedObjectNameException, InstanceAlreadyExistsException, MBeanRegistrationException,
-			NotCompliantMBeanException, NullPointerException, IOException {
+	public void startMonitor() throws MalformedObjectNameException, InstanceAlreadyExistsException,
+			MBeanRegistrationException, NotCompliantMBeanException, NullPointerException, IOException {
 		int port = 4096;
 		Set<String> dataCollectors = MonitorConstants.DEFAULT_DATA_COLLECTOR;
 		Set<Integer> jvmPids = MonitorConstants.DEFAULT_JVM_PID;
-		jvmPids.add(2584);
 
 		LOG.info("******************************");
 		LOG.info("* Start nGrinder Monitor Agent *");
@@ -53,21 +53,11 @@ public class AgentServerTest {
 		LOG.info("* Local JVM link support :{}", localAttachmentSupported);
 		AgentServer.getInstance().init(port, dataCollectors, jvmPids);
 		AgentServer.getInstance().start();
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		LOG.info("***Add java data monitoring.s***");
-		AgentServer.getInstance().addJavaDataCollect(6136);
-		LOG.info("***Add java data monitoring.e***");
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+		ThreadUtil.sleep(4000);
+		AgentServer.getInstance().refreshJavaDataCollect();
+		LOG.info("* Refresh java data monitoring.e *");
+		ThreadUtil.sleep(10000);
 	}
 
 	private static final boolean localAttachmentSupported;

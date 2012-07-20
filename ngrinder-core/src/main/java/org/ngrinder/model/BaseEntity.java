@@ -67,11 +67,12 @@ public class BaseEntity<M> implements Serializable {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
-	
+
 	/**
-	 * This function is used to check whether the entity id exist. It is not used to
-	 * check the entity existence in DB. It can be used to check the entity in controller,
-	 * which is passed from page. 
+	 * This function is used to check whether the entity id exist. It is not
+	 * used to check the entity existence in DB. It can be used to check the
+	 * entity in controller, which is passed from page.
+	 * 
 	 * @return
 	 */
 	public boolean exist() {
@@ -86,7 +87,8 @@ public class BaseEntity<M> implements Serializable {
 	 * @param source
 	 *            merge source
 	 */
-	public void merge(M source) {
+	@SuppressWarnings("unchecked")
+	public M merge(M source) {
 		try {
 			BeanInfo beanInfo = Introspector.getBeanInfo(getClass());
 			// Iterate over all the attributes
@@ -97,15 +99,14 @@ public class BaseEntity<M> implements Serializable {
 					// null
 					Object defaultValue = descriptor.getReadMethod().invoke(source);
 					if (defaultValue != null) {
-						if ((defaultValue instanceof String && StringUtils
-								.isNotBlank((String) defaultValue))
+						if ((defaultValue instanceof String && StringUtils.isNotBlank((String) defaultValue))
 								|| !(defaultValue instanceof String)) {
-							descriptor.getWriteMethod().invoke(this,
-									defaultValue);
+							descriptor.getWriteMethod().invoke(this, defaultValue);
 						}
 					}
 				}
 			}
+			return (M) this;
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException(
 					"Exception occurs while merging entities from " + source + " to " + this, e);

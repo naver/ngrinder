@@ -25,10 +25,7 @@ package org.ngrinder.perftest.service;
 import static org.ngrinder.common.util.CollectionUtils.selectSome;
 
 import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -39,7 +36,7 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.util.thread.ExecutorFactory;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -69,10 +66,12 @@ public class AgentManager {
 	}
 
 	/**
-	 * Assign agent on given console
+	 * Assign agent on given console.
 	 * 
 	 * @param singleConsole
+	 *            {@link SingleConsole} to which agents will be assigend
 	 * @param grinderProperties
+	 *            {@link GrinderProperties} to be distributed.
 	 * @param agentCount
 	 *            how much agent are necessary.
 	 */
@@ -97,6 +96,7 @@ public class AgentManager {
 			execService.awaitTermination(AGENT_RUN_TIMEOUT_SECOND, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			LOGGER.error("Error while running agent", e);
+			throw new NGrinderRuntimeException("Error while running agent", e);
 		}
 	}
 }
