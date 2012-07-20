@@ -55,7 +55,7 @@ import org.springframework.data.jpa.domain.Specification;
 public class PerfTest extends BaseModel<PerfTest> {
 
 	/**
-	 * UUID
+	 * UUID.
 	 */
 	private static final long serialVersionUID = 1369809450686098944L;
 
@@ -68,29 +68,29 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Enumerated(EnumType.STRING)
 	private Status status = Status.READY;
 
-	/** The sample interval value, default to 1000ms */
+	/** The sample interval value, default to 1000ms. */
 	private int sampleInterval = 1000;
 
-	/** ignoreSampleCount value, default to 0 */
+	/** ignoreSampleCount value, default to 0. */
 	private int ignoreSampleCount;
 
-	/** ignoreSampleCount value, default to 0, 0 means collect forever */
+	/** ignoreSampleCount value, default to 0, 0 means collect forever. */
 	private int collectSampleCount;
 
-	/** the start time of this test */
+	/** the start time of this test. */
 	private Date startTime;
 
-	/** the finish time of this test */
+	/** the finish time of this test. */
 	private Date finishTime;
 
-	/** the target host to test */
+	/** the target host to test. */
 	@Column(length = 256)
 	private String targetHosts;
 
-	/** The send mail code */
+	/** The send mail code. */
 	private boolean sendMail;
 
-	/** The threshold code, R for run count; D for duration */
+	/** The threshold code, R for run count; D for duration. */
 	private String threshold;
 
 	// default script name to run test
@@ -331,23 +331,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.threads = threads;
 	}
 
-	public static Specification<PerfTest> statusSetEqual(final Status... statuses) {
-		return new Specification<PerfTest>() {
-			@Override
-			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return root.get("status").in((Object[]) statuses);
-			}
-		};
-	}
-
-	public static Specification<PerfTest> createBy(final User user) {
-		return new Specification<PerfTest>() {
-			@Override
-			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return cb.equal(root.get("createdUser"), user);
-			}
-		};
-	}
 
 	public int getTests() {
 		return tests;

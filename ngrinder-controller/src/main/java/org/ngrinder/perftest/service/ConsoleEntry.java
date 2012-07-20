@@ -22,10 +22,24 @@
  */
 package org.ngrinder.perftest.service;
 
+/**
+ * Console information which contains console's characteristics for example
+ * port.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ * 
+ */
 public class ConsoleEntry {
 
 	private Integer port;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param port
+	 *            port
+	 */
 	public ConsoleEntry(Integer port) {
 		this.port = port;
 	}
@@ -48,18 +62,23 @@ public class ConsoleEntry {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
+		}
 		ConsoleEntry other = (ConsoleEntry) obj;
 		if (port == null) {
-			if (other.port != null)
+			if (other.port != null) {
 				return false;
-		} else if (!port.equals(other.port))
+			}
+		} else if (!port.equals(other.port)) {
 			return false;
+		}
 		return true;
 	}
 

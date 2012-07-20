@@ -39,9 +39,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
- * Test Service Class.
+ * Performance Test Service Class.
  * 
  * @author Mavlarn
+ * @author JunHo Yoon
  * @since 3.0
  */
 @Service
@@ -50,6 +51,17 @@ public class PerfTestService {
 	@Autowired
 	private PerfTestRepository perfTestRepository;
 
+	/**
+	 * Get {@link PerfTest} list on the user.
+	 * 
+	 * @param user
+	 *            user
+	 * @param isFinished
+	 *            only find finished test
+	 * @param pageable
+	 *            paging info
+	 * @return found {@link PerfTest} list
+	 */
 	public Page<PerfTest> getTestList(User user, boolean isFinished, Pageable pageable) {
 		if (isFinished) {
 			return perfTestRepository.findAllByStatusAndCreatedUserOrderByCreatedDateAsc(Status.FINISHED, user,
@@ -59,43 +71,85 @@ public class PerfTestService {
 		}
 	}
 
+	/**
+	 * Save {@link PerfTest}.
+	 * 
+	 * @param perfTest
+	 *            {@link PerfTest} instance to be saved.
+	 * @return Saved {@link PerfTest}
+	 */
 	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
-	public PerfTest savePerfTest(PerfTest test) {
-		checkNotNull(test);
-		return perfTestRepository.save(test);
+	public PerfTest savePerfTest(PerfTest perfTest) {
+		checkNotNull(perfTest);
+		// Merge if necessary
+		if (perfTest.exist()) {
+			PerfTest existingPerfTest = perfTestRepository.findOne(perfTest.getId());
+			perfTest = existingPerfTest.merge(perfTest);
+		}
+		return perfTestRepository.save(perfTest);
 	}
 
 	/**
-	 * Save performance test with given status
+	 * Save performance test with given status.
 	 * 
-	 * @param test
+	 * This method is only used for changing {@link Status}
+	 * 
+	 * @param perfTest
+	 *            {@link PerfTest} instance which will be saved.
 	 * @param status
-	 * @return
+	 *            Status to be assigned
+	 * @return saved {@link PerfTest}
 	 */
 	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
-	public PerfTest savePerfTest(PerfTest test, Status status) {
-		checkNotNull(test);
-		test.setStatus(status);
-		return perfTestRepository.save(test);
+	public PerfTest savePerfTest(PerfTest perfTest, Status status) {
+		checkNotNull(perfTest);
+		checkNotNull(perfTest.getId(), "perfTest with status should save Id");
+		perfTest.setStatus(checkNotNull(status, "status should not be null"));
+		return perfTestRepository.save(perfTest);
 	}
 
+	/**
+	 * Get PerfTest by testId.
+	 * 
+	 * @param testId
+	 *            PerfTest id
+	 * @return found {@link PerfTest}, null otherwise
+	 */
 	@Cacheable(value = "perftest")
 	public PerfTest getPerfTest(long testId) {
 		return perfTestRepository.findOne(testId);
 	}
 
+	/**
+	 * Get next runnable PerfTest.
+	 * 
+	 * @return found {@link PerfTest}, null otherwise
+	 */
 	@Cacheable(value = "perftest")
 	public PerfTest getPerfTestCandiate() {
-		Page<PerfTest> perfTest = perfTestRepository.findAllByStatusOrderByCreatedDateAsc(Status.TESTING,
+		Page<PerfTest> perfTest = perfTestRepository.findAllByStatusOrderByCreatedDateAsc(Status.READY,
 				new PageRequest(0, 1));
 		return (perfTest.getNumber() == 0) ? null : perfTest.getContent().get(0);
 	}
 
+	/**
+	 * Get currently testing PerfTest.
+	 * 
+	 * @return found {@link PerfTest} list
+	 */
 	@Cacheable(value = "perftestlist")
 	public List<PerfTest> getTestingPerfTest() {
 		return perfTestRepository.findAllByStatusOrderByCreatedDateAsc(Status.TESTING);
 	}
 
+	/**
+	 * Delete PerfTest by id.
+	 * 
+	 * Never use this method in runtime. This method is used only for testing.
+	 * 
+	 * @param id
+	 *            {@link PerfTest} it
+	 */
 	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
 	public void deletePerfTest(long id) {
 		perfTestRepository.delete(id);
