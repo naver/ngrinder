@@ -9,6 +9,7 @@
 	<body>
     	<#include "../common/navigator.ftl">
 		<div class="container">
+			<img src="${req.getContextPath()}/img/bg_perftest_banner.png" style="margin-top:-20px;margin-bottom:10px"/>
 			<div class="row">
 				<div class="span12">
 							<a class="btn" href="${req.getContextPath()}/perftest/detail" id="createBtn" data-toggle="modal">
