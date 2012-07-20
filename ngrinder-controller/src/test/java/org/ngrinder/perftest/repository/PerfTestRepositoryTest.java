@@ -30,6 +30,6 @@ public class PerfTestRepositoryTest extends AbstractNGNinderTransactionalTest {
 		// Then all should be 3
 		assertThat(repo.findAll().size(), is(3));
 		// Then finished and canceled perftest should 2
-		assertThat(repo.findAll(PerfTest.statusSetEqual(Status.FINISHED, Status.CANCELED)).size(), is(2));
+		assertThat(repo.findAll(PerfTestSpecification.statusSetEqual(Status.FINISHED, Status.CANCELED)).size(), is(2));
 	}
 }
