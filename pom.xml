@@ -7,7 +7,6 @@
 	<packaging>pom</packaging>
 	<name>ngrinder</name>
 	<modules>
-		<module>ngrinder-agent</module>
 		<module>ngrinder-controller</module>
 		<module>ngrinder-core</module>
 	</modules>
