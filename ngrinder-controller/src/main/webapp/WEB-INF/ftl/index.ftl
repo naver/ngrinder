@@ -13,22 +13,7 @@
 	<body>
 	<#include "common/navigator.ftl">
 	<div class="container">
-		<div class="hero-unit">
-		    <div class="form-horizontal">
-				<fieldset>
-					<div class="control-group">
-						<label for="searchTest_url" class="control-label"><h2>Quick Start</h2></label>
-						<div class="controls">
-						  <input type="text" class="span6"  id="searchTest_url">
-						  <!--<span class="help-inline"></span>-->
-						  <a class="btn btn-success">Create Test</a>
-						</div>
-					</div>
-				</fieldset>
-			</div> 
-		    <p>Type the URL you want to run performance test !</p>
-		</div>
-
+		<img src="${req.getContextPath()}/img/bg_main_banner.png"  style="margin-top:-20px;margin-bottom:10px"/>
 		<div class="row">
 			<div class="span6">
 			  <h2>Heading</h2>

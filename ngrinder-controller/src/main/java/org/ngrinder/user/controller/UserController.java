@@ -26,14 +26,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
-import org.ngrinder.user.model.JsonBean;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -62,12 +60,10 @@ public class UserController extends NGrinderBaseController {
 			userList = userService.getUserListByKeyWord(keywords);
 			model.put("keywords", keywords);
 		}
-		
-		Map<Role, List<User>> userMap = userService.getUserInGroupFromList();
 
-		List<JsonBean> jList = convertToUserGroupTree(userMap);
 		model.addAttribute("userList", userList);
-		model.addAttribute("jsonStr", JSONUtil.toJson(jList));
+		EnumSet<Role> roleSet = EnumSet.allOf(Role.class); 
+		model.addAttribute("roleSet", roleSet);
 
 		return "user/userList";
 	}
@@ -83,12 +79,7 @@ public class UserController extends NGrinderBaseController {
 	public String getUserDetail(final ModelMap model, final @RequestParam(required = false) String userId) {
 
 		List<User> userList = userService.getAllUserByRole(null);
-		Map<Role, List<User>> userMap = userService.getUserInGroupFromList();
-
-		List<JsonBean> jList = convertToUserGroupTree(userMap);
 		model.addAttribute("userList", userList);
-		model.addAttribute("jsonStr", JSONUtil.toJson(jList));
-		
 		EnumSet<Role> roleSet = EnumSet.allOf(Role.class); 
 		model.addAttribute("roleSet", roleSet);
 
@@ -96,27 +87,6 @@ public class UserController extends NGrinderBaseController {
 
 		model.addAttribute("user", user);
 		return "user/userDetail";
-	}
-
-	/**
-	 * @param userMap
-	 * @return
-	 */
-	private List<JsonBean> convertToUserGroupTree(Map<Role, List<User>> userMap) {
-		List<JsonBean> jList = new ArrayList<JsonBean>();
-
-		JsonBean TopBean = new JsonBean("all", "0", "All Users", true);
-		jList.add(TopBean);
-		for (Map.Entry<Role, List<User>> entry : userMap.entrySet()) {
-			Role id = entry.getKey();
-			JsonBean bean = new JsonBean(id.name(), "all", id.name(), true);
-			jList.add(bean);
-			for (User user : entry.getValue()) {
-				JsonBean leafBean = new JsonBean(user.getUserId(), id.name(), user.getUserName(), true);
-				jList.add(leafBean);
-			}
-		}
-		return jList;
 	}
 
 	@RequestMapping("/save")

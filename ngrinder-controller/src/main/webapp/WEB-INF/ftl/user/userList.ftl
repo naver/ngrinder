@@ -15,7 +15,16 @@
 				<a class="btn" href="${req.getContextPath()}/user/detail"
 					id="createBtn" data-toggle="modal"> <i class="icon-user"></i>
 					Create User
-				</a> <#include "userTree.ftl">
+				</a>
+				<div class="well sidebar-nav">
+		            <ul class="nav nav-list">
+		            	<#list roleSet as role>
+						<li class="active nav-header">
+							<a href="${req.getContextPath()}/user/list?roleName="+${role.fullName}>${role.fullName}</a>
+						</li>
+						</#list>
+		            </ul>
+				</div><!--/.well -->
 			</div>
 
 			<div class="span10">
