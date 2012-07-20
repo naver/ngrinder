@@ -101,14 +101,8 @@ public class MonitorExecuteWorker implements Runnable {
 					if (method != null) {
 						method.invoke(recoder, key, retData, agentInfo);
 					}
-				} catch (IOException e) {
-					LOG.error(e.getMessage(), e);
-					LOG.error("IOException! Disconnect this MBean client.");
-					mbeanClient.disconnect();
-					break;
 				} catch (Exception e) {
-					LOG.error(e.getMessage(), e);
-					LOG.error("Exception! Disconnect this MBean client.");
+					LOG.error("Error while MonitorExecutorWorker is runnng. Disconnect this MBean client.", e);
 					mbeanClient.disconnect();
 					break;
 				}

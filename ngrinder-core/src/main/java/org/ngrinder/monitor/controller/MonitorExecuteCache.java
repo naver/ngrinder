@@ -22,8 +22,8 @@
  */
 package org.ngrinder.monitor.controller;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.ngrinder.monitor.MonitorConstants;
 
@@ -34,7 +34,7 @@ public final class MonitorExecuteCache {
 			MonitorConstants.DEFAULT_CONTROLLER_CACHE_SIZE);
 
 	private MonitorExecuteCache(final int capacity) {
-		cache = new HashMap<String, MonitorExecuteManager>(capacity);
+		cache = new ConcurrentHashMap<String, MonitorExecuteManager>(capacity);
 	}
 
 	public static MonitorExecuteCache getInstance() {

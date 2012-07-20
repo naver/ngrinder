@@ -28,9 +28,9 @@ import org.ngrinder.monitor.share.domain.SystemInfo;
 public interface MonitorRecoder {
 	void before();
 
-	void recodeJavaInfo(final String key, final JavaInfo javaInfo, final MonitorAgentInfo agentInfo);
+	void recoderJavaInfo(final String key, final JavaInfo javaInfo, final MonitorAgentInfo agentInfo);
 
-	void recodeSystemInfo(final String key, final SystemInfo systemInfo, final MonitorAgentInfo agentInfo);
+	void recoderSystemInfo(final String key, final SystemInfo systemInfo, final MonitorAgentInfo agentInfo);
 
 	void after();
 }
