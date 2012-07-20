@@ -6,7 +6,7 @@
 		<style>
 			body { overflow-y:hidden; background-color:white }
 			.content { height:635px; margin-top:30px; padding-top:30px; background-color:#f5f4f2 }
-			.logo { margin-top:280px; text-align:center }
+			.logo { margin-top:150px; text-align:center }
 			.login { text-align:center }
 			.login input { border:1px solid #e0e0e0 }
 			.login .input { margin-bottom:6px; height:13px }
@@ -25,8 +25,8 @@
 			<fieldset>
 				<div class="login">
 					<span class="lgn_ipt">
-					<input type="text" class="span2 input" name="j_username" id="j_username" placeholder="User ID"><br>
-					<input type="password" class="span2 input" name="j_password" id="j_password" placeholder="Password">			
+						<input type="text" class="span2 input" name="j_username" id="j_username" placeholder="User ID"><br>
+						<input type="password" class="span2 input" name="j_password" id="j_password" placeholder="Password">			
 					</span>
 					<input id="loginBtn" type="image" src="${req.getContextPath()}/img/login.gif" alt="Login" class="btn_lgn" width="60px">
 				</div>
@@ -34,9 +34,9 @@
 				<div class="prompt">
 					<input type="checkbox" class="chk" name='_spring_security_remember_me'>Remeber me:
 					<select  id="native_language" name="native_language" style="margin-left:30px;">
-					  <option value="en">English</option>
-					  <option value="kr">한국어</option>
-					  <option value="cn">中文</option>
+						  <option value="en">English</option>
+						  <option value="kr">한국어</option>
+						  <option value="cn">中文</option>
 					</select>
 				</div>
 				

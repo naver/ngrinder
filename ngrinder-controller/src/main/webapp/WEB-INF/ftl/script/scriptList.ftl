@@ -33,39 +33,48 @@
 			<!--<legend>introduction</legend>-->
 			<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
 			<button type="submit" class="btn" id="searchBtn">Search</button>
-		</div>
 			<#if svnUrl?has_content>
-				<div class="input-prepend input-append" style="margin-top:-20px"> 
-	               <span class="add-on"> &nbsp;&nbsp; SVN URL &nbsp; </span><input class="span10" id="prependedInput" type="text" value="${svnUrl}" readonly><button class="btn" type="button"><i class="icon-ok"></i> Copy </button>
+				<div class="input-prepend input-append pull-right"> 
+	               <span class="add-on">SVN</span><input class="span6" id="prependedInput" type="text" value="${svnUrl}" readonly style="cursor:text"><button class="btn" type="button"><i class="icon-ok"></i> Copy </button>
 	        	</div> 
         	</#if>		
+		</div>
+			
 		<table class="display ellipsis jsTable" id="scriptTable">
 			<colgroup>
+				<col width="35">
 				<col width="35">
 				<col width="160">
 				<col>
 				<col width="170">
-				<col width="160">
-				<col width="100">
 				<col width="100">
 				<col width="80">
 			</colgroup>
 			<thead>
 				<tr>
 					<th><input type="checkbox" class="checkbox" value=""></th>
+					<th><a href="${req.getContextPath()}/script/list/${currentPath}/../" target="_self"><i class="icon-share-alt"></i></a> 
+					</th>
 					<th>Script File Name</th>
-					<th class="noClick">Description</th>
+					<th class="noClick">Commit Message</th>
 					<th>Last Modified Date</th>
-					<th>Last Modified By</th>
 					<th>Size(KB)</th>
-					<th class="noClick">Tags</th>
 					<th class="noClick">Download</th>
 				</tr>
 			</thead>
 			<tbody>		
-						<#list files as script>
+					<#list files as script>
 						<tr>
-							<td><input type="checkbox" value="${script.fileName}"></td>
+							<td><#if script.fileName != ".."><input type="checkbox" value="${script.fileName}"></#if></td>
+							<td class="left">
+								<#if script.fileType.fileCategory.isEditable()>
+									<i class="icon-file"></i>
+								<#elseif script.fileType == "dir">
+									<i class="icon-folder-open"></i>
+								<#else>	
+									<i class="icon-briefcase"></i>
+								</#if>
+							</td>
 							<td class="left">
 								<#if script.fileType.fileCategory.isEditable()>
 									<a href="${req.getContextPath()}/script/detail/${script.path}" target="_self">${script.fileName}</a>
@@ -74,15 +83,13 @@
 								<#else>	
 									<a href="${req.getContextPath()}/svn/${currentUser.userId}${script.path}" target="_self">${script.fileName}</a>
 								</#if>
-								</td>
+							</td>
 							<td class="left ellipsis" title="${(script.description)!}">${(script.description)!}</td>
 							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
-							<td>${(script.lastModifiedUser.userName)!}</td>
 							<td>${(script.fileSize)!0}</td>
-							<td class="left ellipsis" title="${(script.tagsString)!}">${(script.tagsString)!}</td>
 							<td><a href="javascript:void(0);"><i class="icon-download-alt script-download" spath="${script.path}" sname="${script.fileName}"></i></a></td>
 						</tr>
-						</#list>
+					</#list>
 						
 					</tbody>
 				</table>
@@ -321,19 +328,17 @@
 			});
 
 			<#if files?has_content>
-			$("#scriptTable").dataTable({
-				"bAutoWidth": false,
-				"bFilter": false,
-				"bLengthChange": false,
-				"bInfo": false,
-				"iDisplayLength": 10,
-				"aaSorting": [[1, "asc"]],
-				"bProcessing": true,
-				"aoColumns": [{ "asSorting": []}, null, { "asSorting": []}, null, null, null, {"asSorting": []}, { "asSorting": []}],
-				//"bJQueryUI": true,
-				//"oLanguage": {"sLengthMenu": "每页显示 _MENU_ 条记录","sZeroRecords": "抱歉， 没有找到","sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据","sInfoEmpty": "没有数据","sInfoFiltered": "(从 _MAX_ 条数据中检索)","oPaginate": {"sFirst": "首页","sPrevious": "前一页","sNext": "后一页","sLast": "尾页"},"sZeroRecords": "没有检索到数据"},
-				"sPaginationType": "full_numbers"
-			});
+				$("#scriptTable").dataTable({
+					"bAutoWidth": false,
+					"bFilter": false,
+					"bLengthChange": false,
+					"bInfo": false,
+					"iDisplayLength": 10,
+					"aaSorting": [[2, "asc"]],
+					"bProcessing": true,
+					"aoColumns": [{ "asSorting": []}, { "asSorting": []}, null, { "asSorting": []}, null, null, { "asSorting": []}],
+					"sPaginationType": "full_numbers"
+				});
 			</#if>
 			
 			$(".noClick").off('click');

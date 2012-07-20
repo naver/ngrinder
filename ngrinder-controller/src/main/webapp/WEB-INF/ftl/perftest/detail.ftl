@@ -54,19 +54,19 @@ div.div-host .host {
 						<div class="control-group">
 							<label for="testName" class="control-label">Test Name</label>
 							<div class="controls">
-								<input type="text" id="testName" name="testName" value="${(test.testName)!}">
-								<button type="submit" class="btn btn-success">
-									<#if test??>Clone<#else>Save</#if> & Start
-								</button>
+								<input class="span8" type="text" id="testName" name="testName" value="${(test.testName)!}">
+								<button type="submit" class="btn btn-success btn-primary btn-large">
+									<#if test??>Clone<#else>Save</#if> and Start 
+								</button> 
 							</div>
 						</div>
 						<div class="control-group" style="margin-bottom: 0">
 							<label for="description" class="control-label">Description</label>
 							<div class="controls">
-								<input type="text" id="description" name="description" value="${(test.description)!}">
+								<textarea class="input-xlarge span8" id="description" rows="3" name="description">${(test.description)!}</textarea>
 								<button type="submit" class="btn btn-primary" data-toggle="modal" href="#scheduleModal">
 									<#if test??>Clone<#else>Save</#if> & Schedule
-								</button>
+								</button> 
 							</div>
 						</div>
 					</fieldset>

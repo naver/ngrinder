@@ -27,7 +27,8 @@ public class HomeService {
 		try {
 			reader = new XmlReader(new URL("http://www.cubrid.org/wiki_ngrinder/rss"));
 			SyndFeed feed = input.build(reader);
-			return (List<SyndEntryImpl>) feed.getEntries();
+			return (List<SyndEntryImpl>) (feed.getEntries().size() >= 8 ? feed.getEntries().subList(0, 7) : feed
+					.getEntries());
 		} catch (Exception e) {
 			LOG.error("Error while patching ngriner rss", e);
 		} finally {

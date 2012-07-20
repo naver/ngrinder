@@ -110,15 +110,12 @@ public class FileEntityRepository {
 
 							FileEntry script = new FileEntry();
 							if (StringUtils.isBlank(dirEntry.getRelativePath())) {
-								script.setPath(StringUtils.defaultIfBlank(FilenameUtils.normalize(path + "/../", true),
-										""));
-								script.setFileName("..");
-							} else {
-								// It's because relative path contains "/" in
-								// front.
-								script.setPath(FilenameUtils.normalize(path + "/" + dirEntry.getRelativePath(), true));
-								script.setFileName(dirEntry.getName());
+								return;
 							}
+							// It's because relative path contains "/" in
+							// front.
+							script.setPath(FilenameUtils.normalize(path + "/" + dirEntry.getRelativePath(), true));
+							script.setFileName(dirEntry.getName());
 
 							// script.setPath(path + "/" +
 							// dirEntry.getRelativePath());

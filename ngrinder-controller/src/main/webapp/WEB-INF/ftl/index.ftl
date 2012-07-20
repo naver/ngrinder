@@ -21,14 +21,31 @@
 			  <p><a class="btn" href="#">View details &raquo;</a></p>
 			</div>
 			<div class="span6">
-			  <h3>Developer Resources</h3>
-			  <#if ngrinder_wiki_rss_list?has_content>
-			  	<ul>
-			  		<#list ngrinder_wiki_rss_list as rss_entry>
-			  			<li><a href="${rss_entry.link }" target="_blank">${rss_entry.title}</a></li>
-			  		</#list>
-			  	</ul>
-			  </#if>
+				<div class="page-header">
+	 				 <h2>Developer Resources</h2> 
+				</div>
+				<div class="alert alert-info">
+			  	You can find my ngrinder script related documents.
+			  	</div> 
+		   		<div class="well">
+			  		<br/>
+			  		
+			  	<#if ngrinder_wiki_rss_list?has_content>
+				  	<table class="table table-striped">
+				  		<#list ngrinder_wiki_rss_list as rss_entry>
+				  			<tr>
+				  				<td><a href="${rss_entry.link }" target="_blank">${rss_entry.title}</a></td>
+				  				<td>${rss_entry.publishedDate?string("yyyy-MM-dd")}</td>
+				  			</tr>
+				  		</#list>
+			  			<tr>
+			  				<td><a href="http://www.cubrid.org/wiki_ngrinder" target="_blank"><i class="icon-share-alt"></i>&nbsp;more...</a></td>
+			  				<td></td>
+			  			</tr>
+			  			</div>
+	  				</table>
+	   		 	 </#if> 
+				 </div>
 			</div>
 		</div>
 		<#include "common/copyright.ftl">
