@@ -24,10 +24,7 @@ package org.ngrinder.user.service;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.Role;
@@ -42,7 +39,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * The Class UserService.
  * 
- * @author Yubin Mao & AlexQin
+ * @author Yubin Mao
+ * @author AlexQin
  */
 @Service
 public class UserService {
@@ -50,6 +48,9 @@ public class UserService {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private FileEntryService scriptService;
+	
 	/**
 	 * get user by user id.
 	 * 
@@ -85,35 +86,10 @@ public class UserService {
 	}
 
 	/**
-	 * get a map which containing user in group,
-	 * 
-	 * @param users
-	 * @return
-	 */
-	public Map<Role, List<User>> getUserInGroupFromList() {
-		List<User> users = userRepository.findAll();
-		Map<Role, List<User>> rtnMap = new HashMap<Role, List<User>>();
-
-		for (User user : users) {
-			Role currRole = user.getRole();
-			List<User> userList = new ArrayList<User>();
-
-			if (!rtnMap.containsKey(currRole)) {
-				userList = new ArrayList<User>();
-				userList.add(user);
-				rtnMap.put(currRole, userList);
-			} else {
-				rtnMap.get(currRole).add(user);
-			}
-		}
-		return rtnMap;
-	}
-
-	/**
 	 * create user.
 	 * 
 	 * @param user
-	 *            , include id, userID, fullName, role, password.
+	 * 			include id, userID, fullName, role, password.
 	 * 
 	 * @return result
 	 */
@@ -123,9 +99,6 @@ public class UserService {
 		prepareUserEnv(user);
 		return createdUser;
 	}
-
-	@Autowired
-	private FileEntryService scriptService;
 
 	private void prepareUserEnv(User user) {
 		scriptService.prepare(user);

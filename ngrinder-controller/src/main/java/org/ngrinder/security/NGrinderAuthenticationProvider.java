@@ -96,20 +96,18 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class,
 				defaultLoginPlugin)) {
-			try {
-				if (StringUtils.isEmpty(user.getAuthProviderClass())
-						&& isClassEqual(each.getClass(), defaultLoginPlugin.getClass().getName())) {
-					each.validateUser(user.getUsername(), user.getPassword(), presentedPassword, passwordEncoder, salt);
-					authorized = true;
-					break;
-				} else if (isClassEqual(each.getClass(), user.getAuthProviderClass())) {
-					each.validateUser(user.getUsername(), user.getPassword(), presentedPassword, passwordEncoder, salt);
-					authorized = true;
-					break;
-				}
-			} catch (Exception e) {
 
+			if (StringUtils.isEmpty(user.getAuthProviderClass())
+					&& isClassEqual(each.getClass(), defaultLoginPlugin.getClass().getName())) {
+				each.validateUser(user.getUsername(), user.getPassword(), presentedPassword, passwordEncoder, salt);
+				authorized = true;
+				break;
+			} else if (isClassEqual(each.getClass(), user.getAuthProviderClass())) {
+				each.validateUser(user.getUsername(), user.getPassword(), presentedPassword, passwordEncoder, salt);
+				authorized = true;
+				break;
 			}
+
 		}
 
 		if (!authorized) {
