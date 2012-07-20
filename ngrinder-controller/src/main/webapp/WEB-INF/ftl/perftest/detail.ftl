@@ -3,6 +3,7 @@
 <head>
 <title>nGrinder Performance Test Detail</title>
 <#include "../common/common.ftl">
+<link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
 <style>
 div.div-host {
 	border: 1px solid #D6D6D6;
@@ -40,7 +41,7 @@ div.div-host .host {
 	<#include "../common/navigator.ftl">
 	<div class="container">
 		<form id="testContentForm" action="${req.getContextPath()}/perftest/create" method="POST">
-			<div class="well">
+			<div class="well" style="padding:10px">
 				<!-- not to pass test id, because test can not be modified.
 				<input type="hidden" id="testId" name="id" value="${(test.id)!}">
 				 -->
@@ -63,7 +64,7 @@ div.div-host .host {
 							<label for="description" class="control-label">Description</label>
 							<div class="controls">
 								<input type="text" id="description" name="description" value="${(test.description)!}">
-								<button type="submit" class="btn btn-primary">
+								<button type="submit" class="btn btn-primary" data-toggle="modal" href="#scheduleModal">
 									<#if test??>Clone<#else>Save</#if> & Schedule
 								</button>
 							</div>
@@ -289,13 +290,16 @@ div.div-host .host {
 						</div>
 					</div>
 				</div>
+				<input type="hidden" id="scheduleInput" name="scheduleTime"/>
 			</form>
 			<!--content-->
 			<#include "../common/copyright.ftl">
 		</div>
+		
+		<!-- modal -->
 		<div class="modal fade" id="addHostModal">
 			<div class="modal-header">
-				<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
+				<a class="close" data-dismiss="modal">&times;</a>
 				<h3>
 					Add Host
 					<small>Please input one option at least.</small>
@@ -319,13 +323,44 @@ div.div-host .host {
 							</div>
 						</div>					
 					</fieldset>
-				</form>
+				</div>
 			</div>
 			<div class="modal-footer">
 				<a class="btn btn-primary" id="addHostBtn">Add</a>
 			</div>
 		</div>
+
+		<div class="modal fade" id="scheduleModal">
+			<div class="modal-header">
+				<a class="close" data-dismiss="modal">&times;</a>
+				<h3>
+					Schedule Setting
+					<small class="errorColor"></small>
+				</h3>
+			</div>
+			<div class="modal-body">
+				<div class="form-horizontal">
+					<fieldset>
+						<div class="control-group">
+							<label class="control-label">Schedule</label>
+							<div class="controls form-inline">
+							  <input type="text" class="input span2" id="sDateInput" value="" readyonly>&nbsp;
+							  <select id="shSelect" class="select-item"></select>
+							  :
+							  <select id="smSelect" class="select-item"></select>
+							  <code>HH:MM</code>
+							</div>
+						</div>					
+					</fieldset>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<a class="btn btn-primary" id="addScheduleBtn">Schedule</a>
+			</div>
+		</div>
+		
 	<script src="${req.getContextPath()}/js/jquery.gchart.pack.js"></script>
+	<script src="${req.getContextPath()}/plugins/datepicker/js/bootstrap-datepicker.js"></script>
 	<script src="${req.getContextPath()}/js/rampup.js"></script>
 	<script>
 			$(document).ready(function() {
@@ -360,7 +395,29 @@ div.div-host .host {
 					var $elem = $(this).parents("p");
 					$elem.next("br").remove();
 					$elem.remove();
-				});			
+				});
+				
+				$("#addScheduleBtn").click(function() {
+					if (checkEmptyByID("sDateInput")) {
+						$("#scheduleModal small").html("Please select date before schedule.");
+						return;
+					}
+					
+					var timeStr = $("#sDateInput").val() + " " + $("#shSelect").val() + ":" + $("#smSelect").val() +":0";
+					alert(timeStr);
+					if (new Date() > new Date(timeStr.replace(/-/g,"/"))) {
+						$("#scheduleModal small").html("Schedule time must be later than now.");
+						return;
+					}
+					$("#scheduleInput").val(timeStr);
+					$("#scheduleModal").modal("hide");
+					$("#scheduleModal small").html("");
+				});
+				
+				$('#sDateInput').datepicker({
+					format: 'yyyy-mm-dd'
+				});
+						
 				$("#dSelect").append(getOption(100));
 				$("#dSelect").change(getDurationMS);
 				
@@ -372,6 +429,9 @@ div.div-host .host {
 				
 				$("#sSelect").append(getOption(60));
 				$("#sSelect").change(getDurationMS);
+				
+				$("#shSelect").append(getOption(24));
+				$("#smSelect").append(getOption(60));
 
 				//add toggle event to threshold
 				$("#runcountChkbox").change(function (){
