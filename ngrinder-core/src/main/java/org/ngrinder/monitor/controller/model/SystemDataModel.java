@@ -22,8 +22,17 @@
  */
 package org.ngrinder.monitor.controller.model;
 
-public class SystemDataModel {
-	private int id;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import org.ngrinder.model.BaseEntity;
+
+@Entity
+@Table(name = "SystemMonitor")
+public class SystemDataModel extends BaseEntity<JavaDataModel> {
+
+	private static final long serialVersionUID = 790334226137464982L;
+
 	private String key;
 	private String ip;
 	private int port;
@@ -39,14 +48,6 @@ public class SystemDataModel {
 	private float cpuUsedPercentage;
 	private String crtime;
 	private String message;
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
 
 	public String getKey() {
 		return key;
