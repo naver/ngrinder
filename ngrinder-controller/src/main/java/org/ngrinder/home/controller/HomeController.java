@@ -32,6 +32,7 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.JSONUtil;
+import org.ngrinder.home.service.HomeService;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.slf4j.Logger;
@@ -53,7 +54,10 @@ public class HomeController extends NGrinderBaseController {
 
 	@Autowired
 	private Config config;
-	
+
+	@Autowired
+	private HomeService homeService;
+
 	@RequestMapping(value = { "/home", "/" })
 	public String home(ModelMap model, HttpServletResponse response, HttpServletRequest request) {
 		String roles;
@@ -62,9 +66,13 @@ public class HomeController extends NGrinderBaseController {
 			setLanguage(getCurrentUserInfo("userLanguage"), response, request);
 			setLoginPageDate(model);
 			roles = getCurrentUserInfo("role");
+
 		} catch (AuthenticationCredentialsNotFoundException e) {
 			return "login";
 		}
+
+		model.addAttribute("ngrinder_wiki_rss_list", homeService.getRssEntries());
+
 		if (roles == null) {
 			return "login";
 		} else if (roles.contains("A") || roles.contains("U")) {
@@ -120,12 +128,12 @@ public class HomeController extends NGrinderBaseController {
 
 		return "allTimeZone";
 	}
-	
+
 	@RequestMapping("/profile")
 	public String userProfile(ModelMap model, User user) {
 		model.addAttribute("user", user);
 		model.addAttribute("action", "profile");
 		return "user/userInfo";
 	}
-	
+
 }
