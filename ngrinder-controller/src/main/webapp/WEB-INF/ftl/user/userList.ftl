@@ -18,9 +18,12 @@
 				</a>
 				<div class="well sidebar-nav">
 		            <ul class="nav nav-list">
+						<li class="active nav-header">
+							<a href="${req.getContextPath()}/user/list">ALL</a>
+						</li>
 		            	<#list roleSet as role>
 						<li class="active nav-header">
-							<a href="${req.getContextPath()}/user/list?roleName="+${role.fullName}>${role.fullName}</a>
+							<a href="${req.getContextPath()}/user/list?roleName=${role.fullName}">${role.fullName}</a>
 						</li>
 						</#list>
 		            </ul>
