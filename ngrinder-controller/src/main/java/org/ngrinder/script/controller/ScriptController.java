@@ -54,7 +54,7 @@ public class ScriptController extends NGrinderBaseController {
 	@Autowired
 	private FileEntryService fileEntryService;
 
-	@RequestMapping("/list/**")
+	@RequestMapping({"/list/**", ""})
 	public String get(User user, @RemainedPath String path, ModelMap model) { // "fileName"
 		List<FileEntry> files = fileEntryService.getFileEntries(user, path);
 		model.addAttribute("files", files);
