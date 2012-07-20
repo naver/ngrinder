@@ -231,10 +231,10 @@ public class FileEntryService {
 
 		try {
 			Configuration freemarkerConfig = new Configuration();
-			ClassPathResource cpr = new ClassPathResource("template");
+			ClassPathResource cpr = new ClassPathResource("script_template");
 			freemarkerConfig.setDirectoryForTemplateLoading(cpr.getFile());
 			freemarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
-			Template template = freemarkerConfig.getTemplate("script_template.ftl");
+			Template template = freemarkerConfig.getTemplate("basic_template.ftl");
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("url", url);
 			map.put("user", user);
