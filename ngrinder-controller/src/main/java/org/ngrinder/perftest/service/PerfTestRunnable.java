@@ -94,12 +94,13 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 		// Distribute files
 		perfTestService.savePerfTest(perfTest, Status.DISTRIBUTE_FILES);
-		singleConsole.distributeFiles();
-
+		singleConsole.distributeFiles(perfTestService.prepareDistribution(perfTest));
+		
 		// Run test
-		singleConsole.startTest(perfTest.getGrinderProperties());
+		singleConsole.startTest(perfTestService.getGrinderProperties(perfTest));
 		perfTest.setStatus(Status.TESTING);
 		perfTestService.savePerfTest(perfTest);
+
 	}
 
 	/**

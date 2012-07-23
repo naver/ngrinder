@@ -255,6 +255,24 @@ public final class Preconditions {
 	}
 
 	/**
+	 * Ensures that an object reference passed as a parameter to the calling
+	 * method is not 0.
+	 * 
+	 * @param reference
+	 *            an object reference
+	 * @param errorMsg
+	 * @return the non-null reference that was validated
+	 * @throws IllegalArgumentException
+	 *             if {@code condition} is not 0
+	 */
+	public static Long checkNotZero(Long reference, String errorMsg) {
+		if (reference == null || reference == 0L) {
+			throw new IllegalArgumentException(errorMsg);
+		}
+		return reference;
+	}
+
+	/**
 	 * Ensures that an condition passed as a parameter is true
 	 * 
 	 * @param condition

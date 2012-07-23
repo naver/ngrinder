@@ -41,6 +41,7 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
  * @author JunHo Yoon
  */
 public class Home implements NGrinderConstants {
+
 	private final File directory;
 
 	public Home(File directory) {
@@ -98,10 +99,6 @@ public class Home implements NGrinderConstants {
 		return getSubFile(SCRIPT_PATH);
 	}
 
-	public File getProjectDirectory() {
-		return getSubFile(PROJECT_PATH);
-	}
-
 	public File getPluginsDirectory() {
 		return getSubFile(PLUGIN_PATH);
 	}
@@ -112,6 +109,14 @@ public class Home implements NGrinderConstants {
 
 	public File getUserRepoDirectory(String subPath) {
 		return new File(getUserRepoDirectory(), subPath);
+	}
+
+	public File getPerfTestDirectory() {
+		return getSubFile(PERF_TEST_PATH);
+	}
+
+	public File getPerfTestDirectory(String subPath) {
+		return new File(getPerfTestDirectory(), subPath);
 	}
 
 }

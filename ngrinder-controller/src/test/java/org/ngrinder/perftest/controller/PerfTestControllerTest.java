@@ -28,6 +28,7 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGNinderTransactionalTest;
@@ -91,7 +92,7 @@ public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
 		assertThat(testList.size(), is(1));
 		
 		PerfTest test = testList.get(0);
-		//controller.getTestDetail(model, test.getId());
+		Assert.assertTrue(test.getCreatedUser().getUserId().equals(getTestUser().getUserId()));
 	}
 
 	/**

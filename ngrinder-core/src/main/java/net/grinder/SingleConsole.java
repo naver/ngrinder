@@ -22,6 +22,9 @@
  */
 package net.grinder;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,13 +39,20 @@ import net.grinder.console.communication.ProcessControl;
 import net.grinder.console.communication.ProcessControl.Listener;
 import net.grinder.console.communication.ProcessControl.ProcessReports;
 import net.grinder.console.communication.ProcessControlImplementation;
+import net.grinder.console.distribution.AgentCacheState;
+import net.grinder.console.distribution.FileDistribution;
+import net.grinder.console.distribution.FileDistributionHandler;
+import net.grinder.console.distribution.FileDistributionImplementation;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.AllocateLowestNumber;
 import net.grinder.util.ConsolePropertiesFactory;
+import net.grinder.util.Directory;
+import net.grinder.util.FileContents.FileContentsException;
 import net.grinder.util.ReflectionUtil;
 import net.grinder.util.thread.Condition;
 
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.ThreadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +69,7 @@ public class SingleConsole implements Listener {
 	public final static Resources resources = new ResourcesImplementation(
 			"net.grinder.console.common.resources.Console");
 
-	public final static Logger logger = LoggerFactory.getLogger(resources.getString("shortTitle"));
+	public final static Logger LOGGER = LoggerFactory.getLogger(resources.getString("shortTitle"));
 
 	public Condition m_eventSyncCondition = new Condition();
 	private ProcessReports[] processReports;
@@ -78,7 +88,7 @@ public class SingleConsole implements Listener {
 		try {
 			this.getConsoleProperties().setConsoleHost(ip);
 			this.getConsoleProperties().setConsolePort(port);
-			this.consoleFoundation = new ConsoleFoundationEx(resources, logger, consoleProperties, m_eventSyncCondition);
+			this.consoleFoundation = new ConsoleFoundationEx(resources, LOGGER, consoleProperties, m_eventSyncCondition);
 		} catch (GrinderException e) {
 			throw new NGrinderRuntimeException("Exception occurs while creating SingleConsole", e);
 
@@ -172,8 +182,55 @@ public class SingleConsole implements Listener {
 		getConsoleComponent(ProcessControl.class).startWorkerProcesses(properties);
 	}
 
-	public void distributeFiles() {
+	/**
+	 * Distribute files on given filePath to attached agents.
+	 * 
+	 * @param filePath
+	 *            the distribution files
+	 */
+	public void distributeFiles(File filePath) {
+		setDistributionDirectory(filePath);
+		distributFileOnAgents(getAllAttachedAgents());
+	}
 
+	public void setDistributionDirectory(File filePath) {
+		final ConsoleProperties properties = (ConsoleProperties) getConsoleComponent(ConsoleProperties.class);
+		Directory directory;
+		try {
+			directory = new Directory(filePath);
+			properties.setAndSaveDistributionDirectory(directory);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			throw new NGrinderRuntimeException(e.getMessage(), e);
+		}
+	}
+
+	public void distributFileOnAgents(List<AgentIdentity> agentList) {
+		final FileDistribution distribution = (FileDistribution) getConsoleComponent(FileDistribution.class);
+		final AgentCacheState agentCacheState = distribution.getAgentCacheState();
+		final Condition m_cacheStateCondition = new Condition();
+		agentCacheState.addListener(new PropertyChangeListener() {
+			public void propertyChange(PropertyChangeEvent ignored) {
+				synchronized (m_cacheStateCondition) {
+					m_cacheStateCondition.notifyAll();
+				}
+			}
+		});
+		ThreadUtil.sleep(1000);
+		final FileDistributionHandler distributionHandler = distribution.getHandler();
+		try {
+			while (true) {
+				FileDistributionHandler.Result result;
+				result = distributionHandler.sendNextFile();
+				if (result == null) {
+					break;
+				}
+				LOGGER.debug("Success in distributing {}", result.getFileName());
+			}
+		} catch (FileContentsException e) {
+			LOGGER.error(e.getMessage(), e);
+			throw new NGrinderRuntimeException(e.getMessage(), e);
+		}
 	}
 
 	public void waitUntilAgentConnected(int size) {
@@ -195,7 +252,7 @@ public class SingleConsole implements Listener {
 
 	public boolean isAllTestFinished() {
 		for (ProcessReports processReport : this.processReports) {
-			//TODO
+			// TODO
 		}
 		return true;
 	}

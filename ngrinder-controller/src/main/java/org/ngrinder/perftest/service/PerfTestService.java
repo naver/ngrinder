@@ -23,9 +23,14 @@
 package org.ngrinder.perftest.service;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import static org.ngrinder.common.util.Preconditions.checkNotZero;
 
+import java.io.File;
 import java.util.List;
 
+import net.grinder.common.GrinderProperties;
+
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
@@ -50,6 +55,9 @@ public class PerfTestService {
 
 	@Autowired
 	private PerfTestRepository perfTestRepository;
+
+	@Autowired
+	private Config config;
 
 	/**
 	 * Get {@link PerfTest} list on the user.
@@ -153,5 +161,27 @@ public class PerfTestService {
 	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
 	public void deletePerfTest(long id) {
 		perfTestRepository.delete(id);
+	}
+
+	/**
+	 * Get PerfTest Directory in which the distributed file is stored.
+	 * 
+	 * @param perfTest
+	 *            pefTest from which distribution dire.ctory calculated
+	 * @return path on in files are saved.
+	 */
+	public File getPerfTestFilePath(PerfTest perfTest) {
+		return config.getHome().getPerfTestDirectory(
+				checkNotZero(perfTest.getId(), "perftest id should not be 0 or zero").toString());
+	}
+
+	public GrinderProperties getGrinderProperties(PerfTest perfTest) {
+		// TODO: still its empty
+		return null;
+	}
+
+	public File prepareDistribution(PerfTest perfTest) {
+		// TODO: still its empty
+		return null;
 	}
 }
