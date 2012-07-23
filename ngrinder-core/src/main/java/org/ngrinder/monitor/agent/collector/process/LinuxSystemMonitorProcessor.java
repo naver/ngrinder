@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.io.IOUtils;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.mxbean.SystemMonitoringData;
 import org.ngrinder.monitor.share.domain.SystemInfo;
@@ -58,12 +59,8 @@ public class LinuxSystemMonitorProcessor implements Callable<SystemInfo> {
 						outStream.write(buf, 0, len);
 					}
 				} finally {
-					if (null != outStream) {
-						outStream.close();
-					}
-					if (null != inputStream) {
-						inputStream.close();
-					}
+					IOUtils.closeQuietly(inputStream);
+					IOUtils.closeQuietly(outStream);
 				}
 				exeFile.setExecutable(true);
 			}
@@ -76,13 +73,7 @@ public class LinuxSystemMonitorProcessor implements Callable<SystemInfo> {
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
 		} finally {
-			try {
-				if (null != input) {
-					input.close();
-				}
-			} catch (IOException e) {
-				LOG.error(e.getMessage(), e);
-			}
+			IOUtils.closeQuietly(input);
 		}
 		return parse(result.toString());
 	}

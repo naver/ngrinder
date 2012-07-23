@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,8 +70,9 @@ public class MonitorConstants {
 
 	static {
 		Properties prop = new Properties();
+		InputStream myInputStream = null;
 		try {
-			InputStream myInputStream = MonitorConstants.class.getResourceAsStream("/monitor.properties");
+			myInputStream = MonitorConstants.class.getResourceAsStream("/monitor.properties");
 			prop.load(myInputStream);
 
 			DEFAULT_AGENT_PORT = Integer.parseInt(prop.getProperty("agent.listen.port", "3243"));
@@ -79,6 +81,8 @@ public class MonitorConstants {
 			DEFAULT_CONTROLLER_INTERVAL = Integer.parseInt(prop.getProperty("controller.collector.interval", "1"));
 		} catch (IOException e) {
 			LOG.error("IOException during loading monitor.properties:" + e.getMessage(), e);
+		} finally {
+			IOUtils.closeQuietly(myInputStream);
 		}
 	}
 }
