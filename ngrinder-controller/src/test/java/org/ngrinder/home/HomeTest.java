@@ -6,7 +6,6 @@ import java.util.List;
 import org.eclipse.egit.github.core.Issue;
 import org.eclipse.egit.github.core.RepositoryId;
 import org.eclipse.egit.github.core.service.IssueService;
-import org.eclipse.egit.github.core.service.OrganizationService;
 import org.junit.Test;
 
 public class HomeTest {
