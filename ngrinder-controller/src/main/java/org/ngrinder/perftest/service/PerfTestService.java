@@ -24,13 +24,19 @@ package org.ngrinder.perftest.service;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.common.util.Preconditions.checkNotZero;
+import static org.ngrinder.perftest.repository.PerfTestSpecification.createdBy;
+import static org.ngrinder.perftest.repository.PerfTestSpecification.emptyPredicate;
+import static org.ngrinder.perftest.repository.PerfTestSpecification.likeTestNameOrDescription;
+import static org.ngrinder.perftest.repository.PerfTestSpecification.statusSetEqual;
 
 import java.io.File;
 import java.util.List;
 
 import net.grinder.common.GrinderProperties;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
@@ -41,6 +47,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.stereotype.Service;
 
 /**
@@ -64,19 +71,29 @@ public class PerfTestService {
 	 * 
 	 * @param user
 	 *            user
+	 * @param query
 	 * @param isFinished
 	 *            only find finished test
 	 * @param pageable
 	 *            paging info
 	 * @return found {@link PerfTest} list
 	 */
-	public Page<PerfTest> getTestList(User user, boolean isFinished, Pageable pageable) {
-		if (isFinished) {
-			return perfTestRepository.findAllByStatusAndCreatedUserOrderByCreatedDateAsc(Status.FINISHED, user,
-					pageable);
-		} else {
-			return perfTestRepository.findAllByCreatedUserOrderByCreatedDateAsc(user, pageable);
+	public Page<PerfTest> getPerfTestList(User user, String query, boolean isFinished, Pageable pageable) {
+
+		Specifications<PerfTest> spec = Specifications.where(emptyPredicate());
+
+		// User can see only his own test
+		if (user.getRole() == Role.USER) {
+			spec.and(createdBy(user));
 		}
+
+		if (isFinished) {
+			spec = spec.and(statusSetEqual(Status.FINISHED));
+		}
+		if (StringUtils.isNotBlank(query)) {
+			spec = spec.and(likeTestNameOrDescription(query));
+		}
+		return perfTestRepository.findAll(spec, pageable);
 	}
 
 	/**

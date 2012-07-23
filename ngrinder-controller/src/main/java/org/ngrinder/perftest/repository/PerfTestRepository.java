@@ -29,6 +29,7 @@ import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -39,11 +40,12 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * @since 3.0
  */
 public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSpecificationExecutor<PerfTest> {
-	Page<PerfTest> findAllByStatusAndCreatedUserOrderByCreatedDateAsc(Status status, User userId, Pageable pageable);
+	Page<PerfTest> findAll(Specification<PerfTest> spec, Pageable pageable);
 
 	Page<PerfTest> findAllByCreatedUserOrderByCreatedDateAsc(User userId, Pageable pageable);
 
 	List<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status);
 
 	Page<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status, Pageable pageable);
+
 }

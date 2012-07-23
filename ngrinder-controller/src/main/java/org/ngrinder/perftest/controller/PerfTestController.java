@@ -77,15 +77,17 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return perftest/list
 	 */
 	@RequestMapping("/list")
-	public String getTestList(User user, ModelMap model, @RequestParam(required = false) boolean isFinished,
-			@RequestParam(required = false) PageRequest pageable) {
+	public String getTestList(User user, @RequestParam(required = false) String query,
+			@RequestParam(required = false) boolean isFinished, @RequestParam(required = false) PageRequest pageable,
+			ModelMap model) {
 		// FIXME
 		// not to paging on server side for now. Get all tests and
 		// paging/sorting in page.
 		// if (pageable == null) {
 		// pageable = new PageRequest(0, DEFAULT_TEST_PAGE_ZISE);
 		// }
-		Page<PerfTest> testList = perfTestService.getTestList(user, isFinished, pageable);
+		// TODO please provide sort as well in request.
+		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, isFinished, pageable);
 		model.addAttribute("testListPage", testList);
 		return "perftest/list";
 	}
@@ -115,7 +117,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String saveTest(User user, ModelMap model, PerfTest test) {
 		perfTestService.savePerfTest(test);
-		return getTestList(user, model, false, null);
+		return getTestList(user, null, false, null, model);
 	}
 
 	@RequestMapping(value = "/clone", method = RequestMethod.POST)

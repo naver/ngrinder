@@ -77,17 +77,17 @@ public class TestServiceTest extends AbstractNGNinderTransactionalTest {
 	public void testGetTestListAll() {
 		System.out.println(perfTestRepository.findAll());
 		Pageable pageable = new PageRequest(0, 10);
-		Page<PerfTest> testList = testService.getTestList(getTestUser(), false, pageable);
+		Page<PerfTest> testList = testService.getPerfTestList(getTestUser(), null, false, pageable);
 		assertThat(testList.getContent().size(), is(2));
-		testList = testService.getTestList(getTestUser(), true, pageable);
+		testList = testService.getPerfTestList(getTestUser(), null, true, pageable);
 		assertThat(testList.getContent().size(), is(1));
 
-		//test with no paging
-		testList = testService.getTestList(getTestUser(), false, null);
+		// test with no paging
+		testList = testService.getPerfTestList(getTestUser(), null, false, null);
 		assertThat(testList.getContent().size(), is(2));
-		testList = testService.getTestList(getTestUser(), true, null);
+		testList = testService.getPerfTestList(getTestUser(), null, true, null);
 		assertThat(testList.getContent().size(), is(1));
-		
+
 	}
-	
+
 }

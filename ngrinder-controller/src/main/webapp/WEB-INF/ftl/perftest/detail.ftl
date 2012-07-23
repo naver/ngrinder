@@ -49,24 +49,24 @@ div.div-host .host {
 				<input type="hidden" id="threads" name="threads" value="${(test.threads)!0}">
 				<input type="hidden" id="processes" name="processes" value="${(test.processes)!0}">						
 
-				<div class="form-horizontal form-horizontal-1">
+				<div class="form-horizontal">
 					<fieldset>
 						<div class="control-group">
 							<label for="testName" class="control-label">Test Name</label>
-							<div class="controls">
-								<input class="span8" type="text" id="testName" name="testName" value="${(test.testName)!}">
-								<button type="submit" class="btn btn-success btn-primary btn-large">
+							<div class="controls">  
+								<input class="span6" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
+								<button type="submit" class="btn btn-success btn-primary" style="margin-left:70px"> 
 									<#if test??>Clone<#else>Save</#if> and Start 
+								</button>  
+								<button type="submit" class="btn btn-primary" data-toggle="modal" href="#scheduleModal">
+									<#if test??>Clone<#else>Save</#if>
 								</button> 
 							</div>
 						</div>
 						<div class="control-group" style="margin-bottom: 0">
 							<label for="description" class="control-label">Description</label>
-							<div class="controls">
-								<textarea class="input-xlarge span8" id="description" rows="3" name="description">${(test.description)!}</textarea>
-								<button type="submit" class="btn btn-primary" data-toggle="modal" href="#scheduleModal">
-									<#if test??>Clone<#else>Save</#if> & Schedule
-								</button> 
+							<div class="controls">  
+								<textarea class="input-xlarge span9" id="description" rows="3" name="description">${(test.description)!}</textarea>
 							</div>
 						</div>
 					</fieldset>
@@ -74,7 +74,7 @@ div.div-host .host {
 			</div>
 			<div class="tabbable">
 				<ul class="nav nav-tabs" id="homeTab">
-					<li><a href="#testContent" data-toggle="tab">Test</a></li>
+					<li><a href="#testContent" data-toggle="tab">Test Configuration</a></li>
 					<#if test?? && test.status == "FINISHED">
 						<li><a href="#reportContent" data-toggle="tab" id="reportLnk">Report</a></li>
 					</#if>
@@ -84,7 +84,7 @@ div.div-host .host {
 						<div class="row">
 							<div class="span6">
 								<div class="page-header">
-									<h4>Load Test Detail</h4>
+									<h4>Basic Configuration</h4>
 								</div>
 								<div class="form-horizontal form-horizontal-2"> 
 									<fieldset>

@@ -108,7 +108,7 @@ function updateChart(){
 	var xySeries = jQuery.gchart.seriesForXYLines( 
 	    [jQuery.gchart.series(seriesArray, 'blue','green')]);
 	    
-	var bgColor = 'ccffff';
+	var bgColor = 'ffffff'; 
 	
 	var chartAxes = [jQuery.gchart.axis('bottom', 0, lastEle[1], 'red', 'right'), 
     				 jQuery.gchart.axis('right', 0, processes, 1, 'red', 'right')];

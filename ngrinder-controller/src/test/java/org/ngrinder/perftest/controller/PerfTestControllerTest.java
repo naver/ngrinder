@@ -40,15 +40,15 @@ import org.springframework.ui.ModelMap;
 
 /**
  * Class description
- *
+ * 
  * @author mavlarn
  * @Since 3.0
  */
 public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
-	
+
 	@Autowired
 	private PerfTestController controller;
-	
+
 	@Autowired
 	private PerfTestService testService;
 
@@ -63,40 +63,45 @@ public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
 		test.setScriptName("test1.py");
 		testService.savePerfTest(test);
 	}
-	
+
 	/**
-	 * Test method for {@link org.ngrinder.perftest.controller.PerfTestController#getTestList(org.springframework.ui.ModelMap, java.lang.String, boolean, org.springframework.data.domain.PageRequest)}.
+	 * Test method for
+	 * {@link org.ngrinder.perftest.controller.PerfTestController#getTestList(org.springframework.ui.ModelMap, java.lang.String, boolean, org.springframework.data.domain.PageRequest)}
+	 * .
 	 */
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetTestList() {
 		ModelMap model = new ModelMap();
-		controller.getTestList(getTestUser(), model, false, null);
-		Page<PerfTest> testPage = (Page<PerfTest>)model.get("testListPage");
+		controller.getTestList(getTestUser(), null, false, null, model);
+		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
 
 		assertThat(testList.size(), is(1));
-		
+
 	}
 
 	/**
-	 * Test method for {@link org.ngrinder.perftest.controller.PerfTestController#getTestDetail(org.springframework.ui.ModelMap, int)}.
+	 * Test method for
+	 * {@link org.ngrinder.perftest.controller.PerfTestController#getTestDetail(org.springframework.ui.ModelMap, int)}.
 	 */
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testGetTestDetail() {
 		ModelMap model = new ModelMap();
-		controller.getTestList(getTestUser(), model, false, null);
-		Page<PerfTest> testPage = (Page<PerfTest>)model.get("testListPage");
+		controller.getTestList(getTestUser(), null, false, null, model);
+		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
-		
+
 		PerfTest test = testList.get(0);
 		Assert.assertTrue(test.getCreatedUser().getUserId().equals(getTestUser().getUserId()));
 	}
 
 	/**
-	 * Test method for {@link org.ngrinder.perftest.controller.PerfTestController#createTest(org.springframework.ui.ModelMap, org.ngrinder.perftest.model.PerfTest)}.
+	 * Test method for
+	 * {@link org.ngrinder.perftest.controller.PerfTestController#createTest(org.springframework.ui.ModelMap, org.ngrinder.perftest.model.PerfTest)}
+	 * .
 	 */
 	@Test
 	public void testCreateTest() {
@@ -104,7 +109,9 @@ public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
 	}
 
 	/**
-	 * Test method for {@link org.ngrinder.perftest.controller.PerfTestController#deleteTestt(org.springframework.ui.ModelMap, java.lang.String)}.
+	 * Test method for
+	 * {@link org.ngrinder.perftest.controller.PerfTestController#deleteTestt(org.springframework.ui.ModelMap, java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testDeleteTestt() {
