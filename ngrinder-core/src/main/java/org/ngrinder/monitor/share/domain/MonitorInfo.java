@@ -26,6 +26,7 @@ import javax.management.openmbean.CompositeData;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.lang.math.NumberUtils;
 
 public abstract class MonitorInfo {
 	public String toString() {
@@ -49,12 +50,7 @@ public abstract class MonitorInfo {
 	}
 
 	protected float getFloat(String fs) {
-		float lvalue;
-		try {
-			lvalue = Float.parseFloat(fs.trim());
-		} catch (Exception e) {
-			lvalue = 0.0f;
-		}
+		float lvalue = NumberUtils.toFloat(fs.trim(), 0.0f);
 		return lvalue;
 	}
 

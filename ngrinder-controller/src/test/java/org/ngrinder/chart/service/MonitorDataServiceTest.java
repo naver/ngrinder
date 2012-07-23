@@ -20,61 +20,33 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.script.model;
+package org.ngrinder.chart.service;
 
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-
-import org.ngrinder.model.BaseEntity;
+import org.junit.Assert;
+import org.junit.Test;
+import org.ngrinder.AbstractNGNinderTransactionalTest;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Tag entity
+ * Class description.
  * 
- * @author Liu Zhifei
- * @since 3.0
+ * @author Tobi
+ * @since
+ * @date 2012-7-23
  */
-@Entity
-@Table(name = "TAG")
-public class Tag extends BaseEntity<Tag> {
-	/** UUID */
-	private static final long serialVersionUID = -418147255758574079L;
+public class MonitorDataServiceTest extends AbstractNGNinderTransactionalTest {
 
-	@ManyToMany(mappedBy = "tags", fetch = FetchType.LAZY)
-	private List<FileEntry> scripts;
+	@Autowired
+	private MonitorDataService monitorDataService;
 
-	@Column(name = "name", nullable = false)
-	private String name;
-
-	public Tag() {
+	@Test
+	public void testAddMonitorAgents() {
+		Assert.fail("Not yet implemented");
 	}
 
-	public Tag(String name) {
-		this.name = name;
+	@Test
+	public void testRemoveMonitorAgents() {
+		Assert.fail("Not yet implemented");
 	}
 
-	@Override
-	public String toString() {
-		return name;
-	}
-
-	public List<FileEntry> getScripts() {
-		return scripts;
-	}
-
-	public void setScripts(List<FileEntry> scripts) {
-		this.scripts = scripts;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 }
