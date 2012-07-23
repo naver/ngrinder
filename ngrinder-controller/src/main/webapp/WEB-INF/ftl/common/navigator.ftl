@@ -6,7 +6,7 @@
 			<a class="brand" href="${req.getContextPath()}/home"><img src="${req.getContextPath()}/img/logo_ngrinder_a_header_inv.png" alt="nGrinder"></img></a>
 			<div>
 				<ul class="nav">
-				  <li id="n_test"><a href="${req.getContextPath()}/perftest/list">Load Test</a></li>
+				  <li id="n_test"><a href="${req.getContextPath()}/perftest/list">Performance Test</a></li>
 				  <li id="n_script"><a href="${req.getContextPath()}/script/list">Script</a></li>
 				</ul>
 				
