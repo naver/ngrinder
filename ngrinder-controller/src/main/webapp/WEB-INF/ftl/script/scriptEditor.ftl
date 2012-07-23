@@ -42,10 +42,10 @@
 							<textarea id="display_content" name="content" style="height:550px;width:100%;">${(file.content)!}</textarea>
 						</div>
 					</td>
-					<#if oldfile!> 
+					<#if oldfile?has_content> 
 					<td>
+						<textarea id="display_content_2" style="height:550px;width:100%;">${oldfile}</textarea>
 						<div id="script_2" style="width:100%">
-							<textarea id="display_content_2" style="height:550px;width:100%;">${(oldfile!?content!)}</textarea>
 						</div>
 					</td>
 					</#if>

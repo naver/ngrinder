@@ -9,15 +9,15 @@
 from net.grinder.script.Grinder import grinder
 from net.grinder.script import Test
 from net.grinder.plugin.http import HTTPRequest
- 
+
 test1 = Test(1, "Request resource")
 request1 = test1.wrap(HTTPRequest())
- 
+
 class TestRunner:
-    def __call__(self):
-        result = request1.GET("${url}")
- 
-        # result is a HTTPClient.HTTPResult. We get the message body
-        # using the getText() method.
+	def __call__(self):
+		result = request1.GET("${url}")
+
+		# result is a HTTPClient.HTTPResult. We get the message body
+		# using the getText() method.
         assert result.status == 200
         
