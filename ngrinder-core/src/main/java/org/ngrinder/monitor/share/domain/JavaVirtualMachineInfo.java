@@ -122,7 +122,7 @@ public class JavaVirtualMachineInfo {
 		try {
 			vm = VirtualMachine.attach(name);
 		} catch (AttachNotSupportedException x) {
-			IOException ioe = new IOException(x.getMessage());
+			IOException ioe = new IOException(x.getMessage(), x);
 			ioe.initCause(x);
 			throw ioe;
 		}
@@ -143,11 +143,11 @@ public class JavaVirtualMachineInfo {
 		try {
 			vm.loadAgent(agent, "com.sun.management.jmxremote");
 		} catch (AgentLoadException x) {
-			IOException ioe = new IOException(x.getMessage());
+			IOException ioe = new IOException(x.getMessage(), x);
 			ioe.initCause(x);
 			throw ioe;
 		} catch (AgentInitializationException x) {
-			IOException ioe = new IOException(x.getMessage());
+			IOException ioe = new IOException(x.getMessage(), x);
 			ioe.initCause(x);
 			throw ioe;
 		}

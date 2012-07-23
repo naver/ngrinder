@@ -22,16 +22,14 @@
  */
 package org.ngrinder.script.model;
 
-import java.util.ArrayList;
+import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
+
 import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import org.apache.commons.io.FilenameUtils;
 import org.ngrinder.model.BaseModel;
 
 /**
@@ -47,10 +45,6 @@ public class FileEntry extends BaseModel<FileEntry> {
 
 	private static final long serialVersionUID = -2422243194192027508L;
 
-	private FileType fileType;
-
-	private String fileName;
-
 	private long fileSize;
 
 	private String testURL;
@@ -59,30 +53,22 @@ public class FileEntry extends BaseModel<FileEntry> {
 
 	private transient List<Long> revisions;
 
-	private boolean share = false;
-
 	private String description;
 
 	private String encoding;
 
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "SCRIPT_TAG", joinColumns = @JoinColumn(name = "SCRIPT_ID"), inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
-	private List<Tag> tags = new ArrayList<Tag>();
-
 	private byte[] contentBytes;
 
 	private String path;
+
+	private FileType fileType;
 
 	public String getPath() {
 		return path;
 	}
 
 	public String getFileName() {
-		return fileName;
-	}
-
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
+		return FilenameUtils.getName(checkNotEmpty(getPath()));
 	}
 
 	public long getFileSize() {
@@ -119,32 +105,12 @@ public class FileEntry extends BaseModel<FileEntry> {
 		this.content = content;
 	}
 
-	public boolean isShare() {
-		return share;
-	}
-
-	public void setShare(boolean share) {
-		this.share = share;
-	}
-
 	public String getDescription() {
 		return description;
 	}
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public List<Tag> getTags() {
-		return tags;
-	}
-
-	public void setTags(List<Tag> tags) {
-		this.tags = tags;
-	}
-
-	public void addTag(Tag tag) {
-		this.tags.add(tag);
 	}
 
 	public boolean isEditable() {

@@ -57,7 +57,6 @@ public class FileEntryRepositoryTest extends AbstractNGNinderTransactionalTest {
 		fileEntry.setContent("HELLO WORLD2");
 		fileEntry.setEncoding("UTF-8");
 		fileEntry.setPath("helloworld.txt");
-		fileEntry.setFileName("helloworld.txt");
 		fileEntry.setDescription("WOW");
 		User user = userService.getUserById("user1");
 		int size = repo.findAll(user).size();
@@ -91,13 +90,11 @@ public class FileEntryRepositoryTest extends AbstractNGNinderTransactionalTest {
 		fileEntry.setContent("HELLO WORLD2");
 		fileEntry.setEncoding("UTF-8");
 		fileEntry.setPath("helloworld.txt");
-		fileEntry.setFileName("helloworld.txt");
 		fileEntry.setFileType(FileType.TXT);
 		fileEntry.setDescription("WOW");
 		User user = userService.getUserById("user1");
 		repo.save(user, fileEntry, fileEntry.getEncoding());
 		fileEntry.setPath("hello.zip");
-		fileEntry.setFileName("hello.zip");
 		fileEntry.setEncoding(null);
 		fileEntry.setFileType(FileType.UNKNOWN);
 		byte[] byteArray = IOUtils.toByteArray(new ClassPathResource("user1.zip").getInputStream());

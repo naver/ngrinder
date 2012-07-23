@@ -62,7 +62,7 @@ import freemarker.template.Template;
  * 
  * @author JunHo Yoon
  */
-@Service 
+@Service
 public class FileEntryService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileEntryService.class);
@@ -150,7 +150,6 @@ public class FileEntryService {
 
 	public void addFolder(User user, String path, String folderName) {
 		FileEntry entry = new FileEntry();
-		entry.setFileName(folderName);
 		entry.setPath(path + "/" + folderName);
 		entry.setFileType(FileType.DIR);
 		fileEntityRepository.save(user, entry, null);
