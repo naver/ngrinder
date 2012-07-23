@@ -22,6 +22,9 @@
  */
 package org.ngrinder.monitor.controller;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Test;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
@@ -37,8 +40,10 @@ public class MonitorExecuteManagerTest {
 
 	@Test
 	public void getMonitorData() {
-		MonitorAgentInfo[] agentInfo = new MonitorAgentInfo[1];
-		agentInfo[0] = MonitorAgentInfo.getAgentMonitor("127.0.0.1", 4096, new MonitorRecoderDemo());
+		Set<MonitorAgentInfo> agentInfo = new HashSet<MonitorAgentInfo>();
+		MonitorAgentInfo monitorAgentInfo = MonitorAgentInfo.getAgentMonitor("127.0.0.1", 4096,
+				new MonitorRecoderDemo());
+		agentInfo.add(monitorAgentInfo);
 		MonitorExecuteManager monitorExecuteManager = new MonitorExecuteManager("127.0.0.1", 2, 1, agentInfo);
 		monitorExecuteManager.start();
 		ThreadUtil.sleep(10000);
