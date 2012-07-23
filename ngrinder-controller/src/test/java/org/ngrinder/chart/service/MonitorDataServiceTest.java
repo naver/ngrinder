@@ -20,32 +20,33 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.monitor.controller;
+package org.ngrinder.chart.service;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import org.junit.Assert;
 import org.junit.Test;
-import org.ngrinder.common.util.ThreadUtil;
-import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
+import org.ngrinder.AbstractNGNinderTransactionalTest;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Class description.
  * 
  * @author Tobi
  * @since
- * @date 2012-7-20
+ * @date 2012-7-23
  */
-public class MonitorExecuteManagerTest {
+public class MonitorDataServiceTest extends AbstractNGNinderTransactionalTest {
+
+	@Autowired
+	private MonitorDataService monitorDataService;
 
 	@Test
-	public void getMonitorData() {
-		Set<MonitorAgentInfo> agentInfo = new HashSet<MonitorAgentInfo>();
-		MonitorAgentInfo monitorAgentInfo = MonitorAgentInfo.getAgentMonitor("127.0.0.1", 4096,
-				new MonitorRecoderDemo());
-		agentInfo.add(monitorAgentInfo);
-		MonitorExecuteManager monitorExecuteManager = new MonitorExecuteManager("127.0.0.1", 2, 1, agentInfo);
-		monitorExecuteManager.start();
-		ThreadUtil.sleep(10000);
+	public void testAddMonitorAgents() {
+		Assert.fail("Not yet implemented");
 	}
+
+	@Test
+	public void testRemoveMonitorAgents() {
+		Assert.fail("Not yet implemented");
+	}
+
 }

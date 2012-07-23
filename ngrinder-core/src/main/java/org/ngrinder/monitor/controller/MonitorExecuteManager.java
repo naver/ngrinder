@@ -24,6 +24,7 @@ package org.ngrinder.monitor.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -34,29 +35,29 @@ public class MonitorExecuteManager {
 	private ScheduledExecutorService scheduler;
 	private long firstTime;
 	private long interval;
-	private MonitorAgentInfo[] agentInfo;
+	private Set<MonitorAgentInfo> agentInfo;
 	private boolean running;
 	private String key;
 
 	private List<MonitorExecuteWorker> monitorExecuteWorkers = new ArrayList<MonitorExecuteWorker>();
 
-	public MonitorExecuteManager(final String key, final int interval, final MonitorAgentInfo[] agentInfo) {
+	public MonitorExecuteManager(final String key, final int interval, final Set<MonitorAgentInfo> agentInfo) {
 		this(key, interval, interval, agentInfo);
 	}
 
 	public MonitorExecuteManager(final String key, final int interval, final long firstTime,
-			final MonitorAgentInfo[] agentInfo) {
+			final Set<MonitorAgentInfo> agentInfo) {
 		this.key = key;
 		this.interval = interval;
 		this.firstTime = firstTime;
 		this.agentInfo = agentInfo;
-		scheduler = Executors.newScheduledThreadPool(this.agentInfo.length);
+		scheduler = Executors.newScheduledThreadPool(this.agentInfo.size());
 	}
 
 	public void start() {
 		if (!isRunning()) {
-			for (int i = 0; i < this.agentInfo.length; i++) {
-				MonitorExecuteWorker mew = new MonitorExecuteWorker(key, agentInfo[i]);
+			for (MonitorAgentInfo monitorAgentInfo : agentInfo) {
+				MonitorExecuteWorker mew = new MonitorExecuteWorker(key, monitorAgentInfo);
 				monitorExecuteWorkers.add(mew);
 				scheduler.scheduleAtFixedRate(mew, firstTime, interval, TimeUnit.SECONDS);
 			}
