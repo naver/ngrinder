@@ -71,7 +71,8 @@ public class HomeController extends NGrinderBaseController {
 			return "login";
 		}
 
-		model.addAttribute("ngrinder_wiki_rss_list", homeService.getRssEntries());
+		model.addAttribute("right_panel_entries", homeService.getRightPanelEntries());
+		model.addAttribute("left_panel_entries", homeService.getLeftPanelEntries());
 
 		if (roles == null) {
 			return "login";

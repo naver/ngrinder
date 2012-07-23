@@ -8,7 +8,6 @@
 				<ul class="nav">
 				  <li id="n_test"><a href="${req.getContextPath()}/perftest/list">Load Test</a></li>
 				  <li id="n_script"><a href="${req.getContextPath()}/script/list">Script</a></li>
-				  <li id="n_alert"><a href="#contact">Alert</a></li>
 				</ul>
 				
 				<ul class="nav pull-right">

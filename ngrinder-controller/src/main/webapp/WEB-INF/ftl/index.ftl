@@ -16,9 +16,44 @@
 		<img src="${req.getContextPath()}/img/bg_main_banner.png"  style="margin-top:-20px;margin-bottom:10px"/>
 		<div class="row">
 			<div class="span6">
-			   <h3>Announcements</h3> 
-			   <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-			  <p><a class="btn" href="#">View details &raquo;</a></p>
+				<div class="page-header">
+	 				 <h2>Q&A</h2> 
+				</div>
+				<div class="alert alert-info">
+			  	You can ask a question and track the progress.
+			  	</div> 
+		   		<div class="well">
+			  		<br/>
+			  	<#if right_panel_entries?has_content>
+				  	<table class="table table-striped">
+				  		<#list right_panel_entries as each_right_entry>
+				  			<tr>
+				  				<td>
+				  					<a href="${each_right_entry.link }" target="_blank">${each_right_entry.title}
+				  					<#if each_right_entry.isNew() == true><span class="label label-info">new</span></#if>
+				  					</a> 
+				  				</td>
+				  				<td>${each_right_entry.lastUpdatedDate?string("yyyy-MM-dd")} 
+				  				</td>
+				  			</tr>
+				  		</#list>
+			  			<tr>
+			  				<td>
+			  					<a href="https://github.com/nhnopensource/ngrinder/issues/new">
+			  						<img src="${req.getContextPath()}/img/asksupport.gif"/> Ask a question
+			  					</a>  
+			  					<a href="https://github.com/nhnopensource/ngrinder/issues/new">
+			  						<img src="${req.getContextPath()}/img/bug_icon.gif"/> Bug report!
+			  					</a>	
+			  				</td>
+			  				<td><a href="https://github.com/nhnopensource/ngrinder/issues" target="_blank"><i class="icon-share-alt"></i>&nbsp;more...</a></td>
+			  			</tr>
+			  			</div>
+	  				</table>
+	   		 	 </#if> 
+			  		
+  			    </div>
+
 			</div>
 			<div class="span6">
 				<div class="page-header">
@@ -29,13 +64,15 @@
 			  	</div> 
 		   		<div class="well">
 			  		<br/>
-			  		
-			  	<#if ngrinder_wiki_rss_list?has_content>
+			  	<#if left_panel_entries?has_content>
 				  	<table class="table table-striped">
-				  		<#list ngrinder_wiki_rss_list as rss_entry>
+				  		<#list left_panel_entries as each_left_entry>
 				  			<tr>
-				  				<td><a href="${rss_entry.link }" target="_blank">${rss_entry.title}</a></td>
-				  				<td>${rss_entry.publishedDate?string("yyyy-MM-dd")}</td>
+				  				<td> 
+				  					<a href="${each_left_entry.link }" target="_blank">${each_left_entry.title}</a>
+				  					<#if each_left_entry.isNew() == true><span class="label label-info">new</span></#if>
+				  				</td>
+				  				<td>${each_left_entry.lastUpdatedDate?string("yyyy-MM-dd")}</td>
 				  			</tr>
 				  		</#list>
 			  			<tr>
@@ -45,7 +82,8 @@
 			  			</div>
 	  				</table>
 	   		 	 </#if> 
-				 </div>
+			  		
+			  	</div>
 			</div>
 		</div>
 		<#include "common/copyright.ftl">

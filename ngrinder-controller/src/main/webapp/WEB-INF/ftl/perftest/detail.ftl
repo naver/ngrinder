@@ -135,16 +135,17 @@ div.div-host .host {
 										</div>
 										<hr>
 										<div class="control-group">
-											<label class="control-label"> <input type="radio"
-												id="durationChkbox"> Duration
+											<label class="control-label"> 
+												<input type="radio" id="durationChkbox"> Duration
 											</label>
 											<input type="hidden" id="duration" name="duration"
 												value="${(test.duration)!0}">
 											<div class="controls">
-												<select class="select-item" id="dSelect"></select> : <select
-													class="select-item" id="hSelect"></select> : <select
-													class="select-item" id="mSelect"></select> : <select
-													class="select-item" id="sSelect"></select>&nbsp;&nbsp;
+												<select class="select-item" id="dSelect"></select> : 
+												<select	class="select-item" id="hSelect"></select> : 
+												<select	class="select-item" id="mSelect"></select> : 
+												<select	class="select-item" id="sSelect"></select>
+												&nbsp;&nbsp;
 												<code>DD:HH:MM:SS</code>
 											</div>
 										</div>
