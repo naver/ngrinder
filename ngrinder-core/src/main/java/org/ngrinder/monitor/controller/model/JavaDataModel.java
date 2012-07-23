@@ -22,6 +22,7 @@
  */
 package org.ngrinder.monitor.controller.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -33,7 +34,9 @@ public class JavaDataModel extends BaseEntity<JavaDataModel> {
 
 	private static final long serialVersionUID = -2872194513786272772L;
 
+	@Column(name = "monitor_key")
 	private String key;
+	
 	private String ip;
 	private int port;
 	private String displayName;
