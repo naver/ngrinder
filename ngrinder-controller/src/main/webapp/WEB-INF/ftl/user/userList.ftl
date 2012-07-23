@@ -18,18 +18,16 @@
 				<div class="page-header pageHeader">
 					<h3>User List</h3>
 				</div>
-				<div class="row">
-					<div class="span10">
-						<a href="javascript:deleteCheckedUsers()" class="btn btn-danger pull-right">
-							<i class="icon-remove"></i>
-							Delete selected Users
-						</a>
-					</div>
-				</div>
 				<div class="well form-inline searchBar">
 					<input type="text" class="input-medium search-query span4"
 						placeholder="Keywords" id="searchText" value="${keywords!}">
 					<button type="submit" class="btn" id="search_user">Search</button>
+					
+					<a href="javascript:deleteCheckedUsers()" class="btn btn-danger pull-right">
+						<i class="icon-remove"></i>
+						Delete selected Users
+					</a> 
+					
 				</div>
 				<table class="display ellipsis jsTable" id="userTable">
 					<colgroup>
@@ -59,7 +57,10 @@
 							<td class="left"><a
 										href="${req.getContextPath()}/user/detail?userId=${user.userId}">${user.userName!}</a></td>
 							<td>
-								${user.createdDate?string("yyyy/MM/dd HH:mm:ss")}</td>
+								<#if user.createdDate?has_content>
+									${user.createdDate?string("yyyy/MM/dd HH:mm:ss")}
+								</#if>
+								</td>
 							<td class="left ellipsis">${user.description!}</td>
 							<td class="left">${user.role}</td>
 							<td><a
