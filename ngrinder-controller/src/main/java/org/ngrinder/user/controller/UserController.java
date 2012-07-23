@@ -64,6 +64,7 @@ public class UserController extends NGrinderBaseController {
 		model.addAttribute("userList", userList);
 		EnumSet<Role> roleSet = EnumSet.allOf(Role.class); 
 		model.addAttribute("roleSet", roleSet);
+		model.addAttribute("roleName", roleName);
 
 		return "user/userList";
 	}

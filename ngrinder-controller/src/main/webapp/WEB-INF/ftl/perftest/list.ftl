@@ -81,7 +81,7 @@
 							</#list>
 							<#else>
 								<tr>
-									<td colspan="11">
+									<td colspan="12">
 										No data to display.
 									</td>
 								</tr>
