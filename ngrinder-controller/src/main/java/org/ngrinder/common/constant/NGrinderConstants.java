@@ -85,11 +85,11 @@ public interface NGrinderConstants {
 	public static final int PERFTEST_MAXIMUM_TRIAL_COUNT = 3;
 
 	// HOME_PATH
-	public static final String PROJECT_PATH = "project";
 	public static final String PLUGIN_PATH = "plugins";
 	public static final String SCRIPT_PATH = "script";
 	public static final int CONSOLE_PORT_BASE = 12000;
 	public static final String USER_REPO_PATH = "repos";
+	public static final String PERF_TEST_PATH = "perftest";
 
 	// parameter constant, for parameter from page, and for key in map
 	public static final String PARAM_USERID = "userId";

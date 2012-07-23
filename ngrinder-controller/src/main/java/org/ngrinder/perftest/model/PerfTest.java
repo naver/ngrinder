@@ -325,7 +325,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.threads = threads;
 	}
 
-
 	public int getTests() {
 		return tests;
 	}
@@ -393,4 +392,5 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public void setTestTrialCount(int testTrialCount) {
 		this.testTrialCount = testTrialCount;
 	}
+
 }
