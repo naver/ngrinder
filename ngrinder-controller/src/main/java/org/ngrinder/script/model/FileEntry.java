@@ -22,14 +22,11 @@
  */
 package org.ngrinder.script.model;
 
-import java.util.ArrayList;
+import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
+
 import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import org.apache.commons.io.FilenameUtils;
@@ -56,8 +53,6 @@ public class FileEntry extends BaseModel<FileEntry> {
 
 	private transient List<Long> revisions;
 
-	private boolean share = false;
-
 	private String description;
 
 	private String encoding;
@@ -73,7 +68,7 @@ public class FileEntry extends BaseModel<FileEntry> {
 	}
 
 	public String getFileName() {
-		return FilenameUtils.getName(getPath());
+		return FilenameUtils.getName(checkNotEmpty(getPath()));
 	}
 
 	public long getFileSize() {
@@ -108,14 +103,6 @@ public class FileEntry extends BaseModel<FileEntry> {
 	public void setContent(String content) {
 		this.fileSize = content.length();
 		this.content = content;
-	}
-
-	public boolean isShare() {
-		return share;
-	}
-
-	public void setShare(boolean share) {
-		this.share = share;
 	}
 
 	public String getDescription() {

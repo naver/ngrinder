@@ -115,9 +115,6 @@ public class FileEntityRepository {
 							// It's because relative path contains "/" in
 							// front.
 							script.setPath(FilenameUtils.normalize(path + "/" + dirEntry.getRelativePath(), true));
-
-							// script.setPath(path + "/" +
-							// dirEntry.getRelativePath());
 							script.setCreatedDate(dirEntry.getDate());
 							script.setLastModifiedDate(dirEntry.getDate());
 							script.setDescription(dirEntry.getCommitMessage());
