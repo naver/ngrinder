@@ -25,7 +25,7 @@
 	 				 <h2>Developer Resources</h2> 
 				</div>
 				<div class="alert alert-info">
-			  	You can find my ngrinder script related documents.
+			  	You can find ngrinder related documents in the followings.
 			  	</div> 
 		   		<div class="well">
 			  		<br/>
@@ -39,8 +39,8 @@
 				  			</tr>
 				  		</#list>
 			  			<tr>
-			  				<td><a href="http://www.cubrid.org/wiki_ngrinder" target="_blank"><i class="icon-share-alt"></i>&nbsp;more...</a></td>
 			  				<td></td>
+			  				<td><a href="http://www.cubrid.org/wiki_ngrinder" target="_blank"><i class="icon-share-alt"></i>&nbsp;more...</a></td>
 			  			</tr>
 			  			</div>
 	  				</table>

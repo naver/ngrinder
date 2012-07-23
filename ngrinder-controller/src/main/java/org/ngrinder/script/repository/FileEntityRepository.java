@@ -115,7 +115,6 @@ public class FileEntityRepository {
 							// It's because relative path contains "/" in
 							// front.
 							script.setPath(FilenameUtils.normalize(path + "/" + dirEntry.getRelativePath(), true));
-							script.setFileName(dirEntry.getName());
 
 							// script.setPath(path + "/" +
 							// dirEntry.getRelativePath());
@@ -157,13 +156,12 @@ public class FileEntityRepository {
 								return;
 							}
 							script.setPath(dirEntry.getRelativePath());
-							script.setFileName(dirEntry.getName());
 
 							// script.setPath(path + "/" +
 							// dirEntry.getRelativePath());
 							script.setDescription(dirEntry.getCommitMessage());
-
-							script.setFileType(FileType.getFileType(FilenameUtils.getExtension(dirEntry.getName())));
+							script.setFileType(dirEntry.getKind() == SVNNodeKind.DIR ? FileType.DIR : FileType
+									.getFileType(FilenameUtils.getExtension(dirEntry.getName())));
 							script.setFileSize(dirEntry.getSize());
 							scripts.add(script);
 						}
@@ -197,13 +195,13 @@ public class FileEntityRepository {
 						}
 					});
 			script.setPath(path);
-			script.setFileName(FilenameUtils.getName(path));
 			byte[] byteArray = outputStream.toByteArray();
 			String autoDetectedEncoding = EncodingUtil.detectEncoding(byteArray, "UTF-8");
 			script.setContent(new String(byteArray, autoDetectedEncoding));
 			script.setEncoding(autoDetectedEncoding);
 			SVNLogEntry lastLogEntry = logEntries.get(logEntries.size() - 1);
 			script.setDescription(lastLogEntry.getMessage());
+			script.setFileType(FileType.getFileType(FilenameUtils.getExtension(script.getFileName())));
 			final List<Long> revisions = new ArrayList<Long>();
 			for (SVNLogEntry each : logEntries) {
 				revisions.add(each.getRevision());
