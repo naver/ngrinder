@@ -1,3 +1,25 @@
+/*
+ * Copyright (C) 2012 - 2012 NHN Corporation
+ * All rights reserved.
+ *
+ * This file is part of The nGrinder software distribution. Refer to
+ * the file LICENSE which is part of The nGrinder distribution for
+ * licensing details. The nGrinder distribution is available on the
+ * Internet at http://nhnopensource.org/ngrinder
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package org.ngrinder.home.service;
 
 import java.net.URL;
@@ -22,6 +44,13 @@ import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 
+/**
+ * Data retriever for index page display.
+ * 
+ * 
+ * @author JunHo Yoon
+ * @since 3.1
+ */
 @Component
 public class HomeService {
 	private static final Logger LOG = LoggerFactory.getLogger(HomeService.class);
@@ -65,11 +94,9 @@ public class HomeService {
 		try {
 
 			List<PanelEntry> panelEntries = new ArrayList<PanelEntry>();
-			List<Issue> issues = service.getIssues(repo, new HashMap<String, String>() {
-				{
-					put("state", "open");
-				}
-			});
+			Map<String, String> param = new HashMap<String, String>();
+			param.put("state", "open");
+			List<Issue> issues = service.getIssues(repo, param);
 			issues = issues.size() >= 8 ? issues.subList(0, 7) : issues;
 			for (Issue each : issues) {
 				PanelEntry entry = new PanelEntry();
@@ -79,12 +106,9 @@ public class HomeService {
 				entry.setLink(each.getHtmlUrl());
 				panelEntries.add(entry);
 			}
+			param.put("state", "close");
 
-			issues = service.getIssues(repo, new HashMap<String, String>() {
-				{
-					put("state", "close");
-				}
-			});
+			issues = service.getIssues(repo, param);
 
 			for (Issue each : issues) {
 				PanelEntry entry = new PanelEntry();

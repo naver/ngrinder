@@ -47,6 +47,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
+/**
+ * Home index page controller.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
 @Controller
 public class HomeController extends NGrinderBaseController {
 

@@ -20,62 +20,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.home.model;
+package org.ngrinder.home.service;
 
-import java.util.Date;
-
-import org.ngrinder.common.util.DateUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
 /**
- * Panel entry which will be shown in main page.
+ * Wrapper for aync-call to HomeService.
+ * 
+ * This is used for pre-fetching home news entries.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
-public class PanelEntry implements Comparable<PanelEntry> {
-	private String title;
-	private Date lastUpdatedDate;
-	private String link;
-	private String author;
+@Component
+public class HomeAsyncService {
+	@Autowired
+	private HomeService homeService;
 
-	public String getTitle() {
-		return title;
+	@Async
+	public void getRightPanelEntries() {
+		homeService.getRightPanelEntries();
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	public Date getLastUpdatedDate() {
-		return lastUpdatedDate;
-	}
-
-	public void setLastUpdatedDate(Date lastUpdatedDate) {
-		this.lastUpdatedDate = lastUpdatedDate;
-	}
-
-	public String getLink() {
-		return link;
-	}
-
-	public void setLink(String link) {
-		this.link = link;
-	}
-
-	public String getAuthor() {
-		return author;
-	}
-
-	public void setAuthor(String author) {
-		this.author = author;
-	}
-
-	public boolean isNew() {
-		return DateUtil.addDay(lastUpdatedDate, 5).compareTo(new Date()) > 0;
-	}
-
-	@Override
-	public int compareTo(PanelEntry o) {
-		return o.lastUpdatedDate.compareTo(lastUpdatedDate);
+	@Async
+	public void getLeftPanelEntries() {
+		homeService.getLeftPanelEntries();
 	}
 }
