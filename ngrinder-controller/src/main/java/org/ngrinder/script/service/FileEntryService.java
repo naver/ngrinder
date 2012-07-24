@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.infra.config.Config;
@@ -43,10 +45,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.tmatesoft.svn.core.SVNException;
+import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.internal.io.fs.FSHook;
+import org.tmatesoft.svn.core.internal.io.fs.FSHookEvent;
+import org.tmatesoft.svn.core.internal.io.fs.FSHooks;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
@@ -55,10 +62,12 @@ import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 
 /**
- * File entry service class. This class is responsible for creating user repo
- * whenever user is created and connection b/w user and underlying svn.
+ * File entry service class.<br/>
+ * 
+ * This class is responsible for creating user repo whenever user is created and connection b/w user and underlying svn.
  * 
  * @author JunHo Yoon
+ * @since 3.0
  */
 @Service
 public class FileEntryService {
@@ -73,6 +82,50 @@ public class FileEntryService {
 	@Autowired
 	private HttpContainerContext httpContainerContext;
 
+	@Autowired
+	private EhCacheCacheManager cacheManager;
+
+	/**
+	 * Initialize {@link FileEntryService}
+	 */
+	@PostConstruct
+	public void init() {
+		// Add cache invalidation hook.
+		FSHooks.registerHook(new FSHook() {
+			@Override
+			public void onHook(FSHookEvent event) throws SVNException {
+				// FIXME: later
+			}
+		});
+
+		// Add each file size limit hook on pre-commit
+		FSHooks.registerHook(new FSHook() {
+			@Override
+			public void onHook(FSHookEvent event) throws SVNException {
+				// FIXME: later
+			}
+		});
+
+		// Add total storage size hook
+		FSHooks.registerHook(new FSHook() {
+			@Override
+			public void onHook(FSHookEvent event) throws SVNException {
+				// FIXME: later
+			}
+		});
+
+	}
+
+	/**
+	 * invalidate the file_entry_seach_cache.
+	 * 
+	 * @param user
+	 *            user.
+	 */
+	public void invalidateCache(User user) {
+		cacheManager.getCache("file_entry_search_cache").evict(user);
+	}
+
 	/**
 	 * Create user svn repo.
 	 * 
@@ -86,11 +139,15 @@ public class FileEntryService {
 		File newUserDirectory = getUserRepoDirectory(user);
 		try {
 			if (!newUserDirectory.exists()) {
-				svnClientManager.getAdminClient().doCreateRepository(newUserDirectory, user.getUserId(), true, true);
+				createUserRepo(user, newUserDirectory);
 			}
 		} catch (SVNException e) {
 			LOG.error("Error while prepare user {}'s repo", user.getUserName(), e);
 		}
+	}
+
+	private SVNURL createUserRepo(User user, File newUserDirectory) throws SVNException {
+		return svnClientManager.getAdminClient().doCreateRepository(newUserDirectory, user.getUserId(), true, true);
 	}
 
 	private File getUserRepoDirectory(User user) {
@@ -133,8 +190,17 @@ public class FileEntryService {
 		return fileEntityRepository.findOne(user, path, SVNRevision.HEAD);
 	}
 
+	/**
+	 * Check file existence.
+	 * 
+	 * @param user
+	 *            user
+	 * @param path
+	 *            path in user repo
+	 * @return true if exists.
+	 */
 	public boolean hasFileEntry(User user, String path) {
-		return getFileEntry(user, path) != null; 
+		return fileEntityRepository.hasFileEntry(user, path);
 	}
 
 	public void addFolder(User user, String path, String folderName) {
