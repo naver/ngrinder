@@ -31,7 +31,7 @@
 					</a>
 				</span>
 			</div>
-			<table class="display ellipsis jsTable" id="testTable">
+			<table class="table table-striped table-bordered ellipsis" id="testTable">
 				<colgroup>
 					<col width="30">
 					<col width="75">
@@ -83,7 +83,7 @@
 					</#list>
 				<#else>
 					<tr>
-						<td colspan="12">
+						<td colspan="12" class="noData">
 							No data to display.
 						</td>
 					</tr>

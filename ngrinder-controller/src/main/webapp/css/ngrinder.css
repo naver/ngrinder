@@ -79,18 +79,6 @@ body {
 	width: 100px;
 }
 
-table th,table td {
-	text-align: center;
-}
-
-table.display thead th {
-	padding: 3px 10px
-}
-
-table.display tbody .left {
-	text-align: left
-}
-
 table.ellipsis {
 	table-layout: fixed
 }
@@ -108,14 +96,6 @@ table.ellipsis td.ellipsis {
 
 .container .searchBar {
 	margin: 10px 0 20px
-}
-
-.container .jsTable {
-	margin-bottom: 10px
-}
-
-.display th input {
-	margin-left: -10px
 }
 
 .modal-body form {
@@ -160,4 +140,8 @@ table.ellipsis td.ellipsis {
 .rampChart {
 	width: 460px; 
 	height: 355px
+}
+
+table td.noData {
+	text-align: center;
 }

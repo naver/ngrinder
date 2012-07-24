@@ -1,7 +1,7 @@
 <div class="span2">
 
-	<div class="well" style="margin-top:20px;">
-        <ul class="nav nav-list">
+	<div class="well" style="margin-top:-5px;">
+	<ul class="nav nav-list">
 			<li class="nav-header <#if listPage?exists && !roleName?exists>active</#if>">
 				<a href="${req.getContextPath()}/user/list">ALL</a>
 			</li>
