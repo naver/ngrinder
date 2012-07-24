@@ -30,7 +30,14 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-
+/**
+ * {@link HandlerMethodArgumentResolver} for {@link User} argument.
+ * 
+ * It passes current user instance on {@link User} argument.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
 public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
 	private UserContext userContext;

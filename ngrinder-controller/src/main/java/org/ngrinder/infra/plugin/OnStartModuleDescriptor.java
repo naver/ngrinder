@@ -29,6 +29,7 @@ import com.atlassian.plugin.module.ContainerManagedPlugin;
  * Plugin Descriptor for OnStartModule
  * 
  * @author JunHo Yoon
+ * @since 3.0
  */
 @PluginDescriptor("on-start")
 @SuppressWarnings("deprecation")

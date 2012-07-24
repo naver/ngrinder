@@ -32,5 +32,17 @@ import org.ngrinder.perftest.model.PerfTest;
  */
 public interface OnTestStartRunnable {
 
+	/**
+	 * extension interface which will be executed on every test execution.
+	 * 
+	 * FIXME : perfTest is not stored in core. So the method param should be changed.
+	 * 
+	 * @param perfTest
+	 *            Performance Test
+	 * @param version
+	 *            version
+	 * @param methodSignatrue
+	 *            method signature
+	 */
 	public void run(PerfTest perfTest, String version, String methodSignatrue);
 }

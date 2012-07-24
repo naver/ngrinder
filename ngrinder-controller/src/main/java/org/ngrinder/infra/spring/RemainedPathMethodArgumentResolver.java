@@ -27,12 +27,20 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerMapping;
 
 /**
- * {@link WebArgumentResolver} which puts the
- * PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE attribute to parameter with the
+ * {@link WebArgumentResolver} which puts the PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE attribute to parameter with the
  * RemainedPath annotation.
  * 
- * @author JunHo Yoon
+ * <pre>
+ *  @RequestMapping("hello/**")
+ * 	public String handleURL(@RemainedPath String path) {
+ *   ....
+ * 	}
+ * </pre>
  * 
+ * When hello/world/1 url is called, world/1 will be provided in path.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
  */
 public class RemainedPathMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
@@ -49,11 +57,9 @@ public class RemainedPathMethodArgumentResolver implements HandlerMethodArgument
 		RequestMapping requestMappingOnMethod = parameter.getMethodAnnotation(RequestMapping.class);
 		RequestMapping requestMappingOnClass = getDeclaringClassRequestMapping(parameter);
 		String combine = pathMatcher.combine(requestMappingOnClass.value()[0], requestMappingOnMethod.value()[0]);
-		return PathUtil.removePrependedSlash(pathMatcher.extractPathWithinPattern(combine, (String) webRequest.getAttribute(
-				HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE, NativeWebRequest.SCOPE_REQUEST)));
+		return PathUtil.removePrependedSlash(pathMatcher.extractPathWithinPattern(combine, (String) webRequest
+				.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE, NativeWebRequest.SCOPE_REQUEST)));
 	}
-
-	
 
 	@SuppressWarnings("unchecked")
 	protected RequestMapping getDeclaringClassRequestMapping(MethodParameter parameter) {
