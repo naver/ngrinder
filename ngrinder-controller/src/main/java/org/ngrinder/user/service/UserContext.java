@@ -22,7 +22,7 @@
  */
 package org.ngrinder.user.service;
 
-import org.ngrinder.infra.annotation.OnlyRuntimeComponent;
+import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.model.User;
 import org.ngrinder.security.SecuredUser;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -36,7 +36,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @author JunHo Yoon
  * @since 3.0
  */
-@OnlyRuntimeComponent
+@RuntimeOnlyComponent
 public class UserContext {
 	
 	/**

@@ -2,9 +2,9 @@ package org.ngrinder.infra.plugin;
 
 import javax.annotation.PostConstruct;
 
-import org.ngrinder.infra.annotation.OnlyTestComponent;
+import org.ngrinder.infra.annotation.TestOnlyComponent;
 
-@OnlyTestComponent
+@TestOnlyComponent
 public class MockPluginManager extends PluginManager {
 
 	@PostConstruct

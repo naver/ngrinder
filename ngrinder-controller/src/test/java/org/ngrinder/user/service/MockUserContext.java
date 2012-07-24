@@ -24,7 +24,7 @@ package org.ngrinder.user.service;
 
 import javax.annotation.PostConstruct;
 
-import org.ngrinder.infra.annotation.OnlyTestComponent;
+import org.ngrinder.infra.annotation.TestOnlyComponent;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
@@ -37,7 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since
  * @date 2012-6-28
  */
-@OnlyTestComponent
+@TestOnlyComponent
 public class MockUserContext extends UserContext {
 	public static final String TEST_USER_ID = "TEST_USER";
 

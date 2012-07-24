@@ -25,7 +25,7 @@ package org.ngrinder.infra.init;
 import javax.annotation.PostConstruct;
 
 import org.ngrinder.home.service.HomeAsyncService;
-import org.ngrinder.infra.annotation.OnlyRuntimeComponent;
+import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -33,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * @author JunHo Yoon
  */
-@OnlyRuntimeComponent
+@RuntimeOnlyComponent
 public class DataInit {
 
 	@Autowired

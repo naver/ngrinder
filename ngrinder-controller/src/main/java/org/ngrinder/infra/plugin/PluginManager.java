@@ -35,7 +35,7 @@ import javax.servlet.ServletContext;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.model.Home;
-import org.ngrinder.infra.annotation.OnlyRuntimeComponent;
+import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.config.Config;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -60,7 +60,7 @@ import com.atlassian.plugin.osgi.hostcomponents.HostComponentProvider;
  * @author JunHo Yoon
  * @since 3.0
  */
-@OnlyRuntimeComponent
+@RuntimeOnlyComponent
 public class PluginManager implements ServletContextAware, NGrinderConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PluginManager.class);

@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component
-public @interface OnlyTestComponent {
+public @interface TestOnlyComponent {
 
 	/**
 	 * The value may indicate a suggestion for a logical component name, to be
