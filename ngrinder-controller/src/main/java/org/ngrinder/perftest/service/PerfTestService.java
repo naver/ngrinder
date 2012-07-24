@@ -29,11 +29,19 @@ import static org.ngrinder.perftest.repository.PerfTestSpecification.emptyPredic
 import static org.ngrinder.perftest.repository.PerfTestSpecification.likeTestNameOrDescription;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.statusSetEqual;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.grinder.common.GrinderProperties;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
@@ -59,6 +67,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PerfTestService {
+
+	private static final String DATA_FILE_EXTENSION = ".data";
 
 	@Autowired
 	private PerfTestRepository perfTestRepository;
@@ -200,5 +210,52 @@ public class PerfTestService {
 	public File prepareDistribution(PerfTest perfTest) {
 		// TODO: still its empty
 		return null;
+	}
+
+	public List<String> getReportData(long testId, String dataType, int imgWidth) throws IOException {
+		List<String> reportData = new ArrayList<String>();
+
+		File reportFolder = config.getHome().getPerfTestDirectory(testId + File.separator + "report");
+
+		int pointCount = imgWidth / 10;
+
+		int lineNumber;
+
+		File targetFile = null;
+		targetFile = new File(reportFolder, dataType.toLowerCase() + DATA_FILE_EXTENSION);
+
+		LineNumberReader lnr = null;
+		try {
+			lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(targetFile)));
+			lnr.skip(targetFile.length());
+			lineNumber = lnr.getLineNumber() + 1;
+
+		} finally {
+			IOUtils.closeQuietly(lnr);
+		}
+
+		FileReader reader = null;
+		BufferedReader br = null;
+		try {
+			reader = new FileReader(targetFile);
+			br = new BufferedReader(reader);
+			String data = null;
+			int current = 0;
+			int interval = lineNumber / pointCount;
+			// TODO should get average data
+			while ((data = br.readLine()) != null) {
+				if (0 == current) {
+					reportData.add(data);
+				}
+				if (++current >= interval) {
+					current = 0;
+				}
+			}
+		} finally {
+			IOUtils.closeQuietly(reader);
+			IOUtils.closeQuietly(br);
+		}
+
+		return reportData;
 	}
 }

@@ -42,9 +42,7 @@ div.div-host .host {
 	<div class="container">
 		<form id="testContentForm" action="${req.getContextPath()}/perftest/create" method="POST">
 			<div class="well" style="padding:10px">
-				<!-- not to pass test id, because test can not be modified.
 				<input type="hidden" id="testId" name="id" value="${(test.id)!}">
-				 -->
 				<input type="hidden" id="threshold" name="threshold" value="${(test.threshold)!"D"}">
 				<input type="hidden" id="threads" name="threads" value="${(test.threads)!0}">
 				<input type="hidden" id="processes" name="processes" value="${(test.processes)!0}">						
@@ -281,12 +279,13 @@ div.div-host .host {
 								</div>
 							</div>
 							<div class="span7">
-								<img src="" height="220" width="750" border="0">
+								<img id="tpsimg" src="" height="220" width="750" border="1"/>
+								<div id="tpsdiv" style="min-width: 700px; height: 300px; margin: 0 auto"></div>
 							</div>
 						</div>
 						<div class="row" style="margin-top: 10px;">
 							<div class="span10">
-								<a class="btn pull-right" target="_blank" href="#">Report in Detail</a>
+								<a id="reportDetail" class="btn pull-right" href="#">Report in Detail</a>
 							</div>
 						</div>
 					</div>
@@ -363,7 +362,10 @@ div.div-host .host {
 	<script src="${req.getContextPath()}/js/jquery.gchart.pack.js"></script>
 	<script src="${req.getContextPath()}/plugins/datepicker/js/bootstrap-datepicker.js"></script>
 	<script src="${req.getContextPath()}/js/rampup.js"></script>
+	<script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
 	<script>
+	   var chart;
 			$(document).ready(function() {
 				$("#n_test").addClass("active");
 				if (${scriptList?size} == 0) {
@@ -460,8 +462,13 @@ div.div-host .host {
 					generateReportChart();
 				});
 				
+				$("#reportDetail").click(function () {
+                    window.open("${req.getContextPath()}/perftest/report?testId="+$("#testId").val());
+                });
+				
 				initThresholdChkBox();
 				initDuration();
+			
 			});
 			
 			function updateVuserTotal () {
@@ -553,7 +560,32 @@ div.div-host .host {
 					
 			function generateReportChart() {
 				showInformation("Generating TPS Chart...");
+				getReportDataTPS();
 			}
+			
+			function getReportDataTPS(){
+			    $.ajax({
+                    url: "${req.getContextPath()}/perftest/getReportData",
+                    dataType:'json',
+                    data: {'testId': $("#testId").val(),
+                           'dataType':'tps_total',
+                           'imgWidth':$("#tpsimg").width()},
+                    success: function(res) {
+                        if (res.success) {
+                            $('#tpsdiv').text('report data:'+res.tps_total);
+                            return true;
+                        } else {
+                            showErrorMsg("Get report data failed.");
+                            return false;
+                        }
+                    },
+                    error: function() {
+                        showErrorMsg("Error!");
+                        return false;
+                    }
+                });
+			}
+			
 			
 		</script>
 </body>
