@@ -18,15 +18,15 @@
                         <input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
                         <button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i>Search</button>
                     </div>
-	                <table class="display ellipsis jsTable" id="agentTable">
+	                <table class="table table-striped table-bordered" id="agentTable">
 	                    <colgroup>
-	                        <col width="35">
+	                        <col width="30">
 	                        <col width="180">
 	                        <col width="100">
 	                        <col>
 	                        <col width="180">
-	                        <col width="100">
-	                        <col width="50">
+	                        <col width="80">
+	                        <col width="40">
 	                    </colgroup>
 	                    <thead>
 	                        <tr>
@@ -57,7 +57,7 @@
 	                        </#list>
 	                        <#else>
 	                            <tr>
-	                                <td colspan="7">
+	                                <td colspan="7" class="noData">
 	                                    No data to display.
 	                                </td>
 	                            </tr>
@@ -116,8 +116,7 @@
 					"aaSorting": [[1, "asc"]],
 					"bProcessing": true,
 					"aoColumns": [{ "asSorting": []}, null, { "asSorting": []}, null, null, null, { "asSorting": []}],
-					//"bJQueryUI": true,
-					"sPaginationType": "full_numbers"
+					"sPaginationType": "bootstrap"
 				});
 				
 				removeClick();

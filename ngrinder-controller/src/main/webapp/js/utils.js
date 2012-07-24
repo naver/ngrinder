@@ -380,7 +380,8 @@ function enableChkboxSelectAll() {
 	
 	$("th input").on('click', function(event) {
 		if($(this)[0].checked) {
-			$("td input").each(function(){
+			$("td input[disabled!='disabled']").each(function(){
+				if ($(this))
 				$(this).attr("checked", "checked");
 			});
 		} else {

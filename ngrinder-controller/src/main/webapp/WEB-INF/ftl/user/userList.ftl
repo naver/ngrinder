@@ -22,22 +22,28 @@
 					<input type="text" class="input-medium search-query span4"
 						placeholder="Keywords" id="searchText" value="${keywords!}">
 					<button type="submit" class="btn" id="search_user">Search</button>
+					<span class="pull-right">
+						<a class="btn" href="${req.getContextPath()}/user/detail" id="createBtn"  data-toggle="modal">
+							<i class="icon-user"></i>
+							Create User
+						</a>
 					
-					<a href="javascript:deleteCheckedUsers()" class="btn btn-danger pull-right">
+						<a href="javascript:deleteCheckedUsers()" class="btn btn-danger">
 						<i class="icon-remove"></i>
 						Delete selected Users
 					</a> 
+					</span>
 					
 				</div>
-				<table class="display ellipsis jsTable" id="userTable">
+				<table class="table table-striped table-bordered ellipsis" id="userTable">
 					<colgroup>
-                        <col width="35">
+                        <col width="30">
                         <col width="150">
                         <col width="150">
                         <col>
-                        <col width="110">
-                        <col width="50">
-                        <col width="50">
+                        <col width="130">
+                        <col width="40">
+                        <col width="40">
                     </colgroup>
 					<thead>
 						<tr>
@@ -96,8 +102,7 @@
 				"aaSorting": [[1, "asc"]],
 				"bProcessing": true,
 				"aoColumns": [{ "asSorting": []}, null, null, { "asSorting": []}, null, { "asSorting": []}, { "asSorting": []}],
-				//"bJQueryUI": true,
-				"sPaginationType": "full_numbers"
+				"sPaginationType": "bootstrap"
 			});
 			
 			removeClick();

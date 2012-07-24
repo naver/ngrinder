@@ -10,7 +10,18 @@
     <#include "../common/navigator.ftl">
 	<div class="container">
 		<div class="row">
-			<div class="span12">
+			
+		</div>
+		<div class="well form-inline searchBar">
+			<!--<legend>introduction</legend>-->
+			<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
+			<button type="submit" class="btn" id="searchBtn">Search</button>
+			<#if svnUrl?has_content>
+				<div class="input-prepend input-append pull-right"> 
+	               <span class="add-on">SVN</span><input class="span6" id="prependedInput" type="text" value="${svnUrl}" readonly style="cursor:text"><button class="btn" type="button"><i class="icon-ok"></i> Copy </button>
+	        	</div> 
+        	</#if>	
+        	<div style="margin-top:10px">
 				<a class="btn" href="#createScriptModal" id="createBtn" data-toggle="modal">
 					<i class="icon-file"></i>
 					Create a script
@@ -29,26 +40,16 @@
 				</a>
 			</div>
 		</div>
-		<div class="well form-inline searchBar">
-			<!--<legend>introduction</legend>-->
-			<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
-			<button type="submit" class="btn" id="searchBtn">Search</button>
-			<#if svnUrl?has_content>
-				<div class="input-prepend input-append pull-right"> 
-	               <span class="add-on">SVN</span><input class="span6" id="prependedInput" type="text" value="${svnUrl}" readonly style="cursor:text"><button class="btn" type="button"><i class="icon-ok"></i> Copy </button>
-	        	</div> 
-        	</#if>		
-		</div>
 			
-		<table class="display ellipsis jsTable" id="scriptTable">
+		<table class="table table-striped table-bordered ellipsis" id="scriptTable">
 			<colgroup>
-				<col width="35">
+				<col width="30">
 				<col width="35">
 				<col width="160">
 				<col>
 				<col width="170">
 				<col width="100">
-				<col width="80">
+				<col width="85">
 			</colgroup>
 			<thead>
 				<tr>
@@ -62,7 +63,8 @@
 					<th class="noClick">Download</th>
 				</tr>
 			</thead>
-			<tbody>		
+			<tbody>
+				<#if files?has_content>	
 					<#list files as script>
 						<tr>
 							<td><#if script.fileName != ".."><input type="checkbox" value="${script.fileName}"></#if></td>
@@ -90,8 +92,14 @@
 							<td><a href="javascript:void(0);"><i class="icon-download-alt script-download" spath="${script.path}" sname="${script.fileName}"></i></a></td>
 						</tr>
 					</#list>
-						
-					</tbody>
+				<#else>
+					<tr>
+						<td colspan="7" class="noData">
+							No data to display.
+						</td>
+					</tr>
+				</#if>		
+				</tbody>
 				</table>
 				<#include "../common/copyright.ftl">
 			</div>
@@ -337,7 +345,7 @@
 					"aaSorting": [[2, "asc"]],
 					"bProcessing": true,
 					"aoColumns": [{ "asSorting": []}, { "asSorting": []}, null, { "asSorting": []}, null, null, { "asSorting": []}],
-					"sPaginationType": "full_numbers"
+					"sPaginationType": "bootstrap"
 				});
 			</#if>
 			
