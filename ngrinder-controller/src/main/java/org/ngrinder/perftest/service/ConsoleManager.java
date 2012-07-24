@@ -22,6 +22,8 @@
  */
 package org.ngrinder.perftest.service;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -50,8 +52,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConsoleManager {
 	private static final Logger LOG = LoggerFactory.getLogger(ConsoleManager.class);
-	private ArrayBlockingQueue<ConsoleEntry> consoleQueue;
-	private List<SingleConsole> consoleInUse = Collections.synchronizedList(new ArrayList<SingleConsole>());
+	volatile private ArrayBlockingQueue<ConsoleEntry> consoleQueue;
+	volatile private List<SingleConsole> consoleInUse = Collections.synchronizedList(new ArrayList<SingleConsole>());
 
 	@Autowired
 	private Config config;
@@ -68,7 +70,6 @@ public class ConsoleManager {
 		for (int each : getAvailablePorts(consoleSize, getConsolePortBase())) {
 			consoleQueue.add(new ConsoleEntry(each));
 		}
-
 		maxWaitingMiliSecond = initMaxWaitingMiliSecond();
 	}
 
@@ -104,20 +105,48 @@ public class ConsoleManager {
 	 *            port number starting from
 	 * @return port list
 	 */
-	private List<Integer> getAvailablePorts(int size, int from) {
+	List<Integer> getAvailablePorts(int size, int from) {
 		List<Integer> ports = new ArrayList<Integer>();
+		int freeSocket;
 		for (int i = 0; i < size; i++) {
-			ports.add(from + i);
+			freeSocket = checkPortAvailability(from);
+			ports.add(freeSocket);
+			from = freeSocket + 1;
 		}
 		return ports;
 	}
 
 	/**
+	 * Get a available port greater than the given port.
+	 * 
+	 * @param scanStartPort
+	 *            port scan from
+	 * @return min port available from scanStartPort
+	 */
+	private int checkPortAvailability(int scanStartPort) {
+		ServerSocket socket = null;
+		while (true) {
+			try {
+				socket = new ServerSocket(scanStartPort++);
+				return socket.getLocalPort();
+			} catch (IOException e) {
+				continue;
+			} finally {
+				if (socket != null) {
+					try {
+						socket.close();
+					} catch (IOException e) {
+					}
+				}
+			}
+		}
+	}
+
+	/**
 	 * Get available console.
 	 * 
-	 * If there is no available console, it waits until available console is
-	 * returned back. If the specific time is elapsed, the timeout error occurs
-	 * and throw {@link NGrinderRuntimeException}. timeout can be adjusted by
+	 * If there is no available console, it waits until available console is returned back. If the specific time is
+	 * elapsed, the timeout error occurs and throw {@link NGrinderRuntimeException}. timeout can be adjusted by
 	 * overriding {@link #getMaxWaitingMiliSecond()}.
 	 * 
 	 * @return console
@@ -164,10 +193,20 @@ public class ConsoleManager {
 		}
 	}
 
+	/**
+	 * Get list of {@link SingleConsole} which are used.
+	 * 
+	 * @return {@link SingleConsole} list in use
+	 */
 	public List<SingleConsole> getConsoleInUse() {
 		return consoleInUse;
 	}
 
+	/**
+	 * Get the size of available consoles.
+	 * 
+	 * @return size of available consoles.
+	 */
 	public Integer getAvailableConsoleSize() {
 		return consoleQueue.size();
 	}

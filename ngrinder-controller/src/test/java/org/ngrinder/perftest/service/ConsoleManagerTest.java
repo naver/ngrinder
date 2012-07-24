@@ -1,12 +1,19 @@
 package org.ngrinder.perftest.service;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.List;
+
 import net.grinder.SingleConsole;
 
 import org.junit.Test;
@@ -78,5 +85,24 @@ public class ConsoleManagerTest extends AbstractNGNinderTransactionalTest {
 
 		assertThat(manager.getAvailableConsoleSize(), is(1));
 		assertThat(manager.getConsoleInUse(), hasSize(initialSize - 1));
+	}
+
+	@Test
+	public void testAvailableSocket() throws IOException {
+		ServerSocket serverSocket = null;
+		try {
+			// When port is already used
+			serverSocket = new ServerSocket(10111);
+			int localPort = serverSocket.getLocalPort();
+
+			// It should be excluded in available ports
+			List<Integer> availablePorts = manager.getAvailablePorts(20, 10110);
+			assertThat(availablePorts, not(hasItem(localPort)));
+			assertThat(availablePorts, hasSize(20));
+		} finally {
+			if (serverSocket != null) {
+				serverSocket.close();
+			}
+		}
 	}
 }
