@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
@@ -47,7 +46,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNRevision;
@@ -96,7 +94,7 @@ public class FileEntryService {
 	}
 
 	private File getUserRepoDirectory(User user) {
-		return new File(config.getHome().getUserRepoDirectory(), checkNotNull(user.getUserId()));
+		return new File(config.getHome().getRepoDirectoryRoot(), checkNotNull(user.getUserId()));
 	}
 
 	@Autowired
@@ -129,23 +127,14 @@ public class FileEntryService {
 	 *            the user
 	 * @param path
 	 *            path in the repo
-	 * @return singl file entity
+	 * @return single file entity
 	 */
 	public FileEntry getFileEntry(User user, String path) {
 		return fileEntityRepository.findOne(user, path, SVNRevision.HEAD);
 	}
 
 	public boolean hasFileEntry(User user, String path) {
-		try {
-			fileEntityRepository.findOne(user, path, SVNRevision.HEAD);
-		} catch (NGrinderRuntimeException e) {
-			if (e.getCause() instanceof SVNException) {
-				if (((SVNException) e.getCause()).getErrorMessage().getErrorCode().equals(SVNErrorCode.FS_NOT_FOUND))
-					return false;
-			}
-			throw e;
-		}
-		return true;
+		return getFileEntry(user, path) != null; 
 	}
 
 	public void addFolder(User user, String path, String folderName) {
@@ -213,7 +202,13 @@ public class FileEntryService {
 	 */
 	public FileEntry prepareNewEntry(User user, String path, String fileName, String langauge, String url) {
 		FileEntry fileEntry = new FileEntry();
-		fileEntry.setPath(path + "/" + fileName);
+		String filePath;
+		if (!StringUtils.isBlank(path)) {
+			filePath = path + "/" + fileName;
+		} else {
+			filePath = fileName;
+		}
+		fileEntry.setPath(filePath);
 		fileEntry.setFileType(FileType.getFileType(langauge));
 		fileEntry.setContent(loadFreeMarkerTemplate(user, url));
 		return fileEntry;

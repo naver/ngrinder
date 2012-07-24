@@ -103,12 +103,12 @@ public class Home implements NGrinderConstants {
 		return getSubFile(PLUGIN_PATH);
 	}
 
-	public File getUserRepoDirectory() {
+	public File getRepoDirectoryRoot() {
 		return getSubFile(USER_REPO_PATH);
 	}
 
 	public File getUserRepoDirectory(String subPath) {
-		return new File(getUserRepoDirectory(), subPath);
+		return new File(getRepoDirectoryRoot(), subPath);
 	}
 
 	public File getPerfTestDirectory() {

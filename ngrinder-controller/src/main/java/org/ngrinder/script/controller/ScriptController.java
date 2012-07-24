@@ -90,7 +90,7 @@ public class ScriptController extends NGrinderBaseController {
 		if (!script.getFileType().isEditable()) {
 			return "error/errors";
 		}
-		model.addAttribute("script", script);
+		model.addAttribute("file", script);
 		return "script/scriptEditor";
 	}
 
@@ -119,7 +119,7 @@ public class ScriptController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
 	public String create(User user, @RemainedPath String path, FileEntry script, ModelMap model) {
-		// TODO : Fix scriptEditor.ftl to pass right script parameter
+		
 		fileEntryService.save(user, script);
 		return get(user, path, model);
 	}

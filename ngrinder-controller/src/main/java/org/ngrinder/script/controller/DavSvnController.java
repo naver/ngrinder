@@ -88,7 +88,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 	 */
 	@PostConstruct
 	public void init() {
-		initParam.put("SVNParentPath", config.getHome().getUserRepoDirectory().getAbsolutePath());
+		initParam.put("SVNParentPath", config.getHome().getRepoDirectoryRoot().getAbsolutePath());
 		FSRepositoryFactory.setup();
 		try {
 			myDAVConfig = new DAVConfig(getServletConfig());
