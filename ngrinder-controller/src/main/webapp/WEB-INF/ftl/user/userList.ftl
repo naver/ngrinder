@@ -32,7 +32,7 @@
 						<i class="icon-remove"></i>
 						Delete selected Users
 					</a> 
-					</span>
+				</span>
 					
 				</div>
 				<table class="table table-striped table-bordered ellipsis" id="userTable">

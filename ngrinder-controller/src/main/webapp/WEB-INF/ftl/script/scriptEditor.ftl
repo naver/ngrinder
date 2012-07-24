@@ -16,7 +16,7 @@
 						<label class="label" for="scriptNameInput">
 							Script Name
 						</label>
-						<input type="text" id="scriptNameInput" name="fileName" value="${file.fileName!}" readonly/>
+						<input type="text" id="scriptNameInput" name="fileName" value="${file.path!}" readonly/>
 						<#if file.revision!?size != 0>
 						<div class="pull-right">
 							<label class="label" for="historySelect">
@@ -219,7 +219,7 @@
 				cache: false,
 				type: "POST",
 				dataType:'json',
-				data: {'id': ${(script.fileName)!0}, 'content': scriptContent},
+				data: {'id': ${(script.getFileName())!0}, 'content': scriptContent},
 		        success: function(res) {
 		        	if (res.success) {
 		        		showMsg("Auto save script at " + new Date(), false)

@@ -30,7 +30,7 @@
 						Delete selected tests
 					</a>
 				</span>
-				</div>
+			</div>
 			<table class="table table-striped table-bordered ellipsis" id="testTable">
 				<colgroup>
 					<col width="30">
