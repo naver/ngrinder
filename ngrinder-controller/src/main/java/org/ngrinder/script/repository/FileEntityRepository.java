@@ -177,14 +177,14 @@ public class FileEntityRepository {
 		SVNClientManager svnClientManager = null;
 		try {
 			svnClientManager = SVNClientManager.newInstance();
-			
+
 			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepository(user));
 			SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
 			SVNNodeKind nodeKind = repo.checkPath(path, -1);
 			if (nodeKind == SVNNodeKind.NONE) {
 				return null;
 			}
-			
+
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
 			svnClientManager.getWCClient().doGetFileContents(
@@ -341,6 +341,31 @@ public class FileEntityRepository {
 	private void closeSVNClientManagerQuietly(SVNClientManager svnClientManager) {
 		if (svnClientManager != null) {
 			svnClientManager.dispose();
+		}
+	}
+
+	/**
+	 * Check file existence.
+	 * 
+	 * @param user
+	 *            user
+	 * @param path
+	 *            path in user repo
+	 * @return true if exists.
+	 */
+	public boolean hasFileEntry(User user, String path) {
+		SVNClientManager svnClientManager = null;
+		try {
+			svnClientManager = SVNClientManager.newInstance();
+			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepository(user));
+			SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
+			SVNNodeKind nodeKind = repo.checkPath(path, -1);
+			return (nodeKind != SVNNodeKind.NONE);
+		} catch (Exception e) {
+			LOG.error("Error while fetching files from SVN", e);
+			throw new NGrinderRuntimeException("Error while checking file existence from SVN", e);
+		} finally {
+			closeSVNClientManagerQuietly(svnClientManager);
 		}
 	}
 }

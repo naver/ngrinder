@@ -24,6 +24,11 @@
 			<name>atlassian.maven.repo</name>
 			<url>http://repository.atlassian.com/maven2/</url>
 		</repository>
+		<repository>
+			<id>scm-manager.repo</id>
+			<name>scm-manager.repo</name>
+			<url>http://maven.scm-manager.org/nexus/content/repositories/releases</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -47,15 +52,13 @@
 		<dependency>
 			<groupId>sonia.svnkit</groupId>
 			<artifactId>svnkit-dav</artifactId>
-			<version>1.7.5-1</version>
+			<version>1.7.5-2</version>
 		</dependency>
-
 		<dependency>
-			<groupId>org.tmatesoft.svnkit</groupId>
+			<groupId>sonia.svnkit</groupId>
 			<artifactId>svnkit</artifactId>
-			<version>1.7.5</version>
+			<version>1.7.5-2</version>
 		</dependency>
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
