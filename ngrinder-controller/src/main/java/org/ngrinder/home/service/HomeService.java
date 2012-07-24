@@ -63,7 +63,9 @@ public class HomeService {
 	@PostConstruct
 	public void init() {
 		openIssueQuery.put("state", "open");
+		openIssueQuery.put("labels", "announcement");
 		closeIssueQuery.put("state", "close");
+		closeIssueQuery.put("labels", "announcement");
 	}
 
 	@SuppressWarnings("unchecked")

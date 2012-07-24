@@ -14,7 +14,7 @@ import org.ngrinder.home.model.PanelEntry;
 import org.ngrinder.home.service.HomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class HomeTest extends AbstractNGNinderTransactionalTest {
+public class HomeServiceTest extends AbstractNGNinderTransactionalTest {
 
 	@Autowired
 	private HomeService homeService;
