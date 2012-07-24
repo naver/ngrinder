@@ -370,7 +370,6 @@ div.div-host .host {
 				$("#n_test").addClass("active");
 				if (${scriptList?size} == 0) {
 					alert ("User has not script yet! Please create a script first.");
-					return;
 				}
 				
 				$("#homeTab a:first").tab('show');	

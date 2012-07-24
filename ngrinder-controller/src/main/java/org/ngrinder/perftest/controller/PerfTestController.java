@@ -81,7 +81,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/list")
 	public String getTestList(User user, @RequestParam(required = false) String query,
-			@RequestParam(required = false) boolean isFinished, @RequestParam(required = false) PageRequest pageable,
+			@RequestParam(required = false) boolean onlyFinished, @RequestParam(required = false) PageRequest pageable,
 			ModelMap model) {
 		// FIXME
 		// not to paging on server side for now. Get all tests and
@@ -89,9 +89,11 @@ public class PerfTestController extends NGrinderBaseController {
 		// if (pageable == null) {
 		// pageable = new PageRequest(0, DEFAULT_TEST_PAGE_ZISE);
 		// }
-		// TODO please provide sort as well in request.
-		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, isFinished, pageable);
+		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, onlyFinished, pageable);
 		model.addAttribute("testListPage", testList);
+		model.addAttribute("onlyFinished", onlyFinished);
+		model.addAttribute("query", query);
+		model.addAttribute("page", pageable);
 		return "perftest/list";
 	}
 

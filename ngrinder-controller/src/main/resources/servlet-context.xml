@@ -14,6 +14,7 @@
 				<property name="userContext" ref="userContext" />
 			</bean>
 			<bean class="org.ngrinder.infra.spring.RemainedPathMethodArgumentResolver" />
+			<bean class="org.springframework.data.web.PageableArgumentResolver" />
 		</mvc:argument-resolvers>
 	</mvc:annotation-driven>
 

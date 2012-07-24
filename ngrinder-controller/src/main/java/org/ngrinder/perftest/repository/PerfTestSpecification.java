@@ -40,8 +40,9 @@ public class PerfTestSpecification {
 		return new Specification<PerfTest>() {
 			@Override
 			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return cb.or(cb.like(root.get("testName").as(String.class), "%" + queryString + "%"),
-						cb.like(root.get("description").as(String.class), "%" + queryString + "%"));
+				String queryStr = ("%" + queryString + "%").toLowerCase();
+				return cb.or(cb.like(cb.lower(root.get("testName").as(String.class)), queryStr),
+						cb.like(root.get("description").as(String.class), queryStr));
 			}
 		};
 	}

@@ -71,6 +71,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// In case of too many trial, cancel running.
 		if (runCandidate.getTestTrialCount() > PERFTEST_MAXIMUM_TRIAL_COUNT) {
 			perfTestService.savePerfTest(runCandidate, Status.CANCELED);
+			return;
 		}
 		doTest(runCandidate);
 	}
@@ -95,7 +96,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// Distribute files
 		perfTestService.savePerfTest(perfTest, Status.DISTRIBUTE_FILES);
 		singleConsole.distributeFiles(perfTestService.prepareDistribution(perfTest));
-		
+
 		// Run test
 		singleConsole.startTest(perfTestService.getGrinderProperties(perfTest));
 		perfTest.setStatus(Status.TESTING);
@@ -122,13 +123,14 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * @param perfTest
 	 *            {@link PerfTest} to be finished
 	 * @param singleConsoleInUse
-	 *            {@link SingleConsole} which is being using for
-	 *            {@link PerfTest}
+	 *            {@link SingleConsole} which is being using for {@link PerfTest}
 	 */
 	public void doFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		if (singleConsoleInUse.isAllTestFinished()) {
 			perfTestService.savePerfTest(perfTest, Status.FINISHED);
 		}
 	}
+	
+
 
 }

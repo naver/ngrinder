@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.io.IOUtils;
 import org.eclipse.egit.github.core.Issue;
 import org.eclipse.egit.github.core.RepositoryId;
@@ -54,6 +56,15 @@ import com.sun.syndication.io.XmlReader;
 @Component
 public class HomeService {
 	private static final Logger LOG = LoggerFactory.getLogger(HomeService.class);
+
+	private Map<String, String> openIssueQuery = new HashMap<String, String>(1);
+	private Map<String, String> closeIssueQuery = new HashMap<String, String>(1);
+
+	@PostConstruct
+	public void init() {
+		openIssueQuery.put("state", "open");
+		closeIssueQuery.put("state", "close");
+	}
 
 	@SuppressWarnings("unchecked")
 	@Cacheable(value = "left_panel_entries")
@@ -94,9 +105,7 @@ public class HomeService {
 		try {
 
 			List<PanelEntry> panelEntries = new ArrayList<PanelEntry>();
-			Map<String, String> param = new HashMap<String, String>();
-			param.put("state", "open");
-			List<Issue> issues = service.getIssues(repo, param);
+			List<Issue> issues = service.getIssues(repo, openIssueQuery);
 			issues = issues.size() >= 8 ? issues.subList(0, 7) : issues;
 			for (Issue each : issues) {
 				PanelEntry entry = new PanelEntry();
@@ -106,10 +115,7 @@ public class HomeService {
 				entry.setLink(each.getHtmlUrl());
 				panelEntries.add(entry);
 			}
-			param.put("state", "close");
-
-			issues = service.getIssues(repo, param);
-
+			issues = service.getIssues(repo, closeIssueQuery);
 			for (Issue each : issues) {
 				PanelEntry entry = new PanelEntry();
 				entry.setAuthor(each.getUser().getName());

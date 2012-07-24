@@ -177,6 +177,14 @@ public class FileEntityRepository {
 		SVNClientManager svnClientManager = null;
 		try {
 			svnClientManager = SVNClientManager.newInstance();
+			
+			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepository(user));
+			SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
+			SVNNodeKind nodeKind = repo.checkPath(path, -1);
+			if (nodeKind == SVNNodeKind.NONE) {
+				return null;
+			}
+			
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
 			svnClientManager.getWCClient().doGetFileContents(
@@ -250,7 +258,7 @@ public class FileEntityRepository {
 				// If encoding is set, try to convert it content into given
 				// encoding,
 				// otherwise, just get bytes
-				bais = StringUtils.isEmpty(encoding) ? new ByteArrayInputStream(fileEntry.getContentBytes())
+				bais = StringUtils.isEmpty(encoding) ? new ByteArrayInputStream(fileEntry.getContent().getBytes())
 						: new ByteArrayInputStream(fileEntry.getContent().getBytes(encoding));
 				checksum = deltaGenerator.sendDelta(fileEntry.getPath(), bais, editor, true);
 			}
