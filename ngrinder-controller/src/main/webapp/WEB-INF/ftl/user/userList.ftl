@@ -22,11 +22,17 @@
 					<input type="text" class="input-medium search-query span4"
 						placeholder="Keywords" id="searchText" value="${keywords!}">
 					<button type="submit" class="btn" id="search_user">Search</button>
-					
-					<a href="javascript:deleteCheckedUsers()" class="btn btn-danger pull-right">
-						<i class="icon-remove"></i>
-						Delete selected Users
-					</a> 
+					<span class="pull-right">
+						<a class="btn" href="${req.getContextPath()}/user/detail" id="createBtn"  data-toggle="modal">
+							<i class="icon-user"></i>
+							Create User
+						</a>
+						
+						<a href="javascript:deleteCheckedUsers()" class="btn btn-danger">
+							<i class="icon-remove"></i>
+							Delete selected Users
+						</a> 
+					</span>
 					
 				</div>
 				<table class="display ellipsis jsTable" id="userTable">

@@ -1,8 +1,5 @@
 <div class="span2">
-	<a class="btn" href="${req.getContextPath()}/user/detail"
-		id="createBtn" data-toggle="modal"> <i class="icon-user"></i>
-		Create User
-	</a>
+
 	<div class="well" style="margin-top:20px;">
         <ul class="nav nav-list">
 			<li class="nav-header <#if listPage?exists && !roleName?exists>active</#if>">

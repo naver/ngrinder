@@ -10,7 +10,18 @@
     <#include "../common/navigator.ftl">
 	<div class="container">
 		<div class="row">
-			<div class="span12">
+			
+		</div>
+		<div class="well form-inline searchBar">
+			<!--<legend>introduction</legend>-->
+			<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
+			<button type="submit" class="btn" id="searchBtn">Search</button>
+			<#if svnUrl?has_content>
+				<div class="input-prepend input-append pull-right"> 
+	               <span class="add-on">SVN</span><input class="span6" id="prependedInput" type="text" value="${svnUrl}" readonly style="cursor:text"><button class="btn" type="button"><i class="icon-ok"></i> Copy </button>
+	        	</div> 
+        	</#if>	
+        	<div style="margin-top:10px">
 				<a class="btn" href="#createScriptModal" id="createBtn" data-toggle="modal">
 					<i class="icon-file"></i>
 					Create a script
@@ -28,16 +39,8 @@
 					Delete selected scripts
 				</a>
 			</div>
-		</div>
-		<div class="well form-inline searchBar">
-			<!--<legend>introduction</legend>-->
-			<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
-			<button type="submit" class="btn" id="searchBtn">Search</button>
-			<#if svnUrl?has_content>
-				<div class="input-prepend input-append pull-right"> 
-	               <span class="add-on">SVN</span><input class="span6" id="prependedInput" type="text" value="${svnUrl}" readonly style="cursor:text"><button class="btn" type="button"><i class="icon-ok"></i> Copy </button>
-	        	</div> 
-        	</#if>		
+        	
+        		
 		</div>
 			
 		<table class="display ellipsis jsTable" id="scriptTable">

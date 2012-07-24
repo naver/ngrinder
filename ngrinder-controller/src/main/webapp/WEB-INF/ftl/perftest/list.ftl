@@ -14,24 +14,22 @@
     	<#include "../common/navigator.ftl">
 		<div class="container">
 			<img src="${req.getContextPath()}/img/bg_perftest_banner.png" style="margin-top:-20px;margin-bottom:10px"/>
-			<div class="row">
-				<div class="span12">
+			<div class="well form-inline searchBar">
+				<input type="text" class="search-query" placeholder="Keywords" id="query" value="${query!}">
+				<button class="btn" id="searchBtn">Search</button>
+				<label class="checkbox" style="position:relative;">
+					<input type="checkbox" id="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> Only Finished
+				</label>
+				<span class="pull-right">
 					<a class="btn" href="${req.getContextPath()}/perftest/detail" id="createBtn" data-toggle="modal">
 						<i class="icon-file"></i>
 						Create test
 					</a>
-					<a class="btn btn-danger pull-right" href="javascript:void(0);" id="deleteBtn">
+					<a class="btn btn-danger" href="javascript:void(0);" id="deleteBtn">
 						<i class="icon-remove"></i>
 						Delete selected tests
 					</a>
-				</div>
-			</div>
-			<div class="well form-inline searchBar">
-				<input type="text" class="search-query" placeholder="Keywords" id="query" value="${query!}">
-				<button class="btn" id="searchBtn">Search</button>
-				<label class="checkbox pull-right" style="position:relative; top:5px">
-					<input type="checkbox" id="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> Finished
-				</label>
+				</span>
 			</div>
 			<table class="display ellipsis jsTable" id="testTable">
 				<colgroup>
