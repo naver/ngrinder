@@ -22,7 +22,9 @@
  */
 package org.ngrinder.perftest.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,6 +34,8 @@ import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.service.FileEntryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -52,8 +56,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/perftest")
 public class PerfTestController extends NGrinderBaseController {
 
-	// private static final Logger LOG =
-	// LoggerFactory.getLogger(ScriptController.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PerfTestController.class);
 
 	@Autowired
 	private PerfTestService perfTestService;
@@ -167,6 +170,25 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/report")
 	public String getReport(ModelMap model, @RequestParam long testId) {
+		PerfTest test = perfTestService.getPerfTest(testId);
+		model.addAttribute("test", test);
 		return "perftest/report";
+	}
+
+	@RequestMapping(value = "/getReportData")
+	public @ResponseBody
+	String getReportData(ModelMap model, @RequestParam long testId, @RequestParam String dataType,
+			@RequestParam int imgWidth) {
+		List<String> reportData = null;
+		Map<String, Object> rtnMap = new HashMap<String, Object>(2);
+		try {
+			reportData = perfTestService.getReportData(testId, dataType, imgWidth);
+			rtnMap.put(JSON_SUCCESS, true);
+		} catch (IOException e) {
+			rtnMap.put(JSON_SUCCESS, false);
+			LOG.error("Get report data failed.", e);
+		}
+		rtnMap.put(dataType, reportData);
+		return JSONUtil.toJson(rtnMap);
 	}
 }
