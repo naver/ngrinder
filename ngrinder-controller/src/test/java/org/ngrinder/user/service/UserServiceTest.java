@@ -25,6 +25,7 @@ public class UserServiceTest extends AbstractNGNinderTransactionalTest {
 		User user = new User();
 		user.setUserId("hello");
 		user.setPassword("www");
+		user.setRole(Role.USER);
 		user = userService.saveUser(user);
 		assertThat(user.getUserId(), is("hello"));
 	}

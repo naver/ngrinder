@@ -30,8 +30,6 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
-import net.grinder.common.GrinderProperties;
-
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.ConfigurationException;
