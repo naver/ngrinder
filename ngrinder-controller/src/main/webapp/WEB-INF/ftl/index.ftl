@@ -39,15 +39,15 @@
 				  			<tr>
 				  				<td>
 				  					<img src="${req.getContextPath()}/img/asksupport.gif"/> 
-				  					<a href="https://github.com/nhnopensource/ngrinder/issues/new">
+				  					<a href="http://github.com/nhnopensource/ngrinder/issues/new?labels=question">
 				  						Ask a question
 				  					</a>  &nbsp;&nbsp;&nbsp; 
 				  					<img src="${req.getContextPath()}/img/bug_icon.gif"/>
-				  					<a href="https://github.com/nhnopensource/ngrinder/issues/new">
+				  					<a href="http://github.com/nhnopensource/ngrinder/issues/new?labels=bug">
 				  						Report a bug
 				  					</a>	
 				  				</td>
-				  				<td><a href="https://github.com/nhnopensource/ngrinder/issues" target="_blank"><i class="icon-share-alt"></i>&nbsp;more...</a></td>
+				  				<td><a href="http://github.com/nhnopensource/ngrinder/issues" target="_blank"><i class="icon-share-alt"></i>&nbsp;more...</a></td>
 				  			</tr>
 				  			</div>
 		  				</table>
