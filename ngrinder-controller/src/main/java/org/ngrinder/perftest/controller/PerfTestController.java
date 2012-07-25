@@ -22,7 +22,9 @@
  */
 package org.ngrinder.perftest.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,6 +35,8 @@ import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.service.FileEntryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -53,8 +57,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/perftest")
 public class PerfTestController extends NGrinderBaseController {
 
-	// private static final Logger LOG =
-	// LoggerFactory.getLogger(ScriptController.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PerfTestController.class);
 
 	@Autowired
 	private PerfTestService perfTestService;
@@ -79,7 +82,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/list")
 	public String getTestList(User user, @RequestParam(required = false) String query,
-			@RequestParam(required = false) boolean isFinished, @RequestParam(required = false) PageRequest pageable,
+			@RequestParam(required = false) boolean onlyFinished, @RequestParam(required = false) PageRequest pageable,
 			ModelMap model) {
 		// FIXME
 		// not to paging on server side for now. Get all tests and
@@ -87,9 +90,11 @@ public class PerfTestController extends NGrinderBaseController {
 		// if (pageable == null) {
 		// pageable = new PageRequest(0, DEFAULT_TEST_PAGE_ZISE);
 		// }
-		// TODO please provide sort as well in request.
-		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, isFinished, pageable);
+		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, onlyFinished, pageable);
 		model.addAttribute("testListPage", testList);
+		model.addAttribute("onlyFinished", onlyFinished);
+		model.addAttribute("query", query);
+		model.addAttribute("page", pageable);
 		return "perftest/list";
 	}
 
@@ -167,6 +172,25 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/report")
 	public String getReport(ModelMap model, @RequestParam long testId) {
+		PerfTest test = perfTestService.getPerfTest(testId);
+		model.addAttribute("test", test);
 		return "perftest/report";
+	}
+
+	@RequestMapping(value = "/getReportData")
+	public @ResponseBody
+	String getReportData(ModelMap model, @RequestParam long testId, @RequestParam String dataType,
+			@RequestParam int imgWidth) {
+		List<String> reportData = null;
+		Map<String, Object> rtnMap = new HashMap<String, Object>(2);
+		try {
+			reportData = perfTestService.getReportData(testId, dataType, imgWidth);
+			rtnMap.put(JSON_SUCCESS, true);
+		} catch (IOException e) {
+			rtnMap.put(JSON_SUCCESS, false);
+			LOG.error("Get report data failed.", e);
+		}
+		rtnMap.put(dataType, reportData);
+		return JSONUtil.toJson(rtnMap);
 	}
 }

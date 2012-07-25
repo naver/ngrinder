@@ -25,7 +25,7 @@ package org.ngrinder.infra.plugin;
 import org.ngrinder.model.User;
 
 /**
- * Plugin extension for user authentication
+ * Plugin extension for user authentication.
  * 
  * @author JunHo Yoon
  * @since 3.0

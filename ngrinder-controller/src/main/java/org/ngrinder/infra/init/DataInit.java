@@ -20,35 +20,28 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.infra.annotation;
+package org.ngrinder.infra.init;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import javax.annotation.PostConstruct;
 
-import org.springframework.stereotype.Component;
+import org.ngrinder.home.service.HomeAsyncService;
+import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Spring component annotation to mark this component is only necessary to
- * create in test context. This annotation is mainly used to block the component
- * creation in runtime.
+ * Prepare data which is used in Runtime.
  * 
  * @author JunHo Yoon
- * @since 3.0
  */
-@Target({ ElementType.TYPE })
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
-@Component
-public @interface OnlyTestComponent {
+@RuntimeOnlyComponent
+public class DataInit {
 
-	/**
-	 * The value may indicate a suggestion for a logical component name, to be
-	 * turned into a Spring bean in case of an autodetected component.
-	 * 
-	 * @return the suggested component name, if any
-	 */
-	String value() default "";
+	@Autowired
+	private HomeAsyncService homeAsyncService;
+
+	@PostConstruct
+	public void init() {
+		homeAsyncService.getLeftPanelEntries();
+		homeAsyncService.getRightPanelEntries();
+	}
 }

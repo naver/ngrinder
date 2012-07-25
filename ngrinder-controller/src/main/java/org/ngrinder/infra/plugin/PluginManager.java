@@ -35,7 +35,7 @@ import javax.servlet.ServletContext;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.model.Home;
-import org.ngrinder.infra.annotation.OnlyRuntimeComponent;
+import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.config.Config;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -54,13 +54,13 @@ import com.atlassian.plugin.osgi.hostcomponents.ComponentRegistrar;
 import com.atlassian.plugin.osgi.hostcomponents.HostComponentProvider;
 
 /**
- * Plugin manager which is responsible to init the plugin infra. It mainly uses atlassian plugin framework.
+ * Plugin manager which is responsible to initialize the plugin infra. It mainly uses atlassian plugin framework.
  * 
  * @see https://developer.atlassian.com/display/PLUGINFRAMEWORK/Plugin+Framework
  * @author JunHo Yoon
  * @since 3.0
  */
-@OnlyRuntimeComponent
+@RuntimeOnlyComponent
 public class PluginManager implements ServletContextAware, NGrinderConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PluginManager.class);
@@ -71,6 +71,10 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	@Autowired
 	private Config config;
 
+	/**
+	 * Initialize plugin component.
+	 * 
+	 */
 	@PostConstruct
 	public void init() {
 		// In case of test mode, no plugin is supported.
@@ -79,6 +83,10 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 		}
 	}
 
+	/**
+	 * Initialize Plugin Framework.
+	 * 
+	 */
 	public void initPluginFramework() {
 		// waiting for sqlmap and grinder to start
 		// Determine which packages to expose to plugins
@@ -119,10 +127,24 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 		}
 	}
 
+	/**
+	 * Check plugin support.
+	 * 
+	 * @return true if plugin is supported.
+	 * 
+	 */
 	protected boolean isPluginSupportEnabled() {
 		return config.isPluginSupported();
 	}
 
+	/**
+	 * Collect plugin descriptors by scanning
+	 * 
+	 * @param modules
+	 *            module factory
+	 * @param packagename
+	 *            the package name from which scan is done.
+	 */
 	@SuppressWarnings("rawtypes")
 	protected void initPluginDescriptor(DefaultModuleDescriptorFactory modules, String packagename) {
 		final Reflections reflections = new Reflections(packagename);
@@ -175,6 +197,9 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 		return pluginClasses;
 	}
 
+	/**
+	 * Stop plugin framework
+	 */
 	@PreDestroy
 	public void destroy() {
 		plugins.stop();

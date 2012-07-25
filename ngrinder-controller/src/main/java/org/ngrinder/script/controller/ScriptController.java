@@ -26,7 +26,9 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
@@ -90,7 +92,7 @@ public class ScriptController extends NGrinderBaseController {
 		if (!script.getFileType().isEditable()) {
 			return "error/errors";
 		}
-		model.addAttribute("script", script);
+		model.addAttribute("file", script);
 		return "script/scriptEditor";
 	}
 
@@ -119,7 +121,7 @@ public class ScriptController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
 	public String create(User user, @RemainedPath String path, FileEntry script, ModelMap model) {
-		// TODO : Fix scriptEditor.ftl to pass right script parameter
+		
 		fileEntryService.save(user, script);
 		return get(user, path, model);
 	}
@@ -128,6 +130,13 @@ public class ScriptController extends NGrinderBaseController {
 	public String uploadFiles(User user, @RemainedPath String path, FileEntry script,
 			@RequestParam("uploadFile") MultipartFile file, ModelMap model) throws IOException {
 		script.setContentBytes(file.getBytes());
+
+		try {
+			script.setContent(IOUtils.toString(file.getInputStream()));
+		} catch (Exception e) {
+			LOG.error("Error while getting file content", e);
+			return "error/errors";
+		}
 		fileEntryService.save(user, script);
 		return get(user, path, model);
 	}

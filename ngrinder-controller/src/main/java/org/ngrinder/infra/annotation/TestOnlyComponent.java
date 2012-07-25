@@ -20,45 +20,35 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.user.service;
+package org.ngrinder.infra.annotation;
 
-import javax.annotation.PostConstruct;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.ngrinder.infra.annotation.TestOnlyComponent;
-import org.ngrinder.model.Role;
-import org.ngrinder.model.User;
-import org.ngrinder.user.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
- * user util
+ * Spring component annotation to mark this component is only necessary to
+ * create in test context. This annotation is mainly used to block the component
+ * creation in runtime.
  * 
- * @author Tobi
- * @since
- * @date 2012-6-28
+ * @author JunHo Yoon
+ * @since 3.0
  */
-@TestOnlyComponent
-public class MockUserContext extends UserContext {
-	public static final String TEST_USER_ID = "TEST_USER";
+@Target({ ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Component
+public @interface TestOnlyComponent {
 
-	@Autowired
-	protected UserRepository userRepository;
-
-	@PostConstruct
-	public void init() {
-		User user = userRepository.findOneByUserId(TEST_USER_ID);
-		if (user == null) {
-			user = new User();
-			user.setUserId(TEST_USER_ID);
-			user.setUserName("TEST_USER");
-			user.setPassword("123");
-			user.setUserLanguage("en");
-			user.setRole(Role.USER);
-			userRepository.save(user);
-		}
-	}
-
-	public User getCurrentUser() {
-		return userRepository.findOneByUserId(TEST_USER_ID);
-	}
+	/**
+	 * The value may indicate a suggestion for a logical component name, to be
+	 * turned into a Spring bean in case of an autodetected component.
+	 * 
+	 * @return the suggested component name, if any
+	 */
+	String value() default "";
 }

@@ -38,25 +38,25 @@
 						<div class="control-group">
 							<label for="testNameInput" class="control-label">Vuser</label>
 							<div class="controls">
-								<strong>10</strong>
+								<strong>${(test.vuserPerAgent)!}</strong>
 							</div>
 						</div>
 						<div class="control-group">
 							<label for="testNameInput" class="control-label">Agents</label>
 							<div class="controls">
-								<span>1</span><a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
+								<span>${(test.agentCount)!}</span><a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
 							</div>
 						</div>
 						<div class="control-group">
 							<label for="testNameInput" class="control-label">Processes</label>
 							<div class="controls">
-								1
+								${(test.processes)!0}
 							</div>
 						</div>
 						<div class="control-group">
 							<label for="testNameInput" class="control-label">Threads</label>
 							<div class="controls">
-								10
+								${(test.threads)!0}
 							</div>
 						</div>
 						<hr>
@@ -70,20 +70,20 @@
 						<div class="control-group">
 							<label for="testNameInput" class="control-label">Duration</label>
 							<div class="controls">
-								00:00:02:19
+								${(test.duration)!0}
 							</div>
 						</div>
 						<div class="control-group">
 							<label for="testNameInput" class="control-label">Ignore Count</label>
 							<div class="controls">
-								<span>0</span><code>sec</code>
+								<span>${(test.ignoreSampleCount)!0}</span><code>sec</code>
 							</div>
 						</div>
 						<hr>
 						<div class="control-group">
 							<label for="testNameInput" class="control-label">Sample Interval</label>
 							<div class="controls">
-								<span>1000</span><code>ms</code>
+								<span>${(test.sampleInterval)!1000}</span><code>ms</code>
 							</div>
 						</div>
 						<hr>
@@ -97,25 +97,25 @@
 						<div class="control-group">
 							<label for="testNameInput" class="control-label">TPS</label>
 							<div class="controls">
-								<strong>Total 26.67</strong>
+								<strong>Total ${(test.tps)!}</strong>
 							</div>
 						</div>
 						<div class="control-group">
 							<label for="testNameInput" class="control-label">Mean Time</label>
 							<div class="controls">
-								<span>316.5</span><code>ms</code>
+								<span>${(test.meanTestTime)!}</span><code>ms</code>
 							</div>
 						</div>
 						<div class="control-group">
 							<label for="testNameInput" class="control-label">Peak TPS</label>
 							<div class="controls">
-								<strong>41</strong>
+								<strong>${(test.peakTps)!}</strong>
 							</div>
 						</div>
 						<div class="control-group">
 							<label for="testNameInput" class="control-label">Finished Tests</label>
 							<div class="controls">
-								3560
+								${(test.tests)!}
 							</div>
 						</div>
 					</fieldset>

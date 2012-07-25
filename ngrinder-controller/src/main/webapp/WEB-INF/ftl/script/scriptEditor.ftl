@@ -12,11 +12,14 @@
 		<div class="row">
 			<div class="span12">
 				<form id="contentForm" method="post" target="_self">
+					
+					<input type="hidden" id="contentHidden" name="content" value="">
+					
 					<div class="well form-inline" style="padding:5px;margin:5px 0">
 						<label class="label" for="scriptNameInput">
 							Script Name
 						</label>
-						<input type="text" id="scriptNameInput" name="fileName" value="${file.path!}" readonly/>
+						<input type="text" id="scriptNameInput" name="path" value="${file.path!}" readonly/>
 						<#if file.revision!?size != 0>
 						<div class="pull-right">
 							<label class="label" for="historySelect">
@@ -49,7 +52,7 @@
 						</div>
 					</td>
 					</#if>
-			</table>
+				</table>
 			
 			
 				<div class="well form-inline" style="padding:5px;margin:5px 0">
@@ -58,18 +61,14 @@
 					</label>
 					<input type="text" id="descInput" name="description" class="span6" style="width:600px" value="${(file.description)!}">
 				</div>
-				<a class="btn" href="javascript:void(0);" id="saveBtn">Save</a>
+				<a class="btn saveBtn" href="javascript:void(0);" id="saveBtn">Save</a>
 				<a class="btn" href="javascript:void(0);" id="validateBtn">Validate Script</a>
 				<span class="help-inline" id="messageDiv"></span>
 				<div class="alert alert-info fade in" style="margin-top:5px;" id="autoSaveMsg"></div>
-				 <pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre"></pre>
+				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre"></pre>
 						
 
 			</div>
-
-			<a class="btn saveBtn" href="javascript:void(0);">Save</a>
-			<a class="btn" href="javascript:void(0);" id="validateBottomBtn">Validate Script</a>
-			<a class="btn listBtn" href="javascript:void(0);">Go back</a>
 
 		</form>
 		<#include "../common/copyright.ftl">
@@ -124,14 +123,13 @@
 					alert("Please select a history file.");
 					return;
 				}
-				
 				document.forms.contentForm.action = "${req.getContextPath()}/script/detail";
 				document.forms.contentForm.submit();
 			});
 
 			$(".saveBtn").on('click', function() {
 				var scriptContent = editAreaLoader.getValue("display_content");
-				$('#display_content').val(scriptContent);
+				$('#contentHidden').val(scriptContent);
 				
 				document.forms.contentForm.action = "${req.getContextPath()}/script/save";
 				document.forms.contentForm.submit();

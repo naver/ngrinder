@@ -31,6 +31,7 @@ import com.atlassian.plugin.module.ContainerManagedPlugin;
  * The plugin should be constructed by implementing {@link OnTestStartRunnable}
  * 
  * @author JunHo Yoon
+ * @since 3.0
  */
 
 @PluginDescriptor("on-login")

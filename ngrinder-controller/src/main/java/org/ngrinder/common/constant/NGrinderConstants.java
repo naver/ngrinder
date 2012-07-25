@@ -94,6 +94,12 @@ public interface NGrinderConstants {
 	public static final String PARAM_MESSAGE = "message";
 	public static final String PARAM_THREAD_COUNT = "threadCount";
 	public static final String PARAM_PROCESS_COUNT = "processCount";
+	public static final String PARAM_DATA_LIST = "dataList";
+
+	public static final String PARAM_TPS_TOTAL = "tps_total";
+	public static final String PARAM_TPS_FAILED = "tps_failed";
+	public static final String PARAM_VUSER = "vuser";
+	public static final String PARAM_RESPONSE_TIME = "response_time";
 
 	// GRINDER_PROPERTY_KEY
 	public static final String GRINDER_PROP_PROCESSES = "grinder.processes";

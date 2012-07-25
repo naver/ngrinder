@@ -240,7 +240,7 @@ public class SingleConsole implements Listener {
 				m_eventSyncCondition.waitNoInterrruptException(10000);
 			} else {
 				return;
-			}
+			} 
 		}
 	}
 

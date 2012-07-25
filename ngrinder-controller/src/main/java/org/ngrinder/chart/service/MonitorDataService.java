@@ -39,8 +39,7 @@ import org.springframework.stereotype.Service;
  * agent monitor data service.
  * 
  * @author Tobi
- * @since
- * @date 2012-7-23
+ * @since 3.0
  */
 @Service
 public class MonitorDataService {

@@ -177,6 +177,14 @@ public class FileEntityRepository {
 		SVNClientManager svnClientManager = null;
 		try {
 			svnClientManager = SVNClientManager.newInstance();
+
+			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepository(user));
+			SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
+			SVNNodeKind nodeKind = repo.checkPath(path, -1);
+			if (nodeKind == SVNNodeKind.NONE) {
+				return null;
+			}
+
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
 			svnClientManager.getWCClient().doGetFileContents(
@@ -250,7 +258,7 @@ public class FileEntityRepository {
 				// If encoding is set, try to convert it content into given
 				// encoding,
 				// otherwise, just get bytes
-				bais = StringUtils.isEmpty(encoding) ? new ByteArrayInputStream(fileEntry.getContentBytes())
+				bais = StringUtils.isEmpty(encoding) ? new ByteArrayInputStream(fileEntry.getContent().getBytes())
 						: new ByteArrayInputStream(fileEntry.getContent().getBytes(encoding));
 				checksum = deltaGenerator.sendDelta(fileEntry.getPath(), bais, editor, true);
 			}
@@ -333,6 +341,31 @@ public class FileEntityRepository {
 	private void closeSVNClientManagerQuietly(SVNClientManager svnClientManager) {
 		if (svnClientManager != null) {
 			svnClientManager.dispose();
+		}
+	}
+
+	/**
+	 * Check file existence.
+	 * 
+	 * @param user
+	 *            user
+	 * @param path
+	 *            path in user repo
+	 * @return true if exists.
+	 */
+	public boolean hasFileEntry(User user, String path) {
+		SVNClientManager svnClientManager = null;
+		try {
+			svnClientManager = SVNClientManager.newInstance();
+			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepository(user));
+			SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
+			SVNNodeKind nodeKind = repo.checkPath(path, -1);
+			return (nodeKind != SVNNodeKind.NONE);
+		} catch (Exception e) {
+			LOG.error("Error while fetching files from SVN", e);
+			throw new NGrinderRuntimeException("Error while checking file existence from SVN", e);
+		} finally {
+			closeSVNClientManagerQuietly(svnClientManager);
 		}
 	}
 }

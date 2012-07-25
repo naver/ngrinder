@@ -20,35 +20,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.infra.annotation;
+package org.ngrinder.home.service;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
- * Spring component annotation to mark this component is only necessary to
- * create in runtime. This annotation is mainly used to block the component
- * creation in Unit Text.
+ * Wrapper for aync-call to HomeService.
+ * 
+ * This is used for pre-fetching home news entries.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
-@Target({ ElementType.TYPE })
-@Retention(RetentionPolicy.RUNTIME)
-@Documented
 @Component
-public @interface OnlyRuntimeComponent {
+public class HomeAsyncService {
+	@Autowired
+	private HomeService homeService;
 
-	/**
-	 * The value may indicate a suggestion for a logical component name, to be
-	 * turned into a Spring bean in case of an autodetected component.
-	 * 
-	 * @return the suggested component name, if any
-	 */
-	String value() default "";
+	@Async
+	public void getRightPanelEntries() {
+		homeService.getRightPanelEntries();
+	}
+
+	@Async
+	public void getLeftPanelEntries() {
+		homeService.getLeftPanelEntries();
+	}
 }
