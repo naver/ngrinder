@@ -83,11 +83,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            perftest instance;
 	 */
 	public void doTest(PerfTest perfTest) {
+		// get available console.
 		SingleConsole singleConsole = consoleManager.getAvailableConsole();
 		singleConsole.start();
 		// increase trial count
 		perfTest.setTestTrialCount(perfTest.getTestTrialCount() + 1);
-
+		perfTest.setPort(singleConsole.getConsolePort());
 		// Start agents
 		perfTestService.savePerfTest(perfTest, Status.WAITING_AGENT);
 		agentManager.runAgent(singleConsole, null, perfTest.getAgentCount());
@@ -101,7 +102,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 		singleConsole.startTest(perfTestService.getGrinderProperties(perfTest));
 		perfTest.setStatus(Status.TESTING);
 		perfTestService.savePerfTest(perfTest);
-
 	}
 
 	/**
@@ -130,7 +130,5 @@ public class PerfTestRunnable implements NGrinderConstants {
 			perfTestService.savePerfTest(perfTest, Status.FINISHED);
 		}
 	}
-	
-
 
 }

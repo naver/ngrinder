@@ -8,6 +8,7 @@ import java.util.Date;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGNinderTransactionalTest;
+import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.repository.UserSpecification;
@@ -32,6 +33,7 @@ public class UserTest extends AbstractNGNinderTransactionalTest {
 		user.setCreatedUser(getUser("user"));
 		user.setCreatedDate(new Date());
 		user.setUserId("hello");
+		user.setRole(Role.USER);
 		userRepository.save(user);
 		User user2 = new User();
 
@@ -40,9 +42,8 @@ public class UserTest extends AbstractNGNinderTransactionalTest {
 		user2.setEmail("junoyoon@paran.com");
 		user2.setCreatedUser(getUser("user"));
 		user2.setCreatedDate(new Date());
+		user2.setRole(Role.USER);
 		userRepository.save(user2);
-
-		System.out.println(user2);
 
 		assertThat(userRepository.count(), is(2L));
 

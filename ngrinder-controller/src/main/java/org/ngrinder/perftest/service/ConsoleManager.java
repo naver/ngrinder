@@ -124,19 +124,35 @@ public class ConsoleManager {
 	 * @return min port available from scanStartPort
 	 */
 	private int checkPortAvailability(int scanStartPort) {
-		ServerSocket socket = null;
 		while (true) {
-			try {
-				socket = new ServerSocket(scanStartPort++);
-				return socket.getLocalPort();
-			} catch (IOException e) {
-				continue;
-			} finally {
-				if (socket != null) {
-					try {
-						socket.close();
-					} catch (IOException e) {
-					}
+			if (checkExactPortAvailability(scanStartPort)) {
+				return scanStartPort;
+			}
+			if (scanStartPort++ > 65000) {
+				throw new NGrinderRuntimeException("no port for console is available");
+			}
+		}
+	}
+
+	/**
+	 * Check the given port is empty
+	 * 
+	 * @param port
+	 *            port to be checked
+	 * @return port
+	 */
+	private boolean checkExactPortAvailability(int port) {
+		ServerSocket socket = null;
+		try {
+			socket = new ServerSocket(port);
+			return true;
+		} catch (IOException e) {
+			return false;
+		} finally {
+			if (socket != null) {
+				try {
+					socket.close();
+				} catch (IOException e) {
 				}
 			}
 		}
@@ -183,11 +199,16 @@ public class ConsoleManager {
 				console.shutdown();
 			} catch (Exception e) {
 				LOG.error("Exception occurs while shuttdowning console in returnback process", e);
+				// But the port is getting back.
+				// FIXME : Is it OK?
 			}
 			ConsoleEntry consoleEntry = new ConsoleEntry(console.getConsolePort());
 
 			if (!consoleQueue.contains(consoleEntry)) {
 				consoleQueue.add(consoleEntry);
+				if (!getConsoleInUse().contains(console)) {
+					LOG.error("Try to return back the not used console on {} port", console.getConsolePort());
+				}
 				getConsoleInUse().remove(console);
 			}
 		}
