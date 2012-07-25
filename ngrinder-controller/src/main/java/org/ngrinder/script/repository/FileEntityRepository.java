@@ -27,9 +27,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -50,10 +48,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.tmatesoft.svn.core.ISVNDirEntryHandler;
-import org.tmatesoft.svn.core.ISVNLogEntryHandler;
 import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
-import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNProperties;
 import org.tmatesoft.svn.core.SVNProperty;
@@ -116,8 +112,6 @@ public class FileEntityRepository {
 							if (StringUtils.isBlank(dirEntry.getRelativePath())) {
 								return;
 							}
-							// It's because relative path contains "/" in
-							// front.
 							script.setPath(FilenameUtils.normalize(path + "/" + dirEntry.getRelativePath(), true));
 							script.setCreatedDate(dirEntry.getDate());
 							script.setLastModifiedDate(dirEntry.getDate());
@@ -127,7 +121,6 @@ public class FileEntityRepository {
 							if (dirEntry.getKind() == SVNNodeKind.DIR) {
 								script.setFileType(FileType.DIR);
 							} else {
-								script.setFileType(FileType.getFileType(FilenameUtils.getExtension(dirEntry.getName())));
 								script.setFileSize(dirEntry.getSize());
 							}
 							fileEntries.add(script);
@@ -157,12 +150,8 @@ public class FileEntityRepository {
 								return;
 							}
 							script.setPath(dirEntry.getRelativePath());
-
-							// script.setPath(path + "/" +
-							// dirEntry.getRelativePath());
 							script.setDescription(dirEntry.getCommitMessage());
-							script.setFileType(dirEntry.getKind() == SVNNodeKind.DIR ? FileType.DIR : FileType
-									.getFileType(FilenameUtils.getExtension(dirEntry.getName())));
+							script.setFileType(dirEntry.getKind() == SVNNodeKind.DIR ? FileType.DIR : null);
 							script.setFileSize(dirEntry.getSize());
 							scripts.add(script);
 						}
@@ -253,11 +242,9 @@ public class FileEntityRepository {
 
 				// Calc diff
 				final SVNDeltaGenerator deltaGenerator = new SVNDeltaGenerator();
-				// If encoding is set, try to convert it content into given
-				// encoding, otherwise, just get bytes
-				fileEntry.setFileType(FileType.getFileType(FilenameUtils.getExtension(fileEntry.getFileName())));
 				if (fileEntry.getFileType().isEditable()) {
-					bais = new ByteArrayInputStream(fileEntry.getContent().getBytes(encoding == null ? "UTF-8" : encoding));
+					bais = new ByteArrayInputStream(fileEntry.getContent().getBytes(
+							encoding == null ? "UTF-8" : encoding));
 				} else {
 					bais = new ByteArrayInputStream(fileEntry.getContentBytes());
 				}

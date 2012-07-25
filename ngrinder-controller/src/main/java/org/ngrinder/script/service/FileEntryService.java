@@ -278,7 +278,6 @@ public class FileEntryService {
 			filePath = fileName;
 		}
 		fileEntry.setPath(filePath);
-		fileEntry.setFileType(FileType.getFileType(langauge));
 		fileEntry.setContent(loadFreeMarkerTemplate(user, url));
 		return fileEntry;
 	}
