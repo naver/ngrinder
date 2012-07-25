@@ -39,7 +39,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.web.PageableDefaults;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,7 +84,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/list")
 	public String getTestList(User user, @RequestParam(required = false) String query,
-			@RequestParam(required = false) boolean onlyFinished, @RequestParam(required = false) PageRequest pageable,
+			@RequestParam(required = false) boolean onlyFinished,
+			@PageableDefaults(pageNumber = 0, value = 15) Pageable pageable,
 			ModelMap model) {
 		// FIXME
 		// not to paging on server side for now. Get all tests and
@@ -95,6 +98,11 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute("onlyFinished", onlyFinished);
 		model.addAttribute("query", query);
 		model.addAttribute("page", pageable);
+		if (pageable.getSort() != null && pageable.getSort().iterator().hasNext()) {
+			Order sortProp = pageable.getSort().iterator().next();
+			model.addAttribute("sortColumn", sortProp.getProperty());
+			model.addAttribute("sortDirection", sortProp.getDirection());
+		}
 		return "perftest/list";
 	}
 

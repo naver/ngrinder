@@ -1,6 +1,6 @@
 <#macro paging totalCount pageNo countPerPage displayPageCount action>
 	<#if totalCount ==0 || countPerPage == 0 || displayPageCount == 0 >
-		<div class="pagination">&nbsp;</div>
+		<div class="paginate">&nbsp;</div>
 		<#return>
 	</#if>
 
@@ -33,15 +33,21 @@
 	</#if>
 	<div class="pagination pagination-centered">
 		<ul>
-			<li<#if pageNo == 1> class="disabled"</#if>><a href="javascript:doSubmit('${pageNo - 1}')">Prev</a></li>
+			<li <#if pageNo == 1> class="disabled"</#if>>
+				<a href="javascript:doSubmit('${pageNo - 1}')">Prev</a>
+			</li>
 			<#list startPage..endPage as i>
 				<#if i == pageNo >
 					<li class="active"><a href="javascript:void(0);">${i}</a></li>
 				<#else>
 					<li><a href="javascript:doSubmit('${i}')">${i}</a></li>
 				</#if>
-			</list>
-			<li<#if pageNo == totalPage> class="disabled"</#if>><a href="javascript:doSubmit('${pageNo + 1}')">Next</a></li>
+			</#list>
+			</span>
+			<li <#if pageNo == totalPage> class="disabled"</#if>>
+				<a href="javascript:doSubmit('${pageNo + 1}')">Next</a>
+			</li>
+
 		</ul>
 	</div>
 </#macro>
