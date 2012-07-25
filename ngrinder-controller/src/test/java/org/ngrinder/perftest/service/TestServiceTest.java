@@ -52,6 +52,7 @@ public class TestServiceTest extends AbstractNGNinderTransactionalTest {
 		PerfTest test = new PerfTest();
 		test.setTestName("new Test1");
 		test.setThreshold("D");
+		test.setAgentCount(2);
 		test.setDuration(120);
 		test.setIgnoreSampleCount(0);
 		test.setTargetHosts("127.0.0.1");
@@ -62,6 +63,7 @@ public class TestServiceTest extends AbstractNGNinderTransactionalTest {
 		test.setTestName("new Test2");
 		test.setStatus(Status.FINISHED);
 		test.setThreshold("D");
+		test.setAgentCount(2);
 		test.setDuration(120);
 		test.setIgnoreSampleCount(0);
 		test.setTargetHosts("127.0.0.1");
@@ -75,7 +77,6 @@ public class TestServiceTest extends AbstractNGNinderTransactionalTest {
 
 	@Test
 	public void testGetTestListAll() {
-		System.out.println(perfTestRepository.findAll());
 		Pageable pageable = new PageRequest(0, 10);
 		Page<PerfTest> testList = testService.getPerfTestList(getTestUser(), null, false, pageable);
 		assertThat(testList.getContent().size(), is(2));
@@ -87,7 +88,6 @@ public class TestServiceTest extends AbstractNGNinderTransactionalTest {
 		assertThat(testList.getContent().size(), is(2));
 		testList = testService.getPerfTestList(getTestUser(), null, true, null);
 		assertThat(testList.getContent().size(), is(1));
-
 	}
 
 }

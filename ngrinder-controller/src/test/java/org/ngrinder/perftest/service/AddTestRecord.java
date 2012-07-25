@@ -22,6 +22,8 @@
  */
 package org.ngrinder.perftest.service;
 
+import org.junit.Ignore;
+import org.junit.Test;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
@@ -72,7 +74,13 @@ public class AddTestRecord extends AbstractJUnit4SpringContextTests {
 	@Autowired
 	PerfTestRepository perfTestRepository;
 
-	//@Test
+	@Test
+	public void doNothing() {
+
+	}
+
+	@Test
+	@Ignore("Only enable this when test data is necessary.")
 	public void testGetTestListAll() {
 		createTempTests();
 		createTempTests();
@@ -86,5 +94,5 @@ public class AddTestRecord extends AbstractJUnit4SpringContextTests {
 		createTempTests();
 		System.out.println(perfTestRepository.findAll());
 	}
-	
+
 }
