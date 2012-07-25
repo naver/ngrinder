@@ -23,6 +23,7 @@ import org.ngrinder.script.util.CompressionUtil;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.tmatesoft.svn.core.wc.SVNRevision;
 
 public class FileEntryRepositoryTest extends AbstractNGNinderTransactionalTest {
 
@@ -85,7 +86,7 @@ public class FileEntryRepositoryTest extends AbstractNGNinderTransactionalTest {
 	}
 
 	@Test
-	public void testPerfTest2() throws IOException {
+	public void testBinarySaveAndLoad() throws IOException {
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setContent("HELLO WORLD2");
 		fileEntry.setEncoding("UTF-8");
@@ -101,10 +102,29 @@ public class FileEntryRepositoryTest extends AbstractNGNinderTransactionalTest {
 		fileEntry.setContentBytes(byteArray);
 		repo.save(user, fileEntry, null);
 		List<FileEntry> findAll = repo.findAll(user, "hello.zip");
-		assertThat(findAll.get(0).getFileSize(), is((long) byteArray.length));
+		FileEntry foundEntry = findAll.get(0);
+		System.out.println(foundEntry.getPath());
+		assertThat(foundEntry.getFileSize(), is((long) byteArray.length));
 		// commit again
 		repo.save(user, fileEntry, null);
 		findAll = repo.findAll(user, "hello.zip");
-		assertThat(findAll.get(0).getFileSize(), is((long) byteArray.length));
+		assertThat(foundEntry.getFileSize(), is((long) byteArray.length));
+	}
+
+	@Test
+	public void testBinarySaveAndLoadWithFindOne() throws IOException {
+		FileEntry fileEntry = new FileEntry();
+		fileEntry.setContent("HELLO WORLD2");
+		fileEntry.setEncoding("UTF-8");
+		fileEntry.setPath("hello.zip");
+		fileEntry.setEncoding(null);
+		fileEntry.setFileType(FileType.UNKNOWN);
+		byte[] byteArray = IOUtils.toByteArray(new ClassPathResource("user1.zip").getInputStream());
+		fileEntry.setContentBytes(byteArray);
+		User user = userService.getUserById("user1");
+		repo.save(user, fileEntry, null);
+		FileEntry foundEntry = repo.findOne(user, "hello.zip", SVNRevision.HEAD);
+		System.out.println(foundEntry);
+		assertThat(foundEntry.getFileSize(), is((long) byteArray.length));
 	}
 }

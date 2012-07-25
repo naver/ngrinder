@@ -20,20 +20,6 @@
 							Script Name
 						</label>
 						<input type="text" id="scriptNameInput" name="path" value="${file.path!}" readonly/>
-						<#if file.revision!?size != 0>
-						<div class="pull-right">
-							<label class="label" for="historySelect">
-								History
-							</label>
-							<select id="historySelect" name="historyFileName">
-								<option value="0">History List</option>
-								<#list file.revisions as revision>
-								<option value="${revision}">${revision}</option>
-								</#list>
-							</select>
-							<a class="btn" href="javascript:void(0);" id="compareBtn">Compare</a>
-						</div>
-						</#if>
 					</div>
 				</form>
 				

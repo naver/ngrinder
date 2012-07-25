@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
@@ -50,7 +49,6 @@ import com.google.common.collect.Collections2;
 @RequestMapping("/script")
 public class ScriptController extends NGrinderBaseController {
 
-	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(ScriptController.class);
 
 	@Autowired

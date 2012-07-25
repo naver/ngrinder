@@ -190,15 +190,19 @@ public class PerfTestController extends NGrinderBaseController {
 	String getReportData(ModelMap model, @RequestParam long testId, @RequestParam String dataType,
 			@RequestParam int imgWidth) {
 		List<String> reportData = null;
-		Map<String, Object> rtnMap = new HashMap<String, Object>(2);
-		try {
-			reportData = perfTestService.getReportData(testId, dataType, imgWidth);
-			rtnMap.put(JSON_SUCCESS, true);
-		} catch (IOException e) {
-			rtnMap.put(JSON_SUCCESS, false);
-			LOG.error("Get report data failed.", e);
+		String[] dataTypes = dataType.split(",");
+		Map<String, Object> rtnMap = new HashMap<String, Object>(1 + dataTypes.length);
+		for (String dt : dataTypes) {
+			try {
+				reportData = perfTestService.getReportData(testId, dt, imgWidth);
+				rtnMap.put(JSON_SUCCESS, true);
+				rtnMap.put(dt, reportData);
+			} catch (IOException e) {
+				rtnMap.put(JSON_SUCCESS, false);
+				LOG.error("Get report data failed. type: " + dt, e);
+			}
 		}
-		rtnMap.put(dataType, reportData);
+
 		return JSONUtil.toJson(rtnMap);
 	}
 }

@@ -41,7 +41,6 @@ import java.util.List;
 
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.GrinderProperties.PersistenceException;
-import net.grinder.console.model.ConsoleProperties;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
