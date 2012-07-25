@@ -23,6 +23,7 @@
 		</li>
 	</ul>
 	<div class="container">
+	   <input type="hidden" id="testId" name="id" value="${(test.id)!}">
 		<div class="row">
 			<div class="span12" style="margin-bottom:10px;">
 				<button class="btn btn-large pull-right"><i class="icon-download-alt"></i><strong>Download CSV</strong></button>
@@ -32,6 +33,7 @@
 			<div class="span4 left">
 				<select id="scriptSelect">
 					<option value="0">Performance</option>
+					<option value="1">Monitor</option>
 				</select>
 				<div class="form-horizontal form-horizontal-3" style="margin-top:20px">
 					<fieldset>
@@ -70,13 +72,13 @@
 						<div class="control-group">
 							<label for="testNameInput" class="control-label">Duration</label>
 							<div class="controls">
-								${(test.duration)!0}
+								<span>${(test.duration)!0}</span><code>sec</code>
 							</div>
 						</div>
 						<div class="control-group">
 							<label for="testNameInput" class="control-label">Ignore Count</label>
 							<div class="controls">
-								<span>${(test.ignoreSampleCount)!0}</span><code>sec</code>
+								<span>${(test.ignoreSampleCount)!0}</span>
 							</div>
 						</div>
 						<hr>
@@ -122,10 +124,12 @@
 				</div>
 			</div>
 			<div class="span7">
-				<div class="chart"></div>
-				<div class="chart"></div>
-				<div class="chart"></div>
-				<div class="chart"></div>
+			    <div id="performanceDiv">
+    				<div class="chart" id="tpsDiv"></div>
+    				<div class="chart" id="rpsDiv"></div>
+    				<div class="chart" id="vuserDiv"></div>
+    				<div class="chart" id="errorDiv"></div>
+				</div>
 				<!--
 				<img src="image01.jpg" height="210" width="800" border="0">
 				<img src="image01.jpg" height="210" width="800" border="0">
@@ -147,8 +151,34 @@
 	</div>
 	<script>
 		$(document).ready(function() {
-			
+			getPerformanceData();
 		});
+		function getPerformanceData(){
+            $.ajax({
+                url: "${req.getContextPath()}/perftest/getReportData",
+                dataType:'json',
+                data: {'testId': $("#testId").val(),
+                       'dataType':'tps_total,tps_failed,vuser,response_time',
+                       'imgWidth':700},
+                success: function(res) {
+                    if (res.success) {
+                        $('#tpsDiv').text('tps data:'+res.tps_total);
+                        $('#rpsDiv').text('response time data:'+res.response_time);
+                        $('#vuserDiv').text('vuser data:'+res.vuser);
+                        $('#errorDiv').text('error data:'+res.tps_failed);
+                        return true;
+                    } else {
+                        showErrorMsg("Get report data failed.");
+                        return false;
+                    }
+                },
+                error: function() {
+                    alert(2);
+                    showErrorMsg("Error!");
+                    return false;
+                }
+            });
+        }
 	</script>
 	</body>
 </html>
