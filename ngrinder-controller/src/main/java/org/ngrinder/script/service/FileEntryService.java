@@ -44,6 +44,7 @@ import org.ngrinder.script.repository.FileEntityRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.core.io.ClassPathResource;
@@ -64,7 +65,8 @@ import freemarker.template.Template;
 /**
  * File entry service class.<br/>
  * 
- * This class is responsible for creating user repo whenever user is created and connection b/w user and underlying svn.
+ * This class is responsible for creating user repo whenever user is created and
+ * connection b/w user and underlying svn.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -233,6 +235,7 @@ public class FileEntryService {
 	 * @param fileEntity
 	 *            fileEntity to be saved
 	 */
+	@CacheEvict(value = "file_entry_search_cache", allEntries = true)
 	public void save(User user, FileEntry fileEntity) {
 		checkNotEmpty(fileEntity.getPath());
 		fileEntityRepository.save(user, fileEntity, fileEntity.getEncoding());

@@ -123,14 +123,14 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String saveTest(User user, ModelMap model, PerfTest test) {
 		perfTestService.savePerfTest(test);
-		return getTestList(user, null, false, null, model);
+		return "redirect:/perftest/list";
 	}
 
 	@RequestMapping(value = "/clone", method = RequestMethod.POST)
 	public String cloneTest(ModelMap model, PerfTest test) {
 		test.setId(null);
 		perfTestService.savePerfTest(test);
-		return "perftest/list";
+		return "redirect:/perftest/list";
 	}
 
 	/**
