@@ -49,18 +49,18 @@ public class BaseModel<M> extends BaseEntity<M> {
 
 	private static final long serialVersionUID = -3876339828833595694L;
 
-	@Column(name = "CREATED_DATE", insertable = true, updatable = false)
+	@Column(name = "created_date", insertable = true, updatable = false)
 	private Date createdDate;
 
 	@ManyToOne
-	@JoinColumn(name = "CREATED_USER", insertable = true, updatable = false)
+	@JoinColumn(name = "created_user", insertable = true, updatable = false)
 	private User createdUser;
 
-	@Column(name = "LAST_MODIFIED_DATE", insertable = false, updatable = true)
+	@Column(name = "last_modified_date", insertable = false, updatable = true)
 	private Date lastModifiedDate;
 
 	@ManyToOne
-	@JoinColumn(name = "LAST_MODIFIED_USER", insertable = false, updatable = true)
+	@JoinColumn(name = "last_modified_user", insertable = false, updatable = true)
 	private User lastModifiedUser;
 
 	public Date getCreatedDate() {
