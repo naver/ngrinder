@@ -34,12 +34,6 @@ public interface NGrinderConstants {
 	public static final String STOP = "stop";
 	public static final String END = "end";
 
-	public static final String PREFIX_USER = "u_";
-
-	public static final String PATH_LIB = "libs";
-
-	public static final String PREFIX_SCRIPT = "s_";
-
 	public static final String SCRIPT_PROPERTIES = "script.properties";
 
 	public static final String PATH_LOG = "logs";
@@ -90,6 +84,7 @@ public interface NGrinderConstants {
 	public static final int CONSOLE_PORT_BASE = 12000;
 	public static final String USER_REPO_PATH = "repos";
 	public static final String PERF_TEST_PATH = "perftest";
+	public static final String DEFAULT_GRINDER_PROPERTIES_PATH = "grinder.properties";
 
 	// parameter constant, for parameter from page, and for key in map
 	public static final String PARAM_USERID = "userId";
@@ -100,4 +95,23 @@ public interface NGrinderConstants {
 	public static final String PARAM_THREAD_COUNT = "threadCount";
 	public static final String PARAM_PROCESS_COUNT = "processCount";
 
+	// GRINDER_PROPERTY_KEY
+	public static final String GRINDER_PROP_PROCESSES = "grinder.processes";
+	public static final String GRINDER_PROP_THREAD = "grinder.threads";
+	public static final String GRINDER_PROP_RUNS = "grinder.runs";
+	public static final String GRINDER_PROP_PROCESS_INCREMENT = "grinder.processIncrement";
+	public static final String GRINDER_PROP_PROCESS_INCREMENT_INTERVAL = "grinder.processIncrementInterval";
+	public static final String GRINDER_PROP_INITIAL_PROCESS = "grinder.initialProcesses";
+	public static final String GRINDER_PROP_DURATION = "grinder.duration";
+	public static final String GRINDER_PROP_SCRIPT = "grinder.script";
+	public static final String GRINDER_PROP_JVM = "grinder.jvm";
+	public static final String GRINDER_PROP_JVM_CLASSPATH = "grinder.jvm.classpath";
+	public static final String GRINDER_PROP_JVM_ARGUMENTS = "grinder.jvm.arguments";
+	public static final String GRINDER_PROP_LOG_DIRECTORY = "grinder.logDirectory";
+	public static final String GRINDER_PROP_CONSOLE_HOST = "grinder.consoleHost";
+	public static final String GRINDER_PROP_CONSOLE_PORT = "grinder.consolePort";
+	public static final String GRINDER_PROP_USE_CONSOLE = "grinder.useConsole";
+	public static final String GRINDER_PROP_REPORT_TO_CONSOLE = "grinder.reportToConsole.interval";
+	public static final String GRINDER_PROP_INITIAL_SLEEP_TIME = "grinder.initialSleepTime";
+	public static final String GRINDER_PROP_REPORT_TIMES_TO_CONSOLE = "grinder.reportTimesToConsole";
 }

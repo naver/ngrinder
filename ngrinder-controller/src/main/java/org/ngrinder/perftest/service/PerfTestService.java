@@ -33,12 +33,16 @@ import java.io.File;
 import java.util.List;
 
 import net.grinder.common.GrinderProperties;
+import net.grinder.common.GrinderProperties.PersistenceException;
+import net.grinder.console.model.ConsoleProperties;
 
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
+import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +62,7 @@ import org.springframework.stereotype.Service;
  * @since 3.0
  */
 @Service
-public class PerfTestService {
+public class PerfTestService implements NGrinderConstants {
 
 	@Autowired
 	private PerfTestRepository perfTestRepository;
@@ -193,12 +197,36 @@ public class PerfTestService {
 	}
 
 	public GrinderProperties getGrinderProperties(PerfTest perfTest) {
-		// TODO: still its empty
+		try {
+			GrinderProperties grinderProperties = new GrinderProperties(config.getHome().getDefaultGrinderProperties());
+			grinderProperties.setFile(GrinderProperties.SCRIPT,
+					new File(getPerfTestFilePath(perfTest), perfTest.getScriptName()));
+			ProcessAndThread calcProcessAndThread = calcProcessAndThread(perfTest.getVuserPerAgent());
+			grinderProperties.setInt(GRINDER_PROP_THREAD, calcProcessAndThread.getThreadCount());
+			grinderProperties.setInt(GRINDER_PROP_PROCESSES, calcProcessAndThread.getProcessCount());
+
+			grinderProperties.setInt(GRINDER_PROP_RUNS, perfTest.getRunCount());
+			grinderProperties.setBoolean(GRINDER_PROP_USE_CONSOLE, true);
+			grinderProperties.setInt(GRINDER_PROP_INITIAL_SLEEP_TIME, perfTest.getInitSleepTime());
+			grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, perfTest.getProcessIncrement());
+			grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT_INTERVAL, perfTest.getProcessIncrementInterval());
+			
+		} catch (PersistenceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return null;
+
 	}
 
 	public File prepareDistribution(PerfTest perfTest) {
 		// TODO: still its empty
 		return null;
+	}
+
+	public ProcessAndThread calcProcessAndThread(int newVuser) {
+		int threadCount = 2;
+		int processCount = newVuser / threadCount + newVuser % threadCount;
+		return new ProcessAndThread(processCount, threadCount);
 	}
 }

@@ -62,14 +62,14 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Enumerated(EnumType.STRING)
 	private Status status = Status.READY;
 
-	/** The sample interval value, default to 1000ms. */
-	private int sampleInterval = 1000;
+	/** The sample Integererval value, default to 1000ms. */
+	private Integer sampleInterval = 1000;
 
 	/** ignoreSampleCount value, default to 0. */
-	private int ignoreSampleCount;
+	private Integer ignoreSampleCount;
 
 	/** ignoreSampleCount value, default to 0, 0 means collect forever. */
-	private int collectSampleCount;
+	private Integer collectSampleCount;
 
 	/** the start time of this test. */
 	private Date startTime;
@@ -92,40 +92,40 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	private long duration;
 
-	private int runCount;
+	private Integer runCount;
 
-	private int agentCount;
+	private Integer agentCount;
 
-	private int vuserPerAgent;
+	private Integer vuserPerAgent;
 
-	private int processes;
+	private Integer processes;
 
-	private int initProcesses;
+	private Integer initProcesses;
 
-	private int initSleepTime;
+	private Integer initSleepTime;
 
-	private int processIncrement;
+	private Integer processIncrement;
 
-	private int processIncrementInterval;
+	private Integer processIncrementInterval;
 
-	private int threads;
+	private Integer threads;
 
 	// followings are test result members
-	private int tests = 0;
+	private Integer tests = 0;
 
-	private int errors = 0;
+	private Integer errors = 0;
 
-	private double meanTestTime = 0;
+	private Double meanTestTime = 0d;
 
-	private double testTimeStandardDeviation = 0;
+	private Double testTimeStandardDeviation = 0d;
 
-	private double tps = 0;
+	private Double tps = 0d;
 
-	private double peakTps = 0;
+	private Double peakTps = 0d;
 
-	private int port;
+	private Integer port;
 
-	private int testTrialCount;
+	private Integer testTrialCount;
 
 	@Transient
 	private GrinderProperties grinderProperties;
@@ -154,11 +154,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.finishTime = finishTime;
 	}
 
-	public int getRunCount() {
+	public Integer getRunCount() {
 		return runCount;
 	}
 
-	public void setRunCount(int runCount) {
+	public void setRunCount(Integer runCount) {
 		this.runCount = runCount;
 	}
 
@@ -178,27 +178,27 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.scriptName = scriptName;
 	}
 
-	public int getSampleInterval() {
+	public Integer getSampleInterval() {
 		return sampleInterval;
 	}
 
-	public void setSampleInterval(int sampleInterval) {
+	public void setSampleInterval(Integer sampleInterval) {
 		this.sampleInterval = sampleInterval;
 	}
 
-	public int getIgnoreSampleCount() {
+	public Integer getIgnoreSampleCount() {
 		return ignoreSampleCount;
 	}
 
-	public void setIgnoreSampleCount(int ignoreSampleCount) {
+	public void setIgnoreSampleCount(Integer ignoreSampleCount) {
 		this.ignoreSampleCount = ignoreSampleCount;
 	}
 
-	public void setCollectSampleCount(int collectSampleCount) {
+	public void setCollectSampleCount(Integer collectSampleCount) {
 		this.collectSampleCount = collectSampleCount;
 	}
 
-	public int getCollectSampleCount() {
+	public Integer getCollectSampleCount() {
 		return collectSampleCount;
 	}
 
@@ -254,66 +254,66 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.status = status;
 	}
 
-	public int getAgentCount() {
+	public Integer getAgentCount() {
 		return agentCount;
 	}
 
-	public void setAgentCount(int agentCount) {
+	public void setAgentCount(Integer agentCount) {
 		this.agentCount = agentCount;
 	}
 
-	public int getVuserPerAgent() {
+	public Integer getVuserPerAgent() {
 		return vuserPerAgent;
 	}
 
-	public void setVuserPerAgent(int vuserPerAgent) {
+	public void setVuserPerAgent(Integer vuserPerAgent) {
 		this.vuserPerAgent = vuserPerAgent;
 	}
 
-	public int getProcesses() {
+	public Integer getProcesses() {
 		return processes;
 	}
 
-	public void setProcesses(int processes) {
+	public void setProcesses(Integer processes) {
 		this.processes = processes;
 	}
 
-	public int getInitProcesses() {
+	public Integer getInitProcesses() {
 		return initProcesses;
 	}
 
-	public void setInitProcesses(int initProcesses) {
+	public void setInitProcesses(Integer initProcesses) {
 		this.initProcesses = initProcesses;
 	}
 
-	public int getInitSleepTime() {
+	public Integer getInitSleepTime() {
 		return initSleepTime;
 	}
 
-	public void setInitSleepTime(int initSleepTime) {
+	public void setInitSleepTime(Integer initSleepTime) {
 		this.initSleepTime = initSleepTime;
 	}
 
-	public int getProcessIncrement() {
+	public Integer getProcessIncrement() {
 		return processIncrement;
 	}
 
-	public void setProcessIncrement(int processIncrement) {
+	public void setProcessIncrement(Integer processIncrement) {
 		this.processIncrement = processIncrement;
 	}
 
-	public int getProcessIncrementInterval() {
+	public Integer getProcessIncrementInterval() {
 		return processIncrementInterval;
 	}
 
-	public void setProcessIncrementInterval(int processIncrementInterval) {
+	public void setProcessIncrementInterval(Integer processIncrementInterval) {
 		this.processIncrementInterval = processIncrementInterval;
 	}
 
 	/**
 	 * @return the threads
 	 */
-	public int getThreads() {
+	public Integer getThreads() {
 		return threads;
 	}
 
@@ -321,23 +321,23 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 * @param threads
 	 *            the threads to set
 	 */
-	public void setThreads(int threads) {
+	public void setThreads(Integer threads) {
 		this.threads = threads;
 	}
 
-	public int getTests() {
+	public Integer getTests() {
 		return tests;
 	}
 
-	public void setTests(int tests) {
+	public void setTests(Integer tests) {
 		this.tests = tests;
 	}
 
-	public int getErrors() {
+	public Integer getErrors() {
 		return errors;
 	}
 
-	public void setErrors(int errors) {
+	public void setErrors(Integer errors) {
 		this.errors = errors;
 	}
 
@@ -377,19 +377,19 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
-	public int getPort() {
+	public Integer getPort() {
 		return port;
 	}
 
-	public void setPort(int port) {
+	public void setPort(Integer port) {
 		this.port = port;
 	}
 
-	public int getTestTrialCount() {
+	public Integer getTestTrialCount() {
 		return testTrialCount;
 	}
 
-	public void setTestTrialCount(int testTrialCount) {
+	public void setTestTrialCount(Integer testTrialCount) {
 		this.testTrialCount = testTrialCount;
 	}
 

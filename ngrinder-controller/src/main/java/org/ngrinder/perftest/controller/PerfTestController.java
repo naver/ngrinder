@@ -30,6 +30,7 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
+import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.service.FileEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,12 +139,11 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = "/updateVuser")
 	public @ResponseBody
 	String updateVuser(@RequestParam int newVuser, ModelMap model) {
-		int threadCount = 2;
-		int processCount = newVuser / threadCount + newVuser % threadCount;
+		ProcessAndThread processAndThread = perfTestService.calcProcessAndThread(newVuser);
 		Map<String, Object> rtnMap = new HashMap<String, Object>(3);
 		rtnMap.put(JSON_SUCCESS, true);
-		rtnMap.put(PARAM_THREAD_COUNT, threadCount);
-		rtnMap.put(PARAM_PROCESS_COUNT, processCount);
+		rtnMap.put(PARAM_THREAD_COUNT, processAndThread.getThreadCount());
+		rtnMap.put(PARAM_PROCESS_COUNT, processAndThread.getProcessCount());
 		return JSONUtil.toJson(rtnMap);
 	}
 

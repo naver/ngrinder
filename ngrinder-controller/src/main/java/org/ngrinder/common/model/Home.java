@@ -119,4 +119,8 @@ public class Home implements NGrinderConstants {
 		return new File(getPerfTestDirectory(), subPath);
 	}
 
+	public File getDefaultGrinderProperties() {
+		return getSubFile(DEFAULT_GRINDER_PROPERTIES_PATH);
+	}
+
 }
