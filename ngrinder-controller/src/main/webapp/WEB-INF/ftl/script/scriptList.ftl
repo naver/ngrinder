@@ -186,6 +186,7 @@
 							<label for="upScriptNameInput" class="control-label">Name</label>
 							<div class="controls">
 							  <input type="text" id="upScriptNameInput" name="fileName">
+							  <input type="hidden" id="path" name="path"/>
 							  <span class="help-inline"></span>
 							</div>
 						</div>
@@ -260,7 +261,7 @@
 				} else {
 					cleanErrMsg($elem);
 				}
-				
+				$("#path").val($("#upScriptNameInput").val());
 				document.forms.uploadForm.submit();
 			});
 			
