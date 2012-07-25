@@ -28,6 +28,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ProgressMonitor;
+import javax.swing.SwingUtilities;
+
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.UncheckedInterruptedException;
@@ -42,11 +45,11 @@ import net.grinder.console.communication.ProcessControlImplementation;
 import net.grinder.console.distribution.AgentCacheState;
 import net.grinder.console.distribution.FileDistribution;
 import net.grinder.console.distribution.FileDistributionHandler;
-import net.grinder.console.distribution.FileDistributionImplementation;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.AllocateLowestNumber;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.Directory;
+import net.grinder.util.FileContents;
 import net.grinder.util.FileContents.FileContentsException;
 import net.grinder.util.ReflectionUtil;
 import net.grinder.util.thread.Condition;
@@ -57,7 +60,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Single console for multiple test
+ * Single console for multiple test.
  * 
  * @author JunHo Yoon
  */
@@ -66,46 +69,73 @@ public class SingleConsole implements Listener {
 	private Thread thread;
 	private ThreadGroup threadGroup;
 	private ConsoleFoundationEx consoleFoundation;
-	public final static Resources resources = new ResourcesImplementation(
-			"net.grinder.console.common.resources.Console");
+	public static final Resources RESOURCE = new ResourcesImplementation("net.grinder.console.common.resources.Console");
+	public static final Logger LOGGER = LoggerFactory.getLogger(RESOURCE.getString("shortTitle"));
 
-	public final static Logger LOGGER = LoggerFactory.getLogger(resources.getString("shortTitle"));
-
-	public Condition m_eventSyncCondition = new Condition();
+	private Condition m_eventSyncCondition = new Condition();
 	private ProcessReports[] processReports;
+	private boolean cancel = false;
 
+	/**
+	 * Constructor with console ip and port.
+	 * 
+	 * @param ip
+	 *            IP
+	 * @param port
+	 *            PORT
+	 */
 	public SingleConsole(String ip, int port) {
 		this(ip, port, ConsolePropertiesFactory.createEmptyConsoleProperties());
 	}
 
-	public int getConsolePort() {
-		return this.getConsoleProperties().getConsolePort();
-	}
-
+	/**
+	 * Constructor with IP, port, and properties.
+	 * 
+	 * @param ip
+	 *            IP
+	 * @param port
+	 *            PORT
+	 * @param consoleProperties
+	 *            {@link ConsoleProperties} used.
+	 */
 	public SingleConsole(String ip, int port, ConsoleProperties consoleProperties) {
 		this.consoleProperties = consoleProperties;
 
 		try {
 			this.getConsoleProperties().setConsoleHost(ip);
 			this.getConsoleProperties().setConsolePort(port);
-			this.consoleFoundation = new ConsoleFoundationEx(resources, LOGGER, consoleProperties, m_eventSyncCondition);
+			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties, m_eventSyncCondition);
 		} catch (GrinderException e) {
 			throw new NGrinderRuntimeException("Exception occurs while creating SingleConsole", e);
 
 		}
 	}
 
+	/**
+	 * Simple constructor only setting port. It automatically binds all ip
+	 * addresses.
+	 * 
+	 * @param port
+	 *            PORT number
+	 */
 	public SingleConsole(int port) {
 		this("", port);
 	}
 
 	/**
-	 * Start console and wait until it's ready to get agent message.
+	 * Return the assigned console port.
 	 * 
-	 * @throws UncheckedInterruptedException
-	 *             occurs when console is not ready after 10 seconds.
+	 * @return console port
+	 */
+	public int getConsolePort() {
+		return this.getConsoleProperties().getConsolePort();
+	}
+
+	/**
+	 * Start console and wait until it's ready to get agent message.
 	 */
 	public void start() {
+
 		synchronized (m_eventSyncCondition) {
 			this.threadGroup = new ThreadGroup("SingleConsole ThreadGroup on port " + getConsolePort());
 			thread = new Thread(threadGroup, new Runnable() {
@@ -121,7 +151,7 @@ public class SingleConsole implements Listener {
 	}
 
 	/**
-	 * For test
+	 * For test.
 	 */
 	public void startSync() {
 		consoleFoundation.run();
@@ -153,6 +183,11 @@ public class SingleConsole implements Listener {
 				.getNumberOfLiveAgents();
 	}
 
+	/**
+	 * Get all attached agent list on this console.
+	 * 
+	 * @return agent list
+	 */
 	public List<AgentIdentity> getAllAttachedAgents() {
 		final List<AgentIdentity> agentIdentities = new ArrayList<AgentIdentity>();
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) ReflectionUtil
@@ -167,6 +202,12 @@ public class SingleConsole implements Listener {
 	}
 
 	/**
+	 * Get the console Component.
+	 * 
+	 * @param <T>
+	 *            componentType component type
+	 * @param componentType
+	 *            component type
 	 * @return the consoleFoundation
 	 */
 	public <T> T getConsoleComponent(Class<T> componentType) {
@@ -182,17 +223,6 @@ public class SingleConsole implements Listener {
 		getConsoleComponent(ProcessControl.class).startWorkerProcesses(properties);
 	}
 
-	/**
-	 * Distribute files on given filePath to attached agents.
-	 * 
-	 * @param filePath
-	 *            the distribution files
-	 */
-	public void distributeFiles(File filePath) {
-		setDistributionDirectory(filePath);
-		distributFileOnAgents(getAllAttachedAgents());
-	}
-
 	public void setDistributionDirectory(File filePath) {
 		final ConsoleProperties properties = (ConsoleProperties) getConsoleComponent(ConsoleProperties.class);
 		Directory directory;
@@ -205,31 +235,60 @@ public class SingleConsole implements Listener {
 		}
 	}
 
-	public void distributFileOnAgents(List<AgentIdentity> agentList) {
-		final FileDistribution distribution = (FileDistribution) getConsoleComponent(FileDistribution.class);
-		final AgentCacheState agentCacheState = distribution.getAgentCacheState();
-		final Condition m_cacheStateCondition = new Condition();
+	public void cancel() {
+		cancel = true;
+	}
+
+	private boolean shouldEnable(FileDistribution fileDistribution) {
+		return fileDistribution.getAgentCacheState().getOutOfDate();
+	}
+
+	/**
+	 * Distribute files on given filePath to attached agents.
+	 * 
+	 * @param filePath
+	 *            the distribution files
+	 */
+	public void distributeFiles(File filePath) {
+		setDistributionDirectory(filePath);
+		distributFiles();
+	}
+
+	/**
+	 * Distribute files on agents.
+	 */
+	public void distributFiles() {
+		final FileDistribution fileDistribution = (FileDistribution) getConsoleComponent(FileDistribution.class);
+		final AgentCacheState agentCacheState = fileDistribution.getAgentCacheState();
+		final Condition cacheStateCondition = new Condition();
 		agentCacheState.addListener(new PropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent ignored) {
-				synchronized (m_cacheStateCondition) {
-					m_cacheStateCondition.notifyAll();
+				synchronized (cacheStateCondition) {
+					cacheStateCondition.notifyAll();
 				}
 			}
 		});
-		ThreadUtil.sleep(1000);
-		final FileDistributionHandler distributionHandler = distribution.getHandler();
-		try {
-			while (true) {
-				FileDistributionHandler.Result result;
-				result = distributionHandler.sendNextFile();
+		final FileDistributionHandler distributionHandler = fileDistribution.getHandler();
+		// When cancel is called.. stop processing.
+		while (!cancel) {
+			try {
+				final FileDistributionHandler.Result result = distributionHandler.sendNextFile();
 				if (result == null) {
 					break;
 				}
-				LOGGER.debug("Success in distributing {}", result.getFileName());
+
+			} catch (FileContents.FileContentsException e) {
+				// FIXME : Forward this error to controller.!!
+				e.printStackTrace();
 			}
-		} catch (FileContentsException e) {
-			LOGGER.error(e.getMessage(), e);
-			throw new NGrinderRuntimeException(e.getMessage(), e);
+			// The cache status is updated asynchronously by agent reports.
+			// If we have a listener, we wait for up to five seconds for all
+			// agents to indicate that they are up to date.
+			synchronized (cacheStateCondition) {
+				for (int i = 0; i < 5 && shouldEnable(fileDistribution); ++i) {
+					cacheStateCondition.waitNoInterrruptException(1000);
+				}
+			}
 		}
 	}
 
@@ -240,7 +299,7 @@ public class SingleConsole implements Listener {
 				m_eventSyncCondition.waitNoInterrruptException(10000);
 			} else {
 				return;
-			} 
+			}
 		}
 	}
 
