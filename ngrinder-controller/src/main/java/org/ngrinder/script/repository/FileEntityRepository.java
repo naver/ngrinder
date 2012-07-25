@@ -27,7 +27,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -53,6 +55,8 @@ import org.tmatesoft.svn.core.SVNDirEntry;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNNodeKind;
+import org.tmatesoft.svn.core.SVNProperties;
+import org.tmatesoft.svn.core.SVNProperty;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.io.ISVNEditor;
@@ -175,6 +179,7 @@ public class FileEntityRepository {
 	public FileEntry findOne(User user, String path, SVNRevision revision) {
 		final FileEntry script = new FileEntry();
 		SVNClientManager svnClientManager = null;
+		ByteArrayOutputStream outputStream = null;
 		try {
 			svnClientManager = SVNClientManager.newInstance();
 
@@ -184,39 +189,32 @@ public class FileEntityRepository {
 			if (nodeKind == SVNNodeKind.NONE) {
 				return null;
 			}
-
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-			svnClientManager.getWCClient().doGetFileContents(
-					SVNURL.fromFile(getUserRepository(user)).appendPath(path, true), revision, revision, false,
-					outputStream);
-			final List<SVNLogEntry> logEntries = new ArrayList<SVNLogEntry>();
-			svnClientManager.getLogClient().doLog(SVNURL.fromFile(getUserRepository(user)), new String[] { path },
-					SVNRevision.create(0), SVNRevision.create(0), SVNRevision.HEAD, false, false, false, -1, null,
-					new ISVNLogEntryHandler() {
-						@Override
-						public void handleLogEntry(SVNLogEntry logEntry) throws SVNException {
-							logEntries.add(logEntry);
-						}
-					});
-			script.setPath(path);
+			outputStream = new ByteArrayOutputStream();
+			SVNProperties fileProperty = new SVNProperties();
+			// Get File.
+			repo.getFile(path, -1L, fileProperty, outputStream);
+			String lastRevision = fileProperty.getStringValue(SVNProperty.REVISION);
+			SVNDirEntry info = repo.info(path, Long.parseLong(lastRevision));
 			byte[] byteArray = outputStream.toByteArray();
-			String autoDetectedEncoding = EncodingUtil.detectEncoding(byteArray, "UTF-8");
-			script.setContent(new String(byteArray, autoDetectedEncoding));
-			script.setEncoding(autoDetectedEncoding);
-			SVNLogEntry lastLogEntry = logEntries.get(logEntries.size() - 1);
-			script.setDescription(lastLogEntry.getMessage());
+			script.setPath(path);
 			script.setFileType(FileType.getFileType(FilenameUtils.getExtension(script.getFileName())));
-			final List<Long> revisions = new ArrayList<Long>();
-			for (SVNLogEntry each : logEntries) {
-				revisions.add(each.getRevision());
+			if (script.getFileType().isEditable()) {
+				String autoDetectedEncoding = EncodingUtil.detectEncoding(byteArray, "UTF-8");
+				script.setContent(new String(byteArray, autoDetectedEncoding));
+				script.setEncoding(autoDetectedEncoding);
+			} else {
+				script.setContentBytes(byteArray);
 			}
+			script.setDescription(info.getCommitMessage());
+
+			final List<Long> revisions = new ArrayList<Long>();
 			script.setRevisions(revisions);
 		} catch (Exception e) {
 			LOG.error("Error while fetching files from SVN", e);
 			throw new NGrinderRuntimeException("Error while fetching files from SVN", e);
 		} finally {
 			closeSVNClientManagerQuietly(svnClientManager);
+			IOUtils.closeQuietly(outputStream);
 		}
 		return script;
 	}
@@ -256,10 +254,13 @@ public class FileEntityRepository {
 				// Calc diff
 				final SVNDeltaGenerator deltaGenerator = new SVNDeltaGenerator();
 				// If encoding is set, try to convert it content into given
-				// encoding,
-				// otherwise, just get bytes
-				bais = StringUtils.isEmpty(encoding) ? new ByteArrayInputStream(fileEntry.getContent().getBytes())
-						: new ByteArrayInputStream(fileEntry.getContent().getBytes(encoding));
+				// encoding, otherwise, just get bytes
+				fileEntry.setFileType(FileType.getFileType(FilenameUtils.getExtension(fileEntry.getFileName())));
+				if (fileEntry.getFileType().isEditable()) {
+					bais = new ByteArrayInputStream(fileEntry.getContent().getBytes(encoding == null ? "UTF-8" : encoding));
+				} else {
+					bais = new ByteArrayInputStream(fileEntry.getContentBytes());
+				}
 				checksum = deltaGenerator.sendDelta(fileEntry.getPath(), bais, editor, true);
 			}
 			// Finally push

@@ -1,7 +1,6 @@
 package org.ngrinder.perftest.service;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
@@ -28,8 +27,6 @@ public class ConsoleManagerTest extends AbstractNGNinderTransactionalTest {
 
 	@Test
 	public void testConsoleManager() {
-		ConsoleManager manager = new ConsoleManager();
-		manager.init();
 		int initialSize = manager.getAvailableConsoleSize();
 		SingleConsole availableConsole = manager.getAvailableConsole();
 		assertThat(manager.getAvailableConsoleSize(), is(initialSize - 1));
@@ -97,7 +94,7 @@ public class ConsoleManagerTest extends AbstractNGNinderTransactionalTest {
 
 			// It should be excluded in available ports
 			List<Integer> availablePorts = manager.getAvailablePorts(20, 10110);
-			assertThat(availablePorts, not(hasItem(localPort)));
+			assertThat(availablePorts.contains(localPort), not(true));
 			assertThat(availablePorts, hasSize(20));
 		} finally {
 			if (serverSocket != null) {

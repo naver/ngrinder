@@ -43,12 +43,6 @@
 
 	<dependencies>
 		<!-- For UnitTest -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit-dep</artifactId>
-			<version>4.8.2</version>
-			<scope>test</scope>
-		</dependency>
 
 		<dependency>
 			<groupId>org.hamcrest</groupId>
@@ -62,6 +56,15 @@
 			<version>1.2.1</version>
 			<scope>test</scope>
 		</dependency>
+
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit-dep</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
+		</dependency>
+
 
 
 		<dependency>
