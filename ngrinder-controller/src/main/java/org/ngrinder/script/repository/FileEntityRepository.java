@@ -246,6 +246,8 @@ public class FileEntityRepository {
 					bais = new ByteArrayInputStream(fileEntry.getContent().getBytes(
 							encoding == null ? "UTF-8" : encoding));
 				} else {
+					//TODO: if the file name has no extension with dot(.) when it is creating a data as script file,
+					//      it will be shown null pointer exception on the follow code.
 					bais = new ByteArrayInputStream(fileEntry.getContentBytes());
 				}
 				checksum = deltaGenerator.sendDelta(fileEntry.getPath(), bais, editor, true);

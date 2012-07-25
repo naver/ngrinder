@@ -30,6 +30,11 @@ function checkSimpleName(str, name) {
 	return checkStringFormat(str, patrn);
 }
 
+function checkScriptFileExtension(str, ext) {
+	var patrn = "." + ext + "$";
+	return checkStringFormat(str, patrn, "");
+}
+
 function checkEmailFormat(id) {
 	var obj = $("#" + id);
 	var addr = obj.val();
