@@ -24,104 +24,90 @@
 	</ul>
 	<div class="container">
 	   <input type="hidden" id="testId" name="id" value="${(test.id)!}">
+	   <input type="hidden" id="startTime" name="startTime" value="${(test.startTime)!}">
+	   <input type="hidden" id="finishTime" name="finishTime" value="${(test.finishTime)!}">
 		<div class="row">
 			<div class="span12" style="margin-bottom:10px;">
 				<button class="btn btn-large pull-right"><i class="icon-download-alt"></i><strong>Download CSV</strong></button>
 			</div>
 		</div>
 		<div class="row">
-			<div class="span4 left">
-				<select id="scriptSelect">
-					<option value="0">Performance</option>
-					<option value="1">Monitor</option>
-				</select>
-				<div class="form-horizontal form-horizontal-3" style="margin-top:20px">
-					<fieldset>
-						<div class="control-group">
-							<label for="testNameInput" class="control-label">Vuser</label>
-							<div class="controls">
-								<strong>${(test.vuserPerAgent)!}</strong>
-							</div>
-						</div>
-						<div class="control-group">
-							<label for="testNameInput" class="control-label">Agents</label>
-							<div class="controls">
-								<span>${(test.agentCount)!}</span><a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
-							</div>
-						</div>
-						<div class="control-group">
-							<label for="testNameInput" class="control-label">Processes</label>
-							<div class="controls">
-								${(test.processes)!0}
-							</div>
-						</div>
-						<div class="control-group">
-							<label for="testNameInput" class="control-label">Threads</label>
-							<div class="controls">
-								${(test.threads)!0}
-							</div>
-						</div>
-						<hr>
-						<div class="control-group">
-							<label for="testNameInput" class="control-label">Target Hosts</label>
-							<div class="controls">
-								10.34.64.36
-							</div>
-						</div>
-						<hr>
-						<div class="control-group">
-							<label for="testNameInput" class="control-label">Duration</label>
-							<div class="controls">
-								<span>${(test.duration)!0}</span><code>sec</code>
-							</div>
-						</div>
-						<div class="control-group">
-							<label for="testNameInput" class="control-label">Ignore Count</label>
-							<div class="controls">
-								<span>${(test.ignoreSampleCount)!0}</span>
-							</div>
-						</div>
-						<hr>
-						<div class="control-group">
-							<label for="testNameInput" class="control-label">Sample Interval</label>
-							<div class="controls">
-								<span>${(test.sampleInterval)!1000}</span><code>ms</code>
-							</div>
-						</div>
-						<hr>
-						<div class="control-group">
-							<label for="testNameInput" class="control-label">Test Comment</label>
-							<div class="controls">
-								Copied
-							</div>
-						</div>
-						<hr>
-						<div class="control-group">
-							<label for="testNameInput" class="control-label">TPS</label>
-							<div class="controls">
-								<strong>Total ${(test.tps)!}</strong>
-							</div>
-						</div>
-						<div class="control-group">
-							<label for="testNameInput" class="control-label">Mean Time</label>
-							<div class="controls">
-								<span>${(test.meanTestTime)!}</span><code>ms</code>
-							</div>
-						</div>
-						<div class="control-group">
-							<label for="testNameInput" class="control-label">Peak TPS</label>
-							<div class="controls">
-								<strong>${(test.peakTps)!}</strong>
-							</div>
-						</div>
-						<div class="control-group">
-							<label for="testNameInput" class="control-label">Finished Tests</label>
-							<div class="controls">
-								${(test.tests)!}
-							</div>
-						</div>
-					</fieldset>
-				</div>
+			<div class="span4">
+					   <table class="table table-bordered">
+					       <tr>
+					           <th>Vuser</th>
+					           <td><strong>${(test.vuserPerAgent)!}</strong></td>
+					       </tr>
+					       <tr>
+                               <th>Agents</th>
+                               <td><span>${(test.agentCount)!}</span>&nbsp;&nbsp;<a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a></td>
+                           </tr>
+                           <tr>
+                               <th>Processes</th>
+                               <td>${(test.processes)!0}</td>
+                           </tr>
+                           <tr>
+                               <th>Threads</th>
+                               <td>${(test.threads)!0}</td>
+                           </tr>
+                           <tr>
+                                <td colspan=2></td>
+                           </tr>
+                           <tr>
+                               <th>Duration</th>
+                               <td><span>${(test.duration)!0}</span><code>sec</code></td>
+                           </tr>
+                           <tr>
+                               <th>Ignore Count</th>
+                               <td><span>${(test.ignoreSampleCount)!0}</span></td>
+                           </tr>
+                           <tr>
+                                <td colspan=2></td>
+                           </tr>
+                           <tr>
+                               <th>Sample Interval</th>
+                               <td><span>${(test.sampleInterval)!1000}</span><code>ms</code></td>
+                           </tr>
+                           <tr>
+                                <td colspan=2></td>
+                           </tr>
+                           <tr>
+                               <th>Test Comment</th>
+                               <td>Copied</td>
+                           </tr>
+                           <tr>
+                               <th>Vuser</th>
+                               <td><strong>${(test.vuserPerAgent)!}</strong></td>
+                           </tr>
+                           <tr>
+                                <td colspan=2></td>
+                           </tr>
+                           <tr>
+                               <th>TPS</th>
+                               <td><strong>Total ${(test.tps)!}</strong></td>
+                           </tr>
+                           <tr>
+                               <th>Mean Time</th>
+                               <td><span>${(test.meanTestTime)!}</span><code>ms</code></td>
+                           </tr>
+                           <tr>
+                               <th>Peak TPS</th>
+                               <td><strong>${(test.peakTps)!}</strong></td>
+                           </tr>
+                           <tr>
+                               <th>Finished Tests</th>
+                               <td>${(test.tests)!}</td>
+                           </tr>
+					   </table>
+					   <ul class="unstyled">
+                         <li><a id="testPerformance" href="#void(0)">Performance Report</a></li>
+                       </ul>
+					   <ul class="unstyled">Target Hosts
+                         <li><a id="targetMontor" href="#void(0)">${(test.targetHosts)!}</a></li>
+                       </ul>
+                       <ul class="unstyled">Agent servers
+                         <li><a id="agentMontor" href="#void(0)">${(test.agentServer)!}</a></li>
+                       </ul>
 			</div>
 			<div class="span7">
 			    <div id="performanceDiv">
@@ -130,6 +116,16 @@
     				<div class="chart" id="vuserDiv"></div>
     				<div class="chart" id="errorDiv"></div>
 				</div>
+				<div id="monitorDiv" style="display:none">
+				    <h6>System Data</h6>
+                    <div class="chart" id="cpuDiv"></div>
+                    <div class="chart" id="memoryDiv"></div>
+                    <h6>Java Data</h6>
+                    <div class="chart" id="heapMemoryDiv"></div>
+                    <div class="chart" id="nonHeapMemoryDiv"></div>
+                    <div class="chart" id="threadCountDiv"></div>
+                    <div class="chart" id="jvmCpuDiv"></div>
+                </div>
 				<!--
 				<img src="image01.jpg" height="210" width="800" border="0">
 				<img src="image01.jpg" height="210" width="800" border="0">
@@ -151,7 +147,23 @@
 	</div>
 	<script>
 		$(document).ready(function() {
-			getPerformanceData();
+		    // TODO need to add cache here
+		    $("#testPerformance").click(function() {
+		        $("#performanceDiv").show();
+		        $("#monitorDiv").hide();
+		        getPerformanceData();
+		    });
+		    $("#targetMontor").click(function() {
+                $("#performanceDiv").hide();
+                $("#monitorDiv").show();
+                getMonitorData();
+            });
+            $("#agentMontor").click(function() {
+                $("#performanceDiv").hide();
+                $("#monitorDiv").show();
+                getMonitorData();
+            });
+			$("#testPerformance").click();
 		});
 		function getPerformanceData(){
             $.ajax({
@@ -169,6 +181,35 @@
                         return true;
                     } else {
                         showErrorMsg("Get report data failed.");
+                        return false;
+                    }
+                },
+                error: function() {
+                    alert(2);
+                    showErrorMsg("Error!");
+                    return false;
+                }
+            });
+        }
+        function getMonitorData(){
+            $.ajax({
+                url: "${req.getContextPath()}/monitor/getMonitorData",
+                dataType:'json',
+                data: {'ip': '127.0.0.1',
+                       'startTime': $("#startTime").val(),
+                       'finishTime': $("#finishTime").val(),
+                       'imgWidth':700},
+                success: function(res) {
+                    if (res.success) {
+                        $('#cpuDiv').text('system cpu data:'+res.cpu);
+                        $('#memoryDiv').text('system memory data:'+res.memory);
+                        $('#heapMemoryDiv').text('heap memory data:'+res.heap_memory);
+                        $('#nonHeapMemoryDiv').text('non heap memory data:'+res.non_heap_memory);
+                        $('#threadCountDiv').text('thread count data:'+res.thread_count);
+                        $('#jvmCpuDiv').text('jvm cpu data:'+res.jvm_cpu);
+                        return true;
+                    } else {
+                        showErrorMsg("Get monitor data failed.");
                         return false;
                     }
                 },
