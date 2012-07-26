@@ -24,6 +24,7 @@ package org.ngrinder.script.repository;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
@@ -246,8 +247,8 @@ public class FileEntityRepository {
 					bais = new ByteArrayInputStream(fileEntry.getContent().getBytes(
 							encoding == null ? "UTF-8" : encoding));
 				} else {
-					//TODO: if the file name has no extension with dot(.) when it is creating a data as script file,
-					//      it will be shown null pointer exception on the follow code.
+					// TODO: if the file name has no extension with dot(.) when it is creating a data as script file,
+					// it will be shown null pointer exception on the follow code.
 					bais = new ByteArrayInputStream(fileEntry.getContentBytes());
 				}
 				checksum = deltaGenerator.sendDelta(fileEntry.getPath(), bais, editor, true);
@@ -357,5 +358,31 @@ public class FileEntityRepository {
 		} finally {
 			closeSVNClientManagerQuietly(svnClientManager);
 		}
+	}
+
+	public void writeContentTo(User user, String path, File toPath) {
+		SVNClientManager svnClientManager = null;
+		FileOutputStream fileOutputStream = null;
+		try {
+			svnClientManager = SVNClientManager.newInstance();
+
+			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepository(user));
+			SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
+			SVNNodeKind nodeKind = repo.checkPath(path, -1);
+			if (nodeKind == SVNNodeKind.NONE || nodeKind == SVNNodeKind.DIR) {
+				throw new NGrinderRuntimeException("It's not pssible write directory. nodeKind is " + nodeKind);
+			}
+			fileOutputStream = new FileOutputStream(new File(toPath, FilenameUtils.getName(path)));
+			SVNProperties fileProperty = new SVNProperties();
+			// Get File.
+			repo.getFile(path, -1L, fileProperty, fileOutputStream);
+		} catch (Exception e) {
+			LOG.error("Error while fetching files from SVN", e);
+			throw new NGrinderRuntimeException("Error while fetching files from SVN", e);
+		} finally {
+			closeSVNClientManagerQuietly(svnClientManager);
+			IOUtils.closeQuietly(fileOutputStream);
+		}
+		return;
 	}
 }

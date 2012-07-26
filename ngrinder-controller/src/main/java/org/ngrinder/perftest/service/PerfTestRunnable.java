@@ -22,10 +22,23 @@
  */
 package org.ngrinder.perftest.service;
 
+import static org.ngrinder.perftest.model.Status.CANCELED;
+import static org.ngrinder.perftest.model.Status.DISTRIBUTE_FILES;
+import static org.ngrinder.perftest.model.Status.DISTRIBUTE_FILES_FINISHED;
+import static org.ngrinder.perftest.model.Status.START_AGENTS;
+import static org.ngrinder.perftest.model.Status.START_AGENTS_FINISHED;
+import static org.ngrinder.perftest.model.Status.START_CONSOLE;
+import static org.ngrinder.perftest.model.Status.START_CONSOLE_FINISHED;
+import static org.ngrinder.perftest.model.Status.TESTING;
+import static org.ngrinder.perftest.model.Status.TESTING_FINISHED;
+
 import java.util.List;
+
+import javax.annotation.PostConstruct;
 
 import net.grinder.SingleConsole;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
@@ -39,14 +52,15 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * perf test run scheduler.
  * 
+ * This class is responsible to execute the performance test which is ready to execute. Mostly this class is started
+ * from {@link #startTest()} method. This method is scheduled by Spring Task.
+ * 
  * @author JunHo Yoon
  * @since 3.0
  */
 @Component
-@Transactional
 public class PerfTestRunnable implements NGrinderConstants {
 
-	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(PerfTestRunnable.class);
 
 	@Autowired
@@ -58,19 +72,20 @@ public class PerfTestRunnable implements NGrinderConstants {
 	@Autowired
 	private AgentManager agentManager;
 
+	
 	/**
 	 * Scheduled method for test execution.
 	 */
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
-	@Transactional
 	public void startTest() {
+		// Find out next ready perftest
 		PerfTest runCandidate = perfTestService.getPerfTestCandiate();
 		if (runCandidate == null) {
 			return;
 		}
 		// In case of too many trial, cancel running.
 		if (runCandidate.getTestTrialCount() > PERFTEST_MAXIMUM_TRIAL_COUNT) {
-			perfTestService.savePerfTest(runCandidate, Status.CANCELED);
+			perfTestService.savePerfTest(runCandidate, CANCELED);
 			return;
 		}
 		doTest(runCandidate);
@@ -79,29 +94,72 @@ public class PerfTestRunnable implements NGrinderConstants {
 	/**
 	 * Run given test.
 	 * 
+	 * If fails, it marks STOP_ON_ERROR in the given {@link PerfTest} status
+	 * 
 	 * @param perfTest
 	 *            perftest instance;
 	 */
 	public void doTest(PerfTest perfTest) {
+		SingleConsole singleConsole = null;
+		try {
+			singleConsole = startConsole(perfTest);
+			startAgentsOn(perfTest, singleConsole);
+			distributeFileOn(perfTest, singleConsole);
+			runTestOn(perfTest, singleConsole);
+		} catch (Exception e) {
+			// In case of error, mark the occurs error on perftest.
+			markPerfTestError(perfTest, singleConsole, e);
+		}
+	}
+
+	/**
+	 * Mark test error on {@link PerfTest} instance.
+	 * 
+	 * @param perfTest
+	 *            {@link PerfTest}
+	 * @param singleConsole
+	 *            console in use
+	 * @param e
+	 *            exception occurs.
+	 */
+	void markPerfTestError(PerfTest perfTest, SingleConsole singleConsole, Exception e) {
+		// Leave last status as test error cause
+		perfTest.setTestErrorCause(perfTest.getStatus());
+		perfTest.setTestErrorStackTrace(ExceptionUtils.getFullStackTrace(e));
+		perfTestService.savePerfTest(perfTest, Status.STOP_ON_ERROR);
+	}
+
+	void runTestOn(PerfTest perfTest, SingleConsole singleConsole) {
+		// Run test
+		perfTestService.savePerfTest(perfTest, TESTING);
+		singleConsole.startTest(perfTestService.getGrinderProperties(perfTest));
+		perfTestService.savePerfTest(perfTest, TESTING_FINISHED);
+	}
+
+	void distributeFileOn(PerfTest perfTest, SingleConsole singleConsole) {
+		// Distribute files
+		perfTestService.savePerfTest(perfTest, DISTRIBUTE_FILES);
+		singleConsole.distributeFiles(perfTestService.prepareDistribution(perfTest));
+		perfTestService.savePerfTest(perfTest, DISTRIBUTE_FILES_FINISHED);
+	}
+
+	void startAgentsOn(PerfTest perfTest, SingleConsole singleConsole) {
+		perfTestService.savePerfTest(perfTest, START_AGENTS);
+		agentManager.runAgent(singleConsole, null, perfTest.getAgentCount());
+		singleConsole.waitUntilAgentConnected(perfTest.getAgentCount());
+		perfTestService.savePerfTest(perfTest, START_AGENTS_FINISHED);
+	}
+
+	SingleConsole startConsole(PerfTest perfTest) {
+		perfTestService.savePerfTest(perfTest, START_CONSOLE);
 		// get available console.
 		SingleConsole singleConsole = consoleManager.getAvailableConsole();
-		singleConsole.start();
 		// increase trial count
 		perfTest.setTestTrialCount(perfTest.getTestTrialCount() + 1);
 		perfTest.setPort(singleConsole.getConsolePort());
-		// Start agents
-		perfTestService.savePerfTest(perfTest, Status.WAITING_AGENT);
-		agentManager.runAgent(singleConsole, null, perfTest.getAgentCount());
-		singleConsole.waitUntilAgentConnected(perfTest.getAgentCount());
-
-		// Distribute files
-		perfTestService.savePerfTest(perfTest, Status.DISTRIBUTE_FILES);
-		singleConsole.distributeFiles(perfTestService.prepareDistribution(perfTest));
-
-		// Run test
-		singleConsole.startTest(perfTestService.getGrinderProperties(perfTest));
-		perfTest.setStatus(Status.TESTING);
-		perfTestService.savePerfTest(perfTest);
+		singleConsole.start();
+		perfTestService.savePerfTest(perfTest, START_CONSOLE_FINISHED);
+		return singleConsole;
 	}
 
 	/**

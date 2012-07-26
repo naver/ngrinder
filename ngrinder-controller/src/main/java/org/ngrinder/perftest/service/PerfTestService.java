@@ -22,6 +22,7 @@
  */
 package org.ngrinder.perftest.service;
 
+import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.common.util.Preconditions.checkNotZero;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.createdBy;
@@ -42,9 +43,11 @@ import java.util.List;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.GrinderProperties.PersistenceException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -52,6 +55,11 @@ import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
+import org.ngrinder.script.model.FileEntry;
+import org.ngrinder.script.model.FileType;
+import org.ngrinder.script.service.FileEntryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -71,6 +79,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class PerfTestService implements NGrinderConstants {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(PerfTestService.class);
+
 	private static final String DATA_FILE_EXTENSION = ".data";
 
 	@Autowired
@@ -78,6 +88,9 @@ public class PerfTestService implements NGrinderConstants {
 
 	@Autowired
 	private Config config;
+
+	@Autowired
+	private FileEntryService fileEntryService;
 
 	/**
 	 * Get {@link PerfTest} list on the user.
@@ -219,20 +232,48 @@ public class PerfTestService implements NGrinderConstants {
 			grinderProperties.setInt(GRINDER_PROP_INITIAL_SLEEP_TIME, perfTest.getInitSleepTime());
 			grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, perfTest.getProcessIncrement());
 			grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT_INTERVAL, perfTest.getProcessIncrementInterval());
-
+			return grinderProperties;
 		} catch (PersistenceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new NGrinderRuntimeException("error while prepare grinder property for " + perfTest.getTestName(), e);
 		}
-		return null;
-
 	}
 
+	/**
+	 * Prepare files for distribution
+	 * 
+	 * @param perfTest
+	 * @return
+	 */
 	public File prepareDistribution(PerfTest perfTest) {
-		// TODO: still its empty
-		return null;
+		checkNotNull(perfTest.getId(), "perfTest should have id");
+		String scriptName = checkNotEmpty(perfTest.getScriptName(), "perfTest should have script name");
+		User user = perfTest.getCreatedUser();
+
+		// Get all files in the script path
+		List<FileEntry> fileEntries = fileEntryService.getFileEntries(user,
+				FilenameUtils.getPath(checkNotEmpty(scriptName)));
+		File perfTestDirectory = config.getHome().getPerfTestDirectory(perfTest.getId().toString());
+		for (FileEntry each : fileEntries) {
+			// Directory is not subject to be distributed.
+			if (each.getFileType() == FileType.DIR) {
+				continue;
+			}
+			LOGGER.info(each.getPath() + " is being written in " + perfTestDirectory);
+			fileEntryService.writeContentTo(user, each.getPath(), perfTestDirectory);
+		}
+		LOGGER.info("File write is completed in " + perfTestDirectory);
+		return perfTestDirectory;
 	}
 
+	/**
+	 * Get the optimal process and thread count.
+	 * 
+	 * FIXME : This method should be optimized more.
+	 * 
+	 * @param newVuser
+	 *            the count of virtual users per agent
+	 * @return optimal process thread count
+	 */
 	public ProcessAndThread calcProcessAndThread(int newVuser) {
 		int threadCount = 2;
 		int processCount = newVuser / threadCount + newVuser % threadCount;
@@ -241,16 +282,11 @@ public class PerfTestService implements NGrinderConstants {
 
 	public List<String> getReportData(long testId, String dataType, int imgWidth) throws IOException {
 		List<String> reportData = new ArrayList<String>();
-
 		File reportFolder = config.getHome().getPerfTestDirectory(testId + File.separator + "report");
-
 		int pointCount = imgWidth / 10;
-
 		int lineNumber;
-
 		File targetFile = null;
 		targetFile = new File(reportFolder, dataType.toLowerCase() + DATA_FILE_EXTENSION);
-
 		LineNumberReader lnr = null;
 		try {
 			lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(targetFile)));
@@ -260,7 +296,6 @@ public class PerfTestService implements NGrinderConstants {
 		} finally {
 			IOUtils.closeQuietly(lnr);
 		}
-
 		FileReader reader = null;
 		BufferedReader br = null;
 		try {
@@ -270,6 +305,7 @@ public class PerfTestService implements NGrinderConstants {
 			int current = 0;
 			int interval = lineNumber / pointCount;
 			// TODO should get average data
+			// FIXME : NEVER NEVER DO IT. Be aware of memory size.!!
 			while ((data = br.readLine()) != null) {
 				if (0 == current) {
 					reportData.add(data);
