@@ -57,7 +57,7 @@ public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
 		PerfTest test = new PerfTest();
 		test.setTestName("new Test1");
 		test.setThreshold("D");
-		test.setDuration(120);
+		test.setDuration(120L);
 		test.setIgnoreSampleCount(0);
 		test.setTargetHosts("127.0.0.1");
 		test.setScriptName("test1.py");

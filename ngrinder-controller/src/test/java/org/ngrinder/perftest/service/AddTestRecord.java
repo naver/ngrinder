@@ -47,7 +47,7 @@ public class AddTestRecord extends AbstractJUnit4SpringContextTests {
 		PerfTest test = new PerfTest();
 		test.setTestName("new Test1");
 		test.setThreshold("D");
-		test.setDuration(120);
+		test.setDuration(120L);
 		test.setIgnoreSampleCount(0);
 		test.setTargetHosts("127.0.0.1");
 		test.setScriptName("test1.py");
@@ -60,7 +60,7 @@ public class AddTestRecord extends AbstractJUnit4SpringContextTests {
 		test.setTestName("new Test2");
 		test.setStatus(Status.FINISHED);
 		test.setThreshold("D");
-		test.setDuration(120);
+		test.setDuration(120L);
 		test.setIgnoreSampleCount(0);
 		test.setTargetHosts("127.0.0.1");
 		test.setScriptName("test2.py");
