@@ -77,7 +77,7 @@ public class MonitorController extends NGrinderBaseController {
 		} catch (ParseException e) {
 			st = 0;
 			et = 0;
-			LOG.error("error date format: " + startTime + "" + finishTime, e);
+			LOG.error("error date format: " + startTime + "," + finishTime, e);
 		}
 		List<JavaDataModel> javaMonitorData = monitorService.getJavaMonitorData(ip, st, et);
 		List<SystemDataModel> systemMonitorData = monitorService.getSystemMonitorData(ip, st, et);

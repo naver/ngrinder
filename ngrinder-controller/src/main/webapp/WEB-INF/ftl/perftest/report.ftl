@@ -103,10 +103,10 @@
                          <li><a id="testPerformance" href="#void(0)">Performance Report</a></li>
                        </ul>
 					   <ul class="unstyled">Target Hosts
-                         <li><a id="targetMontor" href="#void(0)">${(test.targetHosts)!}</a></li>
+                         <li><a id="targetMontor" href="#void(0)" ip="${(test.targetHosts)!}">${(test.targetHosts)!}</a></li>
                        </ul>
                        <ul class="unstyled">Agent servers
-                         <li><a id="agentMontor" href="#void(0)">${(test.agentServer)!}</a></li>
+                         <li><a id="agentMontor" href="#void(0)" ip="${(test.targetHosts)!}">${(test.agentServer)!}</a></li>
                        </ul>
 			</div>
 			<div class="span7">
@@ -146,6 +146,8 @@
 		</div>
 	</div>
 	<script>
+	    var performanceInit = false;
+	    var monitorInit = new Array();
 		$(document).ready(function() {
 		    // TODO need to add cache here
 		    $("#testPerformance").click(function() {
@@ -156,16 +158,22 @@
 		    $("#targetMontor").click(function() {
                 $("#performanceDiv").hide();
                 $("#monitorDiv").show();
-                getMonitorData();
+                var $elem = $(this);
+                getMonitorData($elem.attr("ip"));
             });
             $("#agentMontor").click(function() {
                 $("#performanceDiv").hide();
                 $("#monitorDiv").show();
-                getMonitorData();
+                var $elem = $(this);
+                getMonitorData($elem.attr("ip"));
             });
 			$("#testPerformance").click();
 		});
 		function getPerformanceData(){
+		    if(performanceInit){
+		        return;
+		    }
+		    performanceInit = true;
             $.ajax({
                 url: "${req.getContextPath()}/perftest/getReportData",
                 dataType:'json',
@@ -191,11 +199,15 @@
                 }
             });
         }
-        function getMonitorData(){
+        function getMonitorData(ip){
+            if(monitorInit[ip]){
+                return;
+            }
+            monitorInit[ip] = true;
             $.ajax({
                 url: "${req.getContextPath()}/monitor/getMonitorData",
                 dataType:'json',
-                data: {'ip': '127.0.0.1',
+                data: {'ip': ip,
                        'startTime': $("#startTime").val(),
                        'finishTime': $("#finishTime").val(),
                        'imgWidth':700},
