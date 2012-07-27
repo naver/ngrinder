@@ -3,6 +3,7 @@
 	<head>
 		<title>nGrinder Test Report</title>
 		<#include "../common/common.ftl">
+		<#include "../common/jqplot.ftl">
 		
 		<style>
 			body {
@@ -11,7 +12,7 @@
 			.left { border-right: 1px solid #878988 }
 			div.chart { border: 1px solid #878988; height:195px; min-width:615px; margin-bottom:12px}
 		</style>
-		
+
 		<input type="hidden" id="contextPath" value="${req.getContextPath()}">
 		<#setting number_format="computer">
 	</head>
@@ -182,10 +183,10 @@
                        'imgWidth':700},
                 success: function(res) {
                     if (res.success) {
-                        $('#tpsDiv').text('tps data:'+res.tps_total);
-                        $('#rpsDiv').text('response time data:'+res.response_time);
-                        $('#vuserDiv').text('vuser data:'+res.vuser);
-                        $('#errorDiv').text('error data:'+res.tps_failed);
+                        drawChart('TPS', 'tpsDiv', res.tps_total);
+                        drawChart('TPS', 'rpsDiv', res.response_time);
+                        drawChart('TPS', 'vuserDiv', res.vuser);
+                        drawChart('TPS', 'errorDiv', res.tps_failed);
                         return true;
                     } else {
                         showErrorMsg("Get report data failed.");
@@ -213,12 +214,12 @@
                        'imgWidth':700},
                 success: function(res) {
                     if (res.success) {
-                        $('#cpuDiv').text('system cpu data:'+res.cpu);
-                        $('#memoryDiv').text('system memory data:'+res.memory);
-                        $('#heapMemoryDiv').text('heap memory data:'+res.heap_memory);
-                        $('#nonHeapMemoryDiv').text('non heap memory data:'+res.non_heap_memory);
-                        $('#threadCountDiv').text('thread count data:'+res.thread_count);
-                        $('#jvmCpuDiv').text('jvm cpu data:'+res.jvm_cpu);
+                        drawChart('TPS', 'cpuDiv', res.cpu);
+                        drawChart('TPS', 'memoryDiv', res.memory);
+                        drawChart('TPS', 'heapMemoryDiv', res.heap_memory);
+                        drawChart('TPS', 'nonHeapMemoryDiv', res.non_heap_memory);
+                        drawChart('TPS', 'threadCountDiv', res.thread_count);
+                        drawChart('TPS', 'jvmCpuDiv', res.jvm_cpu);
                         return true;
                     } else {
                         showErrorMsg("Get monitor data failed.");
@@ -232,6 +233,33 @@
                 }
             });
         }
+        
+        function drawChart(title, id, data) {
+            var plot1 = $.jqplot(id, [data], { 
+                title: title, 
+                series: [{ 
+                    label: '', 
+                    neighborThreshold: -1 
+                }], 
+                axes: { 
+                    xaxis: { 
+                        tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                        tickOptions: {
+                          angle: -30
+                        } 
+                    }, 
+                    yaxis: {  
+                        renderer: $.jqplot.LogAxisRenderer
+                    } 
+                }, 
+                cursor:{
+                    show: true, 
+                    zoom: true
+                }
+            });
+        }
+        //yaxis {label : 'Transation'}
+        //xaxis {label : 'Time (sec.)'} 
 	</script>
 	</body>
 </html>
