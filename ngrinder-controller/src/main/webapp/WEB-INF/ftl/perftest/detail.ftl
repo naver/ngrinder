@@ -3,6 +3,7 @@
 <head>
 <title>nGrinder Performance Test Detail</title>
 <#include "../common/common.ftl">
+<#include "../common/jqplot.ftl">
 <link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
 <style>
 div.div-host {
@@ -726,7 +727,7 @@ div.chart {
                            'imgWidth':$("#tpsimg").width()},
                     success: function(res) {
                         if (res.success) {
-                            $('#tpsdiv').text('report data:'+res.tps_total);
+                            drawChart('TPS', 'tpsDiv', res.tps_total);
                             return true;
                         } else {
                             showErrorMsg("Get report data failed.");
@@ -763,6 +764,30 @@ div.chart {
 			
 			function drawTPS(data) {
 			}
+			function drawChart(title, id, data) {
+                var plot1 = $.jqplot(id, [data], { 
+                    title: title, 
+                    series: [{ 
+                        label: '', 
+                        neighborThreshold: -1 
+                    }], 
+                    axes: { 
+                        xaxis: { 
+                            tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                            tickOptions: {
+                              angle: -30
+                            } 
+                        }, 
+                        yaxis: {  
+                            renderer: $.jqplot.LogAxisRenderer
+                        } 
+                    }, 
+                    cursor:{
+                        show: true, 
+                        zoom: true
+                    }
+                });
+            }
 		</script>
 </body>
 </html>
