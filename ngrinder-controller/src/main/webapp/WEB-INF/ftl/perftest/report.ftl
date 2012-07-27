@@ -100,13 +100,13 @@
                            </tr>
 					   </table>
 					   <ul class="unstyled">
-                         <li><a id="testPerformance" href="#void(0)">Performance Report</a></li>
+                         <li><a id="testPerformance" href="javascript:void(0);">Performance Report</a></li>
                        </ul>
 					   <ul class="unstyled">Target Hosts
-                         <li><a id="targetMontor" href="#void(0)" ip="${(test.targetHosts)!}">${(test.targetHosts)!}</a></li>
+                         <li><a id="targetMontor" href="javascript:void(0);" ip="${(test.targetHosts)!}">${(test.targetHosts)!}</a></li>
                        </ul>
                        <ul class="unstyled">Agent servers
-                         <li><a id="agentMontor" href="#void(0)" ip="${(test.targetHosts)!}">${(test.agentServer)!}</a></li>
+                         <li><a id="agentMontor" href="javascript:void(0);" ip="${(test.targetHosts)!}">${(test.agentServer)!}</a></li>
                        </ul>
 			</div>
 			<div class="span7">
