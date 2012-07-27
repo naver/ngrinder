@@ -53,7 +53,7 @@ public class TestServiceTest extends AbstractNGNinderTransactionalTest {
 		test.setTestName("new Test1");
 		test.setThreshold("D");
 		test.setAgentCount(2);
-		test.setDuration(120);
+		test.setDuration(120L);
 		test.setIgnoreSampleCount(0);
 		test.setTargetHosts("127.0.0.1");
 		test.setScriptName("test1.py");
@@ -64,7 +64,7 @@ public class TestServiceTest extends AbstractNGNinderTransactionalTest {
 		test.setStatus(Status.FINISHED);
 		test.setThreshold("D");
 		test.setAgentCount(2);
-		test.setDuration(120);
+		test.setDuration(120L);
 		test.setIgnoreSampleCount(0);
 		test.setTargetHosts("127.0.0.1");
 		test.setScriptName("test2.py");
