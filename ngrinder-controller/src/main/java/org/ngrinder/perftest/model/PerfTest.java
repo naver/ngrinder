@@ -71,6 +71,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/** ignoreSampleCount value, default to 0, 0 means collect forever. */
 	private Integer collectSampleCount;
 
+	/** the scheduled time of this test. */
+	private Date scheduleTime;
+
 	/** the start time of this test. */
 	private Date startTime;
 
@@ -148,6 +151,14 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.testName = testName;
 	}
 
+	public Date getScheduleTime() {
+		return scheduleTime;
+	}
+
+	public void setScheduleTime(Date scheduleTime) {
+		this.scheduleTime = scheduleTime;
+	}
+	
 	public Date getStartTime() {
 		return startTime;
 	}

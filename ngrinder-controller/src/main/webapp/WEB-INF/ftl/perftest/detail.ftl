@@ -68,7 +68,7 @@ div.chart {
 									<#if test??>Clone<#else>Save</#if> and Start 
 								</button>  
 								<button type="submit" class="btn btn-primary" data-toggle="modal" href="#scheduleModal">
-									<#if test??>Clone<#else>Save</#if>
+									<#if test??>Clone<#else>Save</#if> and Schedule
 								</button> 
 							</div>
 						</div>
