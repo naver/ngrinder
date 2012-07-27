@@ -119,7 +119,7 @@ public class ScriptController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
 	public String create(User user, @RemainedPath String path, FileEntry script, ModelMap model) {
-		
+		//TODO: it should be fixed to handle exception because of the follow save method.
 		fileEntryService.save(user, script);
 		return get(user, path, model);
 	}

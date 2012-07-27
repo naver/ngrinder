@@ -126,7 +126,6 @@ public class HomeService {
 				entry.setLink(each.getHtmlUrl());
 				panelEntries.add(entry);
 			}
-
 			Collections.sort(panelEntries);
 			return panelEntries;
 		} catch (Exception e) {

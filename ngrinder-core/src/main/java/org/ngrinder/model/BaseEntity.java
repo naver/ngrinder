@@ -52,7 +52,7 @@ public class BaseEntity<M> implements Serializable {
 	private static final long serialVersionUID = 8571113820348514692L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ID", unique = true, nullable = false, insertable = true, updatable = false)
+	@Column(name = "id", unique = true, nullable = false, insertable = true, updatable = false)
 	private Long id;
 
 	public Long getId() {

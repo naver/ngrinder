@@ -64,6 +64,7 @@
 		<intercept-url pattern="/perftest/**" access="A, U" />
 		<intercept-url pattern="/help**" access="A, U" />
 		<intercept-url pattern="/script**" access="A, U" />
+		<intercept-url pattern="/monitor**" access="A, U" />
 
 		<intercept-url pattern="/agent/**" access="A" />
 		<intercept-url pattern="/user/**" access="A" />

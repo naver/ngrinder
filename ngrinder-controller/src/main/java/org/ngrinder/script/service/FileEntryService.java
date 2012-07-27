@@ -65,8 +65,7 @@ import freemarker.template.Template;
 /**
  * File entry service class.<br/>
  * 
- * This class is responsible for creating user repo whenever user is created and
- * connection b/w user and underlying svn.
+ * This class is responsible for creating user repo whenever user is created and connection b/w user and underlying svn.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -181,6 +180,8 @@ public class FileEntryService {
 
 	/**
 	 * Get single file entity.
+	 * 
+	 * The return value has content byte.
 	 * 
 	 * @param user
 	 *            the user
@@ -317,5 +318,9 @@ public class FileEntryService {
 			url.append("/").append(path.trim());
 		}
 		return url.toString();
+	}
+
+	public void writeContentTo(User user, String fromPath, File to) {
+		fileEntityRepository.writeContentTo(user, fromPath, to);
 	}
 }

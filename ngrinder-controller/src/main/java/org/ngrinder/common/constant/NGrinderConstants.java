@@ -69,7 +69,7 @@ public interface NGrinderConstants {
 	public static final int CONSOLE_MAX_WAITING_MILLISECONDS = 5000;
 
 	/**
-	 * Performance test run frequency in milliseconds.
+	 * Performance test execution frequency in milliseconds.
 	 */
 	public static final int PERFTEST_RUN_FREQUENCY_MILLISECONDS = 5000;
 
@@ -120,4 +120,6 @@ public interface NGrinderConstants {
 	public static final String GRINDER_PROP_REPORT_TO_CONSOLE = "grinder.reportToConsole.interval";
 	public static final String GRINDER_PROP_INITIAL_SLEEP_TIME = "grinder.initialSleepTime";
 	public static final String GRINDER_PROP_REPORT_TIMES_TO_CONSOLE = "grinder.reportTimesToConsole";
+
+	public static final int MAX_STACKTRACE_STRING_SIZE = 2048;
 }

@@ -30,15 +30,27 @@ package org.ngrinder.perftest.model;
  */
 public enum Status {
 	/** test ready */
-	READY, 
-	/** During waiting agents, just after starting */
-	WAITING_AGENT, 
-	/** During distributing files */
+	READY,
+	/** Just before starting console */
+	START_CONSOLE,
+	/** Just after staring console */
+	START_CONSOLE_FINISHED,
+	/** Just before starting agents */
+	START_AGENTS,
+	/** Just after starting agents */
+	START_AGENTS_FINISHED,
+	/** Just before distributing files */
 	DISTRIBUTE_FILES,
-	/** During testing */
-	TESTING, 
+	/** Just after distributing files */
+	DISTRIBUTE_FILES_FINISHED,
+	/** Just before staring testing */
+	TESTING,
+	/** Just after staring testing */
+	TESTING_FINISHED,
 	/** Test finish */
-	FINISHED, 
+	FINISHED,
+	/** Stopped by error */
+	STOP_ON_ERROR,
 	/** Test cancel */
 	CANCELED
 }

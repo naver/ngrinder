@@ -31,6 +31,17 @@ div.div-host .host {
 .controls code {
 	vertical-align: middle;
 }
+
+div.chart { 
+	border: 1px solid #878988; 
+	height: 195px; 
+	min-width: 400px; 
+	margin-bottom: 12px
+}
+
+.table thead th {
+    vertical-align: middle;
+}
 </style>
 
 <input type="hidden" id="contextPath" value="${req.getContextPath()}">
@@ -64,7 +75,7 @@ div.div-host .host {
 						<div class="control-group" style="margin-bottom: 0">
 							<label for="description" class="control-label">Description</label>
 							<div class="controls">  
-								<textarea class="input-xlarge span9" id="description" rows="3" name="description">${(test.description)!}</textarea>
+								<textarea class="input-xlarge span9" id="description" rows="3" name="description" style="resize:none">${(test.description)!}</textarea>
 							</div>
 						</div>
 					</fieldset>
@@ -73,6 +84,7 @@ div.div-host .host {
 			<div class="tabbable">
 				<ul class="nav nav-tabs" id="homeTab">
 					<li><a href="#testContent" data-toggle="tab">Test Configuration</a></li>
+					<li><a href="#runningContent" data-toggle="tab">Test Running</a></li>
 					<#if test?? && test.status == "FINISHED">
 						<li><a href="#reportContent" data-toggle="tab" id="reportLnk">Report</a></li>
 					</#if>
@@ -284,8 +296,135 @@ div.div-host .host {
 							</div>
 						</div>
 						<div class="row" style="margin-top: 10px;">
-							<div class="span10">
+							<div class="span12">
 								<a id="reportDetail" class="btn pull-right" href="#">Report in Detail</a>
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane" id="runningContent">
+						<div class="row">
+							<div class="span5">
+								<div class="form-horizontal form-horizontal-3"> 
+									<fieldset>
+										<div class="control-group">
+											<label for="agentCount" class="control-label">Script File Name</label>
+											<div class="controls">
+												hellp.py
+											</div>
+										</div>
+										<hr>
+										<div class="control-group">
+											<label for="vuserPerAgent" class="control-label">Vusers</label>
+											<div class="controls">
+												<strong>2</strong>
+											</div>
+										</div>
+										<div class="control-group">
+											<label for="scriptName" class="control-label">Agents</label>
+											<div class="controls">
+												<span>1</span><a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label">Processes</label>
+											<div class="controls">
+												1
+												<span class="badge badge-info pull-right">Running <data id="process_data">1</data></span>
+											</div>
+										</div>
+										<div class="control-group">
+											<label class="control-label">Threads</label>
+											<div class="controls">
+												2
+												<span class="badge badge-info pull-right">Running <data id="thread_data">2</data></span>
+											</div>
+										</div>
+										<hr>
+										<div class="control-group">
+											<label class="control-label">Target Host</label>
+											<div class="controls">
+												10.34.64.36
+											</div>
+										</div>
+										<hr>
+										<div class="control-group">
+											<label class="control-label"> 
+												Duration
+											</label>
+											<div class="controls">
+												<span>00:00:01:00</span><code>DD:HH:MM:SS</code>
+											</div>
+										</div>
+										<div class="control-group">
+											<label for="ignoreSampleCount" class="control-label">
+												Ignore Count 
+											</label>
+											<div class="controls">
+												<span>0</span><code>sec</code>
+											</div>
+										</div>
+										<hr>
+										<div class="control-group">
+											<label for="sampleInterval" class="control-label">
+												Sample Interval
+											</label>
+											<div class="controls">
+												<input type="text" class="input span2"
+													id="sampleInterval" name="sampleInterval"
+													value="${(test.sampleInterval)!1000}">
+												<code>MS</code>
+											</div>
+										</div>
+										<div class="control-group">
+											<label for="collectSample" class="control-label">
+												Collect Sample Forever
+											</label>
+											<div class="controls">
+												<input type="text" class="input span2"
+													id="collectSample" name="collectSample"
+													value="${(test.collectSample)!1000}">
+												<code>MS</code>
+											</div>
+										</div>
+									</fieldset>
+								</div>
+							</div>
+							<div class="span7">
+								<div class="page-header">
+									<h4>TPS</h4>
+								</div>
+								<div class="chart"></div>
+								<ul class="nav nav-pills" style="margin20px 0" id="tableTab">
+								    <li><a href="#" tid="ls">Latest Sample</a></li>
+								    <li><a href="#" tid="as">Accumulated Statistics</a></li>
+								    <li class="pull-right"><a href="#" target="_blank">Expand View</a></li>
+							    </ul>
+								<table class="table table-striped table-bordered ellipsis" id="testTable">
+									<colgroup>
+										<col width="30px">
+										<col>
+										<col width="85px">
+										<col width="55px">
+										<col width="50px">
+										<col width="50px">
+										<col width="50px">
+										<col width="55px">
+									</colgroup>
+									<thead>
+										<tr>
+											<th class="noClick">ID</th>
+											<th class="noClick">Test Name</th>
+											<th class="noClick">Successful Tests</th>
+											<th class="noClick">Errors</th>
+											<th class="noClick">Mean Time</th>
+											<th class="noClick">TPS</th>
+											<th class="noClick">Peak TPS</th>
+											<th class="noClick">MTSD</th>
+										</tr>
+									</thead>
+									<tbody>
+									</tbody>
+								</table>
 							</div>
 						</div>
 					</div>
@@ -366,6 +505,7 @@ div.div-host .host {
     <script src="http://code.highcharts.com/modules/exporting.js"></script>
 	<script>
 	   var chart;
+	   var objTimer;
 			$(document).ready(function() {
 				$("#n_test").addClass("active");
 				if (${scriptList?size} == 0) {
@@ -373,6 +513,7 @@ div.div-host .host {
 				}
 				
 				$("#homeTab a:first").tab('show');	
+				$("#tableTab a:first").tab('show');	
 				
 				$("#addHostBtn").on('click', function() {
 					var elemStr = "";
@@ -464,6 +605,20 @@ div.div-host .host {
 				$("#reportDetail").click(function () {
                     window.open("${req.getContextPath()}/perftest/report?testId="+$("#testId").val());
                 });
+                
+                $('#tableTab a').click(function (e) {
+				    var $this = $(this);
+				    if ($this.hasClass("pull-right")) {
+				    } else {
+					    e.preventDefault();
+				    	$this.attr("tid");
+				    	$this.tab('show');
+				    }
+			    });
+			    
+			    $("#homeTab a").click(function () {
+			    	resetFooter();
+			    });
 				
 				initThresholdChkBox();
 				initDuration();
@@ -585,7 +740,29 @@ div.div-host .host {
                 });
 			}
 			
+			function refreshData() {
+				var refreshDiv = $("<div id=\"refreshDiv\"></div>");
+				var type = $('#tableTab i.active').attr("tid");
+				var url = "${req.getContextPath()}/perftest/running/refresh?type=" + type;
+				refreshDiv.load(url, function(){
+					var succesVal = refreshDiv.find("#input_status").val();
+		
+					if(succesVal == 'SUCCESS'){
+						$("#testTable tbody").html(refreshDiv.children("tableItem").html());
+						$("#process_data").text(refreshDiv.children("#input_process").val());
+						$("#thread_data").text(refreshDiv.children("#input_thread").val());
+						drawTPS(refreshDiv.children("tpsChartData").val());
+					}else{
+						if (objTimer){
+							window.clearInterval(objTimer);
+							window.clearInterval(countTime);
+						}
+					}
+				});
+			}
 			
+			function drawTPS(data) {
+			}
 		</script>
 </body>
 </html>

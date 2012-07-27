@@ -26,20 +26,23 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Index;
 import org.ngrinder.model.BaseEntity;
 
 @Entity
-@Table(name = "SystemMonitor")
+@Table(name = "system_monitor")
 public class SystemDataModel extends BaseEntity<SystemDataModel> {
 
 	private static final long serialVersionUID = 790334226137464982L;
 
 	@Column(name = "monitor_key")
+	@Index(name = "monitor_key_index")
 	private String key;
-	
+	@Index(name = "ip_index")
 	private String ip;
 	private int port;
 	private String system;
+	@Index(name = "collect_time_index")
 	private long collectTime;
 	private float totalCpuValue;
 	private float idleCpuValue;

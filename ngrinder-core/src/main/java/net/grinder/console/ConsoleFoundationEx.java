@@ -1,10 +1,7 @@
 package net.grinder.console;
 
-import static org.ngrinder.common.util.ReflectionUtil.getFieldValue;
-
 import java.util.Date;
 import java.util.Timer;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import net.grinder.common.GrinderException;
 import net.grinder.communication.MessageDispatchRegistry;
@@ -36,7 +33,6 @@ import net.grinder.util.StandardTimeAuthority;
 import net.grinder.util.thread.Condition;
 
 import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.ngrinder.common.util.ReflectionUtil;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.Parameter;
@@ -130,10 +126,6 @@ public class ConsoleFoundationEx {
 	 */
 	public void shutdown() {
 		m_shutdown = true;
-//		((ArrayBlockingQueue<Exception>) getFieldValue(
-//				getFieldValue(m_container.getComponent(ConsoleCommunication.class), "m_acceptor"), "m_exceptionQueue"))
-//				.offer(new Exception());
-
 		m_container.getComponent(ConsoleCommunication.class).shutdown();
 		m_timer.cancel();
 		if (m_container.getLifecycleState().isStarted())
@@ -155,10 +147,12 @@ public class ConsoleFoundationEx {
 			@Override
 			public void update(StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
 				double tps = sampleModel.getTPSExpression().getDoubleValue(intervalStatistics);
+				// If the tps is low that it's can be the agents or scripts goes wrong.
 				if (tps < 0.001) {
 					if (TPS_LESSTHAN_ZREO_TIME == null) {
 						TPS_LESSTHAN_ZREO_TIME = new Date();
 					} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= 60000) {
+						// FIXME : they are not really stop. What's wrong?
 						m_logger.warn("Test has been forced stop because of tps is less than 0.001 and sustain more than one minitue.");
 					}
 				} else {

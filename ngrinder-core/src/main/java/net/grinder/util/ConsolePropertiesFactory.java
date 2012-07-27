@@ -32,7 +32,7 @@ import net.grinder.console.model.ConsoleProperties;
 public class ConsolePropertiesFactory {
 	public static ConsoleProperties createEmptyConsoleProperties() {
 		try {
-			return new ConsoleProperties(SingleConsole.resources, new File("tmp"));
+			return new ConsoleProperties(SingleConsole.RESOURCE, new File("tmp"));
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("Exception occurs while merging entities while creating empty console",
 					e);

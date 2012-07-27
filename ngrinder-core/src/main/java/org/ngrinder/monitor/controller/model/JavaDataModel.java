@@ -26,20 +26,23 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Index;
 import org.ngrinder.model.BaseEntity;
 
 @Entity
-@Table(name = "JavaMonitor")
+@Table(name = "java_monitor")
 public class JavaDataModel extends BaseEntity<JavaDataModel> {
 
 	private static final long serialVersionUID = -2872194513786272772L;
 
 	@Column(name = "monitor_key")
+	@Index(name = "monitor_key_index")
 	private String key;
-	
+	@Index(name = "ip_index")
 	private String ip;
 	private int port;
 	private String displayName;
+	@Index(name = "collect_time_index")
 	private long collectTime;
 	private long heapMaxMemory;
 	private long heapUsedMemory;

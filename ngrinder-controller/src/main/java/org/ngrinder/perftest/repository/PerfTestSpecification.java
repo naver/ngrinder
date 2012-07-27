@@ -60,8 +60,4 @@ public class PerfTestSpecification {
 		return new Sort(Sort.Direction.ASC, "createdDate");
 	}
 
-	public static Specification<PerfTest> isFinsihed() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

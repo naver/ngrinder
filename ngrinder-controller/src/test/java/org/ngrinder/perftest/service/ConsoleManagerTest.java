@@ -1,13 +1,11 @@
 package org.ngrinder.perftest.service;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -23,7 +21,7 @@ import org.springframework.util.StopWatch;
 
 public class ConsoleManagerTest extends AbstractNGNinderTransactionalTest {
 	@Autowired
-	private ConsoleManager manager;
+	private MockConsoleManager manager;
 
 	@Test
 	public void testConsoleManager() {
@@ -36,10 +34,7 @@ public class ConsoleManagerTest extends AbstractNGNinderTransactionalTest {
 
 	@Test
 	public void testConsoleManagerWhenExceedingLimit() {
-		manager = spy(manager);
-		when(manager.getMaxWaitingMiliSecond()).thenReturn(3L);
 
-		manager.init();
 		// Get all console
 		int initialSize = manager.getAvailableConsoleSize();
 		SingleConsole availableConsole = null;
@@ -53,17 +48,21 @@ public class ConsoleManagerTest extends AbstractNGNinderTransactionalTest {
 		// Try to get more console, it will take time
 		try {
 			manager.getAvailableConsole();
+			fail("should throw Exception");
 		} catch (NGrinderRuntimeException e) {
 		}
 		elapseTime.stop();
-		assertThat(elapseTime.getTotalTimeSeconds(), greaterThanOrEqualTo(3D));
-
+		assertThat(elapseTime.getTotalTimeSeconds(), lessThan(3000D));
 		// Let's try the case when console is returned back.
 		Thread thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				sleep(1000);
-				manager.returnBackConsole(lastConsole);
+				try {
+					Thread.sleep(1000);
+					manager.returnBackConsole(lastConsole);
+				} catch (InterruptedException e) {
+				}
+
 			}
 		});
 		elapseTime = new StopWatch();
@@ -71,17 +70,17 @@ public class ConsoleManagerTest extends AbstractNGNinderTransactionalTest {
 		thread.start();
 		// Try to get more console, it will return console just after console is
 		// returned back
-		manager.getAvailableConsole();
+		SingleConsole anotherConsole = manager.getAvailableConsole();
 		elapseTime.stop();
-		assertThat(elapseTime.getTotalTimeSeconds(), lessThan(2D));
+		assertThat(elapseTime.getTotalTimeSeconds(), lessThan(3000D));
 		assertThat(manager.getAvailableConsoleSize(), is(0));
-		manager.returnBackConsole(lastConsole);
+		manager.returnBackConsole(anotherConsole);
 
 		// return console again is always allowed
-		manager.returnBackConsole(lastConsole);
+		manager.returnBackConsole(anotherConsole);
 
 		assertThat(manager.getAvailableConsoleSize(), is(1));
-		assertThat(manager.getConsoleInUse(), hasSize(initialSize - 1));
+		assertThat(manager.getConsoleInUse().size(), is(initialSize - 1));
 	}
 
 	@Test

@@ -22,6 +22,8 @@
  */
 package org.ngrinder.perftest.model;
 
+import static org.ngrinder.common.constant.NGrinderConstants.MAX_STACKTRACE_STRING_SIZE;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -33,24 +35,22 @@ import javax.persistence.Transient;
 
 import net.grinder.common.GrinderProperties;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.model.BaseModel;
 
 /**
- * Performance Test Entity Use Create user of BaseModel as test owner, use
- * create date of BaseModel as create time, but the created time maybe not the
- * test starting time.
+ * Performance Test Entity Use Create user of BaseModel as test owner, use create date of BaseModel as create time, but
+ * the created time maybe not the test starting time.
  * 
  */
 @Entity
 @Table(name = "PERF_TEST")
 public class PerfTest extends BaseModel<PerfTest> {
 
-	/**
-	 * UUID.
-	 */
+	/** UUID. */
 	private static final long serialVersionUID = 1369809450686098944L;
 
 	@Column(name = "name")
@@ -62,7 +62,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Enumerated(EnumType.STRING)
 	private Status status = Status.READY;
 
-	/** The sample Integererval value, default to 1000ms. */
+	/** The sampling Interval value, default to 1000ms. */
 	private Integer sampleInterval = 1000;
 
 	/** ignoreSampleCount value, default to 0. */
@@ -90,7 +90,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	// default script name to run test
 	private String scriptName;
 
-	private long duration;
+	private Long duration;
 
 	private Integer runCount;
 
@@ -123,12 +123,22 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	private Double peakTps = 0d;
 
+	/** Console port for this test. This is the identifier for console */
 	private Integer port;
 
 	private Integer testTrialCount;
 
+	@Enumerated(EnumType.STRING)
+	private Status testErrorCause;
+
+	@Column(length = MAX_STACKTRACE_STRING_SIZE)
+	private String testErrorStackTrace;
+
 	@Transient
 	private GrinderProperties grinderProperties;
+
+	/** The path used for file distribution */
+	private String distributionPath;
 
 	public String getTestName() {
 		return testName;
@@ -162,11 +172,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.runCount = runCount;
 	}
 
-	public long getDuration() {
+	public Long getDuration() {
 		return duration;
 	}
 
-	public void setDuration(long duration) {
+	public void setDuration(Long duration) {
 		this.duration = duration;
 	}
 
@@ -393,4 +403,27 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.testTrialCount = testTrialCount;
 	}
 
+	public String setTestErrorStackTrace() {
+		return testErrorStackTrace;
+	}
+
+	public void setTestErrorStackTrace(String testErrorStackTrace) {
+		this.testErrorStackTrace = StringUtils.abbreviate(testErrorStackTrace, MAX_STACKTRACE_STRING_SIZE);
+	}
+
+	public Status getTestErrorCause() {
+		return testErrorCause;
+	}
+
+	public void setTestErrorCause(Status errorCause) {
+		this.testErrorCause = errorCause;
+	}
+
+	public String getDistributionPath() {
+		return distributionPath;
+	}
+
+	public void setDistributionPath(String distributionPath) {
+		this.distributionPath = distributionPath;
+	}
 }
