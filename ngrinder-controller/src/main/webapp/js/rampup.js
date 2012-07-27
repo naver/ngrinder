@@ -65,12 +65,6 @@ function updateChart(){
     	modified = false;
 	}
 	var curChartDiv = "#rampChart1";
-	var oldChartDiv = "#rampChart2";
-    $(oldChartDiv).gchart('destroy');
-    
-    var temp = curChartDiv;
-    curChartDiv = oldChartDiv;
-    oldChartDiv = temp;
     
     var steps = (processes - initialProcesses) / processInc;
     if (steps == 0) {
@@ -78,6 +72,7 @@ function updateChart(){
     }
     
     var initialSleepTime = parseInt($('#initSleepTime').val());
+     
     var curX = initialSleepTime;
     var curY = initialProcesses;
     var seriesArray = [];
@@ -98,38 +93,8 @@ function updateChart(){
     	curX = curX+internalTime;
         seriesArray.push([curX, curY]);
     }
-    
-    var lastEle = seriesArray[seriesArray.length-1];
-  	var ratio = lastEle[1]/(lastEle[0]);
-  	for(var index=0; index<seriesArray.length; index++){
-  		seriesArray[index] = [seriesArray[index][0]*ratio, seriesArray[index][1]];
-  	}
-    
-	var xySeries = jQuery.gchart.seriesForXYLines( 
-	    [jQuery.gchart.series(seriesArray, 'blue','green')]);
-	    
-	var bgColor = 'ffffff'; 
-	
-	var chartAxes = [jQuery.gchart.axis('bottom', 0, lastEle[1], 'red', 'right'), 
-    				 jQuery.gchart.axis('right', 0, processes, 1, 'red', 'right')];
-    
-    $(curChartDiv).gchart( 
-                            {title:"Ramp-Up Chart",
-                             type: 'lineXY',
-                             backgroundColor: bgColor, 
-                             maxValue:jQuery.gchart.calculate, 
-                             series: xySeries,
-                             axes:chartAxes
-                            }
-                );
-    $(oldChartDiv).addClass("hidden");
-    $(curChartDiv).removeClass("hidden");         
-}
-
-function checkRampUpForm() {
-	if ($('#rampupCheckbox')[0].checked) {
-		
-	}
-	
-	return true;
+    var lastXEle = parseInt(seriesArray[seriesArray.length-1][0]);
+    $.jqplot("rampChart1", [seriesArray],
+    		{title:"Ramp-Up Chart", axesDefaults:{},
+    			seriesDefaults:{showMarker:false, lineWidth: 1.5}});
 }

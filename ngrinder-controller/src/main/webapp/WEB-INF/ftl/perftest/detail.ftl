@@ -84,8 +84,10 @@ div.chart {
 			<div class="tabbable">
 				<ul class="nav nav-tabs" id="homeTab">
 					<li><a href="#testContent" data-toggle="tab">Test Configuration</a></li>
-					<li><a href="#runningContent" data-toggle="tab">Test Running</a></li>
-					<#if test?? && test.status == "FINISHED">
+					<#if test?? && (test.status == "TESTING" || test.status != "")>
+						<li><a href="#runningContent" data-toggle="tab">Test Running</a></li>
+					</#if>
+					<#if test?? && (test.status == "FINISHED" || test.status == "CANCELED")>
 						<li><a href="#reportContent" data-toggle="tab" id="reportLnk">Report</a></li>
 					</#if>
 				</ul>
@@ -497,12 +499,10 @@ div.chart {
 				<a class="btn btn-primary" id="addScheduleBtn">Schedule</a>
 			</div>
 		</div>
-		
-	<script src="${req.getContextPath()}/js/jquery.gchart.pack.js"></script>
+	
+	<#include "../common/jqplot.ftl">
 	<script src="${req.getContextPath()}/plugins/datepicker/js/bootstrap-datepicker.js"></script>
 	<script src="${req.getContextPath()}/js/rampup.js"></script>
-	<script src="http://code.highcharts.com/highcharts.js"></script>
-    <script src="http://code.highcharts.com/modules/exporting.js"></script>
 	<script>
 	   var chart;
 	   var objTimer;
