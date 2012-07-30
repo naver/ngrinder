@@ -31,10 +31,10 @@
 	<#if (endPage > totalPage) >
 		<#assign endPage = 	totalPage >
 	</#if>
-	<div class="pagination pagination-centered">
+	<div class="dataTables_paginate pagination">
 		<ul>
 			<li <#if pageNo == 1> class="disabled"</#if>>
-				<a href="javascript:doSubmit('${pageNo - 1}')">Prev</a>
+				<a href="javascript:doSubmit('${pageNo - 1}')">&larr; Prev</a>
 			</li>
 			<#list startPage..endPage as i>
 				<#if i == pageNo >
@@ -45,7 +45,7 @@
 			</#list>
 			</span>
 			<li <#if pageNo == totalPage> class="disabled"</#if>>
-				<a href="javascript:doSubmit('${pageNo + 1}')">Next</a>
+				<a href="javascript:doSubmit('${pageNo + 1}')">Next &rarr;</a>
 			</li>
 
 		</ul>

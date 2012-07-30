@@ -85,7 +85,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping("/list")
 	public String getTestList(User user, @RequestParam(required = false) String query,
 			@RequestParam(required = false) boolean onlyFinished,
-			@PageableDefaults(pageNumber = 0, value = 15) Pageable pageable,
+			@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable,
 			ModelMap model) {
 		// FIXME
 		// not to paging on server side for now. Get all tests and
@@ -162,13 +162,6 @@ public class PerfTestController extends NGrinderBaseController {
 		rtnMap.put(PARAM_THREAD_COUNT, processAndThread.getThreadCount());
 		rtnMap.put(PARAM_PROCESS_COUNT, processAndThread.getProcessCount());
 		return JSONUtil.toJson(rtnMap);
-	}
-
-	@RequestMapping(value = "/deleteTest")
-	public @ResponseBody
-	String deleteTest(ModelMap model, @RequestParam Long id) {
-		perfTestService.deletePerfTest(id);
-		return JSONUtil.returnSuccess();
 	}
 
 	@RequestMapping(value = "/deleteTests")
