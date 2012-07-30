@@ -10,6 +10,19 @@
 <script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
 <script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
 <script src="${req.getContextPath()}/js/utils.js"></script>
+<script src="${req.getContextPath()}/js/jquery.validate.js"></script>
+
+<script>
+	//common validation function and options. 
+	$.validator.addMethod('positiveNumber',
+		    function (value) { 
+		        return Number(value) > 0;
+		    }, 'Enter a positive number.');
+	$.validator.addMethod('CountNumber',
+		    function (value) { 
+		        return Number(value) >= 0;
+		    }, 'Enter a Non-negative number.');
+</script>
 
 <input type="hidden" id="contextPath" value="${req.getContextPath()}">
 <#setting number_format="computer">

@@ -45,8 +45,6 @@ div.chart {
 }
 </style>
 
-<input type="hidden" id="contextPath" value="${req.getContextPath()}">
-<#setting number_format="computer">
 </head>
 
 <body>
@@ -64,12 +62,12 @@ div.chart {
 						<div class="control-group">
 							<label for="testName" class="control-label">Test Name</label>
 							<div class="controls">  
-								<input class="span5" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
+								<input class="span5 required" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
 								<button type="submit" class="btn btn-success btn-primary" style="margin-left:70px"> 
 									<#if test??>Clone<#else>Save</#if> and Start 
 								</button>  
-								<button type="submit" class="btn btn-primary" data-toggle="modal" href="#scheduleModal">
-									<#if test??>Clone<#else>Save</#if> and Schedule
+								<button type="submit" class="btn btn-primary" data-toggle="modal" href="#scheduleModal"  id="saveScheduleBtn">
+									<#if test??>Clone<#else>Save</#if>&Schedule
 								</button> 
 							</div>
 						</div>
@@ -105,7 +103,7 @@ div.chart {
 											<label for="agentCount" class="control-label">Agent</label>
 											<div class="controls">
 												<div class="input-append">
-													<input type="text" class="input"
+													<input type="text" class="input required positiveNumber"
 														id="agentCount" name="agentCount" value="${(test.agentCount)!}">
 												</div>
 											</div>
@@ -114,8 +112,9 @@ div.chart {
 											<label for="vuserPerAgent" class="control-label">Vuser per agent</label>
 											<div class="controls">
 												<div class="input-append">
-													<input type="text" class="input"
-														id="vuserPerAgent" name="vuserPerAgent" value="${(test.vuserPerAgent)!}">
+													<input type="text" class="input required positiveNumber" rel="popover""
+														id="vuserPerAgent" name="vuserPerAgent" value="${(test.vuserPerAgent)!}"
+														data-content="Input vuser count for every agent." data-original-title="Vuser count" >
 												</div>
 												<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
 												<span class="badge badge-info pull-right" id="vuserTotal">Vuser: ${vuserTotal}</span>
@@ -124,8 +123,7 @@ div.chart {
 										<div class="control-group">
 											<label for="scriptName" class="control-label">Script</label>
 											<div class="controls">
-												<select id="scriptName" name="scriptName">
-													<option>---</option>
+												<select id="scriptName" class="required" name="scriptName">
 													<#if scriptList?size &gt; 0>
 														<#list scriptList as scriptItem>
 															<#if test?? && scriptItem.fileName == test.scriptName>
@@ -151,7 +149,7 @@ div.chart {
 											<label class="control-label"> 
 												<input type="radio" id="durationChkbox"> Duration
 											</label>
-											<input type="hidden" id="duration" name="duration"
+											<input type="hidden" id="duration" name="duration" class="required positiveNumber"
 												value="${(test.duration)!0}">
 											<div class="controls">
 												<select class="select-item" id="dSelect"></select> : 
@@ -175,7 +173,7 @@ div.chart {
 											<label for="ignoreSampleCount" class="control-label">
 												Ignore Count </label>
 											<div class="controls">
-												<input type="text" class="input"
+												<input type="text" class="input required CountNumber"
 													id="ignoreSampleCount" name="ignoreSampleCount"
 													value="${(test.ignoreSampleCount)!0}">
 											</div>
@@ -184,7 +182,7 @@ div.chart {
 											<label for="sampleInterval" class="control-label">
 												Sample Interval </label>
 											<div class="controls">
-												<input type="text" class="input"
+												<input type="text" class="input required positiveNumber"
 													id="sampleInterval" name="sampleInterval"
 													value="${(test.sampleInterval)!1000}">
 												<code>MS</code>
@@ -209,7 +207,7 @@ div.chart {
 														<label for="initProcesses" class="control-label">
 															Inital Processes </label>
 														<div class="controls">
-															<input type="text" class="input input-mini"
+															<input type="text" class="input input-mini required CountNumber"
 																id="initProcesses" name="initProcesses"
 																value="${(test.initProcesses)!0}" />
 														</div>
@@ -218,7 +216,7 @@ div.chart {
 														<label for="processIncrement" class="control-label">
 															Ramp-Up </label>
 														<div class="controls">
-															<input type="text" class="input input-mini"
+															<input type="text" class="input input-mini required positiveNumber"
 																id="processIncrement" name="processIncrement"
 																value="${(test.processIncrement)!1}">
 														</div>
@@ -231,9 +229,9 @@ div.chart {
 												<fieldset>
 													<div class="control-group">
 														<label for="initSleepTime" class="control-label">
-															Inital Sleep Time </label>
+															Initial Sleep Time </label>
 														<div class="controls">
-															<input type="text" class="input input-mini"
+															<input type="text" class="input input-mini required CountNumber"
 																id="initSleepTime" name="initSleepTime"
 																value="${(test.initSleepTime)!0}">
 															<code>MS</code>
@@ -243,10 +241,10 @@ div.chart {
 														<label for="processIncrementInterval" class="control-label">
 															Processes Every </label>
 														<div class="controls">
-															<input type="text" class="input input-mini"
+															<input type="text" class="input input-mini required positiveNumber"
 																id="processIncrementInterval"
 																name="processIncrementInterval"
-																value="${(test.processIncrementInterval)!1}">
+																value="${(test.processIncrementInterval)!1000}">
 															<code>MS</code>
 														</div>
 													</div>
@@ -473,7 +471,7 @@ div.chart {
 						</div>
 					</div>
 				</div>
-				<input type="hidden" id="scheduleInput" name="scheduleInput"/>
+				<input type="hidden" id="scheduleInput" name="scheduleTime"/>
 			</form>
 			<!--content-->
 			<#include "../common/copyright.ftl">
@@ -557,7 +555,25 @@ div.chart {
 				$("#homeTab a:first").tab('show');	
 				$("#tableTab a:first").tab('show');	
 				
-				$("#addHostBtn").on('click', function() {
+				$('#testContentForm input').hover(function() {
+			        $(this).popover('show')
+			    });
+				
+			    $("#testContentForm").validate({
+			    	ignore: "", //make the validation on hidden input work
+			    	duration: "Please select a proper duration value!",
+			        errorClass: "help-inline",
+			        errorElement: "span",
+			        highlight:function(element, errorClass, validClass) {
+			            $(element).parents('.control-group').addClass('error');
+			            $(element).parents('.control-group').removeClass('success');
+			        },
+			        unhighlight: function(element, errorClass, validClass) {
+			            $(element).parents('.control-group').removeClass('error');
+			            $(element).parents('.control-group').addClass('success');
+			        }
+			    });
+			    $("#addHostBtn").on('click', function() {
 					var elemStr = "";
 					if (!checkEmptyByID("ipInput")) {
 						elemStr += hostItem("ipInput");
@@ -582,6 +598,12 @@ div.chart {
 					$elem.remove();
 				});
 				
+				$("#saveScheduleBtn").click (function() {
+					if (!$("#testContentForm").valid()) {
+						return false;
+					}
+					return true;
+				});
 				$("#addScheduleBtn").click(function() {
 					if (checkEmptyByID("sDateInput")) {
 						$("#scheduleModal small").html("Please select date before schedule.");
@@ -589,11 +611,12 @@ div.chart {
 					}
 					
 					var timeStr = $("#sDateInput").val() + " " + $("#shSelect").val() + ":" + $("#smSelect").val() +":0";
-					if (new Date() > new Date(timeStr.replace(/-/g,"/"))) {
+					var scheduledTime = new Date(timeStr.replace(/-/g,"/"));
+					if (new Date() > scheduledTime) {
 						$("#scheduleModal small").html("Schedule time must be later than now.");
 						return;
 					}
-					$("#scheduleInput").val(timeStr);
+					$("#scheduleInput").val(scheduledTime);
 					$("#scheduleModal").modal("hide");
 					$("#scheduleModal small").html("");
 					document.testContentForm.submit();
@@ -622,13 +645,24 @@ div.chart {
 				$("#runcountChkbox").change(function (){
 					if ($("#runcountChkbox").attr("checked") == "checked") {
 						$("#threshold").val("R");
+						$("#runCount").addClass("required");
+						$("#runCount").addClass("positiveNumber");
 						$("#durationChkbox").removeAttr("checked");
+						$("#duration").removeClass("required");
+						$("#duration").removeClass("positiveNumber");
+						$("#duration").valid();
+						$("#runCount").valid();
 					}
 				});
 				$("#durationChkbox").change(function (){
 					if ($("#durationChkbox").attr("checked") == "checked") {
 						$("#threshold").val("D");
+						$("#duration").addClass("required positiveNumber");
 						$("#runcountChkbox").removeAttr("checked");
+						$("#runCount").removeClass("required");
+						$("#runCount").removeClass("positiveNumber");
+						$("#duration").valid();
+						$("#runCount").valid();
 					}
 				});
 				
@@ -637,7 +671,9 @@ div.chart {
 				});
 				
 				$("#vuserPerAgent").change (function() {
-					updateVuserPolicy ();
+					if ($("#vuserPerAgent").valid()) {
+						updateVuserPolicy ();
+					}
 				});
 				
 				$("#reportLnk").click(function () {
@@ -689,6 +725,11 @@ div.chart {
 				    		var threadCount = res.threadCount;
 				    		$('#processes').val(processCount);
 				    		$('#threads').val(threadCount);
+
+				    		//if ramp-up chart is not enabled, update init process count as total 
+				    		if (!$("#rampupCheckbox")[0].checked) {
+				    			$('#initProcesses').val($('#processes').val());
+				    		}
 				    		updateChart();
 							return true;
 			    		} else {
@@ -731,7 +772,9 @@ div.chart {
 				var durationM = parseInt($("#mSelect").val());   
 				var durationS = parseInt($("#sSelect").val());
 				var durationMs = (durationS + durationM * 60 + durationH * 3600 + durationD * 3600*24) * 1000;
-				$("#duration").val(durationMs);
+				var durationObj = $("#duration");
+				durationObj.val(durationMs);
+				durationObj.valid(); //trigger validation
 				return durationMs;
 			}
 			
