@@ -420,7 +420,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.testTrialCount = testTrialCount;
 	}
 
-	public String setTestErrorStackTrace() {
+	public String getTestErrorStackTrace() {
 		return testErrorStackTrace;
 	}
 

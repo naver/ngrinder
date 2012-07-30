@@ -20,34 +20,24 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.perftest.repository;
+package org.ngrinder.infra.spring;
 
-import java.util.List;
-
-import org.ngrinder.model.User;
-import org.ngrinder.perftest.model.PerfTest;
-import org.ngrinder.perftest.model.Status;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.domain.PageRequest;
 
 /**
- * Performance Test Repository
+ * Convenient class for when requesting only one element
  * 
- * @author junHo Yoon
+ * @author JunHo Yoon
  * @since 3.0
  */
-public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSpecificationExecutor<PerfTest> {
-	Page<PerfTest> findAll(Specification<PerfTest> spec, Pageable pageable);
+public class OnlyOnePageRequest extends PageRequest {
 
-	Page<PerfTest> findAllByCreatedUserOrderByCreatedDateAsc(User userId, Pageable pageable);
+	/**
+	 * UUID
+	 */
+	private static final long serialVersionUID = -7852729644522630091L;
 
-	List<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status);
-
-	Page<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status, Pageable pageable);
-
-	Page<PerfTest> findAllByStatusOrderByScheduledDateAsc(Status status, Pageable pageable);
-
+	public OnlyOnePageRequest() {
+		super(0, 1);
+	}
 }

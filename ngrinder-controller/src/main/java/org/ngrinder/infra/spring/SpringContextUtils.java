@@ -20,34 +20,23 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.perftest.repository;
+package org.ngrinder.infra.spring;
 
-import java.util.List;
-
-import org.ngrinder.model.User;
-import org.ngrinder.perftest.model.PerfTest;
-import org.ngrinder.perftest.model.Status;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.web.context.request.RequestContextHolder;
 
 /**
- * Performance Test Repository
+ * Convenient class to determine spring context
  * 
- * @author junHo Yoon
+ * @author JunHo Yoon
  * @since 3.0
  */
-public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSpecificationExecutor<PerfTest> {
-	Page<PerfTest> findAll(Specification<PerfTest> spec, Pageable pageable);
-
-	Page<PerfTest> findAllByCreatedUserOrderByCreatedDateAsc(User userId, Pageable pageable);
-
-	List<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status);
-
-	Page<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status, Pageable pageable);
-
-	Page<PerfTest> findAllByStatusOrderByScheduledDateAsc(Status status, Pageable pageable);
-
+public class SpringContextUtils {
+	/**
+	 * Determine if the current thread is from servlet context
+	 * 
+	 * @return true if it's servlet.
+	 */
+	public static boolean isServletRequestContext() {
+		return RequestContextHolder.getRequestAttributes() != null;
+	}
 }

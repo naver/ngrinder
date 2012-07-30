@@ -49,6 +49,7 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.spring.OnlyOnePageRequest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
@@ -64,7 +65,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.stereotype.Service;
@@ -178,8 +178,8 @@ public class PerfTestService implements NGrinderConstants {
 	 */
 	@Cacheable(value = "perftest")
 	public PerfTest getPerfTestCandiate() {
-		Page<PerfTest> perfTest = perfTestRepository.findAllByStatusOrderByCreatedDateAsc(Status.READY,
-				new PageRequest(0, 1));
+		Page<PerfTest> perfTest = perfTestRepository.findAllByStatusOrderByScheduledDateAsc(Status.READY,
+				new OnlyOnePageRequest());
 		return (perfTest.getNumber() == 0) ? null : perfTest.getContent().get(0);
 	}
 

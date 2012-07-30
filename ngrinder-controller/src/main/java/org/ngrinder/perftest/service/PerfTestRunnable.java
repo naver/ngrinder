@@ -34,8 +34,6 @@ import static org.ngrinder.perftest.model.Status.TESTING_FINISHED;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import net.grinder.SingleConsole;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -72,7 +70,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 	@Autowired
 	private AgentManager agentManager;
 
-	
 	/**
 	 * Scheduled method for test execution.
 	 */
@@ -85,6 +82,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 		}
 		// In case of too many trial, cancel running.
 		if (runCandidate.getTestTrialCount() > PERFTEST_MAXIMUM_TRIAL_COUNT) {
+			LOG.error("The {} test project is canceld because it has too many test execution errors",
+					runCandidate.getId());
+			runCandidate.setTestErrorCause(Status.READY);
+			runCandidate.setTestErrorStackTrace("The test project is canceld because it has too many test execution errors");			
 			perfTestService.savePerfTest(runCandidate, CANCELED);
 			return;
 		}

@@ -27,6 +27,7 @@ import java.util.Date;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.ngrinder.infra.spring.SpringContextUtils;
 import org.ngrinder.model.BaseModel;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,8 @@ import org.springframework.stereotype.Service;
  * model aspect
  * 
  * @author Liu Zhifei
- * @date 2012-6-19
+ * @author JunHo Yoon
+ * @since 3.0
  */
 @Aspect
 @Service
@@ -47,10 +49,18 @@ public class ModelAspect {
 	@Autowired
 	private UserContext userContext;
 
+	/**
+	 * Save current user to modified date or created date. It's only workable when it's from servlet context.
+	 * 
+	 * @param joinPoint
+	 *            joint point
+	 */
 	@Before(EXECUTION_SAVE)
 	public void beforeSave(JoinPoint joinPoint) {
 		for (Object object : joinPoint.getArgs()) {
-			if (object instanceof BaseModel) {
+			// If the object is base model and it's on request of servlet
+			// It's not executed on Task scheduling.
+			if (object instanceof BaseModel && SpringContextUtils.isServletRequestContext()) {
 				BaseModel<?> model = (BaseModel<?>) object;
 				if (model.exist()) {
 					model.setLastModifiedDate(new Date());
