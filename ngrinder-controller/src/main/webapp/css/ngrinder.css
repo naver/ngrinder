@@ -7,6 +7,10 @@ body {
 	padding: 5px 20px
 }
 
+.table thead th {
+	vertical-align: middle !important;
+}
+
 .form-horizontal .control-label {
 	color: #666666;
 	font-family: Tahoma, applegothic, sans-serif;
