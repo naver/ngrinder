@@ -24,6 +24,7 @@ package org.ngrinder.perftest.model;
 
 import static org.ngrinder.common.constant.NGrinderConstants.MAX_STACKTRACE_STRING_SIZE;
 
+import java.text.ParseException;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -69,7 +70,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private Integer ignoreSampleCount;
 
 	/** ignoreSampleCount value, default to 0, 0 means collect forever. */
-	private Integer collectSampleCount;
+	private Integer collectSampleCount = 0;
 
 	/** the scheduled time of this test. */
 	private Date scheduleTime;
@@ -127,7 +128,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private Double peakTps = 0d;
 
 	/** Console port for this test. This is the identifier for console */
-	private Integer port;
+	private Integer port ;
 
 	private Integer testTrialCount;
 
@@ -159,6 +160,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.scheduleTime = scheduleTime;
 	}
 	
+	public void setScheduleInput(String scheduleInput) throws ParseException {
+		if (StringUtils.isNotBlank(scheduleInput))
+			this.scheduleTime = DateUtil.toSimpleDate(scheduleInput);
+	}
+
 	public Date getStartTime() {
 		return startTime;
 	}

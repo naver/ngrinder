@@ -52,7 +52,7 @@ div.chart {
 <body>
 	<#include "../common/navigator.ftl">
 	<div class="container">
-		<form id="testContentForm" action="${req.getContextPath()}/perftest/create" method="POST">
+		<form id="testContentForm"  name="testContentForm" action="${req.getContextPath()}/perftest/create" method="POST">
 			<div class="well" style="padding:10px">
 				<input type="hidden" id="testId" name="id" value="${(test.id)!}">
 				<input type="hidden" id="threshold" name="threshold" value="${(test.threshold)!"D"}">
@@ -473,7 +473,7 @@ div.chart {
 						</div>
 					</div>
 				</div>
-				<input type="hidden" id="scheduleInput" name="scheduleTime"/>
+				<input type="hidden" id="scheduleInput" name="scheduleInput"/>
 			</form>
 			<!--content-->
 			<#include "../common/copyright.ftl">
@@ -589,7 +589,6 @@ div.chart {
 					}
 					
 					var timeStr = $("#sDateInput").val() + " " + $("#shSelect").val() + ":" + $("#smSelect").val() +":0";
-					alert(timeStr);
 					if (new Date() > new Date(timeStr.replace(/-/g,"/"))) {
 						$("#scheduleModal small").html("Schedule time must be later than now.");
 						return;
@@ -597,6 +596,7 @@ div.chart {
 					$("#scheduleInput").val(timeStr);
 					$("#scheduleModal").modal("hide");
 					$("#scheduleModal small").html("");
+					document.testContentForm.submit();
 				});
 				
 				$('#sDateInput').datepicker({
