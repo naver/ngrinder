@@ -14,6 +14,10 @@ body {
 	font-weight: bold
 }
 
+.form-horizontal hr {
+	margin: 20px 10px 20px 0
+}
+
 .form-horizontal-1 .control-label {
 	width: 100px;
 }
@@ -41,8 +45,11 @@ body {
 }
 
 .form-horizontal-3 {
-	margin-bottom: 0;
-	margin-left: 10px
+	margin-bottom: 0
+}
+
+.form-horizontal-3 .control-group {
+	margin-bottom: 10px;
 }
 
 .form-horizontal-3 .control-label {
@@ -53,10 +60,6 @@ body {
 .form-horizontal-3 .controls {
 	margin-left: 115px;
 	margin-top: 5px
-}
-
-.form-horizontal-3 hr {
-	margin: 25px 10px 25px 0
 }
 
 .form-horizontal-3 .controls span {

@@ -64,7 +64,7 @@ div.chart {
 						<div class="control-group">
 							<label for="testName" class="control-label">Test Name</label>
 							<div class="controls">  
-								<input class="span6" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
+								<input class="span5" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
 								<button type="submit" class="btn btn-success btn-primary" style="margin-left:70px"> 
 									<#if test??>Clone<#else>Save</#if> and Start 
 								</button>  
@@ -262,13 +262,16 @@ div.chart {
 					</div>
 					<div class="tab-pane" id="reportContent">
 						<div class="row">
-							<div class="span3">
-								<div class="form-horizontal form-horizontal-3" style="margin-left: 20px">
+							<div class="span4">
+								<div class="page-header">
+									<h4>Summary</h4>
+								</div>
+								<div class="form-horizontal form-horizontal-3" style="margin-left: 10px">
 									<fieldset>
 										<div class="control-group">
 											<label for="agentInput" class="control-label control-label-1">TPS</label>
 											<div class="controls">
-												<span class="label label-info">Total ${(test.tps)!}</span>
+												<strong>Total ${(test.tps)!}</strong>
 											</div>
 										</div>
 										<div class="control-group">
@@ -293,9 +296,8 @@ div.chart {
 									</fieldset>
 								</div>
 							</div>
-							<div class="span7">
-								<img id="tpsimg" src="" height="220" width="750" border="1"/>
-								<div id="tpsdiv" style="min-width: 700px; height: 300px; margin: 0 auto"></div>
+							<div class="span8">
+								<div class="chart" style="width:600px; height:250px"></div>
 							</div>
 						</div>
 						<div class="row" style="margin-top: 10px;">
@@ -307,7 +309,10 @@ div.chart {
 					<div class="tab-pane" id="runningContent">
 						<div class="row">
 							<div class="span5">
-								<div class="form-horizontal form-horizontal-3"> 
+								<div class="page-header">
+									<h4>Summary</h4>
+								</div>
+								<div class="form-horizontal form-horizontal-3" style="margin-top:10px;"> 
 									<fieldset>
 										<div class="control-group">
 											<label for="agentCount" class="control-label">Script File Name</label>
@@ -371,13 +376,14 @@ div.chart {
 											<label for="sampleInterval" class="control-label">
 												Sample Interval
 											</label>
-											<div class="controls">
+											<div class="controls" style="margin-top:0">
 												<input type="text" class="input span2"
 													id="sampleInterval" name="sampleInterval"
 													value="${(test.sampleInterval)!1000}">
 												<code>MS</code>
 											</div>
 										</div>
+										<!--
 										<div class="control-group">
 											<label for="collectSample" class="control-label">
 												Collect Sample Forever
@@ -389,45 +395,80 @@ div.chart {
 												<code>MS</code>
 											</div>
 										</div>
+										-->
 									</fieldset>
 								</div>
 							</div>
 							<div class="span7">
 								<div class="page-header">
-									<h4>TPS</h4>
+									<h4>Statistics</h4>
 								</div>
 								<div class="chart"></div>
-								<ul class="nav nav-pills" style="margin20px 0" id="tableTab">
-								    <li><a href="#" tid="ls">Latest Sample</a></li>
-								    <li><a href="#" tid="as">Accumulated Statistics</a></li>
-								    <li class="pull-right"><a href="#" target="_blank">Expand View</a></li>
-							    </ul>
-								<table class="table table-striped table-bordered ellipsis" id="testTable">
-									<colgroup>
-										<col width="30px">
-										<col>
-										<col width="85px">
-										<col width="55px">
-										<col width="50px">
-										<col width="50px">
-										<col width="50px">
-										<col width="55px">
-									</colgroup>
-									<thead>
-										<tr>
-											<th class="noClick">ID</th>
-											<th class="noClick">Test Name</th>
-											<th class="noClick">Successful Tests</th>
-											<th class="noClick">Errors</th>
-											<th class="noClick">Mean Time</th>
-											<th class="noClick">TPS</th>
-											<th class="noClick">Peak TPS</th>
-											<th class="noClick">MTSD</th>
-										</tr>
-									</thead>
-									<tbody>
-									</tbody>
-								</table>
+								<div class="tabbable">
+									<ul class="nav nav-pills" style="margin20px 0" id="tableTab">
+									    <li><a href="#lsTab" tid="ls">Latest Sample</a></li>
+									    <li><a href="#asTab" tid="as">Accumulated Statistics</a></li>
+									    <!--<li class="pull-right"><a href="#" target="_blank">Expand View</a></li>-->
+								    </ul>
+								    <div class="tab-content">
+								    	<div class="tab-pane active" id="lsTab">
+											<table class="table table-striped table-bordered ellipsis" id="lsTable">
+												<colgroup>
+													<col width="30px">
+													<col>
+													<col width="85px">
+													<col width="55px">
+													<col width="50px">
+													<col width="50px">
+													<col width="50px">
+													<col width="55px">
+												</colgroup>
+												<thead>
+													<tr>
+														<th class="noClick">ID</th>
+														<th class="noClick ellipsis">Test Name</th>
+														<th class="noClick">Successful Tests</th>
+														<th class="noClick">Errors</th>
+														<th class="noClick">Mean Time</th>
+														<th class="noClick">TPS</th>
+														<th class="noClick">Peak TPS</th>
+														<th class="noClick">MTSD</th>
+													</tr>
+												</thead>
+												<tbody>
+												</tbody>
+											</table>
+										</div>
+										<div class="tab-pane active" id="asTab">
+											<table class="table table-striped table-bordered ellipsis" id="asTable">
+												<colgroup>
+													<col width="30px">
+													<col>
+													<col width="85px">
+													<col width="55px">
+													<col width="50px">
+													<col width="50px">
+													<col width="50px">
+													<col width="55px">
+												</colgroup>
+												<thead>
+													<tr>
+														<th class="noClick">ID</th>
+														<th class="noClick ellipsis">Test Name</th>
+														<th class="noClick">Successful Tests</th>
+														<th class="noClick">Errors</th>
+														<th class="noClick">Mean Time</th>
+														<th class="noClick">TPS</th>
+														<th class="noClick">Peak TPS</th>
+														<th class="noClick">MTSD</th>
+													</tr>
+												</thead>
+												<tbody>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -749,7 +790,8 @@ div.chart {
 					var succesVal = refreshDiv.find("#input_status").val();
 		
 					if(succesVal == 'SUCCESS'){
-						$("#testTable tbody").html(refreshDiv.children("tableItem").html());
+						$("#lsTable tbody").html(refreshDiv.children("lsTableItem").html());
+						$("#asTable tbody").html(refreshDiv.children("asTableItem").html());
 						$("#process_data").text(refreshDiv.children("#input_process").val());
 						$("#thread_data").text(refreshDiv.children("#input_thread").val());
 						drawTPS(refreshDiv.children("tpsChartData").val());

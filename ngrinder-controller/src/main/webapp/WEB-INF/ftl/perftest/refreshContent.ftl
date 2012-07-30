@@ -5,31 +5,50 @@
 	
 	<INPUT type="hidden" id="input_status" value='<#if resultsub.success?? && resultsub.success>SUCCESS<#else>FAIL'</#if>>
 	
-	<div id="tableItem">
-	    <#list resultsub?keys as mKey>
-			<#if mKey=='lastSampleStatistics'>
+    <#list resultsub?keys as mKey>
+		<#if mKey=='latestSample'>
+			<div id="lsTableItem">
 				<#assign item = resultsub[mKey]>   
 				<#list item as statistics>
-				<tr id="first_div_last">
-					<td class="td_l" ><div style="width:35px;white-space:nowrap;">Test${statistics.testNumber!'&nbsp;'}</div></td>
-					<td class="td_l" >
+				<tr>
+					<td>Test${statistics.testNumber!'&nbsp;'}</td>
+					<td>
+	        			${statistics.testDescription!'&nbsp;'}
+					</td>
+					<td>${statistics.TestsStr!'&nbsp;'}</td>
+					<td>${statistics.ErrorsStr!'&nbsp;'}</td>
+					<td>${statistics['Mean_Test_Time_(ms)']!'&nbsp;'}</td>
+					<td>${statistics.TPS!'&nbsp;'}</td>
+					<td>${statistics.Peak_TPS!'&nbsp;'}</td>
+					<td>${statistics['Test_Time_Standard_Deviation_(ms)']!'&nbsp;'}</td>
+				</tr>
+				</#list>
+			</div>
+		</#if>
+		<#if mKey=='accumulated'>
+			<div id="asTableItem">
+				<#assign item = resultsub[mKey]>   
+				<#list item as statistics>
+				<tr>
+					<td>Test${statistics.testNumber!'&nbsp;'}</td>
+					<td>
 						<div style="width:100px;white-space:nowrap;">
 						<#if statistics.testDescription?has_content && statistics.testDescription?length gt 25>
 	        				${statistics.testDescription?substring(0,24)}...
 	      				<#else>
 	        				${statistics.testDescription!'&nbsp;'}
 						</#if>
-						</div>
+						
 					</td>
-					<td class="td_l"><div style="width:60px;white-space:nowrap;">${statistics.TestsStr!'&nbsp;'}</div></td>
-					<td class="td_l"><div style="width:40px;white-space:nowrap;">${statistics.ErrorsStr!'&nbsp;'}</div></td>
-					<td class="td_l"><div style="width:65px;white-space:nowrap;">${statistics['Mean_Test_Time_(ms)']!'&nbsp;'}</div></td>
-					<td class="td_l"><div style="width:50px;white-space:nowrap;">${statistics.TPS!'&nbsp;'}</div></td>
-					<td class="td_l"><div style="width:60px;white-space:nowrap;">${statistics.Peak_TPS!'&nbsp;'}</div></td>
-					<td class="td_l"><div style="width:60px;white-space:nowrap;">${statistics['Test_Time_Standard_Deviation_(ms)']!'&nbsp;'}</div></td>
+					<td>${statistics.TestsStr!'&nbsp;'}</td>
+					<td>${statistics.ErrorsStr!'&nbsp;'}</td>
+					<td>${statistics['Mean_Test_Time_(ms)']!'&nbsp;'}</td>
+					<td>${statistics.TPS!'&nbsp;'}</td>
+					<td>${statistics.Peak_TPS!'&nbsp;'}</td>
+					<td>${statistics['Test_Time_Standard_Deviation_(ms)']!'&nbsp;'}</td>
 				</tr>
 				</#list>
-			</#if>
-		</#list>
-	</div>
+			</div>
+		</#if>
+	</#list>
 </#if>
