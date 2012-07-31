@@ -178,7 +178,7 @@ public class PerfTestService implements NGrinderConstants {
 	 */
 	@Cacheable(value = "perftest")
 	public PerfTest getPerfTestCandiate() {
-		Page<PerfTest> perfTest = perfTestRepository.findAllByStatusOrderByScheduledDateAsc(Status.READY,
+		Page<PerfTest> perfTest = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY,
 				new OnlyOnePageRequest());
 		return (perfTest.getNumber() == 0) ? null : perfTest.getContent().get(0);
 	}

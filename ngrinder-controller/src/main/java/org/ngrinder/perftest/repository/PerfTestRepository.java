@@ -48,6 +48,6 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 
 	Page<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status, Pageable pageable);
 
-	Page<PerfTest> findAllByStatusOrderByScheduledDateAsc(Status status, Pageable pageable);
+	Page<PerfTest> findAllByStatusOrderByScheduledTimeAsc(Status status, Pageable pageable);
 
 }
