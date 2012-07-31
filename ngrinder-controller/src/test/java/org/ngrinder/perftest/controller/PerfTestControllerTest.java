@@ -23,7 +23,6 @@
 package org.ngrinder.perftest.controller;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
@@ -35,8 +34,6 @@ import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.ui.ModelMap;
 
 /**
@@ -55,19 +52,15 @@ public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
 
 	@Before
 	public void createTempTests() {
-		newTest("new Test1");
-	}
-	
-	private PerfTest newTest(String testName) {
+		
 		PerfTest test = new PerfTest();
-		test.setTestName(testName);
+		test.setTestName("new Test1");
 		test.setThreshold("D");
 		test.setDuration(120L);
 		test.setIgnoreSampleCount(0);
 		test.setTargetHosts("127.0.0.1");
 		test.setScriptName("test1.py");
 		testService.savePerfTest(test);
-		return test;
 	}
 
 	/**
@@ -79,8 +72,7 @@ public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
 	@Test
 	public void testGetTestList() {
 		ModelMap model = new ModelMap();
-		Pageable pageable = new PageRequest(0, 10);
-		controller.getTestList(getTestUser(), null, false, pageable, model);
+		controller.getTestList(getTestUser(), null, false, null, model);
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
 
@@ -97,62 +89,9 @@ public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
 	@SuppressWarnings("unchecked")
 	public void testGetTestDetail() {
 		ModelMap model = new ModelMap();
-		Pageable pageable = new PageRequest(0, 10);
-		controller.getTestList(getTestUser(), null, false, pageable, model);
+		controller.getTestList(getTestUser(), null, false, null, model);
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
-		PerfTest testNew = testList.get(0);
-		controller.getTestDetail(getTestUser(), testNew.getId(), model);
-		PerfTest testInDB = (PerfTest)model.get(PARAM_TEST);
-		
-		assertThat(testInDB.getCreatedUser().getUserId(), is(testNew.getCreatedUser().getUserId()));
-		assertThat(testInDB.getId(), is(testNew.getId()));
-		assertThat(testInDB.getTestName(), is(testNew.getTestName()));
+		assertThat(testList.size(), is(1));
 	}
-
-	/**
-	 * Test method for
-	 * {@link org.ngrinder.perftest.controller.PerfTestController#createTest(org.springframework.ui.ModelMap, org.ngrinder.perftest.model.PerfTest)}
-	 * .
-	 */
-	@Test
-	public void testSaveTest() {
-		ModelMap model = new ModelMap();
-		PerfTest test = newTest("new Test2");
-		controller.saveTest(getTestUser(), model, test);
-		controller.getTestDetail(getTestUser(), test.getId(), model);
-		PerfTest testInDB = (PerfTest)model.get(PARAM_TEST);
-		assertThat(testInDB.getTestName(), is(test.getTestName()));
-	}
-
-	@Test
-	public void testDeleteTestOne() {
-		ModelMap model = new ModelMap();
-		PerfTest test = newTest("name1");
-		long testId = test.getId();
-		String delIds = String.valueOf(testId);
-		controller.deleteTests(model, delIds);
-		controller.getTestDetail(getTestUser(), testId, model);
-		PerfTest testInDB = (PerfTest)model.get(PARAM_TEST);
-		assertThat(testInDB, nullValue());
-	}
-
-	@Test
-	public void testDeleteTestMore() {
-		ModelMap model = new ModelMap();
-		PerfTest test1 = newTest("name1");
-		PerfTest test2 = newTest("name2");
-		long testId1 = test1.getId();
-		long testId2 = test2.getId();
-		String delIds = "" +  testId1 + "," +  testId2;
-		controller.deleteTests(model, delIds);
-		controller.getTestDetail(getTestUser(), testId1, model);
-		PerfTest testInDB = (PerfTest)model.get(PARAM_TEST);
-		assertThat(testInDB, nullValue());
-
-		controller.getTestDetail(getTestUser(), testId2, model);
-		testInDB = (PerfTest)model.get(PARAM_TEST);
-		assertThat(testInDB, nullValue());
-	}
-
 }
