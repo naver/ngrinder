@@ -43,7 +43,7 @@ public class AddTestRecord extends AbstractJUnit4SpringContextTests {
 	@Autowired
 	private PerfTestService testService;
 
-	public void createTempTests() {
+	public void createTempTests(PerfTestService testService) {
 		PerfTest test = new PerfTest();
 		test.setTestName("new Test1");
 		test.setThreshold("D");
@@ -82,16 +82,16 @@ public class AddTestRecord extends AbstractJUnit4SpringContextTests {
 	@Test
 	@Ignore("Only enable this when test data is necessary.")
 	public void testGetTestListAll() {
-		createTempTests();
-		createTempTests();
-		createTempTests();
-		createTempTests();
-		createTempTests();
-		createTempTests();
-		createTempTests();
-		createTempTests();
-		createTempTests();
-		createTempTests();
+		createTempTests(testService);
+		createTempTests(testService);
+		createTempTests(testService);
+		createTempTests(testService);
+		createTempTests(testService);
+		createTempTests(testService);
+		createTempTests(testService);
+		createTempTests(testService);
+		createTempTests(testService);
+		createTempTests(testService);
 		System.out.println(perfTestRepository.findAll());
 	}
 
