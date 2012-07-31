@@ -34,10 +34,7 @@
 		</div>
 	</div>
 </div>
-<div class="alert messageDiv hidden" id="messageDiv">
-
-</div>
-
+<#include "messages.ftl">
 
 <div class="modal fade" id="userProfileModal">
 	<div class="modal-header">
@@ -49,7 +46,6 @@
 	</div>	
 </div>
 <script type="text/javascript">
-	
 	var myProfile = function(){
 			var url = "${req.getContextPath()}/profile";
 			$("#user_profile_id").on('click', function() {

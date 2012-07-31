@@ -177,7 +177,7 @@
 		
 		function deleteTests(ids) {
 			$.ajax({
-		  		url: "${req.getContextPath()}/perftest/deleteTest?id=" + ids;
+		  		url: "${req.getContextPath()}/perftest/deleteTests?ids=" + ids,
 				dataType:'json',
 		    	success: function(res) {
 		    		if (res.success) {
