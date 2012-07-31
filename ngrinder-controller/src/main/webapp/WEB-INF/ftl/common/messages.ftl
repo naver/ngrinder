@@ -7,7 +7,7 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		$("#errorDivBtn").click(function() {
-			$("#errorDiv").fadeOut("fast");
+			$("#errorDiv").fadeOut('fast');
 		});
 	});
 	
