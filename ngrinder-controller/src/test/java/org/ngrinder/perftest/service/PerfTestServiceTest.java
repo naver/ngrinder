@@ -27,7 +27,7 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.AbstractNGNinderTransactionalTest;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
@@ -37,12 +37,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 /**
- * Class description.
+ * {@link PerfTestService} test
  * 
  * @author Mavlarn
- * @since
+ * @since 3.0
  */
-public class TestServiceTest extends AbstractNGNinderTransactionalTest {
+public class PerfTestServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private PerfTestService testService;

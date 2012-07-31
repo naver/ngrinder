@@ -11,7 +11,7 @@ import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class DBInitTest extends org.ngrinder.AbstractNGNinderTransactionalTest {
+public class DBInitTest extends org.ngrinder.AbstractNGrinderTransactionalTest {
 	@Autowired
 	private DBInit dbInit;
 

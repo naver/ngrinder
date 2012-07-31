@@ -9,12 +9,12 @@ import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
-import org.ngrinder.AbstractNGNinderTransactionalTest;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.home.model.PanelEntry;
 import org.ngrinder.home.service.HomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class HomeServiceTest extends AbstractNGNinderTransactionalTest {
+public class HomeServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private HomeService homeService;

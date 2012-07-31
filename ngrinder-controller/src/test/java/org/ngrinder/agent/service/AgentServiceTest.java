@@ -25,7 +25,7 @@ package org.ngrinder.agent.service;
 import junit.framework.Assert;
 
 import org.junit.Test;
-import org.ngrinder.AbstractNGNinderTransactionalTest;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.model.Agent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,7 +36,7 @@ import org.springframework.data.domain.Page;
  * @author Tobi
  * @since 3.0
  */
-public class AgentServiceTest extends AbstractNGNinderTransactionalTest {
+public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private AgentService agentService;

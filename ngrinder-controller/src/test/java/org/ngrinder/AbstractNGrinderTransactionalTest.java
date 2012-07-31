@@ -22,9 +22,9 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
  * 
  */
 @ContextConfiguration({ "classpath:applicationContext.xml" })
-abstract public class AbstractNGNinderTransactionalTest extends AbstractTransactionalJUnit4SpringContextTests
+abstract public class AbstractNGrinderTransactionalTest extends AbstractTransactionalJUnit4SpringContextTests
 		implements NGrinderConstants {
-	protected static final Logger LOG = LoggerFactory.getLogger(AbstractNGNinderTransactionalTest.class);
+	protected static final Logger LOG = LoggerFactory.getLogger(AbstractNGrinderTransactionalTest.class);
 
 	@Autowired
 	protected UserRepository userRepository;

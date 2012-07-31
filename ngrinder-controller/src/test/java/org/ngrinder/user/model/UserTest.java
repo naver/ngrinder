@@ -7,7 +7,7 @@ import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.AbstractNGNinderTransactionalTest;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
@@ -15,7 +15,7 @@ import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specifications;
 
-public class UserTest extends AbstractNGNinderTransactionalTest {
+public class UserTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	public UserRepository userRepository;

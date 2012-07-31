@@ -14,12 +14,12 @@ import java.util.List;
 import net.grinder.SingleConsole;
 
 import org.junit.Test;
-import org.ngrinder.AbstractNGNinderTransactionalTest;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StopWatch;
 
-public class ConsoleManagerTest extends AbstractNGNinderTransactionalTest {
+public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	private MockConsoleManager manager;
 

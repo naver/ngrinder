@@ -5,12 +5,12 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.AbstractNGNinderTransactionalTest;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class UserServiceTest extends AbstractNGNinderTransactionalTest {
+public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private UserService userService;

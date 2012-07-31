@@ -12,7 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.AbstractNGNinderTransactionalTest;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.init.DBInit;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
-public class FileEntryRepositoryTest extends AbstractNGNinderTransactionalTest {
+public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	public MockFileEntityRepsotory repo;

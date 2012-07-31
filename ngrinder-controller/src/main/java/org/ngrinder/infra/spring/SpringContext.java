@@ -22,6 +22,7 @@
  */
 package org.ngrinder.infra.spring;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /**
@@ -30,13 +31,14 @@ import org.springframework.web.context.request.RequestContextHolder;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class SpringContextUtils {
+@Component
+public class SpringContext {
 	/**
 	 * Determine if the current thread is from servlet context
 	 * 
 	 * @return true if it's servlet.
 	 */
-	public static boolean isServletRequestContext() {
+	public boolean isServletRequestContext() {
 		return RequestContextHolder.getRequestAttributes() != null;
 	}
 }
