@@ -162,9 +162,9 @@
 
 			$("th.sorting").on('click', function() {
 				var $currObj = $(this);
-				var sortDir = "ASC";
+				var sortDirection = "ASC";
 				if ($currObj.hasClass("sorting_asc")) {
-					sortDir = "DESC";
+					sortDirection = "DESC";
 				}
 				
 				$("#sortColumn").val($currObj.attr('id'));
@@ -177,7 +177,7 @@
 		
 		function deleteTests(ids) {
 			$.ajax({
-		  		url: "${req.getContextPath()}/perftest/deleteTest?id=" + ids;
+		  		url: "${req.getContextPath()}/perftest/deleteTests?ids=" + ids,
 				dataType:'json',
 		    	success: function(res) {
 		    		if (res.success) {
