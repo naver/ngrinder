@@ -30,33 +30,68 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Convenient class for property extraction
+ * Convenient class for property extraction.
  * 
  * @author JunHo Yoon
  */
 public class PropertiesWrapper {
 	private final Properties properties;
-	private final static Logger logger = LoggerFactory.getLogger(PropertiesWrapper.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesWrapper.class);
 
 	private static final String DEFAULT_ERROR_MESSGAE = "The {} is not defined in conf file. Use {} instead.";
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param properties
+	 *            {@link Properties} which will be used for data retrieval.
+	 */
 	public PropertiesWrapper(Properties properties) {
 		this.properties = properties;
 	}
 
+	/**
+	 * Get property.
+	 * 
+	 * @param key
+	 *            property key
+	 * @param defaultValue
+	 *            default value when data is not available
+	 * @param errorMsgTemplate
+	 *            error msg
+	 * @return property value
+	 */
 	public String getProperty(String key, String defaultValue, String errorMsgTemplate) {
 		String value = this.properties.getProperty(key);
 		if (StringUtils.isBlank(value)) {
-			logger.error(errorMsgTemplate, key, defaultValue);
+			LOGGER.info(errorMsgTemplate, key, defaultValue);
 			value = defaultValue;
 		}
 		return value;
 	}
 
+	/**
+	 * Get property.
+	 * 
+	 * @param key
+	 *            property key
+	 * @param defaultValue
+	 *            default value when data is not available
+	 * @return property value
+	 */
 	public String getProperty(String key, String defaultValue) {
 		return getProperty(key, defaultValue, DEFAULT_ERROR_MESSGAE);
 	}
 
+	/**
+	 * Get property as integer.
+	 * 
+	 * @param key
+	 *            property key
+	 * @param defaultValue
+	 *            default value when data is not available
+	 * @return property integer value
+	 */
 	public int getPropertyInt(String key, int defaultValue) {
 		String property = getProperty(key, String.valueOf(defaultValue), DEFAULT_ERROR_MESSGAE);
 		return NumberUtils.toInt(property, defaultValue);
