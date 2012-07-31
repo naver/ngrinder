@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.infra.spring.RemainedPath;
@@ -128,7 +129,11 @@ public class ScriptController extends NGrinderBaseController {
 	public String uploadFiles(User user, @RemainedPath String path, FileEntry script,
 			@RequestParam("uploadFile") MultipartFile file, ModelMap model) throws IOException {
 		script.setContentBytes(file.getBytes());
-
+		String originalFileExt = FilenameUtils.getExtension(file.getOriginalFilename());
+		String inputedFileExt = FilenameUtils.getExtension(script.getPath());
+		if (!originalFileExt.equalsIgnoreCase(inputedFileExt)) {
+			script.setPath(script.getPath() + "." + originalFileExt);
+		}
 		try {
 			script.setContent(IOUtils.toString(file.getInputStream()));
 		} catch (Exception e) {
