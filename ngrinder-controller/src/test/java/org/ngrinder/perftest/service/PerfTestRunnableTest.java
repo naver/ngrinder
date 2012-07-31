@@ -7,6 +7,6 @@ public class PerfTestRunnableTest extends AbstractNGNinderTransactionalTest {
 
 	@Test
 	public void doNothingYet() {
-
+		
 	}
 }

@@ -85,8 +85,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping("/list")
 	public String getTestList(User user, @RequestParam(required = false) String query,
 			@RequestParam(required = false) boolean onlyFinished,
-			@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable,
-			ModelMap model) {
+			@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
 		// FIXME
 		// not to paging on server side for now. Get all tests and
 		// paging/sorting in page.
@@ -98,7 +97,7 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute("onlyFinished", onlyFinished);
 		model.addAttribute("query", query);
 		model.addAttribute("page", pageable);
-		if (pageable.getSort() != null && pageable.getSort().iterator().hasNext()) {
+		if (pageable != null && pageable.getSort() != null && pageable.getSort().iterator().hasNext()) {
 			Order sortProp = pageable.getSort().iterator().next();
 			model.addAttribute("sortColumn", sortProp.getProperty());
 			model.addAttribute("sortDirection", sortProp.getDirection());
@@ -138,8 +137,9 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String saveTest(User user, ModelMap model, PerfTest test) {
-		//Test can only be cloned, but not allowed to modified, so set id as null,
-		//to make sure it will create a new test.
+		// Test can only be cloned, but not allowed to modified, so set id as
+		// null,
+		// to make sure it will create a new test.
 		test.setId(null);
 		perfTestService.savePerfTest(test);
 		return "redirect:/perftest/list";

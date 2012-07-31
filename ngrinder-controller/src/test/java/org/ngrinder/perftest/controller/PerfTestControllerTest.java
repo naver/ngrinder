@@ -24,7 +24,6 @@ package org.ngrinder.perftest.controller;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -83,7 +82,8 @@ public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.perftest.controller.PerfTestController#getTestDetail(org.springframework.ui.ModelMap, int)}.
+	 * {@link org.ngrinder.perftest.controller.PerfTestController#getTestDetail(org.springframework.ui.ModelMap, int)}
+	 * .
 	 */
 	@Test
 	@SuppressWarnings("unchecked")
@@ -93,29 +93,5 @@ public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
-
-		PerfTest test = testList.get(0);
-		Assert.assertTrue(test.getCreatedUser().getUserId().equals(getTestUser().getUserId()));
 	}
-
-	/**
-	 * Test method for
-	 * {@link org.ngrinder.perftest.controller.PerfTestController#createTest(org.springframework.ui.ModelMap, org.ngrinder.perftest.model.PerfTest)}
-	 * .
-	 */
-	@Test
-	public void testCreateTest() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for
-	 * {@link org.ngrinder.perftest.controller.PerfTestController#deleteTestt(org.springframework.ui.ModelMap, java.lang.String)}
-	 * .
-	 */
-	@Test
-	public void testDeleteTestt() {
-		fail("Not yet implemented");
-	}
-
 }

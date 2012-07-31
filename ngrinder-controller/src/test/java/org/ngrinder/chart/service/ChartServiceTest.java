@@ -22,6 +22,8 @@
  */
 package org.ngrinder.chart.service;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -38,7 +40,7 @@ import org.springframework.test.annotation.Rollback;
 
 /**
  * Class description.
- *
+ * 
  * @author Mavlarn
  * @since
  */
@@ -49,22 +51,22 @@ public class ChartServiceTest extends AbstractNGNinderTransactionalTest {
 
 	@Autowired
 	private SystemMonitorRepository systemRepository;
-	
+
 	@Test
 	@Rollback(false)
 	public void testSaveJavaMonitorInfo() {
 		JavaDataModel javaInfo = newJavaData(20120719010101L);
 		javaRepository.save(javaInfo);
-		
+
 		JavaDataModel infoInDb = javaRepository.findOne(javaInfo.getId());
-		assertTrue(infoInDb.getId().equals(javaInfo.getId()) &&
-				infoInDb.getCpuUsedPercentage() == javaInfo.getCpuUsedPercentage());
+		assertTrue(infoInDb.getId().equals(javaInfo.getId())
+				&& infoInDb.getCpuUsedPercentage() == javaInfo.getCpuUsedPercentage());
 	}
 
 	/**
 	 * Used to add mock monitor data
 	 */
-	//@Test
+	// @Test
 	public void addMockMonitorData() {
 		int i = 1000 * 20;
 		long colTime = 20120719010101L;
@@ -74,7 +76,7 @@ public class ChartServiceTest extends AbstractNGNinderTransactionalTest {
 			colTime++;
 			i--;
 		}
-		
+
 		i = 1000 * 20;
 		colTime = 20120719010101L;
 		while (i > 0) {
@@ -84,8 +86,8 @@ public class ChartServiceTest extends AbstractNGNinderTransactionalTest {
 			i--;
 		}
 	}
-	
-	private JavaDataModel newJavaData (long colTime) {
+
+	private JavaDataModel newJavaData(long colTime) {
 		JavaDataModel javaInfo = new JavaDataModel();
 		javaInfo.setIp("10.0.0.1");
 		javaInfo.setCollectTime(colTime);
@@ -100,8 +102,8 @@ public class ChartServiceTest extends AbstractNGNinderTransactionalTest {
 		javaInfo.setPort(12345);
 		return javaInfo;
 	}
-	
-	private SystemDataModel newSysData (long colTime) {
+
+	private SystemDataModel newSysData(long colTime) {
 		SystemDataModel sysInfo = new SystemDataModel();
 		sysInfo.setIp("10.0.0.1");
 		sysInfo.setCollectTime(colTime);
@@ -113,15 +115,15 @@ public class ChartServiceTest extends AbstractNGNinderTransactionalTest {
 		sysInfo.setTotalCpuValue(4);
 		return sysInfo;
 	}
-	
+
 	@Test
 	public void testSaveSystemMonitorInfo() {
 		SystemDataModel sysInfo = newSysData(20120719010101L);
 		systemRepository.save(sysInfo);
-		
+
 		SystemDataModel infoInDb = systemRepository.findOne(sysInfo.getId());
-		assertTrue(infoInDb.getId().equals(sysInfo.getId()) &&
-				infoInDb.getCpuUsedPercentage() == sysInfo.getCpuUsedPercentage());
+		assertTrue(infoInDb.getId().equals(sysInfo.getId())
+				&& infoInDb.getCpuUsedPercentage() == sysInfo.getCpuUsedPercentage());
 	}
 
 	@Test
@@ -129,15 +131,16 @@ public class ChartServiceTest extends AbstractNGNinderTransactionalTest {
 		long startTime = 20120719010101L;
 		long endTime = 20120719010201L;
 		List<JavaDataModel> infoList = javaRepository.findAllByIpAndCollectTimeBetween("10.0.0.1", startTime, endTime);
-		assertTrue(infoList.size() == 101);
+		assertThat(infoList.size(), is(10));
 	}
 
 	@Test
 	public void testGetSystemMonitorData() {
 		long startTime = 20120719010101L;
 		long endTime = 20120719010201L;
-		List<SystemDataModel> infoList = systemRepository.findAllByIpAndCollectTimeBetween("10.0.0.1", startTime, endTime);
-		assertTrue(infoList.size() == 101);
+		List<SystemDataModel> infoList = systemRepository.findAllByIpAndCollectTimeBetween("10.0.0.1", startTime,
+				endTime);
+		assertThat(infoList.size(), is(101));
 	}
 
 }
