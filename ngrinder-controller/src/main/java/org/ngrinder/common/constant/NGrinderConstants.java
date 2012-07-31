@@ -100,6 +100,9 @@ public interface NGrinderConstants {
 	public static final String PARAM_TPS_FAILED = "tps_failed";
 	public static final String PARAM_VUSER = "vuser";
 	public static final String PARAM_RESPONSE_TIME = "response_time";
+	
+	public static final String PARAM_TEST = "test";;
+	public static final String PARAM_SCRIPT_LIST = "scriptList";
 
 	// GRINDER_PROPERTY_KEY
 	public static final String GRINDER_PROP_PROCESSES = "grinder.processes";

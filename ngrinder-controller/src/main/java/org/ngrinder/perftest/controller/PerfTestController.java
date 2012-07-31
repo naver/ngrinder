@@ -29,11 +29,13 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.service.PerfTestService;
+import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.service.FileEntryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,8 +125,14 @@ public class PerfTestController extends NGrinderBaseController {
 		if (id != null) {
 			test = perfTestService.getPerfTest(id);
 		}
-		model.addAttribute("test", test);
-		model.addAttribute("scriptList", fileEntiryService.getAllFileEntries(user));
+		model.addAttribute(PARAM_TEST, test);
+		List<FileEntry> scriptList = null;
+		try {
+			scriptList = fileEntiryService.getAllFileEntries(user);
+		} catch (NGrinderRuntimeException e) {
+			LOG.error("Cannot get script list of user:", e);
+		}
+		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
 		return "perftest/detail";
 	}
 
