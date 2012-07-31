@@ -90,7 +90,8 @@ public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
 
 	/**
 	 * Test method for
-	 * {@link org.ngrinder.perftest.controller.PerfTestController#getTestDetail(org.springframework.ui.ModelMap, int)}.
+	 * {@link org.ngrinder.perftest.controller.PerfTestController#getTestDetail(org.springframework.ui.ModelMap, int)}
+	 * .
 	 */
 	@Test
 	@SuppressWarnings("unchecked")

@@ -145,8 +145,9 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String saveTest(User user, ModelMap model, PerfTest test) {
-		//Test can only be cloned, but not allowed to modified, so set id as null,
-		//to make sure it will create a new test.
+		// Test can only be cloned, but not allowed to modified, so set id as
+		// null,
+		// to make sure it will create a new test.
 		test.setId(null);
 		perfTestService.savePerfTest(test);
 		return "redirect:/perftest/list";

@@ -28,9 +28,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.ProgressMonitor;
-import javax.swing.SwingUtilities;
-
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.UncheckedInterruptedException;
@@ -50,12 +47,10 @@ import net.grinder.util.AllocateLowestNumber;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.Directory;
 import net.grinder.util.FileContents;
-import net.grinder.util.FileContents.FileContentsException;
 import net.grinder.util.ReflectionUtil;
 import net.grinder.util.thread.Condition;
 
 import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.ngrinder.common.util.ThreadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -308,7 +303,7 @@ public class SingleConsole implements Listener {
 		this.processReports = processReports;
 		m_eventSyncCondition.notifyAll();
 	}
-
+  
 	public boolean isAllTestFinished() {
 		for (ProcessReports processReport : this.processReports) {
 			// TODO
