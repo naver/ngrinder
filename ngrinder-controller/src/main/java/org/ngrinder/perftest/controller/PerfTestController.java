@@ -34,6 +34,7 @@ import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.ProcessAndThread;
+import org.ngrinder.perftest.model.Status;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.service.FileEntryService;
@@ -209,5 +210,16 @@ public class PerfTestController extends NGrinderBaseController {
 		}
 
 		return JSONUtil.toJson(rtnMap);
+	}
+	
+	@RequestMapping(value = "/running/refresh")
+	public String refreshTestRunning(ModelMap model, @RequestParam long testId) {
+		PerfTest test = perfTestService.getPerfTest(testId);
+		Map<String, Object> result = null;
+		if (test != null && test.getStatus() == Status.TESTING) {
+			result = perfTestService.getStatistics(test.getPort());
+			model.addAttribute("resultsub", result);
+		}
+		return "perftest/report";
 	}
 }

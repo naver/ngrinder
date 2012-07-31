@@ -37,17 +37,29 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
+import net.grinder.common.Test;
 import net.grinder.common.GrinderProperties.PersistenceException;
+import net.grinder.console.model.ModelTestIndex;
+import net.grinder.console.model.SampleModel;
+import net.grinder.console.model.SampleModelViews;
+import net.grinder.statistics.ExpressionView;
+import net.grinder.statistics.StatisticsSet;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.ReflectionUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.spring.OnlyOnePageRequest;
 import org.ngrinder.model.Role;
@@ -85,6 +97,9 @@ public class PerfTestService implements NGrinderConstants {
 
 	@Autowired
 	private PerfTestRepository perfTestRepository;
+	
+	@Autowired
+	private ConsoleManager consoleManager;
 
 	@Autowired
 	private Config config;
@@ -321,4 +336,85 @@ public class PerfTestService implements NGrinderConstants {
 
 		return reportData;
 	}
+	
+	/**
+	 * To get statistics data when test is running
+	 */
+	public Map<String, Object> getStatistics(int port) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
+		SingleConsole singleConsole = consoleManager.getConsoleUsingPort(port);
+
+		final SampleModel model = (SampleModel) singleConsole.getConsoleComponent(SampleModel.class);
+		final SampleModelViews modelView = (SampleModelViews) singleConsole.getConsoleComponent(SampleModelViews.class);
+		ExpressionView[] views = modelView.getCumulativeStatisticsView().getExpressionViews();
+		ModelTestIndex modelIndex = (ModelTestIndex) ReflectionUtil.getFieldValue(model, "modelTestIndex");
+		NumberFormat formatter = new DecimalFormat("#,###,###.###");
+		if (modelIndex != null) {
+
+			StatisticsSet set, lastSet;
+			for (int i = 0; i < modelIndex.getNumberOfTests(); i++) {
+				Map<String, Object> statistics = new HashMap<String, Object>();
+				Map<String, Object> lastStatistics = new HashMap<String, Object>();
+				Test test = modelIndex.getTest(i);
+				set = modelIndex.getCumulativeStatistics(i);
+				lastSet = modelIndex.getLastSampleStatistics(i);
+				statistics.put("testNumber", test.getNumber());
+				statistics.put("testDescription", test.getDescription());
+				lastStatistics.put("testNumber", test.getNumber());
+				lastStatistics.put("testDescription", test.getDescription());
+
+				for (ExpressionView expressionView : views) {
+					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
+							getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
+					lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
+							getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
+				}
+
+				// Tests
+
+				Double tests = (Double) statistics.get("Tests");
+				Double errors = (Double) statistics.get("Errors");
+				statistics.put("TestsStr", formatter.format(tests));
+				statistics.put("ErrorsStr", formatter.format(errors));
+
+				Double lastTests = (Double) lastStatistics.get("Tests");
+				Double lastErrors = (Double) lastStatistics.get("Errors");
+				lastStatistics.put("TestsStr", formatter.format(lastTests));
+				lastStatistics.put("ErrorsStr", formatter.format(lastErrors));
+
+				cumulativeStatistics.add(statistics);
+				lastSampleStatistics.add(lastStatistics);
+			}
+		}
+
+		StatisticsSet totalSet = model.getTotalCumulativeStatistics();
+		Map<String, Object> totalStatistics = new HashMap<String, Object>();
+
+		for (ExpressionView expressionView : views) {
+			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
+					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
+			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
+					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
+		}
+
+		Double tests = (Double) totalStatistics.get("Tests");
+		Double errors = (Double) totalStatistics.get("Errors");
+		totalStatistics.put("TestsStr", formatter.format(tests));
+		totalStatistics.put("ErrorsStr", formatter.format(errors));
+
+		result.put("totalStatistics", totalStatistics);
+		result.put("cumulativeStatistics", cumulativeStatistics);
+		result.put("lastSampleStatistics", lastSampleStatistics);
+		return result;
+	}
+
+	private static Object getRealDoubleValue(Double doubleValue) {
+		if (doubleValue.isInfinite() || doubleValue.isNaN()) {
+			return null;
+		}
+		return doubleValue;
+	}
+
 }
