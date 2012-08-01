@@ -10,24 +10,35 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import net.grinder.AgentControllerDaemon;
 import net.grinder.SingleConsole;
+import net.grinder.common.GrinderProperties;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
-import org.ngrinder.script.service.MockFileEntityRepsotory;
+import org.ngrinder.script.repository.FileEntityRepository;
 import org.ngrinder.script.util.CompressionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
-public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest {
+public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest implements NGrinderConstants {
 
 	@Autowired
 	private MockPerfTestRunnable perfTestRunnable;
+
+	AgentControllerDaemon agentControllerDaemon;
+	AgentControllerDaemon agentControllerDaemon2;
+
+	@Autowired
+	private AgentManager agentManager;
 
 	@Before
 	public void before() {
@@ -36,45 +47,72 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest {
 		createPerfTest("test2", Status.READY, new Date());
 		List<PerfTest> allPerfTest = perfTestService.getAllPerfTest();
 		assertThat(allPerfTest.size(), is(2));
+
+		agentControllerDaemon = new AgentControllerDaemon();
+		agentControllerDaemon.run(AGENT_SERVER_DAEMON_PORT);
+		sleep(2000);
+		assertThat(agentManager.getAllAttachedAgents().size(), is(1));
+	}
+
+	@After
+	public void after() {
+		agentControllerDaemon.shutdown();
+		sleep(2000);
 	}
 
 	@Test
 	public void testDoTest() {
 		perfTestRunnable.startTest();
+
 	}
 
 	@Autowired
-	public MockFileEntityRepsotory repo;
+	public FileEntityRepository fileEntityRepository;
 
 	@Test
 	public void testStartConsole() throws IOException {
-		PerfTest perfTestCandiate = perfTestService.getPerfTestCandiate();
-		assertThat(perfTestCandiate, not(nullValue()));
-		SingleConsole singleConsole = perfTestRunnable.startConsole(perfTestCandiate);
+		// Get perf test
+		PerfTest perfTest = perfTestService.getPerfTestCandiate();
+		perfTest.setScriptName("/hello/world.py");
+		assertThat(perfTest, not(nullValue()));
+
+		// Start console
+		SingleConsole singleConsole = perfTestRunnable.startConsole(perfTest);
 		assertThat(singleConsole, not(nullValue()));
-		assertThat(singleConsole.getConsolePort(), not(0));
+		assertThat(singleConsole.getConsolePort(), is(perfTest.getPort()));
 
+		// Start agents
+		perfTest.setAgentCount(1);
+		GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
+		perfTestRunnable.startAgentsOn(perfTest, grinderProperties, singleConsole);
+		assertThat(agentManager.getAllFreeAgents().size(), is(0));
+
+		// Distribute files
 		prepareUserRepo();
+		perfTestRunnable.distributeFileOn(perfTest, grinderProperties, singleConsole);
 
-		perfTestRunnable.distributeFileOn(perfTestCandiate, singleConsole);
+		// Run test
+		perfTestRunnable.runTestOn(perfTest, grinderProperties, singleConsole);
+		sleep(10000);
 	}
+
+	@Autowired
+	private Config config;
 
 	private void prepareUserRepo() throws IOException {
 		CompressionUtil compressUtil = new CompressionUtil();
-
-		File file = new File(System.getProperty("java.io.tmpdir"), "repo");
-		FileUtils.deleteQuietly(file);
-		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), file);
-		repo.setUserRepository(new File(file, "TEST_USER"));
+		File repo = config.getHome().getUserRepoDirectory(getTestUser().getUserId());
+		FileUtils.deleteQuietly(repo);
+		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), config.getHome().getRepoDirectoryRoot());
 		FileEntry fileEntryDir = new FileEntry();
 		fileEntryDir.setPath("/hello");
 		fileEntryDir.setFileType(FileType.DIR);
-		repo.save(getTestUser(), fileEntryDir, null);
+		fileEntityRepository.save(getTestUser(), fileEntryDir, null);
 
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath("/hello/world.py");
 		fileEntry.setContent("print 'HELLO'");
 		fileEntry.setFileType(FileType.PYTHON_SCRIPT);
-		repo.save(getTestUser(), fileEntry, "UTF-8");
+		fileEntityRepository.save(getTestUser(), fileEntry, "UTF-8");
 	}
 }

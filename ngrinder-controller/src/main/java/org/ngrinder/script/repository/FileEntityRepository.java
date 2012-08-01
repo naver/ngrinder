@@ -32,6 +32,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -370,7 +371,10 @@ public class FileEntityRepository {
 			if (nodeKind == SVNNodeKind.NONE || nodeKind == SVNNodeKind.DIR) {
 				throw new NGrinderRuntimeException("It's not pssible write directory. nodeKind is " + nodeKind);
 			}
-			fileOutputStream = new FileOutputStream(new File(toPath, FilenameUtils.getName(path)));
+			File destFile = new File(toPath, FilenameUtils.getName(path));
+			// Prepare parent folders
+			toPath.mkdirs();
+			fileOutputStream = new FileOutputStream(destFile);
 			SVNProperties fileProperty = new SVNProperties();
 			// Get File.
 			repo.getFile(path, -1L, fileProperty, fileOutputStream);

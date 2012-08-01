@@ -29,10 +29,27 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
 import net.grinder.SingleConsole;
 import net.grinder.console.model.ConsoleProperties;
 
-public class ConsolePropertiesFactory {
+/**
+ * Convenient class for {@link ConsoleProperties} creation.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
+public abstract class ConsolePropertiesFactory {
+	/**
+	 * Create empty {@link ConsoleProperties}. the created
+	 * {@link ConsoleProperties} instance links with temp/temp_console
+	 * directory.
+	 * 
+	 * @return empty {@link ConsoleProperties} instance
+	 * 
+	 */
 	public static ConsoleProperties createEmptyConsoleProperties() {
 		try {
-			return new ConsoleProperties(SingleConsole.RESOURCE, new File("tmp"));
+			File tmpFile = File.createTempFile("ngrinder", "tmp");
+			ConsoleProperties consoleProperties = new ConsoleProperties(SingleConsole.RESOURCE, tmpFile);
+			tmpFile.delete();
+			return consoleProperties;
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("Exception occurs while merging entities while creating empty console",
 					e);

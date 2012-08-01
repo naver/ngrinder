@@ -35,6 +35,8 @@ import static org.ngrinder.perftest.model.Status.TESTING_FINISHED;
 import java.util.List;
 
 import net.grinder.SingleConsole;
+import net.grinder.common.GrinderProperties;
+import net.grinder.console.model.ConsoleProperties;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -50,8 +52,9 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * perf test run scheduler.
  * 
- * This class is responsible to execute the performance test which is ready to execute. Mostly this class is started
- * from {@link #startTest()} method. This method is scheduled by Spring Task.
+ * This class is responsible to execute the performance test which is ready to
+ * execute. Mostly this class is started from {@link #startTest()} method. This
+ * method is scheduled by Spring Task.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -85,7 +88,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 			LOG.error("The {} test project is canceld because it has too many test execution errors",
 					runCandidate.getId());
 			runCandidate.setTestErrorCause(Status.READY);
-			runCandidate.setTestErrorStackTrace("The test project is canceld because it has too many test execution errors");			
+			runCandidate
+					.setTestErrorStackTrace("The test project is canceld because it has too many test execution errors");
 			perfTestService.savePerfTest(runCandidate, CANCELED);
 			return;
 		}
@@ -104,9 +108,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 		SingleConsole singleConsole = null;
 		try {
 			singleConsole = startConsole(perfTest);
-			startAgentsOn(perfTest, singleConsole);
-			distributeFileOn(perfTest, singleConsole);
-			runTestOn(perfTest, singleConsole);
+			GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
+			startAgentsOn(perfTest, grinderProperties, singleConsole);
+			distributeFileOn(perfTest, grinderProperties, singleConsole);
+			runTestOn(perfTest, grinderProperties, singleConsole);
 		} catch (Exception e) {
 			// In case of error, mark the occurs error on perftest.
 			markPerfTestError(perfTest, singleConsole, e);
@@ -130,23 +135,23 @@ public class PerfTestRunnable implements NGrinderConstants {
 		perfTestService.savePerfTest(perfTest, Status.STOP_ON_ERROR);
 	}
 
-	void runTestOn(PerfTest perfTest, SingleConsole singleConsole) {
+	void runTestOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		// Run test
 		perfTestService.savePerfTest(perfTest, TESTING);
 		singleConsole.startTest(perfTestService.getGrinderProperties(perfTest));
 		perfTestService.savePerfTest(perfTest, TESTING_FINISHED);
 	}
 
-	void distributeFileOn(PerfTest perfTest, SingleConsole singleConsole) {
+	void distributeFileOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		// Distribute files
 		perfTestService.savePerfTest(perfTest, DISTRIBUTE_FILES);
 		singleConsole.distributeFiles(perfTestService.prepareDistribution(perfTest));
 		perfTestService.savePerfTest(perfTest, DISTRIBUTE_FILES_FINISHED);
 	}
 
-	void startAgentsOn(PerfTest perfTest, SingleConsole singleConsole) {
+	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		perfTestService.savePerfTest(perfTest, START_AGENTS);
-		agentManager.runAgent(singleConsole, null, perfTest.getAgentCount());
+		agentManager.runAgent(singleConsole, grinderProperties, perfTest.getAgentCount());
 		singleConsole.waitUntilAgentConnected(perfTest.getAgentCount());
 		perfTestService.savePerfTest(perfTest, START_AGENTS_FINISHED);
 	}
@@ -154,7 +159,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 	SingleConsole startConsole(PerfTest perfTest) {
 		perfTestService.savePerfTest(perfTest, START_CONSOLE);
 		// get available console.
-		SingleConsole singleConsole = consoleManager.getAvailableConsole();
+		ConsoleProperties consoleProperty = perfTestService.createConsoleProperties(perfTest);
+		SingleConsole singleConsole = consoleManager.getAvailableConsole(consoleProperty);
 		// increase trial count
 		perfTest.setTestTrialCount(perfTest.getTestTrialCount() + 1);
 		perfTest.setPort(singleConsole.getConsolePort());
@@ -182,7 +188,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * @param perfTest
 	 *            {@link PerfTest} to be finished
 	 * @param singleConsoleInUse
-	 *            {@link SingleConsole} which is being using for {@link PerfTest}
+	 *            {@link SingleConsole} which is being using for
+	 *            {@link PerfTest}
 	 */
 	public void doFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		if (singleConsoleInUse.isAllTestFinished()) {

@@ -32,16 +32,22 @@ import org.slf4j.LoggerFactory;
 /**
  * Reflection Utility functions.
  * 
+ * @author Mavlarn
+ * @author JunHo Yoon
+ * @since 2.0
  */
-public final class ReflectionUtil {
+public abstract class ReflectionUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ReflectionUtil.class);
 
-	private ReflectionUtil() {
-	}
-
 	/**
-	 * get object field value, bypassing getter method.
+	 * Get object field value, bypassing getter method.
+	 * 
+	 * @param object
+	 *            object to be inspected.
+	 * @param fieldName
+	 *            fieldName
+	 * @return inspected value. null if error.
 	 */
 	public static Object getFieldValue(final Object object, final String fieldName) {
 		Field field = getDeclaredField(object, fieldName);
@@ -61,6 +67,15 @@ public final class ReflectionUtil {
 		return result;
 	}
 
+	/**
+	 * Get filed object.
+	 * 
+	 * @param object
+	 *            object to be inspected
+	 * @param fieldName
+	 *            field name
+	 * @return {@link Field} instance. otherwise null.
+	 */
 	private static Field getDeclaredField(final Object object, final String fieldName) {
 		if (object == null) {
 			return null;
@@ -73,12 +88,18 @@ public final class ReflectionUtil {
 			try {
 				return superClass.getDeclaredField(fieldName);
 			} catch (NoSuchFieldException e) {
-				// Field is not defined in current class, go on get superClass
+				LOG.error(e.getMessage(), e);
 			}
 		}
 		return null;
 	}
 
+	/**
+	 * Make the private field accessible.
+	 * 
+	 * @param field
+	 *            field to be modified
+	 */
 	private static void makeAccessible(final Field field) {
 		if (!Modifier.isPublic(field.getModifiers()) || !Modifier.isPublic(field.getDeclaringClass().getModifiers())) {
 			field.setAccessible(true);

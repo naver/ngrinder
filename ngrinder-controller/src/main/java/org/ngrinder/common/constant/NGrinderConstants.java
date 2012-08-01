@@ -100,10 +100,11 @@ public interface NGrinderConstants {
 	public static final String PARAM_TPS_FAILED = "tps_failed";
 	public static final String PARAM_VUSER = "vuser";
 	public static final String PARAM_RESPONSE_TIME = "response_time";
-	
+
 	public static final String PARAM_TEST = "test";;
 	public static final String PARAM_SCRIPT_LIST = "scriptList";
 
+	public static final int AGENT_SERVER_DAEMON_PORT = 1011;
 	// GRINDER_PROPERTY_KEY
 	public static final String GRINDER_PROP_PROCESSES = "grinder.processes";
 	public static final String GRINDER_PROP_THREAD = "grinder.threads";

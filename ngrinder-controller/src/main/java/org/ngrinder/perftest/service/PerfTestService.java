@@ -47,13 +47,16 @@ import java.util.Map;
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.Test;
-import net.grinder.common.GrinderProperties.PersistenceException;
+import net.grinder.console.model.ConsoleProperties;
 import net.grinder.console.model.ModelTestIndex;
 import net.grinder.console.model.SampleModel;
 import net.grinder.console.model.SampleModelViews;
 import net.grinder.statistics.ExpressionView;
 import net.grinder.statistics.StatisticsSet;
+import net.grinder.util.ConsolePropertiesFactory;
+import net.grinder.util.Directory;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -235,20 +238,25 @@ public class PerfTestService implements NGrinderConstants {
 
 	public GrinderProperties getGrinderProperties(PerfTest perfTest) {
 		try {
+
 			GrinderProperties grinderProperties = new GrinderProperties(config.getHome().getDefaultGrinderProperties());
-			grinderProperties.setFile(GrinderProperties.SCRIPT,
-					new File(getPerfTestFilePath(perfTest), perfTest.getScriptName()));
-			ProcessAndThread calcProcessAndThread = calcProcessAndThread(perfTest.getVuserPerAgent());
+			grinderProperties.setProperty(GrinderProperties.SCRIPT,
+					FilenameUtils.getName(checkNotEmpty(perfTest.getScriptName())));
+			ProcessAndThread calcProcessAndThread = calcProcessAndThread(checkNotZero(perfTest.getVuserPerAgent(),
+					"vuser count should be provided"));
 			grinderProperties.setInt(GRINDER_PROP_THREAD, calcProcessAndThread.getThreadCount());
 			grinderProperties.setInt(GRINDER_PROP_PROCESSES, calcProcessAndThread.getProcessCount());
-
-			grinderProperties.setInt(GRINDER_PROP_RUNS, perfTest.getRunCount());
+			if ("D".equals(perfTest.getThreshold())) {
+				grinderProperties.setLong(GRINDER_PROP_DURATION, perfTest.getDuration());
+			} else {
+				grinderProperties.setInt(GRINDER_PROP_RUNS, perfTest.getRunCount());
+			}
 			grinderProperties.setBoolean(GRINDER_PROP_USE_CONSOLE, true);
 			grinderProperties.setInt(GRINDER_PROP_INITIAL_SLEEP_TIME, perfTest.getInitSleepTime());
 			grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, perfTest.getProcessIncrement());
 			grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT_INTERVAL, perfTest.getProcessIncrementInterval());
 			return grinderProperties;
-		} catch (PersistenceException e) {
+		} catch (Exception e) {
 			throw new NGrinderRuntimeException("error while prepare grinder property for " + perfTest.getTestName(), e);
 		}
 	}
@@ -268,6 +276,12 @@ public class PerfTestService implements NGrinderConstants {
 		List<FileEntry> fileEntries = fileEntryService.getFileEntries(user,
 				FilenameUtils.getPath(checkNotEmpty(scriptName)));
 		File perfTestDirectory = config.getHome().getPerfTestDirectory(perfTest.getId().toString());
+
+		// clean up Distribution folders
+		FileUtils.deleteQuietly(perfTestDirectory);
+		perfTestDirectory.mkdirs();
+
+		// Distribute each files in that folder.
 		for (FileEntry each : fileEntries) {
 			// Directory is not subject to be distributed.
 			if (each.getFileType() == FileType.DIR) {
@@ -419,6 +433,17 @@ public class PerfTestService implements NGrinderConstants {
 
 	public List<PerfTest> getAllPerfTest() {
 		return perfTestRepository.findAll();
+	}
+
+	public ConsoleProperties createConsoleProperties(PerfTest perfTest) {
+		ConsoleProperties consoleProperties = ConsolePropertiesFactory.createEmptyConsoleProperties();
+		try {
+			consoleProperties.setAndSaveDistributionDirectory(new Directory(config.getHome().getPerfTestDirectory(
+					perfTest.getId().toString())));
+		} catch (Exception e) {
+			throw new NGrinderRuntimeException("Error while setting console properties", e);
+		}
+		return consoleProperties;
 	}
 
 }

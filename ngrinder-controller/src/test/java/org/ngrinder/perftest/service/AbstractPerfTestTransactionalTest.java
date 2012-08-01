@@ -12,7 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
- * In addition {@link AbstractNGrinderTransactionalTest}, this class provides basic function to create {@link PerfTest}
+ * In addition {@link AbstractNGrinderTransactionalTest}, this class provides
+ * basic function to create {@link PerfTest}
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -32,20 +33,28 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 		perfTestRepository.deleteAll();
 	}
 
-	public void createPerfTest(String testName, Status status, Date scheduledTime) {
+	public PerfTest createPerfTest(String testName, Status status, Date scheduledTime) {
 		PerfTest test = new PerfTest();
 		test.setTestName(testName);
 		test.setThreshold("D");
 		test.setDuration(120L);
+		test.setVuserPerAgent(10);
 		test.setScheduledTime(scheduledTime);
 		test.setIgnoreSampleCount(0);
 		test.setTargetHosts("127.0.0.1");
 		test.setScriptName("test1.py");
 		test.setProcesses(10);
 		test.setProcessIncrement(1);
+		test.setInitSleepTime(0);
 		test.setProcessIncrementInterval(1000);
 		test.setStatus(status);
 		test.setCreatedUser(getTestUser());
 		perfTestService.savePerfTest(test);
+		return test;
+	}
+
+	public PerfTest createPerfTest(PerfTest perfTest) {
+		perfTestService.savePerfTest(perfTest);
+		return perfTest;
 	}
 }

@@ -42,8 +42,9 @@ import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.model.BaseModel;
 
 /**
- * Performance Test Entity Use Create user of BaseModel as test owner, use create date of BaseModel as create time, but
- * the created time maybe not the test starting time.
+ * Performance Test Entity Use Create user of BaseModel as test owner, use
+ * create date of BaseModel as create time, but the created time maybe not the
+ * test starting time.
  * 
  */
 @Entity
@@ -437,4 +438,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public void setDistributionPath(String distributionPath) {
 		this.distributionPath = distributionPath;
 	}
+
+	
 }

@@ -12,6 +12,7 @@ import java.net.ServerSocket;
 import java.util.List;
 
 import net.grinder.SingleConsole;
+import net.grinder.util.ConsolePropertiesFactory;
 
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
@@ -26,7 +27,8 @@ public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testConsoleManager() {
 		int initialSize = manager.getAvailableConsoleSize();
-		SingleConsole availableConsole = manager.getAvailableConsole();
+		SingleConsole availableConsole = manager.getAvailableConsole(ConsolePropertiesFactory
+				.createEmptyConsoleProperties());
 		assertThat(manager.getAvailableConsoleSize(), is(initialSize - 1));
 		manager.returnBackConsole(availableConsole);
 		assertThat(manager.getAvailableConsoleSize(), is(initialSize));
@@ -39,7 +41,7 @@ public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 		int initialSize = manager.getAvailableConsoleSize();
 		SingleConsole availableConsole = null;
 		for (int i = 1; i <= initialSize; i++) {
-			availableConsole = manager.getAvailableConsole();
+			availableConsole = manager.getAvailableConsole(ConsolePropertiesFactory.createEmptyConsoleProperties());
 		}
 		final SingleConsole lastConsole = availableConsole;
 		assertThat(manager.getAvailableConsoleSize(), is(0));
@@ -47,7 +49,7 @@ public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 		elapseTime.start();
 		// Try to get more console, it will take time
 		try {
-			manager.getAvailableConsole();
+			manager.getAvailableConsole(ConsolePropertiesFactory.createEmptyConsoleProperties());
 			fail("should throw Exception");
 		} catch (NGrinderRuntimeException e) {
 		}
@@ -70,7 +72,8 @@ public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 		thread.start();
 		// Try to get more console, it will return console just after console is
 		// returned back
-		SingleConsole anotherConsole = manager.getAvailableConsole();
+		SingleConsole anotherConsole = manager.getAvailableConsole(ConsolePropertiesFactory
+				.createEmptyConsoleProperties());
 		elapseTime.stop();
 		assertThat(elapseTime.getTotalTimeSeconds(), lessThan(3000D));
 		assertThat(manager.getAvailableConsoleSize(), is(0));

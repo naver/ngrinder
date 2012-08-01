@@ -36,6 +36,7 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.util.thread.ExecutorFactory;
 
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,9 +52,10 @@ import org.springframework.stereotype.Component;
  * @since 3.0
  */
 @Component
-public class AgentManager {
-	public static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class.getName());
-	private final AgentControllerServerDaemon server = new AgentControllerServerDaemon(1011);
+public class AgentManager implements NGrinderConstants {
+	public static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);
+	private final AgentControllerServerDaemon agentControllerServer = new AgentControllerServerDaemon(
+			AGENT_SERVER_DAEMON_PORT);
 	private static final int NUMBER_OF_THREAD = 3;
 	private static final int AGENT_RUN_TIMEOUT_SECOND = 10;
 
@@ -62,7 +64,15 @@ public class AgentManager {
 	 */
 	@PostConstruct
 	public void init() {
-		server.start();
+		agentControllerServer.start();
+	}
+
+	public Set<AgentIdentity> getAllAttachedAgents() {
+		return agentControllerServer.getAllAvailableAgents();
+	}
+
+	public Set<AgentIdentity> getAllFreeAgents() {
+		return agentControllerServer.getAllFreeAgents();
 	}
 
 	/**
@@ -78,18 +88,19 @@ public class AgentManager {
 	public synchronized void runAgent(final SingleConsole singleConsole, final GrinderProperties grinderProperties,
 			final Integer agentCount) {
 		// FIXME : synchronization on this method may have some penalty
-		final Set<AgentIdentity> allFreeAgents = server.getAllFreeAgents();
+		final Set<AgentIdentity> allFreeAgents = agentControllerServer.getAllFreeAgents();
 
 		final Set<AgentIdentity> neccessaryAgents = selectSome(allFreeAgents, agentCount);
 		try {
 			// Make the agents connect to console.
 			grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, singleConsole.getConsolePort());
+			grinderProperties.setProperty(GrinderProperties.CONSOLE_HOST, singleConsole.getConsoleHost());
 			ExecutorService execService = ExecutorFactory.createThreadPool("agentStarter", NUMBER_OF_THREAD);
 			for (final AgentIdentity eachAgentIdentity : neccessaryAgents) {
 				execService.submit(new Runnable() {
 					@Override
 					public void run() {
-						server.startAgent(grinderProperties, eachAgentIdentity);
+						agentControllerServer.startAgent(grinderProperties, eachAgentIdentity);
 					}
 				});
 			}

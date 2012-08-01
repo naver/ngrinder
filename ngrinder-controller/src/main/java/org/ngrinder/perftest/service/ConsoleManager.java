@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 import net.grinder.SingleConsole;
+import net.grinder.console.model.ConsoleProperties;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -161,13 +162,16 @@ public class ConsoleManager {
 	/**
 	 * Get available console.
 	 * 
-	 * If there is no available console, it waits until available console is returned back. If the specific time is
-	 * elapsed, the timeout error occurs and throw {@link NGrinderRuntimeException}. timeout can be adjusted by
+	 * If there is no available console, it waits until available console is
+	 * returned back. If the specific time is elapsed, the timeout error occurs
+	 * and throw {@link NGrinderRuntimeException}. timeout can be adjusted by
 	 * overriding {@link #getMaxWaitingMiliSecond()}.
 	 * 
+	 * @param baseConsoleProperties
+	 *            base {@link ConsoleProperties}
 	 * @return console
 	 */
-	public SingleConsole getAvailableConsole() {
+	public SingleConsole getAvailableConsole(ConsoleProperties baseConsoleProperties) {
 		ConsoleEntry consoleEntry;
 		try {
 			consoleEntry = consoleQueue.poll(getMaxWaitingMiliSecond(), TimeUnit.MILLISECONDS);
@@ -175,8 +179,11 @@ public class ConsoleManager {
 				throw new NGrinderRuntimeException("no console entry available");
 			}
 			synchronized (this) {
-				SingleConsole singleConsole = new SingleConsole(consoleEntry.getPort());
+				// FIXME : It might fail here
+				SingleConsole singleConsole = new SingleConsole(consoleEntry.getPort(), baseConsoleProperties);
+
 				getConsoleInUse().add(singleConsole);
+
 				return singleConsole;
 			}
 		} catch (InterruptedException e) {

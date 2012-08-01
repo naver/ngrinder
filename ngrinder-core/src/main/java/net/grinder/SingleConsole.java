@@ -25,6 +25,8 @@ package net.grinder;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +52,8 @@ import net.grinder.util.FileContents;
 import net.grinder.util.ReflectionUtil;
 import net.grinder.util.thread.Condition;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,6 +85,18 @@ public class SingleConsole implements Listener {
 	 */
 	public SingleConsole(String ip, int port) {
 		this(ip, port, ConsolePropertiesFactory.createEmptyConsoleProperties());
+	}
+
+	/**
+	 * Constructor with console port and properties.
+	 * 
+	 * @param port
+	 *            PORT
+	 * @param consoleProperties
+	 *            {@link ConsoleProperties} used.
+	 */
+	public SingleConsole(int port, ConsoleProperties consoleProperties) {
+		this("", port, consoleProperties);
 	}
 
 	/**
@@ -127,6 +143,20 @@ public class SingleConsole implements Listener {
 	}
 
 	/**
+	 * Return the assigned console host. If it's empty, it returns host IP
+	 * 
+	 * @return console host
+	 */
+	public String getConsoleHost() {
+		try {
+			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress.getLocalHost()
+					.getHostAddress());
+		} catch (UnknownHostException e) {
+			return "";
+		}
+	}
+
+	/**
 	 * Start console and wait until it's ready to get agent message.
 	 */
 	public void start() {
@@ -140,6 +170,7 @@ public class SingleConsole implements Listener {
 			}, "SingleConsole on port " + getConsolePort());
 			thread.setDaemon(true);
 			thread.start();
+			// 10 second is too big?
 			m_eventSyncCondition.waitNoInterrruptException(10000);
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
 		}
@@ -289,25 +320,32 @@ public class SingleConsole implements Listener {
 
 	public void waitUntilAgentConnected(int size) {
 		int trial = 1;
-		while (trial++ < 3) {
+		while (trial++ < 5) {
 			if (this.processReports.length != size) {
-				m_eventSyncCondition.waitNoInterrruptException(10000);
+				synchronized (m_eventSyncCondition) {
+					m_eventSyncCondition.waitNoInterrruptException(1000);
+				}
 			} else {
 				return;
 			}
 		}
+		throw new NGrinderRuntimeException("Connection is not completed "
+				+ ToStringBuilder.reflectionToString(processReports));
 	}
 
 	@Override
 	public void update(ProcessReports[] processReports) {
-		this.processReports = processReports;
-		m_eventSyncCondition.notifyAll();
+		synchronized (m_eventSyncCondition) {
+			this.processReports = processReports;
+			m_eventSyncCondition.notifyAll();
+		}
 	}
-  
+
 	public boolean isAllTestFinished() {
 		for (ProcessReports processReport : this.processReports) {
 			// TODO
 		}
 		return true;
 	}
+
 }
