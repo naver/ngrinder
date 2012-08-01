@@ -198,7 +198,7 @@ public class PerfTestController extends NGrinderBaseController {
 	public @ResponseBody
 	String getReportData(ModelMap model, @RequestParam long testId, @RequestParam String dataType,
 			@RequestParam int imgWidth) {
-		List<List<Object>> reportData = null;
+		List<Object> reportData = null;
 		String[] dataTypes = dataType.split(",");
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1 + dataTypes.length);
 		for (String dt : dataTypes) {

@@ -23,7 +23,6 @@
 package org.ngrinder.chart.controller;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,8 +59,6 @@ public class MonitorController extends NGrinderBaseController {
 
 	private static final String DATE_FORMAT = "yyyyMMddHHmmss";
 
-	private static final String DATE_FORMAT_PAGE = "MM/dd/yy HH:mm:ss";
-
 	@Autowired
 	private MonitorService monitorService;
 
@@ -87,14 +84,13 @@ public class MonitorController extends NGrinderBaseController {
 		int pointCount = imgWidth / 10;
 		int lineObject, current, interval;
 
-		List<List<Object>> cpuData = new ArrayList<List<Object>>();
-		List<List<Object>> memoryData = new ArrayList<List<Object>>();
-		List<List<Object>> heapMemoryData = new ArrayList<List<Object>>();
-		List<List<Object>> nonHeapMemoryData = new ArrayList<List<Object>>();
-		List<List<Object>> threadCountData = new ArrayList<List<Object>>();
-		List<List<Object>> jvmCpuData = new ArrayList<List<Object>>();
+		List<Object> cpuData = new ArrayList<Object>();
+		List<Object> memoryData = new ArrayList<Object>();
+		List<Object> heapMemoryData = new ArrayList<Object>();
+		List<Object> nonHeapMemoryData = new ArrayList<Object>();
+		List<Object> threadCountData = new ArrayList<Object>();
+		List<Object> jvmCpuData = new ArrayList<Object>();
 
-		DateFormat dfPage = new SimpleDateFormat(DATE_FORMAT_PAGE);
 		if (null != javaMonitorData && !javaMonitorData.isEmpty()) {
 			current = 0;
 			lineObject = javaMonitorData.size();
@@ -102,30 +98,10 @@ public class MonitorController extends NGrinderBaseController {
 			// TODO should get average data
 			for (JavaDataModel jdm : javaMonitorData) {
 				if (0 == current) {
-					Date collectTime = null;
-					try {
-						collectTime = df.parse(String.valueOf(jdm.getCollectTime()));
-					} catch (ParseException e) {
-						LOG.error("eror date: " + jdm.getCollectTime(), e);
-						continue;
-					}
-					String ct = dfPage.format(collectTime);
-					List<Object> heapMemory = new ArrayList<Object>();
-					heapMemory.add(ct);
-					heapMemory.add(jdm.getHeapUsedMemory());
-					heapMemoryData.add(heapMemory);
-					List<Object> nonHeapMemor = new ArrayList<Object>();
-					nonHeapMemor.add(ct);
-					nonHeapMemor.add(jdm.getNonHeapUsedMemory());
-					nonHeapMemoryData.add(nonHeapMemor);
-					List<Object> threadCount = new ArrayList<Object>();
-					threadCount.add(ct);
-					threadCount.add(jdm.getThreadCount());
-					threadCountData.add(threadCount);
-					List<Object> jvmCpu = new ArrayList<Object>();
-					jvmCpu.add(ct);
-					jvmCpu.add(jdm.getCpuUsedPercentage());
-					jvmCpuData.add(jvmCpu);
+					heapMemoryData.add(jdm.getHeapUsedMemory());
+					nonHeapMemoryData.add(jdm.getNonHeapUsedMemory());
+					threadCountData.add(jdm.getThreadCount());
+					jvmCpuData.add(jdm.getCpuUsedPercentage() * 100);
 				}
 				if (++current >= interval) {
 					current = 0;
@@ -139,22 +115,8 @@ public class MonitorController extends NGrinderBaseController {
 			// TODO should get average data
 			for (SystemDataModel sdm : systemMonitorData) {
 				if (0 == current) {
-					Date collectTime = null;
-					try {
-						collectTime = df.parse(String.valueOf(sdm.getCollectTime()));
-					} catch (ParseException e) {
-						LOG.error("eror date: " + sdm.getCollectTime(), e);
-						continue;
-					}
-					String ct = dfPage.format(collectTime);
-					List<Object> cpu = new ArrayList<Object>();
-					cpu.add(ct);
-					cpu.add(sdm.getCpuUsedPercentage());
-					cpuData.add(cpu);
-					List<Object> memory = new ArrayList<Object>();
-					memory.add(ct);
-					memory.add(sdm.getTotalMemory() - sdm.getFreeMemory());
-					memoryData.add(memory);
+					cpuData.add(sdm.getCpuUsedPercentage() * 100);
+					memoryData.add(sdm.getTotalMemory() - sdm.getFreeMemory());
 				}
 				if (++current >= interval) {
 					current = 0;

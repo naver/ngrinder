@@ -858,19 +858,15 @@ div.chart {
                     }], 
                     axes: { 
                         xaxis: { 
-                            renderer: $.jqplot.DateAxisRenderer,
-                            tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                            tickRenderer: $.jqplot.AxisTickRenderer,
                             tickOptions: {
-                              angle: -30
+                              show: false
                             } 
-                        }, 
-                        yaxis: {  
-                            renderer: $.jqplot.LogAxisRenderer
-                        } 
+                        }
                     }, 
                     cursor:{
                         show: true, 
-                        zoom: true
+                        zoom: false
                     }
                 });
             }

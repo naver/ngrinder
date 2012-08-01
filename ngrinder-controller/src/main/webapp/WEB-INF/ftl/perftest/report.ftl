@@ -109,6 +109,16 @@
                        </ul>
 			</div>
 			<div class="span7">
+			    <div id="timeDiv">
+			    <table class="table table-bordered">
+                           <tr>
+                               <th>Start Time</th>
+                               <td><span>${(test.startTime)!}</span></td>
+                               <th>Dinish Time</th>
+                               <td><span>${(test.finishTime)!}</span></td>
+                           </tr>
+                       </table>
+                </div>
 			    <div id="performanceDiv">
 			        <div class="row">
                         <div class="span8" style="margin-bottom:10px;">
@@ -222,12 +232,12 @@
                        'imgWidth':700},
                 success: function(res) {
                     if (res.success) {
-                        //drawChart('System CPU', 'cpuDiv', res.cpu);
-                        //drawChart('System Memory', 'memoryDiv', res.memory);
-                        //drawChart('Heap Memory', 'heapMemoryDiv', res.heap_memory);
-                        //drawChart('NonHeap Memory', 'nonHeapMemoryDiv', res.non_heap_memory);
-                        //drawChart('Thread Count', 'threadCountDiv', res.thread_count);
-                        //drawChart('JVM Cpu', 'jvmCpuDiv', res.jvm_cpu);
+                        drawChart('System CPU', 'cpuDiv', res.cpu);
+                        drawChart('System Memory', 'memoryDiv', res.memory);
+                        drawChart('Heap Memory', 'heapMemoryDiv', res.heap_memory);
+                        drawChart('NonHeap Memory', 'nonHeapMemoryDiv', res.non_heap_memory);
+                        drawChart('Thread Count', 'threadCountDiv', res.thread_count);
+                        drawChart('JVM Cpu', 'jvmCpuDiv', res.jvm_cpu);
                         return true;
                     } else {
                         showErrorMsg("Get monitor data failed.");
@@ -251,19 +261,15 @@
                 }], 
                 axes: { 
                     xaxis: { 
-                        renderer: $.jqplot.DateAxisRenderer,
-                        tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                        tickRenderer: $.jqplot.AxisTickRenderer,
                         tickOptions: {
-                          angle: -30
+                          show: false
                         } 
-                    }, 
-                    yaxis: {  
-                        renderer: $.jqplot.LogAxisRenderer
-                    } 
+                    }
                 }, 
                 cursor:{
                     show: true, 
-                    zoom: true
+                    zoom: false
                 }
                 //yaxis: {label : 'Transation'},
                 //xaxis: {label : 'Time (sec.)'} 

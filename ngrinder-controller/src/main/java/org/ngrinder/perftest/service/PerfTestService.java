@@ -308,8 +308,8 @@ public class PerfTestService implements NGrinderConstants {
 	 * @return report data
 	 * @throws IOException
 	 */
-	public List<List<Object>> getReportData(long testId, String dataType, int imgWidth) throws IOException {
-		List<List<Object>> reportData = new ArrayList<List<Object>>();
+	public List<Object> getReportData(long testId, String dataType, int imgWidth) throws IOException {
+		List<Object> reportData = new ArrayList<Object>();
 		File reportFolder = config.getHome().getPerfTestDirectory(testId + File.separator + "report");
 		int pointCount = imgWidth / 10;
 		int lineNumber;
@@ -336,13 +336,8 @@ public class PerfTestService implements NGrinderConstants {
 			// FIXME : NEVER NEVER DO IT. Be aware of memory size.!!
 			while (StringUtils.isNotBlank(data = br.readLine())) {
 				if (0 == current) {
-					String[] datas = data.split(",");
-					String time = datas[0];
-					long number = NumberUtils.createLong(datas[1]);
-					List<Object> temp = new ArrayList<Object>();
-					temp.add(time);
-					temp.add(number);
-					reportData.add(temp);
+					long number = NumberUtils.createLong(data);
+					reportData.add(number);
 				}
 				if (++current >= interval) {
 					current = 0;
