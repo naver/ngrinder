@@ -60,6 +60,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.ReflectionUtil;
@@ -309,8 +310,20 @@ public class PerfTestService implements NGrinderConstants {
 		return new ProcessAndThread(processCount, threadCount);
 	}
 
-	public List<String> getReportData(long testId, String dataType, int imgWidth) throws IOException {
-		List<String> reportData = new ArrayList<String>();
+	/**
+	 * get report data by test id, data type, and image width
+	 * 
+	 * @param testId
+	 *            test id
+	 * @param dataType
+	 *            data type
+	 * @param imgWidth
+	 *            image width
+	 * @return report data
+	 * @throws IOException
+	 */
+	public List<Object> getReportData(long testId, String dataType, int imgWidth) throws IOException {
+		List<Object> reportData = new ArrayList<Object>();
 		File reportFolder = config.getHome().getPerfTestDirectory(testId + File.separator + "report");
 		int pointCount = imgWidth / 10;
 		int lineNumber;
@@ -335,9 +348,10 @@ public class PerfTestService implements NGrinderConstants {
 			int interval = lineNumber / pointCount;
 			// TODO should get average data
 			// FIXME : NEVER NEVER DO IT. Be aware of memory size.!!
-			while ((data = br.readLine()) != null) {
+			while (StringUtils.isNotBlank(data = br.readLine())) {
 				if (0 == current) {
-					reportData.add(data);
+					long number = NumberUtils.createLong(data);
+					reportData.add(number);
 				}
 				if (++current >= interval) {
 					current = 0;
@@ -349,6 +363,12 @@ public class PerfTestService implements NGrinderConstants {
 		}
 
 		return reportData;
+	}
+
+	public File getReportFile(long testId) {
+		File reportFolder = config.getHome().getPerfTestDirectory(testId + File.separator + "report");
+		File targetFile = new File(reportFolder, "output.csv");
+		return targetFile;
 	}
 
 	/**

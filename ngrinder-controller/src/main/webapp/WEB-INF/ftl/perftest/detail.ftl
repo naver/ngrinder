@@ -295,7 +295,7 @@ div.chart {
 								</div>
 							</div>
 							<div class="span8">
-								<div class="chart" style="width:600px; height:250px"></div>
+								<div id="tpsDiv" class="chart" style="width:600px; height:250px"></div>
 							</div>
 						</div>
 						<div class="row" style="margin-top: 10px;">
@@ -808,7 +808,7 @@ div.chart {
                     dataType:'json',
                     data: {'testId': $("#testId").val(),
                            'dataType':'tps_total',
-                           'imgWidth':$("#tpsimg").width()},
+                           'imgWidth':$("#tpsDiv").width()},
                     success: function(res) {
                         if (res.success) {
                             drawChart('TPS', 'tpsDiv', res.tps_total);
@@ -858,18 +858,15 @@ div.chart {
                     }], 
                     axes: { 
                         xaxis: { 
-                            tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                            tickRenderer: $.jqplot.AxisTickRenderer,
                             tickOptions: {
-                              angle: -30
+                              show: false
                             } 
-                        }, 
-                        yaxis: {  
-                            renderer: $.jqplot.LogAxisRenderer
-                        } 
+                        }
                     }, 
                     cursor:{
                         show: true, 
-                        zoom: true
+                        zoom: false
                     }
                 });
             }

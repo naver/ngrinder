@@ -438,6 +438,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public void setDistributionPath(String distributionPath) {
 		this.distributionPath = distributionPath;
 	}
-
 	
+	public String getDurationStr() {
+		return DateUtil.ms2Time(this.duration);
+	}
 }

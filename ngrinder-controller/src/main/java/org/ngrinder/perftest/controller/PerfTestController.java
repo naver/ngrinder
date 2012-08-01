@@ -22,14 +22,17 @@
  */
 package org.ngrinder.perftest.controller;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
@@ -195,7 +198,7 @@ public class PerfTestController extends NGrinderBaseController {
 	public @ResponseBody
 	String getReportData(ModelMap model, @RequestParam long testId, @RequestParam String dataType,
 			@RequestParam int imgWidth) {
-		List<String> reportData = null;
+		List<Object> reportData = null;
 		String[] dataTypes = dataType.split(",");
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1 + dataTypes.length);
 		for (String dt : dataTypes) {
@@ -203,7 +206,7 @@ public class PerfTestController extends NGrinderBaseController {
 				reportData = perfTestService.getReportData(testId, dt, imgWidth);
 				rtnMap.put(JSON_SUCCESS, true);
 				rtnMap.put(dt, reportData);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				rtnMap.put(JSON_SUCCESS, false);
 				LOG.error("Get report data failed. type: " + dt, e);
 			}
@@ -211,7 +214,13 @@ public class PerfTestController extends NGrinderBaseController {
 
 		return JSONUtil.toJson(rtnMap);
 	}
-	
+
+	@RequestMapping(value = "/downloadReportData")
+	public void downloadReportData(HttpServletResponse response, @RequestParam long testId) {
+		File targetFile = perfTestService.getReportFile(testId);
+		FileDownloadUtil.downloadFile(response, targetFile);
+	}
+
 	@RequestMapping(value = "/running/refresh")
 	public String refreshTestRunning(ModelMap model, @RequestParam long testId) {
 		PerfTest test = perfTestService.getPerfTest(testId);

@@ -24,14 +24,12 @@
 		</li>
 	</ul>
 	<div class="container">
-	   <input type="hidden" id="testId" name="id" value="${(test.id)!}">
+	   
 	   <input type="hidden" id="startTime" name="startTime" value="${(test.startTime)!}">
 	   <input type="hidden" id="finishTime" name="finishTime" value="${(test.finishTime)!}">
-		<div class="row">
-			<div class="span12" style="margin-bottom:10px;">
-				<button class="btn btn-large pull-right"><i class="icon-download-alt"></i><strong>Download CSV</strong></button>
-			</div>
-		</div>
+	   <form name="downloadForm">
+	       <input type="hidden" id="testId" name="testId" value="${(test.id)!}">
+	   </form>
 		<div class="row">
 			<div class="span4">
 					   <table class="table table-bordered">
@@ -111,7 +109,22 @@
                        </ul>
 			</div>
 			<div class="span7">
+			    <div id="timeDiv">
+			    <table class="table table-bordered">
+                           <tr>
+                               <th>Start Time</th>
+                               <td><span>${(test.startTime)!}</span></td>
+                               <th>Dinish Time</th>
+                               <td><span>${(test.finishTime)!}</span></td>
+                           </tr>
+                       </table>
+                </div>
 			    <div id="performanceDiv">
+			        <div class="row">
+                        <div class="span8" style="margin-bottom:10px;">
+                            <button class="btn btn-large pull-right" id="downloadReportData"><i class="icon-download-alt"></i><strong>Download CSV</strong></button>
+                        </div>
+                    </div>
     				<div class="chart" id="tpsDiv"></div>
     				<div class="chart" id="rpsDiv"></div>
     				<div class="chart" id="vuserDiv"></div>
@@ -168,6 +181,11 @@
                 var $elem = $(this);
                 getMonitorData($elem.attr("ip"));
             });
+            $("#downloadReportData").click(function() {
+                var url = "${req.getContextPath()}/perftest/downloadReportData?testId=" + $("#testId").val();
+                document.forms.downloadForm.action = url;
+                document.forms.downloadForm.submit();
+            });
 			$("#testPerformance").click();
 		});
 		function getPerformanceData(){
@@ -183,10 +201,10 @@
                        'imgWidth':700},
                 success: function(res) {
                     if (res.success) {
-                        drawChart('TPS', 'tpsDiv', res.tps_total);
-                        drawChart('TPS', 'rpsDiv', res.response_time);
-                        drawChart('TPS', 'vuserDiv', res.vuser);
-                        drawChart('TPS', 'errorDiv', res.tps_failed);
+                        drawChart('Transactions Per Second', 'tpsDiv', res.tps_total);
+                        drawChart('Responses Per Second', 'rpsDiv', res.response_time);
+                        drawChart('Running Vusers', 'vuserDiv', res.vuser);
+                        drawChart('Errors Per Second', 'errorDiv', res.tps_failed);
                         return true;
                     } else {
                         showErrorMsg("Get report data failed.");
@@ -214,12 +232,12 @@
                        'imgWidth':700},
                 success: function(res) {
                     if (res.success) {
-                        drawChart('TPS', 'cpuDiv', res.cpu);
-                        drawChart('TPS', 'memoryDiv', res.memory);
-                        drawChart('TPS', 'heapMemoryDiv', res.heap_memory);
-                        drawChart('TPS', 'nonHeapMemoryDiv', res.non_heap_memory);
-                        drawChart('TPS', 'threadCountDiv', res.thread_count);
-                        drawChart('TPS', 'jvmCpuDiv', res.jvm_cpu);
+                        drawChart('System CPU', 'cpuDiv', res.cpu);
+                        drawChart('System Memory', 'memoryDiv', res.memory);
+                        drawChart('Heap Memory', 'heapMemoryDiv', res.heap_memory);
+                        drawChart('NonHeap Memory', 'nonHeapMemoryDiv', res.non_heap_memory);
+                        drawChart('Thread Count', 'threadCountDiv', res.thread_count);
+                        drawChart('JVM Cpu', 'jvmCpuDiv', res.jvm_cpu);
                         return true;
                     } else {
                         showErrorMsg("Get monitor data failed.");
@@ -238,28 +256,26 @@
             var plot1 = $.jqplot(id, [data], { 
                 title: title, 
                 series: [{ 
-                    label: '', 
+                    label: title, 
                     neighborThreshold: -1 
                 }], 
                 axes: { 
                     xaxis: { 
-                        tickRenderer: $.jqplot.CanvasAxisTickRenderer,
+                        tickRenderer: $.jqplot.AxisTickRenderer,
                         tickOptions: {
-                          angle: -30
+                          show: false
                         } 
-                    }, 
-                    yaxis: {  
-                        renderer: $.jqplot.LogAxisRenderer
-                    } 
+                    }
                 }, 
                 cursor:{
                     show: true, 
-                    zoom: true
+                    zoom: false
                 }
+                //yaxis: {label : 'Transation'},
+                //xaxis: {label : 'Time (sec.)'} 
             });
         }
-        //yaxis {label : 'Transation'}
-        //xaxis {label : 'Time (sec.)'} 
+        
 	</script>
 	</body>
 </html>

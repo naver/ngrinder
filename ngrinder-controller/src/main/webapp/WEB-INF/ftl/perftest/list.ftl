@@ -44,12 +44,12 @@
 						<col width="100">
 						<col width="110">
 						<col>
-						<col width="100">
-						<col width="100">
-						<col width="70">
+						<col width="135">
+						<col width="85">
+						<col width="60">
 						<col width="65">
-						<col width="75">
 						<col width="70">
+						<col width="60">
 						<col width="40">
 					</colgroup>
 					<thead>
@@ -80,7 +80,7 @@
 									<td class="ellipsis">${test.scriptName}</td>
 									<td class="ellipsis" title="${(test.description)!}">${(test.description)!}</td>
 									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
-									<td>${(test.duration)!0}</td>
+									<td>${(test.durationStr)!}</td>
 									<td>${(test.tps)!}</td>
 									<td>${(test.meanTime)!0}</td>
 									<td>${(test.errors)!0}</td>
