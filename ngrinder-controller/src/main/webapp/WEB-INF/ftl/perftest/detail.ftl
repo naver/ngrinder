@@ -4,6 +4,7 @@
 <title>nGrinder Performance Test Detail</title>
 <#include "../common/common.ftl">
 <#include "../common/jqplot.ftl">
+<link href="${req.getContextPath()}/css/slider.css" rel="stylesheet">
 <link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
 <style>
 div.div-host {
@@ -149,8 +150,6 @@ div.chart {
 											<label class="control-label"> 
 												<input type="radio" id="durationChkbox"> Duration
 											</label>
-											<input type="hidden" id="duration" name="duration" class="required positiveNumber"
-												value="${(test.duration)!0}">
 											<div class="controls">
 												<select class="select-item" id="dSelect"></select> : 
 												<select	class="select-item" id="hSelect"></select> : 
@@ -158,6 +157,14 @@ div.chart {
 												<select	class="select-item" id="sSelect"></select>
 												&nbsp;&nbsp;
 												<code>DD:HH:MM:SS</code>
+											</div>
+											<div class="controls">
+												<input type="hidden" id="duration" class="required positiveNumber" name="duration" value="${(test.duration)!0}">
+												<div id="durationSlider" class="slider span3"></div>
+												<input id="hiddenDurationInput" class="span1 hide" 
+														data-slider="#durationSlider"
+														data-max="100" data-min="0" data-step="1">
+												
 											</div>
 										</div>
 										<div class="control-group">
@@ -543,9 +550,33 @@ div.chart {
 	<#include "../common/jqplot.ftl">
 	<script src="${req.getContextPath()}/plugins/datepicker/js/bootstrap-datepicker.js"></script>
 	<script src="${req.getContextPath()}/js/rampup.js"></script>
+	<script src="${req.getContextPath()}/js/bootstrap-slider.min.js"></script>
+	
 	<script>
 	   var chart;
 	   var objTimer;
+	   var sliderMax = 100;
+	   var durationMap = {};
+	   durationMap[0] = 0;
+	   for (var i=1; i<=sliderMax; i++) {
+		   if (i <= 10) {
+			   durationMap[i] = durationMap[i-1] + 1;
+		   } else if (i <= 20) {
+			   durationMap[i] = durationMap[i-1] + 5;
+		   } else if (i <= 32) { //untill 180 min
+			   durationMap[i] = durationMap[i-1] + 10;
+		   } else if (i <= 38) { //360 min
+			   durationMap[i] = durationMap[i-1] + 30;
+		   } else if (i <= 56) { //24 hours
+			   durationMap[i] = durationMap[i-1] + 60;
+		   } else if (i <= 72) {
+			   durationMap[i] = durationMap[i-1] + 60*6;
+		   } else if (i <= 78) {
+			   durationMap[i] = durationMap[i-1] + 60*12;
+		   } else {
+			   durationMap[i] = durationMap[i-1] + 60*24;
+		   }
+	   }
 			$(document).ready(function() {
 				$("#n_test").addClass("active");
 				if (${scriptList?size} == 0) {
@@ -559,9 +590,20 @@ div.chart {
 			        $(this).popover('show')
 			    });
 				
+				for (var i=0; i<=sliderMax; i++) {
+					if (durationMap[i] * 60000 == $("#duration").val()) {
+						$("#hiddenDurationInput").val(i);
+					}
+				}
+
+			    $("#hiddenDurationInput").bind("slide", function(e){
+			    		$("#duration").val(durationMap[this.value] * 60000);
+			    		initDuration();
+			    		$("#duration").valid();
+			    });
+			    	
 			    $("#testContentForm").validate({
 			    	ignore: "", //make the validation on hidden input work
-			    	duration: "Please select a proper duration value!",
 			        errorClass: "help-inline",
 			        errorElement: "span",
 			        highlight:function(element, errorClass, validClass) {

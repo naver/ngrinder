@@ -1,0 +1,234 @@
+.slider {
+	margin-right: 12px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none
+}
+
+.slider .input-slider {
+	display: inline-block;
+	*display: inline;
+	*zoom: 1;
+	position: relative;
+	border-width: 1px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	border-style: solid;
+	border-color: #ccc;
+	background-color: #f5f5f5;
+	background-image: -moz-linear-gradient(top, #fff, #e6e6e6);
+	background-image: -ms-linear-gradient(top, #fff, #e6e6e6);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fff),
+		to(#e6e6e6) );
+	background-image: -webkit-linear-gradient(top, #fff, #e6e6e6);
+	background-image: -o-linear-gradient(top, #fff, #e6e6e6);
+	background-image: linear-gradient(top, #fff, #e6e6e6);
+	background-repeat: repeat-x;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff',
+		endColorstr='#e6e6e6', GradientType=0 );
+	*filter: none;
+	outline-style: none !important;
+	width: 100%;
+	height: 8px;
+	margin: 8px 0 8px 0
+}
+
+.slider.vertical .input-slider {
+	height: 100%;
+	width: 8px;
+	margin: 0 8px 0 8px;
+	background-color: #fff;
+	background-image: -moz-linear-gradient(left, #e6e6e6, #fff);
+	background-image: -ms-linear-gradient(left, #e6e6e6, #fff);
+	background-image: -webkit-gradient(linear, 0 0, 100% 0, from(#e6e6e6),
+		to(#fff) );
+	background-image: -webkit-linear-gradient(left, #e6e6e6, #fff);
+	background-image: -o-linear-gradient(left, #e6e6e6, #fff);
+	background-image: linear-gradient(left, #e6e6e6, #fff);
+	background-repeat: repeat-x;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e6e6e6',
+		endColorstr='#ffffff', GradientType=1 );
+	*filter: none
+}
+
+.input-slider-knob {
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	margin-top: -5px;
+	margin-left: 0;
+	border-width: 1px;
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+	background-color: #f0f0f0;
+	background-image: -moz-linear-gradient(top, #fafafa, #e0e0e0);
+	background-image: -ms-linear-gradient(top, #fafafa, #e0e0e0);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fafafa),
+		to(#e0e0e0) );
+	background-image: -webkit-linear-gradient(top, #fafafa, #e0e0e0);
+	background-image: -o-linear-gradient(top, #fafafa, #e0e0e0);
+	background-image: linear-gradient(top, #fafafa, #e0e0e0);
+	background-repeat: repeat-x;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fafafa',
+		endColorstr='#e0e0e0', GradientType=0 );
+	border-color: #e0e0e0 #e0e0e0 #bababa;
+	border-color: rgba(0, 0, 0, .1) rgba(0, 0, 0, .1) rgba(0, 0, 0, .25);
+	filter: progid:dximagetransform.microsoft.gradient(enabled=false );
+	border-style: solid;
+	border-color: #c7c7c7;
+	zoom: 1
+}
+
+.input-slider-knob:hover,.input-slider-knob:active,.input-slider-knob.active,.input-slider-knob.disabled,.input-slider-knob[disabled]
+	{
+	background-color: #e0e0e0
+}
+
+.input-slider-knob:active,.input-slider-knob.active {
+	background-color: #c7c7c7 \9
+}
+
+.slider.vertical .input-slider-knob {
+	margin-top: 0;
+	margin-left: -5px
+}
+
+.input-slider.disabled,.input-slider.disabled .input-slider-knob {
+	background-color: #eee;
+	border-color: #ddd;
+	cursor: not-allowed
+}
+
+.input-slider {
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+	-moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+	-webkit-transition: border linear .2s, box-shadow linear .2s;
+	-moz-transition: border linear .2s, box-shadow linear .2s;
+	-ms-transition: border linear .2s, box-shadow linear .2s;
+	-o-transition: border linear .2s, box-shadow linear .2s;
+	transition: border linear .2s, box-shadow linear .2s
+}
+
+.input-slider-knob {
+	color: #333;
+	border-color: #ccc
+}
+
+.input-slider-knob:focus,.input-slider-knob.focused {
+	border-color: #b3b3b3;
+	-webkit-box-shadow: 0 0 6px #fff;
+	-moz-box-shadow: 0 0 6px #fff;
+	box-shadow: 0 0 6px #fff
+}
+
+.input-slider.focused {
+	border-color: rgba(82, 168, 236, .8);
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px
+		rgba(82, 168, 236, .6);
+	-moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px
+		rgba(82, 168, 236, .6);
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px
+		rgba(82, 168, 236, .6);
+	outline: 0;
+	outline: thin dotted \9
+}
+
+.control-group.error .input-slider {
+	border-color: #d89ca6
+}
+
+.control-group.error .input-slider:focus,.control-group.error .input-slider.focused
+	{
+	border-color: #bb5364;
+	-webkit-box-shadow: 0 0 6px #fff;
+	-moz-box-shadow: 0 0 6px #fff;
+	box-shadow: 0 0 6px #fff
+}
+
+.control-group.error .input-slider-knob {
+	border-color: #d89ca6
+}
+
+.control-group.warning .input-slider {
+	border-color: #f3d390
+}
+
+.control-group.warning .input-slider:focus,.control-group.warning .input-slider.focused
+	{
+	border-color: #e9ae34;
+	-webkit-box-shadow: 0 0 6px #fff;
+	-moz-box-shadow: 0 0 6px #fff;
+	box-shadow: 0 0 6px #fff
+}
+
+.control-group.warning .input-slider-knob {
+	border-color: #f3d390
+}
+
+.control-group.success .input-slider {
+	border-color: #aed48e
+}
+
+.control-group.success .input-slider:focus,.control-group.success .input-slider.focused
+	{
+	border-color: #79b646;
+	-webkit-box-shadow: 0 0 6px #fff;
+	-moz-box-shadow: 0 0 6px #fff;
+	box-shadow: 0 0 6px #fff
+}
+
+.control-group.success .input-slider-knob {
+	border-color: #aed48e
+}
+
+.control-group.info .input-slider {
+	border-color: #7cd2e3
+}
+
+.control-group.info .input-slider:focus,.control-group.info .input-slider.focused
+	{
+	border-color: #2bb3ce;
+	-webkit-box-shadow: 0 0 6px #fff;
+	-moz-box-shadow: 0 0 6px #fff;
+	box-shadow: 0 0 6px #fff
+}
+
+.control-group.info .input-slider-knob {
+	border-color: #7cd2e3
+}
+
+.add-on .input-slider {
+	top: -3px;
+	width: 140px
+}
+
+.slider.addon-slider {
+	padding-left: 10px;
+	padding-right: 12px;
+	*display: inline;
+	*zoom: 1
+}
+
+.pull-right {
+	float: right
+}
+
+.pull-left {
+	float: left
+}
+
+.hide {
+	display: none
+}
+
+.show {
+	display: block
+}
+
+.invisible {
+	visibility: hidden
+}
