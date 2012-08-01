@@ -22,77 +22,39 @@
  */
 package org.ngrinder.perftest.service;
 
+import java.text.ParseException;
+
 import org.junit.Ignore;
 import org.junit.Test;
+import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.annotation.Rollback;
 
 /**
- * Class description.
+ * {@link PerfTest} generation utility for test
  * 
  * @author Mavlarn
- * @since
+ * @author JunHo Yoon
+ * @since 3.0
  */
-@ContextConfiguration({ "classpath:applicationContext.xml" })
-public class AddTestRecord extends AbstractJUnit4SpringContextTests {
-
-	@Autowired
-	private PerfTestService testService;
-
-	public void createTempTests(PerfTestService testService) {
-		PerfTest test = new PerfTest();
-		test.setTestName("new Test1");
-		test.setThreshold("D");
-		test.setDuration(120L);
-		test.setIgnoreSampleCount(0);
-		test.setTargetHosts("127.0.0.1");
-		test.setScriptName("test1.py");
-		test.setProcesses(10);
-		test.setProcessIncrement(1);
-		test.setProcessIncrementInterval(1000);
-		testService.savePerfTest(test);
-
-		test = new PerfTest();
-		test.setTestName("new Test2");
-		test.setStatus(Status.FINISHED);
-		test.setThreshold("D");
-		test.setDuration(120L);
-		test.setIgnoreSampleCount(0);
-		test.setTargetHosts("127.0.0.1");
-		test.setScriptName("test2.py");
-		test.setProcesses(10);
-		test.setProcessIncrement(1);
-		test.setProcessIncrementInterval(1000);
-		testService.savePerfTest(test);
-
-	}
+@Ignore("Only enable this when test data is necessary.")
+public class AddTestRecord extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
 	PerfTestRepository perfTestRepository;
 
 	@Test
-	public void doNothing() {
-
+	@Rollback(false)
+	public void testGetTestListAll() throws ParseException {
+		createPerfTest("test1", Status.READY, DateUtil.toSimpleDate("2011-01-01"));
+		createPerfTest("test2", Status.READY, DateUtil.toSimpleDate("2011-01-02"));
+		createPerfTest("test3", Status.DISTRIBUTE_FILES, DateUtil.toSimpleDate("2011-01-01"));
+		createPerfTest("test4", Status.TESTING, DateUtil.toSimpleDate("2011-01-03"));
+		createPerfTest("test5", Status.CANCELED, DateUtil.toSimpleDate("2011-01-04"));
+		createPerfTest("test6", Status.FINISHED, DateUtil.toSimpleDate("2011-01-05"));
+		createPerfTest("test7", Status.FINISHED, DateUtil.toSimpleDate("2011-01-06"));
 	}
-
-	@Test
-	@Ignore("Only enable this when test data is necessary.")
-	public void testGetTestListAll() {
-		createTempTests(testService);
-		createTempTests(testService);
-		createTempTests(testService);
-		createTempTests(testService);
-		createTempTests(testService);
-		createTempTests(testService);
-		createTempTests(testService);
-		createTempTests(testService);
-		createTempTests(testService);
-		createTempTests(testService);
-		System.out.println(perfTestRepository.findAll());
-	}
-
 }

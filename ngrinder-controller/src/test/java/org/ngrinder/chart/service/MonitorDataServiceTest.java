@@ -24,7 +24,7 @@ package org.ngrinder.chart.service;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.ngrinder.AbstractNGNinderTransactionalTest;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -34,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since
  * @date 2012-7-23
  */
-public class MonitorDataServiceTest extends AbstractNGNinderTransactionalTest {
+public class MonitorDataServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private MonitorDataService monitorDataService;

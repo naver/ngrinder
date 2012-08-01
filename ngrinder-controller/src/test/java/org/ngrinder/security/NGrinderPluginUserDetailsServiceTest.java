@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.AbstractNGNinderTransactionalTest;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.plugin.OnLoginRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.Role;
@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
-public class NGrinderPluginUserDetailsServiceTest extends AbstractNGNinderTransactionalTest {
+public class NGrinderPluginUserDetailsServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	public NGrinderAuthenticationProvider authProvider;

@@ -29,7 +29,7 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.AbstractNGNinderTransactionalTest;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,7 @@ import org.springframework.ui.ModelMap;
  * @author mavlarn
  * @Since 3.0
  */
-public class PerfTestControllerTest extends AbstractNGNinderTransactionalTest {
+public class PerfTestControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private PerfTestController controller;

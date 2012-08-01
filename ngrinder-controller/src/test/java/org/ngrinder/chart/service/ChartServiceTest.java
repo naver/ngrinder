@@ -30,7 +30,7 @@ import java.util.List;
 
 import org.apache.commons.lang.math.RandomUtils;
 import org.junit.Test;
-import org.ngrinder.AbstractNGNinderTransactionalTest;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.chart.repository.JavaMonitorRepository;
 import org.ngrinder.chart.repository.SystemMonitorRepository;
 import org.ngrinder.monitor.controller.model.JavaDataModel;
@@ -44,7 +44,7 @@ import org.springframework.test.annotation.Rollback;
  * @author Mavlarn
  * @since
  */
-public class ChartServiceTest extends AbstractNGNinderTransactionalTest {
+public class ChartServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private JavaMonitorRepository javaRepository;

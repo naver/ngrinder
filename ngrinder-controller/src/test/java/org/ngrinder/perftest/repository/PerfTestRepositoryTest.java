@@ -4,12 +4,12 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-import org.ngrinder.AbstractNGNinderTransactionalTest;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class PerfTestRepositoryTest extends AbstractNGNinderTransactionalTest {
+public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	public PerfTestRepository repo;
