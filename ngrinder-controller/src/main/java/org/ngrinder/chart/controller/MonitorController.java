@@ -22,15 +22,18 @@
  */
 package org.ngrinder.chart.controller;
 
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.chart.services.MonitorService;
 import org.ngrinder.common.controller.NGrinderBaseController;
-import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -55,6 +58,10 @@ public class MonitorController extends NGrinderBaseController {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MonitorController.class);
 
+	private static final String DATE_FORMAT = "yyyyMMddHHmmss";
+
+	private static final String DATE_FORMAT_PAGE = "MM/dd/yy HH:mm:ss";
+
 	@Autowired
 	private MonitorService monitorService;
 
@@ -67,42 +74,58 @@ public class MonitorController extends NGrinderBaseController {
 
 	@RequestMapping("/getMonitorData")
 	public @ResponseBody
-	String getMonitorData(ModelMap model, @RequestParam String ip, @RequestParam String startTime,
-			@RequestParam String finishTime, @RequestParam int imgWidth) {
+	String getMonitorData(ModelMap model, @RequestParam String ip, @RequestParam Date startTime,
+			@RequestParam Date finishTime, @RequestParam int imgWidth) {
 
-		long st, et;
-		try {
-			st = DateUtil.toSimpleDate(startTime).getTime();
-			et = DateUtil.toSimpleDate(finishTime).getTime();
-		} catch (ParseException e) {
-			st = 0;
-			et = 0;
-			LOG.error("error date format: " + startTime + "," + finishTime, e);
-		}
+		DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+		long st = NumberUtils.toLong(df.format(startTime));
+		long et = NumberUtils.toLong(df.format(finishTime));
+
 		List<JavaDataModel> javaMonitorData = monitorService.getJavaMonitorData(ip, st, et);
 		List<SystemDataModel> systemMonitorData = monitorService.getSystemMonitorData(ip, st, et);
 
 		int pointCount = imgWidth / 10;
-		int lineNumber, current, interval;
+		int lineObject, current, interval;
 
-		List<String> cpuData = new ArrayList<String>();
-		List<String> memoryData = new ArrayList<String>();
-		List<String> heapMemorData = new ArrayList<String>();
-		List<String> nonHeapMemoryData = new ArrayList<String>();
-		List<String> threadCountData = new ArrayList<String>();
-		List<String> jvmCpuData = new ArrayList<String>();
+		List<List<Object>> cpuData = new ArrayList<List<Object>>();
+		List<List<Object>> memoryData = new ArrayList<List<Object>>();
+		List<List<Object>> heapMemoryData = new ArrayList<List<Object>>();
+		List<List<Object>> nonHeapMemoryData = new ArrayList<List<Object>>();
+		List<List<Object>> threadCountData = new ArrayList<List<Object>>();
+		List<List<Object>> jvmCpuData = new ArrayList<List<Object>>();
 
+		DateFormat dfPage = new SimpleDateFormat(DATE_FORMAT_PAGE);
 		if (null != javaMonitorData && !javaMonitorData.isEmpty()) {
 			current = 0;
-			lineNumber = javaMonitorData.size();
-			interval = lineNumber / pointCount;
+			lineObject = javaMonitorData.size();
+			interval = lineObject / pointCount;
 			// TODO should get average data
 			for (JavaDataModel jdm : javaMonitorData) {
 				if (0 == current) {
-					heapMemorData.add(String.valueOf(jdm.getHeapUsedMemory()));
-					nonHeapMemoryData.add(String.valueOf(jdm.getNonHeapUsedMemory()));
-					threadCountData.add(String.valueOf(jdm.getThreadCount()));
-					jvmCpuData.add(String.valueOf(jdm.getCpuUsedPercentage()));
+					Date collectTime = null;
+					try {
+						collectTime = df.parse(String.valueOf(jdm.getCollectTime()));
+					} catch (ParseException e) {
+						LOG.error("eror date: " + jdm.getCollectTime(), e);
+						continue;
+					}
+					String ct = dfPage.format(collectTime);
+					List<Object> heapMemory = new ArrayList<Object>();
+					heapMemory.add(ct);
+					heapMemory.add(jdm.getHeapUsedMemory());
+					heapMemoryData.add(heapMemory);
+					List<Object> nonHeapMemor = new ArrayList<Object>();
+					nonHeapMemor.add(ct);
+					nonHeapMemor.add(jdm.getNonHeapUsedMemory());
+					nonHeapMemoryData.add(nonHeapMemor);
+					List<Object> threadCount = new ArrayList<Object>();
+					threadCount.add(ct);
+					threadCount.add(jdm.getThreadCount());
+					threadCountData.add(threadCount);
+					List<Object> jvmCpu = new ArrayList<Object>();
+					jvmCpu.add(ct);
+					jvmCpu.add(jdm.getCpuUsedPercentage());
+					jvmCpuData.add(jvmCpu);
 				}
 				if (++current >= interval) {
 					current = 0;
@@ -111,13 +134,27 @@ public class MonitorController extends NGrinderBaseController {
 		}
 		if (null != systemMonitorData && !systemMonitorData.isEmpty()) {
 			current = 0;
-			lineNumber = systemMonitorData.size();
-			interval = lineNumber / pointCount;
+			lineObject = systemMonitorData.size();
+			interval = lineObject / pointCount;
 			// TODO should get average data
 			for (SystemDataModel sdm : systemMonitorData) {
 				if (0 == current) {
-					cpuData.add(String.valueOf(sdm.getCpuUsedPercentage()));
-					memoryData.add(String.valueOf(sdm.getTotalMemory() - sdm.getFreeMemory()));
+					Date collectTime = null;
+					try {
+						collectTime = df.parse(String.valueOf(sdm.getCollectTime()));
+					} catch (ParseException e) {
+						LOG.error("eror date: " + sdm.getCollectTime(), e);
+						continue;
+					}
+					String ct = dfPage.format(collectTime);
+					List<Object> cpu = new ArrayList<Object>();
+					cpu.add(ct);
+					cpu.add(sdm.getCpuUsedPercentage());
+					cpuData.add(cpu);
+					List<Object> memory = new ArrayList<Object>();
+					memory.add(ct);
+					memory.add(sdm.getTotalMemory() - sdm.getFreeMemory());
+					memoryData.add(memory);
 				}
 				if (++current >= interval) {
 					current = 0;
@@ -129,7 +166,7 @@ public class MonitorController extends NGrinderBaseController {
 		rtnMap.put(JSON_SUCCESS, true);
 		rtnMap.put("cpu", cpuData);
 		rtnMap.put("memory", memoryData);
-		rtnMap.put("heap_memory", heapMemorData);
+		rtnMap.put("heap_memory", heapMemoryData);
 		rtnMap.put("non_heap_memory", nonHeapMemoryData);
 		rtnMap.put("thread_count", threadCountData);
 		rtnMap.put("jvm_cpu", jvmCpuData);
