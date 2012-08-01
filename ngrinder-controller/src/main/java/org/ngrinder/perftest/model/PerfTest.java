@@ -129,7 +129,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/** Console port for this test. This is the identifier for console */
 	private Integer port ;
 
-	private Integer testTrialCount;
+	private Integer testTrialCount = 0;
 
 	@Enumerated(EnumType.STRING)
 	private Status testErrorCause;
@@ -436,5 +436,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setDistributionPath(String distributionPath) {
 		this.distributionPath = distributionPath;
+	}
+	
+	public String getDurationStr() {
+		return DateUtil.ms2Time(this.duration);
 	}
 }

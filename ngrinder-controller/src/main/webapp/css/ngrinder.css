@@ -7,8 +7,9 @@ body {
 	padding: 5px 20px
 }
 
-.table thead th {
+.table thead th, .table tbody td {
 	vertical-align: middle !important;
+	
 }
 
 .form-horizontal .control-label {
