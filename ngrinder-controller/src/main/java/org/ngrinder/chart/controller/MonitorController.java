@@ -58,10 +58,18 @@ public class MonitorController extends NGrinderBaseController {
 	private static final Logger LOG = LoggerFactory.getLogger(MonitorController.class);
 
 	private static final String DATE_FORMAT = "yyyyMMddHHmmss";
+	private static final DateFormat df = new SimpleDateFormat(DATE_FORMAT);
 
 	@Autowired
 	private MonitorService monitorService;
 
+	/**
+	 * get chart data(like tps, vuser) of test
+	 * @param model
+	 * @param chartTypes
+	 * 		is some chart type combined wit ',', eg. "tps,errors,vusers".
+	 * @return
+	 */
 	@RequestMapping("/chart")
 	public @ResponseBody
 	String getChartData(ModelMap model, @RequestParam(required = false) String[] chartTypes) {
@@ -69,12 +77,21 @@ public class MonitorController extends NGrinderBaseController {
 		return null;
 	}
 
+	/**
+	 * get monitor data of agents
+	 * 
+	 * @param model
+	 * @param ip
+	 * @param startTime
+	 * @param finishTime
+	 * @param imgWidth
+	 * @return
+	 */
 	@RequestMapping("/getMonitorData")
 	public @ResponseBody
 	String getMonitorData(ModelMap model, @RequestParam String ip, @RequestParam Date startTime,
 			@RequestParam Date finishTime, @RequestParam int imgWidth) {
 
-		DateFormat df = new SimpleDateFormat(DATE_FORMAT);
 		long st = NumberUtils.toLong(df.format(startTime));
 		long et = NumberUtils.toLong(df.format(finishTime));
 
@@ -84,12 +101,12 @@ public class MonitorController extends NGrinderBaseController {
 		int pointCount = imgWidth / 10;
 		int lineObject, current, interval;
 
-		List<Object> cpuData = new ArrayList<Object>();
-		List<Object> memoryData = new ArrayList<Object>();
-		List<Object> heapMemoryData = new ArrayList<Object>();
-		List<Object> nonHeapMemoryData = new ArrayList<Object>();
-		List<Object> threadCountData = new ArrayList<Object>();
-		List<Object> jvmCpuData = new ArrayList<Object>();
+		List<Object> cpuData = new ArrayList<Object>(pointCount);
+		List<Object> memoryData = new ArrayList<Object>(pointCount);
+		List<Object> heapMemoryData = new ArrayList<Object>(pointCount);
+		List<Object> nonHeapMemoryData = new ArrayList<Object>(pointCount);
+		List<Object> threadCountData = new ArrayList<Object>(pointCount);
+		List<Object> jvmCpuData = new ArrayList<Object>(pointCount);
 
 		if (null != javaMonitorData && !javaMonitorData.isEmpty()) {
 			current = 0;

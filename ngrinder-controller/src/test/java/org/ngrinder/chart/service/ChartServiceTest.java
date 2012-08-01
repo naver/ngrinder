@@ -26,8 +26,12 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
@@ -36,7 +40,6 @@ import org.ngrinder.chart.repository.SystemMonitorRepository;
 import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
 
 /**
  * Class description.
@@ -46,22 +49,14 @@ import org.springframework.test.annotation.Rollback;
  */
 public class ChartServiceTest extends AbstractNGrinderTransactionalTest {
 
+	private static final String DATE_FORMAT = "yyyyMMddHHmmss";
+	private static final DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+	
 	@Autowired
 	private JavaMonitorRepository javaRepository;
 
 	@Autowired
 	private SystemMonitorRepository systemRepository;
-
-	@Test
-	@Rollback(false)
-	public void testSaveJavaMonitorInfo() {
-		JavaDataModel javaInfo = newJavaData(20120719010101L);
-		javaRepository.save(javaInfo);
-
-		JavaDataModel infoInDb = javaRepository.findOne(javaInfo.getId());
-		assertTrue(infoInDb.getId().equals(javaInfo.getId())
-				&& infoInDb.getCpuUsedPercentage() == javaInfo.getCpuUsedPercentage());
-	}
 
 	/**
 	 * Used to add mock monitor data
@@ -128,19 +123,45 @@ public class ChartServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testGetJavaMonitorData() {
-		long startTime = 20120719010101L;
-		long endTime = 20120719010201L;
+		
+		//insert one record and get to check
+		long startTime = NumberUtils.toLong(df.format(new Date()));;
+		JavaDataModel javaInfo = newJavaData(startTime);
+		javaRepository.save(javaInfo);
+		JavaDataModel infoInDb = javaRepository.findOne(javaInfo.getId());
+		assertTrue(infoInDb.getId().equals(javaInfo.getId())
+				&& infoInDb.getCpuUsedPercentage() == javaInfo.getCpuUsedPercentage());
+		
+		long endTime = startTime + 100;
 		List<JavaDataModel> infoList = javaRepository.findAllByIpAndCollectTimeBetween("10.0.0.1", startTime, endTime);
-		assertThat(infoList.size(), is(10));
+		assertThat(infoList.size(), is(1));
+
+		//insert another to check
+		javaInfo = newJavaData(startTime + 1);
+		javaRepository.save(javaInfo);
+		infoList = javaRepository.findAllByIpAndCollectTimeBetween("10.0.0.1", startTime, endTime);
+		assertThat(infoList.size(), is(2));
+		
 	}
 
 	@Test
 	public void testGetSystemMonitorData() {
-		long startTime = 20120719010101L;
-		long endTime = 20120719010201L;
+		long startTime = NumberUtils.toLong(df.format(new Date()));
+		long endTime = startTime + 100;
+		SystemDataModel sysInfo = newSysData(startTime);
+		systemRepository.save(sysInfo);
+		SystemDataModel infoInDb = systemRepository.findOne(sysInfo.getId());
+		assertTrue(infoInDb.getId().equals(sysInfo.getId())
+				&& infoInDb.getCpuUsedPercentage() == sysInfo.getCpuUsedPercentage());
+		
 		List<SystemDataModel> infoList = systemRepository.findAllByIpAndCollectTimeBetween("10.0.0.1", startTime,
 				endTime);
-		assertThat(infoList.size(), is(101));
+		assertThat(infoList.size(), is(1));
+		
+		sysInfo = newSysData(startTime + 1);
+		systemRepository.save(sysInfo);
+		infoList = systemRepository.findAllByIpAndCollectTimeBetween("10.0.0.1", startTime, endTime);
+		assertThat(infoList.size(), is(2));
 	}
 
 }
