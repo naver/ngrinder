@@ -127,7 +127,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private Double peakTps = 0d;
 
 	/** Console port for this test. This is the identifier for console */
-	private Integer port ;
+	private Integer port;
 
 	private Integer testTrialCount = 0;
 

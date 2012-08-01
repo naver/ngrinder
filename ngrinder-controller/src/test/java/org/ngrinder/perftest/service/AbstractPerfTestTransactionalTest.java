@@ -5,6 +5,7 @@ import java.util.Date;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
+import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,13 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 	@Autowired
 	protected PerfTestService perfTestService;
 
+	@Autowired
+	protected PerfTestRepository perfTestRepository;
+
+	public void clearAllPerfTest() {
+		perfTestRepository.deleteAll();
+	}
+
 	public void createPerfTest(String testName, Status status, Date scheduledTime) {
 		PerfTest test = new PerfTest();
 		test.setTestName(testName);
@@ -37,6 +45,7 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 		test.setProcessIncrement(1);
 		test.setProcessIncrementInterval(1000);
 		test.setStatus(status);
+		test.setCreatedUser(getTestUser());
 		perfTestService.savePerfTest(test);
 	}
 }

@@ -14,8 +14,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.init.DBInit;
-import org.ngrinder.model.Role;
-import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.MockFileEntityRepsotory;
@@ -43,13 +41,12 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 	 */
 	@Before
 	public void before() throws IOException {
-		dbinit.createUser("user1", "user1", Role.USER, "user1", "user1@gmail.com");
 		CompressionUtil compressUtil = new CompressionUtil();
 
 		File file = new File(System.getProperty("java.io.tmpdir"), "repo");
 		FileUtils.deleteQuietly(file);
-		compressUtil.unzip(new ClassPathResource("user1.zip").getFile(), file);
-		repo.setUserRepository(new File(file, "user1"));
+		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), file);
+		repo.setUserRepository(new File(file, getTestUser().getUserId()));
 	}
 
 	@Test
@@ -59,25 +56,24 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 		fileEntry.setEncoding("UTF-8");
 		fileEntry.setPath("helloworld.txt");
 		fileEntry.setDescription("WOW");
-		User user = userService.getUserById("user1");
-		int size = repo.findAll(user).size();
-		repo.save(user, fileEntry, fileEntry.getEncoding());
+		int size = repo.findAll(getTestUser()).size();
+		repo.save(getTestUser(), fileEntry, fileEntry.getEncoding());
 		fileEntry.setPath("www");
 		fileEntry.setFileType(FileType.DIR);
-		repo.save(user, fileEntry, null);
+		repo.save(getTestUser(), fileEntry, null);
 		fileEntry.setPath("www/aa.py");
 		fileEntry.setFileType(FileType.PYTHON_SCRIPT);
-		repo.save(user, fileEntry, "UTF-8");
-		assertThat(repo.findAll(user).size(), is(size + 2));
-		repo.delete(user, new String[] { "helloworld.txt" });
-		assertThat(repo.findAll(user).size(), is(size + 1));
+		repo.save(getTestUser(), fileEntry, "UTF-8");
+		assertThat(repo.findAll(getTestUser()).size(), is(size + 2));
+		repo.delete(getTestUser(), new String[] { "helloworld.txt" });
+		assertThat(repo.findAll(getTestUser()).size(), is(size + 1));
 
 		// Attempt to create duplicated path
 		fileEntry.setPath("www");
 		fileEntry.setFileType(FileType.DIR);
 		try {
 			// It should fail
-			repo.save(user, fileEntry, null);
+			repo.save(getTestUser(), fileEntry, null);
 			fail("duplicated insert should be failed");
 		} catch (Exception e) {
 
@@ -93,21 +89,20 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 		fileEntry.setPath("helloworld.txt");
 		fileEntry.setFileType(FileType.TXT);
 		fileEntry.setDescription("WOW");
-		User user = userService.getUserById("user1");
-		repo.save(user, fileEntry, fileEntry.getEncoding());
+		repo.save(getTestUser(), fileEntry, fileEntry.getEncoding());
 		fileEntry.setPath("hello.zip");
 		fileEntry.setEncoding(null);
 		fileEntry.setFileType(FileType.UNKNOWN);
-		byte[] byteArray = IOUtils.toByteArray(new ClassPathResource("user1.zip").getInputStream());
+		byte[] byteArray = IOUtils.toByteArray(new ClassPathResource("TEST_USER.zip").getInputStream());
 		fileEntry.setContentBytes(byteArray);
-		repo.save(user, fileEntry, null);
-		List<FileEntry> findAll = repo.findAll(user, "hello.zip");
+		repo.save(getTestUser(), fileEntry, null);
+		List<FileEntry> findAll = repo.findAll(getTestUser(), "hello.zip");
 		FileEntry foundEntry = findAll.get(0);
 		System.out.println(foundEntry.getPath());
 		assertThat(foundEntry.getFileSize(), is((long) byteArray.length));
 		// commit again
-		repo.save(user, fileEntry, null);
-		findAll = repo.findAll(user, "hello.zip");
+		repo.save(getTestUser(), fileEntry, null);
+		findAll = repo.findAll(getTestUser(), "hello.zip");
 		assertThat(foundEntry.getFileSize(), is((long) byteArray.length));
 	}
 
@@ -119,11 +114,10 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 		fileEntry.setPath("hello.zip");
 		fileEntry.setEncoding(null);
 		fileEntry.setFileType(FileType.UNKNOWN);
-		byte[] byteArray = IOUtils.toByteArray(new ClassPathResource("user1.zip").getInputStream());
+		byte[] byteArray = IOUtils.toByteArray(new ClassPathResource("TEST_USER.zip").getInputStream());
 		fileEntry.setContentBytes(byteArray);
-		User user = userService.getUserById("user1");
-		repo.save(user, fileEntry, null);
-		FileEntry foundEntry = repo.findOne(user, "hello.zip", SVNRevision.HEAD);
+		repo.save(getTestUser(), fileEntry, null);
+		FileEntry foundEntry = repo.findOne(getTestUser(), "hello.zip", SVNRevision.HEAD);
 		System.out.println(foundEntry);
 		assertThat(foundEntry.getFileSize(), is((long) byteArray.length));
 	}

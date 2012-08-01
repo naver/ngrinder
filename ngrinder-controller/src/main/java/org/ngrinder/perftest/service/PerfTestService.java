@@ -97,7 +97,7 @@ public class PerfTestService implements NGrinderConstants {
 
 	@Autowired
 	private PerfTestRepository perfTestRepository;
-	
+
 	@Autowired
 	private ConsoleManager consoleManager;
 
@@ -195,7 +195,7 @@ public class PerfTestService implements NGrinderConstants {
 	public PerfTest getPerfTestCandiate() {
 		Page<PerfTest> perfTest = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY,
 				new OnlyOnePageRequest());
-		return (perfTest.getNumber() == 0) ? null : perfTest.getContent().get(0);
+		return (perfTest.getNumberOfElements() == 0) ? null : perfTest.getContent().get(0);
 	}
 
 	/**
@@ -336,7 +336,7 @@ public class PerfTestService implements NGrinderConstants {
 
 		return reportData;
 	}
-	
+
 	/**
 	 * To get statistics data when test is running
 	 */
@@ -415,6 +415,10 @@ public class PerfTestService implements NGrinderConstants {
 			return null;
 		}
 		return doubleValue;
+	}
+
+	public List<PerfTest> getAllPerfTest() {
+		return perfTestRepository.findAll();
 	}
 
 }
