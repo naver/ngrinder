@@ -48,6 +48,9 @@ public class MonitorExecuteWorker implements Runnable {
 	private MonitorRecoder recoder;
 	private MonitorAgentInfo agentInfo;
 	private String key;
+	private int interval = 1;
+
+	private static final int ERRORS = 5;
 
 	public MonitorExecuteWorker(final String key, final MonitorAgentInfo agentInfo) {
 		this.key = key;
@@ -67,14 +70,12 @@ public class MonitorExecuteWorker implements Runnable {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void run() {
+		// If an error occurs, then skip 5 times
+		if (--interval > 0) {
+			return;
+		}
 		if (!mbeanClient.isConnected()) {
-			try {
-				mbeanClient.connect();
-			} catch (SecurityException e) {
-				LOG.error(e.getMessage(), e);
-			} catch (IllegalArgumentException e) {
-				LOG.error(e.getMessage(), e);
-			}
+			mbeanClient.connect();
 		}
 		if (mbeanClient.isConnected()) {
 			// mbeanClient.flush();
@@ -107,6 +108,8 @@ public class MonitorExecuteWorker implements Runnable {
 					break;
 				}
 			}
+		} else {
+			interval = ERRORS;
 		}
 	}
 
