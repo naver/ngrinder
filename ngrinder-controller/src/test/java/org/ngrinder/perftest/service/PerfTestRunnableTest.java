@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,9 +14,14 @@ import java.util.List;
 import net.grinder.AgentControllerDaemon;
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
+import net.grinder.common.processidentity.WorkerProcessReport;
+import net.grinder.console.communication.ProcessControl.Listener;
+import net.grinder.console.communication.ProcessControlImplementation;
+import net.grinder.console.communication.ProcessControl.ProcessReports;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,6 +80,8 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	@Autowired
 	public FileEntityRepository fileEntityRepository;
 
+	private int currentProcessCount = 0;
+
 	@Test
 	public void testStartConsole() throws IOException {
 		// Get perf test
@@ -96,11 +104,34 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		prepareUserRepo();
 		perfTestRunnable.distributeFileOn(perfTest, grinderProperties, singleConsole);
 
+		singleConsole.getConsoleComponent(ProcessControlImplementation.class).addProcessStatusListener(new Listener() {
+
+			@Override
+			public void update(ProcessReports[] processReports) {
+				currentProcessCount = 0;
+				for (ProcessReports each : processReports) {
+					for (WorkerProcessReport eachWorker : each.getWorkerProcessReports()) {
+						if (eachWorker.getState() == 2) {
+							currentProcessCount++;
+						}
+					}
+				}
+			}
+		});
+
 		// Run test
 		perfTestRunnable.runTestOn(perfTest, grinderProperties, singleConsole);
+		sleep(10000);
+
+		// Waiting for termination
 		for (int i = 1; i < 100; i++) {
+			if (currentProcessCount == 0) {
+				return;
+			}
+			System.out.println("**** Current Process Count : " + currentProcessCount);
 			sleep(1000);
 		}
+		fail("Process is not finished within 100 sec");
 	}
 
 	@Autowired
