@@ -2,7 +2,7 @@ function drawChart(title, containerId, data, yLabel, startTime, interval) {
 	//startTime is a Date object.
 	//interval is second amount.
 	//startTime and interval are optional.
-	var plotObj = $.jqplot(containerId, [data], {
+	var plotObj = $.jqplot(containerId, [eval(data)], {
         title: {
 			text: title,
 			fontSize: '16pt'
