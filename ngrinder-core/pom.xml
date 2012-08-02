@@ -67,6 +67,11 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
+					<archive>
+	                    <manifest>
+	                        <mainClass>org.ngrinder.NGrinderStarter</mainClass>
+	                    </manifest>
+	                </archive>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
