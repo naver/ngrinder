@@ -148,7 +148,7 @@ public class SingleConsole implements Listener {
 	 * @return console host
 	 */
 	public String getConsoleHost() {
-		try {
+		try { 
 			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress.getLocalHost()
 					.getHostAddress());
 		} catch (UnknownHostException e) {
