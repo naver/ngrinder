@@ -55,6 +55,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/monitor")
 public class MonitorController extends NGrinderBaseController {
 
+	@SuppressWarnings("unused")
 	private static final Logger LOG = LoggerFactory.getLogger(MonitorController.class);
 
 	private static final String DATE_FORMAT = "yyyyMMddHHmmss";
@@ -65,9 +66,10 @@ public class MonitorController extends NGrinderBaseController {
 
 	/**
 	 * get chart data(like tps, vuser) of test
+	 * 
 	 * @param model
 	 * @param chartTypes
-	 * 		is some chart type combined wit ',', eg. "tps,errors,vusers".
+	 *            is some chart type combined wit ',', eg. "tps,errors,vusers".
 	 * @return
 	 */
 	@RequestMapping("/chart")
@@ -89,20 +91,96 @@ public class MonitorController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/getMonitorData")
 	public @ResponseBody
-	String getMonitorData(ModelMap model, @RequestParam String ip, @RequestParam Date startTime,
-			@RequestParam Date finishTime, @RequestParam int imgWidth) {
+	String getMonitorData(ModelMap model, @RequestParam String ip, @RequestParam(required = false) Date startTime,
+			@RequestParam(required = false) Date finishTime, @RequestParam int imgWidth) {
 
+		if (null == finishTime) {
+			finishTime = new Date();
+		}
+		if (null == startTime) {
+			startTime = new Date(finishTime.getTime() - 30 * 1000);
+		}
+		DateFormat df = new SimpleDateFormat(DATE_FORMAT);
 		long st = NumberUtils.toLong(df.format(startTime));
 		long et = NumberUtils.toLong(df.format(finishTime));
 
-		List<JavaDataModel> javaMonitorData = monitorService.getJavaMonitorData(ip, st, et);
-		List<SystemDataModel> systemMonitorData = monitorService.getSystemMonitorData(ip, st, et);
+		Map<String, Object> rtnMap = new HashMap<String, Object>(7);
+		this.getMonitorDataJava(rtnMap, ip, st, et, imgWidth);
+		this.getMonitorDataSystem(rtnMap, ip, st, et, imgWidth);
+		rtnMap.put(JSON_SUCCESS, true);
+		rtnMap.put("startTime", startTime);
+		return JSONUtil.toJson(rtnMap);
+	}
+
+	/**
+	 * get java monitor data of agents
+	 * 
+	 * @param model
+	 * @param ip
+	 * @param startTime
+	 * @param finishTime
+	 * @param imgWidth
+	 * @return
+	 */
+	@RequestMapping("/getMonitorDataJava")
+	public @ResponseBody
+	String getMonitorDataJava(ModelMap model, @RequestParam String ip, @RequestParam(required = false) Date startTime,
+			@RequestParam(required = false) Date finishTime, @RequestParam int imgWidth) {
+
+		if (null == finishTime) {
+			finishTime = new Date();
+		}
+		if (null == startTime) {
+			startTime = new Date(finishTime.getTime() - 30 * 1000);
+		}
+		DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+		long st = NumberUtils.toLong(df.format(startTime));
+		long et = NumberUtils.toLong(df.format(finishTime));
+
+		Map<String, Object> rtnMap = new HashMap<String, Object>(5);
+		this.getMonitorDataJava(rtnMap, ip, st, et, imgWidth);
+		rtnMap.put(JSON_SUCCESS, true);
+		return JSONUtil.toJson(rtnMap);
+	}
+
+	/**
+	 * get system monitor data of agents
+	 * 
+	 * @param model
+	 * @param ip
+	 * @param startTime
+	 * @param finishTime
+	 * @param imgWidth
+	 * @return
+	 */
+	@RequestMapping("/getMonitorDataSystem")
+	public @ResponseBody
+	String getMonitorDataSystem(ModelMap model, @RequestParam String ip,
+			@RequestParam(required = false) Date startTime, @RequestParam(required = false) Date finishTime,
+			@RequestParam int imgWidth) {
+
+		if (null == finishTime) {
+			finishTime = new Date();
+		}
+		if (null == startTime) {
+			startTime = new Date(finishTime.getTime() - 30 * 1000);
+		}
+		long st = NumberUtils.toLong(df.format(startTime));
+		long et = NumberUtils.toLong(df.format(finishTime));
+
+		Map<String, Object> rtnMap = new HashMap<String, Object>(3);
+		this.getMonitorDataSystem(rtnMap, ip, st, et, imgWidth);
+		rtnMap.put(JSON_SUCCESS, true);
+		return JSONUtil.toJson(rtnMap);
+	}
+
+	private void getMonitorDataJava(Map<String, Object> rtnMap, String ip, long startTime, long finishTime, int imgWidth) {
+
+		List<JavaDataModel> javaMonitorData = monitorService.getJavaMonitorData(ip, startTime, finishTime);
 
 		int pointCount = imgWidth / 10;
-		int lineObject, current, interval;
+		int lineObject, current, interval = 0;
 
-		List<Object> cpuData = new ArrayList<Object>(pointCount);
-		List<Object> memoryData = new ArrayList<Object>(pointCount);
 		List<Object> heapMemoryData = new ArrayList<Object>(pointCount);
 		List<Object> nonHeapMemoryData = new ArrayList<Object>(pointCount);
 		List<Object> threadCountData = new ArrayList<Object>(pointCount);
@@ -125,6 +203,26 @@ public class MonitorController extends NGrinderBaseController {
 				}
 			}
 		}
+
+		rtnMap.put("heap_memory", heapMemoryData);
+		rtnMap.put("non_heap_memory", nonHeapMemoryData);
+		rtnMap.put("thread_count", threadCountData);
+		rtnMap.put("jvm_cpu", jvmCpuData);
+
+		rtnMap.put("interval", interval);
+	}
+
+	private void getMonitorDataSystem(Map<String, Object> rtnMap, String ip, long startTime, long finishTime,
+			int imgWidth) {
+
+		List<SystemDataModel> systemMonitorData = monitorService.getSystemMonitorData(ip, startTime, finishTime);
+
+		int pointCount = imgWidth / 10;
+		int lineObject, current, interval = 0;
+
+		List<Object> cpuData = new ArrayList<Object>(pointCount);
+		List<Object> memoryData = new ArrayList<Object>(pointCount);
+
 		if (null != systemMonitorData && !systemMonitorData.isEmpty()) {
 			current = 0;
 			lineObject = systemMonitorData.size();
@@ -141,15 +239,10 @@ public class MonitorController extends NGrinderBaseController {
 			}
 		}
 
-		Map<String, Object> rtnMap = new HashMap<String, Object>(7);
-		rtnMap.put(JSON_SUCCESS, true);
 		rtnMap.put("cpu", cpuData);
 		rtnMap.put("memory", memoryData);
-		rtnMap.put("heap_memory", heapMemoryData);
-		rtnMap.put("non_heap_memory", nonHeapMemoryData);
-		rtnMap.put("thread_count", threadCountData);
-		rtnMap.put("jvm_cpu", jvmCpuData);
-		return JSONUtil.toJson(rtnMap);
+
+		rtnMap.put("interval", interval);
 	}
 
 }

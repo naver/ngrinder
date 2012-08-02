@@ -3,6 +3,14 @@
     <head>
         <title>nGrinder Agent Info</title>
        	<#include "../common/common.ftl">
+       	<#include "../common/jqplot.ftl">
+       	<style>
+            body {
+                padding-top: 60px;
+            }   
+            .left { border-right: 1px solid #878988 }
+            div.chart { border: 1px solid #878988; height:250px; min-width:615px; margin-bottom:12px}
+        </style>
     </head>
 
     <body>
@@ -46,6 +54,8 @@
 				    </tr>
 				    </tbody>
 				    </table>
+				    <label>Refresh interval (second)</label>
+                    <input id="rinterval" type="text" class="span3" placeholder="number" value="30">
                 </div>
                 <div class="span9">
 					<div class="tabbable" style="margin-left:20px">
@@ -55,48 +65,14 @@
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane active" id="systemData">
-                                <ul class="thumbnails">
-                                  <li class="span4">
-                                    <div class="thumbnail">
-                                      <img src="../img/260x180.gif" alt="">
-                                      <h5>Cpu</h5>
-                                    </div>
-                                  </li>
-                                  <li class="span4">
-                                    <div class="thumbnail">
-                                      <img src="../img/260x180.gif" alt="">
-                                      <h5>Memory</h5>
-                                    </div>
-                                  </li>
-                                </ul>
+                                <div class="chart" id="cpuDiv"></div>
+                                <div class="chart" id="memoryDiv"></div>
                             </div>
                             <div class="tab-pane" id="javaData">
-                                <ul class="thumbnails">
-								  <li class="span4">
-								    <div class="thumbnail">
-								      <img src="../img/260x180.gif" alt="">
-								      <h5>Heap Memory</h5>
-								    </div>
-								  </li>
-								  <li class="span4">
-                                    <div class="thumbnail">
-                                      <img src="../img/260x180.gif" alt="">
-                                      <h5>NonHeap Memory</h5>
-                                    </div>
-                                  </li>
-                                  <li class="span4">
-                                    <div class="thumbnail">
-                                      <img src="../img/260x180.gif" alt="">
-                                      <h5>Thread Count</h5>
-                                    </div>
-                                  </li>
-                                  <li class="span4">
-                                    <div class="thumbnail">
-                                      <img src="../img/260x180.gif" alt="">
-                                      <h5>Cpu</h5>
-                                    </div>
-                                  </li>
-								</ul>
+                                <div class="chart" id="heapMemoryDiv"></div>
+                                <div class="chart" id="nonHeapMemoryDiv"></div>
+                                <div class="chart" id="threadCountDiv"></div>
+                                <div class="chart" id="jvmCpuDiv"></div>
                             </div>
 					     </div>
                     </div>
@@ -106,21 +82,82 @@
     	<!--content-->
         </div>
         <script>
+            var interval;
+            var timer;
             $(document).ready(function() {
                 $("#returnBtn").on('click', function() {
                     history.back();
                 });
                 $("#refreshBtn").on('click', function() {
-                    $.ajax({
-                        url: "#",
-                        context: document.body,
-                        dataObject: {id: "001"},
-                        success: function(){
-                            alert("Refresh success!");
-                            }
-                    });
+                    getMonitorData();
                 });
+                $("#rinterval").keyup(function() {
+                    var number = $(this).val();
+                    $(this).val(number.replace(/[\D]/g,""))
+                });
+                $("#rinterval").change(function() {
+                    if(timer){
+                        window.clearInterval(timer);
+                    }
+                    interval = $(this).val();
+                    if(interval == 0){
+                        interval = 30;
+                    }
+                    timer=window.setInterval("getMonitorData()",interval * 1000);
+                });
+                getMonitorData();
+                $("#rinterval").change();
             });
+            function getMonitorData(){
+                $.ajax({
+                    url: "${req.getContextPath()}/monitor/getMonitorData",
+                    dataType:'json',
+                    data: {'ip': '${(agent.ip)!}',
+                           'imgWidth':700},
+                    success: function(res) {
+                        if (res.success) {
+                            drawChart('CPU', 'cpuDiv', res.cpu);
+                            drawChart('Memory', 'memoryDiv', res.memory);
+                            drawChart('Heap Memory', 'heapMemoryDiv', res.heap_memory);
+                            drawChart('NonHeap Memory', 'nonHeapMemoryDiv', res.non_heap_memory);
+                            drawChart('Thread Count', 'threadCountDiv', res.thread_count);
+                            drawChart('CPU', 'jvmCpuDiv', res.jvm_cpu);
+                            return true;
+                        } else {
+                            showErrorMsg("Get monitor data failed.");
+                            return false;
+                        }
+                    },
+                    error: function() {
+                        alert(2);
+                        showErrorMsg("Error!");
+                        return false;
+                    }
+                });
+            }
+            
+            function drawChart(title, id, data) {
+                $("#" + id).empty();
+                var plot1 = $.jqplot(id, [data], { 
+                    title: title, 
+                    series: [{ 
+                        label: title, 
+                        neighborThreshold: -1 
+                    }], 
+                    axes: { 
+                        xaxis: { 
+                            tickRenderer: $.jqplot.AxisTickRenderer,
+                            tickOptions: {
+                              show: false
+                            } 
+                        }
+                    }, 
+                    cursor:{
+                        show: true, 
+                        zoom: false
+                    }
+                });
+            }
         </script>
     </body>
 </html>
