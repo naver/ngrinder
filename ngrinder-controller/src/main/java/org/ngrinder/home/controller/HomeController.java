@@ -66,7 +66,7 @@ public class HomeController extends NGrinderBaseController {
 
 	@RequestMapping(value = { "/home", "/" })
 	public String home(ModelMap model, HttpServletResponse response, HttpServletRequest request) {
-		String roles;
+		String roles = null;
 		try {
 			// set local language
 			setLanguage(getCurrentUserInfo("userLanguage"), response, request);
@@ -92,16 +92,17 @@ public class HomeController extends NGrinderBaseController {
 
 	public void setLanguage(String lan, HttpServletResponse response, HttpServletRequest request) {
 		LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
-		if (lan != null) {
-			if (localeResolver == null) {
-				throw new NGrinderRuntimeException("No LocaleResolver found!");
-			}
-			LocaleEditor localeEditor = new LocaleEditor();
-			localeEditor.setAsText(lan);
-			localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
-		} else {
+		if (lan == null) {
 			throw new NGrinderRuntimeException("No User Language found!");
 		}
+
+		if (localeResolver == null) {
+			throw new NGrinderRuntimeException("No LocaleResolver found!");
+		}
+
+		LocaleEditor localeEditor = new LocaleEditor();
+		localeEditor.setAsText(lan);
+		localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
 	}
 
 	@RequestMapping(value = "/login")

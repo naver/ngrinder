@@ -20,7 +20,7 @@ public class DateUtil {
 	private static int hh = mi * 60;
 	private static int dd = hh * 24;
 
-	private static Map<String, String> timezoneIDMap;
+	private static Map<String, String> timezoneIDMap = null;
 
 	public static String dateToString(Date date) {
 		return dateFormat.format(date);
@@ -60,7 +60,7 @@ public class DateUtil {
 	 */
 	public static Calendar getWeekStart(Calendar date) {
 		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(date.getTimeInMillis());
+		calendar.setTimeInMillis(date.getTimeInMillis()); // TODO: It is needed to check null, but Now this method does not use.
 		// Calendar.MONDAY is 2
 		boolean isSunday = false;
 		if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {

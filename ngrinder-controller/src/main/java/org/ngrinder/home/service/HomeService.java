@@ -35,6 +35,7 @@ import org.apache.commons.io.IOUtils;
 import org.eclipse.egit.github.core.Issue;
 import org.eclipse.egit.github.core.RepositoryId;
 import org.eclipse.egit.github.core.service.IssueService;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.home.model.PanelEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +76,7 @@ public class HomeService {
 		XmlReader reader = null;
 		try {
 			List<PanelEntry> panelEntries = new ArrayList<PanelEntry>();
-			reader = new XmlReader(new URL("http://www.cubrid.org/wiki_ngrinder/rss"));
+			reader = new XmlReader(new URL(NGrinderConstants.NGRINDER_NEWS_RSS_URL));
 			SyndFeed feed = input.build(reader);
 			List<SyndEntryImpl> entries = (List<SyndEntryImpl>) (feed.getEntries().size() >= 8 ? feed.getEntries()
 					.subList(0, 7) : feed.getEntries());

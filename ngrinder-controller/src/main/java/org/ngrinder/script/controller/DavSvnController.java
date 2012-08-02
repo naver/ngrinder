@@ -236,7 +236,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 			StringWriter sw = new StringWriter();
 			th.printStackTrace(new PrintWriter(sw));
 			String msg = sw.getBuffer().toString();
-			System.out.println(th);
+			System.out.println(th); // TODO: neeed to remove
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
 		} finally {
 			response.flushBuffer();
@@ -244,7 +244,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 	}
 
 	private void logRequest(HttpServletRequest request) {
-		StringBuffer logBuffer = new StringBuffer();
+		StringBuilder logBuffer = new StringBuilder();
 		logBuffer.append('\n');
 		logBuffer.append("request.getAuthType(): " + request.getAuthType());
 		logBuffer.append('\n');

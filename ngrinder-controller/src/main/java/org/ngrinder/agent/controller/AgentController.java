@@ -65,7 +65,6 @@ public class AgentController extends NGrinderBaseController {
 	 */
 	@RequestMapping({ "", "/", "/list" })
 	public String getAgents(ModelMap model, @RequestParam(required = false) String keywords) {
-
 		Order order = new Order(Direction.DESC, "id");
 		Sort sort = new Sort(order);
 		Pageable pageable = new PageRequest(0, DEFAULT_PAGE_LIMIT, sort);
@@ -118,11 +117,18 @@ public class AgentController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/delete")
 	public String deleteAgent(ModelMap model, @RequestParam String ids) {
+		if (ids == null) {
+			return getAgents(model, "");
+		}
+
 		String[] idArr = ids.split(",");
-		long id = 0;
-		for (String idStr : idArr) {
-			id = Long.parseLong(idStr);
-			agentService.deleteAgent(id);
+		if (idArr != null) {
+			for (String idStr : idArr) {
+				try {
+					agentService.deleteAgent(Long.parseLong(idStr));
+				} catch (NumberFormatException ignored) {
+				}
+			}
 		}
 		return getAgents(model, "");
 	}

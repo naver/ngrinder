@@ -333,7 +333,9 @@ public class PerfTestService implements NGrinderConstants {
 	public List<Object> getReportData(long testId, String dataType, int imgWidth) throws IOException {
 		List<Object> reportData = new ArrayList<Object>();
 		File reportFolder = config.getHome().getPerfTestDirectory(testId + File.separator + "report");
-		int pointCount = imgWidth / 10;
+		int pointCount = imgWidth / 10; // TODO: if imgWidth < 0, it can be an
+										// error. (refer to
+										// org.ngrinder.chart.controller.MonitorController)
 		int lineNumber;
 		File targetFile = null;
 		targetFile = new File(reportFolder, dataType.toLowerCase() + DATA_FILE_EXTENSION);
@@ -353,7 +355,10 @@ public class PerfTestService implements NGrinderConstants {
 			br = new BufferedReader(reader);
 			String data = null;
 			int current = 0;
-			int interval = lineNumber / pointCount;
+			int interval = lineNumber / pointCount; // TODO: if pointCount == 0,
+													// it can be an error.
+													// (refer to
+													// org.ngrinder.chart.controller.MonitorController)
 			// TODO should get average data
 			// FIXME : NEVER NEVER DO IT. Be aware of memory size.!!
 			while (StringUtils.isNotBlank(data = br.readLine())) {
@@ -375,7 +380,7 @@ public class PerfTestService implements NGrinderConstants {
 
 	public File getReportFile(long testId) {
 		File reportFolder = config.getHome().getPerfTestDirectory(testId + File.separator + "report");
-		File targetFile = new File(reportFolder, "output.csv");
+		File targetFile = new File(reportFolder, "output.csv"); // TODO: filename is static?
 		return targetFile;
 	}
 
@@ -383,6 +388,8 @@ public class PerfTestService implements NGrinderConstants {
 	 * To get statistics data when test is running
 	 */
 	public Map<String, Object> getStatistics(int port) {
+		NumberFormat formatter = new DecimalFormat("#,###,###.###");
+
 		Map<String, Object> result = new HashMap<String, Object>();
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
@@ -392,22 +399,20 @@ public class PerfTestService implements NGrinderConstants {
 		final SampleModelViews modelView = (SampleModelViews) singleConsole.getConsoleComponent(SampleModelViews.class);
 		ExpressionView[] views = modelView.getCumulativeStatisticsView().getExpressionViews();
 		ModelTestIndex modelIndex = (ModelTestIndex) ReflectionUtil.getFieldValue(model, "modelTestIndex");
-		NumberFormat formatter = new DecimalFormat("#,###,###.###");
 		if (modelIndex != null) {
-
-			StatisticsSet set, lastSet;
 			for (int i = 0; i < modelIndex.getNumberOfTests(); i++) {
 				Map<String, Object> statistics = new HashMap<String, Object>();
 				Map<String, Object> lastStatistics = new HashMap<String, Object>();
+
 				Test test = modelIndex.getTest(i);
-				set = modelIndex.getCumulativeStatistics(i);
-				lastSet = modelIndex.getLastSampleStatistics(i);
 				statistics.put("testNumber", test.getNumber());
 				statistics.put("testDescription", test.getDescription());
 				lastStatistics.put("testNumber", test.getNumber());
 				lastStatistics.put("testDescription", test.getDescription());
 
-				for (ExpressionView expressionView : views) {
+				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
+				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
+				for (ExpressionView expressionView : views) { // TODO : expressionView == null?
 					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
 							getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
 					lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
@@ -415,7 +420,6 @@ public class PerfTestService implements NGrinderConstants {
 				}
 
 				// Tests
-
 				Double tests = (Double) statistics.get("Tests");
 				Double errors = (Double) statistics.get("Errors");
 				statistics.put("TestsStr", formatter.format(tests));
@@ -434,7 +438,7 @@ public class PerfTestService implements NGrinderConstants {
 		StatisticsSet totalSet = model.getTotalCumulativeStatistics();
 		Map<String, Object> totalStatistics = new HashMap<String, Object>();
 
-		for (ExpressionView expressionView : views) {
+		for (ExpressionView expressionView : views) { // TODO : expressionView == null ?
 			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
 					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),

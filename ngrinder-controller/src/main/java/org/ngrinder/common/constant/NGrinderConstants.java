@@ -126,4 +126,6 @@ public interface NGrinderConstants {
 	public static final String GRINDER_PROP_REPORT_TIMES_TO_CONSOLE = "grinder.reportTimesToConsole";
 
 	public static final int MAX_STACKTRACE_STRING_SIZE = 2048;
+
+	public static final String NGRINDER_NEWS_RSS_URL = "http://www.cubrid.org/wiki_ngrinder/rss";
 }

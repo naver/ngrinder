@@ -181,8 +181,11 @@ public class PerfTestController extends NGrinderBaseController {
 	String deleteTests(ModelMap model, @RequestParam String ids) {
 		String[] idList = StringUtils.split(ids, ",");
 		for (String idStr : idList) {
-			long id = Long.valueOf(idStr);
-			perfTestService.deletePerfTest(id);
+			try {
+				perfTestService.deletePerfTest(Long.valueOf(idStr));
+			} catch (NumberFormatException e) {
+				LOG.error("Can't delete a test (id=" + idStr + ") : {}", e);
+			}
 		}
 		return JSONUtil.returnSuccess();
 	}
@@ -199,7 +202,7 @@ public class PerfTestController extends NGrinderBaseController {
 	String getReportData(ModelMap model, @RequestParam long testId, @RequestParam String dataType,
 			@RequestParam int imgWidth) {
 		List<Object> reportData = null;
-		String[] dataTypes = dataType.split(",");
+		String[] dataTypes = dataType.split(","); // TODO: if the dataType value is null?
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1 + dataTypes.length);
 		for (String dt : dataTypes) {
 			try {
@@ -207,6 +210,7 @@ public class PerfTestController extends NGrinderBaseController {
 				rtnMap.put(JSON_SUCCESS, true);
 				rtnMap.put(dt, reportData);
 			} catch (Exception e) {
+				// TODO: If a data type is failed and another data type is success, can it be success?
 				rtnMap.put(JSON_SUCCESS, false);
 				LOG.error("Get report data failed. type: " + dt, e);
 			}
