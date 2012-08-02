@@ -47,6 +47,13 @@ import org.ngrinder.monitor.MonitorContext;
 import org.ngrinder.monitor.agent.collector.AgentDataCollectManager;
 import org.ngrinder.monitor.agent.mxbean.core.MXBean;
 
+/**
+ * 
+ * This class is the agent of monitor server, it will be used to start a JMX server.
+ *
+ * @author Mavlarn
+ * @since 3.0
+ */
 public final class AgentServer {
 
 	private static final Logger LOG = LoggerFactory.getLogger(AgentServer.class);
