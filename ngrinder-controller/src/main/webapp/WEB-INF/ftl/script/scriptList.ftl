@@ -9,10 +9,7 @@
 	<body>
     <#include "../common/navigator.ftl">
 	<div class="container">
-		<div class="row">
-			
-		</div>
-		<div class="well form-inline searchBar">
+		<div class="well form-inline searchBar" style="margin-top:0;">
 			<!--<legend>introduction</legend>-->
 			<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
 			<button type="submit" class="btn" id="searchBtn">Search</button>
