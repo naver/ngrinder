@@ -46,13 +46,15 @@ public class NameStore {
 	static {
 		singleton = new NameStore();
 		String hostPair = System.getProperty("ngrinder.etc.hosts");
-		String[] hostPairs = StringUtils.split(hostPair, ",");
-		for (String pair : hostPairs) {
-			String[] each = StringUtils.split(pair, ":");
-			if (each.length != 2 || StringUtils.isEmpty(each[0]) || StringUtils.isEmpty(each[1])) {
-				continue;
+		if (!StringUtils.isBlank(hostPair)) {
+			String[] hostPairs = StringUtils.split(hostPair, ",");
+			for (String pair : hostPairs) {
+				String[] each = StringUtils.split(pair, ":");
+				if (each.length != 2 || StringUtils.isEmpty(each[0]) || StringUtils.isEmpty(each[1])) {
+					continue;
+				}
+				singleton.put(StringUtils.trim(each[1]), StringUtils.trim(each[0]));
 			}
-			singleton.put(StringUtils.trim(each[1]), StringUtils.trim(each[0]));
 		}
 	}
 
