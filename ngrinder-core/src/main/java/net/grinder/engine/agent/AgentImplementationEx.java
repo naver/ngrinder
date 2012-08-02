@@ -84,7 +84,8 @@ public class AgentImplementationEx implements Agent {
 	 */
 
 	private volatile FileStore m_fileStore;
-
+	
+	private static int indentifier = 0;
 	/**
 	 * Constructor.
 	 * 
@@ -102,7 +103,7 @@ public class AgentImplementationEx implements Agent {
 		m_proceedWithoutConsole = proceedWithoutConsole;
 
 		m_consoleListener = new ConsoleListener(m_eventSynchronisation, m_logger);
-		m_agentIdentity = new AgentIdentityImplementation(getHostName());
+		m_agentIdentity = new AgentIdentityImplementation(getHostName() + (indentifier++));
 
 	}
 
@@ -139,7 +140,7 @@ public class AgentImplementationEx implements Agent {
 					properties = createAndMergeProperties(grinderProperties,
 							startMessage != null ? startMessage.getProperties() : null);
 
-					m_agentIdentity.setName(properties.getProperty("grinder.hostID", getHostName()));
+					m_agentIdentity.setName(properties.getProperty("grinder.hostID", getHostName() + (indentifier++)));
 
 					final Connector connector = properties.getBoolean("grinder.useConsole", true) ? m_connectorFactory
 							.create(properties) : null;

@@ -138,7 +138,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	void runTestOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		// Run test
 		perfTestService.savePerfTest(perfTest, TESTING);
-		singleConsole.startTest(perfTestService.getGrinderProperties(perfTest));
+		singleConsole.startTest(grinderProperties);
 		perfTestService.savePerfTest(perfTest, TESTING_FINISHED);
 	}
 

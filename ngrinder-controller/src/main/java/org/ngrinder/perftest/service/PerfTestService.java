@@ -239,8 +239,12 @@ public class PerfTestService implements NGrinderConstants {
 
 	public GrinderProperties getGrinderProperties(PerfTest perfTest) {
 		try {
-
-			GrinderProperties grinderProperties = new GrinderProperties(config.getHome().getDefaultGrinderProperties());
+			// Copy grinder properties
+			File userGrinderPropertiesPath = new File(getUserPerfTestDirectory(perfTest),
+					DEFAULT_GRINDER_PROPERTIES_PATH);
+			FileUtils.copyFile(config.getHome().getDefaultGrinderProperties(), userGrinderPropertiesPath);
+			GrinderProperties grinderProperties = new GrinderProperties(userGrinderPropertiesPath);
+			grinderProperties.setAssociatedFile(new File(userGrinderPropertiesPath.getName()));
 			grinderProperties.setProperty(GrinderProperties.SCRIPT,
 					FilenameUtils.getName(checkNotEmpty(perfTest.getScriptName())));
 			ProcessAndThread calcProcessAndThread = calcProcessAndThread(checkNotZero(perfTest.getVuserPerAgent(),
@@ -276,7 +280,7 @@ public class PerfTestService implements NGrinderConstants {
 		// Get all files in the script path
 		List<FileEntry> fileEntries = fileEntryService.getFileEntries(user,
 				FilenameUtils.getPath(checkNotEmpty(scriptName)));
-		File perfTestDirectory = config.getHome().getPerfTestDirectory(perfTest.getId().toString());
+		File perfTestDirectory = getUserPerfTestDirectory(perfTest);
 
 		// clean up Distribution folders
 		FileUtils.deleteQuietly(perfTestDirectory);
@@ -293,6 +297,10 @@ public class PerfTestService implements NGrinderConstants {
 		}
 		LOGGER.info("File write is completed in " + perfTestDirectory);
 		return perfTestDirectory;
+	}
+
+	public File getUserPerfTestDirectory(PerfTest perfTest) {
+		return config.getHome().getPerfTestDirectory(perfTest.getId().toString());
 	}
 
 	/**
@@ -458,8 +466,7 @@ public class PerfTestService implements NGrinderConstants {
 	public ConsoleProperties createConsoleProperties(PerfTest perfTest) {
 		ConsoleProperties consoleProperties = ConsolePropertiesFactory.createEmptyConsoleProperties();
 		try {
-			consoleProperties.setAndSaveDistributionDirectory(new Directory(config.getHome().getPerfTestDirectory(
-					perfTest.getId().toString())));
+			consoleProperties.setAndSaveDistributionDirectory(new Directory(getUserPerfTestDirectory(perfTest)));
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("Error while setting console properties", e);
 		}

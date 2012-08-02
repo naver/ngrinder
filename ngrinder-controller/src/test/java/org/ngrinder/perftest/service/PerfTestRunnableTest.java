@@ -15,6 +15,7 @@ import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,13 +51,17 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 		agentControllerDaemon = new AgentControllerDaemon();
 		agentControllerDaemon.run(AGENT_SERVER_DAEMON_PORT);
+		agentControllerDaemon2 = new AgentControllerDaemon();
+		agentControllerDaemon2.run(AGENT_SERVER_DAEMON_PORT);
+
 		sleep(2000);
-		assertThat(agentManager.getAllAttachedAgents().size(), is(1));
+		assertThat(agentManager.getAllAttachedAgents().size(), is(2));
 	}
 
 	@After
 	public void after() {
 		agentControllerDaemon.shutdown();
+		agentControllerDaemon2.shutdown();
 		sleep(2000);
 	}
 
@@ -82,7 +87,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		assertThat(singleConsole.getConsolePort(), is(perfTest.getPort()));
 
 		// Start agents
-		perfTest.setAgentCount(1);
+		perfTest.setAgentCount(2);
 		GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
 		perfTestRunnable.startAgentsOn(perfTest, grinderProperties, singleConsole);
 		assertThat(agentManager.getAllFreeAgents().size(), is(0));
@@ -93,7 +98,9 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 		// Run test
 		perfTestRunnable.runTestOn(perfTest, grinderProperties, singleConsole);
-		sleep(10000);
+		for (int i = 1; i < 100; i++) {
+			sleep(1000);
+		}
 	}
 
 	@Autowired
@@ -111,7 +118,8 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath("/hello/world.py");
-		fileEntry.setContent("print 'HELLO'");
+		String worldString = IOUtils.toString(new ClassPathResource("world.py").getInputStream());
+		fileEntry.setContent(worldString);
 		fileEntry.setFileType(FileType.PYTHON_SCRIPT);
 		fileEntityRepository.save(getTestUser(), fileEntry, "UTF-8");
 	}

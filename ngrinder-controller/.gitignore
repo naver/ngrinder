@@ -5,6 +5,8 @@
 .project
 .classpath
 .project
+*-file-store
 target/
 src/main/webapp/WEB-INF/classes
 src/main/webapp/WEB-INF/lib
+/grinder_logs
