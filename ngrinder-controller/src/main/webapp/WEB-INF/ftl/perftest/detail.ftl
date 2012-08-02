@@ -342,14 +342,14 @@ div.chart {
 											<label class="control-label">Processes</label>
 											<div class="controls">
 												1
-												<span class="badge badge-info pull-right">Running <data id="process_data">1</data></span>
+												<span class="badge badge-info pull-right">Running <data id="process_data"></data></span>
 											</div>
 										</div>
 										<div class="control-group">
 											<label class="control-label">Threads</label>
 											<div class="controls">
 												2
-												<span class="badge badge-info pull-right">Running <data id="thread_data">2</data></span>
+												<span class="badge badge-info pull-right">Running <data id="thread_data"></data></span>
 											</div>
 										</div>
 										<hr>
@@ -408,7 +408,7 @@ div.chart {
 								<div class="page-header">
 									<h4>Statistics</h4>
 								</div>
-								<div class="chart"></div>
+								<div id="runningTps"class="chart"></div>
 								<div class="tabbable">
 									<ul class="nav nav-pills" style="margin20px 0" id="tableTab">
 									    <li><a href="#lsTab" tid="ls">Latest Sample</a></li>
@@ -578,6 +578,11 @@ div.chart {
 		   }
 	   }
 			$(document).ready(function() {
+			
+				var today = new Date();
+				$("#sDateInput").val(today.getFullYear()+"-"+(today.getMonth()+1)+"-"+today.getDate());
+			    objTimer = window.setInterval("refreshData()", ${(test.sampleInterval!1000)});
+			    	
 				$("#n_test").addClass("active");
 				if (${scriptList?size} == 0) {
 					alert ("User has not script yet! Please create a script first.");
@@ -868,18 +873,23 @@ div.chart {
 			}
 			
 			function refreshData() {
-				var refreshDiv = $("<div id=\"refreshDiv\"></div>");
-				var type = $('#tableTab i.active').attr("tid");
-				var url = "${req.getContextPath()}/perftest/running/refresh?type=" + type;
+				var refreshDiv = $("<div></div>");
+				var url = "${req.getContextPath()}/perftest/running/refresh?testId=" + $("#testId").val();
 				refreshDiv.load(url, function(){
 					var succesVal = refreshDiv.find("#input_status").val();
 		
 					if(succesVal == 'SUCCESS'){
-						$("#lsTable tbody").html(refreshDiv.children("lsTableItem").html());
-						$("#asTable tbody").html(refreshDiv.children("asTableItem").html());
-						$("#process_data").text(refreshDiv.children("#input_process").val());
-						$("#thread_data").text(refreshDiv.children("#input_thread").val());
-						drawTPS(refreshDiv.children("tpsChartData").val());
+						//alert(refreshDiv.html());
+						
+						$("#lsTable tbody").empty();
+						$("#asTable tbody").empty();
+						$("#lsTable tbody").prepend(refreshDiv.find("#lsTableItem"));
+						$("#asTable tbody").prepend(refreshDiv.find("#asTableItem"));
+						
+						$("#process_data").text(refreshDiv.find("#input_process").val());
+						$("#thread_data").text(refreshDiv.find("#input_thread").val());
+						
+						drawChart(refreshDiv.find("#tpsChartData").val());
 					}else{
 						if (objTimer){
 							window.clearInterval(objTimer);
@@ -890,13 +900,15 @@ div.chart {
 			}
 			
 			function drawChart(data) {
-                var plot1 = $.jqplot('tpsDiv', [data], { 
+				
+                var plot1 = $.jqplot('runningTps', [eval(data)], { 
                     title: 'TPS', 
                     axes: { 
                         xaxis: { 
                             tickRenderer: $.jqplot.AxisTickRenderer,
                             tickOptions: {
                               show: false 
+                            }
                         }
                     }, 
                     cursor:{
