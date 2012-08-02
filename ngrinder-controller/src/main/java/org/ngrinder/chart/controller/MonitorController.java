@@ -178,7 +178,7 @@ public class MonitorController extends NGrinderBaseController {
 
 		List<JavaDataModel> javaMonitorData = monitorService.getJavaMonitorData(ip, startTime, finishTime);
 
-		int pointCount = imgWidth / 10;
+		int pointCount = imgWidth / 10; // TODO: The imgWidth should be checked if it is less then 0, AND also pointCount should not be 0. (refer to org.ngrinder.perftest.service.PerfTestService)
 		int lineObject, current, interval = 0;
 
 		List<Object> heapMemoryData = new ArrayList<Object>(pointCount);
@@ -189,7 +189,7 @@ public class MonitorController extends NGrinderBaseController {
 		if (null != javaMonitorData && !javaMonitorData.isEmpty()) {
 			current = 0;
 			lineObject = javaMonitorData.size();
-			interval = lineObject / pointCount;
+			interval = lineObject / pointCount; // TODO: The pointCount should not be 0. (refer to org.ngrinder.perftest.service.PerfTestService)
 			// TODO should get average data
 			for (JavaDataModel jdm : javaMonitorData) {
 				if (0 == current) {
