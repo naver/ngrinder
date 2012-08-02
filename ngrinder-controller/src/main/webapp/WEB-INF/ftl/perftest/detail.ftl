@@ -853,7 +853,7 @@ div.chart {
                            'imgWidth':$("#tpsDiv").width()},
                     success: function(res) {
                         if (res.success) {
-                            drawChart('TPS', 'tpsDiv', res.tps_total);
+                            drawChart(res.tps_total);
                             return true;
                         } else {
                             showErrorMsg("Get report data failed.");
@@ -889,24 +889,18 @@ div.chart {
 				});
 			}
 			
-			function drawTPS(data) {
-			}
-			function drawChart(title, id, data) {
-                var plot1 = $.jqplot(id, [data], { 
-                    title: title, 
-                    series: [{ 
-                        label: '', 
-                        neighborThreshold: -1 
-                    }], 
+			function drawChart(data) {
+                var plot1 = $.jqplot('tpsDiv', [data], { 
+                    title: 'TPS', 
                     axes: { 
                         xaxis: { 
                             tickRenderer: $.jqplot.AxisTickRenderer,
                             tickOptions: {
-                              show: false
-                            } 
+                              show: false 
                         }
                     }, 
                     cursor:{
+                    	showTooltip: false,
                         show: true, 
                         zoom: false
                     }

@@ -19,7 +19,7 @@
             </div>
             <div class="row">
                 <div class="span3">
-                    <table class="table table-bordered" style="border-top:#cccccc solid 1px">
+                    <table class="table table-bordered table-striped" style="border-top:#cccccc solid 1px">
 				    <tbody>
 				    <tr>
 				    <th>IP</th>
@@ -48,7 +48,7 @@
 				    </table>
                 </div>
                 <div class="span9">
-					<div class="tabbable">
+					<div class="tabbable" style="margin-left:20px">
                         <ul class="nav nav-tabs">
                             <li class="active"><a href="#systemData" data-toggle="tab">System Data</a></li>
                             <li><a href="#javaData" data-toggle="tab">Java Data</a></li>
@@ -56,13 +56,13 @@
                         <div class="tab-content">
                             <div class="tab-pane active" id="systemData">
                                 <ul class="thumbnails">
-                                  <li class="span3">
+                                  <li class="span4">
                                     <div class="thumbnail">
                                       <img src="../img/260x180.gif" alt="">
                                       <h5>Cpu</h5>
                                     </div>
                                   </li>
-                                  <li class="span3">
+                                  <li class="span4">
                                     <div class="thumbnail">
                                       <img src="../img/260x180.gif" alt="">
                                       <h5>Memory</h5>
@@ -72,25 +72,25 @@
                             </div>
                             <div class="tab-pane" id="javaData">
                                 <ul class="thumbnails">
-								  <li class="span3">
+								  <li class="span4">
 								    <div class="thumbnail">
 								      <img src="../img/260x180.gif" alt="">
 								      <h5>Heap Memory</h5>
 								    </div>
 								  </li>
-								  <li class="span3">
+								  <li class="span4">
                                     <div class="thumbnail">
                                       <img src="../img/260x180.gif" alt="">
                                       <h5>NonHeap Memory</h5>
                                     </div>
                                   </li>
-                                  <li class="span3">
+                                  <li class="span4">
                                     <div class="thumbnail">
                                       <img src="../img/260x180.gif" alt="">
                                       <h5>Thread Count</h5>
                                     </div>
                                   </li>
-                                  <li class="span3">
+                                  <li class="span4">
                                     <div class="thumbnail">
                                       <img src="../img/260x180.gif" alt="">
                                       <h5>Cpu</h5>

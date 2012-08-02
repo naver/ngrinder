@@ -4,10 +4,6 @@
 		<title>nGrinder Performance Test List</title>
 		<#include "../common/common.ftl">
 		<#include "../common/datatables.ftl">
-		<style>
-			.dataTables_filter {visibility:hidden;}
-			
-		</style>
 	</head>
 
 	<body>
