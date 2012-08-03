@@ -160,8 +160,17 @@ public class AgentControllerServerDaemon {
 	}
 
 	public Set<AgentIdentity> getAllFreeAgents() {
-		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgents(
+		// FIXME 
+		//when test running firstly AgentControllerState is RUNNING and then test running again AgentControllerState is AGENT_RUN
+		// whether there are some issues
+		 Set<AgentIdentity> set = agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgents(
 				AgentControllerState.RUNNING, 0);
+		 if(set.size()==0){
+			 return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgents(
+						AgentControllerState.AGENT_RUN, 0);
+		 }
+		 return set;
+		
 	}
 
 	public Set<AgentIdentity> getAllAvailableAgents() {
