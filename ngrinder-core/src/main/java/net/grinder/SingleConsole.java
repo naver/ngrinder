@@ -34,6 +34,7 @@ import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.UncheckedInterruptedException;
 import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.ConsoleFoundationEx;
 import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
@@ -342,7 +343,8 @@ public class SingleConsole implements Listener {
 	public void waitUntilAgentConnected(int size) {
 		int trial = 1;
 		while (trial++ < 5) {
-			if (this.processReports.length != size) {
+			//when agent finished one test, processReports will be updated as null 
+			if (processReports == null || this.processReports.length != size) {
 				synchronized (m_eventSyncCondition) {
 					m_eventSyncCondition.waitNoInterrruptException(1000);
 				}
@@ -363,10 +365,15 @@ public class SingleConsole implements Listener {
 	}
 
 	public boolean isAllTestFinished() {
+		int workingThreadNum = 0;
 		for (ProcessReports processReport : this.processReports) {
 			// TODO
+			WorkerProcessReport[] reports = processReport.getWorkerProcessReports();
+			for (WorkerProcessReport report : reports) {
+				workingThreadNum += report.getNumberOfRunningThreads();
+			}
 		}
-		return true;
+		return workingThreadNum == 0;
 	}
 	
 	public MutablePicoContainer getConsoleContainer() {

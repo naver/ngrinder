@@ -38,6 +38,7 @@ import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.perftest.model.PerfTest;
@@ -178,6 +179,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 		List<PerfTest> finishCandiate = perfTestService.getTestingPerfTest();
 		for (PerfTest each : finishCandiate) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
+			if(consoleUsingPort == null) {
+				LOG.error("There is no console found for test:%s", ToStringBuilder.reflectionToString(each));
+				continue;
+			}
 			doFinish(each, consoleUsingPort);
 		}
 	}
