@@ -320,33 +320,33 @@ div.chart {
 										<div class="control-group">
 											<label for="agentCount" class="control-label">Script File Name</label>
 											<div class="controls">
-												hellp.py
+												${(test.scriptName)!}
 											</div>
 										</div>
 										<hr>
 										<div class="control-group">
 											<label for="vuserPerAgent" class="control-label">Vusers</label>
 											<div class="controls">
-												<strong>2</strong>
+												<strong>${(test.vuserPerAgent)!}</strong>
 											</div>
 										</div>
 										<div class="control-group">
 											<label for="scriptName" class="control-label">Agents</label>
 											<div class="controls">
-												<span>1</span><a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
+												<span>${(test.agentCount)!}</span><a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
 											</div>
 										</div>
 										<div class="control-group">
 											<label class="control-label">Processes</label>
 											<div class="controls">
-												1
+												${(test.processes)!}
 												<span class="badge badge-info pull-right">Running <data id="process_data"></data></span>
 											</div>
 										</div>
 										<div class="control-group">
 											<label class="control-label">Threads</label>
 											<div class="controls">
-												2
+												${(test.threads)!}
 												<span class="badge badge-info pull-right">Running <data id="thread_data"></data></span>
 											</div>
 										</div>
@@ -354,7 +354,7 @@ div.chart {
 										<div class="control-group">
 											<label class="control-label">Target Host</label>
 											<div class="controls">
-												10.34.64.36
+												${(test.targetHosts)!}
 											</div>
 										</div>
 										<hr>
