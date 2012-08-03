@@ -43,7 +43,7 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
-import org.ngrinder.user.service.UserService;
+import org.ngrinder.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +85,7 @@ public class FileEntityRepository {
 	}
 
 	@Autowired
-	private UserService userService;
+	private UserRepository userRepository;
 
 	/**
 	 * Get user repository.
@@ -117,7 +117,7 @@ public class FileEntityRepository {
 							script.setCreatedDate(dirEntry.getDate());
 							script.setLastModifiedDate(dirEntry.getDate());
 							script.setDescription(dirEntry.getCommitMessage());
-							script.setLastModifiedUser(userService.getUserById(dirEntry.getAuthor()));
+							script.setLastModifiedUser(userRepository.findOneByUserId(dirEntry.getAuthor()));
 							// script.setFileName(dirEntry.getName());
 							if (dirEntry.getKind() == SVNNodeKind.DIR) {
 								script.setFileType(FileType.DIR);
