@@ -9,7 +9,7 @@
                 padding-top: 60px;
             }   
             .left { border-right: 1px solid #878988 }
-            div.chart { border: 1px solid #878988; height:250px; min-width:615px; margin-bottom:12px}
+            div.chart { border: 1px solid #878988; height:250px; min-width:615px; margin-bottom:12px; padding: 5px }
         </style>
     </head>
 
@@ -59,7 +59,7 @@
                 </div>
                 <div class="span9">
 					<div class="tabbable" style="margin-left:20px">
-                        <ul class="nav nav-tabs">
+                        <ul class="nav nav-tabs" id="chartTab">
                             <li class="active"><a href="#systemData" data-toggle="tab">System Data</a></li>
                             <li><a href="#javaData" data-toggle="tab">Java Data</a></li>
                         </ul>
@@ -107,6 +107,9 @@
                 });
                 getMonitorData();
                 $("#rinterval").change();
+                $('#chartTab a').click(function () {
+					resetFooter();
+				});
             });
             function getMonitorData(){
                 $.ajax({
@@ -116,12 +119,12 @@
                            'imgWidth':700},
                     success: function(res) {
                         if (res.success) {
-                            drawChart('CPU', 'cpuDiv', res.cpu);
-                            drawChart('Memory', 'memoryDiv', res.memory);
-                            drawChart('Heap Memory', 'heapMemoryDiv', res.heap_memory);
-                            drawChart('NonHeap Memory', 'nonHeapMemoryDiv', res.non_heap_memory);
-                            drawChart('Thread Count', 'threadCountDiv', res.thread_count);
-                            drawChart('CPU', 'jvmCpuDiv', res.jvm_cpu);
+                            showChart('CPU', 'cpuDiv', res.cpu);
+                            showChart('Memory', 'memoryDiv', res.memory);
+                            showChart('Heap Memory', 'heapMemoryDiv', res.heap_memory);
+                            showChart('NonHeap Memory', 'nonHeapMemoryDiv', res.non_heap_memory);
+                            showChart('Thread Count', 'threadCountDiv', res.thread_count);
+                            showChart('CPU', 'jvmCpuDiv', res.jvm_cpu);
                             return true;
                         } else {
                             showErrorMsg("Get monitor data failed.");
@@ -136,27 +139,9 @@
                 });
             }
             
-            function drawChart(title, id, data) {
+            function showChart(title, id, data) {
                 $("#" + id).empty();
-                var plot1 = $.jqplot(id, [data], { 
-                    title: title, 
-                    series: [{ 
-                        label: title, 
-                        neighborThreshold: -1 
-                    }], 
-                    axes: { 
-                        xaxis: { 
-                            tickRenderer: $.jqplot.AxisTickRenderer,
-                            tickOptions: {
-                              show: false
-                            } 
-                        }
-                    }, 
-                    cursor:{
-                        show: true, 
-                        zoom: false
-                    }
-                });
+                drawChart(title, id, data);
             }
         </script>
     </body>
