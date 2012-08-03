@@ -57,37 +57,39 @@ public class JavaInfo extends MonitorInfo implements Serializable {
 		if (cd.containsKey("javaInfoForEach")) {
 			List<JavaInfoForEach> tmpJavaInfoForEach = Collections.synchronizedList(new ArrayList<JavaInfoForEach>());
 			CompositeData[] cdJavaInfoEachs = (CompositeData[]) cd.get("javaInfoForEach");
-			if (cdJavaInfoEachs != null) {
-				for (CompositeData cdJavaInfoEach : cdJavaInfoEachs) {
-					JavaInfoForEach javaInfoForEach = new JavaInfoForEach();
-					javaInfoForEach.setDisplayName(getString(cdJavaInfoEach, "displayName"));
-					javaInfoForEach.setJavaCpuUsedPercentage(getFloat(cdJavaInfoEach, "javaCpuUsedPercentage"));
-					javaInfoForEach.setPid(getInt(cdJavaInfoEach, "pid"));
-					javaInfoForEach.setThreadCount(getInt(cdJavaInfoEach, "threadCount"));
-					javaInfoForEach.setUptime(getLong(cdJavaInfoEach, "uptime"));
-					CompositeData cdHeapMemory = (CompositeData) cdJavaInfoEach.get("heapMemory");
+			if (null == cdJavaInfoEachs) {
+				return;
+			}
 
-					JavaMemory heapMemory = new JavaMemory();
-					if (cdHeapMemory != null) {
-						heapMemory.setCommitted(getLong(cdHeapMemory, "committed"));
-						heapMemory.setInit(getLong(cdHeapMemory, "init"));
-						heapMemory.setMax(getLong(cdHeapMemory, "max"));
-						heapMemory.setUsed(getLong(cdHeapMemory, "used"));
-					}
-					javaInfoForEach.setHeapMemory(heapMemory);
+			for (CompositeData cdJavaInfoEach : cdJavaInfoEachs) {
+				JavaInfoForEach javaInfoForEach = new JavaInfoForEach();
+				javaInfoForEach.setDisplayName(getString(cdJavaInfoEach, "displayName"));
+				javaInfoForEach.setJavaCpuUsedPercentage(getFloat(cdJavaInfoEach, "javaCpuUsedPercentage"));
+				javaInfoForEach.setPid(getInt(cdJavaInfoEach, "pid"));
+				javaInfoForEach.setThreadCount(getInt(cdJavaInfoEach, "threadCount"));
+				javaInfoForEach.setUptime(getLong(cdJavaInfoEach, "uptime"));
+				CompositeData cdHeapMemory = (CompositeData) cdJavaInfoEach.get("heapMemory");
 
-					CompositeData cdNonHeapMemory = (CompositeData) cdJavaInfoEach.get("nonHeapMemory");
-					JavaMemory nonHeapMemory = new JavaMemory();
-					if (cdNonHeapMemory != null) {
-						nonHeapMemory.setCommitted(getLong(cdNonHeapMemory, "committed"));
-						nonHeapMemory.setInit(getLong(cdNonHeapMemory, "init"));
-						nonHeapMemory.setMax(getLong(cdNonHeapMemory, "max"));
-						nonHeapMemory.setUsed(getLong(cdNonHeapMemory, "used"));
-					}
-					javaInfoForEach.setNonHeapMemory(nonHeapMemory);
-
-					tmpJavaInfoForEach.add(javaInfoForEach);
+				JavaMemory heapMemory = new JavaMemory();
+				if (cdHeapMemory != null) {
+					heapMemory.setCommitted(getLong(cdHeapMemory, "committed"));
+					heapMemory.setInit(getLong(cdHeapMemory, "init"));
+					heapMemory.setMax(getLong(cdHeapMemory, "max"));
+					heapMemory.setUsed(getLong(cdHeapMemory, "used"));
 				}
+				javaInfoForEach.setHeapMemory(heapMemory);
+
+				CompositeData cdNonHeapMemory = (CompositeData) cdJavaInfoEach.get("nonHeapMemory");
+				JavaMemory nonHeapMemory = new JavaMemory();
+				if (cdNonHeapMemory != null) {
+					nonHeapMemory.setCommitted(getLong(cdNonHeapMemory, "committed"));
+					nonHeapMemory.setInit(getLong(cdNonHeapMemory, "init"));
+					nonHeapMemory.setMax(getLong(cdNonHeapMemory, "max"));
+					nonHeapMemory.setUsed(getLong(cdNonHeapMemory, "used"));
+				}
+				javaInfoForEach.setNonHeapMemory(nonHeapMemory);
+
+				tmpJavaInfoForEach.add(javaInfoForEach);
 			}
 			this.javaInfoForEach = tmpJavaInfoForEach;
 		}

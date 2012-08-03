@@ -74,42 +74,47 @@ public class MonitorExecuteWorker implements Runnable {
 		if (--interval > 0) {
 			return;
 		}
+
+		// First try to connect
 		if (!mbeanClient.isConnected()) {
 			mbeanClient.connect();
 		}
-		if (mbeanClient.isConnected()) {
-			// mbeanClient.flush();
-			List<MonitorCollectionInfoDomain> mxBeans = collection.getMXBean();
-			for (MonitorCollectionInfoDomain mxBean : mxBeans) {
-				try {
-					CompositeData cd = (CompositeData) mbeanClient.getAttribute(mxBean.getObjectName(),
-							mxBean.getAttrName());
 
-					Class<? extends MonitorInfo> returnClass = (Class<? extends MonitorInfo>) Class.forName(cd
-							.getCompositeType().getTypeName());
-					MonitorInfo retData = returnClass.newInstance();
-					retData.parse(cd);
-
-					// new time?
-					retData.setCollectTime(System.currentTimeMillis());
-
-					StringBuffer methodName = new StringBuffer().append(MonitorConstants.RECODER_METHOD_PREFIX).append(
-							retData.getClass().getSimpleName());
-
-					Method method = recoder.getClass().getMethod(methodName.toString(), key.getClass(),
-							retData.getClass(), agentInfo.getClass());
-
-					if (method != null) {
-						method.invoke(recoder, key, retData, agentInfo);
-					}
-				} catch (Exception e) {
-					LOG.error("Error while MonitorExecutorWorker is runnng. Disconnect this MBean client.", e);
-					mbeanClient.disconnect();
-					break;
-				}
-			}
-		} else {
+		// If it can not be connected, make an error message.
+		if (!mbeanClient.isConnected()) {
 			interval = ERRORS;
+			return;
+		}
+
+		// mbeanClient.flush();
+		List<MonitorCollectionInfoDomain> mxBeans = collection.getMXBean();
+		for (MonitorCollectionInfoDomain mxBean : mxBeans) {
+			try {
+				CompositeData cd = (CompositeData) mbeanClient.getAttribute(mxBean.getObjectName(),
+						mxBean.getAttrName());
+
+				Class<? extends MonitorInfo> returnClass = (Class<? extends MonitorInfo>) Class.forName(cd
+						.getCompositeType().getTypeName());
+				MonitorInfo retData = returnClass.newInstance();
+				retData.parse(cd);
+
+				// new time?
+				retData.setCollectTime(System.currentTimeMillis());
+
+				StringBuffer methodName = new StringBuffer().append(MonitorConstants.RECODER_METHOD_PREFIX).append(
+						retData.getClass().getSimpleName());
+
+				Method method = recoder.getClass().getMethod(methodName.toString(), key.getClass(),
+						retData.getClass(), agentInfo.getClass());
+
+				if (method != null) {
+					method.invoke(recoder, key, retData, agentInfo);
+				}
+			} catch (Exception e) {
+				LOG.error("Error while MonitorExecutorWorker is runnng. Disconnect this MBean client.", e);
+				mbeanClient.disconnect();
+				break;
+			}
 		}
 	}
 

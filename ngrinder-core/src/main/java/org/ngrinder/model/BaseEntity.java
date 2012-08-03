@@ -94,16 +94,19 @@ public class BaseEntity<M> implements Serializable {
 			// Iterate over all the attributes
 			for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
 				// Only copy writable attributes
-				if (descriptor.getWriteMethod() != null) {
-					// Only copy values values where the source values is not
-					// null
-					Object defaultValue = descriptor.getReadMethod().invoke(source);
-					if (defaultValue != null) {
-						if ((defaultValue instanceof String && StringUtils.isNotBlank((String) defaultValue))
-								|| !(defaultValue instanceof String)) {
-							descriptor.getWriteMethod().invoke(this, defaultValue);
-						}
-					}
+				if (descriptor.getWriteMethod() == null) {
+					continue;
+				}
+
+				// Only copy values values where the source values is not null
+				Object defaultValue = descriptor.getReadMethod().invoke(source);
+				if (null == defaultValue) {
+					continue;
+				}
+
+				if ((defaultValue instanceof String && StringUtils.isNotBlank((String) defaultValue))
+						|| !(defaultValue instanceof String)) {
+					descriptor.getWriteMethod().invoke(this, defaultValue);
 				}
 			}
 			return (M) this;

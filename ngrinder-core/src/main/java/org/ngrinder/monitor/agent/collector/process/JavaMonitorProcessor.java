@@ -55,6 +55,7 @@ public class JavaMonitorProcessor implements Callable<JavaInfoForEach> {
 			mbeanClient.connect();
 		}
 
+		// TODO: If mbeanClient was not connected?
 		if (mbeanClient.isConnected()) {
 			// mbeanClient.flush();
 
@@ -93,6 +94,7 @@ public class JavaMonitorProcessor implements Callable<JavaInfoForEach> {
 			if (prevUpTime > 0L && upTime > prevUpTime) {
 				long elapsedCpu = processCpuTime - prevProcessCpuTime;
 				long elapsedTime = upTime - prevUpTime;
+				//TODO : (elapsedTime * 10000F * nCPUs) > 0 is always right?
 				javaInfo.setJavaCpuUsedPercentage(Math.min(100F, elapsedCpu / (elapsedTime * 10000F * nCPUs)));
 			} else {
 				javaInfo.setJavaCpuUsedPercentage(0.001f);

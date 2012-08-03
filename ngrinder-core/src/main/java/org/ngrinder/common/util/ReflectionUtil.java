@@ -64,9 +64,11 @@ public final class ReflectionUtil {
 		if (object == null) {
 			return null;
 		}
-		if (null == fieldName || "".equals(fieldName)) {
+
+		if (null == fieldName || fieldName.length() == 0) {
 			return null;
 		}
+
 		for (Class<?> superClass = object.getClass(); superClass != Object.class; superClass = superClass
 				.getSuperclass()) {
 			try {

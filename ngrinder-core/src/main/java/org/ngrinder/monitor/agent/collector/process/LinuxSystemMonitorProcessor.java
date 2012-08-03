@@ -103,6 +103,7 @@ public class LinuxSystemMonitorProcessor implements Callable<SystemInfo> {
 		if (systemInfo.getTotalCpuValue() == 0) {
 			systemInfo.setCPUUsedPercentage(0f);
 		} else {
+			// TODO: systemInfo.getTotalCpuValue() should not be less then 0.
 			systemInfo
 					.setCPUUsedPercentage((float) ((systemInfo.getTotalCpuValue() - systemInfo.getIdlecpu()) / (float) systemInfo
 							.getTotalCpuValue()) * 100);

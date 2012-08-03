@@ -63,11 +63,11 @@ public class ProxyMBeanServerInvocationHandler implements InvocationHandler {
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		final String methodName = method.getName();
 
-		if (methodName.equals("getAttribute")) {
+		if ("getAttribute".equals(methodName)) {
 			return getAttribute((ObjectName) args[0], (String) args[1]);
-		} else if (methodName.equals("getAttributes")) {
+		} else if ("getAttributes".equals(methodName)) {
 			return getAttributes((ObjectName) args[0], (String[]) args[1]);
-		} else if (methodName.equals("flush")) {
+		} else if ("flush".equals(methodName)) {
 			flush();
 			return null;
 		} else {

@@ -57,9 +57,9 @@ public abstract class MonitorInfo {
 	protected Object get(String string, Class<? extends Number> classType) {
 		Object value = null;
 		if (classType.isAssignableFrom(Long.class)) {
-			value = Long.parseLong(string.trim());
+			value = Long.parseLong(string.trim()); // TODO: it can be occurred NumberFormatException, is it a needed to handle the exception?
 		} else if (classType.isAssignableFrom(Double.class)) {
-			value = Double.parseDouble(string.trim());
+			value = Double.parseDouble(string.trim()); // TODO: it can be occurred NumberFormatException, is it a needed to handle the exception?
 		}
 		return value;
 	}
