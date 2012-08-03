@@ -7,7 +7,7 @@
 	<table>
 		<tbody>	
 		    <#list resultsub?keys as mKey>
-				<#if mKey=='latestSample'>
+				<#if mKey=='lastSampleStatistics'>
 						<#assign item = resultsub[mKey]>   
 						<#list item as statistics>
 						<tr id="lsTableItem">
@@ -24,7 +24,7 @@
 						</tr>
 						</#list>
 				</#if>
-				<#if mKey=='accumulated'>
+				<#if mKey=='cumulativeStatistics'>
 						<#assign item = resultsub[mKey]>   
 						<#list item as statistics>
 						<tr id="asTableItem">

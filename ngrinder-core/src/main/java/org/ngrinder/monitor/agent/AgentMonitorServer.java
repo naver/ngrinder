@@ -54,21 +54,21 @@ import org.ngrinder.monitor.agent.mxbean.core.MXBean;
  * @author Mavlarn
  * @since 3.0
  */
-public final class AgentServer {
+public final class AgentMonitorServer {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AgentServer.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AgentMonitorServer.class);
 	private JMXConnectorServer jmxServer = null;
 	private MBeanServer mBeanServer = null;
 	private Registry rmiRegistry = null;
 	private boolean isRunning = false;
 	private int port = MonitorConstants.DEFAULT_AGENT_PORT;
 
-	private static final AgentServer instance = new AgentServer();
+	private static final AgentMonitorServer instance = new AgentMonitorServer();
 
-	private AgentServer() {
+	private AgentMonitorServer() {
 	}
 
-	public static AgentServer getInstance() {
+	public static AgentMonitorServer getInstance() {
 		return instance;
 	}
 
