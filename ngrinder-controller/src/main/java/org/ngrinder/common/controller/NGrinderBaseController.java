@@ -78,17 +78,16 @@ public class NGrinderBaseController implements NGrinderConstants {
 	 */
 	public String getCurrentUserInfo(String param) {
 		User user = getCurrentUser();
-		if (param.equals(PARAM_USERID))
+		if (PARAM_USERID.equals(param))
 			return user.getUserId();
-		else if (param.equals(PARAM_ROLE))
+		else if (PARAM_ROLE.equals(param))
 			return user.getRole().getShortName();
-		else if (param.equals(PARAM_USER_LANGUAGE))
+		else if (PARAM_USER_LANGUAGE.equals(param))
 			return user.getUserLanguage();
-		else if (param.equals(PARAM_TIMEZONE))
+		else if (PARAM_TIMEZONE.equals(param))
 			return user.getTimeZone();
 		else
 			return user.toString();
-
 	}
 
 	public void setTimeZone(String timeZone) {

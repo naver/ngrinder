@@ -858,7 +858,7 @@ div.chart {
                            'imgWidth':$("#tpsDiv").width()},
                     success: function(res) {
                         if (res.success) {
-                            drawChart(res.tps_total);
+                            showChart('tpsDiv', res.tps_total);
                             return true;
                         } else {
                             showErrorMsg("Get report data failed.");
@@ -889,7 +889,7 @@ div.chart {
 						$("#process_data").text(refreshDiv.find("#input_process").val());
 						$("#thread_data").text(refreshDiv.find("#input_thread").val());
 						
-						drawChart(refreshDiv.find("#tpsChartData").val());
+						showChart('runningTps', refreshDiv.find("#tpsChartData").val());
 					}else{
 						if (objTimer){
 							window.clearInterval(objTimer);
@@ -899,24 +899,8 @@ div.chart {
 				});
 			}
 			
-			function drawChart(data) {
-				
-                var plot1 = $.jqplot('runningTps', [eval(data)], { 
-                    title: 'TPS', 
-                    axes: { 
-                        xaxis: { 
-                            tickRenderer: $.jqplot.AxisTickRenderer,
-                            tickOptions: {
-                              show: false 
-                            }
-                        }
-                    }, 
-                    cursor:{
-                    	showTooltip: false,
-                        show: true, 
-                        zoom: false
-                    }
-                });
+			function showChart(containerId, data) {
+				drawChart('TPS', containerId, data, 'Transaction');
             }
 		</script>
 </body>

@@ -104,6 +104,10 @@ public class MonitorController extends NGrinderBaseController {
 		long st = NumberUtils.toLong(df.format(startTime));
 		long et = NumberUtils.toLong(df.format(finishTime));
 
+		if (imgWidth < 100) {
+			imgWidth = 100;
+		}
+
 		Map<String, Object> rtnMap = new HashMap<String, Object>(7);
 		this.getMonitorDataJava(rtnMap, ip, st, et, imgWidth);
 		this.getMonitorDataSystem(rtnMap, ip, st, et, imgWidth);
@@ -137,6 +141,10 @@ public class MonitorController extends NGrinderBaseController {
 		long st = NumberUtils.toLong(df.format(startTime));
 		long et = NumberUtils.toLong(df.format(finishTime));
 
+		if (imgWidth < 100) {
+			imgWidth = 100;
+		}
+
 		Map<String, Object> rtnMap = new HashMap<String, Object>(5);
 		this.getMonitorDataJava(rtnMap, ip, st, et, imgWidth);
 		rtnMap.put(JSON_SUCCESS, true);
@@ -167,6 +175,10 @@ public class MonitorController extends NGrinderBaseController {
 		}
 		long st = NumberUtils.toLong(df.format(startTime));
 		long et = NumberUtils.toLong(df.format(finishTime));
+
+		if (imgWidth < 100) {
+			imgWidth = 100;
+		}
 
 		Map<String, Object> rtnMap = new HashMap<String, Object>(3);
 		this.getMonitorDataSystem(rtnMap, ip, st, et, imgWidth);

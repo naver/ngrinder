@@ -112,7 +112,7 @@ table.ellipsis td.ellipsis {
 
 .footDiv {
 	position: absolute;
-	top: 820px
+	top: 830px
 }
 
 .pageHeader {
@@ -141,8 +141,7 @@ table.ellipsis td.ellipsis {
 }
 
 #footDiv .footer {
-	text-align:center; 
-	margin-top:20px
+	margin-top:30px
 }
 
 .rampChart {

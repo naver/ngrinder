@@ -161,13 +161,13 @@ public class UserService {
 	 * @return
 	 */
 	public Role getRole(String roleName) {
-		if (roleName.equals(Role.ADMIN.getFullName())) {
+		if (Role.ADMIN.getFullName().equals(roleName)) {
 			return Role.ADMIN;
-		} else if (roleName.equals(Role.USER.getFullName())) {
+		} else if (Role.USER.getFullName().equals(roleName)) {
 			return Role.USER;
-		} else if (roleName.equals(Role.SUPER_USER.getFullName())) {
+		} else if (Role.SUPER_USER.getFullName().equals(roleName)) {
 			return Role.SUPER_USER;
-		} else if (roleName.equals(Role.SYSTEM_USER.getFullName())) {
+		} else if (Role.SYSTEM_USER.getFullName().equals(roleName)) {
 			return Role.SYSTEM_USER;
 		} else {
 			return null;

@@ -66,7 +66,7 @@ public class Home implements NGrinderConstants {
 		// Copy missing files
 		try {
 			for (File file : from.listFiles()) {
-				if (!new File(directory, file.getName()).exists()) {
+				if (!(new File(directory, file.getName()).exists())) {
 					FileUtils.copyFileToDirectory(file, directory);
 				}
 			}

@@ -6,3 +6,5 @@
 <script src="${req.getContextPath()}/plugins/jqplot/plugins/jqplot.logAxisRenderer.min.js"></script>
 <script src="${req.getContextPath()}/plugins/jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
 <script src="${req.getContextPath()}/plugins/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
+
+<script src="${req.getContextPath()}/js/drawChart.js"></script>

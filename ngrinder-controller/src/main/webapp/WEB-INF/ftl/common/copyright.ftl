@@ -1,8 +1,8 @@
-<div class="row" id="footDiv">
-	<div class="span12">
+<div class="row" id="footDiv" >
+	<div class="span12" style="text-align:center">
 		<hr>
 		<footer>
-			<p>Copyright (c) 2012 <a href="http://www.nhncorp.com/nhn/index.nhn" target="_blank">NHN</a>. All rights reserved.</p>
+			<p>Copyright © 2012 <a href="http://www.nhncorp.com/nhn/index.nhn" target="_blank">NHN Corp</a>. All rights reserved.</p>
 		</footer>
 	</div>
 </div>

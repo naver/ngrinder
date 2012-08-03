@@ -251,31 +251,6 @@
                 }
             });
         }
-        
-        function drawChart(title, id, data) {
-            var plot1 = $.jqplot(id, [data], { 
-                title: title, 
-                series: [{ 
-                    label: title, 
-                    neighborThreshold: -1 
-                }], 
-                axes: { 
-                    xaxis: { 
-                        tickRenderer: $.jqplot.AxisTickRenderer,
-                        tickOptions: {
-                          show: false
-                        } 
-                    }
-                }, 
-                cursor:{
-                    show: true, 
-                    zoom: false
-                }
-                //yaxis: {label : 'Transation'},
-                //xaxis: {label : 'Time (sec.)'} 
-            });
-        }
-        
 	</script>
 	</body>
 </html>
