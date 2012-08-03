@@ -34,11 +34,8 @@ div.div-host .host {
 	vertical-align: middle;
 }
 
-div.chart { 
-	border: 1px solid #878988; 
-	height: 195px; 
-	min-width: 400px; 
-	margin-bottom: 12px
+div.chart {
+	margin-bottom: 12px;
 }
 
 .table thead th {
@@ -406,7 +403,7 @@ div.chart {
 								<div class="page-header">
 									<h4>Statistics</h4>
 								</div>
-								<div id="runningTps"class="chart"></div>
+								<div id="runningTps"class="chart" style="width:540px; height:195px"></div>
 								<div class="tabbable">
 									<ul class="nav nav-pills" style="margin20px 0" id="tableTab">
 									    <li><a href="#lsTab" tid="ls">Latest Sample</a></li>
@@ -890,7 +887,8 @@ div.chart {
 						$("#process_data").text(refreshDiv.find("#input_process").val());
 						$("#thread_data").text(refreshDiv.find("#input_thread").val());
 						
-						showChart('runningTps', refreshDiv.find("#tpsChartData").val());
+						$("#runningTps").empty();
+						tpsPlot = showChart('runningTps', refreshDiv.find("#tpsChartData").val());
 					}else{
 						if (objTimer){
 							window.clearInterval(objTimer);
@@ -901,7 +899,7 @@ div.chart {
 			}
 			
 			function showChart(containerId, data) {
-				drawChart('TPS', containerId, data, 'Transaction');
+				drawChart('TPS', containerId, data);
             }
 		</script>
 </body>
