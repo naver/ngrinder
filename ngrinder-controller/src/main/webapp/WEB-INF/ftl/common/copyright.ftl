@@ -24,9 +24,7 @@
 			
 			if (ll < 800) {
 				$elem.addClass("footDiv");
-				$elem.removeClass("footer");
 			} else {
-				$elem.addClass("footer");
 				$elem.removeClass("footDiv");
 			}	
 		}	

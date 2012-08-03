@@ -34,11 +34,8 @@ div.div-host .host {
 	vertical-align: middle;
 }
 
-div.chart { 
-	border: 1px solid #878988; 
-	height: 195px; 
-	min-width: 400px; 
-	margin-bottom: 12px
+div.chart {
+	margin-bottom: 12px;
 }
 
 .table thead th {
@@ -51,7 +48,7 @@ div.chart {
 <body>
 	<#include "../common/navigator.ftl">
 	<div class="container">
-		<form id="testContentForm"  name="testContentForm" action="${req.getContextPath()}/perftest/create" method="POST">
+		<form id="testContentForm"  name="testContentForm" action="${req.getContextPath()}/perftest/create" method="POST" style="margin-bottom:0;">
 			<div class="well" style="padding:10px">
 				<input type="hidden" id="testId" name="id" value="${(test.id)!}">
 				<input type="hidden" id="threshold" name="threshold" value="${(test.threshold)!"D"}">
@@ -82,7 +79,7 @@ div.chart {
 				</div>
 			</div>
 			<div class="tabbable">
-				<ul class="nav nav-tabs" id="homeTab">
+				<ul class="nav nav-tabs" id="homeTab" style="margin-bottom:5px">
 					<li><a href="#testContent" data-toggle="tab">Test Configuration</a></li>
 					<#if test?? && (test.status == "TESTING" || test.status != "")>
 						<li><a href="#runningContent" data-toggle="tab">Test Running</a></li>
@@ -320,33 +317,33 @@ div.chart {
 										<div class="control-group">
 											<label for="agentCount" class="control-label">Script File Name</label>
 											<div class="controls">
-												hellp.py
+												${(test.scriptName)!}
 											</div>
 										</div>
 										<hr>
 										<div class="control-group">
 											<label for="vuserPerAgent" class="control-label">Vusers</label>
 											<div class="controls">
-												<strong>2</strong>
+												<strong>${(test.vuserPerAgent)!}</strong>
 											</div>
 										</div>
 										<div class="control-group">
 											<label for="scriptName" class="control-label">Agents</label>
 											<div class="controls">
-												<span>1</span><a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
+												<span>${(test.agentCount)!}</span><a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
 											</div>
 										</div>
 										<div class="control-group">
 											<label class="control-label">Processes</label>
 											<div class="controls">
-												1
+												${(test.processes)!}
 												<span class="badge badge-info pull-right">Running <data id="process_data"></data></span>
 											</div>
 										</div>
 										<div class="control-group">
 											<label class="control-label">Threads</label>
 											<div class="controls">
-												2
+												${(test.threads)!}
 												<span class="badge badge-info pull-right">Running <data id="thread_data"></data></span>
 											</div>
 										</div>
@@ -354,7 +351,7 @@ div.chart {
 										<div class="control-group">
 											<label class="control-label">Target Host</label>
 											<div class="controls">
-												10.34.64.36
+												${(test.targetHosts)!}
 											</div>
 										</div>
 										<hr>
@@ -406,7 +403,7 @@ div.chart {
 								<div class="page-header">
 									<h4>Statistics</h4>
 								</div>
-								<div id="runningTps"class="chart"></div>
+								<div id="runningTps"class="chart" style="width:540px; height:195px"></div>
 								<div class="tabbable">
 									<ul class="nav nav-pills" style="margin20px 0" id="tableTab">
 									    <li><a href="#lsTab" tid="ls">Latest Sample</a></li>
@@ -476,12 +473,12 @@ div.chart {
 						</div>
 					</div>
 				</div>
+				</div>
 				<input type="hidden" id="scheduleInput" name="scheduleTime"/>
 			</form>
 			<!--content-->
 			<#include "../common/copyright.ftl">
 		</div>
-		
 		<!-- modal -->
 		<div class="modal fade" id="addHostModal">
 			<div class="modal-header">
@@ -576,7 +573,6 @@ div.chart {
 		   }
 	   }
 			$(document).ready(function() {
-			
 				var today = new Date();
 				$("#sDateInput").val(today.getFullYear()+"-"+(today.getMonth()+1)+"-"+today.getDate());
 				<#if test?exists>
@@ -748,7 +744,6 @@ div.chart {
 				initThresholdChkBox();
 				initDuration();
 				resetFooter();
-			
 			});
 			
 			function updateVuserTotal () {
@@ -890,7 +885,8 @@ div.chart {
 						$("#process_data").text(refreshDiv.find("#input_process").val());
 						$("#thread_data").text(refreshDiv.find("#input_thread").val());
 						
-						showChart('runningTps', refreshDiv.find("#tpsChartData").val());
+						$("#runningTps").empty();
+						tpsPlot = showChart('runningTps', refreshDiv.find("#tpsChartData").val());
 					}else{
 						if (objTimer){
 							window.clearInterval(objTimer);
@@ -901,7 +897,7 @@ div.chart {
 			}
 			
 			function showChart(containerId, data) {
-				drawChart('TPS', containerId, data, 'Transaction');
+				drawChart('TPS', containerId, data);
             }
 		</script>
 </body>

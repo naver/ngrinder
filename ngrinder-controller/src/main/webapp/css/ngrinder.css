@@ -128,11 +128,11 @@ table.ellipsis td.ellipsis {
 }
 
 .errorColor {
-	color:red;
+	color: red;
 }
 
-#footDiv .footer {
-	margin-top:30px
+#footDiv hr {
+	margin: 10px 0
 }
 
 .rampChart {
