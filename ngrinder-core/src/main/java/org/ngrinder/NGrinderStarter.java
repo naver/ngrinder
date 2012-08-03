@@ -22,13 +22,10 @@
  */
 package org.ngrinder;
 
-import java.io.IOException;
 import java.util.Set;
 
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
+import net.grinder.AgentControllerDaemon;
+import net.grinder.common.GrinderException;
 
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.monitor.MonitorConstants;
@@ -62,9 +59,8 @@ public class NGrinderStarter {
 		}
 	}
 
-	private void startMonitor() throws MalformedObjectNameException, InstanceAlreadyExistsException,
-			MBeanRegistrationException, NotCompliantMBeanException, NullPointerException, IOException {
-		int port = 4096;
+	private void startMonitor() {
+		int port = MonitorConstants.DEFAULT_AGENT_PORT;
 		Set<String> dataCollectors = MonitorConstants.DEFAULT_DATA_COLLECTOR;
 		Set<Integer> jvmPids = MonitorConstants.DEFAULT_JVM_PID;
 
@@ -72,8 +68,12 @@ public class NGrinderStarter {
 		LOG.info("* Start nGrinder Monitor *");
 		LOG.info("**************************");
 		LOG.info("* Local JVM link support :{}", localAttachmentSupported);
-		AgentServer.getInstance().init(port, dataCollectors, jvmPids);
-		AgentServer.getInstance().start();
+		try {
+			AgentServer.getInstance().init(port, dataCollectors, jvmPids);
+			AgentServer.getInstance().start();
+		} catch (Exception e) {
+			LOG.error("ERROR:", e);
+		}
 
 		ThreadUtil.sleep(4000);
 		AgentServer.getInstance().refreshJavaDataCollect();
@@ -86,17 +86,20 @@ public class NGrinderStarter {
 		LOG.info("* Start nGrinder Agent **");
 		LOG.info("*************************");
 		LOG.info("Not implemented yet.");
+		
+		AgentControllerDaemon agentController = new AgentControllerDaemon();
+		try {
+			agentController.run();
+		} catch (GrinderException e) {
+			LOG.error("ERROR:", e);
+		}
 	}
 	
 	public static void main(String[] args) {
 		NGrinderStarter starter = new NGrinderStarter();
 		if (args != null && args.length > 0 && args[0].equals("-m")) {
 			//just start monitor
-			try {
 			starter.startMonitor();
-			} catch (Exception e) {
-				System.err.println("Failed to start monitor:" + e);
-			}
 		} else {
 			starter.startAgent();
 		}

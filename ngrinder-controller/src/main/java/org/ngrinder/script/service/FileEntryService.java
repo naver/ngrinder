@@ -86,6 +86,9 @@ public class FileEntryService {
 	@Autowired
 	private EhCacheCacheManager cacheManager;
 
+	@Autowired
+	private FileEntityRepository fileEntityRepository;
+
 	/**
 	 * Initialize {@link FileEntryService}
 	 */
@@ -154,9 +157,6 @@ public class FileEntryService {
 	private File getUserRepoDirectory(User user) {
 		return new File(config.getHome().getRepoDirectoryRoot(), checkNotNull(user.getUserId()));
 	}
-
-	@Autowired
-	private FileEntityRepository fileEntityRepository;
 
 	@Cacheable("file_entry_search_cache")
 	public List<FileEntry> getAllFileEntries(User user) {
