@@ -332,10 +332,12 @@ public class PerfTestService implements NGrinderConstants {
 	 */
 	public List<Object> getReportData(long testId, String dataType, int imgWidth) throws IOException {
 		List<Object> reportData = new ArrayList<Object>();
-		File reportFolder = config.getHome().getPerfTestDirectory(testId + File.separator + "report");
-		int pointCount = imgWidth / 10; // TODO: if imgWidth < 0, it can be an
-										// error. (refer to
-										// org.ngrinder.chart.controller.MonitorController)
+		File reportFolder = config.getHome().getPerfTestDirectory(
+				testId + File.separator + NGrinderConstants.PATH_REPORT);
+		if (imgWidth < 100) {
+			imgWidth = 100;
+		}
+		int pointCount = imgWidth / 10;
 		int lineNumber;
 		File targetFile = null;
 		targetFile = new File(reportFolder, dataType.toLowerCase() + DATA_FILE_EXTENSION);
@@ -355,10 +357,7 @@ public class PerfTestService implements NGrinderConstants {
 			br = new BufferedReader(reader);
 			String data = null;
 			int current = 0;
-			int interval = lineNumber / pointCount; // TODO: if pointCount == 0,
-													// it can be an error.
-													// (refer to
-													// org.ngrinder.chart.controller.MonitorController)
+			int interval = lineNumber / pointCount;
 			// TODO should get average data
 			// FIXME : NEVER NEVER DO IT. Be aware of memory size.!!
 			while (StringUtils.isNotBlank(data = br.readLine())) {
@@ -379,8 +378,9 @@ public class PerfTestService implements NGrinderConstants {
 	}
 
 	public File getReportFile(long testId) {
-		File reportFolder = config.getHome().getPerfTestDirectory(testId + File.separator + "report");
-		File targetFile = new File(reportFolder, "output.csv"); // TODO: filename is static?
+		File reportFolder = config.getHome().getPerfTestDirectory(
+				testId + File.separator + NGrinderConstants.PATH_REPORT);
+		File targetFile = new File(reportFolder, NGrinderConstants.REPORT_CSV);
 		return targetFile;
 	}
 

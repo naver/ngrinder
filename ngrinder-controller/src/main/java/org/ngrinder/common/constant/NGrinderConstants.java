@@ -38,7 +38,7 @@ public interface NGrinderConstants {
 
 	public static final String PATH_LOG = "logs";
 
-	public static final String PATH_REPORT = "reports";
+	public static final String PATH_REPORT = "report";
 
 	public static final String PATH_HISTORY = "histories";
 
@@ -52,6 +52,8 @@ public interface NGrinderConstants {
 	public static final String JS_EXTENTION = ".js";
 
 	public static final String GRINDER_PROPERTIES = "grinder.properties";
+	
+	public static final String REPORT_CSV = "output.csv";
 
 	public static final String JSON_SUCCESS = "success";
 	public static final String JSON_MESSAGE = "message";

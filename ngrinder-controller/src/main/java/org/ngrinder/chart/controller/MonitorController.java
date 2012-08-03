@@ -104,6 +104,10 @@ public class MonitorController extends NGrinderBaseController {
 		long st = NumberUtils.toLong(df.format(startTime));
 		long et = NumberUtils.toLong(df.format(finishTime));
 
+		if (imgWidth < 100) {
+			imgWidth = 100;
+		}
+
 		Map<String, Object> rtnMap = new HashMap<String, Object>(7);
 		this.getMonitorDataJava(rtnMap, ip, st, et, imgWidth);
 		this.getMonitorDataSystem(rtnMap, ip, st, et, imgWidth);
@@ -137,6 +141,10 @@ public class MonitorController extends NGrinderBaseController {
 		long st = NumberUtils.toLong(df.format(startTime));
 		long et = NumberUtils.toLong(df.format(finishTime));
 
+		if (imgWidth < 100) {
+			imgWidth = 100;
+		}
+
 		Map<String, Object> rtnMap = new HashMap<String, Object>(5);
 		this.getMonitorDataJava(rtnMap, ip, st, et, imgWidth);
 		rtnMap.put(JSON_SUCCESS, true);
@@ -168,6 +176,10 @@ public class MonitorController extends NGrinderBaseController {
 		long st = NumberUtils.toLong(df.format(startTime));
 		long et = NumberUtils.toLong(df.format(finishTime));
 
+		if (imgWidth < 100) {
+			imgWidth = 100;
+		}
+
 		Map<String, Object> rtnMap = new HashMap<String, Object>(3);
 		this.getMonitorDataSystem(rtnMap, ip, st, et, imgWidth);
 		rtnMap.put(JSON_SUCCESS, true);
@@ -178,7 +190,7 @@ public class MonitorController extends NGrinderBaseController {
 
 		List<JavaDataModel> javaMonitorData = monitorService.getJavaMonitorData(ip, startTime, finishTime);
 
-		int pointCount = imgWidth / 10; // TODO: The imgWidth should be checked if it is less then 0, AND also pointCount should not be 0. (refer to org.ngrinder.perftest.service.PerfTestService)
+		int pointCount = imgWidth / 10;
 		int lineObject, current, interval = 0;
 
 		List<Object> heapMemoryData = new ArrayList<Object>(pointCount);
@@ -189,7 +201,7 @@ public class MonitorController extends NGrinderBaseController {
 		if (null != javaMonitorData && !javaMonitorData.isEmpty()) {
 			current = 0;
 			lineObject = javaMonitorData.size();
-			interval = lineObject / pointCount; // TODO: The pointCount should not be 0. (refer to org.ngrinder.perftest.service.PerfTestService)
+			interval = lineObject / pointCount;
 			// TODO should get average data
 			for (JavaDataModel jdm : javaMonitorData) {
 				if (0 == current) {
