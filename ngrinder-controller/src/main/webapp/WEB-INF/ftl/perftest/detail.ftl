@@ -51,7 +51,7 @@ div.chart {
 <body>
 	<#include "../common/navigator.ftl">
 	<div class="container">
-		<form id="testContentForm"  name="testContentForm" action="${req.getContextPath()}/perftest/create" method="POST">
+		<form id="testContentForm"  name="testContentForm" action="${req.getContextPath()}/perftest/create" method="POST" style="margin-bottom:0;">
 			<div class="well" style="padding:10px">
 				<input type="hidden" id="testId" name="id" value="${(test.id)!}">
 				<input type="hidden" id="threshold" name="threshold" value="${(test.threshold)!"D"}">
@@ -82,7 +82,7 @@ div.chart {
 				</div>
 			</div>
 			<div class="tabbable">
-				<ul class="nav nav-tabs" id="homeTab">
+				<ul class="nav nav-tabs" id="homeTab" style="margin-bottom:5px">
 					<li><a href="#testContent" data-toggle="tab">Test Configuration</a></li>
 					<#if test?? && (test.status == "TESTING" || test.status != "")>
 						<li><a href="#runningContent" data-toggle="tab">Test Running</a></li>
@@ -476,12 +476,12 @@ div.chart {
 						</div>
 					</div>
 				</div>
+				</div>
 				<input type="hidden" id="scheduleInput" name="scheduleTime"/>
 			</form>
 			<!--content-->
 			<#include "../common/copyright.ftl">
 		</div>
-		
 		<!-- modal -->
 		<div class="modal fade" id="addHostModal">
 			<div class="modal-header">
@@ -576,7 +576,6 @@ div.chart {
 		   }
 	   }
 			$(document).ready(function() {
-			
 				var today = new Date();
 				$("#sDateInput").val(today.getFullYear()+"-"+(today.getMonth()+1)+"-"+today.getDate());
 				<#if test?exists>
@@ -748,7 +747,6 @@ div.chart {
 				initThresholdChkBox();
 				initDuration();
 				resetFooter();
-			
 			});
 			
 			function updateVuserTotal () {
