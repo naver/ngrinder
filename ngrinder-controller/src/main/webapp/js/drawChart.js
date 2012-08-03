@@ -7,6 +7,14 @@ function drawChart(title, containerId, data, yLabel, startTime, interval) {
 			text: title,
 			fontSize: '16pt'
 		},
+		seriesDefaults: {
+			markerRenderer: $.jqplot.MarkerRenderer,
+			markerOptions: {
+				size: 5.0,
+				color: '#555555'
+			},
+			lineWidth: 2.0
+		},
 		axes: {
             xaxis: {
 				tickRenderer : $.jqplot.AxisTickRenderer,
