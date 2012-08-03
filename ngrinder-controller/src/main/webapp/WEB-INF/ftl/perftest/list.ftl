@@ -71,7 +71,7 @@
 								<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
 								<tr id="tr${test.id}">
 									<td><input type="checkbox" class="checkbox" value="${test.id}"></td>
-									<td>${test.status}</td>
+									<td class="ellipsis" title="${test.status}">${test.status}</td>
 									<td class="ellipsis" title="${test.testName}"><a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a></td>
 									<td class="ellipsis">${test.scriptName}</td>
 									<td class="ellipsis" title="${(test.description)!}">${(test.description)!}</td>

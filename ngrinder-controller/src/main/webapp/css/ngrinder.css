@@ -24,20 +24,11 @@ body {
 }
 
 .form-horizontal-1 .control-label {
-	width: 100px;
+	width: 120px;
 }
 
 .form-horizontal-1 .controls {
-	margin-left: 130px;
-}
-
-.form-horizontal-1 .controls button {
-	margin-left: 40px;
-	width: 125px;
-}
-
-.form-horizontal-1 .controls input {
-	width: 590px;
+	margin-left: 150px;
 }
 
 .form-horizontal-2 .control-label {

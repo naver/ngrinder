@@ -32,8 +32,8 @@
 	}
 	
 	function showErrorMsg(message) {
-		var $msgDiv = $('#errorDiv span');
-		$msgDiv.html(message);
-		$msgDiv.fadeIn("fast");
+		var $div = $("#errorDiv");
+		$div.children("span").html(message);
+		$div.fadeIn("fast");
 	}
 </script>

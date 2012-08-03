@@ -58,13 +58,13 @@ div.chart {
 				<input type="hidden" id="threads" name="threads" value="${(test.threads)!0}">
 				<input type="hidden" id="processes" name="processes" value="${(test.processes)!0}">						
 
-				<div class="form-horizontal">
+				<div class="form-horizontal form-horizontal-1">
 					<fieldset>
 						<div class="control-group">
 							<label for="testName" class="control-label">Test Name</label>
 							<div class="controls">  
 								<input class="span5 required" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
-								<button type="submit" class="btn btn-success btn-primary" style="margin-left:70px"> 
+								<button type="submit" class="btn btn-success btn-primary" style="margin-left:85px"> 
 									<#if test??>Clone<#else>Save</#if> and Start 
 								</button>  
 								<button type="submit" class="btn btn-primary" data-toggle="modal" href="#scheduleModal"  id="saveScheduleBtn">
@@ -150,17 +150,15 @@ div.chart {
 											<label class="control-label"> 
 												<input type="radio" id="durationChkbox"> Duration
 											</label>
-											<div class="controls">
+											<div class="controls docs-input-sizes">
 												<select class="select-item" id="dSelect"></select> : 
 												<select	class="select-item" id="hSelect"></select> : 
 												<select	class="select-item" id="mSelect"></select> : 
 												<select	class="select-item" id="sSelect"></select>
 												&nbsp;&nbsp;
 												<code>DD:HH:MM:SS</code>
-											</div>
-											<div class="controls">
 												<input type="hidden" id="duration" class="required positiveNumber" name="duration" value="${(test.duration)!0}">
-												<div id="durationSlider" class="slider span3"></div>
+												<div id="durationSlider" class="slider" style="margin-left:0; width:235px"></div>
 												<input id="hiddenDurationInput" class="span1 hide" 
 														data-slider="#durationSlider"
 														data-max="100" data-min="0" data-step="1">
@@ -581,11 +579,13 @@ div.chart {
 			
 				var today = new Date();
 				$("#sDateInput").val(today.getFullYear()+"-"+(today.getMonth()+1)+"-"+today.getDate());
-			    objTimer = window.setInterval("refreshData()", ${(test.sampleInterval!1000)});
-			    	
+				<#if test?exists>
+			    objTimer = window.setInterval("refreshData()", ${test.sampleInterval!1000});
+			    </#if>
+			    
 				$("#n_test").addClass("active");
 				if (${scriptList?size} == 0) {
-					alert ("User has not script yet! Please create a script first.");
+					showInformation("User has not script yet! Please create a script first.");
 				}
 				
 				$("#homeTab a:first").tab('show');	
@@ -747,6 +747,7 @@ div.chart {
 				
 				initThresholdChkBox();
 				initDuration();
+				resetFooter();
 			
 			});
 			
@@ -893,7 +894,7 @@ div.chart {
 					}else{
 						if (objTimer){
 							window.clearInterval(objTimer);
-							window.clearInterval(countTime);
+							//window.clearInterval(countTime);
 						}
 					}
 				});
