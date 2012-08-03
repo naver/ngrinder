@@ -131,8 +131,8 @@ public class PerfTestService implements NGrinderConstants {
 		Specifications<PerfTest> spec = Specifications.where(emptyPredicate());
 
 		// User can see only his own test
-		if (user.getRole() == Role.USER) {
-			spec.and(createdBy(user));
+		if (user.getRole().equals(Role.USER)) {
+			spec = spec.and(createdBy(user));
 		}
 
 		if (isFinished) {
