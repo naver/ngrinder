@@ -45,6 +45,10 @@ import net.grinder.console.distribution.AgentCacheState;
 import net.grinder.console.distribution.FileDistribution;
 import net.grinder.console.distribution.FileDistributionHandler;
 import net.grinder.console.model.ConsoleProperties;
+import net.grinder.console.model.SampleListener;
+import net.grinder.console.model.SampleModel;
+import net.grinder.console.model.SampleModelImplementationEx;
+import net.grinder.statistics.StatisticsSet;
 import net.grinder.util.AllocateLowestNumber;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.Directory;
@@ -55,6 +59,7 @@ import net.grinder.util.thread.Condition;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.picocontainer.MutablePicoContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +80,9 @@ public class SingleConsole implements Listener {
 	private ProcessReports[] processReports;
 	private boolean cancel = false;
 
+	//for displaying tps graph in  running page 
+	private Double[] values = new Double[60];
+	private int cursor = 0;
 	/**
 	 * Constructor with console ip and port.
 	 * 
@@ -116,6 +124,19 @@ public class SingleConsole implements Listener {
 			this.getConsoleProperties().setConsoleHost(ip);
 			this.getConsoleProperties().setConsolePort(port);
 			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties, m_eventSyncCondition);
+		
+			final SampleModel sampleModel = (SampleModel)consoleFoundation.getContainer().getComponent(SampleModelImplementationEx.class);
+
+			//add SampleListener for collecting Tps data for Tps graph
+			sampleModel.addTotalSampleListener(new SampleListener() {
+				@Override
+				public void update(StatisticsSet intervalStatistics,
+					StatisticsSet cumulativeStatistics) {
+					double tps = sampleModel.getTPSExpression().getDoubleValue(
+						intervalStatistics);
+						addTpsValue(tps);
+				}
+			});
 		} catch (GrinderException e) {
 			throw new NGrinderRuntimeException("Exception occurs while creating SingleConsole", e);
 
@@ -346,6 +367,34 @@ public class SingleConsole implements Listener {
 			// TODO
 		}
 		return true;
+	}
+	
+	public MutablePicoContainer getConsoleContainer() {
+		return consoleFoundation.getContainer();
+	}
+	
+	/**
+	 * Get Tps values,Its length is 60
+	 */
+	public void addTpsValue(Double newValue) {
+		values[cursor] = newValue;
+
+		if (++cursor >= values.length) {
+			cursor = 0;
+		}
+	}
+	
+	public String getTpsValues() {
+		StringBuffer str = new StringBuffer("[");
+		for (int i = 0; i < values.length; i++) {
+			str.append(values[i]);
+
+			if (i != (values.length - 1)) {
+				str.append(",");
+			}
+		}
+		str.append("]");
+		return str.toString();
 	}
 
 }

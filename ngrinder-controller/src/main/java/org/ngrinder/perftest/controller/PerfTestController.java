@@ -233,6 +233,6 @@ public class PerfTestController extends NGrinderBaseController {
 			result = perfTestService.getStatistics(test.getPort());
 			model.addAttribute("resultsub", result);
 		}
-		return "perftest/report";
+		return "perftest/refreshContent";
 	}
 }

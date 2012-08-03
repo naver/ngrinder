@@ -47,6 +47,8 @@ import java.util.Map;
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.Test;
+import net.grinder.console.communication.NGrinderConsoleCommunicationService;
+import net.grinder.console.communication.ProcessControl;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.console.model.ModelTestIndex;
 import net.grinder.console.model.SampleModel;
@@ -75,6 +77,7 @@ import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
+import org.picocontainer.MutablePicoContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -453,6 +456,16 @@ public class PerfTestService implements NGrinderConstants {
 		result.put("totalStatistics", totalStatistics);
 		result.put("cumulativeStatistics", cumulativeStatistics);
 		result.put("lastSampleStatistics", lastSampleStatistics);
+		
+		result.put("tpsChartData", singleConsole.getTpsValues());
+
+		
+        MutablePicoContainer container = (MutablePicoContainer) singleConsole.getConsoleContainer();
+        ProcessControl processControl = (ProcessControl) container.getComponent(ProcessControl.class);
+        NGrinderConsoleCommunicationService.collectWorkerAndThreadInfo(processControl, result);
+		
+        result.put("success", true);
+		
 		return result;
 	}
 
