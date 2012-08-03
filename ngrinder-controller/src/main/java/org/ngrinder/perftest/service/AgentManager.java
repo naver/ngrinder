@@ -34,6 +34,7 @@ import net.grinder.AgentControllerServerDaemon;
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.util.thread.ExecutorFactory;
 
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -55,7 +56,7 @@ import org.springframework.stereotype.Component;
 public class AgentManager implements NGrinderConstants {
 	public static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);
 	private final AgentControllerServerDaemon agentControllerServer = new AgentControllerServerDaemon(
-			AGENT_SERVER_DAEMON_PORT);
+			AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 	private static final int NUMBER_OF_THREAD = 3;
 	private static final int AGENT_RUN_TIMEOUT_SECOND = 10;
 

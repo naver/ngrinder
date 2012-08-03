@@ -22,14 +22,16 @@
  */
 package org.ngrinder;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.util.HashSet;
 import java.util.Set;
 
 import net.grinder.AgentControllerDaemon;
 import net.grinder.common.GrinderException;
 
-import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.monitor.agent.AgentServer;
+import org.ngrinder.monitor.agent.AgentMonitorServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,33 +61,35 @@ public class NGrinderStarter {
 		}
 	}
 
-	private void startMonitor() {
+	private void startMonitor(boolean withAgent) {
 		int port = MonitorConstants.DEFAULT_AGENT_PORT;
-		Set<String> dataCollectors = MonitorConstants.DEFAULT_DATA_COLLECTOR;
-		Set<Integer> jvmPids = MonitorConstants.DEFAULT_JVM_PID;
+		Set<String> dataCollectors;
+		if (withAgent) {
+			dataCollectors = MonitorConstants.DEFAULT_DATA_COLLECTOR;
+		} else {
+			dataCollectors = MonitorConstants.TARGET_SERVER_DATA_COLLECTOR;
+		}
+		Set<Integer> jvmPids = new HashSet<Integer>();
+		int currPID = getCurrentJVMPid();
+		jvmPids.add(currPID);
 
 		LOG.info("**************************");
 		LOG.info("* Start nGrinder Monitor *");
 		LOG.info("**************************");
 		LOG.info("* Local JVM link support :{}", localAttachmentSupported);
+		LOG.info("* Colllect SYSTEM %s data. **", withAgent? "and JAVA" : "");
 		try {
-			AgentServer.getInstance().init(port, dataCollectors, jvmPids);
-			AgentServer.getInstance().start();
+			AgentMonitorServer.getInstance().init(port, dataCollectors, jvmPids);
+			AgentMonitorServer.getInstance().start();
 		} catch (Exception e) {
 			LOG.error("ERROR:", e);
 		}
-
-		ThreadUtil.sleep(4000);
-		AgentServer.getInstance().refreshJavaDataCollect();
-		LOG.info("* Refresh java data monitoring.e *");
-		ThreadUtil.sleep(10000);
 	}
 	
 	private void startAgent() {
 		LOG.info("*************************");
 		LOG.info("* Start nGrinder Agent **");
 		LOG.info("*************************");
-		LOG.info("Not implemented yet.");
 		
 		AgentControllerDaemon agentController = new AgentControllerDaemon();
 		try {
@@ -95,14 +99,27 @@ public class NGrinderStarter {
 		}
 	}
 	
+	public static int getCurrentJVMPid() {
+		RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
+		String name = runtime.getName();
+		try {
+			return Integer.parseInt(name.substring(0, name.indexOf('@')));
+		} catch (Exception e) {
+			return -1;
+		}
+	}
+	
 	public static void main(String[] args) {
 		NGrinderStarter starter = new NGrinderStarter();
-		if (args != null && args.length > 0 && args[0].equals("-m")) {
+		boolean withAgent = false;
+		if (args != null && args.length > 0 && args[0].equals("-a")) {
 			//just start monitor
-			starter.startMonitor();
-		} else {
+			withAgent = true;
+		}
+		if (withAgent) {
 			starter.startAgent();
 		}
+		starter.startMonitor(withAgent);
 	}
 
 }
