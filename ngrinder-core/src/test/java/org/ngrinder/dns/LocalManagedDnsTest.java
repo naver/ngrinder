@@ -75,10 +75,12 @@ public class LocalManagedDnsTest {
 	public void testLocalDNSLookup() throws UnknownHostException {
 		System.out.println("test LocalDNSLookup.....");
 		cleanCustomDNS();
+		//10.0.0.1:www.google.com,10.0.0.2:www.google2.com
+		NameStore.getInstance().put("10.0.0.1", "www.google.com");
+		NameStore.getInstance().put("10.0.0.2", "www.google2.com");
+		
 		performLookupLocal("www.google.com");
 		performLookupLocal("www.google2.com");
-		performLookup("www.baidu.com");
-		performLookup("www.naver.com");
 		
 		NameStore.getInstance().put("mydomain.com", "10.10.10.10");
 		//performLookupLocal("mydomain.com");

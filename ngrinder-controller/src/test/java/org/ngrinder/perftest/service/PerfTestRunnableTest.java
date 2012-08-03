@@ -16,12 +16,11 @@ import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.communication.ProcessControl.Listener;
-import net.grinder.console.communication.ProcessControlImplementation;
 import net.grinder.console.communication.ProcessControl.ProcessReports;
+import net.grinder.console.communication.ProcessControlImplementation;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

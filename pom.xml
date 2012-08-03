@@ -251,6 +251,9 @@
 					<includesTestSourceRoots>true</includesTestSourceRoots>
 					<encoding>${source-encoding}</encoding>
 					<jdk>${jdk-version}</jdk>
+					<excludes>
+						<exclude>org/ngrinder/*/model/*.java</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>

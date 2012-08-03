@@ -20,41 +20,33 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.chart.service;
-
-import java.util.HashSet;
-import java.util.Set;
+package org.ngrinder.agent.controller;
 
 import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.agent.model.Agent;
-import org.ngrinder.common.util.ThreadUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.ModelMap;
 
 /**
  * Class description.
- * 
- * @author Tobi
- * @since
- * @date 2012-7-23
+ *
+ * @author Mavlarn
+ * @since 3.0
  */
-public class MonitorDataServiceTest extends AbstractNGrinderTransactionalTest {
+public class AgentControllerTest {
 
 	@Autowired
-	private MonitorDataService monitorDataService;
-
+	AgentController agentController;
+	
 	@Test
-	public void testAddRemoveMonitorAgents() {
-		Set<Agent> agents = new HashSet<Agent>();
-		Agent agt = new Agent();
-		agt.setAppPort(10086);
-		agt.setIp("127.0.0.1");
-		agents.add(agt);
-		
-		monitorDataService.addMonitorAgents("127.0.0.1_test", agents);
-		
-		ThreadUtil.sleep(3000);
-		monitorDataService.removeMonitorAgents("127.0.0.1_test");
+	public void testGetAgent() {
+		ModelMap model = new ModelMap();
+		agentController.getAgent(model, 0L);
+	}
+	
+	@Test
+	public void testGetAgents() {
+		ModelMap model = new ModelMap();
+		agentController.getAgents(model, "");
 	}
 
 }

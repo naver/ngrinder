@@ -24,16 +24,20 @@ package org.ngrinder.perftest.controller;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.model.Role;
+import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.service.PerfTestService;
+import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.ui.ModelMap;
 
 /**
@@ -50,17 +54,19 @@ public class PerfTestControllerTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	private PerfTestService testService;
 
-	@Before
-	public void createTempTests() {
-		
+	@Autowired
+	private UserService userService;
+
+	private PerfTest createTempTests(String testName) {
 		PerfTest test = new PerfTest();
-		test.setTestName("new Test1");
+		test.setTestName(testName);
 		test.setThreshold("D");
 		test.setDuration(120L);
 		test.setIgnoreSampleCount(0);
 		test.setTargetHosts("127.0.0.1");
 		test.setScriptName("test1.py");
 		testService.savePerfTest(test);
+		return test;
 	}
 
 	/**
@@ -71,6 +77,7 @@ public class PerfTestControllerTest extends AbstractNGrinderTransactionalTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetTestList() {
+		createTempTests("new test1");
 		ModelMap model = new ModelMap();
 		controller.getTestList(getTestUser(), null, false, null, model);
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
@@ -78,6 +85,71 @@ public class PerfTestControllerTest extends AbstractNGrinderTransactionalTest {
 
 		assertThat(testList.size(), is(1));
 
+	}
+	
+	@Test
+	public void testGetTestListByAdmin() {
+		String testName = "new test1";
+		createTempTests(testName);
+		ModelMap model = new ModelMap();
+		User testAdmin = new User();
+		testAdmin.setUserId("testAdmin");
+		testAdmin.setPassword("testAdmin");
+		testAdmin.setRole(Role.ADMIN);
+		testAdmin = userService.saveUser(testAdmin);
+		
+		controller.getTestList(testAdmin, null, false, null, model);
+		@SuppressWarnings("unchecked")
+		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
+		List<PerfTest> testList = testPage.getContent();
+		boolean success = false;
+		for (PerfTest perfTest : testList) {
+			if (perfTest.getTestName().equals(testName)) {
+				success = true;
+			}
+		}
+		assertTrue(success);
+	}
+	
+	@Test
+	public void testGetTestListByOtherUser() {
+		String testName = "new test1";
+		createTempTests(testName);
+		
+		ModelMap model = new ModelMap();
+		
+		User testUser = new User();
+		testUser.setUserId("testUser");
+		testUser.setPassword("testUser");
+		testUser.setRole(Role.USER);
+		testUser = userService.saveUser(testUser);
+		
+		controller.getTestList(testUser, null, false, null, model);
+		@SuppressWarnings("unchecked")
+		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
+		List<PerfTest> testList = testPage.getContent();
+
+		assertThat(testList.size(), is(0));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testGetTestListByKeyWord() {
+		String strangeName = "DJJHG^%R&*^%^565(^%&^%(^%(^";
+		createTempTests(strangeName);
+		
+		ModelMap model = new ModelMap();
+		
+		controller.getTestList(getTestUser(), strangeName, false, new PageRequest(0, 10), model);
+		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
+		List<PerfTest> testList = testPage.getContent();
+		assertThat(testList.size(), is(1));
+
+		controller.getTestList(getTestUser(), strangeName.substring(2,10), false, 
+				new PageRequest(0, 10), model);
+		testPage = (Page<PerfTest>) model.get("testListPage");
+		testList = testPage.getContent();
+		assertThat(testList.size(), is(1));
 	}
 
 	/**

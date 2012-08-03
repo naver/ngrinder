@@ -20,41 +20,53 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.chart.service;
+package org.ngrinder.chart.controller;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Date;
 
 import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.agent.model.Agent;
-import org.ngrinder.common.util.ThreadUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.ModelMap;
 
 /**
- * Class description.
- * 
- * @author Tobi
+ * MonitorController Test class.
+ *
+ * @author Mavlarn
  * @since
- * @date 2012-7-23
  */
-public class MonitorDataServiceTest extends AbstractNGrinderTransactionalTest {
-
+public class MonitorControllerTest {
+	
 	@Autowired
-	private MonitorDataService monitorDataService;
+	private MonitorController monitorController;
 
 	@Test
-	public void testAddRemoveMonitorAgents() {
-		Set<Agent> agents = new HashSet<Agent>();
-		Agent agt = new Agent();
-		agt.setAppPort(10086);
-		agt.setIp("127.0.0.1");
-		agents.add(agt);
-		
-		monitorDataService.addMonitorAgents("127.0.0.1_test", agents);
-		
-		ThreadUtil.sleep(3000);
-		monitorDataService.removeMonitorAgents("127.0.0.1_test");
+	public void testGetChartData() {
+		ModelMap model = new ModelMap();
+		monitorController.getChartData(model, null);
+	}
+
+	@Test
+	public void testGetMonitorData() {
+		ModelMap model = new ModelMap();
+		Date endDate = new Date();
+		Date stDate = new Date(endDate.getTime() - 60 * 1000 * 1000);
+		monitorController.getMonitorData(model, "127.0.0.1", stDate, endDate, 0);
+	}
+
+	@Test
+	public void testGetMonitorDataJava() {
+		ModelMap model = new ModelMap();
+		Date endDate = new Date();
+		Date stDate = new Date(endDate.getTime() - 60 * 1000 * 1000);
+		monitorController.getMonitorDataJava(model, "127.0.0.1", stDate, endDate, 0);
+	}
+
+	@Test
+	public void testGetMonitorDataSystem() {
+		ModelMap model = new ModelMap();
+		Date endDate = new Date();
+		Date stDate = new Date(endDate.getTime() - 60 * 1000 * 1000);
+		monitorController.getMonitorDataSystem(model, "127.0.0.1", stDate, endDate, 0);
 	}
 
 }

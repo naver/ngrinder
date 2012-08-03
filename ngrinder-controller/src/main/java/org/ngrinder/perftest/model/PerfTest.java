@@ -332,17 +332,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.processIncrementInterval = processIncrementInterval;
 	}
 
-	/**
-	 * @return the threads
-	 */
 	public Integer getThreads() {
 		return threads;
 	}
 
-	/**
-	 * @param threads
-	 *            the threads to set
-	 */
 	public void setThreads(Integer threads) {
 		this.threads = threads;
 	}
@@ -395,10 +388,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.peakTps = peakTps;
 	}
 
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-	}
-
 	public Integer getPort() {
 		return port;
 	}
@@ -442,4 +431,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public String getDurationStr() {
 		return DateUtil.ms2Time(this.duration);
 	}
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+	}
+	
 }

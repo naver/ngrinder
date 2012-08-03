@@ -20,7 +20,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.chart.service;
+package org.ngrinder.chart.repository;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -45,9 +45,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Class description.
  * 
  * @author Mavlarn
- * @since
+ * @since 3.0
  */
-public class ChartServiceTest extends AbstractNGrinderTransactionalTest {
+public class ChartRepositoryTest extends AbstractNGrinderTransactionalTest {
 
 	private static final String DATE_FORMAT = "yyyyMMddHHmmss";
 	private static final DateFormat df = new SimpleDateFormat(DATE_FORMAT);
@@ -125,7 +125,7 @@ public class ChartServiceTest extends AbstractNGrinderTransactionalTest {
 	public void testGetJavaMonitorData() {
 		
 		//insert one record and get to check
-		long startTime = NumberUtils.toLong(df.format(new Date()));;
+		long startTime = NumberUtils.toLong(df.format(new Date()));
 		JavaDataModel javaInfo = newJavaData(startTime);
 		javaRepository.save(javaInfo);
 		JavaDataModel infoInDb = javaRepository.findOne(javaInfo.getId());
