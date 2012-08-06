@@ -47,6 +47,9 @@ public class FileDownloadUtil {
 	}
 
 	public static boolean downloadFile(HttpServletResponse response, File desFile) {
+		if (desFile == null || !desFile.exists()) {
+			return false;
+		}
 		boolean result = true;
 		response.reset();
 		response.addHeader("Content-Disposition", "attachment;filename=" + desFile.getName());

@@ -175,7 +175,7 @@ public class AgentController implements Agent {
 
 				// Here the agent run code goes..
 				if (startMessage != null) {
-					m_logger.info("starting agent");
+					m_logger.info("starting agent...");
 					agent.run(startMessage.getProperties());
 					m_agentStart = true;
 				}

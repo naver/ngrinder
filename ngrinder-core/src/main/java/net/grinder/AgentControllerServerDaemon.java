@@ -63,8 +63,7 @@ public class AgentControllerServerDaemon {
 	private static final long AGENT_CONTROLLER_SERVER_EVENT_EXPIRATION_TIMEOUT = 10000;
 
 	/**
-	 * Agent controller daemon constructor with default
-	 * {@link ConsoleProperties}.
+	 * Agent controller daemon constructor with default {@link ConsoleProperties}.
 	 * 
 	 * @param ip
 	 *            used IP
@@ -160,17 +159,18 @@ public class AgentControllerServerDaemon {
 	}
 
 	public Set<AgentIdentity> getAllFreeAgents() {
-		// FIXME 
-		//when test running firstly AgentControllerState is RUNNING and then test running again AgentControllerState is AGENT_RUN
+		// FIXME
+		// when test running firstly AgentControllerState is RUNNING and then test running again AgentControllerState is
+		// AGENT_RUN
 		// whether there are some issues
-		 Set<AgentIdentity> set = agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgents(
+		Set<AgentIdentity> agentSet = agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgents(
 				AgentControllerState.RUNNING, 0);
-		 if(set.size()==0){
-			 return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgents(
-						AgentControllerState.AGENT_RUN, 0);
-		 }
-		 return set;
-		
+		if (agentSet.isEmpty()) {
+			return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgents(
+					AgentControllerState.AGENT_RUN, 0);
+		}
+		return agentSet;
+
 	}
 
 	public Set<AgentIdentity> getAllAvailableAgents() {

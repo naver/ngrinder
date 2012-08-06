@@ -28,7 +28,7 @@ import org.springframework.ui.ModelMap;
 
 /**
  * Class description.
- *
+ * 
  * @author Mavlarn
  * @since 3.0
  */
@@ -36,17 +36,11 @@ public class AgentControllerTest {
 
 	@Autowired
 	AgentController agentController;
-	
+
 	@Test
-	public void testGetAgent() {
+	public void testGetAgentList() {
 		ModelMap model = new ModelMap();
-		agentController.getAgent(model, 0L);
-	}
-	
-	@Test
-	public void testGetAgents() {
-		ModelMap model = new ModelMap();
-		agentController.getAgents(model, "");
+		agentController.getAgents(model);
 	}
 
 }

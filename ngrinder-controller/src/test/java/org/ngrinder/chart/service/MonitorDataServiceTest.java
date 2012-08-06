@@ -47,12 +47,11 @@ public class MonitorDataServiceTest extends AbstractNGrinderTransactionalTest {
 	public void testAddRemoveMonitorAgents() {
 		Set<AgentInfo> agents = new HashSet<AgentInfo>();
 		AgentInfo agt = new AgentInfo();
-		agt.setAppPort(10086);
 		agt.setIp("127.0.0.1");
 		agents.add(agt);
-		
+
 		monitorDataService.addMonitorAgents("127.0.0.1_test", agents);
-		
+
 		ThreadUtil.sleep(3000);
 		monitorDataService.removeMonitorAgents("127.0.0.1_test");
 	}

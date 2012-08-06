@@ -14,10 +14,7 @@
 			</div>
             <div class="row">
                 <div class="span12">
-                    <div class="well form-inline searchBar">
-                        <input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
-                        <button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i>Search</button>
-                    </div>
+                   
 	                <table class="table table-striped table-bordered" id="agentTable">
 	                    <colgroup>
 	                        <col width="30">
@@ -32,7 +29,7 @@
 	                        <tr>
 	                            <th><input type="checkbox" class="checkbox" value=""></th>
 	                            <th>IP | Domain</th>
-	                            <th class="noClick">Port</th>
+	                            <th class="noClick">Number</th>
 	                            <th>Name</th>
 	                            <th>Region</th>
 	                            <th>Status</th>
@@ -40,13 +37,12 @@
 	                        </tr>
 	                    </thead>
 	                    <tbody>
-	                        <#assign agentList = agents.content/>
-	                        <#if agentList?has_content>
-	                        <#list agentList as agent>
+	                        <#if agents?has_content>
+	                        <#list agents as agent>
 	                        <tr>
 	                            <td><input type="checkbox" value="${agent.id}"></td>
 	                            <td class="left"><a href="${req.getContextPath()}/agent/detail?id=${agent.id}" target="_self">${agent.ip}</a></td>
-	                            <td>${(agent.appPort)!}</td>
+	                            <td>${(agent.number)!}</td>
 	                            <td class="left">${(agent.appName)!}</td>
 	                            <td class="left">${(agent.region)!}</td>
 	                            <td>${(agent.status)!}</td>

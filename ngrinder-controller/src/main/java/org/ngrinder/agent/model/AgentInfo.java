@@ -48,7 +48,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	/**
 	 * agent application port.
 	 */
-	private int appPort;
+	private int number;
 
 	/**
 	 * agent application name.
@@ -65,14 +65,6 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 
 	public void setIp(String ip) {
 		this.ip = ip;
-	}
-
-	public int getAppPort() {
-		return appPort;
-	}
-
-	public void setAppPort(int appPort) {
-		this.appPort = appPort;
 	}
 
 	public String getAppName() {
@@ -103,7 +95,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + appPort;
+		result = prime * result + number;
 		result = prime * result + ((ip == null) ? 0 : ip.hashCode());
 		return result;
 	}
@@ -120,7 +112,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 			return false;
 		}
 		AgentInfo other = (AgentInfo) obj;
-		if (appPort != other.appPort) {
+		if (getNumber() != other.getNumber()) {
 			return false;
 		}
 		if (ip == null) {
@@ -131,6 +123,14 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 			return false;
 		}
 		return true;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public void setNumber(int number) {
+		this.number = number;
 	}
 
 }

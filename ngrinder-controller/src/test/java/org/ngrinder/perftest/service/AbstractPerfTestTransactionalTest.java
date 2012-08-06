@@ -9,7 +9,6 @@ import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 
 /**
  * In addition {@link AbstractNGrinderTransactionalTest}, this class provides
@@ -19,7 +18,6 @@ import org.springframework.test.context.ContextConfiguration;
  * @since 3.0
  * 
  */
-@ContextConfiguration({ "classpath:applicationContext.xml" })
 abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinderTransactionalTest {
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractPerfTestTransactionalTest.class);
 

@@ -360,7 +360,7 @@ div.chart {
 												Duration
 											</label>
 											<div class="controls">
-												<span>00:00:01:00</span><code>DD:HH:MM:SS</code>
+												<span>${(test.durationStr)!}</span><code>DD:HH:MM:SS</code>
 											</div>
 										</div>
 										<div class="control-group">

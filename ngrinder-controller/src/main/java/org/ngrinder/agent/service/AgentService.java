@@ -29,14 +29,10 @@ import java.util.Set;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 
-import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentRepository;
 import org.ngrinder.perftest.service.AgentManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -64,24 +60,14 @@ public class AgentService {
 	 *            page
 	 * @return agent list
 	 */
-	public Page<AgentInfo> getAgents(String searchStr, Pageable pageable) {
+	public List<AgentInfo> getAgents() {
 		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
 		List<AgentInfo> agentList = new ArrayList<AgentInfo>();
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
 			AgentControllerIdentityImplementation eachAgentController = (AgentControllerIdentityImplementation) eachAgentIdentity;
-			if (StringUtils.isNotBlank(searchStr)) {
-				if (StringUtils.contains(eachAgentController.getName(), searchStr)) {
-					agentList.add(creatAgentInfo(eachAgentController));
-				}
-			} else {
-				agentList.add(creatAgentInfo(eachAgentController));
-			}
+			agentList.add(creatAgentInfo(eachAgentController));
 		}
-		int fromIndex = Math.max(pageable == null ? 0 : pageable.getOffset() - 1, 0);
-		int toIndex = Math.max(
-				pageable == null ? agentList.size() - 1 : Math.min(fromIndex + pageable.getPageSize(),
-						agentList.size() - 1), 0);
-		return new PageImpl<AgentInfo>(agentList.subList(fromIndex, toIndex), pageable, agentList.size());
+		return agentList;
 	}
 
 	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation eachAgentController) {
@@ -125,4 +111,5 @@ public class AgentService {
 	public void deleteAgent(long id) {
 		agentRepository.delete(id);
 	}
+
 }
