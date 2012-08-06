@@ -20,11 +20,16 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.agent.service;
+package org.ngrinder.agent.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.Agent;
+import org.ngrinder.agent.repository.AgentRepository;
+import org.ngrinder.agent.service.AgentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 /**
  * agent service.
@@ -32,41 +37,34 @@ import org.springframework.data.domain.Pageable;
  * @author Tobi
  * @since 3.0
  */
-public interface AgentService {
+@Service
+public class AgentServiceImpl implements AgentService {
 
-	/**
-	 * Get agents.
-	 * 
-	 * @param searchStr
-	 *            search keyword
-	 * @param pageable
-	 *            page
-	 * @return agent list
-	 */
-	Page<Agent> getAgents(String searchStr, Pageable pageable);
+	@Autowired
+	private AgentRepository agentRepository;
 
-	/**
-	 * Get a agent on given id.
-	 * 
-	 * @param id
-	 *            agent id
-	 * @return agent
-	 */
-	Agent getAgent(long id);
+	@Override
+	public Page<Agent> getAgents(String searchStr, Pageable pageable) {
+		if (StringUtils.isBlank(searchStr)) {
+			searchStr = "";
+		}
+		searchStr = "%" + searchStr + "%";
+		return agentRepository.getAgents(searchStr, pageable);
+	}
 
-	/**
-	 * Save agent.
-	 * 
-	 * @param agent
-	 *            saved agent
-	 */
-	void saveAgent(Agent agent);
+	@Override
+	public Agent getAgent(long id) {
+		return agentRepository.findOne(id);
+	}
 
-	/**
-	 * Delete agent.
-	 * 
-	 * @param id
-	 *            agent id to be deleted
-	 */
-	void deleteAgent(long id);
+	@Override
+	public void saveAgent(Agent agent) {
+		agentRepository.save(agent);
+	}
+
+	@Override
+	public void deleteAgent(long id) {
+		agentRepository.delete(id);
+	}
+
 }
