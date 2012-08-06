@@ -22,6 +22,8 @@
  */
 package org.ngrinder.perftest.controller;
 
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -202,16 +204,16 @@ public class PerfTestController extends NGrinderBaseController {
 	String getReportData(ModelMap model, @RequestParam long testId, @RequestParam String dataType,
 			@RequestParam int imgWidth) {
 		List<Object> reportData = null;
-		String[] dataTypes = dataType.split(","); // TODO: if the dataType value is null?
+		String[] dataTypes = StringUtils.split(dataType, ",");
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1 + dataTypes.length);
+		rtnMap.put(JSON_SUCCESS, true);
 		for (String dt : dataTypes) {
 			try {
 				reportData = perfTestService.getReportData(testId, dt, imgWidth);
-				rtnMap.put(JSON_SUCCESS, true);
+				
 				rtnMap.put(dt, reportData);
 			} catch (Exception e) {
-				// TODO: If a data type is failed and another data type is success, can it be success?
-				rtnMap.put(JSON_SUCCESS, false);
+				//just skip if one report data doesn't exist.
 				LOG.error("Get report data failed. type: " + dt, e);
 			}
 		}
@@ -228,10 +230,11 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = "/running/refresh")
 	public String refreshTestRunning(ModelMap model, @RequestParam long testId) {
 		PerfTest test = perfTestService.getPerfTest(testId);
+		checkNotNull(test);
 		Map<String, Object> result = null;
-		if (test != null && test.getStatus() == Status.TESTING) {
+		if (test.getStatus() == Status.TESTING) {
 			result = perfTestService.getStatistics(test.getPort());
-			model.addAttribute("resultsub", result);
+			model.addAttribute(PARAM_RESULT_SUB, result);
 		}
 		return "perftest/refreshContent";
 	}

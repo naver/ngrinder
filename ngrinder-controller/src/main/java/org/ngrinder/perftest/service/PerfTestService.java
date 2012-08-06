@@ -334,6 +334,8 @@ public class PerfTestService implements NGrinderConstants {
 	 * @throws IOException
 	 */
 	public List<Object> getReportData(long testId, String dataType, int imgWidth) throws IOException {
+		//TODO: later, we can make the file content as the string of list, then we can 
+		// just return the file content directly, it will be much faster.
 		List<Object> reportData = new ArrayList<Object>();
 		File reportFolder = config.getHome().getPerfTestDirectory(
 				testId + File.separator + NGrinderConstants.PATH_REPORT);
@@ -344,6 +346,9 @@ public class PerfTestService implements NGrinderConstants {
 		int lineNumber;
 		File targetFile = null;
 		targetFile = new File(reportFolder, dataType.toLowerCase() + DATA_FILE_EXTENSION);
+		if (!targetFile.exists()) {
+			return reportData;
+		}
 		LineNumberReader lnr = null;
 		try {
 			lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(targetFile)));
