@@ -203,7 +203,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// because It will take some seconds to start testing sometimes ,so
 		// above is waiting 5s
 		if (singleConsoleInUse.isAllTestFinished() && startLastingTime > 5000) {
-			perfTestService.savePerfTest(perfTest, Status.FINISHED);
+			PerfTest resultTest =perfTestService.updatePerfTestAfterTestFinish(perfTest);
+			perfTestService.savePerfTest(resultTest, Status.FINISHED);
 		}
 	}
 

@@ -23,22 +23,32 @@
 package org.ngrinder.perftest.controller;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
-import org.ngrinder.perftest.service.PerfTestService;
+import org.ngrinder.perftest.model.Status;
+import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.ui.ModelMap;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * Class description
@@ -46,38 +56,64 @@ import org.springframework.ui.ModelMap;
  * @author mavlarn
  * @Since 3.0
  */
-public class PerfTestControllerTest extends AbstractNGrinderTransactionalTest {
+public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
 	private PerfTestController controller;
 
 	@Autowired
-	private PerfTestService testService;
-
-	@Autowired
 	private UserService userService;
+	
+	@Test
+	public void testDeleteTests() {
+		String testName = "test1";
+		PerfTest test = createPerfTest(testName, Status.READY, new Date());
+		ModelMap model = new ModelMap();
+		controller.deleteTests(model, String.valueOf(test.getId()));
+		
+		model.clear();
+		controller.getTestDetail(getTestUser(), test.getId(), model);
+		PerfTest testInDB = (PerfTest)model.get(PARAM_TEST);
+		assertThat(testInDB, nullValue());
 
-	private PerfTest createTempTests(String testName) {
-		PerfTest test = new PerfTest();
-		test.setTestName(testName);
-		test.setThreshold("D");
-		test.setDuration(120L);
-		test.setIgnoreSampleCount(0);
-		test.setTargetHosts("127.0.0.1");
-		test.setScriptName("test1.py");
-		testService.savePerfTest(test);
-		return test;
+		model.clear();
+		PerfTest test1 = createPerfTest(testName, Status.READY, new Date());
+		PerfTest test2 = createPerfTest(testName, Status.READY, new Date());
+		String delIds = "" + test1.getId() + "," + test2.getId();
+		controller.deleteTests(model, delIds);
+
+		model.clear();
+		controller.getTestDetail(getTestUser(), test1.getId(), model);
+		testInDB = (PerfTest)model.get(PARAM_TEST);
+		assertThat(testInDB, nullValue());
+
+		model.clear();
+		controller.getTestDetail(getTestUser(), test2.getId(), model);
+		testInDB = (PerfTest)model.get(PARAM_TEST);
+		assertThat(testInDB, nullValue());
+	}
+	
+
+
+	@Test
+	public void testSavePerfTestExist() {
+		String testName = "test1";
+		String newName = "new test1";
+		PerfTest test = createPerfTest(testName, Status.READY, new Date());
+		test.setTestName(newName);
+		ModelMap model = new ModelMap();
+		controller.saveTest(getTestUser(), model, test);
+		controller.getTestDetail(getTestUser(), test.getId(), model);
+		PerfTest testInDB = (PerfTest)model.get(PARAM_TEST);
+
+		assertThat(testInDB.getTestName(), is(newName));
+		
 	}
 
-	/**
-	 * Test method for
-	 * {@link org.ngrinder.perftest.controller.PerfTestController#getTestList(org.springframework.ui.ModelMap, java.lang.String, boolean, org.springframework.data.domain.PageRequest)}
-	 * .
-	 */
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetTestList() {
-		createTempTests("new test1");
+		createPerfTest("new test1", Status.READY, new Date());
 		ModelMap model = new ModelMap();
 		controller.getTestList(getTestUser(), null, false, null, model);
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
@@ -90,7 +126,7 @@ public class PerfTestControllerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testGetTestListByAdmin() {
 		String testName = "new test1";
-		createTempTests(testName);
+		createPerfTest(testName, Status.READY, new Date());
 		ModelMap model = new ModelMap();
 		User testAdmin = new User();
 		testAdmin.setUserId("testAdmin");
@@ -114,7 +150,7 @@ public class PerfTestControllerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testGetTestListByOtherUser() {
 		String testName = "new test1";
-		createTempTests(testName);
+		createPerfTest(testName, Status.READY, new Date());
 		
 		ModelMap model = new ModelMap();
 		
@@ -136,11 +172,13 @@ public class PerfTestControllerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testGetTestListByKeyWord() {
 		String strangeName = "DJJHG^%R&*^%^565(^%&^%(^%(^";
-		createTempTests(strangeName);
+		createPerfTest(strangeName, Status.READY, new Date());
 		
 		ModelMap model = new ModelMap();
 		
-		controller.getTestList(getTestUser(), strangeName, false, new PageRequest(0, 10), model);
+		Sort sort = new Sort("testName");
+		Pageable pageable = new PageRequest(0, 10, sort);
+		controller.getTestList(getTestUser(), strangeName, false, pageable, model);
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
@@ -151,19 +189,44 @@ public class PerfTestControllerTest extends AbstractNGrinderTransactionalTest {
 		testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
 	}
-
-	/**
-	 * Test method for
-	 * {@link org.ngrinder.perftest.controller.PerfTestController#getTestDetail(org.springframework.ui.ModelMap, int)}
-	 * .
-	 */
+	
 	@Test
-	@SuppressWarnings("unchecked")
-	public void testGetTestDetail() {
+	public void testUpdateVuser() {
+		ModelMap model = new ModelMap();		
+		String rtn = controller.updateVuser(20, model);
+		JsonParser parser = new JsonParser();
+		JsonObject json = (JsonObject)parser.parse(rtn);
+		int threadCount = json.get(PARAM_THREAD_COUNT).getAsInt();
+		int processCount = json.get(PARAM_PROCESS_COUNT).getAsInt();
+		assertThat(threadCount, is(2));
+		assertThat(processCount, is(10));
+	}
+	
+	@Test
+	public void testGetReport() {
+		String testName = "test1";
+		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
 		ModelMap model = new ModelMap();
-		controller.getTestList(getTestUser(), null, false, null, model);
-		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
-		List<PerfTest> testList = testPage.getContent();
-		assertThat(testList.size(), is(1));
+		controller.getReport(model, test.getId());
+
+		controller.getReportData(model, test.getId(), "tps,errors", 0);
+	}
+	
+	@Test
+	public void testDownloadReportData() {
+		String testName = "test1";
+		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
+
+		HttpServletResponse resp = new MockHttpServletResponse();
+		controller.downloadReportData(resp, test.getId());
+	}
+	
+	@Test
+	public void testRefreshTestRunning() {
+		String testName = "test1";
+		PerfTest test = createPerfTest(testName, Status.TESTING, new Date());
+		test.setPort(11011);
+		ModelMap model = new ModelMap();
+		controller.refreshTestRunning(model, test.getId());
 	}
 }

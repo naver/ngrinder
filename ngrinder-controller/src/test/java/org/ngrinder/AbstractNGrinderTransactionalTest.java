@@ -47,8 +47,7 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 		try {
 			Thread.sleep(miliseconds);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOG.error("error:", e);
 		}
 	}
 
