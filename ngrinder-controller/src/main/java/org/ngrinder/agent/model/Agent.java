@@ -45,18 +45,11 @@ public class Agent extends BaseEntity<Agent> {
 	/** Agent IP. */
 	private String ip;
 
-	/**
-	 * agent application port.
-	 */
-	private int appPort;
-
-	/**
-	 * agent application name.
-	 */
-	private String appName = "";
-
 	private int status;
+	
+	private String name;
 
+	//not used now, later will add some properties
 	private String region;
 
 	public String getIp() {
@@ -65,22 +58,6 @@ public class Agent extends BaseEntity<Agent> {
 
 	public void setIp(String ip) {
 		this.ip = ip;
-	}
-
-	public int getAppPort() {
-		return appPort;
-	}
-
-	public void setAppPort(int appPort) {
-		this.appPort = appPort;
-	}
-
-	public String getAppName() {
-		return appName;
-	}
-
-	public void setAppName(String appName) {
-		this.appName = appName;
 	}
 
 	public int getStatus() {
@@ -99,38 +76,12 @@ public class Agent extends BaseEntity<Agent> {
 		this.region = region;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + appPort;
-		result = prime * result + ((ip == null) ? 0 : ip.hashCode());
-		return result;
+	public String getName() {
+		return name;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		Agent other = (Agent) obj;
-		if (appPort != other.appPort) {
-			return false;
-		}
-		if (ip == null) {
-			if (other.ip != null) {
-				return false;
-			}
-		} else if (!ip.equals(other.ip)) {
-			return false;
-		}
-		return true;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

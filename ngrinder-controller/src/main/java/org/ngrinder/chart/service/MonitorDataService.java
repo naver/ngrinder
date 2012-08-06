@@ -23,13 +23,9 @@
 package org.ngrinder.chart.service;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-
 import org.ngrinder.agent.model.Agent;
-import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.chart.repository.MonitorDataRepository;
 import org.ngrinder.monitor.controller.MonitorExecuteCache;
 import org.ngrinder.monitor.controller.MonitorExecuteManager;
@@ -37,7 +33,6 @@ import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 /**
@@ -56,16 +51,6 @@ public class MonitorDataService {
 
 	@Autowired
 	private MonitorDataRepository monitorDataRepository;
-
-	@Autowired
-	private AgentService agentService;
-
-	@PostConstruct
-	public void init() {
-		Page<Agent> agents = agentService.getAgents(null, null);
-		List<Agent> agentList = agents.getContent();
-		this.addMonitorAgents("init", new HashSet<Agent>(agentList));
-	}
 
 	/**
 	 * Add agents to be monitored

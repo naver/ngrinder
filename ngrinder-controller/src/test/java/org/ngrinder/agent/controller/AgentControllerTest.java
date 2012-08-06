@@ -38,15 +38,9 @@ public class AgentControllerTest {
 	AgentController agentController;
 	
 	@Test
-	public void testGetAgent() {
+	public void testGetAgentList() {
 		ModelMap model = new ModelMap();
-		agentController.getAgent(model, 0L);
-	}
-	
-	@Test
-	public void testGetAgents() {
-		ModelMap model = new ModelMap();
-		agentController.getAgents(model, "");
+		agentController.getAgentList(model);
 	}
 
 }

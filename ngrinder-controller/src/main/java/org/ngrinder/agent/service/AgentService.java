@@ -20,15 +20,17 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.agent.service.impl;
+package org.ngrinder.agent.service;
 
-import org.apache.commons.lang.StringUtils;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import net.grinder.common.processidentity.AgentIdentity;
+
 import org.ngrinder.agent.model.Agent;
-import org.ngrinder.agent.repository.AgentRepository;
-import org.ngrinder.agent.service.AgentService;
+import org.ngrinder.perftest.service.AgentManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -38,33 +40,21 @@ import org.springframework.stereotype.Service;
  * @since 3.0
  */
 @Service
-public class AgentServiceImpl implements AgentService {
-
+public class AgentService {
+	
 	@Autowired
-	private AgentRepository agentRepository;
+	private AgentManager agenManager;
 
-	@Override
-	public Page<Agent> getAgents(String searchStr, Pageable pageable) {
-		if (StringUtils.isBlank(searchStr)) {
-			searchStr = "";
+	public List<Agent> getAgentList() {
+		//TODO: should get agent list from manager.
+		Set<AgentIdentity> agentSet = agenManager.getAllAttachedAgents();
+		for (AgentIdentity agentIdentity : agentSet) {
+			Agent agt = new Agent();
+			agt.setId(Long.valueOf(agentIdentity.getNumber()));
+			agt.setName(agentIdentity.getName());
 		}
-		searchStr = "%" + searchStr + "%";
-		return agentRepository.getAgents(searchStr, pageable);
-	}
 
-	@Override
-	public Agent getAgent(long id) {
-		return agentRepository.findOne(id);
-	}
-
-	@Override
-	public void saveAgent(Agent agent) {
-		agentRepository.save(agent);
-	}
-
-	@Override
-	public void deleteAgent(long id) {
-		agentRepository.delete(id);
+		return new ArrayList<Agent>();
 	}
 
 }

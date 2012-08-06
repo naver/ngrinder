@@ -107,6 +107,8 @@ public interface NGrinderConstants {
 	public static final String PARAM_SCRIPT_LIST = "scriptList";
 	
 	public static final String PARAM_RESULT_SUB = "resultsub";
+	
+	public static final String PARAM_AGENTS = "agents";
 
 	public static final int AGENT_SERVER_DAEMON_PORT = 1011;
 	// GRINDER_PROPERTY_KEY
