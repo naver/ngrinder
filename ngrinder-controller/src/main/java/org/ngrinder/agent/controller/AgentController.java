@@ -22,7 +22,7 @@
  */
 package org.ngrinder.agent.controller;
 
-import org.ngrinder.agent.model.Agent;
+import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +68,7 @@ public class AgentController extends NGrinderBaseController {
 		Order order = new Order(Direction.DESC, "id");
 		Sort sort = new Sort(order);
 		Pageable pageable = new PageRequest(0, DEFAULT_PAGE_LIMIT, sort);
-		Page<Agent> agents = agentService.getAgents(keywords, pageable);
+		Page<AgentInfo> agents = agentService.getAgents(keywords, pageable);
 
 		model.addAttribute("agents", agents);
 		model.addAttribute("keywords", keywords);
@@ -87,7 +87,7 @@ public class AgentController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/detail")
 	public String getAgent(ModelMap model, @RequestParam(required = false) Long id) {
-		Agent agent = agentService.getAgent(id);
+		AgentInfo agent = agentService.getAgent(id);
 		model.addAttribute("agent", agent);
 		return "agent/agentDetail";
 	}
@@ -102,7 +102,7 @@ public class AgentController extends NGrinderBaseController {
 	 * @return agent/agentDetail
 	 */
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String createAgent(ModelMap model, Agent agent) {
+	public String createAgent(ModelMap model, AgentInfo agent) {
 		return getAgent(model, agent.getId());
 	}
 

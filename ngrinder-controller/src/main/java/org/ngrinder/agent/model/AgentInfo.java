@@ -35,7 +35,7 @@ import org.ngrinder.model.BaseEntity;
  */
 @Entity
 @Table(name = "AGENT")
-public class Agent extends BaseEntity<Agent> {
+public class AgentInfo extends BaseEntity<AgentInfo> {
 
 	/**
 	 * UUID.
@@ -119,7 +119,7 @@ public class Agent extends BaseEntity<Agent> {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		Agent other = (Agent) obj;
+		AgentInfo other = (AgentInfo) obj;
 		if (appPort != other.appPort) {
 			return false;
 		}

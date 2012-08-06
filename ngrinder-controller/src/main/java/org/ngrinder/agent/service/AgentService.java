@@ -22,28 +22,78 @@
  */
 package org.ngrinder.agent.service;
 
-import org.ngrinder.agent.model.Agent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.engine.controller.AgentControllerIdentityImplementation;
+
+import org.apache.commons.lang.StringUtils;
+import org.ngrinder.agent.model.AgentInfo;
+import org.ngrinder.agent.repository.AgentRepository;
+import org.ngrinder.perftest.service.AgentManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 /**
  * agent service.
  * 
  * @author Tobi
+ * @author JunHo Yoon
  * @since 3.0
  */
-public interface AgentService {
+@Service
+public class AgentService {
+
+	@Autowired
+	private AgentManager agentManager;
+
+	@Autowired
+	private AgentRepository agentRepository;
 
 	/**
 	 * Get agents.
 	 * 
 	 * @param searchStr
-	 *            search keyword
+	 *            search keyword. if empty, no search
 	 * @param pageable
 	 *            page
 	 * @return agent list
 	 */
-	Page<Agent> getAgents(String searchStr, Pageable pageable);
+	public Page<AgentInfo> getAgents(String searchStr, Pageable pageable) {
+		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
+		List<AgentInfo> agentList = new ArrayList<AgentInfo>();
+		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
+			AgentControllerIdentityImplementation eachAgentController = (AgentControllerIdentityImplementation) eachAgentIdentity;
+			if (StringUtils.isNotBlank(searchStr)) {
+				if (StringUtils.contains(eachAgentController.getName(), searchStr)) {
+					agentList.add(creatAgentInfo(eachAgentController));
+				}
+			} else {
+				agentList.add(creatAgentInfo(eachAgentController));
+			}
+		}
+		int fromIndex = Math.max(pageable == null ? 0 : pageable.getOffset() - 1, 0);
+		int toIndex = Math.max(
+				pageable == null ? agentList.size() - 1 : Math.min(fromIndex + pageable.getPageSize(),
+						agentList.size() - 1), 0);
+		return new PageImpl<AgentInfo>(agentList.subList(fromIndex, toIndex), pageable, agentList.size());
+	}
+
+	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation eachAgentController) {
+		AgentInfo agentInfo = agentRepository.findByIp(eachAgentController.getIp());
+		agentInfo = agentInfo == null ? new AgentInfo() : agentInfo;
+		agentInfo.setAppName(eachAgentController.getName());
+		agentInfo.setIp(eachAgentController.getIp());
+		if (!agentInfo.exist()) {
+			agentRepository.save(agentInfo);
+		}
+		return agentInfo;
+	}
 
 	/**
 	 * Get a agent on given id.
@@ -52,7 +102,9 @@ public interface AgentService {
 	 *            agent id
 	 * @return agent
 	 */
-	Agent getAgent(long id);
+	public AgentInfo getAgent(long id) {
+		return agentRepository.findOne(id);
+	}
 
 	/**
 	 * Save agent.
@@ -60,7 +112,9 @@ public interface AgentService {
 	 * @param agent
 	 *            saved agent
 	 */
-	void saveAgent(Agent agent);
+	public void saveAgent(AgentInfo agent) {
+		agentRepository.save(agent);
+	}
 
 	/**
 	 * Delete agent.
@@ -68,5 +122,7 @@ public interface AgentService {
 	 * @param id
 	 *            agent id to be deleted
 	 */
-	void deleteAgent(long id);
+	public void deleteAgent(long id) {
+		agentRepository.delete(id);
+	}
 }

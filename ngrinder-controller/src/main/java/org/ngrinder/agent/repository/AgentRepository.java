@@ -22,30 +22,19 @@
  */
 package org.ngrinder.agent.repository;
 
-import org.ngrinder.agent.model.Agent;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.ngrinder.agent.model.AgentInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 /**
  * agent repository.
  * 
  * @author Tobi
+ * @author JunHo Yoon
  * @since 3.0
  */
-public interface AgentRepository extends JpaRepository<Agent, Long> {
+@Repository
+public interface AgentRepository extends JpaRepository<AgentInfo, Long> {
 
-	/**
-	 * Query agent based on region.
-	 * 
-	 * @param searchStr
-	 *            search keyword
-	 * @param pageable
-	 *            page
-	 * @return matching agents
-	 */
-	@Query("select a from Agent a where a.ip like :searchStr or a.region like :searchStr")
-	Page<Agent> getAgents(@Param("searchStr") String searchStr, Pageable pageable);
+	AgentInfo findByIp(String ip);
 }
