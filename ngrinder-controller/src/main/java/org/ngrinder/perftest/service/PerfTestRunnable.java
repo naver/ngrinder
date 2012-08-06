@@ -33,7 +33,9 @@ import static org.ngrinder.perftest.model.Status.START_TESTING;
 import static org.ngrinder.perftest.model.Status.TESTING;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
@@ -41,6 +43,8 @@ import net.grinder.console.model.ConsoleProperties;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.ngrinder.agent.model.Agent;
+import org.ngrinder.chart.service.MonitorDataService;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
@@ -74,6 +78,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	@Autowired
 	private AgentManager agentManager;
+	
+	@Autowired
+	private MonitorDataService monitorDataService;
+	
+	//wait 30 seconds until agents start the test running.
+	private static final int WAIT_TEST_START_SECOND = 30000;
 
 	/**
 	 * Scheduled method for test execution.
@@ -138,6 +148,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	void runTestOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
+		//start target monitor
+		Set<Agent> agents = new HashSet<Agent>();
+		Agent agent = new Agent();
+		agent.setIp(perfTest.getTargetHosts());
+		monitorDataService.addMonitorAgents(perfTest.getTargetHosts(), agents);
+		
 		// Run test
 		perfTestService.savePerfTest(perfTest, START_TESTING);
 		long startTime = singleConsole.startTest(grinderProperties);
@@ -200,9 +216,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	public void doFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		long startLastingTime = System.currentTimeMillis() - singleConsoleInUse.getStartTime();
-		// because It will take some seconds to start testing sometimes ,so
-		// above is waiting 5s
-		if (singleConsoleInUse.isAllTestFinished() && startLastingTime > 5000) {
+		// because It will take some seconds to start testing sometimes , if the test is not started
+		// after some seconds, will set it as finished.
+		if (singleConsoleInUse.isAllTestFinished() && startLastingTime > WAIT_TEST_START_SECOND) {
+			monitorDataService.removeMonitorAgents(perfTest.getTargetHosts());
 			PerfTest resultTest =perfTestService.updatePerfTestAfterTestFinish(perfTest);
 			perfTestService.savePerfTest(resultTest, Status.FINISHED);
 		}
