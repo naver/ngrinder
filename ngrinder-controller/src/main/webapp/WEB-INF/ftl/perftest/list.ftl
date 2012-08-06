@@ -70,7 +70,7 @@
 							<#list testList as test>
 								<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
 								<tr id="tr${test.id}">
-									<td style="text-align:center"><input type="checkbox" class="checkbox" value="${test.id}"></td>
+									<td style="text-align:center"><input type="checkbox" class="checkbox" value="${test.id}" <#if !(test.status =="READY" || test.status == "FINISHED")>disabled</#if>></td>
 									<td class="ellipsis" title="${test.status}" style="text-align:center">${test.status}</td>
 									<td class="ellipsis" title="${test.testName}" style="text-align:center"><a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a></td>
 									<td class="ellipsis" style="text-align:center">${test.scriptName}</td>
@@ -81,7 +81,7 @@
 									<td>${(test.meanTime)!0}</td>
 									<td>${(test.errors)!0}</td>
 									<td>${vuserTotal}</td>
-									<td><a href="javascript:void(0);"><i class="icon-remove test-remove" sid="${test.id}"></i></a></td>
+									<td><#if test.status =="READY" || test.status == "FINISHED"><a href="javascript:void(0);"><i class="icon-remove test-remove" sid="${test.id}"></i></a></#if></td>
 								</tr>
 							</#list>
 						<#else>
@@ -180,7 +180,7 @@
 			    		showSuccessMsg("The test(s) deleted successfully.");
 							setTimeout(function() {
 								getList(1);
-							}, 3500);
+							}, 3000);
 		    		} else {
 			    		showErrorMsg("Test(s) deletion failed:" + res.message);
 		    		}
