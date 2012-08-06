@@ -219,6 +219,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// because It will take some seconds to start testing sometimes , if the test is not started
 		// after some seconds, will set it as finished.
 		if (singleConsoleInUse.isAllTestFinished() && startLastingTime > WAIT_TEST_START_SECOND) {
+			//stop target host monitor
+			//TODO: later should modified to use target host IP.
 			monitorDataService.removeMonitorAgents(perfTest.getTargetHosts());
 			PerfTest resultTest =perfTestService.updatePerfTestAfterTestFinish(perfTest);
 			perfTestService.savePerfTest(resultTest, Status.FINISHED);
