@@ -114,6 +114,7 @@ public class PerfTestService implements NGrinderConstants {
 	@Autowired
 	private FileEntryService fileEntryService;
 
+	private NumberFormat formatter = new DecimalFormat("###.###");
 	/**
 	 * Get {@link PerfTest} list on the user.
 	 * 
@@ -396,7 +397,7 @@ public class PerfTestService implements NGrinderConstants {
 	 * To get statistics data when test is running
 	 */
 	public Map<String, Object> getStatistics(int port) {
-		NumberFormat formatter = new DecimalFormat("#,###,###.###");
+		checkNotNull(port, "perfTest is testing ,Its port should not be null!");
 
 		Map<String, Object> result = new HashMap<String, Object>();
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
@@ -493,6 +494,21 @@ public class PerfTestService implements NGrinderConstants {
 			throw new NGrinderRuntimeException("Error while setting console properties", e);
 		}
 		return consoleProperties;
+	}
+	
+	public PerfTest updatePerfTestAfterTestFinish(PerfTest perfTest) {
+		checkNotNull(perfTest);
+		int port = perfTest.getPort();
+		Map<String, Object> result = getStatistics(port);
+		checkNotNull(result);
+		@SuppressWarnings("unchecked")
+		Map<String, Object> totalStatistics = (Map<String, Object>) result.get("totalStatistics");
+
+		perfTest.setErrors((int) ((Double) totalStatistics.get("Errors")).doubleValue());
+		perfTest.setTps(Double.parseDouble(formatter.format(totalStatistics.get("TPS"))));
+		perfTest.setMeanTestTime(Double.parseDouble(formatter.format(totalStatistics.get("Mean_Test_Time_(ms)"))));
+		perfTest.setPeakTps(Double.parseDouble(formatter.format(totalStatistics.get("Peak_TPS"))));
+		return perfTest;
 	}
 
 }

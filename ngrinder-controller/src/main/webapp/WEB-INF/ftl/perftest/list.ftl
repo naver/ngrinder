@@ -78,7 +78,7 @@
 									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
 									<td>${(test.durationStr)!}</td>
 									<td>${(test.tps)!}</td>
-									<td>${(test.meanTime)!0}</td>
+									<td>${(test.meanTestTime)!0}</td>
 									<td>${(test.errors)!0}</td>
 									<td>${vuserTotal}</td>
 									<td><a href="javascript:void(0);"><i class="icon-remove test-remove" sid="${test.id}"></i></a></td>
