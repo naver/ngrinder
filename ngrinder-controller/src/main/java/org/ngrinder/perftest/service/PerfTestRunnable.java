@@ -29,9 +29,10 @@ import static org.ngrinder.perftest.model.Status.START_AGENTS;
 import static org.ngrinder.perftest.model.Status.START_AGENTS_FINISHED;
 import static org.ngrinder.perftest.model.Status.START_CONSOLE;
 import static org.ngrinder.perftest.model.Status.START_CONSOLE_FINISHED;
+import static org.ngrinder.perftest.model.Status.START_TESTING;
 import static org.ngrinder.perftest.model.Status.TESTING;
-import static org.ngrinder.perftest.model.Status.TESTING_FINISHED;
 
+import java.util.Date;
 import java.util.List;
 
 import net.grinder.SingleConsole;
@@ -138,9 +139,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	void runTestOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		// Run test
+		perfTestService.savePerfTest(perfTest, START_TESTING);
+		long startTime = singleConsole.startTest(grinderProperties);
+		perfTest.setStartTime(new Date(startTime));
 		perfTestService.savePerfTest(perfTest, TESTING);
-		singleConsole.startTest(grinderProperties);
-		perfTestService.savePerfTest(perfTest, TESTING_FINISHED);
 	}
 
 	void distributeFileOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
@@ -197,7 +199,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            {@link PerfTest}
 	 */
 	public void doFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		if (singleConsoleInUse.isAllTestFinished()) {
+		long startLastingTime = System.currentTimeMillis() - singleConsoleInUse.getStartTime();
+		// because It will take some seconds to start testing sometimes ,so
+		// above is waiting 5s
+		if (singleConsoleInUse.isAllTestFinished() && startLastingTime > 5000) {
 			perfTestService.savePerfTest(perfTest, Status.FINISHED);
 		}
 	}
