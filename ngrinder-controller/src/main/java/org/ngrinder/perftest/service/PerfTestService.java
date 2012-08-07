@@ -398,7 +398,7 @@ public class PerfTestService implements NGrinderConstants {
 	 */
 	public Map<String, Object> getStatistics(int port) {
 		checkNotNull(port, "perfTest is testing ,Its port should not be null!");
-
+		
 		Map<String, Object> result = new HashMap<String, Object>();
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
@@ -470,8 +470,8 @@ public class PerfTestService implements NGrinderConstants {
         ProcessControl processControl = (ProcessControl) container.getComponent(ProcessControl.class);
         NGrinderConsoleCommunicationService.collectWorkerAndThreadInfo(processControl, result);
 		
-        result.put("success", true);
-		
+        result.put("success", !singleConsole.isAllTestFinished());
+        
 		return result;
 	}
 

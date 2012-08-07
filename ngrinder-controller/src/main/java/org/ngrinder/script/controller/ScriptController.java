@@ -75,13 +75,13 @@ public class ScriptController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = "/create/**", params = "type=script", method = RequestMethod.POST)
-	public String getCreateForm(User user, @RemainedPath String path, @RequestParam String language,
-			@RequestParam String testUrl, @RequestParam String fileName, ModelMap model) { // "fileName"
+	public String getCreateForm(User user, @RemainedPath String path,
+			@RequestParam String testUrl, @RequestParam String fileName, ModelMap model) {
 		if (fileEntryService.hasFileEntry(user, path + "/" + fileName)) {
 			return "error/duplicated";
 		}
 
-		model.addAttribute("file", fileEntryService.prepareNewEntry(user, path, fileName, language, testUrl));
+		model.addAttribute("file", fileEntryService.prepareNewEntry(user, path, fileName, testUrl));
 		return "script/scriptEditor";
 	}
 
@@ -119,8 +119,7 @@ public class ScriptController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
-	public String create(User user, @RemainedPath String path, FileEntry script, ModelMap model) {
-		//TODO: it should be fixed to handle exception because of the follow save method.
+	public String saveScript(User user, @RemainedPath String path, FileEntry script, ModelMap model) {
 		fileEntryService.save(user, script);
 		return get(user, path, model);
 	}

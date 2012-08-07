@@ -475,7 +475,7 @@ div.chart {
 					</div>
 				</div>
 				</div>
-				<input type="hidden" id="scheduleInput" name="scheduleTime"/>
+				<input type="hidden" id="scheduleInput" name="scheduledTime"/>
 			</form>
 			<!--content-->
 			<#include "../common/copyright.ftl">
