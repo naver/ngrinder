@@ -35,6 +35,7 @@ div.div-host .host {
 }
 
 div.chart {
+	border: 1px solid #878988;
 	margin-bottom: 12px;
 }
 
@@ -61,7 +62,7 @@ div.chart {
 							<label for="testName" class="control-label">Test Name</label>
 							<div class="controls">  
 								<input class="span5 required" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
-								<button type="submit" class="btn btn-success btn-primary" style="margin-left:85px"> 
+								<button type="submit" class="btn btn-success" style="margin-left:85px"> 
 									<#if test??>Clone<#else>Save</#if> and Start 
 								</button>  
 								<button type="submit" class="btn btn-primary" data-toggle="modal" href="#scheduleModal"  id="saveScheduleBtn">
@@ -296,8 +297,8 @@ div.chart {
 									</fieldset>
 								</div>
 							</div>
-							<div class="span8">
-								<div id="tpsDiv" class="chart" style="width:600px; height:250px"></div>
+							<div class="span8" style="margin-top:10px;">
+								<div id="tpsDiv" class="chart" style="width:610px; height:240px"></div>
 							</div>
 						</div>
 						<div class="row" style="margin-top: 10px;">
@@ -403,7 +404,7 @@ div.chart {
 								<div class="page-header">
 									<h4>Statistics</h4>
 								</div>
-								<div id="runningTps"class="chart" style="width:540px; height:195px"></div>
+								<div id="runningTps"class="chart" style="width:530px; height:195px"></div>
 								<div class="tabbable">
 									<ul class="nav nav-pills" style="margin20px 0" id="tableTab">
 									    <li><a href="#lsTab" tid="ls">Latest Sample</a></li>

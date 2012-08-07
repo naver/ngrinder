@@ -8,24 +8,34 @@
 	<body>
 	<#include "../common/navigator.ftl">
 	<div class="container">
-
 		<div class="row">
 			<div class="span12">
 				<form id="contentForm" method="post" target="_self">
-					
-					<input type="hidden" id="contentHidden" name="content" value="">
-					
-					<div class="well form-inline" style="padding:5px;margin:5px 0">
-						<label class="label" for="scriptNameInput">
-							Script Name
-						</label>
-						<input type="text" id="scriptNameInput" name="path" value="${file.path!}" readonly/>
+				<div class="well" style="margin-bottom:20px">
+					<div class="form-horizontal form-horizontal-1">
+						<fieldset>
+							<div class="control-group">
+								<label class="control-label" for="testName">Script Name</label>
+								<div class="controls">  
+									<input type="text" id="scriptNameInput" name="path" value="${file.path!}" readonly/>
+									<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:315px">Save</a>
+									<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn">Validate Script</a>
+								</div>
+							</div>
+							<div style="margin-bottom: 0" class="control-group">
+								<label class="control-label" for="description">Description</label>
+								<div class="controls">  
+									<input type="text" id="descInput" name="description" class="span9" value="${(file.description)!}">
+								</div>
+							</div>
+						</fieldset>
 					</div>
+				</div>
+				<input type="hidden" id="contentHidden" name="content" value="">
 				</form>
 				
-			</div>
-			<table style="border:none;width:100%">
-				<tr>
+				<table style="border:none;width:100%">
+					<tr>
 					<td>
 						<div id="script_1" style="width:100%">
 							<textarea id="display_content" name="content" style="height:550px;width:100%;">${(file.content)!}</textarea>
@@ -38,25 +48,11 @@
 						</div>
 					</td>
 					</#if>
+					</tr>
 				</table>
-			
-			
-				<div class="well form-inline" style="padding:5px;margin:5px 0">
-					<label class="label" for="descInput">
-						Description
-					</label>
-					<input type="text" id="descInput" name="description" class="span6" style="width:600px" value="${(file.description)!}">
-				</div>
-				<a class="btn saveBtn" href="javascript:void(0);" id="saveBtn">Save</a>
-				<a class="btn" href="javascript:void(0);" id="validateBtn">Validate Script</a>
-				<span class="help-inline" id="messageDiv"></span>
-				<div class="alert alert-info fade in" style="margin-top:5px;" id="autoSaveMsg"></div>
-				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre"></pre>
-						
-
-			</div>
-
-		</form>
+				<!--<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre"></pre>-->
+			</div>	
+		</div>
 		<#include "../common/copyright.ftl">
 	</div>
 	
@@ -113,7 +109,7 @@
 				document.forms.contentForm.submit();
 			});
 
-			$(".saveBtn").on('click', function() {
+			$("#saveBtn").on('click', function() {
 				var scriptContent = editAreaLoader.getValue("display_content");
 				$('#contentHidden').val(scriptContent);
 				
@@ -140,8 +136,8 @@
 
 		function validateScript(isTopPosition) {
 			var scriptContent = editAreaLoader.getValue("display_content");
-			$('#messageDiv').ajaxSend(function() {
-			  $(this).html("Validating script......");
+			$('#validateBtn').ajaxSend(function() {
+			  showInformation("Validating script......");
 			});
 
 			$.ajax({
@@ -155,19 +151,17 @@
 						$.each(res, function(i,item){
 							validationInfo = validationInfo + "\n" + item + "\n";
 						});
-						$('#messageDiv').html("");
 
 						if (isTopPosition)
 							$('#validateRsPreTop').text(validationInfo);
 						else
 							$('#validateRsPreBottom').text(validationInfo);
 		    		} else {
-		    			showMsg("Validation error:" + res.message, isTopPosition);
+		    			showErrorMsg("Validation error:" + res.message, isTopPosition);
 		    		}
 		    	},
 		    	error: function() {
-		    		$('#messageDiv').html("");
-		    		showMsg("Validate Script error.", isTopPosition);
+		    		showErrorMsg("Validate Script error.", isTopPosition);
 		    	}
 		  	});
 		}
