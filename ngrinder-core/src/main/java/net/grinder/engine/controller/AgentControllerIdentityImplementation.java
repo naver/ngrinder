@@ -39,6 +39,10 @@ public class AgentControllerIdentityImplementation extends AbstractAgentControll
 
 	private final String ip;
 
+	private Integer port;
+
+	private String region;
+
 	/**
 	 * Constructor.
 	 * 
@@ -78,6 +82,22 @@ public class AgentControllerIdentityImplementation extends AbstractAgentControll
 	 */
 	public String getIp() {
 		return ip;
+	}
+
+	public Integer getPort() {
+		return port;
+	}
+
+	public void setPort(Integer port) {
+		this.port = port;
+	}
+
+	public String getRegion() {
+		return region;
+	}
+
+	public void setRegion(String region) {
+		this.region = region;
 	}
 
 }

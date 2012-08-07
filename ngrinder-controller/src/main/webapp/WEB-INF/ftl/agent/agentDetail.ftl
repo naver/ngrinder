@@ -29,29 +29,36 @@
                 <div class="span3">
                     <table class="table table-bordered table-striped" style="border-top:#cccccc solid 1px">
 				    <tbody>
-				    <tr>
-				    <th>IP</th>
-				    </tr>
-                    <tr>
-				    <td>${(agent.ip)!}</td>
-				    </tr>
-				    <tr>
-				    <th>Number</th>
-				    </tr>
-                    <tr>
-				    <td>${(agent.number)!}</td>
-				    </tr>
-				    <tr>
-				    <th>Name</th>
-				    </tr>
-                    <tr>
-				    <td>${(agent.appName)!}</td>
-				    </tr>
-				    <th>Region</th>
-				    </tr>
-                    <tr>
-				    <td>${(agent.region)!}</td>
-				    </tr>
+					    <tr>
+					    	<th>IP</th>
+					    </tr>
+	                    <tr>
+					    	<td>${(agent.ip)!}</td>
+					    </tr>
+					    <tr>
+					    	<th>Port</th>
+					    </tr>
+	                    <tr>
+					    	<td>${(agent.port)!}</td>
+					    </tr>
+					    <tr>
+					    	<th>Name</th>
+					    </tr>
+	                    <tr>
+					   		<td>${(agent.hostName)!}</td>
+					    </tr>
+					    	<th>Region</th>
+					    </tr>
+	                    <tr>
+					    	<td>${(agent.region)!}</td>
+					    </tr>
+					    </tr>
+					    <tr>
+					    	<th>Status</th>
+					    </tr>
+	                    <tr>
+					    	<td>${(agent.status)!}</td>
+					    </tr>
 				    </tbody>
 				    </table>
 				    <label>Refresh interval (second)</label>

@@ -23,6 +23,7 @@
 package net.grinder;
 
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -49,6 +50,7 @@ import net.grinder.message.console.AgentControllerProcessReportMessage;
 import net.grinder.message.console.AgentControllerState;
 import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
+import net.grinder.util.ReflectionUtil;
 import net.grinder.util.thread.Condition;
 
 import org.slf4j.Logger;
@@ -137,9 +139,8 @@ public class AgentController implements Agent {
 				GrinderProperties properties;
 				do {
 					properties = grinderProperties;
-
 					m_agentIdentity.setName(properties.getProperty("grinder.hostID", getHostName()));
-
+					m_agentIdentity.setRegion(grinderProperties.getProperty("grinder.region"));
 					final Connector connector = m_connectorFactory.create(properties);
 
 					if (consoleCommunication == null) {
@@ -152,6 +153,12 @@ public class AgentController implements Agent {
 							m_logger.error(e.getMessage());
 							return;
 						}
+					}
+					try {
+						m_agentIdentity.setPort(getSocket(
+								ReflectionUtil.getFieldValue(consoleCommunication, "m_sender")).getPort());
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 
 					if (consoleCommunication != null && startMessage == null) {
@@ -226,6 +233,12 @@ public class AgentController implements Agent {
 		}
 	}
 
+	private Socket getSocket(Object sender) {
+		Object socketWrapper = ReflectionUtil.getFieldValue(sender, "m_socketWrapper");
+		Socket socket = (Socket) ReflectionUtil.getFieldValue(socketWrapper, "m_socket");
+		return socket;
+	}
+
 	private void updateAgent(UpdateAgentGrinderMessage lastUpdateAgentGrinderMessage) {
 	}
 
@@ -257,7 +270,7 @@ public class AgentController implements Agent {
 	}
 
 	/**
-	 * Get host name
+	 * Get host name.
 	 * 
 	 * @return host name
 	 */
@@ -275,9 +288,10 @@ public class AgentController implements Agent {
 		private final MessagePump m_messagePump;
 
 		public ConsoleCommunication(Connector connector) throws CommunicationException {
-
 			final ClientReceiver receiver = ClientReceiver.connect(connector, new AgentAddress(m_agentIdentity));
 			m_sender = ClientSender.connect(receiver);
+
+			m_agentIdentity.setPort(getSocket(m_sender).getPort());
 			m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.START));
 
 			final MessageDispatchSender messageDispatcher = new MessageDispatchSender();

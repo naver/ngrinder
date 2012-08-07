@@ -24,9 +24,8 @@ package net.grinder;
 
 /**
  * The Class GrinderConstants.
- * 
  */
-public final class GrinderConstants {
+public abstract class GrinderConstants {
 
 	/** The Constant P_PROCESS. */
 	public static final String P_PROCESS = "process";
