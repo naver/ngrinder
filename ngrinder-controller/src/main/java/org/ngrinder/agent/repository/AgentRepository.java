@@ -20,40 +20,21 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.chart.service;
+package org.ngrinder.agent.repository;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.model.AgentInfo;
-import org.ngrinder.common.util.ThreadUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 /**
- * Class description.
+ * agent repository.
  * 
  * @author Tobi
- * @since
- * @date 2012-7-23
+ * @author JunHo Yoon
+ * @since 3.0
  */
-public class MonitorDataServiceTest extends AbstractNGrinderTransactionalTest {
+@Repository
+public interface AgentRepository extends JpaRepository<AgentInfo, Long> {
 
-	@Autowired
-	private MonitorDataService monitorDataService;
-
-	@Test
-	public void testAddRemoveMonitorAgents() {
-		Set<AgentInfo> agents = new HashSet<AgentInfo>();
-		AgentInfo agt = new AgentInfo();
-		agt.setIp("127.0.0.1");
-		agents.add(agt);
-
-		monitorDataService.addMonitorAgents("127.0.0.1_test", agents);
-
-		ThreadUtil.sleep(3000);
-		monitorDataService.removeMonitorAgents("127.0.0.1_test");
-	}
-
+	AgentInfo findByIp(String ip);
 }

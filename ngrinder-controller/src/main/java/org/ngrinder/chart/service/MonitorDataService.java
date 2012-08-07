@@ -25,7 +25,7 @@ package org.ngrinder.chart.service;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.ngrinder.agent.model.Agent;
+import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.repository.MonitorDataRepository;
 import org.ngrinder.monitor.controller.MonitorExecuteCache;
 import org.ngrinder.monitor.controller.MonitorExecuteManager;
@@ -57,7 +57,7 @@ public class MonitorDataService {
 	 * 
 	 * @param agent
 	 */
-	public void addMonitorAgents(String key, Set<Agent> agents) {
+	public void addMonitorAgents(String key, Set<AgentInfo> agents) {
 		MonitorExecuteManager manager = MonitorExecuteCache.getInstance().getCache(key);
 		if (null != manager) {
 			LOG.debug("Agent monitor:{} is already exists.", key);
@@ -67,7 +67,7 @@ public class MonitorDataService {
 		int interval = 1, delay = 0;
 
 		Set<MonitorAgentInfo> agentInfo = new HashSet<MonitorAgentInfo>();
-		for (Agent agent : agents) {
+		for (AgentInfo agent : agents) {
 			MonitorAgentInfo monitorAgentInfo = MonitorAgentInfo.getAgentMonitor(agent.getIp(), DEFAULT_PORT,
 					monitorDataRepository);
 			agentInfo.add(monitorAgentInfo);

@@ -31,7 +31,8 @@ import net.grinder.messages.console.AgentAddress;
 /**
  * Message for informing the console of agent process status.
  * 
- * @author Philip Aston
+ * @author JunHo Yoon
+ * @since 3.0
  */
 public class AgentControllerProcessReportMessage implements AddressAwareMessage {
 

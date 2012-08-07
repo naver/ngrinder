@@ -24,13 +24,15 @@ package org.ngrinder.agent.controller;
 
 import java.util.List;
 
-import org.ngrinder.agent.model.Agent;
+import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * agent controller.
@@ -55,10 +57,66 @@ public class AgentController extends NGrinderBaseController {
 	 * @return viewName
 	 */
 	@RequestMapping({ "", "/", "/list" })
-	public String getAgentList(ModelMap model) {
-		List<Agent> agents = agentService.getAgentList();
+	public String getAgents(ModelMap model) {
+		List<AgentInfo> agents = agentService.getAgents();
 		model.addAttribute("agents", agents);
 		return "agent/agentList";
 	}
 
+	/**
+	 * Get agent detail info.
+	 * 
+	 * @param model
+	 *            model
+	 * @param id
+	 *            agent id
+	 * @return agent/agentDetail
+	 */
+	@RequestMapping("/detail")
+	public String getAgent(ModelMap model, @RequestParam(required = false) Long id) {
+		AgentInfo agent = agentService.getAgent(id);
+		model.addAttribute("agent", agent);
+		return "agent/agentDetail";
+	}
+
+	/**
+	 * Create agent.
+	 * 
+	 * @param model
+	 *            model
+	 * @param agent
+	 *            agent model
+	 * @return agent/agentDetail
+	 */
+	@RequestMapping(value = "/save", method = RequestMethod.POST)
+	public String createAgent(ModelMap model, AgentInfo agent) {
+		return getAgent(model, agent.getId());
+	}
+
+	/**
+	 * Delete agent.
+	 * 
+	 * @param model
+	 *            model
+	 * @param ids
+	 *            agent ids
+	 * @return agent/agentList
+	 */
+	@RequestMapping(value = "/delete")
+	public String deleteAgent(ModelMap model, @RequestParam String ids) {
+		if (ids == null) {
+			return getAgents(model);
+		}
+
+		String[] idArr = ids.split(",");
+		if (idArr != null) {
+			for (String idStr : idArr) {
+				try {
+					agentService.deleteAgent(Long.parseLong(idStr));
+				} catch (NumberFormatException ignored) {
+				}
+			}
+		}
+		return getAgents(model);
+	}
 }

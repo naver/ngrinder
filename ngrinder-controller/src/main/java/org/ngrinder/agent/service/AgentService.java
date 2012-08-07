@@ -27,8 +27,10 @@ import java.util.List;
 import java.util.Set;
 
 import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 
-import org.ngrinder.agent.model.Agent;
+import org.ngrinder.agent.model.AgentInfo;
+import org.ngrinder.agent.repository.AgentRepository;
 import org.ngrinder.perftest.service.AgentManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,24 +39,77 @@ import org.springframework.stereotype.Service;
  * agent service.
  * 
  * @author Tobi
+ * @author JunHo Yoon
  * @since 3.0
  */
 @Service
 public class AgentService {
-	
+
 	@Autowired
-	private AgentManager agenManager;
+	private AgentManager agentManager;
 
-	public List<Agent> getAgentList() {
-		//TODO: should get agent list from manager.
-		Set<AgentIdentity> agentSet = agenManager.getAllAttachedAgents();
-		for (AgentIdentity agentIdentity : agentSet) {
-			Agent agt = new Agent();
-			agt.setId(Long.valueOf(agentIdentity.getNumber()));
-			agt.setName(agentIdentity.getName());
+	@Autowired
+	private AgentRepository agentRepository;
+
+	/**
+	 * Get agents.
+	 * 
+	 * @param searchStr
+	 *            search keyword. if empty, no search
+	 * @param pageable
+	 *            page
+	 * @return agent list
+	 */
+	public List<AgentInfo> getAgents() {
+		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
+		List<AgentInfo> agentList = new ArrayList<AgentInfo>();
+		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
+			AgentControllerIdentityImplementation eachAgentController = (AgentControllerIdentityImplementation) eachAgentIdentity;
+			agentList.add(creatAgentInfo(eachAgentController));
 		}
+		return agentList;
+	}
 
-		return new ArrayList<Agent>();
+	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation eachAgentController) {
+		AgentInfo agentInfo = agentRepository.findByIp(eachAgentController.getIp());
+		agentInfo = agentInfo == null ? new AgentInfo() : agentInfo;
+		agentInfo.setAppName(eachAgentController.getName());
+		agentInfo.setIp(eachAgentController.getIp());
+		if (!agentInfo.exist()) {
+			agentRepository.save(agentInfo);
+		}
+		return agentInfo;
+	}
+
+	/**
+	 * Get a agent on given id.
+	 * 
+	 * @param id
+	 *            agent id
+	 * @return agent
+	 */
+	public AgentInfo getAgent(long id) {
+		return agentRepository.findOne(id);
+	}
+
+	/**
+	 * Save agent.
+	 * 
+	 * @param agent
+	 *            saved agent
+	 */
+	public void saveAgent(AgentInfo agent) {
+		agentRepository.save(agent);
+	}
+
+	/**
+	 * Delete agent.
+	 * 
+	 * @param id
+	 *            agent id to be deleted
+	 */
+	public void deleteAgent(long id) {
+		agentRepository.delete(id);
 	}
 
 }

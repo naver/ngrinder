@@ -31,7 +31,7 @@ import static org.ngrinder.perftest.model.Status.START_CONSOLE;
 import static org.ngrinder.perftest.model.Status.START_CONSOLE_FINISHED;
 import static org.ngrinder.perftest.model.Status.START_TESTING;
 import static org.ngrinder.perftest.model.Status.TESTING;
-
+import org.ngrinder.common.util.DateUtil;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -43,7 +43,7 @@ import net.grinder.console.model.ConsoleProperties;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.ngrinder.agent.model.Agent;
+import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.service.MonitorDataService;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.perftest.model.PerfTest;
@@ -58,9 +58,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * perf test run scheduler.
  * 
- * This class is responsible to execute the performance test which is ready to
- * execute. Mostly this class is started from {@link #startTest()} method. This
- * method is scheduled by Spring Task.
+ * This class is responsible to execute the performance test which is ready to execute. Mostly this class is started
+ * from {@link #startTest()} method. This method is scheduled by Spring Task.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -78,11 +77,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	@Autowired
 	private AgentManager agentManager;
-	
+
 	@Autowired
 	private MonitorDataService monitorDataService;
-	
-	//wait 30 seconds until agents start the test running.
+
+	// wait 30 seconds until agents start the test running.
 	private static final int WAIT_TEST_START_SECOND = 30000;
 
 	/**
@@ -95,6 +94,14 @@ public class PerfTestRunnable implements NGrinderConstants {
 		if (runCandidate == null) {
 			return;
 		}
+		
+		// schedule test
+		Date schedule = runCandidate.getScheduledTime();
+		if(schedule != null&&!DateUtil.compareDateEndWithMinute(schedule,new Date(System.currentTimeMillis()))){
+			// this test project is reserved,but it isn't yet going to run test  right now.
+			return;
+		}
+		
 		// In case of too many trial, cancel running.
 		if (runCandidate.getTestTrialCount() > PERFTEST_MAXIMUM_TRIAL_COUNT) {
 			LOG.error("The {} test project is canceld because it has too many test execution errors",
@@ -148,12 +155,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	void runTestOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
-		//start target monitor
-		Set<Agent> agents = new HashSet<Agent>();
-		Agent agent = new Agent();
+		// start target monitor
+		Set<AgentInfo> agents = new HashSet<AgentInfo>();
+		AgentInfo agent = new AgentInfo();
 		agent.setIp(perfTest.getTargetHosts());
 		monitorDataService.addMonitorAgents(perfTest.getTargetHosts(), agents);
-		
+
 		// Run test
 		perfTestService.savePerfTest(perfTest, START_TESTING);
 		long startTime = singleConsole.startTest(grinderProperties);
@@ -197,7 +204,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		List<PerfTest> finishCandiate = perfTestService.getTestingPerfTest();
 		for (PerfTest each : finishCandiate) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
-			if(consoleUsingPort == null) {
+			if (consoleUsingPort == null) {
 				LOG.error("There is no console found for test:%s", ToStringBuilder.reflectionToString(each));
 				continue;
 			}
@@ -211,18 +218,17 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * @param perfTest
 	 *            {@link PerfTest} to be finished
 	 * @param singleConsoleInUse
-	 *            {@link SingleConsole} which is being using for
-	 *            {@link PerfTest}
+	 *            {@link SingleConsole} which is being using for {@link PerfTest}
 	 */
 	public void doFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		long startLastingTime = System.currentTimeMillis() - singleConsoleInUse.getStartTime();
 		// because It will take some seconds to start testing sometimes , if the test is not started
 		// after some seconds, will set it as finished.
 		if (singleConsoleInUse.isAllTestFinished() && startLastingTime > WAIT_TEST_START_SECOND) {
-			//stop target host monitor
-			//TODO: later should modified to use target host IP.
+			// stop target host monitor
+			// TODO: later should modified to use target host IP.
 			monitorDataService.removeMonitorAgents(perfTest.getTargetHosts());
-			PerfTest resultTest =perfTestService.updatePerfTestAfterTestFinish(perfTest);
+			PerfTest resultTest = perfTestService.updatePerfTestAfterTestFinish(perfTest);
 			perfTestService.savePerfTest(resultTest, Status.FINISHED);
 		}
 	}

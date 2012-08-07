@@ -112,7 +112,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		m_newData = true;
 	}
 
-	private AgentStatus getAgentStatus(AgentIdentity agentIdentity) {
+	public AgentStatus getAgentStatus(AgentIdentity agentIdentity) {
 		synchronized (m_agentMap) {
 			final AgentStatus existing = m_agentMap.get(agentIdentity);
 			if (existing != null) {
@@ -152,7 +152,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	}
 
 	/**
-	 * Callers are   for synchronization.
+	 * Callers are for synchronization.
 	 * 
 	 * @param purgableMap
 	 */
@@ -256,8 +256,8 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	public void startAgent(Set<AgentIdentity> agents, GrinderProperties properties) {
 		final GrinderProperties propertiesToSend = properties != null ? properties : new GrinderProperties();
 		for (AgentIdentity each : agents) {
-			m_consoleCommunication.sendToAddressedAgents(new AgentAddress(each),
-					new StartGrinderMessage(propertiesToSend, each.getNumber()));
+			m_consoleCommunication.sendToAddressedAgents(new AgentAddress(each), new StartGrinderMessage(
+					propertiesToSend, each.getNumber()));
 		}
 	}
 
@@ -344,6 +344,10 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		public AgentControllerState getState() {
 			return AgentControllerState.UNKNOWN;
 		}
+	}
+
+	public AgentControllerState getAgentControllerState(AgentIdentity agentIdentity) {
+		return getAgentStatus(agentIdentity).getAgentControllerState();
 	}
 
 }

@@ -10,6 +10,41 @@
 	<artifactId>ngrinder-core</artifactId>
 	<name>ngrinder-core</name>
 	<packaging>jar</packaging>
+	<profiles>
+		<profile>
+			<id>windows_profile</id>
+			<activation>
+				<os>
+					<family>Windows</family>
+				</os>
+			</activation>
+			<properties>
+				<toolsjar>${java.home}/../lib/tools.jar</toolsjar>
+			</properties>
+		</profile>
+		<profile>
+			<id>unix_profile</id>
+			<activation>
+				<os>
+					<family>unix</family>
+				</os>
+			</activation>
+			<properties>
+				<toolsjar>${java.home}/../lib/tools.jar</toolsjar>
+			</properties>
+		</profile>
+		<profile>
+			<id>osx_profile</id>
+			<activation>
+				<os>
+					<family>mac</family>
+				</os>
+			</activation>
+			<properties>
+				<toolsjar>${java.home}/../Classes/classes.jar</toolsjar>
+			</properties>
+		</profile>
+	</profiles>
 	<dependencies>
 
 		<dependency>
@@ -39,7 +74,7 @@
 			<artifactId>tools</artifactId>
 			<version>1.6.0</version>
 			<scope>system</scope>
-			<systemPath>${java.home}/../lib/tools.jar</systemPath>
+			<systemPath>${toolsjar}</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
@@ -68,13 +103,12 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
 					<archive>
-	                    <manifest>
-	                        <mainClass>org.ngrinder.NGrinderStarter</mainClass>
-	                    </manifest>
-						<manifestEntries>
-							<Class-Path>lib/tools.jar</Class-Path>
-						</manifestEntries>
-	                </archive>
+						<manifest>
+							<mainClass>org.ngrinder.NGrinderStarter</mainClass>
+							<addClasspath>true</addClasspath>
+						</manifest>
+
+					</archive>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
@@ -96,42 +130,6 @@
 					</additionalBuildcommands>
 				</configuration>
 			</plugin>
-			
-	        <plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-dependency-plugin</artifactId>
-	            <executions>
-	                <execution>
-	                    <id>copy-dependencies</id>
-	                    <phase>prepare-package</phase>
-	                    <goals>
-	                        <goal>copy-dependencies</goal>
-	                    </goals>
-	                    <configuration>
-	                        <outputDirectory>${project.build.directory}/lib</outputDirectory>
-	                        <overWriteReleases>false</overWriteReleases>
-	                        <overWriteSnapshots>false</overWriteSnapshots>
-	                        <overWriteIfNewer>true</overWriteIfNewer>
-	                    </configuration>
-	                </execution>
-	            </executions>
-	        </plugin>
-	        <plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-jar-plugin</artifactId>
-	            <configuration>
-	                <archive>
-	                    <manifest>
-	                        <addClasspath>true</addClasspath>
-	                        <classpathPrefix>lib/</classpathPrefix>
-	                        <mainClass>org.ngrinder.NGrinderStarter</mainClass>
-	                    </manifest>
-	                        <manifestEntries>
-	                                <Class-Path>tools.jar</Class-Path>
-	                        </manifestEntries>
-	                </archive>
-	            </configuration>
-	        </plugin>
 		</plugins>
 	</build>
 </project>

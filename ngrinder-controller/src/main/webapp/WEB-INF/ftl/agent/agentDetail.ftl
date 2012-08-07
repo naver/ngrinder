@@ -36,10 +36,10 @@
 				    <td>${(agent.ip)!}</td>
 				    </tr>
 				    <tr>
-				    <th>Port</th>
+				    <th>Number</th>
 				    </tr>
                     <tr>
-				    <td>${(agent.appPort)!}</td>
+				    <td>${(agent.number)!}</td>
 				    </tr>
 				    <tr>
 				    <th>Name</th>
@@ -95,7 +95,7 @@
                     var number = $(this).val();
                     $(this).val(number.replace(/[\D]/g,""))
                 });
-                $("#rinterval").change(function() {
+                $("#rinterval").blur(function() {
                     if(timer){
                         window.clearInterval(timer);
                     }

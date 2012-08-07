@@ -9,55 +9,42 @@
     <body>
         <#include "../common/navigator.ftl">
         <div class="container">
-        	<div class="page-header pageHeader" style="margin-bottom: 10px">
+        	<div class="page-header pageHeader" style="margin-bottom: 20px">
 				<h3>Agent Management</h3>
 			</div>
             <div class="row">
                 <div class="span12">
-                    <div class="well form-inline searchBar">
-                        <input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
-                        <button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i>Search</button>
-                    </div>
 	                <table class="table table-striped table-bordered" id="agentTable">
 	                    <colgroup>
-	                        <col width="30">
-	                        <col width="180">
-	                        <col width="100">
+	                        <col width="130">
+	                        <col width="200">
 	                        <col>
 	                        <col width="180">
-	                        <col width="80">
-	                        <col width="40">
+	                        <col width="130">
 	                    </colgroup>
 	                    <thead>
 	                        <tr>
-	                            <th><input type="checkbox" class="checkbox" value=""></th>
+	                            <th class="noClick">Number</th>
 	                            <th>IP | Domain</th>
-	                            <th class="noClick">Port</th>
 	                            <th>Name</th>
 	                            <th>Region</th>
 	                            <th>Status</th>
-	                            <th class="noClick">Del</th>
 	                        </tr>
 	                    </thead>
 	                    <tbody>
-	                        <#assign agentList = agents.content/>
-	                        <#if agentList?has_content>
-	                        <#list agentList as agent>
+	                        <#if agents?has_content>
+	                        <#list agents as agent>
 	                        <tr>
-	                            <td><input type="checkbox" value="${agent.id}"></td>
+	                            <td>${(agent.number)!}</td>
 	                            <td class="left"><a href="${req.getContextPath()}/agent/detail?id=${agent.id}" target="_self">${agent.ip}</a></td>
-	                            <td>${(agent.appPort)!}</td>
 	                            <td class="left">${(agent.appName)!}</td>
 	                            <td class="left">${(agent.region)!}</td>
 	                            <td>${(agent.status)!}</td>
-	                            <td>
-	                                <a href="${req.getContextPath()}/agent/delete?ids=${agent.id}" title="Delete this agent"><i class="icon-remove"></i></a>
-	                            </td>
 	                        </tr>
 	                        </#list>
 	                        <#else>
 	                            <tr>
-	                                <td colspan="7" class="noData">
+	                                <td colspan="5" class="noData">
 	                                    No data to display.
 	                                </td>
 	                            </tr>
@@ -71,41 +58,6 @@
         </div>
         <script>
             $(document).ready(function() {
-                $("#connectBtn").on('click', function() {
-                    var ids = "";
-                    var list = $("td input:checked");
-                    if(list.length == 0) {
-                        alert("Please select any agents first.");
-                        return;
-                    }
-                    var agentArray = [];
-                    list.each(function() {
-                        agentArray.push($(this).val());
-                    });
-                    ids = agentArray.join(",");
-                    document.location.href = "${req.getContextPath()}/agent/connect?ids=" + ids + "&isConnect=true";
-                });
-                $("#disconnectBtn").on('click', function() {
-                    var ids = "";
-                    var list = $("td input:checked");
-                    if(list.length == 0) {
-                        alert("Please select any agents first.");
-                        return;
-                    }
-                    var agentArray = [];
-                    list.each(function() {
-                        agentArray.push($(this).val());
-                    });
-                    ids = agentArray.join(",");
-                    document.location.href = "${req.getContextPath()}/agent/connect?ids=" + ids + "&isConnect=false";
-                });
-                $("#searchBtn").on('click', function() {
-                    var keywords =  $("#searchText").val();
-                    document.location.href = "${req.getContextPath()}/agent/list?keywords=" + keywords;
-                });
-                
-                enableChkboxSelectAll();
-                
                 <#if agentList?has_content>
 				oTable = $("#agentTable").dataTable({
 					"bAutoWidth": false,

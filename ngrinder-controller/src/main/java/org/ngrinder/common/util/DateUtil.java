@@ -14,6 +14,7 @@ public class DateUtil {
 
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 	private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+	private static final SimpleDateFormat dateFormatEndWithMinute = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 	private static int ss = 1000;
 	private static int mi = ss * 60;
@@ -112,4 +113,15 @@ public class DateUtil {
 	public static int timeToMs(int day, int hour, int min, int sec) {
 		return (((day * 24 + hour) * 60 + min) * 60 + sec) * 1000;
 	}
+	
+	
+	public static Boolean compareDateEndWithMinute(Date d1, Date d2) {
+		String s1 = dateFormatEndWithMinute.format(d1);
+		String s2 = dateFormatEndWithMinute.format(d2);
+		if (s1.equals(s2))
+			return true;
+		else
+			return false;
+	}
+
 }
