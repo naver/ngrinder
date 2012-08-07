@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>nGrinder Agent List</title> <#include "../common/common.ftl"> <#include "../common/datatables.ftl">
+<title>nGrinder Agent List</title>
+<#include "../common/common.ftl"> 
+<#include "../common/datatables.ftl">
 </head>
-
 <body>
 	<#include "../common/navigator.ftl">
 	<div class="container">
@@ -52,48 +53,13 @@
 						</#if>
 					</tbody>
 				</table>
-			</div>
 		</div>
 		<#include "../common/copyright.ftl">
 		<!--content-->
 	</div>
-	<script>
+		<script>
+
             $(document).ready(function() {
-                $("#connectBtn").on('click', function() {
-                    var ids = "";
-                    var list = $("td input:checked");
-                    if(list.length == 0) {
-                        alert("Please select any agents first.");
-                        return;
-                    }
-                    var agentArray = [];
-                    list.each(function() {
-                        agentArray.push($(this).val());
-                    });
-                    ids = agentArray.join(",");
-                    document.location.href = "${req.getContextPath()}/agent/connect?ids=" + ids + "&isConnect=true";
-                });
-                $("#disconnectBtn").on('click', function() {
-                    var ids = "";
-                    var list = $("td input:checked");
-                    if(list.length == 0) {
-                        alert("Please select any agents first.");
-                        return;
-                    }
-                    var agentArray = [];
-                    list.each(function() {
-                        agentArray.push($(this).val());
-                    });
-                    ids = agentArray.join(",");
-                    document.location.href = "${req.getContextPath()}/agent/connect?ids=" + ids + "&isConnect=false";
-                });
-                $("#searchBtn").on('click', function() {
-                    var keywords =  $("#searchText").val();
-                    document.location.href = "${req.getContextPath()}/agent/list?keywords=" + keywords;
-                });
-                
-                enableChkboxSelectAll();
-                
                 <#if agentList?has_content>
 				oTable = $("#agentTable").dataTable({
 					"bAutoWidth": false,

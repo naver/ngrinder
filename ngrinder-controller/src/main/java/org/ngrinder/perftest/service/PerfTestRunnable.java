@@ -31,7 +31,7 @@ import static org.ngrinder.perftest.model.Status.START_CONSOLE;
 import static org.ngrinder.perftest.model.Status.START_CONSOLE_FINISHED;
 import static org.ngrinder.perftest.model.Status.START_TESTING;
 import static org.ngrinder.perftest.model.Status.TESTING;
-
+import org.ngrinder.common.util.DateUtil;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -94,6 +94,14 @@ public class PerfTestRunnable implements NGrinderConstants {
 		if (runCandidate == null) {
 			return;
 		}
+		
+		// schedule test
+		Date schedule = runCandidate.getScheduledTime();
+		if(schedule != null&&!DateUtil.compareDateEndWithMinute(schedule,new Date(System.currentTimeMillis()))){
+			// this test project is reserved,but it isn't yet going to run test  right now.
+			return;
+		}
+		
 		// In case of too many trial, cancel running.
 		if (runCandidate.getTestTrialCount() > PERFTEST_MAXIMUM_TRIAL_COUNT) {
 			LOG.error("The {} test project is canceld because it has too many test execution errors",
