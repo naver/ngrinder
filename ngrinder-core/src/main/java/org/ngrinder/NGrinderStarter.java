@@ -22,14 +22,22 @@
  */
 package org.ngrinder;
 
+import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import net.grinder.AgentControllerDaemon;
 import net.grinder.common.GrinderException;
+import net.grinder.util.ReflectionUtil;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.AgentMonitorServer;
 import org.slf4j.Logger;
@@ -46,9 +54,10 @@ public class NGrinderStarter {
 	private final Logger LOG = LoggerFactory.getLogger(NGrinderStarter.class);
 
 	private boolean localAttachmentSupported;
-	
+
 	public NGrinderStarter() {
 		try {
+			addClassPathForToolsJar();
 			Class.forName("com.sun.tools.attach.VirtualMachine");
 			Class.forName("sun.management.ConnectorAddressLink");
 			localAttachmentSupported = true;
@@ -77,7 +86,7 @@ public class NGrinderStarter {
 		LOG.info("* Start nGrinder Monitor *");
 		LOG.info("**************************");
 		LOG.info("* Local JVM link support :{}", localAttachmentSupported);
-		LOG.info("* Colllect SYSTEM %s data. **", withAgent? "and JAVA" : "");
+		LOG.info("* Colllect SYSTEM %s data. **", withAgent ? "and JAVA" : "");
 		try {
 			AgentMonitorServer.getInstance().init(port, dataCollectors, jvmPids);
 			AgentMonitorServer.getInstance().start();
@@ -85,20 +94,20 @@ public class NGrinderStarter {
 			LOG.error("ERROR:", e);
 		}
 	}
-	
+
 	private void startAgent() {
 		LOG.info("*************************");
 		LOG.info("* Start nGrinder Agent **");
 		LOG.info("*************************");
-		
+
 		AgentControllerDaemon agentController = new AgentControllerDaemon();
 		try {
 			agentController.run();
 		} catch (GrinderException e) {
-			LOG.error("ERROR:", e);
+			LOG.error("Error while starting agent controller", e);
 		}
 	}
-	
+
 	public static int getCurrentJVMPid() {
 		RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
 		String name = runtime.getName();
@@ -108,12 +117,49 @@ public class NGrinderStarter {
 			return -1;
 		}
 	}
-	
+
+	public URL findToolsJarPath() {
+		String toolsJar = SystemUtils.IS_OS_MAC_OSX ? "Classes/classes.jar" : "lib/tools.jar";
+		try {
+			for (Entry<Object, Object> each : System.getProperties().entrySet()) {
+				LOG.debug("{}={}", each.getKey(), each.getValue());
+			}
+
+			String property = System.getProperty("java.home");
+
+			File javaHome = new File(property);
+			File toolsJarPath = new File(javaHome, toolsJar);
+			if (toolsJarPath.exists()) {
+				return toolsJarPath.toURI().toURL();
+			}
+			toolsJarPath = new File(javaHome.getParentFile(), toolsJar);
+			if (toolsJarPath.exists()) {
+				return toolsJarPath.toURI().toURL();
+			}
+			for (File eachCandidate : javaHome.getParentFile().listFiles()) {
+				toolsJarPath = new File(eachCandidate, toolsJar);
+				if (toolsJarPath.exists()) {
+					return toolsJarPath.toURI().toURL();
+				}
+			}
+		} catch (MalformedURLException e) {
+		}
+		LOG.error("{} path is not found. Please set up JAVA_HOME env var to JDK(not JRE).", toolsJar);
+		System.exit(-1);
+		return null;
+	}
+
+	private void addClassPathForToolsJar() {
+		URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+		ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { findToolsJarPath() });
+	}
+
 	public static void main(String[] args) {
 		NGrinderStarter starter = new NGrinderStarter();
 		boolean withAgent = false;
+
 		if (args != null && args.length > 0 && args[0].equals("-a")) {
-			//just start monitor
+			// just start monitor
 			withAgent = true;
 		}
 		if (withAgent) {
@@ -121,5 +167,4 @@ public class NGrinderStarter {
 		}
 		starter.startMonitor(withAgent);
 	}
-
 }
