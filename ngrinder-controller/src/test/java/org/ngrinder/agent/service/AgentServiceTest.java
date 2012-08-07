@@ -24,6 +24,8 @@ package org.ngrinder.agent.service;
 
 import junit.framework.Assert;
 
+import net.grinder.message.console.AgentControllerState;
+
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.model.AgentInfo;
@@ -54,14 +56,15 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 		// this.saveAgent("get2");
 		// this.saveAgent("get3");
 		// Page<AgentInfo> page2 = agentService.getAgents("testRegion", null);
-		// Assert.assertEquals(page1.getTotalElements() + 3, page2.getTotalElements());
+		// Assert.assertEquals(page1.getTotalElements() + 3,
+		// page2.getTotalElements());
 	}
 
 	@Test
 	public void testGetAgent() {
 		AgentInfo agent = this.saveAgent("get");
 		AgentInfo agent2 = agentService.getAgent(agent.getId());
-		Assert.assertEquals(agent.getAppName(), agent2.getAppName());
+		Assert.assertEquals(agent.getHostName(), agent2.getHostName());
 	}
 
 	@Test
@@ -75,10 +78,10 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 	private AgentInfo saveAgent(String key) {
 		AgentInfo agent = new AgentInfo();
 		agent.setIp("1.1.1.1" + key);
-		agent.setAppName("testAppName" + key);
-		agent.setNumber(8080);
+		agent.setHostName("testAppName" + key);
+		agent.setPort(8080);
 		agent.setRegion("testRegion" + key);
-		agent.setStatus(1);
+		agent.setStatus(AgentControllerState.AGENT_RUN);
 		agentService.saveAgent(agent);
 		return agent;
 	}

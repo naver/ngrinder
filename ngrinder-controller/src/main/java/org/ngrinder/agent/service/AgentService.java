@@ -29,6 +29,7 @@ import java.util.Set;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentRepository;
 import org.ngrinder.perftest.service.AgentManager;
@@ -70,13 +71,16 @@ public class AgentService {
 		return agentList;
 	}
 
-	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation eachAgentController) {
-		AgentInfo agentInfo = agentRepository.findByIp(eachAgentController.getIp());
+	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation agentIdentity) {
+		AgentInfo agentInfo = agentRepository.findByIp(agentIdentity.getIp());
 		agentInfo = agentInfo == null ? new AgentInfo() : agentInfo;
-		agentInfo.setAppName(eachAgentController.getName());
-		agentInfo.setIp(eachAgentController.getIp());
+		agentInfo.setHostName(agentIdentity.getName());
+		agentInfo.setRegion(agentIdentity.getRegion());
+		agentInfo.setIp(agentIdentity.getIp());
+		agentInfo.setPort(agentIdentity.getPort());
+		agentInfo.setStatus(agentManager.getAgentControllerState(agentIdentity));
 		if (!agentInfo.exist()) {
-			agentRepository.save(agentInfo);
+			agentInfo = agentRepository.save(agentInfo);
 		}
 		return agentInfo;
 	}
@@ -89,7 +93,31 @@ public class AgentService {
 	 * @return agent
 	 */
 	public AgentInfo getAgent(long id) {
-		return agentRepository.findOne(id);
+		AgentInfo agentInfo = agentRepository.findOne(id);
+		AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIp(agentInfo.getIp());
+		if (agentIdentity != null) {
+			agentInfo.setStatus(agentManager.getAgentControllerState(agentIdentity));
+			agentInfo.setPort(agentIdentity.getPort());
+			agentInfo.setHostName(agentIdentity.getName());
+			agentInfo.setRegion(agentIdentity.getRegion());
+		}
+		return agentInfo;
+	}
+
+	/**
+	 * Get {@link AgentControllerIdentityImplementation} for give agentInfo
+	 * 
+	 * @param agentInfo
+	 * @return
+	 */
+	private AgentControllerIdentityImplementation getAgentIdentityByIp(String agentIP) {
+		for (AgentIdentity agentIdentity : agentManager.getAllAttachedAgents()) {
+			AgentControllerIdentityImplementation eachAgentIdentity = (AgentControllerIdentityImplementation) agentIdentity;
+			if (StringUtils.equals(eachAgentIdentity.getIp(), agentIP)) {
+				return eachAgentIdentity;
+			}
+		}
+		return null;
 	}
 
 	/**

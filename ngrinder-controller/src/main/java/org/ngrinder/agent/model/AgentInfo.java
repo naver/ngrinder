@@ -24,6 +24,9 @@ package org.ngrinder.agent.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import net.grinder.message.console.AgentControllerState;
 
 import org.ngrinder.model.BaseEntity;
 
@@ -46,16 +49,19 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	private String ip;
 
 	/**
-	 * agent application port.
+	 * agent application port. It's only available when the connection is
+	 * re-established.
 	 */
-	private int number;
+	@Transient
+	private Integer port;
 
 	/**
 	 * agent application name.
 	 */
-	private String appName = "";
+	private String hostName = "";
 
-	private int status;
+	@Transient
+	private AgentControllerState status;
 
 	private String region;
 
@@ -67,19 +73,11 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 		this.ip = ip;
 	}
 
-	public String getAppName() {
-		return appName;
-	}
-
-	public void setAppName(String appName) {
-		this.appName = appName;
-	}
-
-	public int getStatus() {
+	public AgentControllerState getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(AgentControllerState status) {
 		this.status = status;
 	}
 
@@ -95,7 +93,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + number;
+		result = prime * result + port;
 		result = prime * result + ((ip == null) ? 0 : ip.hashCode());
 		return result;
 	}
@@ -112,7 +110,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 			return false;
 		}
 		AgentInfo other = (AgentInfo) obj;
-		if (getNumber() != other.getNumber()) {
+		if (getPort() != other.getPort()) {
 			return false;
 		}
 		if (ip == null) {
@@ -125,12 +123,20 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 		return true;
 	}
 
-	public int getNumber() {
-		return number;
+	public Integer getPort() {
+		return port;
 	}
 
-	public void setNumber(int number) {
-		this.number = number;
+	public void setPort(Integer port) {
+		this.port = port;
+	}
+
+	public String getHostName() {
+		return hostName;
+	}
+
+	public void setHostName(String hostName) {
+		this.hostName = hostName;
 	}
 
 }

@@ -38,6 +38,12 @@ import net.grinder.AgentControllerDaemon;
 import net.grinder.common.GrinderException;
 import net.grinder.util.ReflectionUtil;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.ngrinder.monitor.MonitorConstants;
@@ -73,7 +79,8 @@ public class NGrinderStarter {
 		}
 	}
 
-	private void startMonitor(boolean withAgent, int port) {		
+	private void startMonitor(boolean withAgent) {
+		int port = MonitorConstants.DEFAULT_AGENT_PORT;
 		Set<String> dataCollectors;
 		if (withAgent) {
 			dataCollectors = MonitorConstants.DEFAULT_DATA_COLLECTOR;
@@ -98,16 +105,18 @@ public class NGrinderStarter {
 		}
 	}
 
-	private void startAgent() {
+	private void startAgent(String region) {
 		LOG.info("*************************");
 		LOG.info("* Start nGrinder Agent **");
 		LOG.info("*************************");
 
 		AgentControllerDaemon agentController = new AgentControllerDaemon();
+		agentController.setRegion(region);
 		try {
 			agentController.run();
 		} catch (GrinderException e) {
-			LOG.error("Error while starting agent controller:{}", e.getMessage(), e);
+			LOG.error("Error while starting agent controller", e.getMessage());
+			LOG.debug("Error while starting agent controller", e);
 		}
 	}
 
@@ -185,33 +194,30 @@ public class NGrinderStarter {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		NGrinderStarter starter = new NGrinderStarter();
-		boolean withAgent = false;
-		int port = MonitorConstants.DEFAULT_AGENT_PORT;
-		
+		Options options = new Options();
+		options.addOption("a", "agent", false, "run agent together");
+		options.addOption("r", "region", true, "provide agent region");
+		CommandLineParser parser = new PosixParser();
+		CommandLine cmd = null;
 		try {
-			if (args != null && args.length > 0){
-				for (int i=0; i<args.length; i++) {
-					if (args[i].equals("-a")) {
-						withAgent = true;
-					} else if (args[i].equals("-p")){
-						port = Integer.valueOf(args[i + 1]);
-					}
-				}
-			}
-		} catch (Exception e) {
-			printHelp ();
+			cmd = parser.parse(options, args);
+		} catch (ParseException e) {
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("ngrinder", options);
+			System.exit(-1);
 		}
-
+		boolean withAgent = true;
+		if (cmd.hasOption("a")) {
+			withAgent = true;
+		}
+		String region = "";
+		if (cmd.hasOption("r")) {
+			region = cmd.getOptionValue("r");
+		}
+		NGrinderStarter starter = new NGrinderStarter();
 		if (withAgent) {
-			starter.startAgent();
+			starter.startAgent(region);
 		}
-		starter.startMonitor(withAgent, port);
-	}
-
-	public static void printHelp() {
-		System.out.println("Option:");
-		System.out.println("       -a : start ngrinder agent.");
-		System.out.println("       -p 3242: start monitor on one port.");
+		starter.startMonitor(withAgent);
 	}
 }

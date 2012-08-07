@@ -28,8 +28,7 @@ import net.grinder.GrinderConstants;
 import net.grinder.common.processidentity.ProcessIdentity;
 import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.communication.ProcessStatusImplementation.AgentAndWorkers;
-
-import org.springframework.test.util.ReflectionTestUtils;
+import net.grinder.util.ReflectionUtil;
 
 /**
  * This class is used to get worker and thread information from grinder. We add
@@ -85,10 +84,10 @@ public final class NGrinderConsoleCommunicationService {
 	 */
 	@SuppressWarnings("unchecked")
 	public static Map<ProcessIdentity, AgentAndWorkers> getLiveAgents(ProcessControl processControl) {
-		ProcessStatusImplementation processStatusSet = (ProcessStatusImplementation) ReflectionTestUtils.getField(
+		ProcessStatusImplementation processStatusSet = (ProcessStatusImplementation) ReflectionUtil.getFieldValue(
 				processControl, "m_processStatusSet");
-		Map<ProcessIdentity, AgentAndWorkers> result = (Map<ProcessIdentity, AgentAndWorkers>) ReflectionTestUtils
-				.getField(processStatusSet, "m_agentIdentityToAgentAndWorkers");
+		Map<ProcessIdentity, AgentAndWorkers> result = (Map<ProcessIdentity, AgentAndWorkers>) ReflectionUtil
+				.getFieldValue(processStatusSet, "m_agentIdentityToAgentAndWorkers");
 
 		return result;
 	}

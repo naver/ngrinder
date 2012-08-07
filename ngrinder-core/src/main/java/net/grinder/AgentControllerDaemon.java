@@ -53,6 +53,10 @@ public class AgentControllerDaemon implements Agent {
 	public Condition m_eventSyncCondition = new Condition();
 
 	public final static Logger logger = LoggerFactory.getLogger("agent controller daemon");
+	/**
+	 * Region of grinder agent
+	 */
+	private String region = "";
 
 	public AgentControllerDaemon() {
 		try {
@@ -82,7 +86,7 @@ public class AgentControllerDaemon implements Agent {
 	}
 
 	public void run(final GrinderProperties grinderProperties) {
-
+		grinderProperties.put("grinder.region", region);
 		thread = new Thread(new Runnable() {
 			public void run() {
 				do {
@@ -146,6 +150,10 @@ public class AgentControllerDaemon implements Agent {
 
 	private void setForceToshutdown(boolean force) {
 		this.forceToshutdown = force;
+	}
+
+	public void setRegion(String region) {
+		this.region = region;
 	}
 
 }

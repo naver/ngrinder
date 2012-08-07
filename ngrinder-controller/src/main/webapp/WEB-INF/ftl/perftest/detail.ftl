@@ -62,7 +62,7 @@ div.chart {
 							<label for="testName" class="control-label">Test Name</label>
 							<div class="controls">  
 								<input class="span5 required" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
-								<button type="submit" class="btn btn-success" style="margin-left:85px"> 
+								<button type="submit" class="btn btn-success" style="margin-left:85px"  id="saveAndStartTestBtn"> 
 									<#if test??>Clone<#else>Save</#if> and Start 
 								</button>  
 								<button type="submit" class="btn btn-primary" data-toggle="modal" href="#scheduleModal"  id="saveScheduleBtn">
@@ -82,7 +82,7 @@ div.chart {
 			<div class="tabbable">
 				<ul class="nav nav-tabs" id="homeTab" style="margin-bottom:5px">
 					<li><a href="#testContent" data-toggle="tab">Test Configuration</a></li>
-					<#if test?? && (test.status == "TESTING" || test.status != "")>
+					<#if test?? && (test.status == "TESTING")>
 						<li><a href="#runningContent" data-toggle="tab">Test Running</a></li>
 					</#if>
 					<#if test?? && (test.status == "FINISHED" || test.status == "CANCELED")>
@@ -663,6 +663,11 @@ div.chart {
 					$("#scheduleInput").val(scheduledTime);
 					$("#scheduleModal").modal("hide");
 					$("#scheduleModal small").html("");
+					document.testContentForm.submit();
+				});
+				
+				$("#saveAndStartTestBtn").click (function() {
+					$("#scheduleInput").attr('name','');
 					document.testContentForm.submit();
 				});
 				
