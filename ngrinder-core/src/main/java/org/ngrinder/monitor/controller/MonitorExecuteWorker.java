@@ -72,6 +72,7 @@ public class MonitorExecuteWorker implements Runnable {
 	public void run() {
 		// If an error occurs, then skip 5 times
 		if (--interval > 0) {
+			interval = 1;
 			return;
 		}
 
@@ -104,8 +105,8 @@ public class MonitorExecuteWorker implements Runnable {
 				StringBuffer methodName = new StringBuffer().append(MonitorConstants.RECODER_METHOD_PREFIX).append(
 						retData.getClass().getSimpleName());
 
-				Method method = recoder.getClass().getMethod(methodName.toString(), key.getClass(),
-						retData.getClass(), agentInfo.getClass());
+				Method method = recoder.getClass().getMethod(methodName.toString(), key.getClass(), retData.getClass(),
+						agentInfo.getClass());
 
 				if (method != null) {
 					method.invoke(recoder, key, retData, agentInfo);

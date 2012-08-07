@@ -35,6 +35,7 @@ import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
+import net.grinder.message.console.AgentControllerState;
 import net.grinder.util.thread.ExecutorFactory;
 
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -66,6 +67,10 @@ public class AgentManager implements NGrinderConstants {
 	@PostConstruct
 	public void init() {
 		agentControllerServer.start();
+	}
+
+	public AgentControllerState getAgentControllerState(AgentIdentity agentIdentity) {
+		return agentControllerServer.getAgentState(agentIdentity);
 	}
 
 	public Set<AgentIdentity> getAllAttachedAgents() {
@@ -107,7 +112,6 @@ public class AgentManager implements NGrinderConstants {
 			}
 			execService.awaitTermination(AGENT_RUN_TIMEOUT_SECOND, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
-			LOGGER.error("Error while running agent", e);
 			throw new NGrinderRuntimeException("Error while running agent", e);
 		}
 	}
