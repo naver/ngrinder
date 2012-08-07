@@ -84,6 +84,9 @@ public class SingleConsole implements Listener {
 	//for displaying tps graph in  running page 
 	private Double[] values = new Double[60];
 	private int cursor = 0;
+	
+	private  long startTime = 0;
+	
 	/**
 	 * Constructor with console ip and port.
 	 * 
@@ -266,9 +269,11 @@ public class SingleConsole implements Listener {
 		return consoleProperties;
 	}
 
-	public void startTest(GrinderProperties properties) {
+	public long startTest(GrinderProperties properties) {
 		properties.setInt(GrinderProperties.CONSOLE_PORT, getConsolePort());
 		getConsoleComponent(ProcessControl.class).startWorkerProcesses(properties);
+		this.startTime = System.currentTimeMillis();
+		return this.startTime;
 	}
 
 	public void setDistributionDirectory(File filePath) {
@@ -375,6 +380,7 @@ public class SingleConsole implements Listener {
 		}
 		return workingThreadNum == 0;
 	}
+
 	
 	public MutablePicoContainer getConsoleContainer() {
 		return consoleFoundation.getContainer();
@@ -403,5 +409,8 @@ public class SingleConsole implements Listener {
 		str.append("]");
 		return str.toString();
 	}
-
+	
+	public long getStartTime() {
+		return startTime;
+	}
 }

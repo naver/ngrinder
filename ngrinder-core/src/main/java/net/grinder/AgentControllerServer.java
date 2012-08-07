@@ -51,6 +51,7 @@ public class AgentControllerServer {
 		m_container.getComponent(AgentProcessControlImplementation.class);
 		ConsoleCommunication communication = m_container.getComponent(ConsoleCommunication.class);
 		synchronized (m_eventSyncCondition) {
+			// Now ready to work
 			m_eventSyncCondition.notifyAll();
 		}
 		while (communication.processOneMessage()) {

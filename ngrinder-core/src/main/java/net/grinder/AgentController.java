@@ -88,7 +88,20 @@ public class AgentController implements Agent {
 		m_logger = logger;
 		m_eventSyncCondition = eventSyncCondition;
 		m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, m_logger);
-		m_agentIdentity = new AgentControllerIdentityImplementation(getHostName());
+		m_agentIdentity = new AgentControllerIdentityImplementation(getHostName(), getHostAddress());
+	}
+
+	/**
+	 * Get host address
+	 * 
+	 * @return ip form of host address
+	 */
+	private String getHostAddress() {
+		try {
+			return InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+			return "UNNAMED HOST ADDRESS";
+		}
 	}
 
 	/**
@@ -162,7 +175,7 @@ public class AgentController implements Agent {
 
 				// Here the agent run code goes..
 				if (startMessage != null) {
-					m_logger.info("starting agent");
+					m_logger.info("starting agent...");
 					agent.run(startMessage.getProperties());
 					m_agentStart = true;
 				}
@@ -265,7 +278,6 @@ public class AgentController implements Agent {
 
 			final ClientReceiver receiver = ClientReceiver.connect(connector, new AgentAddress(m_agentIdentity));
 			m_sender = ClientSender.connect(receiver);
-
 			m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.START));
 
 			final MessageDispatchSender messageDispatcher = new MessageDispatchSender();

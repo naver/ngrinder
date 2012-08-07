@@ -37,14 +37,19 @@ public class AgentControllerIdentityImplementation extends AbstractAgentControll
 
 	private int m_number = -1;
 
+	private final String ip;
+
 	/**
 	 * Constructor.
 	 * 
 	 * @param name
 	 *            The public name of the agent.
+	 * @param ip
+	 *            The ip of agent controller
 	 */
-	public AgentControllerIdentityImplementation(String name) {
+	public AgentControllerIdentityImplementation(String name, String ip) {
 		super(name);
+		this.ip = ip;
 	}
 
 	/**
@@ -64,6 +69,15 @@ public class AgentControllerIdentityImplementation extends AbstractAgentControll
 	 */
 	public void setNumber(int number) {
 		m_number = number;
+	}
+
+	/**
+	 * Get ip
+	 * 
+	 * @return ip
+	 */
+	public String getIp() {
+		return ip;
 	}
 
 }

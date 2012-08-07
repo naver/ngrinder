@@ -27,7 +27,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.agent.model.Agent;
+import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.common.util.ThreadUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -45,14 +45,13 @@ public class MonitorDataServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testAddRemoveMonitorAgents() {
-		Set<Agent> agents = new HashSet<Agent>();
-		Agent agt = new Agent();
-		agt.setAppPort(10086);
+		Set<AgentInfo> agents = new HashSet<AgentInfo>();
+		AgentInfo agt = new AgentInfo();
 		agt.setIp("127.0.0.1");
 		agents.add(agt);
-		
+
 		monitorDataService.addMonitorAgents("127.0.0.1_test", agents);
-		
+
 		ThreadUtil.sleep(3000);
 		monitorDataService.removeMonitorAgents("127.0.0.1_test");
 	}

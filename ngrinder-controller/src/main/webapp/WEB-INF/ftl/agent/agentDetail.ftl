@@ -36,10 +36,10 @@
 				    <td>${(agent.ip)!}</td>
 				    </tr>
 				    <tr>
-				    <th>Port</th>
+				    <th>Number</th>
 				    </tr>
                     <tr>
-				    <td>${(agent.appPort)!}</td>
+				    <td>${(agent.number)!}</td>
 				    </tr>
 				    <tr>
 				    <th>Name</th>

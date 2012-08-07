@@ -35,7 +35,7 @@ import org.ngrinder.model.BaseEntity;
  */
 @Entity
 @Table(name = "AGENT")
-public class Agent extends BaseEntity<Agent> {
+public class AgentInfo extends BaseEntity<AgentInfo> {
 
 	/**
 	 * UUID.
@@ -48,7 +48,7 @@ public class Agent extends BaseEntity<Agent> {
 	/**
 	 * agent application port.
 	 */
-	private int appPort;
+	private int number;
 
 	/**
 	 * agent application name.
@@ -65,14 +65,6 @@ public class Agent extends BaseEntity<Agent> {
 
 	public void setIp(String ip) {
 		this.ip = ip;
-	}
-
-	public int getAppPort() {
-		return appPort;
-	}
-
-	public void setAppPort(int appPort) {
-		this.appPort = appPort;
 	}
 
 	public String getAppName() {
@@ -103,7 +95,7 @@ public class Agent extends BaseEntity<Agent> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + appPort;
+		result = prime * result + number;
 		result = prime * result + ((ip == null) ? 0 : ip.hashCode());
 		return result;
 	}
@@ -119,8 +111,8 @@ public class Agent extends BaseEntity<Agent> {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		Agent other = (Agent) obj;
-		if (appPort != other.appPort) {
+		AgentInfo other = (AgentInfo) obj;
+		if (getNumber() != other.getNumber()) {
 			return false;
 		}
 		if (ip == null) {
@@ -131,6 +123,14 @@ public class Agent extends BaseEntity<Agent> {
 			return false;
 		}
 		return true;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public void setNumber(int number) {
+		this.number = number;
 	}
 
 }

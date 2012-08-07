@@ -1,5 +1,7 @@
 package org.ngrinder.dns;
 
+import static org.junit.Assert.assertTrue;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.Security;
@@ -55,6 +57,11 @@ public class LocalManagedDnsTest {
 		cleanCustomDNS();
 	}
 
+	/**
+	 * This test can only run with vm option:
+	 * -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns
+	 * @throws UnknownHostException
+	 */
 	@Test
 	@Ignore("Only this test is available when we provide JVM options on test runner")
 	public void testOriginalDNSLookup() throws UnknownHostException {
@@ -75,16 +82,43 @@ public class LocalManagedDnsTest {
 	public void testLocalDNSLookup() throws UnknownHostException {
 		System.out.println("test LocalDNSLookup.....");
 		cleanCustomDNS();
-		//10.0.0.1:www.google.com,10.0.0.2:www.google2.com
-		NameStore.getInstance().put("10.0.0.1", "www.google.com");
-		NameStore.getInstance().put("10.0.0.2", "www.google2.com");
+
+		NameStore.getInstance().put("www.google.com", "10.0.0.1");
+		NameStore.getInstance().put("www.google2.com", "10.0.0.2");
 		
-		performLookupLocal("www.google.com");
+		InetAddress[] addrs = localNS.lookupAllHostAddr("www.google.com");
+		boolean success = false;
+		for (InetAddress inetAddress : addrs) {
+			if (inetAddress.getHostAddress().equals("10.0.0.1")) {
+				success = true;
+			} else {
+			}
+		}
+		assertTrue(success);
+		
 		performLookupLocal("www.google2.com");
+		addrs = localNS.lookupAllHostAddr("www.google2.com");
+		for (InetAddress inetAddress : addrs) {
+			if (inetAddress.getHostAddress().equals("10.0.0.2")) {
+				success = true;
+				break;
+			}
+		}
+		assertTrue(success);
 		
 		NameStore.getInstance().put("mydomain.com", "10.10.10.10");
-		//performLookupLocal("mydomain.com");
 		performLookupLocal("mydomain.com");
+		addrs = localNS.lookupAllHostAddr("mydomain.com");
+		for (InetAddress inetAddress : addrs) {
+			if (inetAddress.getHostAddress().equals("10.10.10.10")) {
+				success = true;
+				break;
+			}
+		}
+		assertTrue(success);
+
+		NameStore.getInstance().remove("www.google.com");
+		NameStore.getInstance().remove("www.google2.com");
 
 	}
 

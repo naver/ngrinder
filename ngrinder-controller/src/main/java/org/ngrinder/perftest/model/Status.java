@@ -44,6 +44,7 @@ public enum Status {
 	/** Just after distributing files */
 	DISTRIBUTE_FILES_FINISHED,
 	/** Just before staring testing */
+	START_TESTING,
 	TESTING,
 	/** Just after staring testing */
 	TESTING_FINISHED,

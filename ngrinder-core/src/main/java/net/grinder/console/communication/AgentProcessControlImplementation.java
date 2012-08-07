@@ -256,7 +256,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	public void startAgent(Set<AgentIdentity> agents, GrinderProperties properties) {
 		final GrinderProperties propertiesToSend = properties != null ? properties : new GrinderProperties();
 		for (AgentIdentity each : agents) {
-			m_consoleCommunication.sendToAddressedAgents(new AgentAddress((AgentIdentity) each),
+			m_consoleCommunication.sendToAddressedAgents(new AgentAddress(each),
 					new StartGrinderMessage(propertiesToSend, each.getNumber()));
 		}
 	}
