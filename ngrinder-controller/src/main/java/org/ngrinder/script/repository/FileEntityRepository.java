@@ -85,7 +85,7 @@ public class FileEntityRepository {
 	}
 
 	@Autowired
-	private UserRepository userRepository;
+	protected UserRepository userRepository;
 
 	/**
 	 * Get user repository.
@@ -96,7 +96,7 @@ public class FileEntityRepository {
 	 *            the user
 	 * @return user repository path.
 	 */
-	public File getUserRepository(User user) {
+	public File getUserRepoDirectory(User user) {
 		return home.getUserRepoDirectory(user.getUserId());
 	}
 
@@ -104,7 +104,7 @@ public class FileEntityRepository {
 		final List<FileEntry> fileEntries = new ArrayList<FileEntry>();
 		SVNClientManager svnClientManager = SVNClientManager.newInstance();
 		try {
-			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepository(user)).appendPath(path, true),
+			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepoDirectory(user)).appendPath(path, true),
 					SVNRevision.HEAD, SVNRevision.HEAD, true, false, new ISVNDirEntryHandler() {
 						@Override
 						public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
@@ -139,7 +139,7 @@ public class FileEntityRepository {
 		final List<FileEntry> scripts = new ArrayList<FileEntry>();
 		SVNClientManager svnClientManager = SVNClientManager.newInstance();
 		try {
-			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepository(user)), SVNRevision.HEAD,
+			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepoDirectory(user)), SVNRevision.HEAD,
 					SVNRevision.HEAD, true, true, new ISVNDirEntryHandler() {
 						@Override
 						public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
@@ -173,7 +173,7 @@ public class FileEntityRepository {
 		try {
 			svnClientManager = SVNClientManager.newInstance();
 
-			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepository(user));
+			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepoDirectory(user));
 			SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
 			SVNNodeKind nodeKind = repo.checkPath(path, -1);
 			if (nodeKind == SVNNodeKind.NONE) {
@@ -224,7 +224,7 @@ public class FileEntityRepository {
 		InputStream bais = null;
 		try {
 			svnClientManager = SVNClientManager.newInstance();
-			SVNRepository repo = svnClientManager.createRepository(SVNURL.fromFile(getUserRepository(user)), true);
+			SVNRepository repo = svnClientManager.createRepository(SVNURL.fromFile(getUserRepoDirectory(user)), true);
 			SVNDirEntry dirEntry = repo.info(fileEntry.getPath(), -1);
 			editor = repo.getCommitEditor(fileEntry.getDescription(), null, true, null);
 			editor.openRoot(-1);
@@ -310,7 +310,7 @@ public class FileEntityRepository {
 		ISVNEditor editor = null;
 		try {
 			svnClientManager = SVNClientManager.newInstance();
-			SVNRepository repo = svnClientManager.createRepository(SVNURL.fromFile(getUserRepository(user)), true);
+			SVNRepository repo = svnClientManager.createRepository(SVNURL.fromFile(getUserRepoDirectory(user)), true);
 
 			editor = repo.getCommitEditor("delete", null, true, null);
 			editor.openRoot(-1);
@@ -346,7 +346,7 @@ public class FileEntityRepository {
 		SVNClientManager svnClientManager = null;
 		try {
 			svnClientManager = SVNClientManager.newInstance();
-			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepository(user));
+			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepoDirectory(user));
 			SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
 			SVNNodeKind nodeKind = repo.checkPath(path, -1);
 			return (nodeKind != SVNNodeKind.NONE);
@@ -364,7 +364,7 @@ public class FileEntityRepository {
 		try {
 			svnClientManager = SVNClientManager.newInstance();
 
-			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepository(user));
+			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepoDirectory(user));
 			SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
 			SVNNodeKind nodeKind = repo.checkPath(path, -1);
 			if (nodeKind == SVNNodeKind.NONE || nodeKind == SVNNodeKind.DIR) {

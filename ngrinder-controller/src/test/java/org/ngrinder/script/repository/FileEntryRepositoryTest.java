@@ -25,8 +25,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 
 public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 
-	@Autowired
-	public MockFileEntityRepsotory repo;
+	public MockFileEntityRepsotory repo = new MockFileEntityRepsotory();
 
 	@Autowired
 	public UserService userService;

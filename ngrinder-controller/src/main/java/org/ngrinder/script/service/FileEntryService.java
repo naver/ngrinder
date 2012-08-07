@@ -266,11 +266,10 @@ public class FileEntryService {
 	 * @param user
 	 * @param path
 	 * @param fileName
-	 * @param langauge
 	 * @param url
 	 * @return
 	 */
-	public FileEntry prepareNewEntry(User user, String path, String fileName, String langauge, String url) {
+	public FileEntry prepareNewEntry(User user, String path, String fileName, String url) {
 		FileEntry fileEntry = new FileEntry();
 		String filePath;
 		if (!StringUtils.isBlank(path)) {

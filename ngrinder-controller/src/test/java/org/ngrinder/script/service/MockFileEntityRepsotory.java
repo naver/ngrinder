@@ -6,15 +6,15 @@ import org.ngrinder.model.User;
 import org.ngrinder.script.repository.FileEntityRepository;
 import org.springframework.stereotype.Component;
 
-@Component
 public class MockFileEntityRepsotory extends FileEntityRepository {
-	private File userRepository;
+	
+	private File userRepoDir;
 
-	public File getUserRepository(User user) {
-		return userRepository;
+	public File getUserRepoDirectory(User user) {
+		return userRepoDir;
 	}
 
 	public void setUserRepository(File userRepository) {
-		this.userRepository = userRepository;
+		this.userRepoDir = userRepository;
 	}
 }
