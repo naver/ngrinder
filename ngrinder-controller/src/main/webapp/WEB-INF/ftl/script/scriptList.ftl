@@ -121,7 +121,7 @@
 							<label for="languageSelect" class="control-label">Type</label>
 							<div class="controls">
 								<input type="hidden" name="type" value="script"/>
-								<select id="languageSelect" name="language">
+								<select id="languageSelect" name="scriptType">
 									<option value="py">PythonScript</option>
 								</select>
 							  <span class="help-inline"></span>

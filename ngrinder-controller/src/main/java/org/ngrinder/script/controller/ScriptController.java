@@ -76,7 +76,8 @@ public class ScriptController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/create/**", params = "type=script", method = RequestMethod.POST)
 	public String getCreateForm(User user, @RemainedPath String path,
-			@RequestParam String testUrl, @RequestParam String fileName, ModelMap model) {
+			@RequestParam String testUrl, @RequestParam String fileName,
+			@RequestParam(required = false) String scriptType, ModelMap model) {
 		if (fileEntryService.hasFileEntry(user, path + "/" + fileName)) {
 			return "error/duplicated";
 		}
@@ -126,16 +127,16 @@ public class ScriptController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/upload/**", method = RequestMethod.POST)
 	public String uploadFiles(User user, @RemainedPath String path, FileEntry script,
-			@RequestParam("uploadFile") MultipartFile file, ModelMap model) throws IOException {
-		script.setContentBytes(file.getBytes());
-		String originalFileExt = FilenameUtils.getExtension(file.getOriginalFilename());
-		String inputedFileExt = FilenameUtils.getExtension(script.getPath());
-		if (!originalFileExt.equalsIgnoreCase(inputedFileExt)) {
-			script.setPath(script.getPath() + "." + originalFileExt);
-		}
+			@RequestParam("uploadFile") MultipartFile file, ModelMap model) {
 		try {
+			script.setContentBytes(file.getBytes());
+			String originalFileExt = FilenameUtils.getExtension(file.getOriginalFilename());
+			String inputedFileExt = FilenameUtils.getExtension(script.getPath());
+			if (!originalFileExt.equalsIgnoreCase(inputedFileExt)) {
+				script.setPath(script.getPath() + "." + originalFileExt);
+			}
 			script.setContent(IOUtils.toString(file.getInputStream()));
-		} catch (Exception e) {
+		} catch (IOException e) {
 			LOG.error("Error while getting file content", e);
 			return "error/errors";
 		}

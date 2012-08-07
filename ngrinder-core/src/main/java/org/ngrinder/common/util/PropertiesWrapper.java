@@ -82,6 +82,10 @@ public class PropertiesWrapper {
 	public String getProperty(String key, String defaultValue) {
 		return getProperty(key, defaultValue, DEFAULT_ERROR_MESSGAE);
 	}
+	
+	public void addProperty(String key, String value) {
+		this.properties.put(key, value);
+	}
 
 	/**
 	 * Get property as integer.

@@ -27,20 +27,21 @@ import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.repository.FileEntityRepository;
-import org.ngrinder.script.service.FileEntryService;
-import org.ngrinder.script.service.MockFileEntityRepsotory;
 import org.ngrinder.script.util.CompressionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Class description.
@@ -55,6 +56,9 @@ public class ScriptControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private FileEntityRepository fileEntityRepository;
+
+	@Autowired
+	private Config config;
 	
 	@Before
 	public void before() throws IOException {
@@ -76,65 +80,87 @@ public class ScriptControllerTest extends AbstractNGrinderTransactionalTest {
 		testUserRoot.mkdirs();
 		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
 		testUserRoot.deleteOnExit();
-	}
-	
-	@Test
-	public void testGet() {
-		ModelMap model = new ModelMap();
-		scriptController.get(getTestUser(), null, model);
-	}
-
-	@Test
-	public void testAddFolder() {
-		ModelMap model = new ModelMap();
-		scriptController.addFolder(getTestUser(), null, "new_folder", model);
+		
+		config.getSystemProperties().addProperty("http.url", "http://127.0.0.1:80");
 	}
 
 	@Test
 	public void testSaveAndGet() {
 		ModelMap model = new ModelMap();
+		String path = "";
 		//create
-		scriptController.getCreateForm(getTestUser(), null, "test.com", "new_file.py", model);
+		scriptController.getCreateForm(getTestUser(), path, "test.com", "new_file.py", null, model);
 
 		FileEntry script = (FileEntry)model.get("file");
-		script.setContent("#test comment");
-		scriptController.saveScript(getTestUser(), script.getPath(), script, model);
+		script.setContent(script.getContent() + "#test comment");
+		scriptController.saveScript(getTestUser(), path, script, model);
 		//save and get
 		model.clear();
-		scriptController.getDetail(getTestUser(), null, model);
+		scriptController.getDetail(getTestUser(), script.getPath(), model);
 		FileEntry newScript = (FileEntry)model.get("file");
 		assertThat(newScript.getFileName(), is(script.getFileName()));
 		assertThat(newScript.getContent(), is(script.getContent()));
+		
+		//List<Long> versionList = newScript.getRevisions();
+		//reversion list is not implemented yet.
+		//assertThat(versionList.size(), is(2));
+		model.clear();
+		scriptController.getDiff(getTestUser(), script.getPath(), script.getRevision(), model);
+	
+		model.clear();
+		scriptController.searchFileEntity(getTestUser(), "test", model);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
-	public void testGetDetail() {
+	public void testCreateFolderSaveAndGet() {
 		ModelMap model = new ModelMap();
-		scriptController.getDetail(getTestUser(), null, model);
-	}
+		String path = "";
+		
+		//add folder
+		scriptController.addFolder(getTestUser(), path, "new_folder", model);
+		
+		path = "new_folder"; //new folder
+		//create
+		scriptController.getCreateForm(getTestUser(), path, "test.com", "file-for-search.py", null, model);
+		FileEntry script = (FileEntry)model.get("file");
+		scriptController.saveScript(getTestUser(), path, script, model);
 
-	@Test
-	public void testGetDiff() {
-		ModelMap model = new ModelMap();
-		scriptController.addFolder(getTestUser(), null, "new_folder", model);
+		//save another script
+		model.clear();
+		script.setPath(script.getPath().replace("file-for-search", "new-file-for-search"));
+		scriptController.saveScript(getTestUser(), path, script, model);
+		//save and get
+		model.clear();
+		scriptController.getDetail(getTestUser(), script.getPath(), model);
+
+		model.clear();
+		scriptController.searchFileEntity(getTestUser(), "file-for-search", model);
+		Collection<FileEntry> searchResult = (Collection<FileEntry>)model.get("files");
+		assertThat(searchResult.size(), is(2));
 	}
 
 	@Test
 	public void testSearchFileEntity() {
 		ModelMap model = new ModelMap();
-		scriptController.addFolder(getTestUser(), null, "new_folder", model);
+		scriptController.searchFileEntity(getTestUser(), "test", model);
 	}
 
 	@Test
 	public void testUploadFiles() {
 		ModelMap model = new ModelMap();
-		scriptController.addFolder(getTestUser(), null, "new_folder", model);
+		String path = "";
+		FileEntry script = new FileEntry();
+		MultipartFile upFile = new MockMultipartFile("Uploaded.py", "#test content...".getBytes());
+		
+		scriptController.uploadFiles(getTestUser(), path, script, upFile, model);
 	}
 
 	@Test
 	public void testDelete() {
 		ModelMap model = new ModelMap();
-		scriptController.addFolder(getTestUser(), null, "new_folder", model);
+		String path = "";
+		scriptController.delete(getTestUser(), path, "delFile.py", model);
 	}
 
 }

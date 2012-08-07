@@ -62,6 +62,8 @@ public class FileEntry extends BaseModel<FileEntry> {
 	private String path;
 
 	private FileType fileType;
+	
+	private long revision;
 
 	public String getPath() {
 		return path;
@@ -143,6 +145,20 @@ public class FileEntry extends BaseModel<FileEntry> {
 
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
+	}
+
+	/**
+	 * @return the revision
+	 */
+	public long getRevision() {
+		return revision;
+	}
+
+	/**
+	 * @param revision the revision to set
+	 */
+	public void setRevision(long revision) {
+		this.revision = revision;
 	}
 
 }

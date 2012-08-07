@@ -183,8 +183,9 @@ public class FileEntityRepository {
 			SVNProperties fileProperty = new SVNProperties();
 			// Get File.
 			repo.getFile(path, -1L, fileProperty, outputStream);
-			String lastRevision = fileProperty.getStringValue(SVNProperty.REVISION);
-			SVNDirEntry info = repo.info(path, Long.parseLong(lastRevision));
+			String lastRevisionStr = fileProperty.getStringValue(SVNProperty.REVISION);
+			long lastRevision = Long.parseLong(lastRevisionStr);
+			SVNDirEntry info = repo.info(path, lastRevision);
 			byte[] byteArray = outputStream.toByteArray();
 			script.setPath(path);
 			script.setFileType(FileType.getFileType(FilenameUtils.getExtension(script.getFileName())));
@@ -196,8 +197,10 @@ public class FileEntityRepository {
 				script.setContentBytes(byteArray);
 			}
 			script.setDescription(info.getCommitMessage());
+			script.setRevision(lastRevision);
 
 			final List<Long> revisions = new ArrayList<Long>();
+			//TODO: version list is not got yet
 			script.setRevisions(revisions);
 		} catch (Exception e) {
 			LOG.error("Error while fetching files from SVN", e);
