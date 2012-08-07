@@ -22,6 +22,8 @@
  */
 package org.ngrinder;
 
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
@@ -29,8 +31,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import net.grinder.AgentControllerDaemon;
 import net.grinder.common.GrinderException;
@@ -47,6 +49,7 @@ import org.slf4j.LoggerFactory;
  * Main class to start agent or monitor.
  * 
  * @author Mavlarn
+ * @author JunHo Yoon
  * @since 3.0
  */
 public class NGrinderStarter {
@@ -62,10 +65,10 @@ public class NGrinderStarter {
 			Class.forName("sun.management.ConnectorAddressLink");
 			localAttachmentSupported = true;
 		} catch (NoClassDefFoundError x) {
-			LOG.error(x.getMessage(), x);
+			LOG.error("Local attachement is not supported", x);
 			localAttachmentSupported = false;
 		} catch (ClassNotFoundException x) {
-			LOG.error(x.getMessage(), x);
+			LOG.error("Local attachement is not supported", x);
 			localAttachmentSupported = false;
 		}
 	}
@@ -86,12 +89,13 @@ public class NGrinderStarter {
 		LOG.info("* Start nGrinder Monitor *");
 		LOG.info("**************************");
 		LOG.info("* Local JVM link support :{}", localAttachmentSupported);
-		LOG.info("* Colllect SYSTEM %s data. **", withAgent ? "and JAVA" : "");
+		LOG.info("* Colllect SYSTEM {} data. **", withAgent ? "and JAVA" : "");
 		try {
 			AgentMonitorServer.getInstance().init(port, dataCollectors, jvmPids);
 			AgentMonitorServer.getInstance().start();
 		} catch (Exception e) {
-			LOG.error("ERROR:", e);
+			LOG.error("ERROR: {}", e.getMessage());
+			LOG.debug("Error while starting Monitor", e);
 		}
 	}
 
@@ -104,7 +108,8 @@ public class NGrinderStarter {
 		try {
 			agentController.run();
 		} catch (GrinderException e) {
-			LOG.error("Error while starting agent controller", e);
+			LOG.error("Error while starting agent controller", e.getMessage());
+			LOG.debug("Error while starting agent controller", e);
 		}
 	}
 
@@ -118,16 +123,33 @@ public class NGrinderStarter {
 		}
 	}
 
+	/**
+	 * Do best to find tools.jar path.
+	 * 
+	 * <ol>
+	 * <li>First try to resolve JAVA_HOME</li>
+	 * <li>If it's not defined, try to get java.home system property</li>
+	 * <li>Try to find the ${java.home}/lib/tools.jar</li>
+	 * <li>Try to find the ${java.home}/../lib/tools.jar</li>
+	 * <li>Try to find the ${java.home}/../{any_subpath}/lib/tools.jar</li>
+	 * </ol>
+	 * 
+	 * @return found tools.jar path.
+	 */
 	public URL findToolsJarPath() {
+		// In OSX, tools.jar should be classes.jar
 		String toolsJar = SystemUtils.IS_OS_MAC_OSX ? "Classes/classes.jar" : "lib/tools.jar";
 		try {
 			for (Entry<Object, Object> each : System.getProperties().entrySet()) {
-				LOG.debug("{}={}", each.getKey(), each.getValue());
+				LOG.trace("{}={}", each.getKey(), each.getValue());
+			}
+			String javaHomePath = System.getenv().get("JAVA_HOME");
+			if (StringUtils.isBlank(javaHomePath)) {
+				LOG.warn("JAVA_HOME is not set. NGrinder is trying to find the JAVA_HOME programically");
+				javaHomePath = System.getProperty("java.home");
 			}
 
-			String property = System.getProperty("java.home");
-
-			File javaHome = new File(property);
+			File javaHome = new File(javaHomePath);
 			File toolsJarPath = new File(javaHome, toolsJar);
 			if (toolsJarPath.exists()) {
 				return toolsJarPath.toURI().toURL();
@@ -149,11 +171,21 @@ public class NGrinderStarter {
 		return null;
 	}
 
+	/**
+	 * Add tools.jar classpath. This contains hack
+	 */
 	private void addClassPathForToolsJar() {
 		URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-		ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { findToolsJarPath() });
+		URL toolsJarPath = findToolsJarPath();
+		LOG.info("tools.jar is found in {}", checkNotNull(toolsJarPath).toString());
+		ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { checkNotNull(toolsJarPath) });
 	}
 
+	/**
+	 * Agent starter
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		NGrinderStarter starter = new NGrinderStarter();
 		boolean withAgent = false;
