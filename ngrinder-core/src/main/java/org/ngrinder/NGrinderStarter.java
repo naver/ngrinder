@@ -73,8 +73,7 @@ public class NGrinderStarter {
 		}
 	}
 
-	private void startMonitor(boolean withAgent) {
-		int port = MonitorConstants.DEFAULT_AGENT_PORT;
+	private void startMonitor(boolean withAgent, int port) {		
 		Set<String> dataCollectors;
 		if (withAgent) {
 			dataCollectors = MonitorConstants.DEFAULT_DATA_COLLECTOR;
@@ -108,8 +107,7 @@ public class NGrinderStarter {
 		try {
 			agentController.run();
 		} catch (GrinderException e) {
-			LOG.error("Error while starting agent controller", e.getMessage());
-			LOG.debug("Error while starting agent controller", e);
+			LOG.error("Error while starting agent controller:{}", e.getMessage(), e);
 		}
 	}
 
@@ -189,14 +187,31 @@ public class NGrinderStarter {
 	public static void main(String[] args) {
 		NGrinderStarter starter = new NGrinderStarter();
 		boolean withAgent = false;
-
-		if (args != null && args.length > 0 && args[0].equals("-a")) {
-			// just start monitor
-			withAgent = true;
+		int port = MonitorConstants.DEFAULT_AGENT_PORT;
+		
+		try {
+			if (args != null && args.length > 0){
+				for (int i=0; i<args.length; i++) {
+					if (args[i].equals("-a")) {
+						withAgent = true;
+					} else if (args[i].equals("-p")){
+						port = Integer.valueOf(args[i + 1]);
+					}
+				}
+			}
+		} catch (Exception e) {
+			printHelp ();
 		}
+
 		if (withAgent) {
 			starter.startAgent();
 		}
-		starter.startMonitor(withAgent);
+		starter.startMonitor(withAgent, port);
+	}
+
+	public static void printHelp() {
+		System.out.println("Option:");
+		System.out.println("       -a : start ngrinder agent.");
+		System.out.println("       -p 3242: start monitor on one port.");
 	}
 }
