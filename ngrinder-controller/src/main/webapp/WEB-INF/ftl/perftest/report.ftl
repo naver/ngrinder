@@ -10,7 +10,8 @@
 				padding-top: 0;
 			}	
 			.left { border-right: 1px solid #878988 }
-			div.chart { border: 1px solid #878988; height:195px; min-width:615px; margin-bottom:12px}
+			div.chart { border: 1px solid #878988; height:195px; min-width:615px; margin-bottom:12px }
+			td strong { color: #6DAFCF }
 		</style>
 
 		<input type="hidden" id="contextPath" value="${req.getContextPath()}">
@@ -99,32 +100,34 @@
                            </tr>
 					   </table>
 					   <ul class="unstyled">
-                         <li><a id="testPerformance" href="javascript:void(0);">Performance Report</a></li>
+                         <li><i class="icon-tag"></i> <a id="testPerformance" href="javascript:void(0);">Performance Report</a></li>
                        </ul>
-					   <ul class="unstyled">Target Hosts
-                         <li><a id="targetMontor" href="javascript:void(0);" ip="${(test.targetHosts)!}">${(test.targetHosts)!}</a></li>
+					   <ul class="unstyled"><i class="icon-tags"></i> Target Hosts
+                         <#if (test.targetHosts)?exists><li><i class="icon-chevron-right"></i><a id="targetMontor" href="javascript:void(0);" ip="${test.targetHosts}">${test.targetHosts}</a></li></#if>
                        </ul>
-                       <ul class="unstyled">Agent servers
-                         <li><a id="agentMontor" href="javascript:void(0);" ip="${(test.targetHosts)!}">${(test.agentServer)!}</a></li>
+                       <ul class="unstyled"><i class="icon-tags"></i> Agent servers
+                         <#if (test.agentServer)?exists><li><i class="icon-chevron-right"></i><a id="agentMontor" href="javascript:void(0);" ip="${test.agentServer}">${test.agentServer}</a></li></#if>
                        </ul>
 			</div>
-			<div class="span7">
-			    <div id="timeDiv">
-			    <table class="table table-bordered">
-                           <tr>
-                               <th>Start Time</th>
-                               <td><span>${(test.startTime)!}</span></td>
-                               <th>Dinish Time</th>
-                               <td><span>${(test.finishTime)!}</span></td>
-                           </tr>
-                       </table>
-                </div>
+			<div class="span8">
+			    <table class="table table-bordered" style="margin-bottom:10px">
+			    	<colgroup>
+						<col width="100">
+						<col width="220">
+						<col width="100">
+						<col>
+					</colgroup>
+                   <tr>
+                       <th>Start Time</th>
+                       <td><span>${(test.startTime)!'&nbsp;'}</span></td>
+                       <th>Finish Time</th>
+                       <td><span>${(test.finishTime)!'&nbsp;'}</span></td>
+                   </tr>
+               </table>
+               <div class="row" style="margin-bottom:10px">
+	                <button class="btn btn-large pull-right" id="downloadReportData"><i class="icon-download-alt"></i><strong>Download CSV</strong></button>
+	           </div>
 			    <div id="performanceDiv">
-			        <div class="row">
-                        <div class="span8" style="margin-bottom:10px;">
-                            <button class="btn btn-large pull-right" id="downloadReportData"><i class="icon-download-alt"></i><strong>Download CSV</strong></button>
-                        </div>
-                    </div>
     				<div class="chart" id="tpsDiv"></div>
     				<div class="chart" id="rpsDiv"></div>
     				<div class="chart" id="vuserDiv"></div>
@@ -140,12 +143,6 @@
                     <div class="chart" id="threadCountDiv"></div>
                     <div class="chart" id="jvmCpuDiv"></div>
                 </div>
-				<!--
-				<img src="image01.jpg" height="210" width="800" border="0">
-				<img src="image01.jpg" height="210" width="800" border="0">
-				<img src="image01.jpg" height="210" width="800" border="0">
-				<img src="image01.jpg" height="210" width="800" border="0">
-				-->
 			</div>
 		</div>
 		<#include "../common/copyright.ftl">
