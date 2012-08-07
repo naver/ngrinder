@@ -38,6 +38,12 @@ import net.grinder.AgentControllerDaemon;
 import net.grinder.common.GrinderException;
 import net.grinder.util.ReflectionUtil;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.ngrinder.monitor.MonitorConstants;
@@ -99,12 +105,13 @@ public class NGrinderStarter {
 		}
 	}
 
-	private void startAgent() {
+	private void startAgent(String region) {
 		LOG.info("*************************");
 		LOG.info("* Start nGrinder Agent **");
 		LOG.info("*************************");
 
 		AgentControllerDaemon agentController = new AgentControllerDaemon();
+		agentController.setRegion(region);
 		try {
 			agentController.run();
 		} catch (GrinderException e) {
@@ -187,15 +194,29 @@ public class NGrinderStarter {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		NGrinderStarter starter = new NGrinderStarter();
-		boolean withAgent = false;
-
-		if (args != null && args.length > 0 && args[0].equals("-a")) {
-			// just start monitor
+		Options options = new Options();
+		options.addOption("a", "agent", false, "run agent together");
+		options.addOption("r", "region", true, "provide agent region");
+		CommandLineParser parser = new PosixParser();
+		CommandLine cmd = null;
+		try {
+			cmd = parser.parse(options, args);
+		} catch (ParseException e) {
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("ngrinder", options);
+			System.exit(-1);
+		}
+		boolean withAgent = true;
+		if (cmd.hasOption("a")) {
 			withAgent = true;
 		}
+		String region = "";
+		if (cmd.hasOption("r")) {
+			region = cmd.getOptionValue("r");
+		}
+		NGrinderStarter starter = new NGrinderStarter();
 		if (withAgent) {
-			starter.startAgent();
+			starter.startAgent(region);
 		}
 		starter.startMonitor(withAgent);
 	}
