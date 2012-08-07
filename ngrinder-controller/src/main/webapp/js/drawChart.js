@@ -42,7 +42,18 @@ function drawChart(title, containerId, data, yLabel, startTime, interval) {
 					fontSize : '12pt'
 				},
 				tickOptions : {
-					angle : -30
+					angle : -30,
+					formatter: function(format, value) {
+						if (value < 1000) {
+							return value;
+						} else if (value < 1000000) {
+							return (value/1000).toFixed(2) + "K";
+						} else if (value < 1000000000) {
+							return (value/1000000).toFixed(2) + "M";
+						} else {
+							return (value/1000000000).toFixed(2) + "G";
+						}
+					}
 				},
 				pad: 0,
 				numberTicks: 8
