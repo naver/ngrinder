@@ -45,9 +45,9 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.ListenerSupport;
 
 /**
- * Implementation of {@link ProcessControl}.
+ * Implementation of {@link AgentProcessControl}.
  * 
- * @author Philip Aston
+ * @author JunHo Yoon
  */
 public class AgentProcessControlImplementation implements AgentProcessControl {
 
@@ -106,13 +106,26 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 				});
 	}
 
+	/**
+	 * Add Agent status report.
+	 * 
+	 * @param message
+	 *            {@link AgentControllerProcessReportMessage}
+	 */
 	private void addAgentStatusReport(AgentControllerProcessReportMessage message) {
 		AgentStatus agentStatus = getAgentStatus(message.getAgentIdentity());
 		agentStatus.setAgentProcessStatus(message);
 		m_newData = true;
 	}
 
-	public AgentStatus getAgentStatus(AgentIdentity agentIdentity) {
+	/**
+	 * Get agent status. It's for internal use.
+	 * 
+	 * @param agentIdentity
+	 *            agent identity
+	 * @return {@link AgentStatus}
+	 */
+	private AgentStatus getAgentStatus(AgentIdentity agentIdentity) {
 		synchronized (m_agentMap) {
 			final AgentStatus existing = m_agentMap.get(agentIdentity);
 			if (existing != null) {
@@ -124,6 +137,9 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		}
 	}
 
+	/**
+	 * Update agent status.
+	 */
 	private void update() {
 		if (!m_newData) {
 			return;
@@ -155,6 +171,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	 * Callers are for synchronization.
 	 * 
 	 * @param purgableMap
+	 *            map for {@link ProcessIdentity}
 	 */
 	private void purge(Map<? extends ProcessIdentity, ? extends Purgable> purgableMap) {
 
@@ -173,12 +190,18 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	}
 
 	private interface Purgable {
+		/**
+		 * check it should be purged.
+		 * 
+		 * @return true if purse is necessary
+		 */
 		boolean shouldPurge();
 	}
 
 	private abstract class AbstractTimedReference implements Purgable {
 		private int m_purgeDelayCount;
 
+		@Override
 		public boolean shouldPurge() {
 			// Processes have a short time to report - see the javadoc for
 			// FLUSH_PERIOD.
@@ -195,8 +218,14 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	private final class AgentReference extends AbstractTimedReference {
 		private final AgentControllerProcessReportMessage m_agentProcessReportMessage;
 
-		AgentReference(AgentControllerProcessReportMessage m_agentProcessReportMessage) {
-			this.m_agentProcessReportMessage = m_agentProcessReportMessage;
+		/**
+		 * Constructor.
+		 * 
+		 * @param agentProcessReportMessage
+		 *            {@link AgentControllerProcessReportMessage}
+		 */
+		AgentReference(AgentControllerProcessReportMessage agentProcessReportMessage) {
+			this.m_agentProcessReportMessage = agentProcessReportMessage;
 		}
 
 		@Override
@@ -215,6 +244,12 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	private final class AgentStatus implements Purgable {
 		private volatile AgentReference m_agentReference;
 
+		/**
+		 * Constructor.
+		 * 
+		 * @param agentIdentity
+		 *            agent identity
+		 */
 		public AgentStatus(AgentIdentity agentIdentity) {
 			setAgentProcessStatus(new UnknownAgentProcessReport(new AgentAddress(agentIdentity)));
 		}
@@ -224,10 +259,14 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 			return m_agentReference.shouldPurge();
 		}
 
+		/**
+		 * Get agent controller status.
+		 * 
+		 * @return {@link AgentControllerState} member
+		 */
 		public AgentControllerState getAgentControllerState() {
-			AgentControllerProcessReportMessage m_agentProcessReportMessage = m_agentReference.m_agentProcessReportMessage;
-			return m_agentProcessReportMessage == null ? AgentControllerState.UNKNOWN : m_agentProcessReportMessage
-					.getState();
+			AgentControllerProcessReportMessage agentProcessReport = m_agentReference.m_agentProcessReportMessage;
+			return agentProcessReport == null ? AgentControllerState.UNKNOWN : agentProcessReport.getState();
 		}
 
 		public void setAgentProcessStatus(AgentControllerProcessReportMessage message) {
@@ -346,6 +385,13 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		}
 	}
 
+	/**
+	 * Get agent controller state for the given agent identity.
+	 * 
+	 * @param agentIdentity
+	 *            agent identity
+	 * @return {@link AgentControllerState} member
+	 */
 	public AgentControllerState getAgentControllerState(AgentIdentity agentIdentity) {
 		return getAgentStatus(agentIdentity).getAgentControllerState();
 	}

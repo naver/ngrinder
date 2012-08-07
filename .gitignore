@@ -5,4 +5,5 @@
 .project
 .classpath
 .project
+.checkstyle
 target/

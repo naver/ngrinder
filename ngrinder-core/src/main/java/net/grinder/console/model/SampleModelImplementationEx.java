@@ -14,11 +14,6 @@ import net.grinder.common.GrinderException;
 import net.grinder.common.Test;
 import net.grinder.console.common.ErrorHandler;
 import net.grinder.console.common.Resources;
-import net.grinder.console.model.ConsoleProperties;
-import net.grinder.console.model.ModelTestIndex;
-import net.grinder.console.model.SampleAccumulator;
-import net.grinder.console.model.SampleListener;
-import net.grinder.console.model.SampleModel;
 import net.grinder.statistics.PeakStatisticExpression;
 import net.grinder.statistics.StatisticExpression;
 import net.grinder.statistics.StatisticExpressionFactory;
@@ -436,6 +431,7 @@ public final class SampleModelImplementationEx implements SampleModel {
 						}
 					}
 				}
+				// CHECKSTYLE:OFF
 			}.iterate();
 		}
 
