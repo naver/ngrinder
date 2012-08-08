@@ -68,7 +68,7 @@
 							<#list testList as test>
 								<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
 								<tr id="tr${test.id}">
-									<td style="text-align:center"><input type="checkbox" class="checkbox" value="${test.id}" <#if !(test.status =="READY" || test.status == "FINISHED")>disabled</#if>></td>
+									<td style="text-align:center"><input type="checkbox" class="checkbox" value="${test.id}" <#if !(test.status =="READY" || test.status =="SAVED"|| test.status == "FINISHED")>disabled</#if>></td>
 									<td class="ellipsis" title="${test.status}" style="text-align:center">${test.status}</td>
 									<td class="ellipsis" title="${test.testName}" style="text-align:center"><a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a></td>
 									<td class="ellipsis" style="text-align:center">${test.scriptName}</td>

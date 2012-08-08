@@ -83,17 +83,11 @@ div.chart {
 							<div class="controls">  
 								<input class="span5 required" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
 								<button type="submit" class="btn btn-primary pull-right" style="margin-left:5px;margin-right:70px" data-toggle="modal" href="#scheduleModal"  id="saveScheduleBtn">
-									<#if test??>Clone<#else>Save</#if> and Start
+									<#if test?? && (test.status != "SAVED")>Clone<#else>Save</#if> and Start
 								</button>  
 								<button type="submit" class="btn btn-success  pull-right" style="margin-left:5px"  id="saveTestBtn"> 
-									<#if test??>Clone<#else>Save</#if>
+									<#if test?? && (test.status != "SAVED")>Clone<#else>Save</#if>
 								</button>  
-								<#if test?? && (test.status == "SAVED")>
-									<button type="submit" class="btn btn-success pull-right" style="margin-left:5px" id="startTestBtn"> 
-										Start
-									</button> 
-								</#if>  
-
 							</div>
 						</div>
 						<div class="control-group" style="margin-bottom: 0">
@@ -520,6 +514,8 @@ div.chart {
 				<input type="hidden" id="scheduleInput" name="scheduledTime"/>
 				<#if test??>
 					<input type="hidden" id="testStatus"  name="status" value="${(test.status)}">
+				<#else> 
+					<input type="hidden" id="testStatus"  name="status" value="SAVED">		
 				</#if>				
 			</form>
 			<!--content-->
@@ -729,6 +725,10 @@ div.chart {
 					$("#scheduleInput").val(scheduledTime);
 					$("#scheduleModal").modal("hide");
 					$("#scheduleModal small").html("");
+					<#if test?? && (test.status != "SAVED")>
+						$("#testId").val("");
+					</#if>
+					$("#testStatus").val("READY");
 					document.testContentForm.submit();
 				});
 				
