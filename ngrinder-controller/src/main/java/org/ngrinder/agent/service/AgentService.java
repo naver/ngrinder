@@ -61,9 +61,9 @@ public class AgentService {
 	 *            page
 	 * @return agent list
 	 */
-	public List<AgentInfo> getAgents() {
+	public List<AgentInfo> getAgentList() {
 		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
-		List<AgentInfo> agentList = new ArrayList<AgentInfo>();
+		List<AgentInfo> agentList = new ArrayList<AgentInfo>(allAttachedAgents.size());
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
 			AgentControllerIdentityImplementation eachAgentController = (AgentControllerIdentityImplementation) eachAgentIdentity;
 			agentList.add(creatAgentInfo(eachAgentController));
@@ -79,9 +79,9 @@ public class AgentService {
 		agentInfo.setIp(agentIdentity.getIp());
 		agentInfo.setPort(agentIdentity.getPort());
 		agentInfo.setStatus(agentManager.getAgentControllerState(agentIdentity));
-		if (!agentInfo.exist()) {
-			agentInfo = agentRepository.save(agentInfo);
-		}
+		
+		//need to save agent info into DB, like ip and port maybe changed.
+		agentInfo = agentRepository.save(agentInfo);
 		return agentInfo;
 	}
 
@@ -94,6 +94,9 @@ public class AgentService {
 	 */
 	public AgentInfo getAgent(long id) {
 		AgentInfo agentInfo = agentRepository.findOne(id);
+		if (agentInfo == null) {
+			return null;
+		}
 		AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIp(agentInfo.getIp());
 		if (agentIdentity != null) {
 			agentInfo.setStatus(agentManager.getAgentControllerState(agentIdentity));

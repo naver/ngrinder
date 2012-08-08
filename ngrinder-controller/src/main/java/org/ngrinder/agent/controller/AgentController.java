@@ -24,6 +24,7 @@ package org.ngrinder.agent.controller;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.common.controller.NGrinderBaseController;
@@ -57,8 +58,8 @@ public class AgentController extends NGrinderBaseController {
 	 * @return viewName
 	 */
 	@RequestMapping({ "", "/", "/list" })
-	public String getAgents(ModelMap model) {
-		List<AgentInfo> agents = agentService.getAgents();
+	public String getAgentList(ModelMap model) {
+		List<AgentInfo> agents = agentService.getAgentList();
 		model.addAttribute("agents", agents);
 		return "agent/agentList";
 	}
@@ -104,19 +105,12 @@ public class AgentController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/delete")
 	public String deleteAgent(ModelMap model, @RequestParam String ids) {
-		if (ids == null) {
-			return getAgents(model);
-		}
-
-		String[] idArr = ids.split(",");
-		if (idArr != null) {
+		if (!StringUtils.isBlank(ids)) {
+			String[] idArr = StringUtils.split(ids, ",");
 			for (String idStr : idArr) {
-				try {
-					agentService.deleteAgent(Long.parseLong(idStr));
-				} catch (NumberFormatException ignored) {
-				}
+				agentService.deleteAgent(Long.parseLong(idStr));
 			}
 		}
-		return getAgents(model);
+		return getAgentList(model);
 	}
 }
