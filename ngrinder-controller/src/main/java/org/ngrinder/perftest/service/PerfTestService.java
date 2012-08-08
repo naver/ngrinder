@@ -403,6 +403,7 @@ public class PerfTestService implements NGrinderConstants {
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
 		SingleConsole singleConsole = consoleManager.getConsoleUsingPort(port);
+		checkNotNull(singleConsole, "Test is not running!");
 
 		final SampleModel model = (SampleModel) singleConsole.getConsoleComponent(SampleModel.class);
 		final SampleModelViews modelView = (SampleModelViews) singleConsole.getConsoleComponent(SampleModelViews.class);

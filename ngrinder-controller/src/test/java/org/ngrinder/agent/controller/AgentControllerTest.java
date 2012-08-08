@@ -41,7 +41,7 @@ public class AgentControllerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testGetAgentList() {
 		ModelMap model = new ModelMap();
-		agentController.getAgents(model);
+		agentController.getAgentList(model);
 	}
 
 }
