@@ -26,6 +26,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.message.console.AgentControllerState;
 
 import org.ngrinder.model.BaseEntity;
@@ -54,6 +55,9 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	 */
 	@Transient
 	private Integer port;
+
+	@Transient
+	private AgentIdentity agentIdentity;
 
 	/**
 	 * agent application name.
@@ -137,6 +141,14 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 
 	public void setHostName(String hostName) {
 		this.hostName = hostName;
+	}
+
+	public AgentIdentity getAgentIdentity() {
+		return agentIdentity;
+	}
+
+	public void setAgentIdentity(AgentIdentity agentIdentity) {
+		this.agentIdentity = agentIdentity;
 	}
 
 }
