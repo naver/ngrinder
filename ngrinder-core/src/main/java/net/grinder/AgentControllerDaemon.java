@@ -67,7 +67,7 @@ public class AgentControllerDaemon implements Agent {
 		}
 	}
 
-	public void run() throws GrinderException {
+	public void run() {
 		run(null, AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 	}
 

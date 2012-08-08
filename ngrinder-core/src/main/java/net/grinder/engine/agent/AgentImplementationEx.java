@@ -48,11 +48,9 @@ import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
 import net.grinder.engine.communication.AgentControllerServerListener;
 import net.grinder.engine.communication.ConsoleListener;
-import net.grinder.message.console.AgentProcessPeformanceReportMessage;
 import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.messages.console.AgentProcessReportMessage;
-import net.grinder.performance.Performance;
 import net.grinder.util.Directory;
 import net.grinder.util.thread.Condition;
 
@@ -84,8 +82,9 @@ public class AgentImplementationEx implements Agent {
 	 */
 
 	private volatile FileStore m_fileStore;
-	
+
 	private static int indentifier = 0;
+
 	/**
 	 * Constructor.
 	 * 
@@ -294,6 +293,7 @@ public class AgentImplementationEx implements Agent {
 					}
 
 					workerLauncher.shutdown();
+					break;
 				}
 
 				if (consoleCommunication == null) {
@@ -404,11 +404,6 @@ public class AgentImplementationEx implements Agent {
 		}
 	}
 
-	public Performance getCurrentPerformance() {
-		// TOBE FIXED
-		return new Performance(10, 20);
-	}
-
 	private final class ConsoleCommunication {
 		private final ClientSender m_sender;
 		private final Connector m_connector;
@@ -445,8 +440,8 @@ public class AgentImplementationEx implements Agent {
 			m_reportRunningTask = new TimerTask() {
 				public void run() {
 					try {
-						m_sender.send(new AgentProcessPeformanceReportMessage(ProcessReport.STATE_RUNNING, m_fileStore
-								.getCacheHighWaterMark(), getCurrentPerformance()));
+						m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_RUNNING, m_fileStore
+								.getCacheHighWaterMark()));
 					} catch (CommunicationException e) {
 						cancel();
 						m_logger.error(e.getMessage());

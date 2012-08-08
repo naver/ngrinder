@@ -73,7 +73,7 @@ public class DatabaseConfig implements NGrinderConstants {
 				"[FATAL] Database type is not sepecfied. In default, use sqlite."));
 
 		hibernateJpaVendorAdapter.setDatabasePlatform(database.getDialect());
-		hibernateJpaVendorAdapter.setShowSql(true);
+		hibernateJpaVendorAdapter.setShowSql(false);
 		hibernateJpaVendorAdapter.setGenerateDdl(true);
 
 		emf.setJpaVendorAdapter(hibernateJpaVendorAdapter);

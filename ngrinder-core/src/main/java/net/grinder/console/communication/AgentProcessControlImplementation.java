@@ -31,6 +31,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.ngrinder.monitor.controller.model.JavaDataModel;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.common.processidentity.ProcessIdentity;
@@ -54,7 +59,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	private final ConsoleCommunication m_consoleCommunication;
 	private Map<AgentIdentity, AgentStatus> m_agentMap = new ConcurrentHashMap<AgentIdentity, AgentStatus>();
 	private final ListenerSupport<Listener> m_listeners = new ListenerSupport<Listener>();
-
+	private final static Logger logger = LoggerFactory.getLogger(AgentProcessControlImplementation.class);
 	/**
 	 * Period at which to update the listeners.
 	 */
@@ -95,7 +100,6 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 				}
 			}
 		}, 0, FLUSH_PERIOD);
-
 		final MessageDispatchRegistry messageDispatchRegistry = consoleCommunication.getMessageDispatchRegistry();
 
 		messageDispatchRegistry.set(AgentControllerProcessReportMessage.class,
@@ -112,7 +116,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	 * @param message
 	 *            {@link AgentControllerProcessReportMessage}
 	 */
-	private void addAgentStatusReport(AgentControllerProcessReportMessage message) {
+	public void addAgentStatusReport(AgentControllerProcessReportMessage message) {
 		AgentStatus agentStatus = getAgentStatus(message.getAgentIdentity());
 		agentStatus.setAgentProcessStatus(message);
 		m_newData = true;
@@ -270,7 +274,17 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		}
 
 		public void setAgentProcessStatus(AgentControllerProcessReportMessage message) {
+			logger.trace("agent perf status on {} is {}", message.getAgentIdentity(), message.getJavaDataModel());
+			logger.trace("agent perf status on {} is {}", message.getAgentIdentity(), message.getSystemDataModel());
 			m_agentReference = new AgentReference(message);
+		}
+
+		public JavaDataModel getJavaDataModel() {
+			return m_agentReference == null ? null : m_agentReference.m_agentProcessReportMessage.getJavaDataModel();
+		}
+
+		public SystemDataModel getSystemDataModel() {
+			return m_agentReference == null ? null : m_agentReference.m_agentProcessReportMessage.getSystemDataModel();
 		}
 	}
 
@@ -371,7 +385,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		 *            known.
 		 */
 		public UnknownAgentProcessReport(AgentAddress address) {
-			super(AgentControllerState.UNKNOWN);
+			super(AgentControllerState.UNKNOWN, null, null);
 			try {
 				setAddress(address);
 			} catch (CommunicationException e) {
@@ -385,15 +399,19 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		}
 	}
 
-	/**
-	 * Get agent controller state for the given agent identity.
-	 * 
-	 * @param agentIdentity
-	 *            agent identity
-	 * @return {@link AgentControllerState} member
-	 */
+	@Override
 	public AgentControllerState getAgentControllerState(AgentIdentity agentIdentity) {
 		return getAgentStatus(agentIdentity).getAgentControllerState();
+	}
+
+	@Override
+	public JavaDataModel getJavaDataModel(AgentIdentity agentIdentity) {
+		return getAgentStatus(agentIdentity).getJavaDataModel();
+	}
+
+	@Override
+	public SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {
+		return getAgentStatus(agentIdentity).getSystemDataModel();
 	}
 
 }

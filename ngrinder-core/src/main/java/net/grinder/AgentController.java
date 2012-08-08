@@ -28,6 +28,7 @@ import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.grinder.AgentDaemon.AgentShutDownListener;
 import net.grinder.common.GrinderBuild;
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
@@ -53,6 +54,8 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.ReflectionUtil;
 import net.grinder.util.thread.Condition;
 
+import org.ngrinder.monitor.controller.model.JavaDataModel;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
 
 /**
@@ -185,6 +188,12 @@ public class AgentController implements Agent {
 					m_logger.info("starting agent...");
 					agent.run(startMessage.getProperties());
 					m_agentStart = true;
+					agent.addListener(new AgentShutDownListener() {
+						@Override
+						public void shutdownAgent() {
+							m_agentStart = false;
+						}
+					});
 				}
 				// Ignore any pending start messages.
 				m_agentControllerServerListener.discardMessages(AgentControllerServerListener.START);
@@ -282,6 +291,22 @@ public class AgentController implements Agent {
 		}
 	}
 
+	public SystemDataModel getSystemDataModel() {
+		SystemDataModel systemDataModel = new SystemDataModel();
+		systemDataModel.setCollectTime(10000);
+		systemDataModel.setCpuUsedPercentage(20f);
+		// FIXME
+		return systemDataModel;
+	}
+
+	public JavaDataModel getJavaDataModel() {
+		JavaDataModel javaDataModel = new JavaDataModel();
+		javaDataModel.setCollectTime(10000);
+		javaDataModel.setCpuUsedPercentage(20f);
+		// FIXME
+		return javaDataModel;
+	}
+
 	private final class ConsoleCommunication {
 		private final ClientSender m_sender;
 		private final TimerTask m_reportRunningTask;
@@ -292,7 +317,8 @@ public class AgentController implements Agent {
 			m_sender = ClientSender.connect(receiver);
 
 			m_agentIdentity.setPort(getSocket(m_sender).getPort());
-			m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.START));
+			m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.START, getJavaDataModel(),
+					getSystemDataModel()));
 
 			final MessageDispatchSender messageDispatcher = new MessageDispatchSender();
 			m_agentControllerServerListener.registerMessageHandlers(messageDispatcher);
@@ -303,13 +329,15 @@ public class AgentController implements Agent {
 				public void run() {
 					try {
 						m_sender.send(new AgentControllerProcessReportMessage(
-								m_agentStart ? AgentControllerState.AGENT_RUN : AgentControllerState.RUNNING));
+								(m_agentStart ? AgentControllerState.AGENT_RUN : AgentControllerState.RUNNING),
+								getJavaDataModel(), getSystemDataModel()));
 					} catch (CommunicationException e) {
 						cancel();
 						m_logger.error(e.getMessage());
 					}
 
 				}
+
 			};
 		}
 
@@ -322,7 +350,7 @@ public class AgentController implements Agent {
 			m_reportRunningTask.cancel();
 
 			try {
-				m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.FINISHED));
+				m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.FINISHED, null, null));
 			} catch (CommunicationException e) {
 				// Ignore - peer has probably shut down.
 			} finally {

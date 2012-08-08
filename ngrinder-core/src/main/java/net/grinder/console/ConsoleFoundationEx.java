@@ -12,7 +12,6 @@ import net.grinder.console.communication.ConsoleCommunication;
 import net.grinder.console.communication.ConsoleCommunicationImplementation;
 import net.grinder.console.communication.DistributionControlImplementation;
 import net.grinder.console.communication.ProcessControlImplementation;
-import net.grinder.console.communication.WireEnhancedProcessReportMessage;
 import net.grinder.console.communication.server.DispatchClientCommands;
 import net.grinder.console.distribution.FileDistributionImplementation;
 import net.grinder.console.distribution.WireFileDistribution;
@@ -101,15 +100,9 @@ public class ConsoleFoundationEx {
 						new ConstantParameter(properties.getDistributionFileFilterPattern()), });
 
 		m_container.addComponent(DispatchClientCommands.class);
-
 		m_container.addComponent(WireFileDistribution.class);
-
 		m_container.addComponent(WireMessageDispatch.class);
-
 		m_container.addComponent(WireDistributedBarriers.class);
-
-		m_container.addComponent(WireEnhancedProcessReportMessage.class);
-
 		m_container.addComponent(ErrorQueue.class);
 
 		ErrorQueue errorQueue = m_container.getComponent(ErrorQueue.class);
@@ -165,7 +158,6 @@ public class ConsoleFoundationEx {
 		m_container.getComponent(WireMessageDispatch.class);
 		m_container.getComponent(WireFileDistribution.class);
 		m_container.getComponent(WireDistributedBarriers.class);
-		m_container.getComponent(WireEnhancedProcessReportMessage.class);
 		m_container.getComponent(Logger.class).info("{} console has been stated", "test");
 		synchronized (m_eventSyncCondition) {
 			m_eventSyncCondition.notifyAll();

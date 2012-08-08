@@ -79,8 +79,8 @@ public class AgentService {
 		agentInfo.setIp(agentIdentity.getIp());
 		agentInfo.setPort(agentIdentity.getPort());
 		agentInfo.setStatus(agentManager.getAgentControllerState(agentIdentity));
-		
-		//need to save agent info into DB, like ip and port maybe changed.
+		agentInfo.setAgentIdentity(agentIdentity);
+		// need to save agent info into DB, like ip and port maybe changed.
 		agentInfo = agentRepository.save(agentInfo);
 		return agentInfo;
 	}
@@ -103,6 +103,7 @@ public class AgentService {
 			agentInfo.setPort(agentIdentity.getPort());
 			agentInfo.setHostName(agentIdentity.getName());
 			agentInfo.setRegion(agentIdentity.getRegion());
+			agentInfo.setAgentIdentity(agentIdentity);
 		}
 		return agentInfo;
 	}

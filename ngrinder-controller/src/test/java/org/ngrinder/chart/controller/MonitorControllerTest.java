@@ -25,6 +25,7 @@ package org.ngrinder.chart.controller;
 import java.util.Date;
 
 import org.junit.Test;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 
@@ -34,16 +35,10 @@ import org.springframework.ui.ModelMap;
  * @author Mavlarn
  * @since
  */
-public class MonitorControllerTest {
+public class MonitorControllerTest extends AbstractNGrinderTransactionalTest {
 	
 	@Autowired
 	private MonitorController monitorController;
-
-	@Test
-	public void testGetChartData() {
-		ModelMap model = new ModelMap();
-		monitorController.getChartData(model, null);
-	}
 
 	@Test
 	public void testGetMonitorData() {

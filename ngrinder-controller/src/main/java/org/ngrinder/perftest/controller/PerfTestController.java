@@ -129,7 +129,11 @@ public class PerfTestController extends NGrinderBaseController {
 		PerfTest test = null;
 		if (id != null) {
 			test = perfTestService.getPerfTest(id);
+			if (test == null || !user.equals(test.getCreatedUser())) {
+				throw new NGrinderRuntimeException("PerfTest " + id + " is not allowed to show for user " + user);
+			}
 		}
+		
 		model.addAttribute(PARAM_TEST, test);
 		List<FileEntry> scriptList = null;
 		try {
@@ -201,7 +205,7 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/getReportData")
 	public @ResponseBody
-	String getReportData(ModelMap model, @RequestParam long testId, @RequestParam String dataType,
+	String getReportData(ModelMap model, @RequestParam long testId, @RequestParam(required = true) String dataType,
 			@RequestParam int imgWidth) {
 		List<Object> reportData = null;
 		String[] dataTypes = StringUtils.split(dataType, ",");
@@ -210,10 +214,10 @@ public class PerfTestController extends NGrinderBaseController {
 		for (String dt : dataTypes) {
 			try {
 				reportData = perfTestService.getReportData(testId, dt, imgWidth);
-				
+
 				rtnMap.put(dt, reportData);
 			} catch (Exception e) {
-				//just skip if one report data doesn't exist.
+				// just skip if one report data doesn't exist.
 				LOG.error("Get report data failed. type: " + dt, e);
 			}
 		}
