@@ -47,7 +47,7 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 		test.setInitSleepTime(0);
 		test.setProcessIncrementInterval(1000);
 		test.setStatus(status);
-		test.setCreatedUser(testUser);
+		test.setCreatedUser(getTestUser());
 		perfTestService.savePerfTest(test);
 		return test;
 	}

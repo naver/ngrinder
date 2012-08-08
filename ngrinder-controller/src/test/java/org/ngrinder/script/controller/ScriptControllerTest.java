@@ -35,7 +35,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.repository.FileEntityRepository;
 import org.ngrinder.script.util.CompressionUtil;
@@ -77,7 +76,7 @@ public class ScriptControllerTest extends AbstractNGrinderTransactionalTest {
 //		file.deleteOnExit();
 		
 		
-		File testUserRoot = fileEntityRepository.getUserRepoDirectory(testUser).getParentFile();
+		File testUserRoot = fileEntityRepository.getUserRepoDirectory(getTestUser()).getParentFile();
 		FileUtils.deleteQuietly(testUserRoot);
 		testUserRoot.mkdirs();
 		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
@@ -92,14 +91,14 @@ public class ScriptControllerTest extends AbstractNGrinderTransactionalTest {
 		ModelMap model = new ModelMap();
 		String path = "";
 		//create
-		scriptController.getCreateForm(testUser, path, "test.com", "new_file.py", null, model);
+		scriptController.getCreateForm(getTestUser(), path, "test.com", "new_file.py", null, model);
 
 		FileEntry script = (FileEntry)model.get("file");
 		script.setContent(script.getContent() + "#test comment");
-		scriptController.saveScript(testUser, path, script, model);
+		scriptController.saveScript(getTestUser(), path, script, model);
 		//save and get
 		model.clear();
-		scriptController.getDetail(testUser, script.getPath(), model);
+		scriptController.getDetail(getTestUser(), script.getPath(), model);
 		FileEntry newScript = (FileEntry)model.get("file");
 		assertThat(newScript.getFileName(), is(script.getFileName()));
 		assertThat(newScript.getContent(), is(script.getContent()));
@@ -108,13 +107,13 @@ public class ScriptControllerTest extends AbstractNGrinderTransactionalTest {
 		//reversion list is not implemented yet.
 		//assertThat(versionList.size(), is(2));
 		model.clear();
-		scriptController.getDiff(testUser, script.getPath(), script.getRevision(), model);
+		scriptController.getDiff(getTestUser(), script.getPath(), script.getRevision(), model);
 	
 		model.clear();
-		scriptController.searchFileEntity(testUser, "test", model);
+		scriptController.searchFileEntity(getTestUser(), "test", model);
 
 		model.clear();
-		scriptController.get(testUser, path, model);
+		scriptController.get(getTestUser(), path, model);
 		List<FileEntry> scriptList = (List<FileEntry>)model.get("files");
 		assertThat(scriptList.size(), is(0));
 	}
@@ -126,32 +125,32 @@ public class ScriptControllerTest extends AbstractNGrinderTransactionalTest {
 		String path = "";
 		
 		//add folder
-		scriptController.addFolder(testUser, path, "new_folder", model);
+		scriptController.addFolder(getTestUser(), path, "new_folder", model);
 		
 		path = "new_folder"; //new folder
 		//create
-		scriptController.getCreateForm(testUser, path, "test.com", "file-for-search.py", null, model);
+		scriptController.getCreateForm(getTestUser(), path, "test.com", "file-for-search.py", null, model);
 		FileEntry script = (FileEntry)model.get("file");
-		scriptController.saveScript(testUser, path, script, model);
+		scriptController.saveScript(getTestUser(), path, script, model);
 
 		//save another script
 		model.clear();
 		script.setPath(script.getPath().replace("file-for-search", "new-file-for-search"));
-		scriptController.saveScript(testUser, path, script, model);
+		scriptController.saveScript(getTestUser(), path, script, model);
 		//save and get
 		model.clear();
-		scriptController.getDetail(testUser, script.getPath(), model);
+		scriptController.getDetail(getTestUser(), script.getPath(), model);
 
 		model.clear();
-		scriptController.searchFileEntity(testUser, "file-for-search", model);
+		scriptController.searchFileEntity(getTestUser(), "file-for-search", model);
 		Collection<FileEntry> searchResult = (Collection<FileEntry>)model.get("files");
 		assertThat(searchResult.size(), is(2));
 		
 		model.clear();
 		//delete both files
-		scriptController.delete(testUser, script.getPath(),
+		scriptController.delete(getTestUser(), script.getPath(),
 				"file-for-search.py,new-file-for-search.py", model);
-		scriptController.get(testUser, path, model);
+		scriptController.get(getTestUser(), path, model);
 		List<FileEntry> scriptList = (List<FileEntry>)model.get("files");
 		assertThat(scriptList.size(), is(0));
 	}
@@ -164,10 +163,10 @@ public class ScriptControllerTest extends AbstractNGrinderTransactionalTest {
 		FileEntry script = new FileEntry();
 		MultipartFile upFile = new MockMultipartFile("Uploaded.py", "#test content...".getBytes());
 		
-		scriptController.uploadFiles(testUser, path, script, upFile, model);
+		scriptController.uploadFiles(getTestUser(), path, script, upFile, model);
 
 		model.clear();
-		scriptController.searchFileEntity(testUser, "Uploaded", model);
+		scriptController.searchFileEntity(getTestUser(), "Uploaded", model);
 		Collection<FileEntry> searchResult = (Collection<FileEntry>)model.get("files");
 		assertThat(searchResult.size(), is(1));
 	}

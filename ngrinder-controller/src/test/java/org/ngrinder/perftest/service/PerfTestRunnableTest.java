@@ -146,7 +146,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	private void prepareUserRepo() throws IOException {
 		CompressionUtil compressUtil = new CompressionUtil();
-		File repo = config.getHome().getUserRepoDirectory(testUser.getUserId());
+		File repo = config.getHome().getUserRepoDirectory(getTestUser().getUserId());
 		FileUtils.deleteQuietly(repo);
 		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), config.getHome().getRepoDirectoryRoot());
 		FileEntry fileEntryDir = new FileEntry();

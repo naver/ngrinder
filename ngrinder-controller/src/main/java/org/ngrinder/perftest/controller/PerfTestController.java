@@ -94,7 +94,12 @@ public class PerfTestController extends NGrinderBaseController {
 	public String getTestList(User user, @RequestParam(required = false) String query,
 			@RequestParam(required = false) boolean onlyFinished,
 			@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
-
+		// FIXME
+		// not to paging on server side for now. Get all tests and
+		// paging/sorting in page.
+		// if (pageable == null) {
+		// pageable = new PageRequest(0, DEFAULT_TEST_PAGE_ZISE);
+		// }
 		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, onlyFinished, pageable);
 		model.addAttribute("testListPage", testList);
 		model.addAttribute("onlyFinished", onlyFinished);
@@ -123,7 +128,10 @@ public class PerfTestController extends NGrinderBaseController {
 	public String getTestDetail(User user, @RequestParam(required = false) Long id, ModelMap model) {
 		PerfTest test = null;
 		if (id != null) {
-			test = checkTestPermissionAndGet(user, id);
+			test = perfTestService.getPerfTest(id);
+			if (test == null || !user.equals(test.getCreatedUser())) {
+				throw new NGrinderRuntimeException("PerfTest " + id + " is not allowed to show for user " + user);
+			}
 		}
 		
 		model.addAttribute(PARAM_TEST, test);
@@ -147,7 +155,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String saveTest(User user, ModelMap model, PerfTest test) {
-		// Test can only be cloned, but not allowed to modified, so set id as null,
+		// Test can only be cloned, but not allowed to modified, so set id as
+		// null,
 		// to make sure it will create a new test.
 		test.setId(null);
 		perfTestService.savePerfTest(test);
@@ -175,13 +184,11 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/deleteTests")
 	public @ResponseBody
-	String deleteTests(User user, ModelMap model, @RequestParam String ids) {
+	String deleteTests(ModelMap model, @RequestParam String ids) {
 		String[] idList = StringUtils.split(ids, ",");
 		for (String idStr : idList) {
 			try {
-				long delId = Long.valueOf(idStr);
-				checkTestPermissionAndGet(user, delId);
-				perfTestService.deletePerfTest(delId);
+				perfTestService.deletePerfTest(Long.valueOf(idStr));
 			} catch (NumberFormatException e) {
 				LOG.error("Can't delete a test (id=" + idStr + ") : {}", e);
 			}
@@ -190,8 +197,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = "/report")
-	public String getReport(User user, ModelMap model, @RequestParam long testId) {
-		checkTestPermissionAndGet(user, testId);
+	public String getReport(ModelMap model, @RequestParam long testId) {
 		PerfTest test = perfTestService.getPerfTest(testId);
 		model.addAttribute("test", test);
 		return "perftest/report";
@@ -199,9 +205,8 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/getReportData")
 	public @ResponseBody
-	String getReportData(User user, ModelMap model, @RequestParam long testId, @RequestParam(required = true) String dataType,
+	String getReportData(ModelMap model, @RequestParam long testId, @RequestParam(required = true) String dataType,
 			@RequestParam int imgWidth) {
-		checkTestPermissionAndGet(user, testId);
 		List<Object> reportData = null;
 		String[] dataTypes = StringUtils.split(dataType, ",");
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1 + dataTypes.length);
@@ -221,15 +226,13 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = "/downloadReportData")
-	public void downloadReportData(User user, HttpServletResponse response, @RequestParam long testId) {
-		checkTestPermissionAndGet(user, testId);
+	public void downloadReportData(HttpServletResponse response, @RequestParam long testId) {
 		File targetFile = perfTestService.getReportFile(testId);
 		FileDownloadUtil.downloadFile(response, targetFile);
 	}
 
 	@RequestMapping(value = "/running/refresh")
-	public String refreshTestRunning(User user, ModelMap model, @RequestParam long testId) {
-		checkTestPermissionAndGet(user, testId);
+	public String refreshTestRunning(ModelMap model, @RequestParam long testId) {
 		PerfTest test = perfTestService.getPerfTest(testId);
 		checkNotNull(test);
 		Map<String, Object> result = null;
@@ -238,14 +241,5 @@ public class PerfTestController extends NGrinderBaseController {
 			model.addAttribute(PARAM_RESULT_SUB, result);
 		}
 		return "perftest/refreshContent";
-	}
-	
-	private PerfTest checkTestPermissionAndGet(User user, long id) {
-		PerfTest test = perfTestService.getPerfTest(id);
-		if (test!= null && !test.getCreatedUser().equals(user)) {
-			throw new NGrinderRuntimeException("User "+ getCurrentUser().getUserId()
-					+ " has no right on  PerfTest ");
-		}
-		return test;
 	}
 }
