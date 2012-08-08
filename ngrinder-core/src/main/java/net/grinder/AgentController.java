@@ -284,6 +284,22 @@ public class AgentController implements Agent {
 		}
 	}
 
+	public SystemDataModel getSystemDataModel() {
+		SystemDataModel systemDataModel = new SystemDataModel();
+		systemDataModel.setCollectTime(10000);
+		systemDataModel.setCpuUsedPercentage(20f);
+		// FIXME
+		return systemDataModel;
+	}
+
+	public JavaDataModel getJavaDataModel() {
+		JavaDataModel javaDataModel = new JavaDataModel();
+		javaDataModel.setCollectTime(10000);
+		javaDataModel.setCpuUsedPercentage(20f);
+		// FIXME
+		return javaDataModel;
+	}
+
 	private final class ConsoleCommunication {
 		private final ClientSender m_sender;
 		private final TimerTask m_reportRunningTask;
@@ -316,22 +332,6 @@ public class AgentController implements Agent {
 				}
 
 			};
-		}
-
-		protected SystemDataModel getSystemDataModel() {
-			SystemDataModel systemDataModel = new SystemDataModel();
-			systemDataModel.setCollectTime(10000);
-			systemDataModel.setCpuUsedPercentage(20f);
-			// FIXME
-			return systemDataModel;
-		}
-
-		protected JavaDataModel getJavaDataModel() {
-			JavaDataModel javaDataModel = new JavaDataModel();
-			javaDataModel.setCollectTime(10000);
-			javaDataModel.setCpuUsedPercentage(20f);
-			// FIXME
-			return javaDataModel;
 		}
 
 		public void start() {
