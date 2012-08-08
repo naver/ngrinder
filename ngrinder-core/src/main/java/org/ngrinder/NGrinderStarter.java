@@ -35,6 +35,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import net.grinder.AgentControllerDaemon;
+import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.util.ReflectionUtil;
 
 import org.apache.commons.cli.CommandLine;
@@ -78,13 +79,8 @@ public class NGrinderStarter {
 		}
 	}
 
-	private void startMonitor(boolean withAgent, int port) {
-		Set<String> dataCollectors;
-		if (withAgent) {
-			dataCollectors = MonitorConstants.DEFAULT_DATA_COLLECTOR;
-		} else {
-			dataCollectors = MonitorConstants.TARGET_SERVER_DATA_COLLECTOR;
-		}
+	private void startMonitor(int port) {
+		Set<String> dataCollectors = MonitorConstants.TARGET_SERVER_DATA_COLLECTOR;
 		Set<Integer> jvmPids = new HashSet<Integer>();
 		int currPID = getCurrentJVMPid();
 		jvmPids.add(currPID);
@@ -93,7 +89,7 @@ public class NGrinderStarter {
 		LOG.info("* Start nGrinder Monitor *");
 		LOG.info("**************************");
 		LOG.info("* Local JVM link support :{}", localAttachmentSupported);
-		LOG.info("* Colllect SYSTEM {} data. **", withAgent ? "and JAVA" : "");
+		LOG.info("* Colllect SYSTEM data. **");
 		try {
 			AgentMonitorServer.getInstance().init(port, dataCollectors, jvmPids);
 			AgentMonitorServer.getInstance().start();
@@ -188,57 +184,67 @@ public class NGrinderStarter {
 	 */
 	public static void main(String[] args) {
 		Options options = new Options();
-		options.addOption("a", "agent", false, "run agent together");
+		options.addOption("a", "agent", false, "run ngrinder agent, exclusive with 'monitor' option");
+		options.addOption("m", "monitor", false, "run monitor server, exclusive with 'agent' option");
 		options.addOption("r", "region", true, "provide agent region");
 		options.addOption("p", "port", true, "provide agent JMX port number");
 		options.addOption("c", "controller", true, "provide ngrinder controller address");
 		CommandLineParser parser = new PosixParser();
 		CommandLine cmd = null;
+		NGrinderStarter starter = new NGrinderStarter();
+		
 		try {
 			cmd = parser.parse(options, args);
 		} catch (ParseException e) {
-			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("ngrinder", options);
-			System.exit(-1);
+			printHelpAndReturn(options);
 		}
-		boolean withAgent = false;
-		if (cmd.hasOption("a")) {
-			withAgent = true;
-		}
-		String region = "";
-		if (cmd.hasOption("r")) {
-			region = cmd.getOptionValue("r");
-		}
-		int agentPort = MonitorConstants.DEFAULT_AGENT_PORT;
-		if (cmd.hasOption("p")) {
-			try {
-				agentPort = Integer.valueOf(cmd.getOptionValue("p"));
-			} catch (NumberFormatException e) {
-				HelpFormatter formatter = new HelpFormatter();
-				formatter.printHelp("ngrinder", options);
-				System.exit(-1);
-			}
+		if (cmd.hasOption("a") && cmd.hasOption("m")) {
+			printHelpAndReturn(options);
 		}
 
-		String consoleAddress = null;
-		String consoleIP = null;
-		int consolePort = 0;
-		if (cmd.hasOption("c")) {
-			try {
-				consoleAddress = cmd.getOptionValue("c");
-				String[] addressStrs = StringUtils.split(consoleAddress, ":");
-				consoleIP = addressStrs[0];
-				consolePort = Integer.valueOf(addressStrs[1]); 
-			} catch (Exception e) {
-				HelpFormatter formatter = new HelpFormatter();
-				formatter.printHelp("ngrinder", options);
-				System.exit(-1);
+		if (cmd.hasOption("m")) {
+			int monitorPort = MonitorConstants.DEFAULT_AGENT_PORT;
+			if (cmd.hasOption("p")) {
+				try {
+					monitorPort = Integer.valueOf(cmd.getOptionValue("p"));
+				} catch (NumberFormatException e) {
+					printHelpAndReturn(options);
+				}
 			}
-		}
-		NGrinderStarter starter = new NGrinderStarter();
-		if (withAgent) {
+	
+			starter.startMonitor(monitorPort);
+		} else if (cmd.hasOption("a")) {
+			
+			String consoleAddress = null;
+			String consoleIP = "127.0.0.1";
+			int consolePort = AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT;
+			if (cmd.hasOption("c")) {
+				try {
+					consoleAddress = cmd.getOptionValue("c");
+					String[] addressStrs = StringUtils.split(consoleAddress, ":");
+					consoleIP = addressStrs[0];
+					consolePort = Integer.valueOf(addressStrs[1]); 
+				} catch (Exception e) {
+					printHelpAndReturn(options);
+				}
+			}
+			String region = "";
+			if (cmd.hasOption("r")) {
+				region = cmd.getOptionValue("r");
+			}
 			starter.startAgent(region, consoleIP, consolePort);
+			
+		} else {
+			printHelpAndReturn(options);
 		}
-		starter.startMonitor(withAgent, agentPort);
+	}
+
+	/**
+	 * @param options
+	 */
+	private static void printHelpAndReturn(Options options) {
+		HelpFormatter formatter = new HelpFormatter();
+		formatter.printHelp("ngrinder", options);
+		System.exit(-1);
 	}
 }

@@ -35,9 +35,11 @@ import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
+import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import net.grinder.util.thread.ExecutorFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.monitor.controller.model.JavaDataModel;
@@ -77,6 +79,16 @@ public class AgentManager implements NGrinderConstants {
 
 	public Set<AgentIdentity> getAllAttachedAgents() {
 		return agentControllerServer.getAllAvailableAgents();
+	}
+	
+	public AgentControllerIdentityImplementation getAgentIdentityByIp(String agentIP) {
+		for (AgentIdentity agentIdentity : getAllAttachedAgents()) {
+			AgentControllerIdentityImplementation eachAgentIdentity = (AgentControllerIdentityImplementation) agentIdentity;
+			if (StringUtils.equals(eachAgentIdentity.getIp(), agentIP)) {
+				return eachAgentIdentity;
+			}
+		}
+		return null;
 	}
 
 	public Set<AgentIdentity> getAllFreeAgents() {
