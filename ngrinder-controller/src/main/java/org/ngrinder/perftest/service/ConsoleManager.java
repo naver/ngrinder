@@ -85,6 +85,7 @@ public class ConsoleManager {
 				String.valueOf(NGrinderConstants.CONSOLE_SIZE));
 		return NumberUtils.toInt(consoleSizeString, NGrinderConstants.CONSOLE_SIZE);
 	}
+	
 
 	/**
 	 * Timeout (in second).
@@ -181,9 +182,7 @@ public class ConsoleManager {
 			synchronized (this) {
 				// FIXME : It might fail here
 				SingleConsole singleConsole = new SingleConsole(consoleEntry.getPort(), baseConsoleProperties);
-
 				getConsoleInUse().add(singleConsole);
-
 				return singleConsole;
 			}
 		} catch (InterruptedException e) {

@@ -42,17 +42,18 @@ import net.grinder.util.thread.ExecutorFactory;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
  * Agent manager class.
  * 
- * This class runs {@link AgentControllerServerDaemon} internally and manage to
- * agent connection.
+ * This class runs {@link AgentControllerServerDaemon} internally and manage to agent connection.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -64,6 +65,9 @@ public class AgentManager implements NGrinderConstants {
 			AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 	private static final int NUMBER_OF_THREAD = 3;
 	private static final int AGENT_RUN_TIMEOUT_SECOND = 10;
+
+	@Autowired
+	private Config config;
 
 	/**
 	 * Initialize agent manager.
@@ -80,7 +84,21 @@ public class AgentManager implements NGrinderConstants {
 	public Set<AgentIdentity> getAllAttachedAgents() {
 		return agentControllerServer.getAllAvailableAgents();
 	}
-	
+
+	public int getMaxAgentSizePerConsole() {
+		return config.getSystemProperties().getPropertyInt("agentperconsole.maxsize",
+				NGrinderConstants.MAX_AGENT_SIZE_PER_CONSOLE);
+	}
+
+	public int getMaxVuserPerAgent() {
+		return config.getSystemProperties().getPropertyInt("vuserperagent.maxsize",
+				NGrinderConstants.MAX_VUSER_PER_AGENT);
+	}
+
+	public int getMaxRunCount() {
+		return config.getSystemProperties().getPropertyInt("runcount.maxsize", NGrinderConstants.MAX_RUN_COUNT);
+	}
+
 	public AgentControllerIdentityImplementation getAgentIdentityByIp(String agentIP) {
 		for (AgentIdentity agentIdentity : getAllAttachedAgents()) {
 			AgentControllerIdentityImplementation eachAgentIdentity = (AgentControllerIdentityImplementation) agentIdentity;
@@ -137,4 +155,5 @@ public class AgentManager implements NGrinderConstants {
 			throw new NGrinderRuntimeException("Error while running agent", e);
 		}
 	}
+
 }

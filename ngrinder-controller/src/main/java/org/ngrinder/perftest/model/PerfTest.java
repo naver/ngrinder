@@ -133,7 +133,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private Integer testTrialCount = 0;
 
 	@Enumerated(EnumType.STRING)
-	private Status testErrorCause;
+	private Status testErrorCause = Status.UNKNOWN;
 
 	@Column(length = MAX_STACKTRACE_STRING_SIZE)
 	private String testErrorStackTrace;

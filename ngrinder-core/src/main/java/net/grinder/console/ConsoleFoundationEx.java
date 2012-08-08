@@ -1,6 +1,5 @@
 package net.grinder.console;
 
-import java.util.Date;
 import java.util.Timer;
 
 import net.grinder.common.GrinderException;
@@ -16,7 +15,6 @@ import net.grinder.console.communication.server.DispatchClientCommands;
 import net.grinder.console.distribution.FileDistributionImplementation;
 import net.grinder.console.distribution.WireFileDistribution;
 import net.grinder.console.model.ConsoleProperties;
-import net.grinder.console.model.SampleListener;
 import net.grinder.console.model.SampleModel;
 import net.grinder.console.model.SampleModelImplementationEx;
 import net.grinder.console.model.SampleModelViews;
@@ -27,7 +25,6 @@ import net.grinder.messages.console.RegisterExpressionViewMessage;
 import net.grinder.messages.console.RegisterTestsMessage;
 import net.grinder.messages.console.ReportStatisticsMessage;
 import net.grinder.statistics.StatisticsServicesImplementation;
-import net.grinder.statistics.StatisticsSet;
 import net.grinder.util.StandardTimeAuthority;
 import net.grinder.util.thread.Condition;
 
@@ -53,9 +50,6 @@ public class ConsoleFoundationEx {
 	private boolean m_shutdown = false;
 
 	private final Condition m_eventSyncCondition;
-	private static Date TPS_LESSTHAN_ZREO_TIME = null;
-
-	private Logger m_logger;
 
 	/**
 	 * Constructor. Allows properties to be specified.
@@ -74,7 +68,6 @@ public class ConsoleFoundationEx {
 	 */
 	public ConsoleFoundationEx(Resources resources, Logger logger, ConsoleProperties properties,
 			Condition eventSyncCondition) throws GrinderException {
-		m_logger = logger;
 		m_eventSyncCondition = eventSyncCondition;
 		m_container = new DefaultPicoContainer(new Caching());
 		m_container.addComponent(logger);
@@ -134,25 +127,6 @@ public class ConsoleFoundationEx {
 			throw new NGrinderRuntimeException("console can not run becaz it's shutdowned");
 		}
 		m_container.start();
-
-		final SampleModel sampleModel = (SampleModel) m_container.getComponent(SampleModelImplementationEx.class);
-		sampleModel.addTotalSampleListener(new SampleListener() {
-			@Override
-			public void update(StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-				double tps = sampleModel.getTPSExpression().getDoubleValue(intervalStatistics);
-				// If the tps is low that it's can be the agents or scripts goes wrong.
-				if (tps < 0.001) {
-					if (TPS_LESSTHAN_ZREO_TIME == null) {
-						TPS_LESSTHAN_ZREO_TIME = new Date();
-					} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= 60000) {
-						// FIXME : they are not really stop. What's wrong?
-						m_logger.warn("Test has been forced stop because of tps is less than 0.001 and sustain more than one minitue.");
-					}
-				} else {
-					TPS_LESSTHAN_ZREO_TIME = null;
-				}
-			}
-		});
 		ConsoleCommunication communication = m_container.getComponent(ConsoleCommunication.class);
 		// Need to request components, or they won't be instantiated.
 		m_container.getComponent(WireMessageDispatch.class);

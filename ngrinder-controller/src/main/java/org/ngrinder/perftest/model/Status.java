@@ -29,6 +29,8 @@ package org.ngrinder.perftest.model;
  * 
  */
 public enum Status {
+	/** Just Saved.. not ready to run */
+	SAVED,
 	/** test ready */
 	READY,
 	/** Just before starting console */
@@ -44,8 +46,7 @@ public enum Status {
 	/** Just after distributing files */
 	DISTRIBUTE_FILES_FINISHED,
 	/** Just before staring testing */
-	START_TESTING,
-	TESTING,
+	START_TESTING, TESTING,
 	/** Just after staring testing */
 	TESTING_FINISHED,
 	/** Test finish */
@@ -53,5 +54,7 @@ public enum Status {
 	/** Stopped by error */
 	STOP_ON_ERROR,
 	/** Test cancel */
-	CANCELED
+	CANCELED,
+	/** Nothing */
+	UNKNOWN
 }
