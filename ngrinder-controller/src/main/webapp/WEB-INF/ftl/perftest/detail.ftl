@@ -7,6 +7,20 @@
 <link href="${req.getContextPath()}/css/slider.css" rel="stylesheet">
 <link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
 <style>
+div.div-resources {
+	border: 1px solid #D6D6D6;
+	height: 80px;
+	margin-bottom: 8px;
+	overflow-y: scroll;
+	border-radius: 3px 3px 3px 3px;
+}
+
+div.div-resources .resource {
+	color: #666666;
+	display: inline-block;
+	margin: 7px;
+}
+
 div.div-host {
 	border: 1px solid #D6D6D6;
 	height: 80px;
@@ -14,6 +28,7 @@ div.div-host {
 	overflow-y: scroll;
 	border-radius: 3px 3px 3px 3px;
 }
+
 
 div.div-host .host {
 	color: #666666;
@@ -67,19 +82,25 @@ div.chart {
 							<label for="testName" class="control-label">Test Name</label>
 							<div class="controls">  
 								<input class="span5 required" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
-								<button type="submit" class="btn btn-success" style="margin-left:85px"  id="saveAndStartTestBtn"> 
-									<#if test??>Clone<#else>Save</#if> and Start 
+								<button type="submit" class="btn btn-primary pull-right" style="margin-left:5px;margin-right:70px" data-toggle="modal" href="#scheduleModal"  id="saveScheduleBtn">
+									<#if test??>Clone<#else>Save</#if> and Start
 								</button>  
-								<button type="submit" class="btn btn-primary" data-toggle="modal" href="#scheduleModal"  id="saveScheduleBtn">
-									<#if test??>Clone<#else>Save</#if>&Schedule
-								</button> 
+								<button type="submit" class="btn btn-success  pull-right" style="margin-left:5px"  id="saveTestBtn"> 
+									<#if test??>Clone<#else>Save</#if>
+								</button>  
+								<#if test?? && (test.status == "SAVED")>
+									<button type="submit" class="btn btn-success pull-right" style="margin-left:5px" id="startTestBtn"> 
+										Start
+									</button> 
+								</#if>  
+
 							</div>
 						</div>
 						<div class="control-group" style="margin-bottom: 0">
 							<label for="description" class="control-label">Description</label>
-							<div class="controls">  
+							<div class="controls">   
 								<textarea class="input-xlarge span9" id="description" rows="3" name="description" style="resize:none">${(test.description)!}</textarea>
-							</div>
+							</div>  
 						</div>
 					</fieldset>
 				</div>
@@ -107,8 +128,9 @@ div.chart {
 											<label for="agentCount" class="control-label">Agent</label>
 											<div class="controls">
 												<div class="input-append">
-													<input type="text" class="input required positiveNumber"
-														id="agentCount" name="agentCount" value="${(test.agentCount)!}">
+													<input type="text" class="input required positiveNumber span2" 
+														number_limit="${(maxAgentSizePerConsole)}" id="agentCount" name="agentCount" 
+														value="${(test.agentCount)!}"><span class="add-on">MAX : ${(maxAgentSizePerConsole)}</span>
 												</div>
 											</div>
 										</div>
@@ -116,9 +138,11 @@ div.chart {
 											<label for="vuserPerAgent" class="control-label">Vuser per agent</label>
 											<div class="controls">
 												<div class="input-append">
-													<input type="text" class="input required positiveNumber" rel="popover""
+													<input type="text" class="input required positiveNumber span2" rel="popover"
+														number_limit="${(maxVuserPerAgent)}"
 														id="vuserPerAgent" name="vuserPerAgent" value="${(test.vuserPerAgent)!}"
-														data-content="Input vuser count for every agent." data-original-title="Vuser count" >
+														data-content="Input vuser count for every agent." 
+														data-original-title="Vuser count" ><span class="add-on">MAX : ${(maxVuserPerAgent)}</span>
 												</div>
 												<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
 												<span class="badge badge-info pull-right" id="vuserTotal">Vuser: ${vuserTotal}</span>
@@ -135,12 +159,20 @@ div.chart {
 															<#else>
 																<#assign isSelected = ""/>
 															</#if>
-															<option value="${scriptItem.fileName}"${isSelected}>${scriptItem.fileName}</option>
+															<option value="${scriptItem.path}"${isSelected}>${scriptItem.path}</option>
 														</#list>
 													</#if>
 												</select>
 											</div>
 										</div>
+										<div class="control-group">
+											<label for="Script Resources" class="control-label">Script Resources</label>
+											<div class="controls">
+												<div class="div-resources read-only" id="scriptResources" readonly="readonly"> 
+												</div>
+											</div> 
+										</div>
+										
 										<div class="control-group">
 											<label class="control-label">Target Host</label>
 											<div class="controls">
@@ -155,7 +187,7 @@ div.chart {
 												<input type="radio" id="durationChkbox"> Duration
 											</label>
 											<div class="controls docs-input-sizes">
-												<select class="select-item" id="dSelect"></select> : 
+												<select class="select-item" id="dSelect" style="visibility:hidden"></select> : 
 												<select	class="select-item" id="hSelect"></select> : 
 												<select	class="select-item" id="mSelect"></select> : 
 												<select	class="select-item" id="sSelect"></select>
@@ -165,7 +197,7 @@ div.chart {
 												<div id="durationSlider" class="slider" style="margin-left:0; width:235px"></div>
 												<input id="hiddenDurationInput" class="span1 hide" 
 														data-slider="#durationSlider"
-														data-max="100" data-min="0" data-step="1">
+														data-max="40" data-min="0" data-step="1">
 												
 											</div>
 										</div>
@@ -174,8 +206,12 @@ div.chart {
 												type="radio" id="runcountChkbox"> Run Count
 											</label>
 											<div class="controls">
-												<input type="text" class="input" id="runCount"
-													name="runCount" value="${(test.runCount)!0}">
+												<div class="input-append">
+													<input type="text" id="runCount" class="input span2"
+														number_limit="${(maxRunCount)}"
+														name="runCount" 
+														value="${(test.runCount)!0}"><span class="add-on">MAX : ${(maxRunCount)}</span>
+												</div>
 											</div>
 										</div>
 										<div class="control-group">
@@ -482,6 +518,9 @@ div.chart {
 				</div>
 				</div>
 				<input type="hidden" id="scheduleInput" name="scheduledTime"/>
+				<#if test??>
+					<input type="hidden" id="testStatus"  name="status" value="${(test.status)}">
+				</#if>				
 			</form>
 			<!--content-->
 			<#include "../common/copyright.ftl">
@@ -503,7 +542,7 @@ div.chart {
 							<div class="controls">
 							  <input type="text" id="domainInput">
 							  <span class="help-inline"></span>
-							</div>
+							</div> 
 						</div>					
 						<div class="control-group">
 							<label for="ipInput" class="control-label">IP</label>
@@ -545,6 +584,7 @@ div.chart {
 				</div>
 			</div>
 			<div class="modal-footer">
+				<a class="btn btn-primary" id="runNowBtn">Run NOW</a>
 				<a class="btn btn-primary" id="addScheduleBtn">Schedule</a>
 			</div>
 		</div>
@@ -555,10 +595,10 @@ div.chart {
 	
 	<script>
 	   var objTimer;
-	   var sliderMax = 100;
+	   var sliderMax = 40;
 	   var durationMap = {};
 	   durationMap[0] = 0;
-	   for (var i=1; i<=sliderMax; i++) {
+	   for (var i = 1; i <= sliderMax; i++) {
 		   if (i <= 10) {
 			   durationMap[i] = durationMap[i-1] + 1;
 		   } else if (i <= 20) {
@@ -577,9 +617,9 @@ div.chart {
 			   durationMap[i] = durationMap[i-1] + 60*24;
 		   }
 	   }
-			$(document).ready(function() {
-				var today = new Date();
-				$("#sDateInput").val(today.getFullYear()+"-"+(today.getMonth()+1)+"-"+today.getDate());
+	   $(document).ready(function() {
+				var date = new Date();
+				$("#sDateInput").val(('0'+date.getFullYear()).substr(-4,4)+'-'+('0'+(date.getMonth() +1)).substr(-2,2)+'-'+ ('0'+date.getDate()).substr(-2,2));
 				<#if test?exists>
 			    objTimer = window.setInterval("refreshData()", ${test.sampleInterval!1000});
 			    </#if>
@@ -601,7 +641,11 @@ div.chart {
 						$("#hiddenDurationInput").val(i);
 					}
 				}
-
+				
+				$("#scriptName").change(function() {
+					updateScriptResources();
+				});
+				
 			    $("#hiddenDurationInput").bind("slide", function(e){
 			    		$("#duration").val(durationMap[this.value] * 60000);
 			    		initDuration();
@@ -654,12 +698,22 @@ div.chart {
 					deleteHost();
 				});
 				
-				$("#saveScheduleBtn").click (function() {
+				$("#saveTestBtn").click (function() {
 					if (!$("#testContentForm").valid()) {
 						return false;
 					}
+					$("#scheduleInput").attr('name','');
 					return true;
 				});
+				
+				$("#runNowBtn").click(function() {
+					$("#scheduleModal").modal("hide");
+					$("#scheduleModal small").html("");
+					$("#scheduleInput").attr('name','');
+					$("#testStatus").val("READY");
+					document.testContentForm.submit();
+				});
+								
 				$("#addScheduleBtn").click(function() {
 					if (checkEmptyByID("sDateInput")) {
 						$("#scheduleModal small").html("Please select date before schedule.");
@@ -678,10 +732,7 @@ div.chart {
 					document.testContentForm.submit();
 				});
 				
-				$("#saveAndStartTestBtn").click (function() {
-					$("#scheduleInput").attr('name','');
-					document.testContentForm.submit();
-				});
+				
 				
 				$('#sDateInput').datepicker({
 					format: 'yyyy-mm-dd'
@@ -728,12 +779,12 @@ div.chart {
 				});
 				
 				$("#agentCount").change(function() {
-					updateVuserTotal ();
+					updateVuserTotal();
 				});
 				
 				$("#vuserPerAgent").change (function() {
 					if ($("#vuserPerAgent").valid()) {
-						updateVuserPolicy ();
+						updateVuserPolicy();
 					}
 				});
 				
@@ -764,6 +815,7 @@ div.chart {
 				initDuration();
 				updateChart();
 				resetFooter();
+				updateScriptResources();
 			});
 			
 			function updateVuserTotal () {
@@ -772,6 +824,29 @@ div.chart {
 				$("#vuserTotal").text("Vuser:" + agtCount*vcount);
 			}
 			
+			function updateScriptResources() {
+				$('#messageDiv').ajaxSend(function() {
+					showInformation("Updating script resources...");
+				});
+				$.ajax({
+			  		url: "${req.getContextPath()}/perftest/getResourcesOnScriptFolder",
+					dataType:'json',
+					data: {'scriptPath': $("#scriptName").val()},
+			    	success: function(res) {
+			    		var html = "";
+				    	var len=res.length;
+						for(var i=0; i<len; i++) {
+							var value = res[i];
+							html = html + "<div class='resource'>" + value + "</div>";
+						}
+						$("#scriptResources").html(html);
+			    	},
+			    	error: function() {
+			    		showErrorMsg("Error!");
+						return false;
+			    	}
+			  	});
+			}
 			function updateVuserPolicy() {
 				updateVuserTotal();
 				$('#messageDiv').ajaxSend(function() {
