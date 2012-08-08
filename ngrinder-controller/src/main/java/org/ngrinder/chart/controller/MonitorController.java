@@ -65,21 +65,6 @@ public class MonitorController extends NGrinderBaseController {
 	private MonitorService monitorService;
 
 	/**
-	 * get chart data(like tps, vuser) of test
-	 * 
-	 * @param model
-	 * @param chartTypes
-	 *            is some chart type combined wit ',', eg. "tps,errors,vusers".
-	 * @return
-	 */
-	@RequestMapping("/chart")
-	public @ResponseBody
-	String getChartData(ModelMap model, @RequestParam(required = false) String[] chartTypes) {
-
-		return null;
-	}
-
-	/**
 	 * get monitor data of agents
 	 * 
 	 * @param model

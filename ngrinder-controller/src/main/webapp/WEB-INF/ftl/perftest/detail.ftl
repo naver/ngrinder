@@ -145,6 +145,7 @@ div.chart {
 											<label class="control-label">Target Host</label>
 											<div class="controls">
 												<div class="div-host"></div>
+												<input type="hidden" name="targetHosts" id="hostsHidden" value="${(test.targetHosts)!}">
 												<a class="btn pull-right btn-mini" data-toggle="modal" href="#addHostModal">Add</a>
 											</div>
 										</div>
@@ -622,17 +623,24 @@ div.chart {
 			    });
 			    $("#addHostBtn").on('click', function() {
 					var elemStr = "";
+					var contents = [];
+					var content;
 					if (!checkEmptyByID("ipInput")) {
-						elemStr += hostItem("ipInput");
+						content = getValueByID("ipInput");
+						contents.push(content);
+						elemStr += hostItem(content);
 					}
 					if (!checkEmptyByID("domainInput")) {
-						elemStr += hostItem("domainInput");
+						content = getValueByID("domainInput");
+						contents.push(content);
+						elemStr += hostItem(content);
 					}
 					if (elemStr == "") {
 						$("#addHostModal small").addClass("errorColor");
 						return;
 					}
 					
+					$("#hostsHidden").val(contents.join(","));
 					$(".div-host").empty();
 					$(".div-host").append(elemStr);
 					$("#addHostModal").modal("hide");
@@ -643,6 +651,7 @@ div.chart {
 					var $elem = $(this).parents("p");
 					$elem.next("br").remove();
 					$elem.remove();
+					deleteHost();
 				});
 				
 				$("#saveScheduleBtn").click (function() {
@@ -751,9 +760,10 @@ div.chart {
 			    });
 				
 				initThresholdChkBox();
+				initHosts();
 				initDuration();
-				resetFooter();
 				updateChart();
+				resetFooter();
 			});
 			
 			function updateVuserTotal () {
@@ -836,8 +846,27 @@ div.chart {
 				$("#durationChkbox").toggle();
 			}
 			
-			function hostItem(id) {
-				return "<p class=\"host\">" + $.trim($("#" + id).val()) + "<a href=\"javascript:void(0);\"><i class=\"icon-remove-circle\"></i></a></p><br>"
+			function hostItem(content) {
+				return "<p class=\"host\">" + content + " <a href=\"javascript:void(0);\"><i class=\"icon-remove-circle\"></i></a><input type=\"hidden\" id=\"hostsItem\" value=\"" + content + "\"></p><br>"
+			}
+			
+			function deleteHost() {
+				var contents = [];
+				$("#hostsItem").each(function() {
+					contents.push($(this).val());
+				});
+				$("#hostsHidden").val(contents.join(","));
+			}
+			
+			function initHosts() {
+				var contents = $("#hostsHidden").val().split(",");
+				var str = "";
+				for (i = 0; i < contents.length; i++) {
+					str += hostItem(contents[i]);
+				}
+				
+				$(".div-host").empty();
+				$(".div-host").append(str);
 			}
 			
 			function getOption(cnt) {

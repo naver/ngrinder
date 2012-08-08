@@ -205,7 +205,7 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/getReportData")
 	public @ResponseBody
-	String getReportData(ModelMap model, @RequestParam long testId, @RequestParam String dataType,
+	String getReportData(ModelMap model, @RequestParam long testId, @RequestParam(required = true) String dataType,
 			@RequestParam int imgWidth) {
 		List<Object> reportData = null;
 		String[] dataTypes = StringUtils.split(dataType, ",");

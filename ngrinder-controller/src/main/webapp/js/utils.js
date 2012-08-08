@@ -402,3 +402,7 @@ function enableChkboxSelectAll() {
 function removeClick() {
 	$(".noClick").off('click');
 }
+
+function getValueByID(id) {
+	return $.trim($("#" + id).val());
+}
