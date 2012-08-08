@@ -29,6 +29,8 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 	@Autowired
 	protected UserRepository userRepository;
 
+	protected User testUser = null;
+
 	@Autowired
 	@Override
 	public void setDataSource(@Qualifier("dataSource") DataSource dataSource) {
@@ -40,7 +42,10 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 	}
 
 	public User getTestUser() {
-		return getUser(MockUserContext.TEST_USER_ID);
+		if (testUser == null) {
+			testUser = getUser(MockUserContext.TEST_USER_ID);
+		}
+		return testUser;
 	}
 
 	public void sleep(long miliseconds) {

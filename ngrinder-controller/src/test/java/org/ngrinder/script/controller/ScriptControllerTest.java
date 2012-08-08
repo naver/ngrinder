@@ -62,8 +62,6 @@ public class ScriptControllerTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	private Config config;
 	
-	private User testUser = getTestUser();
-	
 	@Before
 	public void before() throws IOException {
 		CompressionUtil compressUtil = new CompressionUtil();
