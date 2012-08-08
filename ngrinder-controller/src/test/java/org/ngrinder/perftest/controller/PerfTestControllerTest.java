@@ -23,6 +23,7 @@
 package org.ngrinder.perftest.controller;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -101,12 +102,28 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		String newName = "new test1";
 		PerfTest test = createPerfTest(testName, Status.READY, new Date());
 		test.setTestName(newName);
+		
+		PerfTest newTest = new PerfTest();
+		newTest.setId(test.getId());
+		newTest.setTestName(newName);
+		newTest.setThreshold(test.getThreshold());
+		newTest.setDuration(test.getDuration());
+		newTest.setVuserPerAgent(test.getVuserPerAgent());
+		newTest.setScheduledTime(test.getScheduledTime());
+		newTest.setIgnoreSampleCount(test.getIgnoreSampleCount());
+		newTest.setTargetHosts(test.getTargetHosts());
+		newTest.setScriptName(test.getScriptName());
+
+		
 		ModelMap model = new ModelMap();
-		controller.saveTest(getTestUser(), model, test);
-		controller.getTestDetail(getTestUser(), test.getId(), model);
+		controller.saveTest(getTestUser(), model, newTest);
+		controller.getTestDetail(getTestUser(), newTest.getId(), model);
 		PerfTest testInDB = (PerfTest)model.get(PARAM_TEST);
 
 		assertThat(testInDB.getTestName(), is(newName));
+		
+		//test is cloned, but not modified.
+		assertThat(testInDB.getId(), not(test.getId()));
 		
 	}
 

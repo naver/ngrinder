@@ -23,6 +23,7 @@
 package org.ngrinder.agent.controller;
 
 import org.junit.Test;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 
@@ -32,7 +33,7 @@ import org.springframework.ui.ModelMap;
  * @author Mavlarn
  * @since 3.0
  */
-public class AgentControllerTest {
+public class AgentControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	AgentController agentController;

@@ -94,6 +94,9 @@ public class AgentService {
 	 */
 	public AgentInfo getAgent(long id) {
 		AgentInfo agentInfo = agentRepository.findOne(id);
+		if (agentInfo == null) {
+			return null;
+		}
 		AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIp(agentInfo.getIp());
 		if (agentIdentity != null) {
 			agentInfo.setStatus(agentManager.getAgentControllerState(agentIdentity));
