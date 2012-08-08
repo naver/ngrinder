@@ -89,7 +89,8 @@ public class ScriptControllerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testSaveAndGet() {
 		ModelMap model = new ModelMap();
-		String path = "";
+		String path = "test1-path";
+		scriptController.addFolder(getTestUser(), "", path, model);
 		//create
 		scriptController.getCreateForm(getTestUser(), path, "test.com", "new_file.py", null, model);
 
@@ -113,6 +114,7 @@ public class ScriptControllerTest extends AbstractNGrinderTransactionalTest {
 		scriptController.searchFileEntity(getTestUser(), "test", model);
 
 		model.clear();
+		scriptController.delete(getTestUser(), path, "new_file.py", model);
 		scriptController.get(getTestUser(), path, model);
 		List<FileEntry> scriptList = (List<FileEntry>)model.get("files");
 		assertThat(scriptList.size(), is(0));
@@ -122,12 +124,10 @@ public class ScriptControllerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testCreateFolderSaveAndGet() {
 		ModelMap model = new ModelMap();
-		String path = "";
+		String path = "test2-path";
 		
 		//add folder
-		scriptController.addFolder(getTestUser(), path, "new_folder", model);
-		
-		path = "new_folder"; //new folder
+		scriptController.addFolder(getTestUser(), "", path, model);
 		//create
 		scriptController.getCreateForm(getTestUser(), path, "test.com", "file-for-search.py", null, model);
 		FileEntry script = (FileEntry)model.get("file");
@@ -159,8 +159,12 @@ public class ScriptControllerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testUploadFiles() {
 		ModelMap model = new ModelMap();
-		String path = "";
+		String path = "test-upload-path";
+		scriptController.addFolder(getTestUser(), "", path, model);
+		
+		String upFileName = "Uploaded";
 		FileEntry script = new FileEntry();
+		script.setPath(path + "/" + upFileName);
 		MultipartFile upFile = new MockMultipartFile("Uploaded.py", "#test content...".getBytes());
 		
 		scriptController.uploadFiles(getTestUser(), path, script, upFile, model);
