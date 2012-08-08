@@ -70,7 +70,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.READY, new Date());
 		ModelMap model = new ModelMap();
-		controller.deleteTests(model, String.valueOf(test.getId()));
+		controller.deleteTests(getTestUser(), model, String.valueOf(test.getId()));
 		
 		model.clear();
 		controller.getTestDetail(getTestUser(), test.getId(), model);
@@ -81,7 +81,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		PerfTest test1 = createPerfTest(testName, Status.READY, new Date());
 		PerfTest test2 = createPerfTest(testName, Status.READY, new Date());
 		String delIds = "" + test1.getId() + "," + test2.getId();
-		controller.deleteTests(model, delIds);
+		controller.deleteTests(getTestUser(), model, delIds);
 
 		model.clear();
 		controller.getTestDetail(getTestUser(), test1.getId(), model);
@@ -224,9 +224,9 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
 		ModelMap model = new ModelMap();
-		controller.getReport(model, test.getId());
+		controller.getReport(getTestUser(), model, test.getId());
 
-		controller.getReportData(model, test.getId(), "tps,errors", 0);
+		controller.getReportData(getTestUser(), model, test.getId(), "tps,errors", 0);
 	}
 	
 	@Test
@@ -235,7 +235,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
 
 		HttpServletResponse resp = new MockHttpServletResponse();
-		controller.downloadReportData(resp, test.getId());
+		controller.downloadReportData(getTestUser(), resp, test.getId());
 	}
 	
 	@Test
@@ -246,7 +246,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		test.setPort(11011);
 		ModelMap model = new ModelMap();
 		try {
-			controller.refreshTestRunning(model, test.getId());
+			controller.refreshTestRunning(getTestUser(), model, test.getId());
 		} catch (NullPointerException e) {
 			assertTrue(true);
 		}
