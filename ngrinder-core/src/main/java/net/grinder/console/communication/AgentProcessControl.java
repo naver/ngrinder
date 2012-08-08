@@ -87,8 +87,27 @@ public interface AgentProcessControl {
 	 */
 	public Set<AgentIdentity> getAllAgents();
 
+	/**
+	 * Get {@link JavaDataModel} for given {@link AgentIdentity}
+	 * 
+	 * @return {@link JavaDataModel} instance if available. null otherwise
+	 */
 	SystemDataModel getSystemDataModel(AgentIdentity agentIdentity);
 
+	/**
+	 * Get {@link SystemDataModel} for given {@link AgentIdentity}
+	 * 
+	 * @return {@link SystemDataModel} instance if available. null otherwise
+	 */
 	JavaDataModel getJavaDataModel(AgentIdentity agentIdentity);
+
+	/**
+	 * Get agent controller state for the given agent identity.
+	 * 
+	 * @param agentIdentity
+	 *            agent identity
+	 * @return {@link AgentControllerState} member
+	 */
+	AgentControllerState getAgentControllerState(AgentIdentity agentIdentity);
 
 }

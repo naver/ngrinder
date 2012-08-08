@@ -399,13 +399,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		}
 	}
 
-	/**
-	 * Get agent controller state for the given agent identity.
-	 * 
-	 * @param agentIdentity
-	 *            agent identity
-	 * @return {@link AgentControllerState} member
-	 */
+	@Override
 	public AgentControllerState getAgentControllerState(AgentIdentity agentIdentity) {
 		return getAgentStatus(agentIdentity).getAgentControllerState();
 	}

@@ -28,6 +28,7 @@ import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.grinder.AgentDaemon.AgentShutDownListener;
 import net.grinder.common.GrinderBuild;
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
@@ -187,6 +188,12 @@ public class AgentController implements Agent {
 					m_logger.info("starting agent...");
 					agent.run(startMessage.getProperties());
 					m_agentStart = true;
+					agent.addListener(new AgentShutDownListener() {
+						@Override
+						public void shutdownAgent() {
+							m_agentStart = false;
+						}
+					});
 				}
 				// Ignore any pending start messages.
 				m_agentControllerServerListener.discardMessages(AgentControllerServerListener.START);

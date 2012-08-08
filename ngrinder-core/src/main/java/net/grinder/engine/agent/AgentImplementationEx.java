@@ -293,6 +293,7 @@ public class AgentImplementationEx implements Agent {
 					}
 
 					workerLauncher.shutdown();
+					break;
 				}
 
 				if (consoleCommunication == null) {
