@@ -348,7 +348,6 @@ public class AgentController implements Agent {
 
 		public void shutdown() {
 			m_reportRunningTask.cancel();
-
 			try {
 				m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.FINISHED, null, null));
 			} catch (CommunicationException e) {

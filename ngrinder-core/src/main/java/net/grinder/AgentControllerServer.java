@@ -18,12 +18,34 @@ import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.behaviors.Caching;
 import org.slf4j.Logger;
 
+/**
+ * Agent Controller which controls agent behavior. This class is subject to
+ * synchronized. So if you want to daemon, please refer
+ * {@link AgentControllerServerDaemon}
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
 public class AgentControllerServer {
 	private DefaultPicoContainer m_container;
 	private Timer m_timer;
 	private boolean m_shutdown = false;
 	private final Condition m_eventSyncCondition;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param resources
+	 *            message resource
+	 * @param logger
+	 *            logger
+	 * @param properties
+	 *            {@link ConsoleProperties}
+	 * @param eventSyncCondition
+	 *            event synchronized condition to synchronize server stop phase.
+	 * @throws GrinderException
+	 *             occurs when error is
+	 */
 	public AgentControllerServer(Resources resources, Logger logger, ConsoleProperties properties,
 			Condition eventSyncCondition) throws GrinderException {
 		m_eventSyncCondition = eventSyncCondition;
@@ -43,6 +65,9 @@ public class AgentControllerServer {
 		errorQueue.setErrorHandler(new ErrorHandlerImplementation(logger));
 	}
 
+	/**
+	 * Run agent controller in synchronized way.
+	 */
 	public void run() {
 		if (m_shutdown) {
 			throw new NGrinderRuntimeException("console can not run becaz it's shutdowned");
@@ -54,7 +79,9 @@ public class AgentControllerServer {
 			// Now ready to work
 			m_eventSyncCondition.notifyAll();
 		}
+		// CHECKSTYLE:OFF
 		while (communication.processOneMessage()) {
+			// Fall through
 			// Process until communication is shut down.
 		}
 	}
@@ -67,10 +94,20 @@ public class AgentControllerServer {
 		m_shutdown = true;
 		m_container.getComponent(ConsoleCommunication.class).shutdown();
 		m_timer.cancel();
-		if (m_container.getLifecycleState().isStarted())
+		if (m_container.getLifecycleState().isStarted()) {
 			m_container.stop();
+		}
 	}
 
+	/**
+	 * Get internal component.
+	 * 
+	 * @param componentType
+	 *            component type class
+	 * @param <T>
+	 *            component type
+	 * @return component
+	 */
 	public <T> T getComponent(Class<T> componentType) {
 		return m_container.getComponent(componentType);
 	}

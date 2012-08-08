@@ -42,6 +42,7 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 		test.setTargetHosts("127.0.0.1");
 		test.setScriptName("test1.py");
 		test.setProcesses(10);
+		test.setThreads(3);
 		test.setProcessIncrement(1);
 		test.setInitSleepTime(0);
 		test.setProcessIncrementInterval(1000);

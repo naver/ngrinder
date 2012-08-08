@@ -15,6 +15,7 @@ import net.grinder.AgentControllerDaemon;
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.WorkerProcessReport;
+import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.console.communication.ProcessControl.Listener;
 import net.grinder.console.communication.ProcessControl.ProcessReports;
 import net.grinder.console.communication.ProcessControlImplementation;
@@ -55,11 +56,11 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		assertThat(allPerfTest.size(), is(2));
 
 		agentControllerDaemon = new AgentControllerDaemon();
-		agentControllerDaemon.run(AGENT_SERVER_DAEMON_PORT);
+		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		agentControllerDaemon2 = new AgentControllerDaemon();
-		agentControllerDaemon2.run(AGENT_SERVER_DAEMON_PORT);
+		agentControllerDaemon2.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 
-		sleep(2000);
+		sleep(3000);
 		assertThat(agentManager.getAllAttachedAgents().size(), is(2));
 	}
 
@@ -79,7 +80,8 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	@Autowired
 	public FileEntityRepository fileEntityRepository;
 
-	private int currentProcessCount = 0;
+	private int currentProcessCount = 10;
+	private Object processCountSync = new Object();
 
 	@Test
 	public void testStartConsole() throws IOException {
@@ -107,11 +109,13 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 			@Override
 			public void update(ProcessReports[] processReports) {
-				currentProcessCount = 0;
-				for (ProcessReports each : processReports) {
-					for (WorkerProcessReport eachWorker : each.getWorkerProcessReports()) {
-						if (eachWorker.getState() == 2) {
-							currentProcessCount++;
+				synchronized (processCountSync) {
+					currentProcessCount = 0;
+					for (ProcessReports each : processReports) {
+						for (WorkerProcessReport eachWorker : each.getWorkerProcessReports()) {
+							if (eachWorker.getState() == 2) {
+								currentProcessCount++;
+							}
 						}
 					}
 				}
@@ -120,16 +124,20 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 		// Run test
 		perfTestRunnable.runTestOn(perfTest, grinderProperties, singleConsole);
-		sleep(10000);
+		sleep(20000);
 
 		// Waiting for termination
 		for (int i = 1; i < 100; i++) {
-			if (currentProcessCount == 0) {
-				return;
+			sleep(1000);
+			synchronized (processCountSync) {
+				if (currentProcessCount == 0) {
+					return;
+				}
 			}
 			System.out.println("**** Current Process Count : " + currentProcessCount);
-			sleep(1000);
+
 		}
+
 		fail("Process is not finished within 100 sec");
 	}
 
