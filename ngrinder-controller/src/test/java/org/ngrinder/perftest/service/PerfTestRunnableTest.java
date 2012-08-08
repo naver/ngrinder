@@ -152,13 +152,13 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		FileEntry fileEntryDir = new FileEntry();
 		fileEntryDir.setPath("/hello");
 		fileEntryDir.setFileType(FileType.DIR);
-		fileEntityRepository.save(testUser, fileEntryDir, null);
+		fileEntityRepository.save(getTestUser(), fileEntryDir, null);
 
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath("/hello/world.py");
 		String worldString = IOUtils.toString(new ClassPathResource("world.py").getInputStream());
 		fileEntry.setContent(worldString);
 		fileEntry.setFileType(FileType.PYTHON_SCRIPT);
-		fileEntityRepository.save(testUser, fileEntry, "UTF-8");
+		fileEntityRepository.save(getTestUser(), fileEntry, "UTF-8");
 	}
 }
