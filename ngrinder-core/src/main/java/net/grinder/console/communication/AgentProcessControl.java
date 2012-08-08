@@ -24,6 +24,9 @@ package net.grinder.console.communication;
 
 import java.util.Set;
 
+import org.ngrinder.monitor.controller.model.JavaDataModel;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
+
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.message.console.AgentControllerState;
@@ -83,5 +86,9 @@ public interface AgentProcessControl {
 	 * @return agent list
 	 */
 	public Set<AgentIdentity> getAllAgents();
+
+	SystemDataModel getSystemDataModel(AgentIdentity agentIdentity);
+
+	JavaDataModel getJavaDataModel(AgentIdentity agentIdentity);
 
 }

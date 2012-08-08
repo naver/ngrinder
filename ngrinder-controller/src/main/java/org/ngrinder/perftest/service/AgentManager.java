@@ -40,6 +40,8 @@ import net.grinder.util.thread.ExecutorFactory;
 
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.monitor.controller.model.JavaDataModel;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -79,6 +81,14 @@ public class AgentManager implements NGrinderConstants {
 
 	public Set<AgentIdentity> getAllFreeAgents() {
 		return agentControllerServer.getAllFreeAgents();
+	}
+
+	public JavaDataModel getJavaDataModel(AgentIdentity agentIdentity) {
+		return agentControllerServer.getJavaDataModel(agentIdentity);
+	}
+
+	public SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {
+		return agentControllerServer.getSystemDataModel(agentIdentity);
 	}
 
 	/**

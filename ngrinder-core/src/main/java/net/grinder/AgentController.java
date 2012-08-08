@@ -53,6 +53,8 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.ReflectionUtil;
 import net.grinder.util.thread.Condition;
 
+import org.ngrinder.monitor.controller.model.JavaDataModel;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
 
 /**
@@ -292,7 +294,8 @@ public class AgentController implements Agent {
 			m_sender = ClientSender.connect(receiver);
 
 			m_agentIdentity.setPort(getSocket(m_sender).getPort());
-			m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.START));
+			m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.START, getJavaDataModel(),
+					getSystemDataModel()));
 
 			final MessageDispatchSender messageDispatcher = new MessageDispatchSender();
 			m_agentControllerServerListener.registerMessageHandlers(messageDispatcher);
@@ -303,14 +306,32 @@ public class AgentController implements Agent {
 				public void run() {
 					try {
 						m_sender.send(new AgentControllerProcessReportMessage(
-								m_agentStart ? AgentControllerState.AGENT_RUN : AgentControllerState.RUNNING));
+								(m_agentStart ? AgentControllerState.AGENT_RUN : AgentControllerState.RUNNING),
+								getJavaDataModel(), getSystemDataModel()));
 					} catch (CommunicationException e) {
 						cancel();
 						m_logger.error(e.getMessage());
 					}
 
 				}
+
 			};
+		}
+
+		protected SystemDataModel getSystemDataModel() {
+			SystemDataModel systemDataModel = new SystemDataModel();
+			systemDataModel.setCollectTime(10000);
+			systemDataModel.setCpuUsedPercentage(20f);
+			// FIXME
+			return systemDataModel;
+		}
+
+		protected JavaDataModel getJavaDataModel() {
+			JavaDataModel javaDataModel = new JavaDataModel();
+			javaDataModel.setCollectTime(10000);
+			javaDataModel.setCpuUsedPercentage(20f);
+			// FIXME
+			return javaDataModel;
 		}
 
 		public void start() {
@@ -322,7 +343,7 @@ public class AgentController implements Agent {
 			m_reportRunningTask.cancel();
 
 			try {
-				m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.FINISHED));
+				m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.FINISHED, null, null));
 			} catch (CommunicationException e) {
 				// Ignore - peer has probably shut down.
 			} finally {
