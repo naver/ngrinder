@@ -418,4 +418,8 @@ $(document).ready(function() {
 		} 
 		return false;
 	});
+	
+	$("div[rel=popover]").hover(function() {
+        $(this).popover('show')
+    });
 });

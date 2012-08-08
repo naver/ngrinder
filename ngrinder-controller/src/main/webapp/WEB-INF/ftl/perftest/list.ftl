@@ -36,7 +36,7 @@
 				<table class="table table-striped table-bordered ellipsis" id="testTable">
 					<colgroup>
 						<col width="30">
-						<col width="150">
+						<col width="100">
 						<col>
 						<col>
 						<col width="135">
@@ -45,7 +45,6 @@
 						<col width="95">
 						<col width="70">
 						<col width="60">
-						<col width="40">
 					</colgroup>
 					<thead>
 						<tr>
@@ -59,7 +58,6 @@
 							<th id="meanTestTime">Mean Time</th>
 							<th id="errors">Errors</th>
 							<th class="nothing">Vusers</th>
-							<th class="nothing">Del</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -69,16 +67,40 @@
 								<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
 								<tr id="tr${test.id}">
 									<td style="text-align:center"><input type="checkbox" class="checkbox" value="${test.id}" <#if !(test.status =="READY" || test.status =="SAVED"|| test.status == "FINISHED")>disabled</#if>></td>
-									<td class="ellipsis" title="${test.status}" style="text-align:center">${test.status}</td>
-									<td class="ellipsis" title="${test.testName}" style="text-align:center"><a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a></td>
-									<td class="ellipsis" style="text-align:center">${test.scriptName}</td>
+									<td class="ellipsis"  style="text-align:center">
+										<div 
+										<#if test.status == 'STOP_ON_ERROR'>
+											 rel="popover"
+											 data-content="${test.testErrorStackTrace?replace('\n', '<br/>')?html}" 
+											 data-original-title="Error on ${test.testErrorCause} phase"
+										</#if>
+										<#if test.status == 'SAVED'>
+											 rel="popover"
+											 data-content="${test.createdDate}" 
+											 data-original-title="Saved at"
+										</#if>
+										>
+										${test.status}
+										</div>
+									</td>
+									<td class="ellipsis" > 
+										<div rel="popover"
+											 data-content="${test.description?replace('\n', '<br/>')?html}"  
+											 data-original-title="${test.testName} description">
+											<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
+											<#if test.status =="READY" || test.status == "SAVED"><a href="javascript:void(0);"><i class="icon-remove test-remove" sid="${test.id}"></i></a></#if>
+										</div>
+
+									</td>
+									<td class="ellipsis">
+										${test.scriptName} 
+									</td>
 									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
 									<td>${(test.durationStr)!}</td>
 									<td>${(test.tps)!}</td>
 									<td>${(test.meanTestTime)!0}</td>
 									<td>${(test.errors)!0}</td>
 									<td>${vuserTotal}</td>
-									<td><#if test.status =="READY" || test.status == "FINISHED"><a href="javascript:void(0);"><i class="icon-remove test-remove" sid="${test.id}"></i></a></#if></td>
 								</tr>
 							</#list>
 						<#else>
