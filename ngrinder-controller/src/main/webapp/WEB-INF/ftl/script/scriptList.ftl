@@ -80,7 +80,7 @@
 								<#elseif script.fileType == "dir">
 									<a href="${req.getContextPath()}/script/list/${script.path}" target="_self">${script.fileName}</a>
 								<#else>	
-									<a href="${req.getContextPath()}/svn/${currentUser.userId}" target="_blank">${script.fileName}</a>
+									<a href="${req.getContextPath()}/svn/${currentUser.userId}/${script.path}" target="_blank">${script.fileName}</a>
 								</#if>
 							</td>
 							<td class="ellipsis" title="${(script.description)!}">${(script.description)!}</td>
