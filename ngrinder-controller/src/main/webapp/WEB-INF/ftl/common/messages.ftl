@@ -13,12 +13,12 @@
 	
 	function showMsg(color, message) {
 		var $msgDiv = $('#messageDiv');
+		$msgDiv.hide();
 		$msgDiv.addClass(color);
 		$msgDiv.html(message);
 		$msgDiv.fadeIn("fast");
 		setTimeout(function() {
 			$msgDiv.fadeOut('fast');
-			$msgDiv.html("");
 			$msgDiv.removeClass(color);
 		}, 3000);
 	}
@@ -33,6 +33,7 @@
 	
 	function showErrorMsg(message) {
 		var $div = $("#errorDiv");
+		$div.hide();
 		$div.children("span").html(message);
 		$div.fadeIn("fast");
 	}

@@ -35,18 +35,20 @@
 						</tr>
 					</thead>
 					<tbody>
-						<#if agents?has_content> <#list agents as agent>
+						<#if agents?has_content>
+						<#list agents as agent>
 						<tr>
 							<td><input type="checkbox" value="${agent.id}"></td>
-							<td class="left"><a href="${req.getContextPath()}/agent/detail?id=${agent.id}" target="_self">${agent.ip}</a>
-								<a href="${req.getContextPath()}/agent/delete?ids=${agent.id}" title="Delete this agent">
-								<iclass="icon-remove"></i></a></td>
+							<td>
+								<a href="${req.getContextPath()}/agent/detail?id=${agent.id}" target="_self">${agent.ip}</a>
+							</td>
 							<td>${(agent.port)!}</td>
-							<td class="left">${(agent.hostName)!}</td>
-							<td class="left">${(agent.region)!}</td>
+							<td>${(agent.hostName)!}</td>
+							<td>${(agent.region)!}</td>
 							<td>${(agent.status)!}</td>
 						</tr>
-						</#list> <#else>
+						</#list>
+						<#else>
 						<tr>
 							<td colspan="7" class="noData">No data to display.</td>
 						</tr>

@@ -42,6 +42,11 @@ div.chart {
 .table thead th {
     vertical-align: middle;
 }
+
+.rampChart {
+	width: 450px; 
+	height: 355px
+}
 </style>
 
 </head>
@@ -256,8 +261,8 @@ div.chart {
 										</td>
 									</tr>
 								</table>
-								<div id="rampChart1" class="rampChart"></div>
-								<div id="rampChart2" class="rampChart hidden"></div>
+								
+								<div id="rampChart" class="rampChart"></div>
 							</div>
 						</div>
 					</div>
@@ -543,13 +548,11 @@ div.chart {
 			</div>
 		</div>
 	
-	<#include "../common/jqplot.ftl">
 	<script src="${req.getContextPath()}/plugins/datepicker/js/bootstrap-datepicker.js"></script>
 	<script src="${req.getContextPath()}/js/rampup.js"></script>
 	<script src="${req.getContextPath()}/js/bootstrap-slider.min.js"></script>
 	
 	<script>
-	   var chart;
 	   var objTimer;
 	   var sliderMax = 100;
 	   var durationMap = {};
@@ -750,6 +753,7 @@ div.chart {
 				initThresholdChkBox();
 				initDuration();
 				resetFooter();
+				updateChart();
 			});
 			
 			function updateVuserTotal () {

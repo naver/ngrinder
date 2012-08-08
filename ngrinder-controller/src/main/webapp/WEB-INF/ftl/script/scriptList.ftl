@@ -12,11 +12,11 @@
 		<div class="well form-inline searchBar" style="margin-top:0;">
 			<!--<legend>introduction</legend>-->
 			<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
-			<button type="submit" class="btn" id="searchBtn">Search</button>
+			<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> Search</button>
 			<#if svnUrl?has_content>
-				<div class="input-prepend input-append pull-right"> 
-	               <span class="add-on">SVN</span><input class="span6" id="prependedInput" type="text" value="${svnUrl}" readonly style="cursor:text"><button class="btn" type="button"><i class="icon-ok"></i> Copy </button>
-	        	</div> 
+			<div class="input-prepend pull-right"> 
+               <span class="add-on" style="cursor:default">SVN</span><span class="input-xlarge uneditable-input span6" style="cursor:text">${svnUrl}</span>
+        	</div> 
         	</#if>	
         	<div style="margin-top:10px">
 				<a class="btn" href="#createScriptModal" id="createBtn" data-toggle="modal">
@@ -65,7 +65,7 @@
 					<#list files as script>
 						<tr>
 							<td><#if script.fileName != ".."><input type="checkbox" value="${script.fileName}"></#if></td>
-							<td class="left">
+							<td>
 								<#if script.fileType.fileCategory.isEditable()>
 									<i class="icon-file"></i>
 								<#elseif script.fileType == "dir">
@@ -74,7 +74,7 @@
 									<i class="icon-briefcase"></i>
 								</#if>
 							</td>
-							<td class="left">
+							<td>
 								<#if script.fileType.fileCategory.isEditable()>
 									<a href="${req.getContextPath()}/script/detail/${script.path}" target="_self">${script.fileName}</a>
 								<#elseif script.fileType == "dir">
@@ -83,7 +83,7 @@
 									<a href="${req.getContextPath()}/svn/${currentUser.userId}" target="_blank">${script.fileName}</a>
 								</#if>
 							</td>
-							<td class="left ellipsis" title="${(script.description)!}">${(script.description)!}</td>
+							<td class="ellipsis" title="${(script.description)!}">${(script.description)!}</td>
 							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
 							<td>${(script.fileSize)!0}</td>
 							<td><a href="javascript:void(0);"><i class="icon-download-alt script-download" spath="${script.path}" sname="${script.fileName}"></i></a></td>

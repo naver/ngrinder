@@ -135,11 +135,6 @@ table.ellipsis td.ellipsis {
 	margin: 10px 0
 }
 
-.rampChart {
-	width: 460px; 
-	height: 355px
-}
-
 table td.noData {
 	text-align: center;
 }

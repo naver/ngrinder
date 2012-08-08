@@ -18,7 +18,7 @@
 		
 				<div class="well form-inline searchBar">
 					<input type="text" class="search-query" placeholder="Keywords" name ="query" id="query" value="${query!}">
-					<button type="submit" class="btn" id="searchBtn">Search</button>
+					<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> Search</button>
 					<label class="checkbox" style="position:relative;">
 						<input type="checkbox" id="onlyFinished" name="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> Only Finished
 					</label>

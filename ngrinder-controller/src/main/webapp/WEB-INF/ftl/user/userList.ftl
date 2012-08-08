@@ -21,7 +21,7 @@
 				<div class="well form-inline searchBar">
 					<input type="text" class="input-medium search-query span4"
 						placeholder="Keywords" id="searchText" value="${keywords!}">
-					<button type="submit" class="btn" id="search_user">Search</button>
+					<button type="submit" class="btn" id="search_user"><i class="icon-search"></i> Search</button>
 					<span class="pull-right">
 						<a class="btn" href="${req.getContextPath()}/user/detail" id="createBtn"  data-toggle="modal">
 							<i class="icon-user"></i>
@@ -42,7 +42,7 @@
                         <col width="150">
                         <col>
                         <col width="130">
-                        <col width="40">
+                        <col width="42">
                         <col width="40">
                     </colgroup>
 					<thead>
@@ -60,21 +60,27 @@
 						<#list userList as user>
 						<tr>
 							<td><input type="checkbox" id="user_info_check" <#if user.userId == "admin">disabled</#if> value="${user.userId}" /></td>
-							<td class="left"><a
-										href="${req.getContextPath()}/user/detail?userId=${user.userId}">${user.userName!}</a></td>
+							<td>
+								<a href="${req.getContextPath()}/user/detail?userId=${user.userId}">${user.userName!}</a></td>
 							<td>
 								<#if user.createdDate?has_content>
 									${user.createdDate?string("yyyy/MM/dd HH:mm:ss")}
 								</#if>
-								</td>
-							<td class="left ellipsis">${user.description!}</td>
-							<td class="left">${user.role}</td>
-							<td><a
-								href="${req.getContextPath()}/user/detail?userId=${user.userId}"><i
-									class="icon-edit"></i></a></td>
-							<td><a
-								href="${req.getContextPath()}/user/delete?userIds=${user.userId}"><i
-									class="icon-remove"></i></a></td>
+							</td>
+							<td class="ellipsis">${user.description!}</td>
+							<td>${user.role}</td>
+							<td>
+								<a href="${req.getContextPath()}/user/detail?userId=${user.userId}">
+									<i class="icon-edit"></i>
+								</a>
+							</td>
+							<td>
+								<#if user.userId != "admin">
+								<a href="javascript:deleteUsers('${user.userId}');">
+									<i class="icon-remove"></i>
+								</a>
+								</#if>
+							</td>
 						</tr>
 						</#list>
 					</tbody>
@@ -122,13 +128,13 @@
 				checkedUser.push($elem.val());
 			});
 			
-			var ids = checkedUser.join(",");
-			
-			if (!confirm("Do you want to delete user: "+ ids +" ?")) {
-				return;
+			deleteUsers(checkedUser.join(","));	
+		}
+		
+		function deleteUsers(ids) {
+			if (confirm("Do you want to delete user(s): " + ids + "?")) {
+				document.location.href="${req.getContextPath()}/user/delete?userIds=" + ids;
 			}
-			
-			document.location.href="${req.getContextPath()}/user/delete?userIds=" + ids;		
 		}
 	</script>
 </body>
