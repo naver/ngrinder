@@ -859,10 +859,14 @@ div.chart {
 			}
 			
 			function initHosts() {
+				if (checkEmptyByID("hostsHidden")) {
+					return;
+				}
+				
 				var contents = $("#hostsHidden").val().split(",");
 				var str = "";
 				for (i = 0; i < contents.length; i++) {
-					str += hostItem(contents[i]);
+					str += hostItem($.trim(contents[i]));
 				}
 				
 				$(".div-host").empty();
