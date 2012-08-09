@@ -71,9 +71,9 @@
 										<div 
 										<#if test.status == 'STOP_ON_ERROR'>
 											 rel="popover"
-											 data-content="${test.testErrorStackTrace?replace('\n', '<br/>')?html}" 
+											 data-content="${(test.testErrorStackTrace)! ?replace('\n', '<br/>')?html}" 
 											 data-original-title="Error on ${test.testErrorCause} phase"
-										</#if>
+										</#if> 
 										<#if test.status == 'SAVED'>
 											 rel="popover"
 											 data-content="${test.createdDate}" 

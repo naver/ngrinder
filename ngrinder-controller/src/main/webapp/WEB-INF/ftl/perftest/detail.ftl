@@ -18,7 +18,7 @@ div.div-resources {
 div.div-resources .resource {
 	color: #666666;
 	display: inline-block;
-	margin: 7px;
+	margin-left: 7px;
 }
 
 div.div-host {
@@ -698,6 +698,10 @@ div.chart {
 					if (!$("#testContentForm").valid()) {
 						return false;
 					}
+					<#if test?? && (test.status != "SAVED")>
+						$("#testId").val("");
+						$("#testStatus").val("SAVED");
+					</#if>
 					$("#scheduleInput").attr('name','');
 					return true;
 				});
@@ -837,7 +841,7 @@ div.chart {
 				    	var len=res.length;
 						for(var i=0; i<len; i++) {
 							var value = res[i];
-							html = html + "<div class='resource'>" + value + "</div>";
+							html = html + "<div class='resource'>" + value + "</div><br/>";
 						}
 						$("#scriptResources").html(html);
 			    	},

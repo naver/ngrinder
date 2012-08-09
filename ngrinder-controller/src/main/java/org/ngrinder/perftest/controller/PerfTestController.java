@@ -22,6 +22,7 @@
  */
 package org.ngrinder.perftest.controller;
 
+import static org.ngrinder.common.util.Preconditions.checkArgument;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
@@ -165,6 +166,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String saveTest(User user, ModelMap model, PerfTest test) {
+		checkArgument(test.getStatus() == Status.READY || test.getStatus() == Status.SAVED, "save test only support for SAVE or READY status");
 		perfTestService.savePerfTest(test);
 		return "redirect:/perftest/list";
 	}
