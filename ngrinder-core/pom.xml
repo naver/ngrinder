@@ -81,6 +81,29 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copies for distribution</id>
+						<phase>package</phase>
+						<goals>
+							<goal>assembly</goal>
+						</goals>
+						<configuration>
+							<finalName>ngrinder-core</finalName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copies for download</id>
+						<phase>package</phase>
+						<goals>
+							<goal>assembly</goal>
+						</goals>
+						<configuration>
+							<finalName>ngrinder-core</finalName>
+							<outputDirectory>${project.parent.basedir}/ngrinder-controller/target/ngrinder-controller-${project.version}/WEB-INF/classes</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
 				<configuration>
 					<archive>
 						<manifest>
