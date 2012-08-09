@@ -75,18 +75,49 @@
 			<systemPath>${toolsjar}</systemPath>
 		</dependency>
 
+		<dependency>
+			<groupId>net.sf.grinder</groupId>
+			<artifactId>grinder</artifactId>
+			<version>3.9.1</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>grinder-dcr-agent</artifactId>
+					<groupId>net.sf.grinder</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
+				<artifactId>maven-dependency-plugin</artifactId>
+
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
 				<executions>
 					<execution>
 						<id>copies for distribution</id>
 						<phase>package</phase>
 						<goals>
-							<goal>assembly</goal>
+							<goal>jar</goal>
 						</goals>
 						<configuration>
 							<finalName>ngrinder-core</finalName>
@@ -96,25 +127,25 @@
 						<id>copies for download</id>
 						<phase>package</phase>
 						<goals>
-							<goal>assembly</goal>
+							<goal>jar</goal>
 						</goals>
 						<configuration>
 							<finalName>ngrinder-core</finalName>
-							<outputDirectory>${project.parent.basedir}/ngrinder-controller/target/ngrinder-controller-${project.version}/WEB-INF/classes</outputDirectory>
+							<outputDirectory>${project.parent.basedir}/ngrinder-controller/src/main/resources/ngrinder-controller-${project.version}/WEB-INF/classes</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>org.ngrinder.NGrinderStarter</mainClass>
 							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+							<mainClass>org.ngrinder.NGrinderStarter</mainClass>
 						</manifest>
-
+						<manifestEntries>
+							<Class-Path>tools.jar</Class-Path>
+						</manifestEntries>
 					</archive>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
 				</configuration>
 			</plugin>
 			<plugin>
