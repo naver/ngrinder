@@ -46,6 +46,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
+import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.AgentMonitorServer;
 import org.slf4j.Logger;
@@ -63,6 +64,8 @@ public class NGrinderStarter {
 	private final Logger LOG = LoggerFactory.getLogger(NGrinderStarter.class);
 
 	private boolean localAttachmentSupported;
+
+	public static AgentConfig agentConfig;
 
 	public NGrinderStarter() {
 		try {
@@ -192,7 +195,9 @@ public class NGrinderStarter {
 		CommandLineParser parser = new PosixParser();
 		CommandLine cmd = null;
 		NGrinderStarter starter = new NGrinderStarter();
-		
+		agentConfig = new AgentConfig();
+		agentConfig.init();
+		MonitorConstants.init(agentConfig);
 		try {
 			cmd = parser.parse(options, args);
 		} catch (ParseException e) {
@@ -211,19 +216,19 @@ public class NGrinderStarter {
 					printHelpAndReturn(options);
 				}
 			}
-	
+
 			starter.startMonitor(monitorPort);
 		} else if (cmd.hasOption("a")) {
-			
 			String consoleAddress = null;
-			String consoleIP = "127.0.0.1";
-			int consolePort = AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT;
+			String consoleIP = agentConfig.getAgentProperties().getProperty("console.ip", "127.0.0,1");
+			int consolePort = agentConfig.getAgentProperties().getPropertyInt("console.port",
+					AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 			if (cmd.hasOption("c")) {
 				try {
 					consoleAddress = cmd.getOptionValue("c");
 					String[] addressStrs = StringUtils.split(consoleAddress, ":");
 					consoleIP = addressStrs[0];
-					consolePort = Integer.valueOf(addressStrs[1]); 
+					consolePort = Integer.valueOf(addressStrs[1]);
 				} catch (Exception e) {
 					printHelpAndReturn(options);
 				}
@@ -233,7 +238,7 @@ public class NGrinderStarter {
 				region = cmd.getOptionValue("r");
 			}
 			starter.startAgent(region, consoleIP, consolePort);
-			
+
 		} else {
 			printHelpAndReturn(options);
 		}

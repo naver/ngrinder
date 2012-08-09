@@ -22,8 +22,6 @@
  */
 package org.ngrinder.common.util;
 
-import java.util.NoSuchElementException;
-
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NoElementFoundException;
 import org.picocontainer.annotations.Nullable;
@@ -57,18 +55,19 @@ import org.picocontainer.annotations.Nullable;
  * <p>
  * Take care not to confuse precondition checking with other similar types of
  * checks! Precondition exceptions -- including those provided here, but also
- * {@link IndexOutOfBoundsException}, {@link NoSuchElementException},
- * {@link UnsupportedOperationException} and others -- are used to signal that
- * the <i>calling method</i> has made an error. This tells the caller that it
- * should not have invoked the method when it did, with the arguments it did, or
- * perhaps ever. Postcondition or other invariant failures should not throw
- * these types of exceptions.
+ * {@link IndexOutOfBoundsException}, {@link UnsupportedOperationException} and
+ * others -- are used to signal that the <i>calling method</i> has made an
+ * error. This tells the caller that it should not have invoked the method when
+ * it did, with the arguments it did, or perhaps ever. Postcondition or other
+ * invariant failures should not throw these types of exceptions.
  * 
  * @author Kevin Bourrillion
  * @author JunHo Yoon (modify some.. add string related)
  * @since 2 (imported from Google Collections Library)
  */
 public final class Preconditions {
+	private static final int DEFAULT_16 = 16;
+
 	private Preconditions() {
 	}
 
@@ -78,8 +77,6 @@ public final class Preconditions {
 	 * 
 	 * @param expression
 	 *            a boolean expression
-	 * @throws IllegalArgumentException
-	 *             if {@code expression} is false
 	 */
 	public static void checkArgument(boolean expression) {
 		if (!expression) {
@@ -96,8 +93,6 @@ public final class Preconditions {
 	 * @param errorMessage
 	 *            the exception message to use if the check fails; will be
 	 *            converted to a string using {@link String#valueOf(Object)}
-	 * @throws IllegalArgumentException
-	 *             if {@code expression} is false
 	 */
 	public static void checkArgument(boolean expression, @Nullable Object errorMessage) {
 		if (!expression) {
@@ -123,11 +118,6 @@ public final class Preconditions {
 	 *            the arguments to be substituted into the message template.
 	 *            Arguments are converted to strings using
 	 *            {@link String#valueOf(Object)}.
-	 * @throws IllegalArgumentException
-	 *             if {@code expression} is false
-	 * @throws NullPointerException
-	 *             if the check fails and either {@code errorMessageTemplate} or
-	 *             {@code errorMessageArgs} is null (don't let this happen)
 	 */
 	public static void checkArgument(boolean expression, @Nullable String errorMessageTemplate,
 			@Nullable Object... errorMessageArgs) {
@@ -142,8 +132,6 @@ public final class Preconditions {
 	 * 
 	 * @param expression
 	 *            a boolean expression
-	 * @throws IllegalStateException
-	 *             if {@code expression} is false
 	 */
 	public static void checkState(boolean expression) {
 		if (!expression) {
@@ -160,8 +148,6 @@ public final class Preconditions {
 	 * @param errorMessage
 	 *            the exception message to use if the check fails; will be
 	 *            converted to a string using {@link String#valueOf(Object)}
-	 * @throws IllegalStateException
-	 *             if {@code expression} is false
 	 */
 	public static void checkState(boolean expression, @Nullable Object errorMessage) {
 		if (!expression) {
@@ -187,11 +173,6 @@ public final class Preconditions {
 	 *            the arguments to be substituted into the message template.
 	 *            Arguments are converted to strings using
 	 *            {@link String#valueOf(Object)}.
-	 * @throws IllegalStateException
-	 *             if {@code expression} is false
-	 * @throws NullPointerException
-	 *             if the check fails and either {@code errorMessageTemplate} or
-	 *             {@code errorMessageArgs} is null (don't let this happen)
 	 */
 	public static void checkState(boolean expression, @Nullable String errorMessageTemplate,
 			@Nullable Object... errorMessageArgs) {
@@ -208,8 +189,6 @@ public final class Preconditions {
 	 * @param reference
 	 *            an object reference
 	 * @return the non-null reference that was validated
-	 * @throws NullPointerException
-	 *             if {@code reference} is null
 	 */
 	public static String checkNotEmpty(String reference) {
 		if (StringUtils.isEmpty(reference)) {
@@ -225,9 +204,8 @@ public final class Preconditions {
 	 * @param reference
 	 *            an object reference
 	 * @param errorMsg
+	 *            error message
 	 * @return the non-null reference that was validated
-	 * @throws NullPointerException
-	 *             if {@code reference} is null
 	 */
 	public static String checkNotEmpty(String reference, String errorMsg) {
 		if (StringUtils.isEmpty(reference)) {
@@ -243,9 +221,8 @@ public final class Preconditions {
 	 * @param reference
 	 *            an object reference
 	 * @param errorMsg
+	 *            error message
 	 * @return the non-null reference that was validated
-	 * @throws IllegalArgumentException
-	 *             if {@code condition} is not 0
 	 */
 	public static Integer checkNotZero(Integer reference, String errorMsg) {
 		if (reference == null || reference == 0) {
@@ -261,9 +238,8 @@ public final class Preconditions {
 	 * @param reference
 	 *            an object reference
 	 * @param errorMsg
+	 *            error messgae.
 	 * @return the non-null reference that was validated
-	 * @throws IllegalArgumentException
-	 *             if {@code condition} is not 0
 	 */
 	public static Long checkNotZero(Long reference, String errorMsg) {
 		if (reference == null || reference == 0L) {
@@ -273,13 +249,12 @@ public final class Preconditions {
 	}
 
 	/**
-	 * Ensures that an condition passed as a parameter is true
+	 * Ensures that an condition passed as a parameter is true.
 	 * 
 	 * @param condition
 	 *            condition
 	 * @param errorMsg
-	 * @throws IllegalArgumentException
-	 *             if {@code condition} is false
+	 *            error message
 	 */
 
 	public static void checkTrue(boolean condition, String errorMsg) {
@@ -293,11 +268,15 @@ public final class Preconditions {
 	 * Ensures that an object reference passed as a parameter to the calling
 	 * method is not null.
 	 * 
+	 * @param <T>
+	 *            type
 	 * @param reference
-	 *            an object reference
+	 *            reference
+	 * @param message
+	 *            error message template
+	 * @param args
+	 *            error formatting element
 	 * @return the non-null reference that was validated
-	 * @throws NullPointerException
-	 *             if {@code reference} is null
 	 */
 	public static <T> T checkExist(T reference, String message, Object... args) {
 		if (reference == null) {
@@ -310,11 +289,11 @@ public final class Preconditions {
 	 * Ensures that an object reference passed as a parameter to the calling
 	 * method is not null.
 	 * 
+	 * @param <T>
+	 *            type
 	 * @param reference
 	 *            an object reference
 	 * @return the non-null reference that was validated
-	 * @throws NullPointerException
-	 *             if {@code reference} is null
 	 */
 	public static <T> T checkNotNull(T reference) {
 		if (reference == null) {
@@ -327,14 +306,15 @@ public final class Preconditions {
 	 * Ensures that an object reference passed as a parameter to the calling
 	 * method is not null.
 	 * 
+	 * @param <T>
+	 *            type
+	 * 
 	 * @param reference
 	 *            an object reference
 	 * @param errorMessage
 	 *            the exception message to use if the check fails; will be
 	 *            converted to a string using {@link String#valueOf(Object)}
 	 * @return the non-null reference that was validated
-	 * @throws NullPointerException
-	 *             if {@code reference} is null
 	 */
 	public static <T> T checkNotNull(T reference, @Nullable Object errorMessage) {
 		if (reference == null) {
@@ -347,6 +327,8 @@ public final class Preconditions {
 	 * Ensures that an object reference passed as a parameter to the calling
 	 * method is not null.
 	 * 
+	 * @param <T>
+	 *            type
 	 * @param reference
 	 *            an object reference
 	 * @param errorMessageTemplate
@@ -362,8 +344,6 @@ public final class Preconditions {
 	 *            Arguments are converted to strings using
 	 *            {@link String#valueOf(Object)}.
 	 * @return the non-null reference that was validated
-	 * @throws NullPointerException
-	 *             if {@code reference} is null
 	 */
 	public static <T> T checkNotNull(T reference, @Nullable String errorMessageTemplate,
 			@Nullable Object... errorMessageArgs) {
@@ -412,10 +392,6 @@ public final class Preconditions {
 	 * @param size
 	 *            the size of that array, list or string
 	 * @return the value of {@code index}
-	 * @throws IndexOutOfBoundsException
-	 *             if {@code index} is negative or is not less than {@code size}
-	 * @throws IllegalArgumentException
-	 *             if {@code size} is negative
 	 */
 	public static int checkElementIndex(int index, int size) {
 		return checkElementIndex(index, size, "index");
@@ -434,10 +410,6 @@ public final class Preconditions {
 	 * @param desc
 	 *            the text to use to describe this index in an error message
 	 * @return the value of {@code index}
-	 * @throws IndexOutOfBoundsException
-	 *             if {@code index} is negative or is not less than {@code size}
-	 * @throws IllegalArgumentException
-	 *             if {@code size} is negative
 	 */
 	public static int checkElementIndex(int index, int size, @Nullable String desc) {
 		// Carefully optimized for execution by hotspot (explanatory comment
@@ -469,10 +441,6 @@ public final class Preconditions {
 	 * @param size
 	 *            the size of that array, list or string
 	 * @return the value of {@code index}
-	 * @throws IndexOutOfBoundsException
-	 *             if {@code index} is negative or is greater than {@code size}
-	 * @throws IllegalArgumentException
-	 *             if {@code size} is negative
 	 */
 	public static int checkPositionIndex(int index, int size) {
 		return checkPositionIndex(index, size, "index");
@@ -491,10 +459,6 @@ public final class Preconditions {
 	 * @param desc
 	 *            the text to use to describe this index in an error message
 	 * @return the value of {@code index}
-	 * @throws IndexOutOfBoundsException
-	 *             if {@code index} is negative or is greater than {@code size}
-	 * @throws IllegalArgumentException
-	 *             if {@code size} is negative
 	 */
 	public static int checkPositionIndex(int index, int size, @Nullable String desc) {
 		// Carefully optimized for execution by hotspot (explanatory comment
@@ -529,11 +493,6 @@ public final class Preconditions {
 	 *            array, list or string
 	 * @param size
 	 *            the size of that array, list or string
-	 * @throws IndexOutOfBoundsException
-	 *             if either index is negative or is greater than {@code size},
-	 *             or if {@code end} is less than {@code start}
-	 * @throws IllegalArgumentException
-	 *             if {@code size} is negative
 	 */
 	public static void checkPositionIndexes(int start, int end, int size) {
 		// Carefully optimized for execution by hotspot (explanatory comment
@@ -567,12 +526,13 @@ public final class Preconditions {
 	 *            the arguments to be substituted into the message template.
 	 *            Arguments are converted to strings using
 	 *            {@link String#valueOf(Object)}. Arguments can be null.
+	 * @return formatted message
 	 */
 	static String format(String template, @Nullable Object... args) {
 		template = String.valueOf(template); // null -> "null"
 
 		// start substituting the arguments into the '%s' placeholders
-		StringBuilder builder = new StringBuilder(template.length() + 16 * args.length);
+		StringBuilder builder = new StringBuilder(template.length() + DEFAULT_16 * args.length);
 		int templateStart = 0;
 		int i = 0;
 		while (i < args.length) {

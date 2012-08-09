@@ -22,18 +22,18 @@
  */
 package org.ngrinder.monitor;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.ngrinder.infra.AgentConfig;
 
+/**
+ * Static Monitoring Constants.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
 public class MonitorConstants {
-	private static final Logger LOG = LoggerFactory.getLogger(MonitorConstants.class);
 
 	public static int DEFAULT_AGENT_PORT;
 	public static int DEFAULT_AGENT_COLLECTOR_INTERVAL;
@@ -68,21 +68,18 @@ public class MonitorConstants {
 
 	public static String P_COMMA = ",";
 
-	static {
-		Properties prop = new Properties();
-		InputStream myInputStream = null;
-		try {
-			myInputStream = MonitorConstants.class.getResourceAsStream("/monitor.properties");
-			prop.load(myInputStream);
-
-			DEFAULT_AGENT_PORT = Integer.parseInt(prop.getProperty("agent.listen.port", "3243"));
-			DEFAULT_AGENT_COLLECTOR_INTERVAL = Integer.parseInt(prop.getProperty("agent.collector.interval", "1"));
-			DEFAULT_CONTROLLER_CACHE_SIZE = Integer.parseInt(prop.getProperty("controller.cache.size", "128"));
-			DEFAULT_CONTROLLER_INTERVAL = Integer.parseInt(prop.getProperty("controller.collector.interval", "1"));
-		} catch (IOException e) {
-			LOG.error("IOException during loading monitor.properties:" + e.getMessage(), e);
-		} finally {
-			IOUtils.closeQuietly(myInputStream);
-		}
+	/**
+	 * Initialize the Monitor configuration.
+	 * 
+	 * @param agentConfig
+	 *            {@link AgentConfig} from which the property is loaded.
+	 */
+	public static void init(AgentConfig agentConfig) {
+		DEFAULT_AGENT_PORT = agentConfig.getAgentProperties().getPropertyInt("agent.listen.port", 3243);
+		DEFAULT_AGENT_COLLECTOR_INTERVAL = agentConfig.getAgentProperties().getPropertyInt("agent.collector.interval",
+				1);
+		DEFAULT_CONTROLLER_CACHE_SIZE = agentConfig.getAgentProperties().getPropertyInt("controller.cache.size", 128);
+		DEFAULT_CONTROLLER_INTERVAL = agentConfig.getAgentProperties().getPropertyInt("controller.collector.interval",
+				1);
 	}
 }
