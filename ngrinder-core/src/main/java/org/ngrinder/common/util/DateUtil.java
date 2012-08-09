@@ -22,6 +22,8 @@
  */
 package org.ngrinder.common.util;
 
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -32,22 +34,46 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-public class DateUtil {
+/**
+ * Date Utility.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
+public abstract class DateUtil {
 
-	private final static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-	private final static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+	private static final SimpleDateFormat FULL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+			Locale.getDefault());
+	private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
-	private static int ss = 1000;
-	private static int mi = ss * 60;
-	private static int hh = mi * 60;
-	private static int dd = hh * 24;
+	private static final int CONSTANT_10 = 10;
+	private static final int CONSTANT_24 = 24;
+	private static final int CONSTANT_60 = 60;
+	private static final int CONSTANT_1000 = 1000;
+	private static final int CONSTANT_MINUS_7 = -7;
+	private static final int SS = CONSTANT_1000;
+	private static final int MI = SS * CONSTANT_60;
+	private static final int HH = MI * CONSTANT_60;
+	private static final int DD = HH * CONSTANT_24;
 
 	private static Map<String, String> timezoneIDMap;
 
+	/**
+	 * Format date to {@value #FULL_DATE_FORMAT}.
+	 * 
+	 * @param date
+	 *            date
+	 * @return formated string
+	 */
 	public static String dateToString(Date date) {
-		return dateFormat.format(date);
+		return FULL_DATE_FORMAT.format(date);
 	}
 
+	/**
+	 * Get time zones.
+	 * 
+	 * @return map typezone id and GMT
+	 */
 	public static Map<String, String> getFilteredTimeZoneMap() {
 		if (timezoneIDMap == null) {
 			timezoneIDMap = new LinkedHashMap<String, String>();
@@ -55,21 +81,40 @@ public class DateUtil {
 			for (String id : ids) {
 				TimeZone zone = TimeZone.getTimeZone(id);
 				int offset = zone.getRawOffset();
-				int offsetSecond = offset / 1000;
-				int hour = offsetSecond / 3600;
-				int minutes = (offsetSecond % 3600) / 60;
+				int offsetSecond = offset / CONSTANT_1000;
+				int hour = offsetSecond / (CONSTANT_60 * CONSTANT_60);
+				int minutes = (offsetSecond % (CONSTANT_60 * CONSTANT_60)) / CONSTANT_60;
 				timezoneIDMap.put(id, String.format("(GMT%+d:%02d) %s", hour, minutes, id));
 			}
 		}
 		return timezoneIDMap;
 	}
 
+	/**
+	 * Convert string date to Date with {@value #SIMPLE_DATE_FORMAT}.
+	 * 
+	 * @param strDate
+	 *            date string
+	 * @return date
+	 * @throws ParseException
+	 *             occurs when given steDate is not {@link #SIMPLE_DATE_FORMAT}
+	 */
 	public static Date toSimpleDate(String strDate) throws ParseException {
-		return simpleDateFormat.parse(strDate);
+		return SIMPLE_DATE_FORMAT.parse(strDate);
 	}
 
+	/**
+	 * Convert string date to Date with {@value #FULL_DATE_FORMAT}.
+	 * 
+	 * @param strDate
+	 *            date string
+	 * @return date
+	 * 
+	 * @throws ParseException
+	 *             occurs when given steDate is not {@link #FULL_DATE_FORMAT}
+	 */
 	public static Date toDate(String strDate) throws ParseException {
-		return dateFormat.parse(strDate);
+		return FULL_DATE_FORMAT.parse(strDate);
 	}
 
 	/**
@@ -78,7 +123,8 @@ public class DateUtil {
 	 * field to get previous week.
 	 * 
 	 * @param date
-	 * @return
+	 *            calendar
+	 * @return week start
 	 */
 	public static Calendar getWeekStart(Calendar date) {
 		Calendar calendar = Calendar.getInstance();
@@ -90,22 +136,35 @@ public class DateUtil {
 		}
 		calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 		if (isSunday) {
-			calendar.add(Calendar.DAY_OF_WEEK, -7);
+			calendar.add(Calendar.DAY_OF_WEEK, CONSTANT_MINUS_7);
 		}
 		return calendar;
 
 	}
 
+	/**
+	 * Format date with given pattern.
+	 * 
+	 * @param date
+	 *            date
+	 * @param pattern
+	 *            pattern
+	 * @return formatted date string
+	 */
 	public static String formatDate(Date date, String pattern) {
-		if (date == null)
-			throw new IllegalArgumentException("date is null");
-		if (pattern == null)
-			throw new IllegalArgumentException("pattern is null");
-
-		SimpleDateFormat formatter = new SimpleDateFormat(pattern);
-		return formatter.format(date);
+		SimpleDateFormat formatter = new SimpleDateFormat(checkNotNull(pattern, "pattern is null"));
+		return formatter.format(checkNotNull(date, "date is null"));
 	}
 
+	/**
+	 * Add days on date.
+	 * 
+	 * @param date
+	 *            base date
+	 * @param days
+	 *            days to be added.
+	 * @return added Date
+	 */
 	public static Date addDay(Date date, int days) {
 		Calendar cal = new GregorianCalendar();
 		cal.setTime(date);
@@ -113,19 +172,26 @@ public class DateUtil {
 		return cal.getTime();
 	}
 
+	/**
+	 * Convert millisecond to DD:HH:MM:SS style.
+	 * 
+	 * @param ms
+	 *            Millisecond
+	 * @return DD:HH:MM:SS formated string
+	 */
 	public static String ms2Time(long ms) {
 
-		long day = ms / dd;
-		long hour = (ms - day * dd) / hh;
-		long minute = (ms - day * dd - hour * hh) / mi;
-		long second = (ms - day * dd - hour * hh - minute * mi) / ss;
+		long day = ms / DD;
+		long hour = (ms - day * DD) / HH;
+		long minute = (ms - day * DD - hour * HH) / MI;
+		long second = (ms - day * DD - hour * HH - minute * MI) / SS;
 		// long milliSecond = ms - day * dd - hour * hh - minute * mi - second *
 		// ss;
 
-		String strDay = day < 10 ? "0" + day : "" + day;
-		String strHour = hour < 10 ? "0" + hour : "" + hour;
-		String strMinute = minute < 10 ? "0" + minute : "" + minute;
-		String strSecond = second < 10 ? "0" + second : "" + second;
+		String strDay = day < CONSTANT_10 ? "0" + day : "" + day;
+		String strHour = hour < CONSTANT_10 ? "0" + hour : "" + hour;
+		String strMinute = minute < CONSTANT_10 ? "0" + minute : "" + minute;
+		String strSecond = second < CONSTANT_10 ? "0" + second : "" + second;
 		// String strMilliSecond = milliSecond < 10 ? "0" + milliSecond : "" +
 		// milliSecond;
 		// strMilliSecond = milliSecond < 100 ? "0" + strMilliSecond : "" +
@@ -133,8 +199,21 @@ public class DateUtil {
 		return strDay + ":" + strHour + ":" + strMinute + ":" + strSecond;
 	}
 
+	/**
+	 * Convert time to millisecond.
+	 * 
+	 * @param day
+	 *            day
+	 * @param hour
+	 *            hour
+	 * @param min
+	 *            min
+	 * @param sec
+	 *            sec
+	 * @return converted millisecond
+	 */
 	public static int timeToMs(int day, int hour, int min, int sec) {
-		return (((day * 24 + hour) * 60 + min) * 60 + sec) * 1000;
+		return (((day * CONSTANT_24 + hour) * CONSTANT_60 + min) * CONSTANT_60 + sec) * CONSTANT_1000;
 	}
 
 }

@@ -28,6 +28,7 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import net.grinder.common.GrinderException;
@@ -54,6 +55,8 @@ import net.grinder.util.AllocateLowestNumber;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.Directory;
 import net.grinder.util.FileContents;
+import net.grinder.util.ListenerSupport;
+import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.ReflectionUtil;
 import net.grinder.util.thread.Condition;
 
@@ -69,7 +72,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author JunHo Yoon
  */
-public class SingleConsole implements Listener {
+public class SingleConsole implements Listener, SampleListener {
 	private final ConsoleProperties consoleProperties;
 	private Thread thread;
 	private ThreadGroup threadGroup;
@@ -81,12 +84,14 @@ public class SingleConsole implements Listener {
 	private ProcessReports[] processReports;
 	private boolean cancel = false;
 
-	//for displaying tps graph in  running page 
+	// for displaying tps graph in running page
 	private Double[] values = new Double[60];
 	private int cursor = 0;
-	
-	private  long startTime = 0;
-	
+	private SampleModel sampleModel;
+	private long startTime = 0;
+	private Date TPS_LESSTHAN_ZREO_TIME;
+	private final ListenerSupport<ConsoleShutdownListener> m_shutdownListeners = new ListenerSupport<ConsoleShutdownListener>();
+
 	/**
 	 * Constructor with console ip and port.
 	 * 
@@ -128,19 +133,10 @@ public class SingleConsole implements Listener {
 			this.getConsoleProperties().setConsoleHost(ip);
 			this.getConsoleProperties().setConsolePort(port);
 			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties, m_eventSyncCondition);
-		
-			final SampleModel sampleModel = (SampleModel)consoleFoundation.getContainer().getComponent(SampleModelImplementationEx.class);
+			sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
+			sampleModel.addTotalSampleListener(this);
+			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
 
-			//add SampleListener for collecting Tps data for Tps graph
-			sampleModel.addTotalSampleListener(new SampleListener() {
-				@Override
-				public void update(StatisticsSet intervalStatistics,
-					StatisticsSet cumulativeStatistics) {
-					double tps = sampleModel.getTPSExpression().getDoubleValue(
-						intervalStatistics);
-						addTpsValue(tps);
-				}
-			});
 		} catch (GrinderException e) {
 			throw new NGrinderRuntimeException("Exception occurs while creating SingleConsole", e);
 
@@ -148,8 +144,7 @@ public class SingleConsole implements Listener {
 	}
 
 	/**
-	 * Simple constructor only setting port. It automatically binds all ip
-	 * addresses.
+	 * Simple constructor only setting port. It automatically binds all ip addresses.
 	 * 
 	 * @param port
 	 *            PORT number
@@ -173,7 +168,7 @@ public class SingleConsole implements Listener {
 	 * @return console host
 	 */
 	public String getConsoleHost() {
-		try { 
+		try {
 			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress.getLocalHost()
 					.getHostAddress());
 		} catch (UnknownHostException e) {
@@ -197,7 +192,6 @@ public class SingleConsole implements Listener {
 			thread.start();
 			// 10 second is too big?
 			m_eventSyncCondition.waitNoInterrruptException(10000);
-			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
 		}
 	}
 
@@ -348,7 +342,7 @@ public class SingleConsole implements Listener {
 	public void waitUntilAgentConnected(int size) {
 		int trial = 1;
 		while (trial++ < 5) {
-			//when agent finished one test, processReports will be updated as null 
+			// when agent finished one test, processReports will be updated as null
 			if (processReports == null || this.processReports.length != size) {
 				synchronized (m_eventSyncCondition) {
 					m_eventSyncCondition.waitNoInterrruptException(1000);
@@ -359,14 +353,6 @@ public class SingleConsole implements Listener {
 		}
 		throw new NGrinderRuntimeException("Connection is not completed "
 				+ ToStringBuilder.reflectionToString(processReports));
-	}
-
-	@Override
-	public void update(ProcessReports[] processReports) {
-		synchronized (m_eventSyncCondition) {
-			this.processReports = processReports;
-			m_eventSyncCondition.notifyAll();
-		}
 	}
 
 	public boolean isAllTestFinished() {
@@ -381,22 +367,20 @@ public class SingleConsole implements Listener {
 		return workingThreadNum == 0;
 	}
 
-	
 	public MutablePicoContainer getConsoleContainer() {
 		return consoleFoundation.getContainer();
 	}
-	
+
 	/**
 	 * Get Tps values,Its length is 60
 	 */
 	public void addTpsValue(Double newValue) {
 		values[cursor] = newValue;
-
 		if (++cursor >= values.length) {
 			cursor = 0;
 		}
 	}
-	
+
 	public String getTpsValues() {
 		StringBuffer str = new StringBuffer("[");
 		for (int i = 0; i < values.length; i++) {
@@ -409,8 +393,50 @@ public class SingleConsole implements Listener {
 		str.append("]");
 		return str.toString();
 	}
-	
+
 	public long getStartTime() {
 		return startTime;
+	}
+
+	@Override
+	public void update(StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
+		double tps = sampleModel.getTPSExpression().getDoubleValue(intervalStatistics);
+		addTpsValue(tps);
+		// If the tps is low that it's can be the agents or scripts goes wrong.
+		if (tps < 0.001) {
+			if (TPS_LESSTHAN_ZREO_TIME == null) {
+				TPS_LESSTHAN_ZREO_TIME = new Date();
+			} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= 60000) {
+				LOGGER.warn("Test has been forced stop because of tps is less than 0.001 and sustain more than one minitue.");
+				getListeners().apply(new Informer<ConsoleShutdownListener>() {
+					public void inform(ConsoleShutdownListener listener) {
+						listener.readyToStop();
+					}
+				});
+
+			}
+		} else {
+			TPS_LESSTHAN_ZREO_TIME = null;
+		}
+	}
+
+	public ListenerSupport<ConsoleShutdownListener> getListeners() {
+		return this.m_shutdownListeners;
+	}
+
+	public void addListener(ConsoleShutdownListener listener) {
+		m_shutdownListeners.add(listener);
+	}
+
+	@Override
+	public void update(ProcessReports[] processReports) {
+		synchronized (m_eventSyncCondition) {
+			this.processReports = processReports;
+			m_eventSyncCondition.notifyAll();
+		}
+	}
+
+	public interface ConsoleShutdownListener {
+		void readyToStop();
 	}
 }

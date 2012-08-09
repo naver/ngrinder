@@ -25,15 +25,27 @@ package org.ngrinder.common.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ThreadUtil {
+/**
+ * Thread related utility.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
+public abstract class ThreadUtil {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ThreadUtil.class);
+	private static final Logger LOGGET = LoggerFactory.getLogger(ThreadUtil.class);
 
+	/**
+	 * Sleep in give millis without throwing exception.
+	 * 
+	 * @param millis
+	 *            milisecond.
+	 */
 	public static void sleep(long millis) {
 		try {
 			Thread.sleep(millis);
 		} catch (InterruptedException e) {
-			LOG.warn(e.getMessage(), e);
+			LOGGET.warn(e.getMessage(), e);
 		}
 	}
 

@@ -20,28 +20,51 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.grinder.performance;
+package org.ngrinder.perftest.model;
 
-import java.io.Serializable;
-
-public class Performance implements Serializable {
+/**
+ * Category of {@link Status}. This class provides the characterisic of each
+ * status.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
+public enum StatusCategory {
 	/**
-	 * 
+	 * Processing.
 	 */
-	private static final long serialVersionUID = 1L;
-	private final long cpu;
-	private final long mem;
+	PROGRESSING("blue_anime.gif", true, false), 
+	/**
+	 * Stopped by error or user.
+	 */
+	STOP("red.png", false, false),
+	/**
+	 * Finished normally.
+	 */
+	FINISHED("green.png", false, false),
+	/**
+	 * Ready to run..
+	 */
+	PREPARE("blue.png", true, true);
+	private final boolean stoppable;
+	private final boolean deletable;
+	private final String iconName;
 
-	public Performance(long cpu, long mem) {
-		this.cpu = cpu;
-		this.mem = mem;
+	StatusCategory(String iconName, boolean stoppable, boolean deletable) {
+		this.iconName = iconName;
+		this.stoppable = stoppable;
+		this.deletable = deletable;
 	}
 
-	public long getCpu() {
-		return cpu;
+	public boolean isStoppable() {
+		return stoppable;
 	}
 
-	public long getMem() {
-		return mem;
+	public boolean isDeletable() {
+		return deletable;
+	}
+
+	public String getIconName() {
+		return iconName;
 	}
 }

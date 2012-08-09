@@ -35,13 +35,14 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 		PerfTest test = new PerfTest();
 		test.setTestName(testName);
 		test.setThreshold("D");
-		test.setDuration(120L);
-		test.setVuserPerAgent(10);
+		test.setDuration(200L);
+		test.setVuserPerAgent(30);
 		test.setScheduledTime(scheduledTime);
 		test.setIgnoreSampleCount(0);
 		test.setTargetHosts("127.0.0.1");
 		test.setScriptName("test1.py");
-		test.setProcesses(10);
+		test.setProcesses(2);
+		test.setThreads(6);
 		test.setProcessIncrement(1);
 		test.setInitSleepTime(0);
 		test.setProcessIncrementInterval(1000);

@@ -29,7 +29,6 @@ import java.util.Set;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 
-import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentRepository;
 import org.ngrinder.perftest.service.AgentManager;
@@ -97,7 +96,7 @@ public class AgentService {
 		if (agentInfo == null) {
 			return null;
 		}
-		AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIp(agentInfo.getIp());
+		AgentControllerIdentityImplementation agentIdentity = agentManager.getAgentIdentityByIp(agentInfo.getIp());
 		if (agentIdentity != null) {
 			agentInfo.setStatus(agentManager.getAgentControllerState(agentIdentity));
 			agentInfo.setPort(agentIdentity.getPort());
@@ -106,22 +105,6 @@ public class AgentService {
 			agentInfo.setAgentIdentity(agentIdentity);
 		}
 		return agentInfo;
-	}
-
-	/**
-	 * Get {@link AgentControllerIdentityImplementation} for give agentInfo
-	 * 
-	 * @param agentInfo
-	 * @return
-	 */
-	private AgentControllerIdentityImplementation getAgentIdentityByIp(String agentIP) {
-		for (AgentIdentity agentIdentity : agentManager.getAllAttachedAgents()) {
-			AgentControllerIdentityImplementation eachAgentIdentity = (AgentControllerIdentityImplementation) agentIdentity;
-			if (StringUtils.equals(eachAgentIdentity.getIp(), agentIP)) {
-				return eachAgentIdentity;
-			}
-		}
-		return null;
 	}
 
 	/**

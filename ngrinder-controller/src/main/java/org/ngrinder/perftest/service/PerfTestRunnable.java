@@ -31,7 +31,7 @@ import static org.ngrinder.perftest.model.Status.START_CONSOLE;
 import static org.ngrinder.perftest.model.Status.START_CONSOLE_FINISHED;
 import static org.ngrinder.perftest.model.Status.START_TESTING;
 import static org.ngrinder.perftest.model.Status.TESTING;
-import org.ngrinder.common.util.DateUtil;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -46,6 +46,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.service.MonitorDataService;
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.slf4j.Logger;
@@ -53,7 +54,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * perf test run scheduler.
@@ -94,14 +94,14 @@ public class PerfTestRunnable implements NGrinderConstants {
 		if (runCandidate == null) {
 			return;
 		}
-		
+
 		// schedule test
 		Date schedule = runCandidate.getScheduledTime();
-		if(schedule != null&&!DateUtil.compareDateEndWithMinute(schedule,new Date(System.currentTimeMillis()))){
-			// this test project is reserved,but it isn't yet going to run test  right now.
+		if (schedule != null && !DateUtil.compareDateEndWithMinute(schedule, new Date(System.currentTimeMillis()))) {
+			// this test project is reserved,but it isn't yet going to run test right now.
 			return;
 		}
-		
+
 		// In case of too many trial, cancel running.
 		if (runCandidate.getTestTrialCount() > PERFTEST_MAXIMUM_TRIAL_COUNT) {
 			LOG.error("The {} test project is canceld because it has too many test execution errors",
@@ -199,7 +199,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * Scheduled method for test finish.
 	 */
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
-	@Transactional
 	public void finishTest() {
 		List<PerfTest> finishCandiate = perfTestService.getTestingPerfTest();
 		for (PerfTest each : finishCandiate) {
@@ -225,10 +224,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// because It will take some seconds to start testing sometimes , if the test is not started
 		// after some seconds, will set it as finished.
 		if (singleConsoleInUse.isAllTestFinished() && startLastingTime > WAIT_TEST_START_SECOND) {
-			// stop target host monitor
-			// TODO: later should modified to use target host IP.
-			monitorDataService.removeMonitorAgents(perfTest.getTargetHosts());
 			PerfTest resultTest = perfTestService.updatePerfTestAfterTestFinish(perfTest);
+			consoleManager.returnBackConsole(singleConsoleInUse);
 			perfTestService.savePerfTest(resultTest, Status.FINISHED);
 		}
 	}

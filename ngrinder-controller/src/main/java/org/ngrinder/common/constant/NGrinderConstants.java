@@ -52,7 +52,7 @@ public interface NGrinderConstants {
 	public static final String JS_EXTENTION = ".js";
 
 	public static final String GRINDER_PROPERTIES = "grinder.properties";
-	
+
 	public static final String REPORT_CSV = "output.csv";
 
 	public static final String JSON_SUCCESS = "success";
@@ -65,6 +65,22 @@ public interface NGrinderConstants {
 	 * Initial console size.
 	 */
 	public static final int CONSOLE_SIZE = 10;
+
+	/**
+	 * Initial Max assignable agent size per console.
+	 */
+	public static final int MAX_AGENT_SIZE_PER_CONSOLE = 10;
+
+	/**
+	 * Initial Max vuser per agent.
+	 */
+	public static final int MAX_VUSER_PER_AGENT = 100;
+
+	/**
+	 * Initial Max run count.
+	 */
+	public static final int MAX_RUN_COUNT = 1000;
+
 	/**
 	 * Maximum waiting seconds until all agents are connected.
 	 */
@@ -105,9 +121,12 @@ public interface NGrinderConstants {
 
 	public static final String PARAM_TEST = "test";;
 	public static final String PARAM_SCRIPT_LIST = "scriptList";
-	
+	public static final String PARAM_MAX_AGENT_SIZE_PER_CONSOLE = "maxAgentSizePerConsole";
+	public static final String PARAM_MAX_VUSER_PER_AGENT = "maxVuserPerAgent";
+	public static final String PARAM_MAX_RUN_COUNT = "maxRunCount";
+
 	public static final String PARAM_RESULT_SUB = "resultsub";
-	
+
 	public static final String PARAM_AGENTS = "agents";
 
 	public static final int AGENT_SERVER_DAEMON_PORT = 1011;

@@ -22,8 +22,6 @@
  */
 package org.ngrinder.chart.controller;
 
-import java.util.Date;
-
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,27 +39,11 @@ public class MonitorControllerTest extends AbstractNGrinderTransactionalTest {
 	private MonitorController monitorController;
 
 	@Test
-	public void testGetMonitorData() {
+	public void testGetCurrentMonitorData() {
 		ModelMap model = new ModelMap();
-		Date endDate = new Date();
-		Date stDate = new Date(endDate.getTime() - 60 * 1000 * 1000);
-		monitorController.getMonitorData(model, "127.0.0.1", stDate, endDate, 0);
+		String rtnStr = monitorController.getCurrentMonitorData(model, "127.0.0.1");
+		LOG.debug("Current monitor data for ip:{} is\n{}", "127.0.0.1", rtnStr);
 	}
 
-	@Test
-	public void testGetMonitorDataJava() {
-		ModelMap model = new ModelMap();
-		Date endDate = new Date();
-		Date stDate = new Date(endDate.getTime() - 60 * 1000 * 1000);
-		monitorController.getMonitorDataJava(model, "127.0.0.1", stDate, endDate, 0);
-	}
-
-	@Test
-	public void testGetMonitorDataSystem() {
-		ModelMap model = new ModelMap();
-		Date endDate = new Date();
-		Date stDate = new Date(endDate.getTime() - 60 * 1000 * 1000);
-		monitorController.getMonitorDataSystem(model, "127.0.0.1", stDate, endDate, 0);
-	}
 
 }

@@ -28,16 +28,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * Local Dns Name Storage
+ * Local Dns Name Storage.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
 public class NameStore {
 
-	protected static NameStore singleton;
+	private static NameStore singleton;
 
-	protected Map<String, String> globalNames;
+	private Map<String, String> globalNames;
 
 	protected NameStore() {
 		globalNames = new ConcurrentHashMap<String, String>();
@@ -62,14 +62,35 @@ public class NameStore {
 		return singleton;
 	}
 
+	/**
+	 * Put hostname with ipAddress.
+	 * 
+	 * @param hostName
+	 *            host name
+	 * @param ipAddress
+	 *            ip address
+	 */
 	public void put(String hostName, String ipAddress) {
 		globalNames.put(hostName, ipAddress);
 	}
 
+	/**
+	 * Remove hostname from the store.
+	 * 
+	 * @param hostName
+	 *            host name
+	 */
 	public void remove(String hostName) {
 		globalNames.remove(hostName);
 	}
 
+	/**
+	 * Get ip from hostname.
+	 * 
+	 * @param hostName
+	 *            host name
+	 * @return ip if found. null otherwise.
+	 */
 	public String get(String hostName) {
 		return globalNames.get(hostName);
 	}

@@ -35,6 +35,7 @@ import org.ngrinder.monitor.share.domain.MBeanClient;
 
 import com.sun.management.OperatingSystemMXBean;
 
+@SuppressWarnings("restriction")
 public class JavaMonitorProcessor implements Callable<JavaInfoForEach> {
 
 	private JavaVirtualMachineInfo jvmInfo;
@@ -94,7 +95,7 @@ public class JavaMonitorProcessor implements Callable<JavaInfoForEach> {
 			if (prevUpTime > 0L && upTime > prevUpTime) {
 				long elapsedCpu = processCpuTime - prevProcessCpuTime;
 				long elapsedTime = upTime - prevUpTime;
-				//TODO : (elapsedTime * 10000F * nCPUs) > 0 is always right?
+				// TODO : (elapsedTime * 10000F * nCPUs) > 0 is always right?
 				javaInfo.setJavaCpuUsedPercentage(Math.min(100F, elapsedCpu / (elapsedTime * 10000F * nCPUs)));
 			} else {
 				javaInfo.setJavaCpuUsedPercentage(0.001f);

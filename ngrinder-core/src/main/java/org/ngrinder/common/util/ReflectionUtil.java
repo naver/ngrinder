@@ -25,12 +25,15 @@ package org.ngrinder.common.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Reflection Utility functions.
  * 
+ * @author JunHo Yoon
+ * @since 3.0
  */
 public final class ReflectionUtil {
 
@@ -41,6 +44,12 @@ public final class ReflectionUtil {
 
 	/**
 	 * get object field value, bypassing getter method.
+	 * 
+	 * @param object
+	 *            object
+	 * @param fieldName
+	 *            field Name
+	 * @return fileValue
 	 */
 	public static Object getFieldValue(final Object object, final String fieldName) {
 		Field field = getDeclaredField(object, fieldName);
@@ -68,13 +77,13 @@ public final class ReflectionUtil {
 		if (null == fieldName || fieldName.length() == 0) {
 			return null;
 		}
-
+		// CHECKSTYLE:OFF
 		for (Class<?> superClass = object.getClass(); superClass != Object.class; superClass = superClass
 				.getSuperclass()) {
 			try {
 				return superClass.getDeclaredField(fieldName);
 			} catch (NoSuchFieldException e) {
-				// Field is not defined in current class, go on get superClass
+				// Fall through
 			}
 		}
 		return null;

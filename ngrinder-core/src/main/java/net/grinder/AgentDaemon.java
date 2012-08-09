@@ -39,7 +39,7 @@ public class AgentDaemon implements Agent {
 	private GrinderProperties properties;
 	private final ListenerSupport<AgentShutDownListener> m_listeners = new ListenerSupport<AgentShutDownListener>();
 	private boolean forceToshutdown = false;
-	public final static Logger logger = LoggerFactory.getLogger("agent");
+	public static final Logger logger = LoggerFactory.getLogger("agent");
 
 	public AgentDaemon() {
 		try {
@@ -127,9 +127,7 @@ public class AgentDaemon implements Agent {
 				thread.join();
 			}
 		} catch (Exception e) {
-			logger.error("Error while shutdownning agent", e);
 			throw new NGrinderRuntimeException("Exception occurs while shutting down AgentDaemon", e);
-
 		}
 	}
 

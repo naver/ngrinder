@@ -31,11 +31,11 @@ import org.xbill.DNS.PTRRecord;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
-
+// CHECKSTYLE:OFF
 import sun.net.spi.nameservice.NameService;
 
 /**
- * DNS Java DNS resolver
+ * DNS Java DNS resolver.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -46,16 +46,19 @@ public class DNSJavaNameService implements NameService {
 	/**
 	 * Finds A records (ip addresses) for the host name.
 	 * 
-	 * @param The
+	 * @param name
 	 *            host name to resolve.
 	 * @return All the ip addresses found for the host name.
+	 * @throws UnknownHostException
+	 *             occurs when name is not available in DNS
 	 */
 	public InetAddress[] lookupAllHostAddr(String name) throws UnknownHostException {
 
 		try {
 			Record[] records = new Lookup(name, Type.A).run();
-			if (records == null)
+			if (records == null) {
 				throw new UnknownHostException(name);
+			}
 
 			InetAddress[] array = new InetAddress[records.length];
 			for (int i = 0; i < records.length; i++) {
@@ -70,20 +73,22 @@ public class DNSJavaNameService implements NameService {
 	}
 
 	/**
-	 * Finds PTR records (reverse dns lookups) for the ip address
+	 * Finds PTR records (reverse dns lookups) for the ip address.
 	 * 
-	 * @param The
+	 * @param ip
 	 *            ip address to lookup.
 	 * @return The host name found for the ip address.
-	 * @throws TextParseException
+	 * @throws UnknownHostException
+	 *             occurs when id is not available in DNS
 	 */
 	public String getHostByAddr(byte[] ip) throws UnknownHostException {
 
 		try {
 			String addr = DnsUtil.numericToTextFormat(ip);
 			Record[] records = new Lookup(addr, Type.PTR).run();
-			if (records == null)
+			if (records == null) {
 				throw new UnknownHostException(addr);
+			}
 			PTRRecord ptr = (PTRRecord) records[0];
 			return ptr.getTarget().toString();
 		} catch (TextParseException e) {

@@ -150,7 +150,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		}
 
 		m_newData = false;
-
+		
 		m_listeners.apply(new ListenerSupport.Informer<Listener>() {
 			public void inform(Listener l) {
 				l.update(new ConcurrentHashMap<AgentIdentity, AgentStatus>(m_agentMap));

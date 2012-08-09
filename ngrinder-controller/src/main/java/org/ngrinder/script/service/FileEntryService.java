@@ -65,7 +65,8 @@ import freemarker.template.Template;
 /**
  * File entry service class.<br/>
  * 
- * This class is responsible for creating user repo whenever user is created and connection b/w user and underlying svn.
+ * This class is responsible for creating user repo whenever user is created and
+ * connection b/w user and underlying svn.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -206,6 +207,16 @@ public class FileEntryService {
 		return fileEntityRepository.hasFileEntry(user, path);
 	}
 
+	/**
+	 * Add folder on the given path
+	 * 
+	 * @param user
+	 *            user
+	 * @param path
+	 *            base path
+	 * @param folderName
+	 *            folder name
+	 */
 	public void addFolder(User user, String path, String folderName) {
 		FileEntry entry = new FileEntry();
 		entry.setPath(path + "/" + folderName);

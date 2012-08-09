@@ -30,6 +30,7 @@ package org.ngrinder.dns;
  * @since 3.0
  */
 public class DnsUtil {
+	// CHECKSTYLE:OFF
 	public static final int INADDRSZ = 4;
 
 	private DnsUtil() {

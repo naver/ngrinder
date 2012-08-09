@@ -22,15 +22,20 @@
  */
 package org.ngrinder.perftest.controller;
 
+import static org.ngrinder.common.util.Preconditions.checkArgument;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -40,8 +45,10 @@ import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.model.Status;
+import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.model.FileEntry;
+import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +82,8 @@ public class PerfTestController extends NGrinderBaseController {
 	@Autowired
 	private FileEntryService fileEntiryService;
 
-	// private static final int DEFAULT_TEST_PAGE_ZISE = 15;
+	@Autowired
+	private AgentManager agentManager;
 
 	/**
 	 * Get Performance test lists.
@@ -94,12 +102,7 @@ public class PerfTestController extends NGrinderBaseController {
 	public String getTestList(User user, @RequestParam(required = false) String query,
 			@RequestParam(required = false) boolean onlyFinished,
 			@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
-		// FIXME
-		// not to paging on server side for now. Get all tests and
-		// paging/sorting in page.
-		// if (pageable == null) {
-		// pageable = new PageRequest(0, DEFAULT_TEST_PAGE_ZISE);
-		// }
+
 		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, onlyFinished, pageable);
 		model.addAttribute("testListPage", testList);
 		model.addAttribute("onlyFinished", onlyFinished);
@@ -128,20 +131,28 @@ public class PerfTestController extends NGrinderBaseController {
 	public String getTestDetail(User user, @RequestParam(required = false) Long id, ModelMap model) {
 		PerfTest test = null;
 		if (id != null) {
-			test = perfTestService.getPerfTest(id);
-			if (test == null || !user.equals(test.getCreatedUser())) {
-				throw new NGrinderRuntimeException("PerfTest " + id + " is not allowed to show for user " + user);
-			}
+			test = checkTestPermissionAndGet(user, id);
 		}
-		
+
 		model.addAttribute(PARAM_TEST, test);
 		List<FileEntry> scriptList = null;
 		try {
 			scriptList = fileEntiryService.getAllFileEntries(user);
+			// Only python script is allowed right now.
+			CollectionUtils.filter(scriptList, new Predicate() {
+				@Override
+				public boolean evaluate(Object object) {
+					return ((FileEntry) object).getFileType() == FileType.PYTHON_SCRIPT;
+				}
+			});
+
 		} catch (NGrinderRuntimeException e) {
 			LOG.error("Cannot get script list of user:", e);
 		}
 		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
+		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, agentManager.getMaxAgentSizePerConsole());
+		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
+		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
 		return "perftest/detail";
 	}
 
@@ -155,10 +166,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String saveTest(User user, ModelMap model, PerfTest test) {
-		// Test can only be cloned, but not allowed to modified, so set id as
-		// null,
-		// to make sure it will create a new test.
-		test.setId(null);
+		checkArgument(test.getStatus() == Status.READY || test.getStatus() == Status.SAVED, "save test only support for SAVE or READY status");
 		perfTestService.savePerfTest(test);
 		return "redirect:/perftest/list";
 	}
@@ -184,11 +192,13 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/deleteTests")
 	public @ResponseBody
-	String deleteTests(ModelMap model, @RequestParam String ids) {
+	String deleteTests(User user, ModelMap model, @RequestParam String ids) {
 		String[] idList = StringUtils.split(ids, ",");
 		for (String idStr : idList) {
 			try {
-				perfTestService.deletePerfTest(Long.valueOf(idStr));
+				long delId = Long.valueOf(idStr);
+				checkTestPermissionAndGet(user, delId);
+				perfTestService.deletePerfTest(delId);
 			} catch (NumberFormatException e) {
 				LOG.error("Can't delete a test (id=" + idStr + ") : {}", e);
 			}
@@ -196,8 +206,27 @@ public class PerfTestController extends NGrinderBaseController {
 		return JSONUtil.returnSuccess();
 	}
 
+	@RequestMapping(value = "/getResourcesOnScriptFolder")
+	public @ResponseBody
+	String getResourcesOnScriptFolder(User user, @RequestParam String scriptPath) {
+		if (StringUtils.isEmpty(scriptPath)) {
+			return JSONUtil.toJson(new ArrayList<String>());
+		}
+		List<FileEntry> fileEntries = fileEntiryService.getFileEntries(user, FilenameUtils.getPath(scriptPath));
+		List<String> fileList = new ArrayList<String>();
+
+		for (FileEntry eachFileEntry : fileEntries) {
+			FileType fileType = eachFileEntry.getFileType();
+			if (fileType != FileType.DIR && fileType != FileType.PYTHON_SCRIPT) {
+				fileList.add(eachFileEntry.getPath());
+			}
+		}
+		return JSONUtil.toJson(fileList);
+	}
+
 	@RequestMapping(value = "/report")
-	public String getReport(ModelMap model, @RequestParam long testId) {
+	public String getReport(User user, ModelMap model, @RequestParam long testId) {
+		checkTestPermissionAndGet(user, testId);
 		PerfTest test = perfTestService.getPerfTest(testId);
 		model.addAttribute("test", test);
 		return "perftest/report";
@@ -205,8 +234,9 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/getReportData")
 	public @ResponseBody
-	String getReportData(ModelMap model, @RequestParam long testId, @RequestParam(required = true) String dataType,
-			@RequestParam int imgWidth) {
+	String getReportData(User user, ModelMap model, @RequestParam long testId,
+			@RequestParam(required = true) String dataType, @RequestParam int imgWidth) {
+		checkTestPermissionAndGet(user, testId);
 		List<Object> reportData = null;
 		String[] dataTypes = StringUtils.split(dataType, ",");
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1 + dataTypes.length);
@@ -226,13 +256,15 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = "/downloadReportData")
-	public void downloadReportData(HttpServletResponse response, @RequestParam long testId) {
+	public void downloadReportData(User user, HttpServletResponse response, @RequestParam long testId) {
+		checkTestPermissionAndGet(user, testId);
 		File targetFile = perfTestService.getReportFile(testId);
 		FileDownloadUtil.downloadFile(response, targetFile);
 	}
 
 	@RequestMapping(value = "/running/refresh")
-	public String refreshTestRunning(ModelMap model, @RequestParam long testId) {
+	public String refreshTestRunning(User user, ModelMap model, @RequestParam long testId) {
+		checkTestPermissionAndGet(user, testId);
 		PerfTest test = perfTestService.getPerfTest(testId);
 		checkNotNull(test);
 		Map<String, Object> result = null;
@@ -241,5 +273,13 @@ public class PerfTestController extends NGrinderBaseController {
 			model.addAttribute(PARAM_RESULT_SUB, result);
 		}
 		return "perftest/refreshContent";
+	}
+
+	private PerfTest checkTestPermissionAndGet(User user, long id) {
+		PerfTest test = perfTestService.getPerfTest(id);
+		if (test != null && !test.getCreatedUser().equals(user)) {
+			throw new NGrinderRuntimeException("User " + getCurrentUser().getUserId() + " has no right on  PerfTest ");
+		}
+		return test;
 	}
 }

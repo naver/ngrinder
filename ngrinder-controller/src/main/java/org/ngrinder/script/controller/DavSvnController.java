@@ -190,9 +190,9 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 	@Override
 	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 			IOException {
-		ServletDAVHandler handler = null;
 		logRequest(request);// TODO: remove later
 		try {
+			ServletDAVHandler handler = null;
 			final String head = DAVPathUtil.head(request.getPathInfo());
 			final User currentUser = userContext.getCurrentUser();
 			// check the security. If the other user tries to the other user's repo, deny it.
