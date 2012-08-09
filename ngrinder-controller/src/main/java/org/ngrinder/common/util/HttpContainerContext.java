@@ -43,11 +43,10 @@ public class HttpContainerContext {
 	/**
 	 * Get current container nGrinder context base path.
 	 * 
-	 * E.g) if user requests http://hostname:port/context_path/realurl, This
-	 * will return http://hostname:port/context_path
+	 * E.g) if user requests http://hostname:port/context_path/realurl, This will return
+	 * http://hostname:port/context_path
 	 * 
-	 * In case of providing "http.url" property in system.properties file, this
-	 * method will return pre-set value.
+	 * In case of providing "http.url" property in system.properties file, this method will return pre-set value.
 	 * 
 	 * @return ngrinder context base path on http request.
 	 */
@@ -68,5 +67,11 @@ public class HttpContainerContext {
 		String portString = serverPort == 80 ? "" : ":" + serverPort;
 		return new StringBuilder(httpUrl).append(request.getScheme()).append("://").append(request.getServerName())
 				.append(portString).append(request.getContextPath()).toString();
+	}
+
+	public boolean isUnixUser() {
+		SecurityContextHolderAwareRequestWrapper request = (SecurityContextHolderAwareRequestWrapper) RequestContextHolder
+				.currentRequestAttributes().resolveReference("request");
+		return !StringUtils.containsIgnoreCase(request.getHeader("User-Agent"), "Win");
 	}
 }

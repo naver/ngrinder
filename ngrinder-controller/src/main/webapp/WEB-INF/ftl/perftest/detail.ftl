@@ -19,6 +19,8 @@ div.div-resources .resource {
 	color: #666666;
 	display: inline-block;
 	margin-left: 7px;
+	margin-top:2px;
+	margin-bottom:2px;
 }
 
 div.div-host {
@@ -33,7 +35,9 @@ div.div-host {
 div.div-host .host {
 	color: #666666;
 	display: inline-block;
-	margin: 7px;
+	margin-left: 7px;
+	margin-top:2px;
+	margin-bottom:2px;
 }
 
 .select-item {
@@ -678,28 +682,27 @@ div.chart {
 			            $(element).parents('.control-group').addClass('success');
 			        }
 			    });
-			    $("#addHostBtn").on('click', function() {
-					var elemStr = "";
-					var contents = [];
-					var content;
+			    $("#addHostBtn").click(function() {
+					var curHostDiv = $(".div-host").html();
+					var curHostVal = $("#hostsHidden").val();
+					var content = "";
+					
+					
 					if (!checkEmptyByID("ipInput")) {
 						content = getValueByID("ipInput");
-						contents.push(content);
-						elemStr += hostItem(content);
 					}
 					if (!checkEmptyByID("domainInput")) {
-						content = getValueByID("domainInput");
-						contents.push(content);
-						elemStr += hostItem(content);
+						content = content + ":" + getValueByID("domainInput");
 					}
-					if (elemStr == "") {
+					
+					if (content == ":") {
 						$("#addHostModal small").addClass("errorColor");
 						return;
 					}
 					
-					$("#hostsHidden").val(contents.join(","));
-					$(".div-host").empty();
-					$(".div-host").append(elemStr);
+					curHostDiv += hostItem(content);					
+					$(".div-host").html(curHostDiv);
+					buildHost()
 					$("#addHostModal").modal("hide");
 					$("#addHostModal small").removeClass("errorColor");
 				});
@@ -708,7 +711,7 @@ div.chart {
 					var $elem = $(this).parents("p");
 					$elem.next("br").remove();
 					$elem.remove();
-					deleteHost();
+					buildHost();
 				});
 				
 				$("#saveTestBtn").click (function() {
@@ -937,10 +940,10 @@ div.chart {
 			}
 			
 			function hostItem(content) {
-				return "<p class=\"host\">" + content + " <a href=\"javascript:void(0);\"><i class=\"icon-remove-circle\"></i></a><input type=\"hidden\" id=\"hostsItem\" value=\"" + content + "\"></p><br>"
+				return "<p class='host'>" + content + "  <a href='javascript:void(0);'><i class='icon-remove-circle'></i></a><input type='hidden' id='hostsItem' value='" + content + "'></p><br>"
 			}
 			
-			function deleteHost() {
+			function buildHost() {
 				var contents = [];
 				$("#hostsItem").each(function() {
 					contents.push($(this).val());

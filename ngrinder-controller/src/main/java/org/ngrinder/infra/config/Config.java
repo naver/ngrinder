@@ -22,6 +22,9 @@
  */
 package org.ngrinder.infra.config;
 
+import static org.ngrinder.common.constant.NGrinderConstants.DOWNLOAD_PATH;
+import static org.ngrinder.common.constant.NGrinderConstants.PERF_TEST_PATH;
+import static org.ngrinder.common.constant.NGrinderConstants.PLUGIN_PATH;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
@@ -41,8 +44,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 /**
- * Spring component which is responsible to get the nGrinder config which is
- * stored ${NGRINDER_HOME}.
+ * Spring component which is responsible to get the nGrinder config which is stored ${NGRINDER_HOME}.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -52,7 +54,7 @@ public class Config {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
 	private static final Logger logger = LoggerFactory.getLogger(Config.class);
 	private PropertiesWrapper databaseProperties;
-	
+
 	/**
 	 * Make it singleton
 	 */
@@ -77,8 +79,9 @@ public class Config {
 	private void copyDefaultConfigurationFiles() throws IOException {
 		checkNotNull(home);
 		home.copyFrom(new ClassPathResource("ngrinder_home_template").getFile(), false);
-		home.makeSubPath("plugins");
-		home.makeSubPath("project");
+		home.makeSubPath(PLUGIN_PATH);
+		home.makeSubPath(PERF_TEST_PATH);
+		home.makeSubPath(DOWNLOAD_PATH);
 
 	}
 

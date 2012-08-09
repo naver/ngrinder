@@ -22,16 +22,25 @@
  */
 package org.ngrinder.agent.controller;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.util.FileDownloadUtil;
+import org.ngrinder.common.util.HttpContainerContext;
+import org.ngrinder.infra.config.Config;
+import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -50,6 +59,12 @@ public class AgentController extends NGrinderBaseController {
 	@Autowired
 	private AgentService agentService;
 
+	@Autowired
+	private Config config;
+
+	@Autowired
+	private HttpContainerContext httpContainerContext;
+
 	/**
 	 * Get agenet list.
 	 * 
@@ -63,6 +78,22 @@ public class AgentController extends NGrinderBaseController {
 	public String getAgentList(ModelMap model) {
 		List<AgentInfo> agents = agentService.getAgentList();
 		model.addAttribute("agents", agents);
+
+		File directory = config.getHome().getDownloadDirectory();
+		final String extension = httpContainerContext.isUnixUser() ? "tar.gz" : "zip";
+
+		String[] list = directory.list(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.startsWith("ngrinder") && name.endsWith(extension);
+			}
+		});
+		if (list.length != 0) {
+			String contextPath = httpContainerContext.getCurrentRequestUrlFromUserRequest();
+			StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url", contextPath));
+			url.append("/agent/download/" + list[0]);
+			model.addAttribute("downloadLink", url.toString());
+		}
 		return "agent/agentList";
 	}
 
@@ -114,5 +145,17 @@ public class AgentController extends NGrinderBaseController {
 			}
 		}
 		return getAgentList(model);
+	}
+
+	@RequestMapping(value = "/download/{fileName}")
+	public void downloadAgent(User user, @PathVariable String fileName, HttpServletResponse response) {
+
+		final String extension = httpContainerContext.isUnixUser() ? "tar.gz" : "zip";
+		File ngrinderFile = new File(config.getHome().getDownloadDirectory(), fileName + "." + extension);
+		// FIXME
+		// We need to change the file to connect this controller.
+		if (ngrinderFile.exists()) {
+			FileDownloadUtil.downloadFile(response, ngrinderFile);
+		}
 	}
 }

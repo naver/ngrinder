@@ -102,6 +102,8 @@ public interface NGrinderConstants {
 	public static final int CONSOLE_PORT_BASE = 12000;
 	public static final String USER_REPO_PATH = "repos";
 	public static final String PERF_TEST_PATH = "perftest";
+	public static final String DOWNLOAD_PATH = "download";
+	
 	public static final String DEFAULT_GRINDER_PROPERTIES_PATH = "grinder.properties";
 
 	// parameter constant, for parameter from page, and for key in map

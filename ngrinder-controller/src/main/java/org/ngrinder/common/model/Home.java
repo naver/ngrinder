@@ -123,4 +123,8 @@ public class Home implements NGrinderConstants {
 		return getSubFile(DEFAULT_GRINDER_PROPERTIES_PATH);
 	}
 
+	public File getDownloadDirectory() {
+		return getSubFile(DOWNLOAD_PATH);
+	}
+
 }
