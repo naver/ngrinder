@@ -85,7 +85,7 @@
 							</td>
 							<td class="ellipsis" title="${(script.description)!}">${(script.description)!}</td>
 							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
-							<td>${(script.fileSize)!0}</td>
+							<td><#assign floatSize = script.fileSize?number/1024>${floatSize?string("0.##")}</td>
 							<td><a href="javascript:void(0);"><i class="icon-download-alt script-download" spath="${script.path}" sname="${script.fileName}"></i></a></td>
 						</tr>
 					</#list>

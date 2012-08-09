@@ -62,7 +62,7 @@
 				    </tbody>
 				    </table>
 				    <label>Refresh interval (second)</label>
-                    <input id="rinterval" type="text" class="span3" placeholder="number" value="30">
+                    <input id="rinterval" type="text" class="span3" placeholder="number" value="1">
                 </div>
                 <div class="span9">
 					<div class="tabbable" style="margin-left:20px">
@@ -88,9 +88,16 @@
         	<#include "../common/copyright.ftl">
     	<!--content-->
         </div>
+        <script src="${req.getContextPath()}/js/queue.js"></script>
         <script>
             var interval;
             var timer;
+            var java_heapUsedMemory = new Queue();
+			var java_nonHeapUsedMemory = new Queue();
+			var java_cpuUsedPercentage = new Queue();
+			var java_threadCount = new Queue();
+			var sys_totalCpuValue = new Queue();
+			var sys_usedMemory = new Queue();
             $(document).ready(function() {
                 $("#returnBtn").on('click', function() {
                     history.back();
@@ -108,8 +115,9 @@
                     }
                     interval = $(this).val();
                     if(interval == 0){
-                        interval = 30;
+                        interval = 1;
                     }
+                    cleanChartData();
                     timer=window.setInterval("getMonitorData()",interval * 1000);
                 });
                 getMonitorData();
@@ -126,12 +134,13 @@
                            'imgWidth':700},
                     success: function(res) {
                         if (res.success) {
-                            showChart('CPU', 'cpuDiv', res.cpu);
-                            showChart('Memory', 'memoryDiv', res.memory);
-                            showChart('Heap Memory', 'heapMemoryDiv', res.heap_memory);
-                            showChart('NonHeap Memory', 'nonHeapMemoryDiv', res.non_heap_memory);
-                            showChart('Thread Count', 'threadCountDiv', res.thread_count);
-                            showChart('CPU', 'jvmCpuDiv', res.jvm_cpu);
+                        	getChartData(res);
+                            showChart('CPU', 'cpuDiv', sys_totalCpuValue.getArray());
+                            showChart('Memory', 'memoryDiv', sys_usedMemory.getArray());
+                            showChart('Heap Memory', 'heapMemoryDiv', java_heapUsedMemory.getArray());
+                            showChart('NonHeap Memory', 'nonHeapMemoryDiv', java_nonHeapUsedMemory.getArray());
+                            showChart('Thread Count', 'threadCountDiv', java_threadCount.getArray());
+                            showChart('CPU', 'jvmCpuDiv', java_cpuUsedPercentage.getArray());
                             return true;
                         } else {
                             showErrorMsg("Get monitor data failed.");
@@ -139,7 +148,6 @@
                         }
                     },
                     error: function() {
-                        alert(2);
                         showErrorMsg("Error!");
                         return false;
                     }
@@ -150,6 +158,33 @@
                 $("#" + id).empty();
                 drawChart(title, id, data);
             }
+            
+            function getChartData(dataObj) {
+				if (java_heapUsedMemory.getSize() == 60) {
+					java_heapUsedMemory.deQueue();
+					java_nonHeapUsedMemory.deQueue();
+					java_cpuUsedPercentage.deQueue();
+					java_threadCount.deQueue();
+					sys_totalCpuValue.deQueue();
+					sys_usedMemory.deQueue();
+				}
+				
+				java_heapUsedMemory.enQueue(dataObj.javaData.heapUsedMemory);
+				java_nonHeapUsedMemory.enQueue(dataObj.javaData.nonHeapUsedMemory);
+				java_cpuUsedPercentage.enQueue(dataObj.javaData.cpuUsedPercentage);
+				java_threadCount.enQueue(dataObj.javaData.threadCount);
+				sys_totalCpuValue.enQueue(dataObj.systemData.totalCpuValue);
+				sys_usedMemory.enQueue(dataObj.systemData.totalMemory - dataObj.systemData.freeMemory);
+			}
+			
+			function cleanChartData() {
+	            java_heapUsedMemory.makeEmpty();
+				java_nonHeapUsedMemory.makeEmpty();
+				java_cpuUsedPercentage.makeEmpty();
+				java_threadCount.makeEmpty();
+				sys_totalCpuValue.makeEmpty();
+				sys_usedMemory.makeEmpty();
+			}
         </script>
     </body>
 </html>

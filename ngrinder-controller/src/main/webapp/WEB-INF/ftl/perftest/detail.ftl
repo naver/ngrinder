@@ -198,15 +198,14 @@ div.chart {
 											<label class="control-label"> 
 												<input type="radio" id="durationChkbox"> Duration
 											</label>
-											<div class="controls docs-input-sizes">
-												<select class="select-item" id="dSelect" style="visibility:hidden"></select> : 
+											<div class="controls docs-input-sizes"> 
 												<select	class="select-item" id="hSelect"></select> : 
 												<select	class="select-item" id="mSelect"></select> : 
 												<select	class="select-item" id="sSelect"></select>
 												&nbsp;&nbsp;
-												<code>DD:HH:MM:SS</code>
+												<code>HH:MM:SS</code>
 												<input type="hidden" id="duration" class="required positiveNumber" name="duration" value="${(test.duration)!0}">
-												<div id="durationSlider" class="slider" style="margin-left:0; width:235px"></div>
+												<div id="durationSlider" class="slider" style="margin-left:0; width:250px"></div>
 												<input id="hiddenDurationInput" class="span1 hide" 
 														data-slider="#durationSlider"
 														data-max="40" data-min="0" data-step="1">
@@ -415,7 +414,7 @@ div.chart {
 												Duration
 											</label>
 											<div class="controls">
-												<span>${(test.durationStr)!}</span><code>DD:HH:MM:SS</code>
+												<span>${(test.durationStr)!}</span><code>HH:MM:SS</code>
 											</div>
 										</div>
 										<div class="control-group">
@@ -760,9 +759,6 @@ div.chart {
 					format: 'yyyy-mm-dd'
 				});
 						
-				$("#dSelect").append(getOption(100));
-				$("#dSelect").change(getDurationMS);
-				
 				$("#hSelect").append(getOption(24));
 				$("#hSelect").change(getDurationMS);
 				
@@ -916,22 +912,19 @@ div.chart {
 			function initDuration() {
 				var duration = $("#duration").val();
 				var durationInSec = parseInt(duration / 1000);
-		        var durationD = parseInt(durationInSec /(60*60*24))
 		        var durationH = parseInt((durationInSec%(60*60*24))/3600);
 		        var durationM = parseInt((durationInSec%3600)/60);
 		        var durationS = durationInSec%60;
-				$("#dSelect").val(durationD);
 				$("#hSelect").val(durationH);
 				$("#mSelect").val(durationM);
 				$("#sSelect").val(durationS);
 			}
 			
 			function getDurationMS() {
-				var durationD = parseInt($("#dSelect").val());     
 				var durationH = parseInt($("#hSelect").val());   
 				var durationM = parseInt($("#mSelect").val());   
 				var durationS = parseInt($("#sSelect").val());
-				var durationMs = (durationS + durationM * 60 + durationH * 3600 + durationD * 3600*24) * 1000;
+				var durationMs = (durationS + durationM * 60 + durationH * 3600) * 1000;
 				var durationObj = $("#duration");
 				durationObj.val(durationMs);
 				durationObj.valid(); //trigger validation
@@ -956,10 +949,14 @@ div.chart {
 			}
 			
 			function initHosts() {
+				if (checkEmptyByID("hostsHidden")) {
+					return;
+				}
+				
 				var contents = $("#hostsHidden").val().split(",");
 				var str = "";
 				for (i = 0; i < contents.length; i++) {
-					str += hostItem(contents[i]);
+					str += hostItem($.trim(contents[i]));
 				}
 				
 				$(".div-host").empty();
