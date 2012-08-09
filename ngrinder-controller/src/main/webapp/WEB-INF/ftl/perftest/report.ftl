@@ -55,7 +55,7 @@
                            </tr>
                            <tr>
                                <th>Duration</th>
-                               <td><span>${(test.duration)!0}</span><code>sec</code></td>
+                               <td><span>${(test.durationStr)!}</span><code>HH:MM:SS</code></td>
                            </tr>
                            <tr>
                                <th>Ignore Count</th>

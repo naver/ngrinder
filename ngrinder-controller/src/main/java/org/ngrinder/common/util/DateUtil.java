@@ -19,7 +19,6 @@ public class DateUtil {
 	private static int ss = 1000;
 	private static int mi = ss * 60;
 	private static int hh = mi * 60;
-	private static int dd = hh * 24;
 
 	private static Map<String, String> timezoneIDMap = null;
 
@@ -94,20 +93,18 @@ public class DateUtil {
 
 	public static String ms2Time(Long ms) {
 		if (null == ms) {
-			return "00:00:00:00";
+			return "00:00:00";
 		}
 		
-		long day = ms / dd;
-		long hour = (ms - day * dd) / hh;
-		long minute = (ms - day * dd - hour * hh) / mi;
-		long second = (ms - day * dd - hour * hh - minute * mi) / ss;
+		long hour = ms / hh;
+		long minute = (ms - hour * hh) / mi;
+		long second = (ms - hour * hh - minute * mi) / ss;
 
-		String strDay = day < 10 ? "0" + day : "" + day;
 		String strHour = hour < 10 ? "0" + hour : "" + hour;
 		String strMinute = minute < 10 ? "0" + minute : "" + minute;
 		String strSecond = second < 10 ? "0" + second : "" + second;
 
-		return strDay + ":" + strHour + ":" + strMinute + ":" + strSecond;
+		return strHour + ":" + strMinute + ":" + strSecond;
 	}
 
 	public static int timeToMs(int day, int hour, int min, int sec) {
