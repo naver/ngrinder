@@ -83,7 +83,7 @@ public class AgentImplementationEx implements Agent {
 
 	private volatile FileStore m_fileStore;
 
-	private static int indentifier = 0;
+	private int indentifier = 0;
 
 	/**
 	 * Constructor.
@@ -102,7 +102,8 @@ public class AgentImplementationEx implements Agent {
 		m_proceedWithoutConsole = proceedWithoutConsole;
 
 		m_consoleListener = new ConsoleListener(m_eventSynchronisation, m_logger);
-		m_agentIdentity = new AgentIdentityImplementation(getHostName() + (indentifier++));
+		indentifier = (int) (Math.random() * 100);
+		m_agentIdentity = new AgentIdentityImplementation(getHostName() + "_");
 
 	}
 
@@ -139,7 +140,8 @@ public class AgentImplementationEx implements Agent {
 					properties = createAndMergeProperties(grinderProperties,
 							startMessage != null ? startMessage.getProperties() : null);
 
-					m_agentIdentity.setName(properties.getProperty("grinder.hostID", getHostName() + (indentifier++)));
+					m_agentIdentity.setName(properties.getProperty("grinder.hostID", getHostName() + "_"
+							+ (indentifier)));
 
 					final Connector connector = properties.getBoolean("grinder.useConsole", true) ? m_connectorFactory
 							.create(properties) : null;
@@ -417,6 +419,7 @@ public class AgentImplementationEx implements Agent {
 			m_connector = connector;
 
 			if (m_fileStore == null) {
+				// FIXME : store the log in ngrinder home
 				// Only create the file store if we connected.
 				m_fileStore = new FileStore(new File("./" + m_agentIdentity.getName() + "-file-store"), m_logger);
 			}

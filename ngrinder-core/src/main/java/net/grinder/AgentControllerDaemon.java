@@ -35,8 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is daemon wrapper for agent controller;
- * 
+ * This is daemon wrapper for agent controller.
  * 
  * @author JunHo Yoon
  */
@@ -52,16 +51,16 @@ public class AgentControllerDaemon implements Agent {
 	private boolean forceToshutdown = false;
 	public Condition m_eventSyncCondition = new Condition();
 
-	public final static Logger logger = LoggerFactory.getLogger("agent controller daemon");
+	public static final Logger LOGGER = LoggerFactory.getLogger("agent controller daemon");
 	/**
-	 * Region of grinder agent
+	 * Region of grinder agent.
 	 */
 	private String region = "";
 
 	public AgentControllerDaemon() {
 		try {
 			properties = new GrinderProperties(GrinderProperties.DEFAULT_PROPERTIES);
-			agent = new AgentController(logger, m_eventSyncCondition);
+			agent = new AgentController(LOGGER, m_eventSyncCondition);
 		} catch (GrinderException e) {
 			throw new NGrinderRuntimeException("Exception occurs while initiating agent controller deamon", e);
 		}
@@ -91,7 +90,7 @@ public class AgentControllerDaemon implements Agent {
 			public void run() {
 				do {
 					try {
-						logger.info("agent controller daemon : started.");
+						LOGGER.info("agent controller daemon : started.");
 						getAgentController().run(grinderProperties);
 
 						getListeners().apply(new Informer<AgentShutDownListener>() {
@@ -100,7 +99,7 @@ public class AgentControllerDaemon implements Agent {
 							}
 						});
 					} catch (Exception e) {
-						logger.info("agent controller daemon : crashed.", e);
+						LOGGER.info("agent controller daemon : crashed.", e);
 					}
 					if (isForceToshutdown()) {
 						setForceToshutdown(false);

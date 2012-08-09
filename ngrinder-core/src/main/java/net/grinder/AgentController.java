@@ -97,7 +97,7 @@ public class AgentController implements Agent {
 	}
 
 	/**
-	 * Get host address
+	 * Get host address.
 	 * 
 	 * @return ip form of host address
 	 */
