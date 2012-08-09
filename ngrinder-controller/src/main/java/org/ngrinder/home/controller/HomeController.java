@@ -42,6 +42,7 @@ import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.LocaleResolver;
@@ -133,7 +134,6 @@ public class HomeController extends NGrinderBaseController {
 	@RequestMapping(value = "/allTimeZone")
 	public String getAllTimeZone(ModelMap model) {
 		model.addAttribute("timeZones", DateUtil.getFilteredTimeZoneMap());
-
 		return "allTimeZone";
 	}
 
@@ -144,4 +144,11 @@ public class HomeController extends NGrinderBaseController {
 		return "user/userInfo";
 	}
 
+	@RequestMapping("/profile/save")
+	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser) {
+		if (user.getId() != null && user.getId() > 0) {
+			getUserService().modifyUser(updatedUser);
+		}
+		return "/";
+	}
 }

@@ -69,7 +69,7 @@
 		<intercept-url pattern="/monitor**" access="A, U" />
 
 		<intercept-url pattern="/agent/**" access="A" />
-		<intercept-url pattern="/user/**" access="A" />
+		<intercept-url pattern="/user/**" access="A, U" />
 
 		<custom-filter ref="customFilter" position="FORM_LOGIN_FILTER" />
 

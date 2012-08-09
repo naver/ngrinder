@@ -88,10 +88,12 @@ div.chart {
 											 rel="popover"
 											 data-content="Error on ${test.testErrorCause} phase. ${(test.testErrorStackTrace)! ?replace('\n', '<br/>')?html}" 
 											 data-original-title="${test.status}"
+											 type="toggle"
 										<#else>
 											 rel="popover"
 											 data-content="${test.createdDate}" 
 											 data-original-title="${test.status}"
+											 type="toggle"
 										</#if>
 								>
 								

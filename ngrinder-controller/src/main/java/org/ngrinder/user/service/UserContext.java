@@ -38,9 +38,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 @RuntimeOnlyComponent
 public class UserContext {
-	
+
+
 	/**
 	 * Get current user object from context
+	 * 
 	 * @return
 	 */
 	public User getCurrentUser() {

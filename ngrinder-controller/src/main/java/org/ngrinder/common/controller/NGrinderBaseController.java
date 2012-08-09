@@ -93,7 +93,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	public void setTimeZone(String timeZone) {
 		User user = userContext.getCurrentUser();
 		user.setTimeZone(timeZone);
-		userService.saveUser(user);
+		getUserService().saveUser(user);
 	}
 
 	protected void setCurrentUserInfoForModel(ModelMap model) {
@@ -166,6 +166,10 @@ public class NGrinderBaseController implements NGrinderConstants {
 			return "Getting message error:" + e.getMessage();
 		}
 		return message;
+	}
+
+	public UserService getUserService() {
+		return userService;
 	}
 
 }
