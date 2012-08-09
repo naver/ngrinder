@@ -82,6 +82,7 @@ div.chart {
 							<label for="testName" class="control-label">Test Name</label>
 							<div class="controls">  
 								<input class="span3 required" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
+								<#if test??>
 								<span  
 										<#if test.status == 'STOP_ON_ERROR'>
 											 rel="popover"
@@ -96,6 +97,7 @@ div.chart {
 								
 									<img src="${req.getContextPath()}/img/ball/${test.status.iconName}"/>
 								</span>
+								</#if>
 								<button type="submit" class="btn btn-primary pull-right" style="margin-left:5px;margin-right:70px" data-toggle="modal" href="#scheduleModal"  id="saveScheduleBtn">
 									<#if test?? && (test.status != "SAVED")>Clone<#else>Save</#if> and Start
 								</button>  
