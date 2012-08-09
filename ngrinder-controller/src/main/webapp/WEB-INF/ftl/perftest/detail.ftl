@@ -688,12 +688,14 @@ div.chart {
 					var content = "";
 					
 					
-					if (!checkEmptyByID("ipInput")) {
-						content = getValueByID("ipInput");
-					}
 					if (!checkEmptyByID("domainInput")) {
-						content = content + ":" + getValueByID("domainInput");
+						content = getValueByID("domainInput");
+					} 
+					content = content + ":";
+					if (!checkEmptyByID("ipInput")) {
+						content = content + getValueByID("ipInput");
 					}
+					
 					
 					if (content == ":") {
 						$("#addHostModal small").addClass("errorColor");
@@ -702,10 +704,38 @@ div.chart {
 					
 					curHostDiv += hostItem(content);					
 					$(".div-host").html(curHostDiv);
-					buildHost()
+					buildHost();
 					$("#addHostModal").modal("hide");
 					$("#addHostModal small").removeClass("errorColor");
 				});
+				
+				function hostItem(content) {
+			   	   return "<p class='host'>" + content + "  <a href='javascript:void(0);'><i class='icon-remove-circle'></i></a><input type='hidden' class='hostsItem' value='" + content + "'></p><br>"
+			    }
+			
+				function buildHost() {
+					var contents = [];
+					$(".hostsItem").each(function() {
+						contents.push($(this).val());
+					});
+					$("#hostsHidden").val(contents.join(","));
+				}
+				
+				function initHosts() {
+					if (checkEmptyByID("hostsHidden")) {
+						return;
+					}
+					
+					var contents = $("#hostsHidden").val().split(",");
+					var str = "";
+					for (i = 0; i < contents.length; i++) {
+						str += hostItem($.trim(contents[i]));
+					}
+					
+					$(".div-host").empty();
+					$(".div-host").html(str);
+				}
+				
 				
 				$("i.icon-remove-circle").live('click', function() {
 					var $elem = $(this).parents("p");
@@ -939,32 +969,6 @@ div.chart {
 				$("#durationChkbox").toggle();
 			}
 			
-			function hostItem(content) {
-				return "<p class='host'>" + content + "  <a href='javascript:void(0);'><i class='icon-remove-circle'></i></a><input type='hidden' id='hostsItem' value='" + content + "'></p><br>"
-			}
-			
-			function buildHost() {
-				var contents = [];
-				$("#hostsItem").each(function() {
-					contents.push($(this).val());
-				});
-				$("#hostsHidden").val(contents.join(","));
-			}
-			
-			function initHosts() {
-				if (checkEmptyByID("hostsHidden")) {
-					return;
-				}
-				
-				var contents = $("#hostsHidden").val().split(",");
-				var str = "";
-				for (i = 0; i < contents.length; i++) {
-					str += hostItem($.trim(contents[i]));
-				}
-				
-				$(".div-host").empty();
-				$(".div-host").append(str);
-			}
 			
 			function getOption(cnt) {
 				var contents = [];
