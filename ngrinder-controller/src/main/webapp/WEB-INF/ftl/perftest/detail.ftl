@@ -81,7 +81,21 @@ div.chart {
 						<div class="control-group">
 							<label for="testName" class="control-label">Test Name</label>
 							<div class="controls">  
-								<input class="span5 required" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
+								<input class="span3 required" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
+								<span  
+										<#if test.status == 'STOP_ON_ERROR'>
+											 rel="popover"
+											 data-content="Error on ${test.testErrorCause} phase. ${(test.testErrorStackTrace)! ?replace('\n', '<br/>')?html}" 
+											 data-original-title="${test.status}"
+										<#else>
+											 rel="popover"
+											 data-content="${test.createdDate}" 
+											 data-original-title="${test.status}"
+										</#if>
+								>
+								
+									<img src="${req.getContextPath()}/img/ball/${test.status.iconName}"/>
+								</span>
 								<button type="submit" class="btn btn-primary pull-right" style="margin-left:5px;margin-right:70px" data-toggle="modal" href="#scheduleModal"  id="saveScheduleBtn">
 									<#if test?? && (test.status != "SAVED")>Clone<#else>Save</#if> and Start
 								</button>  

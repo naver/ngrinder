@@ -23,38 +23,68 @@
 package org.ngrinder.perftest.model;
 
 /**
- * Performance Test Status
+ * Performance Test Status.
  * 
  * @author JunHo Yoon
- * 
+ * @since 3.0
  */
 public enum Status {
 	/** Just Saved.. not ready to run */
-	SAVED,
-	/** test ready */
-	READY,
-	/** Just before starting console */
-	START_CONSOLE,
-	/** Just after staring console */
-	START_CONSOLE_FINISHED,
-	/** Just before starting agents */
-	START_AGENTS,
-	/** Just after starting agents */
-	START_AGENTS_FINISHED,
-	/** Just before distributing files */
-	DISTRIBUTE_FILES,
-	/** Just after distributing files */
-	DISTRIBUTE_FILES_FINISHED,
-	/** Just before staring testing */
-	START_TESTING, TESTING,
-	/** Just after staring testing */
-	TESTING_FINISHED,
-	/** Test finish */
-	FINISHED,
-	/** Stopped by error */
-	STOP_ON_ERROR,
-	/** Test cancel */
-	CANCELED,
-	/** Nothing */
-	UNKNOWN
+	SAVED(StatusCategory.PREPARE),
+	/** test ready. */
+	READY(StatusCategory.PREPARE),
+	/** Just before starting console. */
+	START_CONSOLE(StatusCategory.PROGRESSING),
+	/** Just after staring console. */
+	START_CONSOLE_FINISHED(StatusCategory.PROGRESSING),
+	/** Just before starting agents. */
+	START_AGENTS(StatusCategory.PROGRESSING),
+	/** Just after starting agents. */
+	START_AGENTS_FINISHED(StatusCategory.PROGRESSING),
+	/** Just before distributing files. */
+	DISTRIBUTE_FILES(StatusCategory.PROGRESSING),
+	/** Just after distributing files. */
+	DISTRIBUTE_FILES_FINISHED(StatusCategory.PROGRESSING),
+	/** Just before staring testing. */
+	START_TESTING(StatusCategory.PROGRESSING),
+	/** Just after staring testing. */
+	TESTING(StatusCategory.PROGRESSING),
+	/** Waiting for test is finishing. */
+	TESTING_FINISHED(StatusCategory.PROGRESSING),
+	/** Test finished. */
+	FINISHED(StatusCategory.FINISHED),
+	/** Stopped by error. */
+	STOP_ON_ERROR(StatusCategory.STOP),
+	/** Test cancel. */
+	CANCELED(StatusCategory.STOP),
+	/** Nothing. */
+	UNKNOWN(StatusCategory.STOP);
+
+	private final StatusCategory category;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param category
+	 *            category of this status within.
+	 */
+	Status(StatusCategory category) {
+		this.category = category;
+	}
+
+	public StatusCategory getCategory() {
+		return category;
+	}
+
+	public boolean isStoppable() {
+		return category.isStoppable();
+	}
+
+	public boolean isDeletable() {
+		return category.isStoppable();
+	}
+
+	public String getIconName() {
+		return category.getIconName();
+	}
 }

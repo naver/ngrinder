@@ -36,7 +36,7 @@
 				<table class="table table-striped table-bordered ellipsis" id="testTable">
 					<colgroup>
 						<col width="30">
-						<col width="100">
+						<col width="40">  
 						<col>
 						<col>
 						<col width="135">
@@ -49,7 +49,7 @@
 					<thead>
 						<tr>
 							<th class="nothing"><input id="chkboxAll" type="checkbox" class="checkbox" value=""></th>
-							<th id="status" style="text-align:center">Status</th>
+							<th class="nothing"style="text-align:center"> </th>
 							<th id="testName">Test Name</th>
 							<th id="scriptName">Script Name</th>
 							<th id="startTime">Start Time</th>
@@ -57,7 +57,7 @@
 							<th id="tps">TPS</th>
 							<th id="meanTestTime">Mean Time</th>
 							<th id="errors">Errors</th>
-							<th class="nothing">Vusers</th>
+							<th class="nothing">Vusers</th> 
 						</tr>
 					</thead>
 					<tbody>
@@ -71,16 +71,15 @@
 										<div 
 										<#if test.status == 'STOP_ON_ERROR'>
 											 rel="popover"
-											 data-content="${(test.testErrorStackTrace)! ?replace('\n', '<br/>')?html}" 
-											 data-original-title="Error on ${test.testErrorCause} phase"
-										</#if> 
-										<#if test.status == 'SAVED'>
+											 data-content="Error on ${test.testErrorCause} phase. ${(test.testErrorStackTrace)! ?replace('\n', '<br/>')?html}" 
+											 data-original-title="${test.status}"
+										<#else>
 											 rel="popover"
 											 data-content="${test.createdDate}" 
-											 data-original-title="Saved at"
+											 data-original-title="${test.status}"
 										</#if>
 										>
-										${test.status}
+											<img src="${req.getContextPath()}/img/ball/${test.status.iconName}"/>
 										</div>
 									</td>
 									<td class="ellipsis" > 

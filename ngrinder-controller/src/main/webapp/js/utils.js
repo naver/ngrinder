@@ -420,6 +420,9 @@ $(document).ready(function() {
 	});
 	
 	$("div[rel=popover]").hover(function() {
-        $(this).popover('show')
+        $(this).popover('show');
+    });
+	$("span[rel=popover]").hover(function() {
+        $(this).popover('show');
     });
 });
