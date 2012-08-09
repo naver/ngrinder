@@ -28,10 +28,11 @@ import java.net.UnknownHostException;
 
 import org.apache.commons.lang.StringUtils;
 
+// CHECKSTYLE:OFF
 import sun.net.spi.nameservice.NameService;
 
 /**
- * Locally managed DNS
+ * Locally managed DNS.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -39,9 +40,16 @@ import sun.net.spi.nameservice.NameService;
 @SuppressWarnings("restriction")
 public class LocalManagedDns implements NameService {
 
-	NameService defaultDnsImpl = new DNSJavaNameService();
+	private NameService defaultDnsImpl = new DNSJavaNameService();
 
 	/**
+	 * Get host name by address.
+	 * 
+	 * @param ip
+	 *            ip
+	 * @return host name
+	 * @throws UnknownHostException
+	 *             occurs when hostname can not be found.
 	 * @see sun.net.spi.nameservice.NameService#getHostByAddr(byte[])
 	 */
 	public String getHostByAddr(byte[] ip) throws UnknownHostException {
@@ -49,7 +57,14 @@ public class LocalManagedDns implements NameService {
 	}
 
 	/**
-	 * @see sun.net.spi.nameservice.NameService#lookupAllHostAddr(java.lang.String)
+	 * Get ip by hostname.
+	 * 
+	 * @param name
+	 *            hostname
+	 * @return ip addresses
+	 * @throws UnknownHostException
+	 *             occurs when hostname can not be found.
+	 * @see sun.net.spi.nameservice.NameService#getHostByAddr(byte[])
 	 */
 	public InetAddress[] lookupAllHostAddr(String name) throws UnknownHostException {
 
