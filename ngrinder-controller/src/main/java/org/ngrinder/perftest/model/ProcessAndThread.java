@@ -23,14 +23,14 @@
 package org.ngrinder.perftest.model;
 
 /**
- * Count Data holder of processes and threads
+ * Count Data holder of processes and threads.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
 public class ProcessAndThread {
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param processCount
 	 *            count of processes
