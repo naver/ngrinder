@@ -55,7 +55,7 @@ public class ScriptController extends NGrinderBaseController {
 	@Autowired
 	private FileEntryService fileEntryService;
 
-	@RequestMapping({"/list/**", ""})
+	@RequestMapping({ "/list/**", "" })
 	public String get(User user, @RemainedPath String path, ModelMap model) { // "fileName"
 		List<FileEntry> files = fileEntryService.getFileEntries(user, path);
 		model.addAttribute("files", files);
@@ -75,9 +75,8 @@ public class ScriptController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = "/create/**", params = "type=script", method = RequestMethod.POST)
-	public String getCreateForm(User user, @RemainedPath String path,
-			@RequestParam String testUrl, @RequestParam String fileName,
-			@RequestParam(required = false) String scriptType, ModelMap model) {
+	public String getCreateForm(User user, @RemainedPath String path, @RequestParam String testUrl,
+			@RequestParam String fileName, @RequestParam(required = false) String scriptType, ModelMap model) {
 		if (fileEntryService.hasFileEntry(user, path + "/" + fileName)) {
 			return "error/duplicated";
 		}
@@ -89,7 +88,7 @@ public class ScriptController extends NGrinderBaseController {
 	@RequestMapping("/detail/**")
 	public String getDetail(User user, @RemainedPath String path, ModelMap model) { // "fileName"
 		FileEntry script = fileEntryService.getFileEntry(user, path);
-		if (!script.getFileType().isEditable()) {
+		if (script == null || !script.getFileType().isEditable()) {
 			return "error/errors";
 		}
 		model.addAttribute("file", script);

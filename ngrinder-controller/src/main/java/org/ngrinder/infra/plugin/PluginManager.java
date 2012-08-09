@@ -156,8 +156,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 			if (pluginDescriptorAnnotation == null) {
 				LOG.error("plugin descriptor " + pluginDescriptor.getName()
 						+ " doesn't have PluginDescriptor annotation. Skip..");
-			}
-			if (StringUtils.isEmpty(pluginDescriptorAnnotation.value())) {
+			} else if (StringUtils.isEmpty(pluginDescriptorAnnotation.value())) {
 				LOG.error("plugin descriptor " + pluginDescriptor.getName()
 						+ " doesn't have corresponding plugin key. Skip..");
 			} else {
