@@ -97,6 +97,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		}
 
 		// schedule test
+		// FIXME : What if the timezone is different..
 		Date schedule = runCandidate.getScheduledTime();
 		if (schedule != null && !DateUtil.compareDateEndWithMinute(schedule, new Date(System.currentTimeMillis()))) {
 			// this test project is reserved,but it isn't yet going to run test
@@ -106,11 +107,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 		// In case of too many trial, cancel running.
 		if (runCandidate.getTestTrialCount() > PERFTEST_MAXIMUM_TRIAL_COUNT) {
-			LOG.error("The {} test project is canceld because it has too many test execution errors",
-					runCandidate.getId());
+			LOG.error("The {} test is canceled because it has too many test execution errors",
+					runCandidate.getTestName());
 			runCandidate.setTestErrorCause(Status.READY);
-			runCandidate
-					.setTestErrorStackTrace("The test project is canceld because it has too many test execution errors");
+			runCandidate.setTestErrorStackTrace("The test is canceled because it has too many test execution errors");
 			perfTestService.savePerfTest(runCandidate, CANCELED);
 			return;
 		}
@@ -141,7 +141,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Mark test error on {@link PerfTest} instance.
+	 * Mark test error on {@link PerfTest} instance
 	 * 
 	 * @param perfTest
 	 *            {@link PerfTest}

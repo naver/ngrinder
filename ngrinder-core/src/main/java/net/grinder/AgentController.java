@@ -56,6 +56,7 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.ReflectionUtil;
 import net.grinder.util.thread.Condition;
 
+import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
@@ -78,7 +79,7 @@ public class AgentController implements Agent {
 	private final AgentControllerConnectorFactory m_connectorFactory = new AgentControllerConnectorFactory(
 			ConnectionType.AGENT);
 	private boolean m_agentStart = false;
-
+	private AgentConfig agentConfig;
 	private final Condition m_eventSyncCondition;
 
 	/**
@@ -142,7 +143,7 @@ public class AgentController implements Agent {
 		ConsoleCommunication consoleCommunication = null;
 		m_fanOutStreamSender = new FanOutStreamSender(GrinderConstants.AGENT_CONTROLLER_FANOUT_STREAM_THREAD_COUNT);
 		m_timer = new Timer(false);
-		AgentDaemon agent = new AgentDaemon();
+		AgentDaemon agent = new AgentDaemon(checkNotNull(getAgentConfig(), "agentconfig should be provided before agentdaemon start."));
 		try {
 			while (true) {
 				m_logger.info(GrinderBuild.getName());
@@ -327,6 +328,14 @@ public class AgentController implements Agent {
 		javaDataModel.setCpuUsedPercentage(20f);
 		// FIXME
 		return javaDataModel;
+	}
+
+	public AgentConfig getAgentConfig() {
+		return agentConfig;
+	}
+
+	public void setAgentConfig(AgentConfig agentConfig) {
+		this.agentConfig = agentConfig;
 	}
 
 	private final class ConsoleCommunication {

@@ -32,7 +32,11 @@ import net.grinder.util.ListenerSupport.Informer;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+<<<<<<< OURS
 import org.ngrinder.common.util.ThreadUtil;
+=======
+import org.ngrinder.infra.AgentConfig;
+>>>>>>> THEIRS
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,12 +54,20 @@ public class AgentDaemon implements Agent {
 	private boolean forceToshutdown = false;
 	public static final Logger LOGGER = LoggerFactory.getLogger(AgentDaemon.class);
 
+<<<<<<< OURS
 	/**
 	 * Constructor.
 	 */
 	public AgentDaemon() {
+=======
+	public AgentDaemon(AgentConfig agentConfig) {
+>>>>>>> THEIRS
 		try {
 			properties = new GrinderProperties(GrinderProperties.DEFAULT_PROPERTIES);
+<<<<<<< OURS
+=======
+			agent = new AgentImplementationEx(logger, agentConfig);
+>>>>>>> THEIRS
 		} catch (GrinderException e) {
 			throw new NGrinderRuntimeException("Exception occurs while creating AgentDaemon", e);
 		}

@@ -56,6 +56,7 @@ import net.grinder.messages.console.AgentProcessReportMessage;
 import net.grinder.util.Directory;
 import net.grinder.util.thread.Condition;
 
+import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 
 /**
@@ -86,6 +87,7 @@ public class AgentImplementationEx implements Agent {
 	private volatile FileStore m_fileStore;
 
 	private int indentifier = 0;
+	private final AgentConfig m_agentConfig;
 
 	/**
 	 * Constructor.
@@ -98,9 +100,11 @@ public class AgentImplementationEx implements Agent {
 	 * @throws GrinderException
 	 *             If an error occurs.
 	 */
-	public AgentImplementationEx(Logger logger, boolean proceedWithoutConsole) throws GrinderException {
+	public AgentImplementationEx(Logger logger, AgentConfig agentConfig, boolean proceedWithoutConsole)
+			throws GrinderException {
 
 		m_logger = logger;
+		m_agentConfig = agentConfig;
 		m_proceedWithoutConsole = proceedWithoutConsole;
 
 		m_consoleListener = new ConsoleListener(m_eventSynchronisation, m_logger);
@@ -116,8 +120,8 @@ public class AgentImplementationEx implements Agent {
 	 * @throws GrinderException
 	 *             occurs when initialization is failed.
 	 */
-	public AgentImplementationEx(Logger logger) throws GrinderException {
-		this(logger, false);
+	public AgentImplementationEx(Logger logger, AgentConfig agentConfig) throws GrinderException {
+		this(logger, agentConfig, false);
 	}
 
 	/**
@@ -447,7 +451,8 @@ public class AgentImplementationEx implements Agent {
 			if (m_fileStore == null) {
 				// FIXME : store the log in ngrinder home
 				// Only create the file store if we connected.
-				m_fileStore = new FileStore(new File("./" + m_agentIdentity.getName() + "-file-store"), m_logger);
+
+				m_fileStore = new FileStore(new File(m_agentConfig.getHome().getDirectory(), "file-store"), m_logger);
 			}
 
 			m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_STARTED, m_fileStore

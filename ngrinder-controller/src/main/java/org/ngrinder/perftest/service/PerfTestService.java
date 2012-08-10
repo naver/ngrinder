@@ -275,8 +275,6 @@ public class PerfTestService implements NGrinderConstants {
 				FilenameUtils.getPath(checkNotEmpty(scriptName)));
 		File perfTestDirectory = getUserPerfTestDirectory(perfTest, NGrinderConstants.PATH_DIST);
 
-		// clean up Distribution folders
-		//FileUtils.deleteQuietly(perfTestDirectory);
 		perfTestDirectory.mkdirs();
 
 		// Distribute each files in that folder.
