@@ -407,6 +407,13 @@ function getValueByID(id) {
 	return $.trim($("#" + id).val());
 }
 
+function popover(element) {
+	if ($(this).attr("type") == "toggle") {
+		$(this).popover('toggle');
+	} else {
+		$(this).popover('show');
+	}
+}
 $(document).ready(function() {
 	$("input[number_limit]").keypress(function(e) {
 		if (e.keyCode >= 48 && e.keyCode < 58) {
@@ -420,9 +427,17 @@ $(document).ready(function() {
 	});
 	
 	$("div[rel=popover]").hover(function() {
-        $(this).popover('show');
+		if ($(this).attr("type") == "toggle") {
+			$(this).popover('toggle');
+		} else {
+			$(this).popover('show');
+		}
     });
 	$("span[rel=popover]").hover(function() {
-        $(this).popover('show');
+		if ($(this).attr("type") == "toggle") {
+			$(this).popover('toggle');
+		} else {
+			$(this).popover('show');
+		}
     });
 });

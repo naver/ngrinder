@@ -34,6 +34,7 @@ import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -48,21 +49,21 @@ public class UserController extends NGrinderBaseController {
 	@Autowired
 	private UserService userService;
 
+	@PreAuthorize("hasAnyRole('A', 'S')")
 	@RequestMapping("/list")
-	public String getUserList(ModelMap model,
-			@RequestParam(required = false) String roleName,
+	public String getUserList(ModelMap model, @RequestParam(required = false) String roleName,
 			@RequestParam(required = false) String keywords) {
 
 		List<User> userList = null;
 		if (StringUtils.isEmpty(keywords)) {
 			userList = userService.getAllUserByRole(roleName);
-		}else{
+		} else {
 			userList = userService.getUserListByKeyWord(keywords);
 			model.put("keywords", keywords);
 		}
 
 		model.addAttribute("userList", userList);
-		EnumSet<Role> roleSet = EnumSet.allOf(Role.class); 
+		EnumSet<Role> roleSet = EnumSet.allOf(Role.class);
 		model.addAttribute("roleSet", roleSet);
 		model.addAttribute("roleName", roleName);
 
@@ -72,35 +73,43 @@ public class UserController extends NGrinderBaseController {
 	/**
 	 * Get user detail page.
 	 * 
-	 * @param model 
+	 * @param model
 	 * @param userId
 	 * @return view name
 	 */
+
 	@RequestMapping("/detail")
-	public String getUserDetail(final ModelMap model, final @RequestParam(required = false) String userId) {
+	@PreAuthorize("hasAnyRole('A', 'S') or #user.userId == #userId")
+	public String getUserDetail(User user, final ModelMap model, final @RequestParam(required = false) String userId) {
 
 		List<User> userList = userService.getAllUserByRole(null);
 		model.addAttribute("userList", userList);
-		EnumSet<Role> roleSet = EnumSet.allOf(Role.class); 
+		EnumSet<Role> roleSet = EnumSet.allOf(Role.class);
 		model.addAttribute("roleSet", roleSet);
 
-		User user = userService.getUserById(userId);
+		User retrievedUser = userService.getUserById(userId);
 
-		model.addAttribute("user", user);
+		model.addAttribute("user", retrievedUser);
 		return "user/userDetail";
 	}
 
 	@RequestMapping("/save")
-	public String saveOrUpdateUserDetail(ModelMap model, @ModelAttribute("user") User user) {
+	@PreAuthorize("hasAnyRole('A', 'S') or #user.id == #updatedUser.id")
+	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser) {
 
 		if (user.getId() != null && user.getId() > 0) {
-			userService.modifyUser(user);
+			userService.modifyUser(updatedUser);
 		} else {
-			userService.saveUser(user);
+			userService.saveUser(updatedUser);
 		}
-		return "redirect:/user/list";
+		if (user.getId() == updatedUser.getId()) {
+			return "redirect:/";
+		} else {
+			return "redirect:/user/list";
+		}
 	}
 
+	@PreAuthorize("hasAnyRole('A', 'S')")
 	@RequestMapping("/delete")
 	public String deleteUser(ModelMap model, @RequestParam String userIds) {
 		String[] ids = userIds.split(",");
@@ -108,16 +117,17 @@ public class UserController extends NGrinderBaseController {
 		userService.deleteUsers(aListNumbers);
 		return "redirect:/user/list";
 	}
-	
+
+	@PreAuthorize("hasAnyRole('A', 'S')")
 	@RequestMapping("/checkUserId")
-	public @ResponseBody String checkUserId(ModelMap model, @RequestParam String userId) {
+	public @ResponseBody
+	String checkUserId(ModelMap model, @RequestParam String userId) {
 		User user = userService.getUserById(userId);
-		if(user == null){
+		if (user == null) {
 			return JSONUtil.returnSuccess();
-		}else{
+		} else {
 			return JSONUtil.returnError();
 		}
 	}
-	
 
 }

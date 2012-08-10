@@ -9,11 +9,18 @@
 	<#include "../common/navigator.ftl">
 	<div class="container">
 		<div class="page-header pageHeader" style="margin-bottom: 10px">
+			<span>
 			<h3>Agent Management</h3>
+			</span>
+			
 		</div>
 		<div class="row">
 			<div class="span12">
-
+				<#if downloadLink?has_content>
+					<div class="input-prepend pull-right"> 
+		               <span class="add-on" style="cursor:default">Agent Download</span><span class="input-xlarge uneditable-input span6" style="cursor:text"><a href="${downloadLink}">${downloadLink}</a></span>
+		        	</div>  
+        		</#if>
 				<table class="table table-striped table-bordered" id="agentTable">
 					<colgroup>
 						<col width="30">

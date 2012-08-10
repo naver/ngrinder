@@ -51,7 +51,7 @@
 			<thead>
 				<tr>
 					<th><input type="checkbox" class="checkbox" value=""></th>
-					<th><a href="${req.getContextPath()}/script/list/${currentPath}/../" target="_self"><i class="icon-share-alt"></i></a> 
+					<th><a href="${req.getContextPath()}/script/list/${currentPath}/../" target="_self"><img src="${req.getContextPath()}/img/up_folder.png"/></a> 
 					</th>
 					<th>Script File Name</th>
 					<th class="noClick">Commit Message</th>

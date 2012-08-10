@@ -75,25 +75,72 @@
 			<systemPath>${toolsjar}</systemPath>
 		</dependency>
 
+		<dependency>
+			<groupId>net.sf.grinder</groupId>
+			<artifactId>grinder</artifactId>
+			<version>3.9.1</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>grinder-dcr-agent</artifactId>
+					<groupId>net.sf.grinder</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>clojure</artifactId>
+					<groupId>org.clojure</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
+				<artifactId>maven-dependency-plugin</artifactId>
+
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+							<includeScope>runtime</includeScope>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copies for distribution</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>org.ngrinder.NGrinderStarter</mainClass>
 							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+							<mainClass>org.ngrinder.NGrinderStarter</mainClass>
 						</manifest>
-
+						<manifestEntries>
+							<Class-Path>tools.jar</Class-Path>
+						</manifestEntries>
 					</archive>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
 				</configuration>
 			</plugin>
+
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
@@ -108,6 +155,27 @@
 							org.eclipse.m2e.core.maven2Builder
 						</buildcommand>
 					</additionalBuildcommands>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>assemble</id>
+						<phase>package</phase>
+						<goals>
+							<goal>assembly</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<descriptors>
+						<descriptor>src/assemble/ngrinder.xml</descriptor>
+					</descriptors>
+					<outputDirectory>${project.build.directory}</outputDirectory>
+					<overWriteReleases>false</overWriteReleases>
+					<overWriteSnapshots>false</overWriteSnapshots>
+					<overWriteIfNewer>true</overWriteIfNewer>
 				</configuration>
 			</plugin>
 		</plugins>

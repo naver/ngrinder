@@ -25,6 +25,7 @@ package net.grinder.engine.agent;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -54,6 +55,7 @@ import net.grinder.messages.console.AgentProcessReportMessage;
 import net.grinder.util.Directory;
 import net.grinder.util.thread.Condition;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 
 /**
@@ -76,9 +78,8 @@ public class AgentImplementationEx implements Agent {
 	private FanOutStreamSender m_fanOutStreamSender = new FanOutStreamSender(3);
 	private final ConnectorFactory m_connectorFactory = new ConnectorFactory(ConnectionType.AGENT);
 	/**
-	 * We use an most one file store throughout an agent's life, but can't
-	 * initialise it until we've read the properties and connected to the
-	 * console.
+	 * We use an most one file store throughout an agent's life, but can't initialise it until we've read the properties
+	 * and connected to the console.
 	 */
 
 	private volatile FileStore m_fileStore;
@@ -91,8 +92,7 @@ public class AgentImplementationEx implements Agent {
 	 * @param logger
 	 *            Logger.
 	 * @param proceedWithoutConsole
-	 *            <code>true</code> => proceed if a console connection could not
-	 *            be made.
+	 *            <code>true</code> => proceed if a console connection could not be made.
 	 * @throws GrinderException
 	 *             If an error occurs.
 	 */
@@ -229,9 +229,12 @@ public class AgentImplementationEx implements Agent {
 					final WorkerFactory workerFactory;
 
 					if (!properties.getBoolean("grinder.debug.singleprocess", false)) {
-
+						Properties properties2 = System.getProperties();
+						
+						System.out.println("WWWW" + properties2.getProperty("java.class.path"));
+						/// Fix to provide empty system classpath to speed up
 						final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
-								System.getProperties(), jvmArguments, script.getDirectory());
+								properties2, jvmArguments, script.getDirectory());
 
 						m_logger.info("Worker process command line: {}", workerCommandLine);
 
