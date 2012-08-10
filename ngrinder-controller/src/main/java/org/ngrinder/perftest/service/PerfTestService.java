@@ -57,6 +57,7 @@ import net.grinder.statistics.ExpressionView;
 import net.grinder.statistics.StatisticsSet;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.Directory;
+import net.grinder.util.ReflectionUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -65,7 +66,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.ngrinder.common.util.ReflectionUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.spring.OnlyOnePageRequest;
 import org.ngrinder.model.Role;

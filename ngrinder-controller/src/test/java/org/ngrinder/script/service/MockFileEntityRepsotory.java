@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.ngrinder.model.User;
 import org.ngrinder.script.repository.FileEntityRepository;
-import org.springframework.stereotype.Component;
 
 public class MockFileEntityRepsotory extends FileEntityRepository {
 	
