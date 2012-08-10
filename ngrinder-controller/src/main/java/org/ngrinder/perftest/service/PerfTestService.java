@@ -40,21 +40,11 @@ import java.io.LineNumberReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
-import net.grinder.common.Test;
-import net.grinder.console.communication.NGrinderConsoleCommunicationService;
-import net.grinder.console.communication.ProcessControl;
 import net.grinder.console.model.ConsoleProperties;
-import net.grinder.console.model.ModelTestIndex;
-import net.grinder.console.model.SampleModel;
-import net.grinder.console.model.SampleModelViews;
-import net.grinder.statistics.ExpressionView;
-import net.grinder.statistics.StatisticsSet;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.Directory;
 
@@ -65,7 +55,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.ngrinder.common.util.ReflectionUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.spring.OnlyOnePageRequest;
 import org.ngrinder.model.Role;
@@ -77,7 +66,6 @@ import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
-import org.picocontainer.MutablePicoContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -392,95 +380,18 @@ public class PerfTestService implements NGrinderConstants {
 		File targetFile = new File(reportFolder, NGrinderConstants.REPORT_CSV);
 		return targetFile;
 	}
+	
+	public File getReportFileDirectory(long testId) {
+		File reportFolder = config.getHome().getPerfTestDirectory(
+				testId + File.separator + NGrinderConstants.PATH_REPORT);
+		return reportFolder;
+	}
 
 	/**
 	 * To get statistics data when test is running
 	 */
 	public Map<String, Object> getStatistics(int port) {
-		checkNotNull(port, "perfTest is testing ,Its port should not be null!");
-		
-		Map<String, Object> result = new HashMap<String, Object>();
-		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
-		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
-		SingleConsole singleConsole = consoleManager.getConsoleUsingPort(port);
-		checkNotNull(singleConsole, "Test is not running!");
-
-		final SampleModel model = (SampleModel) singleConsole.getConsoleComponent(SampleModel.class);
-		final SampleModelViews modelView = (SampleModelViews) singleConsole.getConsoleComponent(SampleModelViews.class);
-		ExpressionView[] views = modelView.getCumulativeStatisticsView().getExpressionViews();
-		ModelTestIndex modelIndex = (ModelTestIndex) ReflectionUtil.getFieldValue(model, "modelTestIndex");
-		if (modelIndex != null) {
-			for (int i = 0; i < modelIndex.getNumberOfTests(); i++) {
-				Map<String, Object> statistics = new HashMap<String, Object>();
-				Map<String, Object> lastStatistics = new HashMap<String, Object>();
-
-				Test test = modelIndex.getTest(i);
-				statistics.put("testNumber", test.getNumber());
-				statistics.put("testDescription", test.getDescription());
-				lastStatistics.put("testNumber", test.getNumber());
-				lastStatistics.put("testDescription", test.getDescription());
-
-				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
-				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
-				for (ExpressionView expressionView : views) { // TODO : expressionView == null?
-					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-							getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
-					lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-							getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
-				}
-
-				// Tests
-				Double tests = (Double) statistics.get("Tests");
-				Double errors = (Double) statistics.get("Errors");
-				statistics.put("TestsStr", formatter.format(tests));
-				statistics.put("ErrorsStr", formatter.format(errors));
-
-				Double lastTests = (Double) lastStatistics.get("Tests");
-				Double lastErrors = (Double) lastStatistics.get("Errors");
-				lastStatistics.put("TestsStr", formatter.format(lastTests));
-				lastStatistics.put("ErrorsStr", formatter.format(lastErrors));
-
-				cumulativeStatistics.add(statistics);
-				lastSampleStatistics.add(lastStatistics);
-			}
-		}
-
-		StatisticsSet totalSet = model.getTotalCumulativeStatistics();
-		Map<String, Object> totalStatistics = new HashMap<String, Object>();
-
-		for (ExpressionView expressionView : views) { // TODO : expressionView == null ?
-			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
-			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
-		}
-
-		Double tests = (Double) totalStatistics.get("Tests");
-		Double errors = (Double) totalStatistics.get("Errors");
-		totalStatistics.put("TestsStr", formatter.format(tests));
-		totalStatistics.put("ErrorsStr", formatter.format(errors));
-
-		result.put("totalStatistics", totalStatistics);
-		result.put("cumulativeStatistics", cumulativeStatistics);
-		result.put("lastSampleStatistics", lastSampleStatistics);
-		
-		result.put("tpsChartData", singleConsole.getTpsValues());
-
-		
-        MutablePicoContainer container = (MutablePicoContainer) singleConsole.getConsoleContainer();
-        ProcessControl processControl = (ProcessControl) container.getComponent(ProcessControl.class);
-        NGrinderConsoleCommunicationService.collectWorkerAndThreadInfo(processControl, result);
-		
-        result.put("success", !singleConsole.isAllTestFinished());
-        
-		return result;
-	}
-
-	private static Object getRealDoubleValue(Double doubleValue) {
-		if (doubleValue.isInfinite() || doubleValue.isNaN()) {
-			return null;
-		}
-		return doubleValue;
+		return consoleManager.getConsoleUsingPort(port).getStatictisData();
 	}
 
 	public List<PerfTest> getAllPerfTest() {
@@ -508,6 +419,7 @@ public class PerfTestService implements NGrinderConstants {
 		perfTest.setTps(Double.parseDouble(formatter.format(totalStatistics.get("TPS"))));
 		perfTest.setMeanTestTime(Double.parseDouble(formatter.format(totalStatistics.get("Mean_Test_Time_(ms)"))));
 		perfTest.setPeakTps(Double.parseDouble(formatter.format(totalStatistics.get("Peak_TPS"))));
+		perfTest.setTests((int)((Double)totalStatistics.get("Tests")).doubleValue());
 		return perfTest;
 	}
 

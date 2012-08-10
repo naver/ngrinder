@@ -22,23 +22,33 @@
  */
 package net.grinder;
 
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
+import net.grinder.common.Test;
 import net.grinder.common.UncheckedInterruptedException;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.ConsoleFoundationEx;
 import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
+import net.grinder.console.communication.NGrinderConsoleCommunicationService;
 import net.grinder.console.communication.ProcessControl;
 import net.grinder.console.communication.ProcessControl.Listener;
 import net.grinder.console.communication.ProcessControl.ProcessReports;
@@ -47,9 +57,12 @@ import net.grinder.console.distribution.AgentCacheState;
 import net.grinder.console.distribution.FileDistribution;
 import net.grinder.console.distribution.FileDistributionHandler;
 import net.grinder.console.model.ConsoleProperties;
+import net.grinder.console.model.ModelTestIndex;
 import net.grinder.console.model.SampleListener;
 import net.grinder.console.model.SampleModel;
 import net.grinder.console.model.SampleModelImplementationEx;
+import net.grinder.console.model.SampleModelViews;
+import net.grinder.statistics.ExpressionView;
 import net.grinder.statistics.StatisticsSet;
 import net.grinder.util.AllocateLowestNumber;
 import net.grinder.util.ConsolePropertiesFactory;
@@ -60,6 +73,7 @@ import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.ReflectionUtil;
 import net.grinder.util.thread.Condition;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -91,7 +105,10 @@ public class SingleConsole implements Listener, SampleListener {
 	private long startTime = 0;
 	private Date TPS_LESSTHAN_ZREO_TIME;
 	private final ListenerSupport<ConsoleShutdownListener> m_shutdownListeners = new ListenerSupport<ConsoleShutdownListener>();
-
+	
+	private String reportPath;
+	private NumberFormat formatter = new DecimalFormat("###.###");
+	private Map<String, Object> statisticData;
 	/**
 	 * Constructor with console ip and port.
 	 * 
@@ -136,7 +153,7 @@ public class SingleConsole implements Listener, SampleListener {
 			sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 			sampleModel.addTotalSampleListener(this);
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
-
+			
 		} catch (GrinderException e) {
 			throw new NGrinderRuntimeException("Exception occurs while creating SingleConsole", e);
 
@@ -401,7 +418,6 @@ public class SingleConsole implements Listener, SampleListener {
 	@Override
 	public void update(StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
 		double tps = sampleModel.getTPSExpression().getDoubleValue(intervalStatistics);
-		addTpsValue(tps);
 		// If the tps is low that it's can be the agents or scripts goes wrong.
 		if (tps < 0.001) {
 			if (TPS_LESSTHAN_ZREO_TIME == null) {
@@ -418,6 +434,120 @@ public class SingleConsole implements Listener, SampleListener {
 		} else {
 			TPS_LESSTHAN_ZREO_TIME = null;
 		}
+		
+		statisticData = this.getStatistics();
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>)statisticData.get("lastSampleStatistics");
+		
+		if (lastSampleStatistics != null) {
+			double tpsSum = 0;
+			double errors = 0;
+			double meanTestTime = 0;
+
+			for (Map<String, Object> lastStatistic : lastSampleStatistics) {
+				tpsSum += (Double) lastStatistic.get("TPS");
+				errors += (Double) lastStatistic.get("Errors");
+				Double temp = (Double) lastStatistic.get("Mean_Test_Time_(ms)");
+
+				meanTestTime += temp != null ? temp : 0;
+			}
+
+			try {
+				writeReportData("errors", errors);
+				writeReportData("tps_total", tpsSum);
+				writeReportData("meanTestTime", meanTestTime);
+			} catch (IOException e) {
+				LOGGER.error("Write report data failed : ", e);
+			}
+			addTpsValue(tps);
+		}
+		
+	}
+	
+	/**
+	 * To get statistics data when test is running
+	 */
+	private Map<String, Object> getStatistics() {
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
+		final SampleModel model = (SampleModel) this.getConsoleComponent(SampleModel.class);
+		final SampleModelViews modelView = (SampleModelViews) this.getConsoleComponent(SampleModelViews.class);
+		ExpressionView[] views = modelView.getCumulativeStatisticsView().getExpressionViews();
+		ModelTestIndex modelIndex = (ModelTestIndex) ReflectionUtil.getFieldValue(model, "modelTestIndex");
+		if (modelIndex != null) {
+			for (int i = 0; i < modelIndex.getNumberOfTests(); i++) {
+				Map<String, Object> statistics = new HashMap<String, Object>();
+				Map<String, Object> lastStatistics = new HashMap<String, Object>();
+
+				Test test = modelIndex.getTest(i);
+				statistics.put("testNumber", test.getNumber());
+				statistics.put("testDescription", test.getDescription());
+				lastStatistics.put("testNumber", test.getNumber());
+				lastStatistics.put("testDescription", test.getDescription());
+
+				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
+				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
+				for (ExpressionView expressionView : views) { // TODO : expressionView == null?
+					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
+							getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
+					lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
+							getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
+				}
+
+				// Tests
+				Double tests = (Double) statistics.get("Tests");
+				Double errors = (Double) statistics.get("Errors");
+				statistics.put("TestsStr", formatter.format(tests));
+				statistics.put("ErrorsStr", formatter.format(errors));
+
+				Double lastTests = (Double) lastStatistics.get("Tests");
+				Double lastErrors = (Double) lastStatistics.get("Errors");
+				lastStatistics.put("TestsStr", formatter.format(lastTests));
+				lastStatistics.put("ErrorsStr", formatter.format(lastErrors));
+
+				cumulativeStatistics.add(statistics);
+				lastSampleStatistics.add(lastStatistics);
+			}
+		}
+
+		StatisticsSet totalSet = model.getTotalCumulativeStatistics();
+		Map<String, Object> totalStatistics = new HashMap<String, Object>();
+
+		for (ExpressionView expressionView : views) { // TODO : expressionView == null ?
+			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
+					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
+			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
+					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
+		}
+
+		Double tests = (Double) totalStatistics.get("Tests");
+		Double errors = (Double) totalStatistics.get("Errors");
+		totalStatistics.put("TestsStr", formatter.format(tests));
+		totalStatistics.put("ErrorsStr", formatter.format(errors));
+
+		result.put("totalStatistics", totalStatistics);
+		result.put("cumulativeStatistics", cumulativeStatistics);
+		result.put("lastSampleStatistics", lastSampleStatistics);
+		
+		result.put("tpsChartData", this.getTpsValues());
+
+		
+        MutablePicoContainer container = (MutablePicoContainer) this.getConsoleContainer();
+        ProcessControl processControl = (ProcessControl) container.getComponent(ProcessControl.class);
+        NGrinderConsoleCommunicationService.collectWorkerAndThreadInfo(processControl, result);
+		
+        result.put("success", !this.isAllTestFinished());
+        
+		return result;
+	}
+	
+	private static Object getRealDoubleValue(Double doubleValue) {
+		if (doubleValue.isInfinite() || doubleValue.isNaN()) {
+			return null;
+		}
+		return doubleValue;
 	}
 
 	public ListenerSupport<ConsoleShutdownListener> getListeners() {
@@ -439,4 +569,38 @@ public class SingleConsole implements Listener, SampleListener {
 	public interface ConsoleShutdownListener {
 		void readyToStop();
 	}
+	
+	
+	public void writeReportData(String name, double value) throws IOException {
+		File filename = new File(this.reportPath + File.separator + name + ".data");
+		FileWriter write = null;
+		BufferedWriter bw = null;
+		try {
+			write = new FileWriter(filename, true);
+			bw = new BufferedWriter(write);
+			bw.write(formatter.format(value));
+			bw.newLine();
+			bw.flush();
+		} finally {
+			IOUtils.closeQuietly(write);
+			IOUtils.closeQuietly(bw);
+		}
+	}
+
+	public String getReportPath() {
+		return reportPath;
+	}
+	
+	public Map<String, Object> getStatictisData() {
+		return this.statisticData;
+	}
+
+
+	public void setReportPath(File reportDir) {
+		if (!reportDir.exists()) {
+			reportDir.mkdir();
+		}
+		this.reportPath = reportDir.getAbsolutePath();
+	}
+
 }
