@@ -20,37 +20,46 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.agent.controller;
+package org.ngrinder.common.util;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
+
+import java.io.IOException;
 
 import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * Class description.
- * 
+ *
  * @author Mavlarn
- * @since 3.0
+ * @since
  */
-public class AgentControllerTest extends AbstractNGrinderTransactionalTest {
+public class EncodingUtilTest {
 
-	@Autowired
-	AgentController agentController;
+	/**
+	 * Test method for {@link org.ngrinder.common.util.EncodingUtil#getAutoDecodedString(byte[], java.lang.String)}.
+	 * @throws IOException 
+	 */
+	@Test
+	public void testGetAutoDecodedString() throws IOException {
+		String testStr = "12345678ikbsdfghjklsdfghjklzxcvbnm,.:LGF)(&^%^RYVG";
+		String rtnEncode = EncodingUtil.detectEncoding(testStr.getBytes(), "UTF-8");
+		assertThat(rtnEncode, is("UTF-8"));
+	}
+	
+	@Test
+	public void testGetAutoDecodedStringChinese() throws IOException {
+		String testStr = "12345678ikbsdfghjklsd你好lzxcvbnm,.:LGF)(&^%^RYVG";
+		String rtnEncode = EncodingUtil.detectEncoding(testStr.getBytes(), "UTF-8");
+		assertThat(rtnEncode, is("UTF-8"));
+	}
 
 	@Test
-	public void testGetAgentList() {
-		MockHttpServletRequest req = new MockHttpServletRequest();
-		req.addHeader("User-Agent", "Win");
-		SecurityContextHolderAwareRequestWrapper reqWrapper = new SecurityContextHolderAwareRequestWrapper(req, "U");
-		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(reqWrapper));
-		
-		ModelMap model = new ModelMap();
-		agentController.getAgentList(model);
+	public void testDetectEncoding() throws IOException {
+		String testStr = "12345678ikbsdfghjklsd你好lzxcvbnm,.:LGF)(&^%^RYVG";
+		String rtnStr = EncodingUtil.getAutoDecodedString(testStr.getBytes(), "UTF-8");
+		assertThat(rtnStr, is(testStr));
 	}
 
 }

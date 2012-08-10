@@ -130,6 +130,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
 			startAgentsOn(perfTest, grinderProperties, singleConsole);
 			distributeFileOn(perfTest, grinderProperties, singleConsole);
+			singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest.getId()));
 			runTestOn(perfTest, grinderProperties, singleConsole);
 		} catch (Exception e) {
 			// In case of error, mark the occurs error on perftest.

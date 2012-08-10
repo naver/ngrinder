@@ -50,7 +50,7 @@ public abstract class DateUtil {
 	private static final int CONSTANT_24 = 24;
 	private static final int CONSTANT_60 = 60;
 	private static final int CONSTANT_1000 = 1000;
-	private static final int CONSTANT_MINUS_7 = -7;
+	//private static final int CONSTANT_MINUS_7 = -7;
 	private static final int SS = CONSTANT_1000;
 	private static final int MI = SS * CONSTANT_60;
 	private static final int HH = MI * CONSTANT_60;
@@ -126,21 +126,21 @@ public abstract class DateUtil {
 	 *            calendar
 	 * @return week start
 	 */
-	public static Calendar getWeekStart(Calendar date) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(date.getTimeInMillis());
-		// Calendar.MONDAY is 2
-		boolean isSunday = false;
-		if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-			isSunday = true;
-		}
-		calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-		if (isSunday) {
-			calendar.add(Calendar.DAY_OF_WEEK, CONSTANT_MINUS_7);
-		}
-		return calendar;
-
-	}
+//	public static Calendar getWeekStart(Calendar date) {
+//		Calendar calendar = Calendar.getInstance();
+//		calendar.setTimeInMillis(date.getTimeInMillis());
+//		// Calendar.MONDAY is 2
+//		boolean isSunday = false;
+//		if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+//			isSunday = true;
+//		}
+//		calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+//		if (isSunday) {
+//			calendar.add(Calendar.DAY_OF_WEEK, CONSTANT_MINUS_7);
+//		}
+//		return calendar;
+//
+//	}
 
 	/**
 	 * Format date with given pattern.
@@ -212,8 +212,8 @@ public abstract class DateUtil {
 	 *            sec
 	 * @return converted millisecond
 	 */
-	public static int timeToMs(int day, int hour, int min, int sec) {
-		return (((day * CONSTANT_24 + hour) * CONSTANT_60 + min) * CONSTANT_60 + sec) * CONSTANT_1000;
+	public static long timeToMs(int day, int hour, int min, int sec) {
+		return ((long) CONSTANT_1000) * (((day * CONSTANT_24 + hour) * CONSTANT_60 + min) * CONSTANT_60 + sec);
 	}
 
 }

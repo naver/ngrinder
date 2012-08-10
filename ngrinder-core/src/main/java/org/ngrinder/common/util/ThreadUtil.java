@@ -57,6 +57,7 @@ public abstract class ThreadUtil {
 	 * @param stopMaessage
 	 *            message to be shown when stop thread forcely
 	 */
+	@SuppressWarnings("deprecation")
 	public static void stopQuetly(Thread thread, String stopMaessage) {
 		if (thread == null) {
 			return;
