@@ -2,7 +2,9 @@ package org.ngrinder.perftest.service;
 
 import java.util.Date;
 
+import org.junit.Before;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
@@ -11,8 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * In addition {@link AbstractNGrinderTransactionalTest}, this class provides
- * basic function to create {@link PerfTest}
+ * In addition {@link AbstractNGrinderTransactionalTest}, this class provides basic function to create {@link PerfTest}
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -20,6 +21,15 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinderTransactionalTest {
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractPerfTestTransactionalTest.class);
+
+	protected AgentConfig agentConfig1;
+	protected AgentConfig agentConfig2;
+
+	@Before
+	public void firstInit() {
+		agentConfig1 = new MockAgentConfig().init();
+		agentConfig2 = new MockAgentConfig().init();
+	}
 
 	@Autowired
 	protected PerfTestService perfTestService;

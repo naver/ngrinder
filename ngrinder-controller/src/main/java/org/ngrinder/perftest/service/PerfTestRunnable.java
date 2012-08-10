@@ -58,9 +58,8 @@ import org.springframework.stereotype.Component;
 /**
  * perf test run scheduler.
  * 
- * This class is responsible to execute the performance test which is ready to
- * execute. Mostly this class is started from {@link #startTest()} method. This
- * method is scheduled by Spring Task.
+ * This class is responsible to execute the performance test which is ready to execute. Mostly this class is started
+ * from {@link #startTest()} method. This method is scheduled by Spring Task.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -166,6 +165,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 		// Run test
 		perfTestService.savePerfTest(perfTest, START_TESTING);
+		grinderProperties.setProperty(GRINDER_PROP_TEST_ID, "test_" + perfTest.getId());
 		long startTime = singleConsole.startTest(grinderProperties);
 		perfTest.setStartTime(new Date(startTime));
 		perfTestService.savePerfTest(perfTest, TESTING);
@@ -187,7 +187,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	SingleConsole startConsole(PerfTest perfTest) {
 		perfTestService.savePerfTest(perfTest, START_CONSOLE);
-		// get available console.
+		// get available consoles.
 		ConsoleProperties consoleProperty = perfTestService.createConsoleProperties(perfTest);
 		SingleConsole singleConsole = consoleManager.getAvailableConsole(consoleProperty);
 		singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest.getId()));
@@ -217,8 +217,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * @param perfTest
 	 *            {@link PerfTest} to be finished
 	 * @param singleConsoleInUse
-	 *            {@link SingleConsole} which is being using for
-	 *            {@link PerfTest}
+	 *            {@link SingleConsole} which is being using for {@link PerfTest}
 	 */
 	public void doFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		if (singleConsoleInUse == null) {

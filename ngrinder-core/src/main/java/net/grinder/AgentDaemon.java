@@ -32,11 +32,8 @@ import net.grinder.util.ListenerSupport.Informer;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
-<<<<<<< OURS
 import org.ngrinder.common.util.ThreadUtil;
-=======
 import org.ngrinder.infra.AgentConfig;
->>>>>>> THEIRS
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,21 +50,16 @@ public class AgentDaemon implements Agent {
 	private final ListenerSupport<AgentShutDownListener> m_listeners = new ListenerSupport<AgentShutDownListener>();
 	private boolean forceToshutdown = false;
 	public static final Logger LOGGER = LoggerFactory.getLogger(AgentDaemon.class);
+	private final AgentConfig m_agentConfig;
 
-<<<<<<< OURS
 	/**
 	 * Constructor.
 	 */
-	public AgentDaemon() {
-=======
+
 	public AgentDaemon(AgentConfig agentConfig) {
->>>>>>> THEIRS
+		this.m_agentConfig = agentConfig;
 		try {
 			properties = new GrinderProperties(GrinderProperties.DEFAULT_PROPERTIES);
-<<<<<<< OURS
-=======
-			agent = new AgentImplementationEx(logger, agentConfig);
->>>>>>> THEIRS
 		} catch (GrinderException e) {
 			throw new NGrinderRuntimeException("Exception occurs while creating AgentDaemon", e);
 		}
@@ -103,7 +95,7 @@ public class AgentDaemon implements Agent {
 	 */
 	public void run(GrinderProperties grinderProperties) {
 		this.properties = grinderProperties;
-		run(null, CommunicationDefaults.CONSOLE_PORT);
+		run(null, 0);
 	}
 
 	/**
@@ -124,7 +116,7 @@ public class AgentDaemon implements Agent {
 		if (StringUtils.isNotEmpty(consoleHost)) {
 			getGrinderProperties().setProperty(GrinderProperties.CONSOLE_HOST, consoleHost);
 		}
-		if (consolePort >= 0) {
+		if (consolePort > 0) {
 			getGrinderProperties().setInt(GrinderProperties.CONSOLE_PORT, consolePort);
 		}
 		thread = new Thread(new AgentThreadRunnable(), "Agent conntected to port : "
@@ -142,7 +134,7 @@ public class AgentDaemon implements Agent {
 		public void run() {
 			do {
 				try {
-					setAgent(new AgentImplementationEx(LOGGER)).run(getGrinderProperties());
+					setAgent(new AgentImplementationEx(LOGGER, m_agentConfig)).run(getGrinderProperties());
 					getListeners().apply(new Informer<AgentShutDownListener>() {
 						public void inform(AgentShutDownListener listener) {
 							listener.shutdownAgent();

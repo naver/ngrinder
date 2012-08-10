@@ -121,7 +121,7 @@ public class AgentController implements Agent {
 	 */
 	public void run() throws GrinderException {
 		GrinderProperties grinderProperties = new GrinderProperties();
-		grinderProperties.setInt(GrinderProperties.CONSOLE_PORT,
+		grinderProperties.setInt(AgentConfig.AGENT_HOSTID,
 				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		synchronized (m_eventSyncCondition) {
 			m_eventSyncCondition.notifyAll();
@@ -143,7 +143,8 @@ public class AgentController implements Agent {
 		ConsoleCommunication consoleCommunication = null;
 		m_fanOutStreamSender = new FanOutStreamSender(GrinderConstants.AGENT_CONTROLLER_FANOUT_STREAM_THREAD_COUNT);
 		m_timer = new Timer(false);
-		AgentDaemon agent = new AgentDaemon(checkNotNull(getAgentConfig(), "agentconfig should be provided before agentdaemon start."));
+		AgentDaemon agent = new AgentDaemon(checkNotNull(getAgentConfig(),
+				"agentconfig should be provided before agentdaemon start."));
 		try {
 			while (true) {
 				m_logger.info(GrinderBuild.getName());
@@ -151,8 +152,8 @@ public class AgentController implements Agent {
 				GrinderProperties properties;
 				do {
 					properties = grinderProperties;
-					m_agentIdentity.setName(properties.getProperty("grinder.hostID", getHostName()));
-					m_agentIdentity.setRegion(grinderProperties.getProperty("grinder.region"));
+					m_agentIdentity.setName(agentConfig.getProperty(AgentConfig.AGENT_HOSTID, getHostName()));
+					m_agentIdentity.setRegion(agentConfig.getProperty(AgentConfig.AGENT_REGION, ""));
 					final Connector connector = m_connectorFactory.create(properties);
 
 					if (consoleCommunication == null) {

@@ -56,8 +56,10 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		assertThat(allPerfTest.size(), is(2));
 
 		agentControllerDaemon = new AgentControllerDaemon();
+		agentControllerDaemon.setAgentConfig(agentConfig1);
 		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		agentControllerDaemon2 = new AgentControllerDaemon();
+		agentControllerDaemon2.setAgentConfig(agentConfig2);
 		agentControllerDaemon2.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 
 		sleep(3000);
