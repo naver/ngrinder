@@ -49,9 +49,9 @@ public class FileEntry extends BaseModel<FileEntry> {
 
 	private String testURL;
 
-	private transient String content;
+	private String content;
 
-	private transient List<Long> revisions;
+	private List<Long> revisions;
 
 	private String description;
 
@@ -62,7 +62,7 @@ public class FileEntry extends BaseModel<FileEntry> {
 	private String path;
 
 	private FileType fileType;
-	
+
 	private long revision;
 
 	public String getPath() {
@@ -155,7 +155,8 @@ public class FileEntry extends BaseModel<FileEntry> {
 	}
 
 	/**
-	 * @param revision the revision to set
+	 * @param revision
+	 *            the revision to set
 	 */
 	public void setRevision(long revision) {
 		this.revision = revision;

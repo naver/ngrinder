@@ -22,6 +22,8 @@
  */
 package net.grinder;
 
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
@@ -247,9 +249,11 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	public List<AgentIdentity> getAllAttachedAgents() {
 		final List<AgentIdentity> agentIdentities = new ArrayList<AgentIdentity>();
-		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) ReflectionUtil
-				.getFieldValue((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
-						"m_agentNumberMap");
+		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(
+				ReflectionUtil.getFieldValue(
+						(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
+						"m_agentNumberMap"),
+				"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
 			public void objectAndNumber(Object object, int number) {
 				agentIdentities.add((AgentIdentity) object);

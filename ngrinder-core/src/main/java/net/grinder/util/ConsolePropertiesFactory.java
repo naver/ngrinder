@@ -24,6 +24,7 @@ package net.grinder.util;
 
 import java.io.File;
 
+import org.apache.commons.io.FileUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 
 import net.grinder.SingleConsole;
@@ -45,14 +46,17 @@ public abstract class ConsolePropertiesFactory {
 	 * 
 	 */
 	public static ConsoleProperties createEmptyConsoleProperties() {
+		File tmpFile = null;
 		try {
-			File tmpFile = File.createTempFile("ngrinder", "tmp");
+			tmpFile = File.createTempFile("ngrinder", "tmp");
 			ConsoleProperties consoleProperties = new ConsoleProperties(SingleConsole.RESOURCE, tmpFile);
-			tmpFile.delete();
+
 			return consoleProperties;
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("Exception occurs while merging entities while creating empty console",
 					e);
+		} finally {
+			FileUtils.deleteQuietly(tmpFile);
 		}
 	}
 }

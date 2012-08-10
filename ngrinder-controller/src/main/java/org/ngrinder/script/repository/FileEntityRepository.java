@@ -200,7 +200,7 @@ public class FileEntityRepository {
 			script.setRevision(lastRevision);
 
 			final List<Long> revisions = new ArrayList<Long>();
-			//TODO: version list is not got yet
+			// TODO: version list is not got yet
 			script.setRevisions(revisions);
 		} catch (Exception e) {
 			LOG.error("Error while fetching files from SVN", e);
@@ -221,6 +221,9 @@ public class FileEntityRepository {
 	 *            fileEntry to be saved
 	 */
 	public void save(User user, FileEntry fileEntry, String encoding) {
+		if (fileEntry.getFileType().isEditable() && fileEntry.getContent() == null) {
+			return;
+		}
 		SVNClientManager svnClientManager = null;
 		ISVNEditor editor = null;
 		String checksum = null;
