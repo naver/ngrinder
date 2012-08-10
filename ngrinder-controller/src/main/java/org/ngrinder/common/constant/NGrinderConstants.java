@@ -44,6 +44,8 @@ public interface NGrinderConstants {
 
 	public static final String CACHE_NAME = "cache";
 
+	public static final String PATH_DIST = "dist";
+
 	public static final String COMMA = ",";
 
 	public static final String ENCODE_UTF8 = "UTF-8";
@@ -103,7 +105,7 @@ public interface NGrinderConstants {
 	public static final String USER_REPO_PATH = "repos";
 	public static final String PERF_TEST_PATH = "perftest";
 	public static final String DOWNLOAD_PATH = "download";
-	
+
 	public static final String DEFAULT_GRINDER_PROPERTIES_PATH = "grinder.properties";
 
 	// parameter constant, for parameter from page, and for key in map
@@ -155,4 +157,5 @@ public interface NGrinderConstants {
 	public static final int MAX_STACKTRACE_STRING_SIZE = 2048;
 
 	public static final String NGRINDER_NEWS_RSS_URL = "http://www.cubrid.org/wiki_ngrinder/rss";
+
 }

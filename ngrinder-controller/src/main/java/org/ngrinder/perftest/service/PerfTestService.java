@@ -104,6 +104,7 @@ public class PerfTestService implements NGrinderConstants {
 	private FileEntryService fileEntryService;
 
 	private NumberFormat formatter = new DecimalFormat("###.###");
+
 	/**
 	 * Get {@link PerfTest} list on the user.
 	 * 
@@ -233,7 +234,7 @@ public class PerfTestService implements NGrinderConstants {
 	public GrinderProperties getGrinderProperties(PerfTest perfTest) {
 		try {
 			// Copy grinder properties
-			File userGrinderPropertiesPath = new File(getUserPerfTestDirectory(perfTest),
+			File userGrinderPropertiesPath = new File(getUserPerfTestDirectory(perfTest, NGrinderConstants.PATH_DIST),
 					DEFAULT_GRINDER_PROPERTIES_PATH);
 			FileUtils.copyFile(config.getHome().getDefaultGrinderProperties(), userGrinderPropertiesPath);
 			GrinderProperties grinderProperties = new GrinderProperties(userGrinderPropertiesPath);
@@ -273,10 +274,10 @@ public class PerfTestService implements NGrinderConstants {
 		// Get all files in the script path
 		List<FileEntry> fileEntries = fileEntryService.getFileEntries(user,
 				FilenameUtils.getPath(checkNotEmpty(scriptName)));
-		File perfTestDirectory = getUserPerfTestDirectory(perfTest);
+		File perfTestDirectory = getUserPerfTestDirectory(perfTest, NGrinderConstants.PATH_DIST);
 
 		// clean up Distribution folders
-		FileUtils.deleteQuietly(perfTestDirectory);
+		//FileUtils.deleteQuietly(perfTestDirectory);
 		perfTestDirectory.mkdirs();
 
 		// Distribute each files in that folder.
@@ -294,6 +295,10 @@ public class PerfTestService implements NGrinderConstants {
 
 	public File getUserPerfTestDirectory(PerfTest perfTest) {
 		return config.getHome().getPerfTestDirectory(perfTest.getId().toString());
+	}
+
+	public File getUserPerfTestDirectory(PerfTest perfTest, String subDir) {
+		return new File(getUserPerfTestDirectory(perfTest), subDir);
 	}
 
 	/**
@@ -324,7 +329,8 @@ public class PerfTestService implements NGrinderConstants {
 	 * @throws IOException
 	 */
 	public List<Object> getReportData(long testId, String dataType, int imgWidth) throws IOException {
-		//TODO: later, we can make the file content as the string of list, then we can 
+		// TODO: later, we can make the file content as the string of list, then
+		// we can
 		// just return the file content directly, it will be much faster.
 		List<Object> reportData = new ArrayList<Object>();
 		File reportFolder = config.getHome().getPerfTestDirectory(
@@ -381,7 +387,7 @@ public class PerfTestService implements NGrinderConstants {
 		File targetFile = new File(reportFolder, NGrinderConstants.REPORT_CSV);
 		return targetFile;
 	}
-	
+
 	public File getReportFileDirectory(long testId) {
 		File reportFolder = config.getHome().getPerfTestDirectory(
 				testId + File.separator + NGrinderConstants.PATH_REPORT);
@@ -402,13 +408,14 @@ public class PerfTestService implements NGrinderConstants {
 	public ConsoleProperties createConsoleProperties(PerfTest perfTest) {
 		ConsoleProperties consoleProperties = ConsolePropertiesFactory.createEmptyConsoleProperties();
 		try {
-			consoleProperties.setAndSaveDistributionDirectory(new Directory(getUserPerfTestDirectory(perfTest)));
+			consoleProperties.setAndSaveDistributionDirectory(new Directory(getUserPerfTestDirectory(perfTest,
+					NGrinderConstants.PATH_DIST)));
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("Error while setting console properties", e);
 		}
 		return consoleProperties;
 	}
-	
+
 	public PerfTest updatePerfTestAfterTestFinish(PerfTest perfTest) {
 		checkNotNull(perfTest);
 		int port = perfTest.getPort();
@@ -420,7 +427,7 @@ public class PerfTestService implements NGrinderConstants {
 		perfTest.setTps(Double.parseDouble(formatter.format(totalStatistics.get("TPS"))));
 		perfTest.setMeanTestTime(Double.parseDouble(formatter.format(totalStatistics.get("Mean_Test_Time_(ms)"))));
 		perfTest.setPeakTps(Double.parseDouble(formatter.format(totalStatistics.get("Peak_TPS"))));
-		perfTest.setTests((int)((Double)totalStatistics.get("Tests")).doubleValue());
+		perfTest.setTests((int) ((Double) totalStatistics.get("Tests")).doubleValue());
 		return perfTest;
 	}
 

@@ -58,8 +58,9 @@ import org.springframework.stereotype.Component;
 /**
  * perf test run scheduler.
  * 
- * This class is responsible to execute the performance test which is ready to execute. Mostly this class is started
- * from {@link #startTest()} method. This method is scheduled by Spring Task.
+ * This class is responsible to execute the performance test which is ready to
+ * execute. Mostly this class is started from {@link #startTest()} method. This
+ * method is scheduled by Spring Task.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -98,7 +99,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// schedule test
 		Date schedule = runCandidate.getScheduledTime();
 		if (schedule != null && !DateUtil.compareDateEndWithMinute(schedule, new Date(System.currentTimeMillis()))) {
-			// this test project is reserved,but it isn't yet going to run test right now.
+			// this test project is reserved,but it isn't yet going to run test
+			// right now.
 			return;
 		}
 
@@ -188,6 +190,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// get available console.
 		ConsoleProperties consoleProperty = perfTestService.createConsoleProperties(perfTest);
 		SingleConsole singleConsole = consoleManager.getAvailableConsole(consoleProperty);
+		singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest.getId()));
 		// increase trial count
 		perfTest.setTestTrialCount(perfTest.getTestTrialCount() + 1);
 		perfTest.setPort(singleConsole.getConsolePort());
@@ -218,11 +221,13 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * @param perfTest
 	 *            {@link PerfTest} to be finished
 	 * @param singleConsoleInUse
-	 *            {@link SingleConsole} which is being using for {@link PerfTest}
+	 *            {@link SingleConsole} which is being using for
+	 *            {@link PerfTest}
 	 */
 	public void doFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		long startLastingTime = System.currentTimeMillis() - singleConsoleInUse.getStartTime();
-		// because It will take some seconds to start testing sometimes , if the test is not started
+		// because It will take some seconds to start testing sometimes , if the
+		// test is not started
 		// after some seconds, will set it as finished.
 		if (singleConsoleInUse.isAllTestFinished() && startLastingTime > WAIT_TEST_START_SECOND) {
 			// stop target host monitor

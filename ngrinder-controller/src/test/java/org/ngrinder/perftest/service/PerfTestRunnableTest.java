@@ -98,6 +98,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		// Start agents
 		perfTest.setAgentCount(2);
 		GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
+		singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest.getId()));
 		perfTestRunnable.startAgentsOn(perfTest, grinderProperties, singleConsole);
 		assertThat(agentManager.getAllFreeAgents().size(), is(0));
 
