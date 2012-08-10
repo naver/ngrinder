@@ -52,11 +52,11 @@ public class AgentServerTest {
 		LOG.info("* Start nGrinder Monitor Agent *");
 		LOG.info("******************************");
 		LOG.info("* Local JVM link support :{}", localAttachmentSupported);
-		
+
 		AgentConfig config = new AgentConfig();
 		config.init();
 		MonitorConstants.init(config);
-		
+
 		AgentMonitorServer.getInstance().init(port, dataCollectors, jvmPids);
 		AgentMonitorServer.getInstance().start();
 

@@ -104,8 +104,7 @@ public class AgentImplementationEx implements Agent {
 		m_proceedWithoutConsole = proceedWithoutConsole;
 
 		m_consoleListener = new ConsoleListener(m_eventSynchronisation, m_logger);
-		indentifier = (int) (Math.random() * 100);
-		m_agentIdentity = new AgentIdentityImplementation(getHostName() + "_");
+		m_agentIdentity = new AgentIdentityImplementation(getHostName());
 
 	}
 
@@ -157,8 +156,7 @@ public class AgentImplementationEx implements Agent {
 					properties = createAndMergeProperties(grinderProperties,
 							startMessage != null ? startMessage.getProperties() : null);
 
-					m_agentIdentity.setName(properties.getProperty("grinder.hostID", getHostName() + "_"
-							+ (indentifier)));
+					m_agentIdentity.setName(properties.getProperty("grinder.hostID", getHostName()));
 
 					final Connector connector = properties.getBoolean("grinder.useConsole", true) ? m_connectorFactory
 							.create(properties) : null;

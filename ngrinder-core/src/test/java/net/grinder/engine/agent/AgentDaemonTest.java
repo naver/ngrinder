@@ -57,7 +57,7 @@ public class AgentDaemonTest extends AbstractMuliGrinderTestBase {
 		agent.run(console1.getConsolePort());
 		agent.addListener(new AgentShutDownSynchronizeListener(condition));
 		// Shutdown console
-		sleep(2000);
+		sleep(4000);
 		assertThat(console1.getAllAttachedAgentsCount(), is(1));
 
 		// shutdown twice
