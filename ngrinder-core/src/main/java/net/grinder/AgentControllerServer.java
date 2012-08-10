@@ -7,7 +7,7 @@ import net.grinder.console.common.ErrorQueue;
 import net.grinder.console.common.Resources;
 import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.console.communication.ConsoleCommunication;
-import net.grinder.console.communication.ConsoleCommunicationImplementation;
+import net.grinder.console.communication.ConsoleCommunicationImplementationEx;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.engine.console.ErrorHandlerImplementation;
 import net.grinder.util.StandardTimeAuthority;
@@ -54,7 +54,7 @@ public class AgentControllerServer {
 		m_container.addComponent(resources);
 		m_container.addComponent(properties);
 		m_container.addComponent(new StandardTimeAuthority());
-		m_container.addComponent(ConsoleCommunicationImplementation.class);
+		m_container.addComponent(ConsoleCommunicationImplementationEx.class);
 		m_container.addComponent(AgentProcessControlImplementation.class);
 		m_timer = new Timer(true);
 		m_container.addComponent(m_timer);

@@ -8,7 +8,7 @@ import net.grinder.communication.MessageDispatchRegistry.AbstractHandler;
 import net.grinder.console.common.ErrorQueue;
 import net.grinder.console.common.Resources;
 import net.grinder.console.communication.ConsoleCommunication;
-import net.grinder.console.communication.ConsoleCommunicationImplementation;
+import net.grinder.console.communication.ConsoleCommunicationImplementationEx;
 import net.grinder.console.communication.DistributionControlImplementation;
 import net.grinder.console.communication.ProcessControlImplementation;
 import net.grinder.console.communication.server.DispatchClientCommands;
@@ -78,7 +78,7 @@ public class ConsoleFoundationEx {
 
 		m_container.addComponent(SampleModelImplementationEx.class);
 		m_container.addComponent(SampleModelViewsImplementation.class);
-		m_container.addComponent(ConsoleCommunicationImplementation.class);
+		m_container.addComponent(ConsoleCommunicationImplementationEx.class);
 		m_container.addComponent(DistributionControlImplementation.class);
 		m_container.addComponent(ProcessControlImplementation.class);
 		m_timer = new Timer(true);
@@ -119,8 +119,8 @@ public class ConsoleFoundationEx {
 	}
 
 	/**
-	 * Console message event loop. Dispatches communication messages appropriately. Blocks until we are
-	 * {@link #shutdown()}.
+	 * Console message event loop. Dispatches communication messages
+	 * appropriately. Blocks until we are {@link #shutdown()}.
 	 */
 	public void run() {
 		if (m_shutdown) {

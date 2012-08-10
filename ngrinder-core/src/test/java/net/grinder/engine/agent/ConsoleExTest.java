@@ -5,6 +5,8 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import net.grinder.AgentDaemon;
 import net.grinder.SingleConsole;
@@ -29,6 +31,7 @@ public class ConsoleExTest extends AbstractMuliGrinderTestBase {
 	@Before
 	public void before() throws ConsoleException, InterruptedException {
 		startThreadCount = Thread.activeCount();
+
 		console1 = new SingleConsole(getFreePort());
 		console2 = new SingleConsole(getFreePort());
 		console1.start();
@@ -42,16 +45,19 @@ public class ConsoleExTest extends AbstractMuliGrinderTestBase {
 		agentThread1.shutdown();
 		agentThread2.shutdown();
 		agentThread3.shutdown();
-		sleep(2000);
+		sleep(5000);
 		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
 		for (Thread each : threadSet) {
-			System.out.println(each.getName());
+			System.out.println(each.getName() + "-" + each.getThreadGroup().getName());
 		}
-		sleep(2000);
+		
+		sleep(5000);
 		assertThat("Aftre shutdowning all agents and console, the active thread count should be same",
 				Thread.activeCount(), is(startThreadCount));
-		
+
 	}
+
+
 
 	@Test
 	public void testConsole() throws GrinderException, InterruptedException {
@@ -96,4 +102,5 @@ public class ConsoleExTest extends AbstractMuliGrinderTestBase {
 		console1.shutdown();
 
 	}
+
 }

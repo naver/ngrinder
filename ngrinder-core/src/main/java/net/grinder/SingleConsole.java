@@ -41,7 +41,6 @@ import java.util.Map;
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.Test;
-import net.grinder.common.UncheckedInterruptedException;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.ConsoleFoundationEx;
@@ -88,7 +87,6 @@ import org.slf4j.LoggerFactory;
 public class SingleConsole implements Listener, SampleListener {
 	private final ConsoleProperties consoleProperties;
 	private Thread thread;
-	private ThreadGroup threadGroup;
 	private ConsoleFoundationEx consoleFoundation;
 	public static final Resources RESOURCE = new ResourcesImplementation("net.grinder.console.common.resources.Console");
 	public static final Logger LOGGER = LoggerFactory.getLogger(RESOURCE.getString("shortTitle"));
@@ -200,8 +198,7 @@ public class SingleConsole implements Listener, SampleListener {
 	public void start() {
 
 		synchronized (m_eventSyncCondition) {
-			this.threadGroup = new ThreadGroup("SingleConsole ThreadGroup on port " + getConsolePort());
-			thread = new Thread(threadGroup, new Runnable() {
+			thread = new Thread(new Runnable() {
 				public void run() {
 					consoleFoundation.run();
 				}
@@ -227,15 +224,12 @@ public class SingleConsole implements Listener, SampleListener {
 		try {
 			synchronized (this) {
 				consoleFoundation.shutdown();
-				if (thread != null) {
-					threadGroup.interrupt();
-					thread.join();
-					thread = null;
-					threadGroup = null;
+				if (thread != null && !thread.isInterrupted()) {
+					thread.interrupt();
+					thread.join(1000);
 				}
+
 			}
-		} catch (InterruptedException e) {
-			throw new UncheckedInterruptedException(e);
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("Exception occurs while shutting down SingleConsole", e);
 		}

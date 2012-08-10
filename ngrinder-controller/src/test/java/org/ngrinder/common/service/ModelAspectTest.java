@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import java.sql.Date;
 
 import org.aspectj.lang.JoinPoint;
+import org.junit.Assume;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.spring.SpringContext;
@@ -28,7 +29,7 @@ public class ModelAspectTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testModelAspect() {
-		assertThat(springContext.isServletRequestContext(), is(false));
+		Assume.assumeThat(springContext.isServletRequestContext(), is(false));
 		JoinPoint joinPoint = mock(JoinPoint.class);
 		@SuppressWarnings("unchecked")
 		BaseModel<Object> baseModel = mock(BaseModel.class);
