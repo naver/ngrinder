@@ -109,7 +109,7 @@ public class AgentDaemon implements Agent {
 	 * 
 	 */
 	public void run(String consoleHost, int consolePort) {
-		if (StringUtils.isEmpty(consoleHost)) {
+		if (StringUtils.isNotEmpty(consoleHost)) {
 			getGrinderProperties().setProperty(GrinderProperties.CONSOLE_HOST, consoleHost);
 		}
 		if (consolePort <= 0) {
@@ -179,7 +179,9 @@ public class AgentDaemon implements Agent {
 	public void shutdown() {
 		try {
 			forceToshutdown = true;
-			agent.shutdown();
+			if (agent != null) {
+				agent.shutdown();
+			}
 			ThreadUtil.stopQuetly(thread, "Agent Daemon is not stopped. So force to stop");
 			thread = null;
 		} catch (Exception e) {

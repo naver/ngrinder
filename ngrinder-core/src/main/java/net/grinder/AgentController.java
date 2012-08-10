@@ -75,7 +75,6 @@ public class AgentController implements Agent {
 	private final AgentControllerIdentityImplementation m_agentIdentity;
 	private final AgentControllerServerListener m_agentControllerServerListener;
 	private FanOutStreamSender m_fanOutStreamSender;
-	public static final int FANOUT_STREAM_THREAD_COUNT = 6;
 	private final AgentControllerConnectorFactory m_connectorFactory = new AgentControllerConnectorFactory(
 			ConnectionType.AGENT);
 	private boolean m_agentStart = false;
@@ -141,7 +140,7 @@ public class AgentController implements Agent {
 
 		StartGrinderMessage startMessage = null;
 		ConsoleCommunication consoleCommunication = null;
-		m_fanOutStreamSender = new FanOutStreamSender(FANOUT_STREAM_THREAD_COUNT);
+		m_fanOutStreamSender = new FanOutStreamSender(GrinderConstants.AGENT_CONTROLLER_FANOUT_STREAM_THREAD_COUNT);
 		m_timer = new Timer(false);
 		AgentDaemon agent = new AgentDaemon();
 		try {
@@ -211,7 +210,6 @@ public class AgentController implements Agent {
 				if (!m_agentControllerServerListener.received(AgentControllerServerListener.ANY)) {
 					// We've got here naturally, without a console signal.
 					m_logger.info("agent started. waiting for agent controller signal");
-					System.out.println("Waiting for message!!!");
 					m_agentControllerServerListener.waitForMessage();
 
 				}

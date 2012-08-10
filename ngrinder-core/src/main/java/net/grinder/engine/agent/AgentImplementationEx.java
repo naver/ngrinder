@@ -29,6 +29,7 @@ import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.grinder.GrinderConstants;
 import net.grinder.common.GrinderBuild;
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
@@ -74,11 +75,12 @@ public class AgentImplementationEx implements Agent {
 	private final Condition m_eventSynchronisation = new Condition();
 	private final AgentIdentityImplementation m_agentIdentity;
 	private final ConsoleListener m_consoleListener;
-	private FanOutStreamSender m_fanOutStreamSender = new FanOutStreamSender(3);
+	private FanOutStreamSender m_fanOutStreamSender;
 	private final ConnectorFactory m_connectorFactory = new ConnectorFactory(ConnectionType.AGENT);
 	/**
-	 * We use an most one file store throughout an agent's life, but can't initialise it until we've read the properties
-	 * and connected to the console.
+	 * We use an most one file store throughout an agent's life, but can't
+	 * Initialize it until we've read the properties and connected to the
+	 * console.
 	 */
 
 	private volatile FileStore m_fileStore;
@@ -91,7 +93,8 @@ public class AgentImplementationEx implements Agent {
 	 * @param logger
 	 *            Logger.
 	 * @param proceedWithoutConsole
-	 *            <code>true</code> => proceed if a console connection could not be made.
+	 *            <code>true</code> => proceed if a console connection could not
+	 *            be made.
 	 * @throws GrinderException
 	 *             If an error occurs.
 	 */
@@ -106,10 +109,24 @@ public class AgentImplementationEx implements Agent {
 
 	}
 
+	/**
+	 * Constructor with connection to console.
+	 * 
+	 * @param logger
+	 *            logger
+	 * @throws GrinderException
+	 *             occurs when initialization is failed.
+	 */
 	public AgentImplementationEx(Logger logger) throws GrinderException {
 		this(logger, false);
 	}
 
+	/**
+	 * Run grinder with empty {@link GrinderProperties}.
+	 * 
+	 * @throws GrinderException
+	 *             occurs when initialization is failed.
+	 */
 	public void run() throws GrinderException {
 		run(new GrinderProperties());
 	}
@@ -117,15 +134,16 @@ public class AgentImplementationEx implements Agent {
 	/**
 	 * Run the Grinder agent process.
 	 * 
+	 * @param grinderProperties
+	 *            {@link GrinderProperties} which contains grinder agent base
+	 *            configuration.
 	 * @throws GrinderException
 	 *             If an error occurs.
 	 */
 	public void run(GrinderProperties grinderProperties) throws GrinderException {
-
 		StartGrinderMessage startMessage = null;
-
 		ConsoleCommunication consoleCommunication = null;
-		m_fanOutStreamSender = new FanOutStreamSender(3);
+		m_fanOutStreamSender = new FanOutStreamSender(GrinderConstants.AGENT_FANOUT_STREAM_THREAD_COUNT);
 		m_timer = new Timer(false);
 
 		try {
@@ -229,9 +247,7 @@ public class AgentImplementationEx implements Agent {
 
 					if (!properties.getBoolean("grinder.debug.singleprocess", false)) {
 						Properties properties2 = System.getProperties();
-						
-						System.out.println("WWWW" + properties2.getProperty("java.class.path"));
-						/// Fix to provide empty system classpath to speed up
+						// Fix to provide empty system classpath to speed up
 						final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
 								properties2, jvmArguments, script.getDirectory());
 
@@ -325,12 +341,20 @@ public class AgentImplementationEx implements Agent {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			m_logger.error("Exception occurs in the agent message loop", e);
 		} finally {
-
-			m_timer.cancel();
-			m_timer = null;
+			// FIXME.. it doens't close
+			if (m_timer != null) {
+				m_timer.cancel();
+				m_timer = null;
+			}
 			shutdownConsoleCommunication(consoleCommunication);
+			if (m_fanOutStreamSender != null) {
+				m_fanOutStreamSender.shutdown();
+				m_fanOutStreamSender = null;
+			}
+			m_consoleListener.shutdown();
+			m_logger.info("finished");
 		}
 	}
 
@@ -355,11 +379,9 @@ public class AgentImplementationEx implements Agent {
 	}
 
 	private void shutdownConsoleCommunication(ConsoleCommunication consoleCommunication) {
-
 		if (consoleCommunication != null) {
 			consoleCommunication.shutdown();
 		}
-
 		m_consoleListener.discardMessages(AgentControllerServerListener.ANY);
 	}
 
@@ -367,9 +389,13 @@ public class AgentImplementationEx implements Agent {
 	 * Clean up resources.
 	 */
 	public void shutdown() {
-		if (m_timer != null)
+		if (m_timer != null) {
 			m_timer.cancel();
-		m_fanOutStreamSender.shutdown();
+			m_timer = null;
+		}
+		if (m_fanOutStreamSender != null) {
+			m_fanOutStreamSender.shutdown();
+		}
 		m_consoleListener.shutdown();
 		m_logger.info("finished");
 	}
@@ -458,7 +484,8 @@ public class AgentImplementationEx implements Agent {
 
 		public void start() {
 			m_messagePump.start();
-			m_timer.schedule(m_reportRunningTask, 1000, 1000);
+			m_timer.schedule(m_reportRunningTask, GrinderConstants.AGENT_HEARTBEAT_DELAY,
+					GrinderConstants.AGENT_HEARTBEAT_INTERVAL);
 		}
 
 		public Connector getConnector() {
