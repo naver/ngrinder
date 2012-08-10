@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ThreadUtil {
 
-	private static final Logger LOGGET = LoggerFactory.getLogger(ThreadUtil.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ThreadUtil.class);
 
 	/**
 	 * Sleep in give millis without throwing exception.
@@ -45,7 +45,44 @@ public abstract class ThreadUtil {
 		try {
 			Thread.sleep(millis);
 		} catch (InterruptedException e) {
-			LOGGET.warn(e.getMessage(), e);
+			LOGGER.warn(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Stop thread quietly.
+	 * 
+	 * @param thread
+	 *            thread to be stop
+	 * @param stopMaessage
+	 *            message to be shown when stop thread forcely
+	 */
+	@SuppressWarnings("deprecation")
+	public static void stopQuetly(Thread thread, String stopMaessage) {
+		if (thread == null) {
+			return;
+		}
+		// Wait 5000 second for natural death.
+		try {
+			thread.join(5000);
+		} catch (Exception e) {
+		}
+		try {
+			thread.interrupt();
+		} catch (Exception e) {
+		}
+		try {
+			// Again Wait 5000 second.
+			thread.join(5000);
+		} catch (Exception e) {
+		}
+		try {
+			// Force to Stop
+			if (thread.isAlive()) {
+				LOGGER.error(stopMaessage);
+				thread.stop();
+			}
+		} catch (Exception e) {
 		}
 	}
 

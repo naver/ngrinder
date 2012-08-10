@@ -23,7 +23,6 @@
 package org.ngrinder.perftest.controller;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -95,7 +94,9 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	}
 	
 
-
+	/**
+	 * for "saved" or "ready" test, can be modified, but for running or finished test, can not modify 
+	 */
 	@Test
 	public void testSavePerfTestExist() {
 		String testName = "test1";
@@ -106,6 +107,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		PerfTest newTest = new PerfTest();
 		newTest.setId(test.getId());
 		newTest.setTestName(newName);
+		newTest.setStatus(Status.START_TESTING);
 		newTest.setThreshold(test.getThreshold());
 		newTest.setDuration(test.getDuration());
 		newTest.setVuserPerAgent(test.getVuserPerAgent());
@@ -121,9 +123,15 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		PerfTest testInDB = (PerfTest)model.get(PARAM_TEST);
 
 		assertThat(testInDB.getTestName(), is(newName));
+		assertThat(testInDB.getId(), is(test.getId()));
 		
-		//test is cloned, but not modified.
-		assertThat(testInDB.getId(), not(test.getId()));
+		//test status id "START_TESTING", can not be saved.
+		try {
+			controller.saveTest(getTestUser(), model, newTest);
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+			assertTrue(true);
+		}
 		
 	}
 
@@ -218,12 +226,10 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	}
 	
 	@Test
-	public void testGetReport() {
+	public void testGetReportData() {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
 		ModelMap model = new ModelMap();
-		controller.getReport(getTestUser(), model, test.getId());
-
 		controller.getReportData(getTestUser(), model, test.getId(), "tps,errors", 0);
 	}
 	

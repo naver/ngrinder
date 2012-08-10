@@ -31,6 +31,7 @@ import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.thread.Condition;
 
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.ThreadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,7 +114,7 @@ public class AgentControllerDaemon implements Agent {
 					}
 				} while (true);
 			}
-		});
+		}, "Agent Controller Thread");
 		thread.start();
 	}
 
@@ -133,7 +134,10 @@ public class AgentControllerDaemon implements Agent {
 		try {
 			setForceToshutdown(true);
 			agent.shutdown();
-			thread.join();
+			if (thread != null) {
+				ThreadUtil.stopQuetly(thread, "Agent Controller  Thread is not stopped. Force to Stop");
+				thread = null;
+			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -147,7 +151,7 @@ public class AgentControllerDaemon implements Agent {
 		return forceToshutdown;
 	}
 
-	private void setForceToshutdown(boolean force) {
+	private synchronized void setForceToshutdown(boolean force) {
 		this.forceToshutdown = force;
 	}
 

@@ -416,8 +416,11 @@ function popover(element) {
 }
 $(document).ready(function() {
 	$("input[number_limit]").keypress(function(e) {
-		if (e.keyCode >= 48 && e.keyCode < 58) {
-			var curValue = Number($(this).val() + String(e.keyCode - 48));
+		if (e.charCode == 0) {
+			return true;
+		}
+		if (e.charCode >= 48 && e.charCode < 58) {
+			var curValue = Number($(this).val() + String(e.charCode - 48));
 			var limit = Number($(this).attr("number_limit"));
 			if (curValue <= limit) {
 				return true;

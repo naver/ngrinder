@@ -20,37 +20,42 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.agent.controller;
+package org.ngrinder.common.util;
+
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.is;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * Class description.
- * 
+ *
  * @author Mavlarn
- * @since 3.0
+ * @since
  */
-public class AgentControllerTest extends AbstractNGrinderTransactionalTest {
+public class CollectionUtilsTest {
 
-	@Autowired
-	AgentController agentController;
-
+	/**
+	 * Test method for {@link org.ngrinder.common.util.CollectionUtils#selectSome(java.util.Set, int)}.
+	 */
 	@Test
-	public void testGetAgentList() {
-		MockHttpServletRequest req = new MockHttpServletRequest();
-		req.addHeader("User-Agent", "Win");
-		SecurityContextHolderAwareRequestWrapper reqWrapper = new SecurityContextHolderAwareRequestWrapper(req, "U");
-		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(reqWrapper));
-		
-		ModelMap model = new ModelMap();
-		agentController.getAgentList(model);
+	public void testSelectSome() {
+		Set<Integer> intSet = new HashSet<Integer>();
+		intSet.add(1);
+		intSet.add(2);
+		intSet.add(3);
+		intSet.add(4);
+		intSet.add(5);
+		intSet.add(6);
+		Set<Integer> rtnSet = CollectionUtils.selectSome(intSet, 3);
+		assertThat(rtnSet.size(), is(3));
+		assertTrue(rtnSet.contains(1));
+		assertTrue(rtnSet.contains(2));
+		assertTrue(rtnSet.contains(3));
 	}
 
 }

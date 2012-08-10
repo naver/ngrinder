@@ -205,7 +205,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		for (PerfTest each : finishCandiate) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			if (consoleUsingPort == null) {
-				LOG.error("There is no console found for test:%s", ToStringBuilder.reflectionToString(each));
+				LOG.error("There is no console found for test:{}", ToStringBuilder.reflectionToString(each));
 				continue;
 			}
 			doFinish(each, consoleUsingPort);

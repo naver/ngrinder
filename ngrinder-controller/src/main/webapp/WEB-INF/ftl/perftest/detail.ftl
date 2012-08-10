@@ -168,7 +168,7 @@ div.chart {
 											<label for="scriptName" class="control-label">Script</label>
 											<div class="controls">
 												<select id="scriptName" class="required" name="scriptName">
-													<#if scriptList?size &gt; 0>
+													<#if scriptList?? && scriptList?size &gt; 0>
 														<#list scriptList as scriptItem>
 															<#if test?? && scriptItem.fileName == test.scriptName>
 																<#assign isSelected = "selected"/>
@@ -642,9 +642,9 @@ div.chart {
 			    </#if>
 			    
 				$("#n_test").addClass("active");
-				if (${scriptList?size} == 0) {
-					showInformation("User has not script yet! Please create a script first.");
-				}
+				<#if !scriptList?? || scriptList?size == 0>
+					showErrorMsg("User has not script yet! Please create a script first.");
+				</#if>
 				
 				$("#homeTab a:first").tab('show');	
 				$("#tableTab a:first").tab('show');	
@@ -673,6 +673,13 @@ div.chart {
 			    	ignore: "", //make the validation on hidden input work
 			        errorClass: "help-inline",
 			        errorElement: "span",
+			        errorPlacement: function(error, element) {
+			        	if (element.next().attr("class") == "add-on") {
+			        		error.insertAfter(element.next());
+			        	} else {
+			        		error.insertAfter(selement);
+			        	}
+			        },
 			        highlight:function(element, errorClass, validClass) {
 			            $(element).parents('.control-group').addClass('error');
 			            $(element).parents('.control-group').removeClass('success');

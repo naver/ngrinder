@@ -30,6 +30,7 @@ import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.ThreadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +40,12 @@ public class AgentDaemon implements Agent {
 	private GrinderProperties properties;
 	private final ListenerSupport<AgentShutDownListener> m_listeners = new ListenerSupport<AgentShutDownListener>();
 	private boolean forceToshutdown = false;
-	public static final Logger logger = LoggerFactory.getLogger("agent");
+	public static final Logger LOGGER = LoggerFactory.getLogger("agent");
 
 	public AgentDaemon() {
 		try {
 			properties = new GrinderProperties(GrinderProperties.DEFAULT_PROPERTIES);
-			agent = new AgentImplementationEx(logger);
+			agent = new AgentImplementationEx(LOGGER);
 		} catch (GrinderException e) {
 			throw new NGrinderRuntimeException("Exception occurs while creating AgentDaemon", e);
 		}
@@ -74,6 +75,7 @@ public class AgentDaemon implements Agent {
 				+ getGrinderProperties().getInt(GrinderProperties.CONSOLE_PORT, 0));
 		thread.setDaemon(true);
 		thread.start();
+		LOGGER.info("Agent Daemon {} is started.", thread.getName());
 	}
 
 	private GrinderProperties getGrinderProperties() {
@@ -92,7 +94,7 @@ public class AgentDaemon implements Agent {
 						}
 					});
 				} catch (GrinderException e) {
-					logger.error("while sleeping agent thread, error occurs", e);
+					LOGGER.error("while sleeping agent thread, error occurs", e);
 				}
 				if (isForceToshutdown()) {
 					setForceToshutdown(false);
@@ -101,7 +103,7 @@ public class AgentDaemon implements Agent {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					logger.error("while sleeping agent thread, error occurs", e);
+					LOGGER.error("while sleeping agent thread, error occurs", e);
 				}
 			} while (true);
 		}
@@ -123,9 +125,8 @@ public class AgentDaemon implements Agent {
 		try {
 			forceToshutdown = true;
 			agent.shutdown();
-			if (thread != null) {
-				thread.join();
-			}
+			ThreadUtil.stopQuetly(thread, "Agent Daemon is not stopped. So force to stop");
+			thread = null;
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("Exception occurs while shutting down AgentDaemon", e);
 		}

@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import org.junit.Test;
 import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorConstants;
 
 public class AgentServerTest {
@@ -51,6 +52,10 @@ public class AgentServerTest {
 		LOG.info("* Start nGrinder Monitor Agent *");
 		LOG.info("******************************");
 		LOG.info("* Local JVM link support :{}", localAttachmentSupported);
+		
+		AgentConfig config = new AgentConfig();
+		MonitorConstants.init(config);
+		
 		AgentMonitorServer.getInstance().init(port, dataCollectors, jvmPids);
 		AgentMonitorServer.getInstance().start();
 
