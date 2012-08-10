@@ -22,10 +22,16 @@
  */
 package org.ngrinder.agent.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * Class description.
@@ -40,6 +46,11 @@ public class AgentControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testGetAgentList() {
+		HttpServletRequest req = new MockHttpServletRequest();
+		SecurityContextHolderAwareRequestWrapper reqWrapper = new SecurityContextHolderAwareRequestWrapper(req, "U");
+		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(reqWrapper));
+
+		
 		ModelMap model = new ModelMap();
 		agentController.getAgentList(model);
 	}

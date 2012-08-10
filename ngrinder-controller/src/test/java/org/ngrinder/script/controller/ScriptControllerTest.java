@@ -148,8 +148,7 @@ public class ScriptControllerTest extends AbstractNGrinderTransactionalTest {
 		
 		model.clear();
 		//delete both files
-		scriptController.delete(getTestUser(), script.getPath(),
-				"file-for-search.py,new-file-for-search.py", model);
+		scriptController.delete(getTestUser(), path, "file-for-search.py,new-file-for-search.py", model);
 		scriptController.get(getTestUser(), path, model);
 		List<FileEntry> scriptList = (List<FileEntry>)model.get("files");
 		assertThat(scriptList.size(), is(0));
