@@ -1,4 +1,22 @@
-function drawChart(title, containerId, data, yLabel, startTime, interval) {
+var formatAmount = function(format, value) {
+	if (value < 1024) {
+		return value;
+	} else if (value < 1048576) {
+		return (value/1024).toFixed(2) + "K";
+	} else if (value < 1073741824) {
+		return (value/1048576).toFixed(2) + "M";
+	} else {
+		return (value/1073741824).toFixed(2) + "G";
+	}	
+};
+
+var formatPercentage = function(format, value) {
+	return value + "%";
+};
+
+function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, interval) {
+	//title, containerId and data is necessary.
+	//formatYaxis is the formatter function for y-axis, can be set undefined means don't format.
 	//startTime is a Date object.
 	//interval is second amount.
 	//startTime and interval are optional.
@@ -43,17 +61,7 @@ function drawChart(title, containerId, data, yLabel, startTime, interval) {
 				},
 				tickOptions : {
 					angle : -30,
-					formatter : function(format, value) {
-						if (value < 1000) {
-							return value;
-						} else if (value < 1000000) {
-							return (value / 1000).toFixed(2) + "K";
-						} else if (value < 1000000000) {
-							return (value / 1000000).toFixed(2) + "M";
-						} else {
-							return (value / 1000000000).toFixed(2) + "G";
-						}
-					}
+					formatter : formatYaxis
 				},
 				pad : 0,
 				numberTicks : 8

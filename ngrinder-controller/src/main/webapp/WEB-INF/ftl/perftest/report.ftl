@@ -209,7 +209,6 @@
                     }
                 },
                 error: function() {
-                    alert(2);
                     showErrorMsg("Error!");
                     return false;
                 }
@@ -229,12 +228,12 @@
                        'imgWidth':700},
                 success: function(res) {
                     if (res.success) {
-                        drawChart('System CPU', 'cpuDiv', res.cpu);
-                        drawChart('System Memory', 'memoryDiv', res.memory);
-                        drawChart('Heap Memory', 'heapMemoryDiv', res.heap_memory);
-                        drawChart('NonHeap Memory', 'nonHeapMemoryDiv', res.non_heap_memory);
+                        drawChart('System CPU', 'cpuDiv', res.cpu, formatPercentage);
+                        drawChart('System Memory', 'memoryDiv', res.memory, formatAmount);
+                        drawChart('Heap Memory', 'heapMemoryDiv', res.heap_memory, formatAmount);
+                        drawChart('NonHeap Memory', 'nonHeapMemoryDiv', res.non_heap_memory, formatAmount);
                         drawChart('Thread Count', 'threadCountDiv', res.thread_count);
-                        drawChart('JVM Cpu', 'jvmCpuDiv', res.jvm_cpu);
+                        drawChart('JVM Cpu', 'jvmCpuDiv', res.jvm_cpu, formatPercentage);
                         return true;
                     } else {
                         showErrorMsg("Get monitor data failed.");
@@ -242,8 +241,7 @@
                     }
                 },
                 error: function() {
-                    alert(2);
-                    showErrorMsg("Error!");
+                    showErrorMsg("Display Error!");
                     return false;
                 }
             });

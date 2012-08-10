@@ -135,12 +135,12 @@
                     success: function(res) {
                         if (res.success) {
                         	getChartData(res);
-                            showChart('CPU', 'cpuDiv', sys_totalCpuValue.getArray());
-                            showChart('Memory', 'memoryDiv', sys_usedMemory.getArray());
-                            showChart('Heap Memory', 'heapMemoryDiv', java_heapUsedMemory.getArray());
-                            showChart('NonHeap Memory', 'nonHeapMemoryDiv', java_nonHeapUsedMemory.getArray());
+                            showChart('CPU', 'cpuDiv', sys_totalCpuValue.getArray(), formatPercentage);
+                            showChart('Memory', 'memoryDiv', sys_usedMemory.getArray(), formatAmount);
+                            showChart('Heap Memory', 'heapMemoryDiv', java_heapUsedMemory.getArray(), formatAmount);
+                            showChart('NonHeap Memory', 'nonHeapMemoryDiv', java_nonHeapUsedMemory.getArray(), formatAmount);
                             showChart('Thread Count', 'threadCountDiv', java_threadCount.getArray());
-                            showChart('CPU', 'jvmCpuDiv', java_cpuUsedPercentage.getArray());
+                            showChart('CPU', 'jvmCpuDiv', java_cpuUsedPercentage.getArray(), formatPercentage);
                             return true;
                         } else {
                             showErrorMsg("Get monitor data failed.");
@@ -154,9 +154,9 @@
                 });
             }
             
-            function showChart(title, id, data) {
+            function showChart(title, id, data, formatYaxis) {
                 $("#" + id).empty();
-                drawChart(title, id, data);
+                drawChart(title, id, data, formatYaxis);
             }
             
             function getChartData(dataObj) {

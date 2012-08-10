@@ -1006,8 +1006,6 @@ div.chart {
 					var succesVal = refreshDiv.find("#input_status").val();
 		
 					if(succesVal == 'SUCCESS'){
-						//alert(refreshDiv.html());
-						
 						$("#lsTable tbody").empty();
 						$("#asTable tbody").empty();
 						$("#lsTable tbody").prepend(refreshDiv.find("#lsTableItem"));
