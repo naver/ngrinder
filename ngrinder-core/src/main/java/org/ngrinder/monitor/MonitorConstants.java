@@ -53,13 +53,15 @@ public class MonitorConstants {
 		TARGET_SERVER_DATA_COLLECTOR.add(SYSTEM);
 	}
 
+	//collector for system data and java data.
 	public static final Set<String> AGENT_SERVER_DATA_COLLECTOR = new HashSet<String>();
 	static {
 		AGENT_SERVER_DATA_COLLECTOR.add(SYSTEM);
 		AGENT_SERVER_DATA_COLLECTOR.add(JAVA);
 	}
 
-	public static final Set<String> DEFAULT_DATA_COLLECTOR = AGENT_SERVER_DATA_COLLECTOR;
+	//default collector will only collect system data.
+	public static final Set<String> DEFAULT_DATA_COLLECTOR = TARGET_SERVER_DATA_COLLECTOR;
 
 	/**
 	 * empty means all processes
@@ -75,11 +77,11 @@ public class MonitorConstants {
 	 *            {@link AgentConfig} from which the property is loaded.
 	 */
 	public static void init(AgentConfig agentConfig) {
-		DEFAULT_AGENT_PORT = agentConfig.getAgentProperties().getPropertyInt("agent.listen.port", 3243);
-		DEFAULT_AGENT_COLLECTOR_INTERVAL = agentConfig.getAgentProperties().getPropertyInt("agent.collector.interval",
+		DEFAULT_AGENT_PORT = agentConfig.getAgentProperties().getPropertyInt("monitor.listen.port", 3243);
+		DEFAULT_AGENT_COLLECTOR_INTERVAL = agentConfig.getAgentProperties().getPropertyInt("monitor.collector.interval",
 				1);
-		DEFAULT_CONTROLLER_CACHE_SIZE = agentConfig.getAgentProperties().getPropertyInt("controller.cache.size", 128);
-		DEFAULT_CONTROLLER_INTERVAL = agentConfig.getAgentProperties().getPropertyInt("controller.collector.interval",
+		DEFAULT_CONTROLLER_CACHE_SIZE = agentConfig.getAgentProperties().getPropertyInt("monitor.controller.cache.size", 128);
+		DEFAULT_CONTROLLER_INTERVAL = agentConfig.getAgentProperties().getPropertyInt("monitor.collector.interval",
 				1);
 	}
 }

@@ -30,20 +30,12 @@ import java.lang.management.RuntimeMXBean;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.HashSet;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import net.grinder.AgentControllerDaemon;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.util.ReflectionUtil;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.ngrinder.infra.AgentConfig;
@@ -82,11 +74,7 @@ public class NGrinderStarter {
 		}
 	}
 
-	private void startMonitor(int port) {
-		Set<String> dataCollectors = MonitorConstants.TARGET_SERVER_DATA_COLLECTOR;
-		Set<Integer> jvmPids = new HashSet<Integer>();
-		int currPID = getCurrentJVMPid();
-		jvmPids.add(currPID);
+	private void startMonitor() {
 
 		LOG.info("**************************");
 		LOG.info("* Start nGrinder Monitor *");
@@ -94,7 +82,7 @@ public class NGrinderStarter {
 		LOG.info("* Local JVM link support :{}", localAttachmentSupported);
 		LOG.info("* Colllect SYSTEM data. **");
 		try {
-			AgentMonitorServer.getInstance().init(port, dataCollectors, jvmPids);
+			AgentMonitorServer.getInstance().init();
 			AgentMonitorServer.getInstance().start();
 		} catch (Exception e) {
 			LOG.error("ERROR: {}", e.getMessage());
@@ -186,70 +174,30 @@ public class NGrinderStarter {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Options options = new Options();
-		options.addOption("a", "agent", false, "run ngrinder agent, exclusive with 'monitor' option");
-		options.addOption("m", "monitor", false, "run monitor server, exclusive with 'agent' option");
-		options.addOption("r", "region", true, "provide agent region");
-		options.addOption("p", "port", true, "provide agent JMX port number");
-		options.addOption("c", "controller", true, "provide ngrinder controller address");
-		CommandLineParser parser = new PosixParser();
-		CommandLine cmd = null;
+
 		NGrinderStarter starter = new NGrinderStarter();
 		agentConfig = new AgentConfig();
 		agentConfig.init();
-		MonitorConstants.init(agentConfig);
-		try {
-			cmd = parser.parse(options, args);
-		} catch (ParseException e) {
-			printHelpAndReturn(options);
-		}
-		if (cmd.hasOption("a") && cmd.hasOption("m")) {
-			printHelpAndReturn(options);
-		}
-
-		if (cmd.hasOption("m")) {
-			int monitorPort = MonitorConstants.DEFAULT_AGENT_PORT;
-			if (cmd.hasOption("p")) {
-				try {
-					monitorPort = Integer.valueOf(cmd.getOptionValue("p"));
-				} catch (NumberFormatException e) {
-					printHelpAndReturn(options);
-				}
-			}
-
-			starter.startMonitor(monitorPort);
-		} else if (cmd.hasOption("a")) {
-			String consoleAddress = null;
-			String consoleIP = agentConfig.getAgentProperties().getProperty("console.ip", "127.0.0,1");
-			int consolePort = agentConfig.getAgentProperties().getPropertyInt("console.port",
+		
+		String startMode = agentConfig.getAgentProperties().getProperty("start.mode", "agent");
+		if (startMode.equalsIgnoreCase("agent")) {
+			String consoleIP = agentConfig.getAgentProperties().getProperty("agent.console.ip", "127.0.0,1");
+			int consolePort = agentConfig.getAgentProperties().getPropertyInt("agent.console.port",
 					AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
-			if (cmd.hasOption("c")) {
-				try {
-					consoleAddress = cmd.getOptionValue("c");
-					String[] addressStrs = StringUtils.split(consoleAddress, ":");
-					consoleIP = addressStrs[0];
-					consolePort = Integer.valueOf(addressStrs[1]);
-				} catch (Exception e) {
-					printHelpAndReturn(options);
-				}
-			}
-			String region = "";
-			if (cmd.hasOption("r")) {
-				region = cmd.getOptionValue("r");
-			}
-			starter.startAgent(region, consoleIP, consolePort);
 
+			String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
+
+			starter.startAgent(region, consoleIP, consolePort);
+		} else if (startMode.equalsIgnoreCase("monitor")){
+			MonitorConstants.init(agentConfig);
+			starter.startMonitor();
 		} else {
-			printHelpAndReturn(options);
+			printHelpAndReturn();
 		}
 	}
 
-	/**
-	 * @param options
-	 */
-	private static void printHelpAndReturn(Options options) {
-		HelpFormatter formatter = new HelpFormatter();
-		formatter.printHelp("ngrinder", options);
+	private static void printHelpAndReturn() {
+		System.out.println("Invalid agent.conf, 'start.mode' must be set as 'monitor' or 'agent'");
 		System.exit(-1);
 	}
 }
