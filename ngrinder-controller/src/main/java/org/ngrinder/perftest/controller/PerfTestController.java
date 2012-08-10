@@ -166,7 +166,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String saveTest(User user, ModelMap model, PerfTest test) {
-		checkArgument(test.getStatus() == Status.READY || test.getStatus() == Status.SAVED, "save test only support for SAVE or READY status");
+		checkArgument(test.getStatus().equals(Status.READY) || test.getStatus().equals(Status.SAVED), "save test only support for SAVE or READY status");
 		perfTestService.savePerfTest(test);
 		return "redirect:/perftest/list";
 	}

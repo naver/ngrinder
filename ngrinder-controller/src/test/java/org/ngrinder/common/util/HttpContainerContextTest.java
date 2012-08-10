@@ -24,6 +24,7 @@ package org.ngrinder.common.util;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
@@ -52,6 +53,11 @@ public class HttpContainerContextTest extends AbstractNGrinderTransactionalTest 
 		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(reqWrapper));
 	}
 
+	@After
+	public void resetContext() {
+		RequestContextHolder.resetRequestAttributes();
+	}
+	
 	/**
 	 * Test method for {@link org.ngrinder.common.util.HttpContainerContext#getCurrentRequestUrlFromUserRequest()}.
 	 */
