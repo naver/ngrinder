@@ -45,6 +45,5 @@ public final class ProcessControlListener implements ProcessControl.Listener {
 		if (lastWP != wp) {
 			LOG.debug("Current worker process count:{}", wp);
 		}
-		// GrinderAPI.updateWorkerProcessCount(wp);
 	}
 }

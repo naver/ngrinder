@@ -165,7 +165,7 @@
 				</executions>
 				<configuration>
 					<descriptors>
-						<descriptor>src/assemble/ngrinder.xml</descriptor>
+						<descriptor>src/assembly/ngrinder.xml</descriptor>
 					</descriptors>
 					<outputDirectory>${project.build.directory}</outputDirectory>
 					<overWriteReleases>false</overWriteReleases>

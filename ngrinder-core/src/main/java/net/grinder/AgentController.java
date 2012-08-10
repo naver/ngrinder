@@ -72,7 +72,8 @@ public class AgentController implements Agent {
 	private final Condition m_eventSynchronisation = new Condition();
 	private final AgentControllerIdentityImplementation m_agentIdentity;
 	private final AgentControllerServerListener m_agentControllerServerListener;
-	private FanOutStreamSender m_fanOutStreamSender = new FanOutStreamSender(3);
+	private FanOutStreamSender m_fanOutStreamSender;
+	public static final int FANOUT_STREAM_THREAD_COUNT = 6;
 	private final AgentControllerConnectorFactory m_connectorFactory = new AgentControllerConnectorFactory(
 			ConnectionType.AGENT);
 	private boolean m_agentStart = false;
@@ -84,7 +85,8 @@ public class AgentController implements Agent {
 	 * 
 	 * @param logger
 	 *            Logger.
-	 * @param m_eventSyncCondition
+	 * @param eventSyncCondition
+	 *            event sync condition to wait until agent start to run.
 	 * 
 	 * @throws GrinderException
 	 *             If an error occurs.
@@ -111,6 +113,9 @@ public class AgentController implements Agent {
 
 	/**
 	 * Run agent controller. This method use default server port (for test)
+	 * 
+	 * @exception GrinderException
+	 *                occurs when there is a problem.
 	 */
 	public void run() throws GrinderException {
 		GrinderProperties grinderProperties = new GrinderProperties();
@@ -125,6 +130,8 @@ public class AgentController implements Agent {
 	/**
 	 * Run the agent controller.
 	 * 
+	 * @param grinderProperties
+	 *            {@link GrinderProperties} used.
 	 * @throws GrinderException
 	 *             If an error occurs.
 	 */
@@ -132,7 +139,7 @@ public class AgentController implements Agent {
 
 		StartGrinderMessage startMessage = null;
 		ConsoleCommunication consoleCommunication = null;
-		m_fanOutStreamSender = new FanOutStreamSender(6);
+		m_fanOutStreamSender = new FanOutStreamSender(FANOUT_STREAM_THREAD_COUNT);
 		m_timer = new Timer(false);
 		AgentDaemon agent = new AgentDaemon();
 		try {
@@ -273,7 +280,9 @@ public class AgentController implements Agent {
 		if (m_timer != null) {
 			m_timer.cancel();
 		}
-		m_fanOutStreamSender.shutdown();
+		if (m_fanOutStreamSender != null) {
+			m_fanOutStreamSender.shutdown();
+		}
 		m_agentControllerServerListener.shutdown();
 		m_logger.info("finished");
 	}
@@ -291,6 +300,11 @@ public class AgentController implements Agent {
 		}
 	}
 
+	/**
+	 * Get current System performance.
+	 * 
+	 * @return {@link SystemDataModel} instance
+	 */
 	public SystemDataModel getSystemDataModel() {
 		SystemDataModel systemDataModel = new SystemDataModel();
 		systemDataModel.setCollectTime(10000);
@@ -299,6 +313,11 @@ public class AgentController implements Agent {
 		return systemDataModel;
 	}
 
+	/**
+	 * Get current java performance.
+	 * 
+	 * @return {@link JavaDataModel} instance
+	 */
 	public JavaDataModel getJavaDataModel() {
 		JavaDataModel javaDataModel = new JavaDataModel();
 		javaDataModel.setCollectTime(10000);
@@ -343,7 +362,7 @@ public class AgentController implements Agent {
 
 		public void start() {
 			m_messagePump.start();
-			m_timer.schedule(m_reportRunningTask, 0, 2000);
+			m_timer.schedule(m_reportRunningTask, 0, GrinderConstants.AGENT_CONTROLLER_HEARTBEAT_INTERVAL);
 		}
 
 		public void shutdown() {
@@ -351,6 +370,7 @@ public class AgentController implements Agent {
 			try {
 				m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.FINISHED, null, null));
 			} catch (CommunicationException e) {
+				// Fall through
 				// Ignore - peer has probably shut down.
 			} finally {
 				m_messagePump.shutdown();
