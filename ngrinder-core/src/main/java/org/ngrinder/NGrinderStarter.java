@@ -181,7 +181,7 @@ public class NGrinderStarter {
 		
 		String startMode = agentConfig.getAgentProperties().getProperty("start.mode", "agent");
 		if (startMode.equalsIgnoreCase("agent")) {
-			String consoleIP = agentConfig.getAgentProperties().getProperty("agent.console.ip", "127.0.0,1");
+			String consoleIP = agentConfig.getAgentProperties().getProperty("agent.console.ip", "127.0.0.1");
 			int consolePort = agentConfig.getAgentProperties().getPropertyInt("agent.console.port",
 					AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 

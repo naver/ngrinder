@@ -25,7 +25,6 @@ package org.ngrinder.common.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
