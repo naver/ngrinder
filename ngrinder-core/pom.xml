@@ -76,10 +76,6 @@
 			<version>3.9.1</version>
 			<exclusions>
 				<exclusion>
-					<artifactId>grinder-dcr-agent</artifactId>
-					<groupId>net.sf.grinder</groupId>
-				</exclusion>
-				<exclusion>
 					<artifactId>clojure</artifactId>
 					<groupId>org.clojure</groupId>
 				</exclusion>
