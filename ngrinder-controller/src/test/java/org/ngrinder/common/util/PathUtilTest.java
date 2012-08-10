@@ -20,37 +20,29 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.agent.controller;
+package org.ngrinder.common.util;
+
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * Class description.
- * 
+ *
  * @author Mavlarn
- * @since 3.0
+ * @since
  */
-public class AgentControllerTest extends AbstractNGrinderTransactionalTest {
+public class PathUtilTest {
 
-	@Autowired
-	AgentController agentController;
-
+	/**
+	 * Test method for {@link org.ngrinder.common.util.PathUtil#removePrependedSlash(java.lang.String)}.
+	 */
 	@Test
-	public void testGetAgentList() {
-		MockHttpServletRequest req = new MockHttpServletRequest();
-		req.addHeader("User-Agent", "Win");
-		SecurityContextHolderAwareRequestWrapper reqWrapper = new SecurityContextHolderAwareRequestWrapper(req, "U");
-		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(reqWrapper));
-		
-		ModelMap model = new ModelMap();
-		agentController.getAgentList(model);
+	public void testRemovePrependedSlash() {
+		String path = "/aaa/bbb/vvv";
+		String newPath = PathUtil.removePrependedSlash(path);
+
+		assertTrue(path.contains(newPath));
 	}
 
 }

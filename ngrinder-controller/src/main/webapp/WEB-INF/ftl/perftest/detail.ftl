@@ -673,6 +673,13 @@ div.chart {
 			    	ignore: "", //make the validation on hidden input work
 			        errorClass: "help-inline",
 			        errorElement: "span",
+			        errorPlacement: function(error, element) {
+			        	if (element.next().attr("class") == "add-on") {
+			        		error.insertAfter(element.next());
+			        	} else {
+			        		error.insertAfter(selement);
+			        	}
+			        },
 			        highlight:function(element, errorClass, validClass) {
 			            $(element).parents('.control-group').addClass('error');
 			            $(element).parents('.control-group').removeClass('success');
