@@ -22,6 +22,8 @@
  */
 package net.grinder;
 
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -166,7 +168,8 @@ public class AgentController implements Agent {
 					}
 					try {
 						m_agentIdentity.setPort(getSocket(
-								ReflectionUtil.getFieldValue(consoleCommunication, "m_sender")).getPort());
+								checkNotNull(ReflectionUtil.getFieldValue(consoleCommunication, "m_sender"),
+										"m_sender is not availble in consoleComminitation")).getPort());
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -188,7 +191,7 @@ public class AgentController implements Agent {
 					if (startMessage != null) {
 						m_agentIdentity.setNumber(startMessage.getAgentNumber());
 					}
-				} while (startMessage.getProperties() == null);
+				} while (checkNotNull(startMessage, "start method should be exist in messaging loop").getProperties() == null);
 
 				// Here the agent run code goes..
 				if (startMessage != null) {
@@ -250,8 +253,10 @@ public class AgentController implements Agent {
 	}
 
 	private Socket getSocket(Object sender) {
-		Object socketWrapper = ReflectionUtil.getFieldValue(sender, "m_socketWrapper");
-		Socket socket = (Socket) ReflectionUtil.getFieldValue(socketWrapper, "m_socket");
+		Object socketWrapper = checkNotNull(ReflectionUtil.getFieldValue(sender, "m_socketWrapper"),
+				"m_socketWrapper might not be exist in this grinder");
+		Socket socket = (Socket) checkNotNull(ReflectionUtil.getFieldValue(socketWrapper, "m_socket"),
+				"m_socket is not available in socketwrapper of this grinder");
 		return socket;
 	}
 

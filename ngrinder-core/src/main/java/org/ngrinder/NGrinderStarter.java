@@ -141,14 +141,17 @@ public class NGrinderStarter {
 			if (toolsJarPath.exists()) {
 				return toolsJarPath.toURI().toURL();
 			}
-			toolsJarPath = new File(javaHome.getParentFile(), toolsJar);
-			if (toolsJarPath.exists()) {
-				return toolsJarPath.toURI().toURL();
-			}
-			for (File eachCandidate : javaHome.getParentFile().listFiles()) {
-				toolsJarPath = new File(eachCandidate, toolsJar);
+			File parentFile = javaHome.getParentFile();
+			if (parentFile != null) {
+				toolsJarPath = new File(parentFile, toolsJar);
 				if (toolsJarPath.exists()) {
 					return toolsJarPath.toURI().toURL();
+				}
+				for (File eachCandidate : parentFile.listFiles()) {
+					toolsJarPath = new File(eachCandidate, toolsJar);
+					if (toolsJarPath.exists()) {
+						return toolsJarPath.toURI().toURL();
+					}
 				}
 			}
 		} catch (MalformedURLException e) {
@@ -178,7 +181,7 @@ public class NGrinderStarter {
 		NGrinderStarter starter = new NGrinderStarter();
 		agentConfig = new AgentConfig();
 		agentConfig.init();
-		
+
 		String startMode = agentConfig.getAgentProperties().getProperty("start.mode", "agent");
 		if (startMode.equalsIgnoreCase("agent")) {
 			String consoleIP = agentConfig.getAgentProperties().getProperty("agent.console.ip", "127.0.0.1");
@@ -188,7 +191,7 @@ public class NGrinderStarter {
 			String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
 
 			starter.startAgent(region, consoleIP, consolePort);
-		} else if (startMode.equalsIgnoreCase("monitor")){
+		} else if (startMode.equalsIgnoreCase("monitor")) {
 			MonitorConstants.init(agentConfig);
 			starter.startMonitor();
 		} else {

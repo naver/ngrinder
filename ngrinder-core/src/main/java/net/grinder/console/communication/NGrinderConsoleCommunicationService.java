@@ -22,6 +22,8 @@
  */
 package net.grinder.console.communication;
 
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
 import java.util.Map;
 
 import net.grinder.GrinderConstants;
@@ -54,7 +56,7 @@ public final class NGrinderConsoleCommunicationService {
 	 *            - Result map to front end
 	 */
 	public static void collectWorkerAndThreadInfo(ProcessControl processControl, Map<String, Object> result) {
-		Map<ProcessIdentity, AgentAndWorkers> agents = getLiveAgents(processControl);
+		Map<ProcessIdentity, AgentAndWorkers> agents = checkNotNull(getLiveAgents(processControl));
 
 		int workerNumber = 0;
 		int threadNumber = 0;

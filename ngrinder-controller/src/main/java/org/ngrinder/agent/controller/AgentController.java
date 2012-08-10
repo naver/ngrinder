@@ -88,7 +88,7 @@ public class AgentController extends NGrinderBaseController {
 				return name.startsWith("ngrinder") && name.endsWith(extension);
 			}
 		});
-		if (list.length != 0) {
+		if (list != null && list.length != 0) {
 			String contextPath = httpContainerContext.getCurrentRequestUrlFromUserRequest();
 			StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url", contextPath));
 			url.append("/agent/download/" + list[0]);
