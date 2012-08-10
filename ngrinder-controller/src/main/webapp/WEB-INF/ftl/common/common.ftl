@@ -26,3 +26,4 @@
 
 <input type="hidden" id="contextPath" value="${req.getContextPath()}">
 <#setting number_format="computer">
+<#import "spring.ftl" as spring/>

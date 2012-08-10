@@ -6,8 +6,8 @@
 			<a class="brand" href="${req.getContextPath()}/home"><img src="${req.getContextPath()}/img/logo_ngrinder_a_header_inv.png" alt="nGrinder"></img></a>
 			<div>
 				<ul class="nav">
-				  <li id="n_test"><a href="${req.getContextPath()}/perftest/list">Performance Test</a></li>
-				  <li id="n_script"><a href="${req.getContextPath()}/script/list">Script</a></li>
+				  <li id="n_test"><a href="${req.getContextPath()}/perftest/list"><@spring.message "navigator.perfTest"/></a></li>
+				  <li id="n_script"><a href="${req.getContextPath()}/script/list"><@spring.message "navigator.script"/></a></li>
 				</ul>
 				
 				<ul class="nav pull-right">
@@ -15,20 +15,20 @@
 		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">${(currentUser.userId)!}<b class="caret"></b></a>
 		            	<ul class="dropdown-menu">
 							<@security.authorize ifAnyGranted="U, A, S">
-			                	<li><a id="user_profile_id">Profile</a></li>
+			                	<li><a id="user_profile_id"><@spring.message "navigator.dropdown.profile"/></a></li>
 			                	<li class="divider"/>
-				          		<li><a href="${req.getContextPath()}/j_spring_security_logout">Sign Out</a></li>
+				          		<li><a href="${req.getContextPath()}/j_spring_security_logout"><@spring.message "navigator.dropdown.signout"/></a></li>
 			            	</@security.authorize>
 			            	<@security.authorize ifAnyGranted="A, S">
 				            	<li class="divider"/>
-		               			<li><a href="${req.getContextPath()}/user/list">User Management</a></li>
-		               			<li><a href="${req.getContextPath()}/config/view">Test Default Options</a></li>
-				                <li><a href="${req.getContextPath()}/agent/list">Agent Management</a></li>
+		               			<li><a href="${req.getContextPath()}/user/list"><@spring.message "navigator.dropdown.userManagement"/></a></li>
+		               			<li><a href="${req.getContextPath()}/config/view"><@spring.message "navigator.dropdown.testDefaultOption"/></a></li>
+				                <li><a href="${req.getContextPath()}/agent/list"><@spring.message "navigator.dropdown.agentManagement"/></a></li>
 			            	</@security.authorize>
 		            	</ul>
 		            </li>
 					<li class="divider-vertical"></li>
-					<li class="dropdown"><a href="#">Help</a></li>
+					<li class="dropdown"><a href="#"><@spring.message "navigator.help"/></a></li>
          		</ul>      		    
 			</div>
 		</div>
@@ -39,7 +39,7 @@
 <div class="modal fade" id="userProfileModal">
 	<div class="modal-header">
 		<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
-		<h3>My Profile</h3>
+		<h3><@spring.message "navigator.dropdown.profile.title"/></h3>
 	</div>
 	<div class="modal-body" id="user_profile_modal">
 		
