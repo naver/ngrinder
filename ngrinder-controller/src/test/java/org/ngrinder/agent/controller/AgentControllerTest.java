@@ -51,6 +51,9 @@ public class AgentControllerTest extends AbstractNGrinderTransactionalTest {
 		
 		ModelMap model = new ModelMap();
 		agentController.getAgentList(model);
+		
+		RequestContextHolder.resetRequestAttributes();
+		
 	}
 
 }

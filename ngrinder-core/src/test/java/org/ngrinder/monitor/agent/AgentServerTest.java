@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorConstants;
+import org.ngrinder.monitor.share.JVMUtils;
 
 public class AgentServerTest {
 	private static final Logger LOG = LoggerFactory.getLogger(AgentServerTest.class);
@@ -45,8 +46,8 @@ public class AgentServerTest {
 	public void startMonitor() throws MalformedObjectNameException, InstanceAlreadyExistsException,
 			MBeanRegistrationException, NotCompliantMBeanException, NullPointerException, IOException {
 		int port = 4096;
-		Set<String> dataCollectors = MonitorConstants.DEFAULT_DATA_COLLECTOR;
-		Set<Integer> jvmPids = MonitorConstants.DEFAULT_JVM_PID;
+		Set<String> dataCollectors = MonitorConstants.AGENT_SERVER_DATA_COLLECTOR;
+		Set<Integer> jvmPids = JVMUtils.getAllJVMs().keySet();
 
 		LOG.info("******************************");
 		LOG.info("* Start nGrinder Monitor Agent *");

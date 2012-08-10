@@ -42,7 +42,6 @@ import org.springframework.beans.propertyeditors.LocaleEditor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.LocaleResolver;
@@ -70,9 +69,9 @@ public class HomeController extends NGrinderBaseController {
 		String roles = null;
 		try {
 			// set local language
-			setLanguage(getCurrentUserInfo("userLanguage"), response, request);
+			setLanguage(getCurrentUser().getUserLanguage(), response, request);
 			setLoginPageDate(model);
-			roles = getCurrentUserInfo("role");
+			roles = getCurrentUser().getRole().getShortName();
 
 		} catch (AuthenticationCredentialsNotFoundException e) {
 			return "login";
@@ -81,9 +80,7 @@ public class HomeController extends NGrinderBaseController {
 		model.addAttribute("right_panel_entries", homeService.getRightPanelEntries());
 		model.addAttribute("left_panel_entries", homeService.getLeftPanelEntries());
 
-		if (roles == null) {
-			return "login";
-		} else if (roles.contains("A") || roles.contains("U")) {
+		if (roles.contains("A") || roles.contains("U")) {
 			return "index";
 		} else {
 			LOG.info("Invalid user role:{}", roles);
@@ -144,11 +141,12 @@ public class HomeController extends NGrinderBaseController {
 		return "user/userInfo";
 	}
 
-	@RequestMapping("/profile/save")
-	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser) {
-		if (user.getId() != null && user.getId() > 0) {
-			getUserService().modifyUser(updatedUser);
-		}
-		return "/";
-	}
+	//user save/modification is in UserController
+//	@RequestMapping("/profile/save")
+//	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser) {
+//		if (updatedUser.exist()) {
+//			getUserService().modifyUser(updatedUser);
+//		}
+//		return "/";
+//	}
 }
