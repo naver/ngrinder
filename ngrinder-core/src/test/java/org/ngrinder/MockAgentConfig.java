@@ -1,4 +1,4 @@
-package org.ngrinder.perftest.service;
+package org.ngrinder;
 
 import java.io.File;
 

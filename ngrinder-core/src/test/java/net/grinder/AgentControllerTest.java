@@ -26,9 +26,10 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 		agentControllerServerDeamon.start();
 
 		agentControllerDaemon = new AgentControllerDaemon();
+		agentControllerDaemon.setAgentConfig(agentConfig1);
 		agentControllerDaemon.run(agentControllerServerDeamon.getPort());
-
 		agentControllerDaemon2 = new AgentControllerDaemon();
+		agentControllerDaemon2.setAgentConfig(agentConfig2);
 		agentControllerDaemon2.run(agentControllerServerDeamon.getPort());
 		sleep(2000);
 		// Validate if all agents are well-attached.
@@ -110,7 +111,7 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 
 		// Stop that agent and see it's well disconnected
 		agentControllerServerDeamon.stopAgent(agentIdentity);
-		sleep(3000);
+		sleep(5000);
 		assertThat(console1.getAllAttachedAgentsCount(), is(0));
 
 		// Stop that agent and see it's well disconnected again.
@@ -148,9 +149,9 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 		assertThat(console1.getAllAttachedAgents().size(), is(0));
 
 		// Then start again
-		agentControllerServerDeamon = new AgentControllerServerDaemon(2022);
+		agentControllerServerDeamon = new AgentControllerServerDaemon(agentControllerServerDeamon.getPort());
 		agentControllerServerDeamon.start();
-		sleep(2000);
+		sleep(3000);
 
 		// See the agent controller is attached automatically
 		assertThat(agentControllerServerDeamon.getAllAttachedAgentsCount(), is(2));

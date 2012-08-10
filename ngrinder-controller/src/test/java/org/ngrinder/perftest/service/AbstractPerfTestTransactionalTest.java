@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.junit.Before;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.MockAgentConfig;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;

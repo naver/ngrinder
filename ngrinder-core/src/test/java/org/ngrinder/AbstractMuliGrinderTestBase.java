@@ -16,12 +16,15 @@ import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.AgentConfig;
 
 abstract public class AbstractMuliGrinderTestBase {
-	public AgentConfig agentConfig;
+	public AgentConfig agentConfig1;
+	public AgentConfig agentConfig2;
+	public AgentConfig agentConfig3;
 
 	@Before
 	public void agentInit() {
-		agentConfig = new AgentConfig();
-		agentConfig.init();
+		agentConfig1 = new MockAgentConfig().init();
+		agentConfig2 = new MockAgentConfig().init();
+		agentConfig3 = new MockAgentConfig().init();
 	}
 
 	/**

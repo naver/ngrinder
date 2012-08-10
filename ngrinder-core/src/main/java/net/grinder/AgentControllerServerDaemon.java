@@ -168,7 +168,7 @@ public class AgentControllerServerDaemon {
 
 	public Set<AgentIdentity> getAllFreeAgents() {
 		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgents(
-				AgentControllerState.RUNNING, 0);
+				AgentControllerState.READY, 0);
 	}
 
 	public JavaDataModel getJavaDataModel(AgentIdentity agentIdentity) {
