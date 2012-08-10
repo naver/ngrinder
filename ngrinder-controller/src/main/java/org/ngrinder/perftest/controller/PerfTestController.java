@@ -224,14 +224,6 @@ public class PerfTestController extends NGrinderBaseController {
 		return JSONUtil.toJson(fileList);
 	}
 
-	@RequestMapping(value = "/report")
-	public String getReport(User user, ModelMap model, @RequestParam long testId) {
-		checkTestPermissionAndGet(user, testId);
-		PerfTest test = perfTestService.getPerfTest(testId);
-		model.addAttribute("test", test);
-		return "perftest/report";
-	}
-
 	@RequestMapping(value = "/getReportData")
 	public @ResponseBody
 	String getReportData(User user, ModelMap model, @RequestParam long testId,
@@ -244,10 +236,10 @@ public class PerfTestController extends NGrinderBaseController {
 		for (String dt : dataTypes) {
 			try {
 				reportData = perfTestService.getReportData(testId, dt, imgWidth);
-
 				rtnMap.put(dt, reportData);
 			} catch (Exception e) {
 				// just skip if one report data doesn't exist.
+				rtnMap.put(dt, "Get report data failed. type: " + dt);
 				LOG.error("Get report data failed. type: " + dt, e);
 			}
 		}
