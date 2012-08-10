@@ -11,7 +11,7 @@ var formatAmount = function(format, value) {
 };
 
 var formatPercentage = function(format, value) {
-	return value + "%";
+	return value.toFixed(2) + "%";
 };
 
 function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, interval) {

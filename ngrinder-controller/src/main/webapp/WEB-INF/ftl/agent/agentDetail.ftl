@@ -128,7 +128,7 @@
             });
             function getMonitorData(){
                 $.ajax({
-                    url: "${req.getContextPath()}/monitor/getMonitorData",
+                    url: "${req.getContextPath()}/monitor/getCurrentMonitorData",
                     dataType:'json',
                     data: {'ip': '${(agent.ip)!}',
                            'imgWidth':700},

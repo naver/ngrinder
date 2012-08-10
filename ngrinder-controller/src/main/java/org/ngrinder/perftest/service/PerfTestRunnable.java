@@ -207,10 +207,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 		List<PerfTest> finishCandiate = perfTestService.getTestingPerfTest();
 		for (PerfTest each : finishCandiate) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
-			if (consoleUsingPort == null) {
-				LOG.error("There is no console found for test:{}", ToStringBuilder.reflectionToString(each));
-				continue;
-			}
 			doFinish(each, consoleUsingPort);
 		}
 	}
@@ -225,6 +221,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            {@link PerfTest}
 	 */
 	public void doFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+		if (singleConsoleInUse == null) {
+			LOG.error("There is no console found for test:{}", ToStringBuilder.reflectionToString(perfTest));
+			// need to finish test as error
+			perfTestService.savePerfTest(perfTest, Status.STOP_ON_ERROR);
+			return;
+		}
 		long startLastingTime = System.currentTimeMillis() - singleConsoleInUse.getStartTime();
 		// because It will take some seconds to start testing sometimes , if the
 		// test is not started
