@@ -108,7 +108,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		PerfTest newTest = new PerfTest();
 		newTest.setId(test.getId());
 		newTest.setTestName(newName);
-		newTest.setStatus(Status.READY);
+		newTest.setStatus(Status.SAVED);
 		newTest.setThreshold(test.getThreshold());
 		newTest.setDuration(test.getDuration());
 		newTest.setVuserPerAgent(test.getVuserPerAgent());
@@ -120,12 +120,21 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		ModelMap model = new ModelMap();
 		controller.saveTest(getTestUser(), model, newTest);
 		controller.getTestDetail(getTestUser(), newTest.getId(), model);
-		PerfTest testInDB = (PerfTest) model.get(PARAM_TEST);
-
+		PerfTest testInDB = (PerfTest)model.get(PARAM_TEST);
 		assertThat(testInDB.getTestName(), is(newName));
 		assertThat(testInDB.getId(), is(test.getId()));
 
-		// test status id "START_TESTING", can not be saved.
+		model.clear();
+		newTest.setStatus(Status.READY);
+		controller.saveTest(getTestUser(), model, newTest);
+		controller.getTestDetail(getTestUser(), newTest.getId(), model);
+		testInDB = (PerfTest)model.get(PARAM_TEST);
+		assertThat(testInDB.getTestName(), is(newName));
+		assertThat(testInDB.getId(), is(test.getId()));
+
+		
+		//test status id "START_TESTING", can not be saved.
+		newTest.setStatus(Status.START_TESTING);
 		try {
 			newTest.setStatus(Status.START_TESTING);
 			controller.saveTest(getTestUser(), model, newTest);

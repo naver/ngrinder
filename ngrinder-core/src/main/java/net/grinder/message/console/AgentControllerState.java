@@ -22,10 +22,21 @@
  */
 package net.grinder.message.console;
 
+/**
+ * Agent Controller State
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
 public enum AgentControllerState {
-	START, 
-	/** When */
-	RUNNING,
-	AGENT_RUN, 
-	FINISHED, UNKNOWN
+	/** Just after agent controller is started */
+	STARTED,
+	/** When agent controller is ready to get some message */
+	READY,
+	/** When agent controller runs agents or other jobs */
+	BUSY,
+	/** When agent controller is closed */
+	FINISHED,
+	/** Unknown */
+	UNKNOWN
 }

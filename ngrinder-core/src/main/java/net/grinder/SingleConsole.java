@@ -161,8 +161,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Simple constructor only setting port. It automatically binds all ip
-	 * addresses.
+	 * Simple constructor only setting port. It automatically binds all ip addresses.
 	 * 
 	 * @param port
 	 *            PORT number

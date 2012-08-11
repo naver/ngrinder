@@ -22,6 +22,7 @@
  */
 package net.grinder;
 
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
@@ -32,6 +33,7 @@ import net.grinder.util.thread.Condition;
 
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +43,6 @@ import org.slf4j.LoggerFactory;
  * @author JunHo Yoon
  */
 public class AgentControllerDaemon implements Agent {
-
-	public static final String AGENT_CONTROLER_SERVER_HOST = "ngrinder.agentcontroller.host";
-	public static final String AGENT_CONTROLER_SERVER_PORT = "ngrinder.agentcontroller.port";
 
 	private final AgentController agentController;
 	private Thread thread;
@@ -58,6 +57,7 @@ public class AgentControllerDaemon implements Agent {
 	 * Region of grinder agent.
 	 */
 	private String region = "";
+	private AgentConfig agentConfig;
 
 	/**
 	 * Constructor.
@@ -90,8 +90,7 @@ public class AgentControllerDaemon implements Agent {
 	}
 
 	/**
-	 * Run agent controller with the given agent controller host and the agent
-	 * controller server port.
+	 * Run agent controller with the given agent controller host and the agent controller server port.
 	 * 
 	 * @param agentControllerServerHost
 	 *            agent controller server host
@@ -100,17 +99,17 @@ public class AgentControllerDaemon implements Agent {
 	 */
 	public void run(String agentControllerServerHost, int agentControllerServerPort) {
 		if (agentControllerServerHost != null) {
-			properties.setProperty(AGENT_CONTROLER_SERVER_HOST, agentControllerServerHost);
+			properties.setProperty(AgentConfig.AGENT_CONTROLER_SERVER_HOST, agentControllerServerHost);
 		}
 		if (agentControllerServerPort != 0) {
-			properties.setInt(AGENT_CONTROLER_SERVER_PORT, agentControllerServerPort);
+			properties.setInt(AgentConfig.AGENT_CONTROLER_SERVER_PORT, agentControllerServerPort);
 		}
 		run(properties);
 	}
 
 	/**
-	 * Run agent controller with given {@link GrinderProperties}. server host
-	 * and port will be gained from {@link GrinderProperties}
+	 * Run agent controller with given {@link GrinderProperties}. server host and port will be gained from
+	 * {@link GrinderProperties}
 	 * 
 	 * @param grinderProperties
 	 *            {@link GrinderProperties}
@@ -122,6 +121,9 @@ public class AgentControllerDaemon implements Agent {
 				do {
 					try {
 						LOGGER.info("agent controller daemon : started.");
+						getAgentController().setAgentConfig(
+								checkNotNull(agentConfig,
+										"agent config should be provided before agent controller start"));
 						getAgentController().run(grinderProperties);
 
 						getListeners().apply(new Informer<AgentControllerShutDownListener>() {
@@ -199,6 +201,10 @@ public class AgentControllerDaemon implements Agent {
 
 	public void setRegion(String region) {
 		this.region = region;
+	}
+
+	public void setAgentConfig(AgentConfig agentConfig) {
+		this.agentConfig = agentConfig;
 	}
 
 }

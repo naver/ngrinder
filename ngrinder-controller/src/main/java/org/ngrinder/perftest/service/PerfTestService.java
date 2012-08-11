@@ -277,8 +277,6 @@ public class PerfTestService implements NGrinderConstants {
 				FilenameUtils.getPath(checkNotEmpty(scriptName)));
 		File perfTestDirectory = getUserPerfTestDirectory(perfTest, NGrinderConstants.PATH_DIST);
 
-		// clean up Distribution folders
-		// FileUtils.deleteQuietly(perfTestDirectory);
 		perfTestDirectory.mkdirs();
 
 		// Distribute each files in that folder.
@@ -397,7 +395,7 @@ public class PerfTestService implements NGrinderConstants {
 
 	/**
 	 * To get statistics data when test is running If the console is not
-	 * availbale.. it returns empty map.
+	 * available.. it returns empty map.
 	 */
 	public Map<String, Object> getStatistics(int port) {
 		SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(port);

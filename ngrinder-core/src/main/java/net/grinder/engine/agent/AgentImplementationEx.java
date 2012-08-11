@@ -56,6 +56,7 @@ import net.grinder.messages.console.AgentProcessReportMessage;
 import net.grinder.util.Directory;
 import net.grinder.util.thread.Condition;
 
+import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 
 /**
@@ -78,29 +79,31 @@ public class AgentImplementationEx implements Agent {
 	private FanOutStreamSender m_fanOutStreamSender;
 	private final ConnectorFactory m_connectorFactory = new ConnectorFactory(ConnectionType.AGENT);
 	/**
-	 * We use an most one file store throughout an agent's life, but can't
-	 * Initialize it until we've read the properties and connected to the
-	 * console.
+	 * We use an most one file store throughout an agent's life, but can't Initialize it until we've read the properties
+	 * and connected to the console.
 	 */
 
 	private volatile FileStore m_fileStore;
 
-	private int indentifier = 0;
+	private final AgentConfig m_agentConfig;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param logger
 	 *            Logger.
+	 * @param agentConfig
+	 *            which contains basic agent configuration
 	 * @param proceedWithoutConsole
-	 *            <code>true</code> => proceed if a console connection could not
-	 *            be made.
+	 *            <code>true</code> => proceed if a console connection could not be made.
 	 * @throws GrinderException
 	 *             If an error occurs.
 	 */
-	public AgentImplementationEx(Logger logger, boolean proceedWithoutConsole) throws GrinderException {
+	public AgentImplementationEx(Logger logger, AgentConfig agentConfig, boolean proceedWithoutConsole)
+			throws GrinderException {
 
 		m_logger = logger;
+		m_agentConfig = agentConfig;
 		m_proceedWithoutConsole = proceedWithoutConsole;
 
 		m_consoleListener = new ConsoleListener(m_eventSynchronisation, m_logger);
@@ -116,8 +119,8 @@ public class AgentImplementationEx implements Agent {
 	 * @throws GrinderException
 	 *             occurs when initialization is failed.
 	 */
-	public AgentImplementationEx(Logger logger) throws GrinderException {
-		this(logger, false);
+	public AgentImplementationEx(Logger logger, AgentConfig agentConfig) throws GrinderException {
+		this(logger, agentConfig, false);
 	}
 
 	/**
@@ -134,8 +137,7 @@ public class AgentImplementationEx implements Agent {
 	 * Run the Grinder agent process.
 	 * 
 	 * @param grinderProperties
-	 *            {@link GrinderProperties} which contains grinder agent base
-	 *            configuration.
+	 *            {@link GrinderProperties} which contains grinder agent base configuration.
 	 * @throws GrinderException
 	 *             If an error occurs.
 	 */
@@ -144,7 +146,6 @@ public class AgentImplementationEx implements Agent {
 		ConsoleCommunication consoleCommunication = null;
 		m_fanOutStreamSender = new FanOutStreamSender(GrinderConstants.AGENT_FANOUT_STREAM_THREAD_COUNT);
 		m_timer = new Timer(false);
-
 		try {
 			while (true) {
 				m_logger.info(GrinderBuild.getName());
@@ -322,7 +323,7 @@ public class AgentImplementationEx implements Agent {
 
 					if (!m_consoleListener.received(AgentControllerServerListener.ANY)) {
 						// We've got here naturally, without a console signal.
-						m_logger.info("finished, waiting for console signal");
+						m_logger.info("test is finished, waiting for console signal");
 						m_consoleListener.waitForMessage();
 					}
 
@@ -356,23 +357,16 @@ public class AgentImplementationEx implements Agent {
 		}
 	}
 
+	public static final String GRINDER_PROP_TEST_ID = "grinder.test.id";
+
 	private GrinderProperties createAndMergeProperties(GrinderProperties properties,
 			GrinderProperties startMessageProperties) throws PersistenceException {
 
 		if (startMessageProperties != null) {
 			properties.putAll(startMessageProperties);
 		}
-
-		// Ensure the log directory property is set and is absolute.
-		final File nullFile = new File("");
-
-		final File originalLogDirectory = properties.getFile(GrinderProperties.LOG_DIRECTORY, nullFile);
-
-		if (!originalLogDirectory.isAbsolute()) {
-			properties.setFile(GrinderProperties.LOG_DIRECTORY, new File(nullFile.getAbsoluteFile(),
-					originalLogDirectory.getPath()));
-		}
-
+		properties.setFile(GrinderProperties.LOG_DIRECTORY, new File(m_agentConfig.getHome().getLogDirectory(),
+				properties.getProperty(GRINDER_PROP_TEST_ID, "grinder_log")));
 		return properties;
 	}
 
@@ -395,7 +389,7 @@ public class AgentImplementationEx implements Agent {
 			m_fanOutStreamSender.shutdown();
 		}
 		m_consoleListener.shutdown();
-		m_logger.info("finished");
+		m_logger.info("agent is forcely terminated");
 	}
 
 	private static String getHostName() {
@@ -447,7 +441,8 @@ public class AgentImplementationEx implements Agent {
 			if (m_fileStore == null) {
 				// FIXME : store the log in ngrinder home
 				// Only create the file store if we connected.
-				m_fileStore = new FileStore(new File("./" + m_agentIdentity.getName() + "-file-store"), m_logger);
+
+				m_fileStore = new FileStore(new File(m_agentConfig.getHome().getDirectory(), "file-store"), m_logger);
 			}
 
 			m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_STARTED, m_fileStore
@@ -473,7 +468,7 @@ public class AgentImplementationEx implements Agent {
 								.getCacheHighWaterMark()));
 					} catch (CommunicationException e) {
 						cancel();
-						m_logger.error(e.getMessage());
+						m_logger.error("Error while pumping up the AgentPrcessReportMessage", e);
 					}
 
 				}

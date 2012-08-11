@@ -40,9 +40,7 @@ import org.ngrinder.user.service.UserContext;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
 public class NGrinderBaseController implements NGrinderConstants {
 
@@ -58,36 +56,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 	@Autowired
 	private UserService userService;
 
-	@ModelAttribute("currentUser")
-	public User currentUser() {
-		try {
-			return getCurrentUser();
-		} catch (AuthenticationCredentialsNotFoundException e) {
-		}
-		return new User();
-	}
-
 	public User getCurrentUser() {
 		return userContext.getCurrentUser();
-	}
-
-	/**
-	 * @param param
-	 *            userId or timeZone or userLanguage or role
-	 * @return
-	 */
-	public String getCurrentUserInfo(String param) {
-		User user = getCurrentUser();
-		if (PARAM_USERID.equals(param))
-			return user.getUserId();
-		else if (PARAM_ROLE.equals(param))
-			return user.getRole().getShortName();
-		else if (PARAM_USER_LANGUAGE.equals(param))
-			return user.getUserLanguage();
-		else if (PARAM_TIMEZONE.equals(param))
-			return user.getTimeZone();
-		else
-			return user.toString();
 	}
 
 	public void setTimeZone(String timeZone) {
@@ -97,8 +67,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	protected void setCurrentUserInfoForModel(ModelMap model) {
-		model.put(PARAM_USERID, getCurrentUserInfo(PARAM_USERID));
-		model.put(PARAM_TIMEZONE, getCurrentUserInfo(PARAM_TIMEZONE));
+		model.put(PARAM_USERID,getCurrentUser().getUserId());
+		model.put(PARAM_TIMEZONE,getCurrentUser().getTimeZone());
 	}
 
 	protected void addMsgToModel(ModelMap model, String message) {
@@ -160,7 +130,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 		Locale locale = null;
 		String message = null;
 		try {
-			locale = new Locale(getCurrentUserInfo("userLanguage"));
+			locale = new Locale(getCurrentUser().getTimeZone());
 			message = messageSource.getMessage(key, null, locale);
 		} catch (Exception e) {
 			return "Getting message error:" + e.getMessage();

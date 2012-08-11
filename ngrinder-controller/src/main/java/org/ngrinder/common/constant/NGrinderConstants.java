@@ -153,6 +153,7 @@ public interface NGrinderConstants {
 	public static final String GRINDER_PROP_REPORT_TO_CONSOLE = "grinder.reportToConsole.interval";
 	public static final String GRINDER_PROP_INITIAL_SLEEP_TIME = "grinder.initialSleepTime";
 	public static final String GRINDER_PROP_REPORT_TIMES_TO_CONSOLE = "grinder.reportTimesToConsole";
+	public static final String GRINDER_PROP_TEST_ID = "grinder.test.id";
 
 	public static final int MAX_STACKTRACE_STRING_SIZE = 2048;
 

@@ -22,11 +22,12 @@
  */
 package net.grinder.engine.common;
 
-import net.grinder.AgentControllerDaemon;
 import net.grinder.common.GrinderProperties;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.communication.ConnectionType;
 import net.grinder.communication.Connector;
+
+import org.ngrinder.infra.AgentConfig;
 
 /**
  * ConnectorFactory.
@@ -55,12 +56,9 @@ public class AgentControllerConnectorFactory {
 	 * @return A connector which can be used to contact the console.
 	 */
 	public Connector create(GrinderProperties properties) {
-		return new Connector(
-				properties
-						.getProperty(
-								AgentControllerDaemon.AGENT_CONTROLER_SERVER_HOST,
-								AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_HOST),
-				properties.getInt(AgentControllerDaemon.AGENT_CONTROLER_SERVER_PORT,
-						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT), m_connectionType);
+		return new Connector(properties.getProperty(AgentConfig.AGENT_CONTROLER_SERVER_HOST,
+				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_HOST), properties.getInt(
+				AgentConfig.AGENT_CONTROLER_SERVER_PORT,
+				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT), m_connectionType);
 	}
 }

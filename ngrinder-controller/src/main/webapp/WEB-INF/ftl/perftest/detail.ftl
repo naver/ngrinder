@@ -767,6 +767,9 @@ div.chart {
 					$("#scheduleModal").modal("hide");
 					$("#scheduleModal small").html("");
 					$("#scheduleInput").attr('name','');
+					<#if test?? && (test.status != "SAVED")>
+						$("#testId").val("");
+					</#if>
 					$("#testStatus").val("READY");
 					document.testContentForm.submit();
 				});
