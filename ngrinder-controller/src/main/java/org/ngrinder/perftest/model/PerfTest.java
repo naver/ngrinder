@@ -42,9 +42,8 @@ import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.model.BaseModel;
 
 /**
- * Performance Test Entity Use Create user of BaseModel as test owner, use
- * create date of BaseModel as create time, but the created time maybe not the
- * test starting time.
+ * Performance Test Entity Use Create user of BaseModel as test owner, use create date of BaseModel as create time, but
+ * the created time maybe not the test starting time.
  * 
  */
 @Entity
@@ -96,23 +95,23 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	private Long duration;
 
-	private Integer runCount;
+	private Integer runCount = 0;
 
-	private Integer agentCount;
+	private Integer agentCount = 0;
 
-	private Integer vuserPerAgent;
+	private Integer vuserPerAgent = 0;
 
-	private Integer processes;
+	private Integer processes = 0;
 
-	private Integer initProcesses;
+	private Integer initProcesses = 0;
 
-	private Integer initSleepTime;
+	private Integer initSleepTime = 0;
 
-	private Integer processIncrement;
+	private Integer processIncrement = 0;
 
-	private Integer processIncrementInterval;
+	private Integer processIncrementInterval = 0;
 
-	private Integer threads;
+	private Integer threads = 0;
 
 	// followings are test result members
 	private Integer tests = 0;
@@ -427,14 +426,14 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public void setDistributionPath(String distributionPath) {
 		this.distributionPath = distributionPath;
 	}
-	
+
 	public String getDurationStr() {
 		return DateUtil.ms2Time(this.duration);
 	}
-	
+
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
-	
+
 }

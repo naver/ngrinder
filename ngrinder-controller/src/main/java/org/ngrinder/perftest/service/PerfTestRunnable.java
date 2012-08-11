@@ -88,9 +88,14 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
 	public void startTest() {
-		// Block if testing
-		if (perfTestService.canExecuteTestMore()) {
-			LOG.debug("current running test is {}. so no tests start to run", perfTestService.get);
+		// Block if the count of testing exceed the limit
+		if (!perfTestService.canExecuteTestMore()) {
+			// LOG MORE
+			List<PerfTest> perfTestsInTesting = perfTestService.getPerfTest(null, Status.getProcessingTestStatus());
+			LOG.debug("current running test is {}. so no tests start to run", perfTestsInTesting.size());
+			for (PerfTest perfTest : perfTestsInTesting) {
+				LOG.trace("- " + perfTest);
+			}
 			return;
 		}
 
@@ -110,10 +115,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 			return;
 		}
 		doTest(runCandidate);
-	}
-
-	private long getCurrentRunningTestCount() {
-		return perfTestService.getPerfTestCount(null, Status.getProcessingTestStatus());
 	}
 
 	/**

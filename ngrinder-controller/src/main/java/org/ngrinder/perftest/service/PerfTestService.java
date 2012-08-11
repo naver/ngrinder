@@ -57,9 +57,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.infra.spring.OnlyOnePageRequest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
@@ -153,6 +151,30 @@ public class PerfTestService implements NGrinderConstants {
 	}
 
 	/**
+	 * Get perf test list.
+	 * 
+	 * @param user
+	 *            user who created {@link PerfTest}. if null, retrieve all test
+	 * @param statuses
+	 *            set of {@link Status}
+	 * @return found {@link PerfTest} list.
+	 */
+	public List<PerfTest> getPerfTest(User user, Status... statuses) {
+		Specifications<PerfTest> spec = Specifications.where(emptyPredicate());
+
+		// User can see only his own test
+		if (user != null) {
+			spec = spec.and(createdBy(user));
+		}
+
+		if (statuses.length != 0) {
+			spec = spec.and(statusSetEqual(statuses));
+		}
+
+		return perfTestRepository.findAll(spec);
+	}
+
+	/**
 	 * Save {@link PerfTest}.
 	 * 
 	 * @param perfTest
@@ -201,7 +223,6 @@ public class PerfTestService implements NGrinderConstants {
 		return perfTestRepository.findOne(testId);
 	}
 
-	public List<PerfTest> getAll
 	/**
 	 * Get next runnable PerfTest list.
 	 * 
@@ -210,16 +231,7 @@ public class PerfTestService implements NGrinderConstants {
 	@Cacheable(value = "perftest")
 	public PerfTest getPerfTestCandiate() {
 		List<PerfTest> perfTests = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY);
-		perfTest
-		// schedule test
-		// FIXME : What if the timezone is different..
-		Date schedule = runCandidate.getScheduledTime();
-		if (schedule != null && !DateUtil.compareDateEndWithMinute(schedule, new Date(System.currentTimeMillis()))) {
-			// this test project is reserved,but it isn't yet going to run test
-			// right now.
-			return;
-		}
-
+		return perfTests.isEmpty() ? null : perfTests.get(0);
 	}
 
 	/**
@@ -419,8 +431,7 @@ public class PerfTestService implements NGrinderConstants {
 	}
 
 	/**
-	 * To get statistics data when test is running If the console is not
-	 * available.. it returns empty map.
+	 * To get statistics data when test is running If the console is not available.. it returns empty map.
 	 */
 	public Map<String, Object> getStatistics(int port) {
 		SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(port);
@@ -459,11 +470,11 @@ public class PerfTestService implements NGrinderConstants {
 	}
 
 	public int getMaximumConcurrentTestCount() {
-		config.getSystemProperties().getPropertyInt(, defaultValue)
-	}
-	public boolean canExecuteTestMore() {
-		config.// TODO Auto-generated method stub
-		return false;
+		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
+				NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
 	}
 
+	public boolean canExecuteTestMore() {
+		return getPerfTestCount(null, Status.getProcessingTestStatus()) < getMaximumConcurrentTestCount();
+	}
 }
