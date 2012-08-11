@@ -67,7 +67,8 @@ import org.tmatesoft.svn.util.SVNDebugLog;
 import org.tmatesoft.svn.util.SVNLogType;
 
 /**
- * WebDav servlet implementation on SVN Server. This servlet translates WEBDAV request into underlying SVN Repo.
+ * WebDav servlet implementation on SVN Server. This servlet translates WEBDAV
+ * request into underlying SVN Repo.
  * 
  * This implementation is borrowed from SVNKit-DAV project.
  * 
@@ -101,7 +102,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 
 	private static final Map OUR_STATUS_LINES = new SVNHashMap();
 	private static final Map OUR_SHARED_CACHE = new SVNHashMap();
-
+	// CHECKSTYLE:OFF
 	static {
 		OUR_STATUS_LINES.put(new Integer(100), "100 Continue");
 		OUR_STATUS_LINES.put(new Integer(101), "101 Switching Protocols");
@@ -172,7 +173,8 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 	/**
 	 * Returns this servlet's {@link ServletConfig} object.
 	 * 
-	 * @return ServletConfig the <code>ServletConfig</code> object that initialized this servlet
+	 * @return ServletConfig the <code>ServletConfig</code> object that
+	 *         initialized this servlet
 	 * 
 	 */
 
@@ -184,18 +186,27 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 	private UserContext userContext;
 
 	/**
-	 * Handler
+	 * Request Handler.
 	 * 
+	 * @param request
+	 *            request
+	 * @param response
+	 *            response
+	 * @throws ServletException
+	 *             occurs when servlet has a problem.
+	 * @throws IOException
+	 *             occurs when file system has a problem.
 	 */
 	@Override
 	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 			IOException {
-		logRequest(request);// TODO: remove later
+		logRequest(request);
 		try {
 			ServletDAVHandler handler = null;
 			final String head = DAVPathUtil.head(request.getPathInfo());
 			final User currentUser = userContext.getCurrentUser();
-			// check the security. If the other user tries to the other user's repo, deny it.
+			// check the security. If the other user tries to the other user's
+			// repo, deny it.
 			if (!StringUtils.equals(currentUser.getUserId(), head)) {
 				SecurityContextHolder.getContext().setAuthentication(null);
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
@@ -282,6 +293,16 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 		SVNDebugLog.getDefaultLog().logFine(SVNLogType.NETWORK, logBuffer.toString());
 	}
 
+	/**
+	 * Handler for error.
+	 * 
+	 * @param error
+	 *            error occurred
+	 * @param servletResponse
+	 *            response
+	 * @throws IOException
+	 *             occurs when IO has problem
+	 */
 	public static void handleError(DAVException error, HttpServletResponse servletResponse) throws IOException {
 		SVNDebugLog.getDefaultLog().logFine(SVNLogType.NETWORK, error);
 		DAVResponse response = error.getResponse();
@@ -364,22 +385,34 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 		return xmlBuffer.toString();
 	}
 
-	public static String getStatusLine(int statusCode) {
-		return (String) OUR_STATUS_LINES.get(new Integer(statusCode));
-	}
-
+	/**
+	 * Get shared activities.
+	 * 
+	 * @return activity string
+	 */
 	public static String getSharedActivity() {
 		synchronized (OUR_SHARED_CACHE) {
 			return (String) OUR_SHARED_CACHE.get(DAV_SVN_AUTOVERSIONING_ACTIVITY);
 		}
 	}
 
+	/**
+	 * Set shared activities.
+	 * 
+	 * @param sharedActivity
+	 *            shared activity.
+	 */
 	public static void setSharedActivity(String sharedActivity) {
 		synchronized (OUR_SHARED_CACHE) {
 			OUR_SHARED_CACHE.put(DAV_SVN_AUTOVERSIONING_ACTIVITY, sharedActivity);
 		}
 	}
 
+	/**
+	 * Check if statusCode is http server error of not.
+	 * 
+	 * @return true if it's server error.
+	 */
 	public static boolean isHTTPServerError(int statusCode) {
 		return statusCode >= 500 && statusCode < 600;
 	}

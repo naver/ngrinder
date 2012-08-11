@@ -26,33 +26,40 @@ import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
 import org.apache.commons.io.FilenameUtils;
 import org.ngrinder.model.BaseModel;
 
 /**
- * Script entity
+ * File entity which will be stored in SVN.
+ * 
  * 
  * @author Liu Zhifei
  * @author JunHo Yoon
  * @since 3.0
  */
-@Entity
-@Table(name = "SCRIPT")
 public class FileEntry extends BaseModel<FileEntry> {
 
 	private static final long serialVersionUID = -2422243194192027508L;
 
 	private long fileSize;
 
+	/**
+	 * Test url. This File entity works on.. This field is only for the HTML
+	 * form.
+	 */
 	private String testURL;
 
 	private String content;
 
+	/**
+	 * Revisions on this entity. This fields are sometimes empty depending on
+	 * the {@link FileEntryRepository}
+	 */
 	private List<Long> revisions;
 
+	/**
+	 * This is mapped to commit comment.
+	 */
 	private String description;
 
 	private String encoding;
@@ -93,6 +100,10 @@ public class FileEntry extends BaseModel<FileEntry> {
 		return contentBytes;
 	}
 
+	/**
+	 * set content bytes.
+	 * @param contentBytes contentByte.
+	 */
 	public void setContentBytes(byte[] contentBytes) {
 		this.fileSize = contentBytes.length;
 		this.contentBytes = contentBytes;
@@ -102,6 +113,10 @@ public class FileEntry extends BaseModel<FileEntry> {
 		return content;
 	}
 
+	/**
+	 * Set content in string form.
+	 * @param content content string
+	 */
 	public void setContent(String content) {
 		this.fileSize = content.length();
 		this.content = content;
@@ -120,7 +135,7 @@ public class FileEntry extends BaseModel<FileEntry> {
 	}
 
 	public FileType getFileType() {
-		return (fileType == null) ? FileType.getFileType(FilenameUtils.getExtension(getPath())) : fileType;
+		return (fileType == null) ? FileType.getFileTypeByExtension(FilenameUtils.getExtension(getPath())) : fileType;
 	}
 
 	public void setFileType(FileType fileType) {
@@ -148,6 +163,8 @@ public class FileEntry extends BaseModel<FileEntry> {
 	}
 
 	/**
+	 * Get current revision.
+	 * 
 	 * @return the revision
 	 */
 	public long getRevision() {
@@ -155,6 +172,8 @@ public class FileEntry extends BaseModel<FileEntry> {
 	}
 
 	/**
+	 * Set current revision.
+	 * 
 	 * @param revision
 	 *            the revision to set
 	 */

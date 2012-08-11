@@ -63,21 +63,26 @@ import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 /**
- * SVN FileEntity abstraction
+ * SVN FileEntity abstraction. This class save and retrieve {@link FileEntry}
+ * from Database.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
 @Repository
-public class FileEntityRepository {
+public class FileEntryRepository {
 
-	private static final Logger LOG = LoggerFactory.getLogger(FileEntityRepository.class);
+	private static final Logger LOG = LoggerFactory.getLogger(FileEntryRepository.class);
 
 	@Autowired
 	private Config config;
 
 	private Home home;
 
+	/**
+	 * Initialize the {@link FileEntryRepository}. This method should be
+	 * performed to set up FS Repository.
+	 */
 	@PostConstruct
 	public void init() {
 		FSRepositoryFactory.setup();
@@ -85,7 +90,7 @@ public class FileEntityRepository {
 	}
 
 	@Autowired
-	protected UserRepository userRepository;
+	private UserRepository userRepository;
 
 	/**
 	 * Get user repository.
@@ -100,6 +105,15 @@ public class FileEntityRepository {
 		return home.getUserRepoDirectory(user.getUserId());
 	}
 
+	/**
+	 * Return all {@link FileEntry}s under the given path.
+	 * 
+	 * @param user
+	 *            user
+	 * @param path
+	 *            path under which files are searched.
+	 * @return found {@link FileEntry}s
+	 */
 	public List<FileEntry> findAll(User user, final String path) {
 		final List<FileEntry> fileEntries = new ArrayList<FileEntry>();
 		SVNClientManager svnClientManager = SVNClientManager.newInstance();
@@ -110,6 +124,7 @@ public class FileEntityRepository {
 						public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
 
 							FileEntry script = new FileEntry();
+							// Exclude base path "/"
 							if (StringUtils.isBlank(dirEntry.getRelativePath())) {
 								return;
 							}
@@ -118,7 +133,6 @@ public class FileEntityRepository {
 							script.setLastModifiedDate(dirEntry.getDate());
 							script.setDescription(dirEntry.getCommitMessage());
 							script.setLastModifiedUser(userRepository.findOneByUserId(dirEntry.getAuthor()));
-							// script.setFileName(dirEntry.getName());
 							if (dirEntry.getKind() == SVNNodeKind.DIR) {
 								script.setFileType(FileType.DIR);
 							} else {
@@ -135,6 +149,14 @@ public class FileEntityRepository {
 		return fileEntries;
 	}
 
+	/**
+	 * Return all {@link FileEntry}s which user have. It excludes
+	 * {@link FileType#DIR} entries.
+	 * 
+	 * @param user
+	 *            user
+	 * @return found {@link FileEntry}s
+	 */
 	public List<FileEntry> findAll(User user) {
 		final List<FileEntry> scripts = new ArrayList<FileEntry>();
 		SVNClientManager svnClientManager = SVNClientManager.newInstance();
@@ -166,6 +188,17 @@ public class FileEntityRepository {
 
 	}
 
+	/**
+	 * Return a {@link FileEntry} for the given path and revision.
+	 * 
+	 * @param user
+	 *            user
+	 * @param path
+	 *            path in the svn repo
+	 * @param revision
+	 *            revision of the file
+	 * @return found {@link FileEntry}
+	 */
 	public FileEntry findOne(User user, String path, SVNRevision revision) {
 		final FileEntry script = new FileEntry();
 		SVNClientManager svnClientManager = null;
@@ -182,13 +215,13 @@ public class FileEntityRepository {
 			outputStream = new ByteArrayOutputStream();
 			SVNProperties fileProperty = new SVNProperties();
 			// Get File.
-			repo.getFile(path, -1L, fileProperty, outputStream);
+			repo.getFile(path, revision.getNumber(), fileProperty, outputStream);
 			String lastRevisionStr = fileProperty.getStringValue(SVNProperty.REVISION);
 			long lastRevision = Long.parseLong(lastRevisionStr);
 			SVNDirEntry info = repo.info(path, lastRevision);
 			byte[] byteArray = outputStream.toByteArray();
 			script.setPath(path);
-			script.setFileType(FileType.getFileType(FilenameUtils.getExtension(script.getFileName())));
+			script.setFileType(FileType.getFileTypeByExtension(FilenameUtils.getExtension(script.getFileName())));
 			if (script.getFileType().isEditable()) {
 				String autoDetectedEncoding = EncodingUtil.detectEncoding(byteArray, "UTF-8");
 				script.setContent(new String(byteArray, autoDetectedEncoding));
@@ -213,12 +246,16 @@ public class FileEntityRepository {
 	}
 
 	/**
-	 * Save fileEntry on the {@link FileEntry.getPath()} location
+	 * Save fileEntry on the {@link FileEntry.getPath()} location.
 	 * 
 	 * @param user
 	 *            the user
 	 * @param fileEntry
 	 *            fileEntry to be saved
+	 * @param encoding
+	 *            file encoding with which fileEntry is saved. It is meaningful
+	 *            only FileEntry is editable.
+	 * 
 	 */
 	public void save(User user, FileEntry fileEntry, String encoding) {
 		if (fileEntry.getFileType().isEditable() && fileEntry.getContent() == null) {
@@ -271,7 +308,7 @@ public class FileEntityRepository {
 	}
 
 	/**
-	 * Quietly close svn editor
+	 * Quietly close svn editor.
 	 * 
 	 * @param editor
 	 *            editor to be closed.
@@ -283,11 +320,12 @@ public class FileEntityRepository {
 		try {
 			editor.abortEdit();
 		} catch (SVNException e) {
+			// FALL THROUGH
 		}
 	}
 
 	/**
-	 * Quietly close svn editor
+	 * Quietly close svn editor. This is convenient method.
 	 * 
 	 * @param editor
 	 *            editor to be closed.
@@ -302,15 +340,27 @@ public class FileEntityRepository {
 				editor.closeDir();
 			}
 		} catch (EmptyStackException e) {
+			// FALL THROUGH
 		} catch (SVNException e) {
+			// FALL THROUGH
 		} finally {
 			try {
 				editor.closeEdit();
 			} catch (SVNException e) {
+				// FALL THROUGH
 			}
 		}
 	}
 
+	/**
+	 * Delete file entries on given paths. If the one of paths does not existm,
+	 * all deletion is canceled.
+	 * 
+	 * @param user
+	 *            user
+	 * @param paths
+	 *            paths of file entries.
+	 */
 	public void delete(User user, String[] paths) {
 		SVNClientManager svnClientManager = null;
 		ISVNEditor editor = null;
@@ -364,6 +414,18 @@ public class FileEntityRepository {
 		}
 	}
 
+	/**
+	 * Copy {@link FileEntry} to the given path.
+	 * 
+	 * This method only work for the file not dir.
+	 * 
+	 * @param user
+	 *            user
+	 * @param path
+	 *            path of {@link FileEntry}
+	 * @param toPath
+	 *            file path for write.
+	 */
 	public void writeContentTo(User user, String path, File toPath) {
 		SVNClientManager svnClientManager = null;
 		FileOutputStream fileOutputStream = null;
@@ -373,6 +435,7 @@ public class FileEntityRepository {
 			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepoDirectory(user));
 			SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
 			SVNNodeKind nodeKind = repo.checkPath(path, -1);
+			// If it's DIR, it does not work.
 			if (nodeKind == SVNNodeKind.NONE || nodeKind == SVNNodeKind.DIR) {
 				throw new NGrinderRuntimeException("It's not pssible write directory. nodeKind is " + nodeKind);
 			}
@@ -381,7 +444,7 @@ public class FileEntityRepository {
 			toPath.mkdirs();
 			fileOutputStream = new FileOutputStream(destFile);
 			SVNProperties fileProperty = new SVNProperties();
-			// Get File.
+			// Get file.
 			repo.getFile(path, -1L, fileProperty, fileOutputStream);
 		} catch (Exception e) {
 			LOG.error("Error while fetching files from SVN", e);
@@ -390,6 +453,5 @@ public class FileEntityRepository {
 			closeSVNClientManagerQuietly(svnClientManager);
 			IOUtils.closeQuietly(fileOutputStream);
 		}
-		return;
 	}
 }

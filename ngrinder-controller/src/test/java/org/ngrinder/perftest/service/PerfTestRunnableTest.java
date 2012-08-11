@@ -31,7 +31,7 @@ import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
-import org.ngrinder.script.repository.FileEntityRepository;
+import org.ngrinder.script.repository.FileEntryRepository;
 import org.ngrinder.script.util.CompressionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -78,7 +78,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	}
 
 	@Autowired
-	public FileEntityRepository fileEntityRepository;
+	public FileEntryRepository fileEntityRepository;
 
 	private int currentProcessCount = 10;
 	private Object processCountSync = new Object();

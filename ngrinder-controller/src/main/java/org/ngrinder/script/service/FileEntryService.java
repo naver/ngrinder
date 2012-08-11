@@ -40,7 +40,7 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
-import org.ngrinder.script.repository.FileEntityRepository;
+import org.ngrinder.script.repository.FileEntryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +88,7 @@ public class FileEntryService {
 	private EhCacheCacheManager cacheManager;
 
 	@Autowired
-	private FileEntityRepository fileEntityRepository;
+	private FileEntryRepository fileEntityRepository;
 
 	/**
 	 * Initialize {@link FileEntryService}
@@ -187,7 +187,7 @@ public class FileEntryService {
 	 * @param user
 	 *            the user
 	 * @param path
-	 *            path in the repo
+	 *            path in the svn repo
 	 * @return single file entity
 	 */
 	public FileEntry getFileEntry(User user, String path) {

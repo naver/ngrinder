@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
@@ -46,15 +47,32 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
+/**
+ * FileEntry manipulation controller.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
 @Controller
 @RequestMapping("/script")
-public class ScriptController extends NGrinderBaseController {
+public class FileEntryController extends NGrinderBaseController {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ScriptController.class);
+	private static final Logger LOG = LoggerFactory.getLogger(FileEntryController.class);
 
 	@Autowired
 	private FileEntryService fileEntryService;
 
+	/**
+	 * Get the list of file entries for the given user.
+	 * 
+	 * @param user
+	 *            current user
+	 * @param path
+	 *            path looking for.
+	 * @param model
+	 *            model.
+	 * @return script/scriptList
+	 */
 	@RequestMapping({ "/list/**", "" })
 	public String get(User user, @RemainedPath String path, ModelMap model) { // "fileName"
 		List<FileEntry> files = fileEntryService.getFileEntries(user, path);
@@ -64,8 +82,22 @@ public class ScriptController extends NGrinderBaseController {
 		return "script/scriptList";
 	}
 
+	/**
+	 * Add a folder on the given path.
+	 * 
+	 * @param user
+	 *            current user
+	 * @param path
+	 *            path in which folder will be added
+	 * @param folderName
+	 *            folderName
+	 * @param model
+	 *            model.
+	 * @return redirect:/script/list/${path}
+	 */
 	@RequestMapping(value = "/create/**", params = "type=folder", method = RequestMethod.POST)
-	public String addFolder(User user, @RemainedPath String path, @RequestParam String folderName, ModelMap model) { // "fileName"
+	public String addFolder(User user, @RemainedPath String path, @RequestParam String folderName,
+					ModelMap model) { // "fileName"
 		try {
 			fileEntryService.addFolder(user, path, folderName);
 		} catch (Exception e) {
@@ -74,9 +106,27 @@ public class ScriptController extends NGrinderBaseController {
 		return "redirect:/script/list/" + path;
 	}
 
+	/**
+	 * Provide new file creation form data.
+	 * 
+	 * @param user
+	 *            current user
+	 * @param path
+	 *            path in which a file will be added
+	 * @param testUrl
+	 *            url the script may uses
+	 * @param fileName
+	 *            fileName
+	 * @param scriptType
+	 *            Type of script. optional
+	 * @param model
+	 *            model.
+	 * @return redirect:/script/list/${path}
+	 */
 	@RequestMapping(value = "/create/**", params = "type=script", method = RequestMethod.POST)
 	public String getCreateForm(User user, @RemainedPath String path, @RequestParam String testUrl,
-			@RequestParam String fileName, @RequestParam(required = false) String scriptType, ModelMap model) {
+					@RequestParam String fileName, @RequestParam(required = false) String scriptType,
+					ModelMap model) {
 		if (fileEntryService.hasFileEntry(user, path + "/" + fileName)) {
 			return "error/duplicated";
 		}
@@ -85,66 +135,124 @@ public class ScriptController extends NGrinderBaseController {
 		return "script/scriptEditor";
 	}
 
+	/**
+	 * Get the details of given path.
+	 * 
+	 * @param user
+	 *            user
+	 * @param path
+	 *            user
+	 * @param model
+	 *            model
+	 * @return script/scriptEditor
+	 */
 	@RequestMapping("/detail/**")
 	public String getDetail(User user, @RemainedPath String path, ModelMap model) { // "fileName"
 		FileEntry script = fileEntryService.getFileEntry(user, path);
 		if (script == null || !script.getFileType().isEditable()) {
-			return "error/errors";
+			throw new NGrinderRuntimeException(
+							"Error while getting file detail. the file does not exist or not editable");
 		}
 		model.addAttribute("file", script);
 		return "script/scriptEditor";
 	}
 
-	@RequestMapping("/compare/**")
-	public String getDiff(User user, @RemainedPath String path, @RequestParam Long revision, ModelMap model) {
-		FileEntry file = fileEntryService.getFileEntry(user, path);
-		FileEntry oldFile = fileEntryService.getFileEntry(user, path, revision);
-		model.addAttribute("file", file);
-		model.addAttribute("oldFile", oldFile);
-		return "script/diff";
-	}
-
+	/**
+	 * Search files on the query.
+	 * 
+	 * @param user
+	 *            user
+	 * @param query
+	 *            query string
+	 * @param model
+	 *            model
+	 * 
+	 * @return script/scriptList
+	 */
 	@RequestMapping(value = "/search/**")
-	public String searchFileEntity(User user, final @RequestParam(required = true) String query, ModelMap model) {
+	public String searchFileEntity(User user, @RequestParam(required = true) final String query,
+					ModelMap model) {
 		Collection<FileEntry> searchResult = Collections2.filter(fileEntryService.getAllFileEntries(user),
-				new Predicate<FileEntry>() {
-					@Override
-					public boolean apply(FileEntry input) {
-						return input.getPath().contains(query);
-					}
-				});
+						new Predicate<FileEntry>() {
+							@Override
+							public boolean apply(FileEntry input) {
+								return input.getPath().contains(query);
+							}
+						});
 		model.addAttribute("files", searchResult);
 		model.addAttribute("currentPath", "");
 		return "script/scriptList";
 	}
 
+	/**
+	 * Save fileEntry and return the the path.
+	 * 
+	 * @param user
+	 *            user
+	 * @param path
+	 *            path to which this will forward.
+	 * @param fileEntry
+	 *            file to be saved
+	 * @param model
+	 *            model
+	 * @return script/scriptList
+	 */
 	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
-	public String saveScript(User user, @RemainedPath String path, FileEntry script, ModelMap model) {
-		fileEntryService.save(user, script);
+	public String saveFileEntry(User user, @RemainedPath String path, FileEntry fileEntry, ModelMap model) {
+		fileEntryService.save(user, fileEntry);
 		return get(user, path, model);
 	}
 
+	/**
+	 * Upload files.
+	 * 
+	 * @param user
+	 *            path
+	 * @param path
+	 *            path
+	 * @param fileEntry
+	 *            fileEntry
+	 * @param file
+	 *            multipart file
+	 * @param model
+	 *            model
+	 * @return script/scriptList
+	 */
 	@RequestMapping(value = "/upload/**", method = RequestMethod.POST)
-	public String uploadFiles(User user, @RemainedPath String path, FileEntry script,
-			@RequestParam("uploadFile") MultipartFile file, ModelMap model) {
+	public String uploadFiles(User user, @RemainedPath String path, FileEntry fileEntry,
+					@RequestParam("uploadFile") MultipartFile file, ModelMap model) {
 		try {
-			script.setContentBytes(file.getBytes());
+			fileEntry.setContentBytes(file.getBytes());
 			String originalFileExt = FilenameUtils.getExtension(file.getOriginalFilename());
-			String inputedFileExt = FilenameUtils.getExtension(script.getPath());
+			String inputedFileExt = FilenameUtils.getExtension(fileEntry.getPath());
 			if (!originalFileExt.equalsIgnoreCase(inputedFileExt)) {
-				script.setPath(script.getPath() + "." + originalFileExt);
+				fileEntry.setPath(fileEntry.getPath() + "." + originalFileExt);
 			}
-			script.setContent(IOUtils.toString(file.getInputStream()));
+			fileEntry.setContent(IOUtils.toString(file.getInputStream()));
 		} catch (IOException e) {
 			LOG.error("Error while getting file content", e);
-			return "error/errors";
+			throw new NGrinderRuntimeException("Error while getting file content", e);
 		}
-		fileEntryService.save(user, script);
+		fileEntryService.save(user, fileEntry);
 		return get(user, path, model);
 	}
 
+	/**
+	 * Delete files on the given path.
+	 * 
+	 * @param user
+	 *            user
+	 * @param path
+	 *            base path
+	 * @param filesString
+	 *            file list delimited by ","
+	 * @param model
+	 *            model
+	 * @return redirect:/script/list/${path}
+	 */
 	@RequestMapping(value = "/delete/**")
-	public String delete(User user, @RemainedPath String path, @RequestParam String filesString, ModelMap model) {
+	public String delete(User user, @RemainedPath String path, @RequestParam String filesString,
+					ModelMap model) {
 		String[] files = filesString.split(",");
 		fileEntryService.delete(user, path, files);
 		return "redirect:/script/list" + path;

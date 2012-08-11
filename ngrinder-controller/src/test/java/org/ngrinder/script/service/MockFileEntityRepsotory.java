@@ -3,11 +3,11 @@ package org.ngrinder.script.service;
 import java.io.File;
 
 import org.ngrinder.model.User;
-import org.ngrinder.script.repository.FileEntityRepository;
+import org.ngrinder.script.repository.FileEntryRepository;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MockFileEntityRepsotory extends FileEntityRepository {
+public class MockFileEntityRepsotory extends FileEntryRepository {
 	
 	private File userRepoDir;
 

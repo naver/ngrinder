@@ -66,7 +66,7 @@ public class AgentController extends NGrinderBaseController {
 	private HttpContainerContext httpContainerContext;
 
 	/**
-	 * Get agenet list.
+	 * Get agent list.
 	 * 
 	 * @param model
 	 *            model
