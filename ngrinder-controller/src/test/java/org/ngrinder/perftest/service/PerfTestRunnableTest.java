@@ -32,6 +32,7 @@ import org.ngrinder.perftest.model.Status;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.repository.FileEntryRepository;
+import org.ngrinder.script.repository.MockFileEntityRepsotory;
 import org.ngrinder.script.util.CompressionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -47,8 +48,17 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	@Autowired
 	private AgentManager agentManager;
 
+	@Autowired
+	public MockFileEntityRepsotory fileEntityRepository;
+
+	private int currentProcessCount = 10;
+	private Object processCountSync = new Object();
+
 	@Before
 	public void before() {
+		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
+		fileEntityRepository.setUserRepository(new File(tempRepo, getTestUser().getUserId()));
+
 		clearAllPerfTest();
 		createPerfTest("test1", Status.READY, new Date());
 		createPerfTest("test2", Status.READY, new Date());
@@ -79,12 +89,6 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	}
 
-	@Autowired
-	public FileEntryRepository fileEntityRepository;
-
-	private int currentProcessCount = 10;
-	private Object processCountSync = new Object();
-
 	@Test
 	public void testStartConsole() throws IOException {
 		// Get perf test
@@ -108,22 +112,23 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		prepareUserRepo();
 		perfTestRunnable.distributeFileOn(perfTest, grinderProperties, singleConsole);
 
-		singleConsole.getConsoleComponent(ProcessControlImplementation.class).addProcessStatusListener(new Listener() {
+		singleConsole.getConsoleComponent(ProcessControlImplementation.class).addProcessStatusListener(
+						new Listener() {
 
-			@Override
-			public void update(ProcessReports[] processReports) {
-				synchronized (processCountSync) {
-					currentProcessCount = 0;
-					for (ProcessReports each : processReports) {
-						for (WorkerProcessReport eachWorker : each.getWorkerProcessReports()) {
-							if (eachWorker.getState() == 2) {
-								currentProcessCount++;
+							@Override
+							public void update(ProcessReports[] processReports) {
+								synchronized (processCountSync) {
+									currentProcessCount = 0;
+									for (ProcessReports each : processReports) {
+										for (WorkerProcessReport eachWorker : each.getWorkerProcessReports()) {
+											if (eachWorker.getState() == 2) {
+												currentProcessCount++;
+											}
+										}
+									}
+								}
 							}
-						}
-					}
-				}
-			}
-		});
+						});
 
 		// Run test
 		perfTestRunnable.runTestOn(perfTest, grinderProperties, singleConsole);
@@ -149,9 +154,10 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	private void prepareUserRepo() throws IOException {
 		CompressionUtil compressUtil = new CompressionUtil();
-		File repo = config.getHome().getUserRepoDirectory(getTestUser().getUserId());
-		FileUtils.deleteQuietly(repo);
-		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), config.getHome().getRepoDirectoryRoot());
+		File userRepoDirectory = fileEntityRepository.getUserRepoDirectory(null);
+		FileUtils.deleteQuietly(userRepoDirectory);
+		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(),
+						userRepoDirectory.getParentFile());
 		FileEntry fileEntryDir = new FileEntry();
 		fileEntryDir.setPath("/hello");
 		fileEntryDir.setFileType(FileType.DIR);

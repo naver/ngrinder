@@ -50,7 +50,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author Mavlarn
  * @since 3.0
  */
-public class ScriptControllerTest extends AbstractNGrinderTransactionalTest {
+public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private FileEntryController scriptController;

@@ -22,23 +22,45 @@
  */
 package org.ngrinder.agent.repository;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import net.grinder.message.console.AgentControllerState;
+
+import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.agent.model.AgentInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Test AgentRepository Class.
- *
+ * 
  * @author Mavlarn
  * @since
  */
-public class AgentRepositoryTest {
-	
+public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
+
 	@Autowired
 	private AgentRepository agentRepository;
 
-	@Test
-	public void testGetByIp() {
-		agentRepository.findByIp("127.0.0.1");
+	AgentInfo agentInfo;
+
+	@Before
+	public void before() {
+		agentRepository.deleteAll();
+		agentInfo = new AgentInfo();
+		agentInfo.setHostName("hello");
+		agentInfo.setIp("127.0.0.1");
+		agentInfo.setRegion("world");
+		agentInfo.setStatus(AgentControllerState.BUSY);
+		agentRepository.save(agentInfo);
 	}
 
+	@Test
+	public void testGetByIp() {
+		assertThat(agentRepository.findByIp("127.0.0.1"), notNullValue());
+		assertThat(agentRepository.findByIp("127.0.0.1").getHostName(), is("hello"));
+		assertThat(agentRepository.findByIp("127.0.0.1").getRegion(), is("world"));
+	}
 }

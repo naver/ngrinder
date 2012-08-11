@@ -28,6 +28,7 @@ import net.grinder.statistics.StatisticsServicesImplementation;
 import net.grinder.util.StandardTimeAuthority;
 import net.grinder.util.thread.Condition;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
@@ -67,7 +68,7 @@ public class ConsoleFoundationEx {
 	 *                If an error occurs.
 	 */
 	public ConsoleFoundationEx(Resources resources, Logger logger, ConsoleProperties properties,
-			Condition eventSyncCondition) throws GrinderException {
+					Condition eventSyncCondition) throws GrinderException {
 		m_eventSyncCondition = eventSyncCondition;
 		m_container = new DefaultPicoContainer(new Caching());
 		m_container.addComponent(logger);
@@ -84,13 +85,11 @@ public class ConsoleFoundationEx {
 		m_timer = new Timer(true);
 		m_container.addComponent(m_timer);
 
-		m_container.addComponent(
-				FileDistributionImplementation.class,
-				FileDistributionImplementation.class,
-				new Parameter[] { new ComponentParameter(DistributionControlImplementation.class),
-						new ComponentParameter(ProcessControlImplementation.class),
-						new ConstantParameter(properties.getDistributionDirectory()),
-						new ConstantParameter(properties.getDistributionFileFilterPattern()), });
+		m_container.addComponent(FileDistributionImplementation.class, FileDistributionImplementation.class,
+						new Parameter[] { new ComponentParameter(DistributionControlImplementation.class),
+								new ComponentParameter(ProcessControlImplementation.class),
+								new ConstantParameter(properties.getDistributionDirectory()),
+								new ConstantParameter(properties.getDistributionFileFilterPattern()), });
 
 		m_container.addComponent(DispatchClientCommands.class);
 		m_container.addComponent(WireFileDistribution.class);
@@ -118,9 +117,15 @@ public class ConsoleFoundationEx {
 			m_container.stop();
 	}
 
+	private String getConsoleInfo() {
+		ConsoleProperties consoleProperties = m_container.getComponent(ConsoleProperties.class);
+		return StringUtils.defaultIfBlank(consoleProperties.getConsoleHost(), "localhost") + ":"
+						+ consoleProperties.getConsolePort();
+	}
+
 	/**
-	 * Console message event loop. Dispatches communication messages
-	 * appropriately. Blocks until we are {@link #shutdown()}.
+	 * Console message event loop. Dispatches communication messages appropriately. Blocks until we
+	 * are {@link #shutdown()}.
 	 */
 	public void run() {
 		if (m_shutdown) {
@@ -132,7 +137,7 @@ public class ConsoleFoundationEx {
 		m_container.getComponent(WireMessageDispatch.class);
 		m_container.getComponent(WireFileDistribution.class);
 		m_container.getComponent(WireDistributedBarriers.class);
-		m_container.getComponent(Logger.class).info("{} console has been stated", "test");
+		m_container.getComponent(Logger.class).info("console {} has been started", getConsoleInfo());
 		synchronized (m_eventSyncCondition) {
 			m_eventSyncCondition.notifyAll();
 		}
@@ -173,28 +178,31 @@ public class ConsoleFoundationEx {
 		 *            Client command dispatcher.
 		 */
 		public WireMessageDispatch(ConsoleCommunication communication, final SampleModel model,
-				final SampleModelViews sampleModelViews, DispatchClientCommands dispatchClientCommands) {
+						final SampleModelViews sampleModelViews, DispatchClientCommands dispatchClientCommands) {
 
-			final MessageDispatchRegistry messageDispatchRegistry = communication.getMessageDispatchRegistry();
+			final MessageDispatchRegistry messageDispatchRegistry = communication
+							.getMessageDispatchRegistry();
 
-			messageDispatchRegistry.set(RegisterTestsMessage.class, new AbstractHandler<RegisterTestsMessage>() {
-				public void handle(RegisterTestsMessage message) {
-					model.registerTests(message.getTests());
-				}
-			});
+			messageDispatchRegistry.set(RegisterTestsMessage.class,
+							new AbstractHandler<RegisterTestsMessage>() {
+								public void handle(RegisterTestsMessage message) {
+									model.registerTests(message.getTests());
+								}
+							});
 
-			messageDispatchRegistry.set(ReportStatisticsMessage.class, new AbstractHandler<ReportStatisticsMessage>() {
-				public void handle(ReportStatisticsMessage message) {
-					model.addTestReport(message.getStatisticsDelta());
-				}
-			});
+			messageDispatchRegistry.set(ReportStatisticsMessage.class,
+							new AbstractHandler<ReportStatisticsMessage>() {
+								public void handle(ReportStatisticsMessage message) {
+									model.addTestReport(message.getStatisticsDelta());
+								}
+							});
 
 			messageDispatchRegistry.set(RegisterExpressionViewMessage.class,
-					new AbstractHandler<RegisterExpressionViewMessage>() {
-						public void handle(RegisterExpressionViewMessage message) {
-							sampleModelViews.registerStatisticExpression(message.getExpressionView());
-						}
-					});
+							new AbstractHandler<RegisterExpressionViewMessage>() {
+								public void handle(RegisterExpressionViewMessage message) {
+									sampleModelViews.registerStatisticExpression(message.getExpressionView());
+								}
+							});
 
 			dispatchClientCommands.registerMessageHandlers(messageDispatchRegistry);
 		}

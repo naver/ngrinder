@@ -65,13 +65,13 @@ public class HomeController extends NGrinderBaseController {
 	private HomeService homeService;
 
 	@RequestMapping(value = { "/home", "/" })
-	public String home(ModelMap model, HttpServletResponse response, HttpServletRequest request) {
+	public String home(User user, ModelMap model, HttpServletResponse response, HttpServletRequest request) {
 		String roles = null;
 		try {
 			// set local language
 			setLanguage(getCurrentUser().getUserLanguage(), response, request);
 			setLoginPageDate(model);
-			roles = getCurrentUser().getRole().getShortName();
+			roles = user.getRole().getShortName();
 
 		} catch (AuthenticationCredentialsNotFoundException e) {
 			return "login";
@@ -141,12 +141,13 @@ public class HomeController extends NGrinderBaseController {
 		return "user/userInfo";
 	}
 
-	//user save/modification is in UserController
-//	@RequestMapping("/profile/save")
-//	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser) {
-//		if (updatedUser.exist()) {
-//			getUserService().modifyUser(updatedUser);
-//		}
-//		return "/";
-//	}
+	// user save/modification is in UserController
+	// @RequestMapping("/profile/save")
+	// public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User
+	// updatedUser) {
+	// if (updatedUser.exist()) {
+	// getUserService().modifyUser(updatedUser);
+	// }
+	// return "/";
+	// }
 }

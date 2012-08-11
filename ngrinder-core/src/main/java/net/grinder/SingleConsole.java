@@ -90,7 +90,8 @@ public class SingleConsole implements Listener, SampleListener {
 	private final ConsoleProperties consoleProperties;
 	private Thread thread;
 	private ConsoleFoundationEx consoleFoundation;
-	public static final Resources RESOURCE = new ResourcesImplementation("net.grinder.console.common.resources.Console");
+	public static final Resources RESOURCE = new ResourcesImplementation(
+					"net.grinder.console.common.resources.Console");
 	public static final Logger LOGGER = LoggerFactory.getLogger(RESOURCE.getString("shortTitle"));
 
 	private Condition m_eventSyncCondition = new Condition();
@@ -149,7 +150,8 @@ public class SingleConsole implements Listener, SampleListener {
 		try {
 			this.getConsoleProperties().setConsoleHost(ip);
 			this.getConsoleProperties().setConsolePort(port);
-			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties, m_eventSyncCondition);
+			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties,
+							m_eventSyncCondition);
 			sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 			sampleModel.addTotalSampleListener(this);
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
@@ -186,8 +188,8 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	public String getConsoleHost() {
 		try {
-			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress.getLocalHost()
-					.getHostAddress());
+			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress
+							.getLocalHost().getHostAddress());
 		} catch (UnknownHostException e) {
 			return "";
 		}
@@ -238,7 +240,7 @@ public class SingleConsole implements Listener, SampleListener {
 
 	public int getAllAttachedAgentsCount() {
 		return ((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class))
-				.getNumberOfLiveAgents();
+						.getNumberOfLiveAgents();
 	}
 
 	/**
@@ -249,10 +251,9 @@ public class SingleConsole implements Listener, SampleListener {
 	public List<AgentIdentity> getAllAttachedAgents() {
 		final List<AgentIdentity> agentIdentities = new ArrayList<AgentIdentity>();
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(
-				ReflectionUtil.getFieldValue(
-						(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
-						"m_agentNumberMap"),
-				"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
+						ReflectionUtil.getFieldValue((ProcessControlImplementation) consoleFoundation
+										.getComponent(ProcessControl.class), "m_agentNumberMap"),
+						"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
 			public void objectAndNumber(Object object, int number) {
 				agentIdentities.add((AgentIdentity) object);
@@ -356,7 +357,7 @@ public class SingleConsole implements Listener, SampleListener {
 
 	public void waitUntilAgentConnected(int size) {
 		int trial = 1;
-		while (trial++ < 5) {
+		while (trial++ < 10) {
 			// when agent finished one test, processReports will be updated as
 			// null
 			if (processReports == null || this.processReports.length != size) {
@@ -367,8 +368,8 @@ public class SingleConsole implements Listener, SampleListener {
 				return;
 			}
 		}
-		throw new NGrinderRuntimeException("Connection is not completed "
-				+ ToStringBuilder.reflectionToString(processReports));
+		throw new NGrinderRuntimeException("Connection is not completed. processReport is "
+						+ ToStringBuilder.reflectionToString(processReports));
 	}
 
 	public boolean isAllTestFinished() {
@@ -438,7 +439,7 @@ public class SingleConsole implements Listener, SampleListener {
 		statisticData = this.getStatistics();
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) statisticData
-				.get("lastSampleStatistics");
+						.get("lastSampleStatistics");
 
 		if (lastSampleStatistics != null) {
 			double tpsSum = 0;
@@ -474,7 +475,8 @@ public class SingleConsole implements Listener, SampleListener {
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
 		final SampleModel model = (SampleModel) this.getConsoleComponent(SampleModel.class);
-		final SampleModelViews modelView = (SampleModelViews) this.getConsoleComponent(SampleModelViews.class);
+		final SampleModelViews modelView = (SampleModelViews) this
+						.getConsoleComponent(SampleModelViews.class);
 		ExpressionView[] views = modelView.getCumulativeStatisticsView().getExpressionViews();
 		ModelTestIndex modelIndex = (ModelTestIndex) ReflectionUtil.getFieldValue(model, "modelTestIndex");
 		if (modelIndex != null) {
@@ -494,9 +496,10 @@ public class SingleConsole implements Listener, SampleListener {
 																// expressionView
 																// == null?
 					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-							getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
-					lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-							getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
+									getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
+					lastStatistics.put(
+									expressionView.getDisplayName().replaceAll("\\s+", "_"),
+									getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
 				}
 
 				// Tests
@@ -521,9 +524,9 @@ public class SingleConsole implements Listener, SampleListener {
 		for (ExpressionView expressionView : views) { // TODO : expressionView
 														// == null ?
 			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
+							getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
+							getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 		}
 
 		Double tests = (Double) totalStatistics.get("Tests");

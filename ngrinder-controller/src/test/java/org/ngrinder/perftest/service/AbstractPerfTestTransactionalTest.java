@@ -4,8 +4,9 @@ import java.util.Date;
 
 import org.junit.Before;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.MockAgentConfig;
+import org.ngrinder.MockAgentConfigInAgentSide;
 import org.ngrinder.infra.AgentConfig;
+import org.ngrinder.infra.config.MockAgentConfigInControllerSide;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
@@ -14,7 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * In addition {@link AbstractNGrinderTransactionalTest}, this class provides basic function to create {@link PerfTest}
+ * In addition {@link AbstractNGrinderTransactionalTest}, this class provides basic function to
+ * create {@link PerfTest}
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -28,8 +30,8 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 
 	@Before
 	public void firstInit() {
-		agentConfig1 = new MockAgentConfig().init();
-		agentConfig2 = new MockAgentConfig().init();
+		agentConfig1 = new MockAgentConfigInControllerSide().init();
+		agentConfig2 = new MockAgentConfigInControllerSide().init();
 	}
 
 	@Autowired

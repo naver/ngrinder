@@ -1,11 +1,11 @@
-package org.ngrinder;
+package org.ngrinder.infra.config;
 
 import java.io.File;
 
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.infra.AgentHome;
 
-public class MockAgentConfig extends AgentConfig {
+public class MockAgentConfigInControllerSide extends AgentConfig {
 	public static int counter = 0;
 
 	@Override

@@ -22,9 +22,9 @@ abstract public class AbstractMuliGrinderTestBase {
 
 	@Before
 	public void agentInit() {
-		agentConfig1 = new MockAgentConfig().init();
-		agentConfig2 = new MockAgentConfig().init();
-		agentConfig3 = new MockAgentConfig().init();
+		agentConfig1 = new MockAgentConfigInAgentSide().init();
+		agentConfig2 = new MockAgentConfigInAgentSide().init();
+		agentConfig3 = new MockAgentConfigInAgentSide().init();
 	}
 
 	/**
