@@ -59,8 +59,6 @@ public class ConsoleFoundationEx {
 	 *            Console resources
 	 * @param logger
 	 *            Logger.
-	 * @param timer
-	 *            A timer.
 	 * @param properties
 	 *            The properties.
 	 * 

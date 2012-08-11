@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.script.model.FileEntry;
-import org.ngrinder.script.repository.FileEntryRepository;
+import org.ngrinder.script.repository.MockFileEntityRepsotory;
 import org.ngrinder.script.util.CompressionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -56,7 +56,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 	private FileEntryController scriptController;
 
 	@Autowired
-	private FileEntryRepository fileEntityRepository;
+	private MockFileEntityRepsotory fileEntityRepository;
 
 	@Autowired
 	private Config config;
@@ -74,6 +74,9 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		// repo.setUserRepository(new File(file, getTestUser().getUserId()));
 		// ReflectionTestUtils.setField(service, "fileEntityRepository", repo);
 		// file.deleteOnExit();
+
+		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
+		fileEntityRepository.setUserRepository(new File(tempRepo, getTestUser().getUserId()));
 
 		File testUserRoot = fileEntityRepository.getUserRepoDirectory(getTestUser()).getParentFile();
 		FileUtils.deleteQuietly(testUserRoot);

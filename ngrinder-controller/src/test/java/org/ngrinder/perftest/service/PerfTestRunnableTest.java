@@ -26,12 +26,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.infra.config.Config;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
-import org.ngrinder.script.repository.FileEntryRepository;
 import org.ngrinder.script.repository.MockFileEntityRepsotory;
 import org.ngrinder.script.util.CompressionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,8 +147,6 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		fail("Process is not finished within 100 sec");
 	}
 
-	@Autowired
-	private Config config;
 
 	private void prepareUserRepo() throws IOException {
 		CompressionUtil compressUtil = new CompressionUtil();

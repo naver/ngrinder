@@ -40,7 +40,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class AgentControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
-	AgentController agentController;
+	AgentManagerController agentController;
 
 	@Test
 	public void testGetAgentList() {
