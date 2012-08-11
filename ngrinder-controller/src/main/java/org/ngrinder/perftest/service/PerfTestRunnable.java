@@ -46,7 +46,6 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.service.MonitorDataService;
 import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.slf4j.Logger;
@@ -89,18 +88,15 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
 	public void startTest() {
-		// Find out next ready perftest
-		PerfTest runCandidate = perfTestService.getPerfTestCandiate();
-		if (runCandidate == null) {
+		// Block if testing
+		if (perfTestService.canExecuteTestMore()) {
+			LOG.debug("current running test is {}. so no tests start to run", perfTestService.get);
 			return;
 		}
 
-		// schedule test
-		// FIXME : What if the timezone is different..
-		Date schedule = runCandidate.getScheduledTime();
-		if (schedule != null && !DateUtil.compareDateEndWithMinute(schedule, new Date(System.currentTimeMillis()))) {
-			// this test project is reserved,but it isn't yet going to run test
-			// right now.
+		// Find out next ready perftest
+		PerfTest runCandidate = perfTestService.getPerfTestCandiate();
+		if (runCandidate == null) {
 			return;
 		}
 
@@ -114,6 +110,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 			return;
 		}
 		doTest(runCandidate);
+	}
+
+	private long getCurrentRunningTestCount() {
+		return perfTestService.getPerfTestCount(null, Status.getProcessingTestStatus());
 	}
 
 	/**

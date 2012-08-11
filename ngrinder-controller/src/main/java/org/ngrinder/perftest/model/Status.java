@@ -22,6 +22,9 @@
  */
 package org.ngrinder.perftest.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Performance Test Status.
  * 
@@ -86,5 +89,15 @@ public enum Status {
 
 	public String getIconName() {
 		return category.getIconName();
+	}
+
+	public static Status[] getProcessingTestStatus() {
+		List<Status> status = new ArrayList<Status>();
+		for (Status each : values()) {
+			if (each.getCategory() == StatusCategory.PROGRESSING) {
+				status.add(each);
+			}
+		}
+		return status.toArray(new Status[0]);
 	}
 }

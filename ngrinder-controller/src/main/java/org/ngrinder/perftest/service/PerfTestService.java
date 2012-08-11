@@ -57,6 +57,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.spring.OnlyOnePageRequest;
 import org.ngrinder.model.Role;
@@ -136,6 +137,21 @@ public class PerfTestService implements NGrinderConstants {
 		return perfTestRepository.findAll(spec, pageable);
 	}
 
+	public long getPerfTestCount(User user, Status... statuses) {
+		Specifications<PerfTest> spec = Specifications.where(emptyPredicate());
+
+		// User can see only his own test
+		if (user != null) {
+			spec = spec.and(createdBy(user));
+		}
+
+		if (statuses.length != 0) {
+			spec = spec.and(statusSetEqual(statuses));
+		}
+
+		return perfTestRepository.count(spec);
+	}
+
 	/**
 	 * Save {@link PerfTest}.
 	 * 
@@ -185,16 +201,25 @@ public class PerfTestService implements NGrinderConstants {
 		return perfTestRepository.findOne(testId);
 	}
 
+	public List<PerfTest> getAll
 	/**
-	 * Get next runnable PerfTest.
+	 * Get next runnable PerfTest list.
 	 * 
 	 * @return found {@link PerfTest}, null otherwise
 	 */
 	@Cacheable(value = "perftest")
 	public PerfTest getPerfTestCandiate() {
-		Page<PerfTest> perfTest = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY,
-				new OnlyOnePageRequest());
-		return (perfTest.getNumberOfElements() == 0) ? null : perfTest.getContent().get(0);
+		List<PerfTest> perfTests = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY);
+		perfTest
+		// schedule test
+		// FIXME : What if the timezone is different..
+		Date schedule = runCandidate.getScheduledTime();
+		if (schedule != null && !DateUtil.compareDateEndWithMinute(schedule, new Date(System.currentTimeMillis()))) {
+			// this test project is reserved,but it isn't yet going to run test
+			// right now.
+			return;
+		}
+
 	}
 
 	/**
@@ -431,6 +456,14 @@ public class PerfTestService implements NGrinderConstants {
 		perfTest.setPeakTps(Double.parseDouble(formatter.format(totalStatistics.get("Peak_TPS"))));
 		perfTest.setTests((int) ((Double) totalStatistics.get("Tests")).doubleValue());
 		return perfTest;
+	}
+
+	public int getMaximumConcurrentTestCount() {
+		config.getSystemProperties().getPropertyInt(, defaultValue)
+	}
+	public boolean canExecuteTestMore() {
+		config.// TODO Auto-generated method stub
+		return false;
 	}
 
 }

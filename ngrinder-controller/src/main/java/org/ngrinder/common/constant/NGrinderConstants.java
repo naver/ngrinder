@@ -128,6 +128,7 @@ public interface NGrinderConstants {
 	public static final String PARAM_MAX_AGENT_SIZE_PER_CONSOLE = "maxAgentSizePerConsole";
 	public static final String PARAM_MAX_VUSER_PER_AGENT = "maxVuserPerAgent";
 	public static final String PARAM_MAX_RUN_COUNT = "maxRunCount";
+	public static final String PARAM_MAX_RUN_HOUR = "maxRunHour";
 
 	public static final String PARAM_RESULT_SUB = "resultsub";
 
@@ -158,5 +159,5 @@ public interface NGrinderConstants {
 	public static final int MAX_STACKTRACE_STRING_SIZE = 2048;
 
 	public static final String NGRINDER_NEWS_RSS_URL = "http://www.cubrid.org/wiki_ngrinder/rss";
-
+	public static final int MAX_RUN_HOUR = 8;
 }

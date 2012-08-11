@@ -153,6 +153,7 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, agentManager.getMaxAgentSizePerConsole());
 		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
 		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
+		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour() - 1);
 		return "perftest/detail";
 	}
 
@@ -166,7 +167,16 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String saveTest(User user, ModelMap model, PerfTest test) {
-		checkArgument(test.getStatus().equals(Status.READY) || test.getStatus().equals(Status.SAVED), "save test only support for SAVE or READY status");
+		checkArgument(test.getStatus().equals(Status.READY) || test.getStatus().equals(Status.SAVED),
+				"save test only support for SAVE or READY status");
+		checkArgument(test.getDuration() <= (1000 * 60 * 60 * agentManager.getMaxRunHour()),
+				"test duration should be within " + agentManager.getMaxRunHour());
+		checkArgument(test.getRunCount() <= agentManager.getMaxRunCount(), "test run count should be within "
+				+ agentManager.getMaxRunCount());
+		checkArgument(test.getAgentCount() <= agentManager.getMaxAgentSizePerConsole(), "test agent shoule be within "
+				+ agentManager.getMaxAgentSizePerConsole());
+		checkArgument(test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(), "test vuser shoule be within "
+				+ agentManager.getMaxVuserPerAgent());
 		perfTestService.savePerfTest(test);
 		return "redirect:/perftest/list";
 	}

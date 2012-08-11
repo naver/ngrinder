@@ -802,7 +802,7 @@ div.chart {
 					format: 'yyyy-mm-dd'
 				});
 						
-				$("#hSelect").append(getOption(24));
+				$("#hSelect").append(getOption(${maxRunHour}));
 				$("#hSelect").change(getDurationMS);
 				
 				$("#mSelect").append(getOption(60));
