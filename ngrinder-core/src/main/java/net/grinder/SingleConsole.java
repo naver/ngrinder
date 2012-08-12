@@ -77,7 +77,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.picocontainer.MutablePicoContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,8 +89,7 @@ public class SingleConsole implements Listener, SampleListener {
 	private final ConsoleProperties consoleProperties;
 	private Thread thread;
 	private ConsoleFoundationEx consoleFoundation;
-	public static final Resources RESOURCE = new ResourcesImplementation(
-					"net.grinder.console.common.resources.Console");
+	public static final Resources RESOURCE = new ResourcesImplementation("net.grinder.console.common.resources.Console");
 	public static final Logger LOGGER = LoggerFactory.getLogger(RESOURCE.getString("shortTitle"));
 
 	private Condition m_eventSyncCondition = new Condition();
@@ -150,8 +148,7 @@ public class SingleConsole implements Listener, SampleListener {
 		try {
 			this.getConsoleProperties().setConsoleHost(ip);
 			this.getConsoleProperties().setConsolePort(port);
-			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties,
-							m_eventSyncCondition);
+			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties, m_eventSyncCondition);
 			sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 			sampleModel.addTotalSampleListener(this);
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
@@ -188,8 +185,8 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	public String getConsoleHost() {
 		try {
-			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress
-							.getLocalHost().getHostAddress());
+			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress.getLocalHost()
+					.getHostAddress());
 		} catch (UnknownHostException e) {
 			return "";
 		}
@@ -240,7 +237,7 @@ public class SingleConsole implements Listener, SampleListener {
 
 	public int getAllAttachedAgentsCount() {
 		return ((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class))
-						.getNumberOfLiveAgents();
+				.getNumberOfLiveAgents();
 	}
 
 	/**
@@ -251,9 +248,10 @@ public class SingleConsole implements Listener, SampleListener {
 	public List<AgentIdentity> getAllAttachedAgents() {
 		final List<AgentIdentity> agentIdentities = new ArrayList<AgentIdentity>();
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(
-						ReflectionUtil.getFieldValue((ProcessControlImplementation) consoleFoundation
-										.getComponent(ProcessControl.class), "m_agentNumberMap"),
-						"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
+				ReflectionUtil.getFieldValue(
+						(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
+						"m_agentNumberMap"),
+				"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
 			public void objectAndNumber(Object object, int number) {
 				agentIdentities.add((AgentIdentity) object);
@@ -369,23 +367,28 @@ public class SingleConsole implements Listener, SampleListener {
 			}
 		}
 		throw new NGrinderRuntimeException("Connection is not completed. processReport is "
-						+ ToStringBuilder.reflectionToString(processReports));
+				+ ToStringBuilder.reflectionToString(processReports));
 	}
 
+	/**
+	 * Check all test is finished. To be safe, this counts thread count and not finished workprocess. If one of them is
+	 * 0, It thinks test is finished.
+	 * 
+	 * @return true if finished
+	 */
 	public boolean isAllTestFinished() {
 		int workingThreadNum = 0;
+		int notFinishedWorkerCount = 0;
 		for (ProcessReports processReport : this.processReports) {
-			// TODO
 			WorkerProcessReport[] reports = processReport.getWorkerProcessReports();
 			for (WorkerProcessReport report : reports) {
+				if (report.getState() != 3) {
+					notFinishedWorkerCount++;
+				}
 				workingThreadNum += report.getNumberOfRunningThreads();
 			}
 		}
-		return workingThreadNum == 0;
-	}
-
-	public MutablePicoContainer getConsoleContainer() {
-		return consoleFoundation.getContainer();
+		return notFinishedWorkerCount == 0 || workingThreadNum == 0;
 	}
 
 	/**
@@ -439,7 +442,7 @@ public class SingleConsole implements Listener, SampleListener {
 		statisticData = this.getStatistics();
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) statisticData
-						.get("lastSampleStatistics");
+				.get("lastSampleStatistics");
 
 		if (lastSampleStatistics != null) {
 			double tpsSum = 0;
@@ -474,9 +477,8 @@ public class SingleConsole implements Listener, SampleListener {
 		Map<String, Object> result = new HashMap<String, Object>();
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
-		final SampleModel model = (SampleModel) this.getConsoleComponent(SampleModel.class);
-		final SampleModelViews modelView = (SampleModelViews) this
-						.getConsoleComponent(SampleModelViews.class);
+		final SampleModel model = getConsoleComponent(SampleModel.class);
+		final SampleModelViews modelView = getConsoleComponent(SampleModelViews.class);
 		ExpressionView[] views = modelView.getCumulativeStatisticsView().getExpressionViews();
 		ModelTestIndex modelIndex = (ModelTestIndex) ReflectionUtil.getFieldValue(model, "modelTestIndex");
 		if (modelIndex != null) {
@@ -496,10 +498,9 @@ public class SingleConsole implements Listener, SampleListener {
 																// expressionView
 																// == null?
 					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-									getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
-					lastStatistics.put(
-									expressionView.getDisplayName().replaceAll("\\s+", "_"),
-									getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
+							getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
+					lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
+							getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
 				}
 
 				// Tests
@@ -524,9 +525,9 @@ public class SingleConsole implements Listener, SampleListener {
 		for (ExpressionView expressionView : views) { // TODO : expressionView
 														// == null ?
 			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-							getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
+					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-							getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
+					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 		}
 
 		Double tests = (Double) totalStatistics.get("Tests");
@@ -540,10 +541,8 @@ public class SingleConsole implements Listener, SampleListener {
 
 		result.put("tpsChartData", this.getTpsValues());
 
-		MutablePicoContainer container = (MutablePicoContainer) this.getConsoleContainer();
-		ProcessControl processControl = (ProcessControl) container.getComponent(ProcessControl.class);
+		ProcessControl processControl = getConsoleComponent(ProcessControl.class);
 		NGrinderConsoleCommunicationService.collectWorkerAndThreadInfo(processControl, result);
-
 		result.put("success", !this.isAllTestFinished());
 
 		return result;

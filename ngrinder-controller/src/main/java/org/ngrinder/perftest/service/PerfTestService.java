@@ -135,6 +135,15 @@ public class PerfTestService implements NGrinderConstants {
 		return perfTestRepository.findAll(spec, pageable);
 	}
 
+	/**
+	 * Get PerfTest count which have given status.
+	 * 
+	 * @param user
+	 *            user who created test. null to retrieve all
+	 * @param statuses
+	 *            status set
+	 * @return the count
+	 */
 	public long getPerfTestCount(User user, Status... statuses) {
 		Specifications<PerfTest> spec = Specifications.where(emptyPredicate());
 
@@ -151,7 +160,7 @@ public class PerfTestService implements NGrinderConstants {
 	}
 
 	/**
-	 * Get perf test list.
+	 * Get {@link PerfTest} list which have give state.
 	 * 
 	 * @param user
 	 *            user who created {@link PerfTest}. if null, retrieve all test
@@ -166,7 +175,6 @@ public class PerfTestService implements NGrinderConstants {
 		if (user != null) {
 			spec = spec.and(createdBy(user));
 		}
-
 		if (statuses.length != 0) {
 			spec = spec.and(statusSetEqual(statuses));
 		}
@@ -241,7 +249,7 @@ public class PerfTestService implements NGrinderConstants {
 	 */
 	@Cacheable(value = "perftestlist")
 	public List<PerfTest> getTestingPerfTest() {
-		return perfTestRepository.findAllByStatusOrderByCreatedDateAsc(Status.TESTING);
+		return getPerfTest(null, Status.getTestingTestStates());
 	}
 
 	/**
@@ -269,11 +277,17 @@ public class PerfTestService implements NGrinderConstants {
 				checkNotZero(perfTest.getId(), "perftest id should not be 0 or zero").toString());
 	}
 
+	/**
+	 * Create {@link GrinderProperties} based on the passed {@link PerfTest}
+	 * 
+	 * @param perfTest
+	 *            base data
+	 * @return created {@link GrinderProperties} instance
+	 */
 	public GrinderProperties getGrinderProperties(PerfTest perfTest) {
 		try {
 			// Copy grinder properties
-			File userGrinderPropertiesPath = new File(getUserPerfTestDirectory(perfTest, NGrinderConstants.PATH_DIST),
-					DEFAULT_GRINDER_PROPERTIES_PATH);
+			File userGrinderPropertiesPath = new File(getPerfTestDirectory(perfTest), DEFAULT_GRINDER_PROPERTIES_PATH);
 			FileUtils.copyFile(config.getHome().getDefaultGrinderProperties(), userGrinderPropertiesPath);
 			GrinderProperties grinderProperties = new GrinderProperties(userGrinderPropertiesPath);
 			grinderProperties.setAssociatedFile(new File(userGrinderPropertiesPath.getName()));
@@ -299,10 +313,11 @@ public class PerfTestService implements NGrinderConstants {
 	}
 
 	/**
-	 * Prepare files for distribution
+	 * Prepare files for distribution.
 	 * 
 	 * @param perfTest
-	 * @return
+	 *            perfTest
+	 * @return File location in which the perftest should have.
 	 */
 	public File prepareDistribution(PerfTest perfTest) {
 		checkNotNull(perfTest.getId(), "perfTest should have id");
@@ -312,7 +327,7 @@ public class PerfTestService implements NGrinderConstants {
 		// Get all files in the script path
 		List<FileEntry> fileEntries = fileEntryService.getFileEntries(user,
 				FilenameUtils.getPath(checkNotEmpty(scriptName)));
-		File perfTestDirectory = getUserPerfTestDirectory(perfTest, NGrinderConstants.PATH_DIST);
+		File perfTestDirectory = getPerfTestDirectory(perfTest);
 
 		perfTestDirectory.mkdirs();
 
@@ -329,16 +344,30 @@ public class PerfTestService implements NGrinderConstants {
 		return perfTestDirectory;
 	}
 
-	public File getUserPerfTestDirectory(PerfTest perfTest) {
+	/**
+	 * Get perf test base directory
+	 * 
+	 * @param perfTest
+	 *            perfTest
+	 * @return prefTest base path
+	 */
+	public File getPerfTestBaseDirectory(PerfTest perfTest) {
 		return config.getHome().getPerfTestDirectory(perfTest.getId().toString());
 	}
 
-	public File getUserPerfTestDirectory(PerfTest perfTest, String subDir) {
-		return new File(getUserPerfTestDirectory(perfTest), subDir);
+	/**
+	 * Get user perf test directory fot
+	 * 
+	 * @param perfTest
+	 * @param subDir
+	 * @return
+	 */
+	public File getPerfTestDirectory(PerfTest perfTest) {
+		return new File(getPerfTestBaseDirectory(perfTest), NGrinderConstants.PATH_DIST);
 	}
 
 	/**
-	 * Get the optimal process and thread count.
+	 * Ff Get the optimal process and thread count.
 	 * 
 	 * FIXME : This method should be optimized more.
 	 * 
@@ -417,17 +446,25 @@ public class PerfTestService implements NGrinderConstants {
 		return reportData;
 	}
 
+	/**
+	 * Get report file name for give test id.
+	 * 
+	 * @param testId
+	 * @return report file path
+	 */
 	public File getReportFile(long testId) {
-		File reportFolder = config.getHome().getPerfTestDirectory(
-				testId + File.separator + NGrinderConstants.PATH_REPORT);
-		File targetFile = new File(reportFolder, NGrinderConstants.REPORT_CSV);
-		return targetFile;
+		return new File(getReportFileDirectory(testId), NGrinderConstants.REPORT_CSV);
 	}
 
+	/**
+	 * Get report file directory for give test id.
+	 * 
+	 * @param testId
+	 * @return report file path
+	 */
+
 	public File getReportFileDirectory(long testId) {
-		File reportFolder = config.getHome().getPerfTestDirectory(
-				testId + File.separator + NGrinderConstants.PATH_REPORT);
-		return reportFolder;
+		return new File(config.getHome().getPerfTestDirectory(String.valueOf(testId)), NGrinderConstants.PATH_REPORT);
 	}
 
 	/**
@@ -439,15 +476,29 @@ public class PerfTestService implements NGrinderConstants {
 		return consoleUsingPort == null ? new HashMap<String, Object>() : consoleUsingPort.getStatictisData();
 	}
 
+	/**
+	 * Get all perf test list.
+	 * 
+	 * Note : This is only for test
+	 * 
+	 * @return all {@link PerfTest} list
+	 * 
+	 */
 	public List<PerfTest> getAllPerfTest() {
 		return perfTestRepository.findAll();
 	}
 
+	/**
+	 * Create {@link ConsoleProperties} based on given {@link PerfTest} instance.
+	 * 
+	 * @param perfTest
+	 *            perfTest
+	 * @return {@link ConsoleProperties}
+	 */
 	public ConsoleProperties createConsoleProperties(PerfTest perfTest) {
 		ConsoleProperties consoleProperties = ConsolePropertiesFactory.createEmptyConsoleProperties();
 		try {
-			consoleProperties.setAndSaveDistributionDirectory(new Directory(getUserPerfTestDirectory(perfTest,
-					NGrinderConstants.PATH_DIST)));
+			consoleProperties.setAndSaveDistributionDirectory(new Directory(getPerfTestDirectory(perfTest)));
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("Error while setting console properties", e);
 		}
@@ -469,12 +520,22 @@ public class PerfTestService implements NGrinderConstants {
 		return perfTest;
 	}
 
+	/**
+	 * Get maximum concurrent test count.
+	 * 
+	 * @return maximum concurrent test
+	 */
 	public int getMaximumConcurrentTestCount() {
 		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
 				NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
 	}
 
+	/**
+	 * Check the test can be executed more.
+	 * 
+	 * @return true if possible
+	 */
 	public boolean canExecuteTestMore() {
-		return getPerfTestCount(null, Status.getProcessingTestStatus()) < getMaximumConcurrentTestCount();
+		return getPerfTestCount(null, Status.getProcessingOrTestingTestStatus()) < getMaximumConcurrentTestCount();
 	}
 }

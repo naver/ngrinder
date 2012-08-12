@@ -49,11 +49,11 @@ public enum Status {
 	/** Just after distributing files. */
 	DISTRIBUTE_FILES_FINISHED(StatusCategory.PROGRESSING),
 	/** Just before staring testing. */
-	START_TESTING(StatusCategory.PROGRESSING),
+	START_TESTING(StatusCategory.TESTING),
 	/** Just after staring testing. */
-	TESTING(StatusCategory.PROGRESSING),
+	TESTING(StatusCategory.TESTING),
 	/** Waiting for test is finishing. */
-	TESTING_FINISHED(StatusCategory.PROGRESSING),
+	TESTING_FINISHED(StatusCategory.TESTING),
 	/** Test finished. */
 	FINISHED(StatusCategory.FINISHED),
 	/** Stopped by error. */
@@ -91,10 +91,20 @@ public enum Status {
 		return category.getIconName();
 	}
 
-	public static Status[] getProcessingTestStatus() {
+	public static Status[] getProcessingOrTestingTestStatus() {
 		List<Status> status = new ArrayList<Status>();
 		for (Status each : values()) {
-			if (each.getCategory() == StatusCategory.PROGRESSING) {
+			if (each.getCategory() == StatusCategory.PROGRESSING || each.getCategory() == StatusCategory.TESTING) {
+				status.add(each);
+			}
+		}
+		return status.toArray(new Status[0]);
+	}
+
+	public static Status[] getTestingTestStates() {
+		List<Status> status = new ArrayList<Status>();
+		for (Status each : values()) {
+			if (each.getCategory() == StatusCategory.TESTING) {
 				status.add(each);
 			}
 		}

@@ -366,7 +366,7 @@ public class AgentImplementationEx implements Agent {
 			properties.putAll(startMessageProperties);
 		}
 		properties.setFile(GrinderProperties.LOG_DIRECTORY, new File(m_agentConfig.getHome().getLogDirectory(),
-				properties.getProperty(GRINDER_PROP_TEST_ID, "grinder_log")));
+				properties.getProperty(GRINDER_PROP_TEST_ID, "default")));
 		return properties;
 	}
 

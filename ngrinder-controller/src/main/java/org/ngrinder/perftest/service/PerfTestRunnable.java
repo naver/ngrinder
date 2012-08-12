@@ -41,7 +41,6 @@ import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.service.MonitorDataService;
@@ -91,7 +90,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// Block if the count of testing exceed the limit
 		if (!perfTestService.canExecuteTestMore()) {
 			// LOG MORE
-			List<PerfTest> perfTestsInTesting = perfTestService.getPerfTest(null, Status.getProcessingTestStatus());
+			List<PerfTest> perfTestsInTesting = perfTestService.getPerfTest(null,
+					Status.getProcessingOrTestingTestStatus());
 			LOG.debug("current running test is {}. so no tests start to run", perfTestsInTesting.size());
 			for (PerfTest perfTest : perfTestsInTesting) {
 				LOG.trace("- " + perfTest);
@@ -221,8 +221,9 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            {@link SingleConsole} which is being using for {@link PerfTest}
 	 */
 	public void doFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+		// FIXME... it should found abnormal test status..
 		if (singleConsoleInUse == null) {
-			LOG.error("There is no console found for test:{}", ToStringBuilder.reflectionToString(perfTest));
+			LOG.error("There is no console found for test:{}", perfTest);
 			// need to finish test as error
 			perfTestService.savePerfTest(perfTest, Status.STOP_ON_ERROR);
 			return;
@@ -239,5 +240,4 @@ public class PerfTestRunnable implements NGrinderConstants {
 			perfTestService.savePerfTest(resultTest, Status.FINISHED);
 		}
 	}
-
 }
