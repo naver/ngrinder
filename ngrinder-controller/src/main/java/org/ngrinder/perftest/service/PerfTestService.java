@@ -367,7 +367,7 @@ public class PerfTestService implements NGrinderConstants {
 	}
 
 	/**
-	 * Ff Get the optimal process and thread count.
+	 * Get the optimal process and thread count.
 	 * 
 	 * FIXME : This method should be optimized more.
 	 * 
@@ -505,6 +505,13 @@ public class PerfTestService implements NGrinderConstants {
 		return consoleProperties;
 	}
 
+	/**
+	 * Update the given {@link PerfTest} properties after test finished.
+	 * 
+	 * @param perfTest
+	 *            perfTest
+	 * @return updated {@link PerfTest}
+	 */
 	public PerfTest updatePerfTestAfterTestFinish(PerfTest perfTest) {
 		checkNotNull(perfTest);
 		int port = perfTest.getPort();

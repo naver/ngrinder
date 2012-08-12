@@ -25,6 +25,8 @@ package net.grinder.engine.agent;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -56,6 +58,7 @@ import net.grinder.messages.console.AgentProcessReportMessage;
 import net.grinder.util.Directory;
 import net.grinder.util.thread.Condition;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 
@@ -245,10 +248,9 @@ public class AgentImplementationEx implements Agent {
 					final WorkerFactory workerFactory;
 
 					if (!properties.getBoolean("grinder.debug.singleprocess", false)) {
-						Properties properties2 = System.getProperties();
 						// Fix to provide empty system classpath to speed up
 						final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
-								properties2, jvmArguments, script.getDirectory());
+								filterSystemClassPath(System.getProperties()), jvmArguments, script.getDirectory());
 
 						m_logger.info("Worker process command line: {}", workerCommandLine);
 
@@ -355,6 +357,35 @@ public class AgentImplementationEx implements Agent {
 			m_consoleListener.shutdown();
 			m_logger.info("finished");
 		}
+	}
+
+	/**
+	 * Filter classpath to prevent too many instrumentation.
+	 * 
+	 * @param properties
+	 *            system properties
+	 * @return filtered properties
+	 */
+	private Properties filterSystemClassPath(Properties properties) {
+		List<String> classPathList = new ArrayList<String>();
+		for (String eachClassPath : properties.getProperty("java.class.path", "").split(File.pathSeparator)) {
+			if (eachClassPath.contains("ngrinder") || eachClassPath.contains("spring")) {
+				continue;
+			}
+			
+			if (eachClassPath.contains("grinder") || eachClassPath.contains("asm")
+					|| eachClassPath.contains("picocontainer") || eachClassPath.contains("jython")
+					|| eachClassPath.contains("slf4j-api") || eachClassPath.contains("logback")
+					|| eachClassPath.contains("jsr173") || eachClassPath.contains("xmlbeans")
+					|| eachClassPath.contains("stax-api")) {
+				classPathList.add(eachClassPath);
+			}
+		}
+
+		String newClassPath = StringUtils.join(classPathList, File.pathSeparator);
+		properties.setProperty("java.class.path", newClassPath);
+		m_logger.debug("Filtered System Class Path is " + newClassPath);
+		return properties;
 	}
 
 	public static final String GRINDER_PROP_TEST_ID = "grinder.test.id";
