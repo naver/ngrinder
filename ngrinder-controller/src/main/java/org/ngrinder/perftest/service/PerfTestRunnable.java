@@ -90,10 +90,9 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// Block if the count of testing exceed the limit
 		if (!perfTestService.canExecuteTestMore()) {
 			// LOG MORE
-			List<PerfTest> perfTestsInTesting = perfTestService.getPerfTest(null,
-					Status.getProcessingOrTestingTestStatus());
-			LOG.debug("current running test is {}. so no tests start to run", perfTestsInTesting.size());
-			for (PerfTest perfTest : perfTestsInTesting) {
+			List<PerfTest> currentlyRunningTests = perfTestService.getCurrentlyRunningTest();
+			LOG.debug("current running test is {}. so no tests start to run", currentlyRunningTests.size());
+			for (PerfTest perfTest : currentlyRunningTests) {
 				LOG.trace("- " + perfTest);
 			}
 			return;

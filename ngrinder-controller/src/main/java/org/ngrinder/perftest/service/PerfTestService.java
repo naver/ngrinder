@@ -41,8 +41,10 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
@@ -50,9 +52,12 @@ import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.Directory;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -76,6 +81,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * {@link PerfTest} Service Class.
@@ -239,9 +245,45 @@ public class PerfTestService implements NGrinderConstants {
 	 * @return found {@link PerfTest}, null otherwise
 	 */
 	@Cacheable(value = "perftest")
+	@Transactional
 	public PerfTest getPerfTestCandiate() {
-		List<PerfTest> perfTests = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY);
-		return perfTests.isEmpty() ? null : perfTests.get(0);
+		List<PerfTest> readyPerfTests = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY);
+		List<PerfTest> usersFirstPerfTests = filterCurrentlyRunningTestUsersTest(readyPerfTests);
+		return usersFirstPerfTests.isEmpty() ? null : readyPerfTests.get(0);
+	}
+
+	/**
+	 * Get currently running {@link PerfTest} list.
+	 * 
+	 * @return
+	 */
+	public List<PerfTest> getCurrentlyRunningTest() {
+		return getPerfTest(null, Status.getProcessingOrTestingTestStatus());
+	}
+
+	/**
+	 * Filter out {@link PerfTest} whose owner is running another test now..
+	 * 
+	 * @param perfTestLists
+	 *            perf test
+	 * @return filtered perf test
+	 */
+	private List<PerfTest> filterCurrentlyRunningTestUsersTest(List<PerfTest> perfTestLists) {
+		List<PerfTest> currentlyRunningTests = getCurrentlyRunningTest();
+		final Set<User> currentlyRunningTestOwners = new HashSet<User>();
+		for (PerfTest each : currentlyRunningTests) {
+			currentlyRunningTestOwners.add((User) ObjectUtils.defaultIfNull(each.getLastModifiedUser(),
+					each.getCreatedUser()));
+		}
+		CollectionUtils.filter(perfTestLists, new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				PerfTest perfTest = (PerfTest) object;
+				return !currentlyRunningTestOwners.contains(ObjectUtils.defaultIfNull(perfTest.getLastModifiedUser(),
+						perfTest.getCreatedUser()));
+			}
+		});
+		return perfTestLists;
 	}
 
 	/**
