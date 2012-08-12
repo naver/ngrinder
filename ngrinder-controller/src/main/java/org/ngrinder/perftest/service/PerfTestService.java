@@ -78,7 +78,9 @@ import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.stereotype.Service;
 
 /**
- * Performance Test Service Class.
+ * {@link PerfTest} Service Class.
+ * 
+ * This class contains various method which mainly get the {@link PerfTest} matching specific conditions.
  * 
  * @author Mavlarn
  * @author JunHo Yoon

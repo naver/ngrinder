@@ -67,12 +67,12 @@ import org.tmatesoft.svn.util.SVNDebugLog;
 import org.tmatesoft.svn.util.SVNLogType;
 
 /**
- * WebDav servlet implementation on SVN Server. This servlet translates WEBDAV
- * request into underlying SVN Repo.
+ * WebDav servlet implementation on SVN Server. This servlet translates WEBDAV request into underlying SVN Repo.
  * 
  * This implementation is borrowed from SVNKit-DAV project.
  * 
  * @author JunHo Yoon
+ * @since 3.0
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 @Controller("svnDavServlet")
@@ -173,8 +173,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 	/**
 	 * Returns this servlet's {@link ServletConfig} object.
 	 * 
-	 * @return ServletConfig the <code>ServletConfig</code> object that
-	 *         initialized this servlet
+	 * @return ServletConfig the <code>ServletConfig</code> object that initialized this servlet
 	 * 
 	 */
 

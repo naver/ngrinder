@@ -54,7 +54,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
- * perf test run scheduler.
+ * {@link PerfTest} test running run scheduler.
  * 
  * This class is responsible to execute the performance test which is ready to execute. Mostly this class is started
  * from {@link #startTest()} method. This method is scheduled by Spring Task.
