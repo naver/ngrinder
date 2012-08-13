@@ -103,7 +103,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return perftest/list
 	 */
 	@RequestMapping("/list")
-	public String getTestList(User user, @RequestParam(required = false) String query,
+	public String getPerfTestList(User user, @RequestParam(required = false) String query,
 					@RequestParam(required = false) boolean onlyFinished,
 					@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
 		PageRequest pageReq = ((PageRequest) pageable);
@@ -136,7 +136,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return "perftest/detail"
 	 */
 	@RequestMapping("/detail")
-	public String getTestDetail(User user, @RequestParam(required = false) Long id, ModelMap model) {
+	public String getPerfTestDetail(User user, @RequestParam(required = false) Long id, ModelMap model) {
 		PerfTest test = null;
 		if (id != null) {
 			test = checkTestPermissionAndGet(user, id);
@@ -174,16 +174,19 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return
 	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public String saveTest(User user, ModelMap model, PerfTest test) {
+	public String savePerfTest(User user, ModelMap model, PerfTest test) {
 		checkArgument(test.getStatus().equals(Status.READY) || test.getStatus().equals(Status.SAVED),
 						"save test only support for SAVE or READY status");
-		checkArgument(test.getDuration() <= (1000 * 60 * 60 * agentManager.getMaxRunHour()),
+		checkArgument(test.getDuration() == null
+						|| test.getDuration() <= (1000 * 60 * 60 * agentManager.getMaxRunHour()),
 						"test duration should be within " + agentManager.getMaxRunHour());
-		checkArgument(test.getRunCount() <= agentManager.getMaxRunCount(), "test run count should be within "
-						+ agentManager.getMaxRunCount());
-		checkArgument(test.getAgentCount() == null || test.getAgentCount() <= agentManager.getMaxAgentSizePerConsole(),
+		checkArgument(test.getRunCount() == null || test.getRunCount() <= agentManager.getMaxRunCount(),
+						"test run count should be within " + agentManager.getMaxRunCount());
+		checkArgument(test.getAgentCount() == null
+						|| test.getAgentCount() <= agentManager.getMaxAgentSizePerConsole(),
 						"test agent shoule be within " + agentManager.getMaxAgentSizePerConsole());
-		checkArgument(test.getVuserPerAgent() == null ||test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
+		checkArgument(test.getVuserPerAgent() == null
+						|| test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
 						"test vuser shoule be within " + agentManager.getMaxVuserPerAgent());
 		perfTestService.savePerfTest(test);
 		return "redirect:/perftest/list";
@@ -210,7 +213,7 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/deleteTests")
 	public @ResponseBody
-	String deleteTests(User user, ModelMap model, @RequestParam String ids) {
+	String deletePerfTests(User user, ModelMap model, @RequestParam String ids) {
 		String[] idList = StringUtils.split(ids, ",");
 		for (String idStr : idList) {
 			try {
@@ -245,7 +248,7 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/getReportData")
 	public @ResponseBody
-	String getReportData(User user, ModelMap model, @RequestParam long testId,
+	String getPerfTestReportData(User user, ModelMap model, @RequestParam long testId,
 					@RequestParam(required = true) String dataType, @RequestParam int imgWidth) {
 		checkTestPermissionAndGet(user, testId);
 		List<Object> reportData = null;
