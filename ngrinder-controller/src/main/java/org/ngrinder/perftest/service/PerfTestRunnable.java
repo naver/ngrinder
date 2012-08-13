@@ -97,13 +97,17 @@ public class PerfTestRunnable implements NGrinderConstants {
 			}
 			return;
 		}
-
 		// Find out next ready perftest
 		PerfTest runCandidate = perfTestService.getPerfTestCandiate();
 		if (runCandidate == null) {
 			return;
 		}
-
+		
+		// If agent is not enough...
+		if (runCandidate.getAgentCount() > agentManager.getAllFreeAgents().size()) {
+			return;
+		}
+		
 		// In case of too many trial, cancel running.
 		if (runCandidate.getTestTrialCount() > PERFTEST_MAXIMUM_TRIAL_COUNT) {
 			LOG.error("The {} test is canceled because it has too many test execution errors",
@@ -127,6 +131,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	public void doTest(PerfTest perfTest) {
 		SingleConsole singleConsole = null;
 		try {
+
 			singleConsole = startConsole(perfTest);
 			GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
 			startAgentsOn(perfTest, grinderProperties, singleConsole);
