@@ -677,7 +677,7 @@ div.chart {
 			        	if (element.next().attr("class") == "add-on") {
 			        		error.insertAfter(element.next());
 			        	} else {
-			        		error.insertAfter(selement);
+			        		error.insertAfter(element);
 			        	}
 			        },
 			        highlight:function(element, errorClass, validClass) {

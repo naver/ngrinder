@@ -70,10 +70,10 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.READY, new Date());
 		ModelMap model = new ModelMap();
-		controller.deleteTests(getTestUser(), model, String.valueOf(test.getId()));
+		controller.deletePerfTests(getTestUser(), model, String.valueOf(test.getId()));
 
 		model.clear();
-		controller.getTestDetail(getTestUser(), test.getId(), model);
+		controller.getPerfTestDetail(getTestUser(), test.getId(), model);
 		PerfTest testInDB = (PerfTest) model.get(PARAM_TEST);
 		assertThat(testInDB, nullValue());
 
@@ -81,22 +81,22 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		PerfTest test1 = createPerfTest(testName, Status.READY, new Date());
 		PerfTest test2 = createPerfTest(testName, Status.READY, new Date());
 		String delIds = "" + test1.getId() + "," + test2.getId();
-		controller.deleteTests(getTestUser(), model, delIds);
+		controller.deletePerfTests(getTestUser(), model, delIds);
 
 		model.clear();
-		controller.getTestDetail(getTestUser(), test1.getId(), model);
+		controller.getPerfTestDetail(getTestUser(), test1.getId(), model);
 		testInDB = (PerfTest) model.get(PARAM_TEST);
 		assertThat(testInDB, nullValue());
 
 		model.clear();
-		controller.getTestDetail(getTestUser(), test2.getId(), model);
+		controller.getPerfTestDetail(getTestUser(), test2.getId(), model);
 		testInDB = (PerfTest) model.get(PARAM_TEST);
 		assertThat(testInDB, nullValue());
 	}
 
 	/**
-	 * for "saved" or "ready" test, can be modified, but for running or finished
-	 * test, can not modify
+	 * for "saved" or "ready" test, can be modified, but for running or finished test, can not
+	 * modify
 	 */
 	@Test
 	public void testSavePerfTestExist() {
@@ -118,26 +118,25 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		newTest.setScriptName(test.getScriptName());
 
 		ModelMap model = new ModelMap();
-		controller.saveTest(getTestUser(), model, newTest);
-		controller.getTestDetail(getTestUser(), newTest.getId(), model);
-		PerfTest testInDB = (PerfTest)model.get(PARAM_TEST);
+		controller.savePerfTest(getTestUser(), model, newTest);
+		controller.getPerfTestDetail(getTestUser(), newTest.getId(), model);
+		PerfTest testInDB = (PerfTest) model.get(PARAM_TEST);
 		assertThat(testInDB.getTestName(), is(newName));
 		assertThat(testInDB.getId(), is(test.getId()));
 
 		model.clear();
 		newTest.setStatus(Status.READY);
-		controller.saveTest(getTestUser(), model, newTest);
-		controller.getTestDetail(getTestUser(), newTest.getId(), model);
-		testInDB = (PerfTest)model.get(PARAM_TEST);
+		controller.savePerfTest(getTestUser(), model, newTest);
+		controller.getPerfTestDetail(getTestUser(), newTest.getId(), model);
+		testInDB = (PerfTest) model.get(PARAM_TEST);
 		assertThat(testInDB.getTestName(), is(newName));
 		assertThat(testInDB.getId(), is(test.getId()));
 
-		
-		//test status id "START_TESTING", can not be saved.
+		// test status id "START_TESTING", can not be saved.
 		newTest.setStatus(Status.START_TESTING);
 		try {
 			newTest.setStatus(Status.START_TESTING);
-			controller.saveTest(getTestUser(), model, newTest);
+			controller.savePerfTest(getTestUser(), model, newTest);
 			fail("test status id START_TESTING, can not be saved");
 		} catch (IllegalArgumentException e) {
 
@@ -150,7 +149,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	public void testGetTestList() {
 		createPerfTest("new test1", Status.READY, new Date());
 		ModelMap model = new ModelMap();
-		controller.getTestList(getTestUser(), null, false, null, model);
+		controller.getPerfTestList(getTestUser(), null, false, null, model);
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
@@ -167,7 +166,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		testAdmin.setRole(Role.ADMIN);
 		testAdmin = userService.saveUser(testAdmin);
 
-		controller.getTestList(testAdmin, null, false, null, model);
+		controller.getPerfTestList(testAdmin, null, false, null, model);
 		@SuppressWarnings("unchecked")
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
@@ -193,7 +192,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		otherTestUser.setRole(Role.USER);
 		otherTestUser = userService.saveUser(otherTestUser);
 
-		controller.getTestList(otherTestUser, null, false, null, model);
+		controller.getPerfTestList(otherTestUser, null, false, null, model);
 		@SuppressWarnings("unchecked")
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
@@ -211,12 +210,13 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 		Sort sort = new Sort("testName");
 		Pageable pageable = new PageRequest(0, 10, sort);
-		controller.getTestList(getTestUser(), strangeName, false, pageable, model);
+		controller.getPerfTestList(getTestUser(), strangeName, false, pageable, model);
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
 
-		controller.getTestList(getTestUser(), strangeName.substring(2, 10), false, new PageRequest(0, 10), model);
+		controller.getPerfTestList(getTestUser(), strangeName.substring(2, 10), false,
+						new PageRequest(0, 10), model);
 		testPage = (Page<PerfTest>) model.get("testListPage");
 		testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
@@ -239,7 +239,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
 		ModelMap model = new ModelMap();
-		controller.getReportData(getTestUser(), model, test.getId(), "tps,errors", 0);
+		controller.getPerfTestReportData(getTestUser(), model, test.getId(), "tps,errors", 0);
 	}
 
 	@Test

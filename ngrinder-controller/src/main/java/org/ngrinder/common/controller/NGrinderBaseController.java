@@ -40,7 +40,9 @@ import org.ngrinder.user.service.UserContext;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 public class NGrinderBaseController implements NGrinderConstants {
 
@@ -60,6 +62,15 @@ public class NGrinderBaseController implements NGrinderConstants {
 		return userContext.getCurrentUser();
 	}
 
+	@ModelAttribute("currentUser")
+	public User currentUser() {
+		try {
+			return getCurrentUser();
+		} catch (AuthenticationCredentialsNotFoundException e) {
+		}
+		return new User();
+	}
+
 	public void setTimeZone(String timeZone) {
 		User user = userContext.getCurrentUser();
 		user.setTimeZone(timeZone);
@@ -67,8 +78,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	protected void setCurrentUserInfoForModel(ModelMap model) {
-		model.put(PARAM_USERID,getCurrentUser().getUserId());
-		model.put(PARAM_TIMEZONE,getCurrentUser().getTimeZone());
+		model.put(PARAM_USERID, getCurrentUser().getUserId());
+		model.put(PARAM_TIMEZONE, getCurrentUser().getTimeZone());
 	}
 
 	protected void addMsgToModel(ModelMap model, String message) {

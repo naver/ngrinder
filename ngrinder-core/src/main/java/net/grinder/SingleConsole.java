@@ -100,6 +100,7 @@ public class SingleConsole implements Listener, SampleListener {
 	private Double[] values = new Double[60];
 	private int cursor = 0;
 	private SampleModel sampleModel;
+	private SampleModelViews modelView;
 	private long startTime = 0;
 	private Date TPS_LESSTHAN_ZREO_TIME;
 	private final ListenerSupport<ConsoleShutdownListener> m_shutdownListeners = new ListenerSupport<ConsoleShutdownListener>();
@@ -151,6 +152,7 @@ public class SingleConsole implements Listener, SampleListener {
 			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties, m_eventSyncCondition);
 			sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 			sampleModel.addTotalSampleListener(this);
+			modelView = getConsoleComponent(SampleModelViews.class);
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
 
 		} catch (GrinderException e) {
@@ -437,6 +439,8 @@ public class SingleConsole implements Listener, SampleListener {
 			}
 		} else {
 			TPS_LESSTHAN_ZREO_TIME = null;
+			//only if tps value is not too small ,It should be displayed 
+			addTpsValue(tps);
 		}
 
 		statisticData = this.getStatistics();
@@ -464,7 +468,6 @@ public class SingleConsole implements Listener, SampleListener {
 			} catch (IOException e) {
 				LOGGER.error("Write report data failed : ", e);
 			}
-			addTpsValue(tps);
 		}
 
 	}
@@ -477,10 +480,8 @@ public class SingleConsole implements Listener, SampleListener {
 		Map<String, Object> result = new HashMap<String, Object>();
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
-		final SampleModel model = getConsoleComponent(SampleModel.class);
-		final SampleModelViews modelView = getConsoleComponent(SampleModelViews.class);
 		ExpressionView[] views = modelView.getCumulativeStatisticsView().getExpressionViews();
-		ModelTestIndex modelIndex = (ModelTestIndex) ReflectionUtil.getFieldValue(model, "modelTestIndex");
+		ModelTestIndex modelIndex = ((SampleModelImplementationEx) sampleModel).getModelTestIndex();
 		if (modelIndex != null) {
 			for (int i = 0; i < modelIndex.getNumberOfTests(); i++) {
 				Map<String, Object> statistics = new HashMap<String, Object>();
@@ -519,13 +520,11 @@ public class SingleConsole implements Listener, SampleListener {
 			}
 		}
 
-		StatisticsSet totalSet = model.getTotalCumulativeStatistics();
+		StatisticsSet totalSet = sampleModel.getTotalCumulativeStatistics();
 		Map<String, Object> totalStatistics = new HashMap<String, Object>();
 
 		for (ExpressionView expressionView : views) { // TODO : expressionView
 														// == null ?
-			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
 					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 		}
@@ -586,7 +585,8 @@ public class SingleConsole implements Listener, SampleListener {
 			bw.newLine();
 			bw.flush();
 		} catch (Exception e) {
-			System.out.println(e);
+			LOGGER.error(e.getMessage(), e);
+			throw new NGrinderRuntimeException(e.getMessage(), e);
 		} finally {
 			IOUtils.closeQuietly(write);
 			IOUtils.closeQuietly(bw);
@@ -602,9 +602,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	public void setReportPath(File reportDir) {
-		if (!reportDir.exists()) {
-			reportDir.mkdirs();
-		}
+		checkNotNull(reportDir, "report folder should not be empty!").mkdirs();
 		this.reportPath = reportDir;
 	}
 

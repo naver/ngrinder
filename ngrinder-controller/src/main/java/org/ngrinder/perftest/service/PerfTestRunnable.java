@@ -195,7 +195,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// get available consoles.
 		ConsoleProperties consoleProperty = perfTestService.createConsoleProperties(perfTest);
 		SingleConsole singleConsole = consoleManager.getAvailableConsole(consoleProperty);
-		singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest.getId()));
 		// increase trial count
 		perfTest.setTestTrialCount(perfTest.getTestTrialCount() + 1);
 		perfTest.setPort(singleConsole.getConsolePort());
