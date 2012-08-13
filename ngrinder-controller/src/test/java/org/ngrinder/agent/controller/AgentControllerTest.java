@@ -46,14 +46,15 @@ public class AgentControllerTest extends AbstractNGrinderTransactionalTest {
 	public void testGetAgentList() {
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		req.addHeader("User-Agent", "Win");
-		SecurityContextHolderAwareRequestWrapper reqWrapper = new SecurityContextHolderAwareRequestWrapper(req, "U");
+		SecurityContextHolderAwareRequestWrapper reqWrapper = new SecurityContextHolderAwareRequestWrapper(
+						req, "U");
 		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(reqWrapper));
-		
+
 		ModelMap model = new ModelMap();
 		agentController.getAgentList(model);
-		
+
 		RequestContextHolder.resetRequestAttributes();
-		
+
 	}
 
 }
