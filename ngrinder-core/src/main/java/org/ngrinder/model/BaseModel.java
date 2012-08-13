@@ -56,11 +56,11 @@ public class BaseModel<M> extends BaseEntity<M> {
 	@JoinColumn(name = "created_user", insertable = true, updatable = false)
 	private User createdUser;
 
-	@Column(name = "last_modified_date", insertable = false, updatable = true)
+	@Column(name = "last_modified_date", insertable = true, updatable = true)
 	private Date lastModifiedDate;
 
 	@ManyToOne
-	@JoinColumn(name = "last_modified_user", insertable = false, updatable = true)
+	@JoinColumn(name = "last_modified_user", insertable = true, updatable = true)
 	private User lastModifiedUser;
 
 	public Date getCreatedDate() {
