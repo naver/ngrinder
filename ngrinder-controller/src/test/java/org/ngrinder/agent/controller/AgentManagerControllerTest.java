@@ -22,8 +22,16 @@
  */
 package org.ngrinder.agent.controller;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import net.grinder.message.console.AgentControllerState;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.agent.model.AgentInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
@@ -37,24 +45,54 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  * @author Mavlarn
  * @since 3.0
  */
-public class AgentControllerTest extends AbstractNGrinderTransactionalTest {
+public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	AgentManagerController agentController;
 
-	@Test
-	public void testGetAgentList() {
+	@Before
+	public void setMockRequest() {
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		req.addHeader("User-Agent", "Win");
 		SecurityContextHolderAwareRequestWrapper reqWrapper = new SecurityContextHolderAwareRequestWrapper(
 						req, "U");
 		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(reqWrapper));
+	}
+	
+	@After
+	public void reSetRequest(){
+		RequestContextHolder.resetRequestAttributes();
+	}
 
+	@Test
+	public void testGetAgentList() {
 		ModelMap model = new ModelMap();
 		agentController.getAgentList(model);
-
-		RequestContextHolder.resetRequestAttributes();
-
+	}
+	
+	@Test
+	public void testSaveAndGetAgent() {
+		ModelMap model = new ModelMap();
+		AgentInfo agent = new AgentInfo();
+		agent.setIp("11.11.11.11");
+		agent.setPort(1234);
+		agent.setRegion("BJ");
+		agent.setStatus(AgentControllerState.READY);
+		agentController.createAgent(model, agent);
+		
+		model.clear();
+		agentController.getAgent(model, agent.getId());
+		AgentInfo agentInDB = (AgentInfo)model.get("agent");
+		assertThat(agentInDB.getId(), is(agent.getId()));
+		assertThat(agentInDB.getIp(), is(agent.getIp()));
+		assertThat(agentInDB.getPort(), is(agent.getPort()));
+		
+		model.clear();
+		agentController.deleteAgent(model, "" + agent.getId());
+		model.clear();
+		agentController.getAgent(model, agent.getId());
+		agentInDB = (AgentInfo)model.get("agent");
+		assertThat(agentInDB, nullValue());
 	}
 
 }
