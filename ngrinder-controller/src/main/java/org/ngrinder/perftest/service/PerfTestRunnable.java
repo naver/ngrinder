@@ -43,7 +43,7 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
 
 import org.ngrinder.agent.model.AgentInfo;
-import org.ngrinder.chart.service.MonitorDataService;
+import org.ngrinder.chart.service.MonitorAgentService;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
@@ -77,7 +77,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	private AgentManager agentManager;
 
 	@Autowired
-	private MonitorDataService monitorDataService;
+	private MonitorAgentService monitorDataService;
 
 	// wait 30 seconds until agents start the test running.
 	private static final int WAIT_TEST_START_SECOND = 30000;

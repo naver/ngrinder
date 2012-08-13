@@ -22,6 +22,11 @@
  */
 package org.ngrinder.chart.controller;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +39,9 @@ import org.springframework.ui.ModelMap;
  * @since
  */
 public class MonitorControllerTest extends AbstractNGrinderTransactionalTest {
+
+	private static final String DATE_FORMAT = "yyyyMMddHHmmss";
+	private static final DateFormat df = new SimpleDateFormat(DATE_FORMAT);
 	
 	@Autowired
 	private MonitorController monitorController;
@@ -45,5 +53,22 @@ public class MonitorControllerTest extends AbstractNGrinderTransactionalTest {
 		LOG.debug("Current monitor data for ip:{} is\n{}", "127.0.0.1", rtnStr);
 	}
 
+	@Test
+	public void testMonitorDataNoTimeParam() {
+		ModelMap model = new ModelMap();
+		String rtnStr = monitorController.getMonitorData(model, "127.0.0.1", null, null, 0);
+		LOG.debug("Current monitor data for ip:{} is\n{}", "127.0.0.1", rtnStr);
+	}
+
+	@Test
+	public void testMonitorData() throws ParseException {
+		ModelMap model = new ModelMap();
+		Date endTime = new Date();
+		long endTimelong = Long.valueOf(df.format(new Date()));
+		long startTimeLong = endTimelong - 10 *60 * 1000; //10 minutes before
+		Date startTime = df.parse(String.valueOf(startTimeLong));
+		String rtnStr = monitorController.getMonitorData(model, "127.0.0.1", startTime, endTime, 500);
+		LOG.debug("Current monitor data for ip:{} is\n{}", "127.0.0.1", rtnStr);
+	}
 
 }
