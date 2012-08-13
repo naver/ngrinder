@@ -113,9 +113,6 @@ public class PerfTestController extends NGrinderBaseController {
 			pageable = new PageRequest(pageReq.getPageNumber(), pageReq.getPageSize(), sort);
 		}
 		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, onlyFinished, pageable);
-		for (PerfTest perfTest : testList) {
-			System.out.println(perfTest.getLastModifiedDate());
-		}
 		model.addAttribute("testListPage", testList);
 		model.addAttribute("onlyFinished", onlyFinished);
 		model.addAttribute("query", query);
