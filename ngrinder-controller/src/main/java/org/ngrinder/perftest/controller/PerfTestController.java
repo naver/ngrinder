@@ -26,6 +26,8 @@ import static org.ngrinder.common.util.Preconditions.checkArgument;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -158,6 +160,49 @@ public class PerfTestController extends NGrinderBaseController {
 		} catch (NGrinderRuntimeException e) {
 			LOG.error("Cannot get script list of user:", e);
 		}
+		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
+		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, agentManager.getMaxAgentSizePerConsole());
+		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
+		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
+		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour() - 1);
+		return "perftest/detail";
+	}
+
+	private String getTestNameFromUrl(String urlString) {
+		URL url;
+		try {
+			url = new URL(urlString);
+			return "test_for_" + StringUtils.replace(url.getHost(), ".", "_") + ".py";
+		} catch (MalformedURLException e) {
+			throw new NGrinderRuntimeException("Error while translating " + urlString, e);
+		}
+	}
+
+	/**
+	 * Get performance test detail on give perf test id
+	 * 
+	 * @param user
+	 *            user
+	 * @param model
+	 *            model
+	 * @param id
+	 *            performance test id
+	 * @return "perftest/detail"
+	 */
+	@RequestMapping("/quickStart")
+	public String getQuickStart(User user, @RequestParam(value = "url", required = true) String urlString,
+					ModelMap model) {
+		PerfTest test = checkTestPermissionAndGet(user, 0);
+		model.addAttribute(PARAM_TEST, test);
+		String testNameFromUrl = getTestNameFromUrl(urlString);
+		fileEntiryService.addFolder(user, "", testNameFromUrl);
+		FileEntry prepareNewEntry = fileEntiryService.prepareNewEntry(user, "/" + testNameFromUrl,
+						"script.py", urlString);
+		fileEntiryService.save(user, prepareNewEntry);
+
+		FileEntry newOne = fileEntiryService.getFileEntry(user, testNameFromUrl + "/" + "script.py");
+		List<FileEntry> scriptList = new ArrayList<FileEntry>();
+		scriptList.add(newOne);
 		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
 		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, agentManager.getMaxAgentSizePerConsole());
 		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());

@@ -49,6 +49,7 @@
 		<property name="requestContextAttribute" value="req" />
 		<property name="contentType" value="text/html;charset=UTF-8" />
 		<property name="exposeSpringMacroHelpers" value="true" />
+		<property name="cache" value="no" />
 	</bean>
 
 
