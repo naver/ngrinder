@@ -9,6 +9,7 @@
 			.controls a { margin-left:50px; }
 			.quickStart  { padding-left:160px; padding-top:35px }  
 		</style> 
+
 	</head>
 	<body>
 	<#include "common/navigator.ftl">
@@ -92,6 +93,17 @@
 			  	</div>
 			</div>
 		</div>
+		<script>
+			$(document).ready(function(){
+   				 $("#quickStart").validate({
+				  rules: {
+				    field: {
+				      required: true,
+				      url: true
+				    }
+				  }
+				});
+		</script>
 		<#include "common/copyright.ftl">
 	</div>
 	</body>

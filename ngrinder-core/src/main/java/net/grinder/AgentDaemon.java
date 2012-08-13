@@ -132,16 +132,15 @@ public class AgentDaemon implements Agent {
 		public void run() {
 
 			try {
-				getListeners().apply(new Informer<AgentShutDownListener>() {
-					public void inform(AgentShutDownListener listener) {
-						listener.shutdownAgent();
-					}
-				});
 				setAgent(new AgentImplementationEx(LOGGER, m_agentConfig)).run(getGrinderProperties());
-
-			} catch (GrinderException e) {
-				LOGGER.error("while sleeping agent thread, error occurs", e);
+			} catch (Exception e) {
+				LOGGER.error("while running agent thread, error occurs", e);
 			}
+			getListeners().apply(new Informer<AgentShutDownListener>() {
+				public void inform(AgentShutDownListener listener) {
+					listener.shutdownAgent();
+				}
+			});
 			if (isForceToshutdown()) {
 				setForceToshutdown(false);
 			}

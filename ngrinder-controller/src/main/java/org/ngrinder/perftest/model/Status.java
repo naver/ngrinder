@@ -54,6 +54,8 @@ public enum Status {
 	TESTING(StatusCategory.TESTING),
 	/** Waiting for test is finishing. */
 	TESTING_FINISHED(StatusCategory.TESTING),
+	/** Waiting for test is finishing. */
+	ABNORMAL_TESTING(StatusCategory.TESTING),
 	/** Test finished. */
 	FINISHED(StatusCategory.FINISHED),
 	/** Stopped by error. */

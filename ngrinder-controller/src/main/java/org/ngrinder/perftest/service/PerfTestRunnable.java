@@ -38,10 +38,10 @@ import java.util.List;
 import java.util.Set;
 
 import net.grinder.SingleConsole;
+import net.grinder.SingleConsole.ConsoleShutdownListener;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.service.MonitorDataService;
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -102,12 +102,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 		if (runCandidate == null) {
 			return;
 		}
-		
+
 		// If agent is not enough...
 		if (runCandidate.getAgentCount() > agentManager.getAllFreeAgents().size()) {
 			return;
 		}
-		
+
 		// In case of too many trial, cancel running.
 		if (runCandidate.getTestTrialCount() > PERFTEST_MAXIMUM_TRIAL_COUNT) {
 			LOG.error("The {} test is canceled because it has too many test execution errors",
@@ -157,11 +157,28 @@ public class PerfTestRunnable implements NGrinderConstants {
 	void markPerfTestError(PerfTest perfTest, SingleConsole singleConsole, Exception e) {
 		// Leave last status as test error cause
 		perfTest.setTestErrorCause(perfTest.getStatus());
-		perfTest.setTestErrorStackTrace(ExceptionUtils.getFullStackTrace(e));
+		perfTest.setTestErrorStackTrace(e.getMessage());
 		perfTestService.savePerfTest(perfTest, Status.STOP_ON_ERROR);
 	}
 
-	void runTestOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
+	/**
+	 * Mark test error on {@link PerfTest} instance
+	 * 
+	 * @param perfTest
+	 *            {@link PerfTest}
+	 * @param singleConsole
+	 *            console in use
+	 * @param e
+	 *            exception occurs.
+	 */
+	void markAbromalTermination(PerfTest perfTest, String reason) {
+		// Leave last status as test error cause
+		perfTest.setTestErrorCause(perfTest.getStatus());
+		perfTest.setTestErrorStackTrace(reason);
+		perfTestService.savePerfTest(perfTest, Status.ABNORMAL_TESTING);
+	}
+
+	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties, final SingleConsole singleConsole) {
 		// start target monitor
 		Set<AgentInfo> agents = new HashSet<AgentInfo>();
 		AgentInfo agent = new AgentInfo();
@@ -170,6 +187,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 		// Run test
 		perfTestService.savePerfTest(perfTest, START_TESTING);
+		singleConsole.addListener(new ConsoleShutdownListener() {
+			@Override
+			public void readyToStop() {
+				markAbromalTermination(perfTest, "Too low TPS");
+			}
+		});
 		grinderProperties.setProperty(GRINDER_PROP_TEST_ID, "test_" + perfTest.getId());
 		long startTime = singleConsole.startTest(grinderProperties);
 		perfTest.setStartTime(new Date(startTime));
@@ -208,11 +231,42 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
 	public void finishTest() {
+		List<PerfTest> abnoramlTestingPerfTest = perfTestService.getAbnoramlTestingPerfTest();
+
+		for (PerfTest each : abnoramlTestingPerfTest) {
+			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
+			doTermicate(each, consoleUsingPort);
+		}
+
 		List<PerfTest> finishCandiate = perfTestService.getTestingPerfTest();
+
 		for (PerfTest each : finishCandiate) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			doFinish(each, consoleUsingPort);
 		}
+	}
+
+	/**
+	 * Terminate test.
+	 * 
+	 * @param perfTest
+	 *            {@link PerfTest} to be finished
+	 * @param singleConsoleInUse
+	 *            {@link SingleConsole} which is being using for {@link PerfTest}
+	 */
+	public void doTermicate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+		// FIXME... it should found abnormal test status..
+		if (singleConsoleInUse == null) {
+			LOG.error("There is no console found for test:{}", perfTest);
+			// need to finish test as error
+			perfTestService.savePerfTest(perfTest, Status.STOP_ON_ERROR);
+			return;
+		}
+		// stop target host monitor
+
+		// FIXME : Is it safe to locate monitor agents removal?
+		monitorDataService.removeMonitorAgents(perfTest.getTargetHosts());
+		consoleManager.returnBackConsole(singleConsoleInUse);
 	}
 
 	/**
