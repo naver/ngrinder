@@ -107,17 +107,21 @@ public class PerfTestController extends NGrinderBaseController {
 					@RequestParam(required = false) boolean onlyFinished,
 					@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
 		PageRequest pageReq = ((PageRequest) pageable);
-		if (pageReq != null && pageReq.getSort() == null) {
-			Sort sort = new Sort(Direction.ASC, "scheduledTime");
+		Sort sort = pageReq == null ? null : pageReq.getSort();
+		if (sort == null && pageReq != null) {
+			sort = new Sort(Direction.DESC, "lastModifiedDate");
 			pageable = new PageRequest(pageReq.getPageNumber(), pageReq.getPageSize(), sort);
 		}
 		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, onlyFinished, pageable);
+		for (PerfTest perfTest : testList) {
+			System.out.println(perfTest.getLastModifiedDate());
+		}
 		model.addAttribute("testListPage", testList);
 		model.addAttribute("onlyFinished", onlyFinished);
 		model.addAttribute("query", query);
 		model.addAttribute("page", pageable);
-		if (pageable != null && pageable.getSort() != null && pageable.getSort().iterator().hasNext()) {
-			Order sortProp = pageable.getSort().iterator().next();
+		if (sort != null) {
+			Order sortProp = (Order) sort.iterator().next();
 			model.addAttribute("sortColumn", sortProp.getProperty());
 			model.addAttribute("sortDirection", sortProp.getDirection());
 		}
