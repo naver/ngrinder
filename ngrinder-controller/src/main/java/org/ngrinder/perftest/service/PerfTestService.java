@@ -27,6 +27,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.common.util.Preconditions.checkNotZero;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.createdBy;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.emptyPredicate;
+import static org.ngrinder.perftest.repository.PerfTestSpecification.idSetEqual;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.likeTestNameOrDescription;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.statusSetEqual;
 
@@ -141,6 +142,19 @@ public class PerfTestService implements NGrinderConstants {
 			spec = spec.and(likeTestNameOrDescription(query));
 		}
 		return perfTestRepository.findAll(spec, pageable);
+	}
+
+	public List<PerfTest> getPerfTest(User user, Integer[] ids) {
+
+		Specifications<PerfTest> spec = Specifications.where(emptyPredicate());
+
+		// User can see only his own test
+		if (user.getRole().equals(Role.USER)) {
+			spec = spec.and(createdBy(user));
+		}
+
+		spec = spec.and(idSetEqual(ids));
+		return perfTestRepository.findAll(spec);
 	}
 
 	/**
@@ -603,4 +617,5 @@ public class PerfTestService implements NGrinderConstants {
 	public boolean canExecuteTestMore() {
 		return getPerfTestCount(null, Status.getProcessingOrTestingTestStatus()) < getMaximumConcurrentTestCount();
 	}
+
 }
