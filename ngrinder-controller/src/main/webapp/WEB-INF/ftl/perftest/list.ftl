@@ -13,8 +13,8 @@
 			<img src="${req.getContextPath()}/img/bg_perftest_banner.png" style="margin-top:-20px;margin-bottom:10px"/>
 			
 			<form id="listForm" action=""${req.getContextPath()}/perftest/list" method="POST">
-				<input type="hidden" id="sortColumn" name="page.sort" value="${(sortColumn)!'status'}">
-				<input type="hidden" id="sortDirection" name="page.sort.dir" value="${(sortDirection)!'asc'}">
+				<input type="hidden" id="sortColumn" name="page.sort" value="${(sortColumn)!'lastModifiedDate'}">
+				<input type="hidden" id="sortDirection" name="page.sort.dir" value="${(sortDirection)!'desc'}">
 		
 				<div class="well form-inline searchBar">
 					<input type="text" class="search-query" placeholder="Keywords" name ="query" id="query" value="${query!}">
@@ -23,7 +23,7 @@
 						<input type="checkbox" id="onlyFinished" name="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> Only Finished
 					</label>
 					<span class="pull-right">
-						<a class="btn" href="${req.getContextPath()}/perftest/detail" id="createBtn" data-toggle="modal">
+						<a class="btn btn-primary" href="${req.getContextPath()}/perftest/detail" id="createBtn" data-toggle="modal">
 							<i class="icon-file"></i>
 							Create test
 						</a>
@@ -94,14 +94,14 @@
 									<td class="ellipsis">
 										${test.scriptName} 
 									</td>
-									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
-									<td>${(test.durationStr)!}</td>
-									<td>${(test.tps)!}</td>
+									<td><#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
+									<td>${(test.durationStr)!}</td> 
+									<td>${(test.tps)!}</td>  
 									<td>${(test.meanTestTime)!0}</td>
 									<td>${(test.errors)!0}</td>
 									<td>${vuserTotal}</td>
-								</tr>
-							</#list>
+								</tr> 
+							</#list> 
 						<#else>
 							<tr>
 								<td colspan="12" class="noData">

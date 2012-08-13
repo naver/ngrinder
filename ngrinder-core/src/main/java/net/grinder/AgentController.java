@@ -34,6 +34,7 @@ import net.grinder.AgentDaemon.AgentShutDownListener;
 import net.grinder.common.GrinderBuild;
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
+import net.grinder.communication.AddressAwareMessage;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.communication.ClientReceiver;
 import net.grinder.communication.ClientSender;
@@ -56,6 +57,7 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.ReflectionUtil;
 import net.grinder.util.thread.Condition;
 
+import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
@@ -76,10 +78,10 @@ public class AgentController implements Agent {
 	private final AgentControllerServerListener m_agentControllerServerListener;
 	private FanOutStreamSender m_fanOutStreamSender;
 	private final AgentControllerConnectorFactory m_connectorFactory = new AgentControllerConnectorFactory(
-			ConnectionType.AGENT);
-	private boolean m_agentStart = false;
-
+					ConnectionType.AGENT);
+	private AgentConfig agentConfig;
 	private final Condition m_eventSyncCondition;
+	private volatile AgentControllerState m_state = AgentControllerState.STARTED;
 
 	/**
 	 * Constructor.
@@ -120,8 +122,8 @@ public class AgentController implements Agent {
 	 */
 	public void run() throws GrinderException {
 		GrinderProperties grinderProperties = new GrinderProperties();
-		grinderProperties.setInt(GrinderProperties.CONSOLE_PORT,
-				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+		grinderProperties.setInt(AgentConfig.AGENT_HOSTID,
+						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		synchronized (m_eventSyncCondition) {
 			m_eventSyncCondition.notifyAll();
 		}
@@ -140,9 +142,11 @@ public class AgentController implements Agent {
 
 		StartGrinderMessage startMessage = null;
 		ConsoleCommunication consoleCommunication = null;
-		m_fanOutStreamSender = new FanOutStreamSender(GrinderConstants.AGENT_CONTROLLER_FANOUT_STREAM_THREAD_COUNT);
+		m_fanOutStreamSender = new FanOutStreamSender(
+						GrinderConstants.AGENT_CONTROLLER_FANOUT_STREAM_THREAD_COUNT);
 		m_timer = new Timer(false);
-		AgentDaemon agent = new AgentDaemon();
+		AgentDaemon agent = new AgentDaemon(checkNotNull(getAgentConfig(),
+						"agentconfig should be provided before agentdaemon start."));
 		try {
 			while (true) {
 				m_logger.info(GrinderBuild.getName());
@@ -150,16 +154,16 @@ public class AgentController implements Agent {
 				GrinderProperties properties;
 				do {
 					properties = grinderProperties;
-					m_agentIdentity.setName(properties.getProperty("grinder.hostID", getHostName()));
-					m_agentIdentity.setRegion(grinderProperties.getProperty("grinder.region"));
+					m_agentIdentity.setName(agentConfig.getProperty(AgentConfig.AGENT_HOSTID, getHostName()));
+					m_agentIdentity.setRegion(agentConfig.getProperty(AgentConfig.AGENT_REGION, ""));
 					final Connector connector = m_connectorFactory.create(properties);
 
 					if (consoleCommunication == null) {
 						try {
 							consoleCommunication = new ConsoleCommunication(connector);
 							consoleCommunication.start();
-							m_logger.info("connected to waiting for agent controller server at {}",
-									connector.getEndpointAsString());
+							m_logger.info("connected to agent controller server at {}",
+											connector.getEndpointAsString());
 						} catch (CommunicationException e) {
 							m_logger.error(e.getMessage());
 							return;
@@ -167,18 +171,23 @@ public class AgentController implements Agent {
 					}
 					try {
 						m_agentIdentity.setPort(getSocket(
-								checkNotNull(ReflectionUtil.getFieldValue(consoleCommunication, "m_sender"),
-										"m_sender is not availble in consoleComminitation")).getPort());
+										checkNotNull(ReflectionUtil.getFieldValue(consoleCommunication,
+														"m_sender"),
+														"m_sender is not availble in consoleComminitation"))
+										.getPort());
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 
 					if (consoleCommunication != null && startMessage == null) {
 						m_logger.info("waiting for agent controller server signal");
+						m_state = AgentControllerState.READY;
 						m_agentControllerServerListener.waitForMessage();
 
 						if (m_agentControllerServerListener.received(AgentControllerServerListener.START)) {
 							startMessage = m_agentControllerServerListener.getLastStartGrinderMessage();
+
+							m_logger.info("agent start message is revcieved from console " + startMessage);
 							continue;
 						} else {
 							break; // Another message, check at end of outer
@@ -190,17 +199,18 @@ public class AgentController implements Agent {
 					if (startMessage != null) {
 						m_agentIdentity.setNumber(startMessage.getAgentNumber());
 					}
-				} while (checkNotNull(startMessage, "start method should be exist in messaging loop").getProperties() == null);
+				} while (checkNotNull(startMessage, "start method should be exist in messaging loop")
+								.getProperties() == null);
 
 				// Here the agent run code goes..
 				if (startMessage != null) {
 					m_logger.info("starting agent...");
+					m_state = AgentControllerState.BUSY;
 					agent.run(startMessage.getProperties());
-					m_agentStart = true;
 					agent.addListener(new AgentShutDownListener() {
 						@Override
 						public void shutdownAgent() {
-							m_agentStart = false;
+							m_state = AgentControllerState.FINISHED;
 						}
 					});
 				}
@@ -215,65 +225,78 @@ public class AgentController implements Agent {
 				}
 
 				if (m_agentControllerServerListener.received(AgentControllerServerListener.START)) {
-					System.out.println("Start message!!!");
 					startMessage = m_agentControllerServerListener.getLastStartGrinderMessage();
 				} else if (m_agentControllerServerListener.received(AgentControllerServerListener.STOP)) {
 					agent.shutdown();
 					startMessage = null;
-					m_agentStart = false;
 					m_agentControllerServerListener.discardMessages(AgentControllerServerListener.STOP);
-
 				} else if (m_agentControllerServerListener.received(AgentControllerServerListener.SHUTDOWN)) {
 					startMessage = null;
 					break;
-				} else if (m_agentControllerServerListener.received(AgentControllerServerListener.UPDATE_AGENT)) {
+				} else if (m_agentControllerServerListener
+								.received(AgentControllerServerListener.UPDATE_AGENT)) {
 					// Do update agent itself.
 					startMessage = null;
+					m_state = AgentControllerState.BUSY;
+					sendCurrentState(consoleCommunication);
 					updateAgent(m_agentControllerServerListener.getLastUpdateAgentGrinderMessage());
-
 				} else if (m_agentControllerServerListener.received(AgentControllerServerListener.LOG_REPORT)) {
 					startMessage = null;
-					sendLog(m_agentControllerServerListener.getLastLogReportGrinderMessage());
+					m_state = AgentControllerState.BUSY;
+					sendCurrentState(consoleCommunication);
+					sendLog(consoleCommunication,
+									m_agentControllerServerListener.getLastLogReportGrinderMessage());
 					// Do update
 				} else {
 					// ConsoleListener.RESET or natural death.
 					startMessage = null;
-					m_agentStart = false;
 				}
 			}
 
 		} finally {
 			agent.shutdown();
-			m_agentStart = false;
-			m_timer.cancel();
+			m_state = AgentControllerState.FINISHED;
 			shutdownConsoleCommunication(consoleCommunication);
+			m_timer.cancel();
 		}
 	}
 
 	private Socket getSocket(Object sender) {
 		Object socketWrapper = checkNotNull(ReflectionUtil.getFieldValue(sender, "m_socketWrapper"),
-				"m_socketWrapper might not be exist in this grinder");
+						"m_socketWrapper might not be exist in this grinder");
 		Socket socket = (Socket) checkNotNull(ReflectionUtil.getFieldValue(socketWrapper, "m_socket"),
-				"m_socket is not available in socketwrapper of this grinder");
+						"m_socket is not available in socketwrapper of this grinder");
 		return socket;
 	}
 
 	private void updateAgent(UpdateAgentGrinderMessage lastUpdateAgentGrinderMessage) {
+		// FIXME
 	}
 
-	private void sendLog(LogReportGrinderMessage logReportGrinderMessage) {
-
+	private void sendLog(ConsoleCommunication consoleCommunication,
+					LogReportGrinderMessage logReportGrinderMessage) {
+		// FIXME !! consoleCommunication.sendCurrentState()
 	}
 
 	// /////////////////////////////////////////////////////
 
 	private void shutdownConsoleCommunication(ConsoleCommunication consoleCommunication) {
-
+		sendCurrentState(consoleCommunication);
 		if (consoleCommunication != null) {
 			consoleCommunication.shutdown();
+			consoleCommunication = null;
 		}
-
 		m_agentControllerServerListener.discardMessages(AgentControllerServerListener.ANY);
+	}
+
+	private void sendCurrentState(ConsoleCommunication consoleCommunication) {
+		if (consoleCommunication != null) {
+			try {
+				consoleCommunication.sendCurrentState();
+			} catch (CommunicationException e) {
+				m_logger.error("Error while sending current state", e.getMessage());
+			}
+		}
 	}
 
 	/**
@@ -329,18 +352,27 @@ public class AgentController implements Agent {
 		return javaDataModel;
 	}
 
+	public AgentConfig getAgentConfig() {
+		return agentConfig;
+	}
+
+	public void setAgentConfig(AgentConfig agentConfig) {
+		this.agentConfig = agentConfig;
+	}
+
 	private final class ConsoleCommunication {
 		private final ClientSender m_sender;
 		private final TimerTask m_reportRunningTask;
 		private final MessagePump m_messagePump;
 
 		public ConsoleCommunication(Connector connector) throws CommunicationException {
-			final ClientReceiver receiver = ClientReceiver.connect(connector, new AgentAddress(m_agentIdentity));
+			final ClientReceiver receiver = ClientReceiver.connect(connector, new AgentAddress(
+							m_agentIdentity));
 			m_sender = ClientSender.connect(receiver);
 
 			m_agentIdentity.setPort(getSocket(m_sender).getPort());
-			m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.START, getJavaDataModel(),
-					getSystemDataModel()));
+			m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.STARTED,
+							getJavaDataModel(), getSystemDataModel()));
 
 			final MessageDispatchSender messageDispatcher = new MessageDispatchSender();
 			m_agentControllerServerListener.registerMessageHandlers(messageDispatcher);
@@ -350,9 +382,7 @@ public class AgentController implements Agent {
 			m_reportRunningTask = new TimerTask() {
 				public void run() {
 					try {
-						m_sender.send(new AgentControllerProcessReportMessage(
-								(m_agentStart ? AgentControllerState.AGENT_RUN : AgentControllerState.RUNNING),
-								getJavaDataModel(), getSystemDataModel()));
+						sendCurrentState();
 					} catch (CommunicationException e) {
 						cancel();
 						m_logger.error(e.getMessage());
@@ -363,6 +393,19 @@ public class AgentController implements Agent {
 			};
 		}
 
+		public void sendMessage(AddressAwareMessage message) {
+			try {
+				m_sender.send(message);
+			} catch (CommunicationException e) {
+				m_logger.error(e.getMessage());
+			}
+		}
+
+		public void sendCurrentState() throws CommunicationException {
+			sendMessage(new AgentControllerProcessReportMessage(m_state, getJavaDataModel(),
+							getSystemDataModel()));
+		}
+
 		public void start() {
 			m_messagePump.start();
 			m_timer.schedule(m_reportRunningTask, 0, GrinderConstants.AGENT_CONTROLLER_HEARTBEAT_INTERVAL);
@@ -371,7 +414,8 @@ public class AgentController implements Agent {
 		public void shutdown() {
 			m_reportRunningTask.cancel();
 			try {
-				m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.FINISHED, null, null));
+				m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.FINISHED, null,
+								null));
 			} catch (CommunicationException e) {
 				// Fall through
 				// Ignore - peer has probably shut down.

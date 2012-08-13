@@ -35,17 +35,22 @@ public enum StatusCategory {
 	 */
 	PROGRESSING("blue_anime.gif", true, false), 
 	/**
-	 * Stopped by error or user.
+	 * Ready to run..
 	 */
-	STOP("red.png", false, false),
+	PREPARE("blue.png", true, true), 
+	/**
+	 * Testing..
+	 */
+	TESTING("green_anime.gif",true, false),
 	/**
 	 * Finished normally.
 	 */
 	FINISHED("green.png", false, false),
 	/**
-	 * Ready to run..
+	 * Stopped by error or user.
 	 */
-	PREPARE("blue.png", true, true);
+	STOP("red.png", false, false);
+
 	private final boolean stoppable;
 	private final boolean deletable;
 	private final String iconName;
@@ -63,8 +68,8 @@ public enum StatusCategory {
 	public boolean isDeletable() {
 		return deletable;
 	}
-
 	public String getIconName() {
+		
 		return iconName;
 	}
 }

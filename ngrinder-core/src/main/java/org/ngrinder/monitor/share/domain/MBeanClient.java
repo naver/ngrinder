@@ -107,13 +107,13 @@ public class MBeanClient {
 		try {
 			connectClient();
 		} catch (IOException ex) {
-			LOG.error(ex.getMessage(), ex);
+			LOG.error(ex.getMessage(), ex.getCause());
 			bConnect = false;
 		} catch (SecurityException ex) {
-			LOG.error(ex.getMessage(), ex);
+			LOG.error(ex.getMessage(), ex.getCause());
 			bConnect = false;
 		} catch (Exception ex) {
-			LOG.error(ex.getMessage(), ex);
+			LOG.error(ex.getMessage(), ex.getCause());
 			bConnect = false;
 		}
 
@@ -161,7 +161,8 @@ public class MBeanClient {
 			if (sunOperatingSystemMXBean == null) {
 				if (server.isInstanceOf(on, "com.sun.management.OperatingSystemMXBean")) {
 					sunOperatingSystemMXBean = ManagementFactory.newPlatformMXBeanProxy(server,
-							ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME, OperatingSystemMXBean.class);
+									ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME,
+									OperatingSystemMXBean.class);
 				}
 			}
 		} catch (InstanceNotFoundException e) {
@@ -174,24 +175,24 @@ public class MBeanClient {
 
 	public synchronized MemoryMXBean getMemoryMXBean() throws IOException {
 		if (memoryMBean == null) {
-			memoryMBean = ManagementFactory.newPlatformMXBeanProxy(server, ManagementFactory.MEMORY_MXBEAN_NAME,
-					MemoryMXBean.class);
+			memoryMBean = ManagementFactory.newPlatformMXBeanProxy(server,
+							ManagementFactory.MEMORY_MXBEAN_NAME, MemoryMXBean.class);
 		}
 		return memoryMBean;
 	}
 
 	public synchronized RuntimeMXBean getRuntimeMXBean() throws IOException {
 		if (runtimeMBean == null) {
-			runtimeMBean = ManagementFactory.newPlatformMXBeanProxy(server, ManagementFactory.RUNTIME_MXBEAN_NAME,
-					RuntimeMXBean.class);
+			runtimeMBean = ManagementFactory.newPlatformMXBeanProxy(server,
+							ManagementFactory.RUNTIME_MXBEAN_NAME, RuntimeMXBean.class);
 		}
 		return runtimeMBean;
 	}
 
 	public synchronized ThreadMXBean getThreadMXBean() throws IOException {
 		if (threadMBean == null) {
-			threadMBean = ManagementFactory.newPlatformMXBeanProxy(server, ManagementFactory.THREAD_MXBEAN_NAME,
-					ThreadMXBean.class);
+			threadMBean = ManagementFactory.newPlatformMXBeanProxy(server,
+							ManagementFactory.THREAD_MXBEAN_NAME, ThreadMXBean.class);
 		}
 		return threadMBean;
 	}
@@ -208,7 +209,8 @@ public class MBeanClient {
 
 	public static ProxyMBeanServerConnection newProxyMBeanServerConnection(MBeanServerConnection mbsc) {
 		return (ProxyMBeanServerConnection) Proxy.newProxyInstance(MBeanClient.class.getClassLoader(),
-				new Class[] { ProxyMBeanServerConnection.class }, new ProxyMBeanServerInvocationHandler(mbsc));
+						new Class[] { ProxyMBeanServerConnection.class },
+						new ProxyMBeanServerInvocationHandler(mbsc));
 	}
 
 	private void setConnectionState(ConnectionState connectionState) {

@@ -11,9 +11,22 @@ import net.grinder.AgentDaemon.AgentShutDownListener;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.util.thread.Condition;
 
+import org.junit.Before;
 import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.infra.AgentConfig;
 
 abstract public class AbstractMuliGrinderTestBase {
+	public AgentConfig agentConfig1;
+	public AgentConfig agentConfig2;
+	public AgentConfig agentConfig3;
+
+	@Before
+	public void agentInit() {
+		agentConfig1 = new MockAgentConfigInAgentSide().init();
+		agentConfig2 = new MockAgentConfigInAgentSide().init();
+		agentConfig3 = new MockAgentConfigInAgentSide().init();
+	}
+
 	/**
 	 * Sleep quietly
 	 * 
@@ -58,11 +71,9 @@ abstract public class AbstractMuliGrinderTestBase {
 	}
 
 	/**
-	 * Returns a free port numbers on localhost, or less than give count entries
-	 * if unable to find a free port.
+	 * Returns a free port numbers on localhost, or less than give count entries if unable to find a free port.
 	 * 
-	 * @return a free port number on localhost, or less than give count entries
-	 *         if unable to find a free port
+	 * @return a free port number on localhost, or less than give count entries if unable to find a free port
 	 */
 	public List<Integer> getFreePorts(int count) {
 		List<Integer> ports = new ArrayList<Integer>();
@@ -73,11 +84,9 @@ abstract public class AbstractMuliGrinderTestBase {
 	}
 
 	/**
-	 * Returns a free port number on localhost, or -1 if unable to find a free
-	 * port.
+	 * Returns a free port number on localhost, or -1 if unable to find a free port.
 	 * 
-	 * @return a free port number on localhost, or -1 if unable to find a free
-	 *         port
+	 * @return a free port number on localhost, or -1 if unable to find a free port
 	 */
 	public int getFreePort() {
 		ServerSocket socket = null;

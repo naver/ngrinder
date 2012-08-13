@@ -64,11 +64,6 @@ public interface NGrinderConstants {
 	public static final int PLUGIN_UPDATE_FREQUENCY = 60;
 
 	/**
-	 * Initial console size.
-	 */
-	public static final int CONSOLE_SIZE = 10;
-
-	/**
 	 * Initial Max assignable agent size per console.
 	 */
 	public static final int MAX_AGENT_SIZE_PER_CONSOLE = 10;
@@ -86,7 +81,12 @@ public interface NGrinderConstants {
 	/**
 	 * Maximum waiting seconds until all agents are connected.
 	 */
-	public static final int CONSOLE_MAX_WAITING_MILLISECONDS = 5000;
+	public static final String NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS = "ngrinder.consoleMaxWaitingMilliseconds";
+
+	/**
+	 * Maximum waiting seconds until all agents are connected.
+	 */
+	public static final int NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS_VALUE = 5000;
 
 	/**
 	 * Performance test execution frequency in milliseconds.
@@ -101,7 +101,6 @@ public interface NGrinderConstants {
 	// HOME_PATH
 	public static final String PLUGIN_PATH = "plugins";
 	public static final String SCRIPT_PATH = "script";
-	public static final int CONSOLE_PORT_BASE = 12000;
 	public static final String USER_REPO_PATH = "repos";
 	public static final String PERF_TEST_PATH = "perftest";
 	public static final String DOWNLOAD_PATH = "download";
@@ -128,6 +127,7 @@ public interface NGrinderConstants {
 	public static final String PARAM_MAX_AGENT_SIZE_PER_CONSOLE = "maxAgentSizePerConsole";
 	public static final String PARAM_MAX_VUSER_PER_AGENT = "maxVuserPerAgent";
 	public static final String PARAM_MAX_RUN_COUNT = "maxRunCount";
+	public static final String PARAM_MAX_RUN_HOUR = "maxRunHour";
 
 	public static final String PARAM_RESULT_SUB = "resultsub";
 
@@ -153,9 +153,15 @@ public interface NGrinderConstants {
 	public static final String GRINDER_PROP_REPORT_TO_CONSOLE = "grinder.reportToConsole.interval";
 	public static final String GRINDER_PROP_INITIAL_SLEEP_TIME = "grinder.initialSleepTime";
 	public static final String GRINDER_PROP_REPORT_TIMES_TO_CONSOLE = "grinder.reportTimesToConsole";
+	public static final String GRINDER_PROP_TEST_ID = "grinder.test.id";
 
+	// ngrinder setting.
+	public static final String NGRINDER_PROP_CONSOLE_PORT_BASE = "ngrinder.consolePortBase";
+	public static final int NGRINDER_PROP_CONSOLE_PORT_BASE_VALUE = 12000;
+	public static final String NGRINDER_PROP_MAX_CONCURRENT_TEST = "ngrinder.maxConcurrentTest";
+	public static final int NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE = 10;
 	public static final int MAX_STACKTRACE_STRING_SIZE = 2048;
 
 	public static final String NGRINDER_NEWS_RSS_URL = "http://www.cubrid.org/wiki_ngrinder/rss";
-
+	public static final int MAX_RUN_HOUR = 8;
 }

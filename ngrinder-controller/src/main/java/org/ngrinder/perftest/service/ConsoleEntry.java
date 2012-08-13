@@ -23,8 +23,7 @@
 package org.ngrinder.perftest.service;
 
 /**
- * Console information which contains console's characteristics for example
- * port.
+ * Console information which contains console's characteristics for example port.
  * 
  * @author JunHo Yoon
  * @since 3.0

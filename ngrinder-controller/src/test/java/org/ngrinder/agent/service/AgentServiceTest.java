@@ -81,7 +81,7 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 		agent.setHostName("testAppName" + key);
 		agent.setPort(8080);
 		agent.setRegion("testRegion" + key);
-		agent.setStatus(AgentControllerState.AGENT_RUN);
+		agent.setStatus(AgentControllerState.BUSY);
 		agentService.saveAgent(agent);
 		return agent;
 	}

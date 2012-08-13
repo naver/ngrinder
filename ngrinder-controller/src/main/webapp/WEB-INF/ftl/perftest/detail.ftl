@@ -677,7 +677,7 @@ div.chart {
 			        	if (element.next().attr("class") == "add-on") {
 			        		error.insertAfter(element.next());
 			        	} else {
-			        		error.insertAfter(selement);
+			        		error.insertAfter(element);
 			        	}
 			        },
 			        highlight:function(element, errorClass, validClass) {
@@ -802,7 +802,7 @@ div.chart {
 					format: 'yyyy-mm-dd'
 				});
 						
-				$("#hSelect").append(getOption(24));
+				$("#hSelect").append(getOption(${maxRunHour}));
 				$("#hSelect").change(getDurationMS);
 				
 				$("#mSelect").append(getOption(60));

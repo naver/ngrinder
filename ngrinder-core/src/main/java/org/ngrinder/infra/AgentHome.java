@@ -55,7 +55,7 @@ public class AgentHome {
 	 *            agent home directory
 	 */
 	public AgentHome(File directory) {
-		checkNotNull(directory, "directory should not be null").mkdir();
+		checkNotNull(directory, "directory should not be null").mkdirs();
 		if (!directory.canWrite()) {
 			throw new ConfigurationException(String.format(" ngrinder home directory %s is not writable.", directory),
 					null);
@@ -126,5 +126,9 @@ public class AgentHome {
 		}
 		return properties;
 
+	}
+
+	public File getLogDirectory() {
+		return new File(getDirectory(), "log");
 	}
 }

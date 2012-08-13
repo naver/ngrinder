@@ -32,7 +32,7 @@ public class AgentDaemonTest extends AbstractMuliGrinderTestBase {
 	@Test
 	public void testDifferentPort() throws InterruptedException {
 		// Try to connect any port
-		AgentDaemon agent = new AgentDaemon();
+		AgentDaemon agent = new AgentDaemon(agentConfig1);
 		agent.run(getFreePort());
 		sleep(1000);
 	}
@@ -42,7 +42,7 @@ public class AgentDaemonTest extends AbstractMuliGrinderTestBase {
 	@Test(timeout = 3000)
 	public void testIfAgentDeadWellWhenConsoleIsShutdowned() {
 		// After connecting agent daemon,
-		AgentDaemon agent = new AgentDaemon();
+		AgentDaemon agent = new AgentDaemon(agentConfig1);
 		agent.run(console1.getConsolePort());
 		agent.addListener(new AgentShutDownSynchronizeListener(condition));
 		// Shutdown console
@@ -53,7 +53,7 @@ public class AgentDaemonTest extends AbstractMuliGrinderTestBase {
 	@Test
 	public void testAgentReconnect() {
 		// After connecting agent daemon,
-		AgentDaemon agent = new AgentDaemon();
+		AgentDaemon agent = new AgentDaemon(agentConfig1);
 		agent.run(console1.getConsolePort());
 		agent.addListener(new AgentShutDownSynchronizeListener(condition));
 		// Shutdown console
@@ -62,10 +62,10 @@ public class AgentDaemonTest extends AbstractMuliGrinderTestBase {
 
 		// shutdown twice
 		agent.shutdown();
-		sleep(3000);
+		sleep(5000);
 		assertThat(console1.getAllAttachedAgentsCount(), is(0));
 		agent.shutdown();
-		sleep(3000);
+		sleep(5000);
 		assertThat(console1.getAllAttachedAgentsCount(), is(0));
 
 		// Even shutdown twice, agent is well connected into console.

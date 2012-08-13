@@ -40,20 +40,21 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class AgentControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
-	AgentController agentController;
+	AgentManagerController agentController;
 
 	@Test
 	public void testGetAgentList() {
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		req.addHeader("User-Agent", "Win");
-		SecurityContextHolderAwareRequestWrapper reqWrapper = new SecurityContextHolderAwareRequestWrapper(req, "U");
+		SecurityContextHolderAwareRequestWrapper reqWrapper = new SecurityContextHolderAwareRequestWrapper(
+						req, "U");
 		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(reqWrapper));
-		
+
 		ModelMap model = new ModelMap();
 		agentController.getAgentList(model);
-		
+
 		RequestContextHolder.resetRequestAttributes();
-		
+
 	}
 
 }

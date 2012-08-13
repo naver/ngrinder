@@ -35,7 +35,6 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -54,7 +53,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/agent")
 @PreAuthorize("hasAnyRole('A', 'S')")
-public class AgentController extends NGrinderBaseController {
+public class AgentManagerController extends NGrinderBaseController {
 
 	@Autowired
 	private AgentService agentService;
@@ -66,12 +65,10 @@ public class AgentController extends NGrinderBaseController {
 	private HttpContainerContext httpContainerContext;
 
 	/**
-	 * Get agenet list.
+	 * Get agent list.
 	 * 
 	 * @param model
 	 *            model
-	 * @param keywords
-	 *            search keyword
 	 * @return viewName
 	 */
 	@RequestMapping({ "", "/", "/list" })
@@ -90,7 +87,8 @@ public class AgentController extends NGrinderBaseController {
 		});
 		if (list != null && list.length != 0) {
 			String contextPath = httpContainerContext.getCurrentRequestUrlFromUserRequest();
-			StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url", contextPath));
+			StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url",
+							contextPath));
 			url.append("/agent/download/" + list[0]);
 			model.addAttribute("downloadLink", url.toString());
 		}
@@ -147,8 +145,16 @@ public class AgentController extends NGrinderBaseController {
 		return getAgentList(model);
 	}
 
+	/**
+	 * Download agent.
+	 * 
+	 * @param fileName
+	 *            file path of agent
+	 * @param response
+	 *            reponse.
+	 */
 	@RequestMapping(value = "/download/{fileName}")
-	public void downloadAgent(User user, @PathVariable String fileName, HttpServletResponse response) {
+	public void downloadAgent(@PathVariable String fileName, HttpServletResponse response) {
 
 		final String extension = httpContainerContext.isUnixUser() ? "tar.gz" : "zip";
 		File ngrinderFile = new File(config.getHome().getDownloadDirectory(), fileName + "." + extension);

@@ -22,6 +22,8 @@
  */
 package net.grinder;
 
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
@@ -75,7 +77,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.picocontainer.MutablePicoContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,8 +160,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Simple constructor only setting port. It automatically binds all ip
-	 * addresses.
+	 * Simple constructor only setting port. It automatically binds all ip addresses.
 	 * 
 	 * @param port
 	 *            PORT number
@@ -247,9 +247,11 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	public List<AgentIdentity> getAllAttachedAgents() {
 		final List<AgentIdentity> agentIdentities = new ArrayList<AgentIdentity>();
-		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) ReflectionUtil
-				.getFieldValue((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
-						"m_agentNumberMap");
+		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(
+				ReflectionUtil.getFieldValue(
+						(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
+						"m_agentNumberMap"),
+				"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
 			public void objectAndNumber(Object object, int number) {
 				agentIdentities.add((AgentIdentity) object);
@@ -353,7 +355,7 @@ public class SingleConsole implements Listener, SampleListener {
 
 	public void waitUntilAgentConnected(int size) {
 		int trial = 1;
-		while (trial++ < 5) {
+		while (trial++ < 10) {
 			// when agent finished one test, processReports will be updated as
 			// null
 			if (processReports == null || this.processReports.length != size) {
@@ -364,24 +366,29 @@ public class SingleConsole implements Listener, SampleListener {
 				return;
 			}
 		}
-		throw new NGrinderRuntimeException("Connection is not completed "
+		throw new NGrinderRuntimeException("Connection is not completed. processReport is "
 				+ ToStringBuilder.reflectionToString(processReports));
 	}
 
+	/**
+	 * Check all test is finished. To be safe, this counts thread count and not finished workprocess. If one of them is
+	 * 0, It thinks test is finished.
+	 * 
+	 * @return true if finished
+	 */
 	public boolean isAllTestFinished() {
 		int workingThreadNum = 0;
+		int notFinishedWorkerCount = 0;
 		for (ProcessReports processReport : this.processReports) {
-			// TODO
 			WorkerProcessReport[] reports = processReport.getWorkerProcessReports();
 			for (WorkerProcessReport report : reports) {
+				if (report.getState() != 3) {
+					notFinishedWorkerCount++;
+				}
 				workingThreadNum += report.getNumberOfRunningThreads();
 			}
 		}
-		return workingThreadNum == 0;
-	}
-
-	public MutablePicoContainer getConsoleContainer() {
-		return consoleFoundation.getContainer();
+		return notFinishedWorkerCount == 0 || workingThreadNum == 0;
 	}
 
 	/**
@@ -470,8 +477,8 @@ public class SingleConsole implements Listener, SampleListener {
 		Map<String, Object> result = new HashMap<String, Object>();
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
-		final SampleModel model = (SampleModel) this.getConsoleComponent(SampleModel.class);
-		final SampleModelViews modelView = (SampleModelViews) this.getConsoleComponent(SampleModelViews.class);
+		final SampleModel model = getConsoleComponent(SampleModel.class);
+		final SampleModelViews modelView = getConsoleComponent(SampleModelViews.class);
 		ExpressionView[] views = modelView.getCumulativeStatisticsView().getExpressionViews();
 		ModelTestIndex modelIndex = (ModelTestIndex) ReflectionUtil.getFieldValue(model, "modelTestIndex");
 		if (modelIndex != null) {
@@ -534,10 +541,8 @@ public class SingleConsole implements Listener, SampleListener {
 
 		result.put("tpsChartData", this.getTpsValues());
 
-		MutablePicoContainer container = (MutablePicoContainer) this.getConsoleContainer();
-		ProcessControl processControl = (ProcessControl) container.getComponent(ProcessControl.class);
+		ProcessControl processControl = getConsoleComponent(ProcessControl.class);
 		NGrinderConsoleCommunicationService.collectWorkerAndThreadInfo(processControl, result);
-
 		result.put("success", !this.isAllTestFinished());
 
 		return result;

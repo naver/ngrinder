@@ -39,14 +39,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Spring component which is responsible to get the nGrinder config which is
- * stored ${NGRINDER_HOME}.
+ * Spring component which is responsible to get the nGrinder config which is stored ${NGRINDER_HOME}.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
 public class AgentConfig {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder_agent";
+	public static final String AGENT_CONTROLER_SERVER_HOST = "agent.controller.server.host";
+	public static final String AGENT_CONTROLER_SERVER_PORT = "agent.controller.server.port";
+	public static final String AGENT_REGION = "agent.region";
+	public static final String AGENT_HOSTID = "agent.hostid";
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentConfig.class);
 
 	/**
@@ -61,7 +65,7 @@ public class AgentConfig {
 	/**
 	 * Initialize.
 	 */
-	public void init() {
+	public AgentConfig init() {
 		try {
 			home = resolveHome();
 			copyDefaultConfigurationFiles();
@@ -69,6 +73,7 @@ public class AgentConfig {
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while loading NGRINDER_HOME", e);
 		}
+		return this;
 	}
 
 	/**
@@ -97,9 +102,9 @@ public class AgentConfig {
 	 * 
 	 * @return resolved {@link AgentHome}
 	 */
-	private AgentHome resolveHome() {
-		String userHomeFromEnv = System.getenv("NGRINDER_HOME");
-		String userHomeFromProperty = System.getProperty("ngrinder.home");
+	protected AgentHome resolveHome() {
+		String userHomeFromEnv = System.getenv("NGRINDER_AGENT_HOME");
+		String userHomeFromProperty = System.getProperty("ngrinder.agent.home");
 		if (StringUtils.isNotEmpty(userHomeFromEnv) && !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
 			LOGGER.warn("The path to ngrinder-home is ambiguous:");
 			LOGGER.warn("    System Environment:  NGRINDER_HOME=" + userHomeFromEnv);
@@ -117,7 +122,7 @@ public class AgentConfig {
 	private void loadAgentProperties() {
 		checkNotNull(home);
 		Properties properties = home.getProperties("agent.conf");
-		properties.put("NGRINDER_HOME", home.getDirectory().getAbsolutePath());
+		properties.put("NGRINDER_AGENT_HOME", home.getDirectory().getAbsolutePath());
 		agentProperties = new PropertiesWrapper(properties);
 	}
 
@@ -148,4 +153,11 @@ public class AgentConfig {
 		return agentProperties;
 	}
 
+	public String getProperty(String key, String defaultValue) {
+		return getAgentProperties().getProperty(key, defaultValue);
+	}
+
+	public int getPropertyInt(String key, int defaultValue) {
+		return getAgentProperties().getPropertyInt(key, defaultValue);
+	}
 }

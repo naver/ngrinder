@@ -16,7 +16,6 @@ import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.init.DBInit;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
-import org.ngrinder.script.service.MockFileEntityRepsotory;
 import org.ngrinder.script.util.CompressionUtil;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

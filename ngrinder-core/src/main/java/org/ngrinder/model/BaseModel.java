@@ -94,5 +94,4 @@ public class BaseModel<M> extends BaseEntity<M> {
 	public void setLastModifiedUser(User lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
 	}
-
 }

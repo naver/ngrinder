@@ -22,36 +22,63 @@
  */
 package org.ngrinder.script.model;
 
+import org.apache.commons.io.FilenameUtils;
+
+/**
+ * File type of FileEntity.
+ * 
+ * @author JunHo Yoon
+ */
 public enum FileType {
-	/** Python */
+	/** Python. */
 	PYTHON_SCRIPT("Python Script", "py", FileCategory.SCRIPT),
-	/** Java Script */
+	/** Java Script. */
 	JAVA_SCRIPT("JavaScript", "js", FileCategory.SCRIPT),
-	/** Xml */
+	/** Xml. */
 	XML("xml", "xml", FileCategory.DATA),
-	/** Text */
+	/** Text. */
 	TXT("txt", "txt", FileCategory.DATA),
-	/** CSV */
+	/** CSV. */
 	CSV("csv", "csv", FileCategory.DATA),
-	/** Properties */
+	/** Properties. */
 	PROPERTIES("properties", "properties", FileCategory.DATA),
-	/** Jar */
+	/** Jar. */
 	JAR("jar", "jar", FileCategory.LIBRARY),
-	/** Unknown */
+	/** Unknown. */
 	UNKNOWN("unknown", "", FileCategory.ETC),
-	/** Dir */
+	/** Dir. */
 	DIR("dir", "", FileCategory.ETC);
 	private String description;
 	private final FileCategory fileCategory;
 	private final String extension;
 
+	/**
+	 * Constructor.
+	 * @param description description of this file type
+	 * @param extension extendsion used.
+	 * @param fileCategory category of FileType.
+	 */
 	FileType(String description, String extension, FileCategory fileCategory) {
 		this.description = description;
 		this.extension = extension;
 		this.fileCategory = fileCategory;
 	}
 
-	public static FileType getFileType(String extension) {
+	/**
+	 * Get file type by extension of given name.
+	 * @param name name of file.
+	 * @return FileType which matches to extension. UNKNOWN otherwise.
+	 */
+	public static FileType getFileTypeByName(String name) {
+		return getFileTypeByExtension(FilenameUtils.getExtension(name));
+	}
+	
+	/**
+	 * Get file type by extension.
+	 * @param extension extension
+	 * @return FileType which matches to extension. UNKNOWN otherwise.
+	 */
+	public static FileType getFileTypeByExtension(String extension) {
 		for (FileType each : values()) {
 			if (each.extension.equals(extension)) {
 				return each;
@@ -60,6 +87,10 @@ public enum FileType {
 		return UNKNOWN;
 	}
 
+	/**
+	 * Get description of file type.
+	 * @return file type description. 
+	 */
 	public String toString() {
 		return description;
 	}

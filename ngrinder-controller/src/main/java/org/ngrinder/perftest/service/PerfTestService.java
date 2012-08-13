@@ -40,23 +40,29 @@ import java.io.LineNumberReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.Directory;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.infra.spring.OnlyOnePageRequest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
@@ -75,9 +81,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Performance Test Service Class.
+ * {@link PerfTest} Service Class.
+ * 
+ * This class contains various method which mainly get the {@link PerfTest} matching specific conditions.
  * 
  * @author Mavlarn
  * @author JunHo Yoon
@@ -135,6 +144,53 @@ public class PerfTestService implements NGrinderConstants {
 	}
 
 	/**
+	 * Get PerfTest count which have given status.
+	 * 
+	 * @param user
+	 *            user who created test. null to retrieve all
+	 * @param statuses
+	 *            status set
+	 * @return the count
+	 */
+	public long getPerfTestCount(User user, Status... statuses) {
+		Specifications<PerfTest> spec = Specifications.where(emptyPredicate());
+
+		// User can see only his own test
+		if (user != null) {
+			spec = spec.and(createdBy(user));
+		}
+
+		if (statuses.length != 0) {
+			spec = spec.and(statusSetEqual(statuses));
+		}
+
+		return perfTestRepository.count(spec);
+	}
+
+	/**
+	 * Get {@link PerfTest} list which have give state.
+	 * 
+	 * @param user
+	 *            user who created {@link PerfTest}. if null, retrieve all test
+	 * @param statuses
+	 *            set of {@link Status}
+	 * @return found {@link PerfTest} list.
+	 */
+	public List<PerfTest> getPerfTest(User user, Status... statuses) {
+		Specifications<PerfTest> spec = Specifications.where(emptyPredicate());
+
+		// User can see only his own test
+		if (user != null) {
+			spec = spec.and(createdBy(user));
+		}
+		if (statuses.length != 0) {
+			spec = spec.and(statusSetEqual(statuses));
+		}
+
+		return perfTestRepository.findAll(spec);
+	}
+
+	/**
 	 * Save {@link PerfTest}.
 	 * 
 	 * @param perfTest
@@ -184,15 +240,50 @@ public class PerfTestService implements NGrinderConstants {
 	}
 
 	/**
-	 * Get next runnable PerfTest.
+	 * Get next runnable PerfTest list.
 	 * 
 	 * @return found {@link PerfTest}, null otherwise
 	 */
 	@Cacheable(value = "perftest")
+	@Transactional
 	public PerfTest getPerfTestCandiate() {
-		Page<PerfTest> perfTest = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY,
-				new OnlyOnePageRequest());
-		return (perfTest.getNumberOfElements() == 0) ? null : perfTest.getContent().get(0);
+		List<PerfTest> readyPerfTests = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY);
+		List<PerfTest> usersFirstPerfTests = filterCurrentlyRunningTestUsersTest(readyPerfTests);
+		return usersFirstPerfTests.isEmpty() ? null : readyPerfTests.get(0);
+	}
+
+	/**
+	 * Get currently running {@link PerfTest} list.
+	 * 
+	 * @return
+	 */
+	public List<PerfTest> getCurrentlyRunningTest() {
+		return getPerfTest(null, Status.getProcessingOrTestingTestStatus());
+	}
+
+	/**
+	 * Filter out {@link PerfTest} whose owner is running another test now..
+	 * 
+	 * @param perfTestLists
+	 *            perf test
+	 * @return filtered perf test
+	 */
+	private List<PerfTest> filterCurrentlyRunningTestUsersTest(List<PerfTest> perfTestLists) {
+		List<PerfTest> currentlyRunningTests = getCurrentlyRunningTest();
+		final Set<User> currentlyRunningTestOwners = new HashSet<User>();
+		for (PerfTest each : currentlyRunningTests) {
+			currentlyRunningTestOwners.add((User) ObjectUtils.defaultIfNull(each.getLastModifiedUser(),
+					each.getCreatedUser()));
+		}
+		CollectionUtils.filter(perfTestLists, new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				PerfTest perfTest = (PerfTest) object;
+				return !currentlyRunningTestOwners.contains(ObjectUtils.defaultIfNull(perfTest.getLastModifiedUser(),
+						perfTest.getCreatedUser()));
+			}
+		});
+		return perfTestLists;
 	}
 
 	/**
@@ -202,7 +293,7 @@ public class PerfTestService implements NGrinderConstants {
 	 */
 	@Cacheable(value = "perftestlist")
 	public List<PerfTest> getTestingPerfTest() {
-		return perfTestRepository.findAllByStatusOrderByCreatedDateAsc(Status.TESTING);
+		return getPerfTest(null, Status.getTestingTestStates());
 	}
 
 	/**
@@ -230,11 +321,17 @@ public class PerfTestService implements NGrinderConstants {
 				checkNotZero(perfTest.getId(), "perftest id should not be 0 or zero").toString());
 	}
 
+	/**
+	 * Create {@link GrinderProperties} based on the passed {@link PerfTest}
+	 * 
+	 * @param perfTest
+	 *            base data
+	 * @return created {@link GrinderProperties} instance
+	 */
 	public GrinderProperties getGrinderProperties(PerfTest perfTest) {
 		try {
 			// Copy grinder properties
-			File userGrinderPropertiesPath = new File(getUserPerfTestDirectory(perfTest, NGrinderConstants.PATH_DIST),
-					DEFAULT_GRINDER_PROPERTIES_PATH);
+			File userGrinderPropertiesPath = new File(getPerfTestDirectory(perfTest), DEFAULT_GRINDER_PROPERTIES_PATH);
 			FileUtils.copyFile(config.getHome().getDefaultGrinderProperties(), userGrinderPropertiesPath);
 			GrinderProperties grinderProperties = new GrinderProperties(userGrinderPropertiesPath);
 			grinderProperties.setAssociatedFile(new File(userGrinderPropertiesPath.getName()));
@@ -260,10 +357,11 @@ public class PerfTestService implements NGrinderConstants {
 	}
 
 	/**
-	 * Prepare files for distribution
+	 * Prepare files for distribution.
 	 * 
 	 * @param perfTest
-	 * @return
+	 *            perfTest
+	 * @return File location in which the perftest should have.
 	 */
 	public File prepareDistribution(PerfTest perfTest) {
 		checkNotNull(perfTest.getId(), "perfTest should have id");
@@ -273,10 +371,8 @@ public class PerfTestService implements NGrinderConstants {
 		// Get all files in the script path
 		List<FileEntry> fileEntries = fileEntryService.getFileEntries(user,
 				FilenameUtils.getPath(checkNotEmpty(scriptName)));
-		File perfTestDirectory = getUserPerfTestDirectory(perfTest, NGrinderConstants.PATH_DIST);
+		File perfTestDirectory = getPerfTestDirectory(perfTest);
 
-		// clean up Distribution folders
-		//FileUtils.deleteQuietly(perfTestDirectory);
 		perfTestDirectory.mkdirs();
 
 		// Distribute each files in that folder.
@@ -292,12 +388,26 @@ public class PerfTestService implements NGrinderConstants {
 		return perfTestDirectory;
 	}
 
-	public File getUserPerfTestDirectory(PerfTest perfTest) {
+	/**
+	 * Get perf test base directory
+	 * 
+	 * @param perfTest
+	 *            perfTest
+	 * @return prefTest base path
+	 */
+	public File getPerfTestBaseDirectory(PerfTest perfTest) {
 		return config.getHome().getPerfTestDirectory(perfTest.getId().toString());
 	}
 
-	public File getUserPerfTestDirectory(PerfTest perfTest, String subDir) {
-		return new File(getUserPerfTestDirectory(perfTest), subDir);
+	/**
+	 * Get user perf test directory fot
+	 * 
+	 * @param perfTest
+	 * @param subDir
+	 * @return
+	 */
+	public File getPerfTestDirectory(PerfTest perfTest) {
+		return new File(getPerfTestBaseDirectory(perfTest), NGrinderConstants.PATH_DIST);
 	}
 
 	/**
@@ -380,41 +490,72 @@ public class PerfTestService implements NGrinderConstants {
 		return reportData;
 	}
 
+	/**
+	 * Get report file name for give test id.
+	 * 
+	 * @param testId
+	 * @return report file path
+	 */
 	public File getReportFile(long testId) {
-		File reportFolder = config.getHome().getPerfTestDirectory(
-				testId + File.separator + NGrinderConstants.PATH_REPORT);
-		File targetFile = new File(reportFolder, NGrinderConstants.REPORT_CSV);
-		return targetFile;
-	}
-
-	public File getReportFileDirectory(long testId) {
-		File reportFolder = config.getHome().getPerfTestDirectory(
-				testId + File.separator + NGrinderConstants.PATH_REPORT);
-		return reportFolder;
+		return new File(getReportFileDirectory(testId), NGrinderConstants.REPORT_CSV);
 	}
 
 	/**
-	 * To get statistics data when test is running
+	 * Get report file directory for give test id.
+	 * 
+	 * @param testId
+	 * @return report file path
 	 */
-	public Map<String, Object> getStatistics(int port) {
-		return consoleManager.getConsoleUsingPort(port).getStatictisData();
+
+	public File getReportFileDirectory(long testId) {
+		return new File(config.getHome().getPerfTestDirectory(String.valueOf(testId)), NGrinderConstants.PATH_REPORT);
 	}
 
+	/**
+	 * To get statistics data when test is running If the console is not available.. it returns empty map.
+	 */
+	public Map<String, Object> getStatistics(int port) {
+		SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(port);
+		LOGGER.warn("console using {} port is not available", port);
+		return consoleUsingPort == null ? new HashMap<String, Object>() : consoleUsingPort.getStatictisData();
+	}
+
+	/**
+	 * Get all perf test list.
+	 * 
+	 * Note : This is only for test
+	 * 
+	 * @return all {@link PerfTest} list
+	 * 
+	 */
 	public List<PerfTest> getAllPerfTest() {
 		return perfTestRepository.findAll();
 	}
 
+	/**
+	 * Create {@link ConsoleProperties} based on given {@link PerfTest} instance.
+	 * 
+	 * @param perfTest
+	 *            perfTest
+	 * @return {@link ConsoleProperties}
+	 */
 	public ConsoleProperties createConsoleProperties(PerfTest perfTest) {
 		ConsoleProperties consoleProperties = ConsolePropertiesFactory.createEmptyConsoleProperties();
 		try {
-			consoleProperties.setAndSaveDistributionDirectory(new Directory(getUserPerfTestDirectory(perfTest,
-					NGrinderConstants.PATH_DIST)));
+			consoleProperties.setAndSaveDistributionDirectory(new Directory(getPerfTestDirectory(perfTest)));
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("Error while setting console properties", e);
 		}
 		return consoleProperties;
 	}
 
+	/**
+	 * Update the given {@link PerfTest} properties after test finished.
+	 * 
+	 * @param perfTest
+	 *            perfTest
+	 * @return updated {@link PerfTest}
+	 */
 	public PerfTest updatePerfTestAfterTestFinish(PerfTest perfTest) {
 		checkNotNull(perfTest);
 		int port = perfTest.getPort();
@@ -430,4 +571,22 @@ public class PerfTestService implements NGrinderConstants {
 		return perfTest;
 	}
 
+	/**
+	 * Get maximum concurrent test count.
+	 * 
+	 * @return maximum concurrent test
+	 */
+	public int getMaximumConcurrentTestCount() {
+		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
+				NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
+	}
+
+	/**
+	 * Check the test can be executed more.
+	 * 
+	 * @return true if possible
+	 */
+	public boolean canExecuteTestMore() {
+		return getPerfTestCount(null, Status.getProcessingOrTestingTestStatus()) < getMaximumConcurrentTestCount();
+	}
 }

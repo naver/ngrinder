@@ -22,6 +22,8 @@
  */
 package org.ngrinder.perftest.service;
 
+import static org.ngrinder.common.constant.NGrinderConstants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
@@ -35,7 +37,6 @@ import javax.annotation.PostConstruct;
 import net.grinder.SingleConsole;
 import net.grinder.console.model.ConsoleProperties;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
@@ -59,8 +60,6 @@ public class ConsoleManager {
 	@Autowired
 	private Config config;
 
-	private long maxWaitingMiliSecond;
-
 	/**
 	 * Prepare console queue.
 	 */
@@ -71,31 +70,26 @@ public class ConsoleManager {
 		for (int each : getAvailablePorts(consoleSize, getConsolePortBase())) {
 			consoleQueue.add(new ConsoleEntry(each));
 		}
-		maxWaitingMiliSecond = initMaxWaitingMiliSecond();
 	}
 
 	protected int getConsolePortBase() {
-		String consoleSizeString = config.getSystemProperties().getProperty("console.portbase",
-				String.valueOf(NGrinderConstants.CONSOLE_PORT_BASE));
-		return NumberUtils.toInt(consoleSizeString, NGrinderConstants.CONSOLE_PORT_BASE);
+		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_CONSOLE_PORT_BASE,
+				NGrinderConstants.NGRINDER_PROP_CONSOLE_PORT_BASE_VALUE);
 	}
 
 	protected int getConsoleSize() {
-		String consoleSizeString = config.getSystemProperties().getProperty("console.size",
-				String.valueOf(NGrinderConstants.CONSOLE_SIZE));
-		return NumberUtils.toInt(consoleSizeString, NGrinderConstants.CONSOLE_SIZE);
+		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
+				NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
 	}
-	
 
 	/**
 	 * Timeout (in second).
 	 * 
 	 * @return 5000 second
 	 */
-	protected long initMaxWaitingMiliSecond() {
-		String consoleSizeString = config.getSystemProperties().getProperty("console.maxwaitingseconds",
-				String.valueOf(NGrinderConstants.CONSOLE_MAX_WAITING_MILLISECONDS));
-		return NumberUtils.toInt(consoleSizeString, NGrinderConstants.CONSOLE_MAX_WAITING_MILLISECONDS);
+	protected long getMaxWaitingMiliSecond() {
+		return config.getSystemProperties().getPropertyInt(NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS,
+				NGrinderConstants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS_VALUE);
 	}
 
 	/**
@@ -163,9 +157,8 @@ public class ConsoleManager {
 	/**
 	 * Get available console.
 	 * 
-	 * If there is no available console, it waits until available console is
-	 * returned back. If the specific time is elapsed, the timeout error occurs
-	 * and throw {@link NGrinderRuntimeException}. timeout can be adjusted by
+	 * If there is no available console, it waits until available console is returned back. If the specific time is
+	 * elapsed, the timeout error occurs and throw {@link NGrinderRuntimeException}. timeout can be adjusted by
 	 * overriding {@link #getMaxWaitingMiliSecond()}.
 	 * 
 	 * @param baseConsoleProperties
@@ -238,9 +231,6 @@ public class ConsoleManager {
 		return consoleQueue.size();
 	}
 
-	public long getMaxWaitingMiliSecond() {
-		return maxWaitingMiliSecond;
-	}
 
 	/**
 	 * Get {@link SingleConsole} instance which uses the given port.
