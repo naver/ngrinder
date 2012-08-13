@@ -105,6 +105,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -124,13 +125,9 @@
 							<classpathPrefix>lib/</classpathPrefix>
 							<mainClass>org.ngrinder.NGrinderStarter</mainClass>
 						</manifest>
-						<manifestEntries>
-							<Class-Path>tools.jar</Class-Path>
-						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
-
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -152,7 +149,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>assemble</id>
+						<id>assembly</id>
 						<phase>package</phase>
 						<goals>
 							<goal>assembly</goal>
@@ -167,6 +164,13 @@
 					<overWriteReleases>false</overWriteReleases>
 					<overWriteSnapshots>false</overWriteSnapshots>
 					<overWriteIfNewer>true</overWriteIfNewer>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+							<mainClass>org.ngrinder.NGrinderStarter</mainClass>
+						</manifest>
+					</archive>
 				</configuration>
 			</plugin>
 		</plugins>

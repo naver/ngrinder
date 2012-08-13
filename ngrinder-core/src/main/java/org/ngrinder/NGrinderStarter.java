@@ -25,17 +25,23 @@ package org.ngrinder;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 
 import net.grinder.AgentControllerDaemon;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
+import net.grinder.engine.process.WorkerProcessEntryPoint;
 import net.grinder.util.ReflectionUtil;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.ngrinder.infra.AgentConfig;
@@ -61,7 +67,7 @@ public class NGrinderStarter {
 
 	public NGrinderStarter() {
 		try {
-			addClassPathForToolsJar();
+			addClassPath();
 			Class.forName("com.sun.tools.attach.VirtualMachine");
 			Class.forName("sun.management.ConnectorAddressLink");
 			localAttachmentSupported = true;
@@ -165,11 +171,36 @@ public class NGrinderStarter {
 	/**
 	 * Add tools.jar classpath. This contains hack
 	 */
-	private void addClassPathForToolsJar() {
+	private void addClassPath() {
 		URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
 		URL toolsJarPath = findToolsJarPath();
 		LOG.info("tools.jar is found in {}", checkNotNull(toolsJarPath).toString());
 		ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { checkNotNull(toolsJarPath) });
+		List<String> libString = new ArrayList<String>();
+		String path = NGrinderStarter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		String file = null;
+		try {
+			file = URLDecoder.decode(path, "UTF-8");
+		} catch (UnsupportedEncodingException e1) {
+		}
+		if (file.endsWith(".jar")) {
+			file = FilenameUtils.getPath(file);
+		}
+		for (File each : new File(file, "lib").listFiles()) {
+			if (each.getName().endsWith(".jar")) {
+				try {
+					ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { checkNotNull(each
+							.toURI().toURL()) });
+					libString.add(each.getPath());
+				} catch (MalformedURLException e) {
+				}
+			}
+		}
+		if (!libString.isEmpty()) {
+			String base = System.getProperties().getProperty("java.class.path");
+			System.getProperties().setProperty("java.class.path",
+					base + File.pathSeparator + StringUtils.join(libString, File.pathSeparator));
+		}
 	}
 
 	/**

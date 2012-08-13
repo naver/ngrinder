@@ -567,6 +567,9 @@ public class PerfTestService implements NGrinderConstants {
 		checkNotNull(perfTest);
 		int port = perfTest.getPort();
 		Map<String, Object> result = getStatistics(port);
+		if (result == null) {
+			return perfTest;
+		}
 		checkNotNull(result);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = (Map<String, Object>) result.get("totalStatistics");
