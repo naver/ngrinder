@@ -97,6 +97,7 @@ public class NGrinderStarter {
 
 		AgentControllerDaemon agentController = new AgentControllerDaemon();
 		agentController.setRegion(region);
+		agentController.setAgentConfig(agentConfig);
 		agentController.run(consoleIP, consolePort);
 	}
 
