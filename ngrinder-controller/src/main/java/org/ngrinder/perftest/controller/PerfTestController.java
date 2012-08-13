@@ -107,7 +107,7 @@ public class PerfTestController extends NGrinderBaseController {
 					@RequestParam(required = false) boolean onlyFinished,
 					@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
 		PageRequest pageReq = ((PageRequest) pageable);
-		if (pageReq.getSort() == null) {
+		if (pageReq != null && pageReq.getSort() == null) {
 			Sort sort = new Sort(Direction.ASC, "scheduledTime");
 			pageable = new PageRequest(pageReq.getPageNumber(), pageReq.getPageSize(), sort);
 		}
