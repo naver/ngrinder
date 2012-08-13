@@ -161,9 +161,12 @@ public class PerfTestController extends NGrinderBaseController {
 	 * Create a new test or clone a current test.
 	 * 
 	 * @param user
+	 *            user
 	 * @param model
+	 *            model
 	 * @param test
-	 * @return
+	 *            {@link PerfTest}
+	 * @return redirect:/perftest/list
 	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String saveTest(User user, ModelMap model, PerfTest test) {
