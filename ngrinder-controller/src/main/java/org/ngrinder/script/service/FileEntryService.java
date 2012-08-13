@@ -65,8 +65,7 @@ import freemarker.template.Template;
 /**
  * File entry service class.<br/>
  * 
- * This class is responsible for creating user repo whenever user is created and
- * connection b/w user and underlying svn.
+ * This class is responsible for creating user repo whenever user is created and connection b/w user and underlying svn.
  * 
  * @author JunHo Yoon
  * @since 3.0

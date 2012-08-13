@@ -372,16 +372,17 @@ public class AgentImplementationEx implements Agent {
 
 		m_logger.debug("Total System Class Path in total is " + properties.getProperty("java.class.path", ""));
 		for (String eachClassPath : properties.getProperty("java.class.path", "").split(File.pathSeparator)) {
-			if ("jar".equals(FilenameUtils.getExtension(eachClassPath))
-					&& (FilenameUtils.getName(eachClassPath).contains("ngrinder") || eachClassPath.contains("spring"))) {
+			String name = FilenameUtils.getName(eachClassPath);
+			if ("jar".equals(FilenameUtils.getExtension(name))
+					&& (name.contains("ngrinder") || eachClassPath.contains("spring"))) {
 				continue;
 			}
 			m_logger.debug("Each System Class Path in total is " + eachClassPath);
-			if (eachClassPath.contains("grinder") || eachClassPath.contains("asm")
-					|| eachClassPath.contains("picocontainer") || eachClassPath.contains("jython")
-					|| eachClassPath.contains("slf4j-api") || eachClassPath.contains("logback")
-					|| eachClassPath.contains("jsr173") || eachClassPath.contains("xmlbeans")
-					|| eachClassPath.contains("stax-api")) {
+			if (name.contains("grinder") || name.contains("asm")
+					|| name.contains("picocontainer") || name.contains("jython")
+					|| name.contains("slf4j-api") || name.contains("logback")
+					|| name.contains("jsr173") || name.contains("xmlbeans")
+					|| name.contains("stax-api")) {
 				m_logger.info("classpath :" + eachClassPath);
 				classPathList.add(eachClassPath);
 			}
