@@ -267,6 +267,14 @@ public class PerfTestController extends NGrinderBaseController {
 		return "perftest/refreshContent";
 	}
 
+	@RequestMapping(value = "/report")
+	public String getReport(User user, ModelMap model, @RequestParam long testId) {
+		checkTestPermissionAndGet(user, testId);
+		PerfTest test = perfTestService.getPerfTest(testId);
+		model.addAttribute("test", test);
+		return "perftest/report";
+	}
+
 	private PerfTest checkTestPermissionAndGet(User user, long id) {
 		PerfTest test = perfTestService.getPerfTest(id);
 		if (test != null && !test.getCreatedUser().equals(user)) {
