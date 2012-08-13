@@ -82,10 +82,10 @@
 											<img src="${req.getContextPath()}/img/ball/${test.status.iconName}"/>
 										</div>
 									</td>
-									<td class="ellipsis" > 
+									<td class="ellipsis" >   
 										<div rel="popover"
-											 data-content="${test.description?replace('\n', '<br/>')?html}"  
-											 data-original-title="${test.testName} description">
+											 data-content="${test.description?replace('\n', '<br/>')?html}  &lt;br&gt;&lt;br&gt; modified at <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if>"  
+											 data-original-title="${test.testName}">
 											<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
 											<#if test.status =="READY" || test.status == "SAVED"><a href="javascript:void(0);"><i class="icon-remove test-remove" sid="${test.id}"></i></a></#if>
 										</div>
@@ -94,7 +94,7 @@
 									<td class="ellipsis">
 										${test.scriptName} 
 									</td>
-									<td><#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
+									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
 									<td>${(test.durationStr)!}</td> 
 									<td>${(test.tps)!}</td>  
 									<td>${(test.meanTestTime)!0}</td>

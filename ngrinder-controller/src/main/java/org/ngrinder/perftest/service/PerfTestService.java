@@ -205,7 +205,9 @@ public class PerfTestService implements NGrinderConstants {
 			PerfTest existingPerfTest = perfTestRepository.findOne(perfTest.getId());
 			perfTest = existingPerfTest.merge(perfTest);
 		}
-		return perfTestRepository.save(perfTest);
+		PerfTest save = perfTestRepository.save(perfTest);
+		checkNotNull(save.getLastModifiedDate());
+		return save;
 	}
 
 	/**
