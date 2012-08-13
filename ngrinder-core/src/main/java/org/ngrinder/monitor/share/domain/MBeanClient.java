@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import com.sun.management.OperatingSystemMXBean;
 
+@SuppressWarnings("restriction")
 public class MBeanClient {
 	private static final Logger LOG = LoggerFactory.getLogger(MBeanClient.class);
 

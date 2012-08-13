@@ -22,7 +22,6 @@
  */
 package org.ngrinder.monitor.agent;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
@@ -31,16 +30,13 @@ import javax.management.MBeanRegistrationException;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.apache.commons.io.FilenameUtils;
 import org.junit.Test;
-import org.ngrinder.NGrinderStarter;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.share.JVMUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AgentServerTest {
 	private static final Logger LOG = LoggerFactory.getLogger(AgentServerTest.class);

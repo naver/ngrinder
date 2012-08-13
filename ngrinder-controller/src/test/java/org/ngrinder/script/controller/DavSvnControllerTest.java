@@ -37,12 +37,12 @@ import org.tmatesoft.svn.core.internal.server.dav.DAVException;
 
 /**
  * Class description
- *
+ * 
  * @author mavlarn
  * @Since 3.0
  */
 public class DavSvnControllerTest extends AbstractNGrinderTransactionalTest {
-	
+
 	@Autowired
 	DavSvnController svnController;
 
@@ -57,7 +57,7 @@ public class DavSvnControllerTest extends AbstractNGrinderTransactionalTest {
 	public void testHandleError() throws IOException {
 		DAVException davE = new DAVException("Test Error", 404, 0);
 		HttpServletResponse resp = new MockHttpServletResponse();
-		svnController.handleError(davE, resp);
+		DavSvnController.handleError(davE, resp);
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class DavSvnControllerTest extends AbstractNGrinderTransactionalTest {
 	 */
 	@Test
 	public void testGetSharedActivity() {
-		svnController.getSharedActivity();
+		DavSvnController.getSharedActivity();
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class DavSvnControllerTest extends AbstractNGrinderTransactionalTest {
 	 */
 	@Test
 	public void testSetSharedActivity() {
-		svnController.setSharedActivity("TEST SA");
+		DavSvnController.setSharedActivity("TEST SA");
 	}
 
 	/**
@@ -81,8 +81,8 @@ public class DavSvnControllerTest extends AbstractNGrinderTransactionalTest {
 	 */
 	@Test
 	public void testIsHTTPServerError() {
-		svnController.isHTTPServerError(404);
-		svnController.isHTTPServerError(104);
+		DavSvnController.isHTTPServerError(404);
+		DavSvnController.isHTTPServerError(104);
 	}
 
 	@Test

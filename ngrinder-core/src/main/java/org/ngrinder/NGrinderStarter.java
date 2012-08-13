@@ -38,7 +38,6 @@ import java.util.Map.Entry;
 
 import net.grinder.AgentControllerDaemon;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
-import net.grinder.engine.process.WorkerProcessEntryPoint;
 import net.grinder.util.ReflectionUtil;
 
 import org.apache.commons.io.FilenameUtils;
