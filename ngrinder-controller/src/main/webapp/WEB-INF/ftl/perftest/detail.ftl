@@ -84,12 +84,16 @@ div.chart {
 							<label for="testName" class="control-label">Test Name</label>
 							<div class="controls">
 								<input class="span3 required" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
-								<#if test??> <span<#if test.status == 'STOP_ON_ERROR'> rel="popover" data-content="Error on
-									${test.testErrorCause} phase. ${(test.testErrorStackTrace)! ?replace('\n', '<br/>')?html}"
-									data-original-title="${test.status}" type="toggle" <#else> rel="popover" data-content="${test.createdDate}"
-									data-original-title="${test.status}" type="toggle" </#if> > <img
-									src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
-								</span> </#if>
+								<#if test??> 
+									<span
+										<#if test.status == 'STOP_ON_ERROR'> 
+											rel="popover" data-content="Error on ${test.testErrorCause} phase. ${(test.testErrorStackTrace)!?replace('\n', '<br/>')?html}"
+											data-original-title="${test.status}" type="toggle" <#else> rel="popover" data-content="${test.createdDate}"
+											data-original-title="${test.status}" type="toggle" 
+										</#if> > 
+										<img src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
+									</span> 
+								</#if>
 								<button type="submit" class="btn btn-primary pull-right" style="margin-left: 5px; margin-right: 70px"
 									data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn"><#if test?? && (test.status !=
 									"SAVED")>Clone<#else>Save</#if> and Start</button>
@@ -1000,6 +1004,35 @@ div.chart {
             		}
             	});
             }
+            
+    		function updateStatus(id, status, icon, message) {
+    			var ballImg = $("#testName span img");
+    			if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) { 
+    				ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
+    			}
+    		}
+    		// Wrap this function in a closure so we don't pollute the namespace
+    		(function refreshContent() {
+    			var ids = [];
+    			var testId = $('#testId').val();
+    			if (testId == "") {
+    				return;
+    			}
+    		    $.ajax({
+    			    url: '${req.getContextPath()}/perftest/updateStatus', 
+    			    type: 'GET',
+    			    data: {"ids": testId },
+    			    success: function(data) {
+    			    	data = eval(data); 
+    			    	for (var i = 0; i < data.length; i++) {
+    			    		updateStatus(data[i].id, data[i].name, data[i].icon, data[i].message);
+    			    	}
+    			    },
+    			    complete: function() {
+    			        setTimeout(refreshContent, 5000);
+    			    }
+    		    });
+    	  })();
 		</script>
 </body>
 </html>

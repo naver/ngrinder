@@ -67,7 +67,7 @@
 								<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
 								<tr id="tr${test.id}">
 									<td style="text-align:center"><input type="checkbox" class="checkbox perf_test" value="${test.id}" <#if !(test.status.isDeletable())>disabled</#if>></td>
-									<td class="ellipsis"  style="text-align:center">
+									<td class="ellipsis"  style="text-align:center" id="row_${test.id}">
 										<div class="ball" id="ball_${test.id}"
 										<#if test.status == 'STOP_ON_ERROR'>
 											 rel="popover"
@@ -218,7 +218,7 @@
 			document.forms.listForm.submit();
 		}
 		
-		function updateBall(id, status, icon, message) {
+		function updateStatus(id, status, icon, message) {
 			var ballImg = $("#ball_" + id + " img");
 			if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) { 
 				ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
@@ -229,7 +229,7 @@
 			
 		}
 		// Wrap this function in a closure so we don't pollute the namespace
-		(function refreshBall() {
+		(function refreshContent() {
 			var ids = [];
 			$('.perf_test').map(function(i,n) {
 		        	return ids.push($(n).val());
@@ -244,11 +244,11 @@
 			    success: function(data) {
 			    	data = eval(data); 
 			    	for (var i = 0; i < data.length; i++) {
-			    		updateBall(data[i].id, data[i].name, data[i].icon, data[i].message);
+			    		updateStatus(data[i].id, data[i].name, data[i].icon, data[i].message);
 			    	}
 			    },
 			    complete: function() {
-			      setTimeout(refreshBall, 5000);
+			        setTimeout(refreshContent, 5000);
 			    }
 		    });
 	  })();
