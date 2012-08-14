@@ -174,7 +174,8 @@ public class NGrinderStarter {
 		URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
 		URL toolsJarPath = findToolsJarPath();
 		LOG.info("tools.jar is found in {}", checkNotNull(toolsJarPath).toString());
-		ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { checkNotNull(toolsJarPath) });
+		ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL",
+						new Object[] { checkNotNull(toolsJarPath) });
 		List<String> libString = new ArrayList<String>();
 		String path = NGrinderStarter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		String file = null;
@@ -185,6 +186,9 @@ public class NGrinderStarter {
 		if (file.endsWith(".jar")) {
 			file = FilenameUtils.getPath(file);
 		}
+		if (file == null) {
+			file = new File(".").getAbsolutePath();
+		}
 		File libFolder = new File(file, "lib");
 		if (!libFolder.exists()) {
 			return;
@@ -192,8 +196,8 @@ public class NGrinderStarter {
 		for (File each : libFolder.listFiles()) {
 			if (each.getName().endsWith(".jar")) {
 				try {
-					ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { checkNotNull(each
-							.toURI().toURL()) });
+					ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL",
+									new Object[] { checkNotNull(each.toURI().toURL()) });
 					libString.add(each.getPath());
 				} catch (MalformedURLException e) {
 				}
@@ -202,7 +206,7 @@ public class NGrinderStarter {
 		if (!libString.isEmpty()) {
 			String base = System.getProperties().getProperty("java.class.path");
 			System.getProperties().setProperty("java.class.path",
-					base + File.pathSeparator + StringUtils.join(libString, File.pathSeparator));
+							base + File.pathSeparator + StringUtils.join(libString, File.pathSeparator));
 		}
 	}
 
