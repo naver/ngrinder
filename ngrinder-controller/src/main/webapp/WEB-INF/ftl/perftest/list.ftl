@@ -39,12 +39,12 @@
 						<col width="40">  
 						<col>
 						<col>
-						<col width="135">
+						<col width="130">
 						<col width="85">
 						<col width="60">
 						<col width="95">
 						<col width="70">
-						<col width="60">
+						<col width="80">
 					</colgroup>
 					<thead>
 						<tr>
@@ -92,9 +92,9 @@
 
 									</td>
 									<td class="ellipsis">
-										${test.scriptName} 
+										<a href="${req.getContextPath()}/script/detail/${test.scriptName}" title="${test.scriptName}">${test.scriptName}</a> 
 									</td>
-									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
+									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if></td>
 									<td>${(test.durationStr)!}</td> 
 									<td>${(test.tps)!}</td>  
 									<td>${(test.meanTestTime)!0}</td>
