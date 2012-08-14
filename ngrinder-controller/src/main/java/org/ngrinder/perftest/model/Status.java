@@ -86,7 +86,7 @@ public enum Status {
 	}
 
 	public boolean isDeletable() {
-		return category.isStoppable();
+		return category.isDeletable();
 	}
 
 	public String getIconName() {
@@ -96,7 +96,8 @@ public enum Status {
 	public static Status[] getProcessingOrTestingTestStatus() {
 		List<Status> status = new ArrayList<Status>();
 		for (Status each : values()) {
-			if (each.getCategory() == StatusCategory.PROGRESSING || each.getCategory() == StatusCategory.TESTING) {
+			if (each.getCategory() == StatusCategory.PROGRESSING
+							|| each.getCategory() == StatusCategory.TESTING) {
 				status.add(each);
 			}
 		}

@@ -252,6 +252,8 @@
 						<exclude>org/ngrinder/monitor/controller/model/*.java</exclude>
 						<exclude>org/hibernate/dialect/*.java</exclude>
 						<exclude>org/ngrinder/common/util/Preconditions.java</exclude>
+						<exclude>**/DavSvnController.java</exclude>
+						<exclude>**/Main.java</exclude>
 					</excludes>
 				</configuration>
 			</plugin>

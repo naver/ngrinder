@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /**
- * Utility Component which provides various Http Container values;
+ * Utility Component which provides various Http Container values.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -46,7 +46,8 @@ public class HttpContainerContext {
 	 * E.g) if user requests http://hostname:port/context_path/realurl, This will return
 	 * http://hostname:port/context_path
 	 * 
-	 * In case of providing "http.url" property in system.properties file, this method will return pre-set value.
+	 * In case of providing "http.url" property in system.properties file, this method will return
+	 * pre-set value.
 	 * 
 	 * @return ngrinder context base path on http request.
 	 */
@@ -59,19 +60,25 @@ public class HttpContainerContext {
 
 		// if empty
 		SecurityContextHolderAwareRequestWrapper request = (SecurityContextHolderAwareRequestWrapper) RequestContextHolder
-				.currentRequestAttributes().resolveReference("request");
+						.currentRequestAttributes().resolveReference("request");
 		int serverPort = request.getServerPort();
 		// If it's http default port it will ignore the port part.
 		// However, if ngrinder is provided in HTTPS.. it can be a problem.
 		// FIXME : Later fix above.
-		String portString = serverPort == 80 ? "" : ":" + serverPort;
-		return new StringBuilder(httpUrl).append(request.getScheme()).append("://").append(request.getServerName())
-				.append(portString).append(request.getContextPath()).toString();
+		String portString = (serverPort == 80) ? StringUtils.EMPTY : ":" + serverPort;
+		return new StringBuilder(httpUrl).append(request.getScheme()).append("://")
+						.append(request.getServerName()).append(portString).append(request.getContextPath())
+						.toString();
 	}
 
+	/**
+	 * Check the user has unix user agent.
+	 * 
+	 * @return true if unix.
+	 */
 	public boolean isUnixUser() {
 		SecurityContextHolderAwareRequestWrapper request = (SecurityContextHolderAwareRequestWrapper) RequestContextHolder
-				.currentRequestAttributes().resolveReference("request");
+						.currentRequestAttributes().resolveReference("request");
 		return !StringUtils.containsIgnoreCase(request.getHeader("User-Agent"), "Win");
 	}
 }

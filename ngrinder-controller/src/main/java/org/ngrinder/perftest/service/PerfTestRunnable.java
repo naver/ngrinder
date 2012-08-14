@@ -141,7 +141,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			runTestOn(perfTest, grinderProperties, singleConsole);
 		} catch (Exception e) {
 			// In case of error, mark the occurs error on perftest.
-			markPerfTestError(perfTest, singleConsole, e);
+			markPerfTestError(perfTest, e);
 		}
 	}
 
@@ -150,16 +150,26 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * 
 	 * @param perfTest
 	 *            {@link PerfTest}
-	 * @param singleConsole
-	 *            console in use
 	 * @param e
 	 *            exception occurs.
 	 */
-	void markPerfTestError(PerfTest perfTest, SingleConsole singleConsole, Exception e) {
+	void markPerfTestError(PerfTest perfTest, Exception e) {
+		markPerfTestError(perfTest, e.getMessage());
+	}
+
+	/**
+	 * Mark test error on {@link PerfTest} instance
+	 * 
+	 * @param perfTest
+	 *            {@link PerfTest}
+	 * @param reason
+	 *            error reason
+	 */
+	void markPerfTestError(PerfTest perfTest, String reason) {
 		// Leave last status as test error cause
 		perfTest.setTestErrorCause(perfTest.getStatus());
-		perfTest.setTestErrorStackTrace(e.getMessage());
-		perfTestService.savePerfTest(perfTest, Status.STOP_ON_ERROR);
+		perfTest.setTestErrorStackTrace(reason);
+		perfTestService.savePerfTest(perfTest, Status.ABNORMAL_TESTING);
 	}
 
 	/**
@@ -190,7 +200,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 			targetServer.setPort(MonitorConstants.DEFAULT_AGENT_PORT);
 			agents.add(targetServer);
 		}
-		monitorDataService.addMonitorAgent(perfTest.getTargetHosts(), agents);
+		// use perf test id as key for the set of target server.
+		monitorDataService.addMonitorTarget("PerfTest-" + perfTest.getId(), agents);
 
 		// Run test
 		perfTestService.savePerfTest(perfTest, START_TESTING);
@@ -242,7 +253,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 		for (PerfTest each : abnoramlTestingPerfTest) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
-			doTermicate(each, consoleUsingPort);
+			doTerminate(each, consoleUsingPort);
 		}
 
 		List<PerfTest> finishCandiate = perfTestService.getTestingPerfTest();
@@ -261,19 +272,14 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * @param singleConsoleInUse
 	 *            {@link SingleConsole} which is being using for {@link PerfTest}
 	 */
-	public void doTermicate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		// FIXME... it should found abnormal test status..
-		if (singleConsoleInUse == null) {
-			LOG.error("There is no console found for test:{}", perfTest);
+	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+		markPerfTestError(perfTest, perfTest.getTestErrorStackTrace());
+		monitorDataService.removeMonitorAgents(perfTest.getTargetHosts());
+		if (singleConsoleInUse != null) {
 			// need to finish test as error
-			perfTestService.savePerfTest(perfTest, Status.STOP_ON_ERROR);
+			consoleManager.returnBackConsole(singleConsoleInUse);
 			return;
 		}
-		// stop target host monitor
-
-		// FIXME : Is it safe to locate monitor agents removal?
-		monitorDataService.removeMonitorAgents(perfTest.getTargetHosts());
-		consoleManager.returnBackConsole(singleConsoleInUse);
 	}
 
 	/**
@@ -290,6 +296,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			LOG.error("There is no console found for test:{}", perfTest);
 			// need to finish test as error
 			perfTestService.savePerfTest(perfTest, Status.STOP_ON_ERROR);
+			monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 			return;
 		}
 		long finishTime = System.currentTimeMillis();
@@ -299,7 +306,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// after some seconds, will set it as finished.
 		if (singleConsoleInUse.isAllTestFinished() && startLastingTime > WAIT_TEST_START_SECOND) {
 			// stop target host monitor
-			monitorDataService.removeMonitorAgents(perfTest.getTargetHosts());
+			monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 			perfTest.setFinishTime(new Date(finishTime));
 			PerfTest resultTest = perfTestService.updatePerfTestAfterTestFinish(perfTest);
 			consoleManager.returnBackConsole(singleConsoleInUse);
@@ -313,7 +320,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	public boolean isAbormalFinishing(PerfTest perfTest) {
 		if ("D".equals(perfTest.getThreshold())) {
-			if (new Date().getTime() - perfTest.getStartTime().getTime() < perfTest.getDuration()) {
+			if ((new Date().getTime() - perfTest.getStartTime().getTime()) < perfTest.getDuration()) {
 				return true;
 			}
 		}
