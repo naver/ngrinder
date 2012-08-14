@@ -81,24 +81,28 @@ div.chart {
 				<div class="form-horizontal form-horizontal-1">
 					<fieldset>
 						<div class="control-group">
-							<label for="testName" class="control-label">Test Name</label>
+							<label for="testName" class="control-label"><@spring.message "perfTest.table.testName"/></label>
 							<div class="controls">
 								<input class="span3 required" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
-								<#if test??> <span<#if test.status == 'STOP_ON_ERROR'> rel="popover" data-content="Error on
-									${test.testErrorCause} phase. ${(test.testErrorStackTrace)! ?replace('\n', '<br/>')?html}"
-									data-original-title="${test.status}" type="toggle" <#else> rel="popover" data-content="${test.createdDate}"
-									data-original-title="${test.status}" type="toggle" </#if> > <img
-									src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
-								</span> </#if>
+								<#if test??> 
+									<span
+										<#if test.status == 'STOP_ON_ERROR'> 
+											rel="popover" data-content="Error on ${test.testErrorCause} phase. ${(test.testErrorStackTrace)!?replace('\n', '<br/>')?html}"
+											data-original-title="${test.status}" type="toggle" <#else> rel="popover" data-content="${test.createdDate}"
+											data-original-title="${test.status}" type="toggle" 
+										</#if> > 
+										<img src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
+									</span> 
+								</#if>
 								<button type="submit" class="btn btn-primary pull-right" style="margin-left: 5px; margin-right: 70px"
 									data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn"><#if test?? && (test.status !=
-									"SAVED")>Clone<#else>Save</#if> and Start</button>
+									"SAVED")><@spring.message "perfTest.detail.clone"/><#else><@spring.message "perfTest.detail.save"/></#if> <@spring.message "perfTest.detail.andStart"/></button>
 								<button type="submit" class="btn btn-success  pull-right" style="margin-left: 5px" id="saveTestBtn">
-									<#if test?? && (test.status != "SAVED")>Clone<#else>Save</#if></button>
+									<#if test?? && (test.status != "SAVED")><@spring.message "perfTest.detail.clone"/><#else><@spring.message "perfTest.detail.save"/></#if></button>
 							</div>
 						</div>
 						<div class="control-group" style="margin-bottom: 0">
-							<label for="description" class="control-label">Description</label>
+							<label for="description" class="control-label"><@spring.message "perfTest.table.description"/></label>
 							<div class="controls">
 								<textarea class="input-xlarge span9" id="description" rows="3" name="description" style="resize: none">${(test.description)!}</textarea>
 							</div>
@@ -108,7 +112,7 @@ div.chart {
 			</div>
 			<div class="tabbable">
 				<ul class="nav nav-tabs" id="homeTab" style="margin-bottom: 5px">
-					<li><a href="#testContent" data-toggle="tab">Test Configuration</a></li> <#if test?? && (test.status == "TESTING")>
+					<li><a href="#testContent" data-toggle="tab"><@spring.message "perfTest.configuration.testConfiguration"/></a></li> <#if test?? && (test.status == "TESTING")>
 					<li><a href="#runningContent" data-toggle="tab">Test Running</a></li> </#if> <#if test?? && (test.status ==
 					"FINISHED" || test.status == "CANCELED")>
 					<li><a href="#reportContent" data-toggle="tab" id="reportLnk">Report</a></li> </#if>
@@ -118,36 +122,36 @@ div.chart {
 						<div class="row">
 							<div class="span6">
 								<div class="page-header">
-									<h4>Basic Configuration</h4>
+									<h4><@spring.message "perfTest.configuration.basicConfiguration"/></h4>
 								</div>
 								<div class="form-horizontal form-horizontal-2">
 									<fieldset>
 										<div class="control-group">
-											<label for="agentCount" class="control-label">Agent</label>
+											<label for="agentCount" class="control-label"><@spring.message "perfTest.configuration.agent"/></label>
 											<div class="controls">
 												<div class="input-append">
 													<input type="text" class="input required positiveNumber span2" number_limit="${(maxAgentSizePerConsole)}"
-														id="agentCount" name="agentCount" value="${(test.agentCount)!}"><span class="add-on">MAX :
+														id="agentCount" name="agentCount" value="${(test.agentCount)!}"><span class="add-on"><@spring.message "perfTest.configuration.max"/>
 														${(maxAgentSizePerConsole)}</span>
 												</div>
-												<span class="badge badge-info pull-right" id="vuserTotal">Avail Agents : ${currentFreeAgentsCount}</span>
+												<span class="badge badge-info pull-right" id="vuserTotal"><@spring.message "perfTest.configuration.availAgent"/> ${currentFreeAgentsCount}</span>
 											</div>
 										</div>
 										<div class="control-group">
-											<label for="vuserPerAgent" class="control-label">Vuser per agent</label>
+											<label for="vuserPerAgent" class="control-label"><@spring.message "perfTest.configuration.vuserPerAgent"/></label>
 											<div class="controls">
 												<div class="input-append">
 													<input type="text" class="input required positiveNumber span2" rel="popover"
 														number_limit="${(maxVuserPerAgent)}" id="vuserPerAgent" name="vuserPerAgent"
 														value="${(test.vuserPerAgent)!}" data-content="Input vuser count for every agent."
-														data-original-title="Vuser count"><span class="add-on">MAX : ${(maxVuserPerAgent)}</span>
+														data-original-title="Vuser count"><span class="add-on"><@spring.message "perfTest.configuration.max"/> ${(maxVuserPerAgent)}</span>
 												</div>
 												<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 /> <span
 													class="badge badge-info pull-right" id="vuserTotal">Vuser: ${vuserTotal}</span>
 											</div>
 										</div>
 										<div class="control-group">
-											<label for="scriptName" class="control-label">Script</label>
+											<label for="scriptName" class="control-label"><@spring.message "perfTest.configuration.script"/></label>
 											<div class="controls">
 												<select id="scriptName" class="required" name="scriptName"> <#if scriptList?? && scriptList?size
 													&gt; 0> <#list scriptList as scriptItem> <#if test?? && scriptItem.fileName == test.scriptName> <#assign
@@ -157,23 +161,23 @@ div.chart {
 											</div>
 										</div>
 										<div class="control-group">
-											<label for="Script Resources" class="control-label">Script Resources</label>
+											<label for="Script Resources" class="control-label"><@spring.message "perfTest.configuration.scriptResources"/></label>
 											<div class="controls">
 												<div class="div-resources read-only" id="scriptResources" readonly="readonly"></div>
 											</div>
 										</div>
 
 										<div class="control-group">
-											<label class="control-label">Target Host</label>
+											<label class="control-label"><@spring.message "perfTest.configuration.targetHost"/></label>
 											<div class="controls">
 												<div class="div-host"></div>
 												<input type="hidden" name="targetHosts" id="hostsHidden" value="${(test.targetHosts)!}"> <a
-													class="btn pull-right btn-mini" data-toggle="modal" href="#addHostModal">Add</a>
+													class="btn pull-right btn-mini" data-toggle="modal" href="#addHostModal"><@spring.message "perfTest.configuration.add"/></a>
 											</div>
 										</div>
 										<hr>
 										<div class="control-group">
-											<label class="control-label"> <input type="radio" id="durationChkbox"> Duration
+											<label class="control-label"> <input type="radio" id="durationChkbox"> <@spring.message "perfTest.configuration.duration"/>
 											</label>
 											<div class="controls docs-input-sizes">
 												<select class="select-item" id="hSelect"></select> : <select class="select-item" id="mSelect"></select> : <select
@@ -188,13 +192,13 @@ div.chart {
 											</div>
 										</div>
 										<div class="control-group">
-											<label for="runCount" class="control-label"> <input type="radio" id="runcountChkbox"> Run
-												Count
+											<label for="runCount" class="control-label"> <input type="radio" id="runcountChkbox"> 
+												<@spring.message "perfTest.configuration.runCount"/>
 											</label>
 											<div class="controls">
 												<div class="input-append">
 													<input type="text" id="runCount" class="input span2" number_limit="${(maxRunCount)}" name="runCount"
-														value="${(test.runCount)!0}"><span class="add-on">MAX : ${(maxRunCount)}</span>
+														value="${(test.runCount)!0}"><span class="add-on"><@spring.message "perfTest.configuration.max"/> ${(maxRunCount)}</span>
 												</div>
 											</div>
 										</div>
@@ -1005,6 +1009,35 @@ div.chart {
             		}
             	});
             }
+            
+    		function updateStatus(id, status, icon, message) {
+    			var ballImg = $("#testName span img");
+    			if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) { 
+    				ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
+    			}
+    		}
+    		// Wrap this function in a closure so we don't pollute the namespace
+    		(function refreshContent() {
+    			var ids = [];
+    			var testId = $('#testId').val();
+    			if (testId == "") {
+    				return;
+    			}
+    		    $.ajax({
+    			    url: '${req.getContextPath()}/perftest/updateStatus', 
+    			    type: 'GET',
+    			    data: {"ids": testId },
+    			    success: function(data) {
+    			    	data = eval(data); 
+    			    	for (var i = 0; i < data.length; i++) {
+    			    		updateStatus(data[i].id, data[i].name, data[i].icon, data[i].message);
+    			    	}
+    			    },
+    			    complete: function() {
+    			        setTimeout(refreshContent, 5000);
+    			    }
+    		    });
+    	  })();
 		</script>
 </body>
 </html>

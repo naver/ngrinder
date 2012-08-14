@@ -20,8 +20,51 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.grinder.engine.console;
+package org.ngrinder.perftest.model;
 
-public class ConsolePool {
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
+import java.util.List;
+
+import org.junit.Test;
+
+/**
+ * Class description.
+ *
+ * @author Mavlarn
+ * @since
+ */
+public class PerfTestTest {
+	
+	@Test
+	public void testGetTargetHostIp () {
+		PerfTest test = new PerfTest();
+		test.setTargetHosts("aaa.com:1.1.1.1");
+		List<String> ipList = test.getTargetHostIP();
+		assertThat(ipList.get(0), is("1.1.1.1"));
+
+		test.setTargetHosts(":1.1.1.1");
+		ipList = test.getTargetHostIP();
+		assertThat(ipList.get(0), is("1.1.1.1"));
+
+		test.setTargetHosts("1.1.1.1");
+		ipList = test.getTargetHostIP();
+		assertThat(ipList.get(0), is("1.1.1.1"));
+		
+		//multiple hosts
+		test.setTargetHosts("aaa.com:1.1.1.1,aaabb.com:1.1.1.2");
+		ipList = test.getTargetHostIP();
+		assertThat(ipList.get(1), is("1.1.1.2"));
+
+		test.setTargetHosts("aaa.com:1.1.1.1,:1.1.1.2");
+		ipList = test.getTargetHostIP();
+		assertThat(ipList.get(1), is("1.1.1.2"));
+
+		test.setTargetHosts("aaa.com:1.1.1.1,1.1.1.2");
+		ipList = test.getTargetHostIP();
+		assertThat(ipList.get(1), is("1.1.1.2"));
+		
+	}
 
 }

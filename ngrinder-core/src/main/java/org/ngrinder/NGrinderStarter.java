@@ -25,13 +25,11 @@ package org.ngrinder;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -40,7 +38,6 @@ import net.grinder.AgentControllerDaemon;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.util.ReflectionUtil;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.ngrinder.infra.AgentConfig;
@@ -79,7 +76,7 @@ public class NGrinderStarter {
 		}
 	}
 
-	private void startMonitor() {
+	public void startMonitor() {
 
 		LOG.info("**************************");
 		LOG.info("* Start nGrinder Monitor *");
@@ -177,22 +174,13 @@ public class NGrinderStarter {
 		ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL",
 						new Object[] { checkNotNull(toolsJarPath) });
 		List<String> libString = new ArrayList<String>();
-		String path = NGrinderStarter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-		String file = null;
-		try {
-			file = URLDecoder.decode(path, "UTF-8");
-		} catch (UnsupportedEncodingException e1) {
-		}
-		if (file.endsWith(".jar")) {
-			file = FilenameUtils.getPath(file);
-		}
-		if (file == null) {
-			file = new File(".").getAbsolutePath();
-		}
-		File libFolder = new File(file, "lib");
+
+		File libFolder = new File(".", "lib").getAbsoluteFile();
 		if (!libFolder.exists()) {
-			return;
+			LOG.error("lib path does not exist {}", libFolder.getAbsolutePath());
+			printHelpAndReturn();
 		}
+
 		for (File each : libFolder.listFiles()) {
 			if (each.getName().endsWith(".jar")) {
 				try {

@@ -18,18 +18,18 @@
 		
 				<div class="well form-inline searchBar">
 					<input type="text" class="search-query" placeholder="Keywords" name ="query" id="query" value="${query!}">
-					<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> Search</button>
+					<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> <@spring.message "perfTest.formInline.search"/></button>
 					<label class="checkbox" style="position:relative;">
-						<input type="checkbox" id="onlyFinished" name="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> Only Finished
+						<input type="checkbox" id="onlyFinished" name="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> <@spring.message "perfTest.formInline.onlyFished"/>
 					</label>
 					<span class="pull-right">
 						<a class="btn btn-primary" href="${req.getContextPath()}/perftest/detail" id="createBtn" data-toggle="modal">
 							<i class="icon-file"></i>
-							Create test
+							<@spring.message "perfTest.formInline.createTest"/>
 						</a>
 						<a class="btn btn-danger" href="javascript:void(0);" id="deleteBtn">
 							<i class="icon-remove"></i>
-							Delete selected tests
+							<@spring.message "perfTest.formInline.deletetSelectedTest"/>
 						</a>
 					</span>
 				</div>
@@ -39,25 +39,25 @@
 						<col width="40">  
 						<col>
 						<col>
-						<col width="135">
+						<col width="130">
 						<col width="85">
 						<col width="60">
 						<col width="95">
 						<col width="70">
-						<col width="60">
+						<col width="80">
 					</colgroup>
 					<thead>
 						<tr>
 							<th class="nothing"><input id="chkboxAll" type="checkbox" class="checkbox" value=""></th>
 							<th class="nothing"style="text-align:center"> </th>
-							<th id="testName">Test Name</th>
-							<th id="scriptName">Script Name</th>
-							<th id="startTime">Start Time</th>
-							<th id="duration">Duration</th>
-							<th id="tps">TPS</th>
-							<th id="meanTestTime">Mean Time</th>
-							<th id="errors">Errors</th>
-							<th class="nothing">Vusers</th> 
+							<th id="testName"><@spring.message "perfTest.table.testName"/></th>
+							<th id="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
+							<th id="startTime"><@spring.message "perfTest.table.startTime"/></th>
+							<th id="duration"><@spring.message "perfTest.table.duration"/></th>
+							<th id="tps"><@spring.message "perfTest.table.tps"/></th>
+							<th id="meanTestTime"><@spring.message "perfTest.table.meantime"/></th>
+							<th id="errors"><@spring.message "perfTest.table.errors"/></th>
+							<th class="nothing"><@spring.message "perfTest.table.vusers"/></th> 
 						</tr>
 					</thead>
 					<tbody>
@@ -66,9 +66,9 @@
 							<#list testList as test>
 								<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
 								<tr id="tr${test.id}">
-									<td style="text-align:center"><input type="checkbox" class="checkbox" value="${test.id}" <#if !(test.status.isDeletable())>disabled</#if>></td>
-									<td class="ellipsis"  style="text-align:center">
-										<div class="ball" id="${test.id}"
+									<td style="text-align:center"><input type="checkbox" class="checkbox perf_test" value="${test.id}" <#if !(test.status.isDeletable())>disabled</#if>></td>
+									<td class="ellipsis"  style="text-align:center" id="row_${test.id}">
+										<div class="ball" id="ball_${test.id}"
 										<#if test.status == 'STOP_ON_ERROR'>
 											 rel="popover"
 											 data-content="Error on ${test.testErrorCause} phase. ${(test.testErrorStackTrace)! ?replace('\n', '<br/>')?html}" 
@@ -87,14 +87,14 @@
 											 data-content="${test.description?replace('\n', '<br/>')?html}  &lt;br&gt;&lt;br&gt; modified at <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if>"  
 											 data-original-title="${test.testName}">
 											<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
-											<#if test.status =="READY" || test.status == "SAVED"><a href="javascript:void(0);"><i class="icon-remove test-remove" sid="${test.id}"></i></a></#if>
+											<#if test.status.isDeletable()><a href="javascript:void(0);"><i class="icon-remove test-remove" sid="${test.id}"></i></a></#if>
 										</div>
 
 									</td>
 									<td class="ellipsis">
-										${test.scriptName} 
+										<a href="${req.getContextPath()}/script/detail/${test.scriptName}" title="${test.scriptName}">${test.scriptName}</a> 
 									</td>
-									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
+									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if></td>
 									<td>${(test.durationStr)!}</td> 
 									<td>${(test.tps)!}</td>  
 									<td>${(test.meanTestTime)!0}</td>
@@ -105,7 +105,7 @@
 						<#else>
 							<tr>
 								<td colspan="12" class="noData">
-									No data to display.
+									<@spring.message "perfTest.table.noData"/>
 								</td>
 							</tr>
 						</#if>
@@ -218,25 +218,40 @@
 			document.forms.listForm.submit();
 		}
 		
-		
+		function updateStatus(id, status, icon, message) {
+			var ballImg = $("#ball_" + id + " img");
+			if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) { 
+				ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
+				$(".icon-remove[sid=" + id + "]").remove();
+			}
+			$("#ball_" + id).attr("data-original-title", status);
+			$("#ball_" + id).attr("data-content", message);
+			
+		}
 		// Wrap this function in a closure so we don't pollute the namespace
-		(function refreshBall() {
-			 var db = $('.ball').map(function(i,n) {
-		        	return $(n).id;
-		  		 }).get();
-		    
-		  $.ajax({
-		    url: '${req.getContextPath()}/perftest/updateball', 
-		    type: 'POST',
-		    data:db,
-		    success: function(data) {
-		       
-		    },
-		    complete: function() {
-		      setTimeout(refreshBall, 5000);
-		    }
-		  });
-		})();
+		(function refreshContent() {
+			var ids = [];
+			$('.perf_test').map(function(i,n) {
+		        	return ids.push($(n).val());
+		  	});
+			if (ids.length == 0) {
+				return;
+			}
+		    $.ajax({
+			    url: '${req.getContextPath()}/perftest/updateStatus', 
+			    type: 'GET',
+			    data: {"ids": ids.join(",")},
+			    success: function(data) {
+			    	data = eval(data); 
+			    	for (var i = 0; i < data.length; i++) {
+			    		updateStatus(data[i].id, data[i].name, data[i].icon, data[i].message);
+			    	}
+			    },
+			    complete: function() {
+			        setTimeout(refreshContent, 5000);
+			    }
+		    });
+	  })();
 	</script>
 	</body>
 </html>

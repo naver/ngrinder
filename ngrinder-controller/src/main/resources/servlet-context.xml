@@ -62,6 +62,7 @@
 				<value>classpath:errorMessages</value>
 			</list>
 		</property>
+		<property name="useCodeAsDefaultMessage" value="true"/>
 		<property name="defaultEncoding" value="UTF-8" />
 	</bean>
 

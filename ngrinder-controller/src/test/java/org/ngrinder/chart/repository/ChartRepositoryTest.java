@@ -26,17 +26,12 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.lang.math.RandomUtils;
 import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.chart.repository.JavaMonitorRepository;
-import org.ngrinder.chart.repository.SystemMonitorRepository;
+import org.ngrinder.chart.AbstractChartTransactionalTest;
 import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,10 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Mavlarn
  * @since 3.0
  */
-public class ChartRepositoryTest extends AbstractNGrinderTransactionalTest {
-
-	private static final String DATE_FORMAT = "yyyyMMddHHmmss";
-	private static final DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+public class ChartRepositoryTest extends AbstractChartTransactionalTest {
 	
 	@Autowired
 	private JavaMonitorRepository javaRepository;
@@ -66,7 +58,7 @@ public class ChartRepositoryTest extends AbstractNGrinderTransactionalTest {
 		int i = 1000 * 20;
 		long colTime = 20120719010101L;
 		while (i > 0) {
-			JavaDataModel javaInfo = newJavaData(colTime);
+			JavaDataModel javaInfo = newJavaData(colTime, "127.0.0.1");
 			javaRepository.save(javaInfo);
 			colTime++;
 			i--;
@@ -75,45 +67,16 @@ public class ChartRepositoryTest extends AbstractNGrinderTransactionalTest {
 		i = 1000 * 20;
 		colTime = 20120719010101L;
 		while (i > 0) {
-			SystemDataModel sysInfo = newSysData(colTime);
+			SystemDataModel sysInfo = newSysData(colTime, "127.0.0.1");
 			systemRepository.save(sysInfo);
 			colTime++;
 			i--;
 		}
 	}
 
-	private JavaDataModel newJavaData(long colTime) {
-		JavaDataModel javaInfo = new JavaDataModel();
-		javaInfo.setIp("10.0.0.1");
-		javaInfo.setCollectTime(colTime);
-		javaInfo.setCpuUsedPercentage(RandomUtils.nextFloat());
-		javaInfo.setHeapMaxMemory(2048000);
-		int used = RandomUtils.nextInt(2048000);
-		javaInfo.setHeapUsedMemory(used);
-		javaInfo.setNonHeapMaxMemory(1024000);
-		used = RandomUtils.nextInt(1024000);
-		javaInfo.setNonHeapUsedMemory(1024000 - used);
-		javaInfo.setThreadCount(RandomUtils.nextInt(20));
-		javaInfo.setPort(12345);
-		return javaInfo;
-	}
-
-	private SystemDataModel newSysData(long colTime) {
-		SystemDataModel sysInfo = new SystemDataModel();
-		sysInfo.setIp("10.0.0.1");
-		sysInfo.setCollectTime(colTime);
-		sysInfo.setCpuUsedPercentage(RandomUtils.nextFloat());
-		sysInfo.setIdleCpuValue(RandomUtils.nextFloat());
-		sysInfo.setPort(12345);
-		sysInfo.setTotalMemory(4096000);
-		sysInfo.setFreeMemory(4096000 - RandomUtils.nextInt(2048000));
-		sysInfo.setTotalCpuValue(4);
-		return sysInfo;
-	}
-
 	@Test
 	public void testSaveSystemMonitorInfo() {
-		SystemDataModel sysInfo = newSysData(20120719010101L);
+		SystemDataModel sysInfo = newSysData(20120719010101L, "10.0.0.1");
 		systemRepository.save(sysInfo);
 
 		SystemDataModel infoInDb = systemRepository.findOne(sysInfo.getId());
@@ -126,7 +89,7 @@ public class ChartRepositoryTest extends AbstractNGrinderTransactionalTest {
 		
 		//insert one record and get to check
 		long startTime = NumberUtils.toLong(df.format(new Date()));
-		JavaDataModel javaInfo = newJavaData(startTime);
+		JavaDataModel javaInfo = newJavaData(startTime, "10.0.0.1");
 		javaRepository.save(javaInfo);
 		JavaDataModel infoInDb = javaRepository.findOne(javaInfo.getId());
 		assertTrue(infoInDb.getId().equals(javaInfo.getId())
@@ -137,7 +100,7 @@ public class ChartRepositoryTest extends AbstractNGrinderTransactionalTest {
 		assertThat(infoList.size(), is(1));
 
 		//insert another to check
-		javaInfo = newJavaData(startTime + 1);
+		javaInfo = newJavaData(startTime + 1, "10.0.0.1");
 		javaRepository.save(javaInfo);
 		infoList = javaRepository.findAllByIpAndCollectTimeBetween("10.0.0.1", startTime, endTime);
 		assertThat(infoList.size(), is(2));
@@ -148,7 +111,7 @@ public class ChartRepositoryTest extends AbstractNGrinderTransactionalTest {
 	public void testGetSystemMonitorData() {
 		long startTime = NumberUtils.toLong(df.format(new Date()));
 		long endTime = startTime + 100;
-		SystemDataModel sysInfo = newSysData(startTime);
+		SystemDataModel sysInfo = newSysData(startTime, "10.0.0.1");
 		systemRepository.save(sysInfo);
 		SystemDataModel infoInDb = systemRepository.findOne(sysInfo.getId());
 		assertTrue(infoInDb.getId().equals(sysInfo.getId())
@@ -158,7 +121,7 @@ public class ChartRepositoryTest extends AbstractNGrinderTransactionalTest {
 				endTime);
 		assertThat(infoList.size(), is(1));
 		
-		sysInfo = newSysData(startTime + 1);
+		sysInfo = newSysData(startTime + 1, "10.0.0.1");
 		systemRepository.save(sysInfo);
 		infoList = systemRepository.findAllByIpAndCollectTimeBetween("10.0.0.1", startTime, endTime);
 		assertThat(infoList.size(), is(2));

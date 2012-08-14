@@ -24,7 +24,9 @@ package org.ngrinder.perftest.model;
 
 import static org.ngrinder.common.constant.NGrinderConstants.MAX_STACKTRACE_STRING_SIZE;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -237,6 +239,27 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public String getTargetHosts() {
 		return targetHosts;
+	}
+
+	/**
+	 * Get ip address of target hosts.
+	 * if target hosts 'a.com:1.1.1.1'    add ip: '1.1.1.1'
+	 * if target hosts ':1.1.1.1'    add ip: '1.1.1.1'
+	 * if target hosts '1.1.1.1'    add ip: '1.1.1.1'
+	 * @return
+	 */
+	public List<String> getTargetHostIP() {
+		List<String> targetIPList = new ArrayList<String>();
+		String[] hostsList = StringUtils.split(targetHosts, ",");
+		for (String hosts : hostsList) {
+			String[] addresses = StringUtils.split(hosts, ":");
+			if (addresses.length > 0) {
+				targetIPList.add(addresses[addresses.length - 1]);
+			} else {
+				targetIPList.add(hosts);
+			}			
+		}
+		return targetIPList;
 	}
 
 	public void setTargetHosts(String theTarget) {
