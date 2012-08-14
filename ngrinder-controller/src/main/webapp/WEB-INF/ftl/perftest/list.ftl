@@ -224,13 +224,13 @@
 			 var db = $('.ball').map(function(i,n) {
 		        	return $(n).id;
 		  		 }).get();
-		     alert(db);
+		    
 		  $.ajax({
 		    url: '${req.getContextPath()}/perftest/updateball', 
 		    type: 'POST',
 		    data:db,
 		    success: function(data) {
-		      //alert(data);
+		       
 		    },
 		    complete: function() {
 		      setTimeout(refreshBall, 5000);
