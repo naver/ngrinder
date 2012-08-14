@@ -128,7 +128,6 @@
     				<div class="chart" id="tpsDiv"></div>
     				<div class="chart" id="rpsDiv"></div>
     				<div class="chart" id="errorDiv"></div>
-    				<div class="chart" id="vuserDiv"></div>
 				</div>
 				<div id="monitorDiv" style="display:none">
 				    <h6>System Data</h6>

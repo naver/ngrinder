@@ -22,77 +22,52 @@
  */
 package org.ngrinder.chart.service;
 
-import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.math.NumberUtils;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.NGrinderStarter;
-import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.AbstractChartTransactionalTest;
-import org.ngrinder.common.util.ThreadUtil;
-import org.ngrinder.infra.AgentConfig;
-import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.monitor.agent.AgentMonitorServer;
+import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Class description.
- * 
- * @author Tobi
+ *
+ * @author Mavlarn
  * @since
- * @date 2012-7-23
  */
-public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
-
-	@Autowired
-	private MonitorAgentService monitorDataService;
+public class MonitorServiceTest extends AbstractChartTransactionalTest {
 	
 	@Autowired
 	private MonitorService monitorService;
-	
-	NGrinderStarter starter = new NGrinderStarter();
-	
-	@Before
-	public void startMonitorServer() {
-		AgentConfig agentConfig = new AgentConfig();
-		agentConfig.init();
 
-		MonitorConstants.init(agentConfig);
-		starter.startMonitor();
-		ThreadUtil.sleep(3000);
-	}
-	
-	@After
-	public void stopMonitorServer() {
-		try {
-			AgentMonitorServer.getInstance().stop();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
+	/**
+	 * Test method for {@link org.ngrinder.chart.service.MonitorService#saveJavaMonitorInfo(org.ngrinder.monitor.controller.model.JavaDataModel)}.
+	 */
 	@Test
-	public void testAddRemoveMonitorAgents() {
-		AgentInfo agt = new AgentInfo();
-		agt.setIp("127.0.0.1");
-		agt.setPort(3243);
+	public void testSaveAndGetJavaMonitorInfo() {
 		long startTime = NumberUtils.toLong(df.format(new Date()));
+		JavaDataModel javaInfo = newJavaData(startTime, "10.0.0.1");
+		monitorService.saveJavaMonitorInfo(javaInfo);
+		List<JavaDataModel> infoList = monitorService.getJavaMonitorData("10.0.0.1", startTime, startTime);
+		assertThat(infoList.size(), is(1));
+	}
 
-		monitorDataService.addMonitorTarget("127.0.0.1_test", agt);
-		ThreadUtil.sleep(3000);
-		long endTime = NumberUtils.toLong(df.format(new Date()));
-		List<SystemDataModel> infoList = monitorService.getSystemMonitorData("127.0.0.1", startTime, endTime);
-		assertThat(infoList.size(), greaterThan(0));
-		
-		monitorDataService.removeMonitorAgents("127.0.0.1_test");
+	/**
+	 * Test method for {@link org.ngrinder.chart.service.MonitorService#saveSystemMonitorInfo(org.ngrinder.monitor.controller.model.SystemDataModel)}.
+	 */
+	@Test
+	public void testSaveAndGetSystemMonitorInfo() {
+		long startTime = NumberUtils.toLong(df.format(new Date()));
+		SystemDataModel sysInfo = newSysData(startTime, "10.0.0.1");
+		monitorService.saveSystemMonitorInfo(sysInfo);
+		List<SystemDataModel> infoList = monitorService.getSystemMonitorData("10.0.0.1", startTime, startTime);
+		assertThat(infoList.size(), is(1));
 	}
 
 }

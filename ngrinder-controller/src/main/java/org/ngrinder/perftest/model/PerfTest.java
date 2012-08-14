@@ -239,6 +239,22 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return targetHosts;
 	}
 
+	/**
+	 * Get ip address of target hosts.
+	 * if target hosts 'a.com:1.1.1.1'    return '1.1.1.1'
+	 * if target hosts ':1.1.1.1'    return '1.1.1.1'
+	 * if target hosts '1.1.1.1'    return '1.1.1.1'
+	 * @return
+	 */
+	public String getTargetHostIP() {
+		String[] addresses = StringUtils.split(targetHosts, ":");
+		if (addresses.length > 0) {
+			return addresses[addresses.length - 1];
+		} else {
+			return targetHosts;
+		}
+	}
+
 	public void setTargetHosts(String theTarget) {
 		this.targetHosts = theTarget;
 	}
