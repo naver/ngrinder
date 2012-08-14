@@ -141,7 +141,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			runTestOn(perfTest, grinderProperties, singleConsole);
 		} catch (Exception e) {
 			// In case of error, mark the occurs error on perftest.
-			markPerfTestError(perfTest, singleConsole, e);
+			markPerfTestError(perfTest, e);
 		}
 	}
 
@@ -150,16 +150,26 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * 
 	 * @param perfTest
 	 *            {@link PerfTest}
-	 * @param singleConsole
-	 *            console in use
 	 * @param e
 	 *            exception occurs.
 	 */
-	void markPerfTestError(PerfTest perfTest, SingleConsole singleConsole, Exception e) {
+	void markPerfTestError(PerfTest perfTest, Exception e) {
+		markPerfTestError(perfTest, e.getMessage());
+	}
+
+	/**
+	 * Mark test error on {@link PerfTest} instance
+	 * 
+	 * @param perfTest
+	 *            {@link PerfTest}
+	 * @param reason
+	 *            error reason
+	 */
+	void markPerfTestError(PerfTest perfTest, String reason) {
 		// Leave last status as test error cause
 		perfTest.setTestErrorCause(perfTest.getStatus());
-		perfTest.setTestErrorStackTrace(e.getMessage());
-		perfTestService.savePerfTest(perfTest, Status.STOP_ON_ERROR);
+		perfTest.setTestErrorStackTrace(reason);
+		perfTestService.savePerfTest(perfTest, Status.ABNORMAL_TESTING);
 	}
 
 	/**
@@ -242,7 +252,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 		for (PerfTest each : abnoramlTestingPerfTest) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
-			doTermicate(each, consoleUsingPort);
+			doTerminate(each, consoleUsingPort);
 		}
 
 		List<PerfTest> finishCandiate = perfTestService.getTestingPerfTest();
@@ -261,19 +271,16 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * @param singleConsoleInUse
 	 *            {@link SingleConsole} which is being using for {@link PerfTest}
 	 */
-	public void doTermicate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		// FIXME... it should found abnormal test status..
-		if (singleConsoleInUse == null) {
-			LOG.error("There is no console found for test:{}", perfTest);
-			// need to finish test as error
-			perfTestService.savePerfTest(perfTest, Status.STOP_ON_ERROR);
-			return;
-		}
+	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+		markPerfTestError(perfTest, perfTest.getTestErrorStackTrace());
 		// stop target host monitor
-
 		// FIXME : Is it safe to locate monitor agents removal?
 		monitorDataService.removeMonitorAgents(perfTest.getTargetHosts());
-		consoleManager.returnBackConsole(singleConsoleInUse);
+		if (singleConsoleInUse != null) {
+			// need to finish test as error
+			consoleManager.returnBackConsole(singleConsoleInUse);
+			return;
+		}
 	}
 
 	/**
@@ -313,7 +320,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	public boolean isAbormalFinishing(PerfTest perfTest) {
 		if ("D".equals(perfTest.getThreshold())) {
-			if (new Date().getTime() - perfTest.getStartTime().getTime() < perfTest.getDuration()) {
+			if ((new Date().getTime() - perfTest.getStartTime().getTime()) < perfTest.getDuration()) {
 				return true;
 			}
 		}
