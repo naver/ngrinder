@@ -103,6 +103,7 @@
 				    }
 				  }
 				});
+			});
 		</script>
 		<#include "common/copyright.ftl">
 	</div>
