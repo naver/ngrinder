@@ -124,6 +124,7 @@ public interface NGrinderConstants {
 
 	public static final String PARAM_TEST = "test";;
 	public static final String PARAM_SCRIPT_LIST = "scriptList";
+	public static final String PARAM_CURRENT_FREE_AGENTS_COUNT = "currentFreeAgentsCount";
 	public static final String PARAM_MAX_AGENT_SIZE_PER_CONSOLE = "maxAgentSizePerConsole";
 	public static final String PARAM_MAX_VUSER_PER_AGENT = "maxVuserPerAgent";
 	public static final String PARAM_MAX_RUN_COUNT = "maxRunCount";

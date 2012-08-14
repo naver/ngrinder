@@ -146,21 +146,9 @@ public class PerfTestController extends NGrinderBaseController {
 		}
 
 		model.addAttribute(PARAM_TEST, test);
-		List<FileEntry> scriptList = null;
-		try {
-			scriptList = fileEntiryService.getAllFileEntries(user);
-			// Only python script is allowed right now.
-			CollectionUtils.filter(scriptList, new Predicate() {
-				@Override
-				public boolean evaluate(Object object) {
-					return ((FileEntry) object).getFileType() == FileType.PYTHON_SCRIPT;
-				}
-			});
-
-		} catch (NGrinderRuntimeException e) {
-			LOG.error("Cannot get script list of user:", e);
-		}
-		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
+		model.addAttribute(PARAM_SCRIPT_LIST,
+						fileEntiryService.getAllFileEntries(user, FileType.PYTHON_SCRIPT));
+		model.addAttribute(PARAM_CURRENT_FREE_AGENTS_COUNT, agentManager.getAllFreeAgents().size());
 		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, agentManager.getMaxAgentSizePerConsole());
 		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
 		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
@@ -172,7 +160,7 @@ public class PerfTestController extends NGrinderBaseController {
 		URL url;
 		try {
 			url = new URL(urlString);
-			return "test_for_" + StringUtils.replace(url.getHost(), ".", "_") + ".py";
+			return "test_for_" + StringUtils.replace(url.getHost(), ".", "_");
 		} catch (MalformedURLException e) {
 			throw new NGrinderRuntimeException("Error while translating " + urlString, e);
 		}

@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>nGrinder Performance Test Detail</title>
-<#include "../common/common.ftl">
-<#include "../common/jqplot.ftl">
+<title>nGrinder Performance Test Detail</title> <#include "../common/common.ftl"> <#include "../common/jqplot.ftl">
 <link href="${req.getContextPath()}/css/slider.css" rel="stylesheet">
 <link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
 <style>
@@ -19,8 +17,8 @@ div.div-resources .resource {
 	color: #666666;
 	display: inline-block;
 	margin-left: 7px;
-	margin-top:2px;
-	margin-bottom:2px;
+	margin-top: 2px;
+	margin-bottom: 2px;
 }
 
 div.div-host {
@@ -31,13 +29,12 @@ div.div-host {
 	border-radius: 3px 3px 3px 3px;
 }
 
-
 div.div-host .host {
 	color: #666666;
 	display: inline-block;
 	margin-left: 7px;
-	margin-top:2px;
-	margin-bottom:2px;
+	margin-top: 2px;
+	margin-bottom: 2px;
 }
 
 .select-item {
@@ -59,11 +56,11 @@ div.chart {
 }
 
 .table thead th {
-    vertical-align: middle;
+	vertical-align: middle;
 }
 
 .rampChart {
-	width: 450px; 
+	width: 450px;
 	height: 355px
 }
 </style>
@@ -73,63 +70,48 @@ div.chart {
 <body>
 	<#include "../common/navigator.ftl">
 	<div class="container">
-		<form id="testContentForm"  name="testContentForm" action="${req.getContextPath()}/perftest/create" method="POST" style="margin-bottom:0;">
-			<div class="well" style="padding:10px">
-				<input type="hidden" id="testId" name="id" value="${(test.id)!}">
-				<input type="hidden" id="threshold" name="threshold" value="${(test.threshold)!"D"}">
-				<input type="hidden" id="threads" name="threads" value="${(test.threads)!0}">
-				<input type="hidden" id="processes" name="processes" value="${(test.processes)!0}">						
+		<form id="testContentForm" name="testContentForm" action="${req.getContextPath()}/perftest/create" method="POST"
+			style="margin-bottom: 0;">
+			<div class="well" style="padding: 10px">
+				<input type="hidden" id="testId" name="id" value="${(test.id)!}"> <input type="hidden" id="threshold"
+					name="threshold" value="${(test.threshold)!"D"}"> <input type="hidden" id="threads" name="threads"
+					value="${(test.threads)!0}"> <input type="hidden" id="processes" name="processes"
+					value="${(test.processes)!0}">
 
 				<div class="form-horizontal form-horizontal-1">
 					<fieldset>
 						<div class="control-group">
 							<label for="testName" class="control-label">Test Name</label>
-							<div class="controls">  
+							<div class="controls">
 								<input class="span3 required" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
-								<#if test??>
-								<span  
-										<#if test.status == 'STOP_ON_ERROR'>
-											 rel="popover"
-											 data-content="Error on ${test.testErrorCause} phase. ${(test.testErrorStackTrace)! ?replace('\n', '<br/>')?html}" 
-											 data-original-title="${test.status}"
-											 type="toggle"
-										<#else>
-											 rel="popover"
-											 data-content="${test.createdDate}" 
-											 data-original-title="${test.status}"
-											 type="toggle"
-										</#if>
-								>
-								
-									<img src="${req.getContextPath()}/img/ball/${test.status.iconName}"/>
-								</span>
-								</#if>
-								<button type="submit" class="btn btn-primary pull-right" style="margin-left:5px;margin-right:70px" data-toggle="modal" href="#scheduleModal"  id="saveScheduleBtn">
-									<#if test?? && (test.status != "SAVED")>Clone<#else>Save</#if> and Start
-								</button>  
-								<button type="submit" class="btn btn-success  pull-right" style="margin-left:5px"  id="saveTestBtn"> 
-									<#if test?? && (test.status != "SAVED")>Clone<#else>Save</#if>
-								</button>  
+								<#if test??> <span<#if test.status == 'STOP_ON_ERROR'> rel="popover" data-content="Error on
+									${test.testErrorCause} phase. ${(test.testErrorStackTrace)! ?replace('\n', '<br/>')?html}"
+									data-original-title="${test.status}" type="toggle" <#else> rel="popover" data-content="${test.createdDate}"
+									data-original-title="${test.status}" type="toggle" </#if> > <img
+									src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
+								</span> </#if>
+								<button type="submit" class="btn btn-primary pull-right" style="margin-left: 5px; margin-right: 70px"
+									data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn"><#if test?? && (test.status !=
+									"SAVED")>Clone<#else>Save</#if> and Start</button>
+								<button type="submit" class="btn btn-success  pull-right" style="margin-left: 5px" id="saveTestBtn">
+									<#if test?? && (test.status != "SAVED")>Clone<#else>Save</#if></button>
 							</div>
 						</div>
 						<div class="control-group" style="margin-bottom: 0">
 							<label for="description" class="control-label">Description</label>
-							<div class="controls">   
-								<textarea class="input-xlarge span9" id="description" rows="3" name="description" style="resize:none">${(test.description)!}</textarea>
-							</div>  
+							<div class="controls">
+								<textarea class="input-xlarge span9" id="description" rows="3" name="description" style="resize: none">${(test.description)!}</textarea>
+							</div>
 						</div>
 					</fieldset>
 				</div>
 			</div>
 			<div class="tabbable">
-				<ul class="nav nav-tabs" id="homeTab" style="margin-bottom:5px">
-					<li><a href="#testContent" data-toggle="tab">Test Configuration</a></li>
-					<#if test?? && (test.status == "TESTING")>
-						<li><a href="#runningContent" data-toggle="tab">Test Running</a></li>
-					</#if>
-					<#if test?? && (test.status == "FINISHED" || test.status == "CANCELED")>
-						<li><a href="#reportContent" data-toggle="tab" id="reportLnk">Report</a></li>
-					</#if>
+				<ul class="nav nav-tabs" id="homeTab" style="margin-bottom: 5px">
+					<li><a href="#testContent" data-toggle="tab">Test Configuration</a></li> <#if test?? && (test.status == "TESTING")>
+					<li><a href="#runningContent" data-toggle="tab">Test Running</a></li> </#if> <#if test?? && (test.status ==
+					"FINISHED" || test.status == "CANCELED")>
+					<li><a href="#reportContent" data-toggle="tab" id="reportLnk">Report</a></li> </#if>
 				</ul>
 				<div class="tab-content">
 					<div class="tab-pane" id="testContent">
@@ -138,16 +120,17 @@ div.chart {
 								<div class="page-header">
 									<h4>Basic Configuration</h4>
 								</div>
-								<div class="form-horizontal form-horizontal-2"> 
+								<div class="form-horizontal form-horizontal-2">
 									<fieldset>
 										<div class="control-group">
 											<label for="agentCount" class="control-label">Agent</label>
 											<div class="controls">
 												<div class="input-append">
-													<input type="text" class="input required positiveNumber span2" 
-														number_limit="${(maxAgentSizePerConsole)}" id="agentCount" name="agentCount" 
-														value="${(test.agentCount)!}"><span class="add-on">MAX : ${(maxAgentSizePerConsole)}</span>
+													<input type="text" class="input required positiveNumber span2" number_limit="${(maxAgentSizePerConsole)}"
+														id="agentCount" name="agentCount" value="${(test.agentCount)!}"><span class="add-on">MAX :
+														${(maxAgentSizePerConsole)}</span>
 												</div>
+												<span class="badge badge-info pull-right" id="vuserTotal">Avail Agents : ${currentFreeAgentsCount}</span>
 											</div>
 										</div>
 										<div class="control-group">
@@ -155,95 +138,77 @@ div.chart {
 											<div class="controls">
 												<div class="input-append">
 													<input type="text" class="input required positiveNumber span2" rel="popover"
-														number_limit="${(maxVuserPerAgent)}"
-														id="vuserPerAgent" name="vuserPerAgent" value="${(test.vuserPerAgent)!}"
-														data-content="Input vuser count for every agent." 
-														data-original-title="Vuser count" ><span class="add-on">MAX : ${(maxVuserPerAgent)}</span>
+														number_limit="${(maxVuserPerAgent)}" id="vuserPerAgent" name="vuserPerAgent"
+														value="${(test.vuserPerAgent)!}" data-content="Input vuser count for every agent."
+														data-original-title="Vuser count"><span class="add-on">MAX : ${(maxVuserPerAgent)}</span>
 												</div>
-												<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
-												<span class="badge badge-info pull-right" id="vuserTotal">Vuser: ${vuserTotal}</span>
+												<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 /> <span
+													class="badge badge-info pull-right" id="vuserTotal">Vuser: ${vuserTotal}</span>
 											</div>
 										</div>
 										<div class="control-group">
 											<label for="scriptName" class="control-label">Script</label>
 											<div class="controls">
-												<select id="scriptName" class="required" name="scriptName">
-													<#if scriptList?? && scriptList?size &gt; 0>
-														<#list scriptList as scriptItem>
-															<#if test?? && scriptItem.fileName == test.scriptName>
-																<#assign isSelected = "selected"/>
-															<#else>
-																<#assign isSelected = ""/>
-															</#if>
-															<option value="${scriptItem.path}"${isSelected}>${scriptItem.path}</option>
-														</#list>
-													</#if>
+												<select id="scriptName" class="required" name="scriptName"> <#if scriptList?? && scriptList?size
+													&gt; 0> <#list scriptList as scriptItem> <#if test?? && scriptItem.fileName == test.scriptName> <#assign
+													isSelected = "selected"/> <#else> <#assign isSelected = ""/> </#if>
+													<option value="${scriptItem.path}" ${isSelected}>${scriptItem.path}</option> </#list> </#if>
 												</select>
 											</div>
 										</div>
 										<div class="control-group">
 											<label for="Script Resources" class="control-label">Script Resources</label>
 											<div class="controls">
-												<div class="div-resources read-only" id="scriptResources" readonly="readonly"> 
-												</div>
-											</div> 
+												<div class="div-resources read-only" id="scriptResources" readonly="readonly"></div>
+											</div>
 										</div>
-										
+
 										<div class="control-group">
 											<label class="control-label">Target Host</label>
 											<div class="controls">
 												<div class="div-host"></div>
-												<input type="hidden" name="targetHosts" id="hostsHidden" value="${(test.targetHosts)!}">
-												<a class="btn pull-right btn-mini" data-toggle="modal" href="#addHostModal">Add</a>
+												<input type="hidden" name="targetHosts" id="hostsHidden" value="${(test.targetHosts)!}"> <a
+													class="btn pull-right btn-mini" data-toggle="modal" href="#addHostModal">Add</a>
 											</div>
 										</div>
 										<hr>
 										<div class="control-group">
-											<label class="control-label"> 
-												<input type="radio" id="durationChkbox"> Duration
+											<label class="control-label"> <input type="radio" id="durationChkbox"> Duration
 											</label>
-											<div class="controls docs-input-sizes"> 
-												<select	class="select-item" id="hSelect"></select> : 
-												<select	class="select-item" id="mSelect"></select> : 
-												<select	class="select-item" id="sSelect"></select>
-												&nbsp;&nbsp;
+											<div class="controls docs-input-sizes">
+												<select class="select-item" id="hSelect"></select> : <select class="select-item" id="mSelect"></select> : <select
+													class="select-item" id="sSelect"></select> &nbsp;&nbsp;
 												<code>HH:MM:SS</code>
-												<input type="hidden" id="duration" class="required positiveNumber" name="duration" value="${(test.duration)!0}">
-												<div id="durationSlider" class="slider" style="margin-left:0; width:250px"></div>
-												<input id="hiddenDurationInput" class="span1 hide" 
-														data-slider="#durationSlider"
-														data-max="40" data-min="0" data-step="1">
-												
+												<input type="hidden" id="duration" class="required positiveNumber" name="duration"
+													value="${(test.duration)!0}">
+												<div id="durationSlider" class="slider" style="margin-left: 0; width: 250px"></div>
+												<input id="hiddenDurationInput" class="span1 hide" data-slider="#durationSlider" data-max="40" data-min="0"
+													data-step="1">
+
 											</div>
 										</div>
 										<div class="control-group">
-											<label for="runCount" class="control-label"> <input
-												type="radio" id="runcountChkbox"> Run Count
+											<label for="runCount" class="control-label"> <input type="radio" id="runcountChkbox"> Run
+												Count
 											</label>
 											<div class="controls">
 												<div class="input-append">
-													<input type="text" id="runCount" class="input span2"
-														number_limit="${(maxRunCount)}"
-														name="runCount" 
+													<input type="text" id="runCount" class="input span2" number_limit="${(maxRunCount)}" name="runCount"
 														value="${(test.runCount)!0}"><span class="add-on">MAX : ${(maxRunCount)}</span>
 												</div>
 											</div>
 										</div>
 										<div class="control-group">
-											<label for="ignoreSampleCount" class="control-label">
-												Ignore Count </label>
+											<label for="ignoreSampleCount" class="control-label"> Ignore Count </label>
 											<div class="controls">
-												<input type="text" class="input required CountNumber"
-													id="ignoreSampleCount" name="ignoreSampleCount"
+												<input type="text" class="input required CountNumber" id="ignoreSampleCount" name="ignoreSampleCount"
 													value="${(test.ignoreSampleCount)!0}">
 											</div>
 										</div>
 										<div class="control-group">
-											<label for="sampleInterval" class="control-label">
-												Sample Interval </label>
+											<label for="sampleInterval" class="control-label"> Sample Interval </label>
 											<div class="controls">
-												<input type="text" class="input required positiveNumber"
-													id="sampleInterval" name="sampleInterval"
+												<input type="text" class="input required positiveNumber" id="sampleInterval" name="sampleInterval"
 													value="${(test.sampleInterval)!1000}">
 												<code>MS</code>
 											</div>
@@ -253,9 +218,11 @@ div.chart {
 							</div>
 							<div class="span6">
 								<div class="page-header">
-									<label class="checkbox" style="margin-bottom: 0">
-										<input type="checkbox" id="rampupCheckbox" <#if test?? && test.processes &gt; test.initProcesses>checked</#if> />
-										<h4>Enable Ramp-Up <small>(ramp-up chart for every agent)</small></h4>
+									<label class="checkbox" style="margin-bottom: 0"> <input type="checkbox" id="rampupCheckbox"<#if
+										test?? && test.processes &gt; test.initProcesses>checked</#if> />
+										<h4>
+											Enable Ramp-Up <small>(ramp-up chart for every agent)</small>
+										</h4>
 									</label>
 								</div>
 								<table>
@@ -264,21 +231,17 @@ div.chart {
 											<div class="form-horizontal form-horizontal-2">
 												<fieldset>
 													<div class="control-group">
-														<label for="initProcesses" class="control-label">
-															Inital Processes </label>
+														<label for="initProcesses" class="control-label"> Inital Processes </label>
 														<div class="controls">
-															<input type="text" class="input input-mini required CountNumber"
-																id="initProcesses" name="initProcesses"
+															<input type="text" class="input input-mini required CountNumber" id="initProcesses" name="initProcesses"
 																value="${(test.initProcesses)!0}" />
 														</div>
 													</div>
 													<div class="control-group">
-														<label for="processIncrement" class="control-label">
-															Ramp-Up </label>
+														<label for="processIncrement" class="control-label"> Ramp-Up </label>
 														<div class="controls">
-															<input type="text" class="input input-mini required positiveNumber"
-																id="processIncrement" name="processIncrement"
-																value="${(test.processIncrement)!1}">
+															<input type="text" class="input input-mini required positiveNumber" id="processIncrement"
+																name="processIncrement" value="${(test.processIncrement)!1}">
 														</div>
 													</div>
 												</fieldset>
@@ -288,23 +251,18 @@ div.chart {
 											<div class="form-horizontal form-horizontal-2">
 												<fieldset>
 													<div class="control-group">
-														<label for="initSleepTime" class="control-label">
-															Initial Sleep Time </label>
+														<label for="initSleepTime" class="control-label"> Initial Sleep Time </label>
 														<div class="controls">
-															<input type="text" class="input input-mini required CountNumber"
-																id="initSleepTime" name="initSleepTime"
+															<input type="text" class="input input-mini required CountNumber" id="initSleepTime" name="initSleepTime"
 																value="${(test.initSleepTime)!0}">
 															<code>MS</code>
 														</div>
 													</div>
 													<div class="control-group">
-														<label for="processIncrementInterval" class="control-label">
-															Processes Every </label>
+														<label for="processIncrementInterval" class="control-label"> Processes Every </label>
 														<div class="controls">
-															<input type="text" class="input input-mini required positiveNumber"
-																id="processIncrementInterval"
-																name="processIncrementInterval"
-																value="${(test.processIncrementInterval)!1000}">
+															<input type="text" class="input input-mini required positiveNumber" id="processIncrementInterval"
+																name="processIncrementInterval" value="${(test.processIncrementInterval)!1000}">
 															<code>MS</code>
 														</div>
 													</div>
@@ -313,7 +271,7 @@ div.chart {
 										</td>
 									</tr>
 								</table>
-								
+
 								<div id="rampChart" class="rampChart"></div>
 							</div>
 						</div>
@@ -354,8 +312,8 @@ div.chart {
 									</fieldset>
 								</div>
 							</div>
-							<div class="span8" style="margin-top:10px;">
-								<div id="tpsDiv" class="chart" style="width:610px; height:240px"></div>
+							<div class="span8" style="margin-top: 10px;">
+								<div id="tpsDiv" class="chart" style="width: 610px; height: 240px"></div>
 							</div>
 						</div>
 						<div class="row" style="margin-top: 10px;">
@@ -370,13 +328,11 @@ div.chart {
 								<div class="page-header">
 									<h4>Summary</h4>
 								</div>
-								<div class="form-horizontal form-horizontal-3" style="margin-top:10px;"> 
+								<div class="form-horizontal form-horizontal-3" style="margin-top: 10px;">
 									<fieldset>
 										<div class="control-group">
 											<label for="agentCount" class="control-label">Script File Name</label>
-											<div class="controls">
-												${(test.scriptName)!}
-											</div>
+											<div class="controls">${(test.scriptName)!}</div>
 										</div>
 										<hr>
 										<div class="control-group">
@@ -388,55 +344,47 @@ div.chart {
 										<div class="control-group">
 											<label for="scriptName" class="control-label">Agents</label>
 											<div class="controls">
-												<span>${(test.agentCount)!}</span><a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
+												<span>${(test.agentCount)!}</span><a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal"
+													data-toggle="modal">Info</a>
 											</div>
 										</div>
 										<div class="control-group">
 											<label class="control-label">Processes</label>
 											<div class="controls">
-												${(test.processes)!}
-												<span class="badge badge-info pull-right">Running <data id="process_data"></data></span>
+												${(test.processes)!} <span class="badge badge-info pull-right">Running <data id="process_data"></data></span>
 											</div>
 										</div>
 										<div class="control-group">
 											<label class="control-label">Threads</label>
 											<div class="controls">
-												${(test.threads)!}
-												<span class="badge badge-info pull-right">Running <data id="thread_data"></data></span>
+												${(test.threads)!} <span class="badge badge-info pull-right">Running <data id="thread_data"></data></span>
 											</div>
 										</div>
 										<hr>
 										<div class="control-group">
 											<label class="control-label">Target Host</label>
+											<div class="controls">${(test.targetHosts)!}</div>
+										</div>
+										<hr>
+										<div class="control-group">
+											<label class="control-label"> Duration </label>
 											<div class="controls">
-												${(test.targetHosts)!}
+												<span>${(test.durationStr)!}</span>
+												<code>HH:MM:SS</code>
+											</div>
+										</div>
+										<div class="control-group">
+											<label for="ignoreSampleCount" class="control-label"> Ignore Count </label>
+											<div class="controls">
+												<span>0</span>
+												<code>sec</code>
 											</div>
 										</div>
 										<hr>
 										<div class="control-group">
-											<label class="control-label"> 
-												Duration
-											</label>
-											<div class="controls">
-												<span>${(test.durationStr)!}</span><code>HH:MM:SS</code>
-											</div>
-										</div>
-										<div class="control-group">
-											<label for="ignoreSampleCount" class="control-label">
-												Ignore Count 
-											</label>
-											<div class="controls">
-												<span>0</span><code>sec</code>
-											</div>
-										</div>
-										<hr>
-										<div class="control-group">
-											<label for="sampleInterval" class="control-label">
-												Sample Interval
-											</label>
-											<div class="controls" style="margin-top:0">
-												<input type="text" class="input span2"
-													id="sampleInterval" name="sampleInterval"
+											<label for="sampleInterval" class="control-label"> Sample Interval </label>
+											<div class="controls" style="margin-top: 0">
+												<input type="text" class="input span2" id="sampleInterval" name="sampleInterval"
 													value="${(test.sampleInterval)!1000}">
 												<code>MS</code>
 											</div>
@@ -461,15 +409,15 @@ div.chart {
 								<div class="page-header">
 									<h4>Statistics</h4>
 								</div>
-								<div id="runningTps"class="chart" style="width:530px; height:195px"></div>
+								<div id="runningTps" class="chart" style="width: 530px; height: 195px"></div>
 								<div class="tabbable">
-									<ul class="nav nav-pills" style="margin20px 0" id="tableTab">
-									    <li><a href="#lsTab" tid="ls">Latest Sample</a></li>
-									    <li><a href="#asTab" tid="as">Accumulated Statistics</a></li>
-									    <!--<li class="pull-right"><a href="#" target="_blank">Expand View</a></li>-->
-								    </ul>
-								    <div class="tab-content">
-								    	<div class="tab-pane active" id="lsTab">
+									<ul class="nav nav-pills" style="" id="tableTab">
+										<li><a href="#lsTab" tid="ls">Latest Sample</a></li>
+										<li><a href="#asTab" tid="as">Accumulated Statistics</a></li>
+										<!--<li class="pull-right"><a href="#" target="_blank">Expand View</a></li>-->
+									</ul>
+									<div class="tab-content">
+										<div class="tab-pane active" id="lsTab">
 											<table class="table table-striped table-bordered ellipsis" id="lsTable">
 												<colgroup>
 													<col width="30px">
@@ -531,85 +479,75 @@ div.chart {
 						</div>
 					</div>
 				</div>
-				</div>
-				<input type="hidden" id="scheduleInput" name="scheduledTime"/>
-				<#if test??>
-					<input type="hidden" id="testStatus"  name="status" value="${(test.status)}">
-				<#else> 
-					<input type="hidden" id="testStatus"  name="status" value="SAVED">		
-				</#if>				
-			</form>
-			<!--content-->
-			<#include "../common/copyright.ftl">
+			</div>
+			<input type="hidden" id="scheduleInput" name="scheduledTime" /> <#if test??> <input type="hidden" id="testStatus"
+				name="status" value="${(test.status)}"> <#else> <input type="hidden" id="testStatus" name="status"
+				value="SAVED"> </#if>
+		</form>
+		<!--content-->
+		<#include "../common/copyright.ftl">
+	</div>
+	<!-- modal -->
+	<div class="modal fade" id="addHostModal">
+		<div class="modal-header">
+			<a class="close" data-dismiss="modal">&times;</a>
+			<h3>
+				Add Host <small>Please input one option at least.</small>
+			</h3>
 		</div>
-		<!-- modal -->
-		<div class="modal fade" id="addHostModal">
-			<div class="modal-header">
-				<a class="close" data-dismiss="modal">&times;</a>
-				<h3>
-					Add Host
-					<small>Please input one option at least.</small>
-				</h3>
-			</div>
-			<div class="modal-body">
-				<div class="form-horizontal">
-					<fieldset>
-						<div class="control-group">
-							<label for="domainInput" class="control-label">Domain</label>
-							<div class="controls">
-							  <input type="text" id="domainInput">
-							  <span class="help-inline"></span>
-							</div> 
-						</div>					
-						<div class="control-group">
-							<label for="ipInput" class="control-label">IP</label>
-							<div class="controls">
-							  <input type="text" id="ipInput">
-							  <span class="help-inline"></span>
-							</div>
-						</div>					
-					</fieldset>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<a class="btn btn-primary" id="addHostBtn">Add</a>
+		<div class="modal-body">
+			<div class="form-horizontal">
+				<fieldset>
+					<div class="control-group">
+						<label for="domainInput" class="control-label">Domain</label>
+						<div class="controls">
+							<input type="text" id="domainInput"> <span class="help-inline"></span>
+						</div>
+					</div>
+					<div class="control-group">
+						<label for="ipInput" class="control-label">IP</label>
+						<div class="controls">
+							<input type="text" id="ipInput"> <span class="help-inline"></span>
+						</div>
+					</div>
+				</fieldset>
 			</div>
 		</div>
+		<div class="modal-footer">
+			<a class="btn btn-primary" id="addHostBtn">Add</a>
+		</div>
+	</div>
 
-		<div class="modal fade" id="scheduleModal">
-			<div class="modal-header">
-				<a class="close" data-dismiss="modal">&times;</a>
-				<h3>
-					Schedule Setting
-					<small class="errorColor"></small>
-				</h3>
-			</div>
-			<div class="modal-body">
-				<div class="form-horizontal">
-					<fieldset>
-						<div class="control-group">
-							<label class="control-label">Schedule</label>
-							<div class="controls form-inline">
-							  <input type="text" class="input span2" id="sDateInput" value="" readyonly>&nbsp;
-							  <select id="shSelect" class="select-item"></select>
-							  :
-							  <select id="smSelect" class="select-item"></select>
-							  <code>HH:MM</code>
-							</div>
-						</div>					
-					</fieldset>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<a class="btn btn-primary" id="runNowBtn">Run NOW</a>
-				<a class="btn btn-primary" id="addScheduleBtn">Schedule</a>
+	<div class="modal fade" id="scheduleModal">
+		<div class="modal-header">
+			<a class="close" data-dismiss="modal">&times;</a>
+			<h3>
+				Schedule Setting <small class="errorColor"></small>
+			</h3>
+		</div>
+		<div class="modal-body">
+			<div class="form-horizontal">
+				<fieldset>
+					<div class="control-group">
+						<label class="control-label">Schedule</label>
+						<div class="controls form-inline">
+							<input type="text" class="input span2" id="sDateInput" value="" readyonly>&nbsp; <select id="shSelect"
+								class="select-item"></select> : <select id="smSelect" class="select-item"></select>
+							<code>HH:MM</code>
+						</div>
+					</div>
+				</fieldset>
 			</div>
 		</div>
-	
+		<div class="modal-footer">
+			<a class="btn btn-primary" id="runNowBtn">Run NOW</a> <a class="btn btn-primary" id="addScheduleBtn">Schedule</a>
+		</div>
+	</div>
+
 	<script src="${req.getContextPath()}/plugins/datepicker/js/bootstrap-datepicker.js"></script>
 	<script src="${req.getContextPath()}/js/rampup.js"></script>
 	<script src="${req.getContextPath()}/js/bootstrap-slider.min.js"></script>
-	
+
 	<script>
 	   var objTimer;
 	   var sliderMax = 40;

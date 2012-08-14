@@ -34,6 +34,8 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.infra.config.Config;
@@ -161,6 +163,19 @@ public class FileEntryService {
 	@Cacheable("file_entry_search_cache")
 	public List<FileEntry> getAllFileEntries(User user) {
 		return fileEntityRepository.findAll(user);
+	}
+	
+	@Cacheable("file_entry_search_cache")
+	public List<FileEntry> getAllFileEntries(User user, FileType fileType) {
+		List<FileEntry> fileEntryList = getAllFileEntries(user);
+		// Only python script is allowed right now.
+		CollectionUtils.filter(fileEntryList, new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				return ((FileEntry) object).getFileType() == FileType.PYTHON_SCRIPT;
+			}
+		});
+		return fileEntryList;
 	}
 
 	/**
