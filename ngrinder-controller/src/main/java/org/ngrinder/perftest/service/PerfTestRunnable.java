@@ -285,13 +285,15 @@ public class PerfTestRunnable implements NGrinderConstants {
 			perfTestService.savePerfTest(perfTest, Status.STOP_ON_ERROR);
 			return;
 		}
-		long startLastingTime = System.currentTimeMillis() - singleConsoleInUse.getStartTime();
+		long finishTime = System.currentTimeMillis();
+		long startLastingTime = finishTime - singleConsoleInUse.getStartTime();
 		// because It will take some seconds to start testing sometimes , if the
 		// test is not started
 		// after some seconds, will set it as finished.
 		if (singleConsoleInUse.isAllTestFinished() && startLastingTime > WAIT_TEST_START_SECOND) {
 			// stop target host monitor
 			monitorDataService.removeMonitorAgents(perfTest.getTargetHosts());
+			perfTest.setFinishTime(new Date(finishTime));
 			PerfTest resultTest = perfTestService.updatePerfTestAfterTestFinish(perfTest);
 			consoleManager.returnBackConsole(singleConsoleInUse);
 			perfTestService.savePerfTest(resultTest, Status.FINISHED);
