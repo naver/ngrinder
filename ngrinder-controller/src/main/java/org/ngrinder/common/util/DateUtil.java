@@ -16,11 +16,17 @@ public class DateUtil {
 	private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 	private static final SimpleDateFormat dateFormatEndWithMinute = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
+	private static final SimpleDateFormat colloectTimeFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+	
 	private static int ss = 1000;
 	private static int mi = ss * 60;
 	private static int hh = mi * 60;
 
 	private static Map<String, String> timezoneIDMap = null;
+	
+	public static long getCollectTimeInLong(Date date) {
+		return Long.valueOf(colloectTimeFormat.format(date));
+	}
 
 	public static String dateToString(Date date) {
 		return dateFormat.format(date);

@@ -114,6 +114,8 @@ public class PerfTestService implements NGrinderConstants {
 	private FileEntryService fileEntryService;
 
 	private NumberFormat formatter = new DecimalFormat("###.###");
+	
+	private int MaximumConcurrentTestCount = 0;
 
 	/**
 	 * Get {@link PerfTest} list on the user.
@@ -614,9 +616,12 @@ public class PerfTestService implements NGrinderConstants {
 	 * @return maximum concurrent test
 	 */
 	public int getMaximumConcurrentTestCount() {
-		return config.getSystemProperties().getPropertyInt(
-						NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
-						NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
+		if (MaximumConcurrentTestCount == 0) {
+			MaximumConcurrentTestCount = config.getSystemProperties().getPropertyInt(
+					NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
+					NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
+		}
+		return MaximumConcurrentTestCount;
 	}
 
 	/**

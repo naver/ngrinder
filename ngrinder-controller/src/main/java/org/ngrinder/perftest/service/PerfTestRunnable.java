@@ -274,7 +274,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		markPerfTestError(perfTest, perfTest.getTestErrorStackTrace());
-		monitorDataService.removeMonitorAgents(perfTest.getTargetHosts());
+		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 		if (singleConsoleInUse != null) {
 			// need to finish test as error
 			consoleManager.returnBackConsole(singleConsoleInUse);
