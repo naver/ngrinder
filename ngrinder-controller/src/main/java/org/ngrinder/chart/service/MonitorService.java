@@ -26,8 +26,12 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.ngrinder.chart.repository.JavaMonitorRepository;
 import org.ngrinder.chart.repository.SystemMonitorRepository;
+import org.ngrinder.infra.AgentConfig;
+import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +53,13 @@ public class MonitorService {
 
 	@Autowired
 	private SystemMonitorRepository sysMonitorRepository;
+	
+	@PostConstruct
+	public void initMonitorEnv() {
+		AgentConfig agentConfig = new AgentConfig();
+		agentConfig.init();
+		MonitorConstants.init(agentConfig);
+	}
 
 
 	public JavaDataModel saveJavaMonitorInfo(JavaDataModel data) {
