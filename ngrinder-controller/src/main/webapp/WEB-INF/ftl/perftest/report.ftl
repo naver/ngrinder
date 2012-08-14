@@ -40,7 +40,7 @@
 					       </tr>
 					       <tr>
                                <th>Agents</th>
-                               <td><span>${(test.agentCount)!}</span>&nbsp;&nbsp;<a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a></td>
+                               <td><span>${(test.agentCount)!}</span>&nbsp;&nbsp;<a class="btn btn-mini btn-info hidden" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a></td>
                            </tr>
                            <tr>
                                <th>Processes</th>
@@ -103,7 +103,11 @@
                          <li><i class="icon-tag"></i> <a id="testPerformance" href="javascript:void(0);">Performance Report</a></li>
                        </ul>
 					   <ul class="unstyled"><i class="icon-tags"></i> Target Hosts
-                         <#if (test.targetHosts)?exists><li><i class="icon-chevron-right"></i><a id="targetMontor" href="javascript:void(0);" ip="${test.targetHosts}">${test.targetHosts}</a></li></#if>
+                         <#if (test.targetHostIP)?exists>
+                         	<#list targetIp as test.targetHostIP>
+                         	<li><i class="icon-chevron-right"></i><a id="targetMontor" href="javascript:void(0);" ip="${targetIp}">${targetIp}</a></li>
+                         	</#list>
+                         </#if>
                        </ul>
 			</div>
 			<div class="span8">
@@ -134,10 +138,10 @@
                     <div class="chart" id="cpuDiv"></div>
                     <div class="chart" id="memoryDiv"></div>
                     <h6>Java Data</h6>
-                    <div class="chart" id="heapMemoryDiv"></div>
-                    <div class="chart" id="nonHeapMemoryDiv"></div>
-                    <div class="chart" id="threadCountDiv"></div>
-                    <div class="chart" id="jvmCpuDiv"></div>
+                    <div class="chart javachart" id="heapMemoryDiv"></div>
+                    <div class="chart javachart" id="nonHeapMemoryDiv"></div>
+                    <div class="chart javachart" id="threadCountDiv"></div>
+                    <div class="chart javachart" id="jvmCpuDiv"></div>
                 </div>
 			</div>
 		</div>
@@ -166,7 +170,7 @@
                 $("#performanceDiv").hide();
                 $("#monitorDiv").show();
                 var $elem = $(this);
-                getMonitorData($elem.attr("ip"));
+                getMonitorData($elem.attr("ip"), false);
             });
 
             $("#downloadReportData").click(function() {
@@ -205,7 +209,7 @@
                 }
             });
         }
-        function getMonitorData(ip){
+        function getMonitorData(ip, hasJava){
             if(monitorInit[ip]){
                 return;
             }
@@ -221,10 +225,15 @@
                     if (res.success) {
                         drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage);
                         drawChart('System Memory', 'memoryDiv', res.SystemData.memory, formatAmount);
-                        drawChart('Heap Memory', 'heapMemoryDiv', res.JavaData.heap_memory, formatAmount);
-                        drawChart('NonHeap Memory', 'nonHeapMemoryDiv', res.JavaData.non_heap_memory, formatAmount);
-                        drawChart('Thread Count', 'threadCountDiv', res.JavaData.thread_count);
-                        drawChart('JVM Cpu', 'jvmCpuDiv', res.JavaData.jvm_cpu, formatPercentage);
+                        if (hasJava) {}
+                        	drawChart('Heap Memory', 'heapMemoryDiv', res.JavaData.heap_memory, formatAmount);
+                        	drawChart('NonHeap Memory', 'nonHeapMemoryDiv', res.JavaData.non_heap_memory, formatAmount);
+                        	drawChart('Thread Count', 'threadCountDiv', res.JavaData.thread_count);
+                     		drawChart('JVM Cpu', 'jvmCpuDiv', res.JavaData.jvm_cpu, formatPercentage);
+                     		$("div.javachart").css("display", "block");
+                    	} else {
+                    		$(div.javachart).css("display", "none");
+                    	}
                         return true;
                     } else {
                         showErrorMsg("Get monitor data failed.");
