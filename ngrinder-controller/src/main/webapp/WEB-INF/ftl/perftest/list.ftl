@@ -66,9 +66,9 @@
 							<#list testList as test>
 								<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
 								<tr id="tr${test.id}">
-									<td style="text-align:center"><input type="checkbox" class="checkbox" value="${test.id}" <#if !(test.status.isDeletable())>disabled</#if>></td>
+									<td style="text-align:center"><input type="checkbox" class="checkbox perf_test" value="${test.id}" <#if !(test.status.isDeletable())>disabled</#if>></td>
 									<td class="ellipsis"  style="text-align:center">
-										<div class="ball" id="${test.id}"
+										<div class="ball" id="ball_${test.id}"
 										<#if test.status == 'STOP_ON_ERROR'>
 											 rel="popover"
 											 data-content="Error on ${test.testErrorCause} phase. ${(test.testErrorStackTrace)! ?replace('\n', '<br/>')?html}" 
@@ -87,7 +87,7 @@
 											 data-content="${test.description?replace('\n', '<br/>')?html}  &lt;br&gt;&lt;br&gt; modified at <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if>"  
 											 data-original-title="${test.testName}">
 											<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
-											<#if test.status =="READY" || test.status == "SAVED"><a href="javascript:void(0);"><i class="icon-remove test-remove" sid="${test.id}"></i></a></#if>
+											<#if test.status.isDeletable()><a href="javascript:void(0);"><i class="icon-remove test-remove" sid="${test.id}"></i></a></#if>
 										</div>
 
 									</td>
@@ -218,25 +218,40 @@
 			document.forms.listForm.submit();
 		}
 		
-		
+		function updateBall(id, status, icon, message) {
+			var ballImg = $("#ball_" + id + " img");
+			if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) { 
+				ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
+				$(".icon-remove[sid=" + id + "]").remove();
+			}
+			$("#ball_" + id).attr("data-original-title", status);
+			$("#ball_" + id).attr("data-content", message);
+			
+		}
 		// Wrap this function in a closure so we don't pollute the namespace
 		(function refreshBall() {
-			 var db = $('.ball').map(function(i,n) {
-		        	return $(n).id;
-		  		 }).get();
-		    
-		  $.ajax({
-		    url: '${req.getContextPath()}/perftest/updateball', 
-		    type: 'POST',
-		    data:db,
-		    success: function(data) {
-		       
-		    },
-		    complete: function() {
-		      setTimeout(refreshBall, 5000);
-		    }
-		  });
-		})();
+			var ids = [];
+			$('.perf_test').map(function(i,n) {
+		        	return ids.push($(n).val());
+		  	});
+			if (ids.length == 0) {
+				return;
+			}
+		    $.ajax({
+			    url: '${req.getContextPath()}/perftest/updateStatus', 
+			    type: 'GET',
+			    data: {"ids": ids.join(",")},
+			    success: function(data) {
+			    	data = eval(data); 
+			    	for (var i = 0; i < data.length; i++) {
+			    		updateBall(data[i].id, data[i].name, data[i].icon, data[i].message);
+			    	}
+			    },
+			    complete: function() {
+			      setTimeout(refreshBall, 5000);
+			    }
+		    });
+	  })();
 	</script>
 	</body>
 </html>

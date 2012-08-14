@@ -56,8 +56,8 @@ import org.springframework.stereotype.Component;
 /**
  * {@link PerfTest} test running run scheduler.
  * 
- * This class is responsible to execute the performance test which is ready to execute. Mostly this class is started
- * from {@link #startTest()} method. This method is scheduled by Spring Task.
+ * This class is responsible to execute the performance test which is ready to execute. Mostly this
+ * class is started from {@link #startTest()} method. This method is scheduled by Spring Task.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -111,7 +111,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// In case of too many trial, cancel running.
 		if (runCandidate.getTestTrialCount() > PERFTEST_MAXIMUM_TRIAL_COUNT) {
 			LOG.error("The {} test is canceled because it has too many test execution errors",
-					runCandidate.getTestName());
+							runCandidate.getTestName());
 			runCandidate.setTestErrorCause(Status.READY);
 			runCandidate.setTestErrorStackTrace("The test is canceled because it has too many test execution errors");
 			perfTestService.savePerfTest(runCandidate, CANCELED);
@@ -178,7 +178,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 		perfTestService.savePerfTest(perfTest, Status.ABNORMAL_TESTING);
 	}
 
-	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties, final SingleConsole singleConsole) {
+	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties,
+					final SingleConsole singleConsole) {
 		// start target monitor
 		Set<AgentInfo> agents = new HashSet<AgentInfo>();
 		AgentInfo agent = new AgentInfo();
@@ -296,7 +297,20 @@ public class PerfTestRunnable implements NGrinderConstants {
 			perfTest.setFinishTime(new Date(finishTime));
 			PerfTest resultTest = perfTestService.updatePerfTestAfterTestFinish(perfTest);
 			consoleManager.returnBackConsole(singleConsoleInUse);
-			perfTestService.savePerfTest(resultTest, Status.FINISHED);
+			if (isAbormalFinishing(perfTest)) {
+				perfTestService.savePerfTest(resultTest, Status.FINISHED);
+			} else {
+				perfTestService.savePerfTest(resultTest, Status.STOP_ON_ERROR);
+			}
 		}
+	}
+
+	public boolean isAbormalFinishing(PerfTest perfTest) {
+		if ("D".equals(perfTest.getThreshold())) {
+			if (new Date().getTime() - perfTest.getStartTime().getTime() < perfTest.getDuration()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
