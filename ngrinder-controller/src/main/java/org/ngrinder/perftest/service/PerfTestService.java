@@ -498,7 +498,7 @@ public class PerfTestService implements NGrinderConstants {
 			// FIXME : NEVER NEVER DO IT. Be aware of memory size.!!
 			while (StringUtils.isNotBlank(data = br.readLine())) {
 				if (0 == current) {
-					long number = NumberUtils.createLong(data);
+					double number = NumberUtils.createDouble(data);
 					reportData.add(number);
 				}
 				if (++current >= interval) {

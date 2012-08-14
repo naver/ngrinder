@@ -127,8 +127,8 @@
 			    <div id="performanceDiv">
     				<div class="chart" id="tpsDiv"></div>
     				<div class="chart" id="rpsDiv"></div>
-    				<div class="chart" id="vuserDiv"></div>
     				<div class="chart" id="errorDiv"></div>
+    				<div class="chart" id="vuserDiv"></div>
 				</div>
 				<div id="monitorDiv" style="display:none">
 				    <h6>System Data</h6>
@@ -192,7 +192,7 @@
                     if (res.success) {
                         drawChart('Transactions Per Second', 'tpsDiv', res.tps_total);
                         drawChart('Responses Per Second', 'rpsDiv', res.response_time);
-                        drawChart('Running Vusers', 'vuserDiv', res.vuser);
+                        //drawChart('Running Vusers', 'vuserDiv', res.vuser);
                         drawChart('Errors Per Second', 'errorDiv', res.tps_failed);
                         return true;
                     } else {
