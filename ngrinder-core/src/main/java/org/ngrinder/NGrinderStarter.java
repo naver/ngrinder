@@ -177,22 +177,13 @@ public class NGrinderStarter {
 		ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL",
 						new Object[] { checkNotNull(toolsJarPath) });
 		List<String> libString = new ArrayList<String>();
-		String path = NGrinderStarter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-		String file = null;
-		try {
-			file = URLDecoder.decode(path, "UTF-8");
-		} catch (UnsupportedEncodingException e1) {
-		}
-		if (file.endsWith(".jar")) {
-			file = FilenameUtils.getPath(file);
-		}
-		if (file == null) {
-			file = new File(".").getAbsolutePath();
-		}
-		File libFolder = new File(file, "lib");
+
+		File libFolder = new File(".", "lib").getAbsoluteFile();
 		if (!libFolder.exists()) {
-			return;
+			LOG.error("lib path does not exist {}", libFolder.getAbsolutePath());
+			printHelpAndReturn();
 		}
+
 		for (File each : libFolder.listFiles()) {
 			if (each.getName().endsWith(".jar")) {
 				try {
