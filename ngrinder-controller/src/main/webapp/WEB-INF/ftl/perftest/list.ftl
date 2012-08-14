@@ -18,18 +18,18 @@
 		
 				<div class="well form-inline searchBar">
 					<input type="text" class="search-query" placeholder="Keywords" name ="query" id="query" value="${query!}">
-					<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> Search</button>
+					<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> <@spring.message "perfTest.formInline.search"/></button>
 					<label class="checkbox" style="position:relative;">
-						<input type="checkbox" id="onlyFinished" name="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> Only Finished
+						<input type="checkbox" id="onlyFinished" name="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> <@spring.message "perfTest.formInline.onlyFished"/>
 					</label>
 					<span class="pull-right">
 						<a class="btn btn-primary" href="${req.getContextPath()}/perftest/detail" id="createBtn" data-toggle="modal">
 							<i class="icon-file"></i>
-							Create test
+							<@spring.message "perfTest.formInline.createTest"/>
 						</a>
 						<a class="btn btn-danger" href="javascript:void(0);" id="deleteBtn">
 							<i class="icon-remove"></i>
-							Delete selected tests
+							<@spring.message "perfTest.formInline.deletetSelectedTest"/>
 						</a>
 					</span>
 				</div>
@@ -50,14 +50,14 @@
 						<tr>
 							<th class="nothing"><input id="chkboxAll" type="checkbox" class="checkbox" value=""></th>
 							<th class="nothing"style="text-align:center"> </th>
-							<th id="testName">Test Name</th>
-							<th id="scriptName">Script Name</th>
-							<th id="startTime">Start Time</th>
-							<th id="duration">Duration</th>
-							<th id="tps">TPS</th>
-							<th id="meanTestTime">Mean Time</th>
-							<th id="errors">Errors</th>
-							<th class="nothing">Vusers</th> 
+							<th id="testName"><@spring.message "perfTest.table.testName"/></th>
+							<th id="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
+							<th id="startTime"><@spring.message "perfTest.table.startTime"/></th>
+							<th id="duration"><@spring.message "perfTest.table.duration"/></th>
+							<th id="tps"><@spring.message "perfTest.table.tps"/></th>
+							<th id="meanTestTime"><@spring.message "perfTest.table.meantime"/></th>
+							<th id="errors"><@spring.message "perfTest.table.errors"/></th>
+							<th class="nothing"><@spring.message "perfTest.table.vusers"/></th> 
 						</tr>
 					</thead>
 					<tbody>
@@ -105,7 +105,7 @@
 						<#else>
 							<tr>
 								<td colspan="12" class="noData">
-									No data to display.
+									<@spring.message "perfTest.table.noData"/>
 								</td>
 							</tr>
 						</#if>
