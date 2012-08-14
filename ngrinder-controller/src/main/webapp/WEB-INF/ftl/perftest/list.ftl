@@ -230,7 +230,7 @@
 		    type: 'POST',
 		    data:db,
 		    success: function(data) {
-		      alert(data);
+		      //alert(data);
 		    },
 		    complete: function() {
 		      setTimeout(refreshBall, 5000);
