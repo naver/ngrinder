@@ -30,7 +30,8 @@ import net.grinder.GrinderConstants;
 import net.grinder.common.processidentity.ProcessIdentity;
 import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.communication.ProcessStatusImplementation.AgentAndWorkers;
-import net.grinder.util.ReflectionUtil;
+
+import org.ngrinder.common.util.ReflectionUtil;
 
 /**
  * This class is used to get worker and thread information from grinder. We add

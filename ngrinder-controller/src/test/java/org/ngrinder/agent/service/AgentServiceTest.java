@@ -43,10 +43,14 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 	private AgentService agentService;
 
 	@Test
-	public void testSaveAgent() {
+	public void testSaveGetDeleteAgent() {
 		AgentInfo agent = this.saveAgent("save");
 		AgentInfo agent2 = agentService.getAgent(agent.getId());
 		Assert.assertNotNull(agent2);
+		
+		agentService.deleteAgent(agent.getId());
+		agent2 = agentService.getAgent(agent.getId());
+		Assert.assertNull(agent2);
 	}
 
 	@Test
@@ -58,21 +62,6 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 		// Page<AgentInfo> page2 = agentService.getAgents("testRegion", null);
 		// Assert.assertEquals(page1.getTotalElements() + 3,
 		// page2.getTotalElements());
-	}
-
-	@Test
-	public void testGetAgent() {
-		AgentInfo agent = this.saveAgent("get");
-		AgentInfo agent2 = agentService.getAgent(agent.getId());
-		Assert.assertEquals(agent.getHostName(), agent2.getHostName());
-	}
-
-	@Test
-	public void testDeleteAgent() {
-		AgentInfo agent = this.saveAgent("delete");
-		agentService.deleteAgent(agent.getId());
-		AgentInfo agent2 = agentService.getAgent(agent.getId());
-		Assert.assertNull(agent2);
 	}
 
 	private AgentInfo saveAgent(String key) {

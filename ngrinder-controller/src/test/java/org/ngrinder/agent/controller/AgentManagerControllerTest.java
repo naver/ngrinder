@@ -23,9 +23,9 @@
 package org.ngrinder.agent.controller;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import net.grinder.message.console.AgentControllerState;
+
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -64,35 +64,22 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		RequestContextHolder.resetRequestAttributes();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetAgentList() {
 		ModelMap model = new ModelMap();
 		agentController.getAgentList(model);
-	}
-	
-	@Test
-	public void testSaveAndGetAgent() {
-		ModelMap model = new ModelMap();
-		AgentInfo agent = new AgentInfo();
-		agent.setIp("11.11.11.11");
-		agent.setPort(1234);
-		agent.setRegion("BJ");
-		agent.setStatus(AgentControllerState.READY);
-		agentController.createAgent(model, agent);
-		
-		model.clear();
-		agentController.getAgent(model, agent.getId());
-		AgentInfo agentInDB = (AgentInfo)model.get("agent");
-		assertThat(agentInDB.getId(), is(agent.getId()));
-		assertThat(agentInDB.getIp(), is(agent.getIp()));
-		assertThat(agentInDB.getPort(), is(agent.getPort()));
-		
-		model.clear();
-		agentController.deleteAgent(model, "" + agent.getId());
-		model.clear();
-		agentController.getAgent(model, agent.getId());
-		agentInDB = (AgentInfo)model.get("agent");
-		assertThat(agentInDB, nullValue());
+		List<AgentInfo> agents = (List<AgentInfo>)model.get("agents");
+		if (agents.size() > 0) {
+			AgentInfo testAgt = agents.get(0);
+			model.clear();
+			agentController.getAgent(model, testAgt.getId());
+			AgentInfo agentInDB = (AgentInfo)model.get("agent");
+			assertThat(agentInDB.getId(), is(testAgt.getId()));
+			assertThat(agentInDB.getIp(), is(testAgt.getIp()));
+			assertThat(agentInDB.getPort(), is(testAgt.getPort()));
+			
+		}
 	}
 
 }

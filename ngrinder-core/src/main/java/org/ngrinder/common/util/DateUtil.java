@@ -45,7 +45,11 @@ public abstract class DateUtil {
 	private static final SimpleDateFormat FULL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
 			Locale.getDefault());
 	private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+	
+	private static final SimpleDateFormat dateFormatEndWithMinute = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
+	private static final SimpleDateFormat collectTimeFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+	
 	private static final int CONSTANT_10 = 10;
 	private static final int CONSTANT_24 = 24;
 	private static final int CONSTANT_60 = 60;
@@ -58,6 +62,10 @@ public abstract class DateUtil {
 
 	private static Map<String, String> timezoneIDMap;
 
+	public static long getCollectTimeInLong(Date date) {
+		return Long.valueOf(collectTimeFormat.format(date));
+	}
+	
 	/**
 	 * Format date to {@value #FULL_DATE_FORMAT}.
 	 * 
@@ -214,6 +222,15 @@ public abstract class DateUtil {
 	 */
 	public static long timeToMs(int day, int hour, int min, int sec) {
 		return ((long) CONSTANT_1000) * (((day * CONSTANT_24 + hour) * CONSTANT_60 + min) * CONSTANT_60 + sec);
+	}
+	
+	public static Boolean compareDateEndWithMinute(Date d1, Date d2) {
+		String s1 = dateFormatEndWithMinute.format(d1);
+		String s2 = dateFormatEndWithMinute.format(d2);
+		if (s1.equals(s2))
+			return true;
+		else
+			return false;
 	}
 
 }

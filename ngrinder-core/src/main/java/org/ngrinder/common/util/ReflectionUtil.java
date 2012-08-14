@@ -23,8 +23,10 @@
 package org.ngrinder.common.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,6 +94,63 @@ public final class ReflectionUtil {
 		if (!Modifier.isPublic(field.getModifiers()) || !Modifier.isPublic(field.getDeclaringClass().getModifiers())) {
 			field.setAccessible(true);
 		}
+	}
+	
+	/**
+	 * Invoke private method
+	 * 
+	 * @param object
+	 *            object
+	 * @param methodName
+	 *            private method name
+	 * @param parameters
+	 *            private method parameter
+	 * @return return value
+	 */
+	public static Object invokePrivateMethod(Object object, String methodName, Object[] parameters) {
+		if (object == null || StringUtils.isBlank(methodName)) {
+			return null;
+		}
+		Class<?>[] newClassParam = new Class[parameters.length];
+		for (int i = 0; i < parameters.length; i++) {
+			newClassParam[i] = parameters[i].getClass();
+		}
+		try {
+			Method declaredMethod = getDeclaredMethod(object.getClass(), methodName, newClassParam);
+			if (declaredMethod == null) {
+				LOG.error("No method {} found in {}", methodName, object.getClass());
+				return null;
+			}
+			declaredMethod.setAccessible(true);
+			return declaredMethod.invoke(object, parameters);
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			return null;
+		}
+	}
+	
+	/**
+	 * Get Method object.
+	 * 
+	 * @param clazz
+	 *            clazz to be inspected
+	 * @param methodName
+	 *            method name
+	 * @param parameters
+	 *            parameter list
+	 * @return {@link Method} instance. otherwise null.
+	 */
+	private static Method getDeclaredMethod(final Class<?> clazz, final String methodName, final Class<?>[] parameters) {
+		if (clazz == null || StringUtils.isBlank(methodName)) {
+			return null;
+		}
+		for (Class<?> superClass = clazz; superClass != Object.class; superClass = superClass.getSuperclass()) {
+			try {
+				return superClass.getDeclaredMethod(methodName, parameters);
+			} catch (Exception e) {
+			}
+		}
+		return null;
 	}
 
 }

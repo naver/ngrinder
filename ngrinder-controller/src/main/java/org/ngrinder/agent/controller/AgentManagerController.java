@@ -28,7 +28,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.service.AgentService;
 import org.ngrinder.common.controller.NGrinderBaseController;
@@ -41,7 +40,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -109,40 +107,6 @@ public class AgentManagerController extends NGrinderBaseController {
 		AgentInfo agent = agentService.getAgent(id);
 		model.addAttribute("agent", agent);
 		return "agent/agentDetail";
-	}
-
-	/**
-	 * Create agent.
-	 * 
-	 * @param model
-	 *            model
-	 * @param agent
-	 *            agent model
-	 * @return agent/agentDetail
-	 */
-	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String createAgent(ModelMap model, AgentInfo agent) {
-		return getAgent(model, agent.getId());
-	}
-
-	/**
-	 * Delete agent.
-	 * 
-	 * @param model
-	 *            model
-	 * @param ids
-	 *            agent ids
-	 * @return agent/agentList
-	 */
-	@RequestMapping(value = "/delete")
-	public String deleteAgent(ModelMap model, @RequestParam String ids) {
-		if (!StringUtils.isBlank(ids)) {
-			String[] idArr = StringUtils.split(ids, ",");
-			for (String idStr : idArr) {
-				agentService.deleteAgent(Long.parseLong(idStr));
-			}
-		}
-		return getAgentList(model);
 	}
 
 	/**
