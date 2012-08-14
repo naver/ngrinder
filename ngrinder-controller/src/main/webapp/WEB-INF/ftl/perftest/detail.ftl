@@ -876,6 +876,7 @@ div.chart {
 				initDuration();
 				updateChart();
 				resetFooter();
+				
 				updateScriptResources();
 			});
 			
@@ -886,8 +887,10 @@ div.chart {
 			}
 			
 			function updateScriptResources() {
-				$('#messageDiv').ajaxSend(function() {
-					showInformation("Updating script resources...");
+				$('#messageDiv').ajaxSend(function(e, xhr, settings) {
+					var url = settings.url;
+					if(url.indexOf("refresh")==0 )
+						showInformation("Updating script resources...");
 				});
 				$.ajax({
 			  		url: "${req.getContextPath()}/perftest/getResourcesOnScriptFolder",
