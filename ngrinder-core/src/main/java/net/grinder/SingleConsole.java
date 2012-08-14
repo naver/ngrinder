@@ -462,9 +462,9 @@ public class SingleConsole implements Listener, SampleListener {
 			}
 
 			try {
-				writeReportData("errors", errors);
+				writeReportData("tps_failed", errors);
 				writeReportData("tps_total", tpsSum);
-				writeReportData("meanTestTime", meanTestTime);
+				writeReportData("response_time", meanTestTime);
 			} catch (IOException e) {
 				LOGGER.error("Write report data failed : ", e);
 			}
