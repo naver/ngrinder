@@ -311,9 +311,9 @@ public class PerfTestRunnable implements NGrinderConstants {
 			PerfTest resultTest = perfTestService.updatePerfTestAfterTestFinish(perfTest);
 			consoleManager.returnBackConsole(singleConsoleInUse);
 			if (isAbormalFinishing(perfTest)) {
-				perfTestService.savePerfTest(resultTest, Status.FINISHED);
-			} else {
 				perfTestService.savePerfTest(resultTest, Status.STOP_ON_ERROR);
+			} else {
+				perfTestService.savePerfTest(resultTest, Status.FINISHED);
 			}
 		}
 	}
