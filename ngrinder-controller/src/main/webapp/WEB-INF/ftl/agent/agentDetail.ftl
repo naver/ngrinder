@@ -98,6 +98,7 @@
 			var java_threadCount = new Queue();
 			var sys_totalCpuValue = new Queue();
 			var sys_usedMemory = new Queue();
+			var jqplots = [];
             $(document).ready(function() {
                 $("#returnBtn").on('click', function() {
                     history.back();
@@ -135,12 +136,12 @@
                     success: function(res) {
                         if (res.success) {
                         	getChartData(res);
-                            showChart('CPU', 'cpuDiv', sys_totalCpuValue.getArray(), formatPercentage);
-                            showChart('Memory', 'memoryDiv', sys_usedMemory.getArray(), formatAmount);
-                            showChart('Heap Memory', 'heapMemoryDiv', java_heapUsedMemory.getArray(), formatAmount);
-                            showChart('NonHeap Memory', 'nonHeapMemoryDiv', java_nonHeapUsedMemory.getArray(), formatAmount);
-                            showChart('Thread Count', 'threadCountDiv', java_threadCount.getArray());
-                            showChart('CPU', 'jvmCpuDiv', java_cpuUsedPercentage.getArray(), formatPercentage);
+                            showChart('CPU', 'cpuDiv', sys_totalCpuValue.getArray(), 0, formatPercentage);
+                            showChart('Memory', 'memoryDiv', sys_usedMemory.getArray(), 1, formatAmount);
+                            showChart('Heap Memory', 'heapMemoryDiv', java_heapUsedMemory.getArray(), 2, formatAmount);
+                            showChart('NonHeap Memory', 'nonHeapMemoryDiv', java_nonHeapUsedMemory.getArray(), 3, formatAmount);
+                            showChart('Thread Count', 'threadCountDiv', java_threadCount.getArray(), 4);
+                            showChart('CPU', 'jvmCpuDiv', java_cpuUsedPercentage.getArray(), 5, formatPercentage);
                             return true;
                         } else {
                             showErrorMsg("Get monitor data failed.");
@@ -154,9 +155,12 @@
                 });
             }
             
-            function showChart(title, id, data, formatYaxis) {
+            function showChart(title, id, data, index, formatYaxis) {
+            	if (jqplot[index]) {
+            		jqplot[index].destroy();
+            	}
                 $("#" + id).empty();
-                drawChart(title, id, data, formatYaxis);
+                jqplot[index] = drawChart(title, id, data, formatYaxis);
             }
             
             function getChartData(dataObj) {

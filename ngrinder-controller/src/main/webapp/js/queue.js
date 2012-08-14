@@ -1,5 +1,5 @@
 function Queue() {
-	this.aElement = new Array();
+	this.aElement = new Array(60);
 
 	Queue.prototype.enQueue = function(vElement) {
 		if (arguments.length == 0) {
