@@ -39,14 +39,12 @@ import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.MonitorContext;
 import org.ngrinder.monitor.agent.collector.AgentDataCollectManager;
 import org.ngrinder.monitor.agent.mxbean.core.MXBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -69,11 +67,6 @@ public final class AgentMonitorServer {
 	private AgentMonitorServer() {}
 
 	public static AgentMonitorServer getInstance() {
-		if (MonitorConstants.DEFAULT_AGENT_PORT == 0) {
-			AgentConfig agentConfig = new AgentConfig();
-			agentConfig.init();
-			MonitorConstants.init(agentConfig);
-		}
 		return instance;
 	}
 

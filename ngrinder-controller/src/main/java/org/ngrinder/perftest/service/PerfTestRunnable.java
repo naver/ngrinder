@@ -190,7 +190,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			targetServer.setPort(MonitorConstants.DEFAULT_AGENT_PORT);
 			agents.add(targetServer);
 		}
-		monitorDataService.addMonitorAgent(perfTest.getTargetHosts(), agents);
+		monitorDataService.addMonitorTarget(perfTest.getTargetHosts(), agents);
 
 		// Run test
 		perfTestService.savePerfTest(perfTest, START_TESTING);
