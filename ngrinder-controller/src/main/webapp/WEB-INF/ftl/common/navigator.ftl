@@ -22,7 +22,6 @@
 			            	<@security.authorize ifAnyGranted="A, S">
 				            	<li class="divider"/>
 		               			<li><a href="${req.getContextPath()}/user/list"><@spring.message "navigator.dropdown.userManagement"/></a></li>
-		               			<li><a href="${req.getContextPath()}/config/view"><@spring.message "navigator.dropdown.testDefaultOption"/></a></li>
 				                <li><a href="${req.getContextPath()}/agent/list"><@spring.message "navigator.dropdown.agentManagement"/></a></li>
 			            	</@security.authorize>
 		            	</ul>

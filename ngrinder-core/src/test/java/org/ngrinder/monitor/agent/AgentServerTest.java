@@ -30,14 +30,13 @@ import javax.management.MBeanRegistrationException;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.junit.Test;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.share.JVMUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AgentServerTest {
 	private static final Logger LOG = LoggerFactory.getLogger(AgentServerTest.class);
@@ -82,6 +81,12 @@ public class AgentServerTest {
 			supported = false;
 		}
 		localAttachmentSupported = supported;
+	}
+	
+	@Test
+	public void testAgentLibResolve() {
+		
+		
 	}
 
 }

@@ -57,6 +57,22 @@ public class PerfTestSpecification {
 	}
 
 	/**
+	 * Get the Specification which check the {@link PerfTest} has one of given id.
+	 * 
+	 * @param statuses
+	 *            status set
+	 * @return {@link Specification}
+	 */
+	public static Specification<PerfTest> idSetEqual(final Integer[] ids) {
+		return new Specification<PerfTest>() {
+			@Override
+			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				return root.get("id").in((Object[]) ids);
+			}
+		};
+	}
+
+	/**
 	 * Get the Specification which provide empty predicate. This is for the base element for "and" or "or" combination.
 	 * 
 	 * @return {@link Specification}

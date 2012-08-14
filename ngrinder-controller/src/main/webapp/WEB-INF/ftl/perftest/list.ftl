@@ -66,9 +66,9 @@
 							<#list testList as test>
 								<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
 								<tr id="tr${test.id}">
-									<td style="text-align:center"><input type="checkbox" class="checkbox" value="${test.id}" <#if !(test.status =="READY" || test.status =="SAVED"|| test.status == "FINISHED")>disabled</#if>></td>
+									<td style="text-align:center"><input type="checkbox" class="checkbox" value="${test.id}" <#if !(test.status.isDeletable())>disabled</#if>></td>
 									<td class="ellipsis"  style="text-align:center">
-										<div 
+										<div class="ball" id="${test.id}"
 										<#if test.status == 'STOP_ON_ERROR'>
 											 rel="popover"
 											 data-content="Error on ${test.testErrorCause} phase. ${(test.testErrorStackTrace)! ?replace('\n', '<br/>')?html}" 
@@ -217,6 +217,26 @@
 			$("#pageNumber").val(page);
 			document.forms.listForm.submit();
 		}
+		
+		
+		// Wrap this function in a closure so we don't pollute the namespace
+		(function refreshBall() {
+			 var db = $('.ball').map(function(i,n) {
+		        	return $(n).id;
+		  		 }).get();
+		     alert(db);
+		  $.ajax({
+		    url: '${req.getContextPath()}/perftest/updateball', 
+		    type: 'POST',
+		    data:db,
+		    success: function(data) {
+		      alert(data);
+		    },
+		    complete: function() {
+		      setTimeout(refreshBall, 5000);
+		    }
+		  });
+		})();
 	</script>
 	</body>
 </html>

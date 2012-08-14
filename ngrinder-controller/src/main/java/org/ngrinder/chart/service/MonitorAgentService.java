@@ -42,12 +42,9 @@ import org.springframework.stereotype.Service;
  * @since 3.0
  */
 @Service
-public class MonitorDataService {
+public class MonitorAgentService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(MonitorDataService.class);
-
-	// TODO should get JMX port from agent
-	private static final int DEFAULT_PORT = 3243;
+	private static final Logger LOG = LoggerFactory.getLogger(MonitorAgentService.class);
 
 	@Autowired
 	private MonitorDataRepository monitorDataRepository;
@@ -68,7 +65,7 @@ public class MonitorDataService {
 
 		Set<MonitorAgentInfo> agentInfo = new HashSet<MonitorAgentInfo>();
 		for (AgentInfo agent : agents) {
-			MonitorAgentInfo monitorAgentInfo = MonitorAgentInfo.getAgentMonitor(agent.getIp(), DEFAULT_PORT,
+			MonitorAgentInfo monitorAgentInfo = MonitorAgentInfo.getAgentMonitor(agent.getIp(), agent.getPort(),
 					monitorDataRepository);
 			agentInfo.add(monitorAgentInfo);
 		}

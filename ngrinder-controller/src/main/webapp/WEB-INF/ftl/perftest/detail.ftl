@@ -881,7 +881,7 @@ div.chart {
 			  	});
 			}
 			function initThresholdChkBox() {
-				if ($("#testId").value == 0 || $("#threshold").value == "R") { //runcount
+				if ($("#testId").val() == 0 || $("#threshold").val() == "R") { //runcount
 					$("#runcountChkbox").attr("checked", "checked");
 					$("#durationChkbox").removeAttr("checked");
 				} else { //duration

@@ -100,11 +100,9 @@ public class AgentDaemon implements Agent {
 
 	/**
 	 * Run agent with given consoleHost and consolePort. <br/>
-	 * if consoleHost is null it will use localhost or use console host set in
-	 * {@link GrinderProperties}
+	 * if consoleHost is null it will use localhost or use console host set in {@link GrinderProperties}
 	 * 
-	 * if port number is 0, it will use default consolePort or use console port
-	 * set in {@link GrinderProperties}
+	 * if port number is 0, it will use default consolePort or use console port set in {@link GrinderProperties}
 	 * 
 	 * @param consoleHost
 	 *            host name
@@ -132,23 +130,20 @@ public class AgentDaemon implements Agent {
 
 	class AgentThreadRunnable implements Runnable {
 		public void run() {
-			do {
-				try {
-					setAgent(new AgentImplementationEx(LOGGER, m_agentConfig)).run(getGrinderProperties());
-					getListeners().apply(new Informer<AgentShutDownListener>() {
-						public void inform(AgentShutDownListener listener) {
-							listener.shutdownAgent();
-						}
-					});
-				} catch (GrinderException e) {
-					LOGGER.error("while sleeping agent thread, error occurs", e);
+
+			try {
+				setAgent(new AgentImplementationEx(LOGGER, m_agentConfig)).run(getGrinderProperties());
+			} catch (Exception e) {
+				LOGGER.error("while running agent thread, error occurs", e);
+			}
+			getListeners().apply(new Informer<AgentShutDownListener>() {
+				public void inform(AgentShutDownListener listener) {
+					listener.shutdownAgent();
 				}
-				if (isForceToshutdown()) {
-					setForceToshutdown(false);
-					break;
-				}
-				ThreadUtil.sleep(GrinderConstants.AGENT_RETRY_INTERVAL);
-			} while (true);
+			});
+			if (isForceToshutdown()) {
+				setForceToshutdown(false);
+			}
 		}
 	}
 

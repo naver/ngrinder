@@ -41,7 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MonitorDataServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
-	private MonitorDataService monitorDataService;
+	private MonitorAgentService monitorDataService;
 
 	@Test
 	public void testAddRemoveMonitorAgents() {

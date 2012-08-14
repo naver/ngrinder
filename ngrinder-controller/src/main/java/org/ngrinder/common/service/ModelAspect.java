@@ -71,7 +71,7 @@ public class ModelAspect {
 				model.setLastModifiedDate(lastModifiedDate);
 				User currentUser = userContext.getCurrentUser();
 				model.setLastModifiedUser(currentUser);
-				if (!model.exist()) {
+				if (!model.exist() || model.getCreatedUser() == null) {
 					model.setCreatedDate(lastModifiedDate);
 					model.setCreatedUser(currentUser);
 				}

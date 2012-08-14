@@ -207,10 +207,12 @@ public class AgentController implements Agent {
 					m_logger.info("starting agent...");
 					m_state = AgentControllerState.BUSY;
 					agent.run(startMessage.getProperties());
+					
+					// It's normal shutdown..
 					agent.addListener(new AgentShutDownListener() {
 						@Override
 						public void shutdownAgent() {
-							m_state = AgentControllerState.FINISHED;
+							m_state = AgentControllerState.READY;
 						}
 					});
 				}
@@ -254,6 +256,7 @@ public class AgentController implements Agent {
 			}
 
 		} finally {
+			// Abnormal state.
 			agent.shutdown();
 			m_state = AgentControllerState.FINISHED;
 			shutdownConsoleCommunication(consoleCommunication);
