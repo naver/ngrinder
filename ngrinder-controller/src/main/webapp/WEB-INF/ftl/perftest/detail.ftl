@@ -677,7 +677,7 @@ div.chart {
 			        	if (element.next().attr("class") == "add-on") {
 			        		error.insertAfter(element.next());
 			        	} else {
-			        		error.insertAfter(selement);
+			        		error.insertAfter(element);
 			        	}
 			        },
 			        highlight:function(element, errorClass, validClass) {
@@ -690,65 +690,43 @@ div.chart {
 			        }
 			    });
 			    $("#addHostBtn").click(function() {
-					var curHostDiv = $(".div-host").html();
-					var curHostVal = $("#hostsHidden").val();
-					var content = "";
-					
-					
+					var content = [];
 					if (!checkEmptyByID("domainInput")) {
-						content = getValueByID("domainInput");
+						content.push(getValueByID("domainInput"));
 					} 
-					content = content + ":";
 					if (!checkEmptyByID("ipInput")) {
-						content = content + getValueByID("ipInput");
+						content.push(getValueByID("ipInput"));
 					}
 					
-					
-					if (content == ":") {
+					if (content.length == 0) {
 						$("#addHostModal small").addClass("errorColor");
 						return;
 					}
 					
-					curHostDiv += hostItem(content);					
-					$(".div-host").html(curHostDiv);
-					buildHost();
+					var contentStr = content.join(":");
+					$(".div-host").html(hostItem(contentStr));
+					$("#hostsHidden").val(contentStr);
 					$("#addHostModal").modal("hide");
 					$("#addHostModal small").removeClass("errorColor");
 				});
 				
 				function hostItem(content) {
-			   	   return "<p class='host'>" + content + "  <a href='javascript:void(0);'><i class='icon-remove-circle'></i></a><input type='hidden' class='hostsItem' value='" + content + "'></p><br>"
+			   	   return "<p class='host'>" + content + "  <a href='javascript:void(0);'><i class='icon-remove-circle'></i></a></p><br>"
 			    }
-			
-				function buildHost() {
-					var contents = [];
-					$(".hostsItem").each(function() {
-						contents.push($(this).val());
-					});
-					$("#hostsHidden").val(contents.join(","));
-				}
 				
 				function initHosts() {
 					if (checkEmptyByID("hostsHidden")) {
 						return;
 					}
-					
-					var contents = $("#hostsHidden").val().split(",");
-					var str = "";
-					for (i = 0; i < contents.length; i++) {
-						str += hostItem($.trim(contents[i]));
-					}
-					
-					$(".div-host").empty();
-					$(".div-host").html(str);
+
+					$(".div-host").html(hostItem($("#hostsHidden").val()));
 				}
-				
 				
 				$("i.icon-remove-circle").live('click', function() {
 					var $elem = $(this).parents("p");
 					$elem.next("br").remove();
 					$elem.remove();
-					buildHost();
+					$("#hostsHidden").val("");
 				});
 				
 				$("#saveTestBtn").click (function() {
@@ -874,6 +852,7 @@ div.chart {
 				updateChart();
 				resetFooter();
 				updateScriptResources();
+				validateHostForm();
 			});
 			
 			function updateVuserTotal () {
@@ -1043,6 +1022,39 @@ div.chart {
 			
 			function showChart(containerId, data) {
 				drawChart('TPS', containerId, data);
+            }
+            
+            function validateHostForm() {
+            	$("#ipInput").blur(function() {
+            		if(!checkEmptyByID("ipInput")) {
+            			if (isIPByID("ipInput")) {
+            				$(this).next("span").empty();
+            				$(this).parents('.control-group').addClass('success');
+			            	$(this).parents('.control-group').removeClass('error');           				
+            			} else {
+            				$(this).next("span").html("IP is invalid.");
+            				$(this).parents('.control-group').addClass('error');
+			            	$(this).parents('.control-group').removeClass('success');
+			            }
+            		}
+            	});
+            	
+            	$("#domainInput").blur(function() {
+            		if(!checkEmptyByID("domainInput")) {
+            			$this = $(this);
+            			var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$";
+            			var str = $this.val();
+            			if (checkStringFormat(str, rule)) {
+            				$this.next("span").empty();
+            				$this.parents('.control-group').addClass('success');
+			            	$this.parents('.control-group').removeClass('error');           				
+            			} else {
+            				$this.next("span").html("Domain is invalid.");
+            				$this.parents('.control-group').addClass('error');
+			            	$this.parents('.control-group').removeClass('success');
+			            }
+            		}
+            	});
             }
 		</script>
 </body>
