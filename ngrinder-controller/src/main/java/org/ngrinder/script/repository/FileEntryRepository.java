@@ -429,7 +429,7 @@ public class FileEntryRepository {
 	 * @param path
 	 *            path of {@link FileEntry}
 	 * @param toPath
-	 *            file path for write.
+	 *            file dir path to write.
 	 */
 	public void writeContentTo(User user, String path, File toPath) {
 		SVNClientManager svnClientManager = null;

@@ -251,7 +251,7 @@ public class AgentImplementationEx implements Agent {
 					if (!properties.getBoolean("grinder.debug.singleprocess", false)) {
 						// Fix to provide empty system classpath to speed up
 						final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
-								filterSystemClassPath(System.getProperties()), jvmArguments, script.getDirectory());
+								filterSystemClassPath(System.getProperties(), m_logger), jvmArguments, script.getDirectory());
 
 						m_logger.info("Worker process command line: {}", workerCommandLine);
 
@@ -367,7 +367,7 @@ public class AgentImplementationEx implements Agent {
 	 *            system properties
 	 * @return filtered properties
 	 */
-	private Properties filterSystemClassPath(Properties properties) {
+	public static Properties filterSystemClassPath(Properties properties, Logger m_logger) {
 		List<String> classPathList = new ArrayList<String>();
 
 		m_logger.debug("Total System Class Path in total is " + properties.getProperty("java.class.path", ""));

@@ -344,7 +344,7 @@ public class FileEntryService {
 		return url.toString();
 	}
 
-	public void writeContentTo(User user, String fromPath, File to) {
-		fileEntityRepository.writeContentTo(user, fromPath, to);
+	public void writeContentTo(User user, String fromPath, File toDir) {
+		fileEntityRepository.writeContentTo(user, fromPath, toDir);
 	}
 }

@@ -12,12 +12,12 @@ from net.grinder.plugin.http import HTTPRequest
 
 test1 = Test(1, "Request resource")
 request1 = test1.wrap(HTTPRequest())
-
-class TestRunner:
+log = grinder.logger.info
+class TestRunner:  
 	def __call__(self):
-		result = request1.GET("${url}")
-
+		hello = request1.GET("http://www.naver.com")
+		hello = request1.GET("http://www.naver.com")
 		# result is a HTTPClient.HTTPResult. We get the message body
 		# using the getText() method.
-		assert result.status == 200
+		assert hello.status == 200 
         

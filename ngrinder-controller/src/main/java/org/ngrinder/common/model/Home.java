@@ -32,6 +32,7 @@ import org.apache.commons.io.FileUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.model.User;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
@@ -98,6 +99,10 @@ public class Home implements NGrinderConstants {
 	public File getScriptDirectory() {
 		return getSubFile(SCRIPT_PATH);
 	}
+	
+	public File getScriptDirectory(String subPath) {
+		return new File(getSubFile(SCRIPT_PATH), subPath);
+	}
 
 	public File getPluginsDirectory() {
 		return getSubFile(PLUGIN_PATH);
@@ -125,6 +130,11 @@ public class Home implements NGrinderConstants {
 
 	public File getDownloadDirectory() {
 		return getSubFile(DOWNLOAD_PATH);
+	}
+
+	public void getUserScriptValidationDriectory(User user) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
