@@ -62,8 +62,8 @@ public class AgentServerTest {
 
 		ThreadUtil.sleep(4000);
 		AgentMonitorServer.getInstance().refreshJavaDataCollect();
-		LOG.info("* Refresh java data monitoring.e *");
-		ThreadUtil.sleep(10000);
+		LOG.info("* Refresh java data monitoring. *");
+		ThreadUtil.sleep(5000);
 	}
 
 	private static final boolean localAttachmentSupported;
@@ -81,12 +81,6 @@ public class AgentServerTest {
 			supported = false;
 		}
 		localAttachmentSupported = supported;
-	}
-	
-	@Test
-	public void testAgentLibResolve() {
-		
-		
 	}
 
 }

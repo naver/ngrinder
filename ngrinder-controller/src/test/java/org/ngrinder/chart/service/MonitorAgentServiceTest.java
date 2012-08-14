@@ -22,13 +22,25 @@
  */
 package org.ngrinder.chart.service;
 
-import java.util.HashSet;
-import java.util.Set;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertThat;
 
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang.math.NumberUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.NGrinderStarter;
 import org.ngrinder.agent.model.AgentInfo;
+import org.ngrinder.chart.AbstractChartTransactionalTest;
 import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.infra.AgentConfig;
+import org.ngrinder.monitor.MonitorConstants;
+import org.ngrinder.monitor.agent.AgentMonitorServer;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -38,22 +50,48 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since
  * @date 2012-7-23
  */
-public class MonitorDataServiceTest extends AbstractNGrinderTransactionalTest {
+public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
 
 	@Autowired
 	private MonitorAgentService monitorDataService;
+	
+	@Autowired
+	private MonitorService monitorService;
+	
+	NGrinderStarter starter = new NGrinderStarter();
+	
+	@Before
+	public void startMonitorServer() {
+		AgentConfig agentConfig = new AgentConfig();
+		agentConfig.init();
+
+		MonitorConstants.init(agentConfig);
+		starter.startMonitor();
+		ThreadUtil.sleep(3000);
+	}
+	
+	@After
+	public void stopMonitorServer() {
+		try {
+			AgentMonitorServer.getInstance().stop();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Test
 	public void testAddRemoveMonitorAgents() {
-		Set<AgentInfo> agents = new HashSet<AgentInfo>();
 		AgentInfo agt = new AgentInfo();
 		agt.setIp("127.0.0.1");
 		agt.setPort(3243);
-		agents.add(agt);
+		long startTime = NumberUtils.toLong(df.format(new Date()));
 
-		monitorDataService.addMonitorAgents("127.0.0.1_test", agents);
-
+		monitorDataService.addMonitorTarget("127.0.0.1_test", agt);
 		ThreadUtil.sleep(3000);
+		long endTime = NumberUtils.toLong(df.format(new Date()));
+		List<SystemDataModel> infoList = monitorService.getSystemMonitorData("127.0.0.1", startTime, endTime);
+		assertThat(infoList.size(), greaterThan(0));
+		
 		monitorDataService.removeMonitorAgents("127.0.0.1_test");
 	}
 

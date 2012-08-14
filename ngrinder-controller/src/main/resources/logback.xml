@@ -12,6 +12,10 @@
 		<appender-ref ref="console" />
 	</logger>
 
+	<logger name="org.ngrinder" level="DEBUG" additivity="false">
+		<appender-ref ref="console" />
+	</logger>
+
 	<logger name="java.sql" level="INFO" additivity="false">
 		<appender-ref ref="console" />
 	</logger>

@@ -25,13 +25,11 @@ package org.ngrinder;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -40,7 +38,6 @@ import net.grinder.AgentControllerDaemon;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.util.ReflectionUtil;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.ngrinder.infra.AgentConfig;
@@ -79,7 +76,7 @@ public class NGrinderStarter {
 		}
 	}
 
-	private void startMonitor() {
+	public void startMonitor() {
 
 		LOG.info("**************************");
 		LOG.info("* Start nGrinder Monitor *");

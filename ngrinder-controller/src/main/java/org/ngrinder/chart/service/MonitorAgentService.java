@@ -54,23 +54,27 @@ public class MonitorAgentService {
 	 * 
 	 * @param agent
 	 */
-	public void addMonitorAgents(String key, Set<AgentInfo> agents) {
+	public void addMonitorAgent(String key, AgentInfo agent) {
+		addMonitor(key, agent.getIp(), MonitorAgentInfo.getAgentMonitor(agent.getIp(), agent.getPort(), monitorDataRepository));
+	}
+	
+	public void addMonitorTarget(String key, AgentInfo agent) {
+		addMonitor(key, agent.getIp(), MonitorAgentInfo.getTargetMonitor(agent.getIp(), agent.getPort(), monitorDataRepository));
+	}
+	
+	private void addMonitor(String key, String ip, MonitorAgentInfo monitorInfo) {
 		MonitorExecuteManager manager = MonitorExecuteCache.getInstance().getCache(key);
 		if (null != manager) {
-			LOG.debug("Agent monitor:{} is already exists.", key);
+			LOG.debug("Monitor agent/target:{} is already exists.", key);
 			return;
 		}
 
 		int interval = 1, delay = 0;
 
-		Set<MonitorAgentInfo> agentInfo = new HashSet<MonitorAgentInfo>();
-		for (AgentInfo agent : agents) {
-			MonitorAgentInfo monitorAgentInfo = MonitorAgentInfo.getAgentMonitor(agent.getIp(), agent.getPort(),
-					monitorDataRepository);
-			agentInfo.add(monitorAgentInfo);
-		}
+		Set<MonitorAgentInfo> agentInfoSet = new HashSet<MonitorAgentInfo>();
+		agentInfoSet.add(monitorInfo);
 
-		manager = new MonitorExecuteManager(key, interval, delay, agentInfo);
+		manager = new MonitorExecuteManager(key, interval, delay, agentInfoSet);
 		manager.start();
 
 		MonitorExecuteCache.getInstance().setCache(key, manager);
