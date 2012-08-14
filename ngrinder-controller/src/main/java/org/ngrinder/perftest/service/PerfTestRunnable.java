@@ -33,7 +33,9 @@ import static org.ngrinder.perftest.model.Status.START_TESTING;
 import static org.ngrinder.perftest.model.Status.TESTING;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.ConsoleShutdownListener;
@@ -180,10 +182,15 @@ public class PerfTestRunnable implements NGrinderConstants {
 	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties,
 					final SingleConsole singleConsole) {
 		// start target monitor
-		AgentInfo targetServer = new AgentInfo();
-		targetServer.setIp(perfTest.getTargetHosts());
-		targetServer.setPort(MonitorConstants.DEFAULT_AGENT_PORT);
-		monitorDataService.addMonitorAgent(perfTest.getTargetHosts(), targetServer);
+		Set<AgentInfo> agents = new HashSet<AgentInfo>();
+		List<String> targetIPList = perfTest.getTargetHostIP();
+		for (String targetIP : targetIPList) {
+			AgentInfo targetServer = new AgentInfo();
+			targetServer.setIp(targetIP);
+			targetServer.setPort(MonitorConstants.DEFAULT_AGENT_PORT);
+			agents.add(targetServer);
+		}
+		monitorDataService.addMonitorAgent(perfTest.getTargetHosts(), agents);
 
 		// Run test
 		perfTestService.savePerfTest(perfTest, START_TESTING);

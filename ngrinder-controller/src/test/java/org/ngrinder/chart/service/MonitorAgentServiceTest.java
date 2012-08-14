@@ -27,13 +27,14 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.NGrinderStarter;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.AbstractChartTransactionalTest;
 import org.ngrinder.common.util.ThreadUtil;
@@ -57,16 +58,24 @@ public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
 	
 	@Autowired
 	private MonitorService monitorService;
-	
-	NGrinderStarter starter = new NGrinderStarter();
-	
+		
 	@Before
 	public void startMonitorServer() {
 		AgentConfig agentConfig = new AgentConfig();
 		agentConfig.init();
 
 		MonitorConstants.init(agentConfig);
-		starter.startMonitor();
+		LOG.info("**************************");
+		LOG.info("* Start nGrinder Monitor *");
+		LOG.info("**************************");
+		LOG.info("* Colllect SYSTEM data. **");
+		try {
+			AgentMonitorServer.getInstance().init();
+			AgentMonitorServer.getInstance().start();
+		} catch (Exception e) {
+			LOG.error("ERROR: {}", e.getMessage());
+			LOG.debug("Error while starting Monitor", e);
+		}
 		ThreadUtil.sleep(3000);
 	}
 	
@@ -85,8 +94,12 @@ public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
 		agt.setIp("127.0.0.1");
 		agt.setPort(3243);
 		long startTime = NumberUtils.toLong(df.format(new Date()));
-
-		monitorDataService.addMonitorTarget("127.0.0.1_test", agt);
+		Set<AgentInfo> agents = new HashSet<AgentInfo>();
+		AgentInfo targetServer = new AgentInfo();
+		targetServer.setIp("127.0.0.1");
+		targetServer.setPort(MonitorConstants.DEFAULT_AGENT_PORT);
+		agents.add(targetServer);
+		monitorDataService.addMonitorTarget("127.0.0.1_test", agents);
 		ThreadUtil.sleep(3000);
 		long endTime = NumberUtils.toLong(df.format(new Date()));
 		List<SystemDataModel> infoList = monitorService.getSystemMonitorData("127.0.0.1", startTime, endTime);
