@@ -22,6 +22,8 @@
  */
 package org.ngrinder.user.controller;
 
+import static org.ngrinder.common.util.Preconditions.checkArgument;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -97,6 +99,7 @@ public class UserController extends NGrinderBaseController {
 	@PreAuthorize("hasAnyRole('A', 'S') or #user.id == #updatedUser.id")
 	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser) {
 
+		checkArgument(updatedUser.validate());
 		if (updatedUser.exist()) {
 			userService.modifyUser(updatedUser);
 		} else {

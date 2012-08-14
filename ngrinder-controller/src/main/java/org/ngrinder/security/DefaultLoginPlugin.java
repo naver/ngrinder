@@ -46,11 +46,7 @@ public class DefaultLoginPlugin implements OnLoginRunnable {
 
 	@Override
 	public User loadUser(String userId) {
-		User user = userService.getUserById(userId);
-		if (user != null) {
-			return user;
-		}
-		return null;
+		return userService.getUserById(userId);
 	}
 
 	@SuppressWarnings("deprecation")

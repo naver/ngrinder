@@ -4,11 +4,13 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.plugin.MockPluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class NGrinderDefaultUserDetailsServiceTest extends AbstractNGrinderTransactionalTest {
@@ -37,7 +39,8 @@ public class NGrinderDefaultUserDetailsServiceTest extends AbstractNGrinderTrans
 	public void testUnknownUser() {
 		// if passing a unknown user,
 
-		userDetailsService.loadUserByUsername("unknown");
+		UserDetails user = userDetailsService.loadUserByUsername("unknown");
+		LOG.info("User details of {} is:", "unknown", ToStringBuilder.reflectionToString(user));
 		// It should throw out the Exception
 	}
 }

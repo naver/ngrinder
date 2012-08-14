@@ -87,6 +87,10 @@ public class User extends BaseModel<User> {
 		this.userName = name;
 		isEnabled();
 	}
+	
+	public boolean validate() {
+		return getUserId() == null || getUserName() == null || getEmail() == null;
+	}
 
 	@Override
 	public int hashCode() {
