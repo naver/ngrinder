@@ -91,7 +91,7 @@ div.chart {
 											data-original-title="${test.status}" type="toggle" <#else> rel="popover" data-content="${test.createdDate}"
 											data-original-title="${test.status}" type="toggle" 
 										</#if> > 
-										<img src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
+										<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
 									</span> 
 								</#if>
 								<button type="submit" class="btn btn-primary pull-right" style="margin-left: 5px; margin-right: 70px"
@@ -203,14 +203,14 @@ div.chart {
 											</div>
 										</div>
 										<div class="control-group">
-											<label for="ignoreSampleCount" class="control-label"> Ignore Count </label>
+											<label for="ignoreSampleCount" class="control-label"> <@spring.message "perfTest.configuration.ignoreCount"/> </label>
 											<div class="controls">
 												<input type="text" class="input required CountNumber" id="ignoreSampleCount" name="ignoreSampleCount"
 													value="${(test.ignoreSampleCount)!0}">
 											</div>
 										</div>
 										<div class="control-group">
-											<label for="sampleInterval" class="control-label"> Sample Interval </label>
+											<label for="sampleInterval" class="control-label"> <@spring.message "perfTest.configuration.sampleInterval"/> </label>
 											<div class="controls">
 												<input type="text" class="input required positiveNumber" id="sampleInterval" name="sampleInterval"
 													value="${(test.sampleInterval)!1000}">
@@ -411,7 +411,7 @@ div.chart {
 							</div>
 							<div class="span7">
 								<div class="page-header">
-									<h4>Statistics</h4>
+									<h4>TPS Statistics Data</h4>
 								</div>
 								<div id="runningTps" class="chart" style="width: 530px; height: 195px"></div>
 								<div class="tabbable">
@@ -948,7 +948,7 @@ div.chart {
 				var url = "${req.getContextPath()}/perftest/running/refresh?testId=" + $("#testId").val();
 				refreshDiv.load(url, function(){
 					var succesVal = refreshDiv.find("#input_status").val();
-		
+					
 					if(succesVal == 'SUCCESS'){
 						$("#lsTable tbody").empty();
 						$("#asTable tbody").empty();
@@ -961,7 +961,7 @@ div.chart {
 						$("#runningTps").empty();
 						showChart('runningTps', refreshDiv.find("#tpsChartData").val());
 					}else{
-						if (objTimer){
+					if (objTimer){
 							window.clearInterval(objTimer);
 							//window.clearInterval(countTime);
 						}
@@ -1011,7 +1011,7 @@ div.chart {
             }
             
     		function updateStatus(id, status, icon, message) {
-    			var ballImg = $("#testName span img");
+    			var ballImg = $("#testStatus_img_id");
     			if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) { 
     				ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
     			}

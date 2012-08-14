@@ -400,6 +400,7 @@ public class SingleConsole implements Listener, SampleListener {
 		values[cursor] = newValue;
 		if (++cursor >= values.length) {
 			cursor = 0;
+			values = new Double[60];
 		}
 	}
 
