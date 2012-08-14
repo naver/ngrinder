@@ -549,9 +549,10 @@ div.chart {
 	<script src="${req.getContextPath()}/js/bootstrap-slider.min.js"></script>
 
 	<script>
+	   var jqplotObj;
 	   var objTimer;
 	   var sliderMax = 40;
-	   var durationMap = {};
+	   var durationMap = [];
 	   durationMap[0] = 0;
 	   for (var i = 1; i <= sliderMax; i++) {
 		   if (i <= 10) {
@@ -924,7 +925,7 @@ div.chart {
                            'imgWidth':$("#tpsDiv").width()},
                     success: function(res) {
                         if (res.success) {
-                            showChart('tpsDiv', res.tps_total);
+                            drawChart('TPS', 'tpsDiv', res.tps_total);
                             return true;
                         } else {
                             showErrorMsg("Get report data failed.");
@@ -954,7 +955,7 @@ div.chart {
 						$("#thread_data").text(refreshDiv.find("#input_thread").val());
 						
 						$("#runningTps").empty();
-						tpsPlot = showChart('runningTps', refreshDiv.find("#tpsChartData").val());
+						showChart('runningTps', refreshDiv.find("#tpsChartData").val());
 					}else{
 						if (objTimer){
 							window.clearInterval(objTimer);
@@ -963,9 +964,13 @@ div.chart {
 					}
 				});
 			}
-			
-			function showChart(containerId, data) {
-				drawChart('TPS', containerId, data);
+            
+            function showChart(containerId, data) {
+            	if (jqplotObj) {
+            		jqplotObj.destroy();
+            	}
+				
+				jqplotObj = drawChart('TPS', containerId, data);
             }
             
             function validateHostForm() {
