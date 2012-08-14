@@ -105,9 +105,6 @@
 					   <ul class="unstyled"><i class="icon-tags"></i> Target Hosts
                          <#if (test.targetHosts)?exists><li><i class="icon-chevron-right"></i><a id="targetMontor" href="javascript:void(0);" ip="${test.targetHosts}">${test.targetHosts}</a></li></#if>
                        </ul>
-                       <ul class="unstyled"><i class="icon-tags"></i> Agent servers
-                         <#if (test.agentServer)?exists><li><i class="icon-chevron-right"></i><a id="agentMontor" href="javascript:void(0);" ip="${test.agentServer}">${test.agentServer}</a></li></#if>
-                       </ul>
 			</div>
 			<div class="span8">
 			    <table class="table table-bordered" style="margin-bottom:10px">
@@ -130,8 +127,8 @@
 			    <div id="performanceDiv">
     				<div class="chart" id="tpsDiv"></div>
     				<div class="chart" id="rpsDiv"></div>
-    				<div class="chart" id="vuserDiv"></div>
     				<div class="chart" id="errorDiv"></div>
+    				<div class="chart" id="vuserDiv"></div>
 				</div>
 				<div id="monitorDiv" style="display:none">
 				    <h6>System Data</h6>
@@ -172,12 +169,7 @@
                 var $elem = $(this);
                 getMonitorData($elem.attr("ip"));
             });
-            $("#agentMontor").click(function() {
-                $("#performanceDiv").hide();
-                $("#monitorDiv").show();
-                var $elem = $(this);
-                getMonitorData($elem.attr("ip"));
-            });
+
             $("#downloadReportData").click(function() {
                 var url = "${req.getContextPath()}/perftest/downloadReportData?testId=" + $("#testId").val();
                 document.forms.downloadForm.action = url;
@@ -200,7 +192,7 @@
                     if (res.success) {
                         drawChart('Transactions Per Second', 'tpsDiv', res.tps_total);
                         drawChart('Responses Per Second', 'rpsDiv', res.response_time);
-                        drawChart('Running Vusers', 'vuserDiv', res.vuser);
+                        //drawChart('Running Vusers', 'vuserDiv', res.vuser);
                         drawChart('Errors Per Second', 'errorDiv', res.tps_failed);
                         return true;
                     } else {
@@ -228,12 +220,12 @@
                        'imgWidth':700},
                 success: function(res) {
                     if (res.success) {
-                        drawChart('System CPU', 'cpuDiv', res.cpu, formatPercentage);
-                        drawChart('System Memory', 'memoryDiv', res.memory, formatAmount);
-                        drawChart('Heap Memory', 'heapMemoryDiv', res.heap_memory, formatAmount);
-                        drawChart('NonHeap Memory', 'nonHeapMemoryDiv', res.non_heap_memory, formatAmount);
-                        drawChart('Thread Count', 'threadCountDiv', res.thread_count);
-                        drawChart('JVM Cpu', 'jvmCpuDiv', res.jvm_cpu, formatPercentage);
+                        drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage);
+                        drawChart('System Memory', 'memoryDiv', res.SystemData.memory, formatAmount);
+                        drawChart('Heap Memory', 'heapMemoryDiv', res.JavaData.heap_memory, formatAmount);
+                        drawChart('NonHeap Memory', 'nonHeapMemoryDiv', res.JavaData.non_heap_memory, formatAmount);
+                        drawChart('Thread Count', 'threadCountDiv', res.JavaData.thread_count);
+                        drawChart('JVM Cpu', 'jvmCpuDiv', res.JavaData.jvm_cpu, formatPercentage);
                         return true;
                     } else {
                         showErrorMsg("Get monitor data failed.");

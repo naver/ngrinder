@@ -70,37 +70,4 @@ public class PropertiesWrapperTest {
 		assertThat(nullValueStr, is("null"));
 	
 	}
-
-	/**
-	 * Test method for {@link org.ngrinder.common.util.PropertiesWrapper#getProperty(java.lang.String, java.lang.String, java.lang.String)}.
-	 */
-	@Test
-	public void testGetPropertyStringStringString() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link org.ngrinder.common.util.PropertiesWrapper#getProperty(java.lang.String, java.lang.String)}.
-	 */
-	@Test
-	public void testGetPropertyStringString() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link org.ngrinder.common.util.PropertiesWrapper#addProperty(java.lang.String, java.lang.String)}.
-	 */
-	@Test
-	public void testAddProperty() {
-		fail("Not yet implemented");
-	}
-
-	/**
-	 * Test method for {@link org.ngrinder.common.util.PropertiesWrapper#getPropertyInt(java.lang.String, int)}.
-	 */
-	@Test
-	public void testGetPropertyInt() {
-		fail("Not yet implemented");
-	}
-
 }

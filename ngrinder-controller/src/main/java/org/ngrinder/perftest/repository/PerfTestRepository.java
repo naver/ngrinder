@@ -40,14 +40,68 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
  * @since 3.0
  */
 public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSpecificationExecutor<PerfTest> {
+	/**
+	 * Find all {@link PerfTest} based on spec.
+	 * 
+	 * @param spec
+	 *            {@link Specification} of {@link PerfTest} query
+	 * @param pageable
+	 *            page info
+	 * 
+	 * @return {@link PerfTest} list
+	 */
 	Page<PerfTest> findAll(Specification<PerfTest> spec, Pageable pageable);
 
-	Page<PerfTest> findAllByCreatedUserOrderByCreatedDateAsc(User userId, Pageable pageable);
+	/**
+	 * Find all {@link PerfTest} based on user.
+	 * 
+	 * @param user
+	 *            user
+	 * @param pageable
+	 *            page info
+	 * 
+	 * @return {@link PerfTest} list
+	 */
+	Page<PerfTest> findAllByCreatedUserOrderByCreatedDateAsc(User user, Pageable pageable);
 
+	/**
+	 * Find all {@link PerfTest} based on {@link Status} ordered by CreatedDate.
+	 * 
+	 * @param Status
+	 *            status
+	 * 
+	 * @return {@link PerfTest} list
+	 */
 	List<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status);
 
+	/**
+	 * Find all {@link PerfTest} based on {@PerfTest#status} ordered by CreatedDate.
+	 * 
+	 * @param Status
+	 *            status
+	 * @param pageable
+	 *            page info
+	 * @return {@link PerfTest} list
+	 */
 	Page<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status, Pageable pageable);
 
+	/**
+	 * Find all {@link PerfTest} based on {@PerfTest#status} ordered by scheduledTime ascending.
+	 * 
+	 * @param Status
+	 *            status
+	 * @param pageable
+	 *            page info
+	 * @return {@link PerfTest} list
+	 */
 	Page<PerfTest> findAllByStatusOrderByScheduledTimeAsc(Status status, Pageable pageable);
 
+	/**
+	 * Find all {@link PerfTest} based on {@PerfTest#status} ordered by scheduledTime ascending.
+	 * 
+	 * @param Status
+	 *            status
+	 * @return {@link PerfTest} list
+	 */
+	List<PerfTest> findAllByStatusOrderByScheduledTimeAsc(Status status);
 }

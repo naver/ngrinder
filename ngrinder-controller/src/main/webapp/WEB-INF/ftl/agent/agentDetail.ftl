@@ -121,14 +121,14 @@
                     timer=window.setInterval("getMonitorData()",interval * 1000);
                 });
                 getMonitorData();
-                $("#rinterval").change();
+                $("#rinterval").blur();
                 $('#chartTab a').click(function () {
 					resetFooter();
 				});
             });
             function getMonitorData(){
                 $.ajax({
-                    url: "${req.getContextPath()}/monitor/getMonitorData",
+                    url: "${req.getContextPath()}/monitor/getCurrentMonitorData",
                     dataType:'json',
                     data: {'ip': '${(agent.ip)!}',
                            'imgWidth':700},
@@ -173,7 +173,7 @@
 				java_nonHeapUsedMemory.enQueue(dataObj.javaData.nonHeapUsedMemory);
 				java_cpuUsedPercentage.enQueue(dataObj.javaData.cpuUsedPercentage);
 				java_threadCount.enQueue(dataObj.javaData.threadCount);
-				sys_totalCpuValue.enQueue(dataObj.systemData.totalCpuValue);
+				sys_totalCpuValue.enQueue(dataObj.systemData.cpuUsedPercentage);
 				sys_usedMemory.enQueue(dataObj.systemData.totalMemory - dataObj.systemData.freeMemory);
 			}
 			

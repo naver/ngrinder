@@ -47,6 +47,7 @@ import com.sun.tools.attach.AttachNotSupportedException;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
 
+@SuppressWarnings("restriction")
 public class JVMUtils {
 
 	private static final Logger LOG = LoggerFactory.getLogger(JVMUtils.class);

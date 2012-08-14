@@ -14,12 +14,17 @@
 			<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
 			<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> Search</button>
 			<#if svnUrl?has_content>
-			<div class="input-prepend pull-right"> 
-               <span class="add-on" style="cursor:default">SVN</span><span class="input-xlarge uneditable-input span6" style="cursor:text">${svnUrl}</span>
+			<div class="input-prepend pull-right" rel="popover" 
+               		data-content="User can access scripts through Subversion.&lt;br&gt; Please access the following URL with your Subversion client"
+               		 data-original-title="Subversion" placement="bottom"
+               		/> 
+               <span class="add-on" style="cursor:default">SVN</span><span class="input-xlarge uneditable-input span6" style="cursor:text"
+                	 
+											>${svnUrl}</span>
         	</div> 
         	</#if>	
         	<div style="margin-top:10px">
-				<a class="btn" href="#createScriptModal" id="createBtn" data-toggle="modal">
+				<a class="btn btn-primary" href="#createScriptModal" id="createBtn" data-toggle="modal">
 					<i class="icon-file"></i>
 					Create a script
 				</a>
@@ -188,7 +193,7 @@
 							</div>
 						</div>
 						<div class="control-group">
-							<label for="discriptionInput" class="control-label">Description</label>
+							<label for="discriptionInput" class="control-label">Commit Comment</label>
 							<div class="controls">
 							  <input type="text" id="discriptionInput" name="description">
 							  <span class="help-inline"></span>

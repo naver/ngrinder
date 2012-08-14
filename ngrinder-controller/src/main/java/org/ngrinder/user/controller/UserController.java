@@ -97,7 +97,7 @@ public class UserController extends NGrinderBaseController {
 	@PreAuthorize("hasAnyRole('A', 'S') or #user.id == #updatedUser.id")
 	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser) {
 
-		if (user.getId() != null && user.getId() > 0) {
+		if (updatedUser.exist()) {
 			userService.modifyUser(updatedUser);
 		} else {
 			userService.saveUser(updatedUser);

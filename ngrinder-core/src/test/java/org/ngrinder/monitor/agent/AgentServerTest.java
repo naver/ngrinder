@@ -30,13 +30,13 @@ import javax.management.MBeanRegistrationException;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.junit.Test;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorConstants;
+import org.ngrinder.monitor.share.JVMUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AgentServerTest {
 	private static final Logger LOG = LoggerFactory.getLogger(AgentServerTest.class);
@@ -45,17 +45,18 @@ public class AgentServerTest {
 	public void startMonitor() throws MalformedObjectNameException, InstanceAlreadyExistsException,
 			MBeanRegistrationException, NotCompliantMBeanException, NullPointerException, IOException {
 		int port = 4096;
-		Set<String> dataCollectors = MonitorConstants.DEFAULT_DATA_COLLECTOR;
-		Set<Integer> jvmPids = MonitorConstants.DEFAULT_JVM_PID;
+		Set<String> dataCollectors = MonitorConstants.AGENT_SERVER_DATA_COLLECTOR;
+		Set<Integer> jvmPids = JVMUtils.getAllJVMs().keySet();
 
 		LOG.info("******************************");
 		LOG.info("* Start nGrinder Monitor Agent *");
 		LOG.info("******************************");
 		LOG.info("* Local JVM link support :{}", localAttachmentSupported);
-		
+
 		AgentConfig config = new AgentConfig();
+		config.init();
 		MonitorConstants.init(config);
-		
+
 		AgentMonitorServer.getInstance().init(port, dataCollectors, jvmPids);
 		AgentMonitorServer.getInstance().start();
 
@@ -80,6 +81,12 @@ public class AgentServerTest {
 			supported = false;
 		}
 		localAttachmentSupported = supported;
+	}
+	
+	@Test
+	public void testAgentLibResolve() {
+		
+		
 	}
 
 }

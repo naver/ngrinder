@@ -2,7 +2,10 @@ package org.ngrinder.perftest.service;
 
 import java.util.Date;
 
+import org.junit.Before;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.infra.AgentConfig;
+import org.ngrinder.infra.config.MockAgentConfigInControllerSide;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
@@ -11,8 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * In addition {@link AbstractNGrinderTransactionalTest}, this class provides
- * basic function to create {@link PerfTest}
+ * In addition {@link AbstractNGrinderTransactionalTest}, this class provides basic function to
+ * create {@link PerfTest}
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -20,6 +23,15 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinderTransactionalTest {
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractPerfTestTransactionalTest.class);
+
+	protected AgentConfig agentConfig1;
+	protected AgentConfig agentConfig2;
+
+	@Before
+	public void firstInit() {
+		agentConfig1 = new MockAgentConfigInControllerSide().init();
+		agentConfig2 = new MockAgentConfigInControllerSide().init();
+	}
 
 	@Autowired
 	protected PerfTestService perfTestService;
@@ -34,15 +46,16 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 	public PerfTest createPerfTest(String testName, Status status, Date scheduledTime) {
 		PerfTest test = new PerfTest();
 		test.setTestName(testName);
-		test.setThreshold("D");
-		test.setDuration(200L);
-		test.setVuserPerAgent(30);
+		test.setThreshold("R");
+		//test.setDuration(200L);
+		test.setRunCount(10);
+		test.setVuserPerAgent(4);
 		test.setScheduledTime(scheduledTime);
 		test.setIgnoreSampleCount(0);
 		test.setTargetHosts("127.0.0.1");
 		test.setScriptName("test1.py");
 		test.setProcesses(2);
-		test.setThreads(6);
+		test.setThreads(2);
 		test.setProcessIncrement(1);
 		test.setInitSleepTime(0);
 		test.setProcessIncrementInterval(1000);

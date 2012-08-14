@@ -54,18 +54,15 @@ public class AgentService {
 	/**
 	 * Get agents.
 	 * 
-	 * @param searchStr
-	 *            search keyword. if empty, no search
-	 * @param pageable
-	 *            page
 	 * @return agent list
 	 */
 	public List<AgentInfo> getAgentList() {
 		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
 		List<AgentInfo> agentList = new ArrayList<AgentInfo>(allAttachedAgents.size());
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
-			AgentControllerIdentityImplementation eachAgentController = (AgentControllerIdentityImplementation) eachAgentIdentity;
-			agentList.add(creatAgentInfo(eachAgentController));
+			AgentControllerIdentityImplementation agentControllerIdentity = 
+					(AgentControllerIdentityImplementation) eachAgentIdentity;
+			agentList.add(creatAgentInfo(agentControllerIdentity));
 		}
 		return agentList;
 	}

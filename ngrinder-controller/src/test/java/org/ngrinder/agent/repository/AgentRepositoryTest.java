@@ -20,37 +20,47 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.agent.controller;
+package org.ngrinder.agent.repository;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import net.grinder.message.console.AgentControllerState;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.agent.model.AgentInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
- * Class description.
+ * Test AgentRepository Class.
  * 
  * @author Mavlarn
- * @since 3.0
+ * @since
  */
-public class AgentControllerTest extends AbstractNGrinderTransactionalTest {
+public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
-	AgentController agentController;
+	private AgentRepository agentRepository;
 
-	@Test
-	public void testGetAgentList() {
-		MockHttpServletRequest req = new MockHttpServletRequest();
-		req.addHeader("User-Agent", "Win");
-		SecurityContextHolderAwareRequestWrapper reqWrapper = new SecurityContextHolderAwareRequestWrapper(req, "U");
-		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(reqWrapper));
-		
-		ModelMap model = new ModelMap();
-		agentController.getAgentList(model);
+	AgentInfo agentInfo;
+
+	@Before
+	public void before() {
+		agentRepository.deleteAll();
+		agentInfo = new AgentInfo();
+		agentInfo.setHostName("hello");
+		agentInfo.setIp("127.0.0.1");
+		agentInfo.setRegion("world");
+		agentInfo.setStatus(AgentControllerState.BUSY);
+		agentRepository.save(agentInfo);
 	}
 
+	@Test
+	public void testGetByIp() {
+		assertThat(agentRepository.findByIp("127.0.0.1"), notNullValue());
+		assertThat(agentRepository.findByIp("127.0.0.1").getHostName(), is("hello"));
+		assertThat(agentRepository.findByIp("127.0.0.1").getRegion(), is("world"));
+	}
 }

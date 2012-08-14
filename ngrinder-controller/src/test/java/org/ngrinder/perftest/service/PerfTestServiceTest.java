@@ -49,6 +49,7 @@ public class PerfTestServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Before
 	public void createTempTests() {
+		perfTestRepository.deleteAll();
 		PerfTest test = new PerfTest();
 		test.setTestName("new Test1");
 		test.setThreshold("D");
@@ -57,6 +58,7 @@ public class PerfTestServiceTest extends AbstractNGrinderTransactionalTest {
 		test.setIgnoreSampleCount(0);
 		test.setTargetHosts("127.0.0.1");
 		test.setScriptName("test1.py");
+		test.setCreatedUser(getTestUser());
 		testService.savePerfTest(test);
 
 		test = new PerfTest();
@@ -67,6 +69,7 @@ public class PerfTestServiceTest extends AbstractNGrinderTransactionalTest {
 		test.setDuration(120L);
 		test.setIgnoreSampleCount(0);
 		test.setTargetHosts("127.0.0.1");
+		test.setCreatedUser(getTestUser());
 		test.setScriptName("test2.py");
 		testService.savePerfTest(test);
 

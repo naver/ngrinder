@@ -1,3 +1,25 @@
+/*
+ * Copyright (C) 2012 - 2012 NHN Corporation
+ * All rights reserved.
+ *
+ * This file is part of The nGrinder software distribution. Refer to
+ * the file LICENSE which is part of The nGrinder distribution for
+ * licensing details. The nGrinder distribution is available on the
+ * Internet at http://nhnopensource.org/ngrinder
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package org.ngrinder.perftest.repository;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -18,6 +40,13 @@ import org.springframework.data.jpa.domain.Specification;
  * @since 3.0
  */
 public class PerfTestSpecification {
+	/**
+	 * Get the Specification which check the {@link PerfTest} has one of given statuses.
+	 * 
+	 * @param statuses
+	 *            status set
+	 * @return {@link Specification}
+	 */
 	public static Specification<PerfTest> statusSetEqual(final Status... statuses) {
 		return new Specification<PerfTest>() {
 			@Override
@@ -27,6 +56,27 @@ public class PerfTestSpecification {
 		};
 	}
 
+	/**
+	 * Get the Specification which check the {@link PerfTest} has one of given id.
+	 * 
+	 * @param statuses
+	 *            status set
+	 * @return {@link Specification}
+	 */
+	public static Specification<PerfTest> idSetEqual(final Integer[] ids) {
+		return new Specification<PerfTest>() {
+			@Override
+			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				return root.get("id").in((Object[]) ids);
+			}
+		};
+	}
+
+	/**
+	 * Get the Specification which provide empty predicate. This is for the base element for "and" or "or" combination.
+	 * 
+	 * @return {@link Specification}
+	 */
 	public static Specification<PerfTest> emptyPredicate() {
 		return new Specification<PerfTest>() {
 			@Override
@@ -36,6 +86,13 @@ public class PerfTestSpecification {
 		};
 	}
 
+	/**
+	 * Get the search {@link Specification} for testName and description fields.
+	 * 
+	 * @param queryString
+	 *            query String
+	 * @return {@link Specification}
+	 */
 	public static Specification<PerfTest> likeTestNameOrDescription(final String queryString) {
 		return new Specification<PerfTest>() {
 			@Override
@@ -47,6 +104,13 @@ public class PerfTestSpecification {
 		};
 	}
 
+	/**
+	 * Get createBy specification to get the {@link PerfTest} whose creator is the given user
+	 * 
+	 * @param user
+	 *            user
+	 * @return {@link Specification}
+	 */
 	public static Specification<PerfTest> createdBy(final User user) {
 		return new Specification<PerfTest>() {
 			@Override
@@ -56,6 +120,11 @@ public class PerfTestSpecification {
 		};
 	}
 
+	/**
+	 * Get sort sorted by ascending "createdDate".
+	 * 
+	 * @return Sort
+	 */
 	public static Sort sortByCreatedDate() {
 		return new Sort(Sort.Direction.ASC, "createdDate");
 	}

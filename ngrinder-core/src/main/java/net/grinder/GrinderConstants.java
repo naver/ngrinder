@@ -32,4 +32,22 @@ public abstract class GrinderConstants {
 
 	/** The Constant P_THREAD. */
 	public static final String P_THREAD = "thread";
+
+	/** Agent daemon retry interval. */
+	public static final long AGENT_RETRY_INTERVAL = 1000;
+
+	/** Agent controller HeartBeat interval. */
+	public static final long AGENT_CONTROLLER_HEARTBEAT_INTERVAL = 1000;
+
+	/**
+	 * Agent controller daemon retry interval.
+	 */
+	protected static final long AGENT_CONTROLLER_RETRY_INTERVAL = 2000;
+
+	public static final int AGENT_CONTROLLER_FANOUT_STREAM_THREAD_COUNT = 3;
+	public static final int AGENT_FANOUT_STREAM_THREAD_COUNT = 3;
+	public static final int AGENT_HEARTBEAT_INTERVAL = 1000;
+	public static final int AGENT_HEARTBEAT_DELAY = 1000;
+	
+	
 }

@@ -8,7 +8,7 @@ import net.grinder.communication.MessageDispatchRegistry.AbstractHandler;
 import net.grinder.console.common.ErrorQueue;
 import net.grinder.console.common.Resources;
 import net.grinder.console.communication.ConsoleCommunication;
-import net.grinder.console.communication.ConsoleCommunicationImplementation;
+import net.grinder.console.communication.ConsoleCommunicationImplementationEx;
 import net.grinder.console.communication.DistributionControlImplementation;
 import net.grinder.console.communication.ProcessControlImplementation;
 import net.grinder.console.communication.server.DispatchClientCommands;
@@ -28,6 +28,7 @@ import net.grinder.statistics.StatisticsServicesImplementation;
 import net.grinder.util.StandardTimeAuthority;
 import net.grinder.util.thread.Condition;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
@@ -58,8 +59,6 @@ public class ConsoleFoundationEx {
 	 *            Console resources
 	 * @param logger
 	 *            Logger.
-	 * @param timer
-	 *            A timer.
 	 * @param properties
 	 *            The properties.
 	 * 
@@ -78,7 +77,7 @@ public class ConsoleFoundationEx {
 
 		m_container.addComponent(SampleModelImplementationEx.class);
 		m_container.addComponent(SampleModelViewsImplementation.class);
-		m_container.addComponent(ConsoleCommunicationImplementation.class);
+		m_container.addComponent(ConsoleCommunicationImplementationEx.class);
 		m_container.addComponent(DistributionControlImplementation.class);
 		m_container.addComponent(ProcessControlImplementation.class);
 		m_timer = new Timer(true);
@@ -113,9 +112,18 @@ public class ConsoleFoundationEx {
 	public void shutdown() {
 		m_shutdown = true;
 		m_container.getComponent(ConsoleCommunication.class).shutdown();
-		m_timer.cancel();
+		try {
+			m_timer.cancel();
+		} catch (Exception e) {
+		}
 		if (m_container.getLifecycleState().isStarted())
 			m_container.stop();
+	}
+
+	private String getConsoleInfo() {
+		ConsoleProperties consoleProperties = m_container.getComponent(ConsoleProperties.class);
+		return StringUtils.defaultIfBlank(consoleProperties.getConsoleHost(), "localhost") + ":"
+				+ consoleProperties.getConsolePort();
 	}
 
 	/**
@@ -132,7 +140,7 @@ public class ConsoleFoundationEx {
 		m_container.getComponent(WireMessageDispatch.class);
 		m_container.getComponent(WireFileDistribution.class);
 		m_container.getComponent(WireDistributedBarriers.class);
-		m_container.getComponent(Logger.class).info("{} console has been stated", "test");
+		m_container.getComponent(Logger.class).info("console {} has been started", getConsoleInfo());
 		synchronized (m_eventSyncCondition) {
 			m_eventSyncCondition.notifyAll();
 		}

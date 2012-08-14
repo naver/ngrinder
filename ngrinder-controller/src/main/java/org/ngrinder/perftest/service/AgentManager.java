@@ -62,7 +62,7 @@ import org.springframework.stereotype.Component;
 public class AgentManager implements NGrinderConstants {
 	public static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);
 	private final AgentControllerServerDaemon agentControllerServer = new AgentControllerServerDaemon(
-			AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+					AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 	private static final int NUMBER_OF_THREAD = 3;
 	private static final int AGENT_RUN_TIMEOUT_SECOND = 10;
 
@@ -86,17 +86,22 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	public int getMaxAgentSizePerConsole() {
-		return config.getSystemProperties().getPropertyInt("agentperconsole.maxsize",
-				NGrinderConstants.MAX_AGENT_SIZE_PER_CONSOLE);
+		return config.getSystemProperties().getPropertyInt("agent.maxsize",
+						NGrinderConstants.MAX_AGENT_SIZE_PER_CONSOLE);
 	}
 
 	public int getMaxVuserPerAgent() {
-		return config.getSystemProperties().getPropertyInt("vuserperagent.maxsize",
-				NGrinderConstants.MAX_VUSER_PER_AGENT);
+		return config.getSystemProperties().getPropertyInt("agent.maxvuser",
+						NGrinderConstants.MAX_VUSER_PER_AGENT);
 	}
 
 	public int getMaxRunCount() {
-		return config.getSystemProperties().getPropertyInt("runcount.maxsize", NGrinderConstants.MAX_RUN_COUNT);
+		return config.getSystemProperties().getPropertyInt("agent.maxruncount",
+						NGrinderConstants.MAX_RUN_COUNT);
+	}
+
+	public int getMaxRunHour() {
+		return config.getSystemProperties().getPropertyInt("agent.maxhour", NGrinderConstants.MAX_RUN_HOUR);
 	}
 
 	public AgentControllerIdentityImplementation getAgentIdentityByIp(String agentIP) {
@@ -131,8 +136,8 @@ public class AgentManager implements NGrinderConstants {
 	 * @param agentCount
 	 *            how much agent are necessary.
 	 */
-	public synchronized void runAgent(final SingleConsole singleConsole, final GrinderProperties grinderProperties,
-			final Integer agentCount) {
+	public synchronized void runAgent(final SingleConsole singleConsole,
+					final GrinderProperties grinderProperties, final Integer agentCount) {
 		// FIXME : synchronization on this method may have some penalty
 		final Set<AgentIdentity> allFreeAgents = agentControllerServer.getAllFreeAgents();
 

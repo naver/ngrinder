@@ -29,6 +29,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.ngrinder.infra.spring.SpringContext;
 import org.ngrinder.model.BaseModel;
+import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,8 @@ public class ModelAspect {
 	private SpringContext springContext;
 
 	/**
-	 * Save current user to modified date or created date. It's only workable when it's from servlet context.
+	 * Save current user to modified date or created date. It's only workable when it's from servlet
+	 * context.
 	 * 
 	 * @param joinPoint
 	 *            joint point
@@ -65,12 +67,13 @@ public class ModelAspect {
 			// It's not executed on Task scheduling.
 			if (object instanceof BaseModel && getSpringContext().isServletRequestContext()) {
 				BaseModel<?> model = (BaseModel<?>) object;
-				if (model.exist()) {
-					model.setLastModifiedDate(new Date());
-					model.setLastModifiedUser(userContext.getCurrentUser());
-				} else {
-					model.setCreatedDate(new Date());
-					model.setCreatedUser(userContext.getCurrentUser());
+				Date lastModifiedDate = new Date();
+				model.setLastModifiedDate(lastModifiedDate);
+				User currentUser = userContext.getCurrentUser();
+				model.setLastModifiedUser(currentUser);
+				if (!model.exist() || model.getCreatedUser() == null) {
+					model.setCreatedDate(lastModifiedDate);
+					model.setCreatedUser(currentUser);
 				}
 			}
 		}

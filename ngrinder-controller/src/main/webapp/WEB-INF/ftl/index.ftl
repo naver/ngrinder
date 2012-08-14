@@ -4,15 +4,24 @@
 		<title>nGrinder Home</title>
 		<#include "common/common.ftl">
 		<style>
-			.hero-unit p { margin-left:15px }
-			.control-label h2 { line-height:18px }
+			.hero-unit { margin-left:0px;background-image:url('${req.getContextPath()}/img/bg_main_banner.png');margin-top:-20px;margin-bottom:10px;height:200px;padding:0px}    
+			.control-label h2 { line-height:px }
 			.controls a { margin-left:50px; }
-		</style>
+			.quickStart  { padding-left:160px; padding-top:35px }  
+		</style> 
+
 	</head>
 	<body>
 	<#include "common/navigator.ftl">
 	<div class="container">
-		<img src="${req.getContextPath()}/img/bg_main_banner.png"  style="margin-top:-20px;margin-bottom:10px"/>
+		<div class="hero-unit"/>	
+			<form class="form-inline" name="quickStart" action="${req.getContextPath()}/perftest/quickStart" method="POST">
+				<div class="quickStart">
+					<input type="text" name="url" class="span7" placeholder="Type URL..."/> 
+					<button class="btn btn-primary"  type="submit">Start Test</button>
+				</div>
+			</form>
+		</div>
 		<div class="row">
 			<div class="span6">
 				<div class="page-header">
@@ -84,6 +93,17 @@
 			  	</div>
 			</div>
 		</div>
+		<script>
+			$(document).ready(function(){
+   				 $("#quickStart").validate({
+				  rules: {
+				    field: {
+				      required: true,
+				      url: true
+				    }
+				  }
+				});
+		</script>
 		<#include "common/copyright.ftl">
 	</div>
 	</body>

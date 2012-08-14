@@ -1,6 +1,6 @@
 var formatAmount = function(format, value) {
 	if (value < 1024) {
-		return value;
+		return value.toFixed(2);
 	} else if (value < 1048576) {
 		return (value/1024).toFixed(2) + "K";
 	} else if (value < 1073741824) {
@@ -11,7 +11,7 @@ var formatAmount = function(format, value) {
 };
 
 var formatPercentage = function(format, value) {
-	return value + "%";
+	return value.toFixed(2) + "%";
 };
 
 function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, interval) {

@@ -76,10 +76,6 @@
 			<version>3.9.1</version>
 			<exclusions>
 				<exclusion>
-					<artifactId>grinder-dcr-agent</artifactId>
-					<groupId>net.sf.grinder</groupId>
-				</exclusion>
-				<exclusion>
 					<artifactId>clojure</artifactId>
 					<groupId>org.clojure</groupId>
 				</exclusion>
@@ -109,6 +105,7 @@
 					</execution>
 				</executions>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -128,13 +125,9 @@
 							<classpathPrefix>lib/</classpathPrefix>
 							<mainClass>org.ngrinder.NGrinderStarter</mainClass>
 						</manifest>
-						<manifestEntries>
-							<Class-Path>tools.jar</Class-Path>
-						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
-
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -156,7 +149,7 @@
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>assemble</id>
+						<id>assembly</id>
 						<phase>package</phase>
 						<goals>
 							<goal>assembly</goal>
@@ -165,12 +158,19 @@
 				</executions>
 				<configuration>
 					<descriptors>
-						<descriptor>src/assemble/ngrinder.xml</descriptor>
+						<descriptor>src/assembly/ngrinder.xml</descriptor>
 					</descriptors>
 					<outputDirectory>${project.build.directory}</outputDirectory>
 					<overWriteReleases>false</overWriteReleases>
 					<overWriteSnapshots>false</overWriteSnapshots>
 					<overWriteIfNewer>true</overWriteIfNewer>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+							<mainClass>org.ngrinder.NGrinderStarter</mainClass>
+						</manifest>
+					</archive>
 				</configuration>
 			</plugin>
 		</plugins>

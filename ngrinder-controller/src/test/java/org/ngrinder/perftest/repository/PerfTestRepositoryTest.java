@@ -3,6 +3,7 @@ package org.ngrinder.perftest.repository;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.perftest.model.PerfTest;
@@ -13,6 +14,11 @@ public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	public PerfTestRepository repo;
+
+	@Before
+	public void before() {
+		repo.deleteAll();
+	}
 
 	@Test
 	public void testPerfTest() {
@@ -30,6 +36,7 @@ public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 		// Then all should be 3
 		assertThat(repo.findAll().size(), is(3));
 		// Then finished and canceled perftest should 2
-		assertThat(repo.findAll(PerfTestSpecification.statusSetEqual(Status.FINISHED, Status.CANCELED)).size(), is(2));
+		assertThat(repo.findAll(PerfTestSpecification.statusSetEqual(Status.FINISHED, Status.CANCELED))
+						.size(), is(2));
 	}
 }

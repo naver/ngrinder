@@ -23,29 +23,34 @@
 package org.ngrinder.perftest.model;
 
 /**
- * Category of {@link Status}. This class provides the characterisic of each
- * status.
+ * Category of {@link Status}. This class provides the characterisic of each status.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
 public enum StatusCategory {
 	/**
+	 * Ready to run..
+	 */
+	PREPARE("blue.png", true, true),
+	/**
 	 * Processing.
 	 */
-	PROGRESSING("blue_anime.gif", true, false), 
+	PROGRESSING("blue_anime.gif", true, false),
+
 	/**
-	 * Stopped by error or user.
+	 * Testing..
 	 */
-	STOP("red.png", false, false),
+	TESTING("green_anime.gif", true, false),
 	/**
 	 * Finished normally.
 	 */
-	FINISHED("green.png", false, false),
+	FINISHED("green.png", false, true),
 	/**
-	 * Ready to run..
+	 * Stopped by error or user.
 	 */
-	PREPARE("blue.png", true, true);
+	STOP("red.png", false, true);
+
 	private final boolean stoppable;
 	private final boolean deletable;
 	private final String iconName;
@@ -65,6 +70,7 @@ public enum StatusCategory {
 	}
 
 	public String getIconName() {
+
 		return iconName;
 	}
 }

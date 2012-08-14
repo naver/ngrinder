@@ -22,6 +22,7 @@
  */
 package net.grinder;
 
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -42,7 +43,6 @@ import java.util.Map;
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.Test;
-import net.grinder.common.UncheckedInterruptedException;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.ConsoleFoundationEx;
@@ -77,7 +77,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.picocontainer.MutablePicoContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +88,6 @@ import org.slf4j.LoggerFactory;
 public class SingleConsole implements Listener, SampleListener {
 	private final ConsoleProperties consoleProperties;
 	private Thread thread;
-	private ThreadGroup threadGroup;
 	private ConsoleFoundationEx consoleFoundation;
 	public static final Resources RESOURCE = new ResourcesImplementation("net.grinder.console.common.resources.Console");
 	public static final Logger LOGGER = LoggerFactory.getLogger(RESOURCE.getString("shortTitle"));
@@ -102,13 +100,15 @@ public class SingleConsole implements Listener, SampleListener {
 	private Double[] values = new Double[60];
 	private int cursor = 0;
 	private SampleModel sampleModel;
+	private SampleModelViews modelView;
 	private long startTime = 0;
 	private Date TPS_LESSTHAN_ZREO_TIME;
 	private final ListenerSupport<ConsoleShutdownListener> m_shutdownListeners = new ListenerSupport<ConsoleShutdownListener>();
-	
-	private String reportPath;
+
+	private File reportPath;
 	private NumberFormat formatter = new DecimalFormat("###.###");
 	private Map<String, Object> statisticData;
+
 	/**
 	 * Constructor with console ip and port.
 	 * 
@@ -152,8 +152,9 @@ public class SingleConsole implements Listener, SampleListener {
 			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties, m_eventSyncCondition);
 			sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 			sampleModel.addTotalSampleListener(this);
+			modelView = getConsoleComponent(SampleModelViews.class);
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
-			
+
 		} catch (GrinderException e) {
 			throw new NGrinderRuntimeException("Exception occurs while creating SingleConsole", e);
 
@@ -199,8 +200,7 @@ public class SingleConsole implements Listener, SampleListener {
 	public void start() {
 
 		synchronized (m_eventSyncCondition) {
-			this.threadGroup = new ThreadGroup("SingleConsole ThreadGroup on port " + getConsolePort());
-			thread = new Thread(threadGroup, new Runnable() {
+			thread = new Thread(new Runnable() {
 				public void run() {
 					consoleFoundation.run();
 				}
@@ -226,15 +226,12 @@ public class SingleConsole implements Listener, SampleListener {
 		try {
 			synchronized (this) {
 				consoleFoundation.shutdown();
-				if (thread != null) {
-					threadGroup.interrupt();
-					thread.join();
-					thread = null;
-					threadGroup = null;
+				if (thread != null && !thread.isInterrupted()) {
+					thread.interrupt();
+					thread.join(1000);
 				}
+
 			}
-		} catch (InterruptedException e) {
-			throw new UncheckedInterruptedException(e);
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("Exception occurs while shutting down SingleConsole", e);
 		}
@@ -252,9 +249,11 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	public List<AgentIdentity> getAllAttachedAgents() {
 		final List<AgentIdentity> agentIdentities = new ArrayList<AgentIdentity>();
-		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) ReflectionUtil
-				.getFieldValue((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
-						"m_agentNumberMap");
+		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(
+				ReflectionUtil.getFieldValue(
+						(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
+						"m_agentNumberMap"),
+				"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
 			public void objectAndNumber(Object object, int number) {
 				agentIdentities.add((AgentIdentity) object);
@@ -358,8 +357,9 @@ public class SingleConsole implements Listener, SampleListener {
 
 	public void waitUntilAgentConnected(int size) {
 		int trial = 1;
-		while (trial++ < 5) {
-			// when agent finished one test, processReports will be updated as null
+		while (trial++ < 10) {
+			// when agent finished one test, processReports will be updated as
+			// null
 			if (processReports == null || this.processReports.length != size) {
 				synchronized (m_eventSyncCondition) {
 					m_eventSyncCondition.waitNoInterrruptException(1000);
@@ -368,24 +368,29 @@ public class SingleConsole implements Listener, SampleListener {
 				return;
 			}
 		}
-		throw new NGrinderRuntimeException("Connection is not completed "
+		throw new NGrinderRuntimeException("Connection is not completed. processReport is "
 				+ ToStringBuilder.reflectionToString(processReports));
 	}
 
+	/**
+	 * Check all test is finished. To be safe, this counts thread count and not finished workprocess. If one of them is
+	 * 0, It thinks test is finished.
+	 * 
+	 * @return true if finished
+	 */
 	public boolean isAllTestFinished() {
 		int workingThreadNum = 0;
+		int notFinishedWorkerCount = 0;
 		for (ProcessReports processReport : this.processReports) {
-			// TODO
 			WorkerProcessReport[] reports = processReport.getWorkerProcessReports();
 			for (WorkerProcessReport report : reports) {
+				if (report.getState() != 3) {
+					notFinishedWorkerCount++;
+				}
 				workingThreadNum += report.getNumberOfRunningThreads();
 			}
 		}
-		return workingThreadNum == 0;
-	}
-
-	public MutablePicoContainer getConsoleContainer() {
-		return consoleFoundation.getContainer();
+		return notFinishedWorkerCount == 0 || workingThreadNum == 0;
 	}
 
 	/**
@@ -417,6 +422,7 @@ public class SingleConsole implements Listener, SampleListener {
 
 	@Override
 	public void update(StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
+
 		double tps = sampleModel.getTPSExpression().getDoubleValue(intervalStatistics);
 		// If the tps is low that it's can be the agents or scripts goes wrong.
 		if (tps < 0.001) {
@@ -433,12 +439,15 @@ public class SingleConsole implements Listener, SampleListener {
 			}
 		} else {
 			TPS_LESSTHAN_ZREO_TIME = null;
+			//only if tps value is not too small ,It should be displayed 
+			addTpsValue(tps);
 		}
-		
+
 		statisticData = this.getStatistics();
 		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>)statisticData.get("lastSampleStatistics");
-		
+		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) statisticData
+				.get("lastSampleStatistics");
+
 		if (lastSampleStatistics != null) {
 			double tpsSum = 0;
 			double errors = 0;
@@ -453,29 +462,26 @@ public class SingleConsole implements Listener, SampleListener {
 			}
 
 			try {
-				writeReportData("errors", errors);
+				writeReportData("tps_failed", errors);
 				writeReportData("tps_total", tpsSum);
-				writeReportData("meanTestTime", meanTestTime);
+				writeReportData("response_time", meanTestTime);
 			} catch (IOException e) {
 				LOGGER.error("Write report data failed : ", e);
 			}
-			addTpsValue(tps);
 		}
-		
+
 	}
-	
+
 	/**
 	 * To get statistics data when test is running
 	 */
 	private Map<String, Object> getStatistics() {
-		
+
 		Map<String, Object> result = new HashMap<String, Object>();
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
-		final SampleModel model = (SampleModel) this.getConsoleComponent(SampleModel.class);
-		final SampleModelViews modelView = (SampleModelViews) this.getConsoleComponent(SampleModelViews.class);
 		ExpressionView[] views = modelView.getCumulativeStatisticsView().getExpressionViews();
-		ModelTestIndex modelIndex = (ModelTestIndex) ReflectionUtil.getFieldValue(model, "modelTestIndex");
+		ModelTestIndex modelIndex = ((SampleModelImplementationEx) sampleModel).getModelTestIndex();
 		if (modelIndex != null) {
 			for (int i = 0; i < modelIndex.getNumberOfTests(); i++) {
 				Map<String, Object> statistics = new HashMap<String, Object>();
@@ -489,7 +495,9 @@ public class SingleConsole implements Listener, SampleListener {
 
 				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
 				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
-				for (ExpressionView expressionView : views) { // TODO : expressionView == null?
+				for (ExpressionView expressionView : views) { // TODO :
+																// expressionView
+																// == null?
 					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
 							getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
 					lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
@@ -512,12 +520,11 @@ public class SingleConsole implements Listener, SampleListener {
 			}
 		}
 
-		StatisticsSet totalSet = model.getTotalCumulativeStatistics();
+		StatisticsSet totalSet = sampleModel.getTotalCumulativeStatistics();
 		Map<String, Object> totalStatistics = new HashMap<String, Object>();
 
-		for (ExpressionView expressionView : views) { // TODO : expressionView == null ?
-			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
+		for (ExpressionView expressionView : views) { // TODO : expressionView
+														// == null ?
 			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
 					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 		}
@@ -530,19 +537,16 @@ public class SingleConsole implements Listener, SampleListener {
 		result.put("totalStatistics", totalStatistics);
 		result.put("cumulativeStatistics", cumulativeStatistics);
 		result.put("lastSampleStatistics", lastSampleStatistics);
-		
+
 		result.put("tpsChartData", this.getTpsValues());
 
-		
-        MutablePicoContainer container = (MutablePicoContainer) this.getConsoleContainer();
-        ProcessControl processControl = (ProcessControl) container.getComponent(ProcessControl.class);
-        NGrinderConsoleCommunicationService.collectWorkerAndThreadInfo(processControl, result);
-		
-        result.put("success", !this.isAllTestFinished());
-        
+		ProcessControl processControl = getConsoleComponent(ProcessControl.class);
+		NGrinderConsoleCommunicationService.collectWorkerAndThreadInfo(processControl, result);
+		result.put("success", !this.isAllTestFinished());
+
 		return result;
 	}
-	
+
 	private static Object getRealDoubleValue(Double doubleValue) {
 		if (doubleValue.isInfinite() || doubleValue.isNaN()) {
 			return null;
@@ -569,10 +573,9 @@ public class SingleConsole implements Listener, SampleListener {
 	public interface ConsoleShutdownListener {
 		void readyToStop();
 	}
-	
-	
+
 	public void writeReportData(String name, double value) throws IOException {
-		File filename = new File(this.reportPath + File.separator + name + ".data");
+		File filename = new File(this.reportPath, name + ".data");
 		FileWriter write = null;
 		BufferedWriter bw = null;
 		try {
@@ -581,26 +584,26 @@ public class SingleConsole implements Listener, SampleListener {
 			bw.write(formatter.format(value));
 			bw.newLine();
 			bw.flush();
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+			throw new NGrinderRuntimeException(e.getMessage(), e);
 		} finally {
 			IOUtils.closeQuietly(write);
 			IOUtils.closeQuietly(bw);
 		}
 	}
 
-	public String getReportPath() {
+	public File getReportPath() {
 		return reportPath;
 	}
-	
+
 	public Map<String, Object> getStatictisData() {
 		return this.statisticData;
 	}
 
-
 	public void setReportPath(File reportDir) {
-		if (!reportDir.exists()) {
-			reportDir.mkdir();
-		}
-		this.reportPath = reportDir.getAbsolutePath();
+		checkNotNull(reportDir, "report folder should not be empty!").mkdirs();
+		this.reportPath = reportDir;
 	}
 
 }

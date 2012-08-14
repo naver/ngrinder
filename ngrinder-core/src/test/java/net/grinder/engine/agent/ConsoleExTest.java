@@ -29,6 +29,7 @@ public class ConsoleExTest extends AbstractMuliGrinderTestBase {
 	@Before
 	public void before() throws ConsoleException, InterruptedException {
 		startThreadCount = Thread.activeCount();
+
 		console1 = new SingleConsole(getFreePort());
 		console2 = new SingleConsole(getFreePort());
 		console1.start();
@@ -42,22 +43,25 @@ public class ConsoleExTest extends AbstractMuliGrinderTestBase {
 		agentThread1.shutdown();
 		agentThread2.shutdown();
 		agentThread3.shutdown();
-		sleep(2000);
+		sleep(5000);
 		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
 		for (Thread each : threadSet) {
-			System.out.println(each.getName());
+			System.out.println(each.getName() + "-" + each.getThreadGroup().getName());
 		}
-		sleep(2000);
+		
+		sleep(5000);
 		assertThat("Aftre shutdowning all agents and console, the active thread count should be same",
 				Thread.activeCount(), is(startThreadCount));
-		
+
 	}
+
+
 
 	@Test
 	public void testConsole() throws GrinderException, InterruptedException {
-		agentThread1 = new AgentDaemon();
+		agentThread1 = new AgentDaemon(agentConfig1);
 		agentThread1.run(console1.getConsolePort());
-		agentThread2 = new AgentDaemon();
+		agentThread2 = new AgentDaemon(agentConfig2);
 		agentThread2.run(console1.getConsolePort());
 		// Wait until all agents are started. They will connect main console.
 		sleep(4000);
@@ -79,7 +83,7 @@ public class ConsoleExTest extends AbstractMuliGrinderTestBase {
 		assertThat("There must be 2 agents connecting console1", console1.getAllAttachedAgents(), hasSize(2));
 
 		// enable one agent more.
-		agentThread3 = new AgentDaemon();
+		agentThread3 = new AgentDaemon(agentConfig3);
 		agentThread3.run(console2.getConsolePort());
 
 		Thread.sleep(4000);
@@ -96,4 +100,5 @@ public class ConsoleExTest extends AbstractMuliGrinderTestBase {
 		console1.shutdown();
 
 	}
+
 }

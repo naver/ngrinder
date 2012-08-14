@@ -13,8 +13,8 @@
 			<img src="${req.getContextPath()}/img/bg_perftest_banner.png" style="margin-top:-20px;margin-bottom:10px"/>
 			
 			<form id="listForm" action=""${req.getContextPath()}/perftest/list" method="POST">
-				<input type="hidden" id="sortColumn" name="page.sort" value="${(sortColumn)!'status'}">
-				<input type="hidden" id="sortDirection" name="page.sort.dir" value="${(sortDirection)!'asc'}">
+				<input type="hidden" id="sortColumn" name="page.sort" value="${(sortColumn)!'lastModifiedDate'}">
+				<input type="hidden" id="sortDirection" name="page.sort.dir" value="${(sortDirection)!'desc'}">
 		
 				<div class="well form-inline searchBar">
 					<input type="text" class="search-query" placeholder="Keywords" name ="query" id="query" value="${query!}">
@@ -23,7 +23,7 @@
 						<input type="checkbox" id="onlyFinished" name="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> Only Finished
 					</label>
 					<span class="pull-right">
-						<a class="btn" href="${req.getContextPath()}/perftest/detail" id="createBtn" data-toggle="modal">
+						<a class="btn btn-primary" href="${req.getContextPath()}/perftest/detail" id="createBtn" data-toggle="modal">
 							<i class="icon-file"></i>
 							Create test
 						</a>
@@ -66,9 +66,9 @@
 							<#list testList as test>
 								<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
 								<tr id="tr${test.id}">
-									<td style="text-align:center"><input type="checkbox" class="checkbox" value="${test.id}" <#if !(test.status =="READY" || test.status =="SAVED"|| test.status == "FINISHED")>disabled</#if>></td>
+									<td style="text-align:center"><input type="checkbox" class="checkbox" value="${test.id}" <#if !(test.status.isDeletable())>disabled</#if>></td>
 									<td class="ellipsis"  style="text-align:center">
-										<div 
+										<div class="ball" id="${test.id}"
 										<#if test.status == 'STOP_ON_ERROR'>
 											 rel="popover"
 											 data-content="Error on ${test.testErrorCause} phase. ${(test.testErrorStackTrace)! ?replace('\n', '<br/>')?html}" 
@@ -82,10 +82,10 @@
 											<img src="${req.getContextPath()}/img/ball/${test.status.iconName}"/>
 										</div>
 									</td>
-									<td class="ellipsis" > 
+									<td class="ellipsis" >   
 										<div rel="popover"
-											 data-content="${test.description?replace('\n', '<br/>')?html}"  
-											 data-original-title="${test.testName} description">
+											 data-content="${test.description?replace('\n', '<br/>')?html}  &lt;br&gt;&lt;br&gt; modified at <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if>"  
+											 data-original-title="${test.testName}">
 											<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
 											<#if test.status =="READY" || test.status == "SAVED"><a href="javascript:void(0);"><i class="icon-remove test-remove" sid="${test.id}"></i></a></#if>
 										</div>
@@ -95,13 +95,13 @@
 										${test.scriptName} 
 									</td>
 									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
-									<td>${(test.durationStr)!}</td>
-									<td>${(test.tps)!}</td>
+									<td>${(test.durationStr)!}</td> 
+									<td>${(test.tps)!}</td>  
 									<td>${(test.meanTestTime)!0}</td>
 									<td>${(test.errors)!0}</td>
 									<td>${vuserTotal}</td>
-								</tr>
-							</#list>
+								</tr> 
+							</#list> 
 						<#else>
 							<tr>
 								<td colspan="12" class="noData">
@@ -217,6 +217,26 @@
 			$("#pageNumber").val(page);
 			document.forms.listForm.submit();
 		}
+		
+		
+		// Wrap this function in a closure so we don't pollute the namespace
+		(function refreshBall() {
+			 var db = $('.ball').map(function(i,n) {
+		        	return $(n).id;
+		  		 }).get();
+		    
+		  $.ajax({
+		    url: '${req.getContextPath()}/perftest/updateball', 
+		    type: 'POST',
+		    data:db,
+		    success: function(data) {
+		       
+		    },
+		    complete: function() {
+		      setTimeout(refreshBall, 5000);
+		    }
+		  });
+		})();
 	</script>
 	</body>
 </html>
