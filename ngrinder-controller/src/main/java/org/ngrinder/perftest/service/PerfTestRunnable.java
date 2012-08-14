@@ -190,7 +190,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 			targetServer.setPort(MonitorConstants.DEFAULT_AGENT_PORT);
 			agents.add(targetServer);
 		}
-		monitorDataService.addMonitorTarget(perfTest.getTargetHosts(), agents);
+		//use perf test id as key for the set of target server.
+		monitorDataService.addMonitorTarget("PerfTest-" + perfTest.getId(), agents);
 
 		// Run test
 		perfTestService.savePerfTest(perfTest, START_TESTING);
@@ -262,6 +263,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            {@link SingleConsole} which is being using for {@link PerfTest}
 	 */
 	public void doTermicate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+		// stop target host monitor
+		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 		// FIXME... it should found abnormal test status..
 		if (singleConsoleInUse == null) {
 			LOG.error("There is no console found for test:{}", perfTest);
@@ -269,10 +272,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			perfTestService.savePerfTest(perfTest, Status.STOP_ON_ERROR);
 			return;
 		}
-		// stop target host monitor
-
 		// FIXME : Is it safe to locate monitor agents removal?
-		monitorDataService.removeMonitorAgents(perfTest.getTargetHosts());
 		consoleManager.returnBackConsole(singleConsoleInUse);
 	}
 
@@ -290,6 +290,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			LOG.error("There is no console found for test:{}", perfTest);
 			// need to finish test as error
 			perfTestService.savePerfTest(perfTest, Status.STOP_ON_ERROR);
+			monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 			return;
 		}
 		long finishTime = System.currentTimeMillis();
@@ -299,7 +300,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// after some seconds, will set it as finished.
 		if (singleConsoleInUse.isAllTestFinished() && startLastingTime > WAIT_TEST_START_SECOND) {
 			// stop target host monitor
-			monitorDataService.removeMonitorAgents(perfTest.getTargetHosts());
+			monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 			perfTest.setFinishTime(new Date(finishTime));
 			PerfTest resultTest = perfTestService.updatePerfTestAfterTestFinish(perfTest);
 			consoleManager.returnBackConsole(singleConsoleInUse);
