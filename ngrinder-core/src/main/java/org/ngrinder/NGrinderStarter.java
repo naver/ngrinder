@@ -185,7 +185,11 @@ public class NGrinderStarter {
 		if (file.endsWith(".jar")) {
 			file = FilenameUtils.getPath(file);
 		}
-		for (File each : new File(file, "lib").listFiles()) {
+		File libFolder = new File(file, "lib");
+		if (!libFolder.exists()) {
+			return;
+		}
+		for (File each : libFolder.listFiles()) {
 			if (each.getName().endsWith(".jar")) {
 				try {
 					ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { checkNotNull(each
@@ -217,7 +221,7 @@ public class NGrinderStarter {
 		if (startMode.equalsIgnoreCase("agent")) {
 			String consoleIP = agentConfig.getAgentProperties().getProperty("agent.console.ip", "127.0.0.1");
 			int consolePort = agentConfig.getAgentProperties().getPropertyInt("agent.console.port",
-					AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+							AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 
 			String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
 
