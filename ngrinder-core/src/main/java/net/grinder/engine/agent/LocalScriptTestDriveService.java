@@ -155,7 +155,7 @@ public class LocalScriptTestDriveService {
 				fanOutStreamSender.shutdown();
 			}
 			// To be safe, wait again..
-			while (true) {
+			while (workerLauncher != null) {
 				final int maximumWaitingCount = 10;
 				int waitingCount = 0;
 				if (workerLauncher.allFinished() || waitingCount++ > maximumWaitingCount) {
