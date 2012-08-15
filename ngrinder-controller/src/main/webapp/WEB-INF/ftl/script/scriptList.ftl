@@ -220,84 +220,17 @@
 			$("#n_script").addClass("active");
 			
 			$("#createBtn2").on('click', function() {
-				var $elem = $("#scriptNameInput");
-				if (checkSimpleNameByObj($elem)) {
-					cleanErrMsg($elem);
-				} else {
-					showErrMsg($elem, "Script name is not correct.");
-					return;
-				}
-
-				var $ext = $("#languageSelect");
-				if (checkScriptFileExtension($elem.val(), $ext.val())) {
-					cleanErrMsg($elem);
-				} else {
-					if (!confirm("You already chose " + $ext.text().trim() + " as a script type.\nMay I append ." + $ext.val() + " file extension after your script name?")) {
-						showErrMsg($elem, "You should append '." + $ext.val() + "' extension of a script file.");
-						return;
-					}
-					$elem.val($elem.val() + ".py");
-				}
-
-				$elem = $("#urlInput");
-				if (checkEmpty($elem)) {
-					showErrMsg($elem, "URL can't be empty.");
-					return;
-				} else {
-					cleanErrMsg($elem);
-				}
-
-				if ($elem.val().indexOf("http://") != -1 && $elem.val().indexOf("https://") != -1) {
-					cleanErrMsg($elem);
-				} else {
-					if (confirm("You omit a url type.\nMay I append a url type as 'http://' on the url?")) {
-						$elem.val("http://" + $elem.val());
-					}
-				}
-
-				if (!confirm("Are you sure to continue?")) {
-					return;
-				}
-
 				document.forms.createForm.submit();
 			});
 			
 			$("#uploadBtn2").on('click', function() {
-				var $elem = $("#upScriptNameInput");
-				if (checkSimpleNameByObj($elem)) {
-					cleanErrMsg($elem);
-				} else {
-					showErrMsg($elem, "Script name is not correct.");
-					return;
-				}
-				
-				$elem = $("#discriptionInput");
-				if (checkEmpty($elem)) {
-					showErrMsg($elem, "Description can't be empty.")
-					return;
-				} else {
-					cleanErrMsg($elem);
-				}
-				
-				$elem = $("#fileInput");
-				if (checkEmpty($elem)) {
-					showErrMsg($elem, "Please set a file.");
-					return;
-				} else {
-					cleanErrMsg($elem);
-				}
+			
 				$("#path").val($("#upScriptNameInput").val());
 				document.forms.uploadForm.submit();
 			});
 			
 			$("#createFolderBtn").on('click', function() {
-				var $elem = $("#folderNameInput");
-				if (checkSimpleNameByObj($elem)) {
-					cleanErrMsg($elem);
-				} else {
-					showErrMsg($elem, "Script name not correct.");
-					return;
-				}
+				
 				document.forms.createFolderForm.submit();
 			});
 						

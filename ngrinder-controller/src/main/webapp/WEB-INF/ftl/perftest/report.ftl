@@ -103,10 +103,10 @@
                          <li><i class="icon-tag"></i> <a id="testPerformance" href="javascript:void(0);">Performance Report</a></li>
                        </ul>
 					   <ul class="unstyled"><i class="icon-tags"></i> Target Hosts
-                         <#if (test.targetHostIP)?exists>
-                         	<#list targetIp as test.targetHostIP>
-                         	<li><i class="icon-chevron-right"></i><a id="targetMontor" href="javascript:void(0);" ip="${targetIp}">${targetIp}</a></li>
-                         	</#list>
+                         <#if test.targetHostIP?exists>	
+                         		<#list test.targetHostIP as targetIp>
+	                         	<li><i class="icon-chevron-right"></i><a id="targetMontor" href="javascript:void(0);" ip="${targetIp}">${targetIp}</a></li>
+	                         	</#list>
                          </#if>
                        </ul>
 			</div>
@@ -225,7 +225,7 @@
                     if (res.success) {
                         drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage);
                         drawChart('System Memory', 'memoryDiv', res.SystemData.memory, formatAmount);
-                        if (hasJava) {}
+                        if (hasJava) {
                         	drawChart('Heap Memory', 'heapMemoryDiv', res.JavaData.heap_memory, formatAmount);
                         	drawChart('NonHeap Memory', 'nonHeapMemoryDiv', res.JavaData.non_heap_memory, formatAmount);
                         	drawChart('Thread Count', 'threadCountDiv', res.JavaData.thread_count);
