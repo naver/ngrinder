@@ -59,7 +59,7 @@
 					<th class="noClick">Commit Message</th>
 					<th>Last Modified Date</th>
 					<th>Size(KB)</th>
-					<th class="noClick">Download</th>
+					<th class="noClick">Actions</th>
 				</tr>
 			</thead>
 			<tbody>

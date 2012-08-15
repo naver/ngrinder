@@ -186,7 +186,7 @@ div.chart {
 												<input type="hidden" id="duration" class="required positiveNumber" name="duration"
 													value="${(test.duration)!0}">
 												<div id="durationSlider" class="slider" style="margin-left: 0; width: 250px"></div>
-												<input id="hiddenDurationInput" class="span1 hide" data-slider="#durationSlider" data-max="40" data-min="0"
+												<input id="hiddenDurationInput" class="span1 hide" data-slider="#durationSlider" data-max="39" data-min="1"
 													data-step="1">
 
 											</div>
@@ -203,7 +203,7 @@ div.chart {
 											</div>
 										</div>
 										<div class="control-group">
-											<label for="ignoreSampleCount" class="control-label"> <@spring.message "perfTest.configuration.ignoreCount"/> </label>
+											<label for="ignoreSampleCount" class="control-label"> <@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
 											<div class="controls">
 												<input type="text" class="input required CountNumber" id="ignoreSampleCount" name="ignoreSampleCount"
 													value="${(test.ignoreSampleCount)!0}">
@@ -225,7 +225,7 @@ div.chart {
 									<label class="checkbox" style="margin-bottom: 0"> <input type="checkbox" id="rampupCheckbox"<#if
 										test?? && test.processes &gt; test.initProcesses>checked</#if> />
 										<h4>
-											<@spring.message "perfTest.configuration.rampEnable"/> <small>(<@spring.message "perfTest.configuration.rampUpDes"/>)</small>
+											<@spring.message "perfTest.configuration.rampEnable"/> <small><@spring.message "perfTest.configuration.rampUpDes"/></small>
 										</h4>
 									</label>
 								</div>
@@ -378,15 +378,14 @@ div.chart {
 											</div>
 										</div>
 										<div class="control-group">
-											<label for="ignoreSampleCount" class="control-label"> Ignore Count </label>
+											<label for="ignoreSampleCount" class="control-label">Ignore Sampling Count </label>
 											<div class="controls">
-												<span>0</span>
-												<code>sec</code>
+												<span>0</span> 
 											</div>
 										</div>
 										<hr>
 										<div class="control-group">
-											<label for="sampleInterval" class="control-label"> Sample Interval </label>
+											<label for="sampleInterval" class="control-label">Sampling Interval </label>
 											<div class="controls" style="margin-top: 0">
 												<input type="text" class="input span2" id="sampleInterval" name="sampleInterval"
 													value="${(test.sampleInterval)!1000}">
@@ -723,7 +722,7 @@ div.chart {
 					format: 'yyyy-mm-dd'
 				});
 						
-				$("#hSelect").append(getOption(${maxRunHour}));
+				$("#hSelect").append(getOption(${maxRunHour}+1));
 				$("#hSelect").change(getDurationMS);
 				
 				$("#mSelect").append(getOption(60));

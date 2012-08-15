@@ -132,9 +132,7 @@
 		$(document).ready(function() {
 			$("#n_test").addClass("active");
 			
-			$("#searchBtn").on('click', function() {
-				searchTestList();
-			});
+		
 			
 			enableChkboxSelectAll();
 			

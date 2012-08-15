@@ -188,9 +188,29 @@ function popunover() {
 	el.popover('hide');
 }
 
+function deleteSelection() {
+    if (window.getSelection) {
+        // Mozilla
+        var selection = window.getSelection();
+        if (selection.type != "Range") {
+        	return;
+        }
+        if (selection.rangeCount > 0) {
+            window.getSelection().deleteFromDocument();
+            window.getSelection().removeAllRanges();
+        }
+    } else if (document.selection) {
+        // Internet Explorer
+        var ranges = document.selection.createRangeCollection();
+        for (var i = 0; i < ranges.length; i++) {
+            ranges[i].text = "";
+        }
+    }
+}
 
 $(document).ready(function() {
 	$("input[number_limit]").keypress(function(e) {
+		//deleteSelection($(this));
 		if (e.charCode == 0) {
 			return true;
 		}
