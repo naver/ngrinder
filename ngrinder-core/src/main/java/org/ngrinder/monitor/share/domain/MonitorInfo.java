@@ -26,7 +26,6 @@ import javax.management.openmbean.CompositeData;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.apache.commons.lang.math.NumberUtils;
 
 public abstract class MonitorInfo {
 	public String toString() {
@@ -39,30 +38,30 @@ public abstract class MonitorInfo {
 
 	public abstract void parse(CompositeData cd);
 
-	protected long getLong(String s) {
-		long lvalue;
-		try {
-			lvalue = Long.parseLong(s.trim());
-		} catch (Exception e) {
-			lvalue = 0L;
-		}
-		return lvalue;
-	}
+//	protected long getLong(String s) {
+//		long lvalue;
+//		try {
+//			lvalue = Long.parseLong(s.trim());
+//		} catch (Exception e) {
+//			lvalue = 0L;
+//		}
+//		return lvalue;
+//	}
 
-	protected float getFloat(String fs) {
-		float lvalue = NumberUtils.toFloat(fs.trim(), 0.0f);
-		return lvalue;
-	}
+//	protected float getFloat(String fs) {
+//		float lvalue = NumberUtils.toFloat(fs.trim(), 0.0f);
+//		return lvalue;
+//	}
 
-	protected Object get(String string, Class<? extends Number> classType) {
-		Object value = null;
-		if (classType.isAssignableFrom(Long.class)) {
-			value = Long.parseLong(string.trim()); // TODO: it can be occurred NumberFormatException, is it a needed to handle the exception?
-		} else if (classType.isAssignableFrom(Double.class)) {
-			value = Double.parseDouble(string.trim()); // TODO: it can be occurred NumberFormatException, is it a needed to handle the exception?
-		}
-		return value;
-	}
+//	protected Object get(String string, Class<? extends Number> classType) {
+//		Object value = null;
+//		if (classType.isAssignableFrom(Long.class)) {
+//			value = Long.parseLong(string.trim()); // TODO: it can be occurred NumberFormatException, is it a needed to handle the exception?
+//		} else if (classType.isAssignableFrom(Double.class)) {
+//			value = Double.parseDouble(string.trim()); // TODO: it can be occurred NumberFormatException, is it a needed to handle the exception?
+//		}
+//		return value;
+//	}
 
 	protected static String getString(CompositeData cd, String itemName) {
 		if (cd == null)
@@ -71,12 +70,12 @@ public abstract class MonitorInfo {
 		return (String) cd.get(itemName);
 	}
 
-	protected static boolean getBoolean(CompositeData cd, String itemName) {
-		if (cd == null)
-			throw new IllegalArgumentException("Null CompositeData");
-
-		return ((Boolean) cd.get(itemName)).booleanValue();
-	}
+//	protected static boolean getBoolean(CompositeData cd, String itemName) {
+//		if (cd == null)
+//			throw new IllegalArgumentException("Null CompositeData");
+//
+//		return ((Boolean) cd.get(itemName)).booleanValue();
+//	}
 
 	protected static long getLong(CompositeData cd, String itemName) {
 		if (cd == null)

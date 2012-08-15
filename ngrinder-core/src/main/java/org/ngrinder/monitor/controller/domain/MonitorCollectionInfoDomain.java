@@ -32,6 +32,7 @@ import org.ngrinder.monitor.share.domain.MonitorInfo;
 public class MonitorCollectionInfoDomain {
 	private ObjectName objectName;
 	private String attrName;
+	@SuppressWarnings("unused")
 	private Class<? extends MonitorInfo> resultClass;
 
 	public MonitorCollectionInfoDomain(ObjectName objectName, String attrName, Class<? extends MonitorInfo> resultClass) {
@@ -40,28 +41,12 @@ public class MonitorCollectionInfoDomain {
 		this.resultClass = resultClass;
 	}
 
-	public Class<? extends MonitorInfo> getResultClass() {
-		return resultClass;
-	}
-
-	public void setResultClass(Class<? extends MonitorInfo> resultClass) {
-		this.resultClass = resultClass;
-	}
-
 	public ObjectName getObjectName() {
 		return objectName;
 	}
 
-	public void setObjectName(ObjectName objectName) {
-		this.objectName = objectName;
-	}
-
 	public String getAttrName() {
 		return attrName;
-	}
-
-	public void setAttrName(String attrName) {
-		this.attrName = attrName;
 	}
 
 	public String toString() {

@@ -34,7 +34,7 @@ import org.springframework.ui.ModelMap;
 
 /**
  * MonitorController Test class.
- *
+ * 
  * @author Mavlarn
  * @since
  */
@@ -42,7 +42,7 @@ public class MonitorControllerTest extends AbstractNGrinderTransactionalTest {
 
 	private static final String DATE_FORMAT = "yyyyMMddHHmmss";
 	private static final DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-	
+
 	@Autowired
 	private MonitorController monitorController;
 
@@ -51,6 +51,9 @@ public class MonitorControllerTest extends AbstractNGrinderTransactionalTest {
 		ModelMap model = new ModelMap();
 		String rtnStr = monitorController.getCurrentMonitorData(model, "127.0.0.1");
 		LOG.debug("Current monitor data for ip:{} is\n{}", "127.0.0.1", rtnStr);
+
+		rtnStr = monitorController.getCurrentMonitorData(model, "1.0.0.1");
+		LOG.debug("Agent ip:{} doesn't exist\n{}", "1.0.0.1", rtnStr);
 	}
 
 	@Test
@@ -65,7 +68,7 @@ public class MonitorControllerTest extends AbstractNGrinderTransactionalTest {
 		ModelMap model = new ModelMap();
 		Date endTime = new Date();
 		long endTimelong = Long.valueOf(df.format(new Date()));
-		long startTimeLong = endTimelong - 10 *60 * 1000; //10 minutes before
+		long startTimeLong = endTimelong - 10 * 60 * 1000; // 10 minutes before
 		Date startTime = df.parse(String.valueOf(startTimeLong));
 		String rtnStr = monitorController.getMonitorData(model, "127.0.0.1", startTime, endTime, 500);
 		LOG.debug("Current monitor data for ip:{} is\n{}", "127.0.0.1", rtnStr);
