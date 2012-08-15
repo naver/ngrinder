@@ -25,9 +25,10 @@ package org.ngrinder.perftest.service;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import org.junit.Before;
+import java.util.Date;
+import java.util.List;
+
 import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.perftest.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
@@ -42,44 +43,20 @@ import org.springframework.data.domain.Pageable;
  * @author Mavlarn
  * @since 3.0
  */
-public class PerfTestServiceTest extends AbstractNGrinderTransactionalTest {
+public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
 	private PerfTestService testService;
 
-	@Before
-	public void createTempTests() {
-		perfTestRepository.deleteAll();
-		PerfTest test = new PerfTest();
-		test.setTestName("new Test1");
-		test.setThreshold("D");
-		test.setAgentCount(2);
-		test.setDuration(120L);
-		test.setIgnoreSampleCount(0);
-		test.setTargetHosts("127.0.0.1");
-		test.setScriptName("test1.py");
-		test.setCreatedUser(getTestUser());
-		testService.savePerfTest(test);
-
-		test = new PerfTest();
-		test.setTestName("new Test2");
-		test.setStatus(Status.FINISHED);
-		test.setThreshold("D");
-		test.setAgentCount(2);
-		test.setDuration(120L);
-		test.setIgnoreSampleCount(0);
-		test.setTargetHosts("127.0.0.1");
-		test.setCreatedUser(getTestUser());
-		test.setScriptName("test2.py");
-		testService.savePerfTest(test);
-
-	}
-
 	@Autowired
 	PerfTestRepository perfTestRepository;
-
+	
 	@Test
 	public void testGetTestListAll() {
+		
+		createPerfTest("new Test1", Status.TESTING, new Date());
+		createPerfTest("new Test2", Status.FINISHED, new Date());
+		
 		Pageable pageable = new PageRequest(0, 10);
 		Page<PerfTest> testList = testService.getPerfTestList(getTestUser(), null, false, pageable);
 		assertThat(testList.getContent().size(), is(2));
@@ -91,6 +68,20 @@ public class PerfTestServiceTest extends AbstractNGrinderTransactionalTest {
 		assertThat(testList.getContent().size(), is(2));
 		testList = testService.getPerfTestList(getTestUser(), null, true, null);
 		assertThat(testList.getContent().size(), is(1));
+
+		List<PerfTest> list = testService.getTestingPerfTest();
+		assertThat(list.size(), is(1));
+
+		createPerfTest("new Test2", Status.getProcessingOrTestingTestStatus()[0], new Date());
+		testService.getCurrentlyRunningTest();
+		assertThat(list.size(), is(2));
+		
+		PerfTest finishedTest = createPerfTest("new Test2", Status.ABNORMAL_TESTING, new Date());
+		testService.getAbnoramlTestingPerfTest();
+		assertThat(list.size(), is(1));
+		
+		testService.updatePerfTestAfterTestFinish(finishedTest);
 	}
+	
 
 }

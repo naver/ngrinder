@@ -39,9 +39,12 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+
 
 /**
  * Script Validation Service
@@ -51,6 +54,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ScriptValidationService {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ScriptValidationService.class);
 	@Autowired
 	private LocalScriptTestDriveService localScriptTestDriveService;
 
@@ -116,7 +121,7 @@ public class ScriptValidationService {
 			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, new Condition(), "");
 			return FileUtils.readFileToString(doValidate);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.error(e.getMessage(), e);
 		}
 		return StringUtils.EMPTY;
 	}

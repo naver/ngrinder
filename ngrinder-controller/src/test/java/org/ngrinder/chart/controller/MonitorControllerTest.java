@@ -28,7 +28,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.chart.AbstractChartTransactionalTest;
+import org.ngrinder.chart.service.MonitorService;
+import org.ngrinder.monitor.controller.model.JavaDataModel;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 
@@ -38,7 +41,7 @@ import org.springframework.ui.ModelMap;
  * @author Mavlarn
  * @since
  */
-public class MonitorControllerTest extends AbstractNGrinderTransactionalTest {
+public class MonitorControllerTest extends AbstractChartTransactionalTest {
 
 	private static final String DATE_FORMAT = "yyyyMMddHHmmss";
 	private static final DateFormat df = new SimpleDateFormat(DATE_FORMAT);
@@ -46,6 +49,9 @@ public class MonitorControllerTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	private MonitorController monitorController;
 
+	@Autowired
+	private MonitorService monitorService;
+	
 	@Test
 	public void testGetCurrentMonitorData() {
 		ModelMap model = new ModelMap();
@@ -66,6 +72,13 @@ public class MonitorControllerTest extends AbstractNGrinderTransactionalTest {
 		Date endTime = new Date();
 		long endTimelong = Long.valueOf(df.format(new Date()));
 		long startTimeLong = endTimelong - 10 *60 * 1000; //10 minutes before
+
+		//add 2 record, make sure getMonitorData() can get data
+		JavaDataModel javaInfo = newJavaData(endTimelong, "10.0.0.1");
+		monitorService.saveJavaMonitorInfo(javaInfo);
+		SystemDataModel systemInfo = newSysData(endTimelong, "10.0.0.1");
+		monitorService.saveSystemMonitorInfo(systemInfo);
+		
 		Date startTime = df.parse(String.valueOf(startTimeLong));
 		String rtnStr = monitorController.getMonitorData(model, "127.0.0.1", startTime, endTime, 500);
 		LOG.debug("Current monitor data for ip:{} is\n{}", "127.0.0.1", rtnStr);

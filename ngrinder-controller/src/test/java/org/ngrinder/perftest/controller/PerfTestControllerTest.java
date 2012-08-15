@@ -24,6 +24,7 @@ package org.ngrinder.perftest.controller;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -263,5 +264,18 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		} catch (NullPointerException e) {
 			assertTrue(true);
 		}
+	}
+	
+	@Test
+	public void testUpdateSatus() {
+		String testName = "test1";
+		PerfTest test = createPerfTest(testName, Status.TESTING, new Date());
+		String testName2 = "test1";
+		PerfTest test2 = createPerfTest(testName2, Status.START_AGENTS, new Date());
+
+		String ids = test.getId() + "," + test2.getId();
+		ModelMap model = new ModelMap();
+		String rtnJson = controller.updateSatus(getTestUser(), ids, model);
+		assertThat(rtnJson, notNullValue());
 	}
 }

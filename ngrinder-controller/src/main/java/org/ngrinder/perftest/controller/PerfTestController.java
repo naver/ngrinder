@@ -263,6 +263,8 @@ public class PerfTestController extends NGrinderBaseController {
 			rtnMap.put(PARAM_STATUS_UPDATE_ID, each.getId());
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_NAME, each.getStatus().name());
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_ICON, each.getStatus().getIconName());
+			//FIXME each.getLastModifiedDateToStr() use the server side time, need to consider
+			//locale later.
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_MESSAGE, each.getLastModifiedDateToStr());
 			statusList.add(rtnMap);
 		}
