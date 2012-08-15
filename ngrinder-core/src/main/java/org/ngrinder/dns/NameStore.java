@@ -98,4 +98,13 @@ public class NameStore {
 		return globalNames.get(hostName);
 	}
 
+	public String getReveredHost(String ip) {
+		for (String hostName : globalNames.keySet()) {
+			if (globalNames.get(hostName).equals(ip)) {
+				return hostName;
+			}
+		}
+		return null;
+	}
+
 }

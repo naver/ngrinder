@@ -53,7 +53,12 @@ public class LocalManagedDns implements NameService {
 	 * @see sun.net.spi.nameservice.NameService#getHostByAddr(byte[])
 	 */
 	public String getHostByAddr(byte[] ip) throws UnknownHostException {
-		return defaultDnsImpl.getHostByAddr(ip);
+		String hostName = NameStore.getInstance().getReveredHost(DnsUtil.numericToTextFormat(ip));
+		if (hostName == null) {
+			return defaultDnsImpl.getHostByAddr(ip);
+		} else {
+			return hostName;
+		}
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package org.ngrinder.dns;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -116,10 +117,35 @@ public class LocalManagedDnsTest {
 			}
 		}
 		assertTrue(success);
+		
+		//naver.com is not registered by us, it will use system DNS
+		performLookupLocal("naver.com");
 
 		NameStore.getInstance().remove("www.google.com");
 		NameStore.getInstance().remove("www.google2.com");
+	}
 
+	@Test
+	public void testLocalDNSLookupIp() throws UnknownHostException {
+		System.out.println("test LocalDNSLookup with IP.....");
+		cleanCustomDNS();
+
+		NameStore.getInstance().put("www.google2.com", "10.0.0.2");
+		
+		String domain = localNS.getHostByAddr(DnsUtil.textToNumericFormat("10.0.0.2"));
+		assertThat(domain, is("www.google2.com"));
+		
+		//naver.com is not registered by us, it will use system DNS
+		InetAddress[] addrs = localNS.lookupAllHostAddr("naver.com");
+		String ip1 = addrs[0].getHostAddress();
+		try {
+			domain = localNS.getHostByAddr(DnsUtil.textToNumericFormat(ip1));
+		} catch (UnknownHostException e) {
+			//FIXME Is it right? can not resolve in unit test.
+		}
+		//assertThat(domain, is("naver.com"));
+
+		NameStore.getInstance().remove("www.google2.com");
 	}
 
 	public static void performLookup(String hostName) throws UnknownHostException {

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.infra.init.DataInit;
 import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -17,6 +18,11 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private HomeController homeController;
+
+	//not need to use, will be tested during initialized
+	@SuppressWarnings("unused")
+	@Autowired
+	private DataInit dataInit;
 
 	@Test
 	public void testHome() {

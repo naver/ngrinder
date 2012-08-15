@@ -26,6 +26,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import static org.ngrinder.common.util.Preconditions.checkArgument;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +42,6 @@ public final class ReflectionUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ReflectionUtil.class);
 
-	private ReflectionUtil() {
-	}
-
 	/**
 	 * get object field value, bypassing getter method.
 	 * 
@@ -54,30 +53,21 @@ public final class ReflectionUtil {
 	 */
 	public static Object getFieldValue(final Object object, final String fieldName) {
 		Field field = getDeclaredField(object, fieldName);
-
-		if (field == null) {
-			throw new IllegalArgumentException("Could not find field [" + fieldName + "] on target [" + object + "]");
-		}
-
+		checkNotNull(field, "Could not find field [" + fieldName + "] on target [" + object + "]");
 		makeAccessible(field);
 
-		Object result = null;
 		try {
-			result = field.get(object);
+			return field.get(object);
 		} catch (IllegalAccessException e) {
 			LOG.error(e.getMessage(), e);
 		}
-		return result;
+		return null;
 	}
 
 	private static Field getDeclaredField(final Object object, final String fieldName) {
-		if (object == null) {
-			return null;
-		}
+		checkNotNull(object);
+		checkArgument(StringUtils.isBlank(fieldName));
 
-		if (null == fieldName || fieldName.length() == 0) {
-			return null;
-		}
 		// CHECKSTYLE:OFF
 		for (Class<?> superClass = object.getClass(); superClass != Object.class; superClass = superClass
 				.getSuperclass()) {
@@ -108,9 +98,9 @@ public final class ReflectionUtil {
 	 * @return return value
 	 */
 	public static Object invokePrivateMethod(Object object, String methodName, Object[] parameters) {
-		if (object == null || StringUtils.isBlank(methodName)) {
-			return null;
-		}
+		checkNotNull(object);
+		checkArgument(StringUtils.isBlank(methodName));
+
 		Class<?>[] newClassParam = new Class[parameters.length];
 		for (int i = 0; i < parameters.length; i++) {
 			newClassParam[i] = parameters[i].getClass();
@@ -141,9 +131,9 @@ public final class ReflectionUtil {
 	 * @return {@link Method} instance. otherwise null.
 	 */
 	private static Method getDeclaredMethod(final Class<?> clazz, final String methodName, final Class<?>[] parameters) {
-		if (clazz == null || StringUtils.isBlank(methodName)) {
-			return null;
-		}
+		checkNotNull(clazz);
+		checkArgument(StringUtils.isBlank(methodName));
+
 		for (Class<?> superClass = clazz; superClass != Object.class; superClass = superClass.getSuperclass()) {
 			try {
 				return superClass.getDeclaredMethod(methodName, parameters);

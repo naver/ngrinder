@@ -54,6 +54,7 @@ public class AgentServerTest {
 		LOG.info("* Local JVM link support :{}", localAttachmentSupported);
 
 		AgentConfig config = new AgentConfig();
+		LOG.info("Is in test mode:{}", config.isTestMode());
 		config.init();
 		MonitorConstants.init(config);
 

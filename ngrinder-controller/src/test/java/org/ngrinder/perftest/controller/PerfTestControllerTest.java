@@ -67,6 +67,17 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	private UserService userService;
 
 	@Test
+	public void testGetQuickStart() {
+		ModelMap model = new ModelMap();
+		controller.getQuickStart(getTestUser(), "naver.com", model);
+	}
+
+	@Test
+	public void testGetResourcesOnScriptFolder() {
+		controller.getResourcesOnScriptFolder(getTestUser(), "");
+	}
+
+	@Test
 	public void testDeleteTests() {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.READY, new Date());
@@ -240,6 +251,9 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
 		ModelMap model = new ModelMap();
+		controller.getReport(getTestUser(), model, test.getId());
+		
+		model.clear();
 		controller.getPerfTestReportData(getTestUser(), model, test.getId(), "tps,errors", 0);
 	}
 

@@ -25,14 +25,12 @@ package org.ngrinder.infra;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.slf4j.Logger;
@@ -66,13 +64,9 @@ public class AgentConfig {
 	 * Initialize.
 	 */
 	public AgentConfig init() {
-		try {
-			home = resolveHome();
-			copyDefaultConfigurationFiles();
-			loadAgentProperties();
-		} catch (IOException e) {
-			throw new ConfigurationException("Error while loading NGRINDER_HOME", e);
-		}
+		home = resolveHome();
+		copyDefaultConfigurationFiles();
+		loadAgentProperties();
 		return this;
 	}
 
@@ -87,7 +81,7 @@ public class AgentConfig {
 		return AgentConfig.class.getClassLoader().getResourceAsStream(path);
 	}
 
-	private void copyDefaultConfigurationFiles() throws IOException {
+	private void copyDefaultConfigurationFiles() {
 		checkNotNull(home);
 		InputStream agentConfIO = loadFromClassPath("agent.conf");
 		if (agentConfIO == null) {

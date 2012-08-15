@@ -25,6 +25,7 @@ package org.ngrinder.common.util;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -49,12 +50,11 @@ public class DateUtilTest {
 		assertThat(dateStr, notNullValue());
 	}
 
-	/**
-	 * Test method for {@link org.ngrinder.common.util.DateUtil#getFilteredTimeZoneMap()}.
-	 */
 	@Test
 	public void testGetFilteredTimeZoneMap() {
 		Map<String, String> tzMap = DateUtil.getFilteredTimeZoneMap();
+		assertThat(tzMap, notNullValue());
+		tzMap = DateUtil.getFilteredTimeZoneMap();
 		assertThat(tzMap, notNullValue());
 	}
 
@@ -107,12 +107,9 @@ public class DateUtilTest {
 		assertThat(durationStr, notNullValue());
 	}
 
-	/**
-	 * Test method for {@link org.ngrinder.common.util.DateUtil#timeToMs(int, int, int, int)}.
-	 */
 	@Test
 	public void testTimeToMs() {
-		int day = 30;
+		int day = 3;
 		int hour = 1;
 		int min = 1;
 		int second = 1;
@@ -120,6 +117,35 @@ public class DateUtilTest {
 		long duration = DateUtil.timeToMs(day, hour, min, second);
 		long expected = 1000L * ((((day * 24) + hour) * 60 + min) * 60 + second );
 		assertThat(duration, is(expected));
+		
+
+		day = 30;
+		hour = 10;
+		min = 10;
+		second = 10;
+		
+		duration = DateUtil.timeToMs(day, hour, min, second);
+		expected = 1000L * ((((day * 24) + hour) * 60 + min) * 60 + second );
+		assertThat(duration, is(expected));
+
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testCompareDateEndWithMinute() {
+		Date date1 = new Date();
+		date1.setSeconds(0);
+		
+		Date date2 = new Date(date1.getTime());
+		date2.setSeconds(10);
+		assertTrue(DateUtil.compareDateEndWithMinute(date1, date2));
+
+		assertTrue(DateUtil.compareDateEndWithMinute(date1, date1));
+
+		date2 = new Date(date1.getTime());
+		date2.setMinutes(date1.getMinutes() + 1);
+		assertTrue(!DateUtil.compareDateEndWithMinute(date1, date2));
+
 	}
 
 }
