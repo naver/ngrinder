@@ -49,9 +49,4 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		assertThat(userById.getId(), is(user.getId()));
 	}
 	
-	@Test
-	public void testGetUserList() {
-		User user1 = createTestUser("testId1");
-		User user2 = createTestUser("testId2");
-	}
 }

@@ -52,21 +52,7 @@
 		<property name="cache" value="no" />
 	</bean>
 
-
-
-	<!-- messages -->
-	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-		<property name="basenames">
-			<list>
-				<value>classpath:messages</value>
-				<value>classpath:errorMessages</value>
-			</list>
-		</property>
-		<property name="useCodeAsDefaultMessage" value="true"/>
-		<property name="defaultEncoding" value="UTF-8" />
-	</bean>
-
-
+	<import resource="servlet-context-message.xml"/>
 
 	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
 		<property name="defaultLocale" value="en" />

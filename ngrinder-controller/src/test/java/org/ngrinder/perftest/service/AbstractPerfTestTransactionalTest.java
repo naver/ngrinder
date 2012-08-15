@@ -43,7 +43,7 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 		perfTestRepository.deleteAll();
 	}
 
-	public PerfTest createPerfTest(String testName, Status status, Date scheduledTime) {
+	public PerfTest newPerfTest(String testName, Status status, Date scheduledTime) {
 		PerfTest test = new PerfTest();
 		test.setTestName(testName);
 		test.setThreshold("R");
@@ -61,6 +61,11 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 		test.setProcessIncrementInterval(1000);
 		test.setStatus(status);
 		test.setCreatedUser(getTestUser());
+		return test;
+	}
+
+	public PerfTest createPerfTest(String testName, Status status, Date scheduledTime) {
+		PerfTest test = newPerfTest(testName, status, scheduledTime);
 		perfTestService.savePerfTest(test);
 		return test;
 	}

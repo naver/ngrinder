@@ -31,11 +31,9 @@ import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
 import org.ngrinder.user.service.UserContext;
-import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 public class NGrinderBaseController implements NGrinderConstants {
@@ -43,14 +41,12 @@ public class NGrinderBaseController implements NGrinderConstants {
 	public static final String ERROR_PAGE = "errors/error";
 
 	protected static final int DEFAULT_PAGE_LIMIT = 20;
+	
 	@Autowired
 	private MessageSource messageSource;
 
 	@Autowired
 	private UserContext userContext;
-
-	@Autowired
-	private UserService userService;
 
 	public User getCurrentUser() {
 		return userContext.getCurrentUser();
@@ -68,17 +64,15 @@ public class NGrinderBaseController implements NGrinderConstants {
 	public void setTimeZone(String timeZone) {
 		User user = userContext.getCurrentUser();
 		user.setTimeZone(timeZone);
-		getUserService().saveUser(user);
+		//now time zone is not saved in user table.
+		//userService.saveUser(user);
 	}
 
-	protected void setCurrentUserInfoForModel(ModelMap model) {
-		model.put(PARAM_USERID, getCurrentUser().getUserId());
-		model.put(PARAM_TIMEZONE, getCurrentUser().getTimeZone());
-	}
-
-	protected void addMsgToModel(ModelMap model, String message) {
-		model.addAttribute(PARAM_MESSAGE, message);
-	}
+	//not we use '@ModelAttribute("currentUser")' to add currentUser
+//	protected void setCurrentUserInfoForModel(ModelMap model) {
+//		model.put(PARAM_USERID, getCurrentUser().getUserId());
+//		model.put(PARAM_TIMEZONE, getCurrentUser().getTimeZone());
+//	}
 
 	protected int getOffSet(String userLocalId) {
 		if (userLocalId == null) {
@@ -93,9 +87,28 @@ public class NGrinderBaseController implements NGrinderConstants {
 		for (Object obj : list) {
 			if (obj instanceof PerfTest) {
 				PerfTest pro = (PerfTest) obj;
-				Date lastModified = pro.getLastModifiedDate();
-				pro.setLastModifiedDate(new Date(lastModified.getTime() - rawOffset));
+				modifyPerfTestDate(rawOffset, pro);
 			}
+		}
+	}
+
+	/**
+	 * Modify the date in PerfTest object with the provided locale
+	 * @param rawOffset
+	 * @param pro
+	 */
+	private void modifyPerfTestDate(int rawOffset, PerfTest pro) {
+		Date lastModified = pro.getLastModifiedDate();
+		if (lastModified != null) {
+			pro.setLastModifiedDate(new Date(lastModified.getTime() - rawOffset));
+		}
+		Date createdDate = pro.getCreatedDate();
+		if (createdDate != null) {
+			pro.setCreatedDate(new Date(createdDate.getTime() - rawOffset));
+		}
+		Date scheduledTime = pro.getScheduledTime();
+		if (lastModified != null) {
+			pro.setScheduledTime(new Date(scheduledTime.getTime() - rawOffset));
 		}
 	}
 
@@ -103,8 +116,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 		int rawOffset = getOffSet(userLocalId);
 		if (obj instanceof PerfTest) {
 			PerfTest pro = (PerfTest) obj;
-			Date lastModified = pro.getLastModifiedDate();
-			pro.setLastModifiedDate(new Date(lastModified.getTime() - rawOffset));
+			modifyPerfTestDate(rawOffset, pro);
 		}
 	}
 
@@ -136,16 +148,12 @@ public class NGrinderBaseController implements NGrinderConstants {
 		Locale locale = null;
 		String message = null;
 		try {
-			locale = new Locale(getCurrentUser().getTimeZone());
+			locale = new Locale(getCurrentUser().getUserLanguage());
 			message = messageSource.getMessage(key, null, locale);
 		} catch (Exception e) {
 			return "Getting message error:" + e.getMessage();
 		}
 		return message;
-	}
-
-	public UserService getUserService() {
-		return userService;
 	}
 
 }

@@ -117,7 +117,6 @@ public class HomeController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/help")
 	public String openHelp(ModelMap model) {
-		setCurrentUserInfoForModel(model);
 		return "help";
 	}
 

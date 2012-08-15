@@ -5,7 +5,7 @@ import javax.sql.DataSource;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
-import org.ngrinder.user.service.MockUserContext;
+import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +30,9 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 	protected UserRepository userRepository;
 
 	protected User testUser = null;
+	
+	@Autowired
+	private UserContext userContext;
 
 	@Autowired
 	@Override
@@ -43,7 +46,7 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 
 	public User getTestUser() {
 		if (testUser == null) {
-			testUser = getUser(MockUserContext.TEST_USER_ID);
+			testUser = userContext.getCurrentUser();
 		}
 		return testUser;
 	}

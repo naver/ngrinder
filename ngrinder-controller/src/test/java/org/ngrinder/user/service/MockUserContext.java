@@ -40,6 +40,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @TestOnlyComponent
 public class MockUserContext extends UserContext {
 	public static final String TEST_USER_ID = "TEST_USER";
+	public static final String TEST_USER_TIMEZONE_US = "America/New_York";
+	public static final String TEST_USER_TIMEZONE_ZH = "Asia/Shanghai";
 
 	@Autowired
 	protected UserRepository userRepository;
@@ -52,13 +54,15 @@ public class MockUserContext extends UserContext {
 			user.setUserId(TEST_USER_ID);
 			user.setUserName("TEST_USER");
 			user.setPassword("123");
-			user.setUserLanguage("en");
 			user.setRole(Role.USER);
 			userRepository.save(user);
 		}
 	}
 
 	public User getCurrentUser() {
-		return userRepository.findOneByUserId(TEST_USER_ID);
+		User user = userRepository.findOneByUserId(TEST_USER_ID);
+		user.setUserLanguage("en");
+		user.setTimeZone(TEST_USER_TIMEZONE_US);
+		return user;
 	}
 }
