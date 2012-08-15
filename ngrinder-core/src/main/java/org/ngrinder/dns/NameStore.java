@@ -35,7 +35,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class NameStore {
 
-	private static NameStore singleton;
+	private static NameStore singleton = new NameStore();
 
 	private Map<String, String> globalNames;
 
@@ -44,7 +44,10 @@ public class NameStore {
 	}
 
 	static {
-		singleton = new NameStore();
+		initFromSystemProperty();
+	}
+	
+	public static void initFromSystemProperty() {
 		String hostPair = System.getProperty("ngrinder.etc.hosts");
 		if (!StringUtils.isBlank(hostPair)) {
 			String[] hostPairs = StringUtils.split(hostPair, ",");

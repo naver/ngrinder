@@ -23,15 +23,9 @@
 package org.ngrinder.common.controller;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
-
-import net.grinder.common.GrinderProperties;
 
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.model.User;
@@ -114,28 +108,29 @@ public class NGrinderBaseController implements NGrinderConstants {
 		}
 	}
 
-	protected void convertPropertiesKeys(GrinderProperties props) {
-		Set<Object> copyKeySet = new HashSet<Object>(props.keySet());
-
-		for (Object obj : copyKeySet) {
-			String key = (String) obj;
-
-			if (key.startsWith("grinder.") || key.startsWith("ngrinder.")) {
-				Object value = props.get(key);
-				props.remove(key);
-				props.put(key.replace(".", "_"), value);
-			}
-		}
-	}
-
-	protected Map<String, Object> getMessageMap(Object isSuccess, String message) {
-		Map<String, Object> result = new HashMap<String, Object>();
-
-		result.put(JSON_SUCCESS, isSuccess);
-		result.put(JSON_MESSAGE, message);
-
-		return result;
-	}
+	//it should not be used any more.
+//	protected void convertPropertiesKeys(GrinderProperties props) {
+//		Set<Object> copyKeySet = new HashSet<Object>(props.keySet());
+//
+//		for (Object obj : copyKeySet) {
+//			String key = (String) obj;
+//
+//			if (key.startsWith("grinder.") || key.startsWith("ngrinder.")) {
+//				Object value = props.get(key);
+//				props.remove(key);
+//				props.put(key.replace(".", "_"), value);
+//			}
+//		}
+//	}
+//
+//	protected Map<String, Object> getMessageMap(Object isSuccess, String message) {
+//		Map<String, Object> result = new HashMap<String, Object>();
+//
+//		result.put(JSON_SUCCESS, isSuccess);
+//		result.put(JSON_MESSAGE, message);
+//
+//		return result;
+//	}
 
 	protected String getErrorMessages(String key) {
 		Locale locale = null;
