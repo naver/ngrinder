@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.math.NumberUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.AbstractChartTransactionalTest;
@@ -57,8 +59,9 @@ public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
 	
 	@Autowired
 	private MonitorService monitorService;
-		
-	private void startMonitorServer(boolean isAgent) {
+	
+	@BeforeClass
+	public static void startMonitorServer() {
 		AgentConfig agentConfig = new AgentConfig();
 		agentConfig.init();
 
@@ -68,24 +71,22 @@ public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
 		LOG.info("**************************");
 		LOG.info("* Colllect SYSTEM data. **");
 		try {
-			Set<String> collector = null;
-			if (isAgent) {
-				collector = MonitorConstants.AGENT_SERVER_DATA_COLLECTOR;
-			}else {
-				collector = MonitorConstants.TARGET_SERVER_DATA_COLLECTOR;
-			}
+			//start with moth java and system collector
+			Set<String> collector = MonitorConstants.AGENT_SERVER_DATA_COLLECTOR;
 			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_AGENT_PORT, collector);
 			AgentMonitorServer.getInstance().start();
 		} catch (Exception e) {
 			LOG.error("ERROR: {}", e.getMessage());
 			LOG.debug("Error while starting Monitor", e);
 		}
-		ThreadUtil.sleep(3000);
+		ThreadUtil.sleep(2000);
 	}
 	
-	private void stopMonitorServer() {
+	@AfterClass
+	public static void stopMonitorServer() {
 		try {
 			AgentMonitorServer.getInstance().stop();
+			ThreadUtil.sleep(1000);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -93,8 +94,6 @@ public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
 
 	@Test
 	public void testAddRemoveMonitorTargets() {
-		//start monitor worker
-		startMonitorServer(false);
 		
 		long startTime = NumberUtils.toLong(df.format(new Date()));
 		Set<AgentInfo> agents = new HashSet<AgentInfo>();
@@ -110,13 +109,10 @@ public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
 		
 		monitorDataService.removeMonitorAgents("127.0.0.1_test");
 		
-		stopMonitorServer();
 	}
 
 	@Test
 	public void testAddRemoveMonitorAgents() {
-		//start monitor worker
-		startMonitorServer(true);
 		
 		long startTime = NumberUtils.toLong(df.format(new Date()));
 		Set<AgentInfo> agents = new HashSet<AgentInfo>();
@@ -139,7 +135,6 @@ public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
 		//try to remove again, should be ok.
 		monitorDataService.removeMonitorAgents("127.0.0.1_test");
 		
-		stopMonitorServer();
 	}
 
 }

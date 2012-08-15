@@ -73,11 +73,12 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		assertThat(list.size(), is(1));
 
 		createPerfTest("new Test2", Status.getProcessingOrTestingTestStatus()[0], new Date());
-		testService.getCurrentlyRunningTest();
+		list = testService.getCurrentlyRunningTest();
 		assertThat(list.size(), is(2));
 		
-		PerfTest finishedTest = createPerfTest("new Test2", Status.ABNORMAL_TESTING, new Date());
-		testService.getAbnoramlTestingPerfTest();
+		PerfTest finishedTest = createPerfTest("new Test3", Status.ABNORMAL_TESTING, new Date());
+		finishedTest.setPort(0); //need port number for finishing
+		list = testService.getAbnoramlTestingPerfTest();
 		assertThat(list.size(), is(1));
 		
 		testService.updatePerfTestAfterTestFinish(finishedTest);

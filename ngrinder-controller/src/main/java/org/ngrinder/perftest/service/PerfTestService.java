@@ -41,7 +41,6 @@ import java.io.LineNumberReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -550,8 +549,10 @@ public class PerfTestService implements NGrinderConstants {
 		SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(port);
 		if (consoleUsingPort == null) {
 			LOGGER.warn("console using {} port is not available", port);
+			//return null if there is no console. We will check null after calling this method. 
+			return null;
 		}
-		return consoleUsingPort == null ? new HashMap<String, Object>() : consoleUsingPort.getStatictisData();
+		return consoleUsingPort.getStatictisData();
 	}
 
 	/**
@@ -597,7 +598,6 @@ public class PerfTestService implements NGrinderConstants {
 		if (result == null) {
 			return perfTest;
 		}
-		checkNotNull(result);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = (Map<String, Object>) result.get("totalStatistics");
 		perfTest.setErrors((int) ((Double) totalStatistics.get("Errors")).doubleValue());
