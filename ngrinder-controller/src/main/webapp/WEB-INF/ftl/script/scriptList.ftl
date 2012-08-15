@@ -16,11 +16,8 @@
 			<#if svnUrl?has_content>
 			<div class="input-prepend pull-right" rel="popover" 
                		data-content="User can access scripts through Subversion.&lt;br&gt; Please access the following URL with your Subversion client"
-               		 data-original-title="Subversion" placement="bottom"
-               		/> 
-               <span class="add-on" style="cursor:default">SVN</span><span class="input-xlarge uneditable-input span6" style="cursor:text"
-                	 
-											>${svnUrl}</span>
+               		 data-original-title="Subversion" placement="bottom"/> 
+               <span class="add-on" style="cursor:default">SVN</span><span class="input-xlarge uneditable-input span6" style="cursor:text">${svnUrl}</span>
         	</div> 
         	</#if>	
         	<div style="margin-top:10px">

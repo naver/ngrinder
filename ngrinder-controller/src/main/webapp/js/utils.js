@@ -164,13 +164,31 @@ function getValueByID(id) {
 	return $.trim($("#" + id).val());
 }
 
-function popover(element) {
-	if ($(this).attr("type") == "toggle") {
-		$(this).popover('toggle');
+function popover() { 
+	var el = $(this);
+	var placementStr = el.attr("placement");
+	if (placementStr == "") {
+		placementStr = "right";
+	}  
+	
+	el.popover({
+		placement:placementStr,
+		trigger:"manual",
+  	    template: '<div class="popover" ><div class="arrow"></div><div class="popover-inner myclass" style="width:400px"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'	});
+	if (el.attr("type") == "toggle") {
+		el.popover('toggle');
 	} else {
-		$(this).popover('show');
+		el.popover('show');
 	}
 }
+
+
+function popunover() { 
+	var el = $(this);
+	el.popover('hide');
+}
+
+
 $(document).ready(function() {
 	$("input[number_limit]").keypress(function(e) {
 		if (e.charCode == 0) {
@@ -186,18 +204,6 @@ $(document).ready(function() {
 		return false;
 	});
 	
-	$("div[rel=popover]").hover(function() {
-		if ($(this).attr("type") == "toggle") {
-			$(this).popover('toggle');
-		} else {
-			$(this).popover('show');
-		}
-    });
-	$("span[rel=popover]").hover(function() {
-		if ($(this).attr("type") == "toggle") {
-			$(this).popover('toggle');
-		} else {
-			$(this).popover('show');
-		}
-    });
+	
+	$("div[rel=popover], span[rel=popover]").hover(popover, popunover);
 });
