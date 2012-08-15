@@ -30,7 +30,6 @@ import org.ngrinder.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -56,7 +55,7 @@ public class NGrinderUserDetailsService implements UserDetailsService {
 	private DefaultLoginPlugin defaultPlugin;
 
 	@Override
-	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException, DataAccessException {
+	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
 		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class, defaultPlugin)) {
 			try {
 				User user = each.loadUser(userId);

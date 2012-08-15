@@ -89,7 +89,7 @@ public class User extends BaseModel<User> {
 	}
 	
 	public boolean validate() {
-		return getUserId() == null || getUserName() == null || getEmail() == null;
+		return !(userId == null || userName == null || email == null);
 	}
 
 	@Override
