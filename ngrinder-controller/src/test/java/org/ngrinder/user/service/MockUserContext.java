@@ -53,6 +53,7 @@ public class MockUserContext extends UserContext {
 			user = new User();
 			user.setUserId(TEST_USER_ID);
 			user.setUserName("TEST_USER");
+			user.setEmail("TEST_USER@nhn.com");
 			user.setPassword("123");
 			user.setRole(Role.USER);
 			userRepository.save(user);

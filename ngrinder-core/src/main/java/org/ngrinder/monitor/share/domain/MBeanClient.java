@@ -22,12 +22,14 @@
  */
 package org.ngrinder.monitor.share.domain;
 
+import static org.ngrinder.common.util.Preconditions.checkArgument;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadMXBean;
-import java.lang.reflect.Proxy;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerConnection;
@@ -37,8 +39,7 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.ngrinder.monitor.share.ProxyMBeanServerConnection;
-import org.ngrinder.monitor.share.ProxyMBeanServerInvocationHandler;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,29 +74,32 @@ public class MBeanClient {
 
 	private OperatingSystemMXBean sunOperatingSystemMXBean = null;
 
+	/**
+	 * used to connect local JVM
+	 * @param jvmInfo
+	 * @throws IOException
+	 */
 	public MBeanClient(JavaVirtualMachineInfo jvmInfo) throws IOException {
+		checkNotNull(jvmInfo);
 		this.jvmInfo = jvmInfo;
-		if (this.jvmInfo != null) {
-			if (!this.jvmInfo.isManageable()) {
-				this.jvmInfo.loadAgent();
-				if (!this.jvmInfo.isManageable()) {
-					throw new IOException(this.jvmInfo + " not manageable");
-				}
-			}
-			this.jmxUrl = new JMXServiceURL(this.jvmInfo.getAddress());
+		if (!this.jvmInfo.isManageable()) {
+			this.jvmInfo.loadAgent();
+			checkArgument(jvmInfo.isManageable(), this.jvmInfo + " not manageable");
 		}
+		this.jmxUrl = new JMXServiceURL(this.jvmInfo.getAddress());
 	}
 
+	/**
+	 * Used to connect remote monitor JMX
+	 * @param hostName
+	 * @param port
+	 * @throws IOException
+	 */
 	public MBeanClient(String hostName, int port) throws IOException {
-		if (hostName.equals("localhost") && port == 0) {
-			this.hostName = hostName;
-			this.port = port;
-		} else {
-			JMXServiceURL url = new JMXServiceURL("rmi", "", 0, String.format(JMX_URI, hostName, port));
-			this.jmxUrl = url;
-			this.hostName = url.getHost();
-			this.port = url.getPort();
-		}
+		JMXServiceURL url = new JMXServiceURL("rmi", "", 0, String.format(JMX_URI, hostName, port));
+		this.jmxUrl = url;
+		this.hostName = url.getHost();
+		this.port = url.getPort();
 	}
 
 	/**
@@ -110,12 +114,6 @@ public class MBeanClient {
 		} catch (IOException ex) {
 			LOG.error(ex.getMessage(), ex.getCause());
 			bConnect = false;
-		} catch (SecurityException ex) {
-			LOG.error(ex.getMessage(), ex.getCause());
-			bConnect = false;
-		} catch (Exception ex) {
-			LOG.error(ex.getMessage(), ex.getCause());
-			bConnect = false;
 		}
 
 		if (!bConnect) {
@@ -126,12 +124,7 @@ public class MBeanClient {
 	}
 
 	public void disconnect() {
-		if (jmxConnector != null) {
-			try {
-				jmxConnector.close();
-			} catch (IOException e) {
-			}
-		}
+		IOUtils.closeQuietly(jmxConnector);
 
 		memoryMBean = null;
 		runtimeMBean = null;
@@ -208,16 +201,16 @@ public class MBeanClient {
 		this.isDead = false;
 	}
 
-	public static ProxyMBeanServerConnection newProxyMBeanServerConnection(MBeanServerConnection mbsc) {
-		return (ProxyMBeanServerConnection) Proxy.newProxyInstance(MBeanClient.class.getClassLoader(),
-						new Class[] { ProxyMBeanServerConnection.class },
-						new ProxyMBeanServerInvocationHandler(mbsc));
-	}
+//	public static ProxyMBeanServerConnection newProxyMBeanServerConnection(MBeanServerConnection mbsc) {
+//		return (ProxyMBeanServerConnection) Proxy.newProxyInstance(MBeanClient.class.getClassLoader(),
+//						new Class[] { ProxyMBeanServerConnection.class },
+//						new ProxyMBeanServerInvocationHandler(mbsc));
+//	}
 
 	private void setConnectionState(ConnectionState connectionState) {
 		this.connectionState = connectionState;
 	}
-
+	
 	public ConnectionState getConnectionState() {
 		return connectionState;
 	}
