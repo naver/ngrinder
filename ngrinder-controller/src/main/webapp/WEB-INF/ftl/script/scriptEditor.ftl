@@ -50,7 +50,7 @@
 					</#if>
 					</tr>
 				</table>
-				<!--<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre"></pre>-->
+				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre"></pre>
 			</div>	
 		</div>
 		<#include "../common/copyright.ftl">
@@ -96,9 +96,6 @@
 	  		} else {
 	      		$('#script_2').show();
 	  		}
-	  		
-	  		$('#autoSaveMsgTop').fadeOut();
-	  		$('#autoSaveMsgBottom').fadeOut();
 			
 			$("#compareBtn").on('click', function() {
 				if ($("#historySelect").val() == 0) {
@@ -125,12 +122,8 @@
 				document.location.replace("${req.getContextPath()}/script/list");
 			});
 
-			$("#validateTopBtn").on('click', function() {
+			$("#validateBtn").on('click', function() {
 				validateScript(true);
-			});
-
-			$("#validateBottomBtn").on('click', function() {
-				validateScript(false);
 			});
 		});
 
@@ -152,28 +145,18 @@
 							validationInfo = validationInfo + "\n" + item + "\n";
 						});
 
-						if (isTopPosition)
-							$('#validateRsPreTop').text(validationInfo);
-						else
-							$('#validateRsPreBottom').text(validationInfo);
+						$('#validateRsPre').text(validationInfo);
 		    		} else {
-		    			showErrorMsg("Validation error:" + res.message, isTopPosition);
+		    			showErrorMsg("Validation error:" + res.message);
 		    		}
 		    	},
 		    	error: function() {
-		    		showErrorMsg("Validate Script error.", isTopPosition);
+		    		showErrorMsg("Validate Script error.");
 		    	}
 		  	});
 		}
-
-		function showMsg(message, isTopPosition) {
-        	var $autoMsg = isTopPosition ? $('#autoSaveMsgTop') : $('#autoSaveMsgBottom');
-        	$autoMsg.html(message);
-        	$autoMsg.fadeIn("fast");
-
-    		setTimeout(function(){$autoMsg.fadeOut('fast')}, 3000);
-		}
 		
+		//TODO  is it necessary now?
 		function loadCache() {
 			
 		}
@@ -200,16 +183,16 @@
 				data: {'id': ${(script.getFileName())!0}, 'content': scriptContent},
 		        success: function(res) {
 		        	if (res.success) {
-		        		showMsg("Auto save script at " + new Date(), false)
+		        		showInformation("Auto save script at " + new Date());
 		        	} else {
-		        		showMsg(res.message, false);
+		        		showErrorMsg(res.message);
 		        	}
 		        },
 		        timeout: function() {
-		        	showMsg("Auto save script is time out.", false);  
+		        	showErrorMsg("Auto save script is time out.");  
 		        },
 		        error: function() {
-		        	showMsg("Auto save script is error.", false);  
+		        	showErrorMsg("Auto save script is error.");  
 		        }
 			});
 			
