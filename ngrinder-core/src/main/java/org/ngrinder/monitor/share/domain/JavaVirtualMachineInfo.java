@@ -51,32 +51,16 @@ public class JavaVirtualMachineInfo {
 		return address;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
-
 	public String getCommandLine() {
 		return commandLine;
-	}
-
-	public void setCommandLine(String commandLine) {
-		this.commandLine = commandLine;
 	}
 
 	public String getDisplayName() {
 		return displayName;
 	}
 
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
-
 	public int getVmid() {
 		return vmid;
-	}
-
-	public void setVmid(int vmid) {
-		this.vmid = vmid;
 	}
 
 	public boolean isAttachSupported() {

@@ -115,7 +115,7 @@ div.chart {
 					<li><a href="#testContent" data-toggle="tab"><@spring.message "perfTest.configuration.testConfiguration"/></a></li> <#if test?? && (test.status == "TESTING")>
 					<li><a href="#runningContent" data-toggle="tab">Test Running</a></li> </#if> <#if test?? && (test.status ==
 					"FINISHED" || test.status == "CANCELED")>
-					<li><a href="#reportContent" data-toggle="tab" id="reportLnk">Report</a></li> </#if>
+					<li><a href="#reportContent" data-toggle="tab" id="reportLnk"><@spring.message "perfTest.report.title"/></a></li> </#if>
 				</ul>
 				<div class="tab-content">
 					<div class="tab-pane" id="testContent">
@@ -225,7 +225,7 @@ div.chart {
 									<label class="checkbox" style="margin-bottom: 0"> <input type="checkbox" id="rampupCheckbox"<#if
 										test?? && test.processes &gt; test.initProcesses>checked</#if> />
 										<h4>
-											Enable Ramp-Up <small>(ramp-up chart for every agent)</small>
+											<@spring.message "perfTest.configuration.rampEnable"/> <small>(<@spring.message "perfTest.configuration.rampUpDes"/>)</small>
 										</h4>
 									</label>
 								</div>
@@ -235,14 +235,14 @@ div.chart {
 											<div class="form-horizontal form-horizontal-2">
 												<fieldset>
 													<div class="control-group">
-														<label for="initProcesses" class="control-label"> Inital Processes </label>
+														<label for="initProcesses" class="control-label"> <@spring.message "perfTest.configuration.initalProcesses"/> </label>
 														<div class="controls">
 															<input type="text" class="input input-mini required CountNumber" id="initProcesses" name="initProcesses"
 																value="${(test.initProcesses)!0}" />
 														</div>
 													</div>
 													<div class="control-group">
-														<label for="processIncrement" class="control-label"> Ramp-Up </label>
+														<label for="processIncrement" class="control-label"> <@spring.message "perfTest.configuration.rampup"/> </label>
 														<div class="controls">
 															<input type="text" class="input input-mini required positiveNumber" id="processIncrement"
 																name="processIncrement" value="${(test.processIncrement)!1}">
@@ -255,7 +255,7 @@ div.chart {
 											<div class="form-horizontal form-horizontal-2">
 												<fieldset>
 													<div class="control-group">
-														<label for="initSleepTime" class="control-label"> Initial Sleep Time </label>
+														<label for="initSleepTime" class="control-label"> <@spring.message "perfTest.configuration.initalSleepTime"/> </label>
 														<div class="controls">
 															<input type="text" class="input input-mini required CountNumber" id="initSleepTime" name="initSleepTime"
 																value="${(test.initSleepTime)!0}">
@@ -263,7 +263,7 @@ div.chart {
 														</div>
 													</div>
 													<div class="control-group">
-														<label for="processIncrementInterval" class="control-label"> Processes Every </label>
+														<label for="processIncrementInterval" class="control-label"> <@spring.message "perfTest.configuration.processesEvery"/> </label>
 														<div class="controls">
 															<input type="text" class="input input-mini required positiveNumber" id="processIncrementInterval"
 																name="processIncrementInterval" value="${(test.processIncrementInterval)!1000}">
@@ -284,33 +284,33 @@ div.chart {
 						<div class="row">
 							<div class="span4">
 								<div class="page-header">
-									<h4>Summary</h4>
+									<h4><@spring.message "perfTest.report.summary"/></h4>
 								</div>
 								<div class="form-horizontal form-horizontal-3" style="margin-left: 10px">
 									<fieldset>
 										<div class="control-group">
-											<label for="agentInput" class="control-label control-label-1">TPS</label>
+											<label for="agentInput" class="control-label control-label-1"><@spring.message "perfTest.table.tps"/></label>
 											<div class="controls">
 												<strong>Total ${(test.tps)!}</strong>
 											</div>
 										</div>
 										<div class="control-group">
-											<label for="agentInput" class="control-label">Mean Time</label>
+											<label for="agentInput" class="control-label"><@spring.message "perfTest.table.meantime"/></label>
 											<div class="controls">
 												${(test.meanTestTime)!}
 												<code>MS</code>
 											</div>
 										</div>
 										<div class="control-group">
-											<label for="agentInput" class="control-label">Peak TPS</label>
+											<label for="agentInput" class="control-label"><@spring.message "perfTest.detail.peakTPS"/></label>
 											<div class="controls">${(test.peakTps)!}</div>
 										</div>
 										<div class="control-group">
-											<label for="agentInput" class="control-label">Finished Tests</label>
+											<label for="agentInput" class="control-label"><@spring.message "perfTest.report.finishedTest"/></label>
 											<div class="controls">${(test.tests)!}</div>
 										</div>
 										<div class="control-group">
-											<label for="agentInput" class="control-label">Errors</label>
+											<label for="agentInput" class="control-label"><@spring.message "perfTest.table.errors"/></label>
 											<div class="controls">${(test.errors)!}</div>
 										</div>
 									</fieldset>
@@ -322,7 +322,7 @@ div.chart {
 						</div>
 						<div class="row" style="margin-top: 10px;">
 							<div class="span12">
-								<a id="reportDetail" class="btn pull-right" href="#">Report in Detail</a>
+								<a id="reportDetail" class="btn pull-right" href="#"><@spring.message "perfTest.report.reportDetail"/></a>
 							</div>
 						</div>
 					</div>

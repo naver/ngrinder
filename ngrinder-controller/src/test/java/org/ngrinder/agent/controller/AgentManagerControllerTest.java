@@ -54,13 +54,12 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 	public void setMockRequest() {
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		req.addHeader("User-Agent", "Win");
-		SecurityContextHolderAwareRequestWrapper reqWrapper = new SecurityContextHolderAwareRequestWrapper(
-						req, "U");
+		SecurityContextHolderAwareRequestWrapper reqWrapper = new SecurityContextHolderAwareRequestWrapper(req, "U");
 		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(reqWrapper));
 	}
-	
+
 	@After
-	public void reSetRequest(){
+	public void reSetRequest() {
 		RequestContextHolder.resetRequestAttributes();
 	}
 
@@ -69,17 +68,22 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 	public void testGetAgentList() {
 		ModelMap model = new ModelMap();
 		agentController.getAgentList(model);
-		List<AgentInfo> agents = (List<AgentInfo>)model.get("agents");
+		List<AgentInfo> agents = (List<AgentInfo>) model.get("agents");
 		if (agents.size() > 0) {
 			AgentInfo testAgt = agents.get(0);
 			model.clear();
 			agentController.getAgent(model, testAgt.getId());
-			AgentInfo agentInDB = (AgentInfo)model.get("agent");
+			AgentInfo agentInDB = (AgentInfo) model.get("agent");
 			assertThat(agentInDB.getId(), is(testAgt.getId()));
 			assertThat(agentInDB.getIp(), is(testAgt.getIp()));
 			assertThat(agentInDB.getPort(), is(testAgt.getPort()));
-			
+
 		}
+	}
+
+	@Test
+	public void testDownloadAgent() {
+		agentController.downloadAgent(null, null);
 	}
 
 }
