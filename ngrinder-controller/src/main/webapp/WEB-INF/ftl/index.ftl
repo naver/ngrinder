@@ -15,10 +15,11 @@
 	<#include "common/navigator.ftl">
 	<div class="container">
 		<div class="hero-unit"/>	
-			<form class="form-inline" name="quickStart" action="${req.getContextPath()}/perftest/quickStart" method="POST">
-				<div class="quickStart">
-					<input type="text" name="url" class="span7" placeholder="Type URL..."/> 
-					<button class="btn btn-primary"  type="submit">Start Test</button>
+			<form class="form-inline" name="quickStart" id="quickStart" action="${req.getContextPath()}/perftest/quickStart" method="POST">
+				<div class="quickStart" 	data-original-title="Please input valid URL" 
+											data-content="URL should start with http(s)://">
+					<input type="text" name="url" id="url" class="span7 url required" placeholder="Type URL..."/> 
+					<button id="startTestBtn" class="btn btn-primary"  type="submit">Start Test</button>
 				</div>
 			</form>
 		</div>
@@ -94,16 +95,30 @@
 			</div>
 		</div>
 		<script>
+		            	
 			$(document).ready(function(){
-   				 $("#quickStart").validate({
-				  rules: {
-				    field: {
-				      required: true,
-				      url: true
-				    }
-				  }
-				});
-			});
+		        $("div.quickStart").popover(
+		          	{
+		          		placement:"bottom",
+		           		trigger:"manual",
+		           		animation:false
+		           	}
+		        );
+			
+		        $("form#quickStart").validate({
+		            errorPlacement: function(error, element) {
+		            	$("div.quickStart").popover("show");
+			        }
+			    });
+			   	
+			    $("#url").change(function() {
+			    	var valid = $("form#quickStart").valid();
+			    	if (valid == true) {
+			    		$("div.quickStart").popover("hide");
+			    	}
+			    });
+		    });
+		    
 		</script>
 		<#include "common/copyright.ftl">
 	</div>

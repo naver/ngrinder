@@ -88,7 +88,8 @@ div.chart {
 									<span
 										<#if test.status == 'STOP_ON_ERROR'> 
 											rel="popover" data-content="Error on ${test.testErrorCause} phase. ${(test.testErrorStackTrace)!?replace('\n', '<br/>')?html}"
-											data-original-title="${test.status}" type="toggle" <#else> rel="popover" data-content="${test.createdDate}"
+											data-original-title="${test.status}" type="toggle" 
+										<#else> rel="popover" data-content="${test.createdDate}"
 											data-original-title="${test.status}" type="toggle" 
 										</#if> > 
 										<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
@@ -224,9 +225,7 @@ div.chart {
 								<div class="page-header">
 									<label class="checkbox" style="margin-bottom: 0"> <input type="checkbox" id="rampupCheckbox"<#if
 										test?? && test.processes &gt; test.initProcesses>checked</#if> />
-										<h4>
-											<@spring.message "perfTest.configuration.rampEnable"/> <small><@spring.message "perfTest.configuration.rampUpDes"/></small>
-										</h4>
+										<h4><@spring.message "perfTest.configuration.rampEnable"/><small> <@spring.message "perfTest.configuration.rampUpDes"/></small></h4>
 									</label>
 								</div>
 								<table>

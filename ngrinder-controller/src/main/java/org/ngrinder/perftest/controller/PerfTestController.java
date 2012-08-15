@@ -24,6 +24,7 @@ package org.ngrinder.perftest.controller;
 
 import static org.ngrinder.common.util.Preconditions.checkArgument;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import static org.ngrinder.common.util.Preconditions.checkValidURL;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -105,8 +106,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/list")
 	public String getPerfTestList(User user, @RequestParam(required = false) String query,
-					@RequestParam(required = false) boolean onlyFinished,
-					@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
+			@RequestParam(required = false) boolean onlyFinished,
+			@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
 		PageRequest pageReq = ((PageRequest) pageable);
 		Sort sort = pageReq == null ? null : pageReq.getSort();
 		if (sort == null && pageReq != null) {
@@ -145,8 +146,7 @@ public class PerfTestController extends NGrinderBaseController {
 		}
 
 		model.addAttribute(PARAM_TEST, test);
-		model.addAttribute(PARAM_SCRIPT_LIST,
-						fileEntiryService.getAllFileEntries(user, FileType.PYTHON_SCRIPT));
+		model.addAttribute(PARAM_SCRIPT_LIST, fileEntiryService.getAllFileEntries(user, FileType.PYTHON_SCRIPT));
 		model.addAttribute(PARAM_CURRENT_FREE_AGENTS_COUNT, agentManager.getAllFreeAgents().size());
 		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, agentManager.getMaxAgentSizePerConsole());
 		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
@@ -178,13 +178,12 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/quickStart")
 	public String getQuickStart(User user, @RequestParam(value = "url", required = true) String urlString,
-					ModelMap model) {
-		PerfTest test = checkTestPermissionAndGet(user, 0);
-		model.addAttribute(PARAM_TEST, test);
+			ModelMap model) {
+		checkValidURL(urlString);
 		String testNameFromUrl = getTestNameFromUrl(urlString);
 		fileEntiryService.addFolder(user, "", testNameFromUrl);
-		FileEntry prepareNewEntry = fileEntiryService.prepareNewEntry(user, "/" + testNameFromUrl,
-						"script.py", urlString);
+		FileEntry prepareNewEntry = fileEntiryService.prepareNewEntry(user, "/" + testNameFromUrl, "script.py",
+				urlString);
 		fileEntiryService.save(user, prepareNewEntry);
 
 		FileEntry newOne = fileEntiryService.getFileEntry(user, testNameFromUrl + "/" + "script.py");
@@ -212,18 +211,16 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String savePerfTest(User user, ModelMap model, PerfTest test) {
 		checkArgument(test.getStatus().equals(Status.READY) || test.getStatus().equals(Status.SAVED),
-						"save test only support for SAVE or READY status");
-		checkArgument(test.getDuration() == null
-						|| test.getDuration() <= (1000 * 60 * 60 * agentManager.getMaxRunHour()),
-						"test duration should be within " + agentManager.getMaxRunHour());
+				"save test only support for SAVE or READY status");
+		checkArgument(
+				test.getDuration() == null || test.getDuration() <= (1000 * 60 * 60 * agentManager.getMaxRunHour()),
+				"test duration should be within " + agentManager.getMaxRunHour());
 		checkArgument(test.getRunCount() == null || test.getRunCount() <= agentManager.getMaxRunCount(),
-						"test run count should be within " + agentManager.getMaxRunCount());
-		checkArgument(test.getAgentCount() == null
-						|| test.getAgentCount() <= agentManager.getMaxAgentSizePerConsole(),
-						"test agent shoule be within " + agentManager.getMaxAgentSizePerConsole());
-		checkArgument(test.getVuserPerAgent() == null
-						|| test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
-						"test vuser shoule be within " + agentManager.getMaxVuserPerAgent());
+				"test run count should be within " + agentManager.getMaxRunCount());
+		checkArgument(test.getAgentCount() == null || test.getAgentCount() <= agentManager.getMaxAgentSizePerConsole(),
+				"test agent shoule be within " + agentManager.getMaxAgentSizePerConsole());
+		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
+				"test vuser shoule be within " + agentManager.getMaxVuserPerAgent());
 		perfTestService.savePerfTest(test);
 		return "redirect:/perftest/list";
 	}
@@ -263,8 +260,8 @@ public class PerfTestController extends NGrinderBaseController {
 			rtnMap.put(PARAM_STATUS_UPDATE_ID, each.getId());
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_NAME, each.getStatus().name());
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_ICON, each.getStatus().getIconName());
-			//FIXME each.getLastModifiedDateToStr() use the server side time, need to consider
-			//locale later.
+			// FIXME each.getLastModifiedDateToStr() use the server side time, need to consider
+			// locale later.
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_MESSAGE, each.getLastModifiedDateToStr());
 			statusList.add(rtnMap);
 		}
@@ -293,8 +290,7 @@ public class PerfTestController extends NGrinderBaseController {
 		if (StringUtils.isEmpty(scriptPath)) {
 			return JSONUtil.toJson(new ArrayList<String>());
 		}
-		List<FileEntry> fileEntries = fileEntiryService.getFileEntries(user,
-						FilenameUtils.getPath(scriptPath));
+		List<FileEntry> fileEntries = fileEntiryService.getFileEntries(user, FilenameUtils.getPath(scriptPath));
 		List<String> fileList = new ArrayList<String>();
 
 		for (FileEntry eachFileEntry : fileEntries) {
@@ -309,7 +305,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = "/getReportData")
 	public @ResponseBody
 	String getPerfTestReportData(User user, ModelMap model, @RequestParam long testId,
-					@RequestParam(required = true) String dataType, @RequestParam int imgWidth) {
+			@RequestParam(required = true) String dataType, @RequestParam int imgWidth) {
 		checkTestPermissionAndGet(user, testId);
 		List<Object> reportData = null;
 		String[] dataTypes = StringUtils.split(dataType, ",");
@@ -363,8 +359,7 @@ public class PerfTestController extends NGrinderBaseController {
 			return test;
 		}
 		if (test != null && !test.getCreatedUser().equals(user)) {
-			throw new NGrinderRuntimeException("User " + getCurrentUser().getUserId()
-							+ " has no right on  PerfTest ");
+			throw new NGrinderRuntimeException("User " + getCurrentUser().getUserId() + " has no right on  PerfTest ");
 		}
 		return test;
 	}

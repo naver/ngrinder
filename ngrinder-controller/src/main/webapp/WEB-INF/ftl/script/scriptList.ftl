@@ -44,12 +44,12 @@
 			<colgroup>
 				<col width="30">
 				<col width="35">
-				<col width="160">
+				<col width="250"> 
 				<col>
-				<col width="170">
-				<col width="100">
-				<col width="85">
-			</colgroup>
+				<col width="150">
+				<col width="70">
+				<col width="60">
+			</colgroup> 
 			<thead>
 				<tr>
 					<th><input type="checkbox" class="checkbox" value=""></th>
@@ -86,7 +86,7 @@
 								</#if>
 							</td>
 							<td class="ellipsis" title="${(script.description)!}">${(script.description)!}</td>
-							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if></td>
+							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if></td>
 							<td><#assign floatSize = script.fileSize?number/1024>${floatSize?string("0.##")}</td>
 							<td><a href="javascript:void(0);"><i class="icon-download-alt script-download" spath="${script.path}" sname="${script.fileName}"></i></a></td>
 						</tr>
