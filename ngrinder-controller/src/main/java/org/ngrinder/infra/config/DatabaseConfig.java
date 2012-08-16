@@ -56,8 +56,8 @@ public class DatabaseConfig implements NGrinderConstants {
 	public BasicDataSource dataSource() {
 		BasicDataSource dataSource = new BasicDataSource();
 		PropertiesWrapper databaseProperties = config.getDatabaseProperties();
-		Database database = Database.getDatabase(databaseProperties.getProperty("database", "sqlite",
-				"[FATAL] Database type is not sepecfied. In default, use sqlite."));
+		Database database = Database.getDatabase(databaseProperties.getProperty("database", "H2",
+				"[FATAL] Database type is not sepecfied. In default, use H2."));
 		database.setup(dataSource, databaseProperties);
 		return dataSource;
 	}
@@ -69,8 +69,8 @@ public class DatabaseConfig implements NGrinderConstants {
 		emf.setPersistenceUnitName("ngrinder");
 		HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
 		PropertiesWrapper databaseProperties = config.getDatabaseProperties();
-		Database database = Database.getDatabase(databaseProperties.getProperty("database", "sqlite",
-				"[FATAL] Database type is not sepecfied. In default, use sqlite."));
+		Database database = Database.getDatabase(databaseProperties.getProperty("database", "H2",
+				"[FATAL] Database type is not sepecfied. In default, use H2."));
 
 		hibernateJpaVendorAdapter.setDatabasePlatform(database.getDialect());
 		hibernateJpaVendorAdapter.setShowSql(false);
