@@ -43,12 +43,11 @@
 				<div class="prompt">
 					   Regional Location:     
 					<select  id="user_locale"  name="user_locale" style="margin-left:19px;">
-					  <option value="Asia/Seoul">한국</option>
-					  <option value="Asia/Shanghai">中国</option>
-					  <option value="America/New_York">USA</option>
-					  <option value="all">All</option>
-					</select>
-				</div>
+					  <#list timezones as eachtimezone>
+						  <option value="${eachtimezone.ID}">${eachtimezone.ID} - ${eachtimezone.displayName}</option>
+				      </#list>
+					</select> 
+				</div> 
 			</fieldset>
 		</form>
 	</div>

@@ -92,7 +92,7 @@ public abstract class DateUtil {
 				int offsetSecond = offset / CONSTANT_1000;
 				int hour = offsetSecond / (CONSTANT_60 * CONSTANT_60);
 				int minutes = (offsetSecond % (CONSTANT_60 * CONSTANT_60)) / CONSTANT_60;
-				timezoneIDMap.put(id, String.format("(GMT%+d:%02d) %s", hour, minutes, id));
+				timezoneIDMap.put(TimeZone.getTimeZone(id).getDisplayName(), String.format("(GMT%+d:%02d) %s", hour, minutes, id));
 			}
 		}
 		return timezoneIDMap;

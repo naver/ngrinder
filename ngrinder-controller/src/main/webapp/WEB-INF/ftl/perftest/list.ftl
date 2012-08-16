@@ -86,10 +86,10 @@
 												<#if test.status.isDeletable()><a href="javascript:void(0);"><i title="delete" class="icon-remove test-remove" sid="${test.id}"></i></a></#if>
 												<#if test.status.isStoppable()><a href="javascript:void(0);"><i title="stop" class="icon-stop test-stop" sid="${test.id}"></i></a></#if>
 											</span>
-										</div>
+										</div> 
 
 									</td>
-									<td >
+									<td >									
 										<a href="${req.getContextPath()}/script/detail/${test.scriptName}" title="${test.scriptName}">${test.scriptName}</a> 
 									</td>
 									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if></td>

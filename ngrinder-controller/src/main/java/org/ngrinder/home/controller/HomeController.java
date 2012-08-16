@@ -22,9 +22,14 @@
  */
 package org.ngrinder.home.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -63,6 +68,26 @@ public class HomeController extends NGrinderBaseController {
 
 	@Autowired
 	private HomeService homeService;
+
+	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
+
+	private List<TimeZone> timeZones = null;
+
+	@PostConstruct
+	public void init() {
+		timeZones = new ArrayList<TimeZone>();
+		final String[] timeZoneIds = TimeZone.getAvailableIDs();
+		for (final String id : timeZoneIds) {
+			if (id.matches(TIMEZONE_ID_PREFIXES)) {
+				timeZones.add(TimeZone.getTimeZone(id));
+			}
+		}
+		Collections.sort(timeZones, new Comparator<TimeZone>() {
+			public int compare(final TimeZone a, final TimeZone b) {
+				return a.getID().compareTo(b.getID());
+			}
+		});
+	}
 
 	@RequestMapping(value = { "/home", "/" })
 	public String home(User user, ModelMap model, HttpServletResponse response, HttpServletRequest request) {
@@ -112,6 +137,7 @@ public class HomeController extends NGrinderBaseController {
 	public void setLoginPageDate(ModelMap model) {
 		TimeZone defaultTime = TimeZone.getDefault();
 		model.addAttribute("version", config.getSystemProperties().getProperty("VERSION", "UNKNOWN"));
+		model.addAttribute("timezones", timeZones);
 		model.addAttribute("defaultTime", defaultTime.getID());
 	}
 

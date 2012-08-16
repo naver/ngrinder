@@ -11,7 +11,9 @@
 <script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
 <script src="${req.getContextPath()}/js/utils.js"></script>
 <script src="${req.getContextPath()}/js/jquery.validate.js"></script>
-
+<#if currentUser?? && currentUser.timeZone??>
+	<#setting time_zone="${currentUser.timeZone}"> 
+</#if>  
 <script>
 	//common validation function and options. 
 	$.validator.addMethod('positiveNumber',
@@ -22,7 +24,7 @@
 		    function (value) { 
 		        return Number(value) >= 0;
 		    }, 'Enter a Non-negative number.');
-</script>
+</script> 
 
 <input type="hidden" id="contextPath" value="${req.getContextPath()}">
 <#setting number_format="computer">

@@ -53,20 +53,20 @@
                            <tr>
                                 <td colspan=2></td>
                            </tr>
-                           <tr>
+                           <tr> 
                                <th>Duration</th>
-                               <td><span>${(test.durationStr)!}</span><code>HH:MM:SS</code></td>
+                               <td><span>${(test.durationStr)!}</span> <code>HH:MM:SS</code></td>
                            </tr>
                            <tr>
                                <th>Ignore Count</th>
-                               <td><span>${(test.ignoreSampleCount)!0}</span></td>
+                               <td><span>${(test.ignoreSampleCount)!0}</span></td> 
                            </tr>
                            <tr>
                                 <td colspan=2></td>
                            </tr>
                            <tr>
                                <th>Sample Interval</th>
-                               <td><span>${(test.sampleInterval)!1000}</span><code>ms</code></td>
+                               <td><span>${(test.sampleInterval)!1000}</span> <code>ms</code></td>
                            </tr>
                            <tr>
                                 <td colspan=2></td>
@@ -88,7 +88,7 @@
                            </tr>
                            <tr>
                                <th>Mean Time</th>
-                               <td><span>${(test.meanTestTime)!}</span><code>ms</code></td>
+                               <td><span>${(test.meanTestTime)!}</span> <code>ms</code></td>
                            </tr>
                            <tr>
                                <th>Peak TPS</th>
@@ -120,9 +120,9 @@
 					</colgroup>
                    <tr>
                        <th>Start Time</th>
-                       <td><span>${(test.startTime)!'&nbsp;'}</span></td>
+                       <td><span><#if test.startTime??>${test.startTime?string('yyyy-MM-dd HH:mm')}<#else>&nbsp;</#if></span></td>
                        <th>Finish Time</th>
-                       <td><span>${(test.finishTime)!'&nbsp;'}</span></td>
+                       <td><span><#if test.finishTime??>${test.finishTime?string('yyyy-MM-dd HH:mm')}<#else>&nbsp;</#if></span></td>
                    </tr>
                </table>
                <div class="row" style="margin-bottom:10px">
