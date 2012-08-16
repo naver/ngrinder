@@ -105,7 +105,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 		}
 
 		// If agent is not enough...
-		if (runCandidate.getAgentCount() > agentManager.getAllFreeAgents().size()) {
+		int size = agentManager.getAllFreeAgents().size();
+		if (runCandidate.getAgentCount() > size) {
+			markProgress(runCandidate,
+							"The test is tried to execute but there is not enough free agents.\n- Current free agent size : "
+											+ size + "  / Requested : " + runCandidate.getAgentCount() + "\n");
 			return;
 		}
 
@@ -114,11 +118,21 @@ public class PerfTestRunnable implements NGrinderConstants {
 			LOG.error("The {} test is canceled because it has too many test execution errors",
 							runCandidate.getTestName());
 			runCandidate.setTestErrorCause(Status.READY);
-			runCandidate.setTestErrorStackTrace("The test is canceled because it has too many test execution errors");
+			markProgress(runCandidate, "The test is canceled because it has too many test execution errors");
 			perfTestService.savePerfTest(runCandidate, CANCELED);
 			return;
 		}
 		doTest(runCandidate);
+	}
+
+	void markProgress(PerfTest perfTest, String message) {
+		perfTest.addProgressMessage(message);
+		perfTestService.savePerfTest(perfTest);
+	}
+
+	void markProgressAndStatus(PerfTest perfTest, String message, Status status) {
+		perfTest.setStatus(status);
+		markProgress(perfTest, message);
 	}
 
 	/**

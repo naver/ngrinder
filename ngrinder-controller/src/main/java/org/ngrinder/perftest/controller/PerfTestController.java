@@ -27,8 +27,6 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.common.util.Preconditions.checkValidURL;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -217,7 +215,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 * 
 	 * @param model
 	 * @param newVuser
-	 *            how many vusers whil be used.
+	 *            how many vusers will be used.
 	 * @return JSON
 	 */
 	@RequestMapping(value = "/updateVuser")
@@ -249,7 +247,11 @@ public class PerfTestController extends NGrinderBaseController {
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_ICON, each.getStatus().getIconName());
 			// FIXME each.getLastModifiedDateToStr() use the server side time, need to consider
 			// locale later.
-			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_MESSAGE, each.getLastModifiedDateToStr());
+
+			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_MESSAGE,
+							StringUtils.replace(
+											each.getProgressMessage() + "\n"
+															+ each.getLastModifiedDateToStr(), "\n", "<br/>"));
 			statusList.add(rtnMap);
 		}
 		return JSONUtil.toJson(statusList);
