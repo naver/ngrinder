@@ -29,8 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
-public class ValidationServiceTest extends AbstractNGrinderTransactionalTest {
-	Logger m_logger = LoggerFactory.getLogger(ValidationServiceTest.class);
+public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTest {
+	Logger m_logger = LoggerFactory.getLogger(ScriptValidationServiceTest.class);
 	@Autowired
 	private LocalScriptTestDriveService validationService;
 
