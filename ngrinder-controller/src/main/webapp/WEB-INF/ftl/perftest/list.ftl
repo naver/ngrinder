@@ -66,7 +66,10 @@
 							<#list testList as test>
 								<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
 								<tr id="tr${test.id}">
-									<td style="text-align:center"><input type="checkbox" class="checkbox perf_test" value="${test.id}" <#if !(test.status.isDeletable())>disabled</#if>></td>
+									<td style="text-align:center">
+										<input type="checkbox" class="checkbox perf_test" value="${test.id}" 
+											<#if !(test.status.isDeletable())>disabled</#if>>
+									</td>
 									<td class="ellipsis"  style="text-align:center" id="row_${test.id}">
 										<div class="ball" id="ball_${test.id}"
 										<#if test.status == 'STOP_ON_ERROR'>
@@ -88,6 +91,7 @@
 											 data-original-title="${test.testName}">
 											<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
 											<#if test.status.isDeletable()><a href="javascript:void(0);"><i class="icon-remove test-remove" sid="${test.id}"></i></a></#if>
+											<#if test.status.isStoppable()><a href="javascript:void(0);"><i class="icon-remove test-remove" sid="${test.id}"></i></a></#if>
 										</div>
 
 									</td>
@@ -116,9 +120,9 @@
 					<INPUT type="hidden" id="pageNumber" name="page.page" value="${page.pageNumber + 1}">
 					<INPUT type="hidden" id="pageSize" name="page.size" value="${page.pageSize!10}">
 					<script type="text/javascript">
-							function doSubmit(page) {
-								getList(page);
-							}
+						function doSubmit(page) {
+							getList(page);
+						}
 					</script>
 			</form>
 					<!--content-->
@@ -131,8 +135,6 @@
 			
 		$(document).ready(function() {
 			$("#n_test").addClass("active");
-			
-		
 			
 			enableChkboxSelectAll();
 			
@@ -153,9 +155,15 @@
 				}
 			});
 			
-			$("i.test-remove").on('click', function() {
+			$("i.test-remove").click(function() {
 				if (confirm("Do you want to delete this test(s)?")) {
 					deleteTests($(this).attr("sid"));
+				}
+			});
+			
+			$("i.test-stop").click(function() {
+				if (confirm("Do you want to stop this test(s)?")) {
+					stopTests($(this).attr("sid"));
 				}
 			});
 			
@@ -189,14 +197,38 @@
 		
 		function deleteTests(ids) {
 			$.ajax({
-		  		url: "${req.getContextPath()}/perftest/deleteTests?ids=" + ids,
+		  		url: "${req.getContextPath()}/perftest/deleteTests",
+		  		type: "POST",
+		  		data: {"ids" : ids},
 				dataType:'json',
 		    	success: function(res) {
 		    		if (res.success) {
 			    		showSuccessMsg("The test(s) deleted successfully.");
 							setTimeout(function() {
 								getList(1);
-							}, 3000);
+							}, 1000);
+		    		} else {
+			    		showErrorMsg("Test(s) deletion failed:" + res.message);
+		    		}
+		    	},
+		    	error: function() {
+		    		showErrorMsg("Test(s) deletion failed!");
+		    	}
+		  	});
+		}
+		
+		function stopTests(ids) {
+			$.ajax({
+		  		url: "${req.getContextPath()}/perftest/stopTests",
+				type: "POST",
+		  		data: {"data":ids},
+				dataType:'json',
+		    	success: fu\nction(res) {
+		    		if (res.success) {
+			    		showSuccessMsg("The stop is requested");
+							setTimeout(function() {
+								getList(1);
+							}, 1000);
 		    		} else {
 			    		showErrorMsg("Test(s) deletion failed:" + res.message);
 		    		}
@@ -237,7 +269,7 @@
 			}
 		    $.ajax({
 			    url: '${req.getContextPath()}/perftest/updateStatus', 
-			    type: 'GET',
+			    type: 'POST',
 			    data: {"ids": ids.join(",")},
 			    success: function(data) {
 			    	data = eval(data); 

@@ -86,8 +86,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * {@link PerfTest} Service Class.
  * 
- * This class contains various method which mainly get the {@link PerfTest} matching specific
- * conditions.
+ * This class contains various method which mainly get the {@link PerfTest} matching specific conditions.
  * 
  * @author Mavlarn
  * @author JunHo Yoon
@@ -113,7 +112,7 @@ public class PerfTestService implements NGrinderConstants {
 	private FileEntryService fileEntryService;
 
 	private NumberFormat formatter = new DecimalFormat("###.###");
-	
+
 	private int MaximumConcurrentTestCount = 0;
 
 	/**
@@ -263,8 +262,7 @@ public class PerfTestService implements NGrinderConstants {
 	@Cacheable(value = "perftest")
 	@Transactional
 	public PerfTest getPerfTestCandiate() {
-		List<PerfTest> readyPerfTests = perfTestRepository
-						.findAllByStatusOrderByScheduledTimeAsc(Status.READY);
+		List<PerfTest> readyPerfTests = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY);
 		List<PerfTest> usersFirstPerfTests = filterCurrentlyRunningTestUsersTest(readyPerfTests);
 		return usersFirstPerfTests.isEmpty() ? null : readyPerfTests.get(0);
 	}
@@ -290,14 +288,14 @@ public class PerfTestService implements NGrinderConstants {
 		final Set<User> currentlyRunningTestOwners = new HashSet<User>();
 		for (PerfTest each : currentlyRunningTests) {
 			currentlyRunningTestOwners.add((User) ObjectUtils.defaultIfNull(each.getLastModifiedUser(),
-							each.getCreatedUser()));
+					each.getCreatedUser()));
 		}
 		CollectionUtils.filter(perfTestLists, new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
 				PerfTest perfTest = (PerfTest) object;
-				return !currentlyRunningTestOwners.contains(ObjectUtils.defaultIfNull(
-								perfTest.getLastModifiedUser(), perfTest.getCreatedUser()));
+				return !currentlyRunningTestOwners.contains(ObjectUtils.defaultIfNull(perfTest.getLastModifiedUser(),
+						perfTest.getCreatedUser()));
 			}
 		});
 		return perfTestLists;
@@ -344,7 +342,7 @@ public class PerfTestService implements NGrinderConstants {
 	 */
 	public File getPerfTestFilePath(PerfTest perfTest) {
 		return config.getHome().getPerfTestDirectory(
-						checkNotZero(perfTest.getId(), "perftest id should not be 0 or zero").toString());
+				checkNotZero(perfTest.getId(), "perftest id should not be 0 or zero").toString());
 	}
 
 	/**
@@ -357,15 +355,14 @@ public class PerfTestService implements NGrinderConstants {
 	public GrinderProperties getGrinderProperties(PerfTest perfTest) {
 		try {
 			// Copy grinder properties
-			File userGrinderPropertiesPath = new File(getPerfTestDirectory(perfTest),
-							DEFAULT_GRINDER_PROPERTIES_PATH);
+			File userGrinderPropertiesPath = new File(getPerfTestDirectory(perfTest), DEFAULT_GRINDER_PROPERTIES_PATH);
 			FileUtils.copyFile(config.getHome().getDefaultGrinderProperties(), userGrinderPropertiesPath);
 			GrinderProperties grinderProperties = new GrinderProperties(userGrinderPropertiesPath);
 			grinderProperties.setAssociatedFile(new File(userGrinderPropertiesPath.getName()));
 			grinderProperties.setProperty(GrinderProperties.SCRIPT,
-							FilenameUtils.getName(checkNotEmpty(perfTest.getScriptName())));
-			ProcessAndThread calcProcessAndThread = calcProcessAndThread(checkNotZero(
-							perfTest.getVuserPerAgent(), "vuser count should be provided"));
+					FilenameUtils.getName(checkNotEmpty(perfTest.getScriptName())));
+			ProcessAndThread calcProcessAndThread = calcProcessAndThread(checkNotZero(perfTest.getVuserPerAgent(),
+					"vuser count should be provided"));
 			grinderProperties.setInt(GRINDER_PROP_THREAD, calcProcessAndThread.getThreadCount());
 			grinderProperties.setInt(GRINDER_PROP_PROCESSES, calcProcessAndThread.getProcessCount());
 			if ("D".equals(perfTest.getThreshold())) {
@@ -376,12 +373,10 @@ public class PerfTestService implements NGrinderConstants {
 			grinderProperties.setBoolean(GRINDER_PROP_USE_CONSOLE, true);
 			grinderProperties.setInt(GRINDER_PROP_INITIAL_SLEEP_TIME, perfTest.getInitSleepTime());
 			grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, perfTest.getProcessIncrement());
-			grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT_INTERVAL,
-							perfTest.getProcessIncrementInterval());
+			grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT_INTERVAL, perfTest.getProcessIncrementInterval());
 			return grinderProperties;
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("error while prepare grinder property for "
-							+ perfTest.getTestName(), e);
+			throw new NGrinderRuntimeException("error while prepare grinder property for " + perfTest.getTestName(), e);
 		}
 	}
 
@@ -398,8 +393,7 @@ public class PerfTestService implements NGrinderConstants {
 		User user = perfTest.getCreatedUser();
 
 		// Get all files in the script path
-		List<FileEntry> fileEntries = fileEntryService.getFileEntries(user,
-						FilenameUtils.getPath(checkNotEmpty(scriptName)));
+		List<FileEntry> fileEntries = fileEntryService.getLibAndResourceEntries(user, checkNotEmpty(scriptName));
 		File perfTestDirectory = getPerfTestDirectory(perfTest);
 
 		perfTestDirectory.mkdirs();
@@ -472,7 +466,7 @@ public class PerfTestService implements NGrinderConstants {
 		// just return the file content directly, it will be much faster.
 		List<Object> reportData = new ArrayList<Object>();
 		File reportFolder = config.getHome().getPerfTestDirectory(
-						testId + File.separator + NGrinderConstants.PATH_REPORT);
+				testId + File.separator + NGrinderConstants.PATH_REPORT);
 		if (imgWidth < 100) {
 			imgWidth = 100;
 		}
@@ -537,19 +531,17 @@ public class PerfTestService implements NGrinderConstants {
 	 */
 
 	public File getReportFileDirectory(long testId) {
-		return new File(config.getHome().getPerfTestDirectory(String.valueOf(testId)),
-						NGrinderConstants.PATH_REPORT);
+		return new File(config.getHome().getPerfTestDirectory(String.valueOf(testId)), NGrinderConstants.PATH_REPORT);
 	}
 
 	/**
-	 * To get statistics data when test is running If the console is not available.. it returns
-	 * empty map.
+	 * To get statistics data when test is running If the console is not available.. it returns empty map.
 	 */
 	public Map<String, Object> getStatistics(int port) {
 		SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(port);
 		if (consoleUsingPort == null) {
 			LOGGER.warn("console using {} port is not available", port);
-			//return null if there is no console. We will check null after calling this method. 
+			// return null if there is no console. We will check null after calling this method.
 			return null;
 		}
 		return consoleUsingPort.getStatictisData();
@@ -603,9 +595,9 @@ public class PerfTestService implements NGrinderConstants {
 		perfTest.setErrors((int) ((Double) totalStatistics.get("Errors")).doubleValue());
 		perfTest.setTps(Double.parseDouble(formatter.format(totalStatistics.get("TPS"))));
 		perfTest.setMeanTestTime(Double.parseDouble(formatter.format(ObjectUtils.defaultIfNull(
-						totalStatistics.get("Mean_Test_Time_(ms)"), 0D))));
+				totalStatistics.get("Mean_Test_Time_(ms)"), 0D))));
 		perfTest.setPeakTps(Double.parseDouble(formatter.format(ObjectUtils.defaultIfNull(
-						totalStatistics.get("Peak_TPS"), 0D))));
+				totalStatistics.get("Peak_TPS"), 0D))));
 		perfTest.setTests((int) ((Double) totalStatistics.get("Tests")).doubleValue());
 		return perfTest;
 	}

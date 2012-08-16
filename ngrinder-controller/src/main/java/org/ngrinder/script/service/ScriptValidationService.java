@@ -45,7 +45,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
-
 /**
  * Script Validation Service
  * 
@@ -54,7 +53,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ScriptValidationService {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(ScriptValidationService.class);
 	@Autowired
 	private LocalScriptTestDriveService localScriptTestDriveService;
@@ -83,7 +82,7 @@ public class ScriptValidationService {
 	 */
 	public String validateScript(User user, FileEntry scriptEntry, boolean useScriptInSVN) {
 		try {
-			checkNotNull(scriptEntry, "scriptEntity  should be not null");
+			checkNotNull(scriptEntry, "scriptEntity should be not null");
 			checkNotEmpty(scriptEntry.getPath(), "scriptEntity path should be provided");
 			if (!useScriptInSVN) {
 				checkNotEmpty(scriptEntry.getContent(), "scriptEntity content should be provided");
@@ -93,8 +92,8 @@ public class ScriptValidationService {
 			File scriptDirectory = config.getHome().getScriptDirectory(String.valueOf(user.getId()));
 
 			// Get all files in the script path
-			List<FileEntry> fileEntries = fileEntryService.getFileEntries(user,
-					FilenameUtils.getPath(checkNotEmpty(scriptEntry.getPath())));
+			List<FileEntry> fileEntries = fileEntryService.getLibAndResourceEntries(user,
+					checkNotEmpty(scriptEntry.getPath()));
 
 			scriptDirectory.mkdirs();
 
@@ -117,11 +116,11 @@ public class ScriptValidationService {
 				FileUtils.writeStringToFile(scriptFile, scriptEntry.getContent(),
 						StringUtils.defaultIfBlank(scriptEntry.getEncoding(), "UTF-8"));
 			}
-
 			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, new Condition(), "");
 			return FileUtils.readFileToString(doValidate);
 		} catch (IOException e) {
-			LOG.error(e.getMessage(), e);
+			LOG.error("Error while distributing files on {} for {}", user, scriptEntry.getPath());
+			LOG.error("Error details ", e);
 		}
 		return StringUtils.EMPTY;
 	}

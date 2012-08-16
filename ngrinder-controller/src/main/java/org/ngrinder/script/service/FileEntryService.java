@@ -36,6 +36,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.infra.config.Config;
@@ -164,7 +165,7 @@ public class FileEntryService {
 	public List<FileEntry> getAllFileEntries(User user) {
 		return fileEntityRepository.findAll(user);
 	}
-	
+
 	@Cacheable("file_entry_search_cache")
 	public List<FileEntry> getAllFileEntries(User user, FileType fileType) {
 		List<FileEntry> fileEntryList = getAllFileEntries(user);
@@ -346,5 +347,36 @@ public class FileEntryService {
 
 	public void writeContentTo(User user, String fromPath, File toDir) {
 		fileEntityRepository.writeContentTo(user, fromPath, toDir);
+	}
+
+	/**
+	 * Get Lib and Resources. This method will collect the files of lib and resources folder on the same folder whre
+	 * script is located.
+	 * 
+	 * @param user
+	 *            user
+	 * @param scriptPath
+	 *            path of script
+	 * @return {@link FileEntry} list
+	 */
+	public List<FileEntry> getLibAndResourceEntries(User user, String scriptPath) {
+		String path = FilenameUtils.getPath(scriptPath);
+		List<FileEntry> fileList = new ArrayList<FileEntry>();
+
+		List<FileEntry> fileEntries = getFileEntries(user, path + "lib/");
+		for (FileEntry eachFileEntry : fileEntries) {
+			FileType fileType = eachFileEntry.getFileType();
+			if (fileType == FileType.JAR) {
+				fileList.add(eachFileEntry);
+			}
+		}
+		fileEntries = getFileEntries(user, path + "resources/");
+		for (FileEntry eachFileEntry : fileEntries) {
+			FileType fileType = eachFileEntry.getFileType();
+			if (fileType != FileType.DIR && fileType != FileType.UNKNOWN) {
+				fileList.add(eachFileEntry);
+			}
+		}
+		return fileList;
 	}
 }

@@ -36,7 +36,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
@@ -268,7 +267,7 @@ public class PerfTestController extends NGrinderBaseController {
 		return JSONUtil.toJson(statusList);
 	}
 
-	@RequestMapping(value = "/deleteTests")
+	@RequestMapping(value = "/deleteTests", method = RequestMethod.POST)
 	public @ResponseBody
 	String deletePerfTests(User user, ModelMap model, @RequestParam String ids) {
 		String[] idList = StringUtils.split(ids, ",");
@@ -287,19 +286,15 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = "/getResourcesOnScriptFolder")
 	public @ResponseBody
 	String getResourcesOnScriptFolder(User user, @RequestParam String scriptPath) {
+		List<String> fileStringList = new ArrayList<String>();
 		if (StringUtils.isEmpty(scriptPath)) {
-			return JSONUtil.toJson(new ArrayList<String>());
+			return JSONUtil.toJson(fileStringList);
 		}
-		List<FileEntry> fileEntries = fileEntiryService.getFileEntries(user, FilenameUtils.getPath(scriptPath));
-		List<String> fileList = new ArrayList<String>();
-
-		for (FileEntry eachFileEntry : fileEntries) {
-			FileType fileType = eachFileEntry.getFileType();
-			if (fileType != FileType.DIR && fileType != FileType.PYTHON_SCRIPT) {
-				fileList.add(eachFileEntry.getPath());
-			}
+		List<FileEntry> fileList = fileEntiryService.getLibAndResourceEntries(user, scriptPath);
+		for (FileEntry each : fileList) {
+			fileStringList.add(each.getPath());
 		}
-		return JSONUtil.toJson(fileList);
+		return JSONUtil.toJson(fileStringList);
 	}
 
 	@RequestMapping(value = "/getReportData")
@@ -358,8 +353,8 @@ public class PerfTestController extends NGrinderBaseController {
 		if (user.getRole().equals(Role.ADMIN) || user.getRole().equals(Role.SUPER_USER)) {
 			return test;
 		}
-		if (test != null && !test.getCreatedUser().equals(user)) {
-			throw new NGrinderRuntimeException("User " + getCurrentUser().getUserId() + " has no right on  PerfTest ");
+		if (test != null && !test.getLastModifiedUser().equals(user)) {
+			throw new NGrinderRuntimeException("User " + getCurrentUser().getUserId() + " has no right on PerfTest ");
 		}
 		return test;
 	}

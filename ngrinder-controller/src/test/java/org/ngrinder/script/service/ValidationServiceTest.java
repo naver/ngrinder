@@ -39,7 +39,7 @@ public class ValidationServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private FileEntryService fileEntryService;
-	
+
 	@Autowired
 	public MockFileEntityRepsotory repo;
 
@@ -100,12 +100,10 @@ public class ValidationServiceTest extends AbstractNGrinderTransactionalTest {
 		fileEntry.setPath("/script2.py");
 		fileEntry.setContent(script);
 		fileEntryService.save(getTestUser(), fileEntry);
-		
 		fileEntry.setContent("");
 		String validateScript = scriptValidationService.validateScript(getTestUser(), fileEntry, true);
 		System.out.println("validation result:" + validateScript);
 		assertThat(validateScript, not(containsString("Validation should be performed within 10sec. Stop it forcely")));
 		assertThat(validateScript.length(), lessThan(10000));
 	}
-
 }

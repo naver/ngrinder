@@ -1064,6 +1064,7 @@ div.chart {
     				ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
     			}
     		}
+    		
     		// Wrap this function in a closure so we don't pollute the namespace
     		(function refreshContent() {
     			var ids = [];

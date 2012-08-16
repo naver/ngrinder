@@ -120,4 +120,12 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 		System.out.println(foundEntry);
 		assertThat(foundEntry.getFileSize(), is((long) byteArray.length));
 	}
+
+	@Test
+	public void testNotExistingPath() throws IOException {
+		// When requesting not existing folder.. it should return empty list
+		List<FileEntry> findAll = repo.findAll(getTestUser(), "/helloworld");
+		assertThat(findAll.size(), is(0));
+	}
+
 }
