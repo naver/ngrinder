@@ -26,8 +26,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Properties;
 
 import net.grinder.common.GrinderProperties;
@@ -111,8 +109,7 @@ public class LocalScriptTestDriveService {
 
 			AgentIdentityImplementation agentIndentity = new AgentIdentityImplementation("validation");
 
-			String newClassPath = buildClasspath();
-
+			String newClassPath = GrinderClassPathUtils.buildClasspathBasedOnCurrentClassLoader(LOGGER);
 			LOGGER.debug("Validation Class Path " + newClassPath);
 
 			Properties systemProperties = new Properties();
@@ -177,17 +174,6 @@ public class LocalScriptTestDriveService {
 			appendingMessageOn(file, "Validation should be performed within 10sec. Stop it forcely");
 		}
 		return file;
-	}
-
-	private String buildClasspath() {
-		URL[] urLs = ((URLClassLoader) LocalScriptTestDriveService.class.getClassLoader()).getURLs();
-		StringBuilder builder = new StringBuilder();
-		for (URL each : urLs) {
-			builder.append(each.getFile()).append(File.pathSeparator);
-		}
-
-		String newClassPath = GrinderClassPathUtils.filterClassPath(builder.toString(), LOGGER);
-		return newClassPath;
 	}
 
 	private void appendingMessageOn(File file, String msg) {

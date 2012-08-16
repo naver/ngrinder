@@ -1,15 +1,11 @@
 package org.ngrinder.infra.init;
 
 import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
 
 import javax.annotation.PostConstruct;
 
-import net.grinder.engine.agent.LocalScriptTestDriveService;
 import net.grinder.util.GrinderClassPathUtils;
 
-import org.ngrinder.script.controller.FileEntryController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -56,17 +52,7 @@ public class ClassPathInit {
 			}
 		}
 		LOG.info("===========================================================================");
-		LOG.info("Total  Class Path for validation is " + buildClasspath());
-	}
-
-	private String buildClasspath() {
-		URL[] urLs = ((URLClassLoader) LocalScriptTestDriveService.class.getClassLoader()).getURLs();
-		StringBuilder builder = new StringBuilder();
-		for (URL each : urLs) {
-			builder.append(each.getFile()).append(File.pathSeparator);
-		}
-
-		String newClassPath = GrinderClassPathUtils.filterClassPath(builder.toString(), LOG);
-		return newClassPath;
+		LOG.info("Total Class Path for validation is {}",
+						GrinderClassPathUtils.buildClasspathBasedOnCurrentClassLoader(LOG));
 	}
 }

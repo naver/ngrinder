@@ -25,6 +25,8 @@ package net.grinder.util;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +42,7 @@ import org.slf4j.Logger;
  */
 public class GrinderClassPathUtils {
 	/**
-	 * Construct classPath for grinder from existing classpath string
+	 * Construct classPath for grinder from given classpath string
 	 * 
 	 * @param classPath
 	 *            classpath string
@@ -48,7 +50,7 @@ public class GrinderClassPathUtils {
 	 *            logger
 	 * @return classpath optimized for grinder.
 	 */
-	public static String filterClassPath(String classPath, Logger m_logger) {
+	public static String filterClassPath(String classPath, Logger logger) {
 		List<String> classPathList = new ArrayList<String>();
 		for (String eachClassPath : checkNotNull(classPath).split(File.pathSeparator)) {
 			String name = FilenameUtils.getName(eachClassPath);
@@ -58,15 +60,30 @@ public class GrinderClassPathUtils {
 				continue;
 			}
 			// Include necessary jars..
-			m_logger.debug("Each System Class Path in total is " + eachClassPath);
 			if (name.contains("grinder") || name.contains("asm") || name.contains("picocontainer")
 							|| name.contains("jython") || name.contains("slf4j-api")
 							|| name.contains("logback") || name.contains("jsr173")
 							|| name.contains("xmlbeans") || name.contains("stax-api")) {
-				m_logger.debug("classpath :" + eachClassPath);
+				logger.debug("classpath :" + eachClassPath);
 				classPathList.add(eachClassPath);
 			}
 		}
 		return StringUtils.join(classPathList, File.pathSeparator);
+	}
+
+	/**
+	 * Construct classPath from current classLoader
+	 * 
+	 * @param m_logger
+	 *            logger
+	 * @return classpath optimized for grinder.
+	 */
+	public static String buildClasspathBasedOnCurrentClassLoader(Logger logger) {
+		URL[] urLs = ((URLClassLoader) GrinderClassPathUtils.class.getClassLoader()).getURLs();
+		StringBuilder builder = new StringBuilder();
+		for (URL each : urLs) {
+			builder.append(each.getFile()).append(File.pathSeparator);
+		}
+		return GrinderClassPathUtils.filterClassPath(builder.toString(), logger);
 	}
 }
