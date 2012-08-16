@@ -50,12 +50,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tmatesoft.svn.core.ISVNDirEntryHandler;
 import org.tmatesoft.svn.core.SVNDirEntry;
+import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNProperties;
 import org.tmatesoft.svn.core.SVNProperty;
 import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.internal.io.fs.FSCommitter;
 import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
+import org.tmatesoft.svn.core.internal.wc.SVNErrorManager;
 import org.tmatesoft.svn.core.io.ISVNEditor;
 import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.diff.SVNDeltaGenerator;
@@ -302,6 +305,13 @@ public class FileEntryRepository {
 			editor.closeFile(fileEntry.getPath(), checksum);
 		} catch (Exception e) {
 			abortSVNEditorQuietly(editor);
+			// If it's adding the folder which already exists... ignore..
+			if (e instanceof SVNException && fileEntry.getFileType() == FileType.DIR) {
+				if (SVNErrorCode.FS_ALREADY_EXISTS
+								.equals(((SVNException) e).getErrorMessage().getErrorCode())) {
+					return;
+				}
+			}
 			LOG.error("Error while saving file to SVN", e);
 			throw new NGrinderRuntimeException("Error while saving file to SVN", e);
 		} finally {

@@ -86,7 +86,7 @@ public class PerfTestController extends NGrinderBaseController {
 	private PerfTestService perfTestService;
 
 	@Autowired
-	private FileEntryService fileEntiryService;
+	private FileEntryService fileEntryService;
 
 	@Autowired
 	private AgentManager agentManager;
@@ -106,8 +106,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/list")
 	public String getPerfTestList(User user, @RequestParam(required = false) String query,
-			@RequestParam(required = false) boolean onlyFinished,
-			@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
+					@RequestParam(required = false) boolean onlyFinished,
+					@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
 		PageRequest pageReq = ((PageRequest) pageable);
 		Sort sort = pageReq == null ? null : pageReq.getSort();
 		if (sort == null && pageReq != null) {
@@ -146,12 +146,9 @@ public class PerfTestController extends NGrinderBaseController {
 		}
 
 		model.addAttribute(PARAM_TEST, test);
-		model.addAttribute(PARAM_SCRIPT_LIST, fileEntiryService.getAllFileEntries(user, FileType.PYTHON_SCRIPT));
-		model.addAttribute(PARAM_CURRENT_FREE_AGENTS_COUNT, agentManager.getAllFreeAgents().size());
-		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, agentManager.getMaxAgentSizePerConsole());
-		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
-		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
-		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour() - 1);
+		model.addAttribute(PARAM_SCRIPT_LIST,
+						fileEntryService.getAllFileEntries(user, FileType.PYTHON_SCRIPT));
+		addDefaultAttributeOnMode(model);
 		return "perftest/detail";
 	}
 
@@ -163,6 +160,14 @@ public class PerfTestController extends NGrinderBaseController {
 		} catch (MalformedURLException e) {
 			throw new NGrinderRuntimeException("Error while translating " + urlString, e);
 		}
+	}
+
+	public void addDefaultAttributeOnMode(ModelMap model) {
+		model.addAttribute(PARAM_CURRENT_FREE_AGENTS_COUNT, agentManager.getAllFreeAgents().size());
+		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, agentManager.getMaxAgentSizePerConsole());
+		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
+		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
+		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour() - 1);
 	}
 
 	/**
@@ -178,22 +183,19 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/quickStart")
 	public String getQuickStart(User user, @RequestParam(value = "url", required = true) String urlString,
-			ModelMap model) {
+					ModelMap model) {
 		checkValidURL(urlString);
 		String testNameFromUrl = getTestNameFromUrl(urlString);
-		fileEntiryService.addFolder(user, "", testNameFromUrl);
-		FileEntry prepareNewEntry = fileEntiryService.prepareNewEntry(user, "/" + testNameFromUrl, "script.py",
-				urlString);
-		fileEntiryService.save(user, prepareNewEntry);
-
-		FileEntry newOne = fileEntiryService.getFileEntry(user, testNameFromUrl + "/" + "script.py");
+		fileEntryService.addFolder(user, "", testNameFromUrl);
+		FileEntry prepareNewEntry = fileEntryService.prepareNewEntry(user, "/" + testNameFromUrl,
+						"script.py", urlString);
+		fileEntryService.save(user, prepareNewEntry);
+		
+		FileEntry newOne = fileEntryService.getFileEntry(user, testNameFromUrl + "/" + "script.py");
 		List<FileEntry> scriptList = new ArrayList<FileEntry>();
 		scriptList.add(newOne);
 		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
-		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, agentManager.getMaxAgentSizePerConsole());
-		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
-		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
-		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour() - 1);
+		addDefaultAttributeOnMode(model);
 		return "perftest/detail";
 	}
 
@@ -211,16 +213,18 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String savePerfTest(User user, ModelMap model, PerfTest test) {
 		checkArgument(test.getStatus().equals(Status.READY) || test.getStatus().equals(Status.SAVED),
-				"save test only support for SAVE or READY status");
-		checkArgument(
-				test.getDuration() == null || test.getDuration() <= (1000 * 60 * 60 * agentManager.getMaxRunHour()),
-				"test duration should be within " + agentManager.getMaxRunHour());
+						"save test only support for SAVE or READY status");
+		checkArgument(test.getDuration() == null
+						|| test.getDuration() <= (1000 * 60 * 60 * agentManager.getMaxRunHour()),
+						"test duration should be within " + agentManager.getMaxRunHour());
 		checkArgument(test.getRunCount() == null || test.getRunCount() <= agentManager.getMaxRunCount(),
-				"test run count should be within " + agentManager.getMaxRunCount());
-		checkArgument(test.getAgentCount() == null || test.getAgentCount() <= agentManager.getMaxAgentSizePerConsole(),
-				"test agent shoule be within " + agentManager.getMaxAgentSizePerConsole());
-		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
-				"test vuser shoule be within " + agentManager.getMaxVuserPerAgent());
+						"test run count should be within " + agentManager.getMaxRunCount());
+		checkArgument(test.getAgentCount() == null
+						|| test.getAgentCount() <= agentManager.getMaxAgentSizePerConsole(),
+						"test agent shoule be within " + agentManager.getMaxAgentSizePerConsole());
+		checkArgument(test.getVuserPerAgent() == null
+						|| test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
+						"test vuser shoule be within " + agentManager.getMaxVuserPerAgent());
 		perfTestService.savePerfTest(test);
 		return "redirect:/perftest/list";
 	}
@@ -290,7 +294,8 @@ public class PerfTestController extends NGrinderBaseController {
 		if (StringUtils.isEmpty(scriptPath)) {
 			return JSONUtil.toJson(new ArrayList<String>());
 		}
-		List<FileEntry> fileEntries = fileEntiryService.getFileEntries(user, FilenameUtils.getPath(scriptPath));
+		List<FileEntry> fileEntries = fileEntryService.getFileEntries(user,
+						FilenameUtils.getPath(scriptPath));
 		List<String> fileList = new ArrayList<String>();
 
 		for (FileEntry eachFileEntry : fileEntries) {
@@ -305,7 +310,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = "/getReportData")
 	public @ResponseBody
 	String getPerfTestReportData(User user, ModelMap model, @RequestParam long testId,
-			@RequestParam(required = true) String dataType, @RequestParam int imgWidth) {
+					@RequestParam(required = true) String dataType, @RequestParam int imgWidth) {
 		checkTestPermissionAndGet(user, testId);
 		List<Object> reportData = null;
 		String[] dataTypes = StringUtils.split(dataType, ",");
@@ -359,7 +364,8 @@ public class PerfTestController extends NGrinderBaseController {
 			return test;
 		}
 		if (test != null && !test.getCreatedUser().equals(user)) {
-			throw new NGrinderRuntimeException("User " + getCurrentUser().getUserId() + " has no right on  PerfTest ");
+			throw new NGrinderRuntimeException("User " + getCurrentUser().getUserId()
+							+ " has no right on  PerfTest ");
 		}
 		return test;
 	}
