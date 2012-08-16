@@ -90,9 +90,10 @@ public class ScriptValidationService {
 			checkNotNull(user, "user should be provided");
 
 			File scriptDirectory = config.getHome().getScriptDirectory(String.valueOf(user.getId()));
-
-			// Get all files in the script path
-			List<FileEntry> fileEntries = fileEntryService.getLibAndResourceEntries(user,
+			File file = new File(scriptDirectory, "validation-0.log");
+			file.delete();
+			// Get all lib and resources in the script path
+			List<FileEntry> fileEntries = fileEntryService.getLibAndResourcesEntries(user,
 					checkNotEmpty(scriptEntry.getPath()));
 
 			scriptDirectory.mkdirs();

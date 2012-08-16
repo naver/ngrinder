@@ -396,7 +396,7 @@ public class FileEntryService {
 	 *            path of script
 	 * @return {@link FileEntry} list
 	 */
-	public List<FileEntry> getLibAndResourceEntries(User user, String scriptPath) {
+	public List<FileEntry> getLibAndResourcesEntries(User user, String scriptPath) {
 		String path = FilenameUtils.getPath(scriptPath);
 		List<FileEntry> fileList = new ArrayList<FileEntry>();
 

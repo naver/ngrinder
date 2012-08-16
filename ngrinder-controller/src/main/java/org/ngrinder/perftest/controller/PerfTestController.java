@@ -274,7 +274,7 @@ public class PerfTestController extends NGrinderBaseController {
 		if (StringUtils.isEmpty(scriptPath)) {
 			return JSONUtil.toJson(fileStringList);
 		}
-		List<FileEntry> fileList = fileEntryService.getLibAndResourceEntries(user, scriptPath);
+		List<FileEntry> fileList = fileEntryService.getLibAndResourcesEntries(user, scriptPath);
 		for (FileEntry each : fileList) {
 			fileStringList.add(each.getPath());
 		}

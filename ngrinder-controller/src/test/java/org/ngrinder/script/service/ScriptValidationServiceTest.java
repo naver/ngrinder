@@ -102,7 +102,6 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 		fileEntryService.save(getTestUser(), fileEntry);
 		fileEntry.setContent("");
 		String validateScript = scriptValidationService.validateScript(getTestUser(), fileEntry, true);
-		System.out.println("validation result:" + validateScript);
 		assertThat(validateScript, not(containsString("Validation should be performed within 10sec. Stop it forcely")));
 		assertThat(validateScript.length(), lessThan(10000));
 	}

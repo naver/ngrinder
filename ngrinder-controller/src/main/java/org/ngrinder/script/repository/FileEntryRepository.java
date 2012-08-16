@@ -141,7 +141,7 @@ public class FileEntryRepository {
 						}
 					});
 		} catch (Exception e) {
-			LOG.info("Request to view the not existing folder {}", path);
+			LOG.info("findAll() to the not existing folder {}", path);
 		} finally {
 			closeSVNClientManagerQuietly(svnClientManager);
 		}
