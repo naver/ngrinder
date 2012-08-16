@@ -99,7 +99,7 @@ public final class ReflectionUtil {
 	 */
 	public static Object invokePrivateMethod(Object object, String methodName, Object[] parameters) {
 		checkNotNull(object);
-		checkArgument(StringUtils.isBlank(methodName));
+		checkArgument(!StringUtils.isBlank(methodName));
 
 		Class<?>[] newClassParam = new Class[parameters.length];
 		for (int i = 0; i < parameters.length; i++) {
