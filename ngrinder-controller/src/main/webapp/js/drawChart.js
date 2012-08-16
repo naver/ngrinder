@@ -70,7 +70,9 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 		},
 		highlighter : {
 			show : true,
-			sizeAdjust : 3
+			sizeAdjust : 3,
+			tooltipAxes: 'y',
+			formatString: '<table class="jqplot-highlighter"><tr><td>%s</td></tr></table>'
 		},
 		cursor : {
 			showTooltip : false,
