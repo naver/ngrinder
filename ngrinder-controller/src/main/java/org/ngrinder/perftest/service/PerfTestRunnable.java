@@ -88,10 +88,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
 	public void startTest() {
-		//return if there is no available agents.
-		if (agentManager.getAllFreeAgents() == null || agentManager.getAllFreeAgents().size() ==0) {
-			return;
-		}
 		// Block if the count of testing exceed the limit
 		if (!perfTestService.canExecuteTestMore()) {
 			// LOG MORE
