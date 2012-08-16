@@ -27,6 +27,8 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +40,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
@@ -68,7 +71,8 @@ import freemarker.template.Template;
 /**
  * File entry service class.<br/>
  * 
- * This class is responsible for creating user repo whenever user is created and connection b/w user and underlying svn.
+ * This class is responsible for creating user repo whenever user is created and connection b/w user
+ * and underlying svn.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -154,7 +158,8 @@ public class FileEntryService {
 	}
 
 	private SVNURL createUserRepo(User user, File newUserDirectory) throws SVNException {
-		return svnClientManager.getAdminClient().doCreateRepository(newUserDirectory, user.getUserId(), true, true);
+		return svnClientManager.getAdminClient().doCreateRepository(newUserDirectory, user.getUserId(), true,
+						true);
 	}
 
 	private File getUserRepoDirectory(User user) {
@@ -286,6 +291,18 @@ public class FileEntryService {
 		fileEntityRepository.delete(user, fileList.toArray(new String[] {}));
 	}
 
+	String getTestNameFromUrl(String urlString) {
+		URL url;
+		try {
+			// FIXME : it's better to include path here...
+			url = new URL(urlString);
+			urlString = (url.getHost() + url.getPath()).replaceAll("[\\/\\.\\&\\?\\%\\=]", "_");
+			return "test_for_" + urlString;
+		} catch (MalformedURLException e) {
+			throw new NGrinderRuntimeException("Error while translating " + urlString, e);
+		}
+	}
+
 	/**
 	 * Create new FileEntry.
 	 * 
@@ -306,6 +323,25 @@ public class FileEntryService {
 		fileEntry.setPath(filePath);
 		fileEntry.setContent(loadFreeMarkerTemplate(user, url));
 		return fileEntry;
+	}
+
+	/**
+	 * Create new FileEntry for the url.
+	 * 
+	 * @param user
+	 *            user
+	 * @param urlString
+	 *            url to be tested.
+	 * @return created new {@link FileEntry}
+	 */
+	public FileEntry prepareNewEntryForQuickTest(User user, String urlString) {
+		String testNameFromUrl = getTestNameFromUrl(urlString);
+		addFolder(user, "", testNameFromUrl);
+		// There might be race condition here... What if a user changes the SVN repo while saving
+		// newEntry??
+		FileEntry newEntry = prepareNewEntry(user, "/" + testNameFromUrl, "script.py", urlString);
+		save(user, newEntry);
+		return getFileEntry(user, testNameFromUrl + "/" + "script.py");
 	}
 
 	/**
@@ -337,7 +373,8 @@ public class FileEntryService {
 
 	public String getSvnUrl(User user, String path) {
 		String contextPath = httpContainerContext.getCurrentRequestUrlFromUserRequest();
-		StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url", contextPath));
+		StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url",
+						contextPath));
 		url.append("/svn/").append(user.getUserId());
 		if (StringUtils.isNotEmpty(path)) {
 			url.append("/").append(path.trim());

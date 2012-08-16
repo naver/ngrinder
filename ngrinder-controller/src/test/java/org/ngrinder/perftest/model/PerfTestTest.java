@@ -23,22 +23,24 @@
 package org.ngrinder.perftest.model;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
 
 import org.junit.Test;
+import org.ngrinder.common.constant.NGrinderConstants;
 
 /**
  * Class description.
- *
+ * 
  * @author Mavlarn
  * @since
  */
 public class PerfTestTest {
-	
+
 	@Test
-	public void testGetTargetHostIp () {
+	public void testGetTargetHostIp() {
 		PerfTest test = new PerfTest();
 		test.setTargetHosts("aaa.com:1.1.1.1");
 		List<String> ipList = test.getTargetHostIP();
@@ -51,8 +53,8 @@ public class PerfTestTest {
 		test.setTargetHosts("1.1.1.1");
 		ipList = test.getTargetHostIP();
 		assertThat(ipList.get(0), is("1.1.1.1"));
-		
-		//multiple hosts
+
+		// multiple hosts
 		test.setTargetHosts("aaa.com:1.1.1.1,aaabb.com:1.1.1.2");
 		ipList = test.getTargetHostIP();
 		assertThat(ipList.get(1), is("1.1.1.2"));
@@ -64,7 +66,17 @@ public class PerfTestTest {
 		test.setTargetHosts("aaa.com:1.1.1.1,1.1.1.2");
 		ipList = test.getTargetHostIP();
 		assertThat(ipList.get(1), is("1.1.1.2"));
-		
+
+	}
+
+	@Test
+	public void testAddProgressMessage() {
+		PerfTest test = new PerfTest();
+		for (int i = 0; i < 1000; i++) {
+			test.addProgressMessage("HELLO");
+			assertThat(test.getProgressMessage().length(),
+							lessThan(NGrinderConstants.MAX_STACKTRACE_STRING_SIZE));
+		}
 	}
 
 }

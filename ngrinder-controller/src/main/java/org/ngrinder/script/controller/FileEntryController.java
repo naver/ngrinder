@@ -34,6 +34,7 @@ import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.service.FileEntryService;
+import org.ngrinder.script.service.ScriptValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.common.base.Predicate;
@@ -61,6 +63,20 @@ public class FileEntryController extends NGrinderBaseController {
 
 	@Autowired
 	private FileEntryService fileEntryService;
+
+	@Autowired
+	private ScriptValidationService scriptValidationService;
+
+	/**
+	 * Validate the script
+	 * @param user
+	 * @param scriptEntry
+	 * @return
+	 */
+	@RequestMapping(value = "/validate", method = RequestMethod.POST)
+	public @ResponseBody String validate (User user, FileEntry scriptEntry) {
+		return scriptValidationService.validateScript(user, scriptEntry, false);
+	}
 
 	/**
 	 * Get the list of file entries for the given user.

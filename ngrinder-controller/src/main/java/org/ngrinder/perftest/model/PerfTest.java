@@ -44,8 +44,8 @@ import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.model.BaseModel;
 
 /**
- * Performance Test Entity Use Create user of BaseModel as test owner, use create date of BaseModel as create time, but
- * the created time maybe not the test starting time.
+ * Performance Test Entity Use Create user of BaseModel as test owner, use create date of BaseModel
+ * as create time, but the created time maybe not the test starting time.
  * 
  */
 @Entity
@@ -145,6 +145,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/** The path used for file distribution */
 	private String distributionPath;
 
+	@Column(length = MAX_STACKTRACE_STRING_SIZE)
+	private String progressMessage;
+
 	public String getTestName() {
 		return testName;
 	}
@@ -242,10 +245,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	/**
-	 * Get ip address of target hosts.
-	 * if target hosts 'a.com:1.1.1.1'    add ip: '1.1.1.1'
-	 * if target hosts ':1.1.1.1'    add ip: '1.1.1.1'
-	 * if target hosts '1.1.1.1'    add ip: '1.1.1.1'
+	 * Get ip address of target hosts. if target hosts 'a.com:1.1.1.1' add ip: '1.1.1.1' if target
+	 * hosts ':1.1.1.1' add ip: '1.1.1.1' if target hosts '1.1.1.1' add ip: '1.1.1.1'
+	 * 
 	 * @return
 	 */
 	public List<String> getTargetHostIP() {
@@ -257,7 +259,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 				targetIPList.add(addresses[addresses.length - 1]);
 			} else {
 				targetIPList.add(hosts);
-			}			
+			}
 		}
 		return targetIPList;
 	}
@@ -459,4 +461,27 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
+	public String getProgressMessage() {
+		return StringUtils.defaultIfEmpty(progressMessage, "");
+	}
+
+	public void setProgressMessage(String progressMessage) {
+		this.progressMessage = progressMessage;
+	}
+
+	public void addProgressMessage(String message) {
+		if (progressMessage == null) {
+			progressMessage = new String();
+		}
+
+		if (message.equals(progressMessage)) {
+			return;
+		}
+		progressMessage = progressMessage + "\n" + message;
+		if (progressMessage.length() >= (MAX_STACKTRACE_STRING_SIZE / 2)) {
+			progressMessage = progressMessage.substring(Math.abs(MAX_STACKTRACE_STRING_SIZE
+							- progressMessage.length()));
+			progressMessage = progressMessage.substring(progressMessage.indexOf("\n"));
+		}
+	}
 }

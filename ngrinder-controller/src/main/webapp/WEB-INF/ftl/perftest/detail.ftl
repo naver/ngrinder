@@ -597,7 +597,7 @@ div.chart {
 	<script src="${req.getContextPath()}/plugins/datepicker/js/bootstrap-datepicker.js"></script>
 	<script src="${req.getContextPath()}/js/rampup.js"></script>
 	<script src="${req.getContextPath()}/js/bootstrap-slider.min.js"></script>
-
+ 	<script src="${req.getContextPath()}/js/queue.js"></script>
 	<script>
 	   var jqplotObj;
 	   var objTimer;
@@ -623,6 +623,7 @@ div.chart {
 			   durationMap[i] = durationMap[i-1] + 60*24;
 		   }
 	   }
+	   var test_tps_data = new Queue();
 	   $(document).ready(function() {
 				var date = new Date();
 				$("#sDateInput").val(('0'+date.getFullYear()).substr(-4,4)+'-'+('0'+(date.getMonth() +1)).substr(-2,2)+'-'+ ('0'+date.getDate()).substr(-2,2));
@@ -1006,12 +1007,19 @@ div.chart {
 						$("#process_data").text(refreshDiv.find("#input_process").val());
 						$("#thread_data").text(refreshDiv.find("#input_thread").val());
 						
-						$("#runningTps").empty();
-						showChart('runningTps', refreshDiv.find("#tpsChartData").val());
+						
+						if (test_tps_data.getSize() == 60) {
+							test_tps_data.deQueue();
+						}
+						
+						test_tps_data.enQueue(refreshDiv.find("#tpsChartData").val());
+						
+						//alert(test_tps_data.aElement);
+						
+						showChart('runningTps',test_tps_data.toString());
 					}else{
 					if (objTimer){
 							window.clearInterval(objTimer);
-							//window.clearInterval(countTime);
 						}
 					}
 				});
@@ -1021,7 +1029,7 @@ div.chart {
             	if (jqplotObj) {
             		jqplotObj.destroy();
             	}
-				
+				$("#runningTps").empty();
 				jqplotObj = drawChart('TPS', containerId, data);
             }
             

@@ -27,8 +27,6 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.common.util.Preconditions.checkValidURL;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,7 +83,7 @@ public class PerfTestController extends NGrinderBaseController {
 	private PerfTestService perfTestService;
 
 	@Autowired
-	private FileEntryService fileEntiryService;
+	private FileEntryService fileEntryService;
 
 	@Autowired
 	private AgentManager agentManager;
@@ -145,54 +143,38 @@ public class PerfTestController extends NGrinderBaseController {
 		}
 
 		model.addAttribute(PARAM_TEST, test);
-		model.addAttribute(PARAM_SCRIPT_LIST, fileEntiryService.getAllFileEntries(user, FileType.PYTHON_SCRIPT));
+		model.addAttribute(PARAM_SCRIPT_LIST, fileEntryService.getAllFileEntries(user, FileType.PYTHON_SCRIPT));
+		addDefaultAttributeOnMode(model);
+		return "perftest/detail";
+	}
+
+	public void addDefaultAttributeOnMode(ModelMap model) {
 		model.addAttribute(PARAM_CURRENT_FREE_AGENTS_COUNT, agentManager.getAllFreeAgents().size());
 		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, agentManager.getMaxAgentSizePerConsole());
 		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
 		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
 		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour() - 1);
-		return "perftest/detail";
-	}
-
-	private String getTestNameFromUrl(String urlString) {
-		URL url;
-		try {
-			url = new URL(urlString);
-			return "test_for_" + StringUtils.replace(url.getHost(), ".", "_");
-		} catch (MalformedURLException e) {
-			throw new NGrinderRuntimeException("Error while translating " + urlString, e);
-		}
 	}
 
 	/**
-	 * Get performance test detail on give perf test id
+	 * get details view for quickStart
 	 * 
 	 * @param user
 	 *            user
+	 * @param urlString
+	 *            url string to be tested.
 	 * @param model
 	 *            model
-	 * @param id
-	 *            performance test id
 	 * @return "perftest/detail"
 	 */
 	@RequestMapping("/quickStart")
 	public String getQuickStart(User user, @RequestParam(value = "url", required = true) String urlString,
 			ModelMap model) {
 		checkValidURL(urlString);
-		String testNameFromUrl = getTestNameFromUrl(urlString);
-		fileEntiryService.addFolder(user, "", testNameFromUrl);
-		FileEntry prepareNewEntry = fileEntiryService.prepareNewEntry(user, "/" + testNameFromUrl, "script.py",
-				urlString);
-		fileEntiryService.save(user, prepareNewEntry);
-
-		FileEntry newOne = fileEntiryService.getFileEntry(user, testNameFromUrl + "/" + "script.py");
 		List<FileEntry> scriptList = new ArrayList<FileEntry>();
-		scriptList.add(newOne);
+		scriptList.add(fileEntryService.prepareNewEntryForQuickTest(user, urlString));
 		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
-		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, agentManager.getMaxAgentSizePerConsole());
-		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
-		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
-		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour() - 1);
+		addDefaultAttributeOnMode(model);
 		return "perftest/detail";
 	}
 
@@ -229,7 +211,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 * 
 	 * @param model
 	 * @param newVuser
-	 *            how many vusers whil be used.
+	 *            how many vusers will be used.
 	 * @return JSON
 	 */
 	@RequestMapping(value = "/updateVuser")
@@ -261,7 +243,9 @@ public class PerfTestController extends NGrinderBaseController {
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_ICON, each.getStatus().getIconName());
 			// FIXME each.getLastModifiedDateToStr() use the server side time, need to consider
 			// locale later.
-			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_MESSAGE, each.getLastModifiedDateToStr());
+
+			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_MESSAGE, StringUtils.replace(
+					each.getProgressMessage() + "\n" + each.getLastModifiedDateToStr(), "\n", "<br/>"));
 			statusList.add(rtnMap);
 		}
 		return JSONUtil.toJson(statusList);
@@ -290,7 +274,7 @@ public class PerfTestController extends NGrinderBaseController {
 		if (StringUtils.isEmpty(scriptPath)) {
 			return JSONUtil.toJson(fileStringList);
 		}
-		List<FileEntry> fileList = fileEntiryService.getLibAndResourceEntries(user, scriptPath);
+		List<FileEntry> fileList = fileEntryService.getLibAndResourceEntries(user, scriptPath);
 		for (FileEntry each : fileList) {
 			fileStringList.add(each.getPath());
 		}

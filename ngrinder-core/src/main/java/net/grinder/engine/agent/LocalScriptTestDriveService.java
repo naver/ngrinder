@@ -32,6 +32,7 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.communication.FanOutStreamSender;
 import net.grinder.engine.common.ScriptLocation;
 import net.grinder.util.Directory;
+import net.grinder.util.GrinderClassPathUtils;
 import net.grinder.util.thread.Condition;
 
 import org.apache.commons.io.FilenameUtils;
@@ -42,8 +43,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Script validation service.
  * 
- * It works on local instead of remote agent. The reason I located this class in ngrinder-core is... some grinder core
- * class doesn't have public access..
+ * It works on local instead of remote agent. The reason I located this class in ngrinder-core is...
+ * some grinder core class doesn't have public access..
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -107,20 +108,20 @@ public class LocalScriptTestDriveService {
 			properties.setProperty("grinder.jvm.classpath", buildCustomClassPath(base));
 
 			AgentIdentityImplementation agentIndentity = new AgentIdentityImplementation("validation");
-			Properties filterSystemClassPath = AgentImplementationEx.filterSystemClassPath(System.getProperties(),
-					LOGGER);
 
-			// Add the script base path as a first classpath so that logback_worker.xml can be found
-			filterSystemClassPath.setProperty("java.class.path", base.getAbsolutePath() + File.pathSeparator
-					+ filterSystemClassPath.getProperty("java.class.path"));
+			String newClassPath = GrinderClassPathUtils.buildClasspathBasedOnCurrentClassLoader(LOGGER);
+			LOGGER.debug("Validation Class Path " + newClassPath);
 
+			Properties systemProperties = new Properties();
+			systemProperties.put("java.class.path", base.getAbsolutePath() + File.pathSeparator
+							+ newClassPath);
 			Directory workingDirectory = new Directory(base);
 			final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
-					filterSystemClassPath, jvmArguments, workingDirectory);
+							systemProperties, jvmArguments, workingDirectory);
 
 			ScriptLocation scriptLocation = new ScriptLocation(workingDirectory, script);
 			ProcessWorkerFactory workerFactory = new ProcessWorkerFactory(workerCommandLine, agentIndentity,
-					fanOutStreamSender, false, scriptLocation, properties);
+							fanOutStreamSender, false, scriptLocation, properties);
 
 			workerLauncher = new WorkerLauncher(1, workerFactory, m_eventSynchronisation, LOGGER);
 
@@ -137,7 +138,7 @@ public class LocalScriptTestDriveService {
 					}
 					if (waitingCount++ > maximumWaitingCount) {
 						LOGGER.error("Validation should be performed within {}. Stop it forcely", sleeptime
-								* waitingCount);
+										* waitingCount);
 						workerLauncher.destroyAllWorkers();
 						stopByTooMuchExecution = true;
 						break;

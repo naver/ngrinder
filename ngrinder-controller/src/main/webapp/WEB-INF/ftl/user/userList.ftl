@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>nGrinder User List</title>
 	<#include "../common/common.ftl">
 	<#include "../common/datatables.ftl">
+	<title><@spring.message "user.list.title"/></title>
 </head>
 
 <body>
@@ -16,21 +16,21 @@
 
 			<div class="span10">
 				<div class="page-header pageHeader">
-					<h3>User List</h3>
+					<h3><@spring.message "user.list.header"/></h3>
 				</div>
 				<div class="well form-inline searchBar">
 					<input type="text" class="input-medium search-query span4"
 						placeholder="Keywords" id="searchText" value="${keywords!}">
-					<button type="submit" class="btn" id="search_user"><i class="icon-search"></i> Search</button>
+					<button type="submit" class="btn" id="search_user"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
 					<span class="pull-right">
 						<a class="btn" href="${req.getContextPath()}/user/detail" id="createBtn"  data-toggle="modal">
 							<i class="icon-user"></i>
-							Create User
+							<@spring.message "user.list.button.create"/>
 						</a>
 					
 						<a href="javascript:deleteCheckedUsers()" class="btn btn-danger">
 						<i class="icon-remove"></i>
-						Delete selected Users
+						<@spring.message "user.list.button.delete"/>
 					</a> 
 				</span>
 					
@@ -39,21 +39,21 @@
 					<colgroup>
                         <col width="30">
                         <col width="150">
-                        <col width="150">
-                        <col>
                         <col width="130">
-                        <col width="42">
-                        <col width="40">
+                        <col>
+                        <col width="150">
+                        <col width="45">
+                        <col width="45">
                     </colgroup>
 					<thead>
 						<tr>
 							<th><input type="checkbox" class="checkbox" value=""></th>
-							<th>User Name</th>
-							<th>Create Date</th>
-							<th class="noClick">Description</th>
-							<th>Role</th>
-							<th class="noClick">Edit</th>
-							<th class="noClick">Del</th>
+							<th><@spring.message "user.option.name"/></th>
+							<th><@spring.message "user.option.role"/></th>
+							<th class="noClick"><@spring.message "user.option.description"/></th>
+							<th><@spring.message "user.list.table.date"/></th>
+							<th class="noClick"><@spring.message "user.list.table.edit"/></th>
+							<th class="noClick"><@spring.message "user.list.table.delete"/></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -62,13 +62,13 @@
 							<td><input type="checkbox" id="user_info_check" <#if user.userId == "admin">disabled</#if> value="${user.userId}" /></td>
 							<td>
 								<a href="${req.getContextPath()}/user/detail?userId=${user.userId}">${user.userName!}</a></td>
+							<td>${user.role}</td>
+							<td class="ellipsis">${user.description!}</td>
 							<td>
 								<#if user.createdDate?has_content>
 									${user.createdDate?string("yyyy/MM/dd HH:mm:ss")}
 								</#if>
 							</td>
-							<td class="ellipsis">${user.description!}</td>
-							<td>${user.role}</td>
 							<td>
 								<a href="${req.getContextPath()}/user/detail?userId=${user.userId}">
 									<i class="icon-edit"></i>
@@ -118,7 +118,7 @@
 		function deleteCheckedUsers() {
 			var list = $("input[id='user_info_check']:checked");
 			if(list.length == 0) {
-				alert("Please select at least 1 user.");
+				showErrorMsg("<@spring.message "user.list.alert.deleteCheck"/>");
 				return;
 			}
 			var checkedUser = [];
@@ -132,7 +132,7 @@
 		}
 		
 		function deleteUsers(ids) {
-			if (confirm("Do you want to delete user(s): " + ids + "?")) {
+			if (confirm("<@spring.message "user.list.confirm.delete"/> " + ids + "?")) {
 				document.location.href="${req.getContextPath()}/user/delete?userIds=" + ids;
 			}
 		}
