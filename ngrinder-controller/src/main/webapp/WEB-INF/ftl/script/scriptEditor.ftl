@@ -133,22 +133,17 @@
 			  showInformation("Validating script......");
 			});
 
+			var scriptPath = $("#scriptNameInput").val();
 			$.ajax({
 		  		url: "${req.getContextPath()}/script/validate",
 		    	async: true,
-				dataType:'json',
-				data: {'scriptContent': scriptContent},
+				data: {'path':scriptPath, 'scriptContent': scriptContent},
 		    	success: function(res) {
-		    		if (res.success) {
-						var validationInfo = "";
-						$.each(res, function(i,item){
-							validationInfo = validationInfo + "\n" + item + "\n";
-						});
-
-						$('#validateRsPre').text(validationInfo);
-		    		} else {
-		    			showErrorMsg("Validation error:" + res.message);
-		    		}
+					var validationInfo = "";
+					$.each(res, function(i,item){
+						validationInfo = validationInfo + "\n" + item + "\n";
+					});
+					$('#validateRsPre').text(validationInfo);
 		    	},
 		    	error: function() {
 		    		showErrorMsg("Validate Script error.");
