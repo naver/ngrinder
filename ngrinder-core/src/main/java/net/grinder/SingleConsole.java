@@ -105,6 +105,8 @@ public class SingleConsole implements Listener, SampleListener {
 
 	private File reportPath;
 	private NumberFormat formatter = new DecimalFormat("###.###");
+	private NumberFormat simpleFormatter = new DecimalFormat("###");
+
 	private Map<String, Object> statisticData;
 
 	/**
@@ -391,7 +393,6 @@ public class SingleConsole implements Listener, SampleListener {
 		return notFinishedWorkerCount == 0 || workingThreadNum == 0;
 	}
 
-
 	public void addTpsValue(double newValue) {
 		tpsValue = newValue;
 	}
@@ -406,7 +407,6 @@ public class SingleConsole implements Listener, SampleListener {
 
 	@Override
 	public void update(StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-
 		double tps = sampleModel.getTPSExpression().getDoubleValue(intervalStatistics);
 		// If the tps is low that it's can be the agents or scripts goes wrong.
 		if (tps < 0.001) {
@@ -423,7 +423,7 @@ public class SingleConsole implements Listener, SampleListener {
 			}
 		} else {
 			TPS_LESSTHAN_ZREO_TIME = null;
-			//only if tps value is not too small ,It should be displayed 
+			// only if tps value is not too small ,It should be displayed
 			addTpsValue(tps);
 		}
 
@@ -460,7 +460,6 @@ public class SingleConsole implements Listener, SampleListener {
 	 * To get statistics data when test is running
 	 */
 	private Map<String, Object> getStatistics() {
-
 		Map<String, Object> result = new HashMap<String, Object>();
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
@@ -491,13 +490,13 @@ public class SingleConsole implements Listener, SampleListener {
 				// Tests
 				Double tests = (Double) statistics.get("Tests");
 				Double errors = (Double) statistics.get("Errors");
-				statistics.put("TestsStr", formatter.format(tests));
-				statistics.put("ErrorsStr", formatter.format(errors));
+				statistics.put("TestsStr", simpleFormatter.format(tests));
+				statistics.put("ErrorsStr", simpleFormatter.format(errors));
 
 				Double lastTests = (Double) lastStatistics.get("Tests");
 				Double lastErrors = (Double) lastStatistics.get("Errors");
-				lastStatistics.put("TestsStr", formatter.format(lastTests));
-				lastStatistics.put("ErrorsStr", formatter.format(lastErrors));
+				lastStatistics.put("TestsStr", simpleFormatter.format(lastTests));
+				lastStatistics.put("ErrorsStr", simpleFormatter.format(lastErrors));
 
 				cumulativeStatistics.add(statistics);
 				lastSampleStatistics.add(lastStatistics);
@@ -515,8 +514,8 @@ public class SingleConsole implements Listener, SampleListener {
 
 		Double tests = (Double) totalStatistics.get("Tests");
 		Double errors = (Double) totalStatistics.get("Errors");
-		totalStatistics.put("TestsStr", formatter.format(tests));
-		totalStatistics.put("ErrorsStr", formatter.format(errors));
+		totalStatistics.put("TestsStr", simpleFormatter.format(tests));
+		totalStatistics.put("ErrorsStr", simpleFormatter.format(errors));
 
 		result.put("totalStatistics", totalStatistics);
 		result.put("cumulativeStatistics", cumulativeStatistics);
@@ -586,6 +585,10 @@ public class SingleConsole implements Listener, SampleListener {
 	public void setReportPath(File reportDir) {
 		checkNotNull(reportDir, "report folder should not be empty!").mkdirs();
 		this.reportPath = reportDir;
+	}
+
+	public void sendStopMessageToAgents() {
+		getConsoleComponent(ProcessControl.class).stopAgentAndWorkerProcesses();
 	}
 
 }

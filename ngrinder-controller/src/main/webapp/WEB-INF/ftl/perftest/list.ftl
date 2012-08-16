@@ -68,34 +68,28 @@
 								<tr id="tr${test.id}">
 									<td style="text-align:center">
 										<input type="checkbox" class="checkbox perf_test" value="${test.id}" 
-											<#if !(test.status.isDeletable())>disabled</#if>>
+											<#if !(test.status.isDeletable())>disabled</#if> >
 									</td>
 									<td class="ellipsis"  style="text-align:center" id="row_${test.id}">
-										<div class="ball" id="ball_${test.id}"
-										<#if test.status == 'STOP_ON_ERROR'>
-											 rel="popover"
-											 data-content="Error on ${test.testErrorCause} phase. ${(test.testErrorStackTrace)! ?replace('\n', '<br/>')?html}" 
-											 data-original-title="${test.status}"
-										<#else>
-											 rel="popover"
-											 data-content="${test.createdDate}" 
-											 data-original-title="${test.status}"
-										</#if>
-										>
+										<div class="ball" id="ball_${test.id}" rel="popover" data-content="${test.createdDate}" data-original-title="${test.status}">
 											<img src="${req.getContextPath()}/img/ball/${test.status.iconName}"/>
 										</div>
 									</td>
-									<td class="ellipsis" >   
+									<td class="ellipsis">   
 										<div rel="popover"
 											 data-content="${test.description?replace('\n', '<br/>')?html}  &lt;br&gt;&lt;br&gt; modified at <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if>"  
 											 data-original-title="${test.testName}">
-											<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
-											<#if test.status.isDeletable()><a href="javascript:void(0);"><i class="icon-remove test-remove" sid="${test.id}"></i></a></#if>
-											<#if test.status.isStoppable()><a href="javascript:void(0);"><i class="icon-remove test-remove" sid="${test.id}"></i></a></#if>
+											<span class="ellipsis" style="width:30px"> 
+												<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
+											</span>
+											<span style="width:20px" class="pull-right">
+												<#if test.status.isDeletable()><a href="javascript:void(0);"><i title="delete" class="icon-remove test-remove" sid="${test.id}"></i></a></#if>
+												<#if test.status.isStoppable()><a href="javascript:void(0);"><i title="stop" class="icon-stop test-stop" sid="${test.id}"></i></a></#if>
+											</span>
 										</div>
 
 									</td>
-									<td class="ellipsis">
+									<td >
 										<a href="${req.getContextPath()}/script/detail/${test.scriptName}" title="${test.scriptName}">${test.scriptName}</a> 
 									</td>
 									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if></td>

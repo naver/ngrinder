@@ -54,10 +54,12 @@ public enum Status {
 	TESTING(StatusCategory.TESTING),
 	/** Waiting for test is finishing. */
 	TESTING_FINISHED(StatusCategory.TESTING),
-	/** Waiting for test is finishing. */
+	/** Detected Abnormal testing. */
 	ABNORMAL_TESTING(StatusCategory.TESTING),
 	/** Test finished. */
 	FINISHED(StatusCategory.FINISHED),
+	/** Stopped by user request. */
+	STOP_BY_USER_REQUEST(StatusCategory.STOP),
 	/** Stopped by error. */
 	STOP_ON_ERROR(StatusCategory.STOP),
 	/** Test cancel. */
@@ -96,8 +98,7 @@ public enum Status {
 	public static Status[] getProcessingOrTestingTestStatus() {
 		List<Status> status = new ArrayList<Status>();
 		for (Status each : values()) {
-			if (each.getCategory() == StatusCategory.PROGRESSING
-							|| each.getCategory() == StatusCategory.TESTING) {
+			if (each.getCategory() == StatusCategory.PROGRESSING || each.getCategory() == StatusCategory.TESTING) {
 				status.add(each);
 			}
 		}

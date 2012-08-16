@@ -56,7 +56,7 @@ public class GrinderClassPathUtils {
 			String name = FilenameUtils.getName(eachClassPath);
 			// Exclude not necessary jars..
 			if ("jar".equals(FilenameUtils.getExtension(name))
-							&& (name.contains("ngrinder") || eachClassPath.contains("spring"))) {
+							&& (name.contains("ngrinder") || name.contains("spring"))) {
 				continue;
 			}
 			// Include necessary jars..

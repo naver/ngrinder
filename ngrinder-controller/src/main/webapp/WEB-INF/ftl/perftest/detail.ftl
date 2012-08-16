@@ -154,13 +154,8 @@ div.chart {
 											<div class="controls">
 												<div class="input-append">
 													<input type="text" class="input required positiveNumber span2" number_limit="${(maxAgentSizePerConsole)}"
-														id="agentCount" name="agentCount" value="${(test.agentCount)!}">
-														<span class="add-on">
-															<@spring.message "perfTest.configuration.max"/>
-															${(maxAgentSizePerConsole)}
-														</span>
-												</div>
-												<span class="badge badge-info pull-right" id="vuserTotal"><@spring.message "perfTest.configuration.availAgent"/> ${currentFreeAgentsCount}</span>
+														id="agentCount" name="agentCount" value="${(test.agentCount)!}"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
+										 		</div>
 											</div>
 										</div>
 										<div class="control-group">
@@ -170,13 +165,12 @@ div.chart {
 													<input type="text" class="input required positiveNumber span2" rel="popover"
 														number_limit="${(maxVuserPerAgent)}" id="vuserPerAgent" name="vuserPerAgent"
 														value="${(test.vuserPerAgent)!}" data-content="Input vuser count for every agent."
-														data-original-title="Vuser count">
-														<span class="add-on">
+														data-original-title="Vuser count"><span class="add-on">
 															<@spring.message "perfTest.configuration.max"/> ${(maxVuserPerAgent)}
 														</span>
 												</div>
 												<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 /> 
-													<span class="badge badge-info pull-right" id="vuserTotal">Vuser: ${vuserTotal}</span>
+												<span class="badge badge-info pull-right" id="vuserTotal">Vuser: ${vuserTotal}</span>
 											</div>
 										</div>
 										<div class="control-group">

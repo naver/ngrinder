@@ -25,8 +25,6 @@ package net.grinder.engine.agent;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -59,8 +57,6 @@ import net.grinder.util.Directory;
 import net.grinder.util.GrinderClassPathUtils;
 import net.grinder.util.thread.Condition;
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 

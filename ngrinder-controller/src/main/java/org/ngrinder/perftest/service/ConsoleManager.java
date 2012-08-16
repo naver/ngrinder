@@ -195,11 +195,19 @@ public class ConsoleManager {
 	public void returnBackConsole(SingleConsole console) {
 		synchronized (this) {
 			try {
-				console.shutdown();
+				console.sendStopMessageToAgents();
 			} catch (Exception e) {
 				LOG.error("Exception occurs while shuttdowning console in returnback process", e);
 				// But the port is getting back.
 				// FIXME : Is it OK?
+			} finally {
+				try {
+					console.shutdown();
+				} catch (Exception e) {
+					LOG.error("Exception occurs while shuttdowning console in returnback process", e);
+					// But the port is getting back.
+					// FIXME : Is it OK?
+				}
 			}
 			ConsoleEntry consoleEntry = new ConsoleEntry(console.getConsolePort());
 
@@ -230,7 +238,6 @@ public class ConsoleManager {
 	public Integer getAvailableConsoleSize() {
 		return consoleQueue.size();
 	}
-
 
 	/**
 	 * Get {@link SingleConsole} instance which uses the given port.

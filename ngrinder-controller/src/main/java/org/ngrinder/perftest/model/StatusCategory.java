@@ -32,7 +32,7 @@ public enum StatusCategory {
 	/**
 	 * Ready to run..
 	 */
-	PREPARE("blue.png", true, true),
+	PREPARE("blue.png", false, true),
 	/**
 	 * Processing.
 	 */
@@ -53,7 +53,7 @@ public enum StatusCategory {
 
 	private final boolean stoppable;
 	private final boolean deletable;
-	private final String iconName;
+	private final String iconName; 
 
 	StatusCategory(String iconName, boolean stoppable, boolean deletable) {
 		this.iconName = iconName;

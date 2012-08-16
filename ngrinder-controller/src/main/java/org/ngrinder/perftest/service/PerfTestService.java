@@ -25,6 +25,7 @@ package org.ngrinder.perftest.service;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.common.util.Preconditions.checkNotZero;
+import static org.ngrinder.perftest.model.Status.getProcessingOrTestingTestStatus;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.createdBy;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.emptyPredicate;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.idSetEqual;
@@ -625,4 +626,29 @@ public class PerfTestService implements NGrinderConstants {
 		return getPerfTestCount(null, Status.getProcessingOrTestingTestStatus()) < getMaximumConcurrentTestCount();
 	}
 
+	@Transactional
+	public void stopPerfTest(User user, Long id) {
+		PerfTest perfTest = getPerfTest(id);
+		if (!perfTest.getLastModifiedUser().equals(user)) {
+			return;
+		}
+		perfTest.setStopRequest(true);
+		savePerfTest(perfTest);
+	}
+
+	/**
+	 * Return stop requested test
+	 * 
+	 * @return stop requested perf test
+	 */
+	public List<PerfTest> getStopRequestedPerfTest() {
+		final List<PerfTest> perfTests = getPerfTest(null, getProcessingOrTestingTestStatus());
+		CollectionUtils.filter(perfTests, new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				return (((PerfTest) object).getStopRequest() == true);
+			}
+		});
+		return perfTests;
+	}
 }

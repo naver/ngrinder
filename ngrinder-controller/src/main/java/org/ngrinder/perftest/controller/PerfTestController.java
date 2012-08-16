@@ -267,6 +267,20 @@ public class PerfTestController extends NGrinderBaseController {
 		return JSONUtil.returnSuccess();
 	}
 
+	@RequestMapping(value = "/stopTests", method = RequestMethod.POST)
+	public @ResponseBody
+	String stopPerfTests(User user, ModelMap model, @RequestParam String ids) {
+		String[] idList = StringUtils.split(ids, ",");
+		for (String idStr : idList) {
+			try {
+				perfTestService.stopPerfTest(user, Long.valueOf(idStr));
+			} catch (NumberFormatException e) {
+				LOG.error("Can't delete a test (id=" + idStr + ") : {}", e);
+			}
+		}
+		return JSONUtil.returnSuccess();
+	}
+
 	@RequestMapping(value = "/getResourcesOnScriptFolder")
 	public @ResponseBody
 	String getResourcesOnScriptFolder(User user, @RequestParam String scriptPath) {
