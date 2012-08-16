@@ -73,10 +73,10 @@ div.chart {
 		<form id="testContentForm" name="testContentForm" action="${req.getContextPath()}/perftest/create" method="POST"
 			style="margin-bottom: 0;">
 			<div class="well" style="padding: 10px">
-				<input type="hidden" id="testId" name="id" value="${(test.id)!}"> <input type="hidden" id="threshold"
-					name="threshold" value="${(test.threshold)!"D"}"> <input type="hidden" id="threads" name="threads"
-					value="${(test.threads)!0}"> <input type="hidden" id="processes" name="processes"
-					value="${(test.processes)!0}">
+				<input type="hidden" id="testId" name="id" value="${(test.id)!}"> 
+				<input type="hidden" id="threshold"	name="threshold" value="${(test.threshold)!"D"}"> 
+				<input type="hidden" id="threads" name="threads" value="${(test.threads)!0}"> 
+				<input type="hidden" id="processes" name="processes" value="${(test.processes)!0}">
 
 				<div class="form-horizontal form-horizontal-1">
 					<fieldset>
@@ -96,10 +96,21 @@ div.chart {
 									</span> 
 								</#if>
 								<button type="submit" class="btn btn-primary pull-right" style="margin-left: 5px; margin-right: 70px"
-									data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn"><#if test?? && (test.status !=
-									"SAVED")><@spring.message "perfTest.detail.clone"/><#else><@spring.message "perfTest.detail.save"/></#if> <@spring.message "perfTest.detail.andStart"/></button>
+									data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn">
+									<#if test?? && (test.status != "SAVED")>
+										<@spring.message "perfTest.detail.clone"/>
+									<#else>
+										<@spring.message "perfTest.detail.save"/>
+									</#if>
+									<@spring.message "perfTest.detail.andStart"/>
+								</button>
 								<button type="submit" class="btn btn-success  pull-right" style="margin-left: 5px" id="saveTestBtn">
-									<#if test?? && (test.status != "SAVED")><@spring.message "perfTest.detail.clone"/><#else><@spring.message "perfTest.detail.save"/></#if></button>
+									<#if test?? && (test.status != "SAVED")>
+										<@spring.message "perfTest.detail.clone"/>
+									<#else>
+										<@spring.message "perfTest.detail.save"/>
+									</#if>
+								</button>
 							</div>
 						</div>
 						<div class="control-group" style="margin-bottom: 0">
@@ -113,10 +124,21 @@ div.chart {
 			</div>
 			<div class="tabbable">
 				<ul class="nav nav-tabs" id="homeTab" style="margin-bottom: 5px">
-					<li><a href="#testContent" data-toggle="tab"><@spring.message "perfTest.configuration.testConfiguration"/></a></li> <#if test?? && (test.status == "TESTING")>
-					<li><a href="#runningContent" data-toggle="tab">Test Running</a></li> </#if> <#if test?? && (test.status ==
-					"FINISHED" || test.status == "CANCELED")>
-					<li><a href="#reportContent" data-toggle="tab" id="reportLnk"><@spring.message "perfTest.report.title"/></a></li> </#if>
+					<li><a href="#testContent" data-toggle="tab">
+						<@spring.message "perfTest.configuration.testConfiguration"/></a>
+					</li> 
+					<#if test?? && (test.status == "TESTING")>
+						<li>
+							<a href="#runningContent" data-toggle="tab">Test Running</a>
+						</li>
+					</#if>
+					<#if test?? && (test.status == "FINISHED" || test.status == "CANCELED")>
+						<li>
+							<a href="#reportContent" data-toggle="tab" id="reportLnk">
+								<@spring.message "perfTest.report.title"/>
+							</a>
+						</li>
+					</#if>
 				</ul>
 				<div class="tab-content">
 					<div class="tab-pane" id="testContent">
@@ -132,8 +154,11 @@ div.chart {
 											<div class="controls">
 												<div class="input-append">
 													<input type="text" class="input required positiveNumber span2" number_limit="${(maxAgentSizePerConsole)}"
-														id="agentCount" name="agentCount" value="${(test.agentCount)!}"><span class="add-on"><@spring.message "perfTest.configuration.max"/>
-														${(maxAgentSizePerConsole)}</span>
+														id="agentCount" name="agentCount" value="${(test.agentCount)!}">
+														<span class="add-on">
+															<@spring.message "perfTest.configuration.max"/>
+															${(maxAgentSizePerConsole)}
+														</span>
 												</div>
 												<span class="badge badge-info pull-right" id="vuserTotal"><@spring.message "perfTest.configuration.availAgent"/> ${currentFreeAgentsCount}</span>
 											</div>
@@ -145,19 +170,29 @@ div.chart {
 													<input type="text" class="input required positiveNumber span2" rel="popover"
 														number_limit="${(maxVuserPerAgent)}" id="vuserPerAgent" name="vuserPerAgent"
 														value="${(test.vuserPerAgent)!}" data-content="Input vuser count for every agent."
-														data-original-title="Vuser count"><span class="add-on"><@spring.message "perfTest.configuration.max"/> ${(maxVuserPerAgent)}</span>
+														data-original-title="Vuser count">
+														<span class="add-on">
+															<@spring.message "perfTest.configuration.max"/> ${(maxVuserPerAgent)}
+														</span>
 												</div>
-												<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 /> <span
-													class="badge badge-info pull-right" id="vuserTotal">Vuser: ${vuserTotal}</span>
+												<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 /> 
+													<span class="badge badge-info pull-right" id="vuserTotal">Vuser: ${vuserTotal}</span>
 											</div>
 										</div>
 										<div class="control-group">
 											<label for="scriptName" class="control-label"><@spring.message "perfTest.configuration.script"/></label>
 											<div class="controls">
-												<select id="scriptName" class="required" name="scriptName"> <#if scriptList?? && scriptList?size
-													&gt; 0> <#list scriptList as scriptItem> <#if test?? && scriptItem.fileName == test.scriptName> <#assign
-													isSelected = "selected"/> <#else> <#assign isSelected = ""/> </#if>
-													<option value="${scriptItem.path}" ${isSelected}>${scriptItem.path}</option> </#list> </#if>
+												<select id="scriptName" class="required" name="scriptName"> 
+												<#if scriptList?? && scriptList?size &gt; 0> 
+													<#list scriptList as scriptItem> 
+														<#if test?? && scriptItem.fileName == test.scriptName> 
+															<#assign isSelected = "selected"/> 
+														<#else> 
+															<#assign isSelected = ""/> 
+														</#if>
+														<option value="${scriptItem.path}" ${isSelected}>${scriptItem.path}</option> 
+													</#list> 
+												</#if>
 												</select>
 											</div>
 										</div>
@@ -172,8 +207,10 @@ div.chart {
 											<label class="control-label"><@spring.message "perfTest.configuration.targetHost"/></label>
 											<div class="controls">
 												<div class="div-host"></div>
-												<input type="hidden" name="targetHosts" id="hostsHidden" value="${(test.targetHosts)!}"> <a
-													class="btn pull-right btn-mini" data-toggle="modal" href="#addHostModal"><@spring.message "perfTest.configuration.add"/></a>
+												<input type="hidden" name="targetHosts" id="hostsHidden" value="${(test.targetHosts)!}"> 
+												<a class="btn pull-right btn-mini" data-toggle="modal" href="#addHostModal">
+													<@spring.message "perfTest.configuration.add"/>
+												</a>
 											</div>
 										</div>
 										<hr>
@@ -181,8 +218,9 @@ div.chart {
 											<label class="control-label"> <input type="radio" id="durationChkbox"> <@spring.message "perfTest.configuration.duration"/>
 											</label>
 											<div class="controls docs-input-sizes">
-												<select class="select-item" id="hSelect"></select> : <select class="select-item" id="mSelect"></select> : <select
-													class="select-item" id="sSelect"></select> &nbsp;&nbsp;
+												<select class="select-item" id="hSelect"></select> : 
+												<select class="select-item" id="mSelect"></select> : 
+												<select class="select-item" id="sSelect"></select> &nbsp;&nbsp;
 												<code>HH:MM:SS</code>
 												<input type="hidden" id="duration" class="required positiveNumber" name="duration"
 													value="${(test.duration)!0}">
@@ -199,7 +237,8 @@ div.chart {
 											<div class="controls">
 												<div class="input-append">
 													<input type="text" id="runCount" class="input span2" number_limit="${(maxRunCount)}" name="runCount"
-														value="${(test.runCount)!0}"><span class="add-on"><@spring.message "perfTest.configuration.max"/> ${(maxRunCount)}</span>
+														value="${(test.runCount)!0}">
+													<span class="add-on"><@spring.message "perfTest.configuration.max"/> ${(maxRunCount)}</span>
 												</div>
 											</div>
 										</div>
@@ -223,9 +262,14 @@ div.chart {
 							</div>
 							<div class="span6">
 								<div class="page-header">
-									<label class="checkbox" style="margin-bottom: 0"> <input type="checkbox" id="rampupCheckbox"<#if
-										test?? && test.processes &gt; test.initProcesses>checked</#if> />
-										<h4><@spring.message "perfTest.configuration.rampEnable"/><small> <@spring.message "perfTest.configuration.rampUpDes"/></small></h4>
+									<label class="checkbox" style="margin-bottom: 0"> 
+										<input type="checkbox" id="rampupCheckbox"
+											<#if test?? && test.processes &gt; test.initProcesses>checked</#if> 
+										/>
+										<h4>
+											<@spring.message "perfTest.configuration.rampEnable"/>
+											<small> <@spring.message "perfTest.configuration.rampUpDes"/></small>
+										</h4>
 									</label>
 								</div>
 								<table>
@@ -262,7 +306,9 @@ div.chart {
 														</div>
 													</div>
 													<div class="control-group">
-														<label for="processIncrementInterval" class="control-label"> <@spring.message "perfTest.configuration.processesEvery"/> </label>
+														<label for="processIncrementInterval" class="control-label"> 
+															<@spring.message "perfTest.configuration.processesEvery"/> 
+														</label>
 														<div class="controls">
 															<input type="text" class="input input-mini required positiveNumber" id="processIncrementInterval"
 																name="processIncrementInterval" value="${(test.processIncrementInterval)!1000}">
@@ -347,14 +393,15 @@ div.chart {
 										<div class="control-group">
 											<label for="scriptName" class="control-label">Agents</label>
 											<div class="controls">
-												<span>${(test.agentCount)!}</span><a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal"
-													data-toggle="modal">Info</a>
+												<span>${(test.agentCount)!}</span>
+												<a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
 											</div>
 										</div>
 										<div class="control-group">
 											<label class="control-label">Processes</label>
 											<div class="controls">
-												${(test.processes)!} <span class="badge badge-info pull-right">Running <data id="process_data"></data></span>
+												${(test.processes)!} 
+												<span class="badge badge-info pull-right">Running <data id="process_data"></data></span>
 											</div>
 										</div>
 										<div class="control-group">
@@ -397,9 +444,7 @@ div.chart {
 												Collect Sample Forever
 											</label>
 											<div class="controls">
-												<input type="text" class="input span2"
-													id="collectSample" name="collectSample"
-													value="${(test.collectSample)!1000}">
+												<input type="text" class="input span2" id="collectSample" name="collectSample" value="${(test.collectSample)!1000}">
 												<code>MS</code>
 											</div>
 										</div>
@@ -482,9 +527,12 @@ div.chart {
 					</div>
 				</div>
 			</div>
-			<input type="hidden" id="scheduleInput" name="scheduledTime" /> <#if test??> <input type="hidden" id="testStatus"
-				name="status" value="${(test.status)}"> <#else> <input type="hidden" id="testStatus" name="status"
-				value="SAVED"> </#if>
+			<input type="hidden" id="scheduleInput" name="scheduledTime" /> 
+			<#if test??> 
+				<input type="hidden" id="testStatus" name="status" value="${(test.status)}"> 
+			<#else> 
+				<input type="hidden" id="testStatus" name="status" value="SAVED">
+			</#if>
 		</form>
 		<!--content-->
 		<#include "../common/copyright.ftl">
@@ -533,8 +581,8 @@ div.chart {
 					<div class="control-group">
 						<label class="control-label">Schedule</label>
 						<div class="controls form-inline">
-							<input type="text" class="input span2" id="sDateInput" value="" readyonly>&nbsp; <select id="shSelect"
-								class="select-item"></select> : <select id="smSelect" class="select-item"></select>
+							<input type="text" class="input span2" id="sDateInput" value="" readyonly>&nbsp; 
+							<select id="shSelect" class="select-item"></select> : <select id="smSelect" class="select-item"></select>
 							<code>HH:MM</code>
 						</div>
 					</div>
@@ -630,6 +678,7 @@ div.chart {
 			            $(element).parents('.control-group').addClass('success');
 			        }
 			    });
+			    
 			    $("#addHostBtn").click(function() {
 					var content = [];
 					if (!checkEmptyByID("domainInput")) {
@@ -865,6 +914,7 @@ div.chart {
 			    	}
 			  	});
 			}
+			
 			function initThresholdChkBox() {
 				if ($("#testId").val() == 0 || $("#threshold").val() == "R") { //runcount
 					$("#runcountChkbox").attr("checked", "checked");
@@ -1037,5 +1087,5 @@ div.chart {
     		    });
     	  })();
 		</script>
-</body>
+	</body>
 </html>
