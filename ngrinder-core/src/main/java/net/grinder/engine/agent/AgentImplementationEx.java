@@ -373,10 +373,12 @@ public class AgentImplementationEx implements Agent {
 		m_logger.debug("Total System Class Path in total is " + properties.getProperty("java.class.path", ""));
 		for (String eachClassPath : properties.getProperty("java.class.path", "").split(File.pathSeparator)) {
 			String name = FilenameUtils.getName(eachClassPath);
+			// Exclude not necessary jars..
 			if ("jar".equals(FilenameUtils.getExtension(name))
 					&& (name.contains("ngrinder") || eachClassPath.contains("spring"))) {
 				continue;
 			}
+			// Include necessary jars..
 			m_logger.debug("Each System Class Path in total is " + eachClassPath);
 			if (name.contains("grinder") || name.contains("asm")
 					|| name.contains("picocontainer") || name.contains("jython")

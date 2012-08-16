@@ -152,16 +152,6 @@ public class PerfTestController extends NGrinderBaseController {
 		return "perftest/detail";
 	}
 
-	private String getTestNameFromUrl(String urlString) {
-		URL url;
-		try {
-			url = new URL(urlString);
-			return "test_for_" + StringUtils.replace(url.getHost(), ".", "_");
-		} catch (MalformedURLException e) {
-			throw new NGrinderRuntimeException("Error while translating " + urlString, e);
-		}
-	}
-
 	public void addDefaultAttributeOnMode(ModelMap model) {
 		model.addAttribute(PARAM_CURRENT_FREE_AGENTS_COUNT, agentManager.getAllFreeAgents().size());
 		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, agentManager.getMaxAgentSizePerConsole());
@@ -171,29 +161,22 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get performance test detail on give perf test id
+	 * get details view for quickStart
 	 * 
 	 * @param user
 	 *            user
+	 * @param urlString
+	 *            url string to be tested.
 	 * @param model
 	 *            model
-	 * @param id
-	 *            performance test id
 	 * @return "perftest/detail"
 	 */
 	@RequestMapping("/quickStart")
 	public String getQuickStart(User user, @RequestParam(value = "url", required = true) String urlString,
 					ModelMap model) {
 		checkValidURL(urlString);
-		String testNameFromUrl = getTestNameFromUrl(urlString);
-		fileEntryService.addFolder(user, "", testNameFromUrl);
-		FileEntry prepareNewEntry = fileEntryService.prepareNewEntry(user, "/" + testNameFromUrl,
-						"script.py", urlString);
-		fileEntryService.save(user, prepareNewEntry);
-		
-		FileEntry newOne = fileEntryService.getFileEntry(user, testNameFromUrl + "/" + "script.py");
 		List<FileEntry> scriptList = new ArrayList<FileEntry>();
-		scriptList.add(newOne);
+		scriptList.add(fileEntryService.prepareNewEntryForQuickTest(user, urlString));
 		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
 		addDefaultAttributeOnMode(model);
 		return "perftest/detail";
@@ -294,8 +277,8 @@ public class PerfTestController extends NGrinderBaseController {
 		if (StringUtils.isEmpty(scriptPath)) {
 			return JSONUtil.toJson(new ArrayList<String>());
 		}
-		List<FileEntry> fileEntries = fileEntryService.getFileEntries(user,
-						FilenameUtils.getPath(scriptPath));
+		List<FileEntry> fileEntries = fileEntryService
+						.getFileEntries(user, FilenameUtils.getPath(scriptPath));
 		List<String> fileList = new ArrayList<String>();
 
 		for (FileEntry eachFileEntry : fileEntries) {
