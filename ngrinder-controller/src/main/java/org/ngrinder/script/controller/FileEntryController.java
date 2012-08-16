@@ -73,7 +73,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @param scriptEntry
 	 * @return
 	 */
-	@RequestMapping(value = "/validate")
+	@RequestMapping(value = "/validate", method = RequestMethod.POST)
 	public @ResponseBody String validate (User user, FileEntry scriptEntry) {
 		return scriptValidationService.validateScript(user, scriptEntry, false);
 	}

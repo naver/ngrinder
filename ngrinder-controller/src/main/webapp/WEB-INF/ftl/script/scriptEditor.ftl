@@ -123,11 +123,11 @@
 			});
 
 			$("#validateBtn").on('click', function() {
-				validateScript(true);
+				validateScript();
 			});
 		});
 
-		function validateScript(isTopPosition) {
+		function validateScript() {
 			var scriptContent = editAreaLoader.getValue("display_content");
 			$('#validateBtn').ajaxSend(function() {
 			  showInformation("Validating script......");
@@ -137,7 +137,8 @@
 			$.ajax({
 		  		url: "${req.getContextPath()}/script/validate",
 		    	async: true,
-				data: {'path':scriptPath, 'scriptContent': scriptContent},
+		    	type: "POST",
+				data: {'path':scriptPath, 'content': scriptContent},
 		    	success: function(res) {
 					var validationInfo = "";
 					$.each(res, function(i,item){

@@ -172,7 +172,7 @@ public class NGrinderStarter {
 		URL toolsJarPath = findToolsJarPath();
 		LOG.info("tools.jar is found in {}", checkNotNull(toolsJarPath).toString());
 		ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL",
-						new Object[] { checkNotNull(toolsJarPath) });
+						new Object[] { toolsJarPath });
 		List<String> libString = new ArrayList<String>();
 
 		File libFolder = new File(".", "lib").getAbsoluteFile();
