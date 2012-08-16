@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>nGrinder User Detail</title>
 	<#include "../common/common.ftl">
+	<title><@spring.message "user.detail.title"/></title>
 </head>
 
 <body>
@@ -14,7 +14,7 @@
 			
 			<div class="span10">
 				<div class="page-header pageHeader">
-					<h3>User Infomation</h3>
+					<h3><@spring.message "user.detail.header"/></h3>
 				</div>
 				<#include "userInfo.ftl">
 			</div>

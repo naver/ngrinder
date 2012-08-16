@@ -48,7 +48,6 @@ import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.ConsoleFoundationEx;
 import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
-import net.grinder.console.communication.NGrinderConsoleCommunicationService;
 import net.grinder.console.communication.ProcessControl;
 import net.grinder.console.communication.ProcessControl.Listener;
 import net.grinder.console.communication.ProcessControl.ProcessReports;
@@ -97,8 +96,7 @@ public class SingleConsole implements Listener, SampleListener {
 	private boolean cancel = false;
 
 	// for displaying tps graph in running page
-	private Double[] values = new Double[60];
-	private int cursor = 0;
+	private double tpsValue = 0;
 	private SampleModel sampleModel;
 	private SampleModelViews modelView;
 	private long startTime = 0;
@@ -393,28 +391,13 @@ public class SingleConsole implements Listener, SampleListener {
 		return notFinishedWorkerCount == 0 || workingThreadNum == 0;
 	}
 
-	/**
-	 * Get Tps values,Its length is 60
-	 */
-	public void addTpsValue(Double newValue) {
-		values[cursor] = newValue;
-		if (++cursor >= values.length) {
-			cursor = 0;
-			values = new Double[60];
-		}
+
+	public void addTpsValue(double newValue) {
+		tpsValue = newValue;
 	}
 
-	public String getTpsValues() {
-		StringBuffer str = new StringBuffer("[");
-		for (int i = 0; i < values.length; i++) {
-			str.append(values[i]);
-
-			if (i != (values.length - 1)) {
-				str.append(",");
-			}
-		}
-		str.append("]");
-		return str.toString();
+	public double getTpsValues() {
+		return tpsValue;
 	}
 
 	public long getStartTime() {
@@ -541,8 +524,6 @@ public class SingleConsole implements Listener, SampleListener {
 
 		result.put("tpsChartData", this.getTpsValues());
 
-		ProcessControl processControl = getConsoleComponent(ProcessControl.class);
-		NGrinderConsoleCommunicationService.collectWorkerAndThreadInfo(processControl, result);
 		result.put("success", !this.isAllTestFinished());
 
 		return result;
