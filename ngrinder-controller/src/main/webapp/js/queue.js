@@ -1,5 +1,5 @@
 function Queue() {
-	this.aElement = new Array(60);
+	this.aElement = new Array();
 
 	Queue.prototype.enQueue = function(vElement) {
 		if (arguments.length == 0) {
@@ -50,9 +50,8 @@ function Queue() {
 	};
 
 	Queue.prototype.toString = function() {
-		var sResult = (this.aElement.reverse()).toString();
-		this.aElement.reverse();
-		return sResult;
+		var sResult = this.aElement.toString();
+		return "[" + sResult + "]";
 	};
 	
 	Queue.prototype.getArray = function() {

@@ -156,11 +156,11 @@
             }
             
             function showChart(title, id, data, index, formatYaxis) {
-            	if (jqplot[index]) {
-            		jqplot[index].destroy();
+            	if (jqplots[index]) {
+            		jqplots[index].destroy();
             	}
                 $("#" + id).empty();
-                jqplot[index] = drawChart(title, id, data, formatYaxis);
+                jqplots[index] = drawChart(title, id, data, formatYaxis);
             }
             
             function getChartData(dataObj) {
