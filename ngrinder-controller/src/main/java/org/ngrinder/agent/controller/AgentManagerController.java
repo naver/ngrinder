@@ -24,6 +24,7 @@ package org.ngrinder.agent.controller;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -75,21 +76,21 @@ public class AgentManagerController extends NGrinderBaseController {
 		model.addAttribute("agents", agents);
 
 		File directory = config.getHome().getDownloadDirectory();
-		final String extension = httpContainerContext.isUnixUser() ? "tar.gz" : "zip";
-
-		String[] list = directory.list(new FilenameFilter() {
+		final String contextPath = httpContainerContext.getCurrentRequestUrlFromUserRequest();
+		final List<String> downloads = new ArrayList<String>();
+		directory.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
-				return name.startsWith("ngrinder") && name.endsWith(extension);
+				if (name.startsWith("ngrinder")) {
+					StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url",
+							contextPath));
+					url.append("/agent/download/" + name);
+					downloads.add(url.toString());
+				}
+				return true;
 			}
 		});
-		if (list != null && list.length != 0) {
-			String contextPath = httpContainerContext.getCurrentRequestUrlFromUserRequest();
-			StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url",
-							contextPath));
-			url.append("/agent/download/" + list[0]);
-			model.addAttribute("downloadLink", url.toString());
-		}
+		model.addAttribute("downloadLinks", directory);
 		return "agent/agentList";
 	}
 
@@ -119,11 +120,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/download/{fileName}")
 	public void downloadAgent(@PathVariable String fileName, HttpServletResponse response) {
-
-		final String extension = httpContainerContext.isUnixUser() ? "tar.gz" : "zip";
-		File ngrinderFile = new File(config.getHome().getDownloadDirectory(), fileName + "." + extension);
-		// FIXME
-		// We need to change the file to connect this controller.
+		File ngrinderFile = new File(config.getHome().getDownloadDirectory(), fileName);
 		if (ngrinderFile.exists()) {
 			FileDownloadUtil.downloadFile(response, ngrinderFile);
 		}
