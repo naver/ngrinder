@@ -66,7 +66,7 @@ public final class ReflectionUtil {
 
 	private static Field getDeclaredField(final Object object, final String fieldName) {
 		checkNotNull(object);
-		checkArgument(StringUtils.isBlank(fieldName));
+		checkArgument(StringUtils.isNotBlank(fieldName));
 
 		// CHECKSTYLE:OFF
 		for (Class<?> superClass = object.getClass(); superClass != Object.class; superClass = superClass
@@ -99,7 +99,7 @@ public final class ReflectionUtil {
 	 */
 	public static Object invokePrivateMethod(Object object, String methodName, Object[] parameters) {
 		checkNotNull(object);
-		checkArgument(StringUtils.isBlank(methodName));
+		checkArgument(StringUtils.isNotBlank(methodName));
 
 		Class<?>[] newClassParam = new Class[parameters.length];
 		for (int i = 0; i < parameters.length; i++) {
@@ -132,7 +132,7 @@ public final class ReflectionUtil {
 	 */
 	private static Method getDeclaredMethod(final Class<?> clazz, final String methodName, final Class<?>[] parameters) {
 		checkNotNull(clazz);
-		checkArgument(StringUtils.isBlank(methodName));
+		checkArgument(StringUtils.isNotBlank(methodName));
 
 		for (Class<?> superClass = clazz; superClass != Object.class; superClass = superClass.getSuperclass()) {
 			try {

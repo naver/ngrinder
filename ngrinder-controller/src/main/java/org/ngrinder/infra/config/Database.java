@@ -27,18 +27,18 @@ import java.sql.Driver;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.hibernate.dialect.CUBRIDDialect;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.H2Dialect;
 import org.hibernate.dialect.SQLiteDialect;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.JDBC;
 
-
 import cubrid.jdbc.driver.CUBRIDDriver;
 
 /**
- * Various Database handler for supported databases. You can easily add the more
- * databases in Enumerator.
+ * Various Database handler for supported databases. You can easily add the more databases in
+ * Enumerator.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -50,26 +50,35 @@ public enum Database {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
 
-			dataSource.setUrl(String.format(getUrlTemplate(), databaseProperties.getProperty("NGRINDER_HOME", "."),
-					" is not defined"));
+			dataSource.setUrl(String.format(getUrlTemplate(),
+							databaseProperties.getProperty("NGRINDER_HOME", "."), " is not defined"));
 			dataSource.setUsername(databaseProperties.getProperty("database_username", "ngrinder"));
 			dataSource.setPassword(databaseProperties.getProperty("database_password", "ngrinder"));
 		}
 	},
 
-	
 	// CUBRID
 	cubrid(CUBRIDDriver.class, CUBRIDDialect.class, "jdbc:CUBRID:%s:::?charset=utf-8") {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
-			dataSource.setUrl(String.format(getUrlTemplate(),
-					databaseProperties.getProperty("database_url", "localhost:33000:ngrinder", " is not defined")));
+			dataSource.setUrl(String.format(getUrlTemplate(), databaseProperties.getProperty("database_url",
+							"localhost:33000:ngrinder", " is not defined")));
 			dataSource.setUsername(databaseProperties.getProperty("database_username", "ngrinder"));
 			dataSource.setPassword(databaseProperties.getProperty("database_password", "ngrinder"));
 		}
-	}
+	},
 
-	;
+	// CUBRID
+	H2(org.h2.Driver.class, H2Dialect.class, "jdbc:h2:%s/h2") {
+		@Override
+		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
+			String format = String.format(getUrlTemplate(),
+							databaseProperties.getProperty("NGRINDER_HOME", "."), " is not defined");
+			dataSource.setUrl(format);
+			dataSource.setUsername(databaseProperties.getProperty("database_username", "ngrinder"));
+			dataSource.setPassword(databaseProperties.getProperty("database_password", "ngrinder"));
+		}
+	};
 
 	private static final Logger logger = LoggerFactory.getLogger(Database.class);
 	private final String urlTemplate;
@@ -96,10 +105,9 @@ public enum Database {
 				return database;
 			}
 		}
-		logger.error(
-				"[FATAL] Database type %s is not supported. Please check the ${NFORGE_HOME}/database.properties. Use sqlite istead.",
-				type);
-		return sqlite;
+		logger.error("[FATAL] Database type %s is not supported. Please check the ${NFORGE_HOME}/database.properties. Use H2 istead.",
+						type);
+		return H2;
 	}
 
 	public void setup(BasicDataSource dataSource, PropertiesWrapper propertiesWrapper) {
