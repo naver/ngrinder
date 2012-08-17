@@ -231,9 +231,10 @@
 				}
 				
 				var name = $name.val();
-				var idx = name.toLowerCase().indexOf(".py");
+				var extension = "." + $("#languageSelect").val().toLowerCase();
+				var idx = name.toLowerCase().indexOf(extension);
 				if (name.length < 3 || idx == -1 || idx < name.length - 3) {
-					$name.val(name + ".py");
+					$name.val(name + extension);
 				}
 				
 				var $url = $("#urlInput");
