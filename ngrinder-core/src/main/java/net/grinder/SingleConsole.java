@@ -48,6 +48,7 @@ import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.ConsoleFoundationEx;
 import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
+import net.grinder.console.communication.NGrinderConsoleCommunicationService;
 import net.grinder.console.communication.ProcessControl;
 import net.grinder.console.communication.ProcessControl.Listener;
 import net.grinder.console.communication.ProcessControl.ProcessReports;
@@ -76,6 +77,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.ReflectionUtil;
+import org.picocontainer.MutablePicoContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -522,6 +524,10 @@ public class SingleConsole implements Listener, SampleListener {
 		result.put("lastSampleStatistics", lastSampleStatistics);
 
 		result.put("tpsChartData", this.getTpsValues());
+		
+		MutablePicoContainer container = (MutablePicoContainer) consoleFoundation.getContainer();
+		ProcessControl processControl = (ProcessControl) container.getComponent(ProcessControl.class);
+		NGrinderConsoleCommunicationService.collectWorkerAndThreadInfo(processControl, result);
 
 		result.put("success", !this.isAllTestFinished());
 

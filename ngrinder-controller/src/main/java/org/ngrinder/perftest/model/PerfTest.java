@@ -44,8 +44,8 @@ import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.model.BaseModel;
 
 /**
- * Performance Test Entity Use Create user of BaseModel as test owner, use create date of BaseModel as create time, but
- * the created time maybe not the test starting time.
+ * Performance Test Entity Use Create user of BaseModel as test owner, use create date of BaseModel
+ * as create time, but the created time maybe not the test starting time.
  * 
  */
 @Entity
@@ -148,6 +148,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(length = MAX_STACKTRACE_STRING_SIZE)
 	private String progressMessage;
 
+	@Column(length = MAX_STACKTRACE_STRING_SIZE)
+	private String lastProgressMessage;
+
 	private Boolean stopRequest = null;
 
 	public String getTestName() {
@@ -247,8 +250,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	/**
-	 * Get ip address of target hosts. if target hosts 'a.com:1.1.1.1' add ip: '1.1.1.1' if target hosts ':1.1.1.1' add
-	 * ip: '1.1.1.1' if target hosts '1.1.1.1' add ip: '1.1.1.1'
+	 * Get ip address of target hosts. if target hosts 'a.com:1.1.1.1' add ip: '1.1.1.1' if target
+	 * hosts ':1.1.1.1' add ip: '1.1.1.1' if target hosts '1.1.1.1' add ip: '1.1.1.1'
 	 * 
 	 * @return
 	 */
@@ -481,8 +484,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		}
 		progressMessage = progressMessage + "\n" + message;
 		if (progressMessage.length() >= (MAX_STACKTRACE_STRING_SIZE / 2)) {
-			progressMessage = progressMessage
-					.substring(Math.abs(MAX_STACKTRACE_STRING_SIZE - progressMessage.length()));
+			progressMessage = progressMessage.substring(Math.abs(MAX_STACKTRACE_STRING_SIZE
+							- progressMessage.length()));
 			progressMessage = progressMessage.substring(progressMessage.indexOf("\n"));
 		}
 	}
@@ -493,5 +496,13 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setStopRequest(Boolean stopRequest) {
 		this.stopRequest = stopRequest;
+	}
+
+	public String getLastProgressMessage() {
+		return lastProgressMessage;
+	}
+
+	public void setLastProgressMessage(String lastProgressMessage) {
+		this.lastProgressMessage = lastProgressMessage;
 	}
 }

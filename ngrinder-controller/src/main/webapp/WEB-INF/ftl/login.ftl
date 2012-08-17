@@ -3,6 +3,9 @@
 	<head>
 		<title>nGrinder Login</title>
 		<#include "common/common.ftl">
+		<link href="${req.getContextPath()}/js/select2/select2.css" rel="stylesheet"/>
+		<script src="${req.getContextPath()}/js/select2/select2.js"></script>
+		<script src="${req.getContextPath()}/js/detect_timezone.js"></script>
 		<style>
 			body { overflow-y:hidden; background-color:white }
 			.content { height:635px; margin-top:30px; padding-top:30px; background-color:#f5f4f2 }
@@ -12,7 +15,7 @@
 			.login .input { margin-bottom:6px; height:13px }
 			.lgn_ipt { display:inline-block }
 			.btn_lgn { display:inline-block; *margin-left:5px; vertical-align:top }
-			.prompt { text-align:center; margin-top:5px; *margin-top:2px; height:30px }
+			.prompt { text-align:center; margin-top:5px; *margin-top:2px; height:30px; }
 			.prompt select { width:75px }
 			.prompt .chk { vertical-align:middle; margin-right:5px; *margin-right:2px }
 		</style>
@@ -32,17 +35,16 @@
 				</div>
 				
 				<div class="prompt">
-					<input type="checkbox" class="chk" name='_spring_security_remember_me'>Remeber me:
+					<input type="checkbox" class="chk" name='_spring_security_remember_me'>Remeber me :
 					<select  id="native_language" name="native_language" style="margin-left:30px;">
 						  <option value="en">English</option>
 						  <option value="kr">한국어</option>
 						  <option value="cn">中文</option>
-					</select>
+					</select> 
 				</div>
 				
 				<div class="prompt">
-					   Regional Location:     
-					<select  id="user_locale"  name="user_locale" style="margin-left:19px;">
+					<select  id="user_locale"  name="user_locale" style="width:250px">
 					  <#list timezones as eachtimezone>
 						  <option value="${eachtimezone.ID}">${eachtimezone.ID} - ${eachtimezone.displayName}</option>
 				      </#list>
@@ -71,6 +73,18 @@
 				$("#user_locale").load("${req.getContextPath()}/allTimeZone");
 			}
 		});
+	});
+	
+	$(function() {
+		 
+	});
+	
+	$(document).ready(function() {
+		$("#user_locale").select2({
+			placeholder: "Select a Timezone"
+		});
+		var timezone = jstz.determine();
+		$("option[value='" + timezone.name() +"']").attr("selected", "selected");
 	});
 </script>
 </body>

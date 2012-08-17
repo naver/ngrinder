@@ -30,7 +30,6 @@ import static org.ngrinder.perftest.model.Status.START_AGENTS_FINISHED;
 import static org.ngrinder.perftest.model.Status.START_CONSOLE;
 import static org.ngrinder.perftest.model.Status.START_CONSOLE_FINISHED;
 import static org.ngrinder.perftest.model.Status.START_TESTING;
-import static org.ngrinder.perftest.model.Status.STOP_BY_USER_REQUEST;
 import static org.ngrinder.perftest.model.Status.TESTING;
 
 import java.util.Date;
@@ -58,8 +57,8 @@ import org.springframework.stereotype.Component;
 /**
  * {@link PerfTest} test running run scheduler.
  * 
- * This class is responsible to execute the performance test which is ready to execute. Mostly this class is started
- * from {@link #startTest()} method. This method is scheduled by Spring Task.
+ * This class is responsible to execute the performance test which is ready to execute. Mostly this
+ * class is started from {@link #startTest()} method. This method is scheduled by Spring Task.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -109,15 +108,15 @@ public class PerfTestRunnable implements NGrinderConstants {
 		int size = agentManager.getAllFreeAgents().size();
 		if (runCandidate.getAgentCount() > size) {
 			markProgress(runCandidate,
-					"The test is tried to execute but there is not enough free agents.\n- Current free agent size : "
-							+ size + "  / Requested : " + runCandidate.getAgentCount() + "\n");
+							"The test is tried to execute but there is not enough free agents.\n- Current free agent size : "
+											+ size + "  / Requested : " + runCandidate.getAgentCount() + "\n");
 			return;
 		}
 
 		// In case of too many trial, cancel running.
 		if (runCandidate.getTestTrialCount() > PERFTEST_MAXIMUM_TRIAL_COUNT) {
 			LOG.error("The {} test is canceled because it has too many test execution errors",
-					runCandidate.getTestName());
+							runCandidate.getTestName());
 			runCandidate.setTestErrorCause(Status.READY);
 			markProgress(runCandidate, "The test is canceled because it has too many test execution errors");
 			perfTestService.savePerfTest(runCandidate, CANCELED);
@@ -204,7 +203,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 		perfTestService.savePerfTest(perfTest, Status.ABNORMAL_TESTING);
 	}
 
-	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties, final SingleConsole singleConsole) {
+	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties,
+					final SingleConsole singleConsole) {
 		// start target monitor
 		Set<AgentInfo> agents = new HashSet<AgentInfo>();
 		List<String> targetIPList = perfTest.getTargetHostIP();
@@ -290,7 +290,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	public void doStop(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		perfTest.setFinishTime(new Date(System.currentTimeMillis()));
 		perfTest = perfTestService.updatePerfTestAfterTestFinish(perfTest);
-		markProgressAndStatus(perfTest, "Stop requested by user", STOP_BY_USER_REQUEST);
+		markProgressAndStatus(perfTest, "Stop requested by user", CANCELED);
 		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 		if (singleConsoleInUse != null) {
 			consoleManager.returnBackConsole(singleConsoleInUse);

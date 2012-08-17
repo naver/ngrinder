@@ -369,63 +369,63 @@ div.chart {
 						<div class="row">
 							<div class="span5">
 								<div class="page-header">
-									<h4>Summary</h4>
+									<h4><@spring.message "perfTest.testRunning.summary"/></h4>
 								</div>
 								<div class="form-horizontal form-horizontal-3" style="margin-top: 10px;">
 									<fieldset>
 										<div class="control-group">
-											<label for="agentCount" class="control-label">Script File Name</label>
+											<label for="agentCount" class="control-label"><@spring.message "perfTest.testRunning.scriptName"/></label>
 											<div class="controls">${(test.scriptName)!}</div>
 										</div>
 										<hr>
 										<div class="control-group">
-											<label for="vuserPerAgent" class="control-label">Vusers</label>
+											<label for="vuserPerAgent" class="control-label"><@spring.message "perfTest.table.vusers"/></label>
 											<div class="controls">
 												<strong>${(test.vuserPerAgent)!}</strong>
 											</div>
 										</div>
 										<div class="control-group">
-											<label for="scriptName" class="control-label">Agents</label>
+											<label for="scriptName" class="control-label"><@spring.message "perfTest.testRunning.agents"/></label>
 											<div class="controls">
 												<span>${(test.agentCount)!}</span>
 												<a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
 											</div>
 										</div>
 										<div class="control-group">
-											<label class="control-label">Processes</label>
+											<label class="control-label"><@spring.message "perfTest.testRunning.processes"/></label>
 											<div class="controls">
 												${(test.processes)!} 
-												<span class="badge badge-info pull-right">Running <data id="process_data"></data></span>
+												<span class="badge badge-info pull-right"><@spring.message "perfTest.testRunning.running"/> <data id="process_data"></data></span>
 											</div>
 										</div>
 										<div class="control-group">
-											<label class="control-label">Threads</label>
+											<label class="control-label"><@spring.message "perfTest.testRunning.threads"/></label>
 											<div class="controls">
-												${(test.threads)!} <span class="badge badge-info pull-right">Running <data id="thread_data"></data></span>
+												${(test.threads)!} <span class="badge badge-info pull-right"><@spring.message "perfTest.testRunning.running"/> <data id="thread_data"></data></span>
 											</div>
 										</div>
 										<hr>
 										<div class="control-group">
-											<label class="control-label">Target Host</label>
+											<label class="control-label"><@spring.message "perfTest.configuration.targetHost"/></label>
 											<div class="controls">${(test.targetHosts)!}</div>
 										</div>
 										<hr>
 										<div class="control-group">
-											<label class="control-label"> Duration </label>
+											<label class="control-label"> <@spring.message "perfTest.table.duration"/> </label>
 											<div class="controls">
 												<span>${(test.durationStr)!}</span>
 												<code>HH:MM:SS</code>
 											</div>
 										</div>
 										<div class="control-group">
-											<label for="ignoreSampleCount" class="control-label">Ignore Sampling Count </label>
+											<label for="ignoreSampleCount" class="control-label"><@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
 											<div class="controls">
 												<span>0</span> 
 											</div>
 										</div>
 										<hr>
 										<div class="control-group">
-											<label for="sampleInterval" class="control-label">Sampling Interval </label>
+											<label for="sampleInterval" class="control-label"><@spring.message "perfTest.configuration.sampleInterval"/> </label>
 											<div class="controls" style="margin-top: 0">
 												<input type="text" class="input span2" id="sampleInterval" name="sampleInterval"
 													value="${(test.sampleInterval)!1000}">
