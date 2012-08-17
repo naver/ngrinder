@@ -17,7 +17,7 @@
 		var i = $elem[0];
 		if (i) {
 			var ll = i.offsetTop;
-			while(i == i.offsetParent){
+			while(i != null && i != i.offsetParent){
 				ll += i.offsetTop;
 				i = i.offsetParent;
 			}
