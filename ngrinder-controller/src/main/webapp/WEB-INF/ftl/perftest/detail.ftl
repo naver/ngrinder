@@ -129,7 +129,7 @@ div.chart {
 					</li> 
 					<#if test?? && (test.status == "TESTING")>
 						<li>
-							<a href="#runningContent" data-toggle="tab">Test Running</a>
+							<a href="#runningContent" data-toggle="tab"><@spring.message "perfTest.testRunning.title"/></a>
 						</li>
 					</#if>
 					<#if test?? && (test.status == "FINISHED" || test.status == "CANCELED")>
@@ -448,13 +448,13 @@ div.chart {
 							</div>
 							<div class="span7">
 								<div class="page-header">
-									<h4>TPS Statistics Data</h4>
+									<h4><@spring.message "perfTest.testRunning.tpsStatistics"/></h4>
 								</div>
 								<div id="runningTps" class="chart" style="width: 530px; height: 195px"></div>
 								<div class="tabbable">
 									<ul class="nav nav-pills" style="" id="tableTab">
-										<li><a href="#lsTab" tid="ls">Latest Sample</a></li>
-										<li><a href="#asTab" tid="as">Accumulated Statistics</a></li>
+										<li><a href="#lsTab" tid="ls"><@spring.message "perfTest.testRunning.latestsample"/></a></li>
+										<li><a href="#asTab" tid="as"><@spring.message "perfTest.testRunning.accumulatedstatistic"/></a></li>
 										<!--<li class="pull-right"><a href="#" target="_blank">Expand View</a></li>-->
 									</ul>
 									<div class="tab-content">
@@ -472,14 +472,14 @@ div.chart {
 												</colgroup>
 												<thead>
 													<tr>
-														<th class="noClick">ID</th>
-														<th class="noClick ellipsis">Test Name</th>
-														<th class="noClick">Successful Tests</th>
-														<th class="noClick">Errors</th>
-														<th class="noClick">Mean Time</th>
-														<th class="noClick">TPS</th>
-														<th class="noClick">Peak TPS</th>
-														<th class="noClick">MTSD</th>
+														<th class="noClick"><@spring.message "perfTest.testRunning.testID"/></th>
+														<th class="noClick ellipsis"><@spring.message "perfTest.table.testName"/></th>
+														<th class="noClick"><@spring.message "perfTest.testRunning.successfulTest"/></th>
+														<th class="noClick"><@spring.message "perfTest.table.errors"/></th>
+														<th class="noClick"><@spring.message "perfTest.table.meantime"/></th>
+														<th class="noClick"><@spring.message "perfTest.table.tps"/></th>
+														<th class="noClick"><@spring.message "perfTest.detail.peakTPS"/></th>
+														<th class="noClick"><@spring.message "perfTest.testRunning.mtsd"/></th>
 													</tr>
 												</thead>
 												<tbody>
@@ -500,14 +500,14 @@ div.chart {
 												</colgroup>
 												<thead>
 													<tr>
-														<th class="noClick">ID</th>
-														<th class="noClick ellipsis">Test Name</th>
-														<th class="noClick">Successful Tests</th>
-														<th class="noClick">Errors</th>
-														<th class="noClick">Mean Time</th>
-														<th class="noClick">TPS</th>
-														<th class="noClick">Peak TPS</th>
-														<th class="noClick">MTSD</th>
+														<th class="noClick"><@spring.message "perfTest.testRunning.testID"/></th>
+														<th class="noClick ellipsis"><@spring.message "perfTest.table.testName"/></th>
+														<th class="noClick"><@spring.message "perfTest.testRunning.successfulTest"/></th>
+														<th class="noClick"><@spring.message "perfTest.table.errors"/></th>
+														<th class="noClick"><@spring.message "perfTest.table.meantime"/></th>
+														<th class="noClick"><@spring.message "perfTest.table.tps"/></th>
+														<th class="noClick"><@spring.message "perfTest.detail.peakTPS"/></th>
+														<th class="noClick"><@spring.message "perfTest.testRunning.mtsd"/></th>
 													</tr>
 												</thead>
 												<tbody>
