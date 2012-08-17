@@ -7,7 +7,7 @@
 <style>
 div.div-resources {
 	border: 1px solid #D6D6D6;
-	height: 80px;
+	height: 50px;
 	margin-bottom: 8px;
 	overflow-y: scroll;
 	border-radius: 3px 3px 3px 3px;
@@ -23,7 +23,7 @@ div.div-resources .resource {
 
 div.div-host {
 	border: 1px solid #D6D6D6;
-	height: 80px;
+	height: 50px;
 	margin-bottom: 8px;
 	overflow-y: scroll;
 	border-radius: 3px 3px 3px 3px;
@@ -202,7 +202,7 @@ div.chart {
 											<div class="controls">
 												<div class="div-host"></div>
 												<input type="hidden" name="targetHosts" id="hostsHidden" value="${(test.targetHosts)!}"> 
-												<a class="btn pull-right btn-mini" data-toggle="modal" href="#addHostModal">
+												<a class="btn pull-right btn-mini" data-toggle="modal" href="#addHostModal" style="margin-right:20px;margin-top:-30px">   
 													<@spring.message "perfTest.configuration.add"/>
 												</a>
 											</div>
@@ -593,487 +593,479 @@ div.chart {
 	<script src="${req.getContextPath()}/js/bootstrap-slider.min.js"></script>
  	<script src="${req.getContextPath()}/js/queue.js"></script>
 	<script>
-	   var jqplotObj;
-	   var objTimer;
-	   var sliderMax = 40;
-	   var durationMap = [];
-	   durationMap[0] = 0;
-	   for (var i = 1; i <= sliderMax; i++) {
-		   if (i <= 10) {
-			   durationMap[i] = durationMap[i-1] + 1;
-		   } else if (i <= 20) {
-			   durationMap[i] = durationMap[i-1] + 5;
-		   } else if (i <= 32) { //untill 180 min
-			   durationMap[i] = durationMap[i-1] + 10;
-		   } else if (i <= 38) { //360 min
-			   durationMap[i] = durationMap[i-1] + 30;
-		   } else if (i <= 56) { //24 hours
-			   durationMap[i] = durationMap[i-1] + 60;
-		   } else if (i <= 72) {
-			   durationMap[i] = durationMap[i-1] + 60*6;
-		   } else if (i <= 78) {
-			   durationMap[i] = durationMap[i-1] + 60*12;
-		   } else {
-			   durationMap[i] = durationMap[i-1] + 60*24;
-		   }
-	   }
-	   var test_tps_data = new Queue();
-	   $(document).ready(function() {
-				var date = new Date();
-				$("#sDateInput").val(('0'+date.getFullYear()).substr(-4,4)+'-'+('0'+(date.getMonth() +1)).substr(-2,2)+'-'+ ('0'+date.getDate()).substr(-2,2));
-				<#if test?exists>
-			    objTimer = window.setInterval("refreshData()", ${test.sampleInterval!1000});
-			    </#if>
-			    
-				$("#n_test").addClass("active");
-				<#if !scriptList?? || scriptList?size == 0>
-					showErrorMsg("User has not script yet! Please create a script first.");
-				</#if>
-				
-				$("#homeTab a:first").tab('show');	
-				$("#tableTab a:first").tab('show');	
-				
-				$('#testContentForm input').hover(function() {
-			        $(this).popover('show')
-			    });
-				
-				for (var i=0; i<=sliderMax; i++) {
-					if (durationMap[i] * 60000 == $("#duration").val()) {
-						$("#hiddenDurationInput").val(i);
-					}
-				}
-				
-				$("#scriptName").change(function() {
-					updateScriptResources();
-				});
-				
-			    $("#hiddenDurationInput").bind("slide", function(e){
-			    		$("#duration").val(durationMap[this.value] * 60000);
-			    		initDuration();
-			    		$("#duration").valid();
-			    });
-			    	
-			    $("#testContentForm").validate({
-			    	ignore: "", //make the validation on hidden input work
-			        errorClass: "help-inline",
-			        errorElement: "span",
-			        errorPlacement: function(error, element) {
-			        	if (element.next().attr("class") == "add-on") {
-			        		error.insertAfter(element.next());
-			        	} else {
-			        		error.insertAfter(element);
-			        	}
-			        },
-			        highlight:function(element, errorClass, validClass) {
-			            $(element).parents('.control-group').addClass('error');
-			            $(element).parents('.control-group').removeClass('success');
-			        },
-			        unhighlight: function(element, errorClass, validClass) {
-			            $(element).parents('.control-group').removeClass('error');
-			            $(element).parents('.control-group').addClass('success');
-			        }
-			    });
-			    
-			    $("#addHostBtn").click(function() {
-					var content = [];
-					if (!checkEmptyByID("domainInput")) {
-						content.push(getValueByID("domainInput"));
-					} 
-					if (!checkEmptyByID("ipInput")) {
-						content.push(getValueByID("ipInput"));
-					}
-					
-					if (content.length == 0) {
-						$("#addHostModal small").addClass("errorColor");
-						return;
-					}
-					
-					var contentStr = content.join(":");
-					$(".div-host").html(hostItem(contentStr));
-					$("#hostsHidden").val(contentStr);
-					$("#addHostModal").modal("hide");
-					$("#addHostModal small").removeClass("errorColor");
-				});
-				
-				function hostItem(content) {
-			   	   return "<p class='host'>" + content + "  <a href='javascript:void(0);'><i class='icon-remove-circle'></i></a></p><br>"
-			    }
-				
-				function initHosts() {
-					if (checkEmptyByID("hostsHidden")) {
-						return;
-					}
+	  var jqplotObj;
+	  var objTimer;
+	  var sliderMax = 40;
+	  var durationMap = [];
+	  durationMap[0] = 0;
+	  for (var i = 1; i <= sliderMax; i++) {
+	      if (i <= 10) {
+	          durationMap[i] = durationMap[i - 1] + 1;
+	      } else if (i <= 20) {
+	          durationMap[i] = durationMap[i - 1] + 5;
+	      } else if (i <= 32) { //untill 180 min
+	          durationMap[i] = durationMap[i - 1] + 10;
+	      } else if (i <= 38) { //360 min
+	          durationMap[i] = durationMap[i - 1] + 30;
+	      } else if (i <= 56) { //24 hours
+	          durationMap[i] = durationMap[i - 1] + 60;
+	      } else if (i <= 72) {
+	          durationMap[i] = durationMap[i - 1] + 60 * 6;
+	      } else if (i <= 78) {
+	          durationMap[i] = durationMap[i - 1] + 60 * 12;
+	      } else {
+	          durationMap[i] = durationMap[i - 1] + 60 * 24;
+	      }
+	  }
+	  var test_tps_data = new Queue();
+	  $(document).ready(function () {
+	      var date = new Date();
+	      $("#sDateInput").val(('0' + date.getFullYear()).substr(-4, 4) + '-' + ('0' + (date.getMonth() + 1)).substr(-2, 2) + '-' + ('0' + date.getDate()).substr(-2, 2));
+	      objTimer = window.setInterval("refreshData()", 1000);
 
-					$(".div-host").html(hostItem($("#hostsHidden").val()));
-				}
-				
-				$("i.icon-remove-circle").live('click', function() {
-					var $elem = $(this).parents("p");
-					$elem.next("br").remove();
-					$elem.remove();
-					$("#hostsHidden").val("");
-				});
-				
-				$("#saveTestBtn").click (function() {
-					if (!$("#testContentForm").valid()) {
-						return false;
-					}
-					<#if test?? && (test.status != "SAVED")>
-						$("#testId").val("");
-						$("#testStatus").val("SAVED");
-					</#if>
-					$("#scheduleInput").attr('name','');
-					return true;
-				});
-				
-				$("#runNowBtn").click(function() {
-					$("#scheduleModal").modal("hide");
-					$("#scheduleModal small").html("");
-					$("#scheduleInput").attr('name','');
-					<#if test?? && (test.status != "SAVED")>
-						$("#testId").val("");
-					</#if>
-					$("#testStatus").val("READY");
-					document.testContentForm.submit();
-				});
-								
-				$("#addScheduleBtn").click(function() {
-					if (checkEmptyByID("sDateInput")) {
-						$("#scheduleModal small").html("Please select date before schedule.");
-						return;
-					}
-					
-					var timeStr = $("#sDateInput").val() + " " + $("#shSelect").val() + ":" + $("#smSelect").val() +":0";
-					var scheduledTime = new Date(timeStr.replace(/-/g,"/"));
-					if (new Date() > scheduledTime) {
-						$("#scheduleModal small").html("Schedule time must be later than now.");
-						return;
-					}
-					$("#scheduleInput").val(scheduledTime);
-					$("#scheduleModal").modal("hide");
-					$("#scheduleModal small").html("");
-					<#if test?? && (test.status != "SAVED")>
-						$("#testId").val("");
-					</#if>
-					$("#testStatus").val("READY");
-					document.testContentForm.submit();
-				});
-				
-				
-				
-				$('#sDateInput').datepicker({
-					format: 'yyyy-mm-dd'
-				});
-						
-				$("#hSelect").append(getOption(${maxRunHour}+1));
-				$("#hSelect").change(getDurationMS);
-				
-				$("#mSelect").append(getOption(60));
-				$("#mSelect").change(getDurationMS);
-				
-				$("#sSelect").append(getOption(60));
-				$("#sSelect").change(getDurationMS);
-				
-				$("#shSelect").append(getOption(24));
-				$("#smSelect").append(getOption(60));
+	      $("#n_test").addClass("active");
 
-				//add toggle event to threshold
-				$("#runcountChkbox").change(function (){
-					if ($("#runcountChkbox").attr("checked") == "checked") {
-						$("#threshold").val("R");
-						$("#runCount").addClass("required");
-						$("#runCount").addClass("positiveNumber");
-						$("#durationChkbox").removeAttr("checked");
-						$("#duration").removeClass("required");
-						$("#duration").removeClass("positiveNumber");
-						$("#duration").valid();
-						$("#runCount").valid();
-					}
-				});
-				$("#durationChkbox").change(function (){
-					if ($("#durationChkbox").attr("checked") == "checked") {
-						$("#threshold").val("D");
-						$("#duration").addClass("required positiveNumber");
-						$("#runcountChkbox").removeAttr("checked");
-						$("#runCount").removeClass("required");
-						$("#runCount").removeClass("positiveNumber");
-						$("#duration").valid();
-						$("#runCount").valid();
-					}
-				});
-				
-				$("#agentCount").change(function() {
-					updateVuserTotal();
-				});
-				
-				$("#vuserPerAgent").change (function() {
-					if ($("#vuserPerAgent").valid()) {
-						updateVuserPolicy();
-					}
-				});
-				
-				$("#reportLnk").click(function () {
-					generateReportChart();
-				});
-				
-				$("#reportDetail").click(function () {
-                    window.open("${req.getContextPath()}/perftest/report?testId="+$("#testId").val());
-                });
-                
-                $('#tableTab a').click(function (e) {
-				    var $this = $(this);
-				    if ($this.hasClass("pull-right")) {
-				    } else {
-					    e.preventDefault();
-				    	$this.attr("tid");
-				    	$this.tab('show');
-				    }
-			    });
-			    
-			    $("#homeTab a").click(function () {
-			    	resetFooter();
-			    });
-				
-				initThresholdChkBox();
-				initHosts();
-				initDuration();
-				updateChart();
-				resetFooter();
-				
-				updateScriptResources();
-				validateHostForm();
-			});
-			
-			function updateVuserTotal () {
-				var agtCount = $("#agentCount").val();
-				var vcount = $("#vuserPerAgent").val();
-				$("#vuserTotal").text("Vuser:" + agtCount*vcount);
-			}
-			
-			function updateScriptResources() {
-				$('#messageDiv').ajaxSend(function(e, xhr, settings) {
-					var url = settings.url;
-					if(url.indexOf("refresh")==0 )
-						showInformation("Updating script resources...");
-				});
-				$.ajax({
-			  		url: "${req.getContextPath()}/perftest/getResourcesOnScriptFolder",
-					dataType:'json',
-					data: {'scriptPath': $("#scriptName").val()},
-			    	success: function(res) {
-			    		var html = "";
-				    	var len=res.length;
-						for(var i=0; i<len; i++) {
-							var value = res[i];
-							html = html + "<div class='resource'>" + value + "</div><br/>";
-						}
-						$("#scriptResources").html(html);
-			    	},
-			    	error: function() {
-			    		showErrorMsg("Error!");
-						return false;
-			    	}
-			  	});
-			}
-			function updateVuserPolicy() {
-				updateVuserTotal();
-				$('#messageDiv').ajaxSend(function() {
-					showInformation("Updating vuser policy from server...");
-				});
+	      $("#homeTab a:first").tab('show');
+	      $("#tableTab a:first").tab('show');
 
-				$.ajax({
-			  		url: "${req.getContextPath()}/perftest/updateVuser",
-					dataType:'json',
-					data: {'newVuser': $("#vuserPerAgent").val()},
-			    	success: function(res) {
-			    		if (res.success) {
-				    		var processCount = res.processCount;
-				    		var threadCount = res.threadCount;
-				    		$('#processes').val(processCount);
-				    		$('#threads').val(threadCount);
+	      $('#testContentForm input').hover(function () {
+	          $(this).popover('show')
+	      });
 
-				    		//if ramp-up chart is not enabled, update init process count as total 
-				    		if (!$("#rampupCheckbox")[0].checked) {
-				    			$('#initProcesses').val($('#processes').val());
-				    		}
-				    		updateChart();
-							return true;
-			    		} else {
-				    		showErrorMsg("Update vuser failed:" + res.message);
-							return false;
-			    		}
-			    	},
-			    	error: function() {
-			    		showErrorMsg("Error!");
-						return false;
-			    	}
-			  	});
-			}
-			
-			function initThresholdChkBox() {
-				if ($("#testId").val() == 0 || $("#threshold").val() == "R") { //runcount
-					$("#runcountChkbox").attr("checked", "checked");
-					$("#durationChkbox").removeAttr("checked");
-				} else { //duration
-					$("#durationChkbox").attr("checked", "checked");
-					$("#runcountChkbox").removeAttr("checked");					
-				}
-			}
-			
-			function initDuration() {
-				var duration = $("#duration").val();
-				var durationInSec = parseInt(duration / 1000);
-		        var durationH = parseInt((durationInSec%(60*60*24))/3600);
-		        var durationM = parseInt((durationInSec%3600)/60);
-		        var durationS = durationInSec%60;
-				$("#hSelect").val(durationH);
-				$("#mSelect").val(durationM);
-				$("#sSelect").val(durationS);
-			}
-			
-			function getDurationMS() {
-				var durationH = parseInt($("#hSelect").val());   
-				var durationM = parseInt($("#mSelect").val());   
-				var durationS = parseInt($("#sSelect").val());
-				var durationMs = (durationS + durationM * 60 + durationH * 3600) * 1000;
-				var durationObj = $("#duration");
-				durationObj.val(durationMs);
-				durationObj.valid(); //trigger validation
-				return durationMs;
-			}
-			
-			function toggleThreshold() {
-				$("#runcountChkbox").toggle();
-				$("#durationChkbox").toggle();
-			}
-			
-			
-			function getOption(cnt) {
-				var contents = [];
-				
-				for(i = 0; i < cnt; i++) {
-					contents.push("<option value='" + i + "'>" + i + "</option>");
-				}
-				
-				return contents.join("\n");
-			}
-					
-			function generateReportChart() {
-				showInformation("Generating TPS Chart...");
-				getReportDataTPS();
-			}
-			
-			function getReportDataTPS(){
-			    $.ajax({
-                    url: "${req.getContextPath()}/perftest/getReportData",
-                    dataType:'json',
-                    data: {'testId': $("#testId").val(),
-                           'dataType':'tps_total',
-                           'imgWidth':$("#tpsDiv").width()},
-                    success: function(res) {
-                        if (res.success) {
-                            drawChart('TPS', 'tpsDiv', res.tps_total);
-                            return true;
-                        } else {
-                            showErrorMsg("Get report data failed.");
-                            return false;
-                        }
-                    },
-                    error: function() {
-                        showErrorMsg("Error!");
-                        return false;
-                    }
-                });
-			}
-			
-			function refreshData() {
-				var refreshDiv = $("<div></div>");
-				var url = "${req.getContextPath()}/perftest/running/refresh?testId=" + $("#testId").val();
-				refreshDiv.load(url, function(){
-					var succesVal = refreshDiv.find("#input_status").val();
-					
-					if(succesVal == 'SUCCESS'){
-						$("#lsTable tbody").empty();
-						$("#asTable tbody").empty();
-						$("#lsTable tbody").prepend(refreshDiv.find("#lsTableItem"));
-						$("#asTable tbody").prepend(refreshDiv.find("#asTableItem"));
-						
-						$("#process_data").text(refreshDiv.find("#input_process").val());
-						$("#thread_data").text(refreshDiv.find("#input_thread").val());
-						
-						
-						if (test_tps_data.getSize() == 60) {
-							test_tps_data.deQueue();
-						}
-						
-						test_tps_data.enQueue(refreshDiv.find("#tpsChartData").val());
-						
-						//alert(test_tps_data.aElement);
-						
-						showChart('runningTps',test_tps_data.toString());
-					}else{
-					if (objTimer){
-							window.clearInterval(objTimer);
-						}
-					}
-				});
-			}
-            
-            function showChart(containerId, data) {
-            	if (jqplotObj) {
-            		jqplotObj.destroy();
-            	}
-				$("#runningTps").empty();
-				jqplotObj = drawChart('TPS', containerId, data);
-            }
-            
-            function validateHostForm() {
-            	$("#ipInput").blur(function() {
-            		var $this = $(this);
-            		if(!checkEmptyByObj($this)) {
-	            		markInput($this, isIPByObj($this), "IP is invalid.");
-            		}
-            	});
-            	
-            	$("#domainInput").blur(function() {
-            		if(!checkEmptyByID("domainInput")) {
-            			var $this = $(this);
-            			var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$";
-            			var str = $this.val();
-            			markInput($this, checkStringFormat(str, rule), "Domain is invalid.");
-            		}
-            	});
-            }
-            
-    		function updateStatus(id, status, icon, message) {
-    			var ballImg = $("#testStatus_img_id");
-    			if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) { 
-    				ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
-    			}
-    		}
-    		
-    		// Wrap this function in a closure so we don't pollute the namespace
-    		(function refreshContent() {
-    			var ids = [];
-    			var testId = $('#testId').val();
-    			if (testId == "") {
-    				return;
-    			}
-    		    $.ajax({
-    			    url: '${req.getContextPath()}/perftest/updateStatus', 
-    			    type: 'GET',
-    			    data: {"ids": testId },
-    			    success: function(data) {
-    			    	data = eval(data); 
-    			    	for (var i = 0; i < data.length; i++) {
-    			    		updateStatus(data[i].id, data[i].name, data[i].icon, data[i].message);
-    			    	}
-    			    },
-    			    complete: function() {
-    			        setTimeout(refreshContent, 5000);
-    			    }
-    		    });
-    	  })();
-		</script>
+	      for (var i = 0; i <= sliderMax; i++) {
+	          if (durationMap[i] * 60000 == $("#duration").val()) {
+	              $("#hiddenDurationInput").val(i);
+	          }
+	      }
+
+	      $("#scriptName").change(function () {
+	          updateScriptResources();
+	      });
+
+	      $("#hiddenDurationInput").bind("slide", function (e) {
+	          $("#duration").val(durationMap[this.value] * 60000);
+	          initDuration();
+	          $("#duration").valid();
+	      });
+
+	      $("#testContentForm").validate({
+	          ignore: "", //make the validation on hidden input work
+	          errorClass: "help-inline",
+	          errorElement: "span",
+	          errorPlacement: function (error, element) {
+	              if (element.next().attr("class") == "add-on") {
+	                  error.insertAfter(element.next());
+	              } else {
+	                  error.insertAfter(element);
+	              }
+	          },
+	          highlight: function (element, errorClass, validClass) {
+	              $(element).parents('.control-group').addClass('error');
+	              $(element).parents('.control-group').removeClass('success');
+	          },
+	          unhighlight: function (element, errorClass, validClass) {
+	              $(element).parents('.control-group').removeClass('error');
+	              $(element).parents('.control-group').addClass('success');
+	          }
+	      });
+
+	      $("#addHostBtn").click(function () {
+	          var content = [];
+	          if (!checkEmptyByID("domainInput")) {
+	              content.push(getValueByID("domainInput"));
+	          }
+	          if (!checkEmptyByID("ipInput")) {
+	              content.push(getValueByID("ipInput"));
+	          }
+
+	          if (content.length == 0) {
+	              $("#addHostModal small").addClass("errorColor");
+	              return;
+	          }
+
+	          var contentStr = content.join(":");
+	          $(".div-host").html(hostItem(contentStr));
+	          $("#hostsHidden").val(contentStr);
+	          $("#addHostModal").modal("hide");
+	          $("#addHostModal small").removeClass("errorColor");
+	      });
+
+	      function hostItem(content) {
+	          return "<p class='host'>" + content + "  <a href='javascript:void(0);'><i class='icon-remove-circle'></i></a></p><br>"
+	      }
+
+	      function initHosts() {
+	          if (checkEmptyByID("hostsHidden")) {
+	              return;
+	          }
+
+	          $(".div-host").html(hostItem($("#hostsHidden").val()));
+	      }
+
+	      $("i.icon-remove-circle").live('click', function () {
+	          var $elem = $(this).parents("p");
+	          $elem.next("br").remove();
+	          $elem.remove();
+	          $("#hostsHidden").val("");
+	      });
+
+	      $("#saveTestBtn").click(function () {
+	          if (!$("#testContentForm").valid()) {
+	              return false;
+	          }
+	          $("#scheduleInput").attr('name', '');
+	          return true;
+	      });
+
+	      $("#runNowBtn").click(function () {
+	          $("#scheduleModal").modal("hide");
+	          $("#scheduleModal small").html("");
+	          $("#scheduleInput").attr('name', '');
+	          $("#testStatus").val("READY");
+	          document.testContentForm.submit();
+	      });
+
+	      $("#addScheduleBtn").click(function () {
+	          if (checkEmptyByID("sDateInput")) {
+	              $("#scheduleModal small").html("Please select date before schedule.");
+	              return;
+	          }
+
+	          var timeStr = $("#sDateInput").val() + " " + $("#shSelect").val() + ":" + $("#smSelect").val() + ":0";
+	          var scheduledTime = new Date(timeStr.replace(/-/g, "/"));
+	          if (new Date() > scheduledTime) {
+	              $("#scheduleModal small").html("Schedule time must be later than now.");
+	              return;
+	          }
+	          $("#scheduleInput").val(scheduledTime);
+	          $("#scheduleModal").modal("hide");
+	          $("#scheduleModal small").html("");
+	          $("#testStatus").val("READY");
+	          document.testContentForm.submit();
+	      });
+
+
+
+	      $('#sDateInput').datepicker({
+	          format: 'yyyy-mm-dd'
+	      });
+
+	      $("#hSelect").append(getOption(7 + 1));
+	      $("#hSelect").change(getDurationMS);
+
+	      $("#mSelect").append(getOption(60));
+	      $("#mSelect").change(getDurationMS);
+
+	      $("#sSelect").append(getOption(60));
+	      $("#sSelect").change(getDurationMS);
+
+	      $("#shSelect").append(getOption(24));
+	      $("#smSelect").append(getOption(60));
+
+	      //add toggle event to threshold
+	      $("#runcountChkbox").change(function () {
+	          if ($("#runcountChkbox").attr("checked") == "checked") {
+	              $("#threshold").val("R");
+	              $("#runCount").addClass("required");
+	              $("#runCount").addClass("positiveNumber");
+	              $("#durationChkbox").removeAttr("checked");
+	              $("#duration").removeClass("required");
+	              $("#duration").removeClass("positiveNumber");
+	              $("#duration").valid();
+	              $("#runCount").valid();
+	          }
+	      });
+	      $("#durationChkbox").change(function () {
+	          if ($("#durationChkbox").attr("checked") == "checked") {
+	              $("#threshold").val("D");
+	              $("#duration").addClass("required positiveNumber");
+	              $("#runcountChkbox").removeAttr("checked");
+	              $("#runCount").removeClass("required");
+	              $("#runCount").removeClass("positiveNumber");
+	              $("#duration").valid();
+	              $("#runCount").valid();
+	          }
+	      });
+
+	      $("#agentCount").change(function () {
+	          updateVuserTotal();
+	      });
+
+	      $("#vuserPerAgent").change(function () {
+	          if ($("#vuserPerAgent").valid()) {
+	              updateVuserPolicy();
+	          }
+	      });
+
+	      $("#reportLnk").click(function () {
+	          generateReportChart();
+	      });
+
+	      $("#reportDetail").click(function () {
+	          window.open("/ngrinder-controller/perftest/report?testId=" + $("#testId").val());
+	      });
+
+	      $('#tableTab a').click(function (e) {
+	          var $this = $(this);
+	          if ($this.hasClass("pull-right")) {} else {
+	              e.preventDefault();
+	              $this.attr("tid");
+	              $this.tab('show');
+	          }
+	      });
+
+	      $("#homeTab a").click(function () {
+	          resetFooter();
+	      });
+
+	      initThresholdChkBox();
+	      initHosts();
+	      initDuration();
+	      updateChart();
+	      resetFooter();
+
+	      updateScriptResources();
+	      validateHostForm();
+	  });
+
+	  function updateVuserTotal() {
+	      var agtCount = $("#agentCount").val();
+	      var vcount = $("#vuserPerAgent").val();
+	      $("#vuserTotal").text("Vuser:" + agtCount * vcount);
+	  }
+
+	  function updateScriptResources() {
+	      $('#messageDiv').ajaxSend(function (e, xhr, settings) {
+	          var url = settings.url;
+	          if (url.indexOf("refresh") == 0) showInformation("Updating script resources...");
+	      });
+	      $.ajax({
+	          url: "/ngrinder-controller/perftest/getResourcesOnScriptFolder",
+	          dataType: 'json',
+	          data: {
+	              'scriptPath': $("#scriptName").val()
+	          },
+	          success: function (res) {
+	              var html = "";
+	              var len = res.length;
+	              for (var i = 0; i < len; i++) {
+	                  var value = res[i];
+	                  html = html + "<div class='resource'>" + value + "</div><br/>";
+	              }
+	              $("#scriptResources").html(html);
+	          },
+	          error: function () {
+	              showErrorMsg("Error!");
+	              return false;
+	          }
+	      });
+	  }
+
+	  function updateVuserPolicy() {
+	      updateVuserTotal();
+	      $('#messageDiv').ajaxSend(function () {
+	          showInformation("Updating vuser policy from server...");
+	      });
+
+	      $.ajax({
+	          url: "/ngrinder-controller/perftest/updateVuser",
+	          dataType: 'json',
+	          data: {
+	              'newVuser': $("#vuserPerAgent").val()
+	          },
+	          success: function (res) {
+	              if (res.success) {
+	                  var processCount = res.processCount;
+	                  var threadCount = res.threadCount;
+	                  $('#processes').val(processCount);
+	                  $('#threads').val(threadCount);
+
+	                  //if ramp-up chart is not enabled, update init process count as total 
+	                  if (!$("#rampupCheckbox")[0].checked) {
+	                      $('#initProcesses').val($('#processes').val());
+	                  }
+	                  updateChart();
+	                  return true;
+	              } else {
+	                  showErrorMsg("Update vuser failed:" + res.message);
+	                  return false;
+	              }
+	          },
+	          error: function () {
+	              showErrorMsg("Error!");
+	              return false;
+	          }
+	      });
+	  }
+
+	  function initThresholdChkBox() {
+	      if ($("#testId").val() == 0 || $("#threshold").val() == "R") { //runcount
+	          $("#runcountChkbox").attr("checked", "checked");
+	          $("#durationChkbox").removeAttr("checked");
+	      } else { //duration
+	          $("#durationChkbox").attr("checked", "checked");
+	          $("#runcountChkbox").removeAttr("checked");
+	      }
+	  }
+
+	  function initDuration() {
+	      var duration = $("#duration").val();
+	      var durationInSec = parseInt(duration / 1000);
+	      var durationH = parseInt((durationInSec % (60 * 60 * 24)) / 3600);
+	      var durationM = parseInt((durationInSec % 3600) / 60);
+	      var durationS = durationInSec % 60;
+	      $("#hSelect").val(durationH);
+	      $("#mSelect").val(durationM);
+	      $("#sSelect").val(durationS);
+	  }
+
+	  function getDurationMS() {
+	      var durationH = parseInt($("#hSelect").val());
+	      var durationM = parseInt($("#mSelect").val());
+	      var durationS = parseInt($("#sSelect").val());
+	      var durationMs = (durationS + durationM * 60 + durationH * 3600) * 1000;
+	      var durationObj = $("#duration");
+	      durationObj.val(durationMs);
+	      durationObj.valid(); //trigger validation
+	      return durationMs;
+	  }
+
+	  function toggleThreshold() {
+	      $("#runcountChkbox").toggle();
+	      $("#durationChkbox").toggle();
+	  }
+
+
+	  function getOption(cnt) {
+	      var contents = [];
+
+	      for (i = 0; i < cnt; i++) {
+	          contents.push("<option value='" + i + "'>" + i + "</option>");
+	      }
+
+	      return contents.join("\n");
+	  }
+
+	  function generateReportChart() {
+	      showInformation("Generating TPS Chart...");
+	      getReportDataTPS();
+	  }
+
+	  function getReportDataTPS() {
+	      $.ajax({
+	          url: "/ngrinder-controller/perftest/getReportData",
+	          dataType: 'json',
+	          data: {
+	              'testId': $("#testId").val(),
+	              'dataType': 'tps_total',
+	              'imgWidth': $("#tpsDiv").width()
+	          },
+	          success: function (res) {
+	              if (res.success) {
+	                  drawChart('TPS', 'tpsDiv', res.tps_total);
+	                  return true;
+	              } else {
+	                  showErrorMsg("Get report data failed.");
+	                  return false;
+	              }
+	          },
+	          error: function () {
+	              showErrorMsg("Error!");
+	              return false;
+	          }
+	      });
+	  }
+
+	  function refreshData() {
+	      var refreshDiv = $("<div></div>");
+	      var url = "/ngrinder-controller/perftest/running/refresh?testId=" + $("#testId").val();
+	      refreshDiv.load(url, function () {
+	          var succesVal = refreshDiv.find("#input_status").val();
+
+	          if (succesVal == 'SUCCESS') {
+	              $("#lsTable tbody").empty();
+	              $("#asTable tbody").empty();
+	              $("#lsTable tbody").prepend(refreshDiv.find("#lsTableItem"));
+	              $("#asTable tbody").prepend(refreshDiv.find("#asTableItem"));
+
+	              $("#process_data").text(refreshDiv.find("#input_process").val());
+	              $("#thread_data").text(refreshDiv.find("#input_thread").val());
+
+
+	              if (test_tps_data.getSize() == 60) {
+	                  test_tps_data.deQueue();
+	              }
+
+	              test_tps_data.enQueue(refreshDiv.find("#tpsChartData").val());
+
+	              //alert(test_tps_data.aElement);
+
+	              showChart('runningTps', test_tps_data.toString());
+	          } else {
+	              if (objTimer) {
+	                  window.clearInterval(objTimer);
+	              }
+	          }
+	      });
+	  }
+
+	  function showChart(containerId, data) {
+	      if (jqplotObj) {
+	          jqplotObj.destroy();
+	      }
+	      $("#runningTps").empty();
+	      jqplotObj = drawChart('TPS', containerId, data);
+	  }
+
+	  function validateHostForm() {
+	      $("#ipInput").blur(function () {
+	          var $this = $(this);
+	          if (!checkEmptyByObj($this)) {
+	              markInput($this, isIPByObj($this), "IP is invalid.");
+	          }
+	      });
+
+	      $("#domainInput").blur(function () {
+	          if (!checkEmptyByID("domainInput")) {
+	              var $this = $(this);
+	              var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$";
+	              var str = $this.val();
+	              markInput($this, checkStringFormat(str, rule), "Domain is invalid.");
+	          }
+	      });
+	  }
+
+	  function updateStatus(id, status, icon, message) {
+	      var ballImg = $("#testStatus_img_id");
+	      if (ballImg.attr("src") != "/ngrinder-controller/img/ball/" + icon) {
+	          ballImg.attr("src", "/ngrinder-controller/img/ball/" + icon);
+	      }
+	  }
+
+	  // Wrap this function in a closure so we don't pollute the namespace
+	  (function refreshContent() {
+	      var ids = [];
+	      var testId = $('#testId').val();
+	      if (testId == "") {
+	          return;
+	      }
+	      $.ajax({
+	          url: '/ngrinder-controller/perftest/updateStatus',
+	          type: 'GET',
+	          data: {
+	              "ids": testId
+	          },
+	          success: function (data) {
+	              data = eval(data);
+	              for (var i = 0; i < data.length; i++) {
+	                  updateStatus(data[i].id, data[i].name, data[i].icon, data[i].message);
+	              }
+	          },
+	          complete: function () {
+	              setTimeout(refreshContent, 5000);
+	          }
+	      });
+	  })();
+	</script>
 	</body>
 </html>
