@@ -16,9 +16,9 @@
 		$msgDiv.hide();
 		$msgDiv.addClass(color);
 		$msgDiv.html(message);
-		$msgDiv.fadeIn("fast");
+		$msgDiv.fadeIn(100);
 		setTimeout(function() {
-			$msgDiv.fadeOut('fast');
+			$msgDiv.fadeOut(100);
 			$msgDiv.removeClass(color);
 		}, 3000);
 	}
