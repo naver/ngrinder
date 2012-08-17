@@ -89,8 +89,12 @@
 										</div> 
 
 									</td>
-									<td >									
-										<a href="${req.getContextPath()}/script/detail/${test.scriptName}" title="${test.scriptName}">${test.scriptName}</a> 
+									<td class="ellipsis">
+										<div rel="popover"
+											 data-content="${test.scriptName}"  
+											 data-original-title="Script File Name">								
+											<a href="${req.getContextPath()}/script/detail/${test.scriptName}">${test.scriptName}</a> 
+										</div>
 									</td>
 									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if></td>
 									<td>${(test.durationStr)!}</td> 
