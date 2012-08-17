@@ -1029,33 +1029,18 @@ div.chart {
             
             function validateHostForm() {
             	$("#ipInput").blur(function() {
-            		if(!checkEmptyByID("ipInput")) {
-            			if (isIPByID("ipInput")) {
-            				$(this).next("span").empty();
-            				$(this).parents('.control-group').addClass('success');
-			            	$(this).parents('.control-group').removeClass('error');           				
-            			} else {
-            				$(this).next("span").html("IP is invalid.");
-            				$(this).parents('.control-group').addClass('error');
-			            	$(this).parents('.control-group').removeClass('success');
-			            }
+            		var $this = $(this);
+            		if(!checkEmptyByObj($this)) {
+	            		markInput($this, isIPByObj($this), "IP is invalid.");
             		}
             	});
             	
             	$("#domainInput").blur(function() {
             		if(!checkEmptyByID("domainInput")) {
-            			$this = $(this);
+            			var $this = $(this);
             			var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$";
             			var str = $this.val();
-            			if (checkStringFormat(str, rule)) {
-            				$this.next("span").empty();
-            				$this.parents('.control-group').addClass('success');
-			            	$this.parents('.control-group').removeClass('error');           				
-            			} else {
-            				$this.next("span").html("Domain is invalid.");
-            				$this.parents('.control-group').addClass('error');
-			            	$this.parents('.control-group').removeClass('success');
-			            }
+            			markInput($this, checkStringFormat(str, rule), "Domain is invalid.");
             		}
             	});
             }

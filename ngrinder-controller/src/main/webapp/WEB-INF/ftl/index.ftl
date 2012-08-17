@@ -26,10 +26,10 @@
 		<div class="row">
 			<div class="span6">
 				<div class="page-header">
-	 				 <h2>Q&A</h2> 
+	 				 <h2><@spring.message "home.qa.title"/></h2> 
 				</div>
 				<div class="alert alert-info">
-			  	You can ask a question and track the progress.
+			  	<@spring.message "home.qa.message"/>
 			  	</div> 
 		   		<div class="well">
 			  		<br/>
@@ -50,14 +50,14 @@
 				  				<td>
 				  					<img src="${req.getContextPath()}/img/asksupport.gif"/> 
 				  					<a href="http://github.com/nhnopensource/ngrinder/issues/new?labels=question">
-				  						Ask a question
-				  					</a>  &nbsp;&nbsp;&nbsp; 
+				  						<@spring.message "home.button.ask"/>
+				  					</a>&nbsp;&nbsp;&nbsp; 
 				  					<img src="${req.getContextPath()}/img/bug_icon.gif"/>
 				  					<a href="http://github.com/nhnopensource/ngrinder/issues/new?labels=bug">
-				  						Report a bug
+				  						<@spring.message "home.button.bug"/>
 				  					</a>	
 				  				</td>
-				  				<td><a href="http://github.com/nhnopensource/ngrinder/issues" target="_blank"><i class="icon-share-alt"></i>&nbsp;more...</a></td>
+				  				<td><a href="http://github.com/nhnopensource/ngrinder/issues" target="_blank"><i class="icon-share-alt"></i>&nbsp;<@spring.message "home.button.more"/></a></td>
 				  			</tr>
 				  			</div>
 		  				</table>
@@ -66,10 +66,10 @@
 			</div>
 			<div class="span6">
 				<div class="page-header">
-	 				 <h2>Developer Resources</h2> 
+	 				 <h2><@spring.message "home.developerResources.title"/></h2> 
 				</div> 
 				<div class="alert alert-info">
-			  	You can find ngrinder related documents in the followings.
+			  		<@spring.message "home.developerResources.message"/>
 			  	</div> 
 		   		<div class="well">
 			  		<br/>
@@ -86,7 +86,7 @@
 					  		</#list>
 				  			<tr>
 				  				<td></td>
-				  				<td><a href="http://www.cubrid.org/wiki_ngrinder" target="_blank"><i class="icon-share-alt"></i>&nbsp;more...</a></td>
+				  				<td><a href="http://www.cubrid.org/wiki_ngrinder" target="_blank"><i class="icon-share-alt"></i>&nbsp;<@spring.message "home.button.more"/></a></td>
 				  			</tr>
 				  			</div>
 		  				</table>
@@ -95,7 +95,6 @@
 			</div>
 		</div>
 		<script>
-		            	
 			$(document).ready(function(){
 		        $("div.quickStart").popover(
 		          	{
@@ -118,7 +117,6 @@
 			    	}
 			    });
 		    });
-		    
 		</script>
 		<#include "common/copyright.ftl">
 	</div>
