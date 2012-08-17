@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-	<head>
+	<head>	
+		<meta http-equiv="X-UA-Compatible" content="IE=8" />
 		<#include "../common/common.ftl">
 		<title><@spring.message "script.editor.title"/></title>
 	</head>
@@ -16,16 +17,18 @@
 						<fieldset>
 							<div class="control-group">
 								<label class="control-label" for="testName"><@spring.message "script.option.name"/></label>
-								<div class="controls">  
-									<input type="text" id="scriptNameInput" name="path" value="${file.path!}" readonly/>
-									<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:310px;width:30px"><@spring.message "common.button.save"/></a>
-									<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:85px"><@spring.message "script.editor.button.validate"/></a>
+								<div class="controls">   
+									<input type="text" id="scriptNameInput" class="span7" name="path" value="${file.path!}" readonly/>
+									<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" ><@spring.message "common.button.save"/></a>
+									<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" ><@spring.message "script.editor.button.validate"/></a>
 								</div>
 							</div>
 							<div style="margin-bottom: 0" class="control-group">
-								<label class="control-label" for="description"><@spring.message "common.label.description"/></label>
+								<label class="control-label" for="description"><@spring.message "script.option.commit"/></label>
 								<div class="controls">  
-									<input type="text" id="descInput" name="description" class="span9" value="${(file.description)!}">
+									<textarea class="input-xlarge span9" id="descInput" rows="3" name="description" style="resize: none" >
+										${(file.description)!}
+									</textarea>
 								</div>
 							</div>
 						</fieldset>
@@ -36,18 +39,11 @@
 				
 				<table style="border:none;width:100%">
 					<tr>
-					<td>
-						<div id="script_1" style="width:100%">
-							<textarea id="display_content" name="content" style="height:550px;width:100%;">${(file.content)!}</textarea>
-						</div>
-					</td>
-					<#if oldfile?has_content> 
-					<td>
-						<textarea id="display_content_2" style="height:550px;width:100%;">${oldfile}</textarea>
-						<div id="script_2" style="width:100%">
-						</div>
-					</td>
-					</#if>
+						<td>
+							<div id="script_1" style="width:100%">
+								<textarea id="display_content" name="content" style="height:550px;width:100%;">${(file.content)!}</textarea>
+							</div>
+						</td>
 					</tr>
 				</table>
 				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre"></pre>
@@ -56,32 +52,19 @@
 		<#include "../common/copyright.ftl">
 	</div>
 	
+	
 	<script src="${req.getContextPath()}/plugins/editarea/edit_area.js"></script>
 	<script>
 		$(document).ready(function() {
 			$("#n_script").addClass("active");
 			
-			editAreaLoader.baseURL = "${req.getContextPath()}/plugins/editarea/";
+			editAreaLoader.baseURL = "${req.getContextPath()}/plugins/editarea/"; 
 			
 			editAreaLoader.init({
 				id: "display_content"
 				,is_editable: true
 				,start_highlight: true
-				,allow_resize: true
-				,allow_toggle: false
-				,language: "en"
-				,syntax: "python" 
-				,replace_tab_by_spaces: 4
-				,font_size: "10"
-				,font_family: "verdana, monospace"
-				,EA_load_callback: "listenEditArea"
-			});
-			
-			editAreaLoader.init({
-				id: "display_content_2"
-				,is_editable: true
-				,start_highlight: true
-				,allow_resize: true
+				,allow_resize: false
 				,allow_toggle: false
 				,language: "en"
 				,syntax: "python" 
@@ -90,22 +73,7 @@
 				,font_family: "verdana, monospace"
 			});
 			
-			if ("0" == "0") {
-	      		$('#script_2').hide();
-	      		loadCache();
-	  		} else {
-	      		$('#script_2').show();
-	  		}
 			
-			$("#compareBtn").on('click', function() {
-				if ($("#historySelect").val() == 0) {
-					alert("Please select a history file.");
-					return;
-				}
-				document.forms.contentForm.action = "${req.getContextPath()}/script/detail";
-				document.forms.contentForm.submit();
-			});
-
 			$("#saveBtn").on('click', function() {
 				var scriptContent = editAreaLoader.getValue("display_content");
 				$('#contentHidden').val(scriptContent);
@@ -150,48 +118,7 @@
 		  	});
 		}
 		
-		//TODO  is it necessary now?
-		function loadCache() {
-			
-		}
-		
-		function listenEditArea() {
-			clearInterval(window.interval);
-			window.lastContent = editAreaLoader.getValue("display_content");
-			window.interval = setInterval(function(){autoSave()}, 10000);
-		}
-		
-		function autoSave() {
-			var scriptContent = editAreaLoader.getValue("display_content");
-			
-			if (scriptContent == window.lastContent) {
-				return;
-			}
-			
-			$.ajax({
-				url: "${req.getContextPath()}/script/autoSave",
-				async: false,
-				cache: false,
-				type: "POST",
-				dataType:'json',
-				data: {'id': ${(script.getFileName())!0}, 'content': scriptContent},
-		        success: function(res) {
-		        	if (res.success) {
-		        		showInformation("<@spring.message "script.editor.message.autoSave"/> " + new Date());
-		        	} else {
-		        		showErrorMsg(res.message);
-		        	}
-		        },
-		        timeout: function() {
-		        	showErrorMsg("<@spring.message "script.editor.error.autoSave"/>");  
-		        },
-		        error: function() {
-		        	showErrorMsg("<@spring.message "script.editor.error.autoSave"/>");  
-		        }
-			});
-			
-			window.lastContent = scriptContent;
-		}
-	</script>
+				
+		</script>
 	</body>
 </html>

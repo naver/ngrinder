@@ -12,7 +12,7 @@
 			.logo { margin-top:150px; text-align:center }
 			.login { text-align:center }
 			.login input { border:1px solid #e0e0e0 }
-			.login .input { margin-bottom:6px; height:13px }
+			.login .input { margin-bottom:6px; }
 			.lgn_ipt { display:inline-block }
 			.btn_lgn { display:inline-block; *margin-left:5px; vertical-align:top }
 			.prompt { text-align:center; margin-top:5px; *margin-top:2px; height:30px; }
@@ -29,14 +29,14 @@
 				<div class="login">
 					<span class="lgn_ipt">
 						<input type="text" class="span2 input" name="j_username" id="j_username" placeholder="User ID"><br>
-						<input type="password" class="span2 input" name="j_password" id="j_password" placeholder="Password">			
+						<input type="password" class="span2 input" name="j_password" id="j_password" placeholder="Password"> 	 		
 					</span>
-					<input id="loginBtn" type="image" src="${req.getContextPath()}/img/login.gif" alt="Login" class="btn_lgn" width="60px">
+					<input id="loginBtn" type="image" src="${req.getContextPath()}/img/login.gif" alt="Login" class="btn_lgn" width="60px" style="margin-top:0px; margin-left:25px"> 
 				</div>
 				
 				<div class="prompt">
 					<input type="checkbox" class="chk" name='_spring_security_remember_me'>Remeber me :
-					<select  id="native_language" name="native_language" style="margin-left:30px;">
+					<select  id="native_language" name="native_language" style="margin-left:60px;"> 
 						  <option value="en">English</option>
 						  <option value="kr">한국어</option>
 						  <option value="cn">中文</option>
@@ -44,7 +44,7 @@
 				</div>
 				
 				<div class="prompt">
-					<select  id="user_locale"  name="user_locale" style="width:250px">
+					<select  id="user_locale"  name="user_locale" style="width:240px">
 					  <#list timezones as eachtimezone>
 						  <option value="${eachtimezone.ID}">${eachtimezone.ID} - ${eachtimezone.displayName}</option>
 				      </#list>

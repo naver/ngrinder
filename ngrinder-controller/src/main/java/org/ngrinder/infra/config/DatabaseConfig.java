@@ -84,7 +84,7 @@ public class DatabaseConfig implements NGrinderConstants {
 			public void postProcessPersistenceUnitInfo(MutablePersistenceUnitInfo pui) {
 				Reflections reflections = new Reflections(NGRINDER_DEFAULT_PACKAGE);
 				for (Class<?> each : reflections.getTypesAnnotatedWith(Entity.class)) {
-					logger.debug("Entity class {} is detected as the SpringData entity.", each.getName());
+					logger.trace("Entity class {} is detected as the SpringData entity.", each.getName());
 					pui.addManagedClassName(each.getName());
 				}
 			}
