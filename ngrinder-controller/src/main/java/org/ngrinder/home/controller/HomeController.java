@@ -78,7 +78,7 @@ public class HomeController extends NGrinderBaseController {
 		timeZones = new ArrayList<TimeZone>();
 		final String[] timeZoneIds = TimeZone.getAvailableIDs();
 		for (final String id : timeZoneIds) {
-			if (id.matches(TIMEZONE_ID_PREFIXES)) {
+			if (id.matches(TIMEZONE_ID_PREFIXES) && !TimeZone.getTimeZone(id).getDisplayName().contains("GMT")) {
 				timeZones.add(TimeZone.getTimeZone(id));
 			}
 		}
