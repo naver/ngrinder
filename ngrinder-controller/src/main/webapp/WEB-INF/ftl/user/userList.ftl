@@ -50,7 +50,7 @@
 							<th><input type="checkbox" class="checkbox" value=""></th>
 							<th><@spring.message "user.option.name"/></th>
 							<th><@spring.message "user.option.role"/></th>
-							<th class="noClick"><@spring.message "user.option.description"/></th>
+							<th class="noClick"><@spring.message "common.label.description"/></th>
 							<th><@spring.message "user.list.table.date"/></th>
 							<th class="noClick"><@spring.message "user.list.table.edit"/></th>
 							<th class="noClick"><@spring.message "user.list.table.delete"/></th>

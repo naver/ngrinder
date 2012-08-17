@@ -152,7 +152,7 @@
 		</div>
 
 		<div class="control-group">
-			<label class="control-label"><@spring.message "user.option.description"/></label>
+			<label class="control-label"><@spring.message "common.label.description"/></label>
 			<div class="controls">
 				<textarea cols="30" id="description" name="description"
 					rows="3" title="Description" class="tx_area span4" rel="popover"
