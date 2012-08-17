@@ -110,7 +110,7 @@
 				<h3><@spring.message "script.list.button.createScript"/></h3>
 			</div>
 			<div class="modal-body">
-				<form class="form-horizontal" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/create/${currentPath}">
+				<form class="form-horizontal form-horizontal-4" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/create/${currentPath}">
 					<fieldset>
 						<div class="control-group">
 							<label for="scriptNameInput" class="control-label"><@spring.message "script.option.name"/></label>
@@ -230,6 +230,13 @@
 					markInput($name, true);
 				}
 				
+				var name = $name.val();
+				var extension = "." + $("#languageSelect").val().toLowerCase();
+				var idx = name.toLowerCase().indexOf(extension);
+				if (name.length < 3 || idx == -1 || idx < name.length - 3) {
+					$name.val(name + extension);
+				}
+				
 				var $url = $("#urlInput");
 				if (checkEmptyByObj($url)) {
 					markInput($url, false, "<@spring.message "common.form.validate.empyt"/>");
@@ -243,6 +250,8 @@
 					
 					markInput($url, true);
 				}
+				
+				$url.val("http://" + $url.val());
 				
 				document.forms.createForm.submit();
 			});

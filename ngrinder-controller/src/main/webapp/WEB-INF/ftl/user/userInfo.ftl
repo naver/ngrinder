@@ -112,7 +112,7 @@
 				    rel="popover" value="${(user.userId)!}"
 					data-content="<@spring.message "user.info.warning.userId.intro"/>"
 					data-original-title="<@spring.message "user.info.form.userId"/>"
-					<#if user?? && user.userId??>disabled</#if> >
+					<#if user?? && user.userId??>readonly="value"</#if> >
 				<span id="userIdError_span_id" class="help-inline"> </span>
 				<input type="hidden" id="id" name="id" value="${(user.id)!}">
 			</div>
