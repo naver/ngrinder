@@ -244,7 +244,7 @@ public class FileEntryController extends NGrinderBaseController {
 			if (!originalFileExt.equalsIgnoreCase(inputedFileExt)) {
 				fileEntry.setPath(fileEntry.getPath() + "." + originalFileExt);
 			}
-			fileEntry.setContent(IOUtils.toString(file.getInputStream()));
+			fileEntry.setContentBytes(IOUtils.toByteArray(file.getInputStream()));
 		} catch (IOException e) {
 			LOG.error("Error while getting file content", e);
 			throw new NGrinderRuntimeException("Error while getting file content", e);

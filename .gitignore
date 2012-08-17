@@ -7,3 +7,4 @@
 .project
 .checkstyle
 target/
+/.clover
