@@ -46,7 +46,8 @@
 						</td>
 					</tr>
 				</table>
-				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre"></pre>
+				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre">
+				</pre>
 			</div>	
 		</div>
 		<#include "../common/copyright.ftl">
@@ -97,9 +98,9 @@
 
 		function validateScript() {
 			showInformation("<@spring.message "script.editor.message.validate"/>");
-			
 			var scriptContent = editAreaLoader.getValue("display_content");
 			var scriptPath = $("#scriptNameInput").val();
+			$('#validateRsPre').attr("class", "prettyprint pre-scrollable hidden");
 			$.ajax({
 		  		url: "${req.getContextPath()}/script/validate",
 		    	async: true,
@@ -107,10 +108,8 @@
 				data: {'path':scriptPath, 'content': scriptContent},
 		    	success: function(res) {
 					var validationInfo = "";
-					$.each(res, function(i,item){
-						validationInfo = validationInfo + "\n" + item + "\n";
-					});
-					$('#validateRsPre').text(validationInfo);
+					$('#validateRsPre').text(res);
+					$('#validateRsPre').attr("class", "prettyprint pre-scrollable");
 		    	},
 		    	error: function() {
 		    		showErrorMsg("<@spring.message "script.editor.error.validate"/>");
