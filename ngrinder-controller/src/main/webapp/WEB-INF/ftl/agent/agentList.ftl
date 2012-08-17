@@ -10,12 +10,13 @@
 	<div class="container">
 		<div class="page-header pageHeader" style="margin-bottom: 10px">
 			<span>
-			<h3>Agent Management</h3>
+			<h3><@spring.message "agent.managerment.title"/></h3>
 			</span>
 			
 		</div>
 		<div class="row">
 			<div class="span12">
+
 				<div class="input-prepend pull-right">
 		              <span class="add-on" style="cursor:default">Agent Download</span><span class="input-xlarge uneditable-input span6" style="cursor:text">
 		              		<#if downloadLinks?has_content>
@@ -26,7 +27,7 @@
 		            		</span> 
 		              </span>
 		        </div>  
-        		
+
 				<table class="table table-striped table-bordered" id="agentTable">
 					<colgroup>
 						<col width="30">
@@ -40,11 +41,11 @@
 					<thead>
 						<tr>
 							<th><input type="checkbox" class="checkbox" value=""></th>
-							<th>IP | Domain</th>
-							<th class="noClick">Port</th>
-							<th>Name</th>
-							<th>Region</th>
-							<th>Status</th>
+							<th><@spring.message "agent.table.IPAndDns"/></th>
+							<th class="noClick"><@spring.message "agent.table.port"/></th>
+							<th><@spring.message "agent.table.name"/></th>
+							<th><@spring.message "agent.table.region"/></th>
+							<th><@spring.message "agent.table.status"/></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -63,7 +64,7 @@
 						</#list>
 						<#else>
 						<tr>
-							<td colspan="7" class="noData">No data to display.</td>
+							<td colspan="7" class="noData"><@spring.message "common.message.noData"/></td>
 						</tr>
 						</#if>
 					</tbody>

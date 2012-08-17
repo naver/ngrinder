@@ -1,15 +1,44 @@
+function checkFormatByObj(obj, ruleStr) {
+	var success = checkStringFormat(obj.val(), ruleStr);
+	
+	if (!success) {
+		obj.focus();
+	}
+	
+	return success;
+}
+
 function checkStringFormat(str, ruleStr) {
 	var rule = new RegExp(ruleStr);
 	
 	return rule.test(str);
 }
 
-function checkEmptyByID(id) {
-	return checkEmpty($('#' + id));
+function checkSimpleNameByID(id) {
+	return checkSimpleNameByObj($("#" + id));
 }
 
-function checkEmpty(obj) {
-	if(checkEmptyByStr(obj.val())) {
+function checkSimpleNameByObj(obj) {
+	var success = checkSimpleName(obj.val());
+	if (!success) {
+		obj.focus();
+	}
+	
+	return success;
+}
+
+function checkSimpleName(str) {
+	var patrn = "^[a-zA-Z]{1}([a-zA-Z0-9]|[_]|[-]|[.]){0,19}$";
+	
+	return checkStringFormat(str, patrn);
+}
+
+function checkEmptyByID(id) {
+	return checkEmptyByObj($('#' + id));
+}
+
+function checkEmptyByObj(obj) {
+	if(checkEmpty(obj.val())) {
 		obj.val('');
 		obj.focus();
 		return true;
@@ -18,7 +47,7 @@ function checkEmpty(obj) {
 	return false;
 }
 
-function checkEmptyByStr(str) {
+function checkEmpty(str) {
 	if($.trim(str) == "") {
 		return true;
 	}
@@ -27,11 +56,14 @@ function checkEmptyByStr(str) {
 }
 
 function isIPByID(id) {
-	var $elem = $("#" + id);
-	var success = isIP($elem.val());
+	return isIPByObj($("#" + id));
+}
+
+function isIPByObj(obj) {
+	var success = isIP(obj.val());
 	
 	if (!success) {
-		$elem.focus();
+		obj.focus();
 	}
 	
 	return success;
@@ -57,12 +89,15 @@ function isIP(str) {
 }
 
 function isPortByID(id) {
-	var $elem = $("#" + id);
-	var success = isPort($elem.val());
+	return isPortByObj($("#" + id));
+}
+
+function isPortByObj(obj) {
+	var success = isPort(obj.val());
 	
 	if (!success) {
 		alert(getI18nMsg("errorPort"));
-		$elem.focus();
+		obj.focus();
 	}
 	
 	return success;
@@ -205,6 +240,18 @@ function deleteSelection() {
         for (var i = 0; i < ranges.length; i++) {
             ranges[i].text = "";
         }
+    }
+}
+
+function markInput(obj, success, message) {
+	if (success) {
+		obj.next("span").empty();
+		obj.parents('.control-group').addClass('success');
+		obj.parents('.control-group').removeClass('error');           				
+	} else {
+		obj.next("span").html(message);
+		obj.parents('.control-group').addClass('error');
+		obj.parents('.control-group').removeClass('success');
     }
 }
 

@@ -18,11 +18,11 @@
         <div class="container">
             <div class="row" style="margin-bottom:10px;">
                 <div class="span9">
-                   <h3>Agent Info</h3>
+                   <h3><@spring.message "agent.info.title"/></h3>
                 </div>
                 <div class="span2 offset1">
-                    <button class="btn pull-right" title="Return" id="returnBtn">Return</button>&nbsp;&nbsp;
-                    <button class="btn" title="Refresh monitor data" id="refreshBtn">Refresh</button>
+                    <button class="btn pull-right" title="Return" id="returnBtn"><@spring.message "common.button.refresh"/></button>&nbsp;&nbsp;
+                    <button class="btn" title="Refresh monitor data" id="refreshBtn"><@spring.message "common.button.refresh"/></button>
                 </div>
             </div>
             <div class="row">
@@ -30,45 +30,45 @@
                     <table class="table table-bordered table-striped" style="border-top:#cccccc solid 1px">
 				    <tbody>
 					    <tr>
-					    	<th>IP</th>
+					    	<th><@spring.message "agent.table.IP"/></th>
 					    </tr>
 	                    <tr>
 					    	<td>${(agent.ip)!}</td>
 					    </tr>
 					    <tr>
-					    	<th>Port</th>
+					    	<th><@spring.message "agent.table.port"/></th>
 					    </tr>
 	                    <tr>
 					    	<td>${(agent.port)!}</td>
 					    </tr>
 					    <tr>
-					    	<th>Name</th>
+					    	<th><@spring.message "agent.table.name"/></th>
 					    </tr>
 	                    <tr>
 					   		<td>${(agent.hostName)!}</td>
 					    </tr>
-					    	<th>Region</th>
+					    	<th><@spring.message "agent.table.region"/></th>
 					    </tr>
 	                    <tr>
 					    	<td>${(agent.region)!}</td>
 					    </tr>
 					    </tr>
 					    <tr>
-					    	<th>Status</th>
+					    	<th><@spring.message "agent.table.status"/></th>
 					    </tr>
 	                    <tr>
 					    	<td>${(agent.status)!}</td>
 					    </tr>
 				    </tbody>
 				    </table>
-				    <label>Refresh interval (second)</label>
+				    <label><@spring.message "agent.info.refreshInterval"/></label>
                     <input id="rinterval" type="text" class="span3" placeholder="number" value="1">
                 </div>
                 <div class="span9">
 					<div class="tabbable" style="margin-left:20px">
                         <ul class="nav nav-tabs" id="chartTab">
-                            <li class="active"><a href="#systemData" data-toggle="tab">System Data</a></li>
-                            <li><a href="#javaData" data-toggle="tab">Java Data</a></li>
+                            <li class="active"><a href="#systemData" data-toggle="tab"><@spring.message "agent.info.systemData"/></a></li>
+                            <li><a href="#javaData" data-toggle="tab"><@spring.message "agent.info.javaData"/></a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane active" id="systemData">

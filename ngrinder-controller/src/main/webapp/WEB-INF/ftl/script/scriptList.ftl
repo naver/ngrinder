@@ -15,7 +15,7 @@
 			<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
 			<#if svnUrl?has_content>
 			<div class="input-prepend pull-right" rel="popover" 
-               		data-content="User can access scripts through Subversion.&lt;br&gt; Please access the following URL with your Subversion client"
+               		data-content="<@spring.message "script.list.message.svn"/>"
                		 data-original-title="Subversion" placement="bottom"/> 
                <span class="add-on" style="cursor:default">SVN</span><span class="input-xlarge uneditable-input span6" style="cursor:text">${svnUrl}</span>
         	</div> 
@@ -185,8 +185,8 @@
 							<label for="upScriptNameInput" class="control-label"><@spring.message "script.list.label.fileName"/></label>
 							<div class="controls">
 							  <input type="text" id="upScriptNameInput" name="fileName">
-							  <input type="hidden" id="path" name="path"/>
 							  <span class="help-inline"></span>
+							  <input type="hidden" id="path" name="path"/>
 							</div>
 						</div>
 						<div class="control-group">
@@ -217,16 +217,60 @@
 			$("#n_script").addClass("active");
 			
 			$("#createBtn2").on('click', function() {
+				var $name = $("#scriptNameInput");
+				if (checkEmptyByObj($name)) {
+					markInput($name, false, "<@spring.message "common.form.validate.empyt"/>");
+					return;
+				} else {
+					if (!checkSimpleNameByObj($name)) {
+						markInput($name, false, "<@spring.message "common.form.validate.format"/>");
+						return;
+					}
+					
+					markInput($name, true);
+				}
+				
+				var $url = $("#urlInput");
+				if (checkEmptyByObj($url)) {
+					markInput($url, false, "<@spring.message "common.form.validate.empyt"/>");
+					return;
+				} else {
+					var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$";
+					if (!checkFormatByObj($url, rule)) {
+						markInput($url, false, "<@spring.message "common.form.validate.format"/>");
+						return;
+					}
+					
+					markInput($url, true);
+				}
+				
 				document.forms.createForm.submit();
 			});
 			
 			$("#uploadBtn2").on('click', function() {
-			
+				var $file = $("#fileInput");
+				if (checkEmptyByObj($file)) {
+					markInput($file, false, "<@spring.message "common.form.validate.empyt"/>");
+					return;
+				}
+				
 				$("#path").val($("#upScriptNameInput").val());
 				document.forms.uploadForm.submit();
 			});
 			
 			$("#createFolderBtn").on('click', function() {
+				var $name = $("#folderNameInput");
+				if (checkEmptyByObj($name)) {
+					markInput($name, false, "<@spring.message "common.form.validate.empyt"/>");
+					return;
+				} else {
+					if (!checkSimpleNameByObj($name)) {
+						markInput($name, false, "<@spring.message "common.form.validate.format"/>");
+						return;
+					}
+					
+					markInput($name, true);
+				}
 				
 				document.forms.createFolderForm.submit();
 			});
@@ -297,10 +341,8 @@
 					"aoColumns": [{ "asSorting": []}, { "asSorting": []}, null, { "asSorting": []}, null, null, { "asSorting": []}],
 					"sPaginationType": "bootstrap"
 				});
+				$(".noClick").off('click');
 			</#if>
-			
-			$(".noClick").off('click');
-			
 		});
 		
 		function searchScriptList() {
