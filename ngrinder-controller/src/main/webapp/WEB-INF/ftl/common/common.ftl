@@ -3,7 +3,7 @@
 <meta name="description" content="nGrinder Performance Test Detail">
 <meta name="author" content="AlexQin">
 
-<link rel="shortcut icon" href="${req.getContextPath()}/favicon.ico" />
+<link rel="shortcut icon" type="image/png" href="${req.getContextPath()}/img/favicon.png" />
 <link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
 <link href="${req.getContextPath()}/css/ngrinder.css" rel="stylesheet">
 

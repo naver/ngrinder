@@ -16,19 +16,18 @@
 		</div>
 		<div class="row">
 			<div class="span12">
-				<#if downloadLinks?has_content>
-					<div class="input-prepend pull-right"> 
-		               <span class="add-on" style="cursor:default"><@spring.message "agent.table.agentDownload"/></span>
-		                 	<span class="input-xlarge uneditable-input span6" style="cursor:text">
-		                 		<#if downloads?exists>
-								<#list downloads as each>
-			               			<div><a href="${each}">${ech}</a></div>
-		               			</#list>
-		               			</#if>
-		               		</span>
-		               </span>
-		        	</div>  
-        		</#if>
+
+				<div class="input-prepend pull-right">
+		              <span class="add-on" style="cursor:default">Agent Download</span><span class="input-xlarge uneditable-input span6" style="cursor:text">
+		              		<#if downloadLinks?has_content>
+								<#list downloadLinks as each>  
+				           			<div><a href="${each}">${each}</a></div>
+			           			</#list>  
+		           			</#if>  
+		            		</span> 
+		              </span>
+		        </div>  
+
 				<table class="table table-striped table-bordered" id="agentTable">
 					<colgroup>
 						<col width="30">

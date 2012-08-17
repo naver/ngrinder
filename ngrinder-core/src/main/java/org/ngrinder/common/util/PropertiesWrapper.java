@@ -64,7 +64,7 @@ public class PropertiesWrapper {
 	public String getProperty(String key, String defaultValue, String errorMsgTemplate) {
 		String value = this.properties.getProperty(key);
 		if (StringUtils.isBlank(value)) {
-			LOGGER.debug(errorMsgTemplate, key, defaultValue);
+			LOGGER.trace(errorMsgTemplate, key, defaultValue);
 			value = defaultValue;
 		}
 		return value;

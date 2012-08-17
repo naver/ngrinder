@@ -29,9 +29,6 @@ public class ClassPathInit {
 	 */
 	@PostConstruct
 	public void init() {
-		LOG.info("===========================================================================");
-		LOG.info("Total System Class Path in total is "
-						+ System.getProperties().getProperty("java.class.path", ""));
 		final String systemClasspath = System.getProperty("java.class.path");
 		if (systemClasspath != null) {
 			for (String pathEntry : systemClasspath.split(File.pathSeparator)) {

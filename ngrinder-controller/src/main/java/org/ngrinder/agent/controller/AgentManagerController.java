@@ -90,7 +90,7 @@ public class AgentManagerController extends NGrinderBaseController {
 				return true;
 			}
 		});
-		model.addAttribute("downloadLinks", directory);
+		model.addAttribute("downloadLinks", downloads);
 		return "agent/agentList";
 	}
 

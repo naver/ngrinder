@@ -221,7 +221,7 @@
 				type: "POST",
 		  		data: {"data":ids},
 				dataType:'json',
-		    	success: fu\nction(res) {
+		    	success: function(res) {
 		    		if (res.success) {
 			    		showSuccessMsg("The stop is requested");
 							setTimeout(function() {

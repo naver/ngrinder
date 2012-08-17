@@ -4,9 +4,9 @@
 
 	<appender name="log-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${PREFIX}.log</file>
-
+ 
 		<encoder>
-			<pattern>%d %-5level %message%n</pattern>
+			<pattern>%d{HH:mm:ss} %-5level %message%n</pattern>
 		</encoder>
 
 		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">

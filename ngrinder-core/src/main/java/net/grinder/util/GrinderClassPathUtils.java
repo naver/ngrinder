@@ -64,7 +64,7 @@ public class GrinderClassPathUtils {
 							|| name.contains("jython") || name.contains("slf4j-api")
 							|| name.contains("logback") || name.contains("jsr173")
 							|| name.contains("xmlbeans") || name.contains("stax-api")) {
-				logger.debug("classpath :" + eachClassPath);
+				logger.trace("classpath :" + eachClassPath);
 				classPathList.add(eachClassPath);
 			}
 		}

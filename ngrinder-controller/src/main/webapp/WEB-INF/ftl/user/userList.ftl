@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<#include "../common/common.ftl">
-	<#include "../common/datatables.ftl">
-	<title><@spring.message "user.list.title"/></title>
+<head><#include "../common/common.ftl"> <#include "../common/datatables.ftl">
+<title><@spring.message "user.list.title"/></title>
 </head>
 
 <body>
@@ -11,40 +9,36 @@
 
 	<div class="container">
 		<div class="row">
-			<#assign listPage = true>
-			<#include "leftButton.ftl"/>
+			<#assign listPage = true> <#include "leftButton.ftl"/>
 
 			<div class="span10">
 				<div class="page-header pageHeader">
 					<h3><@spring.message "user.list.header"/></h3>
 				</div>
 				<div class="well form-inline searchBar">
-					<input type="text" class="input-medium search-query span4"
-						placeholder="Keywords" id="searchText" value="${keywords!}">
-					<button type="submit" class="btn" id="search_user"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
-					<span class="pull-right">
-						<a class="btn" href="${req.getContextPath()}/user/detail" id="createBtn"  data-toggle="modal">
-							<i class="icon-user"></i>
-							<@spring.message "user.list.button.create"/>
-						</a>
-					
-						<a href="javascript:deleteCheckedUsers()" class="btn btn-danger">
-						<i class="icon-remove"></i>
-						<@spring.message "user.list.button.delete"/>
-					</a> 
-				</span>
-					
+					<input type="text" class="input-medium search-query span4" placeholder="Keywords" id="searchText"
+						value="${keywords!}">
+					<button type="submit" class="btn" id="search_user">
+						<i class="icon-search"></i> <@spring.message "common.button.search"/>
+					</button>
+					<span class="pull-right"> <a class="btn" href="${req.getContextPath()}/user/detail" id="createBtn"
+						data-toggle="modal"> <i class="icon-user"></i> <@spring.message "user.list.button.create"/>
+					</a> <a href="javascript:deleteCheckedUsers()" class="btn btn-danger"> <i class="icon-remove"></i> <@spring.message
+							"user.list.button.delete"/>
+					</a>
+					</span>
+
 				</div>
 				<table class="table table-striped table-bordered ellipsis" id="userTable">
 					<colgroup>
-                        <col width="30">
-                        <col width="150">
-                        <col width="130">
-                        <col>
-                        <col width="150">
-                        <col width="45">
-                        <col width="45">
-                    </colgroup>
+						<col width="30">
+						<col width="150">
+						<col width="130">
+						<col>
+						<col width="120">
+						<col width="45">
+						<col width="45">
+					</colgroup>
 					<thead>
 						<tr>
 							<th><input type="checkbox" class="checkbox" value=""></th>
@@ -59,27 +53,17 @@
 					<tbody>
 						<#list userList as user>
 						<tr>
-							<td><input type="checkbox" id="user_info_check" <#if user.userId == "admin">disabled</#if> value="${user.userId}" /></td>
-							<td>
-								<a href="${req.getContextPath()}/user/detail?userId=${user.userId}">${user.userName!}</a></td>
+							<td><input type="checkbox" id="user_info_check"<#if user.userId == "admin">disabled</#if>
+								value="${user.userId}" /></td>
+							<td><a href="${req.getContextPath()}/user/detail?userId=${user.userId}">${user.userName!}</a></td>
 							<td>${user.role}</td>
 							<td class="ellipsis">${user.description!}</td>
-							<td>
-								<#if user.createdDate?has_content>
-									${user.createdDate?string("yyyy/MM/dd HH:mm:ss")}
-								</#if>
-							</td>
-							<td>
-								<a href="${req.getContextPath()}/user/detail?userId=${user.userId}">
-									<i class="icon-edit"></i>
-								</a>
-							</td>
-							<td>
-								<#if user.userId != "admin">
-								<a href="javascript:deleteUsers('${user.userId}');">
-									<i class="icon-remove"></i>
-								</a>
-								</#if>
+							<td><#if user.createdDate?has_content> ${user.createdDate?string("yyyy/MM/dd HH:mm")} </#if></td>
+							<td><a href="${req.getContextPath()}/user/detail?userId=${user.userId}"> <i class="icon-edit"></i>
+							</a></td>
+							<td><#if user.userId != "admin"> <a href="javascript:deleteUsers('${user.userId}');"> <i
+									class="icon-remove"></i>
+							</a> </#if>
 							</td>
 						</tr>
 						</#list>
