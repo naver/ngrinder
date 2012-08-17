@@ -66,6 +66,14 @@ body {
 	color: #6DAFCF;
 }
 
+.form-horizontal-4 .control-label {
+	width: 175px;
+}
+
+.form-horizontal-4 .controls {
+	margin-left: 190px;
+}
+
 .form-horizontal-left .control-label {
 	text-align: left;
 }
