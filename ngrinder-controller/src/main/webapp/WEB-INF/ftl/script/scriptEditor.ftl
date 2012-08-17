@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>nGrinder Script Editor</title>
 		<#include "../common/common.ftl">
+		<title><@spring.message "script.editor.title"/></title>
 	</head>
 
 	<body>
@@ -15,15 +15,15 @@
 					<div class="form-horizontal form-horizontal-1">
 						<fieldset>
 							<div class="control-group">
-								<label class="control-label" for="testName">Script Name</label>
+								<label class="control-label" for="testName"><@spring.message "script.option.name"/></label>
 								<div class="controls">  
 									<input type="text" id="scriptNameInput" name="path" value="${file.path!}" readonly/>
-									<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:315px">Save</a>
-									<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn">Validate Script</a>
+									<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:310px;width:30px"><@spring.message "common.button.save"/></a>
+									<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:85px"><@spring.message "script.editor.button.validate"/></a>
 								</div>
 							</div>
 							<div style="margin-bottom: 0" class="control-group">
-								<label class="control-label" for="description">Description</label>
+								<label class="control-label" for="description"><@spring.message "common.label.description"/></label>
 								<div class="controls">  
 									<input type="text" id="descInput" name="description" class="span9" value="${(file.description)!}">
 								</div>
@@ -115,7 +115,7 @@
 			});
 
 			$(".listBtn").on('click', function() {
-				if (!confirm("You are writting this script.\nAre you sure to cancel modified script and move the scripts list?")) {
+				if (!confirm("<@spring.message "script.editor.confirm.cancelPage"/>")) {
 					return;
 				}
 
@@ -128,11 +128,9 @@
 		});
 
 		function validateScript() {
+			showInformation("<@spring.message "script.editor.message.validate"/>");
+			
 			var scriptContent = editAreaLoader.getValue("display_content");
-			$('#validateBtn').ajaxSend(function() {
-			  showInformation("Validating script......");
-			});
-
 			var scriptPath = $("#scriptNameInput").val();
 			$.ajax({
 		  		url: "${req.getContextPath()}/script/validate",
@@ -147,7 +145,7 @@
 					$('#validateRsPre').text(validationInfo);
 		    	},
 		    	error: function() {
-		    		showErrorMsg("Validate Script error.");
+		    		showErrorMsg("<@spring.message "script.editor.error.validate"/>");
 		    	}
 		  	});
 		}
@@ -179,16 +177,16 @@
 				data: {'id': ${(script.getFileName())!0}, 'content': scriptContent},
 		        success: function(res) {
 		        	if (res.success) {
-		        		showInformation("Auto save script at " + new Date());
+		        		showInformation("<@spring.message "script.editor.message.autoSave"/> " + new Date());
 		        	} else {
 		        		showErrorMsg(res.message);
 		        	}
 		        },
 		        timeout: function() {
-		        	showErrorMsg("Auto save script is time out.");  
+		        	showErrorMsg("<@spring.message "script.editor.error.autoSave"/>");  
 		        },
 		        error: function() {
-		        	showErrorMsg("Auto save script is error.");  
+		        	showErrorMsg("<@spring.message "script.editor.error.autoSave"/>");  
 		        }
 			});
 			

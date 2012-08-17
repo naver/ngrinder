@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>nGrinder Script List</title>
 		<#include "../common/common.ftl">
 		<#include "../common/datatables.ftl">
+		<title><@spring.message "script.list.title"/></title>
 	</head>
 
 	<body>
@@ -12,7 +12,7 @@
 		<div class="well form-inline searchBar" style="margin-top:0;">
 			<!--<legend>introduction</legend>-->
 			<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
-			<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> Search</button>
+			<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
 			<#if svnUrl?has_content>
 			<div class="input-prepend pull-right" rel="popover" 
                		data-content="User can access scripts through Subversion.&lt;br&gt; Please access the following URL with your Subversion client"
@@ -23,19 +23,19 @@
         	<div style="margin-top:10px">
 				<a class="btn btn-primary" href="#createScriptModal" id="createBtn" data-toggle="modal">
 					<i class="icon-file"></i>
-					Create a script
+					<@spring.message "script.list.button.createScript"/>
 				</a>
 				<a class="btn" href="#createFolderModal" id="folderBtn" data-toggle="modal">
 					<i class=" icon-folder-open"></i>
-					Create a folder
+					<@spring.message "script.list.button.createFolder"/>
 				</a>
 				<a class="btn" href="#uploadScriptModal" id="uploadBtn" data-toggle="modal">
 					<i class="icon-upload"></i>
-					Upload script or resources
+					<@spring.message "script.list.label.upload"/>
 				</a>
 				<a class="btn btn-danger pull-right" href="javascript:void(0);" id="deleteBtn">
 					<i class="icon-remove"></i>
-					Delete selected scripts
+					<@spring.message "script.list.button.delete"/>
 				</a>
 			</div>
 		</div>
@@ -47,7 +47,7 @@
 				<col width="250"> 
 				<col>
 				<col width="150">
-				<col width="70">
+				<col width="75">
 				<col width="60">
 			</colgroup> 
 			<thead>
@@ -55,11 +55,11 @@
 					<th><input type="checkbox" class="checkbox" value=""></th>
 					<th><a href="${req.getContextPath()}/script/list/${currentPath}/../" target="_self"><img src="${req.getContextPath()}/img/up_folder.png"/></a> 
 					</th>
-					<th>Script File Name</th>
-					<th class="noClick">Commit Message</th>
-					<th>Last Modified Date</th>
-					<th>Size(KB)</th>
-					<th class="noClick">Actions</th>
+					<th><@spring.message "script.option.name"/></th>
+					<th class="noClick"><@spring.message "script.option.commit"/></th>
+					<th><@spring.message "script.list.table.lastDate"/></th>
+					<th><@spring.message "script.list.table.size"/></th>
+					<th class="noClick"><@spring.message "script.list.table.actions"/></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -94,7 +94,7 @@
 				<#else>
 					<tr>
 						<td colspan="7" class="noData">
-							No data to display.
+							<@spring.message "common.message.noData"/>
 						</td>
 					</tr>
 				</#if>		
@@ -107,30 +107,30 @@
 		<div class="modal fade" id="createScriptModal">
 			<div class="modal-header">
 				<a class="close" data-dismiss="modal" id="createCloseBtn">&times;</a>
-				<h3>Create a script</h3>
+				<h3><@spring.message "script.list.button.createScript"/></h3>
 			</div>
 			<div class="modal-body">
 				<form class="form-horizontal" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/create/${currentPath}">
 					<fieldset>
 						<div class="control-group">
-							<label for="scriptNameInput" class="control-label">Script Name</label>
+							<label for="scriptNameInput" class="control-label"><@spring.message "script.option.name"/></label>
 							<div class="controls">
 							  <input type="text" id="scriptNameInput" name="fileName">
 							  <span class="help-inline"></span>
 							</div>
 						</div>
 						<div class="control-group">
-							<label for="languageSelect" class="control-label">Type</label>
+							<label for="languageSelect" class="control-label"><@spring.message "script.list.label.type"/></label>
 							<div class="controls">
 								<input type="hidden" name="type" value="script"/>
 								<select id="languageSelect" name="scriptType">
-									<option value="py">PythonScript</option>
+									<option value="py">Python</option>
 								</select>
 							  <span class="help-inline"></span>
 							</div>
 						</div>
 						<div class="control-group">
-							<label for="urlInput" class="control-label">URL to be tested</label>
+							<label for="urlInput" class="control-label"><@spring.message "script.list.label.url"/></label>
 							<div class="controls">
 							  <input type="text" id="urlInput" name="testUrl"/>
 							  <span class="help-inline"></span>
@@ -141,21 +141,21 @@
 			</div>
 			
 			<div class="modal-footer">
-				<a href="#" class="btn btn-primary" id="createBtn2">Create</a>
-				<a href="#createScriptModal" class="btn" id="cancelBtn" data-toggle="modal">Cancel</a>
+				<a href="#" class="btn btn-primary" id="createBtn2"><@spring.message "common.button.create"/></a>
+				<a href="#createScriptModal" class="btn" id="cancelBtn" data-toggle="modal"><@spring.message "common.button.cancel"/></a>
 			</div>
 		</div>
 		
 		<div class="modal fade" id="createFolderModal">
 			<div class="modal-header">
 				<a class="close" data-dismiss="modal" id="createCloseBtn">&times;</a>
-				<h3>Create a folder</h3>
+				<h3><@spring.message "script.list.button.createFolder"/></h3>
 			</div>
 			<div class="modal-body">
 				<form class="form-horizontal" method="post" target="_self" id="createFolderForm" action="${req.getContextPath()}/script/create/${currentPath}">
 					<fieldset>
 						<div class="control-group">
-							<label for="folderNameInput" class="control-label">Folder Name</label>
+							<label for="folderNameInput" class="control-label"><@spring.message "script.list.label.folderName"/></label>
 							<div class="controls">
 							  <input type="hidden" name="type" value="folder"/>
 							  <input type="text" id="folderNameInput" name="folderName"/>
@@ -167,22 +167,22 @@
 			</div>
 			
 			<div class="modal-footer">
-				<a href="#" class="btn btn-primary" id="createFolderBtn">Create</a>
-				<a href="#createFolderModal" class="btn" id="cancelBtn" data-toggle="modal">Cancel</a>
+				<a href="#" class="btn btn-primary" id="createFolderBtn"><@spring.message "common.button.create"/></a>
+				<a href="#createFolderModal" class="btn" id="cancelBtn" data-toggle="modal"><@spring.message "common.button.cancel"/></a>
 			</div>
 		</div>
 	
 		<div class="modal fade" id="uploadScriptModal">
 			<div class="modal-header">
 				<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
-				<h3>Upload a JavaScript or Selenium File</h3>
+				<h3><@spring.message "script.list.button.upload"/></h3>
 			</div>
 			<div class="modal-body">
 				<form class="form-horizontal" method="post" target="_self" action="${req.getContextPath()}/script/upload"
 						id="uploadForm" enctype="multipart/form-data">
 					<fieldset>
 						<div class="control-group">
-							<label for="upScriptNameInput" class="control-label">Name</label>
+							<label for="upScriptNameInput" class="control-label"><@spring.message "script.list.label.fileName"/></label>
 							<div class="controls">
 							  <input type="text" id="upScriptNameInput" name="fileName">
 							  <input type="hidden" id="path" name="path"/>
@@ -190,14 +190,14 @@
 							</div>
 						</div>
 						<div class="control-group">
-							<label for="discriptionInput" class="control-label">Commit Comment</label>
+							<label for="discriptionInput" class="control-label"><@spring.message "script.option.commit"/></label>
 							<div class="controls">
 							  <input type="text" id="discriptionInput" name="description">
 							  <span class="help-inline"></span>
 							</div>
 						</div>
 						<div class="control-group">
-							<label for="fileInput" class="control-label">File</label>
+							<label for="fileInput" class="control-label"><@spring.message "script.list.label.file"/></label>
 							<div class="controls">
 							  <input type="file" class="input-file" id="fileInput" name="uploadFile">
 							  <span class="help-inline"></span>
@@ -207,7 +207,7 @@
 				</form>
 			</div>
 			<div class="modal-footer">
-				<a href="#" class="btn btn-primary" id="uploadBtn2">Upload</a>
+				<a href="#" class="btn btn-primary" id="uploadBtn2"><@spring.message "script.list.button.upload"/></a>
 			</div>
 		</div>
 	</div>
@@ -235,10 +235,10 @@
 				var ids = "";
 				var list = $("td input:checked");
 				if(list.length == 0) {
-					alert("Please select any scripts first.");
+					alert("<@spring.message "script.list.alert.delete"/>");
 					return;
 				}
-				if (confirm('Are you sure to delete the script(s)?')) {
+				if (confirm('<@spring.message "script.list.confirm.delete"/>')) {
 					var agentArray = [];
 					list.each(function() {
 						agentArray.push($(this).val());
@@ -277,12 +277,6 @@
 				}
 				
 				event.stopImmediatePropagation();
-			});
-			
-			$("i.script-remove").on('click', function() {
-				if (confirm("Do you want to delete this script file?")) {
-					document.location.href = "${req.getContextPath()}/script/delete/${currentPath}?filesString=" + $(this).attr("sid");
-				}
 			});
 			
 			$("i.script-download").on('click', function() {
