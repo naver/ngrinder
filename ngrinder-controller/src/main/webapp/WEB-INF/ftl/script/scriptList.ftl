@@ -48,7 +48,7 @@
 				<col>
 				<col width="150">
 				<col width="75">
-				<col width="60">
+				<col width="63">
 			</colgroup> 
 			<thead>
 				<tr>
@@ -59,7 +59,7 @@
 					<th class="noClick"><@spring.message "script.option.commit"/></th>
 					<th><@spring.message "script.list.table.lastDate"/></th>
 					<th><@spring.message "script.list.table.size"/></th>
-					<th class="noClick"><@spring.message "script.list.table.actions"/></th>
+					<th class="noClick"><@spring.message "common.label.actions"/></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -88,12 +88,12 @@
 							<td class="ellipsis" title="${(script.description)!}">${(script.description)!}</td>
 							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if></td>
 							<td><#assign floatSize = script.fileSize?number/1024>${floatSize?string("0.##")}</td>
-							<td><a href="javascript:void(0);"><i class="icon-download-alt script-download" spath="${script.path}" sname="${script.fileName}"></i></a></td>
+							<td class="center"><a href="javascript:void(0);"><i class="icon-download-alt script-download" spath="${script.path}" sname="${script.fileName}"></i></a></td>
 						</tr>
 					</#list>
 				<#else>
 					<tr>
-						<td colspan="7" class="noData">
+						<td colspan="7" class="center">
 							<@spring.message "common.message.noData"/>
 						</td>
 					</tr>

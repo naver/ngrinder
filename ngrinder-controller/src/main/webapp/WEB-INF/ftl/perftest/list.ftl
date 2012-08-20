@@ -39,12 +39,13 @@
 						<col width="40">  
 						<col>
 						<col>
-						<col width="130">
+						<col width="120">
 						<col width="85">
 						<col width="60">
 						<col width="95">
 						<col width="70">
 						<col width="80">
+						<col width="63">
 					</colgroup>
 					<thead>
 						<tr>
@@ -57,7 +58,8 @@
 							<th id="tps"><@spring.message "perfTest.table.tps"/></th>
 							<th id="meanTestTime"><@spring.message "perfTest.table.meantime"/></th>
 							<th id="errors"><@spring.message "perfTest.table.errors"/></th>
-							<th class="nothing"><@spring.message "perfTest.table.vusers"/></th> 
+							<th class="nothing"><@spring.message "perfTest.table.vusers"/></th>
+							<th class="nothing"><@spring.message "common.label.actions"/></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -77,22 +79,15 @@
 									</td>
 									<td class="ellipsis">   
 										<div rel="popover"
-											 data-content="${test.description?replace('\n', '<br/>')?html}  &lt;br&gt;&lt;br&gt; modified at <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if>"  
+											 data-content="${test.description?replace('\n', '<br/>')?html}&lt;p&gt;Modified at <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if>&lt;/p&gt;"  
 											 data-original-title="${test.testName}">
-											<span class="ellipsis" style="width:30px"> 
-												<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
-											</span>
-											<span style="width:20px" class="pull-right">
-												<#if test.status.isDeletable()><a href="javascript:void(0);"><i title="delete" class="icon-remove test-remove" sid="${test.id}"></i></a></#if>
-												<#if test.status.isStoppable()><a href="javascript:void(0);"><i title="stop" class="icon-stop test-stop" sid="${test.id}"></i></a></#if>
-											</span>
+											<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
 										</div> 
-
 									</td>
 									<td class="ellipsis">
 										<div rel="popover"
 											 data-content="${test.scriptName}"  
-											 data-original-title="Script File Name">								
+											 data-original-title="<@spring.message "perfTest.table.scriptName"/>">								
 											<a href="${req.getContextPath()}/script/detail/${test.scriptName}">${test.scriptName}</a> 
 										</div>
 									</td>
@@ -102,11 +97,15 @@
 									<td>${(test.meanTestTime)!0}</td>
 									<td>${(test.errors)!0}</td>
 									<td>${vuserTotal}</td>
+									<td class="center">
+										<#if test.status.isDeletable()><a href="javascript:void(0);"><i title="<@spring.message "common.button.delete"/>" class="icon-remove test-remove" sid="${test.id}"></i></a></#if>
+										<#if test.status.isStoppable()><a href="javascript:void(0);"><i title="Stop" class="icon-stop test-stop" sid="${test.id}"></i></a></#if>
+									</td>
 								</tr> 
 							</#list> 
 						<#else>
 							<tr>
-								<td colspan="12" class="noData">
+								<td colspan="12" class="center">
 									<@spring.message "perfTest.table.noData"/>
 								</td>
 							</tr>

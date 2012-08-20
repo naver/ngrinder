@@ -617,7 +617,10 @@ div.chart {
 	  var test_tps_data = new Queue();
 	  $(document).ready(function () {
 	      var date = new Date();
-	      $("#sDateInput").val(('0' + date.getFullYear()).substr(-4, 4) + '-' + ('0' + (date.getMonth() + 1)).substr(-2, 2) + '-' + ('0' + date.getDate()).substr(-2, 2));
+	      var year = date.getFullYear();
+	      var month = date.getMonth() + 1;
+	      var day = date.getDate();
+	      $("#sDateInput").val(year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day));
 	      objTimer = window.setInterval("refreshData()", 1000);
 	      
 	      

@@ -64,7 +64,7 @@
 						</#list>
 						<#else>
 						<tr>
-							<td colspan="7" class="noData"><@spring.message "common.message.noData"/></td>
+							<td colspan="7" class="center"><@spring.message "common.message.noData"/></td>
 						</tr>
 						</#if>
 					</tbody>
@@ -74,9 +74,8 @@
 		<!--content-->
 	</div>
 		<script>
-
+            <#if agentList?has_content>
             $(document).ready(function() {
-                <#if agentList?has_content>
 				oTable = $("#agentTable").dataTable({
 					"bAutoWidth": false,
 					"bFilter": false,
@@ -90,8 +89,8 @@
 				});
 				
 				removeClick();
-				</#if>
             });
+			</#if>
         </script>
 </body>
 </html>
