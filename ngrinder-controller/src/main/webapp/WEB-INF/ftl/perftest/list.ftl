@@ -99,7 +99,7 @@
 									<td>${vuserTotal}</td>
 									<td class="center">
 										<#if test.status.isDeletable()><a href="javascript:void(0);"><i title="<@spring.message "common.button.delete"/>" class="icon-remove test-remove" sid="${test.id}"></i></a></#if>
-										<#if test.status.isStoppable()><a href="javascript:void(0);"><i title="Stop" class="icon-stop test-stop" sid="${test.id}"></i></a></#if>
+										<#if test.status.isStoppable()><a href="javascript:void(0);"><i title="<@spring.message "common.button.stop"/>" class="icon-stop test-stop" sid="${test.id}"></i></a></#if>
 									</td>
 								</tr> 
 							</#list> 
