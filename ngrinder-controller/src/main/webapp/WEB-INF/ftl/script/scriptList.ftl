@@ -8,6 +8,7 @@
 
 	<body>
     <#include "../common/navigator.ftl">
+    <form id="downloadForm"></form>
 	<div class="container">
 		<div class="well form-inline searchBar" style="margin-top:0;">
 			<!--<legend>introduction</legend>-->
@@ -82,13 +83,18 @@
 								<#elseif script.fileType == "dir">
 									<a href="${req.getContextPath()}/script/list/${script.path}" target="_self">${script.fileName}</a>
 								<#else>	
-									<a href="${req.getContextPath()}/svn/${currentUser.userId}/${script.path}" target="_blank">${script.fileName}</a>
+									<a href="${req.getContextPath()}/script/download/${script.path}" target="_blank">${script.fileName}</a>
 								</#if>
 							</td>
 							<td class="ellipsis" title="${(script.description)!}">${(script.description)!}</td>
 							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if></td>
 							<td><#assign floatSize = script.fileSize?number/1024>${floatSize?string("0.##")}</td>
-							<td class="center"><a href="javascript:void(0);"><i class="icon-download-alt script-download" spath="${script.path}" sname="${script.fileName}"></i></a></td>
+							<td class="center">
+								<#if script.fileType != "dir">
+									<a href="javascript:void(0);"><i class="icon-download-alt script-download" spath="${script.path}" sname="${script.fileName}"></i>
+									</a>
+								</#if>
+							</td>
 						</tr>
 					</#list>
 				<#else>
@@ -181,14 +187,7 @@
 				<form class="form-horizontal" method="post" target="_self" action="${req.getContextPath()}/script/upload"
 						id="uploadForm" enctype="multipart/form-data">
 					<fieldset>
-						<div class="control-group">
-							<label for="upScriptNameInput" class="control-label"><@spring.message "script.list.label.fileName"/></label>
-							<div class="controls">
-							  <input type="text" id="upScriptNameInput" name="fileName">
-							  <span class="help-inline"></span>
-							  <input type="hidden" id="path" name="path"/>
-							</div>
-						</div>
+						<input type="hidden" id="path" name="path"/>
 						<div class="control-group">
 							<label for="discriptionInput" class="control-label"><@spring.message "script.option.commit"/></label>
 							<div class="controls">
@@ -297,9 +296,17 @@
 						agentArray.push($(this).val());
 					});
 					ids = agentArray.join(",");
-					
-					document.location.href = "${req.getContextPath()}/script/delete/${currentPath}?filesString=" + ids;
-				}
+					$.ajax({
+				          url: "${req.getContextPath()}/script/delete/${currentPath}",
+				          type: 'POST',
+				          data: {
+				              'filesString': ids
+				          },
+				          success: function (res) {
+				          	  document.location.reload();
+				          }
+				    });
+	      		}
 			});
 			
 			$("#searchBtn").on('click', function() {
@@ -334,8 +341,7 @@
 			
 			$("i.script-download").on('click', function() {
 				var $elem = $(this);
-				document.forms.downloadForm.action = "${req.getContextPath()}/svn/" + $elem.attr("spath");
-				document.forms.downloadForm.submit();
+				window.location  = "${req.getContextPath()}/script/download/" + $elem.attr("spath");
 			});
 
 			<#if files?has_content>

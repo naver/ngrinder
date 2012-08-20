@@ -4,6 +4,25 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=8" />
 		<#include "../common/common.ftl">
 		<title><@spring.message "script.editor.title"/></title>
+		<style>
+		
+		div.div-host {
+			border: 1px solid #D6D6D6;
+			height: 50px;
+			margin-bottom: 8px;
+			display: inline-block;
+			overflow-y: scroll;
+			border-radius: 3px 3px 3px 3px;
+		}
+		
+		div.div-host .host {
+			color: #666666;
+			display: inline-block;
+			margin-left: 7px;
+			margin-top: 2px;
+			margin-bottom: 2px;
+		}
+		</style>
 	</head>
 
 	<body>
@@ -25,11 +44,18 @@
 							</div>
 							<div style="margin-bottom: 0" class="control-group">
 								<label class="control-label" for="description"><@spring.message "script.option.commit"/></label>
-								<div class="controls">  
-									<textarea class="input-xlarge span9" id="descInput" rows="3" name="description" style="resize: none" >
+								<div class="controls"> 
+									<textarea class="input-xlarge span4" id="descInput" rows="3" name="description" style="resize: none" >
 										${(file.description)!}
 									</textarea>
-								</div>
+									
+									<div class="pull-right div-host"></div>
+									<input type="hidden" name="targetHosts" id="hostsHidden" value="${(test.targetHosts)!}"> 
+									<a class="btn pull-right btn-mini" data-toggle="modal" href="#addHostModal" style="margin-right:20px;margin-top:-30px">   
+										<@spring.message "perfTest.configuration.add"/>
+									</a> 
+									
+								</div>            
 							</div>
 						</fieldset>
 					</div>
@@ -46,6 +72,7 @@
 						</td>
 					</tr>
 				</table>
+				
 				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre">
 				</pre>
 			</div>	

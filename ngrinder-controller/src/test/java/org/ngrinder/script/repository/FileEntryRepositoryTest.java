@@ -2,7 +2,6 @@ package org.ngrinder.script.repository;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,14 +48,20 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 	}
 
 	@Test
-	public void testFileEntitySaveAndDelte() {
+	public void testFileEntitySaveAndDelete() {
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setContent("HELLO WORLD2");
 		fileEntry.setEncoding("UTF-8");
 		fileEntry.setPath("helloworld.txt");
 		fileEntry.setDescription("WOW");
+		fileEntry.getProperties().put("hello", "world");
+
 		int size = repo.findAll(getTestUser()).size();
 		repo.save(getTestUser(), fileEntry, fileEntry.getEncoding());
+
+		FileEntry findOne = repo.findOne(getTestUser(), "helloworld.txt", SVNRevision.HEAD);
+		assertThat(findOne.getProperties().get("hello"), is("world"));
+
 		fileEntry.setPath("www");
 		fileEntry.setFileType(FileType.DIR);
 		repo.save(getTestUser(), fileEntry, null);
@@ -70,13 +75,9 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 		// Attempt to create duplicated path
 		fileEntry.setPath("www");
 		fileEntry.setFileType(FileType.DIR);
-		try {
-			// It should fail
-			repo.save(getTestUser(), fileEntry, null);
-			fail("duplicated insert should be failed");
-		} catch (Exception e) {
-
-		}
+		// It should be allowed.
+		repo.save(getTestUser(), fileEntry, null);
+		fileEntry.setPath("helloworld.txt");
 
 	}
 

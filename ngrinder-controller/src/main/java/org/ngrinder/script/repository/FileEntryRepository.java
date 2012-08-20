@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
@@ -55,6 +56,7 @@ import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNNodeKind;
 import org.tmatesoft.svn.core.SVNProperties;
 import org.tmatesoft.svn.core.SVNProperty;
+import org.tmatesoft.svn.core.SVNPropertyValue;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.io.ISVNEditor;
@@ -219,11 +221,15 @@ public class FileEntryRepository {
 			SVNDirEntry info = repo.info(path, lastRevision);
 			byte[] byteArray = outputStream.toByteArray();
 			script.setPath(path);
+			for (String name : fileProperty.nameSet()) {
+				script.getProperties().put(name, fileProperty.getStringValue(name));
+			}
 			script.setFileType(FileType.getFileTypeByExtension(FilenameUtils.getExtension(script.getFileName())));
 			if (script.getFileType().isEditable()) {
 				String autoDetectedEncoding = EncodingUtil.detectEncoding(byteArray, "UTF-8");
 				script.setContent(new String(byteArray, autoDetectedEncoding));
 				script.setEncoding(autoDetectedEncoding);
+				script.setContentBytes(byteArray);
 			} else {
 				script.setContentBytes(byteArray);
 			}
@@ -243,6 +249,14 @@ public class FileEntryRepository {
 		return script;
 	}
 
+	private void addPropertyValue(ISVNEditor editor, FileEntry fileEntry) throws SVNException {
+		if (fileEntry.getFileType() != FileType.DIR) {
+			for (Entry<String, String> each : fileEntry.getProperties().entrySet()) {
+				editor.changeFileProperty(fileEntry.getPath(), each.getKey(), SVNPropertyValue.create(each.getValue()));
+			}
+		}
+	}
+
 	/**
 	 * Save fileEntry on the {@link FileEntry.getPath()} location.
 	 * 
@@ -255,9 +269,6 @@ public class FileEntryRepository {
 	 * 
 	 */
 	public void save(User user, FileEntry fileEntry, String encoding) {
-		if (fileEntry.getFileType().isEditable() && fileEntry.getContent() == null) {
-			return;
-		}
 		SVNClientManager svnClientManager = null;
 		ISVNEditor editor = null;
 		String checksum = null;
@@ -278,7 +289,6 @@ public class FileEntryRepository {
 					// If it's modification
 					editor.openFile(fileEntry.getPath(), -1);
 				}
-
 				editor.applyTextDelta(fileEntry.getPath(), null);
 
 				// Calc diff
@@ -291,14 +301,14 @@ public class FileEntryRepository {
 				}
 				checksum = deltaGenerator.sendDelta(fileEntry.getPath(), bais, editor, true);
 			}
-			// Finally push
+
+			addPropertyValue(editor, fileEntry);
 			editor.closeFile(fileEntry.getPath(), checksum);
 		} catch (Exception e) {
 			abortSVNEditorQuietly(editor);
 			// If it's adding the folder which already exists... ignore..
 			if (e instanceof SVNException && fileEntry.getFileType() == FileType.DIR) {
-				if (SVNErrorCode.FS_ALREADY_EXISTS
-								.equals(((SVNException) e).getErrorMessage().getErrorCode())) {
+				if (SVNErrorCode.FS_ALREADY_EXISTS.equals(((SVNException) e).getErrorMessage().getErrorCode())) {
 					return;
 				}
 			}
@@ -357,7 +367,7 @@ public class FileEntryRepository {
 	}
 
 	/**
-	 * Delete file entries on given paths. If the one of paths does not existm, all deletion is canceled.
+	 * Delete file entries on given paths. If the one of paths does not exist, all deletion is canceled.
 	 * 
 	 * @param user
 	 *            user

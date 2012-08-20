@@ -24,7 +24,9 @@ package org.ngrinder.script.model;
 
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.ngrinder.model.BaseModel;
@@ -44,16 +46,18 @@ public class FileEntry extends BaseModel<FileEntry> {
 	private long fileSize;
 
 	/**
-	 * Test url. This File entity works on.. This field is only for the HTML
-	 * form.
+	 * Test url. This File entity works on.. This field is only for the HTML form.
 	 */
 	private String testURL;
 
 	private String content;
 
 	/**
-	 * Revisions on this entity. This fields are sometimes empty depending on
-	 * the {@link FileEntryRepository}
+	 * File properties
+	 */
+	private Map<String, String> properties = new HashMap<String, String>();
+	/**
+	 * Revisions on this entity. This fields are sometimes empty depending on the {@link FileEntryRepository}
 	 */
 	private List<Long> revisions;
 
@@ -102,7 +106,9 @@ public class FileEntry extends BaseModel<FileEntry> {
 
 	/**
 	 * set content bytes.
-	 * @param contentBytes contentByte.
+	 * 
+	 * @param contentBytes
+	 *            contentByte.
 	 */
 	public void setContentBytes(byte[] contentBytes) {
 		this.fileSize = contentBytes.length;
@@ -115,7 +121,9 @@ public class FileEntry extends BaseModel<FileEntry> {
 
 	/**
 	 * Set content in string form.
-	 * @param content content string
+	 * 
+	 * @param content
+	 *            content string
 	 */
 	public void setContent(String content) {
 		this.fileSize = content.length();
@@ -179,6 +187,14 @@ public class FileEntry extends BaseModel<FileEntry> {
 	 */
 	public void setRevision(long revision) {
 		this.revision = revision;
+	}
+
+	public Map<String, String> getProperties() {
+		return this.properties;
+	}
+
+	public void setProperties(Map<String, String> properties) {
+		this.properties = properties;
 	}
 
 }
