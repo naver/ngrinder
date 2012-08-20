@@ -102,7 +102,7 @@ div.chart {
 									<#else>
 										<@spring.message "perfTest.detail.save"/>
 									</#if>
-									<@spring.message "perfTest.detail.andStart"/>
+									&nbsp;<@spring.message "perfTest.detail.andStart"/>
 								</button>
 								<button type="submit" class="btn btn-success  pull-right" style="margin-left: 5px" id="saveTestBtn">
 									<#if test?? && (test.status != "SAVED")>
@@ -124,21 +124,18 @@ div.chart {
 			</div>
 			<div class="tabbable">
 				<ul class="nav nav-tabs" id="homeTab" style="margin-bottom: 5px">
-					<li><a href="#testContent" data-toggle="tab">
+					<li id="testContent_tab"><a href="#testContent" data-toggle="tab">
 						<@spring.message "perfTest.configuration.testConfiguration"/></a>
 					</li> 
-					<#if test?? && (test.status == "TESTING")>
-						<li>
-							<a href="#runningContent" data-toggle="tab"><@spring.message "perfTest.testRunning.title"/></a>
-						</li>
-					</#if>
-					<#if test?? && (test.status == "FINISHED" || test.status == "CANCELED")>
-						<li>
-							<a href="#reportContent" data-toggle="tab" id="reportLnk">
-								<@spring.message "perfTest.report.title"/>
-							</a>
-						</li>
-					</#if>
+					<li id="runningContent_tab">
+						<a href="#runningContent" data-toggle="tab"><@spring.message "perfTest.testRunning.title"/></a>
+					</li>
+				
+					<li id="reportContent_tab">
+						<a href="#reportContent" data-toggle="tab" id="reportLnk">
+							<@spring.message "perfTest.report.title"/>
+						</a>
+					</li>
 				</ul>
 				<div class="tab-content">
 					<div class="tab-pane" id="testContent">
@@ -622,6 +619,18 @@ div.chart {
 	      var date = new Date();
 	      $("#sDateInput").val(('0' + date.getFullYear()).substr(-4, 4) + '-' + ('0' + (date.getMonth() + 1)).substr(-2, 2) + '-' + ('0' + date.getDate()).substr(-2, 2));
 	      objTimer = window.setInterval("refreshData()", 1000);
+	      
+	      
+	      <#if !test?exists||((test.status !="TESTING")&&(test.status !="FINISHED"))>
+		   		displayCfgOnly();
+		  </#if>
+		  <#if test?? && (test.status =="TESTING")>
+		   		displayCfgAndTestRunning();
+		  </#if>
+		  <#if test?? && (test.status =="FINISHED")>
+		   		displayCfgAndTestReport();
+		  </#if>
+	      
 
 	      $("#n_test").addClass("active");
 
@@ -947,7 +956,7 @@ div.chart {
 	  }
 
 	  function generateReportChart() {
-	      showInformation("Generating TPS Chart...");
+	      showInformation("<@spring.message "common.message.genTpsChart"/>");
 	      getReportDataTPS();
 	  }
 
@@ -1036,9 +1045,18 @@ div.chart {
 	  }
 
 	  function updateStatus(id, status, icon, message) {
+		  
 	      var ballImg = $("#testStatus_img_id");
 	      if (ballImg.attr("src") != "/ngrinder-controller/img/ball/" + icon) {
 	          ballImg.attr("src", "/ngrinder-controller/img/ball/" + icon);
+	          
+	          if((status !="TESTING")&&(status !="FINISHED"))
+		   		displayCfgOnly();
+			  if(status =="TESTING")
+			   		displayCfgAndTestRunning();
+			 
+			  if(status =="FINISHED")
+			   		displayCfgAndTestReport();
 	      }
 	  }
 
@@ -1066,6 +1084,36 @@ div.chart {
 	          }
 	      });
 	  })();
+	  
+	  function displayCfgOnly() {
+		$("#testContent_tab").addClass("active");
+		$("#testContent").addClass("active");
+		$("#runningContent_tab").addClass("hidden");
+		$("#runningContent").addClass("hidden");
+		$("#reportContent_tab").addClass("hidden");
+		$("#reportContent").addClass("hidden");
+	  }
+	  
+	  function displayCfgAndTestRunning() {
+	  	$("#runningContent_tab").addClass("active");
+		$("#runningContent").addClass("active");
+		$("#testContent_tab").removeClass("active");
+		$("#testContent").removeClass("active");
+		$("#runningContent_tab").removeClass("hidden");
+		$("#runningContent").removeClass("hidden");
+		$("#reportContent_tab").addClass("hidden");
+		$("#reportContent").addClass("hidden");
+	  }
+	  function displayCfgAndTestReport() {
+		$("#testContent_tab").addClass("active");
+		$("#testContent").addClass("active");
+		$("#runningContent_tab").addClass("hidden");
+		$("#runningContent").addClass("hidden");
+		$("#reportContent_tab").removeClass("hidden");
+		$("#reportContent").removeClass("hidden");
+		$("#reportContent_tab").addClass("");
+		$("#reportContent").addClass("");
+	  }
 	</script>
 	</body>
 </html>
