@@ -56,14 +56,16 @@ public class GrinderClassPathUtils {
 			String name = FilenameUtils.getName(eachClassPath);
 			// Exclude not necessary jars..
 			if ("jar".equals(FilenameUtils.getExtension(name))
-							&& (name.contains("ngrinder") || name.contains("spring"))) {
+							&& (name.contains("ngrinder-core") || name.contains("ngrinder-controller") || name
+											.contains("spring"))) {
 				continue;
 			}
 			// Include necessary jars..
-			if (name.contains("grinder") || name.contains("asm") || name.contains("picocontainer")
-							|| name.contains("jython") || name.contains("slf4j-api")
-							|| name.contains("logback") || name.contains("jsr173")
-							|| name.contains("xmlbeans") || name.contains("stax-api")) {
+			if (name.contains("ngrinder-dns") || name.contains("grinder") || name.contains("asm")
+							|| name.contains("picocontainer") || name.contains("jython")
+							|| name.contains("slf4j-api") || name.contains("logback")
+							|| name.contains("jsr173") || name.contains("xmlbeans")
+							|| name.contains("stax-api")) {
 				logger.trace("classpath :" + eachClassPath);
 				classPathList.add(eachClassPath);
 			}

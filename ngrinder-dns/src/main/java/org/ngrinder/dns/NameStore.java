@@ -46,9 +46,10 @@ public class NameStore {
 	static {
 		initFromSystemProperty();
 	}
-	
+
 	public static void initFromSystemProperty() {
 		String hostPair = System.getProperty("ngrinder.etc.hosts");
+		System.out.println(hostPair);
 		if (!StringUtils.isBlank(hostPair)) {
 			String[] hostPairs = StringUtils.split(hostPair, ",");
 			for (String pair : hostPairs) {
