@@ -26,8 +26,6 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.commons.lang.StringUtils;
-
 // CHECKSTYLE:OFF
 import sun.net.spi.nameservice.NameService;
 
@@ -74,7 +72,7 @@ public class LocalManagedDns implements NameService {
 	public InetAddress[] lookupAllHostAddr(String name) throws UnknownHostException {
 
 		String ipAddress = NameStore.getInstance().get(name);
-		if (StringUtils.isNotEmpty(ipAddress)) {
+		if (DnsUtil.isNotEmpty(ipAddress)) {
 			InetAddress address = Inet4Address.getByAddress(DnsUtil.textToNumericFormat(ipAddress));
 			return new InetAddress[] { address };
 		} else {

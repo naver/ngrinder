@@ -9,6 +9,7 @@
 	<modules>
 		<module>ngrinder-controller</module>
 		<module>ngrinder-core</module>
+		<module>ngrinder-dns</module>
 	</modules>
 
 	<repositories>
