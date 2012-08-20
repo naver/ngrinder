@@ -106,7 +106,7 @@
 						<#else>
 							<tr>
 								<td colspan="12" class="center">
-									<@spring.message "perfTest.table.noData"/>
+									<@spring.message "common.message.noData"/>
 								</td>
 							</tr>
 						</#if>

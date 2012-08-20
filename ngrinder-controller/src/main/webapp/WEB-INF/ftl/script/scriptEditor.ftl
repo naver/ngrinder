@@ -74,21 +74,12 @@
 				,font_family: "verdana, monospace"
 			});
 			
-			
 			$("#saveBtn").on('click', function() {
 				var scriptContent = editAreaLoader.getValue("display_content");
 				$('#contentHidden').val(scriptContent);
 				
 				document.forms.contentForm.action = "${req.getContextPath()}/script/save";
 				document.forms.contentForm.submit();
-			});
-
-			$(".listBtn").on('click', function() {
-				if (!confirm("<@spring.message "script.editor.confirm.cancelPage"/>")) {
-					return;
-				}
-
-				document.location.replace("${req.getContextPath()}/script/list");
 			});
 
 			$("#validateBtn").on('click', function() {
@@ -116,8 +107,6 @@
 		    	}
 		  	});
 		}
-		
-				
 		</script>
 	</body>
 </html>
