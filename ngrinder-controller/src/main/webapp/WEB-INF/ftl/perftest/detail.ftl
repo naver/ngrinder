@@ -100,7 +100,7 @@ div.chart {
 									<#if test?? && (test.status != "SAVED")>
 										<@spring.message "perfTest.detail.clone"/>
 									<#else>
-										<@spring.message "perfTest.detail.save"/>
+										<@spring.message "common.button.save"/>
 									</#if>
 									&nbsp;<@spring.message "perfTest.detail.andStart"/>
 								</button>
@@ -108,13 +108,13 @@ div.chart {
 									<#if test?? && (test.status != "SAVED")>
 										<@spring.message "perfTest.detail.clone"/>
 									<#else>
-										<@spring.message "perfTest.detail.save"/>
+										<@spring.message "common.button.save"/>
 									</#if>
 								</button>
 							</div>
 						</div>
 						<div class="control-group" style="margin-bottom: 0">
-							<label for="description" class="control-label"><@spring.message "perfTest.table.description"/></label>
+							<label for="description" class="control-label"><@spring.message "common.label.description"/></label>
 							<div class="controls">
 								<textarea class="input-xlarge span9" id="description" rows="3" name="description" style="resize: none">${(test.description)!}</textarea>
 							</div>
