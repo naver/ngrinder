@@ -23,7 +23,7 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 	var plotObj = $.jqplot(containerId, [ eval(data) ], {
 		title : {
 			text : title,
-			fontSize : '16pt'
+			fontSize : '12pt'
 		},
 		seriesDefaults : {
 			markerRenderer : $.jqplot.MarkerRenderer,

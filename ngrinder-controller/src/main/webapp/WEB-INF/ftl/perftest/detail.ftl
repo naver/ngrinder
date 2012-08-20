@@ -621,8 +621,6 @@ div.chart {
 	      var month = date.getMonth() + 1;
 	      var day = date.getDate();
 	      $("#sDateInput").val(year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day));
-	      objTimer = window.setInterval("refreshData()", 1000);
-	      
 	      
 	      <#if !test?exists||((test.status !="TESTING")&&(test.status !="FINISHED"))>
 		   		displayCfgOnly();
@@ -1014,9 +1012,12 @@ div.chart {
 
 	              showChart('runningTps', test_tps_data.toString());
 	          } else {
-	              if (objTimer) {
-	                  window.clearInterval(objTimer);
-	              }
+	             if($('#runningContent_tab').hasClass('hidden')){
+	             	window.clearInterval(objTimer);
+	             }else{
+	             	test_tps_data.enQueue(0);
+	              	showChart('runningTps', test_tps_data.toString());
+	             }
 	          }
 	      });
 	  }
@@ -1106,6 +1107,8 @@ div.chart {
 		$("#runningContent").removeClass("hidden");
 		$("#reportContent_tab").addClass("hidden");
 		$("#reportContent").addClass("hidden");
+		
+		objTimer = window.setInterval("refreshData()", 1000);
 	  }
 	  function displayCfgAndTestReport() {
 		$("#testContent_tab").addClass("active");
