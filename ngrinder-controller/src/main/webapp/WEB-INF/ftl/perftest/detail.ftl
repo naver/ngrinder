@@ -819,7 +819,7 @@ div.chart {
 	      });
 
 	      $("#reportDetail").click(function () {
-	          window.open("/ngrinder-controller/perftest/report?testId=" + $("#testId").val());
+	          window.open("${req.getContextPath()}/perftest/report?testId=" + $("#testId").val());
 	      });
 
 	      $('#tableTab a').click(function (e) {
@@ -857,7 +857,7 @@ div.chart {
 	          if (url.indexOf("refresh") == 0) showInformation("Updating script resources...");
 	      });
 	      $.ajax({
-	          url: "/ngrinder-controller/perftest/getResourcesOnScriptFolder",
+	          url: "${req.getContextPath()}/perftest/getResourcesOnScriptFolder",
 	          dataType: 'json',
 	          data: {
 	              'scriptPath': $("#scriptName").val()
@@ -885,7 +885,7 @@ div.chart {
 	      });
 
 	      $.ajax({
-	          url: "/ngrinder-controller/perftest/updateVuser",
+	          url: "${req.getContextPath()}/perftest/updateVuser",
 	          dataType: 'json',
 	          data: {
 	              'newVuser': $("#vuserPerAgent").val()
@@ -970,7 +970,7 @@ div.chart {
 
 	  function getReportDataTPS() {
 	      $.ajax({
-	          url: "/ngrinder-controller/perftest/getReportData",
+	          url: "${req.getContextPath()}/perftest/getReportData",
 	          dataType: 'json',
 	          data: {
 	              'testId': $("#testId").val(),
@@ -995,7 +995,7 @@ div.chart {
 
 	  function refreshData() {
 	      var refreshDiv = $("<div></div>");
-	      var url = "/ngrinder-controller/perftest/running/refresh?testId=" + $("#testId").val();
+	      var url = "${req.getContextPath()}/perftest/running/refresh?testId=" + $("#testId").val();
 	      refreshDiv.load(url, function () {
 	          var succesVal = refreshDiv.find("#input_status").val();
 
@@ -1058,8 +1058,8 @@ div.chart {
 	  function updateStatus(id, status, icon, message) {
 		  
 	      var ballImg = $("#testStatus_img_id");
-	      if (ballImg.attr("src") != "/ngrinder-controller/img/ball/" + icon) {
-	          ballImg.attr("src", "/ngrinder-controller/img/ball/" + icon);
+	      if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
+	          ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
 	          
 	          if((status !="TESTING")&&(status !="FINISHED"))
 		   		displayCfgOnly();
@@ -1079,7 +1079,7 @@ div.chart {
 	          return;
 	      }
 	      $.ajax({
-	          url: '/ngrinder-controller/perftest/updateStatus',
+	          url: '${req.getContextPath()}/perftest/updateStatus',
 	          type: 'GET',
 	          data: {
 	              "ids": testId
