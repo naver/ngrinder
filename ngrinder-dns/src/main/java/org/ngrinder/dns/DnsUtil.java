@@ -23,8 +23,8 @@
 package org.ngrinder.dns;
 
 /**
- * Static utilities used to convert IP Addresses between the various formats
- * used internally by the java.net.InetAddress class and associated classes.
+ * Static utilities used to convert IP Addresses between the various formats used internally by the
+ * java.net.InetAddress class and associated classes.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -37,9 +37,19 @@ public class DnsUtil {
 		// na
 	}
 
+	public static boolean isEmpty(String str) {
+		if (str == null || str.length() == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean isNotEmpty(String str) {
+		return !isEmpty(str);
+	}
+
 	/**
-	 * Converts the internal integer representation of an IPv4 into a binary
-	 * address
+	 * Converts the internal integer representation of an IPv4 into a binary address
 	 * 
 	 * @param an
 	 *            integer representation of the IPv4 address
@@ -57,8 +67,8 @@ public class DnsUtil {
 	}
 
 	/**
-	 * Converts IPv4 binary address a single integer representation as used
-	 * internally by Inet4Address
+	 * Converts IPv4 binary address a single integer representation as used internally by
+	 * Inet4Address
 	 * 
 	 * @param src
 	 *            a byte array representing an IPv4 numeric address
@@ -82,16 +92,14 @@ public class DnsUtil {
 	 * 
 	 * @param src
 	 *            a byte array representing an IPv4 numeric address
-	 * @return a String representing the IPv4 address in textual representation
-	 *         format
+	 * @return a String representing the IPv4 address in textual representation format
 	 */
 	public static String numericToTextFormat(byte[] src) {
 		return (src[0] & 0xff) + "." + (src[1] & 0xff) + "." + (src[2] & 0xff) + "." + (src[3] & 0xff);
 	}
 
 	/**
-	 * Converts IPv4 address in its textual presentation form into its numeric
-	 * binary form.
+	 * Converts IPv4 address in its textual presentation form into its numeric binary form.
 	 * 
 	 * @param src
 	 *            a String representing an IPv4 address in standard format

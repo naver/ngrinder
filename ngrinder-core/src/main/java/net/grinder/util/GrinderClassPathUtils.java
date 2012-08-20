@@ -61,7 +61,7 @@ public class GrinderClassPathUtils {
 				continue;
 			}
 			// Include necessary jars..
-			if (name.contains("ngrinder-dns") || name.contains("grinder") || name.contains("asm")
+			if (name.contains("dns") || name.contains("grinder") || name.contains("asm")
 							|| name.contains("picocontainer") || name.contains("jython")
 							|| name.contains("slf4j-api") || name.contains("logback")
 							|| name.contains("jsr173") || name.contains("xmlbeans")

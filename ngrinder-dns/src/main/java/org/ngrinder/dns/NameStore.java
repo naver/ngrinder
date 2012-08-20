@@ -25,8 +25,6 @@ package org.ngrinder.dns;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * Local Dns Name Storage.
  * 
@@ -49,15 +47,16 @@ public class NameStore {
 
 	public static void initFromSystemProperty() {
 		String hostPair = System.getProperty("ngrinder.etc.hosts");
+
 		System.out.println(hostPair);
-		if (!StringUtils.isBlank(hostPair)) {
-			String[] hostPairs = StringUtils.split(hostPair, ",");
+		if (!DnsUtil.isEmpty(hostPair)) {
+			String[] hostPairs = hostPair.split(",");
 			for (String pair : hostPairs) {
-				String[] each = StringUtils.split(pair, ":");
-				if (each.length != 2 || StringUtils.isEmpty(each[0]) || StringUtils.isEmpty(each[1])) {
+				String[] each = pair.split(":");
+				if (each.length != 2 || DnsUtil.isEmpty(each[0]) || DnsUtil.isEmpty(each[1])) {
 					continue;
 				}
-				singleton.put(StringUtils.trim(each[1]), StringUtils.trim(each[0]));
+				singleton.put(each[0].trim(), each[1].trim());
 			}
 		}
 	}
