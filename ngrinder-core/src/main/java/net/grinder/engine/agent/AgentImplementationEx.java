@@ -245,7 +245,7 @@ public class AgentImplementationEx implements Agent {
 				} while (script == null);
 
 				if (script != null) {
-					String jvmArguments = properties.getProperty("grinder.jvm.arguments");
+					String jvmArguments = properties.getProperty("grinder.jvm.arguments", "");
 					String etcHost = properties.getProperty("ngrinder.etc.hosts");
 					if (StringUtils.isNotEmpty(etcHost)) {
 						jvmArguments = jvmArguments + " Dngrinder.etc.hosts=" + etcHost;
