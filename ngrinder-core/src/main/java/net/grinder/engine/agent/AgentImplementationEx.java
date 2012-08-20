@@ -57,6 +57,7 @@ import net.grinder.util.Directory;
 import net.grinder.util.GrinderClassPathUtils;
 import net.grinder.util.thread.Condition;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 
@@ -244,8 +245,11 @@ public class AgentImplementationEx implements Agent {
 				} while (script == null);
 
 				if (script != null) {
-					final String jvmArguments = properties.getProperty("grinder.jvm.arguments");
-
+					String jvmArguments = properties.getProperty("grinder.jvm.arguments");
+					String etcHost = properties.getProperty("ngrinder.etc.hosts");
+					if (StringUtils.isNotEmpty(etcHost)) {
+						jvmArguments = jvmArguments + " Dngrinder.etc.hosts=" + etcHost;
+					}
 					final WorkerFactory workerFactory;
 
 					if (!properties.getBoolean("grinder.debug.singleprocess", false)) {

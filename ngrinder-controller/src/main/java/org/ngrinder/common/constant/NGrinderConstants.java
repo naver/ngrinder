@@ -161,6 +161,7 @@ public interface NGrinderConstants {
 	public static final String GRINDER_PROP_TEST_ID = "grinder.test.id";
 
 	// ngrinder setting.
+	public static final String NGRINDER_PROP_ETC_HOSTS = "ngrinder.etc.hosts";
 	public static final String NGRINDER_PROP_CONSOLE_PORT_BASE = "ngrinder.consolePortBase";
 	public static final int NGRINDER_PROP_CONSOLE_PORT_BASE_VALUE = 12000;
 	public static final String NGRINDER_PROP_MAX_CONCURRENT_TEST = "ngrinder.maxConcurrentTest";
