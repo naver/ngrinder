@@ -28,10 +28,10 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 		seriesDefaults : {
 			markerRenderer : $.jqplot.MarkerRenderer,
 			markerOptions : {
-				size : 5.0,
+				size : 3.0,
 				color : '#555555'
 			},
-			lineWidth : 2.0
+			lineWidth : 1.0
 		},
 		axes : {
 			xaxis : {
