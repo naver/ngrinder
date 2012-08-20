@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class NameStore {
 
-	private static NameStore singleton = new NameStore();
+	private static NameStore singleton;
 
 	private Map<String, String> globalNames;
 
@@ -41,14 +41,8 @@ public class NameStore {
 		globalNames = new ConcurrentHashMap<String, String>();
 	}
 
-	static {
-		initFromSystemProperty();
-	}
-
-	public static void initFromSystemProperty() {
+	public void initFromSystemProperty() {
 		String hostPair = System.getProperty("ngrinder.etc.hosts");
-
-		System.out.println(hostPair);
 		if (!DnsUtil.isEmpty(hostPair)) {
 			String[] hostPairs = hostPair.split(",");
 			for (String pair : hostPairs) {
@@ -62,6 +56,10 @@ public class NameStore {
 	}
 
 	public static NameStore getInstance() {
+		if (singleton == null) {
+			singleton = new NameStore();
+			singleton.initFromSystemProperty();
+		}
 		return singleton;
 	}
 

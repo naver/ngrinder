@@ -30,7 +30,7 @@ import org.junit.Test;
 
 /**
  * NameStore test class
- *
+ * 
  * @author mavlarn
  * @Since 3.0
  */
@@ -38,12 +38,13 @@ public class NameStoreTest {
 
 	@Test
 	public void testNameStoreInit() {
-		System.setProperty("ngrinder.etc.hosts", "1.1.1.1:aaa.com,2.2.2.2:bbb.com");
-		NameStore.initFromSystemProperty();
-		
+		System.out.println(System.getProperty("ngrinder.etc.hosts", ""));
+		System.setProperty("ngrinder.etc.hosts", "aaa.com:1.1.1.1,bbb.com:2.2.2.2");
+		System.out.println(System.getProperty("ngrinder.etc.hosts", ""));
+
 		String ip = NameStore.getInstance().get("aaa.com");
 		assertThat(ip, is("1.1.1.1"));
-		
+
 		NameStore.getInstance().remove("bbb.com");
 		ip = NameStore.getInstance().get("bbb.com");
 		assertThat(ip, nullValue());
@@ -52,22 +53,20 @@ public class NameStoreTest {
 
 	@Test
 	public void testNameStoreInitInvald() {
-		System.setProperty("ngrinder.etc.hosts", "1.1.1.1,:bbb.com");
-		NameStore.initFromSystemProperty();
-		
+		System.setProperty("ngrinder.etc.hosts", "bbb.com:,1.1.1.1,");
+
 		String ip = NameStore.getInstance().get("bbb.com");
 		assertThat(ip, nullValue());
-		
+
 	}
 
 	@Test
 	public void testNameStoreInitEmpty() {
 		System.setProperty("ngrinder.etc.hosts", "");
-		NameStore.initFromSystemProperty();
-		
+
 		String ip = NameStore.getInstance().get("bbb.com");
 		assertThat(ip, nullValue());
-		
+
 	}
 
 }
