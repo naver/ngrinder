@@ -246,10 +246,8 @@ public class AgentImplementationEx implements Agent {
 
 				if (script != null) {
 					String jvmArguments = properties.getProperty("grinder.jvm.arguments", "");
-					String etcHost = properties.getProperty("ngrinder.etc.hosts");
-					if (StringUtils.isNotEmpty(etcHost)) {
-						jvmArguments = jvmArguments + "-Dngrinder.etc.hosts=" + etcHost + " -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns";
-					}
+
+					jvmArguments = addCustomDns(properties, jvmArguments);
 					final WorkerFactory workerFactory;
 
 					if (!properties.getBoolean("grinder.debug.singleprocess", false)) {
@@ -368,6 +366,16 @@ public class AgentImplementationEx implements Agent {
 			m_consoleListener.shutdown();
 			m_logger.info("finished");
 		}
+	}
+
+	private String addCustomDns(GrinderProperties properties, String jvmArguments) {
+		String etcHost = properties.getProperty("ngrinder.etc.hosts", "");
+		if (StringUtils.isNotEmpty(etcHost)) {
+			jvmArguments = jvmArguments + " -Dngrinder.etc.hosts=" + etcHost + "," + getHostName()
+							+ ":127.0.0.1,localhost:127.0.0.1"
+							+ "-Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns";
+		}
+		return jvmArguments;
 	}
 
 	/**

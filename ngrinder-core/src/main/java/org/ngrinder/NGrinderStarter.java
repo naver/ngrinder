@@ -171,14 +171,13 @@ public class NGrinderStarter {
 		URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
 		URL toolsJarPath = findToolsJarPath();
 		LOG.info("tools.jar is found in {}", checkNotNull(toolsJarPath).toString());
-		ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL",
-						new Object[] { toolsJarPath });
+		ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { toolsJarPath });
 		List<String> libString = new ArrayList<String>();
 
 		File libFolder = new File(".", "lib").getAbsoluteFile();
 		if (!libFolder.exists()) {
 			LOG.error("lib path does not exist {}", libFolder.getAbsolutePath());
-			printHelpAndReturn();
+			return;
 		}
 
 		for (File each : libFolder.listFiles()) {
