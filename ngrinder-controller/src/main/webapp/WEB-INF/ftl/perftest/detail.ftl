@@ -723,6 +723,10 @@ div.chart {
 	          if (!$("#testContentForm").valid()) {
 	              return false;
 	          }
+	          if ($("#testStatus").val() != "SAVED") {
+	        	  $("#testId").val("");  
+	          }
+	          $("#testStatus").val("SAVED");
 	          $("#scheduleInput").attr('name', '');
 	          return true;
 	      });
@@ -731,6 +735,9 @@ div.chart {
 	          $("#scheduleModal").modal("hide");
 	          $("#scheduleModal small").html("");
 	          $("#scheduleInput").attr('name', '');
+	          if ($("#testStatus").val() != "SAVED") {
+	        	  $("#testId").val("");  
+	          }
 	          $("#testStatus").val("READY");
 	          document.testContentForm.submit();
 	      });
