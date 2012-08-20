@@ -1,0 +1,3 @@
+# dns service provider descriptor
+# This will provide name resolution using local API
+org.ngrinder.dns.LocalManagedDnsDescriptor
