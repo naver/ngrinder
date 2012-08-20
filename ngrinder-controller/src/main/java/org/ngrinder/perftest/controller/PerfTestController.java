@@ -191,8 +191,6 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String savePerfTest(User user, ModelMap model, PerfTest test) {
-		checkArgument(test.getStatus().equals(Status.READY) || test.getStatus().equals(Status.SAVED),
-				"save test only support for SAVE or READY status");
 		checkArgument(
 				test.getDuration() == null || test.getDuration() <= (1000 * 60 * 60 * agentManager.getMaxRunHour()),
 				"test duration should be within " + agentManager.getMaxRunHour());

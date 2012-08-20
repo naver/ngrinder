@@ -621,8 +621,6 @@ div.chart {
 	      var month = date.getMonth() + 1;
 	      var day = date.getDate();
 	      $("#sDateInput").val(year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day));
-	      objTimer = window.setInterval("refreshData()", 1000);
-	      
 	      
 	      <#if !test?exists||((test.status !="TESTING")&&(test.status !="FINISHED"))>
 		   		displayCfgOnly();
@@ -725,6 +723,10 @@ div.chart {
 	          if (!$("#testContentForm").valid()) {
 	              return false;
 	          }
+	          if ($("#testStatus").val() != "SAVED") {
+	        	  $("#testId").val("");  
+	          }
+	          $("#testStatus").val("SAVED");
 	          $("#scheduleInput").attr('name', '');
 	          return true;
 	      });
@@ -733,6 +735,9 @@ div.chart {
 	          $("#scheduleModal").modal("hide");
 	          $("#scheduleModal small").html("");
 	          $("#scheduleInput").attr('name', '');
+	          if ($("#testStatus").val() != "SAVED") {
+	        	  $("#testId").val("");  
+	          }
 	          $("#testStatus").val("READY");
 	          document.testContentForm.submit();
 	      });
@@ -814,7 +819,7 @@ div.chart {
 	      });
 
 	      $("#reportDetail").click(function () {
-	          window.open("/ngrinder-controller/perftest/report?testId=" + $("#testId").val());
+	          window.open("${req.getContextPath()}/perftest/report?testId=" + $("#testId").val());
 	      });
 
 	      $('#tableTab a').click(function (e) {
@@ -852,7 +857,7 @@ div.chart {
 	          if (url.indexOf("refresh") == 0) showInformation("Updating script resources...");
 	      });
 	      $.ajax({
-	          url: "/ngrinder-controller/perftest/getResourcesOnScriptFolder",
+	          url: "${req.getContextPath()}/perftest/getResourcesOnScriptFolder",
 	          dataType: 'json',
 	          data: {
 	              'scriptPath': $("#scriptName").val()
@@ -880,7 +885,7 @@ div.chart {
 	      });
 
 	      $.ajax({
-	          url: "/ngrinder-controller/perftest/updateVuser",
+	          url: "${req.getContextPath()}/perftest/updateVuser",
 	          dataType: 'json',
 	          data: {
 	              'newVuser': $("#vuserPerAgent").val()
@@ -965,7 +970,7 @@ div.chart {
 
 	  function getReportDataTPS() {
 	      $.ajax({
-	          url: "/ngrinder-controller/perftest/getReportData",
+	          url: "${req.getContextPath()}/perftest/getReportData",
 	          dataType: 'json',
 	          data: {
 	              'testId': $("#testId").val(),
@@ -990,7 +995,7 @@ div.chart {
 
 	  function refreshData() {
 	      var refreshDiv = $("<div></div>");
-	      var url = "/ngrinder-controller/perftest/running/refresh?testId=" + $("#testId").val();
+	      var url = "${req.getContextPath()}/perftest/running/refresh?testId=" + $("#testId").val();
 	      refreshDiv.load(url, function () {
 	          var succesVal = refreshDiv.find("#input_status").val();
 
@@ -1014,9 +1019,12 @@ div.chart {
 
 	              showChart('runningTps', test_tps_data.toString());
 	          } else {
-	              if (objTimer) {
-	                  window.clearInterval(objTimer);
-	              }
+	             if($('#runningContent_tab').hasClass('hidden')){
+	             	window.clearInterval(objTimer);
+	             }else{
+	             	test_tps_data.enQueue(0);
+	              	showChart('runningTps', test_tps_data.toString());
+	             }
 	          }
 	      });
 	  }
@@ -1050,8 +1058,8 @@ div.chart {
 	  function updateStatus(id, status, icon, message) {
 		  
 	      var ballImg = $("#testStatus_img_id");
-	      if (ballImg.attr("src") != "/ngrinder-controller/img/ball/" + icon) {
-	          ballImg.attr("src", "/ngrinder-controller/img/ball/" + icon);
+	      if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
+	          ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
 	          
 	          if((status !="TESTING")&&(status !="FINISHED"))
 		   		displayCfgOnly();
@@ -1071,7 +1079,7 @@ div.chart {
 	          return;
 	      }
 	      $.ajax({
-	          url: '/ngrinder-controller/perftest/updateStatus',
+	          url: '${req.getContextPath()}/perftest/updateStatus',
 	          type: 'GET',
 	          data: {
 	              "ids": testId
@@ -1106,6 +1114,8 @@ div.chart {
 		$("#runningContent").removeClass("hidden");
 		$("#reportContent_tab").addClass("hidden");
 		$("#reportContent").addClass("hidden");
+		
+		objTimer = window.setInterval("refreshData()", 1000);
 	  }
 	  function displayCfgAndTestReport() {
 		$("#testContent_tab").addClass("active");
