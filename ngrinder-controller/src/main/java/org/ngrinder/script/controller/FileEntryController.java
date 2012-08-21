@@ -155,6 +155,7 @@ public class FileEntryController extends NGrinderBaseController {
 	public String getCreateForm(User user, @RemainedPath String path,
 					@RequestParam("testUrl") String testUrl, @RequestParam("fileName") String fileName,
 					@RequestParam(required = false, value = "scriptType") String scriptType, ModelMap model) {
+		fileName = StringUtils.trimToEmpty(fileName);
 		if (fileEntryService.hasFileEntry(user, path + "/" + fileName)) {
 			return "error/duplicated";
 		}
