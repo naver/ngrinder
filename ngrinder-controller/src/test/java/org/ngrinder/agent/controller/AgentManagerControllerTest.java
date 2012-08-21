@@ -54,7 +54,8 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 	public void setMockRequest() {
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		req.addHeader("User-Agent", "Win");
-		SecurityContextHolderAwareRequestWrapper reqWrapper = new SecurityContextHolderAwareRequestWrapper(req, "U");
+		SecurityContextHolderAwareRequestWrapper reqWrapper = new SecurityContextHolderAwareRequestWrapper(
+						req, "U");
 		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(reqWrapper));
 	}
 
@@ -83,7 +84,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 
 	@Test
 	public void testDownloadAgent() {
-		agentController.downloadAgent(null, null);
+		agentController.downloadAgent("helloworld", null);
 	}
 
 }

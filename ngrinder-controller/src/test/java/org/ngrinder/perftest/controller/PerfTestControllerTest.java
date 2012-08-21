@@ -66,11 +66,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	@Autowired
 	private UserService userService;
 
-	@Test
-	public void testGetQuickStart() {
-		ModelMap model = new ModelMap();
-		controller.getQuickStart(getTestUser(), "naver.com", model);
-	}
+	
 
 	@Test
 	public void testGetResourcesOnScriptFolder() {
