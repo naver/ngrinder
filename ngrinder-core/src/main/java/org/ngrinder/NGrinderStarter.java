@@ -150,6 +150,10 @@ public class NGrinderStarter {
 				if (toolsJarPath.exists()) {
 					return toolsJarPath.toURI().toURL();
 				}
+				if (parentFile.listFiles() == null) {
+					LOG.error("tools.jar is not found");
+					exit(-1);
+				}
 				for (File eachCandidate : parentFile.listFiles()) {
 					toolsJarPath = new File(eachCandidate, toolsJar);
 					if (toolsJarPath.exists()) {
@@ -177,6 +181,10 @@ public class NGrinderStarter {
 		File libFolder = new File(".", "lib").getAbsoluteFile();
 		if (!libFolder.exists()) {
 			LOG.error("lib path does not exist {}", libFolder.getAbsolutePath());
+			return;
+		}
+		if (libFolder.listFiles() == null) {
+			LOG.error("lib path has no content", libFolder.getAbsolutePath());
 			return;
 		}
 
