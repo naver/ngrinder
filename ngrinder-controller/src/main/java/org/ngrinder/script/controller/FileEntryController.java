@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.JSONUtil;
@@ -126,7 +127,7 @@ public class FileEntryController extends NGrinderBaseController {
 	public String addFolder(User user, @RemainedPath String path,
 					@RequestParam("folderName") String folderName, ModelMap model) { // "fileName"
 		try {
-			fileEntryService.addFolder(user, path, folderName);
+			fileEntryService.addFolder(user, path, StringUtils.trimToEmpty(folderName));
 		} catch (Exception e) {
 			return "error/errors";
 		}
