@@ -463,6 +463,8 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	private Map<String, Object> getStatistics() {
 		Map<String, Object> result = new HashMap<String, Object>();
+        result.put("test_time", (new Date().getTime() - getStartTime()) / 1000);
+
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
 		ExpressionView[] views = modelView.getCumulativeStatisticsView().getExpressionViews();

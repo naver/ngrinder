@@ -445,7 +445,8 @@ div.chart {
 							</div>
 							<div class="span7">
 								<div class="page-header">
-									<h4><@spring.message "perfTest.testRunning.tpsStatistics"/></h4>
+									<h4><@spring.message "perfTest.testRunning.tpsStatistics"/> <span class="badge badge-success pull-center">Running Time <data id="running_time"></data></span></h4>
+								   
 								</div>
 								<div id="runningTps" class="chart" style="width: 530px; height: 195px"></div>
 								<div class="tabbable">
@@ -1007,15 +1008,14 @@ div.chart {
 
 	              $("#process_data").text(refreshDiv.find("#input_process").val());
 	              $("#thread_data").text(refreshDiv.find("#input_thread").val());
-
+	              
+	              $("#running_time").text(showRunTime(refreshDiv.find("#test_time").val()));
 
 	              if (test_tps_data.getSize() == 60) {
 	                  test_tps_data.deQueue();
 	              }
 
 	              test_tps_data.enQueue(refreshDiv.find("#tpsChartData").val());
-
-	              //alert(test_tps_data.aElement);
 
 	              showChart('runningTps', test_tps_data.toString());
 	          } else {
@@ -1028,6 +1028,20 @@ div.chart {
 	          }
 	      });
 	  }
+	  
+	  function showRunTime(s) {
+			if (s < 60) {
+				return "" + s + "s";
+			}
+			if (s < 3600) {
+				return "" + parseInt(s/60) + "m " + (s%60) + "s";
+			}
+			if (s < 86400) {
+				return "" + parseInt(s/3600) + "h " + parseInt(s%3600/60) + "m " + (s%3600%60) + "s";
+			}
+			
+			return "" + parseInt(s/86400) + "d "  + parseInt(s%86400/3600) + "h " + parseInt(s%86400%3600/60) + "m " + (s%86400%3600%60) + "s";
+	   }
 
 	  function showChart(containerId, data) {
 	      if (jqplotObj) {
