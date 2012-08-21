@@ -150,19 +150,18 @@ public class NGrinderStarter {
 				if (toolsJarPath.exists()) {
 					return toolsJarPath.toURI().toURL();
 				}
-				if (parentFile.listFiles() == null) {
-					LOG.error("tools.jar is not found");
-					exit(-1);
-				}
-				for (File eachCandidate : parentFile.listFiles()) {
-					toolsJarPath = new File(eachCandidate, toolsJar);
-					if (toolsJarPath.exists()) {
-						return toolsJarPath.toURI().toURL();
+				if (parentFile.listFiles() != null) {
+					for (File eachCandidate : parentFile.listFiles()) {
+						toolsJarPath = new File(eachCandidate, toolsJar);
+						if (toolsJarPath.exists()) {
+							return toolsJarPath.toURI().toURL();
+						}
 					}
 				}
 			}
 		} catch (MalformedURLException e) {
 		}
+
 		LOG.error("{} path is not found. Please set up JAVA_HOME env var to JDK(not JRE).", toolsJar);
 		System.exit(-1);
 		return null;
@@ -231,6 +230,11 @@ public class NGrinderStarter {
 		} else {
 			printHelpAndReturn();
 		}
+	}
+
+	private static void printHelpAndReturn(String message) {
+		System.out.println("Invalid agent.conf, 'start.mode' must be set as 'monitor' or 'agent'");
+		System.exit(-1);
 	}
 
 	private static void printHelpAndReturn() {
