@@ -937,6 +937,8 @@ div.chart {
 	      var durationH = parseInt((durationInSec % (60 * 60 * 24)) / 3600);
 	      var durationM = parseInt((durationInSec % 3600) / 60);
 	      var durationS = durationInSec % 60;
+	      
+	      // Make 1 min as default
 	      if (durationH == 0 && durationM == 0 && durationS == 0) {
 	    	  $("#hSelect").val(0);
 	    	  $("#mSelect").val(1);

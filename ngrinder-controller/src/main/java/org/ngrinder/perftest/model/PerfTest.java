@@ -83,7 +83,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private Date finishTime;
 
 	/** the target host to test. */
-	@Column(length = 256)
+	@Column
 	private String targetHosts;
 
 	/** The send mail code. */
@@ -146,10 +146,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private String distributionPath;
 
 	@Column(length = MAX_STACKTRACE_STRING_SIZE)
-	private String progressMessage;
+	private String progressMessage = "";
 
 	@Column(length = MAX_STACKTRACE_STRING_SIZE)
-	private String lastProgressMessage;
+	private String lastProgressMessage = "";
 
 	private Boolean stopRequest = null;
 
@@ -234,7 +234,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public String getDescription() {
-		return description;
+		return StringUtils.abbreviate(description, 2040);
 	}
 
 	public String getLastModifiedDateToStr() {
@@ -434,11 +434,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public String getTestErrorStackTrace() {
-		return testErrorStackTrace;
+		return StringUtils.abbreviate(testErrorStackTrace, MAX_STACKTRACE_STRING_SIZE - 5);
 	}
 
 	public void setTestErrorStackTrace(String testErrorStackTrace) {
-		this.testErrorStackTrace = StringUtils.abbreviate(testErrorStackTrace, MAX_STACKTRACE_STRING_SIZE);
+		this.testErrorStackTrace = testErrorStackTrace;
 	}
 
 	public Status getTestErrorCause() {
@@ -471,23 +471,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public void setProgressMessage(String progressMessage) {
-		this.progressMessage = progressMessage;
-	}
-
-	public void addProgressMessage(String message) {
-		if (progressMessage == null) {
-			progressMessage = new String();
-		}
-
-		if (message.equals(progressMessage)) {
-			return;
-		}
-		progressMessage = progressMessage + "\n" + message;
-		if (progressMessage.length() >= (MAX_STACKTRACE_STRING_SIZE / 2)) {
-			progressMessage = progressMessage.substring(Math.abs(MAX_STACKTRACE_STRING_SIZE
-							- progressMessage.length()));
-			progressMessage = progressMessage.substring(progressMessage.indexOf("\n"));
-		}
+		this.progressMessage = StringUtils.defaultIfEmpty(
+						StringUtils.right(progressMessage, MAX_STACKTRACE_STRING_SIZE), "");
 	}
 
 	public Boolean getStopRequest() {
@@ -499,10 +484,13 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public String getLastProgressMessage() {
-		return lastProgressMessage;
+		return StringUtils.defaultIfEmpty(lastProgressMessage, "");
 	}
 
 	public void setLastProgressMessage(String lastProgressMessage) {
+		if (!StringUtils.equals(this.lastProgressMessage, lastProgressMessage)) {
+			setProgressMessage(getProgressMessage() + this.lastProgressMessage + "\n");
+		}
 		this.lastProgressMessage = lastProgressMessage;
 	}
 }

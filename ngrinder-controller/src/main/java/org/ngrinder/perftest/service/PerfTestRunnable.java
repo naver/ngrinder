@@ -126,7 +126,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	void markProgress(PerfTest perfTest, String message) {
-		perfTest.addProgressMessage(message);
+		perfTest.setLastProgressMessage(message);
 		perfTestService.savePerfTest(perfTest);
 	}
 

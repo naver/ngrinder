@@ -23,6 +23,7 @@
 package org.ngrinder.perftest.controller;
 
 import static org.ngrinder.common.util.Preconditions.checkArgument;
+import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.common.util.Preconditions.checkValidURL;
 
@@ -108,7 +109,7 @@ public class PerfTestController extends NGrinderBaseController {
 		PageRequest pageReq = ((PageRequest) pageable);
 		Sort sort = pageReq == null ? null : pageReq.getSort();
 		if (sort == null && pageReq != null) {
-			sort = new Sort(Direction.DESC, "lastModifiedDate");
+			sort = new Sort(Direction.DESC, "lastModifiedDate"); 
 			pageable = new PageRequest(pageReq.getPageNumber(), pageReq.getPageSize(), sort);
 		}
 		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, onlyFinished, pageable);
@@ -192,6 +193,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String savePerfTest(User user, ModelMap model, PerfTest test) {
+		test.setTestName(StringUtils.trimToEmpty(test.getTestName()));
+		checkNotEmpty(test.getTestName(), "test name should be provided");
 		checkArgument(test.getStatus().equals(Status.READY) || test.getStatus().equals(Status.SAVED),
 						"save test only support for SAVE or READY status");
 		checkArgument(test.getDuration() == null
@@ -205,6 +208,7 @@ public class PerfTestController extends NGrinderBaseController {
 		checkArgument(test.getVuserPerAgent() == null
 						|| test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
 						"test vuser shoule be within " + agentManager.getMaxVuserPerAgent());
+
 		perfTestService.savePerfTest(test);
 		return "redirect:/perftest/list";
 	}
@@ -249,7 +253,8 @@ public class PerfTestController extends NGrinderBaseController {
 
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_MESSAGE,
 							StringUtils.replace(
-											each.getProgressMessage() + "\n"
+											each.getProgressMessage() + "\n<b>"
+															+ each.getLastProgressMessage() + "</b>\n"
 															+ each.getLastModifiedDateToStr(), "\n", "<br/>"));
 			statusList.add(rtnMap);
 		}
@@ -274,13 +279,14 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/stopTests", method = RequestMethod.POST)
 	public @ResponseBody
-	String stopPerfTests(User user, ModelMap model, @RequestParam String ids) {
+	String stopPerfTests(User user, ModelMap model, @RequestParam("ids") String ids) {
 		String[] idList = StringUtils.split(ids, ",");
 		for (String idStr : idList) {
 			try {
 				perfTestService.stopPerfTest(user, Long.valueOf(idStr));
 			} catch (NumberFormatException e) {
-				LOG.error("Can't delete a test (id=" + idStr + ") : {}", e);
+				LOG.error("Can't stop a test (id={})", idStr);
+				LOG.error("Exception occured in stopPerfTest", e);
 			}
 		}
 		return JSONUtil.returnSuccess();

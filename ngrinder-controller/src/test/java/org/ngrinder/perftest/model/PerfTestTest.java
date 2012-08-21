@@ -73,7 +73,7 @@ public class PerfTestTest {
 	public void testAddProgressMessage() {
 		PerfTest test = new PerfTest();
 		for (int i = 0; i < 1000; i++) {
-			test.addProgressMessage("HELLO");
+			test.setLastProgressMessage("HELLO");
 			assertThat(test.getProgressMessage().length(),
 							lessThan(NGrinderConstants.MAX_STACKTRACE_STRING_SIZE));
 		}
