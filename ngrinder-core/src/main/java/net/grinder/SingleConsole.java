@@ -447,7 +447,7 @@ public class SingleConsole implements Listener, SampleListener {
 				Double temp = (Double) lastStatistic.get("Mean_Test_Time_(ms)");
 				meanTestTime += temp != null ? temp : 0;
 			}
-
+			
 			try {
 				writeReportData("tps_failed", errors);
 				writeReportData("tps_total", tpsSum);

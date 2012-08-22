@@ -1097,17 +1097,16 @@ div.chart {
 	      $("#testStatus").val(status);
 	      if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
 	          ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
-         
-	          if((status !="TESTING")&&(status !="FINISHED"))
-					displayCfgOnly();
-			  if(status =="TESTING")
-			   		displayCfgAndTestRunning();
-			  }
-			 
-			  if(status =="FINISHED") {
-			   		displayCfgAndTestReport();
-			  }
-	      }
+          }
+	     
+		  if(status =="TESTING") {
+		   		displayCfgAndTestRunning();
+		  } else if(status =="FINISHED") { 
+		   		displayCfgAndTestReport();
+		  } else {
+		      	displayCfgOnly();
+		  }
+	    
 	  }
 
 	  // Wrap this function in a closure so we don't pollute the namespace

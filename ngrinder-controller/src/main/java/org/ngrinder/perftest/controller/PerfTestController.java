@@ -102,7 +102,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            page
 	 * @return perftest/list
 	 */
-	@RequestMapping("/list")
+	@RequestMapping({"/list", "/"})
 	public String getPerfTestList(User user, @RequestParam(required = false) String query,
 					@RequestParam(required = false) boolean onlyFinished,
 					@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {

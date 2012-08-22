@@ -142,11 +142,12 @@ public class AgentManager implements NGrinderConstants {
 		final Set<AgentIdentity> allFreeAgents = agentControllerServer.getAllFreeAgents();
 
 		final Set<AgentIdentity> neccessaryAgents = selectSome(allFreeAgents, agentCount);
+		ExecutorService execService = null;
 		try {
 			// Make the agents connect to console.
 			grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, singleConsole.getConsolePort());
 			grinderProperties.setProperty(GrinderProperties.CONSOLE_HOST, singleConsole.getConsoleHost());
-			ExecutorService execService = ExecutorFactory.createThreadPool("agentStarter", NUMBER_OF_THREAD);
+			execService = ExecutorFactory.createThreadPool("agentStarter", NUMBER_OF_THREAD);
 			for (final AgentIdentity eachAgentIdentity : neccessaryAgents) {
 				execService.submit(new Runnable() {
 					@Override
@@ -158,6 +159,10 @@ public class AgentManager implements NGrinderConstants {
 			execService.awaitTermination(AGENT_RUN_TIMEOUT_SECOND, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			throw new NGrinderRuntimeException("Error while running agent", e);
+		} finally {
+			if (execService != null) {
+				execService.shutdown();
+			}
 		}
 	}
 
