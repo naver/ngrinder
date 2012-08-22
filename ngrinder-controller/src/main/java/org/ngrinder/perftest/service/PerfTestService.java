@@ -42,12 +42,14 @@ import java.io.LineNumberReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import net.grinder.SingleConsole;
+import net.grinder.SingleConsole.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.ConsolePropertiesFactory;
@@ -215,6 +217,7 @@ public class PerfTestService implements NGrinderConstants {
 	 * @return Saved {@link PerfTest}
 	 */
 	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
+	@Transactional
 	public PerfTest savePerfTest(PerfTest perfTest) {
 		checkNotNull(perfTest);
 		// Merge if necessary
@@ -237,11 +240,136 @@ public class PerfTestService implements NGrinderConstants {
 	 * @return saved {@link PerfTest}
 	 */
 	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
-	public PerfTest savePerfTest(PerfTest perfTest, Status status) {
+	@Transactional
+	public PerfTest setRecodingStarting(PerfTest perfTest, long systemTimeMills) {
+		checkNotNull(perfTest);
+		checkNotNull(perfTest.getId(), "perfTest with status should save Id");
+		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
+		if (findOne == null) {
+			return null;
+		}
+		findOne.setStartTime(new Date(systemTimeMills));
+		return perfTestRepository.save(findOne);
+	}
+
+	/**
+	 * Mark test error on {@link PerfTest} instance
+	 * 
+	 * @param perfTest
+	 *            {@link PerfTest}
+	 * @param singleConsole
+	 *            console in use
+	 * @param e
+	 *            exception occurs.
+	 */
+	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
+	public void markAbromalTermination(PerfTest perfTest, StopReason reason) {
+		// Leave last status as test error cause
+		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
+		if (findOne == null) {
+			return;
+		}
+
+		findOne.setTestErrorCause(perfTest.getStatus());
+		findOne.setLastProgressMessage(reason.name());
+		findOne.setStatus(Status.ABNORMAL_TESTING);
+	}
+
+	/**
+	 * Save performance test with given status.
+	 * 
+	 * This method is only used for changing {@link Status}
+	 * 
+	 * @param perfTest
+	 *            {@link PerfTest} instance which will be saved.
+	 * @param status
+	 *            Status to be assigned
+	 * @return saved {@link PerfTest}
+	 */
+	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
+	@Transactional
+	public PerfTest changePerfTestStatus(PerfTest perfTest, Status status) {
 		checkNotNull(perfTest);
 		checkNotNull(perfTest.getId(), "perfTest with status should save Id");
 		perfTest.setStatus(checkNotNull(status, "status should not be null"));
-		return perfTestRepository.save(perfTest);
+		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
+		if (findOne == null) {
+			return null;
+		}
+		findOne.setStatus(status);
+		return perfTestRepository.save(findOne);
+	}
+
+	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
+	@Transactional
+	public void markProgress(PerfTest perfTest, String message) {
+		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
+		if (findOne == null) {
+			return;
+		}
+		findOne.setLastProgressMessage(message);
+		perfTestRepository.save(findOne);
+	}
+
+	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
+	@Transactional
+	public void markProgressAndStatus(PerfTest perfTest, Status status, String message) {
+		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
+		if (findOne == null) {
+			return;
+		}
+		findOne.setStatus(status);
+		findOne.setLastProgressMessage(message);
+		perfTestRepository.save(findOne);
+	}
+
+	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
+	@Transactional
+	public void markProgressAndStatusAndFinishTimeAndStatistics(PerfTest perfTest, Status status,
+					String message) {
+		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
+		if (findOne == null) {
+			return;
+		}
+		findOne.setStatus(status);
+		findOne.setLastProgressMessage(message);
+		findOne.setFinishTime(new Date());
+		updatePerfTestAfterTestFinish(findOne);
+		perfTestRepository.save(findOne);
+	}
+
+	/**
+	 * Mark test error on {@link PerfTest} instance
+	 * 
+	 * @param perfTest
+	 *            {@link PerfTest}
+	 * @param reason
+	 *            error reason
+	 */
+	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
+	@Transactional
+	public void markPerfTestError(PerfTest perfTest, String message) {
+		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
+		if (findOne == null) {
+			return;
+		}
+		findOne.setStatus(Status.ABNORMAL_TESTING);
+		findOne.setTestErrorCause(findOne.getStatus());
+		findOne.setLastProgressMessage(message);
+		perfTestRepository.save(findOne);
+	}
+
+	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
+	@Transactional
+	public void markPerfTestConsoleStart(PerfTest perfTest, int consolePort, Integer testTrialCount) {
+		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
+		if (findOne == null) {
+			return;
+		}
+		findOne.setPort(consolePort);
+		findOne.setTestTrialCount(++testTrialCount);
+		findOne.setStatus(Status.START_CONSOLE_FINISHED);
+		perfTestRepository.save(findOne);
 	}
 
 	/**
@@ -594,14 +722,13 @@ public class PerfTestService implements NGrinderConstants {
 	 * 
 	 * @param perfTest
 	 *            perfTest
-	 * @return updated {@link PerfTest}
 	 */
-	public PerfTest updatePerfTestAfterTestFinish(PerfTest perfTest) {
+	public void updatePerfTestAfterTestFinish(PerfTest perfTest) {
 		checkNotNull(perfTest);
 		int port = perfTest.getPort();
 		Map<String, Object> result = getStatistics(port);
 		if (result == null) {
-			return perfTest;
+			return;
 		}
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = (Map<String, Object>) result.get("totalStatistics");
@@ -612,7 +739,6 @@ public class PerfTestService implements NGrinderConstants {
 		perfTest.setPeakTps(Double.parseDouble(formatter.format(ObjectUtils.defaultIfNull(
 						totalStatistics.get("Peak_TPS"), 0D))));
 		perfTest.setTests((int) ((Double) totalStatistics.get("Tests")).doubleValue());
-		return perfTest;
 	}
 
 	/**
@@ -641,11 +767,13 @@ public class PerfTestService implements NGrinderConstants {
 	@Transactional
 	public void stopPerfTest(User user, Long id) {
 		PerfTest perfTest = getPerfTest(id);
-		if (!perfTest.getLastModifiedUser().equals(user)) {
+		if (user.getRole() != Role.ADMIN && !perfTest.getLastModifiedUser().equals(user)) {
 			return;
 		}
 		perfTest.setStopRequest(true);
-		savePerfTest(perfTest);
+		SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(perfTest.getPort());
+		consoleUsingPort.cancel();
+		perfTestRepository.save(perfTest);
 	}
 
 	/**
@@ -663,4 +791,5 @@ public class PerfTestService implements NGrinderConstants {
 		});
 		return perfTests;
 	}
+
 }

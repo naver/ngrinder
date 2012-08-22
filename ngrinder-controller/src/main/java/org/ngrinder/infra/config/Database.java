@@ -69,7 +69,7 @@ public enum Database {
 	},
 
 	// CUBRID
-	H2(org.h2.Driver.class, H2Dialect.class, "jdbc:h2:%s/h2") {
+	H2(org.h2.Driver.class, H2Dialect.class, "jdbc:h2:%s/db/h2") {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
 			String format = String.format(getUrlTemplate(),

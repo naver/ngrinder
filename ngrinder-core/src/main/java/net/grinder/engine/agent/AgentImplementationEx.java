@@ -48,7 +48,6 @@ import net.grinder.communication.TeeSender;
 import net.grinder.engine.common.ConnectorFactory;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
-import net.grinder.engine.communication.AgentControllerServerListener;
 import net.grinder.engine.communication.ConsoleListener;
 import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
@@ -193,7 +192,7 @@ public class AgentImplementationEx implements Agent {
 						m_logger.info("waiting for console signal");
 						m_consoleListener.waitForMessage();
 
-						if (m_consoleListener.received(AgentControllerServerListener.START)) {
+						if (m_consoleListener.received(ConsoleListener.START)) {
 							startMessage = m_consoleListener.getLastStartGrinderMessage();
 							continue; // Loop to handle new properties.
 						} else {
@@ -297,14 +296,13 @@ public class AgentImplementationEx implements Agent {
 
 					// Wait for a termination event.
 					synchronized (m_eventSynchronisation) {
-						final long maximumShutdownTime = 20000;
+						final long maximumShutdownTime = 5000;
 						long consoleSignalTime = -1;
 
 						while (!workerLauncher.allFinished()) {
 							if (consoleSignalTime == -1
-											&& m_consoleListener
-															.checkForMessage(AgentControllerServerListener.ANY
-																			^ AgentControllerServerListener.START)) {
+											&& m_consoleListener.checkForMessage(ConsoleListener.ANY
+															^ ConsoleListener.START)) {
 								workerLauncher.dontStartAnyMore();
 								consoleSignalTime = System.currentTimeMillis();
 							}
@@ -330,19 +328,18 @@ public class AgentImplementationEx implements Agent {
 					break;
 				} else {
 					// Ignore any pending start messages.
-					m_consoleListener.discardMessages(AgentControllerServerListener.START);
+					m_consoleListener.discardMessages(ConsoleListener.START);
 
-					if (!m_consoleListener.received(AgentControllerServerListener.ANY)) {
+					if (!m_consoleListener.received(ConsoleListener.ANY)) {
 						// We've got here naturally, without a console signal.
 						m_logger.info("test is finished, waiting for console signal");
 						m_consoleListener.waitForMessage();
 					}
 
-					if (m_consoleListener.received(AgentControllerServerListener.START)) {
+					if (m_consoleListener.received(ConsoleListener.START)) {
 						startMessage = m_consoleListener.getLastStartGrinderMessage();
 
-					} else if (m_consoleListener.received(AgentControllerServerListener.STOP
-									| AgentControllerServerListener.SHUTDOWN)) {
+					} else if (m_consoleListener.received(ConsoleListener.STOP | ConsoleListener.SHUTDOWN)) {
 						break;
 					} else {
 						// ConsoleListener.RESET or natural death.
@@ -413,7 +410,7 @@ public class AgentImplementationEx implements Agent {
 		if (consoleCommunication != null) {
 			consoleCommunication.shutdown();
 		}
-		m_consoleListener.discardMessages(AgentControllerServerListener.ANY);
+		m_consoleListener.discardMessages(ConsoleListener.ANY);
 	}
 
 	/**
