@@ -34,6 +34,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -65,14 +66,18 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
 	private UserService userService;
-
+	
+	@Before
+	public void beforeCleanUp() {
+		clearAllPerfTest();
+	}
 	
 
 	@Test
 	public void testGetResourcesOnScriptFolder() {
 		controller.getResourcesOnScriptFolder(getTestUser(), "");
 	}
-
+	
 	@Test
 	public void testDeleteTests() {
 		String testName = "test1";
