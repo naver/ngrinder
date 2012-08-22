@@ -217,6 +217,7 @@ public class PerfTestService implements NGrinderConstants {
 	 * @return Saved {@link PerfTest}
 	 */
 	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
+	@Transactional
 	public PerfTest savePerfTest(PerfTest perfTest) {
 		checkNotNull(perfTest);
 		// Merge if necessary
@@ -239,6 +240,7 @@ public class PerfTestService implements NGrinderConstants {
 	 * @return saved {@link PerfTest}
 	 */
 	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
+	@Transactional
 	public PerfTest setRecodingStarting(PerfTest perfTest, long systemTimeMills) {
 		checkNotNull(perfTest);
 		checkNotNull(perfTest.getId(), "perfTest with status should save Id");

@@ -85,13 +85,9 @@ div.chart {
 							<div class="controls">
 								<input class="span3 required" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
 								<#if test??> 
-									<span
-										<#if test.status == 'STOP_ON_ERROR'> 
-											rel="popover" data-content="Error on ${test.testErrorCause} phase. ${(test.testErrorStackTrace)!?replace('\n', '<br/>')?html}"
-											data-original-title="${test.status}" type="toggle" 
-										<#else> rel="popover" data-content="${test.createdDate}"
-											data-original-title="${test.status}" type="toggle" 
-										</#if> > 
+									<span id="teststatus_pop_over"
+										rel="popover" data-content='${"${test.progressMessage}/n${test.lastProgressMessage}"?replace('/n', '<br>')?html}'  
+											data-original-title="${test.status}" type="toggle">
 										<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
 									</span> 
 								</#if>
@@ -718,7 +714,13 @@ div.chart {
 	          $elem.remove();
 	          $("#hostsHidden").val("");
 	      });
-
+	      
+	      $("#saveScheduleBtn").click(function () {
+	          if (!$("#testContentForm").valid()) {
+	              return false;
+	          }
+	      });
+	      
 	      $("#saveTestBtn").click(function () {
 	          if (!$("#testContentForm").valid()) {
 	              return false;
@@ -744,14 +746,14 @@ div.chart {
 
 	      $("#addScheduleBtn").click(function () {
 	          if (checkEmptyByID("sDateInput")) {
-	              $("#scheduleModal small").html("Please select date before schedule.");
+	              $("#scheduleModal small").html("<@spring.message "perfTest.detail.message.setScheduleDate"/>");
 	              return;
 	          }
 
 	          var timeStr = $("#sDateInput").val() + " " + $("#shSelect").val() + ":" + $("#smSelect").val() + ":0";
 	          var scheduledTime = new Date(timeStr.replace(/-/g, "/"));
 	          if (new Date() > scheduledTime) {
-	              $("#scheduleModal small").html("Schedule time must be later than now.");
+	              $("#scheduleModal small").html("<@spring.message "perfTest.detail.message.errScheduleDate"/>");
 	              return;
 	          }
 	          $("#scheduleInput").val(scheduledTime);
@@ -809,8 +811,8 @@ div.chart {
 	      });
 
 	      $("#vuserPerAgent").change(function () {
-	          if ($("#vuserPerAgent").valid()) {
-	              updateVuserPolicy();
+	          if ($(this).valid()) {
+	          	updateVuserPolicy();
 	          }
 	      });
 
@@ -860,7 +862,8 @@ div.chart {
 	  function updateScriptResources() {
 	      $('#messageDiv').ajaxSend(function (e, xhr, settings) {
 	          var url = settings.url;
-	          if (url.indexOf("refresh") == 0) showInformation("Updating script resources...");
+	          if (url.indexOf("refresh") == 0) 
+	          	showInformation("<@spring.message "perfTest.detail.message.updateResource"/>");
 	      });
 	      $.ajax({
 	          url: "${req.getContextPath()}/perftest/getResourcesOnScriptFolder",
@@ -878,7 +881,7 @@ div.chart {
 	              $("#scriptResources").html(html);
 	          },
 	          error: function () {
-	              showErrorMsg("Error!");
+	              showErrorMsg("<@spring.message "common.error.error"/>");
 	              return false;
 	          }
 	      });
@@ -887,7 +890,7 @@ div.chart {
 	  function updateVuserPolicy() {
 	      updateVuserTotal();
 	      $('#messageDiv').ajaxSend(function () {
-	          showInformation("Updating vuser policy from server...");
+	          showInformation("<@spring.message "perfTest.detail.message.calculatePolicy"/>");
 	      });
 
 	      $.ajax({
@@ -910,7 +913,7 @@ div.chart {
 	                  updateChart();
 	                  return true;
 	              } else {
-	                  showErrorMsg("Update vuser failed:" + res.message);
+	                  showErrorMsg("<@spring.message "perfTest.detail.error.updateVuser"/>" + res.message);
 	                  return false;
 	              }
 	          },
@@ -1082,20 +1085,28 @@ div.chart {
 	      });
 	  }
 
-	  function updateStatus(id, status, icon, message) {
-		  
+	  function updateStatus(id, status, icon, deletable, stoppable, message) {
+		  if ($("#testStatus").val() == status) {
+		  	return;
+		  }
 	      var ballImg = $("#testStatus_img_id");
+	      
+		  $("#teststatus_pop_over").attr("data-original-title", status);
+		  $("#teststatus_pop_over").attr("data-content", message);
+			
+	      $("#testStatus").val(status);
 	      if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
 	          ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
-	          
-	          if((status !="TESTING")&&(status !="FINISHED"))
-		   		displayCfgOnly();
-			  if(status =="TESTING")
-			   		displayCfgAndTestRunning();
-			 
-			  if(status =="FINISHED")
-			   		displayCfgAndTestReport();
-	      }
+          }
+	     
+		  if(status =="TESTING") {
+		   		displayCfgAndTestRunning();
+		  } else if(status =="FINISHED") { 
+		   		displayCfgAndTestReport();
+		  } else {
+		      	displayCfgOnly();
+		  }
+	    
 	  }
 
 	  // Wrap this function in a closure so we don't pollute the namespace
@@ -1114,7 +1125,7 @@ div.chart {
 	          success: function (data) {
 	              data = eval(data);
 	              for (var i = 0; i < data.length; i++) {
-	                  updateStatus(data[i].id, data[i].name, data[i].icon, data[i].message);
+	                  updateStatus(data[i].id, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
 	              }
 	          },
 	          complete: function () {

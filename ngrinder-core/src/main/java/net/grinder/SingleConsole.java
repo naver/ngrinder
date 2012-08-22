@@ -397,7 +397,7 @@ public class SingleConsole implements Listener, SampleListener {
 		return notFinishedWorkerCount == 0 || workingThreadNum == 0;
 	}
 
-	public void addTpsValue(double newValue) {
+	public void setTpsValue(double newValue) {
 		tpsValue = newValue;
 	}
 
@@ -428,8 +428,8 @@ public class SingleConsole implements Listener, SampleListener {
 		} else {
 			TPS_LESSTHAN_ZREO_TIME = null;
 			// only if tps value is not too small ,It should be displayed
-			addTpsValue(tps);
 		}
+		setTpsValue(tps);
 
 		statisticData = this.getStatistics();
 		@SuppressWarnings("unchecked")
@@ -447,7 +447,7 @@ public class SingleConsole implements Listener, SampleListener {
 				Double temp = (Double) lastStatistic.get("Mean_Test_Time_(ms)");
 				meanTestTime += temp != null ? temp : 0;
 			}
-
+			
 			try {
 				writeReportData("tps_failed", errors);
 				writeReportData("tps_total", tpsSum);
