@@ -58,8 +58,15 @@ import net.grinder.util.thread.Condition;
 
 import org.ngrinder.common.util.ReflectionUtil;
 import org.ngrinder.infra.AgentConfig;
+import org.ngrinder.monitor.MonitorConstants;
+import org.ngrinder.monitor.agent.AgentMXBeanStorage;
+import org.ngrinder.monitor.agent.collector.AgentJavaDataCollector;
+import org.ngrinder.monitor.agent.collector.AgentSystemDataCollector;
+import org.ngrinder.monitor.agent.mxbean.JavaMonitoringData;
+import org.ngrinder.monitor.agent.mxbean.SystemMonitoringData;
 import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.ngrinder.monitor.share.domain.JavaInfo;
 import org.slf4j.Logger;
 
 /**
@@ -82,6 +89,14 @@ public class AgentController implements Agent {
 	private AgentConfig agentConfig;
 	private final Condition m_eventSyncCondition;
 	private volatile AgentControllerState m_state = AgentControllerState.STARTED;
+	
+	private GrinderProperties m_grinderProperties;
+	
+	private JavaMonitoringData javaMonitoringData = new JavaMonitoringData();
+	private AgentJavaDataCollector agentJavaDataCollector = new AgentJavaDataCollector();
+	
+	private SystemMonitoringData systemMonitoringData = new SystemMonitoringData();
+	private AgentSystemDataCollector agentSystemDataCollector = new AgentSystemDataCollector();
 
 	/**
 	 * Constructor.
@@ -99,6 +114,11 @@ public class AgentController implements Agent {
 		m_eventSyncCondition = eventSyncCondition;
 		m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, m_logger);
 		m_agentIdentity = new AgentControllerIdentityImplementation(getHostName(), getHostAddress());
+		
+		AgentMXBeanStorage.getInstance().addMXBean(MonitorConstants.JAVA, javaMonitoringData);
+		agentJavaDataCollector.refresh();
+		AgentMXBeanStorage.getInstance().addMXBean(MonitorConstants.SYSTEM, systemMonitoringData);
+		agentSystemDataCollector.refresh();
 	}
 
 	/**
@@ -147,16 +167,18 @@ public class AgentController implements Agent {
 		m_timer = new Timer(false);
 		AgentDaemon agent = new AgentDaemon(checkNotNull(getAgentConfig(),
 						"agentconfig should be provided before agentdaemon start."));
+		
+		m_grinderProperties = grinderProperties;
 		try {
 			while (true) {
 				m_logger.info(GrinderBuild.getName());
 
-				GrinderProperties properties;
+				//GrinderProperties properties;
 				do {
-					properties = grinderProperties;
+					//properties = grinderProperties;
 					m_agentIdentity.setName(agentConfig.getProperty(AgentConfig.AGENT_HOSTID, getHostName()));
 					m_agentIdentity.setRegion(agentConfig.getProperty(AgentConfig.AGENT_REGION, ""));
-					final Connector connector = m_connectorFactory.create(properties);
+					final Connector connector = m_connectorFactory.create(m_grinderProperties);
 
 					if (consoleCommunication == null) {
 						try {
@@ -335,11 +357,8 @@ public class AgentController implements Agent {
 	 * @return {@link SystemDataModel} instance
 	 */
 	public SystemDataModel getSystemDataModel() {
-		SystemDataModel systemDataModel = new SystemDataModel();
-		systemDataModel.setCollectTime(10000);
-		systemDataModel.setCpuUsedPercentage(20f);
-		// FIXME
-		return systemDataModel;
+		agentSystemDataCollector.run();
+		return new SystemDataModel(systemMonitoringData.getSystemInfo());
 	}
 
 	/**
@@ -348,10 +367,15 @@ public class AgentController implements Agent {
 	 * @return {@link JavaDataModel} instance
 	 */
 	public JavaDataModel getJavaDataModel() {
-		JavaDataModel javaDataModel = new JavaDataModel();
-		javaDataModel.setCollectTime(10000);
-		javaDataModel.setCpuUsedPercentage(20f);
-		// FIXME
+		agentJavaDataCollector.run();
+		JavaInfo javaInfo = javaMonitoringData.getJavaInfo();
+		JavaDataModel javaDataModel = new JavaDataModel(javaInfo);
+
+		javaDataModel.setKey(getHostAddress());
+		javaDataModel.setIp(getHostAddress());
+		javaDataModel.setPort(m_grinderProperties.getInt(AgentConfig.AGENT_CONTROLER_SERVER_PORT,
+				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT));
+		
 		return javaDataModel;
 	}
 

@@ -20,56 +20,29 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.monitor;
+package org.ngrinder.monitor.agent.collector;
 
-import java.util.HashSet;
-import java.util.Set;
+import org.junit.Test;
+import org.ngrinder.monitor.MonitorConstants;
+import org.ngrinder.monitor.agent.AgentMXBeanStorage;
+import org.ngrinder.monitor.agent.mxbean.JavaMonitoringData;
 
-public class MonitorContext {
+/**
+ * Class description.
+ *
+ * @author Mavlarn
+ * @since
+ */
+public class AgentJavaDataCollectorTest {
 
-	private static final MonitorContext INSTANCE = new MonitorContext();
-
-	private Set<Integer> jvmPids = new HashSet<Integer>();
-	
-	private MonitorContext() {
-	}
-	
-	public static MonitorContext getInstance() {
-		return INSTANCE;
-	}
-
-	private Set<String> dataCollectors = new HashSet<String>();
-
-	public void setDataCollectors(Set<String> dataCollectors) {
-		this.dataCollectors = dataCollectors;
-	}
-
-	public void setJvmPids(Set<Integer> jvmPids) {
-		this.jvmPids = jvmPids;
-	}
-
-	public Set<String> getDataCollectors() {
-		return dataCollectors;
-	}
-
-	public void addDataCollector(String dataCollector) {
-		this.dataCollectors.add(dataCollector);
-	}
-
-	public void removeDataCollector(String dataCollector) {
-		this.dataCollectors.remove(dataCollector);
-	}
-
-	public Set<Integer> getJvmPids() {
-		return jvmPids;
-	}
-
-	public void addJvmPid(Integer jvmPid) {
-		this.jvmPids.add(jvmPid);
-	}
-
-	public void removeJvmPid(Integer jvmPid) {
-		this.jvmPids.remove(jvmPid);
+	@Test
+	public void testGetJavaData() {
+		JavaMonitoringData monitorData = new JavaMonitoringData();
+		AgentMXBeanStorage.getInstance().addMXBean(MonitorConstants.JAVA, monitorData);
+		AgentJavaDataCollector agentJavaDataCollector = new AgentJavaDataCollector();
+		agentJavaDataCollector.refresh();
+		agentJavaDataCollector.run();
+		System.out.println("java monitor data:" + monitorData);
 	}
 
 }

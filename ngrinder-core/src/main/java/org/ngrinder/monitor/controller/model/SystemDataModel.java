@@ -22,12 +22,16 @@
  */
 package org.ngrinder.monitor.controller.model;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Index;
+import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.model.BaseEntity;
+import org.ngrinder.monitor.share.domain.SystemInfo;
 
 @Entity
 @Table(name = "system_monitor")
@@ -54,6 +58,21 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	private float cpuUsedPercentage;
 	private String crtime;
 	private String message;
+	
+	public SystemDataModel() {};
+	
+	public SystemDataModel (SystemInfo systemInfo) {
+		system = systemInfo.getSystem().toString();
+		collectTime = DateUtil.getCollectTimeInLong(new Date(systemInfo.getCollectTime()));
+		totalCpuValue = systemInfo.getTotalCpuValue();
+		idleCpuValue = systemInfo.getIdlecpu();
+		loadAvg1 = systemInfo.getLoadAvgs()[0];
+		loadAvg5 = systemInfo.getLoadAvgs()[1];
+		loadAvg15 = systemInfo.getLoadAvgs()[2];
+		freeMemory = systemInfo.getFreeMemory();
+		totalMemory = systemInfo.getTotalMemory();
+		cpuUsedPercentage = systemInfo.getCPUUsedPercentage();
+	}
 
 	public String getKey() {
 		return key;

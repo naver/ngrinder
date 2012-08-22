@@ -232,11 +232,6 @@ public class NGrinderStarter {
 		}
 	}
 
-	private static void printHelpAndReturn(String message) {
-		System.out.println("Invalid agent.conf, 'start.mode' must be set as 'monitor' or 'agent'");
-		System.exit(-1);
-	}
-
 	private static void printHelpAndReturn() {
 		System.out.println("Invalid agent.conf, 'start.mode' must be set as 'monitor' or 'agent'");
 		System.exit(-1);
