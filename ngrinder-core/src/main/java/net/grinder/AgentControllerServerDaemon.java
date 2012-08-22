@@ -32,6 +32,7 @@ import net.grinder.console.common.ResourcesImplementation;
 import net.grinder.console.communication.AgentProcessControl;
 import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.console.communication.ConsoleCommunication;
+import net.grinder.console.communication.LogArrivedListener;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.message.console.AgentControllerState;
 import net.grinder.messages.agent.StartGrinderMessage;
@@ -65,8 +66,7 @@ public class AgentControllerServerDaemon {
 	private static final long AGENT_CONTROLLER_SERVER_EVENT_EXPIRATION_TIMEOUT = 10000;
 
 	/**
-	 * Agent controller daemon constructor with default
-	 * {@link ConsoleProperties}.
+	 * Agent controller daemon constructor with default {@link ConsoleProperties}.
 	 * 
 	 * @param ip
 	 *            used IP
@@ -159,6 +159,16 @@ public class AgentControllerServerDaemon {
 	public int getAllAttachedAgentsCount() {
 		return ((AgentProcessControl) agentControllerServer.getComponent(AgentProcessControlImplementation.class))
 				.getNumberOfLiveAgents();
+	}
+
+	/**
+	 * Add Listener which will be used to save log in somewhere.
+	 * 
+	 * @param logArrivedListener
+	 *            listener
+	 */
+	public void addLogArrivedListener(LogArrivedListener logArrivedListener) {
+		getComponent(AgentProcessControlImplementation.class).addLogArrivedListener(logArrivedListener);
 	}
 
 	public AgentControllerState getAgentState(AgentIdentity agentIdentity) {

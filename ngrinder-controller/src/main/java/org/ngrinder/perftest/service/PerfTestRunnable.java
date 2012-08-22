@@ -28,7 +28,6 @@ import static org.ngrinder.perftest.model.Status.DISTRIBUTE_FILES_FINISHED;
 import static org.ngrinder.perftest.model.Status.START_AGENTS;
 import static org.ngrinder.perftest.model.Status.START_AGENTS_FINISHED;
 import static org.ngrinder.perftest.model.Status.START_CONSOLE;
-import static org.ngrinder.perftest.model.Status.START_CONSOLE_FINISHED;
 import static org.ngrinder.perftest.model.Status.START_TESTING;
 import static org.ngrinder.perftest.model.Status.TESTING;
 
@@ -135,7 +134,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 	public void doTest(PerfTest perfTest) {
 		SingleConsole singleConsole = null;
 		try {
-
 			singleConsole = startConsole(perfTest);
 			GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
 			startAgentsOn(perfTest, grinderProperties, singleConsole);
@@ -171,7 +169,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 				perfTestService.markAbromalTermination(perfTest, stopReason);
 			}
 		});
-		grinderProperties.setProperty(GRINDER_PROP_TEST_ID, "test_" + perfTest.getId());
 		long startTime = singleConsole.startTest(grinderProperties);
 		perfTestService.setRecodingStarting(perfTest, startTime);
 		perfTestService.changePerfTestStatus(perfTest, TESTING);

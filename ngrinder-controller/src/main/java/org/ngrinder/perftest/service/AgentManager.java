@@ -24,6 +24,8 @@ package org.ngrinder.perftest.service;
 
 import static org.ngrinder.common.util.CollectionUtils.selectSome;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -35,10 +37,13 @@ import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
+import net.grinder.console.communication.LogArrivedListener;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
+import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.thread.ExecutorFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -62,7 +67,7 @@ import org.springframework.stereotype.Component;
 public class AgentManager implements NGrinderConstants {
 	public static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);
 	private final AgentControllerServerDaemon agentControllerServer = new AgentControllerServerDaemon(
-					AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+			AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 	private static final int NUMBER_OF_THREAD = 3;
 	private static final int AGENT_RUN_TIMEOUT_SECOND = 10;
 
@@ -75,6 +80,29 @@ public class AgentManager implements NGrinderConstants {
 	@PostConstruct
 	public void init() {
 		agentControllerServer.start();
+		agentControllerServer.addLogArrivedListener(new LogArrivedListener() {
+			@Override
+			public void logArrived(String testId, AgentAddress agentAddress, byte[] logs) {
+				AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) agentAddress
+						.getIdentity();
+
+				if (logs == null || logs.length == 0) {
+					LOGGER.error("Log is arrived from {} but no log content", agentIdentity.getIp());
+				}
+				File logDirectory = new File(config.getHome().getPerfTestDirectory(testId.replace("test_", "")), "logs");
+				logDirectory.mkdirs();
+				File logFile = null;
+				try {
+					logFile = new File(logDirectory, agentIdentity.getIp() + "-" + agentIdentity.getName() + "-"
+							+ agentIdentity.getRegion() + "-log.zip");
+					FileUtils.writeByteArrayToFile(logFile, logs);
+				} catch (IOException e) {
+					LOGGER.error("Error while write logs from {} to {}", agentAddress.getIdentity().getName(),
+							logFile.getAbsolutePath());
+					LOGGER.error("Error is following", e);
+				}
+			}
+		});
 	}
 
 	public AgentControllerState getAgentControllerState(AgentIdentity agentIdentity) {
@@ -87,17 +115,15 @@ public class AgentManager implements NGrinderConstants {
 
 	public int getMaxAgentSizePerConsole() {
 		return config.getSystemProperties().getPropertyInt("agent.maxsize",
-						NGrinderConstants.MAX_AGENT_SIZE_PER_CONSOLE);
+				NGrinderConstants.MAX_AGENT_SIZE_PER_CONSOLE);
 	}
 
 	public int getMaxVuserPerAgent() {
-		return config.getSystemProperties().getPropertyInt("agent.maxvuser",
-						NGrinderConstants.MAX_VUSER_PER_AGENT);
+		return config.getSystemProperties().getPropertyInt("agent.maxvuser", NGrinderConstants.MAX_VUSER_PER_AGENT);
 	}
 
 	public int getMaxRunCount() {
-		return config.getSystemProperties().getPropertyInt("agent.maxruncount",
-						NGrinderConstants.MAX_RUN_COUNT);
+		return config.getSystemProperties().getPropertyInt("agent.maxruncount", NGrinderConstants.MAX_RUN_COUNT);
 	}
 
 	public int getMaxRunHour() {
@@ -136,8 +162,8 @@ public class AgentManager implements NGrinderConstants {
 	 * @param agentCount
 	 *            how much agent are necessary.
 	 */
-	public synchronized void runAgent(final SingleConsole singleConsole,
-					final GrinderProperties grinderProperties, final Integer agentCount) {
+	public synchronized void runAgent(final SingleConsole singleConsole, final GrinderProperties grinderProperties,
+			final Integer agentCount) {
 		// FIXME : synchronization on this method may have some penalty
 		final Set<AgentIdentity> allFreeAgents = agentControllerServer.getAllFreeAgents();
 

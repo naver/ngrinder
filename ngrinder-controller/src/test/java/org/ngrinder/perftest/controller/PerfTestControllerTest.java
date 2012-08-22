@@ -258,7 +258,6 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	public void testDownloadReportData() {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
-
 		HttpServletResponse resp = new MockHttpServletResponse();
 		controller.downloadReportData(getTestUser(), resp, test.getId());
 	}

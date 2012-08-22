@@ -130,7 +130,6 @@ public class AgentDaemon implements Agent {
 
 	class AgentThreadRunnable implements Runnable {
 		public void run() {
-
 			try {
 				setAgent(new AgentImplementationEx(LOGGER, m_agentConfig)).run(getGrinderProperties());
 			} catch (Exception e) {

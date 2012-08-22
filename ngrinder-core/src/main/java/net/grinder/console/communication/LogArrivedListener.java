@@ -20,39 +20,18 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.grinder.engine.communication;
+package net.grinder.console.communication;
 
-import net.grinder.communication.Address;
-import net.grinder.communication.AddressAwareMessage;
+import java.util.EventListener;
+
 import net.grinder.messages.console.AgentAddress;
 
-public class LogReportGrinderMessage implements AddressAwareMessage {
-	private static final long serialVersionUID = 1274708100107820158L;
-	private AgentAddress m_processAddress;
-	private final byte[] logs;
-	private final String testId;
-
-	public LogReportGrinderMessage(String testId, byte[] logs, AgentAddress agentAddress) {
-		this.testId = testId;
-		this.logs = logs;
-		setAddress(agentAddress);
-	}
-
-	@Override
-	public void setAddress(Address address) {
-		m_processAddress = (AgentAddress) address;
-	}
-
-	public AgentAddress getAddress() {
-		return m_processAddress;
-	}
-
-	public byte[] getLogs() {
-		return logs;
-	}
-
-	public String getTestId() {
-		return testId;
-	}
-
+/**
+ * Listener which is invoked when log is arrived from agent controller.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
+public interface LogArrivedListener extends EventListener {
+	public void logArrived(String testId, AgentAddress agentAddress, byte[] logs);
 }

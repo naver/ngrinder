@@ -111,5 +111,4 @@ public class AgentControllerServer {
 	public <T> T getComponent(Class<T> componentType) {
 		return m_container.getComponent(componentType);
 	}
-
 }

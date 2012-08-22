@@ -31,23 +31,25 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.ngrinder.monitor.controller.model.JavaDataModel;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.common.processidentity.ProcessIdentity;
 import net.grinder.communication.CommunicationException;
 import net.grinder.communication.MessageDispatchRegistry;
 import net.grinder.communication.MessageDispatchRegistry.AbstractHandler;
+import net.grinder.engine.communication.LogReportGrinderMessage;
 import net.grinder.message.console.AgentControllerProcessReportMessage;
 import net.grinder.message.console.AgentControllerState;
 import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.agent.StopGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.ListenerSupport;
+import net.grinder.util.ListenerSupport.Informer;
+
+import org.ngrinder.monitor.controller.model.JavaDataModel;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of {@link AgentProcessControl}.
@@ -59,6 +61,8 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	private final ConsoleCommunication m_consoleCommunication;
 	private Map<AgentIdentity, AgentStatus> m_agentMap = new ConcurrentHashMap<AgentIdentity, AgentStatus>();
 	private final ListenerSupport<Listener> m_listeners = new ListenerSupport<Listener>();
+	private final ListenerSupport<LogArrivedListener> m_logListeners = new ListenerSupport<LogArrivedListener>();
+
 	private final static Logger logger = LoggerFactory.getLogger(AgentProcessControlImplementation.class);
 	/**
 	 * Period at which to update the listeners.
@@ -66,12 +70,10 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	private static final long UPDATE_PERIOD = 500;
 
 	/**
-	 * We keep a record of processes for a few seconds after they have been
-	 * terminated.
+	 * We keep a record of processes for a few seconds after they have been terminated.
 	 * 
-	 * Every FLUSH_PERIOD, process statuses are checked. Those haven't reported
-	 * for a while are marked and are discarded if they still haven't been
-	 * updated by the next FLUSH_PERIOD.
+	 * Every FLUSH_PERIOD, process statuses are checked. Those haven't reported for a while are marked and are discarded
+	 * if they still haven't been updated by the next FLUSH_PERIOD.
 	 */
 	private static final long FLUSH_PERIOD = 2000;
 
@@ -108,6 +110,17 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 						addAgentStatusReport(message);
 					}
 				});
+		messageDispatchRegistry.set(LogReportGrinderMessage.class, new AbstractHandler<LogReportGrinderMessage>() {
+			public void handle(final LogReportGrinderMessage message) {
+				m_logListeners.apply(new Informer<LogArrivedListener>() {
+					@Override
+					public void inform(LogArrivedListener listener) {
+						listener.logArrived(message.getTestId(), message.getAddress(), message.getLogs());
+					}
+				});
+			}
+		});
+
 	}
 
 	/**
@@ -150,7 +163,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		}
 
 		m_newData = false;
-		
+
 		m_listeners.apply(new ListenerSupport.Informer<Listener>() {
 			public void inform(Listener l) {
 				l.update(new ConcurrentHashMap<AgentIdentity, AgentStatus>(m_agentMap));
@@ -298,12 +311,21 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		m_listeners.add(listener);
 	}
 
+	/**
+	 * Add Log control {@link LogArrivedListener}
+	 * 
+	 * @param listener
+	 *            listener to be added
+	 */
+	public void addLogArrivedListener(LogArrivedListener listener) {
+		m_logListeners.add(listener);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * net.grinder.console.communication.AgentProcessControl#startAgent(java
-	 * .util.Set, net.grinder.common.GrinderProperties)
+	 * @see net.grinder.console.communication.AgentProcessControl#startAgent(java .util.Set,
+	 * net.grinder.common.GrinderProperties)
 	 */
 	@Override
 	public void startAgent(Set<AgentIdentity> agents, GrinderProperties properties) {
@@ -317,8 +339,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * net.grinder.console.communication.AgentProcessControl#stopAgent(net.grinder
+	 * @see net.grinder.console.communication.AgentProcessControl#stopAgent(net.grinder
 	 * .common.processidentity.AgentIdentity)
 	 */
 	@Override
@@ -329,9 +350,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * net.grinder.console.communication.AgentProcessControl#getNumberOfLiveAgents
-	 * ()
+	 * @see net.grinder.console.communication.AgentProcessControl#getNumberOfLiveAgents ()
 	 */
 	@Override
 	public int getNumberOfLiveAgents() {
@@ -343,8 +362,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * net.grinder.console.communication.AgentProcessControl#getAgents(net.grinder
+	 * @see net.grinder.console.communication.AgentProcessControl#getAgents(net.grinder
 	 * .message.console.AgentControllerState, int)
 	 */
 	@Override
@@ -381,8 +399,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		 * Constructor.
 		 * 
 		 * @param address
-		 *            {@link AgentAddress} in which the agent process is not
-		 *            known.
+		 *            {@link AgentAddress} in which the agent process is not known.
 		 */
 		public UnknownAgentProcessReport(AgentAddress address) {
 			super(AgentControllerState.UNKNOWN, null, null);
