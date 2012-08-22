@@ -718,7 +718,13 @@ div.chart {
 	          $elem.remove();
 	          $("#hostsHidden").val("");
 	      });
-
+	      
+	      $("#saveScheduleBtn").click(function () {
+	          if (!$("#testContentForm").valid()) {
+	              return false;
+	          }
+	      });
+	      
 	      $("#saveTestBtn").click(function () {
 	          if (!$("#testContentForm").valid()) {
 	              return false;
