@@ -85,12 +85,13 @@ div.chart {
 							<div class="controls">
 								<input class="span3 required" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
 								<#if test??> 
-									<span
+									<span rel="popover" type="toggle"  
 										<#if test.status == 'STOP_ON_ERROR'> 
-											rel="popover" data-content="Error on ${test.testErrorCause} phase. ${(test.testErrorStackTrace)!?replace('\n', '<br/>')?html}"
-											data-original-title="${test.status}" type="toggle" 
-										<#else> rel="popover" data-content="${test.createdDate}"
-											data-original-title="${test.status}" type="toggle" 
+											data-content="Error on ${test.testErrorCause} phase. ${(test.testErrorStackTrace)!?replace('\n', '<br/>')?html}"
+											data-original-title="${test.status}"
+										<#else>
+											data-content="${test.createdDate}"
+											data-original-title="${test.status}"
 										</#if> > 
 										<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
 									</span> 
@@ -744,14 +745,14 @@ div.chart {
 
 	      $("#addScheduleBtn").click(function () {
 	          if (checkEmptyByID("sDateInput")) {
-	              $("#scheduleModal small").html("Please select date before schedule.");
+	              $("#scheduleModal small").html("<@spring.message "perfTest.detail.message.setScheduleDate"/>");
 	              return;
 	          }
 
 	          var timeStr = $("#sDateInput").val() + " " + $("#shSelect").val() + ":" + $("#smSelect").val() + ":0";
 	          var scheduledTime = new Date(timeStr.replace(/-/g, "/"));
 	          if (new Date() > scheduledTime) {
-	              $("#scheduleModal small").html("Schedule time must be later than now.");
+	              $("#scheduleModal small").html("<@spring.message "perfTest.detail.message.errScheduleDate"/>");
 	              return;
 	          }
 	          $("#scheduleInput").val(scheduledTime);
@@ -809,8 +810,8 @@ div.chart {
 	      });
 
 	      $("#vuserPerAgent").change(function () {
-	          if ($("#vuserPerAgent").valid()) {
-	              updateVuserPolicy();
+	          if ($(this).valid()) {
+	          	updateVuserPolicy();
 	          }
 	      });
 
@@ -860,7 +861,8 @@ div.chart {
 	  function updateScriptResources() {
 	      $('#messageDiv').ajaxSend(function (e, xhr, settings) {
 	          var url = settings.url;
-	          if (url.indexOf("refresh") == 0) showInformation("Updating script resources...");
+	          if (url.indexOf("refresh") == 0) 
+	          	showInformation("<@spring.message "perfTest.detail.message.updateResource"/>");
 	      });
 	      $.ajax({
 	          url: "${req.getContextPath()}/perftest/getResourcesOnScriptFolder",
@@ -878,7 +880,7 @@ div.chart {
 	              $("#scriptResources").html(html);
 	          },
 	          error: function () {
-	              showErrorMsg("Error!");
+	              showErrorMsg("<@spring.message "common.error.error"/>");
 	              return false;
 	          }
 	      });
@@ -887,7 +889,7 @@ div.chart {
 	  function updateVuserPolicy() {
 	      updateVuserTotal();
 	      $('#messageDiv').ajaxSend(function () {
-	          showInformation("Updating vuser policy from server...");
+	          showInformation("<@spring.message "perfTest.detail.message.calculatePolicy"/>");
 	      });
 
 	      $.ajax({
@@ -910,7 +912,7 @@ div.chart {
 	                  updateChart();
 	                  return true;
 	              } else {
-	                  showErrorMsg("Update vuser failed:" + res.message);
+	                  showErrorMsg("<@spring.message "perfTest.detail.error.updateVuser"/>" + res.message);
 	                  return false;
 	              }
 	          },
@@ -1083,16 +1085,14 @@ div.chart {
 	  }
 
 	  function updateStatus(id, status, icon, message) {
-		  
 	      var ballImg = $("#testStatus_img_id");
 	      if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
 	          ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
 	          
 	          if((status !="TESTING")&&(status !="FINISHED"))
-		   		displayCfgOnly();
+					displayCfgOnly();
 			  if(status =="TESTING")
 			   		displayCfgAndTestRunning();
-			 
 			  if(status =="FINISHED")
 			   		displayCfgAndTestReport();
 	      }
