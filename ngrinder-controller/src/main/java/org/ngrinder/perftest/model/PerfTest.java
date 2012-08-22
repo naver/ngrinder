@@ -136,9 +136,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Enumerated(EnumType.STRING)
 	private Status testErrorCause = Status.UNKNOWN;
 
-	@Column(length = MAX_STACKTRACE_STRING_SIZE)
-	private String testErrorStackTrace;
-
 	@Transient
 	private GrinderProperties grinderProperties;
 
@@ -433,14 +430,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.testTrialCount = testTrialCount;
 	}
 
-	public String getTestErrorStackTrace() {
-		return StringUtils.abbreviate(testErrorStackTrace, MAX_STACKTRACE_STRING_SIZE - 5);
-	}
-
-	public void setTestErrorStackTrace(String testErrorStackTrace) {
-		this.testErrorStackTrace = testErrorStackTrace;
-	}
-
 	public Status getTestErrorCause() {
 		return testErrorCause;
 	}
@@ -488,6 +477,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public void setLastProgressMessage(String lastProgressMessage) {
+		if (StringUtils.isEmpty(lastProgressMessage)) {
+			return;
+		}
 		if (!StringUtils.equals(this.lastProgressMessage, lastProgressMessage)) {
 			setProgressMessage(getProgressMessage() + this.lastProgressMessage + "\n");
 		}
