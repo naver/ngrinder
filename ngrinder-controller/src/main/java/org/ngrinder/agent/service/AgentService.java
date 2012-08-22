@@ -34,6 +34,7 @@ import org.ngrinder.agent.repository.AgentRepository;
 import org.ngrinder.perftest.service.AgentManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * agent service.
@@ -122,6 +123,12 @@ public class AgentService {
 	 */
 	public void deleteAgent(long id) {
 		agentRepository.delete(id);
+	}
+
+	@Transactional
+	public void approve(Long id) {
+		AgentInfo findOne = agentRepository.findOne(id);
+		findOne.setApproved(true); 
 	}
 
 }
