@@ -73,7 +73,7 @@
 											<#if !(test.status.isDeletable())>disabled</#if> >
 									</td>
 									<td class="ellipsis"  style="text-align:center" id="row_${test.id}">
-										<div class="ball" id="ball_${test.id}" rel="popover" data-content="${test.createdDate}" data-original-title="${test.status}">
+										<div class="ball" id="ball_${test.id}" rel="popover" data-content='${"${test.progressMessage}/n${test.lastProgressMessage}"?replace('/n', '<br>')?html}'>
 											<img src="${req.getContextPath()}/img/ball/${test.status.iconName}"/>
 										</div>
 									</td>
@@ -98,10 +98,10 @@
 									<td>${(test.errors)!0}</td>
 									<td>${vuserTotal}</td>
 									<td class="center">
-										<#if test.status.isDeletable()><a href="javascript:void(0);"><i title="<@spring.message "common.button.delete"/>" class="icon-remove test-remove" sid="${test.id}"></i></a></#if>
-										<#if test.status.isStoppable()><a href="javascript:void(0);"><i title="<@spring.message "common.button.stop"/>" class="icon-stop test-stop" sid="${test.id}"></i></a></#if>
-									</td>
-								</tr> 
+										<a href="javascript:void(0)"><i title="<@spring.message "common.button.delete"/>"id="delete_${test.id}" style="display: none;" class="icon-remove test-remove" sid="${test.id}"></i></a>
+										<a href="javascript:void(0)"><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" style="display: none;" class="icon-stop test-stop" sid="${test.id}"></i></a>
+									</td>  
+								</tr>  
 							</#list> 
 						<#else>
 							<tr>
@@ -245,7 +245,7 @@
 			document.forms.listForm.submit();
 		}
 		
-		function updateStatus(id, status, icon, message) {
+		function updateStatus(id, status, icon, stoppable, deletable, message) {
 			var ballImg = $("#ball_" + id + " img");
 			if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) { 
 				ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
@@ -253,7 +253,16 @@
 			}
 			$("#ball_" + id).attr("data-original-title", status);
 			$("#ball_" + id).attr("data-content", message);
-			
+			if (stoppable == true) {
+				$("#stop_" + id).show();
+			} else {
+				$("#stop_" + id).hide();
+			}
+			if (deletable == true) {
+				$("#delete_" + id).show();
+			} else { 
+				$("#delete_" + id).hide();
+			}
 		}
 		// Wrap this function in a closure so we don't pollute the namespace
 		(function refreshContent() {
@@ -270,8 +279,8 @@
 			    data: {"ids": ids.join(",")},
 			    success: function(data) {
 			    	data = eval(data); 
-			    	for (var i = 0; i < data.length; i++) {
-			    		updateStatus(data[i].id, data[i].name, data[i].icon, data[i].message);
+			    	for (var i = 0; i < data.length; i++) { 
+			    		updateStatus(data[i].id, data[i].name, data[i].icon, data[i].stoppable, data[i].deletable, data[i].message);
 			    	}
 			    	setTimeout(refreshContent, 5000);
 			    }

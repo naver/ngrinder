@@ -109,7 +109,7 @@ public class PerfTestController extends NGrinderBaseController {
 		PageRequest pageReq = ((PageRequest) pageable);
 		Sort sort = pageReq == null ? null : pageReq.getSort();
 		if (sort == null && pageReq != null) {
-			sort = new Sort(Direction.DESC, "lastModifiedDate"); 
+			sort = new Sort(Direction.DESC, "lastModifiedDate");
 			pageable = new PageRequest(pageReq.getPageNumber(), pageReq.getPageSize(), sort);
 		}
 		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, onlyFinished, pageable);
@@ -256,6 +256,8 @@ public class PerfTestController extends NGrinderBaseController {
 											each.getProgressMessage() + "\n<b>"
 															+ each.getLastProgressMessage() + "</b>\n"
 															+ each.getLastModifiedDateToStr(), "\n", "<br/>"));
+			rtnMap.put(PARAM_STATUS_UPDATE_DELETABLE, each.getStatus().isDeletable());
+			rtnMap.put(PARAM_STATUS_UPDATE_STOPPABLE, each.getStatus().isStoppable());
 			statusList.add(rtnMap);
 		}
 		return JSONUtil.toJson(statusList);

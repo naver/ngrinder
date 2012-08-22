@@ -283,10 +283,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// after some seconds, will set it as finished.
 		if (singleConsoleInUse.isAllTestFinished() && startLastingTime > WAIT_TEST_START_SECOND) {
 			// stop target host monitor
-			monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
-			consoleManager.returnBackConsole(singleConsoleInUse);
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest,
 							((isAbormalFinishing(perfTest)) ? Status.STOP_ON_ERROR : Status.FINISHED), "");
+			monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
+			consoleManager.returnBackConsole(singleConsoleInUse);
 		}
 	}
 
