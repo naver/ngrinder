@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
@@ -73,8 +74,10 @@ import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.thread.Condition;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.mutable.MutableDouble;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.ReflectionUtil;
 import org.picocontainer.MutablePicoContainer;
@@ -109,7 +112,7 @@ public class SingleConsole implements Listener, SampleListener {
 
 	private File reportPath;
 	private NumberFormat formatter = new DecimalFormat("###.###");
-	private NumberFormat simpleFormatter = new DecimalFormat("###");
+	//private NumberFormat simpleFormatter = new DecimalFormat("###");
 
 	private Map<String, Object> statisticData;
 
@@ -439,19 +442,41 @@ public class SingleConsole implements Listener, SampleListener {
 		if (lastSampleStatistics != null) {
 			double tpsSum = 0;
 			double errors = 0;
-			double meanTestTime = 0;
+//			double meanTestTime = 0;
 
+			
+			
+			Map<String, Object> valueMap = new HashMap<String, Object>();
 			for (Map<String, Object> lastStatistic : lastSampleStatistics) {
+
 				tpsSum += (Double) lastStatistic.get("TPS");
 				errors += (Double) lastStatistic.get("Errors");
-				Double temp = (Double) lastStatistic.get("Mean_Test_Time_(ms)");
-				meanTestTime += temp != null ? temp : 0;
+//				Double temp = (Double) lastStatistic.get("Mean_Test_Time_(ms)");
+//				meanTestTime += temp != null ? temp : 0;
+				
+				for (Entry<String, Object> each : lastStatistic.entrySet()) {
+					Object val = valueMap.get(each.getKey());
+					if (val instanceof Double) {
+						//for debug, maybe there are some fields should not be sum up.
+						LOGGER.debug("Calculate sum for key:{} in statistic", each.getKey());
+						MutableDouble mutableDouble = (MutableDouble) val;
+						mutableDouble.add((Double) ObjectUtils.defaultIfNull(each.getValue(), 0D));
+						valueMap.put(each.getKey(), mutableDouble);
+					} else {
+						valueMap.put(each.getKey(), each.getValue());
+					}
+				}
 			}
-			
+
 			try {
-				writeReportData("tps_failed", errors);
-				writeReportData("tps_total", tpsSum);
-				writeReportData("response_time", meanTestTime);
+				
+			    for (Entry<String, Object> each : valueMap.entrySet()) {
+			    	writeReportData(each.getKey(), formatValue(each.getValue()));
+			    }
+				
+//				writeReportData("tps_failed", errors);
+//				writeReportData("tps_total", tpsSum);
+//				writeReportData("response_time", meanTestTime);
 			} catch (IOException e) {
 				LOGGER.error("Write report data failed : ", e);
 			}
@@ -506,15 +531,19 @@ public class SingleConsole implements Listener, SampleListener {
 				}
 
 				// Tests
-				Double tests = (Double) statistics.get("Tests");
-				Double errors = (Double) statistics.get("Errors");
-				statistics.put("TestsStr", simpleFormatter.format(tests));
-				statistics.put("ErrorsStr", simpleFormatter.format(errors));
+//				Double tests = (Double) statistics.get("Tests");
+//				Double errors = (Double) statistics.get("Errors");
+//				statistics.put("TestsStr", simpleFormatter.format(tests));
+//				statistics.put("ErrorsStr", simpleFormatter.format(errors));
+//				statistics.put("TestsStr", tests);
+//				statistics.put("ErrorsStr", errors);
 
-				Double lastTests = (Double) lastStatistics.get("Tests");
-				Double lastErrors = (Double) lastStatistics.get("Errors");
-				lastStatistics.put("TestsStr", simpleFormatter.format(lastTests));
-				lastStatistics.put("ErrorsStr", simpleFormatter.format(lastErrors));
+//				Double lastTests = (Double) lastStatistics.get("Tests");
+//				Double lastErrors = (Double) lastStatistics.get("Errors");
+//				lastStatistics.put("TestsStr", simpleFormatter.format(lastTests));
+//				lastStatistics.put("ErrorsStr", simpleFormatter.format(lastErrors));
+//				lastStatistics.put("TestsStr", lastTests);
+//				lastStatistics.put("ErrorsStr", lastErrors);
 
 				cumulativeStatistics.add(statistics);
 				lastSampleStatistics.add(lastStatistics);
@@ -530,10 +559,12 @@ public class SingleConsole implements Listener, SampleListener {
 							getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 		}
 
-		Double tests = (Double) totalStatistics.get("Tests");
-		Double errors = (Double) totalStatistics.get("Errors");
-		totalStatistics.put("TestsStr", simpleFormatter.format(tests));
-		totalStatistics.put("ErrorsStr", simpleFormatter.format(errors));
+//		Double tests = (Double) totalStatistics.get("Tests");
+//		Double errors = (Double) totalStatistics.get("Errors");
+//		totalStatistics.put("TestsStr", simpleFormatter.format(tests));
+//		totalStatistics.put("ErrorsStr", simpleFormatter.format(errors));
+//		totalStatistics.put("TestsStr", tests);
+//		totalStatistics.put("ErrorsStr", errors);
 
 		result.put("totalStatistics", totalStatistics);
 		result.put("cumulativeStatistics", cumulativeStatistics);
@@ -584,14 +615,15 @@ public class SingleConsole implements Listener, SampleListener {
 		TOO_MANY_ERRORS
 	}
 
-	public void writeReportData(String name, double value) throws IOException {
+	public void writeReportData(String name, String value) throws IOException {
 		File filename = new File(this.reportPath, name + ".data");
 		FileWriter write = null;
 		BufferedWriter bw = null;
 		try {
 			write = new FileWriter(filename, true);
 			bw = new BufferedWriter(write);
-			bw.write(formatter.format(value));
+			//bw.write(formatter.format(value));
+			bw.write(value);
 			bw.newLine();
 			bw.flush();
 		} catch (Exception e) {
@@ -601,6 +633,13 @@ public class SingleConsole implements Listener, SampleListener {
 			IOUtils.closeQuietly(write);
 			IOUtils.closeQuietly(bw);
 		}
+	}
+	
+	private String formatValue(Object val) {
+		if (val instanceof Double) {
+			return formatter.format(val);
+		}
+		return String.valueOf(val);
 	}
 
 	public File getReportPath() {

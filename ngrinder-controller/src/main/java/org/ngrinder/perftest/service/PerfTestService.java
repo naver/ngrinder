@@ -613,9 +613,7 @@ public class PerfTestService implements NGrinderConstants {
 		int lineNumber;
 		File targetFile = null;
 		targetFile = new File(reportFolder, dataType.toLowerCase() + DATA_FILE_EXTENSION);
-		if (!targetFile.exists()) {
-			return reportData;
-		}
+		//if file not found, will throw exception and catched by controller.
 		LineNumberReader lnr = null;
 		try {
 			lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(targetFile)));

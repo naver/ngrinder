@@ -991,12 +991,12 @@ div.chart {
 	          dataType: 'json',
 	          data: {
 	              'testId': $("#testId").val(),
-	              'dataType': 'tps_total',
+	              'dataType': 'TPS',
 	              'imgWidth': $("#tpsDiv").width()
 	          },
 	          success: function (res) {
 	              if (res.success) {
-	                  drawChart('TPS', 'tpsDiv', res.tps_total);
+	                  drawChart('TPS', 'tpsDiv', res.TPS);
 	                  return true;
 	              } else {
 	                  showErrorMsg("Get report data failed.");
@@ -1086,6 +1086,9 @@ div.chart {
 	  }
 
 	  function updateStatus(id, status, icon, deletable, stoppable, message) {
+		  if(status == "FINISHED") {
+			  isFinished = true;
+		  }
 		  if ($("#testStatus").val() == status) {
 		  	return;
 		  }
@@ -1099,7 +1102,7 @@ div.chart {
 	          ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
           }
 	     
-		  if(status =="TESTING") {
+		  if(status == "TESTING") {
 		   		displayCfgAndTestRunning();
 		  } else if(status =="FINISHED") { 
 		   		displayCfgAndTestReport();
@@ -1108,14 +1111,16 @@ div.chart {
 		  }
 	    
 	  }
-
+	
+	  var isFinished = false;
 	  // Wrap this function in a closure so we don't pollute the namespace
 	  (function refreshContent() {
 	      var ids = [];
 	      var testId = $('#testId').val();
-	      if (testId == "") {
+	      if (testId == "" || isFinished) {
 	          return;
 	      }
+
 	      $.ajax({
 	          url: '${req.getContextPath()}/perftest/updateStatus',
 	          type: 'GET',

@@ -310,7 +310,7 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/getReportData")
 	public @ResponseBody
-	String getPerfTestReportData(User user, ModelMap model, @RequestParam long testId,
+	String getReportData(User user, ModelMap model, @RequestParam long testId,
 					@RequestParam(required = true) String dataType, @RequestParam int imgWidth) {
 		checkTestPermissionAndGet(user, testId);
 		List<Object> reportData = null;
@@ -320,7 +320,8 @@ public class PerfTestController extends NGrinderBaseController {
 		for (String dt : dataTypes) {
 			try {
 				reportData = perfTestService.getReportData(testId, dt, imgWidth);
-				rtnMap.put(dt, reportData);
+				String rtnType = dt.replace("(", "").replace(")", "");
+				rtnMap.put(rtnType, reportData);
 			} catch (Exception e) {
 				// just skip if one report data doesn't exist.
 				rtnMap.put(dt, "Get report data failed. type: " + dt);

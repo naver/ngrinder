@@ -130,7 +130,7 @@
 	           </div>
 			    <div id="performanceDiv">
     				<div class="chart" id="tpsDiv"></div>
-    				<div class="chart" id="rpsDiv"></div>
+    				<div class="chart" id="meanTimeDiv"></div>
     				<div class="chart" id="errorDiv"></div>
 				</div>
 				<div id="monitorDiv" style="display:none">
@@ -189,14 +189,14 @@
                 url: "${req.getContextPath()}/perftest/getReportData",
                 dataType:'json',
                 data: {'testId': $("#testId").val(),
-                       'dataType':'tps_total,tps_failed,vuser,response_time',
+                       'dataType':'TPS,Errors,Mean_Test_Time_(ms)',
                        'imgWidth':700},
                 success: function(res) {
                     if (res.success) {
-                        drawChart('Transactions Per Second', 'tpsDiv', res.tps_total);
-                        drawChart('Responses Per Second', 'rpsDiv', res.response_time);
+                        drawChart('Transactions Per Second', 'tpsDiv', res.TPS);
+                        drawChart('Mean Time', 'meanTimeDiv', res.Mean_Test_Time_ms);
                         //drawChart('Running Vusers', 'vuserDiv', res.vuser);
-                        drawChart('Errors Per Second', 'errorDiv', res.tps_failed);
+                        drawChart('Errors Per Second', 'errorDiv', res.Errors);
                         return true;
                     } else {
                         showErrorMsg("Get report data failed.");
