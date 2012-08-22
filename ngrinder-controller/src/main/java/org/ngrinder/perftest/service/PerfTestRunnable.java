@@ -39,6 +39,7 @@ import java.util.Set;
 
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.ConsoleShutdownListener;
+import net.grinder.SingleConsole.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
 
@@ -107,7 +108,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// If agent is not enough...
 		int size = agentManager.getAllFreeAgents().size();
 		if (runCandidate.getAgentCount() > size) {
-			markProgress(runCandidate,
+			perfTestService.markProgress(runCandidate,
 							"The test is tried to execute but there is not enough free agents.\n- Current free agent size : "
 											+ size + "  / Requested : " + runCandidate.getAgentCount() + "\n");
 			return;
@@ -115,24 +116,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 		// In case of too many trial, cancel running.
 		if (runCandidate.getTestTrialCount() > PERFTEST_MAXIMUM_TRIAL_COUNT) {
-			LOG.error("The {} test is canceled because it has too many test execution errors",
-							runCandidate.getTestName());
-			runCandidate.setTestErrorCause(Status.READY);
-			markProgress(runCandidate, "The test is canceled because it has too many test execution errors");
-			perfTestService.savePerfTest(runCandidate, CANCELED);
+			perfTestService.markPerfTestError(runCandidate,
+							"The test is tried to execute but there is not enough free agents.\n- Current free agent size : "
+											+ size + "  / Requested : " + runCandidate.getAgentCount() + "\n");
 			return;
 		}
 		doTest(runCandidate);
-	}
-
-	void markProgress(PerfTest perfTest, String message) {
-		perfTest.addProgressMessage(message);
-		perfTestService.savePerfTest(perfTest);
-	}
-
-	void markProgressAndStatus(PerfTest perfTest, String message, Status status) {
-		perfTest.setStatus(status);
-		markProgress(perfTest, message);
 	}
 
 	/**
@@ -155,52 +144,9 @@ public class PerfTestRunnable implements NGrinderConstants {
 			runTestOn(perfTest, grinderProperties, singleConsole);
 		} catch (Exception e) {
 			// In case of error, mark the occurs error on perftest.
-			markPerfTestError(perfTest, e);
+			LOG.error("Error while excuting test", e);
+			perfTestService.markPerfTestError(perfTest, e.getMessage());
 		}
-	}
-
-	/**
-	 * Mark test error on {@link PerfTest} instance
-	 * 
-	 * @param perfTest
-	 *            {@link PerfTest}
-	 * @param e
-	 *            exception occurs.
-	 */
-	void markPerfTestError(PerfTest perfTest, Exception e) {
-		markPerfTestError(perfTest, e.getMessage());
-	}
-
-	/**
-	 * Mark test error on {@link PerfTest} instance
-	 * 
-	 * @param perfTest
-	 *            {@link PerfTest}
-	 * @param reason
-	 *            error reason
-	 */
-	void markPerfTestError(PerfTest perfTest, String reason) {
-		// Leave last status as test error cause
-		perfTest.setTestErrorCause(perfTest.getStatus());
-		perfTest.setTestErrorStackTrace(reason);
-		perfTestService.savePerfTest(perfTest, Status.ABNORMAL_TESTING);
-	}
-
-	/**
-	 * Mark test error on {@link PerfTest} instance
-	 * 
-	 * @param perfTest
-	 *            {@link PerfTest}
-	 * @param singleConsole
-	 *            console in use
-	 * @param e
-	 *            exception occurs.
-	 */
-	void markAbromalTermination(PerfTest perfTest, String reason) {
-		// Leave last status as test error cause
-		perfTest.setTestErrorCause(perfTest.getStatus());
-		perfTest.setTestErrorStackTrace(reason);
-		perfTestService.savePerfTest(perfTest, Status.ABNORMAL_TESTING);
 	}
 
 	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties,
@@ -218,43 +164,42 @@ public class PerfTestRunnable implements NGrinderConstants {
 		monitorDataService.addMonitorTarget("PerfTest-" + perfTest.getId(), agents);
 
 		// Run test
-		perfTestService.savePerfTest(perfTest, START_TESTING);
+		perfTestService.changePerfTestStatus(perfTest, START_TESTING);
 		singleConsole.addListener(new ConsoleShutdownListener() {
 			@Override
-			public void readyToStop() {
-				markAbromalTermination(perfTest, "Too low TPS");
+			public void readyToStop(StopReason stopReason) {
+				perfTestService.markAbromalTermination(perfTest, stopReason);
 			}
 		});
 		grinderProperties.setProperty(GRINDER_PROP_TEST_ID, "test_" + perfTest.getId());
 		long startTime = singleConsole.startTest(grinderProperties);
-		perfTest.setStartTime(new Date(startTime));
-		perfTestService.savePerfTest(perfTest, TESTING);
+		perfTestService.setRecodingStarting(perfTest, startTime);
+		perfTestService.changePerfTestStatus(perfTest, TESTING);
 	}
 
 	void distributeFileOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		// Distribute files
-		perfTestService.savePerfTest(perfTest, DISTRIBUTE_FILES);
+		perfTestService.changePerfTestStatus(perfTest, DISTRIBUTE_FILES);
 		singleConsole.distributeFiles(perfTestService.prepareDistribution(perfTest));
-		perfTestService.savePerfTest(perfTest, DISTRIBUTE_FILES_FINISHED);
+		perfTestService.changePerfTestStatus(perfTest, DISTRIBUTE_FILES_FINISHED);
 	}
 
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
-		perfTestService.savePerfTest(perfTest, START_AGENTS);
+		perfTestService.changePerfTestStatus(perfTest, START_AGENTS);
 		agentManager.runAgent(singleConsole, grinderProperties, perfTest.getAgentCount());
 		singleConsole.waitUntilAgentConnected(perfTest.getAgentCount());
-		perfTestService.savePerfTest(perfTest, START_AGENTS_FINISHED);
+		perfTestService.changePerfTestStatus(perfTest, START_AGENTS_FINISHED);
 	}
 
 	SingleConsole startConsole(PerfTest perfTest) {
-		perfTestService.savePerfTest(perfTest, START_CONSOLE);
+		perfTestService.changePerfTestStatus(perfTest, START_CONSOLE);
 		// get available consoles.
 		ConsoleProperties consoleProperty = perfTestService.createConsoleProperties(perfTest);
 		SingleConsole singleConsole = consoleManager.getAvailableConsole(consoleProperty);
 		// increase trial count
-		perfTest.setTestTrialCount(perfTest.getTestTrialCount() + 1);
-		perfTest.setPort(singleConsole.getConsolePort());
 		singleConsole.start();
-		perfTestService.savePerfTest(perfTest, START_CONSOLE_FINISHED);
+		perfTestService.markPerfTestConsoleStart(perfTest, singleConsole.getConsolePort(),
+						perfTest.getTestTrialCount());
 		return singleConsole;
 	}
 
@@ -288,9 +233,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            {@link SingleConsole} which is being using for {@link PerfTest}
 	 */
 	public void doStop(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		perfTest.setFinishTime(new Date(System.currentTimeMillis()));
-		perfTest = perfTestService.updatePerfTestAfterTestFinish(perfTest);
-		markProgressAndStatus(perfTest, "Stop requested by user", CANCELED);
+		perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED,
+						"Stop requested by user");
 		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 		if (singleConsoleInUse != null) {
 			consoleManager.returnBackConsole(singleConsoleInUse);
@@ -307,7 +251,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            {@link SingleConsole} which is being using for {@link PerfTest}
 	 */
 	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		markPerfTestError(perfTest, perfTest.getTestErrorStackTrace());
+		perfTestService.markProgressAndStatus(perfTest, Status.STOP_ON_ERROR, "Stoped by error");
 		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 		if (singleConsoleInUse != null) {
 			// need to finish test as error
@@ -329,7 +273,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		if (singleConsoleInUse == null) {
 			LOG.error("There is no console found for test:{}", perfTest);
 			// need to finish test as error
-			perfTestService.savePerfTest(perfTest, Status.STOP_ON_ERROR);
+			perfTestService.changePerfTestStatus(perfTest, Status.STOP_ON_ERROR);
 			monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 			return;
 		}
@@ -339,15 +283,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// after some seconds, will set it as finished.
 		if (singleConsoleInUse.isAllTestFinished() && startLastingTime > WAIT_TEST_START_SECOND) {
 			// stop target host monitor
+			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest,
+							((isAbormalFinishing(perfTest)) ? Status.STOP_ON_ERROR : Status.FINISHED), "");
 			monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
-			perfTest.setFinishTime(new Date(System.currentTimeMillis()));
-			PerfTest resultTest = perfTestService.updatePerfTestAfterTestFinish(perfTest);
 			consoleManager.returnBackConsole(singleConsoleInUse);
-			if (isAbormalFinishing(perfTest)) {
-				perfTestService.savePerfTest(resultTest, Status.STOP_ON_ERROR);
-			} else {
-				perfTestService.savePerfTest(resultTest, Status.FINISHED);
-			}
 		}
 	}
 

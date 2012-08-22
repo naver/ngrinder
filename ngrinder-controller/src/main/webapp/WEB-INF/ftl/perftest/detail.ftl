@@ -85,13 +85,9 @@ div.chart {
 							<div class="controls">
 								<input class="span3 required" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
 								<#if test??> 
-									<span
-										<#if test.status == 'STOP_ON_ERROR'> 
-											rel="popover" data-content="Error on ${test.testErrorCause} phase. ${(test.testErrorStackTrace)!?replace('\n', '<br/>')?html}"
-											data-original-title="${test.status}" type="toggle" 
-										<#else> rel="popover" data-content="${test.createdDate}"
-											data-original-title="${test.status}" type="toggle" 
-										</#if> > 
+									<span id="teststatus_pop_over"
+										rel="popover" data-content='${"${test.progressMessage}/n${test.lastProgressMessage}"?replace('/n', '<br>')?html}'  
+											data-original-title="${test.status}" type="toggle">
 										<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
 									</span> 
 								</#if>
@@ -228,8 +224,7 @@ div.chart {
 											<div class="controls">
 												<div class="input-append">
 													<input type="text" id="runCount" class="input span2" number_limit="${(maxRunCount)}" name="runCount"
-														value="${(test.runCount)!0}">
-													<span class="add-on"><@spring.message "perfTest.configuration.max"/> ${(maxRunCount)}</span>
+														value="${(test.runCount)!0}"><span class="add-on"><@spring.message "perfTest.configuration.max"/> ${(maxRunCount)}</span>
 												</div>
 											</div>
 										</div>
@@ -445,7 +440,8 @@ div.chart {
 							</div>
 							<div class="span7">
 								<div class="page-header">
-									<h4><@spring.message "perfTest.testRunning.tpsStatistics"/></h4>
+									<h4><@spring.message "perfTest.testRunning.tpsStatistics"/> <span class="badge badge-success pull-center">Running Time <data id="running_time"></data></span></h4>
+								   
 								</div>
 								<div id="runningTps" class="chart" style="width: 530px; height: 195px"></div>
 								<div class="tabbable">
@@ -718,7 +714,13 @@ div.chart {
 	          $elem.remove();
 	          $("#hostsHidden").val("");
 	      });
-
+	      
+	      $("#saveScheduleBtn").click(function () {
+	          if (!$("#testContentForm").valid()) {
+	              return false;
+	          }
+	      });
+	      
 	      $("#saveTestBtn").click(function () {
 	          if (!$("#testContentForm").valid()) {
 	              return false;
@@ -744,14 +746,14 @@ div.chart {
 
 	      $("#addScheduleBtn").click(function () {
 	          if (checkEmptyByID("sDateInput")) {
-	              $("#scheduleModal small").html("Please select date before schedule.");
+	              $("#scheduleModal small").html("<@spring.message "perfTest.detail.message.setScheduleDate"/>");
 	              return;
 	          }
 
 	          var timeStr = $("#sDateInput").val() + " " + $("#shSelect").val() + ":" + $("#smSelect").val() + ":0";
 	          var scheduledTime = new Date(timeStr.replace(/-/g, "/"));
 	          if (new Date() > scheduledTime) {
-	              $("#scheduleModal small").html("Schedule time must be later than now.");
+	              $("#scheduleModal small").html("<@spring.message "perfTest.detail.message.errScheduleDate"/>");
 	              return;
 	          }
 	          $("#scheduleInput").val(scheduledTime);
@@ -762,7 +764,7 @@ div.chart {
 	      });
 
 
-
+          
 	      $('#sDateInput').datepicker({
 	          format: 'yyyy-mm-dd'
 	      });
@@ -809,8 +811,8 @@ div.chart {
 	      });
 
 	      $("#vuserPerAgent").change(function () {
-	          if ($("#vuserPerAgent").valid()) {
-	              updateVuserPolicy();
+	          if ($(this).valid()) {
+	          	updateVuserPolicy();
 	          }
 	      });
 
@@ -843,6 +845,12 @@ div.chart {
 
 	      updateScriptResources();
 	      validateHostForm();
+	      $("#durationSlider").mousedown(function() {
+	    	  $("#durationChkbox").click();
+	      });
+	      $("#runCount").focus(function() {
+	    	  $("#runcountChkbox").click();
+	      });
 	  });
 
 	  function updateVuserTotal() {
@@ -854,7 +862,8 @@ div.chart {
 	  function updateScriptResources() {
 	      $('#messageDiv').ajaxSend(function (e, xhr, settings) {
 	          var url = settings.url;
-	          if (url.indexOf("refresh") == 0) showInformation("Updating script resources...");
+	          if (url.indexOf("refresh") == 0) 
+	          	showInformation("<@spring.message "perfTest.detail.message.updateResource"/>");
 	      });
 	      $.ajax({
 	          url: "${req.getContextPath()}/perftest/getResourcesOnScriptFolder",
@@ -872,7 +881,7 @@ div.chart {
 	              $("#scriptResources").html(html);
 	          },
 	          error: function () {
-	              showErrorMsg("Error!");
+	              showErrorMsg("<@spring.message "common.error.error"/>");
 	              return false;
 	          }
 	      });
@@ -881,7 +890,7 @@ div.chart {
 	  function updateVuserPolicy() {
 	      updateVuserTotal();
 	      $('#messageDiv').ajaxSend(function () {
-	          showInformation("Updating vuser policy from server...");
+	          showInformation("<@spring.message "perfTest.detail.message.calculatePolicy"/>");
 	      });
 
 	      $.ajax({
@@ -904,7 +913,7 @@ div.chart {
 	                  updateChart();
 	                  return true;
 	              } else {
-	                  showErrorMsg("Update vuser failed:" + res.message);
+	                  showErrorMsg("<@spring.message "perfTest.detail.error.updateVuser"/>" + res.message);
 	                  return false;
 	              }
 	          },
@@ -931,6 +940,14 @@ div.chart {
 	      var durationH = parseInt((durationInSec % (60 * 60 * 24)) / 3600);
 	      var durationM = parseInt((durationInSec % 3600) / 60);
 	      var durationS = durationInSec % 60;
+	      
+	      // Make 1 min as default
+	      if (durationH == 0 && durationM == 0 && durationS == 0) {
+	    	  $("#hSelect").val(0);
+	    	  $("#mSelect").val(1);
+	    	  $("#sSelect").val(0);
+	    	  return;
+	      } 
 	      $("#hSelect").val(durationH);
 	      $("#mSelect").val(durationM);
 	      $("#sSelect").val(durationS);
@@ -974,12 +991,12 @@ div.chart {
 	          dataType: 'json',
 	          data: {
 	              'testId': $("#testId").val(),
-	              'dataType': 'tps_total',
+	              'dataType': 'TPS',
 	              'imgWidth': $("#tpsDiv").width()
 	          },
 	          success: function (res) {
 	              if (res.success) {
-	                  drawChart('TPS', 'tpsDiv', res.tps_total);
+	                  drawChart('TPS', 'tpsDiv', res.TPS);
 	                  return true;
 	              } else {
 	                  showErrorMsg("Get report data failed.");
@@ -1007,15 +1024,14 @@ div.chart {
 
 	              $("#process_data").text(refreshDiv.find("#input_process").val());
 	              $("#thread_data").text(refreshDiv.find("#input_thread").val());
-
+	              
+	              $("#running_time").text(showRunTime(refreshDiv.find("#test_time").val()));
 
 	              if (test_tps_data.getSize() == 60) {
 	                  test_tps_data.deQueue();
 	              }
 
 	              test_tps_data.enQueue(refreshDiv.find("#tpsChartData").val());
-
-	              //alert(test_tps_data.aElement);
 
 	              showChart('runningTps', test_tps_data.toString());
 	          } else {
@@ -1028,6 +1044,20 @@ div.chart {
 	          }
 	      });
 	  }
+	  
+	  function showRunTime(s) {
+			if (s < 60) {
+				return "" + s + "s";
+			}
+			if (s < 3600) {
+				return "" + parseInt(s/60) + "m " + (s%60) + "s";
+			}
+			if (s < 86400) {
+				return "" + parseInt(s/3600) + "h " + parseInt(s%3600/60) + "m " + (s%3600%60) + "s";
+			}
+			
+			return "" + parseInt(s/86400) + "d "  + parseInt(s%86400/3600) + "h " + parseInt(s%86400%3600/60) + "m " + (s%86400%3600%60) + "s";
+	   }
 
 	  function showChart(containerId, data) {
 	      if (jqplotObj) {
@@ -1055,29 +1085,42 @@ div.chart {
 	      });
 	  }
 
-	  function updateStatus(id, status, icon, message) {
-		  
+	  function updateStatus(id, status, icon, deletable, stoppable, message) {
+		  if(status == "FINISHED") {
+			  isFinished = true;
+		  }
+		  if ($("#testStatus").val() == status) {
+		  	return;
+		  }
 	      var ballImg = $("#testStatus_img_id");
+	      
+		  $("#teststatus_pop_over").attr("data-original-title", status);
+		  $("#teststatus_pop_over").attr("data-content", message);
+			
+	      $("#testStatus").val(status);
 	      if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
 	          ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
-	          
-	          if((status !="TESTING")&&(status !="FINISHED"))
-		   		displayCfgOnly();
-			  if(status =="TESTING")
-			   		displayCfgAndTestRunning();
-			 
-			  if(status =="FINISHED")
-			   		displayCfgAndTestReport();
-	      }
+          }
+	     
+		  if(status == "TESTING") {
+		   		displayCfgAndTestRunning();
+		  } else if(status =="FINISHED") { 
+		   		displayCfgAndTestReport();
+		  } else {
+		      	displayCfgOnly();
+		  }
+	    
 	  }
-
+	
+	  var isFinished = false;
 	  // Wrap this function in a closure so we don't pollute the namespace
 	  (function refreshContent() {
 	      var ids = [];
 	      var testId = $('#testId').val();
-	      if (testId == "") {
+	      if (testId == "" || isFinished) {
 	          return;
 	      }
+
 	      $.ajax({
 	          url: '${req.getContextPath()}/perftest/updateStatus',
 	          type: 'GET',
@@ -1087,7 +1130,7 @@ div.chart {
 	          success: function (data) {
 	              data = eval(data);
 	              for (var i = 0; i < data.length; i++) {
-	                  updateStatus(data[i].id, data[i].name, data[i].icon, data[i].message);
+	                  updateStatus(data[i].id, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
 	              }
 	          },
 	          complete: function () {

@@ -62,13 +62,14 @@ public class MonitorDataRepository implements MonitorRecoder {
 	public void recoderJavaInfo(String key, JavaInfo javaInfo, MonitorAgentInfo agentInfo) {
 		checkNotNull(javaInfo);
 		List<JavaInfoForEach> javaInfoForEachs = javaInfo.getJavaInfoForEach();
-		JavaDataModel javaDataModel = new JavaDataModel();
+		long collTime = DateUtil.getCollectTimeInLong(new Date(javaInfo.getCollectTime()));
 		for (JavaInfoForEach javaInfoForEach : javaInfoForEachs) {
+			JavaDataModel javaDataModel = new JavaDataModel();
+			javaDataModel.setCollectTime(collTime);
 			javaDataModel.setKey(agentInfo.getIp());
 			javaDataModel.setIp(agentInfo.getIp());
 			javaDataModel.setPort(agentInfo.getPort());
 			javaDataModel.setDisplayName(javaInfoForEach.getDisplayName());
-			javaDataModel.setCollectTime(DateUtil.getCollectTimeInLong(new Date(javaInfo.getCollectTime())));
 			javaDataModel.setHeapMaxMemory(javaInfoForEach.getHeapMemory().getMax());
 			javaDataModel.setHeapUsedMemory(javaInfoForEach.getHeapMemory().getUsed());
 			javaDataModel.setNonHeapMaxMemory(javaInfoForEach.getNonHeapMemory().getMax());
@@ -86,21 +87,10 @@ public class MonitorDataRepository implements MonitorRecoder {
 	@Override
 	public void recoderSystemInfo(String key, SystemInfo systemInfo, MonitorAgentInfo agentInfo) {
 		checkNotNull(systemInfo);
-		SystemDataModel systemDataModel = new SystemDataModel();
+		SystemDataModel systemDataModel = new SystemDataModel(systemInfo);
 		systemDataModel.setKey(agentInfo.getIp());
 		systemDataModel.setIp(agentInfo.getIp());
 		systemDataModel.setPort(agentInfo.getPort());
-		systemDataModel.setSystem(systemInfo.getSystem().toString());
-		systemDataModel.setCollectTime(DateUtil.getCollectTimeInLong(new Date(systemInfo.getCollectTime())));
-		systemDataModel.setTotalCpuValue(systemInfo.getTotalCpuValue());
-		systemDataModel.setIdleCpuValue(systemInfo.getIdlecpu());
-		systemDataModel.setLoadAvg1(systemInfo.getLoadAvgs()[0]);
-		systemDataModel.setLoadAvg5(systemInfo.getLoadAvgs()[1]);
-		systemDataModel.setLoadAvg15(systemInfo.getLoadAvgs()[2]);
-		systemDataModel.setFreeMemory(systemInfo.getFreeMemory());
-		systemDataModel.setTotalMemory(systemInfo.getTotalMemory());
-		systemDataModel.setCpuUsedPercentage(systemInfo.getCPUUsedPercentage());
-
 		systemMonitorRepository.save(systemDataModel);
 
 	}

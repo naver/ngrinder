@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
@@ -73,8 +74,10 @@ import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.thread.Condition;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.mutable.MutableDouble;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.ReflectionUtil;
 import org.picocontainer.MutablePicoContainer;
@@ -90,7 +93,8 @@ public class SingleConsole implements Listener, SampleListener {
 	private final ConsoleProperties consoleProperties;
 	private Thread thread;
 	private ConsoleFoundationEx consoleFoundation;
-	public static final Resources RESOURCE = new ResourcesImplementation("net.grinder.console.common.resources.Console");
+	public static final Resources RESOURCE = new ResourcesImplementation(
+					"net.grinder.console.common.resources.Console");
 	public static final Logger LOGGER = LoggerFactory.getLogger(RESOURCE.getString("shortTitle"));
 
 	private Condition m_eventSyncCondition = new Condition();
@@ -103,11 +107,12 @@ public class SingleConsole implements Listener, SampleListener {
 	private SampleModelViews modelView;
 	private long startTime = 0;
 	private Date TPS_LESSTHAN_ZREO_TIME;
+	private Date ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME;
 	private final ListenerSupport<ConsoleShutdownListener> m_shutdownListeners = new ListenerSupport<ConsoleShutdownListener>();
 
 	private File reportPath;
 	private NumberFormat formatter = new DecimalFormat("###.###");
-	private NumberFormat simpleFormatter = new DecimalFormat("###");
+	//private NumberFormat simpleFormatter = new DecimalFormat("###");
 
 	private Map<String, Object> statisticData;
 
@@ -151,7 +156,8 @@ public class SingleConsole implements Listener, SampleListener {
 		try {
 			this.getConsoleProperties().setConsoleHost(ip);
 			this.getConsoleProperties().setConsolePort(port);
-			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties, m_eventSyncCondition);
+			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties,
+							m_eventSyncCondition);
 			sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 			sampleModel.addTotalSampleListener(this);
 			modelView = getConsoleComponent(SampleModelViews.class);
@@ -189,8 +195,8 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	public String getConsoleHost() {
 		try {
-			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress.getLocalHost()
-					.getHostAddress());
+			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress
+							.getLocalHost().getHostAddress());
 		} catch (UnknownHostException e) {
 			return "";
 		}
@@ -241,7 +247,7 @@ public class SingleConsole implements Listener, SampleListener {
 
 	public int getAllAttachedAgentsCount() {
 		return ((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class))
-				.getNumberOfLiveAgents();
+						.getNumberOfLiveAgents();
 	}
 
 	/**
@@ -252,10 +258,9 @@ public class SingleConsole implements Listener, SampleListener {
 	public List<AgentIdentity> getAllAttachedAgents() {
 		final List<AgentIdentity> agentIdentities = new ArrayList<AgentIdentity>();
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(
-				ReflectionUtil.getFieldValue(
-						(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
-						"m_agentNumberMap"),
-				"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
+						ReflectionUtil.getFieldValue((ProcessControlImplementation) consoleFoundation
+										.getComponent(ProcessControl.class), "m_agentNumberMap"),
+						"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
 			public void objectAndNumber(Object object, int number) {
 				agentIdentities.add((AgentIdentity) object);
@@ -371,12 +376,12 @@ public class SingleConsole implements Listener, SampleListener {
 			}
 		}
 		throw new NGrinderRuntimeException("Connection is not completed. processReport is "
-				+ ToStringBuilder.reflectionToString(processReports));
+						+ ToStringBuilder.reflectionToString(processReports));
 	}
 
 	/**
-	 * Check all test is finished. To be safe, this counts thread count and not finished workprocess. If one of them is
-	 * 0, It thinks test is finished.
+	 * Check all test is finished. To be safe, this counts thread count and not finished
+	 * workprocess. If one of them is 0, It thinks test is finished.
 	 * 
 	 * @return true if finished
 	 */
@@ -395,7 +400,7 @@ public class SingleConsole implements Listener, SampleListener {
 		return notFinishedWorkerCount == 0 || workingThreadNum == 0;
 	}
 
-	public void addTpsValue(double newValue) {
+	public void setTpsValue(double newValue) {
 		tpsValue = newValue;
 	}
 
@@ -415,10 +420,10 @@ public class SingleConsole implements Listener, SampleListener {
 			if (TPS_LESSTHAN_ZREO_TIME == null) {
 				TPS_LESSTHAN_ZREO_TIME = new Date();
 			} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= 60000) {
-				LOGGER.warn("Test has been forced stop because of tps is less than 0.001 and sustain more than one minitue.");
+				LOGGER.warn("Test has been forced to stop because of tps is less than 0.001 and sustain more than one minitue.");
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
 					public void inform(ConsoleShutdownListener listener) {
-						listener.readyToStop();
+						listener.readyToStop(StopReason.TOO_LOW_TPS);
 					}
 				});
 
@@ -426,33 +431,66 @@ public class SingleConsole implements Listener, SampleListener {
 		} else {
 			TPS_LESSTHAN_ZREO_TIME = null;
 			// only if tps value is not too small ,It should be displayed
-			addTpsValue(tps);
 		}
+		setTpsValue(tps);
 
 		statisticData = this.getStatistics();
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) statisticData
-				.get("lastSampleStatistics");
+						.get("lastSampleStatistics");
 
 		if (lastSampleStatistics != null) {
 			double tpsSum = 0;
 			double errors = 0;
-			double meanTestTime = 0;
+//			double meanTestTime = 0;
 
+			
+			
+			Map<String, Object> valueMap = new HashMap<String, Object>();
 			for (Map<String, Object> lastStatistic : lastSampleStatistics) {
+
 				tpsSum += (Double) lastStatistic.get("TPS");
 				errors += (Double) lastStatistic.get("Errors");
-				Double temp = (Double) lastStatistic.get("Mean_Test_Time_(ms)");
-
-				meanTestTime += temp != null ? temp : 0;
+//				Double temp = (Double) lastStatistic.get("Mean_Test_Time_(ms)");
+//				meanTestTime += temp != null ? temp : 0;
+				
+				for (Entry<String, Object> each : lastStatistic.entrySet()) {
+					Object val = valueMap.get(each.getKey());
+					if (val instanceof Double) {
+						//for debug, maybe there are some fields should not be sum up.
+						LOGGER.debug("Calculate sum for key:{} in statistic", each.getKey());
+						MutableDouble mutableDouble = (MutableDouble) val;
+						mutableDouble.add((Double) ObjectUtils.defaultIfNull(each.getValue(), 0D));
+						valueMap.put(each.getKey(), mutableDouble);
+					} else {
+						valueMap.put(each.getKey(), each.getValue());
+					}
+				}
 			}
 
 			try {
-				writeReportData("tps_failed", errors);
-				writeReportData("tps_total", tpsSum);
-				writeReportData("response_time", meanTestTime);
+				
+			    for (Entry<String, Object> each : valueMap.entrySet()) {
+			    	writeReportData(each.getKey(), formatValue(each.getValue()));
+			    }
+				
+//				writeReportData("tps_failed", errors);
+//				writeReportData("tps_total", tpsSum);
+//				writeReportData("response_time", meanTestTime);
 			} catch (IOException e) {
 				LOGGER.error("Write report data failed : ", e);
+			}
+			if (tpsSum / 2 < errors) {
+				if (ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME == null) {
+					ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME = new Date();
+				} else if (new Date().getTime() - ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME.getTime() >= 10000) {
+					LOGGER.warn("Test has been forced to stop because of error is more than half of total tps and sustain more than ten second.");
+					getListeners().apply(new Informer<ConsoleShutdownListener>() {
+						public void inform(ConsoleShutdownListener listener) {
+							listener.readyToStop(StopReason.TOO_MANY_ERRORS);
+						}
+					});
+				}
 			}
 		}
 
@@ -463,6 +501,8 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	private Map<String, Object> getStatistics() {
 		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("test_time", (new Date().getTime() - getStartTime()) / 1000);
+
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
 		ExpressionView[] views = modelView.getCumulativeStatisticsView().getExpressionViews();
@@ -484,21 +524,26 @@ public class SingleConsole implements Listener, SampleListener {
 																// expressionView
 																// == null?
 					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-							getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
-					lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-							getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
+									getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
+					lastStatistics.put(
+									expressionView.getDisplayName().replaceAll("\\s+", "_"),
+									getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
 				}
 
 				// Tests
-				Double tests = (Double) statistics.get("Tests");
-				Double errors = (Double) statistics.get("Errors");
-				statistics.put("TestsStr", simpleFormatter.format(tests));
-				statistics.put("ErrorsStr", simpleFormatter.format(errors));
+//				Double tests = (Double) statistics.get("Tests");
+//				Double errors = (Double) statistics.get("Errors");
+//				statistics.put("TestsStr", simpleFormatter.format(tests));
+//				statistics.put("ErrorsStr", simpleFormatter.format(errors));
+//				statistics.put("TestsStr", tests);
+//				statistics.put("ErrorsStr", errors);
 
-				Double lastTests = (Double) lastStatistics.get("Tests");
-				Double lastErrors = (Double) lastStatistics.get("Errors");
-				lastStatistics.put("TestsStr", simpleFormatter.format(lastTests));
-				lastStatistics.put("ErrorsStr", simpleFormatter.format(lastErrors));
+//				Double lastTests = (Double) lastStatistics.get("Tests");
+//				Double lastErrors = (Double) lastStatistics.get("Errors");
+//				lastStatistics.put("TestsStr", simpleFormatter.format(lastTests));
+//				lastStatistics.put("ErrorsStr", simpleFormatter.format(lastErrors));
+//				lastStatistics.put("TestsStr", lastTests);
+//				lastStatistics.put("ErrorsStr", lastErrors);
 
 				cumulativeStatistics.add(statistics);
 				lastSampleStatistics.add(lastStatistics);
@@ -511,20 +556,22 @@ public class SingleConsole implements Listener, SampleListener {
 		for (ExpressionView expressionView : views) { // TODO : expressionView
 														// == null ?
 			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
+							getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 		}
 
-		Double tests = (Double) totalStatistics.get("Tests");
-		Double errors = (Double) totalStatistics.get("Errors");
-		totalStatistics.put("TestsStr", simpleFormatter.format(tests));
-		totalStatistics.put("ErrorsStr", simpleFormatter.format(errors));
+//		Double tests = (Double) totalStatistics.get("Tests");
+//		Double errors = (Double) totalStatistics.get("Errors");
+//		totalStatistics.put("TestsStr", simpleFormatter.format(tests));
+//		totalStatistics.put("ErrorsStr", simpleFormatter.format(errors));
+//		totalStatistics.put("TestsStr", tests);
+//		totalStatistics.put("ErrorsStr", errors);
 
 		result.put("totalStatistics", totalStatistics);
 		result.put("cumulativeStatistics", cumulativeStatistics);
 		result.put("lastSampleStatistics", lastSampleStatistics);
 
 		result.put("tpsChartData", this.getTpsValues());
-		
+
 		MutablePicoContainer container = (MutablePicoContainer) consoleFoundation.getContainer();
 		ProcessControl processControl = (ProcessControl) container.getComponent(ProcessControl.class);
 		NGrinderConsoleCommunicationService.collectWorkerAndThreadInfo(processControl, result);
@@ -558,17 +605,25 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	public interface ConsoleShutdownListener {
-		void readyToStop();
+		void readyToStop(StopReason stopReason);
 	}
 
-	public void writeReportData(String name, double value) throws IOException {
+	public enum StopReason {
+		/** If tps is too low */
+		TOO_LOW_TPS,
+		/** If too many error happen */
+		TOO_MANY_ERRORS
+	}
+
+	public void writeReportData(String name, String value) throws IOException {
 		File filename = new File(this.reportPath, name + ".data");
 		FileWriter write = null;
 		BufferedWriter bw = null;
 		try {
 			write = new FileWriter(filename, true);
 			bw = new BufferedWriter(write);
-			bw.write(formatter.format(value));
+			//bw.write(formatter.format(value));
+			bw.write(value);
 			bw.newLine();
 			bw.flush();
 		} catch (Exception e) {
@@ -578,6 +633,13 @@ public class SingleConsole implements Listener, SampleListener {
 			IOUtils.closeQuietly(write);
 			IOUtils.closeQuietly(bw);
 		}
+	}
+	
+	private String formatValue(Object val) {
+		if (val instanceof Double) {
+			return formatter.format(val);
+		}
+		return String.valueOf(val);
 	}
 
 	public File getReportPath() {

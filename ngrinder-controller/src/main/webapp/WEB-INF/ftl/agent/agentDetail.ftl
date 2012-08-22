@@ -21,8 +21,7 @@
                    <h3><@spring.message "agent.info.title"/></h3>
                 </div>
                 <div class="span2 offset1">
-                    <button class="btn pull-right" title="Return" id="returnBtn"><@spring.message "common.button.refresh"/></button>&nbsp;&nbsp;
-                    <button class="btn" title="Refresh monitor data" id="refreshBtn"><@spring.message "common.button.refresh"/></button>
+                    <button class="btn pull-right" title="Return" id="returnBtn"><@spring.message "common.button.return"/></button>
                 </div>
             </div>
             <div class="row">
@@ -103,13 +102,12 @@
                 $("#returnBtn").on('click', function() {
                     history.back();
                 });
-                $("#refreshBtn").on('click', function() {
-                    getMonitorData();
-                });
+                
                 $("#rinterval").keyup(function() {
                     var number = $(this).val();
                     $(this).val(number.replace(/[\D]/g,""))
                 });
+                
                 $("#rinterval").blur(function() {
                     if(timer){
                         window.clearInterval(timer);
@@ -121,11 +119,13 @@
                     cleanChartData();
                     timer=window.setInterval("getMonitorData()",interval * 1000);
                 });
-                getMonitorData();
-                $("#rinterval").blur();
+                
                 $('#chartTab a').click(function () {
 					resetFooter();
 				});
+				
+                getMonitorData();
+                $("#rinterval").blur();
             });
             function getMonitorData(){
                 $.ajax({

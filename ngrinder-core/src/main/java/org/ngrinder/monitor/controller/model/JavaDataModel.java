@@ -22,12 +22,17 @@
  */
 package org.ngrinder.monitor.controller.model;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Index;
+import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.model.BaseEntity;
+import org.ngrinder.monitor.share.domain.JavaInfo;
+import org.ngrinder.monitor.share.domain.JavaInfoForEach;
 
 @Entity
 @Table(name = "java_monitor")
@@ -54,6 +59,38 @@ public class JavaDataModel extends BaseEntity<JavaDataModel> {
 	private long uptime;
 	private String crtime;
 	private String message;
+
+	/* count of processes of this agent, including agent daemon and worker process */
+	private int processCount;
+	
+	public JavaDataModel () {
+		
+	}
+	
+	public JavaDataModel (JavaInfo javaInfo) {
+		collectTime = DateUtil.getCollectTimeInLong(new Date(javaInfo.getCollectTime()));
+		heapMaxMemory = 0;
+		heapUsedMemory = 0;
+		nonHeapMaxMemory = 0;
+		nonHeapUsedMemory = 0;
+		cpuUsedPercentage = 0;
+		
+		for (JavaInfoForEach javaInfoForEach : javaInfo.getJavaInfoForEach()) {
+			heapMaxMemory += javaInfoForEach.getHeapMemory().getMax();
+			heapUsedMemory += javaInfoForEach.getHeapMemory().getUsed();
+			nonHeapMaxMemory += javaInfoForEach.getNonHeapMemory().getMax();
+			nonHeapUsedMemory += javaInfoForEach.getNonHeapMemory().getUsed();
+			cpuUsedPercentage += javaInfoForEach.getJavaCpuUsedPercentage();
+
+			threadCount = javaInfoForEach.getThreadCount();
+			processCount ++;
+
+		}
+	}
+
+	public int getProcessCount() {
+		return processCount;
+	}
 
 	public String getKey() {
 		return key;

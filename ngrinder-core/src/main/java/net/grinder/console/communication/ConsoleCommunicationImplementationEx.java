@@ -80,7 +80,8 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	 *             If properties are invalid.
 	 */
 	public ConsoleCommunicationImplementationEx(Resources resources, ConsoleProperties properties,
-			ErrorHandler errorHandler, TimeAuthority timeAuthority) throws DisplayMessageConsoleException {
+					ErrorHandler errorHandler, TimeAuthority timeAuthority)
+					throws DisplayMessageConsoleException {
 		this(resources, properties, errorHandler, timeAuthority, 500, 30000);
 	}
 
@@ -96,17 +97,17 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	 * @param timeAuthority
 	 *            Knows the time
 	 * @param idlePollDelay
-	 *            Time in milliseconds that our ServerReceiver threads should
-	 *            sleep for if there's no incoming messages.
+	 *            Time in milliseconds that our ServerReceiver threads should sleep for if there's
+	 *            no incoming messages.
 	 * @param inactiveClientTimeOut
-	 *            How long before we consider a client connection that presents
-	 *            no data to be inactive.
+	 *            How long before we consider a client connection that presents no data to be
+	 *            inactive.
 	 * @throws DisplayMessageConsoleException
 	 *             If properties are invalid.
 	 */
 	public ConsoleCommunicationImplementationEx(Resources resources, ConsoleProperties properties,
-			ErrorHandler errorHandler, TimeAuthority timeAuthority, long idlePollDelay, long inactiveClientTimeOut)
-			throws DisplayMessageConsoleException {
+					ErrorHandler errorHandler, TimeAuthority timeAuthority, long idlePollDelay,
+					long inactiveClientTimeOut) throws DisplayMessageConsoleException {
 
 		m_resources = resources;
 		m_properties = properties;
@@ -120,7 +121,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 				final String property = event.getPropertyName();
 
 				if (property.equals(ConsoleProperties.CONSOLE_HOST_PROPERTY)
-						|| property.equals(ConsoleProperties.CONSOLE_PORT_PROPERTY)) {
+								|| property.equals(ConsoleProperties.CONSOLE_PORT_PROPERTY)) {
 					reset();
 				}
 			}
@@ -130,6 +131,11 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	}
 
 	private void reset() {
+		if (m_acceptorProblemListener != null) {
+			m_acceptorProblemListener.interrupt();
+			m_acceptorProblemListener = null;
+		}
+		
 		try {
 			if (m_acceptor != null) {
 				m_acceptor.shutdown();
@@ -155,19 +161,18 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 			m_processing.await(false);
 		}
 
-		if (m_acceptorProblemListener != null) {
-			m_acceptorProblemListener.interrupt();
-			m_acceptorProblemListener = null;
-		}
+		
 
 		if (m_shutdown.get()) {
 			return;
 		}
 
 		try {
-			m_acceptor = new Acceptor(m_properties.getConsoleHost(), m_properties.getConsolePort(), 1, m_timeAuthority);
+			m_acceptor = new Acceptor(m_properties.getConsoleHost(), m_properties.getConsolePort(), 1,
+							m_timeAuthority);
 		} catch (CommunicationException e) {
-			m_errorHandler.handleException(new DisplayMessageConsoleException(m_resources, "localBindError.text", e));
+			m_errorHandler.handleException(new DisplayMessageConsoleException(m_resources,
+							"localBindError.text", e));
 
 			// Wake up any threads waiting in processOneMessage().
 			m_processing.wakeUpAllWaiters();
@@ -195,6 +200,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 		m_acceptorProblemListener.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 			@Override
 			public void uncaughtException(Thread t, Throwable e) {
+				m_errorHandler.handleInformationMessage(e.getMessage());
 			}
 		});
 		m_acceptorProblemListener.start();
@@ -204,7 +210,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 		try {
 			m_receiver.receiveFrom(m_acceptor, new ConnectionType[] { ConnectionType.AGENT,
 					ConnectionType.CONSOLE_CLIENT, ConnectionType.WORKER, }, 5, m_idlePollDelay,
-					m_inactiveClientTimeOut);
+							m_inactiveClientTimeOut);
 		} catch (CommunicationException e) {
 			throw new AssertionError(e);
 		}
@@ -233,8 +239,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	}
 
 	/**
-	 * Returns the message dispatch registry which callers can use to register
-	 * new message handlers.
+	 * Returns the message dispatch registry which callers can use to register new message handlers.
 	 * 
 	 * @return The registry.
 	 */
@@ -254,8 +259,8 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	/**
 	 * Wait to receive a message, then process it.
 	 * 
-	 * @return <code>true</code> if we processed a message successfully;
-	 *         <code>false</code> if we've been shut down.
+	 * @return <code>true</code> if we processed a message successfully; <code>false</code> if we've
+	 *         been shut down.
 	 * @see #shutdown()
 	 */
 	public boolean processOneMessage() {
@@ -286,8 +291,8 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	}
 
 	/**
-	 * The number of connections that have been accepted and are still active.
-	 * Used by the unit tests.
+	 * The number of connections that have been accepted and are still active. Used by the unit
+	 * tests.
 	 * 
 	 * @return The number of accepted connections.
 	 */
@@ -296,8 +301,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	}
 
 	/**
-	 * Send the given message to the agent processes (which may pass it on to
-	 * their workers).
+	 * Send the given message to the agent processes (which may pass it on to their workers).
 	 * 
 	 * <p>
 	 * Any errors that occur will be handled with the error handler.
@@ -313,14 +317,14 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 			try {
 				m_sender.send(message);
 			} catch (CommunicationException e) {
-				m_errorHandler.handleException(new DisplayMessageConsoleException(m_resources, "sendError.text", e));
+				m_errorHandler.handleException(new DisplayMessageConsoleException(m_resources,
+								"sendError.text", e));
 			}
 		}
 	}
 
 	/**
-	 * Send the given message to the given agent processes (which may pass it on
-	 * to its workers).
+	 * Send the given message to the given agent processes (which may pass it on to its workers).
 	 * 
 	 * <p>
 	 * Any errors that occur will be handled with the error handler.
@@ -338,7 +342,8 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 			try {
 				m_sender.send(address, message);
 			} catch (CommunicationException e) {
-				m_errorHandler.handleException(new DisplayMessageConsoleException(m_resources, "sendError.text", e));
+				m_errorHandler.handleException(new DisplayMessageConsoleException(m_resources,
+								"sendError.text", e));
 			}
 		}
 	}

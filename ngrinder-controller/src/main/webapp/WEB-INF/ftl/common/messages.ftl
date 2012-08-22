@@ -31,6 +31,10 @@
 		showMsg("alert-info", message);
 	}
 	
+	function showWarning(message) {
+		showMsg("alert-block", message);
+	}
+	
 	function showErrorMsg(message) {
 		var $div = $("#errorDiv");
 		$div.hide();

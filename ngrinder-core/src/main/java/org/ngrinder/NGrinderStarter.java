@@ -150,15 +150,18 @@ public class NGrinderStarter {
 				if (toolsJarPath.exists()) {
 					return toolsJarPath.toURI().toURL();
 				}
-				for (File eachCandidate : parentFile.listFiles()) {
-					toolsJarPath = new File(eachCandidate, toolsJar);
-					if (toolsJarPath.exists()) {
-						return toolsJarPath.toURI().toURL();
+				if (parentFile.listFiles() != null) {
+					for (File eachCandidate : parentFile.listFiles()) {
+						toolsJarPath = new File(eachCandidate, toolsJar);
+						if (toolsJarPath.exists()) {
+							return toolsJarPath.toURI().toURL();
+						}
 					}
 				}
 			}
 		} catch (MalformedURLException e) {
 		}
+
 		LOG.error("{} path is not found. Please set up JAVA_HOME env var to JDK(not JRE).", toolsJar);
 		System.exit(-1);
 		return null;
@@ -177,6 +180,10 @@ public class NGrinderStarter {
 		File libFolder = new File(".", "lib").getAbsoluteFile();
 		if (!libFolder.exists()) {
 			LOG.error("lib path does not exist {}", libFolder.getAbsolutePath());
+			return;
+		}
+		if (libFolder.listFiles() == null) {
+			LOG.error("lib path has no content", libFolder.getAbsolutePath());
 			return;
 		}
 

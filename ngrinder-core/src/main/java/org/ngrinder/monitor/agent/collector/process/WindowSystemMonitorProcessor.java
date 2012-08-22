@@ -41,6 +41,8 @@ public class WindowSystemMonitorProcessor implements Callable<SystemInfo> {
 	private static final String WINDOWS_TYPEPERF_PARAM = "\"\\Processor(_Total)\\% Processor Time\" "
 			+ "\"\\Memory\\Available KBytes\"";
 
+	private static SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+
 	@Override
 	public SystemInfo call() {
 		SystemInfo systemInfo = new SystemInfo();
@@ -51,6 +53,7 @@ public class WindowSystemMonitorProcessor implements Callable<SystemInfo> {
 			Process proc = Runtime.getRuntime().exec(
 					new String[] { "cmd.exe", "/c", "typeperf " + WINDOWS_TYPEPERF_PARAM + "  -sc 1" });
 			String line = null;
+			
 			input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 			while ((line = input.readLine()) != null) {
 				result.append(line).append("\n");
@@ -79,7 +82,6 @@ public class WindowSystemMonitorProcessor implements Callable<SystemInfo> {
 		// 다려 주십시오.
 		// 명령이 성공적으로 완료되었습니다.
 
-		SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 		String toDay = formatter.format(new Date());
 
 		String[] splittedLines = str.split("\n");

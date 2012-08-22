@@ -2,6 +2,7 @@
 	<INPUT type="hidden" id="input_process" value="${resultsub.process!'&nbsp;'}">
 	<INPUT type="hidden" id="input_thread"  value="${resultsub.thread!'&nbsp;'}">
 	<INPUT type="hidden" id="tpsChartData"  value="${resultsub.tpsChartData!}">
+	<INPUT type="hidden" id="test_time"  value="${resultsub.test_time!}">
 	<INPUT type="hidden" id="input_status"  value="<#if resultsub.success?? && resultsub.success>SUCCESS<#else>FAIL</#if>">
 
 	<table>

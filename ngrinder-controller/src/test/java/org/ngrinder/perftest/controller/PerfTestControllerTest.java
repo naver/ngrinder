@@ -34,6 +34,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -66,10 +67,9 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	@Autowired
 	private UserService userService;
 
-	@Test
-	public void testGetQuickStart() {
-		ModelMap model = new ModelMap();
-		controller.getQuickStart(getTestUser(), "naver.com", model);
+	@Before
+	public void beforeCleanUp() {
+		clearAllPerfTest();
 	}
 
 	@Test
@@ -107,8 +107,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	}
 
 	/**
-	 * for "saved" or "ready" test, can be modified, but for running or finished test, can not
-	 * modify
+	 * for "saved" or "ready" test, can be modified, but for running or finished test, can not modify
 	 */
 	@Test
 	public void testSavePerfTestExist() {
@@ -227,8 +226,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		List<PerfTest> testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
 
-		controller.getPerfTestList(getTestUser(), strangeName.substring(2, 10), false,
-						new PageRequest(0, 10), model);
+		controller.getPerfTestList(getTestUser(), strangeName.substring(2, 10), false, new PageRequest(0, 10), model);
 		testPage = (Page<PerfTest>) model.get("testListPage");
 		testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
@@ -252,9 +250,8 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
 		ModelMap model = new ModelMap();
 		controller.getReport(getTestUser(), model, test.getId());
-		
+
 		model.clear();
-		controller.getPerfTestReportData(getTestUser(), model, test.getId(), "tps,errors", 0);
 	}
 
 	@Test
@@ -279,7 +276,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 			assertTrue(true);
 		}
 	}
-	
+
 	@Test
 	public void testUpdateSatus() {
 		String testName = "test1";
