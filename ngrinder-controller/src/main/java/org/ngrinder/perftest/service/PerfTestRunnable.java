@@ -39,6 +39,7 @@ import java.util.Set;
 
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.ConsoleShutdownListener;
+import net.grinder.SingleConsole.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
 
@@ -126,7 +127,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	void markProgress(PerfTest perfTest, String message) {
-		perfTest.addProgressMessage(message);
+		perfTest.setLastProgressMessage(message);
 		perfTestService.savePerfTest(perfTest);
 	}
 
@@ -183,6 +184,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// Leave last status as test error cause
 		perfTest.setTestErrorCause(perfTest.getStatus());
 		perfTest.setTestErrorStackTrace(reason);
+		perfTest.setLastProgressMessage(reason);
 		perfTestService.savePerfTest(perfTest, Status.ABNORMAL_TESTING);
 	}
 
@@ -196,10 +198,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * @param e
 	 *            exception occurs.
 	 */
-	void markAbromalTermination(PerfTest perfTest, String reason) {
+	void markAbromalTermination(PerfTest perfTest, StopReason reason) {
 		// Leave last status as test error cause
 		perfTest.setTestErrorCause(perfTest.getStatus());
-		perfTest.setTestErrorStackTrace(reason);
+		perfTest.setTestErrorStackTrace(reason.name());
+		perfTest.setLastProgressMessage(reason.name());
 		perfTestService.savePerfTest(perfTest, Status.ABNORMAL_TESTING);
 	}
 
@@ -221,8 +224,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 		perfTestService.savePerfTest(perfTest, START_TESTING);
 		singleConsole.addListener(new ConsoleShutdownListener() {
 			@Override
-			public void readyToStop() {
-				markAbromalTermination(perfTest, "Too low TPS");
+			public void readyToStop(StopReason stopReason) {
+				markAbromalTermination(perfTest, stopReason);
 			}
 		});
 		grinderProperties.setProperty(GRINDER_PROP_TEST_ID, "test_" + perfTest.getId());

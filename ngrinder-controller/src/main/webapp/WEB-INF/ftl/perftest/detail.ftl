@@ -228,8 +228,7 @@ div.chart {
 											<div class="controls">
 												<div class="input-append">
 													<input type="text" id="runCount" class="input span2" number_limit="${(maxRunCount)}" name="runCount"
-														value="${(test.runCount)!0}">
-													<span class="add-on"><@spring.message "perfTest.configuration.max"/> ${(maxRunCount)}</span>
+														value="${(test.runCount)!0}"><span class="add-on"><@spring.message "perfTest.configuration.max"/> ${(maxRunCount)}</span>
 												</div>
 											</div>
 										</div>
@@ -763,7 +762,7 @@ div.chart {
 	      });
 
 
-
+          
 	      $('#sDateInput').datepicker({
 	          format: 'yyyy-mm-dd'
 	      });
@@ -844,6 +843,12 @@ div.chart {
 
 	      updateScriptResources();
 	      validateHostForm();
+	      $("#durationSlider").mousedown(function() {
+	    	  $("#durationChkbox").click();
+	      });
+	      $("#runCount").focus(function() {
+	    	  $("#runcountChkbox").click();
+	      });
 	  });
 
 	  function updateVuserTotal() {
@@ -932,6 +937,14 @@ div.chart {
 	      var durationH = parseInt((durationInSec % (60 * 60 * 24)) / 3600);
 	      var durationM = parseInt((durationInSec % 3600) / 60);
 	      var durationS = durationInSec % 60;
+	      
+	      // Make 1 min as default
+	      if (durationH == 0 && durationM == 0 && durationS == 0) {
+	    	  $("#hSelect").val(0);
+	    	  $("#mSelect").val(1);
+	    	  $("#sSelect").val(0);
+	    	  return;
+	      } 
 	      $("#hSelect").val(durationH);
 	      $("#mSelect").val(durationM);
 	      $("#sSelect").val(durationS);

@@ -218,7 +218,7 @@
 			$.ajax({
 		  		url: "${req.getContextPath()}/perftest/stopTests",
 				type: "POST",
-		  		data: {"data":ids},
+		  		data: {"ids":ids},
 				dataType:'json',
 		    	success: function(res) {
 		    		if (res.success) {
@@ -273,9 +273,7 @@
 			    	for (var i = 0; i < data.length; i++) {
 			    		updateStatus(data[i].id, data[i].name, data[i].icon, data[i].message);
 			    	}
-			    },
-			    complete: function() {
-			        setTimeout(refreshContent, 5000);
+			    	setTimeout(refreshContent, 5000);
 			    }
 		    });
 	  })();
