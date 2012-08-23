@@ -24,7 +24,7 @@
 	<body>
 	<ul class="breadcrumb">
 		<li>
-			<h3>nGrinder Report</h3>
+			<h3>nGrinder Report : ${(test.testName!)}</h3>
 		</li>
 	</ul>
 	<div class="container">
@@ -38,48 +38,48 @@
 			<div class="span3">
 					   <table class="table table-bordered">
 					       <tr>
-					           <th>Vuser</th>
+					       	   <th><@spring.message "perfTest.table.vusers"/></th>
 					           <td><strong>${(test.vuserPerAgent)!}</strong></td>
 					       </tr>
 					       <tr>
-                               <th>Agents</th>
+                               <th><@spring.message "perfTest.configuration.agent"/></th>
                                <td><span>${(test.agentCount)!}</span>&nbsp;&nbsp;<a class="btn btn-mini btn-info hidden" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a></td>
                            </tr>
                            <tr>
-                               <th>Processes</th>
+                               <th><@spring.message "perfTest.report.process"/></th>
                                <td>${(test.processes)!0}</td>
                            </tr>
                            <tr>
-                               <th>Threads</th>
+                               <th><@spring.message "perfTest.report.thread"/></th>
                                <td>${(test.threads)!0}</td>
                            </tr>
                            <tr>
                                 <td colspan=2></td>
                            </tr>
                            <tr> 
-                               <th>Duration</th>
+                               <th><@spring.message "perfTest.table.duration"/></th>
                                <td><span>${(test.durationStr)!}</span> <code>HH:MM:SS</code></td>
                            </tr>
                            <tr>
-                               <th>Ignore Count</th>
+                               <th><@spring.message "perfTest.configuration.ignoreSampleCount"/></th>
                                <td><span>${(test.ignoreSampleCount)!0}</span></td> 
                            </tr>
                            <tr>
                                 <td colspan=2></td>
                            </tr>
-                           <tr>
-                               <th>Sample Interval</th>
+                           <tr>                               
+                               <th><@spring.message "perfTest.configuration.sampleInterval"/></th>
                                <td><span>${(test.sampleInterval)!1000}</span> <code>ms</code></td>
                            </tr>
                            <tr>
                                 <td colspan=2></td>
                            </tr>
                            <tr>
-                               <th>Test Comment</th>
-                               <td>Copied</td>
+                               <th><@spring.message "perfTest.report.testcomment"/></th>
+                               <td>${(test.testComment)!}</td>
                            </tr>
                            <tr>
-                               <th>Vuser</th>
+                               <th><@spring.message "perfTest.configuration.vuserPerAgent"/></th>
                                <td><strong>${(test.vuserPerAgent)!}</strong></td>
                            </tr>
                            <tr>
@@ -90,7 +90,7 @@
                                <td><strong>Total ${(test.tps)!}</strong></td>
                            </tr>
                            <tr>
-                               <th>Mean Time</th>
+                               <th><@spring.message "perfTest.table.meantime"/></th>
                                <td><span>${(test.meanTestTime)!}</span> <code>ms</code></td>
                            </tr>
                            <tr>
@@ -98,20 +98,20 @@
                                <td><strong>${(test.peakTps)!}</strong></td>
                            </tr>
                            <tr>
-                               <th>Finished Tests</th>
+                               <th><@spring.message "perfTest.report.finishedTest"/></th>
                                <td>${(test.tests)!}</td>
                            </tr>
 					   </table>
 					   <ul class="unstyled">
-                         <li><i class="icon-tag"></i> <a id="testPerformance" href="javascript:void(0);">Performance Report</a></li>
+                         <li><i class="icon-tag"></i> <a id="testPerformance" href="javascript:void(0);"><@spring.message "perfTest.report.performanceReport"/></a></li>
                        </ul>
-					   <ul class="unstyled"><i class="icon-tags"></i> Target Hosts
-                         <#if test.targetHostIP?exists>	
+                       <#if test.targetHostIP?exists>	
+						   <ul class="unstyled"><i class="icon-tags"></i> <@spring.message "perfTest.report.targetHost"/>
                          		<#list test.targetHostIP as targetIp>
-	                         	<li><i class="icon-chevron-right"></i><a id="targetMontor" href="javascript:void(0);" ip="${targetIp}">${targetIp}</a></li>
-	                         	</#list>
-                         </#if>
-                       </ul>
+	                         		<li><i class="icon-chevron-right"></i><a id="targetMontor" href="javascript:void(0);" ip="${targetIp}">${targetIp}</a></li>
+	                         	</#list> 
+                           </ul> 
+                       </#if>
 			</div>
 			<div class="span9">
 			    <table class="table table-bordered" style="margin-bottom:10px">
@@ -122,11 +122,11 @@
 						<col>
 					</colgroup>
                    <tr>
-                       <th>Start Time</th>
+                       <th><@spring.message "perfTest.table.startTime"/></th>
                        <td><span><#if test.startTime??>${test.startTime?string('yyyy-MM-dd HH:mm')}<#else>&nbsp;</#if></span></td>
-                       <th>Finish Time</th>
+                       <th><@spring.message "perfTest.table.finishTime"/></th>
                        <td><span><#if test.finishTime??>${test.finishTime?string('yyyy-MM-dd HH:mm')}<#else>&nbsp;</#if></span></td>
-                   </tr>
+                   </tr> 
                </table>
                <div class="row" style="margin-bottom:10px">
 	                <button class="btn btn-large pull-right" id="downloadReportData"><i class="icon-download-alt"></i><strong>Download CSV</strong></button>

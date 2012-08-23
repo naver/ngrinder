@@ -45,16 +45,16 @@ public abstract class DateUtil {
 	private static final SimpleDateFormat FULL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
 			Locale.getDefault());
 	private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-	
+
 	private static final SimpleDateFormat dateFormatEndWithMinute = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 	private static final SimpleDateFormat collectTimeFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-	
+
 	private static final int CONSTANT_10 = 10;
 	private static final int CONSTANT_24 = 24;
 	private static final int CONSTANT_60 = 60;
 	private static final int CONSTANT_1000 = 1000;
-	//private static final int CONSTANT_MINUS_7 = -7;
+	// private static final int CONSTANT_MINUS_7 = -7;
 	private static final int SS = CONSTANT_1000;
 	private static final int MI = SS * CONSTANT_60;
 	private static final int HH = MI * CONSTANT_60;
@@ -65,7 +65,7 @@ public abstract class DateUtil {
 	public static long getCollectTimeInLong(Date date) {
 		return Long.valueOf(collectTimeFormat.format(date));
 	}
-	
+
 	/**
 	 * Format date to {@value #FULL_DATE_FORMAT}.
 	 * 
@@ -92,7 +92,8 @@ public abstract class DateUtil {
 				int offsetSecond = offset / CONSTANT_1000;
 				int hour = offsetSecond / (CONSTANT_60 * CONSTANT_60);
 				int minutes = (offsetSecond % (CONSTANT_60 * CONSTANT_60)) / CONSTANT_60;
-				timezoneIDMap.put(TimeZone.getTimeZone(id).getDisplayName(), String.format("(GMT%+d:%02d) %s", hour, minutes, id));
+				timezoneIDMap.put(TimeZone.getTimeZone(id).getDisplayName(),
+						String.format("(GMT%+d:%02d) %s", hour, minutes, id));
 			}
 		}
 		return timezoneIDMap;
@@ -126,29 +127,28 @@ public abstract class DateUtil {
 	}
 
 	/**
-	 * get start day of a given date. Because the default start day of Calendar
-	 * is "Sunday", when the given date is "Sunday", we need to add "-7" to date
-	 * field to get previous week.
+	 * get start day of a given date. Because the default start day of Calendar is "Sunday", when the given date is
+	 * "Sunday", we need to add "-7" to date field to get previous week.
 	 * 
 	 * @param date
 	 *            calendar
 	 * @return week start
 	 */
-//	public static Calendar getWeekStart(Calendar date) {
-//		Calendar calendar = Calendar.getInstance();
-//		calendar.setTimeInMillis(date.getTimeInMillis());
-//		// Calendar.MONDAY is 2
-//		boolean isSunday = false;
-//		if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-//			isSunday = true;
-//		}
-//		calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-//		if (isSunday) {
-//			calendar.add(Calendar.DAY_OF_WEEK, CONSTANT_MINUS_7);
-//		}
-//		return calendar;
-//
-//	}
+	// public static Calendar getWeekStart(Calendar date) {
+	// Calendar calendar = Calendar.getInstance();
+	// calendar.setTimeInMillis(date.getTimeInMillis());
+	// // Calendar.MONDAY is 2
+	// boolean isSunday = false;
+	// if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+	// isSunday = true;
+	// }
+	// calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+	// if (isSunday) {
+	// calendar.add(Calendar.DAY_OF_WEEK, CONSTANT_MINUS_7);
+	// }
+	// return calendar;
+	//
+	// }
 
 	/**
 	 * Format date with given pattern.
@@ -204,7 +204,7 @@ public abstract class DateUtil {
 		// milliSecond;
 		// strMilliSecond = milliSecond < 100 ? "0" + strMilliSecond : "" +
 		// strMilliSecond;
-		return strDay + ":" + strHour + ":" + strMinute + ":" + strSecond;
+		return strHour + ":" + strMinute + ":" + strSecond;
 	}
 
 	/**
@@ -223,7 +223,7 @@ public abstract class DateUtil {
 	public static long timeToMs(int day, int hour, int min, int sec) {
 		return ((long) CONSTANT_1000) * (((day * CONSTANT_24 + hour) * CONSTANT_60 + min) * CONSTANT_60 + sec);
 	}
-	
+
 	public static Boolean compareDateEndWithMinute(Date d1, Date d2) {
 		String s1 = dateFormatEndWithMinute.format(d1);
 		String s2 = dateFormatEndWithMinute.format(d2);
