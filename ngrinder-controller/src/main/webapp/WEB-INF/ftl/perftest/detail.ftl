@@ -210,7 +210,7 @@ div.chart {
 												<select class="select-item" id="sSelect"></select> &nbsp;&nbsp;
 												<code>HH:MM:SS</code>
 												<input type="hidden" id="duration" class="required positiveNumber" name="duration"
-													value="${(test.duration)!0}">
+													value="${(test.duration)!6000}">
 												<div id="durationSlider" class="slider" style="margin-left: 0; width: 250px"></div>
 												<input id="hiddenDurationInput" class="span1 hide" data-slider="#durationSlider" data-max="39" data-min="1"
 													data-step="1">
@@ -934,6 +934,7 @@ div.chart {
 	      }
 	  }
 
+	  //initial the duration select box. The default value should be controlled with: $("#duration").val() 
 	  function initDuration() {
 	      var duration = $("#duration").val();
 	      var durationInSec = parseInt(duration / 1000);
@@ -941,13 +942,6 @@ div.chart {
 	      var durationM = parseInt((durationInSec % 3600) / 60);
 	      var durationS = durationInSec % 60;
 	      
-	      // Make 1 min as default
-	      if (durationH == 0 && durationM == 0 && durationS == 0) {
-	    	  $("#hSelect").val(0);
-	    	  $("#mSelect").val(1);
-	    	  $("#sSelect").val(0);
-	    	  return;
-	      } 
 	      $("#hSelect").val(durationH);
 	      $("#mSelect").val(durationM);
 	      $("#sSelect").val(durationS);
