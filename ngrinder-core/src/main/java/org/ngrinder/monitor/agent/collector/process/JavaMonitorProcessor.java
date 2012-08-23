@@ -56,7 +56,6 @@ public class JavaMonitorProcessor implements Callable<JavaInfoForEach> {
 			mbeanClient.connect();
 		}
 
-		// TODO: If mbeanClient was not connected?
 		if (mbeanClient.isConnected()) {
 			// mbeanClient.flush();
 

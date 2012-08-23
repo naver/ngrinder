@@ -148,21 +148,16 @@ public class MBeanClient {
 		return server.getAttribute(objName, attrName);
 	}
 
-	public synchronized OperatingSystemMXBean getSunOperatingSystemMXBean() throws IOException {
+	public synchronized OperatingSystemMXBean getSunOperatingSystemMXBean() throws IOException,
+			MalformedObjectNameException, NullPointerException, InstanceNotFoundException {
 
-		try {
-			ObjectName on = new ObjectName(ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME);
-			if (sunOperatingSystemMXBean == null) {
-				if (server.isInstanceOf(on, "com.sun.management.OperatingSystemMXBean")) {
-					sunOperatingSystemMXBean = ManagementFactory.newPlatformMXBeanProxy(server,
-									ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME,
-									OperatingSystemMXBean.class);
-				}
+		ObjectName on = new ObjectName(ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME);
+		if (sunOperatingSystemMXBean == null) {
+			if (server.isInstanceOf(on, "com.sun.management.OperatingSystemMXBean")) {
+				sunOperatingSystemMXBean = ManagementFactory.newPlatformMXBeanProxy(server,
+								ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME,
+								OperatingSystemMXBean.class);
 			}
-		} catch (InstanceNotFoundException e) {
-			return null;
-		} catch (MalformedObjectNameException e) {
-			return null;
 		}
 		return sunOperatingSystemMXBean;
 	}

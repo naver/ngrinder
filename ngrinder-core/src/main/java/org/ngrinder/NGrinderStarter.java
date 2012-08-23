@@ -150,8 +150,9 @@ public class NGrinderStarter {
 				if (toolsJarPath.exists()) {
 					return toolsJarPath.toURI().toURL();
 				}
-				if (parentFile.listFiles() != null) {
-					for (File eachCandidate : parentFile.listFiles()) {
+				File[] fileList = parentFile.listFiles();
+				if (fileList != null) {
+					for (File eachCandidate : fileList) {
 						toolsJarPath = new File(eachCandidate, toolsJar);
 						if (toolsJarPath.exists()) {
 							return toolsJarPath.toURI().toURL();
@@ -160,6 +161,7 @@ public class NGrinderStarter {
 				}
 			}
 		} catch (MalformedURLException e) {
+			LOG.error(e.getMessage(), e);
 		}
 
 		LOG.error("{} path is not found. Please set up JAVA_HOME env var to JDK(not JRE).", toolsJar);
@@ -182,18 +184,20 @@ public class NGrinderStarter {
 			LOG.error("lib path does not exist {}", libFolder.getAbsolutePath());
 			return;
 		}
-		if (libFolder.listFiles() == null) {
+		File[] libList = libFolder.listFiles();
+		if (libList == null) {
 			LOG.error("lib path has no content", libFolder.getAbsolutePath());
 			return;
 		}
 
-		for (File each : libFolder.listFiles()) {
+		for (File each : libList) {
 			if (each.getName().endsWith(".jar")) {
 				try {
 					ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL",
 									new Object[] { checkNotNull(each.toURI().toURL()) });
 					libString.add(each.getPath());
 				} catch (MalformedURLException e) {
+					LOG.error(e.getMessage(), e);
 				}
 			}
 		}
