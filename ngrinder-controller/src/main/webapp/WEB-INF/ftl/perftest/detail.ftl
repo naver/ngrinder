@@ -120,8 +120,10 @@ div.chart {
 			</div>
 			<div class="tabbable">
 				<ul class="nav nav-tabs" id="homeTab" style="margin-bottom: 5px">
-					<li id="testContent_tab"><a href="#testContent" data-toggle="tab">
-						<@spring.message "perfTest.configuration.testConfiguration"/></a>
+					<li id="testContent_tab">
+						<a href="#testContent" data-toggle="tab">
+							<@spring.message "perfTest.configuration.testConfiguration"/>
+						</a>
 					</li> 
 					<li id="runningContent_tab">
 						<a href="#runningContent" data-toggle="tab"><@spring.message "perfTest.testRunning.title"/></a>
@@ -380,7 +382,7 @@ div.chart {
 											<label for="scriptName" class="control-label"><@spring.message "perfTest.testRunning.agents"/></label>
 											<div class="controls">
 												<span>${(test.agentCount)!}</span>
-												<a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
+												<!--<a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>-->
 											</div>
 										</div>
 										<div class="control-group">
@@ -1035,12 +1037,8 @@ div.chart {
 
 	              showChart('runningTps', test_tps_data.toString());
 	          } else {
-	             if($('#runningContent_tab').hasClass('hidden')){
-	             	window.clearInterval(objTimer);
-	             }else{
-	             	test_tps_data.enQueue(0);
-	              	showChart('runningTps', test_tps_data.toString());
-	             }
+	             test_tps_data.enQueue(0);
+	             showChart('runningTps', test_tps_data.toString());
 	          }
 	      });
 	  }
@@ -1140,36 +1138,41 @@ div.chart {
 	  })();
 	  
 	  function displayCfgOnly() {
-		$("#testContent_tab").addClass("active");
-		$("#testContent").addClass("active");
-		$("#runningContent_tab").addClass("hidden");
-		$("#runningContent").addClass("hidden");
-		$("#reportContent_tab").addClass("hidden");
-		$("#reportContent").addClass("hidden");
+	  	$("#testContent_tab").show();
+	  	$("#runningContent_tab").hide();
+	  	$("#reportContent_tab").hide();
 	  }
 	  
 	  function displayCfgAndTestRunning() {
-	  	$("#runningContent_tab").addClass("active");
-		$("#runningContent").addClass("active");
-		$("#testContent_tab").removeClass("active");
-		$("#testContent").removeClass("active");
-		$("#runningContent_tab").removeClass("hidden");
-		$("#runningContent").removeClass("hidden");
-		$("#reportContent_tab").addClass("hidden");
-		$("#reportContent").addClass("hidden");
-		
+	  	disableTabActive("testContent");
+	  	$("#runningContent_tab").show();
+	  	$("#reportContent_tab").hide();
+	  	enableTabActive("runningContent");
+	  	
 		objTimer = window.setInterval("refreshData()", 1000);
 	  }
 	  function displayCfgAndTestReport() {
-		$("#testContent_tab").addClass("active");
-		$("#testContent").addClass("active");
-		$("#runningContent_tab").addClass("hidden");
-		$("#runningContent").addClass("hidden");
-		$("#reportContent_tab").removeClass("hidden");
-		$("#reportContent").removeClass("hidden");
-		$("#reportContent_tab").addClass("");
-		$("#reportContent").addClass("");
+	  	window.clearInterval(objTimer);
+	  	
+	  	disableTabActive("runningContent");
+	  	$("#runningContent_tab").hide();
+	  	
+	  	$("#reportContent_tab").show();
+	  	
+	  	enableTabActive("testContent");
+	  	
 	  }
+	  
+	  function enableTabActive(name) {
+	  	$("#"+name+"_tab").addClass("active");
+	  	$("#"+name).addClass("active");	
+	  }
+	  
+	  function disableTabActive(name) {
+	  	$("#"+name+"_tab").removeClass("active");
+	  	$("#"+name).removeClass("active");	
+	  }
+	  
 	</script>
 	</body>
 </html>
