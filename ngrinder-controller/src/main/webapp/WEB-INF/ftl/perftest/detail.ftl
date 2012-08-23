@@ -55,6 +55,9 @@ div.chart {
 	margin-bottom: 12px;
 }
 
+.jqplot-yaxis {
+    margin-right: 10px;
+}
 .table thead th {
 	vertical-align: middle;
 }
