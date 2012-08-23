@@ -23,7 +23,6 @@
 package org.ngrinder.common.controller;
 
 import java.util.Locale;
-import java.util.TimeZone;
 
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.model.User;
@@ -56,20 +55,6 @@ public class NGrinderBaseController implements NGrinderConstants {
 		} catch (AuthenticationCredentialsNotFoundException e) {
 		}
 		return new User();
-	}
-
-	public void setTimeZone(String timeZone) {
-		User user = userContext.getCurrentUser();
-		user.setTimeZone(timeZone);
-		//now time zone is not saved in user table.
-		//userService.saveUser(user);
-	}
-
-	protected int getOffSet(String userLocalId) {
-		if (userLocalId == null) {
-			return 0;
-		}
-		return TimeZone.getDefault().getRawOffset() - TimeZone.getTimeZone(userLocalId).getRawOffset();
 	}
 
 	protected String getErrorMessages(String key) {

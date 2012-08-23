@@ -26,17 +26,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.junit.Test;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.controller.PerfTestController;
-import org.ngrinder.perftest.model.PerfTest;
-import org.ngrinder.perftest.model.Status;
 import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
-import org.ngrinder.user.service.MockUserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -60,47 +53,6 @@ public class NGrinderBaseControllerTest extends AbstractPerfTestTransactionalTes
 		assertThat(currUser, notNullValue());
 	}
 
-	@Test
-	public void testSetTimeZone() {
-		perfTestController.setTimeZone(MockUserContext.TEST_USER_TIMEZONE_ZH);
-		int offset = perfTestController.getOffSet(MockUserContext.TEST_USER_TIMEZONE_US);
-		System.out.println("offset:" + offset);
-		
-		List<PerfTest> testList = new ArrayList<PerfTest>();
-		testList.add(newPerfTest("t1", Status.SAVED, new Date()));
-		testList.add(newPerfTest("t2", Status.SAVED, new Date()));
-		perfTestController.convertServerTimeToUserTime(testList, MockUserContext.TEST_USER_TIMEZONE_US);
-
-		PerfTest test3 = newPerfTest("t3", Status.SAVED, new Date());
-		test3.setCreatedDate(new Date());
-		test3.setLastModifiedDate(new Date());
-		testList.add(test3);
-		PerfTest test4 = newPerfTest("t3", Status.SAVED, new Date());
-		test4.setCreatedDate(new Date());
-		test4.setLastModifiedDate(new Date());
-		testList.add(test4);
-		perfTestController.convertServerTimeToUserTime(testList, MockUserContext.TEST_USER_TIMEZONE_US);
-
-	}
-
-	/**
-	 * Test method for {@link org.ngrinder.common.controller.NGrinderBaseController#convertServerTimeToUserTimeForBean(java.lang.Object, java.lang.String)}.
-	 */
-	@Test
-	public void testConvertServerTimeToUserTimeForBean() {
-		PerfTest test = newPerfTest("t3", Status.SAVED, new Date());
-		test.setCreatedDate(new Date());
-		test.setLastModifiedDate(new Date());
-
-		perfTestController.convertServerTimeToUserTimeForBean(test, MockUserContext.TEST_USER_TIMEZONE_US);
-		
-		perfTestController.convertServerTimeToUserTimeForBean("invalid", MockUserContext.TEST_USER_TIMEZONE_US);
-		
-	}
-
-	/**
-	 * Test method for {@link org.ngrinder.common.controller.NGrinderBaseController#getErrorMessages(java.lang.String)}.
-	 */
 	@Test
 	public void testGetErrorMessages() {
 		//in unit test, messageSource can not be resolved properly. Maybe there is a better way

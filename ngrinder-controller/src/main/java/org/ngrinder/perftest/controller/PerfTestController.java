@@ -378,7 +378,7 @@ public class PerfTestController extends NGrinderBaseController {
 			return test;
 		}
 		if (test != null && !test.getLastModifiedUser().equals(user)) {
-			throw new NGrinderRuntimeException("User " + getCurrentUser().getUserId()
+			throw new NGrinderRuntimeException("User " + user.getUserId()
 							+ " has no right on PerfTest ");
 		}
 		return test;

@@ -94,7 +94,7 @@ public class HomeController extends NGrinderBaseController {
 		String roles = null;
 		try {
 			// set local language
-			setLanguage(getCurrentUser().getUserLanguage(), response, request);
+			setLanguage(user.getUserLanguage(), response, request);
 			setLoginPageDate(model);
 			roles = user.getRole().getShortName();
 
@@ -148,8 +148,8 @@ public class HomeController extends NGrinderBaseController {
 
 	@ResponseBody
 	@RequestMapping(value = "/changeTimeZone")
-	public String changeTimeZone(String timeZone) {
-		setTimeZone(timeZone);
+	public String changeTimeZone(User user, String timeZone) {
+		user.setTimeZone(timeZone);
 		return JSONUtil.returnSuccess();
 	}
 
