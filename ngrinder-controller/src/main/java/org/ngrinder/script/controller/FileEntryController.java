@@ -206,6 +206,7 @@ public class FileEntryController extends NGrinderBaseController {
 		}
 		response.reset();
 		try {
+			//FIXME  Is it proper to use "euc-kr" encoding?
 			response.addHeader(
 							"Content-Disposition",
 							"attachment;filename="
@@ -213,8 +214,7 @@ public class FileEntryController extends NGrinderBaseController {
 															FilenameUtils.getName(fileEntry.getPath()),
 															"euc-kr"));
 		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			LOG.error(e1.getMessage(), e1);
 		}
 		response.setContentType("application/octet-stream");
 		response.addHeader("Content-Length", "" + fileEntry.getFileSize());
@@ -303,7 +303,11 @@ public class FileEntryController extends NGrinderBaseController {
 					@RequestParam("uploadFile") MultipartFile file, ModelMap model) {
 		try {
 			FileEntry fileEntry = new FileEntry();
-			fileEntry.setContentBytes(file.getBytes());
+			if (fileEntry.getFileType().isEditable()) {
+				fileEntry.setContent(new String(file.getBytes()));
+			} else {
+				fileEntry.setContentBytes(file.getBytes());
+			}
 			fileEntry.setDescription(description);
 			fileEntry.setPath(FilenameUtils.concat(path, file.getOriginalFilename()));
 			fileEntryService.save(user, fileEntry);

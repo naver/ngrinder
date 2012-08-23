@@ -143,7 +143,10 @@ public class FileEntry extends BaseModel<FileEntry> {
 	}
 
 	public FileType getFileType() {
-		return (fileType == null) ? FileType.getFileTypeByExtension(FilenameUtils.getExtension(getPath())) : fileType;
+		if (fileType == null) {
+			fileType = FileType.getFileTypeByExtension(FilenameUtils.getExtension(getPath()));
+		}
+		return fileType;
 	}
 
 	public void setFileType(FileType fileType) {
