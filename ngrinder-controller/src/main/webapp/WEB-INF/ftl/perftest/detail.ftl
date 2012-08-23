@@ -889,9 +889,7 @@ div.chart {
 
 	  function updateVuserPolicy() {
 	      updateVuserTotal();
-	      $('#messageDiv').ajaxSend(function () {
-	          showInformation("<@spring.message "perfTest.detail.message.calculatePolicy"/>");
-	      });
+	      showInformation("<@spring.message "perfTest.detail.message.calculatePolicy"/>");
 
 	      $.ajax({
 	          url: "${req.getContextPath()}/perftest/updateVuser",
@@ -1160,6 +1158,7 @@ div.chart {
 		
 		objTimer = window.setInterval("refreshData()", 1000);
 	  }
+	  
 	  function displayCfgAndTestReport() {
 		$("#testContent_tab").addClass("active");
 		$("#testContent").addClass("active");
