@@ -234,8 +234,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 	@Test
 	public void testUpdateVuser() {
-		ModelMap model = new ModelMap();
-		String rtn = controller.updateVuser(20, model);
+		String rtn = controller.updateVuser(20);
 		JsonParser parser = new JsonParser();
 		JsonObject json = (JsonObject) parser.parse(rtn);
 		int threadCount = json.get(PARAM_THREAD_COUNT).getAsInt();
