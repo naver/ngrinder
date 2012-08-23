@@ -148,7 +148,9 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute(PARAM_SCRIPT_LIST,
 						fileEntryService.getAllFileEntries(user, FileType.PYTHON_SCRIPT));
 		addDefaultAttributeOnMode(model);
-		model.addAttribute("logs", perfTestService.getLogFiles(id));
+		if (test != null) {
+			model.addAttribute("logs", perfTestService.getLogFiles(id));
+		}
 		return "perftest/detail";
 	}
 

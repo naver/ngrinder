@@ -93,7 +93,7 @@ public class AgentJavaDataCollector extends AgentDataCollector {
 			try {
 				javaInfo.addJavaInfoForEach((JavaInfoForEach) cs.take().get());
 			} catch (Exception e) {
-				LOG.error(e.getMessage(), e);
+				LOG.warn(e.getMessage());
 			}
 		}
 

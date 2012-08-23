@@ -203,8 +203,8 @@ div.chart {
 											</div>
 										</div>
 										<hr>
-										<div class="control-group">
-											<label class="control-label"> <input type="radio" id="durationChkbox"> <@spring.message "perfTest.configuration.duration"/>
+										<div class="control-group"> 
+											<label class="control-label"> <input type="radio" id="durationChkbox" checked="true"> <@spring.message "perfTest.configuration.duration"/>
 											</label>
 											<div class="controls docs-input-sizes">
 												<select class="select-item" id="hSelect"></select> : 
@@ -943,7 +943,7 @@ div.chart {
 	  }
 
 	  function initThresholdChkBox() {
-	      if ($("#testId").val() == 0 || $("#threshold").val() == "R") { //runcount
+	      if ($("#threshold").val() == "R") { //runcount
 	          $("#runcountChkbox").attr("checked", "checked");
 	          $("#durationChkbox").removeAttr("checked");
 	      } else { //duration
@@ -964,6 +964,7 @@ div.chart {
 	    	  $("#hSelect").val(0);
 	    	  $("#mSelect").val(1);
 	    	  $("#sSelect").val(0);
+	    	  $("#duration").val(60000);
 	    	  return;
 	      } 
 	      $("#hSelect").val(durationH);
