@@ -135,13 +135,12 @@ public class UserController extends NGrinderBaseController {
 	}
 	
 	@RequestMapping("/profile")
-	public String userProfile(ModelMap model, @RequestParam String userId) {
-		checkNotEmpty(userId, "UserID should not be NULL!");
-		User user = userService.getUserById(userId);
-		model.addAttribute("user", user);
+	public String userProfile(User user, ModelMap model) {
+		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
+		User newUser = userService.getUserById(user.getUserId());
+		model.addAttribute("user", newUser);
 		model.addAttribute("action", "profile");
 		return "user/userInfo";
 	}
-
 
 }
