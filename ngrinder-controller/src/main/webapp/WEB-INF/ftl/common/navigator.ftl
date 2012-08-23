@@ -46,7 +46,7 @@
 </div>
 <script type="text/javascript">
 	var myProfile = function(){
-			var url = "${req.getContextPath()}/profile";
+			var url = "${req.getContextPath()}/user/profile?userId=${(currentUser.userId)!}";
 			$("#user_profile_id").on('click', function() {
 				$("#user_profile_modal").load(url, function(){
 					$('#userProfileModal').modal('show')

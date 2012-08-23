@@ -159,13 +159,6 @@ public class HomeController extends NGrinderBaseController {
 		return "allTimeZone";
 	}
 
-	@RequestMapping("/profile")
-	public String userProfile(ModelMap model, User user) {
-		model.addAttribute("user", user);
-		model.addAttribute("action", "profile");
-		return "user/userInfo";
-	}
-
 	// user save/modification is in UserController
 	// @RequestMapping("/profile/save")
 	// public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User
