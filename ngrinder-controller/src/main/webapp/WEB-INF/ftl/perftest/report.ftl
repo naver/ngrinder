@@ -10,8 +10,11 @@
 				padding-top: 0;
 			}	
 			.left { border-right: 1px solid #878988 }
-			div.chart { border: 1px solid #878988; height:195px; min-width:615px; margin-bottom:12px }
+			div.chart { border: 1px solid #878988; height:250px; min-width:615px; margin-bottom:12px }
 			td strong { color: #6DAFCF }
+			.jqplot-yaxis {
+			    margin-right: 10px;
+			}
 		</style>
 
 		<input type="hidden" id="contextPath" value="${req.getContextPath()}">
@@ -32,7 +35,7 @@
 	       <input type="hidden" id="testId" name="testId" value="${(test.id)!}">
 	   </form>
 		<div class="row">
-			<div class="span4">
+			<div class="span3">
 					   <table class="table table-bordered">
 					       <tr>
 					           <th>Vuser</th>
@@ -110,7 +113,7 @@
                          </#if>
                        </ul>
 			</div>
-			<div class="span8">
+			<div class="span9">
 			    <table class="table table-bordered" style="margin-bottom:10px">
 			    	<colgroup>
 						<col width="100">
@@ -129,8 +132,17 @@
 	                <button class="btn btn-large pull-right" id="downloadReportData"><i class="icon-download-alt"></i><strong>Download CSV</strong></button>
 	           </div>
 			    <div id="performanceDiv">
-    				<div class="chart" id="tpsDiv"></div>
+			    	<div class="page-header">
+						<h4>TPS</h4>
+					</div>
+			    	<div class="chart" id="tpsDiv"></div>
+    				<div class="page-header">
+						<h4>Mean Time to Test</h4>
+					</div>
     				<div class="chart" id="meanTimeDiv"></div>
+    				<div class="page-header">
+						<h4>Errors</h4>
+					</div>
     				<div class="chart" id="errorDiv"></div>
 				</div>
 				<div id="monitorDiv" style="display:none">

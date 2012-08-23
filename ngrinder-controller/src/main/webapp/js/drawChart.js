@@ -21,23 +21,25 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 	//interval is second amount.
 	//startTime and interval are optional.
 	var plotObj = $.jqplot(containerId, [ eval(data) ], {
-		title : {
-			text : title,
-			fontSize : '12pt'
-		},
+
+        gridPadding: {top:15, right:15, bottom:25, left:60},
+	
 		seriesDefaults : {
 			markerRenderer : $.jqplot.MarkerRenderer,
 			markerOptions : {
-				size : 3.0,
+				size : 2.0,
 				color : '#555555'
 			},
 			lineWidth : 1.0
 		},
 		axes : {
 			xaxis : {
+				min : 0,
+				pad : 0,
+				numberTicks : 5,
 				tickRenderer : $.jqplot.AxisTickRenderer,
 				tickOptions : {
-					show : false,
+					show : true,
 					formatter : function(format, value) {
 						if (startTime) {
 							if (interval) {
@@ -46,7 +48,7 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 								return new Date(startTime.getTime() + value * 1000).toLocaleString();
 							}
 						} else {
-							return value;
+							return value.toFixed(0);
 						}
 					}
 				}
@@ -57,14 +59,16 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 				label : yLabel,
 				labelOptions : {
 					fontFamily : 'Helvetica',
-					fontSize : '12pt'
-				},
+					fontSize : '10pt'
+				}, 
 				tickOptions : {
-					angle : -30,
+					angle : 0,
 					formatter : formatYaxis
 				},
-				pad : 0,
-				numberTicks : 8
+				min : 0,
+				numberTicks : 5,
+				pad : 3,
+				show : true
 			},
 
 		},
