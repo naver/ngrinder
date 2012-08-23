@@ -53,11 +53,5 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 		assertThat(viewName, is("allTimeZone"));
 	}
 
-	@Test
-	public void testUserProfile() {
-		ModelMap model = new ModelMap();
-		String viewName = homeController.userProfile(model, getTestUser());
-		assertThat(viewName, is("user/userInfo"));
-	}
 
 }

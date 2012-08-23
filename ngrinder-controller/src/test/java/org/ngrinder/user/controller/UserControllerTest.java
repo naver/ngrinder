@@ -149,5 +149,12 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		rtnStr = userController.checkUserId(model, getTestUser().getUserId());
 		assertThat(rtnStr, is(JSONUtil.returnError()));
 	}
+	
+	@Test
+	public void testUserProfile() {
+		ModelMap model = new ModelMap();
+		String viewName = userController.userProfile(model, getTestUser().getUserId());
+		assertThat(viewName, is("user/userInfo"));
+	}
 
 }
