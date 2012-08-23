@@ -153,7 +153,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testUserProfile() {
 		ModelMap model = new ModelMap();
-		String viewName = userController.userProfile(model, getTestUser().getUserId());
+		String viewName = userController.userProfile(getTestUser(), model);
 		assertThat(viewName, is("user/userInfo"));
 	}
 
