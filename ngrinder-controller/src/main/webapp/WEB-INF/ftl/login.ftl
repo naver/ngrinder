@@ -2,6 +2,7 @@
 <html lang="en">
 	<head>
 		<title>nGrinder Login</title>
+		
 		<#include "common/common.ftl">
 		<link href="${req.getContextPath()}/js/select2/select2.css" rel="stylesheet"/>
 		<script src="${req.getContextPath()}/js/select2/select2.js"></script>
@@ -22,6 +23,11 @@
 	</head>
 <body>
 <div>
+	<script language="javascript">
+			if (top.location.href.indexOf("login") == -1) {
+				top.location = "${req.getContextPath()}/login";
+			}
+	</script>	
 	<div class="logo"><img src="${req.getContextPath()}/img/logo_ngrinder_a.png" width="400" height="106" alt="nGrinder"></div>
 	<div class="content">
 		<form action="${req.getContextPath()}/form_Login" method="POST">
@@ -56,6 +62,7 @@
 </div>
 
 <script language="javascript">
+
 	$.ajaxSetup({ cache: false });
 	$(function(){
 		var language=getCookie("org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE");
