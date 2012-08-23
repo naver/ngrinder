@@ -126,7 +126,9 @@ div.chart {
 						</a>
 					</li> 
 					<li id="runningContent_tab">
-						<a href="#runningContent" data-toggle="tab"><@spring.message "perfTest.testRunning.title"/></a>
+						<a href="#runningContent" data-toggle="tab">
+							<@spring.message "perfTest.testRunning.title"/>
+						</a>
 					</li>
 				
 					<li id="reportContent_tab">
@@ -636,20 +638,18 @@ div.chart {
 	      var day = date.getDate();
 	      $("#sDateInput").val(year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day));
 	      
-	      <#if !test?exists||((test.status !="TESTING")&&(test.status !="FINISHED"))>
-		   		displayCfgOnly();
-		  </#if>
-		  <#if test?? && (test.status =="TESTING")>
-		   		displayCfgAndTestRunning();
-		  </#if>
-		  <#if test?? && (test.status =="FINISHED")>
-		   		displayCfgAndTestReport();
-		  </#if>
-	      
+		<#if test??>
+			<#if test.status =="TESTING">
+				displayCfgAndTestRunning();
+			<#elseif test.status =="FINISHED">
+				displayCfgAndTestReport();
+			<#else>
+				displayCfgOnly();
+			</#if>
+		<#else>
+			displayCfgOnly();
+		</#if>
 
-	      $("#n_test").addClass("active");
-
-	      $("#homeTab a:first").tab('show');
 	      $("#tableTab a:first").tab('show');
 
 	      $('#testContentForm input').hover(function () {
@@ -907,9 +907,7 @@ div.chart {
 
 	  function updateVuserPolicy() {
 	      updateVuserTotal();
-	      $('#messageDiv').ajaxSend(function () {
-	          showInformation("<@spring.message "perfTest.detail.message.calculatePolicy"/>");
-	      });
+	      showInformation("<@spring.message "perfTest.detail.message.calculatePolicy"/>");
 
 	      $.ajax({
 	          url: "${req.getContextPath()}/perftest/updateVuser",
@@ -1046,17 +1044,20 @@ div.chart {
 	              
 	              $("#running_time").text(showRunTime(refreshDiv.find("#test_time").val()));
 
-	              if (test_tps_data.getSize() == 60) {
-	                  test_tps_data.deQueue();
-	              }
-
 	              test_tps_data.enQueue(refreshDiv.find("#tpsChartData").val());
-
-	              showChart('runningTps', test_tps_data.toString());
 	          } else {
-	             test_tps_data.enQueue(0);
-	             showChart('runningTps', test_tps_data.toString());
+	             if($('#runningContent_tab:hidden')[0]){
+	             	window.clearInterval(objTimer);
+	             	return;
+	             }else{
+	             	test_tps_data.enQueue(0);
+	             }
 	          }
+	          
+	      	  if (test_tps_data.getSize() > 60) {
+	              test_tps_data.deQueue();
+	          }
+	          showChart('runningTps', test_tps_data.toString());
 	      });
 	  }
 	  
@@ -1155,41 +1156,26 @@ div.chart {
 	  })();
 	  
 	  function displayCfgOnly() {
-	  	$("#testContent_tab").show();
-	  	$("#runningContent_tab").hide();
-	  	$("#reportContent_tab").hide();
+		$("#testContent_tab a").tab('show');
+		$("#runningContent_tab").hide();
+		$("#reportContent_tab").hide();
 	  }
 	  
 	  function displayCfgAndTestRunning() {
-	  	disableTabActive("testContent");
-	  	$("#runningContent_tab").show();
-	  	$("#reportContent_tab").hide();
-	  	enableTabActive("runningContent");
-	  	
+		$("#runningContent_tab a").tab('show');
+		$("#reportContent_tab").hide();
+		
 		objTimer = window.setInterval("refreshData()", 1000);
 	  }
+	  
 	  function displayCfgAndTestReport() {
-	  	window.clearInterval(objTimer);
-	  	
-	  	disableTabActive("runningContent");
-	  	$("#runningContent_tab").hide();
-	  	
-	  	$("#reportContent_tab").show();
-	  	
-	  	enableTabActive("testContent");
-	  	
+		$("#testContent_tab a").tab('show');
+		$("#runningContent_tab").hide();
+		
+		if (objTimer) {
+	  		window.clearInterval(objTimer);
+	  	}
 	  }
-	  
-	  function enableTabActive(name) {
-	  	$("#"+name+"_tab").addClass("active");
-	  	$("#"+name).addClass("active");	
-	  }
-	  
-	  function disableTabActive(name) {
-	  	$("#"+name+"_tab").removeClass("active");
-	  	$("#"+name).removeClass("active");	
-	  }
-	  
 	</script>
 	</body>
 </html>
