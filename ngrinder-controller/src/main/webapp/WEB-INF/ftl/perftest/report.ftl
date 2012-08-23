@@ -75,10 +75,6 @@
                                 <td colspan=2></td>
                            </tr>
                            <tr>
-                               <th><@spring.message "perfTest.report.testcomment"/></th>
-                               <td>${(test.testComment)!}</td>
-                           </tr>
-                           <tr>
                                <th><@spring.message "perfTest.configuration.vuserPerAgent"/></th>
                                <td><strong>${(test.vuserPerAgent)!}</strong></td>
                            </tr>
@@ -126,7 +122,11 @@
                        <td><span><#if test.startTime??>${test.startTime?string('yyyy-MM-dd HH:mm')}<#else>&nbsp;</#if></span></td>
                        <th><@spring.message "perfTest.table.finishTime"/></th>
                        <td><span><#if test.finishTime??>${test.finishTime?string('yyyy-MM-dd HH:mm')}<#else>&nbsp;</#if></span></td>
-                   </tr> 
+                   </tr>
+                   <tr>
+                     	<th><@spring.message "perfTest.report.testcomment"/></th>
+                    	<td colspan="3">${(test.testComment)!}</td>
+                   </tr>  
                </table>
                <div class="row" style="margin-bottom:10px">
 	                <button class="btn btn-large pull-right" id="downloadReportData"><i class="icon-download-alt"></i><strong>Download CSV</strong></button>

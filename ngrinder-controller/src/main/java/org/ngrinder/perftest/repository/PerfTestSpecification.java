@@ -73,6 +73,22 @@ public class PerfTestSpecification {
 	}
 
 	/**
+	 * Get the Specification which check the {@link PerfTest} has given id.
+	 * 
+	 * @param statuses
+	 *            status set
+	 * @return {@link Specification}
+	 */
+	public static Specification<PerfTest> idEqual(final Integer id) {
+		return new Specification<PerfTest>() {
+			@Override
+			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				return cb.equal(root.get("id"), id);
+			}
+		};
+	}
+
+	/**
 	 * Get the Specification which provide empty predicate. This is for the base element for "and" or "or" combination.
 	 * 
 	 * @return {@link Specification}
@@ -105,17 +121,17 @@ public class PerfTestSpecification {
 	}
 
 	/**
-	 * Get createBy specification to get the {@link PerfTest} whose creator is the given user
+	 * Get createBy specification to get the {@link PerfTest} whose creator or last modifier is the given user
 	 * 
 	 * @param user
 	 *            user
 	 * @return {@link Specification}
 	 */
-	public static Specification<PerfTest> createdBy(final User user) {
+	public static Specification<PerfTest> lastModifiedOrCreatedBy(final User user) {
 		return new Specification<PerfTest>() {
 			@Override
 			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return cb.equal(root.get("createdUser"), user);
+				return cb.or(cb.equal(root.get("lastModifiedBy"), user), cb.equal(root.get("createdBy"), user));
 			}
 		};
 	}

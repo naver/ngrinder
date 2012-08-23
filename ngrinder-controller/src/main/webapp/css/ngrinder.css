@@ -12,6 +12,10 @@ body {
 	
 }
 
+h1, h2, h3, h4  {
+	text-rendering : auto !important;
+}
+
 .form-horizontal .control-label {
 	color: #666666;
 	font-family: Tahoma, applegothic, sans-serif;

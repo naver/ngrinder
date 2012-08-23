@@ -357,9 +357,10 @@ div.chart {
 							<div class="span8">
 								<div class="page-header">
 									<h4><@spring.message "perfTest.report.tpsgraph"/></h4>
+									<a id="reportDetail" class="btn pull-right" style="margin-top:-10px" href="#"><@spring.message "perfTest.report.reportDetail"/></a>
 								</div>
 								<div id="tpsDiv" class="chart" style="width: 610px; height: 240px"></div>
-							</div>
+							</div>								
 						</div>
 						<div class="row" style="margin-top: 10px;">
 							<div class="span4">
@@ -376,7 +377,13 @@ div.chart {
 								</#if>
 							</div>	
 							<div class="span8">
-								<a id="reportDetail" class="btn pull-right" href="#"><@spring.message "perfTest.report.reportDetail"/></a>
+								<div class="page-header">
+										<h4><@spring.message "perfTest.report.testcomment"/></h4>
+								</div>
+								<div class="control-group"> 
+									<textarea class="span8" id="testComment" rows="3" name="testComment" style="resize: none"> ${(test.testComment)!} </textarea>							
+                        			<button class="btn btn-mini btn-primary" type="button" id="leaveCommentButton"><@spring.message "perfTest.report.leaveComment"/></button>
+                                </div> 
 							</div>
 						</div>
 					</div>
@@ -652,7 +659,19 @@ div.chart {
 		<#else>
 			displayCfgOnly();
 		</#if>
-
+		  $("#leaveCommentButton").click(function(){
+		    var comment = $("#testComment").val();
+		  	$.post(
+		  		"${req.getContextPath()}/perftest/leaveComment",
+		  		{ 
+		  			"testId": ${test.id},   
+		  			"testComment": comment 
+		  		},
+		  		function() {
+		  			alert("Comment is successful");
+		  		}
+		     );
+		  });
 	      $("#tableTab a:first").tab('show');
 
 	      $('#testContentForm input').hover(function () {
