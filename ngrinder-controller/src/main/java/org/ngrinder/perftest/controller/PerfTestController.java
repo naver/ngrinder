@@ -41,6 +41,7 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.common.util.JSONUtil;
+import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.PerfTest;
@@ -102,7 +103,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            page
 	 * @return perftest/list
 	 */
-	@RequestMapping({"/list", "/"})
+	@RequestMapping({ "/list", "/" })
 	public String getPerfTestList(User user, @RequestParam(required = false) String query,
 					@RequestParam(required = false) boolean onlyFinished,
 					@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
@@ -147,6 +148,7 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute(PARAM_SCRIPT_LIST,
 						fileEntryService.getAllFileEntries(user, FileType.PYTHON_SCRIPT));
 		addDefaultAttributeOnMode(model);
+		model.addAttribute("logs", perfTestService.getLogFiles(id));
 		return "perftest/detail";
 	}
 
@@ -336,6 +338,14 @@ public class PerfTestController extends NGrinderBaseController {
 	public void downloadReportData(User user, HttpServletResponse response, @RequestParam long testId) {
 		checkTestPermissionAndGet(user, testId);
 		File targetFile = perfTestService.getReportFile(testId);
+		FileDownloadUtil.downloadFile(response, targetFile);
+	}
+
+	@RequestMapping(value = "/downloadLog/**")
+	public void downloadLogData(User user, @RemainedPath String path, @RequestParam long testId,
+					HttpServletResponse response) {
+		checkTestPermissionAndGet(user, testId);
+		File targetFile = perfTestService.getLogFile(testId, path);
 		FileDownloadUtil.downloadFile(response, targetFile);
 	}
 

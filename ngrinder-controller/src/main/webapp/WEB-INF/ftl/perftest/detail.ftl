@@ -347,12 +347,28 @@ div.chart {
 									</fieldset>
 								</div>
 							</div>
-							<div class="span8" style="margin-top: 10px;">
+							<div class="span8">
+								<div class="page-header">
+									<h4><@spring.message "perfTest.report.tpsgraph"/></h4>
+								</div>
 								<div id="tpsDiv" class="chart" style="width: 610px; height: 240px"></div>
 							</div>
 						</div>
 						<div class="row" style="margin-top: 10px;">
-							<div class="span12">
+							<div class="span4">
+								<#if logs??>
+								
+									<div class="page-header">
+										<h4><@spring.message "perfTest.report.logs"/></h4>
+									</div>
+									<div class="form-horizontal form-horizontal-3" style="margin-left: 10px">
+										<#list logs as eachLog>
+											<div><a href="${req.getContextPath()}/perftest/downloadLog/${eachLog}?testId=${test.id}">${eachLog}</a></div> 
+										</#list>									
+									</div>
+								</#if>
+							</div>	
+							<div class="span8">
 								<a id="reportDetail" class="btn pull-right" href="#"><@spring.message "perfTest.report.reportDetail"/></a>
 							</div>
 						</div>

@@ -6,5 +6,6 @@
 .classpath
 .project
 .checkstyle
+.clover
 target/
-/.clover
+
