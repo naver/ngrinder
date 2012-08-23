@@ -34,6 +34,8 @@ import org.ngrinder.model.BaseEntity;
 import org.ngrinder.monitor.share.domain.JavaInfo;
 import org.ngrinder.monitor.share.domain.JavaInfoForEach;
 
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
 @Entity
 @Table(name = "java_monitor")
 public class JavaDataModel extends BaseEntity<JavaDataModel> {
@@ -68,6 +70,7 @@ public class JavaDataModel extends BaseEntity<JavaDataModel> {
 	}
 	
 	public JavaDataModel (JavaInfo javaInfo) {
+		checkNotNull(javaInfo);
 		collectTime = DateUtil.getCollectTimeInLong(new Date(javaInfo.getCollectTime()));
 		heapMaxMemory = 0;
 		heapUsedMemory = 0;
