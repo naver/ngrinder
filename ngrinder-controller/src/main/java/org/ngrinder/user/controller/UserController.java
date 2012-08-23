@@ -23,6 +23,7 @@
 package org.ngrinder.user.controller;
 
 import static org.ngrinder.common.util.Preconditions.checkArgument;
+import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -132,5 +133,15 @@ public class UserController extends NGrinderBaseController {
 			return JSONUtil.returnError();
 		}
 	}
+	
+	@RequestMapping("/profile")
+	public String userProfile(ModelMap model, @RequestParam String userId) {
+		checkNotEmpty(userId, "UserID should not be NULL!");
+		User user = userService.getUserById(userId);
+		model.addAttribute("user", user);
+		model.addAttribute("action", "profile");
+		return "user/userInfo";
+	}
+
 
 }
