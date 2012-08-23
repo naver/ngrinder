@@ -115,6 +115,8 @@ public class SingleConsole implements Listener, SampleListener {
 	//private NumberFormat simpleFormatter = new DecimalFormat("###");
 
 	private Map<String, Object> statisticData;
+	
+	private List<String> csvHeaderList = new ArrayList<String>();
 
 	/**
 	 * Constructor with console ip and port.
@@ -442,23 +444,19 @@ public class SingleConsole implements Listener, SampleListener {
 		if (lastSampleStatistics != null) {
 			double tpsSum = 0;
 			double errors = 0;
-//			double meanTestTime = 0;
 
-			
-			
 			Map<String, Object> valueMap = new HashMap<String, Object>();
 			for (Map<String, Object> lastStatistic : lastSampleStatistics) {
 
 				tpsSum += (Double) lastStatistic.get("TPS");
 				errors += (Double) lastStatistic.get("Errors");
-//				Double temp = (Double) lastStatistic.get("Mean_Test_Time_(ms)");
-//				meanTestTime += temp != null ? temp : 0;
-				
+
+				valueMap.clear();
 				for (Entry<String, Object> each : lastStatistic.entrySet()) {
 					Object val = valueMap.get(each.getKey());
 					if (val instanceof Double) {
 						//for debug, maybe there are some fields should not be sum up.
-						LOGGER.debug("Calculate sum for key:{} in statistic", each.getKey());
+						LOGGER.warn("Calculate sum for key:{} in statistic", each.getKey());
 						MutableDouble mutableDouble = (MutableDouble) val;
 						mutableDouble.add((Double) ObjectUtils.defaultIfNull(each.getValue(), 0D));
 						valueMap.put(each.getKey(), mutableDouble);
@@ -473,10 +471,8 @@ public class SingleConsole implements Listener, SampleListener {
 			    for (Entry<String, Object> each : valueMap.entrySet()) {
 			    	writeReportData(each.getKey(), formatValue(each.getValue()));
 			    }
+			    writeCSVData(valueMap);
 				
-//				writeReportData("tps_failed", errors);
-//				writeReportData("tps_total", tpsSum);
-//				writeReportData("response_time", meanTestTime);
 			} catch (IOException e) {
 				LOGGER.error("Write report data failed : ", e);
 			}
@@ -520,9 +516,7 @@ public class SingleConsole implements Listener, SampleListener {
 
 				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
 				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
-				for (ExpressionView expressionView : views) { // TODO :
-																// expressionView
-																// == null?
+				for (ExpressionView expressionView : views) {
 					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
 									getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
 					lastStatistics.put(
@@ -615,7 +609,7 @@ public class SingleConsole implements Listener, SampleListener {
 		TOO_MANY_ERRORS
 	}
 
-	public void writeReportData(String name, String value) throws IOException {
+	private void writeReportData(String name, String value) throws IOException {
 		File filename = new File(this.reportPath, name + ".data");
 		FileWriter write = null;
 		BufferedWriter bw = null;
@@ -633,6 +627,11 @@ public class SingleConsole implements Listener, SampleListener {
 			IOUtils.closeQuietly(write);
 			IOUtils.closeQuietly(bw);
 		}
+	}
+
+	private void writeCSVData(Map<String, Object> valueMap) throws IOException {
+		//File filename = new File(this.reportPath, "csv.data");
+		//not finished yet.
 	}
 	
 	private String formatValue(Object val) {

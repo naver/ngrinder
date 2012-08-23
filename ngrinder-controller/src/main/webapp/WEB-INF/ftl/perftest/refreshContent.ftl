@@ -16,8 +16,8 @@
 							<td>
 			        			${statistics.testDescription!'&nbsp;'}
 							</td>
-							<td>${statistics.TestsStr!'&nbsp;'}</td>
-							<td>${statistics.ErrorsStr!'&nbsp;'}</td>
+							<td>${statistics.Tests!'&nbsp;'}</td>
+							<td>${statistics.Errors!'&nbsp;'}</td>
 							<td>${statistics['Mean_Test_Time_(ms)']!'&nbsp;'}</td>
 							<td>${statistics.TPS!'&nbsp;'}</td>
 							<td>${statistics.Peak_TPS!'&nbsp;'}</td>
@@ -39,8 +39,8 @@
 								</#if>
 								
 							</td>
-							<td>${statistics.TestsStr!'&nbsp;'}</td>
-							<td>${statistics.ErrorsStr!'&nbsp;'}</td>
+							<td>${statistics.Tests!'&nbsp;'}</td>
+							<td>${statistics.Errors!'&nbsp;'}</td>
 							<td>${statistics['Mean_Test_Time_(ms)']!'&nbsp;'}</td>
 							<td>${statistics.TPS!'&nbsp;'}</td>
 							<td>${statistics.Peak_TPS!'&nbsp;'}</td>

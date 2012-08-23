@@ -205,8 +205,8 @@ div.chart {
 											</div>
 										</div>
 										<hr>
-										<div class="control-group">
-											<label class="control-label"> <input type="radio" id="durationChkbox"> <@spring.message "perfTest.configuration.duration"/>
+										<div class="control-group"> 
+											<label class="control-label"> <input type="radio" id="durationChkbox" checked="true"> <@spring.message "perfTest.configuration.duration"/>
 											</label>
 											<div class="controls docs-input-sizes">
 												<select class="select-item" id="hSelect"></select> : 
@@ -351,12 +351,28 @@ div.chart {
 									</fieldset>
 								</div>
 							</div>
-							<div class="span8" style="margin-top: 10px;">
+							<div class="span8">
+								<div class="page-header">
+									<h4><@spring.message "perfTest.report.tpsgraph"/></h4>
+								</div>
 								<div id="tpsDiv" class="chart" style="width: 610px; height: 240px"></div>
 							</div>
 						</div>
 						<div class="row" style="margin-top: 10px;">
-							<div class="span12">
+							<div class="span4">
+								<#if logs??>
+								
+									<div class="page-header">
+										<h4><@spring.message "perfTest.report.logs"/></h4>
+									</div>
+									<div class="form-horizontal form-horizontal-3" style="margin-left: 10px">
+										<#list logs as eachLog>
+											<div><a href="${req.getContextPath()}/perftest/downloadLog/${eachLog}?testId=${test.id}">${eachLog}</a></div> 
+										</#list>									
+									</div>
+								</#if>
+							</div>	
+							<div class="span8">
 								<a id="reportDetail" class="btn pull-right" href="#"><@spring.message "perfTest.report.reportDetail"/></a>
 							</div>
 						</div>
@@ -384,7 +400,7 @@ div.chart {
 											<label for="scriptName" class="control-label"><@spring.message "perfTest.testRunning.agents"/></label>
 											<div class="controls">
 												<span>${(test.agentCount)!}</span>
-												<a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
+												<!--<a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>-->
 											</div>
 										</div>
 										<div class="control-group">
@@ -925,7 +941,7 @@ div.chart {
 	  }
 
 	  function initThresholdChkBox() {
-	      if ($("#testId").val() == 0 || $("#threshold").val() == "R") { //runcount
+	      if ($("#threshold").val() == "R") { //runcount
 	          $("#runcountChkbox").attr("checked", "checked");
 	          $("#durationChkbox").removeAttr("checked");
 	      } else { //duration
@@ -946,6 +962,7 @@ div.chart {
 	    	  $("#hSelect").val(0);
 	    	  $("#mSelect").val(1);
 	    	  $("#sSelect").val(0);
+	    	  $("#duration").val(60000);
 	    	  return;
 	      } 
 	      $("#hSelect").val(durationH);
@@ -1154,6 +1171,10 @@ div.chart {
 	  function displayCfgAndTestReport() {
 		$("#testContent_tab a").tab('show');
 		$("#runningContent_tab").hide();
+		
+		if (objTimer) {
+	  		window.clearInterval(objTimer);
+	  	}
 	  }
 	</script>
 	</body>

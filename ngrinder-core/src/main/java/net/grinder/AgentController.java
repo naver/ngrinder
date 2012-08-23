@@ -26,7 +26,6 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -60,7 +59,6 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.LogCompressUtil;
 import net.grinder.util.thread.Condition;
 
-import org.apache.commons.io.FileUtils;
 import org.ngrinder.common.util.ReflectionUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorConstants;
