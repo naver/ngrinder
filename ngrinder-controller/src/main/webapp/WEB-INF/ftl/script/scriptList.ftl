@@ -138,7 +138,7 @@
 						<div class="control-group">
 							<label for="urlInput" class="control-label"><@spring.message "script.list.label.url"/></label>
 							<div class="controls">
-							  <input type="text" id="urlInput" name="testUrl"/>
+							  <input type="text" id="urlInput" class="url" placeholder="Type URL..."  name="testUrl"/>
 							  <span class="help-inline"></span>
 							</div>
 						</div>					
@@ -236,21 +236,16 @@
 					$name.val(name + extension);
 				}
 				
-				var $url = $("#urlInput");
-				if (checkEmptyByObj($url)) {
-					markInput($url, false, "<@spring.message "common.form.validate.empyt"/>");
-					return;
-				} else {
-					var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$";
-					if (!checkFormatByObj($url, rule)) {
-						markInput($url, false, "<@spring.message "common.form.validate.format"/>");
+				var urlValue = $("#urlInput");
+				if (!checkEmptyByObj(urlValue)) {
+				
+					if (!urlValue.valid()) {
+						markInput(urlValue, false, "<@spring.message "common.form.validate.format"/>");
 						return;
 					}
 					
-					markInput($url, true);
+					markInput(urlValue, true);
 				}
-				
-				$url.val("http://" + $url.val());
 				
 				document.forms.createForm.submit();
 			});
