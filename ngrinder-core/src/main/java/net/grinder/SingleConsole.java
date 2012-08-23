@@ -79,6 +79,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.mutable.MutableDouble;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.ReflectionUtil;
 import org.picocontainer.MutablePicoContainer;
 import org.slf4j.Logger;
@@ -97,6 +98,8 @@ public class SingleConsole implements Listener, SampleListener {
 					"net.grinder.console.common.resources.Console");
 	public static final Logger LOGGER = LoggerFactory.getLogger(RESOURCE.getString("shortTitle"));
 
+	private static final String REPORT_CSV = "output.csv";
+	
 	private Condition m_eventSyncCondition = new Condition();
 	private ProcessReports[] processReports;
 	private boolean cancel = false;
@@ -117,6 +120,9 @@ public class SingleConsole implements Listener, SampleListener {
 	private Map<String, Object> statisticData;
 	
 	private List<String> csvHeaderList = new ArrayList<String>();
+	private boolean headerAdded = false;
+	
+	Map<String, BufferedWriter> fileWriterMap = new HashMap<String, BufferedWriter>();
 
 	/**
 	 * Constructor with console ip and port.
@@ -241,6 +247,11 @@ public class SingleConsole implements Listener, SampleListener {
 					thread.join(1000);
 				}
 
+			}
+			
+			//close all report file
+			for (BufferedWriter bw : fileWriterMap.values()) {
+				IOUtils.closeQuietly(bw);
 			}
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("Exception occurs while shutting down SingleConsole", e);
@@ -445,14 +456,23 @@ public class SingleConsole implements Listener, SampleListener {
 			double tpsSum = 0;
 			double errors = 0;
 
+			StringBuilder csvLine = new StringBuilder();
+			StringBuilder csvHeader = new StringBuilder();
+			csvHeader.append("DateTime");
+			
 			Map<String, Object> valueMap = new HashMap<String, Object>();
+			int testIndex = 0;
 			for (Map<String, Object> lastStatistic : lastSampleStatistics) {
-
+				testIndex++;
 				tpsSum += (Double) lastStatistic.get("TPS");
 				errors += (Double) lastStatistic.get("Errors");
 
-				valueMap.clear();
 				for (Entry<String, Object> each : lastStatistic.entrySet()) {
+					if (!headerAdded) {
+						csvHeaderList.add(each.getKey());
+						csvHeader.append(",");
+						csvHeader.append(each.getKey() + "-" + testIndex);
+					}
 					Object val = valueMap.get(each.getKey());
 					if (val instanceof Double) {
 						//for debug, maybe there are some fields should not be sum up.
@@ -464,14 +484,39 @@ public class SingleConsole implements Listener, SampleListener {
 						valueMap.put(each.getKey(), each.getValue());
 					}
 				}
+				
+				//add date time into csv
+				//FIXME this date time interval should be 1 second.
+				//but the system can not make sure about that.
+				csvLine.append(DateUtil.dateToString(new Date()));
+				
+				//FIXME  we should also save vuser number, to describe the current vuser count in this secons. 
+				for (String key : csvHeaderList) {
+					csvLine.append(",");
+					csvLine.append(formatValue(lastStatistic.get(key)));
+				}
 			}
-
 			try {
+			    //add header into csv file.
+				if (!headerAdded) {
+					for (Entry<String, Object> each : valueMap.entrySet()) {
+						csvHeader.append(",");
+						csvHeader.append(each.getKey());
+					}
+					writeCSVDataLine(csvHeader.toString());
+					headerAdded = true;
+				}
 				
 			    for (Entry<String, Object> each : valueMap.entrySet()) {
 			    	writeReportData(each.getKey(), formatValue(each.getValue()));
 			    }
-			    writeCSVData(valueMap);
+			    //add total test report into csv file.
+				for (String key : csvHeaderList) {
+					csvLine.append(",");
+					csvLine.append(formatValue(valueMap.get(key)));
+				}
+
+				writeCSVDataLine(csvLine.toString());
 				
 			} catch (IOException e) {
 				LOGGER.error("Write report data failed : ", e);
@@ -510,9 +555,9 @@ public class SingleConsole implements Listener, SampleListener {
 
 				Test test = modelIndex.getTest(i);
 				statistics.put("testNumber", test.getNumber());
-				statistics.put("testDescription", test.getDescription());
+				//statistics.put("testDescription", test.getDescription());
 				lastStatistics.put("testNumber", test.getNumber());
-				lastStatistics.put("testDescription", test.getDescription());
+				//lastStatistics.put("testDescription", test.getDescription());
 
 				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
 				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
@@ -610,13 +655,14 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	private void writeReportData(String name, String value) throws IOException {
-		File filename = new File(this.reportPath, name + ".data");
-		FileWriter write = null;
-		BufferedWriter bw = null;
+		
 		try {
-			write = new FileWriter(filename, true);
-			bw = new BufferedWriter(write);
-			//bw.write(formatter.format(value));
+			BufferedWriter bw = fileWriterMap.get(name);
+			if (bw == null) {
+				bw = new BufferedWriter(new FileWriter(new File(this.reportPath, name + ".data"), true)); 
+				fileWriterMap.put(name, bw);
+			}
+			
 			bw.write(value);
 			bw.newLine();
 			bw.flush();
@@ -624,19 +670,23 @@ public class SingleConsole implements Listener, SampleListener {
 			LOGGER.error(e.getMessage(), e);
 			throw new NGrinderRuntimeException(e.getMessage(), e);
 		} finally {
-			IOUtils.closeQuietly(write);
-			IOUtils.closeQuietly(bw);
+//			IOUtils.closeQuietly(write);
+//			IOUtils.closeQuietly(bw);
 		}
 	}
 
-	private void writeCSVData(Map<String, Object> valueMap) throws IOException {
-		//File filename = new File(this.reportPath, "csv.data");
-		//not finished yet.
+	private void writeCSVDataLine(String line) throws IOException {
+		writeReportData(REPORT_CSV, line);
 	}
 	
 	private String formatValue(Object val) {
 		if (val instanceof Double) {
 			return formatter.format(val);
+		} else if (val == null){
+			//if target server is too slow, there is no response in this second, then the satatistic data
+			//like mean time will be null.
+			//currently, we set these kind of value as 0.
+			return "0";
 		}
 		return String.valueOf(val);
 	}
