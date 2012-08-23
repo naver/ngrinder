@@ -71,8 +71,7 @@ import freemarker.template.Template;
 /**
  * File entry service class.<br/>
  * 
- * This class is responsible for creating user repo whenever user is created and connection b/w user
- * and underlying svn.
+ * This class is responsible for creating user repo whenever user is created and connection b/w user and underlying svn.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -158,8 +157,7 @@ public class FileEntryService {
 	}
 
 	private SVNURL createUserRepo(User user, File newUserDirectory) throws SVNException {
-		return svnClientManager.getAdminClient().doCreateRepository(newUserDirectory, user.getUserId(), true,
-						true);
+		return svnClientManager.getAdminClient().doCreateRepository(newUserDirectory, user.getUserId(), true, true);
 	}
 
 	private File getUserRepoDirectory(User user) {
@@ -294,10 +292,8 @@ public class FileEntryService {
 	String getTestNameFromUrl(String urlString) {
 		URL url;
 		try {
-			// FIXME : it's better to include path here...
 			url = new URL(urlString);
-			urlString = (url.getHost() + url.getPath()).replaceAll("[\\/\\.\\&\\?\\%\\=]", "_");
-			return "test_for_" + urlString;
+			return (url.getHost() + url.getPath()).replaceAll("[\\&\\?\\%\\-]", "_");
 		} catch (MalformedURLException e) {
 			throw new NGrinderRuntimeException("Error while translating " + urlString, e);
 		}
@@ -336,10 +332,11 @@ public class FileEntryService {
 	 */
 	public FileEntry prepareNewEntryForQuickTest(User user, String urlString) {
 		String testNameFromUrl = getTestNameFromUrl(urlString);
-		addFolder(user, "", testNameFromUrl);
+		// addFolder(user, "", testNameFromUrl);
 		// There might be race condition here... What if a user changes the SVN repo while saving
 		// newEntry??
-		FileEntry newEntry = prepareNewEntry(user, "/" + testNameFromUrl, "script.py", urlString);
+		FileEntry newEntry = prepareNewEntry(user, testNameFromUrl, "script.py", urlString);
+		newEntry.setDescription("Quick test for " + urlString);
 		save(user, newEntry);
 		return getFileEntry(user, testNameFromUrl + "/" + "script.py");
 	}
@@ -373,8 +370,7 @@ public class FileEntryService {
 
 	public String getSvnUrl(User user, String path) {
 		String contextPath = httpContainerContext.getCurrentRequestUrlFromUserRequest();
-		StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url",
-						contextPath));
+		StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url", contextPath));
 		url.append("/svn/").append(user.getUserId());
 		if (StringUtils.isNotEmpty(path)) {
 			url.append("/").append(path.trim());

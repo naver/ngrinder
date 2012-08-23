@@ -130,4 +130,18 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 		assertThat(findAll.size(), is(0));
 	}
 
+	
+
+	@Test
+	public void testRecusiveDireSave() throws IOException {
+		FileEntry fileEntry = new FileEntry();
+		fileEntry.setContent("HELLO WORLD2");
+		fileEntry.setEncoding("UTF-8");
+		fileEntry.setPath("/myworld/www/hello.zip");
+		fileEntry.setEncoding(null);
+		fileEntry.setFileType(FileType.UNKNOWN);
+		byte[] byteArray = IOUtils.toByteArray(new ClassPathResource("TEST_USER.zip").getInputStream());
+		fileEntry.setContentBytes(byteArray);
+		repo.save(getTestUser(), fileEntry, null);
+	}
 }

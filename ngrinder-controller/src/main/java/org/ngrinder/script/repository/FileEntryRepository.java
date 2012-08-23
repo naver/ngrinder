@@ -277,8 +277,31 @@ public class FileEntryRepository {
 			svnClientManager = SVNClientManager.newInstance();
 			SVNRepository repo = svnClientManager.createRepository(SVNURL.fromFile(getUserRepoDirectory(user)), true);
 			SVNDirEntry dirEntry = repo.info(fileEntry.getPath(), -1);
+
+			// Add base pathes
+			String fullPath = "";
+			// Check.. first
+			for (String each : getPathFragment(fileEntry.getPath())) {
+				fullPath = fullPath + "/" + each;
+				dirEntry = repo.info(fullPath, -1);
+				if (dirEntry != null && dirEntry.getKind() == SVNNodeKind.FILE) {
+					throw new NGrinderRuntimeException("User " + user.getUserId() + " tried to create folder "
+							+ fullPath + ". It's file..");
+				}
+			}
+
 			editor = repo.getCommitEditor(fileEntry.getDescription(), null, true, null);
 			editor.openRoot(-1);
+			fullPath = "";
+			for (String each : getPathFragment(fileEntry.getPath())) {
+				fullPath = fullPath + "/" + each;
+				try {
+					editor.addDir(fullPath, null, -1);
+				} catch (Exception e) {
+					// ignore
+				}
+			}
+
 			if (fileEntry.getFileType() == FileType.DIR) {
 				editor.addDir(fileEntry.getPath(), null, -1);
 			} else {
@@ -319,6 +342,12 @@ public class FileEntryRepository {
 			closeSVNClientManagerQuietly(svnClientManager);
 			IOUtils.closeQuietly(bais);
 		}
+	}
+
+	String[] getPathFragment(String path) {
+		String basePath = FilenameUtils.getPath(path);
+		return StringUtils.split(FilenameUtils.separatorsToUnix(basePath), "/");
+
 	}
 
 	/**

@@ -177,10 +177,11 @@ public class PerfTestController extends NGrinderBaseController {
 			ModelMap model) {
 		checkValidURL(urlString);
 		List<FileEntry> scriptList = new ArrayList<FileEntry>();
-		scriptList.add(fileEntryService.prepareNewEntryForQuickTest(user, urlString));
+		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString);
+		scriptList.add(newEntry);
 		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
 		addDefaultAttributeOnMode(model);
-		return "perftest/detail";
+		return "perftest/detail"; 
 	}
 
 	/**

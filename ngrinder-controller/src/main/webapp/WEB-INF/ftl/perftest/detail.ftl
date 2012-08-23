@@ -656,10 +656,7 @@ div.chart {
 			<#else>
 				displayCfgOnly();
 			</#if>
-		<#else>
-			displayCfgOnly();
-		</#if>
-		  $("#leaveCommentButton").click(function(){
+					  $("#leaveCommentButton").click(function(){
 		    var comment = $("#testComment").val();
 		  	$.post(
 		  		"${req.getContextPath()}/perftest/leaveComment",
@@ -672,6 +669,10 @@ div.chart {
 		  		}
 		     );
 		  });
+			
+		<#else>
+			displayCfgOnly();
+		</#if>
 	      $("#tableTab a:first").tab('show');
 
 	      $('#testContentForm input').hover(function () {

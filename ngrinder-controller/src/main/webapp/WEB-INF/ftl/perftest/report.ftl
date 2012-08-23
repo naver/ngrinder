@@ -125,7 +125,7 @@
                    </tr>
                    <tr>
                      	<th><@spring.message "perfTest.report.testcomment"/></th>
-                    	<td colspan="3">${(test.testComment)!}</td>
+                    	<td colspan="3">${(test.testComment)!?html?replace('\n', '<br>')}</td>
                    </tr>  
                </table>
                <div class="row" style="margin-bottom:10px">
