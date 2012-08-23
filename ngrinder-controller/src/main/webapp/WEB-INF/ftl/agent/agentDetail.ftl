@@ -159,7 +159,7 @@
             	if (jqplots[index]) {
             		jqplots[index].destroy();
             	}
-                $("#" + id).empty();
+            	$("#" + id).empty();
                 jqplots[index] = drawChart(title, id, data, formatYaxis);
             }
             

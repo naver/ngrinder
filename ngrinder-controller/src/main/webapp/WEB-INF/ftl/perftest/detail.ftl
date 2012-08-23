@@ -120,11 +120,15 @@ div.chart {
 			</div>
 			<div class="tabbable">
 				<ul class="nav nav-tabs" id="homeTab" style="margin-bottom: 5px">
-					<li id="testContent_tab"><a href="#testContent" data-toggle="tab">
-						<@spring.message "perfTest.configuration.testConfiguration"/></a>
+					<li id="testContent_tab">
+						<a href="#testContent" data-toggle="tab">
+							<@spring.message "perfTest.configuration.testConfiguration"/>
+						</a>
 					</li> 
 					<li id="runningContent_tab">
-						<a href="#runningContent" data-toggle="tab"><@spring.message "perfTest.testRunning.title"/></a>
+						<a href="#runningContent" data-toggle="tab">
+							<@spring.message "perfTest.testRunning.title"/>
+						</a>
 					</li>
 				
 					<li id="reportContent_tab">
@@ -201,8 +205,8 @@ div.chart {
 											</div>
 										</div>
 										<hr>
-										<div class="control-group">
-											<label class="control-label"> <input type="radio" id="durationChkbox"> <@spring.message "perfTest.configuration.duration"/>
+										<div class="control-group"> 
+											<label class="control-label"> <input type="radio" id="durationChkbox" checked="true"> <@spring.message "perfTest.configuration.duration"/>
 											</label>
 											<div class="controls docs-input-sizes">
 												<select class="select-item" id="hSelect"></select> : 
@@ -210,7 +214,7 @@ div.chart {
 												<select class="select-item" id="sSelect"></select> &nbsp;&nbsp;
 												<code>HH:MM:SS</code>
 												<input type="hidden" id="duration" class="required positiveNumber" name="duration"
-													value="${(test.duration)!6000}">
+													value="${(test.duration)!0}">
 												<div id="durationSlider" class="slider" style="margin-left: 0; width: 250px"></div>
 												<input id="hiddenDurationInput" class="span1 hide" data-slider="#durationSlider" data-max="39" data-min="1"
 													data-step="1">
@@ -347,12 +351,28 @@ div.chart {
 									</fieldset>
 								</div>
 							</div>
-							<div class="span8" style="margin-top: 10px;">
+							<div class="span8">
+								<div class="page-header">
+									<h4><@spring.message "perfTest.report.tpsgraph"/></h4>
+								</div>
 								<div id="tpsDiv" class="chart" style="width: 610px; height: 240px"></div>
 							</div>
 						</div>
 						<div class="row" style="margin-top: 10px;">
-							<div class="span12">
+							<div class="span4">
+								<#if logs??>
+								
+									<div class="page-header">
+										<h4><@spring.message "perfTest.report.logs"/></h4>
+									</div>
+									<div class="form-horizontal form-horizontal-3" style="margin-left: 10px">
+										<#list logs as eachLog>
+											<div><a href="${req.getContextPath()}/perftest/downloadLog/${eachLog}?testId=${test.id}">${eachLog}</a></div> 
+										</#list>									
+									</div>
+								</#if>
+							</div>	
+							<div class="span8">
 								<a id="reportDetail" class="btn pull-right" href="#"><@spring.message "perfTest.report.reportDetail"/></a>
 							</div>
 						</div>
@@ -380,7 +400,7 @@ div.chart {
 											<label for="scriptName" class="control-label"><@spring.message "perfTest.testRunning.agents"/></label>
 											<div class="controls">
 												<span>${(test.agentCount)!}</span>
-												<a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
+												<!--<a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>-->
 											</div>
 										</div>
 										<div class="control-group">
@@ -618,20 +638,18 @@ div.chart {
 	      var day = date.getDate();
 	      $("#sDateInput").val(year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day));
 	      
-	      <#if !test?exists||((test.status !="TESTING")&&(test.status !="FINISHED"))>
-		   		displayCfgOnly();
-		  </#if>
-		  <#if test?? && (test.status =="TESTING")>
-		   		displayCfgAndTestRunning();
-		  </#if>
-		  <#if test?? && (test.status =="FINISHED")>
-		   		displayCfgAndTestReport();
-		  </#if>
-	      
+		<#if test??>
+			<#if test.status =="TESTING">
+				displayCfgAndTestRunning();
+			<#elseif test.status =="FINISHED">
+				displayCfgAndTestReport();
+			<#else>
+				displayCfgOnly();
+			</#if>
+		<#else>
+			displayCfgOnly();
+		</#if>
 
-	      $("#n_test").addClass("active");
-
-	      $("#homeTab a:first").tab('show');
 	      $("#tableTab a:first").tab('show');
 
 	      $('#testContentForm input').hover(function () {
@@ -889,9 +907,7 @@ div.chart {
 
 	  function updateVuserPolicy() {
 	      updateVuserTotal();
-	      $('#messageDiv').ajaxSend(function () {
-	          showInformation("<@spring.message "perfTest.detail.message.calculatePolicy"/>");
-	      });
+	      showInformation("<@spring.message "perfTest.detail.message.calculatePolicy"/>");
 
 	      $.ajax({
 	          url: "${req.getContextPath()}/perftest/updateVuser",
@@ -925,7 +941,7 @@ div.chart {
 	  }
 
 	  function initThresholdChkBox() {
-	      if ($("#testId").val() == 0 || $("#threshold").val() == "R") { //runcount
+	      if ($("#threshold").val() == "R") { //runcount
 	          $("#runcountChkbox").attr("checked", "checked");
 	          $("#durationChkbox").removeAttr("checked");
 	      } else { //duration
@@ -934,7 +950,6 @@ div.chart {
 	      }
 	  }
 
-	  //initial the duration select box. The default value should be controlled with: $("#duration").val() 
 	  function initDuration() {
 	      var duration = $("#duration").val();
 	      var durationInSec = parseInt(duration / 1000);
@@ -942,6 +957,14 @@ div.chart {
 	      var durationM = parseInt((durationInSec % 3600) / 60);
 	      var durationS = durationInSec % 60;
 	      
+	      // Make 1 min as default
+	      if (durationH == 0 && durationM == 0 && durationS == 0) {
+	    	  $("#hSelect").val(0);
+	    	  $("#mSelect").val(1);
+	    	  $("#sSelect").val(0);
+	    	  $("#duration").val(60000);
+	    	  return;
+	      } 
 	      $("#hSelect").val(durationH);
 	      $("#mSelect").val(durationM);
 	      $("#sSelect").val(durationS);
@@ -1021,21 +1044,20 @@ div.chart {
 	              
 	              $("#running_time").text(showRunTime(refreshDiv.find("#test_time").val()));
 
-	              if (test_tps_data.getSize() == 60) {
-	                  test_tps_data.deQueue();
-	              }
-
 	              test_tps_data.enQueue(refreshDiv.find("#tpsChartData").val());
-
-	              showChart('runningTps', test_tps_data.toString());
 	          } else {
-	             if($('#runningContent_tab').hasClass('hidden')){
+	             if($('#runningContent_tab:hidden')[0]){
 	             	window.clearInterval(objTimer);
+	             	return;
 	             }else{
 	             	test_tps_data.enQueue(0);
-	              	showChart('runningTps', test_tps_data.toString());
 	             }
 	          }
+	          
+	      	  if (test_tps_data.getSize() > 60) {
+	              test_tps_data.deQueue();
+	          }
+	          showChart('runningTps', test_tps_data.toString());
 	      });
 	  }
 	  
@@ -1134,35 +1156,25 @@ div.chart {
 	  })();
 	  
 	  function displayCfgOnly() {
-		$("#testContent_tab").addClass("active");
-		$("#testContent").addClass("active");
-		$("#runningContent_tab").addClass("hidden");
-		$("#runningContent").addClass("hidden");
-		$("#reportContent_tab").addClass("hidden");
-		$("#reportContent").addClass("hidden");
+		$("#testContent_tab a").tab('show');
+		$("#runningContent_tab").hide();
+		$("#reportContent_tab").hide();
 	  }
 	  
 	  function displayCfgAndTestRunning() {
-	  	$("#runningContent_tab").addClass("active");
-		$("#runningContent").addClass("active");
-		$("#testContent_tab").removeClass("active");
-		$("#testContent").removeClass("active");
-		$("#runningContent_tab").removeClass("hidden");
-		$("#runningContent").removeClass("hidden");
-		$("#reportContent_tab").addClass("hidden");
-		$("#reportContent").addClass("hidden");
+		$("#runningContent_tab a").tab('show');
+		$("#reportContent_tab").hide();
 		
 		objTimer = window.setInterval("refreshData()", 1000);
 	  }
+	  
 	  function displayCfgAndTestReport() {
-		$("#testContent_tab").addClass("active");
-		$("#testContent").addClass("active");
-		$("#runningContent_tab").addClass("hidden");
-		$("#runningContent").addClass("hidden");
-		$("#reportContent_tab").removeClass("hidden");
-		$("#reportContent").removeClass("hidden");
-		$("#reportContent_tab").addClass("");
-		$("#reportContent").addClass("");
+		$("#testContent_tab a").tab('show');
+		$("#runningContent_tab").hide();
+		
+		if (objTimer) {
+	  		window.clearInterval(objTimer);
+	  	}
 	  }
 	</script>
 	</body>
