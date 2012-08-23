@@ -610,7 +610,7 @@ public class PerfTestService implements NGrinderConstants {
 		int pointCount = imgWidth / 10;
 		int lineNumber;
 		File targetFile = null;
-		targetFile = new File(reportFolder, dataType.toLowerCase() + DATA_FILE_EXTENSION);
+		targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
 		// if file not found, will throw exception and catched by controller.
 		LineNumberReader lnr = null;
 		try {
