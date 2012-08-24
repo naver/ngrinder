@@ -70,13 +70,12 @@ public class AgentJavaDataCollector extends AgentDataCollector {
 	@Override
 	public void run() {
 		JavaMonitoringData javaMonitoringData = (JavaMonitoringData) getMXBean(MonitorConstants.JAVA);
-
 		JavaInfo javaInfo = execute();
 		javaMonitoringData.addNotification(javaInfo);
 		javaMonitoringData.setJavaInfo(javaInfo);
 	}
 
-	private synchronized JavaInfo execute() {
+	public synchronized JavaInfo execute() {
 		JavaInfo javaInfo = new JavaInfo();
 
 		for (Entry<JavaVirtualMachineInfo, JavaMonitorProcessor> jj : processors.entrySet()) {
@@ -98,7 +97,6 @@ public class AgentJavaDataCollector extends AgentDataCollector {
 		}
 
 		javaInfo.setCollectTime(System.currentTimeMillis());
-
 		return javaInfo;
 	}
 
