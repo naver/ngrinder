@@ -431,13 +431,14 @@ public class SingleConsole implements Listener, SampleListener {
 		if (tps < 0.001) {
 			if (TPS_LESSTHAN_ZREO_TIME == null) {
 				TPS_LESSTHAN_ZREO_TIME = new Date();
-			} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= 60000) {
+			} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= 10000) {
 				LOGGER.warn("Test has been forced to stop because of tps is less than 0.001 and sustain more than one minitue.");
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
 					public void inform(ConsoleShutdownListener listener) {
 						listener.readyToStop(StopReason.TOO_LOW_TPS);
 					}
 				});
+				TPS_LESSTHAN_ZREO_TIME = null;
 
 			}
 		} else {
@@ -531,6 +532,7 @@ public class SingleConsole implements Listener, SampleListener {
 							listener.readyToStop(StopReason.TOO_MANY_ERRORS);
 						}
 					});
+					ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME = null;
 				}
 			}
 		}
