@@ -70,7 +70,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		agentControllerDaemon2.setAgentConfig(agentConfig2);
 		agentControllerDaemon2.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 
-		sleep(3000);
+		sleep(4000);
 		assertThat(agentManager.getAllAttachedAgents().size(), is(2));
 	}
 

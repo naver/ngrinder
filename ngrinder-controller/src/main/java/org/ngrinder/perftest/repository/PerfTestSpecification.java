@@ -131,7 +131,7 @@ public class PerfTestSpecification {
 		return new Specification<PerfTest>() {
 			@Override
 			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return cb.or(cb.equal(root.get("lastModifiedBy"), user), cb.equal(root.get("createdBy"), user));
+				return cb.or(cb.equal(root.get("lastModifiedUser"), user), cb.equal(root.get("createdUser"), user));
 			}
 		};
 	}
