@@ -127,7 +127,7 @@ public class HomeController extends NGrinderBaseController {
 		localeEditor.setAsText(lan);
 		localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
 	}
-
+	
 	@RequestMapping(value = "/login")
 	public String login(ModelMap model) {
 		setLoginPageDate(model);

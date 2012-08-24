@@ -17,7 +17,7 @@
 							<@security.authorize ifAnyGranted="U, A, S">
 			                	<li><a id="user_profile_id"><@spring.message "navigator.dropdown.profile"/></a></li>
 			                	<li class="divider"/>
-				          		<li><a href="${req.getContextPath()}/j_spring_security_logout"><@spring.message "navigator.dropdown.signout"/></a></li>
+				          		<li><a href="${req.getContextPath()}/logout"><@spring.message "navigator.dropdown.signout"/></a></li>
 			            	</@security.authorize>
 			            	<@security.authorize ifAnyGranted="A, S">
 				            	<li class="divider"/>

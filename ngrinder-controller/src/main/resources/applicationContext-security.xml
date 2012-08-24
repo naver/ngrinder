@@ -74,7 +74,7 @@
 		<custom-filter ref="customFilter" position="FORM_LOGIN_FILTER" />
 
 		<!-- logout to home, and then it will redirect to login. otherwise, there will be some ajax problem. -->
-		<logout logout-success-url="/home" invalidate-session="true" />
+		<logout logout-success-url="/login" logout-url="/logout" delete-cookies="JSESSIONID" invalidate-session="true" />
 
 		<session-management invalid-session-url="/login" session-fixation-protection="migrateSession" />
 
