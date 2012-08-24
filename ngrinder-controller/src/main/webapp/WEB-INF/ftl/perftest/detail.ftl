@@ -698,6 +698,16 @@ div.chart {
 	      });
 
 	      $("#testContentForm").validate({
+		      	 rules:{
+		            testName:"required",
+		            agentCount:"required",
+		            vuserPerAgent:"required"
+		        },
+		        messages:{
+		            testName:"<@spring.message "perfTest.warning.testName"/>",
+		            agentCount:"<@spring.message "perfTest.warning.agentNumber"/>",
+		            vuserPerAgent:"<@spring.message "perfTest.warning.vuserPerAgent"/>"
+		        },
 	          ignore: "", //make the validation on hidden input work
 	          errorClass: "help-inline",
 	          errorElement: "span",
