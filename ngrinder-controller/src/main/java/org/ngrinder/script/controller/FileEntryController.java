@@ -318,8 +318,8 @@ public class FileEntryController extends NGrinderBaseController {
 			fileEntryService.save(user, fileEntry);
 			return get(user, path, model);
 		} catch (IOException e) {
-			LOG.error("Error while getting file content", e);
-			throw new NGrinderRuntimeException("Error while getting file content", e);
+			LOG.error("Error while getting file content:" + e.getMessage(), e);
+			throw new NGrinderRuntimeException("Error while getting file content:" + e.getMessage(), e);
 		}
 	}
 

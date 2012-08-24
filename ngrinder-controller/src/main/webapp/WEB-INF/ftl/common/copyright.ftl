@@ -17,9 +17,10 @@
 		var i = $elem[0];
 		if (i) {
 			var ll = i.offsetTop;
-			while(i != null && i != i.offsetParent){
-				ll += i.offsetTop;
-				i = i.offsetParent;
+			var prt = i.offsetParent;
+			while(i != null && i != prt){
+				ll += prt.offsetTop;
+				i = prt;
 			}
 			
 			if (ll < 800) {
