@@ -184,8 +184,8 @@ public class FileEntryController extends NGrinderBaseController {
 					@RequestParam(value = "r", required = false) Long revision, ModelMap model) { // "fileName"
 		FileEntry script = fileEntryService.getFileEntry(user, path, revision);
 		if (script == null || !script.getFileType().isEditable()) {
-			throw new NGrinderRuntimeException(
-							"Error while getting file detail. the file does not exist or not editable");
+			LOG.error("Error while getting file detail on {}. the file does not exist or not editable", path);
+			return "redirect:/script/list";
 		}
 		model.addAttribute("file", script);
 		return "script/scriptEditor";
@@ -254,8 +254,8 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return script/scriptList
 	 */
 	@RequestMapping(value = "/search/**")
-	public String searchFileEntity(User user, @RequestParam(required = true) final String query,
-					ModelMap model) {
+	public String searchFileEntity(User user,
+					@RequestParam(required = true, value = "query") final String query, ModelMap model) {
 		Collection<FileEntry> searchResult = Collections2.filter(fileEntryService.getAllFileEntries(user),
 						new Predicate<FileEntry>() {
 							@Override
