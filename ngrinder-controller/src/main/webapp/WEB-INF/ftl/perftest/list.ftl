@@ -82,14 +82,14 @@
 											 data-content="${test.description?replace('\n', '<br/>')?html}&lt;p&gt;Modified at <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if>&lt;/p&gt;"  
 											 data-original-title="${test.testName}">
 											<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
-										</div> 
+										</div>  
 									</td>
 									<td class="ellipsis">
 										<div rel="popover"
-											 data-content="${test.scriptName}"  
+											 data-content="${test.scriptName} &lt;br&gt;&lt;br&gt; - <@spring.message "script.list.table.revision"/> : ${(test.scriptRevision)!'HEAD'}"  
 											 data-original-title="<@spring.message "perfTest.table.scriptName"/>">								
-											<a href="${req.getContextPath()}/script/detail/${test.scriptName}">${test.scriptName}</a> 
-										</div>
+											<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}">${test.scriptName}</a> 
+										</div>  
 									</td>
 									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if></td>
 									<td>${(test.durationStr)!}</td> 

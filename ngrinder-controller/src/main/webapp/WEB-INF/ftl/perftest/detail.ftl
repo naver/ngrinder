@@ -921,7 +921,8 @@ div.chart {
 	          url: "${req.getContextPath()}/perftest/getResourcesOnScriptFolder",
 	          dataType: 'json',
 	          data: {
-	              'scriptPath': $("#scriptName").val()
+	              'scriptPath': $("#scriptName").val(),
+	              'r':$("#scriptRevision").val()
 	          },
 	          success: function (res) {
 	              var html = "";

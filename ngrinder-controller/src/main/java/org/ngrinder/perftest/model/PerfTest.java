@@ -44,8 +44,8 @@ import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.model.BaseModel;
 
 /**
- * Performance Test Entity Use Create user of BaseModel as test owner, use create date of BaseModel as create time, but
- * the created time maybe not the test starting time.
+ * Performance Test Entity Use Create user of BaseModel as test owner, use create date of BaseModel
+ * as create time, but the created time maybe not the test starting time.
  * 
  */
 @Entity
@@ -151,6 +151,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(length = MAX_STACKTRACE_STRING_SIZE)
 	private String testComment = "";
 
+	private Long scriptRevision = -1L;
+
 	private Boolean stopRequest = null;
 
 	public String getTestName() {
@@ -250,8 +252,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	/**
-	 * Get ip address of target hosts. if target hosts 'a.com:1.1.1.1' add ip: '1.1.1.1' if target hosts ':1.1.1.1' add
-	 * ip: '1.1.1.1' if target hosts '1.1.1.1' add ip: '1.1.1.1'
+	 * Get ip address of target hosts. if target hosts 'a.com:1.1.1.1' add ip: '1.1.1.1' if target
+	 * hosts ':1.1.1.1' add ip: '1.1.1.1' if target hosts '1.1.1.1' add ip: '1.1.1.1'
 	 * 
 	 * @return
 	 */
@@ -464,7 +466,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setProgressMessage(String progressMessage) {
 		this.progressMessage = StringUtils.defaultIfEmpty(
-				StringUtils.right(progressMessage, MAX_STACKTRACE_STRING_SIZE), "");
+						StringUtils.right(progressMessage, MAX_STACKTRACE_STRING_SIZE), "");
 	}
 
 	public Boolean getStopRequest() {
@@ -494,6 +496,15 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public void setTestComment(String testComment) {
-		this.testComment = StringUtils.defaultIfEmpty(StringUtils.right(testComment, MAX_STACKTRACE_STRING_SIZE), "");
+		this.testComment = StringUtils.defaultIfEmpty(
+						StringUtils.right(testComment, MAX_STACKTRACE_STRING_SIZE), "");
+	}
+
+	public Long getScriptRevision() {
+		return scriptRevision;
+	}
+
+	public void setScriptRevision(Long scriptRevision) {
+		this.scriptRevision = scriptRevision;
 	}
 }

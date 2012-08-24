@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -97,13 +96,13 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 		byte[] byteArray = IOUtils.toByteArray(new ClassPathResource("TEST_USER.zip").getInputStream());
 		fileEntry.setContentBytes(byteArray);
 		repo.save(getTestUser(), fileEntry, null);
-		List<FileEntry> findAll = repo.findAll(getTestUser(), "hello.zip");
+		List<FileEntry> findAll = repo.findAll(getTestUser(), "hello.zip", null);
 		FileEntry foundEntry = findAll.get(0);
 		System.out.println(foundEntry.getPath());
 		assertThat(foundEntry.getFileSize(), is((long) byteArray.length));
 		// commit again
 		repo.save(getTestUser(), fileEntry, null);
-		findAll = repo.findAll(getTestUser(), "hello.zip");
+		findAll = repo.findAll(getTestUser(), "hello.zip", null);
 		assertThat(foundEntry.getFileSize(), is((long) byteArray.length));
 	}
 
@@ -126,11 +125,9 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testNotExistingPath() throws IOException {
 		// When requesting not existing folder.. it should return empty list
-		List<FileEntry> findAll = repo.findAll(getTestUser(), "/helloworld");
+		List<FileEntry> findAll = repo.findAll(getTestUser(), "/helloworld", null);
 		assertThat(findAll.size(), is(0));
 	}
-
-	
 
 	@Test
 	public void testRecusiveDireSave() throws IOException {

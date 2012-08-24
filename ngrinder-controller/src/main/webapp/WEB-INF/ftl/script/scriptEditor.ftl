@@ -7,12 +7,13 @@
 		<style>
 		
 		div.div-host {
+			background-color: #FFFFFF;
 			border: 1px solid #D6D6D6;
 			height: 50px;
 			margin-bottom: 8px;
 			display: inline-block;
 			overflow-y: scroll;
-			border-radius: 3px 3px 3px 3px;
+			border-radius: 3px 3px 3px 3px; 
 		}
 		
 		div.div-host .host {
@@ -41,21 +42,26 @@
 									<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" ><@spring.message "common.button.save"/></a>
 									<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" ><@spring.message "script.editor.button.validate"/></a>
 								</div>
-							</div>
+							</div> 
 							<div style="margin-bottom: 0" class="control-group">
-								<label class="control-label" for="description"><@spring.message "script.option.commit"/></label>
-								<div class="controls"> 
-									<textarea class="input-xlarge span4" id="descInput" rows="3" name="description" style="resize: none" >
-										${(file.description)!}
-									</textarea>
-									
-									<div class="pull-right div-host"></div>
-									<input type="hidden" name="targetHosts" id="hostsHidden" value="${(test.targetHosts)!}"> 
-									<a class="btn pull-right btn-mini" data-toggle="modal" href="#addHostModal" style="margin-right:20px;margin-top:-30px">   
-										<@spring.message "perfTest.configuration.add"/>
-									</a> 
-									
-								</div>            
+								<table style="width:100%">
+									<tr>
+										<td style="width:80%">
+											<label class="control-label" for="description"><@spring.message "script.option.commit"/></label>
+											<div class="controls"> 
+												<textarea class="input-xlarge span7" id="descInput" rows="3" name="description" style="resize: none" >${(file.description)!}</textarea>
+											</div> 
+										</td> 
+										<td style="width:20%"> 
+											<span>
+												<div class="span3 div-host" style="bgcolor:#FFFFFF"></div>
+												<input type="hidden" name="targetHosts" id="hostsHidden" value="${(test.targetHosts)!}"> 
+												<a class="btn btn-mini" data-toggle="modal" href="#addHostModal" style="margin-left:0px;margin-top:-30px">   
+													<@spring.message "perfTest.configuration.add"/> 
+												</a> 
+											</span> 
+										</td> 
+								</table>           
 							</div>
 						</fieldset>
 					</div>

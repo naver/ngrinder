@@ -67,8 +67,8 @@ public class ScriptValidationService {
 	/**
 	 * Validate Script.
 	 * 
-	 * It's quite complex.. to validate script, we need write jar files and script. Furthermore, to make a small log..
-	 * We have to copy optimized logback_worker.xml
+	 * It's quite complex.. to validate script, we need write jar files and script. Furthermore, to
+	 * make a small log.. We have to copy optimized logback_worker.xml
 	 * 
 	 * Finally this method returns the path of validating result file.
 	 * 
@@ -94,7 +94,7 @@ public class ScriptValidationService {
 			file.delete();
 			// Get all lib and resources in the script path
 			List<FileEntry> fileEntries = fileEntryService.getLibAndResourcesEntries(user,
-					checkNotEmpty(scriptEntry.getPath()));
+							checkNotEmpty(scriptEntry.getPath()), null);
 
 			scriptDirectory.mkdirs();
 
@@ -115,9 +115,10 @@ public class ScriptValidationService {
 				fileEntryService.writeContentTo(user, scriptEntry.getPath(), scriptDirectory);
 			} else {
 				FileUtils.writeStringToFile(scriptFile, scriptEntry.getContent(),
-						StringUtils.defaultIfBlank(scriptEntry.getEncoding(), "UTF-8"));
+								StringUtils.defaultIfBlank(scriptEntry.getEncoding(), "UTF-8"));
 			}
-			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, new Condition(), "");
+			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile,
+							new Condition(), "");
 			return FileUtils.readFileToString(doValidate);
 		} catch (IOException e) {
 			LOG.error("Error while distributing files on {} for {}", user, scriptEntry.getPath());

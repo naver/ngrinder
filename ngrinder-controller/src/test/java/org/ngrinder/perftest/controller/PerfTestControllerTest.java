@@ -74,7 +74,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 	@Test
 	public void testGetResourcesOnScriptFolder() {
-		controller.getResourcesOnScriptFolder(getTestUser(), "");
+		controller.getResourcesOnScriptFolder(getTestUser(), "", null);
 	}
 
 	@Test
@@ -107,7 +107,8 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	}
 
 	/**
-	 * for "saved" or "ready" test, can be modified, but for running or finished test, can not modify
+	 * for "saved" or "ready" test, can be modified, but for running or finished test, can not
+	 * modify
 	 */
 	@Test
 	public void testSavePerfTestExist() {
@@ -226,7 +227,8 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		List<PerfTest> testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
 
-		controller.getPerfTestList(getTestUser(), strangeName.substring(2, 10), false, new PageRequest(0, 10), model);
+		controller.getPerfTestList(getTestUser(), strangeName.substring(2, 10), false,
+						new PageRequest(0, 10), model);
 		testPage = (Page<PerfTest>) model.get("testListPage");
 		testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
