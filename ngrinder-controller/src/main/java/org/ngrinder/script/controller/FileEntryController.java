@@ -314,9 +314,10 @@ public class FileEntryController extends NGrinderBaseController {
 				fileEntry.setContentBytes(file.getBytes());
 			}
 			fileEntry.setDescription(description);
-			fileEntry.setPath(FilenameUtils.concat(path, file.getOriginalFilename()));
+			fileEntry.setPath(FilenameUtils.separatorsToUnix(FilenameUtils.concat(path,
+							file.getOriginalFilename())));
 			fileEntryService.save(user, fileEntry);
-			return get(user, path, model);
+			return "redirect:/script/list/" + path;
 		} catch (IOException e) {
 			LOG.error("Error while getting file content:" + e.getMessage(), e);
 			throw new NGrinderRuntimeException("Error while getting file content:" + e.getMessage(), e);
