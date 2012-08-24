@@ -24,6 +24,7 @@ package org.ngrinder.monitor.agent.collector;
 
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.collector.process.LinuxSystemMonitorProcessor;
 import org.ngrinder.monitor.agent.collector.process.WindowSystemMonitorProcessor;
@@ -58,11 +59,12 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 		SystemMonitoringData systemMonitoringData = (SystemMonitoringData) getMXBean(MonitorConstants.SYSTEM);
 		SystemInfo systemInfo = execute();
 
+		LOG.debug("systemInfo ifno: {}", ToStringBuilder.reflectionToString(systemInfo));
 		systemMonitoringData.addNotification(systemInfo);
 		systemMonitoringData.setSystemInfo(systemInfo);
 	}
 
-	private synchronized SystemInfo execute() {
+	public synchronized SystemInfo execute() {
 
 		SystemInfo systemInfo = new SystemInfo();
 		try {

@@ -193,10 +193,10 @@ public class FileEntryService {
 	 *            path in the repo
 	 * @return file entry list
 	 */
-	public List<FileEntry> getFileEntries(User user, String path) {
+	public List<FileEntry> getFileEntries(User user, String path, Long revision) {
 		// If it's not created, make one.
 		prepare(user);
-		return fileEntityRepository.findAll(user, path);
+		return fileEntityRepository.findAll(user, path, revision);
 	}
 
 	/**
@@ -415,18 +415,18 @@ public class FileEntryService {
 	 *            path of script
 	 * @return {@link FileEntry} list
 	 */
-	public List<FileEntry> getLibAndResourcesEntries(User user, String scriptPath) {
+	public List<FileEntry> getLibAndResourcesEntries(User user, String scriptPath, Long revision) {
 		String path = FilenameUtils.getPath(scriptPath);
 		List<FileEntry> fileList = new ArrayList<FileEntry>();
 
-		List<FileEntry> fileEntries = getFileEntries(user, path + "lib/");
+		List<FileEntry> fileEntries = getFileEntries(user, path + "lib/", revision);
 		for (FileEntry eachFileEntry : fileEntries) {
 			FileType fileType = eachFileEntry.getFileType();
 			if (fileType == FileType.JAR) {
 				fileList.add(eachFileEntry);
 			}
 		}
-		fileEntries = getFileEntries(user, path + "resources/");
+		fileEntries = getFileEntries(user, path + "resources/", revision);
 		for (FileEntry eachFileEntry : fileEntries) {
 			FileType fileType = eachFileEntry.getFileType();
 			if (fileType != FileType.DIR && fileType != FileType.UNKNOWN) {

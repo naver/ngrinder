@@ -30,9 +30,12 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.script.service.FileEntryService;
+import org.ngrinder.security.SecuredUser;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.dao.SaltSource;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +53,16 @@ public class UserService {
 
 	@Autowired
 	private FileEntryService scriptService;
-	
+
+	@Autowired
+	public SaltSource saltSource;
+
+	@Autowired
+	public PasswordEncoder passwordEncoder;
+
+	@Autowired
+	public UserContext userContext;
+
 	/**
 	 * get user by user id.
 	 * 
@@ -72,6 +84,15 @@ public class UserService {
 		return userRepository.findOneByUserName(userName);
 	}
 
+	public void encodePassword(User user) {
+		if (StringUtils.isNotBlank(user.getPassword())) {
+			SecuredUser securedUser = new SecuredUser(user, null);
+			String encodePassword = passwordEncoder.encodePassword(user.getPassword(),
+							saltSource.getSalt(securedUser));
+			user.setPassword(encodePassword);
+		}
+	}
+
 	/**
 	 * get all users by role.
 	 * 
@@ -89,12 +110,13 @@ public class UserService {
 	 * create user.
 	 * 
 	 * @param user
-	 * 			include id, userID, fullName, role, password.
+	 *            include id, userID, fullName, role, password.
 	 * 
 	 * @return result
 	 */
 	@Transactional
 	public User saveUser(User user) {
+		encodePassword(user);
 		User createdUser = userRepository.save(user);
 		prepareUserEnv(user);
 		return createdUser;
@@ -110,6 +132,7 @@ public class UserService {
 	 * @param user
 	 */
 	public void saveUser(User user, Role role) {
+		encodePassword(user);
 		user.setRole(role);
 		userRepository.save(user);
 	}
@@ -123,6 +146,7 @@ public class UserService {
 	public String modifyUser(User user) {
 		checkNotNull(user, "user should be not null, when modifying user");
 		checkNotNull(user.getId(), "user id should be provided when modifying user");
+		encodePassword(user);
 		User targetUser = userRepository.findOne(user.getId());
 		targetUser.merge(user);
 		userRepository.save(targetUser);
@@ -173,7 +197,7 @@ public class UserService {
 			return null;
 		}
 	}
-	
+
 	public List<User> getUserListByKeyWord(String keyword) {
 		return userRepository.findAll(UserSpecification.nameLike(keyword));
 	}

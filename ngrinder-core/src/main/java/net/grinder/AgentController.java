@@ -62,15 +62,12 @@ import net.grinder.util.thread.Condition;
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.common.util.ReflectionUtil;
 import org.ngrinder.infra.AgentConfig;
-import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.monitor.agent.AgentMXBeanStorage;
 import org.ngrinder.monitor.agent.collector.AgentJavaDataCollector;
 import org.ngrinder.monitor.agent.collector.AgentSystemDataCollector;
-import org.ngrinder.monitor.agent.mxbean.JavaMonitoringData;
-import org.ngrinder.monitor.agent.mxbean.SystemMonitoringData;
 import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.JavaInfo;
+import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
 
 /**
@@ -96,10 +93,7 @@ public class AgentController implements Agent {
 
 	private GrinderProperties m_grinderProperties;
 
-	private JavaMonitoringData javaMonitoringData = new JavaMonitoringData();
 	private AgentJavaDataCollector agentJavaDataCollector = new AgentJavaDataCollector();
-
-	private SystemMonitoringData systemMonitoringData = new SystemMonitoringData();
 	private AgentSystemDataCollector agentSystemDataCollector = new AgentSystemDataCollector();
 
 	/**
@@ -119,9 +113,7 @@ public class AgentController implements Agent {
 		m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, m_logger);
 		m_agentIdentity = new AgentControllerIdentityImplementation(getHostName(), getHostAddress());
 
-		AgentMXBeanStorage.getInstance().addMXBean(MonitorConstants.JAVA, javaMonitoringData);
 		agentJavaDataCollector.refresh();
-		AgentMXBeanStorage.getInstance().addMXBean(MonitorConstants.SYSTEM, systemMonitoringData);
 		agentSystemDataCollector.refresh();
 	}
 
@@ -372,8 +364,8 @@ public class AgentController implements Agent {
 	 * @return {@link SystemDataModel} instance
 	 */
 	public SystemDataModel getSystemDataModel() {
-		agentSystemDataCollector.run();
-		return new SystemDataModel(systemMonitoringData.getSystemInfo());
+		SystemInfo systemInfo = agentSystemDataCollector.execute();
+		return new SystemDataModel(systemInfo);
 	}
 
 	/**
@@ -382,8 +374,8 @@ public class AgentController implements Agent {
 	 * @return {@link JavaDataModel} instance
 	 */
 	public JavaDataModel getJavaDataModel() {
-		agentJavaDataCollector.run();
-		JavaInfo javaInfo = javaMonitoringData.getJavaInfo();
+		
+		JavaInfo javaInfo = agentJavaDataCollector.execute();
 		JavaDataModel javaDataModel = new JavaDataModel(javaInfo);
 
 		javaDataModel.setKey(getHostAddress());

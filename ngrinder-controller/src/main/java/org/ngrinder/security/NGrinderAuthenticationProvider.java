@@ -33,13 +33,13 @@ import org.ngrinder.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.authentication.dao.SaltSource;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
-import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -61,9 +61,14 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	// ~ Instance fields
 	// ================================================================================================
 
-	private PasswordEncoder passwordEncoder = new PlaintextPasswordEncoder();
+	@Autowired
+	@Qualifier("shaPasswordEncoder")
+	private PasswordEncoder passwordEncoder;
 
+	@Autowired
+	@Qualifier("reflectionSaltSource")
 	private SaltSource saltSource;
+	
 
 	@Autowired
 	private UserDetailsService userDetailsService;
@@ -76,7 +81,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 	@SuppressWarnings("deprecation")
 	protected void additionalAuthenticationChecks(UserDetails userDetails,
-			UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+					UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
 		Object salt = null;
 
 		if (this.saltSource != null) {
@@ -87,7 +92,8 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 			logger.debug("Authentication failed: no credentials provided");
 
 			throw new BadCredentialsException(messages.getMessage(
-					"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"), userDetails);
+							"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"),
+							userDetails);
 		}
 
 		String presentedPassword = authentication.getCredentials().toString();
@@ -95,15 +101,17 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		boolean authorized = false;
 
 		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class,
-				defaultLoginPlugin)) {
+						defaultLoginPlugin)) {
 
 			if (StringUtils.isEmpty(user.getAuthProviderClass())
-					&& isClassEqual(each.getClass(), defaultLoginPlugin.getClass().getName())) {
-				each.validateUser(user.getUsername(), user.getPassword(), presentedPassword, passwordEncoder, salt);
+							&& isClassEqual(each.getClass(), defaultLoginPlugin.getClass().getName())) {
+				each.validateUser(user.getUsername(), user.getPassword(), presentedPassword, passwordEncoder,
+								salt);
 				authorized = true;
 				break;
 			} else if (isClassEqual(each.getClass(), user.getAuthProviderClass())) {
-				each.validateUser(user.getUsername(), user.getPassword(), presentedPassword, passwordEncoder, salt);
+				each.validateUser(user.getUsername(), user.getPassword(), presentedPassword, passwordEncoder,
+								salt);
 				authorized = true;
 				break;
 			}
@@ -112,7 +120,8 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 		if (!authorized) {
 			throw new BadCredentialsException(messages.getMessage(
-					"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"), user);
+							"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"),
+							user);
 		}
 
 		// If It's the first time to login
@@ -148,8 +157,8 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		Assert.notNull(this.userDetailsService, "A UserDetailsService must be set");
 	}
 
-	protected final UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication)
-			throws AuthenticationException {
+	protected final UserDetails retrieveUser(String username,
+					UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
 		UserDetails loadedUser;
 
 		try {
@@ -162,18 +171,20 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 		if (loadedUser == null) {
 			throw new AuthenticationServiceException(
-					"UserDetailsService returned null, which is an interface contract violation");
+							"UserDetailsService returned null, which is an interface contract violation");
 		}
 		return loadedUser;
 	}
 
 	/**
-	 * Sets the PasswordEncoder instance to be used to encode and validate passwords. If not set, the password will be
-	 * compared as plain text.
+	 * Sets the PasswordEncoder instance to be used to encode and validate passwords. If not set,
+	 * the password will be compared as plain text.
 	 * <p>
-	 * For systems which are already using salted password which are encoded with a previous release, the encoder should
-	 * be of type {@code org.springframework.security.authentication.encoding.PasswordEncoder} . Otherwise, the
-	 * recommended approach is to use {@code org.springframework.security.crypto.password.PasswordEncoder}.
+	 * For systems which are already using salted password which are encoded with a previous
+	 * release, the encoder should be of type
+	 * {@code org.springframework.security.authentication.encoding.PasswordEncoder} . Otherwise, the
+	 * recommended approach is to use
+	 * {@code org.springframework.security.crypto.password.PasswordEncoder}.
 	 * 
 	 * @param passwordEncoder
 	 *            must be an instance of one of the {@code PasswordEncoder} types.
@@ -200,7 +211,8 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 				}
 
 				private void checkSalt(Object salt) {
-					Assert.isNull(salt, "Salt value must be null when used with crypto module PasswordEncoder");
+					Assert.isNull(salt,
+									"Salt value must be null when used with crypto module PasswordEncoder");
 				}
 			};
 
@@ -215,12 +227,13 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	}
 
 	/**
-	 * The source of salts to use when decoding passwords. <code>null</code> is a valid value, meaning the
-	 * <code>DaoAuthenticationProvider</code> will present <code>null</code> to the relevant
-	 * <code>PasswordEncoder</code>.
+	 * The source of salts to use when decoding passwords. <code>null</code> is a valid value,
+	 * meaning the <code>DaoAuthenticationProvider</code> will present <code>null</code> to the
+	 * relevant <code>PasswordEncoder</code>.
 	 * <p>
-	 * Instead, it is recommended that you use an encoder which uses a random salt and combines it with the password
-	 * field. This is the default approach taken in the {@code org.springframework.security.crypto.password} package.
+	 * Instead, it is recommended that you use an encoder which uses a random salt and combines it
+	 * with the password field. This is the default approach taken in the
+	 * {@code org.springframework.security.crypto.password} package.
 	 * 
 	 * @param saltSource
 	 *            to use when attempting to decode passwords via the <code>PasswordEncoder</code>

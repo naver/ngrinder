@@ -103,7 +103,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 */
 	@RequestMapping({ "/list/**", "" })
 	public String get(User user, @RemainedPath String path, ModelMap model) { // "fileName"
-		List<FileEntry> files = fileEntryService.getFileEntries(user, path);
+		List<FileEntry> files = fileEntryService.getFileEntries(user, path, null);
 		model.addAttribute("files", files);
 		model.addAttribute("currentPath", path);
 		model.addAttribute("svnUrl", fileEntryService.getSvnUrl(user, path));
