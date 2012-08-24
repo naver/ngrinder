@@ -188,7 +188,9 @@ div.chart {
 													</#list> 
 												</#if>
 												</select>
-											</div>
+												<input type="hidden" id="scriptRevision" name="scriptRevision" value="${(test.scriptRevision)!-1}">
+												<button class="pull-right btn btn-mini btn-info" type="button" id="showScript"><@spring.message "perfTest.configuration.showScript"/></button>
+											</div> 
 										</div>
 										<div class="control-group">
 											<label for="Script Resources" class="control-label"><@spring.message "perfTest.configuration.scriptResources"/></label>
@@ -665,7 +667,7 @@ div.chart {
 		  			"testComment": comment 
 		  		},
 		  		function() {
-		  			alert("Comment is successful");
+		  			showSuccessMsg("Comment is successfully reflected");
 		  		}
 		     );
 		  });
@@ -877,7 +879,16 @@ div.chart {
 	      $("#homeTab a").click(function () {
 	          resetFooter();
 	      });
-
+			
+			
+		  $("#showScript").click(function() {
+		  	  var currentScript = $("#scriptName").val();
+		      if (currentScript != "") {
+		      	var scriptRevision = $("#scriptRevision").val();
+		      	window.open ("${req.getContextPath()}/script/detail/" + currentScript + "?r=" + scriptRevision, "scriptSource");
+		      }
+		  });
+		  	
 	      initThresholdChkBox();
 	      initHosts();
 	      initDuration();

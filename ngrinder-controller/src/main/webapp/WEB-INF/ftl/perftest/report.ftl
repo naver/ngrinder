@@ -38,11 +38,11 @@
 			<div class="span3">
 					   <table class="table table-bordered">
 					       <tr>
-					       	   <th><@spring.message "perfTest.table.vusers"/></th>
+					       	   <th><@spring.message "perfTest.report.vusersPerAgent"/></th>
 					           <td><strong>${(test.vuserPerAgent)!}</strong></td>
 					       </tr>
 					       <tr>
-                               <th><@spring.message "perfTest.configuration.agent"/></th>
+                               <th><@spring.message "perfTest.report.agent"/></th>
                                <td><span>${(test.agentCount)!}</span>&nbsp;&nbsp;<a class="btn btn-mini btn-info hidden" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a></td>
                            </tr>
                            <tr>

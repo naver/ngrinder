@@ -71,7 +71,8 @@ import freemarker.template.Template;
 /**
  * File entry service class.<br/>
  * 
- * This class is responsible for creating user repo whenever user is created and connection b/w user and underlying svn.
+ * This class is responsible for creating user repo whenever user is created and connection b/w user
+ * and underlying svn.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -157,7 +158,8 @@ public class FileEntryService {
 	}
 
 	private SVNURL createUserRepo(User user, File newUserDirectory) throws SVNException {
-		return svnClientManager.getAdminClient().doCreateRepository(newUserDirectory, user.getUserId(), true, true);
+		return svnClientManager.getAdminClient().doCreateRepository(newUserDirectory, user.getUserId(), true,
+						true);
 	}
 
 	private File getUserRepoDirectory(User user) {
@@ -195,6 +197,24 @@ public class FileEntryService {
 		// If it's not created, make one.
 		prepare(user);
 		return fileEntityRepository.findAll(user, path);
+	}
+
+	/**
+	 * Get single file entity.
+	 * 
+	 * The return value has content byte.
+	 * 
+	 * @param user
+	 *            the user
+	 * @param path
+	 *            path in the svn repo
+	 * @param revision
+	 *            file revision.
+	 * @return single file entity
+	 */
+	public FileEntry getFileEntry(User user, String path, long revision) {
+
+		return fileEntityRepository.findOne(user, path, SVNRevision.create(revision));
 	}
 
 	/**
@@ -250,11 +270,13 @@ public class FileEntryService {
 	 * @param path
 	 *            path in the repo
 	 * @param revision
-	 *            revision
+	 *            revision. if -1, HEAD
 	 * @return file entity
 	 */
 	public FileEntry getFileEntry(User user, String path, Long revision) {
-		return fileEntityRepository.findOne(user, path, SVNRevision.create(revision));
+		SVNRevision svnRev = (revision == null || revision == -1) ? SVNRevision.HEAD : SVNRevision
+						.create(revision);
+		return fileEntityRepository.findOne(user, path, svnRev);
 	}
 
 	/**
@@ -370,7 +392,8 @@ public class FileEntryService {
 
 	public String getSvnUrl(User user, String path) {
 		String contextPath = httpContainerContext.getCurrentRequestUrlFromUserRequest();
-		StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url", contextPath));
+		StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url",
+						contextPath));
 		url.append("/svn/").append(user.getUserId());
 		if (StringUtils.isNotEmpty(path)) {
 			url.append("/").append(path.trim());
@@ -383,8 +406,8 @@ public class FileEntryService {
 	}
 
 	/**
-	 * Get Lib and Resources. This method will collect the files of lib and resources folder on the same folder whre
-	 * script is located.
+	 * Get Lib and Resources. This method will collect the files of lib and resources folder on the
+	 * same folder whre script is located.
 	 * 
 	 * @param user
 	 *            user

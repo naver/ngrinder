@@ -133,6 +133,7 @@ public class FileEntryRepository {
 							script.setCreatedDate(dirEntry.getDate());
 							script.setLastModifiedDate(dirEntry.getDate());
 							script.setDescription(dirEntry.getCommitMessage());
+							script.setRevision(dirEntry.getRevision());
 							script.setLastModifiedUser(userRepository.findOneByUserId(dirEntry.getAuthor()));
 							if (dirEntry.getKind() == SVNNodeKind.DIR) {
 								script.setFileType(FileType.DIR);
@@ -174,6 +175,7 @@ public class FileEntryRepository {
 							}
 							script.setPath(dirEntry.getRelativePath());
 							script.setDescription(dirEntry.getCommitMessage());
+							script.setRevision(dirEntry.getRevision());
 							script.setFileType(dirEntry.getKind() == SVNNodeKind.DIR ? FileType.DIR : null);
 							script.setFileSize(dirEntry.getSize());
 							scripts.add(script);

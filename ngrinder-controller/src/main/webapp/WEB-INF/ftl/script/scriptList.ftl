@@ -48,6 +48,7 @@
 				<col width="250"> 
 				<col>
 				<col width="150">
+				<col width="70">
 				<col width="75">
 				<col width="63">
 			</colgroup> 
@@ -59,6 +60,7 @@
 					<th><@spring.message "script.option.name"/></th>
 					<th class="noClick"><@spring.message "script.option.commit"/></th>
 					<th><@spring.message "script.list.table.lastDate"/></th>
+					<th><@spring.message "script.list.label.revision"/></th>
 					<th><@spring.message "script.list.table.size"/></th>
 					<th class="noClick"><@spring.message "common.label.actions"/></th>
 				</tr>
@@ -88,6 +90,7 @@
 							</td>
 							<td class="ellipsis" title="${(script.description)!}">${(script.description)!}</td>
 							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if></td>
+							<td>${script.revision}</td>  
 							<td><#assign floatSize = script.fileSize?number/1024>${floatSize?string("0.##")}</td>
 							<td class="center">
 								<#if script.fileType != "dir">
@@ -348,7 +351,7 @@
 					"iDisplayLength": 10,
 					"aaSorting": [[2, "asc"]],
 					"bProcessing": true,
-					"aoColumns": [{ "asSorting": []}, { "asSorting": []}, null, { "asSorting": []}, null, null, { "asSorting": []}],
+					"aoColumns": [{ "asSorting": []}, { "asSorting": []}, null, { "asSorting": []}, null, null, null, { "asSorting": []}],
 					"sPaginationType": "bootstrap"
 				});
 				$(".noClick").off('click');
