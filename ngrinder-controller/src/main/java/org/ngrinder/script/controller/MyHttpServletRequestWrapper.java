@@ -20,41 +20,37 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.common.util;
+package org.ngrinder.script.controller;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+
+import org.ngrinder.common.util.PathUtil;
+import org.tmatesoft.svn.core.internal.util.SVNEncodingUtil;
 
 /**
- * Utility class for path manipulation
+ * Customized Version of {@link HttpServletRequest} Tomcat's version has bug...
+ * 
+ * getPathInfo() translates encoded path wrongly..
  * 
  * @author JunHo Yoon
- * @since 3.0
- * 
  */
-public class PathUtil {
-	/**
-	 * Remove prepending / on path
-	 * 
-	 * @param path
-	 *            path containning /
-	 * @return / removed path
-	 */
-	public static String removePrependedSlash(String path) {
-		if (path.startsWith("/")) {
-			return path.substring(1);
-		}
-		return path;
+public class MyHttpServletRequestWrapper extends HttpServletRequestWrapper {
+	public MyHttpServletRequestWrapper(HttpServletRequest request) {
+		super(request);
 	}
-	
-	/**
-	 * Remove prepending / on path
-	 * 
-	 * @param path
-	 *            path containning /
-	 * @return / removed path
-	 */
-	public static String removeDuplicatedPrependedSlash(String path) {
-		if (path.startsWith("//")) {
-			return path.substring(1);
+
+	@Override
+	public String getPathInfo() {
+		try {
+			return SVNEncodingUtil.uriEncode(URLDecoder.decode(
+					getRequestURI().substring(
+							PathUtil.removeDuplicatedPrependedSlash(getContextPath() + "/svn").length()), "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			return null;
 		}
-		return path;
 	}
 }

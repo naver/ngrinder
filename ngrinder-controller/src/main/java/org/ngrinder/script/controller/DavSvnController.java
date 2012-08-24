@@ -43,6 +43,8 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -78,6 +80,7 @@ import org.tmatesoft.svn.util.SVNLogType;
 @Controller("svnDavServlet")
 public class DavSvnController implements HttpRequestHandler, ServletConfig, ServletContextAware {
 
+	public static final Logger LOGGER = LoggerFactory.getLogger(DavSvnController.class);
 	public static final String XML_CONTENT_TYPE = "text/xml; charset=\"utf-8\"";
 	public static final String DAV_SVN_AUTOVERSIONING_ACTIVITY = "svn-autoversioning-activity";
 
@@ -199,7 +202,9 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 	@Override
 	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
 			IOException {
-		logRequest(request);
+		if (LOGGER.isTraceEnabled()) {
+			logRequest(request);
+		}
 		try {
 			ServletDAVHandler handler = null;
 			final String head = DAVPathUtil.head(request.getPathInfo());
@@ -212,6 +217,8 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 						head + " is not accessible by " + currentUser.getUserId());
 				return;
 			}
+			// To make it understand Asian Language..
+			request = new MyHttpServletRequestWrapper(request);
 			DAVRepositoryManager repositoryManager = new DAVRepositoryManager(getDAVConfig(), request);
 			handler = DAVHandlerFactory.createHandler(repositoryManager, request, response);
 			handler.execute();
@@ -221,6 +228,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 		} catch (SVNException svne) {
 			StringWriter sw = new StringWriter();
 			svne.printStackTrace(new PrintWriter(sw));
+
 			/**
 			 * truncate status line if it is to long
 			 */
@@ -246,7 +254,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 			StringWriter sw = new StringWriter();
 			th.printStackTrace(new PrintWriter(sw));
 			String msg = sw.getBuffer().toString();
-			System.out.println(th); // TODO: neeed to remove
+			LOGGER.debug("Error in DavSVN Controller", th);
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
 		} finally {
 			response.flushBuffer();
@@ -289,7 +297,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 		logBuffer.append("request.getServletPath(): " + request.getServletPath());
 		logBuffer.append('\n');
 		logBuffer.append("request.getRequestURL(): " + request.getRequestURL());
-		SVNDebugLog.getDefaultLog().logFine(SVNLogType.NETWORK, logBuffer.toString());
+		LOGGER.trace(logBuffer.toString());
 	}
 
 	/**
