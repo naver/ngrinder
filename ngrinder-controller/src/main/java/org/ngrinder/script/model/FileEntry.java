@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.ngrinder.model.BaseModel;
+import org.ngrinder.script.repository.FileEntryRepository;
 
 /**
  * File entity which will be stored in SVN.

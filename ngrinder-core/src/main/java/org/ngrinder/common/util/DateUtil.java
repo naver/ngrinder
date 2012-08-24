@@ -34,6 +34,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Date Utility.
  * 
@@ -188,23 +190,17 @@ public abstract class DateUtil {
 	 * @return DD:HH:MM:SS formated string
 	 */
 	public static String ms2Time(long ms) {
-
 		long day = ms / DD;
 		long hour = (ms - day * DD) / HH;
 		long minute = (ms - day * DD - hour * HH) / MI;
 		long second = (ms - day * DD - hour * HH - minute * MI) / SS;
-		// long milliSecond = ms - day * dd - hour * hh - minute * mi - second *
-		// ss;
 
 		String strDay = day < CONSTANT_10 ? "0" + day : "" + day;
 		String strHour = hour < CONSTANT_10 ? "0" + hour : "" + hour;
 		String strMinute = minute < CONSTANT_10 ? "0" + minute : "" + minute;
 		String strSecond = second < CONSTANT_10 ? "0" + second : "" + second;
-		// String strMilliSecond = milliSecond < 10 ? "0" + milliSecond : "" +
-		// milliSecond;
-		// strMilliSecond = milliSecond < 100 ? "0" + strMilliSecond : "" +
-		// strMilliSecond;
-		return strHour + ":" + strMinute + ":" + strSecond;
+		strDay = (StringUtils.equals(strDay, "00")) ? "" : strDay + ":";
+		return strDay + strHour + ":" + strMinute + ":" + strSecond;
 	}
 
 	/**

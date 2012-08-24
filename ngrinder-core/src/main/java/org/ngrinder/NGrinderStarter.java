@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 public class NGrinderStarter {
 
-	private final Logger LOG = LoggerFactory.getLogger(NGrinderStarter.class);
+	private static final Logger LOG = LoggerFactory.getLogger(NGrinderStarter.class);
 
 	private boolean localAttachmentSupported;
 
@@ -88,7 +88,7 @@ public class NGrinderStarter {
 			AgentMonitorServer.getInstance().start();
 		} catch (Exception e) {
 			LOG.error("ERROR: {}", e.getMessage());
-			LOG.debug("Error while starting Monitor", e);
+			printHelpAndExit("Error while starting Monitor", e);
 		}
 	}
 
@@ -96,11 +96,16 @@ public class NGrinderStarter {
 		LOG.info("*************************");
 		LOG.info("Start nGrinder Agent ...");
 		LOG.info("with console: {}:{}", consoleIP, consolePort);
+		try {
 
-		AgentControllerDaemon agentController = new AgentControllerDaemon();
-		agentController.setRegion(region);
-		agentController.setAgentConfig(agentConfig);
-		agentController.run(consoleIP, consolePort);
+			AgentControllerDaemon agentController = new AgentControllerDaemon();
+			agentController.setRegion(region);
+			agentController.setAgentConfig(agentConfig);
+			agentController.run(consoleIP, consolePort);
+		} catch (Exception e) {
+			LOG.error("ERROR: {}", e.getMessage());
+			printHelpAndExit("Error while starting Agent", e);
+		}
 	}
 
 	public static int getCurrentJVMPid() {
@@ -161,11 +166,9 @@ public class NGrinderStarter {
 				}
 			}
 		} catch (MalformedURLException e) {
-			LOG.error(e.getMessage(), e);
+			LOG.error("Error while patching tools.jar file. Please set JAVA_HOME env home correctly", e);
 		}
-
-		LOG.error("{} path is not found. Please set up JAVA_HOME env var to JDK(not JRE).", toolsJar);
-		System.exit(-1);
+		printHelpAndExit("tools.jar path is not found. Please set up JAVA_HOME env var to JDK(not JRE)");
 		return null;
 	}
 
@@ -181,20 +184,18 @@ public class NGrinderStarter {
 
 		File libFolder = new File(".", "lib").getAbsoluteFile();
 		if (!libFolder.exists()) {
-			LOG.error("lib path does not exist {}", libFolder.getAbsolutePath());
-			return;
+			printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + " does not exist");
 		}
 		File[] libList = libFolder.listFiles();
 		if (libList == null) {
-			LOG.error("lib path has no content", libFolder.getAbsolutePath());
-			return;
+			printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + ") has no content");
 		}
 
 		for (File each : libList) {
 			if (each.getName().endsWith(".jar")) {
 				try {
-					ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL",
-									new Object[] { checkNotNull(each.toURI().toURL()) });
+					ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { checkNotNull(each
+							.toURI().toURL()) });
 					libString.add(each.getPath());
 				} catch (MalformedURLException e) {
 					LOG.error(e.getMessage(), e);
@@ -204,7 +205,7 @@ public class NGrinderStarter {
 		if (!libString.isEmpty()) {
 			String base = System.getProperties().getProperty("java.class.path");
 			System.getProperties().setProperty("java.class.path",
-							base + File.pathSeparator + StringUtils.join(libString, File.pathSeparator));
+					base + File.pathSeparator + StringUtils.join(libString, File.pathSeparator));
 		}
 	}
 
@@ -223,7 +224,7 @@ public class NGrinderStarter {
 		if (startMode.equalsIgnoreCase("agent")) {
 			String consoleIP = agentConfig.getAgentProperties().getProperty("agent.console.ip", "127.0.0.1");
 			int consolePort = agentConfig.getAgentProperties().getPropertyInt("agent.console.port",
-							AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+					AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 
 			String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
 
@@ -232,12 +233,16 @@ public class NGrinderStarter {
 			MonitorConstants.init(agentConfig);
 			starter.startMonitor();
 		} else {
-			printHelpAndReturn();
+			printHelpAndExit("Invalid agent.conf, 'start.mode' must be set as 'monitor' or 'agent'");
 		}
 	}
 
-	private static void printHelpAndReturn() {
-		System.out.println("Invalid agent.conf, 'start.mode' must be set as 'monitor' or 'agent'");
+	private static void printHelpAndExit(String message) {
+		printHelpAndExit(message, null);
+	}
+
+	private static void printHelpAndExit(String message, Exception e) {
+		LOG.error(message);
 		System.exit(-1);
 	}
 }

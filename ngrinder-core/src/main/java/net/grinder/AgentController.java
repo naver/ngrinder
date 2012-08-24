@@ -59,6 +59,7 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.LogCompressUtil;
 import net.grinder.util.thread.Condition;
 
+import org.apache.commons.io.FileUtils;
 import org.ngrinder.common.util.ReflectionUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorConstants;
@@ -224,10 +225,10 @@ public class AgentController implements Agent {
 
 				// Here the agent run code goes..
 				if (startMessage != null) {
-					m_logger.info("starting agent...");
+					final String testId = startMessage.getProperties().getProperty("grinder.test.id", "");
+					m_logger.info("starting agent... for {}", testId);
 					m_state = AgentControllerState.BUSY;
 					agent.run(startMessage.getProperties());
-					final String testId = startMessage.getProperties().getProperty("grinder.test.id", "");
 					final ConsoleCommunication conCom = consoleCommunication;
 					// It's normal shutdown..
 					// FIXME : Is it safe to add listener here? no possibility for duplicated listener?
@@ -313,6 +314,8 @@ public class AgentController implements Agent {
 		}
 		consoleCommunication.sendMessage(new LogReportGrinderMessage(testId, LogCompressUtil.compressFile(new File(
 				logFolder, list[0])), new AgentAddress(m_agentIdentity)));
+		// Delete logs to clean up
+		FileUtils.deleteQuietly(logFolder);
 	}
 
 	// /////////////////////////////////////////////////////
