@@ -49,7 +49,7 @@
 				<col>
 				<col width="150">
 				<col width="70">
-				<col width="75">
+				<col width="80">
 				<col width="63">
 			</colgroup> 
 			<thead>
@@ -60,7 +60,7 @@
 					<th><@spring.message "script.option.name"/></th>
 					<th class="noClick"><@spring.message "script.option.commit"/></th>
 					<th><@spring.message "script.list.table.lastDate"/></th>
-					<th><@spring.message "script.list.label.revision"/></th>
+					<th><@spring.message "script.list.table.revision"/></th>
 					<th><@spring.message "script.list.table.size"/></th>
 					<th class="noClick"><@spring.message "common.label.actions"/></th>
 				</tr>
