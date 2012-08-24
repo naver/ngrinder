@@ -34,7 +34,7 @@ public class ModelAspectTest extends AbstractNGrinderTransactionalTest {
 		BaseModel<Object> baseModel = mock(BaseModel.class);
 		when(joinPoint.getArgs()).thenReturn(new Object[] { baseModel });
 		modelAspect.beforeSave(joinPoint);
-		verify(baseModel, times(0)).setCreatedDate(any(Date.class));
+		verify(baseModel, times(1)).setCreatedDate(any(Date.class));
 	}
 
 	@Test

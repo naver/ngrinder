@@ -23,13 +23,13 @@ public class FileEntryServiceTest {
 
 	@Test
 	public void testFileNameFromUrl() {
-		assertThat(fileEntryService.getTestNameFromUrl("http://helloworld"), is("test_for_helloworld"));
+		assertThat(fileEntryService.getTestNameFromUrl("http://helloworld"), is("helloworld"));
 		assertThat(fileEntryService.getTestNameFromUrl("http://helloworld.com"),
-						is("test_for_helloworld_com"));
+						is("helloworld.com"));
 		assertThat(fileEntryService.getTestNameFromUrl("http://helloworld.com/wewe.nhn"),
-						is("test_for_helloworld_com_wewe_nhn"));
+						is("helloworld.com/wewe.nhn"));
 		assertThat(fileEntryService.getTestNameFromUrl("http://helloworld.com/wewe.nhn?wow=%dd"),
-						is("test_for_helloworld_com_wewe_nhn"));
+						is("helloworld.com/wewe.nhn"));
 	}
 
 	@Test(expected = NGrinderRuntimeException.class)

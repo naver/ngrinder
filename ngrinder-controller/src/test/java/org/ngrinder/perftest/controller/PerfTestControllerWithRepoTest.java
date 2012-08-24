@@ -73,7 +73,7 @@ public class PerfTestControllerWithRepoTest extends AbstractPerfTestTransactiona
 	public void testGetQuickStart() {
 		ModelMap model = new ModelMap();
 		controller.getQuickStart(getTestUser(), "http://naver.com", model);
-		assertThat(repo.findOne(getTestUser(), "test_for_naver_com/script.py", SVNRevision.HEAD),
+		assertThat(repo.findOne(getTestUser(), "naver.com/script.py", SVNRevision.HEAD),
 						notNullValue());
 	}
 

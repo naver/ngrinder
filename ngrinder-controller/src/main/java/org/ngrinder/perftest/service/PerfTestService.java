@@ -238,7 +238,8 @@ public class PerfTestService implements NGrinderConstants {
 	public PerfTest savePerfTest(User user, PerfTest perfTest) {
 		if (perfTest.getStatus() == Status.READY) {
 			FileEntry scriptEntry = fileEntryService.getFileEntry(user, perfTest.getScriptName());
-			perfTest.setScriptRevision(scriptEntry.getRevision());
+			long revision = scriptEntry != null ? scriptEntry.getRevision() : -1;
+			perfTest.setScriptRevision(revision);
 		}
 		return savePerfTest(perfTest);
 	}
