@@ -170,7 +170,7 @@ div.chart {
 														</span>
 												</div>
 												<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 /> 
-												<span class="badge badge-info pull-right" id="vuserTotal">Vuser: ${vuserTotal}</span>
+												<span class="badge badge-info pull-right" id="vuserTotal"><@spring.message "perfTest.configuration.availVuser"/> ${vuserTotal}</span>
 											</div>
 										</div>
 										<div class="control-group">
@@ -472,7 +472,7 @@ div.chart {
 							</div>
 							<div class="span7">
 								<div class="page-header">
-									<h4><@spring.message "perfTest.testRunning.tpsStatistics"/> <span class="badge badge-success pull-center">Running Time <data id="running_time"></data></span></h4>
+									<h4><@spring.message "perfTest.testRunning.tpsStatistics"/> <span class="badge badge-success pull-center"><@spring.message "perfTest.testRunning.runTime"/> <data id="running_time"></data></span></h4>
 								   
 								</div>
 								<div id="runningTps" class="chart" style="width: 530px; height: 195px"></div>
@@ -583,7 +583,7 @@ div.chart {
 			</div>
 		</div>
 		<div class="modal-footer">
-			<a class="btn btn-primary" id="addHostBtn">Add</a>
+			<a class="btn btn-primary" id="addHostBtn"><@spring.message "perfTest.configuration.add"/></a>
 		</div>
 	</div>
 
@@ -591,14 +591,14 @@ div.chart {
 		<div class="modal-header">
 			<a class="close" data-dismiss="modal">&times;</a>
 			<h3>
-				Schedule Setting <small class="errorColor"></small>
+				<@spring.message "perfTest.testRunning.scheduleTitle"/> <small class="errorColor"></small>
 			</h3>
 		</div>
 		<div class="modal-body">
 			<div class="form-horizontal">
 				<fieldset>
 					<div class="control-group">
-						<label class="control-label">Schedule</label>
+						<label class="control-label"><@spring.message "perfTest.testRunning.schedule"/></label>
 						<div class="controls form-inline">
 							<input type="text" class="input span2" id="sDateInput" value="" readyonly>&nbsp; 
 							<select id="shSelect" class="select-item"></select> : <select id="smSelect" class="select-item"></select>
@@ -609,7 +609,7 @@ div.chart {
 			</div>
 		</div>
 		<div class="modal-footer">
-			<a class="btn btn-primary" id="runNowBtn">Run NOW</a> <a class="btn btn-primary" id="addScheduleBtn">Schedule</a>
+			<a class="btn btn-primary" id="runNowBtn"><@spring.message "perfTest.testRunning.runNow"/></a> <a class="btn btn-primary" id="addScheduleBtn"><@spring.message "perfTest.testRunning.schedule"/></a>
 		</div>
 	</div>
 
