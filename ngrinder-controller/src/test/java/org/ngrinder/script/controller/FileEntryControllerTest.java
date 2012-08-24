@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -102,7 +101,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		scriptController.saveFileEntry(getTestUser(), path, script, model);
 		// save and get
 		model.clear();
-		scriptController.getDetail(getTestUser(), script.getPath(), model);
+		scriptController.getDetail(getTestUser(), script.getPath(), -1L, model);
 		FileEntry newScript = (FileEntry) model.get("file");
 		assertThat(newScript.getFileName(), is(script.getFileName()));
 		assertThat(newScript.getContent(), is(script.getContent()));
@@ -139,7 +138,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		scriptController.saveFileEntry(getTestUser(), path, script, model);
 		// save and get
 		model.clear();
-		scriptController.getDetail(getTestUser(), script.getPath(), model);
+		scriptController.getDetail(getTestUser(), script.getPath(), -1L, model);
 
 		model.clear();
 		scriptController.searchFileEntity(getTestUser(), "file-for-search", model);
