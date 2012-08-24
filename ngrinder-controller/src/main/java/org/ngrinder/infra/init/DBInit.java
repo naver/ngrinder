@@ -28,8 +28,11 @@ import javax.annotation.PostConstruct;
 
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
+import org.ngrinder.security.SecuredUser;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.dao.SaltSource;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,15 +47,25 @@ public class DBInit {
 		createDefaultUserIfNecessary();
 	}
 
+	@Autowired
+	public SaltSource saltSource;
+
+	@Autowired
+	public PasswordEncoder passwordEncoder;
+
 	public void createUser(String userId, String password, Role role, String userName, String email) {
 		if (userRepository.findOneByUserId(userId) == null) {
+
 			User adminUser = new User();
 			adminUser.setUserId(userId);
-			adminUser.setPassword(password);
+			SecuredUser securedUser = new SecuredUser(adminUser, null);
+			Object salt = saltSource.getSalt(securedUser);
+			adminUser.setPassword(passwordEncoder.encodePassword(password, salt));
 			adminUser.setRole(role);
 			adminUser.setUserName(userName);
 			adminUser.setEmail(email);
 			adminUser.setCreatedDate(new Date());
+
 			userRepository.save(adminUser);
 		}
 

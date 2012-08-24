@@ -58,7 +58,7 @@
 							<td><a href="${req.getContextPath()}/user/detail?userId=${user.userId}">${user.userName!}</a></td>
 							<td>${user.role}</td>
 							<td class="ellipsis">${user.description!}</td>
-							<td><#if user.createdDate?has_content> ${user.createdDate?string("yyyy/MM/dd HH:mm")} </#if></td>
+							<td><#if user.createdDate?has_content> ${user.createdDate?string("yyyy-MM-dd HH:mm")} </#if></td>
 							<td><a href="${req.getContextPath()}/user/detail?userId=${user.userId}"> <i class="icon-edit"></i>
 							</a></td>
 							<td><#if user.userId != "admin"> <a href="javascript:deleteUsers('${user.userId}');"> <i

@@ -79,7 +79,7 @@
 									</td>
 									<td class="ellipsis">   
 										<div rel="popover"
-											 data-content="${test.description?replace('\n', '<br/>')?html}&lt;p&gt;Modified at <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if>&lt;/p&gt;"  
+											 data-content="${test.description?replace('\n', '<br/>')?html}&lt;p&gt;<@spring.message "perfTest.table.testNamepopoverMessage"/> <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if>&lt;/p&gt;"  
 											 data-original-title="${test.testName}">
 											<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
 										</div>  

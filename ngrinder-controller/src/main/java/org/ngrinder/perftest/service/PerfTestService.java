@@ -238,7 +238,8 @@ public class PerfTestService implements NGrinderConstants {
 	public PerfTest savePerfTest(User user, PerfTest perfTest) {
 		if (perfTest.getStatus() == Status.READY) {
 			FileEntry scriptEntry = fileEntryService.getFileEntry(user, perfTest.getScriptName());
-			perfTest.setScriptRevision(scriptEntry.getRevision());
+			long revision = scriptEntry != null ? scriptEntry.getRevision() : -1;
+			perfTest.setScriptRevision(revision);
 		}
 		return savePerfTest(perfTest);
 	}
@@ -295,18 +296,20 @@ public class PerfTestService implements NGrinderConstants {
 	 *            console in use
 	 * @param e
 	 *            exception occurs.
+	 * @return
 	 */
 	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
-	public void markAbromalTermination(PerfTest perfTest, StopReason reason) {
+	public PerfTest markAbromalTermination(PerfTest perfTest, StopReason reason) {
 		// Leave last status as test error cause
 		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
 		if (findOne == null) {
-			return;
+			return null;
 		}
 
 		findOne.setTestErrorCause(perfTest.getStatus());
 		findOne.setLastProgressMessage(reason.name());
 		findOne.setStatus(Status.ABNORMAL_TESTING);
+		return perfTestRepository.save(findOne);
 	}
 
 	/**
@@ -347,29 +350,29 @@ public class PerfTestService implements NGrinderConstants {
 
 	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
 	@Transactional
-	public void markProgressAndStatus(PerfTest perfTest, Status status, String message) {
+	public PerfTest markProgressAndStatus(PerfTest perfTest, Status status, String message) {
 		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
 		if (findOne == null) {
-			return;
+			return null;
 		}
 		findOne.setStatus(status);
 		findOne.setLastProgressMessage(message);
-		perfTestRepository.save(findOne);
+		return perfTestRepository.save(findOne);
 	}
 
 	@CacheEvict(value = { "perftest", "perftestlist" }, allEntries = true)
 	@Transactional
-	public void markProgressAndStatusAndFinishTimeAndStatistics(PerfTest perfTest, Status status,
+	public PerfTest markProgressAndStatusAndFinishTimeAndStatistics(PerfTest perfTest, Status status,
 					String message) {
 		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
 		if (findOne == null) {
-			return;
+			return null;
 		}
 		findOne.setStatus(status);
 		findOne.setLastProgressMessage(message);
 		findOne.setFinishTime(new Date());
 		updatePerfTestAfterTestFinish(findOne);
-		perfTestRepository.save(findOne);
+		return perfTestRepository.save(findOne);
 	}
 
 	/**

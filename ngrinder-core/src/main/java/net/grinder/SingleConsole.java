@@ -76,7 +76,6 @@ import net.grinder.util.thread.Condition;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.mutable.MutableDouble;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
@@ -99,7 +98,7 @@ public class SingleConsole implements Listener, SampleListener {
 	public static final Logger LOGGER = LoggerFactory.getLogger(RESOURCE.getString("shortTitle"));
 
 	private static final String REPORT_CSV = "output.csv";
-	
+
 	private Condition m_eventSyncCondition = new Condition();
 	private ProcessReports[] processReports;
 	private boolean cancel = false;
@@ -115,13 +114,13 @@ public class SingleConsole implements Listener, SampleListener {
 
 	private File reportPath;
 	private NumberFormat formatter = new DecimalFormat("###.###");
-	//private NumberFormat simpleFormatter = new DecimalFormat("###");
+	// private NumberFormat simpleFormatter = new DecimalFormat("###");
 
 	private Map<String, Object> statisticData;
-	
+
 	private List<String> csvHeaderList = new ArrayList<String>();
 	private boolean headerAdded = false;
-	
+
 	Map<String, BufferedWriter> fileWriterMap = new HashMap<String, BufferedWriter>();
 
 	/**
@@ -248,8 +247,8 @@ public class SingleConsole implements Listener, SampleListener {
 				}
 
 			}
-			
-			//close all report file
+
+			// close all report file
 			for (BufferedWriter bw : fileWriterMap.values()) {
 				IOUtils.closeQuietly(bw);
 			}
@@ -388,8 +387,7 @@ public class SingleConsole implements Listener, SampleListener {
 				return;
 			}
 		}
-		throw new NGrinderRuntimeException("Connection is not completed. processReport is "
-						+ ToStringBuilder.reflectionToString(processReports));
+		throw new NGrinderRuntimeException("Connection is not completed until 10 sec");
 	}
 
 	/**
@@ -432,13 +430,14 @@ public class SingleConsole implements Listener, SampleListener {
 		if (tps < 0.001) {
 			if (TPS_LESSTHAN_ZREO_TIME == null) {
 				TPS_LESSTHAN_ZREO_TIME = new Date();
-			} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= 60000) {
+			} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= 10000) {
 				LOGGER.warn("Test has been forced to stop because of tps is less than 0.001 and sustain more than one minitue.");
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
 					public void inform(ConsoleShutdownListener listener) {
 						listener.readyToStop(StopReason.TOO_LOW_TPS);
 					}
 				});
+				TPS_LESSTHAN_ZREO_TIME = null;
 
 			}
 		} else {
@@ -459,7 +458,7 @@ public class SingleConsole implements Listener, SampleListener {
 			StringBuilder csvLine = new StringBuilder();
 			StringBuilder csvHeader = new StringBuilder();
 			csvHeader.append("DateTime");
-			
+
 			Map<String, Object> valueMap = new HashMap<String, Object>();
 			int testIndex = 0;
 			for (Map<String, Object> lastStatistic : lastSampleStatistics) {
@@ -475,7 +474,7 @@ public class SingleConsole implements Listener, SampleListener {
 					}
 					Object val = valueMap.get(each.getKey());
 					if (val instanceof Double) {
-						//for debug, maybe there are some fields should not be sum up.
+						// for debug, maybe there are some fields should not be sum up.
 						LOGGER.warn("Calculate sum for key:{} in statistic", each.getKey());
 						MutableDouble mutableDouble = (MutableDouble) val;
 						mutableDouble.add((Double) ObjectUtils.defaultIfNull(each.getValue(), 0D));
@@ -484,20 +483,21 @@ public class SingleConsole implements Listener, SampleListener {
 						valueMap.put(each.getKey(), each.getValue());
 					}
 				}
-				
-				//add date time into csv
-				//FIXME this date time interval should be 1 second.
-				//but the system can not make sure about that.
+
+				// add date time into csv
+				// FIXME this date time interval should be 1 second.
+				// but the system can not make sure about that.
 				csvLine.append(DateUtil.dateToString(new Date()));
-				
-				//FIXME  we should also save vuser number, to describe the current vuser count in this secons. 
+
+				// FIXME we should also save vuser number, to describe the current vuser count in
+				// this secons.
 				for (String key : csvHeaderList) {
 					csvLine.append(",");
 					csvLine.append(formatValue(lastStatistic.get(key)));
 				}
 			}
 			try {
-			    //add header into csv file.
+				// add header into csv file.
 				if (!headerAdded) {
 					for (Entry<String, Object> each : valueMap.entrySet()) {
 						csvHeader.append(",");
@@ -506,18 +506,18 @@ public class SingleConsole implements Listener, SampleListener {
 					writeCSVDataLine(csvHeader.toString());
 					headerAdded = true;
 				}
-				
-			    for (Entry<String, Object> each : valueMap.entrySet()) {
-			    	writeReportData(each.getKey(), formatValue(each.getValue()));
-			    }
-			    //add total test report into csv file.
+
+				for (Entry<String, Object> each : valueMap.entrySet()) {
+					writeReportData(each.getKey(), formatValue(each.getValue()));
+				}
+				// add total test report into csv file.
 				for (String key : csvHeaderList) {
 					csvLine.append(",");
 					csvLine.append(formatValue(valueMap.get(key)));
 				}
 
 				writeCSVDataLine(csvLine.toString());
-				
+
 			} catch (IOException e) {
 				LOGGER.error("Write report data failed : ", e);
 			}
@@ -531,6 +531,7 @@ public class SingleConsole implements Listener, SampleListener {
 							listener.readyToStop(StopReason.TOO_MANY_ERRORS);
 						}
 					});
+					ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME = null;
 				}
 			}
 		}
@@ -555,9 +556,9 @@ public class SingleConsole implements Listener, SampleListener {
 
 				Test test = modelIndex.getTest(i);
 				statistics.put("testNumber", test.getNumber());
-				//statistics.put("testDescription", test.getDescription());
+				// statistics.put("testDescription", test.getDescription());
 				lastStatistics.put("testNumber", test.getNumber());
-				//lastStatistics.put("testDescription", test.getDescription());
+				// lastStatistics.put("testDescription", test.getDescription());
 
 				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
 				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
@@ -570,19 +571,19 @@ public class SingleConsole implements Listener, SampleListener {
 				}
 
 				// Tests
-//				Double tests = (Double) statistics.get("Tests");
-//				Double errors = (Double) statistics.get("Errors");
-//				statistics.put("TestsStr", simpleFormatter.format(tests));
-//				statistics.put("ErrorsStr", simpleFormatter.format(errors));
-//				statistics.put("TestsStr", tests);
-//				statistics.put("ErrorsStr", errors);
+				// Double tests = (Double) statistics.get("Tests");
+				// Double errors = (Double) statistics.get("Errors");
+				// statistics.put("TestsStr", simpleFormatter.format(tests));
+				// statistics.put("ErrorsStr", simpleFormatter.format(errors));
+				// statistics.put("TestsStr", tests);
+				// statistics.put("ErrorsStr", errors);
 
-//				Double lastTests = (Double) lastStatistics.get("Tests");
-//				Double lastErrors = (Double) lastStatistics.get("Errors");
-//				lastStatistics.put("TestsStr", simpleFormatter.format(lastTests));
-//				lastStatistics.put("ErrorsStr", simpleFormatter.format(lastErrors));
-//				lastStatistics.put("TestsStr", lastTests);
-//				lastStatistics.put("ErrorsStr", lastErrors);
+				// Double lastTests = (Double) lastStatistics.get("Tests");
+				// Double lastErrors = (Double) lastStatistics.get("Errors");
+				// lastStatistics.put("TestsStr", simpleFormatter.format(lastTests));
+				// lastStatistics.put("ErrorsStr", simpleFormatter.format(lastErrors));
+				// lastStatistics.put("TestsStr", lastTests);
+				// lastStatistics.put("ErrorsStr", lastErrors);
 
 				cumulativeStatistics.add(statistics);
 				lastSampleStatistics.add(lastStatistics);
@@ -598,12 +599,12 @@ public class SingleConsole implements Listener, SampleListener {
 							getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 		}
 
-//		Double tests = (Double) totalStatistics.get("Tests");
-//		Double errors = (Double) totalStatistics.get("Errors");
-//		totalStatistics.put("TestsStr", simpleFormatter.format(tests));
-//		totalStatistics.put("ErrorsStr", simpleFormatter.format(errors));
-//		totalStatistics.put("TestsStr", tests);
-//		totalStatistics.put("ErrorsStr", errors);
+		// Double tests = (Double) totalStatistics.get("Tests");
+		// Double errors = (Double) totalStatistics.get("Errors");
+		// totalStatistics.put("TestsStr", simpleFormatter.format(tests));
+		// totalStatistics.put("ErrorsStr", simpleFormatter.format(errors));
+		// totalStatistics.put("TestsStr", tests);
+		// totalStatistics.put("ErrorsStr", errors);
 
 		result.put("totalStatistics", totalStatistics);
 		result.put("cumulativeStatistics", cumulativeStatistics);
@@ -655,14 +656,14 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	private void writeReportData(String name, String value) throws IOException {
-		
+
 		try {
 			BufferedWriter bw = fileWriterMap.get(name);
 			if (bw == null) {
-				bw = new BufferedWriter(new FileWriter(new File(this.reportPath, name + ".data"), true)); 
+				bw = new BufferedWriter(new FileWriter(new File(this.reportPath, name + ".data"), true));
 				fileWriterMap.put(name, bw);
 			}
-			
+
 			bw.write(value);
 			bw.newLine();
 			bw.flush();
@@ -670,22 +671,23 @@ public class SingleConsole implements Listener, SampleListener {
 			LOGGER.error(e.getMessage(), e);
 			throw new NGrinderRuntimeException(e.getMessage(), e);
 		} finally {
-//			IOUtils.closeQuietly(write);
-//			IOUtils.closeQuietly(bw);
+			// IOUtils.closeQuietly(write);
+			// IOUtils.closeQuietly(bw);
 		}
 	}
 
 	private void writeCSVDataLine(String line) throws IOException {
 		writeReportData(REPORT_CSV, line);
 	}
-	
+
 	private String formatValue(Object val) {
 		if (val instanceof Double) {
 			return formatter.format(val);
-		} else if (val == null){
-			//if target server is too slow, there is no response in this second, then the satatistic data
-			//like mean time will be null.
-			//currently, we set these kind of value as 0.
+		} else if (val == null) {
+			// if target server is too slow, there is no response in this second, then the
+			// satatistic data
+			// like mean time will be null.
+			// currently, we set these kind of value as 0.
 			return "0";
 		}
 		return String.valueOf(val);

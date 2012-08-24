@@ -65,9 +65,9 @@ public class ModelAspect {
 		for (Object object : joinPoint.getArgs()) {
 			// If the object is base model and it's on request of servlet
 			// It's not executed on Task scheduling.
-			SpringContext springContext2 = getSpringContext();
+			SpringContext springContext = getSpringContext();
 			if (object instanceof BaseModel
-							&& (springContext2.isServletRequestContext() || springContext2
+							&& (springContext.isServletRequestContext() || springContext
 											.isUnitTestContext())) {
 				BaseModel<?> model = (BaseModel<?>) object;
 				Date lastModifiedDate = new Date();

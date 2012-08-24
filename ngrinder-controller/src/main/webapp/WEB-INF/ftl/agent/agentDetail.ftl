@@ -71,13 +71,31 @@
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane active" id="systemData">
+								<div class="page-header">
+									<h4>CPU</h4>
+								</div>
                                 <div class="chart" id="cpuDiv"></div>
+								<div class="page-header">
+									<h4>Memory</h4>
+								</div>
                                 <div class="chart" id="memoryDiv"></div>
                             </div>
                             <div class="tab-pane" id="javaData">
+								<div class="page-header">
+									<h4>Heap Memory</h4>
+								</div>
                                 <div class="chart" id="heapMemoryDiv"></div>
+								<div class="page-header">
+									<h4>NonHeap Memory</h4>
+								</div>
                                 <div class="chart" id="nonHeapMemoryDiv"></div>
+								<div class="page-header">
+									<h4>Thread Count</h4>
+								</div>
                                 <div class="chart" id="threadCountDiv"></div>
+								<div class="page-header">
+									<h4>CPU</h4>
+								</div>
                                 <div class="chart" id="jvmCpuDiv"></div>
                             </div>
 					     </div>

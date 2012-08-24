@@ -193,7 +193,10 @@ public class FileEntryRepository {
 								}
 							});
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("Error while fetching files from SVN", e);
+			LOG.error("Error while fetching files from SVN for {}", user.getUserId());
+			LOG.debug("Error details :", e);
+			return new ArrayList<FileEntry>();
+
 		} finally {
 			closeSVNClientManagerQuietly(svnClientManager);
 		}
@@ -210,7 +213,7 @@ public class FileEntryRepository {
 	 *            path in the svn repo
 	 * @param revision
 	 *            revision of the file
-	 * @return found {@link FileEntry}
+	 * @return found {@link FileEntry}, null if not found
 	 */
 	public FileEntry findOne(User user, String path, SVNRevision revision) {
 		final FileEntry script = new FileEntry();
@@ -254,8 +257,8 @@ public class FileEntryRepository {
 			// TODO: version list is not got yet
 			script.setRevisions(revisions);
 		} catch (Exception e) {
-			LOG.error("Error while fetching files from SVN", e);
-			throw new NGrinderRuntimeException("Error while fetching files from SVN", e);
+			LOG.error("Error while fetching a file from SVN {} {}", user.getUserId(), path);
+			return null;
 		} finally {
 			closeSVNClientManagerQuietly(svnClientManager);
 			IOUtils.closeQuietly(outputStream);

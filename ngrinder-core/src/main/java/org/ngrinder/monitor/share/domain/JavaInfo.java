@@ -32,7 +32,7 @@ import javax.management.openmbean.CompositeData;
 public class JavaInfo extends MonitorInfo implements Serializable {
 	private static final long serialVersionUID = -8984112358527689876L;
 
-	private List<JavaInfoForEach> javaInfoForEach;
+	private List<JavaInfoForEach> javaInfoForEach = Collections.synchronizedList(new ArrayList<JavaInfoForEach>());
 
 	public List<JavaInfoForEach> getJavaInfoForEach() {
 		return javaInfoForEach;
@@ -43,9 +43,6 @@ public class JavaInfo extends MonitorInfo implements Serializable {
 	}
 
 	public void addJavaInfoForEach(JavaInfoForEach javaInfoForEach) {
-		if (this.javaInfoForEach == null) {
-			this.javaInfoForEach = Collections.synchronizedList(new ArrayList<JavaInfoForEach>());
-		}
 		this.javaInfoForEach.add(javaInfoForEach);
 	}
 

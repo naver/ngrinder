@@ -187,7 +187,7 @@
 				<h3><@spring.message "script.list.button.upload"/></h3>
 			</div>
 			<div class="modal-body">
-				<form class="form-horizontal" method="post" target="_self" action="${req.getContextPath()}/script/upload"
+				<form class="form-horizontal" method="post" target="_self" action="${req.getContextPath()}/script/upload/${currentPath}"
 						id="uploadForm" enctype="multipart/form-data">
 					<fieldset>
 						<input type="hidden" id="path" name="path"/>

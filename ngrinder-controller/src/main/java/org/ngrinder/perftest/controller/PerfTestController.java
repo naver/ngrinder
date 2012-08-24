@@ -250,9 +250,7 @@ public class PerfTestController extends NGrinderBaseController {
 	String leaveComment(User user, @RequestParam("testComment") String testComment,
 					@RequestParam("testId") Integer testId) {
 		perfTestService.addCommentOn(user, testId, testComment);
-		Map<String, Object> rtnMap = new HashMap<String, Object>(1);
-		rtnMap.put(JSON_SUCCESS, true);
-		return JSONUtil.toJson(rtnMap);
+		return JSONUtil.returnSuccess();
 	}
 
 	@RequestMapping(value = "/updateStatus")

@@ -24,7 +24,7 @@
 	<body>
 	<ul class="breadcrumb">
 		<li>
-			<h3>nGrinder Report : ${(test.testName!)}</h3>
+			<h3><@spring.message "perfTest.report.reportPage"/> ${(test.testName!)}</h3>
 		</li>
 	</ul>
 	<div class="container">
@@ -129,7 +129,7 @@
                    </tr>  
                </table>
                <div class="row" style="margin-bottom:10px">
-	                <button class="btn btn-large pull-right" id="downloadReportData"><i class="icon-download-alt"></i><strong>Download CSV</strong></button>
+	                <button class="btn btn-large pull-right" id="downloadReportData"><i class="icon-download-alt"></i><strong><@spring.message "perfTest.report.downloadCSV"/></strong></button>
 	           </div>
 			    <div id="performanceDiv">
 			    	<div class="page-header">

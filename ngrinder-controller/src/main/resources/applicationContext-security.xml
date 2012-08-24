@@ -6,12 +6,18 @@
 
 	<global-method-security pre-post-annotations="enabled" />
 
+	<beans:bean id="shaPasswordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder"/>
+	
+	<beans:bean id="reflectionSaltSource" class="org.springframework.security.authentication.dao.ReflectionSaltSource">
+		<beans:property name="userPropertyToUse" value="username"/>
+	</beans:bean>
+	
 	<beans:bean id="authenticatedVoter" class="org.springframework.security.access.vote.AuthenticatedVoter" />
 
 	<beans:bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter">
 		<beans:property name="rolePrefix" value="" />
 	</beans:bean>
-
+	
 	<beans:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
 		<beans:constructor-arg name="decisionVoters">
 			<beans:list>
