@@ -1190,6 +1190,7 @@ div.chart {
 	  function displayCfgAndTestRunning() {
 		$("#runningContent_tab a").tab('show');
 		$("#reportContent_tab").hide();
+		$("#runningContent_tab").show();
 		
 		objTimer = window.setInterval("refreshData()", 1000);
 	  }
@@ -1197,6 +1198,7 @@ div.chart {
 	  function displayCfgAndTestReport() {
 		$("#testContent_tab a").tab('show');
 		$("#runningContent_tab").hide();
+		$("#reportContent_tab").show();
 		
 		if (objTimer) {
 	  		window.clearInterval(objTimer);
