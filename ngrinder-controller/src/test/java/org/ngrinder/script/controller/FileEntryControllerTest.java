@@ -163,7 +163,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		String upFileName = "Uploaded";
 		MultipartFile upFile = new MockMultipartFile("Uploaded.py", "#test content...".getBytes());
 		path = path + "/" + upFileName;
-		scriptController.uploadFiles(getTestUser(), path, "hello", upFile, model);
+		scriptController.uploadFiles(getTestUser(), path, "Uploaded file desc.", upFile, model);
 		model.clear();
 		scriptController.searchFileEntity(getTestUser(), "Uploaded", model);
 		Collection<FileEntry> searchResult = (Collection<FileEntry>) model.get("files");

@@ -62,7 +62,7 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	public SystemDataModel() {};
 	
 	public SystemDataModel (SystemInfo systemInfo) {
-		system = systemInfo.getSystem().toString();
+		system = String.valueOf(systemInfo.getSystem());
 		collectTime = DateUtil.getCollectTimeInLong(new Date(systemInfo.getCollectTime()));
 		totalCpuValue = systemInfo.getTotalCpuValue();
 		idleCpuValue = systemInfo.getIdlecpu();

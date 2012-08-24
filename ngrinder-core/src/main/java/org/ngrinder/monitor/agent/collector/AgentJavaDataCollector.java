@@ -80,19 +80,14 @@ public class AgentJavaDataCollector extends AgentDataCollector {
 
 		for (Entry<JavaVirtualMachineInfo, JavaMonitorProcessor> jj : processors.entrySet()) {
 			JavaMonitorProcessor processor = jj.getValue();
-			try {
-				cs.submit(processor);
-			} catch (Exception e) {
-				processors.remove(jj.getKey());
-				LOG.error(e.getMessage(), e);
-			}
+			cs.submit(processor);
 		}
 
 		for (int i = 0; i < processors.size(); i++) {
 			try {
 				javaInfo.addJavaInfoForEach((JavaInfoForEach) cs.take().get());
 			} catch (Exception e) {
-				LOG.warn(e.getMessage());
+				LOG.warn(e.getMessage(), e);
 			}
 		}
 
