@@ -2,7 +2,7 @@
 	<div class="span12" style="text-align:center">
 		<hr>
 		<footer>
-			<p>Copyright © 2012 <a href="http://www.nhncorp.com/nhn/index.nhn" target="_blank">NHN Corp</a>. All rights reserved.</p>
+			<p> © 2012 <a href="http://www.nhncorp.com/nhn/index.nhn" target="_blank"><@spring.message "common.nhnCorp"/></a> <@spring.message "common.nhnReserved"/></p>
 		</footer>
 	</div>
 </div>
