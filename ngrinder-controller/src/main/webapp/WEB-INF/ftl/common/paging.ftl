@@ -1,3 +1,4 @@
+<#import "spring.ftl" as spring/>
 <#macro paging totalCount pageNo countPerPage displayPageCount action>
 	<#if totalCount ==0 || countPerPage == 0 || displayPageCount == 0 >
 		<div class="paginate">&nbsp;</div>
@@ -34,7 +35,7 @@
 	<div class="dataTables_paginate pagination">
 		<ul>
 			<li <#if pageNo == 1> class="disabled"</#if>>
-				<a href="javascript:doSubmit('${pageNo - 1}')">&larr; Prev</a>
+				<a href="javascript:doSubmit('${pageNo - 1}')">&larr; <@spring.message "common.paging.previous"/></a>
 			</li>
 			<#list startPage..endPage as i>
 				<#if i == pageNo >
@@ -45,7 +46,7 @@
 			</#list>
 			</span>
 			<li <#if pageNo == totalPage> class="disabled"</#if>>
-				<a href="javascript:doSubmit('${pageNo + 1}')">Next &rarr;</a>
+				<a href="javascript:doSubmit('${pageNo + 1}')"><@spring.message "common.paging.next"/> &rarr;</a>
 			</li>
 
 		</ul>

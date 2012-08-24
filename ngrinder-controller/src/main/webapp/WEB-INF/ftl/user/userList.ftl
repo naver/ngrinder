@@ -92,7 +92,13 @@
 				"aaSorting": [[1, "asc"]],
 				"bProcessing": true,
 				"aoColumns": [{ "asSorting": []}, null, null, { "asSorting": []}, null, { "asSorting": []}, { "asSorting": []}],
-				"sPaginationType": "bootstrap"
+				"sPaginationType": "bootstrap",
+				"oLanguage": {
+					"oPaginate": {
+						"sPrevious": "<@spring.message "common.paging.previous"/>",
+						"sNext":     "<@spring.message "common.paging.next"/>"
+					}
+				}
 			});
 			
 			removeClick();

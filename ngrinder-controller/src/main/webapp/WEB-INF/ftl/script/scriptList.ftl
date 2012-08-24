@@ -352,7 +352,13 @@
 					"aaSorting": [[2, "asc"]],
 					"bProcessing": true,
 					"aoColumns": [{ "asSorting": []}, { "asSorting": []}, null, { "asSorting": []}, null, null, null, { "asSorting": []}],
-					"sPaginationType": "bootstrap"
+					"sPaginationType": "bootstrap",
+					"oLanguage": {
+						"oPaginate": {
+							"sPrevious": "<@spring.message "common.paging.previous"/>",
+							"sNext":     "<@spring.message "common.paging.next"/>"
+						}
+					}
 				});
 				$(".noClick").off('click');
 			</#if>
