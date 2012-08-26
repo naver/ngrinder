@@ -22,6 +22,9 @@
  */
 package org.ngrinder.infra.plugin;
 
+import org.ngrinder.extension.OnLoginRunnable;
+import org.ngrinder.extension.OnTestStartRunnable;
+
 import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
 import com.atlassian.plugin.module.ContainerManagedPlugin;
 

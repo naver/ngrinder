@@ -25,7 +25,7 @@ package org.ngrinder.security;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.infra.plugin.OnLoginRunnable;
+import org.ngrinder.extension.OnLoginRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;

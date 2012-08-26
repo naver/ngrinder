@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.infra.plugin.OnLoginRunnable;
+import org.ngrinder.extension.OnLoginRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;

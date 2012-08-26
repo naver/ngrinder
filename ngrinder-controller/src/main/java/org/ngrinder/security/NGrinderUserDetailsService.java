@@ -24,7 +24,7 @@ package org.ngrinder.security;
 
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 
-import org.ngrinder.infra.plugin.OnLoginRunnable;
+import org.ngrinder.extension.OnLoginRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.User;
 import org.slf4j.Logger;

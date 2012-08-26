@@ -22,7 +22,7 @@
  */
 package org.ngrinder.security;
 
-import org.ngrinder.infra.plugin.OnLoginRunnable;
+import org.ngrinder.extension.OnLoginRunnable;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
 import org.slf4j.Logger;
