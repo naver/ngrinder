@@ -93,8 +93,7 @@ public class SingleConsole implements Listener, SampleListener {
 	private final ConsoleProperties consoleProperties;
 	private Thread thread;
 	private ConsoleFoundationEx consoleFoundation;
-	public static final Resources RESOURCE = new ResourcesImplementation(
-					"net.grinder.console.common.resources.Console");
+	public static final Resources RESOURCE = new ResourcesImplementation("net.grinder.console.common.resources.Console");
 	public static final Logger LOGGER = LoggerFactory.getLogger(RESOURCE.getString("shortTitle"));
 
 	private static final String REPORT_CSV = "output.csv";
@@ -163,8 +162,7 @@ public class SingleConsole implements Listener, SampleListener {
 		try {
 			this.getConsoleProperties().setConsoleHost(ip);
 			this.getConsoleProperties().setConsolePort(port);
-			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties,
-							m_eventSyncCondition);
+			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties, m_eventSyncCondition);
 			sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 			sampleModel.addTotalSampleListener(this);
 			modelView = getConsoleComponent(SampleModelViews.class);
@@ -202,8 +200,8 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	public String getConsoleHost() {
 		try {
-			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress
-							.getLocalHost().getHostAddress());
+			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress.getLocalHost()
+					.getHostAddress());
 		} catch (UnknownHostException e) {
 			return "";
 		}
@@ -259,7 +257,7 @@ public class SingleConsole implements Listener, SampleListener {
 
 	public int getAllAttachedAgentsCount() {
 		return ((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class))
-						.getNumberOfLiveAgents();
+				.getNumberOfLiveAgents();
 	}
 
 	/**
@@ -270,9 +268,10 @@ public class SingleConsole implements Listener, SampleListener {
 	public List<AgentIdentity> getAllAttachedAgents() {
 		final List<AgentIdentity> agentIdentities = new ArrayList<AgentIdentity>();
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(
-						ReflectionUtil.getFieldValue((ProcessControlImplementation) consoleFoundation
-										.getComponent(ProcessControl.class), "m_agentNumberMap"),
-						"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
+				ReflectionUtil.getFieldValue(
+						(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
+						"m_agentNumberMap"),
+				"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
 			public void objectAndNumber(Object object, int number) {
 				agentIdentities.add((AgentIdentity) object);
@@ -391,8 +390,8 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Check all test is finished. To be safe, this counts thread count and not finished
-	 * workprocess. If one of them is 0, It thinks test is finished.
+	 * Check all test is finished. To be safe, this counts thread count and not finished workprocess. If one of them is
+	 * 0, It thinks test is finished.
 	 * 
 	 * @return true if finished
 	 */
@@ -449,7 +448,7 @@ public class SingleConsole implements Listener, SampleListener {
 		statisticData = this.getStatistics();
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) statisticData
-						.get("lastSampleStatistics");
+				.get("lastSampleStatistics");
 
 		if (lastSampleStatistics != null) {
 			double tpsSum = 0;
@@ -564,10 +563,9 @@ public class SingleConsole implements Listener, SampleListener {
 				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
 				for (ExpressionView expressionView : views) {
 					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-									getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
-					lastStatistics.put(
-									expressionView.getDisplayName().replaceAll("\\s+", "_"),
-									getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
+							getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
+					lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
+							getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
 				}
 
 				// Tests
@@ -596,7 +594,7 @@ public class SingleConsole implements Listener, SampleListener {
 		for (ExpressionView expressionView : views) { // TODO : expressionView
 														// == null ?
 			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-							getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
+					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 		}
 
 		// Double tests = (Double) totalStatistics.get("Tests");
@@ -652,7 +650,11 @@ public class SingleConsole implements Listener, SampleListener {
 		/** If tps is too low */
 		TOO_LOW_TPS,
 		/** If too many error happen */
-		TOO_MANY_ERRORS
+		TOO_MANY_ERRORS,
+		/** Normal Stop */
+		NORMAL,
+		/** Stop By User */
+		STOP_BY_USER
 	}
 
 	private void writeReportData(String name, String value) throws IOException {

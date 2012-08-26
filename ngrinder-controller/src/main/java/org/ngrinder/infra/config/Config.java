@@ -158,4 +158,8 @@ public class Config {
 		return systemProperties;
 	}
 
+	public String getVesion() {
+		return "3.0";
+	}
+
 }

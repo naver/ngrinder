@@ -45,6 +45,8 @@ import net.grinder.console.model.ConsoleProperties;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.service.MonitorAgentService;
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.extension.OnTestStartRunnable;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
@@ -83,9 +85,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	@Autowired
 	private PluginManager pluginManager;
-	
-	// wait 30 seconds until agents start the test running.
-	private static final int WAIT_TEST_START_SECOND = 30000;
+
+	@Autowired
+	private Config config;
+	// wait 10 seconds until agents start the test running.
+	private static final int WAIT_TEST_START_SECOND = 10000;
 
 	/**
 	 * Scheduled method for test execution.
@@ -153,6 +157,9 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties, final SingleConsole singleConsole) {
 		// start target monitor
+		for (OnTestStartRunnable run : pluginManager.getEnabledModulesByClass(OnTestStartRunnable.class)) {
+			run.start(perfTest, config.getVesion());
+		}
 		Set<AgentInfo> agents = new HashSet<AgentInfo>();
 		List<String> targetIPList = perfTest.getTargetHostIP();
 		for (String targetIP : targetIPList) {
@@ -203,24 +210,34 @@ public class PerfTestRunnable implements NGrinderConstants {
 		return singleConsole;
 	}
 
+	public void notifyFinsish(PerfTest perfTest, StopReason reason) {
+		for (OnTestStartRunnable run : pluginManager.getEnabledModulesByClass(OnTestStartRunnable.class)) {
+			run.finish(perfTest, config.getVesion(), reason);
+		}
+	}
+
 	/**
 	 * Scheduled method for test finish.
 	 */
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
 	public void finishTest() {
+
 		for (PerfTest each : perfTestService.getAbnoramlTestingPerfTest()) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			doTerminate(each, consoleUsingPort);
+			notifyFinsish(each, StopReason.TOO_MANY_ERRORS);
 		}
 
 		for (PerfTest each : perfTestService.getStopRequestedPerfTest()) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			doStop(each, consoleUsingPort);
+			notifyFinsish(each, StopReason.STOP_BY_USER);
 		}
 
 		for (PerfTest each : perfTestService.getTestingPerfTest()) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			doFinish(each, consoleUsingPort);
+			notifyFinsish(each, StopReason.NORMAL);
 		}
 	}
 

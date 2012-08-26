@@ -22,6 +22,8 @@
  */
 package org.ngrinder.extension;
 
+import net.grinder.SingleConsole.StopReason;
+
 import org.ngrinder.model.PerfTest;
 
 /**
@@ -44,5 +46,7 @@ public interface OnTestStartRunnable {
 	 * @param methodSignatrue
 	 *            method signature
 	 */
-	public void run(PerfTest perfTest, String version, String methodSignatrue);
+	public void start(PerfTest perfTest, String version);
+
+	public void finish(PerfTest perfTest, String vesion, StopReason reason);
 }
