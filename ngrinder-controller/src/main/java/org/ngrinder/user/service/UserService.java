@@ -31,6 +31,7 @@ import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.security.SecuredUser;
+import org.ngrinder.service.IUserService;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author AlexQin
  */
 @Service
-public class UserService {
+public class UserService implements IUserService {
 
 	@Autowired
 	private UserRepository userRepository;

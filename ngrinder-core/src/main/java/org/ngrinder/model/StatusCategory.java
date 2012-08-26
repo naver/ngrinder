@@ -20,7 +20,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.perftest.model;
+package org.ngrinder.model;
 
 /**
  * Category of {@link Status}. This class provides the characterisic of each status.

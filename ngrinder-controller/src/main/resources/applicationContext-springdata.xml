@@ -11,16 +11,7 @@
 
 	<jpa:repositories base-package="org.ngrinder" />
 
-	<aop:config proxy-target-class="true">
-		<aop:advisor id="transactionAdvisor" advice-ref="transactionAdvice" pointcut="execution(* org.ngrinder.**.service.*Service.*(..))" />
-	</aop:config>
+	<tx:annotation-driven proxy-target-class="true" />
 
-	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
-		<tx:attributes>
-			<tx:method name="get*" read-only="true" />
-			<tx:method name="save*" />
-			<tx:method name="update*" />
-			<tx:method name="delete*" />
-		</tx:attributes>
-	</tx:advice>
+	<aop:aspectj-autoproxy proxy-target-class="true" />
 </beans>

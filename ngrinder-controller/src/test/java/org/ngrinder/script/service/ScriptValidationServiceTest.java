@@ -23,7 +23,7 @@ import org.ngrinder.infra.init.DBInit;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.repository.MockFileEntityRepsotory;
 import org.ngrinder.script.util.CompressionUtil;
-import org.ngrinder.user.service.UserService;
+import org.ngrinder.service.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 	public MockFileEntityRepsotory repo;
 
 	@Autowired
-	public UserService userService;
+	public IUserService userService;
 
 	@Autowired
 	public DBInit dbinit;

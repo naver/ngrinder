@@ -34,6 +34,11 @@ import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.stereotype.Service;
 
+/**
+ * This detault Plugin
+ * @author nhn
+ *
+ */
 @Service
 public class DefaultLoginPlugin implements OnLoginRunnable {
 
@@ -58,12 +63,11 @@ public class DefaultLoginPlugin implements OnLoginRunnable {
 			throw new BadCredentialsException(messages.getMessage(
 					"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"), userId);
 		}
-		return false;
+		return true;
 	}
 
 	@Override
 	public void saveUser(User user) {
 		// Do nothing for default plugin
 	}
-
 }

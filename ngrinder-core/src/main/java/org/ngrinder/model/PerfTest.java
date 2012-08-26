@@ -20,9 +20,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.perftest.model;
-
-import static org.ngrinder.common.constant.NGrinderConstants.MAX_STACKTRACE_STRING_SIZE;
+package org.ngrinder.model;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,17 +39,17 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.ngrinder.common.util.DateUtil;
-import org.ngrinder.model.BaseModel;
 
 /**
- * Performance Test Entity Use Create user of BaseModel as test owner, use create date of BaseModel
- * as create time, but the created time maybe not the test starting time.
+ * Performance Test Entity Use Create user of BaseModel as test owner, use create date of BaseModel as create time, but
+ * the created time maybe not the test starting time.
  * 
  */
 @Entity
 @Table(name = "PERF_TEST")
 public class PerfTest extends BaseModel<PerfTest> {
 
+	private static final int MAX_STRING_SIZE = 2048;
 	/** UUID. */
 	private static final long serialVersionUID = 1369809450686098944L;
 
@@ -142,13 +140,13 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/** The path used for file distribution */
 	private String distributionPath;
 
-	@Column(length = MAX_STACKTRACE_STRING_SIZE)
+	@Column(length = MAX_STRING_SIZE)
 	private String progressMessage = "";
 
-	@Column(length = MAX_STACKTRACE_STRING_SIZE)
+	@Column(length = MAX_STRING_SIZE)
 	private String lastProgressMessage = "";
 
-	@Column(length = MAX_STACKTRACE_STRING_SIZE)
+	@Column(length = MAX_STRING_SIZE)
 	private String testComment = "";
 
 	private Long scriptRevision = -1L;
@@ -252,8 +250,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	/**
-	 * Get ip address of target hosts. if target hosts 'a.com:1.1.1.1' add ip: '1.1.1.1' if target
-	 * hosts ':1.1.1.1' add ip: '1.1.1.1' if target hosts '1.1.1.1' add ip: '1.1.1.1'
+	 * Get ip address of target hosts. if target hosts 'a.com:1.1.1.1' add ip: '1.1.1.1' if target hosts ':1.1.1.1' add
+	 * ip: '1.1.1.1' if target hosts '1.1.1.1' add ip: '1.1.1.1'
 	 * 
 	 * @return
 	 */
@@ -465,8 +463,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public void setProgressMessage(String progressMessage) {
-		this.progressMessage = StringUtils.defaultIfEmpty(
-						StringUtils.right(progressMessage, MAX_STACKTRACE_STRING_SIZE), "");
+		this.progressMessage = StringUtils.defaultIfEmpty(StringUtils.right(progressMessage, MAX_STRING_SIZE), "");
 	}
 
 	public Boolean getStopRequest() {
@@ -496,8 +493,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public void setTestComment(String testComment) {
-		this.testComment = StringUtils.defaultIfEmpty(
-						StringUtils.right(testComment, MAX_STACKTRACE_STRING_SIZE), "");
+		this.testComment = StringUtils.defaultIfEmpty(StringUtils.right(testComment, MAX_STRING_SIZE), "");
 	}
 
 	public Long getScriptRevision() {

@@ -22,7 +22,7 @@
  */
 package org.ngrinder.infra.plugin;
 
-import org.ngrinder.perftest.model.PerfTest;
+import org.ngrinder.model.PerfTest;
 
 /**
  * Plugin extension for manipulation of test start

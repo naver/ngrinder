@@ -45,7 +45,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ModelAspect {
 
-	public static final String EXECUTION_SAVE = "execution(* org.ngrinder.**.service.*Service.save*(..))";
+	public static final String EXECUTION_SAVE = "execution(* org.ngrinder.**.*Service.save*(..))";
 
 	@Autowired
 	private UserContext userContext;
@@ -54,8 +54,7 @@ public class ModelAspect {
 	private SpringContext springContext;
 
 	/**
-	 * Save current user to modified date or created date. It's only workable when it's from servlet
-	 * context.
+	 * Save current user to modified date or created date. It's only workable when it's from servlet context.
 	 * 
 	 * @param joinPoint
 	 *            joint point
@@ -67,8 +66,7 @@ public class ModelAspect {
 			// It's not executed on Task scheduling.
 			SpringContext springContext = getSpringContext();
 			if (object instanceof BaseModel
-							&& (springContext.isServletRequestContext() || springContext
-											.isUnitTestContext())) {
+					&& (springContext.isServletRequestContext() || springContext.isUnitTestContext())) {
 				BaseModel<?> model = (BaseModel<?>) object;
 				Date lastModifiedDate = new Date();
 				model.setLastModifiedDate(lastModifiedDate);

@@ -36,12 +36,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
+import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
-import org.ngrinder.perftest.model.PerfTest;
-import org.ngrinder.perftest.model.Status;
 import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
-import org.ngrinder.user.service.UserService;
+import org.ngrinder.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -65,7 +65,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	private PerfTestController controller;
 
 	@Autowired
-	private UserService userService;
+	private IUserService userService;
 
 	@Before
 	public void beforeCleanUp() {

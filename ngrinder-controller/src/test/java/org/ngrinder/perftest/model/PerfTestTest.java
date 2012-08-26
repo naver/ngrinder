@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.model.PerfTest;
 
 /**
  * Class description.

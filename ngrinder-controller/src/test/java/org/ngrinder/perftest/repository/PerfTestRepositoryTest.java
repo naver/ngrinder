@@ -6,8 +6,8 @@ import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.perftest.model.PerfTest;
-import org.ngrinder.perftest.model.Status;
+import org.ngrinder.model.PerfTest;
+import org.ngrinder.model.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {

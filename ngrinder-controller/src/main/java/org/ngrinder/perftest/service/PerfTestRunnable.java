@@ -22,14 +22,14 @@
  */
 package org.ngrinder.perftest.service;
 
-import static org.ngrinder.perftest.model.Status.CANCELED;
-import static org.ngrinder.perftest.model.Status.DISTRIBUTE_FILES;
-import static org.ngrinder.perftest.model.Status.DISTRIBUTE_FILES_FINISHED;
-import static org.ngrinder.perftest.model.Status.START_AGENTS;
-import static org.ngrinder.perftest.model.Status.START_AGENTS_FINISHED;
-import static org.ngrinder.perftest.model.Status.START_CONSOLE;
-import static org.ngrinder.perftest.model.Status.START_TESTING;
-import static org.ngrinder.perftest.model.Status.TESTING;
+import static org.ngrinder.model.Status.CANCELED;
+import static org.ngrinder.model.Status.DISTRIBUTE_FILES;
+import static org.ngrinder.model.Status.DISTRIBUTE_FILES_FINISHED;
+import static org.ngrinder.model.Status.START_AGENTS;
+import static org.ngrinder.model.Status.START_AGENTS_FINISHED;
+import static org.ngrinder.model.Status.START_CONSOLE;
+import static org.ngrinder.model.Status.START_TESTING;
+import static org.ngrinder.model.Status.TESTING;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -45,9 +45,10 @@ import net.grinder.console.model.ConsoleProperties;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.service.MonitorAgentService;
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.infra.plugin.PluginManager;
+import org.ngrinder.model.PerfTest;
+import org.ngrinder.model.Status;
 import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.perftest.model.PerfTest;
-import org.ngrinder.perftest.model.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,8 +58,8 @@ import org.springframework.stereotype.Component;
 /**
  * {@link PerfTest} test running run scheduler.
  * 
- * This class is responsible to execute the performance test which is ready to execute. Mostly this
- * class is started from {@link #startTest()} method. This method is scheduled by Spring Task.
+ * This class is responsible to execute the performance test which is ready to execute. Mostly this class is started
+ * from {@link #startTest()} method. This method is scheduled by Spring Task.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -80,6 +81,9 @@ public class PerfTestRunnable implements NGrinderConstants {
 	@Autowired
 	private MonitorAgentService monitorDataService;
 
+	@Autowired
+	private PluginManager pluginManager;
+	
 	// wait 30 seconds until agents start the test running.
 	private static final int WAIT_TEST_START_SECOND = 30000;
 
@@ -108,16 +112,16 @@ public class PerfTestRunnable implements NGrinderConstants {
 		int size = agentManager.getAllFreeAgents().size();
 		if (runCandidate.getAgentCount() > size) {
 			perfTestService.markProgress(runCandidate,
-							"The test is tried to execute but there is not enough free agents.\n- Current free agent size : "
-											+ size + "  / Requested : " + runCandidate.getAgentCount() + "\n");
+					"The test is tried to execute but there is not enough free agents.\n- Current free agent size : "
+							+ size + "  / Requested : " + runCandidate.getAgentCount() + "\n");
 			return;
 		}
 
 		// In case of too many trial, cancel running.
 		if (runCandidate.getTestTrialCount() > PERFTEST_MAXIMUM_TRIAL_COUNT) {
 			perfTestService.markPerfTestError(runCandidate,
-							"The test is tried to execute but there is not enough free agents.\n- Current free agent size : "
-											+ size + "  / Requested : " + runCandidate.getAgentCount() + "\n");
+					"The test is tried to execute but there is not enough free agents.\n- Current free agent size : "
+							+ size + "  / Requested : " + runCandidate.getAgentCount() + "\n");
 			return;
 		}
 		doTest(runCandidate);
@@ -147,8 +151,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		}
 	}
 
-	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties,
-					final SingleConsole singleConsole) {
+	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties, final SingleConsole singleConsole) {
 		// start target monitor
 		Set<AgentInfo> agents = new HashSet<AgentInfo>();
 		List<String> targetIPList = perfTest.getTargetHostIP();
@@ -195,8 +198,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 		SingleConsole singleConsole = consoleManager.getAvailableConsole(consoleProperty);
 		// increase trial count
 		singleConsole.start();
-		perfTestService.markPerfTestConsoleStart(perfTest, singleConsole.getConsolePort(),
-						perfTest.getTestTrialCount());
+		perfTestService
+				.markPerfTestConsoleStart(perfTest, singleConsole.getConsolePort(), perfTest.getTestTrialCount());
 		return singleConsole;
 	}
 
@@ -230,8 +233,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            {@link SingleConsole} which is being using for {@link PerfTest}
 	 */
 	public void doStop(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED,
-						"Stop requested by user");
+		perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED, "Stop requested by user");
 		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 		if (singleConsoleInUse != null) {
 			consoleManager.returnBackConsole(singleConsoleInUse);
@@ -281,7 +283,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		if (singleConsoleInUse.isAllTestFinished() && startLastingTime > WAIT_TEST_START_SECOND) {
 			// stop target host monitor
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest,
-							((isAbormalFinishing(perfTest)) ? Status.STOP_ON_ERROR : Status.FINISHED), "");
+					((isAbormalFinishing(perfTest)) ? Status.STOP_ON_ERROR : Status.FINISHED), "");
 			monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 			consoleManager.returnBackConsole(singleConsoleInUse);
 		}

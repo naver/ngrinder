@@ -16,7 +16,7 @@ import org.ngrinder.infra.init.DBInit;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.util.CompressionUtil;
-import org.ngrinder.user.service.UserService;
+import org.ngrinder.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.tmatesoft.svn.core.wc.SVNRevision;
@@ -27,7 +27,7 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 	public MockFileEntityRepsotory repo;
 
 	@Autowired
-	public UserService userService;
+	public IUserService userService;
 
 	@Autowired
 	public DBInit dbinit;

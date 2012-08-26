@@ -27,9 +27,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.ngrinder.model.PerfTest;
+import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
-import org.ngrinder.perftest.model.PerfTest;
-import org.ngrinder.perftest.model.Status;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -63,7 +63,7 @@ public class PerfTestSpecification {
 	 *            status set
 	 * @return {@link Specification}
 	 */
-	public static Specification<PerfTest> idSetEqual(final Integer[] ids) {
+	public static Specification<PerfTest> idSetEqual(final Long[] ids) {
 		return new Specification<PerfTest>() {
 			@Override
 			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
@@ -79,7 +79,7 @@ public class PerfTestSpecification {
 	 *            status set
 	 * @return {@link Specification}
 	 */
-	public static Specification<PerfTest> idEqual(final Integer id) {
+	public static Specification<PerfTest> idEqual(final Long id) {
 		return new Specification<PerfTest>() {
 			@Override
 			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {

@@ -24,9 +24,9 @@ package org.ngrinder.perftest.repository;
 
 import java.util.List;
 
+import org.ngrinder.model.PerfTest;
+import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
-import org.ngrinder.perftest.model.PerfTest;
-import org.ngrinder.perftest.model.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;

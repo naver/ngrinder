@@ -7,7 +7,6 @@
    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd">
 
 	<context:annotation-config />
-	<aop:aspectj-autoproxy />
 
 	<!-- Scans the classpath of this application for @Components to deploy as beans -->
 	<context:component-scan base-package="org.ngrinder">

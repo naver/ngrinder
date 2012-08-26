@@ -29,8 +29,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
-import org.ngrinder.perftest.model.PerfTest;
-import org.ngrinder.perftest.model.Status;
+import org.ngrinder.model.PerfTest;
+import org.ngrinder.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

@@ -7,7 +7,6 @@
    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
 	<context:annotation-config />
-	<aop:aspectj-autoproxy />
 
 	<!-- Scans the classpath of this application for @Components to deploy as beans -->
 	<context:component-scan base-package="org.ngrinder">
@@ -17,6 +16,7 @@
 	<import resource="applicationContext-springdata.xml" />
 	<import resource="applicationContext-ehcache.xml" />
 	<import resource="applicationContext-external.xml" />
+	
 	<bean id="shaPasswordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder" />
 
 	<bean id="reflectionSaltSource" class="org.springframework.security.authentication.dao.ReflectionSaltSource">
