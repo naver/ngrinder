@@ -397,6 +397,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		findOne.setPort(consolePort);
 		findOne.setTestTrialCount(++testTrialCount);
 		findOne.setStatus(Status.START_CONSOLE_FINISHED);
+		findOne.setLastProgressMessage("Console is started on port " + consolePort);
 		perfTestRepository.save(findOne);
 	}
 
@@ -531,6 +532,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			grinderProperties.setInt(GRINDER_PROP_INITIAL_SLEEP_TIME, perfTest.getInitSleepTime());
 			grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, perfTest.getProcessIncrement());
 			grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT_INTERVAL, perfTest.getProcessIncrementInterval());
+		
 			return grinderProperties;
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("error while prepare grinder property for " + perfTest.getTestName(), e);

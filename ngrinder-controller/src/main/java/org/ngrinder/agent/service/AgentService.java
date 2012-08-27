@@ -29,10 +29,13 @@ import java.util.Set;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentRepository;
 import org.ngrinder.perftest.service.AgentManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,28 +58,48 @@ public class AgentService {
 	/**
 	 * Get agents. agent list is obtained from DB and {@link AgentManager}
 	 * 
+	 * This includes not persisted agent as well.
+	 * 
 	 * @return agent list
 	 */
 	public List<AgentInfo> getAgentList() {
 		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
+		List<AgentInfo> agents = agentRepository.findAll();
 		List<AgentInfo> agentList = new ArrayList<AgentInfo>(allAttachedAgents.size());
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
 			AgentControllerIdentityImplementation agentControllerIdentity = (AgentControllerIdentityImplementation) eachAgentIdentity;
-			agentList.add(creatAgentInfo(agentControllerIdentity));
+			agentList.add(creatAgentInfo(agentControllerIdentity, agents));
 		}
 		return agentList;
 	}
 
-	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation agentIdentity) {
-		AgentInfo agentInfo = agentRepository.findByIp(agentIdentity.getIp());
-		agentInfo = agentInfo == null ? new AgentInfo() : agentInfo;
-		
-		agentInfo.setHostName(agentIdentity.getName());
-		agentInfo.setRegion(agentIdentity.getRegion());
-		agentInfo.setIp(agentIdentity.getIp());
-		agentInfo.setAgentIdentity(agentIdentity);
-		agentInfo = agentRepository.save(agentInfo);
-		
+	/**
+	 * Get agents. agent list is obtained only from DB
+	 * 
+	 * @return agent list
+	 */
+	@Cacheable("agents")
+	public List<AgentInfo> getAgentListOnDB() {
+		return agentRepository.findAll();
+	}
+
+	@CacheEvict(allEntries=true, value="agents")
+	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation agentIdentity,
+					List<AgentInfo> agents) {
+		AgentInfo agentInfo = new AgentInfo();
+		for (AgentInfo each : agents) {
+			if (StringUtils.equals(each.getIp(), agentIdentity.getIp())) {
+				agentInfo = each;
+				break;
+			}
+		}
+		if (!StringUtils.equals(agentInfo.getHostName(), agentIdentity.getName())
+						|| !StringUtils.equals(agentInfo.getRegion(), agentIdentity.getRegion())) {
+			agentInfo.setHostName(agentIdentity.getName());
+			agentInfo.setRegion(agentIdentity.getRegion());
+			agentInfo.setIp(agentIdentity.getIp());
+			agentInfo = agentRepository.save(agentInfo);
+		}
 		agentInfo.setPort(agentIdentity.getPort());
 		agentInfo.setStatus(agentManager.getAgentControllerState(agentIdentity));
 		// need to save agent info into DB, like ip and port maybe changed.
@@ -95,7 +118,8 @@ public class AgentService {
 		if (agentInfo == null) {
 			return null;
 		}
-		AgentControllerIdentityImplementation agentIdentity = agentManager.getAgentIdentityByIp(agentInfo.getIp());
+		AgentControllerIdentityImplementation agentIdentity = agentManager.getAgentIdentityByIp(agentInfo
+						.getIp());
 		if (agentIdentity != null) {
 			agentInfo.setStatus(agentManager.getAgentControllerState(agentIdentity));
 			agentInfo.setPort(agentIdentity.getPort());
@@ -112,6 +136,7 @@ public class AgentService {
 	 * @param agent
 	 *            saved agent
 	 */
+	@CacheEvict(allEntries=true, value="agents")
 	public void saveAgent(AgentInfo agent) {
 		agentRepository.save(agent);
 	}
@@ -122,10 +147,12 @@ public class AgentService {
 	 * @param id
 	 *            agent id to be deleted
 	 */
+	@CacheEvict(allEntries=true, value="agents")
 	public void deleteAgent(long id) {
 		agentRepository.delete(id);
 	}
 
+	@CacheEvict(allEntries=true, value="agents")
 	@Transactional
 	public void approve(String ip, boolean approve) {
 		List<AgentInfo> found = agentRepository.findAllByIp(ip);
