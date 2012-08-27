@@ -158,9 +158,8 @@ public class AgentService {
 	public void approve(String ip, boolean approve) {
 		List<AgentInfo> found = agentRepository.findAllByIp(ip);
 		for (AgentInfo each : found) {
-			each.setApproved(approve);
+			each.setApproved(approve ? "A" : "U");
 		}
 		agentRepository.save(found);
 	}
-
 }

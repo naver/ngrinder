@@ -238,7 +238,6 @@ public class CUBRIDDialect extends Dialect {
 
 	@Override
 	public String toBooleanValueString(final boolean bool) {
-		System.out.println("toBooleanValueString:" + bool); //TODO: It should be removed before build a release version.
 		return bool ? "1" : "0";
 	}
 }

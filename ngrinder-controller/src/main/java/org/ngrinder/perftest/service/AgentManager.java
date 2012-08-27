@@ -173,7 +173,7 @@ public class AgentManager implements NGrinderConstants {
 		List<AgentInfo> findAll = agentService.getAgentListOnDB();
 		Set<String> ips = new HashSet<String>();
 		for (AgentInfo each : findAll) {
-			if (each.isApproved()) {
+			if ("A".equals(each.getApproved())) {
 				ips.add(each.getIp());
 			}
 		}
@@ -207,8 +207,7 @@ public class AgentManager implements NGrinderConstants {
 	public synchronized void runAgent(final SingleConsole singleConsole,
 					final GrinderProperties grinderProperties, final Integer agentCount) {
 		// FIXME : synchronization on this method may have some penalty
-		final Set<AgentIdentity> allFreeAgents = agentControllerServer.getAllFreeAgents();
-
+		final Set<AgentIdentity> allFreeAgents = getAllFreeApprovedAgents();
 		final Set<AgentIdentity> neccessaryAgents = selectSome(allFreeAgents, agentCount);
 		ExecutorService execService = null;
 		try {
