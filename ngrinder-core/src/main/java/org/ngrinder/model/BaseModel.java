@@ -29,6 +29,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
+import org.hibernate.annotations.Index;
+
 /**
  * Base Model which has following attribute
  * <ul>
@@ -54,6 +56,7 @@ public class BaseModel<M> extends BaseEntity<M> {
 
 	@ManyToOne
 	@JoinColumn(name = "created_user", insertable = true, updatable = false)
+	@Index(name = "created_user_index")
 	private User createdUser;
 
 	@Column(name = "last_modified_date", insertable = true, updatable = true)
@@ -61,6 +64,7 @@ public class BaseModel<M> extends BaseEntity<M> {
 
 	@ManyToOne
 	@JoinColumn(name = "last_modified_user", insertable = true, updatable = true)
+	@Index(name = "last_modified_user_index")
 	private User lastModifiedUser;
 
 	public Date getCreatedDate() {
