@@ -5,9 +5,6 @@
        	<#include "../common/common.ftl">
        	<#include "../common/jqplot.ftl">
        	<style>
-            body {
-                padding-top: 60px;
-            }   
             .left { border-right: 1px solid #878988 }
             div.chart { border: 1px solid #878988; height:250px; min-width:615px; margin-bottom:12px; padding: 5px }
         </style>
@@ -16,14 +13,11 @@
     <body>
         <#include "../common/navigator.ftl">
         <div class="container">
-            <div class="row" style="margin-bottom:10px;">
-                <div class="span9">
-                   <h3><@spring.message "agent.info.title"/></h3>
-                </div>
-                <div class="span2 offset1">
-                    <button class="btn pull-right" title="Return" id="returnBtn"><@spring.message "common.button.return"/></button>
-                </div>
-            </div>
+            <div class="page-header pageHeader" style="margin-bottom: 10px">
+			<span>
+				<h3><@spring.message "agent.info.title"/></h3>
+			</span>
+		</div>
             <div class="row">
                 <div class="span3">
                     <table class="table table-bordered table-striped" style="border-top:#cccccc solid 1px">

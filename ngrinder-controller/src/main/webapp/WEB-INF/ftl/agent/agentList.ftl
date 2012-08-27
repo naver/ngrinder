@@ -10,9 +10,8 @@
 	<div class="container">
 		<div class="page-header pageHeader" style="margin-bottom: 10px">
 			<span>
-			<h3><@spring.message "agent.managerment.title"/></h3>
+				<h3><@spring.message "agent.managerment.title"/></h3>
 			</span>
-			
 		</div>
 		<div class="row">
 			<div class="span12">
