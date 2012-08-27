@@ -53,7 +53,7 @@ public class AgentService {
 	private AgentRepository agentRepository;
 
 	/**
-	 * Get agents.
+	 * Get agents. agent list is obtained from DB and {@link AgentManager}
 	 * 
 	 * @return agent list
 	 */
@@ -61,8 +61,7 @@ public class AgentService {
 		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
 		List<AgentInfo> agentList = new ArrayList<AgentInfo>(allAttachedAgents.size());
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
-			AgentControllerIdentityImplementation agentControllerIdentity = 
-					(AgentControllerIdentityImplementation) eachAgentIdentity;
+			AgentControllerIdentityImplementation agentControllerIdentity = (AgentControllerIdentityImplementation) eachAgentIdentity;
 			agentList.add(creatAgentInfo(agentControllerIdentity));
 		}
 		return agentList;
@@ -77,8 +76,8 @@ public class AgentService {
 		agentInfo.setPort(agentIdentity.getPort());
 		agentInfo.setStatus(agentManager.getAgentControllerState(agentIdentity));
 		agentInfo.setAgentIdentity(agentIdentity);
-		// need to save agent info into DB, like ip and port maybe changed.
 		agentInfo = agentRepository.save(agentInfo);
+		// need to save agent info into DB, like ip and port maybe changed.
 		return agentInfo;
 	}
 
@@ -126,9 +125,12 @@ public class AgentService {
 	}
 
 	@Transactional
-	public void approve(Long id) {
+	public void approve(Long id, boolean approve) {
 		AgentInfo findOne = agentRepository.findOne(id);
-		findOne.setApproved(true); 
+		if (findOne != null) {
+			findOne.setApproved(approve);
+			agentRepository.save(findOne);
+		}
 	}
 
 }

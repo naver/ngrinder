@@ -94,9 +94,12 @@ public class AgentManagerController extends NGrinderBaseController {
 		return "agent/agentList";
 	}
 
-	public String approveAgent(@RequestParam("id") Long id) {
+	public String approveAgent(@RequestParam("id") Long id,
+			@RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve) {
+		agentService.approve(id, approve);
 		return "agent/agentList";
 	}
+
 	/**
 	 * Get agent detail info.
 	 * 

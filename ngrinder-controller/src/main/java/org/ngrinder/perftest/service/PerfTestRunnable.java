@@ -158,8 +158,9 @@ public class PerfTestRunnable implements NGrinderConstants {
 	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties, final SingleConsole singleConsole) {
 		// start target monitor
 		for (OnTestStartRunnable run : pluginManager.getEnabledModulesByClass(OnTestStartRunnable.class)) {
-			run.start(perfTest, config.getVesion());
+			run.start(perfTest, perfTestService, config.getVesion());
 		}
+		
 		Set<AgentInfo> agents = new HashSet<AgentInfo>();
 		List<String> targetIPList = perfTest.getTargetHostIP();
 		for (String targetIP : targetIPList) {
@@ -212,7 +213,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	public void notifyFinsish(PerfTest perfTest, StopReason reason) {
 		for (OnTestStartRunnable run : pluginManager.getEnabledModulesByClass(OnTestStartRunnable.class)) {
-			run.finish(perfTest, config.getVesion(), reason);
+			run.finish(perfTest, perfTestService, reason, config.getVesion());
 		}
 	}
 

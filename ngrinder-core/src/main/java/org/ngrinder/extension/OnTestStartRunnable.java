@@ -25,9 +25,12 @@ package org.ngrinder.extension;
 import net.grinder.SingleConsole.StopReason;
 
 import org.ngrinder.model.PerfTest;
+import org.ngrinder.service.IPerfTestService;
 
 /**
- * Plugin extension for manipulation of test start
+ * Plugin extension for {@link PerfTest} start and finish.
+ * 
+ * This plugin is necessary if you want to notify the test start and end.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -35,18 +38,29 @@ import org.ngrinder.model.PerfTest;
 public interface OnTestStartRunnable {
 
 	/**
-	 * extension interface which will be executed on every test execution.
-	 * 
-	 * FIXME : perfTest is not stored in core. So the method param should be changed.
+	 * method which will be invoked whenever {@link PerfTest} is started.
 	 * 
 	 * @param perfTest
 	 *            Performance Test
+	 * @param perfTestService
+	 *            perfTestService interface
 	 * @param version
-	 *            version
-	 * @param methodSignatrue
-	 *            method signature
+	 *            ngrinder version
 	 */
-	public void start(PerfTest perfTest, String version);
+	public void start(PerfTest perfTest, IPerfTestService perfTestService, String version);
 
-	public void finish(PerfTest perfTest, String vesion, StopReason reason);
+	/**
+	 * method which will be invoked whenever {@link PerfTest} is finished
+	 * 
+	 * 
+	 * @param perfTest
+	 *            Performance Test
+	 * @param perfTestService
+	 *            perfTestService interface
+	 * @param reason
+	 *            stop reason
+	 * @param vesion
+	 *            ngrinder version
+	 */
+	public void finish(PerfTest perfTest, IPerfTestService perfTestService, StopReason reason, String vesion);
 }

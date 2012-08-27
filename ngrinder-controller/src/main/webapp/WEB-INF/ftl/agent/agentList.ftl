@@ -31,10 +31,11 @@
 				<table class="table table-striped table-bordered" id="agentTable">
 					<colgroup>
 						<col width="30">
-						<col width="180">
+						<col width="150">
 						<col width="100">
 						<col>
-						<col width="180">
+						<col width="150">
+						<col width="80">
 						<col width="80">
 					</colgroup>
 					<thead>
@@ -45,6 +46,7 @@
 							<th><@spring.message "agent.table.name"/></th>
 							<th><@spring.message "agent.table.region"/></th>
 							<th><@spring.message "agent.table.status"/></th>
+							<th><@spring.message "agent.table.approve"/></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -59,6 +61,7 @@
 							<td>${(agent.hostName)!}</td>
 							<td>${(agent.region)!}</td>
 							<td>${(agent.status)!}</td>
+							<td>${(agent.approved)!}</td>
 						</tr>
 						</#list>
 						<#else>
