@@ -63,6 +63,7 @@
 	    
 	    $("#registerUserForm").validate({
 	        rules:{
+	        	userId:"required",
 	            userName:"required",
 	            email:{
 	                required:true,
@@ -74,6 +75,7 @@
 	            }
 	        },
 	        messages:{
+	        	userId:"<@spring.message "user.info.warning.userId.intro"/>",
 	            userName:"<@spring.message "user.info.warning.userName"/>",
 	            email:{
 	                required:"<@spring.message "user.info.warning.email.required"/>",
