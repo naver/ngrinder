@@ -189,7 +189,7 @@ div.chart {
 												</#if>
 												</select>
 												<input type="hidden" id="scriptRevision" name="scriptRevision" value="${(test.scriptRevision)!-1}">
-												<a href="javascfipt:void(0)" id="scriptRefresh"><i class="icon-refresh"  style="margin-top:3px"></i></a> 
+												<a href="javascript:void(0);" id="scriptRefresh"><i class="icon-refresh"  style="margin-top:3px"></i></a> 
 												<button class="pull-right btn btn-mini btn-info" type="button" id="showScript" style="margin-top:3px"><@spring.message "perfTest.configuration.showScript"/></button>
 											</div> 
 										</div>
