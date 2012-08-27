@@ -41,6 +41,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -82,8 +83,8 @@ public class AgentManagerController extends NGrinderBaseController {
 			@Override
 			public boolean accept(File dir, String name) {
 				if (name.startsWith("ngrinder")) {
-					StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url",
-							contextPath));
+					StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty(
+									"http.url", contextPath));
 					url.append("/agent/download/" + name);
 					downloads.add(url.toString());
 				}
@@ -94,9 +95,10 @@ public class AgentManagerController extends NGrinderBaseController {
 		return "agent/agentList";
 	}
 
-	public String approveAgent(@RequestParam("id") Long id,
-			@RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve) {
-		agentService.approve(id, approve);
+	@RequestMapping(value = "approve", method = RequestMethod.POST)
+	public String approveAgent(@RequestParam("ip") String ip,
+					@RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve) {
+		agentService.approve(ip, approve);
 		return "agent/agentList";
 	}
 

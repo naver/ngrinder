@@ -64,10 +64,10 @@
 							<td>
 								<#if agent.approved>
 									<@spring.message "agent.table.approved"/> 
-									<button class="btn btn-mini btn-primary" type="button"><@spring.message "agent.table.unapproved"/> </button>
+									<button class="btn btn-mini btn-primary" id="unapproveBtn" sid="${agent.ip}" type="button"><@spring.message "agent.table.unapproved"/> </button>
 								<#else>
 									<@spring.message "agent.table.unapproved"/> 
-									<button class="btn btn-mini btn-primary" type="button"><@spring.message "agent.table.approved"/> </button>
+									<button class="btn btn-mini btn-primary" id="approveBtn" sid="${agent.ip}" type="button"><@spring.message "agent.table.approved"/> </button>
 								</#if>
 							</td> 
 							
@@ -85,7 +85,7 @@
 		<!--content-->
 	</div>
 		<script>
-            <#if agentList?has_content>
+        <#if agents?has_content>
             $(document).ready(function() {
 				oTable = $("#agentTable").dataTable({
 					"bAutoWidth": false,
@@ -106,8 +106,38 @@
 				});
 				
 				removeClick();
+				
+				$("#approveBtn").click(function() {
+					var sid = $(this).attr("sid");
+					$.post(
+				  		"${req.getContextPath()}/agent/approve",
+				  		{ 
+				  			"ip": sid,
+				  			"approve": "true"
+				  		},
+				  		function() {
+				  			showSuccessMsg("Agent is approved");
+				  			window.location.reload();
+				  		}
+				     );
+				});
+				
+				$("#unapproveBtn").click(function() {
+					var sid = $(this).attr("sid");
+					$.post(
+				  		"${req.getContextPath()}/agent/approve",
+				  		{ 
+				  			"ip": sid,
+				  			"approve": "false"
+				  		},
+				  		function() {
+				  			showSuccessMsg("Agent is unapproved");
+				  			window.location.reload();
+				  		}
+				     );					
+				});
             });
-			</#if>
-        </script>
+		</#if>
+     </script>
 </body>
 </html>

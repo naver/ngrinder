@@ -70,13 +70,15 @@ public class AgentService {
 	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation agentIdentity) {
 		AgentInfo agentInfo = agentRepository.findByIp(agentIdentity.getIp());
 		agentInfo = agentInfo == null ? new AgentInfo() : agentInfo;
+		
 		agentInfo.setHostName(agentIdentity.getName());
 		agentInfo.setRegion(agentIdentity.getRegion());
 		agentInfo.setIp(agentIdentity.getIp());
-		agentInfo.setPort(agentIdentity.getPort());
-		agentInfo.setStatus(agentManager.getAgentControllerState(agentIdentity));
 		agentInfo.setAgentIdentity(agentIdentity);
 		agentInfo = agentRepository.save(agentInfo);
+		
+		agentInfo.setPort(agentIdentity.getPort());
+		agentInfo.setStatus(agentManager.getAgentControllerState(agentIdentity));
 		// need to save agent info into DB, like ip and port maybe changed.
 		return agentInfo;
 	}
@@ -125,12 +127,12 @@ public class AgentService {
 	}
 
 	@Transactional
-	public void approve(Long id, boolean approve) {
-		AgentInfo findOne = agentRepository.findOne(id);
-		if (findOne != null) {
-			findOne.setApproved(approve);
-			agentRepository.save(findOne);
+	public void approve(String ip, boolean approve) {
+		List<AgentInfo> found = agentRepository.findAllByIp(ip);
+		for (AgentInfo each : found) {
+			each.setApproved(approve);
 		}
+		agentRepository.save(found);
 	}
 
 }
