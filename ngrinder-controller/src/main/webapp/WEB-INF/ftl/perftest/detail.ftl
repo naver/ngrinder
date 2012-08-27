@@ -189,7 +189,8 @@ div.chart {
 												</#if>
 												</select>
 												<input type="hidden" id="scriptRevision" name="scriptRevision" value="${(test.scriptRevision)!-1}">
-												<button class="pull-right btn btn-mini btn-info" type="button" id="showScript"><@spring.message "perfTest.configuration.showScript"/></button>
+												<a href="javascfipt:void(0)" id="scriptRefresh"><i class="icon-refresh"  style="margin-top:3px"></i></a> 
+												<button class="pull-right btn btn-mini btn-info" type="button" id="showScript" style="margin-top:3px"><@spring.message "perfTest.configuration.showScript"/></button>
 											</div> 
 										</div>
 										<div class="control-group">
@@ -912,6 +913,11 @@ div.chart {
 	      });
 	      $("#runCount").focus(function() {
 	    	  $("#runcountChkbox").click();
+	      });
+	      
+	      $("#scriptRefresh").click(function() {
+	      	$("#scriptRevision").val(-1);
+	      	showSuccessMsg('<@spring.message "perfTest.configuration.scriptNowPointingHeadRevision"/>'); 
 	      });
 	  });
 

@@ -62,6 +62,7 @@ public class AgentService {
 	 * 
 	 * @return agent list
 	 */
+	@Transactional
 	public List<AgentInfo> getAgentList() {
 		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
 		List<AgentInfo> agents = agentRepository.findAll();
@@ -83,7 +84,7 @@ public class AgentService {
 		return agentRepository.findAll();
 	}
 
-	@CacheEvict(allEntries=true, value="agents")
+	@CacheEvict(allEntries = true, value = "agents")
 	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation agentIdentity,
 					List<AgentInfo> agents) {
 		AgentInfo agentInfo = new AgentInfo();
@@ -136,7 +137,7 @@ public class AgentService {
 	 * @param agent
 	 *            saved agent
 	 */
-	@CacheEvict(allEntries=true, value="agents")
+	@CacheEvict(allEntries = true, value = "agents")
 	public void saveAgent(AgentInfo agent) {
 		agentRepository.save(agent);
 	}
@@ -147,12 +148,12 @@ public class AgentService {
 	 * @param id
 	 *            agent id to be deleted
 	 */
-	@CacheEvict(allEntries=true, value="agents")
+	@CacheEvict(allEntries = true, value = "agents")
 	public void deleteAgent(long id) {
 		agentRepository.delete(id);
 	}
 
-	@CacheEvict(allEntries=true, value="agents")
+	@CacheEvict(allEntries = true, value = "agents")
 	@Transactional
 	public void approve(String ip, boolean approve) {
 		List<AgentInfo> found = agentRepository.findAllByIp(ip);
