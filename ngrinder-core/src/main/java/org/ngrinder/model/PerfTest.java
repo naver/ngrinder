@@ -38,6 +38,7 @@ import net.grinder.common.GrinderProperties;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.hibernate.annotations.Index;
 import org.ngrinder.common.util.DateUtil;
 
 /**
@@ -72,6 +73,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private Integer collectSampleCount = 0;
 
 	/** the scheduled time of this test. */
+	@Index(name = "scheduled_time_index")
 	private Date scheduledTime;
 
 	/** the start time of this test. */
