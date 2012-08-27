@@ -35,8 +35,8 @@
 						<col width="100">
 						<col>
 						<col width="150">
-						<col width="80">
-						<col width="80">
+						<col width="100">
+						<col width="120"> 
 					</colgroup>
 					<thead>
 						<tr>
@@ -61,8 +61,17 @@
 							<td>${(agent.hostName)!}</td>
 							<td>${(agent.region)!}</td>
 							<td>${(agent.status)!}</td>
-							<td>${(agent.approved)!}</td>
-						</tr>
+							<td>
+								<#if agent.approved>
+									<@spring.message "agent.table.approved"/> 
+									<button class="btn btn-mini btn-primary" type="button"><@spring.message "agent.table.unapproved"/> </button>
+								<#else>
+									<@spring.message "agent.table.unapproved"/> 
+									<button class="btn btn-mini btn-primary" type="button"><@spring.message "agent.table.approved"/> </button>
+								</#if>
+							</td> 
+							
+						</tr> 
 						</#list>
 						<#else>
 						<tr>
