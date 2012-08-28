@@ -25,10 +25,10 @@ package org.ngrinder.infra.config;
 import java.sql.Driver;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.hibernate.dialect.CUBRIDDialect;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.H2Dialect;
 import org.hibernate.dialect.SQLiteDialect;
-import org.hibernate.dialect.cubrid.CUBRIDDialect;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
