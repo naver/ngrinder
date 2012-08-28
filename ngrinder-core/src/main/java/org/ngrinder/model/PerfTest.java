@@ -39,6 +39,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Type;
 import org.ngrinder.common.util.DateUtil;
 
 /**
@@ -86,6 +87,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column
 	private String targetHosts;
 
+	@Type(type="true_false")
 	/** The send mail code. */
 	private boolean sendMail;
 
@@ -153,6 +155,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	private Long scriptRevision = -1L;
 
+	@Type(type="true_false")
 	private Boolean stopRequest = null;
 
 	public String getTestName() {
