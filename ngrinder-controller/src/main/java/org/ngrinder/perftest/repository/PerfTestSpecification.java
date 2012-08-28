@@ -30,7 +30,6 @@ import javax.persistence.criteria.Root;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
@@ -134,15 +133,6 @@ public class PerfTestSpecification {
 				return cb.or(cb.equal(root.get("lastModifiedUser"), user), cb.equal(root.get("createdUser"), user));
 			}
 		};
-	}
-
-	/**
-	 * Get sort sorted by ascending "createdDate".
-	 * 
-	 * @return Sort
-	 */
-	public static Sort sortByCreatedDate() {
-		return new Sort(Sort.Direction.ASC, "createdDate");
 	}
 
 }

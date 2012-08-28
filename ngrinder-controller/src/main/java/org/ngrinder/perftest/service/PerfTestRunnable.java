@@ -45,6 +45,7 @@ import net.grinder.console.model.ConsoleProperties;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.service.MonitorAgentService;
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.extension.OnTestStartRunnable;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.plugin.PluginManager;
@@ -109,6 +110,14 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// Find out next ready perftest
 		PerfTest runCandidate = perfTestService.getPerfTestCandiate();
 		if (runCandidate == null) {
+			return;
+		}
+		
+		// schedule test
+		Date schedule = runCandidate.getScheduledTime();
+		if (schedule != null && !DateUtil.compareDateEndWithMinute(schedule, new Date(System.currentTimeMillis()))) {
+			// this test project is reserved,but it isn't yet going to run test
+			// right now.
 			return;
 		}
 

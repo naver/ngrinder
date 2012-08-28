@@ -221,7 +221,7 @@
 			$("#createBtn2").on('click', function() {
 				var $name = $("#scriptNameInput");
 				if (checkEmptyByObj($name)) {
-					markInput($name, false, "<@spring.message "common.form.validate.empyt"/>");
+					markInput($name, false, "<@spring.message "common.form.validate.empty"/>");
 					return;
 				} else {
 					if (!checkSimpleNameByObj($name)) {
@@ -256,7 +256,7 @@
 			$("#uploadBtn2").on('click', function() {
 				var $file = $("#fileInput");
 				if (checkEmptyByObj($file)) {
-					markInput($file, false, "<@spring.message "common.form.validate.empyt"/>");
+					markInput($file, false, "<@spring.message "common.form.validate.empty"/>");
 					return;
 				}
 				
@@ -267,7 +267,7 @@
 			$("#createFolderBtn").on('click', function() {
 				var $name = $("#folderNameInput");
 				if (checkEmptyByObj($name)) {
-					markInput($name, false, "<@spring.message "common.form.validate.empyt"/>");
+					markInput($name, false, "<@spring.message "common.form.validate.empty"/>");
 					return;
 				} else {
 					if (!checkSimpleNameByObj($name)) {
