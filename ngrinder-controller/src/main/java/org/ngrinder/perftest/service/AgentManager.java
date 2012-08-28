@@ -156,7 +156,8 @@ public class AgentManager implements NGrinderConstants {
 
 	public Set<AgentIdentity> getAllFreeApprovedAgents() {
 		Set<AgentIdentity> allFreeAgents = agentControllerServer.getAllFreeAgents();
-		return filterApprovedAgents(allFreeAgents);
+		return allFreeAgents;
+		//return filterApprovedAgents(allFreeAgents);
 	}
 
 	/**

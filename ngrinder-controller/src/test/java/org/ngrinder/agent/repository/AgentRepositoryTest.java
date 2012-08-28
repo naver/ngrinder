@@ -48,7 +48,6 @@ public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 	AgentInfo agentInfo;
 
 	@Before
-	@Rollback(false)
 	public void before() {
 		agentRepository.deleteAll();
 		agentInfo = new AgentInfo();
@@ -58,15 +57,21 @@ public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 		agentInfo.setStatus(AgentControllerState.BUSY);
 		agentInfo.setApproved(false);
 		agentRepository.save(agentInfo);
+		
 	}
 	
 	
 
 	@Test
-	@Rollback(false)
 	public void testGetByIp() {
-		assertThat(agentRepository.findByIp("127.0.0.1"), notNullValue());
-		assertThat(agentRepository.findByIp("127.0.0.1").getHostName(), is("hello"));
-		assertThat(agentRepository.findByIp("127.0.0.1").getRegion(), is("world"));
+		AgentInfo findByIp = agentRepository.findByIp("127.0.0.1");
+		assertThat(findByIp.isApproved(), is(false));
+		findByIp.setApproved(true);
+		agentRepository.save(findByIp);
+		findByIp = agentRepository.findByIp("127.0.0.1");
+		assertThat(findByIp.isApproved(), is(true));
+		assertThat(findByIp, notNullValue());
+		assertThat(findByIp.getHostName(), is("hello"));
+		assertThat(findByIp.getRegion(), is("world"));
 	}
 }

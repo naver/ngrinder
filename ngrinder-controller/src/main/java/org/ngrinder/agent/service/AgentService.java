@@ -154,12 +154,14 @@ public class AgentService {
 	}
 
 	@CacheEvict(allEntries = true, value = "agents")
-	@Transactional
 	public void approve(String ip, boolean approve) {
 		List<AgentInfo> found = agentRepository.findAllByIp(ip);
 		for (AgentInfo each : found) {
 			each.setApproved(approve);
+			agentRepository.save(each);
+			AgentInfo findOne = agentRepository.findOne(each.getId());
+			System.out.println(findOne.isApproved());
 		}
-		agentRepository.save(found);
+		
 	}
 }
