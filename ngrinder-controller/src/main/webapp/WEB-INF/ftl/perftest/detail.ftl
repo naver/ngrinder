@@ -179,17 +179,16 @@ div.chart {
 												<select id="scriptName" class="required" name="scriptName"> 
 												<#if scriptList?? && scriptList?size &gt; 0> 
 													<#list scriptList as scriptItem> 
-														<#if test?? && scriptItem.fileName == test.scriptName> 
+														<#if  test?? && scriptItem.path == test.scriptName> 
 															<#assign isSelected = "selected"/> 
 														<#else> 
-															<#assign isSelected = ""/> 
+															<#assign isSelected = 	""/> 
 														</#if>
 														<option value="${scriptItem.path}" ${isSelected}>${scriptItem.path}</option> 
 													</#list> 
 												</#if>
 												</select>
 												<input type="hidden" id="scriptRevision" name="scriptRevision" value="${(test.scriptRevision)!-1}">
-												<a href="javascript:void(0);" id="scriptRefresh"><i class="icon-refresh"  style="margin-top:3px"></i></a> 
 												<button class="pull-right btn btn-mini btn-info" type="button" id="showScript" style="margin-top:3px"><@spring.message "perfTest.configuration.showScript"/></button>
 											</div> 
 										</div>
@@ -915,10 +914,6 @@ div.chart {
 	    	  $("#runcountChkbox").click();
 	      });
 	      
-	      $("#scriptRefresh").click(function() {
-	      	$("#scriptRevision").val(-1);
-	      	showSuccessMsg('<@spring.message "perfTest.configuration.scriptNowPointingHeadRevision"/>'); 
-	      });
 	  });
 
 	  function updateVuserTotal() {

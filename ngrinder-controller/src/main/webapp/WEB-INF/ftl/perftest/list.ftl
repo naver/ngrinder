@@ -165,9 +165,10 @@
 			});
 			
 			$("i.test-stop").click(function() {
+				var id = $(this).attr("sid");
 				bootbox.confirm("<@spring.message "perfTest.table.message.confirm.stop"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
 					if (result) {
-						stopTests($(this).attr("sid"));
+						stopTests(id);
 					}
 				});
 			});
