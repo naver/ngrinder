@@ -44,7 +44,7 @@
 						<col width="60">
 						<col width="95">
 						<col width="70">
-						<col width="80">
+						<col width="70">
 						<col width="63">
 					</colgroup>
 					<thead>

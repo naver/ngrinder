@@ -47,6 +47,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.ui.ModelMap;
 
@@ -82,7 +83,8 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.READY, new Date());
 		ModelMap model = new ModelMap();
-		controller.deletePerfTests(getTestUser(), model, String.valueOf(test.getId()));
+		controller.deletePerfTests(getTestUser(), model,
+				String.valueOf(test.getId()));
 
 		model.clear();
 		controller.getPerfTestDetail(getTestUser(), test.getId(), model);
@@ -107,8 +109,8 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	}
 
 	/**
-	 * for "saved" or "ready" test, can be modified, but for running or finished test, can not
-	 * modify
+	 * for "saved" or "ready" test, can be modified, but for running or finished
+	 * test, can not modify
 	 */
 	@Test
 	public void testSavePerfTestExist() {
@@ -222,13 +224,14 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 		Sort sort = new Sort("testName");
 		Pageable pageable = new PageRequest(0, 10, sort);
-		controller.getPerfTestList(getTestUser(), strangeName, false, pageable, model);
+		controller.getPerfTestList(getTestUser(), strangeName, false, pageable,
+				model);
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
 
-		controller.getPerfTestList(getTestUser(), strangeName.substring(2, 10), false,
-						new PageRequest(0, 10), model);
+		controller.getPerfTestList(getTestUser(), strangeName.substring(2, 10),
+				false, new PageRequest(0, 10), model);
 		testPage = (Page<PerfTest>) model.get("testListPage");
 		testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
@@ -282,11 +285,11 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.TESTING, new Date());
 		String testName2 = "test1";
-		PerfTest test2 = createPerfTest(testName2, Status.START_AGENTS, new Date());
+		PerfTest test2 = createPerfTest(testName2, Status.START_AGENTS,
+				new Date());
 
 		String ids = test.getId() + "," + test2.getId();
-		ModelMap model = new ModelMap();
-		String rtnJson = controller.updateSatus(getTestUser(), ids, model);
-		assertThat(rtnJson, notNullValue());
+		HttpEntity<String> rtnJson = controller.updateSatus(getTestUser(), ids);
+		assertThat(rtnJson.getBody(), notNullValue());
 	}
 }
