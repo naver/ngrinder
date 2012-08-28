@@ -80,7 +80,7 @@ public class ScriptValidationService {
 	 *            true if the script content in SVN is used. otherwise, false
 	 * @return validation result.
 	 */
-	public String validateScript(User user, FileEntry scriptEntry, boolean useScriptInSVN) {
+	public String validateScript(User user, FileEntry scriptEntry, boolean useScriptInSVN, String hostString) {
 		try {
 			checkNotNull(scriptEntry, "scriptEntity should be not null");
 			checkNotEmpty(scriptEntry.getPath(), "scriptEntity path should be provided");
