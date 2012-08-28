@@ -60,7 +60,7 @@
                 <div class="span9">
 					<div class="tabbable" style="margin-left:20px">
                         <ul class="nav nav-tabs" id="chartTab">
-                            <li class="active"><a href="#systemData" data-toggle="tab"><@spring.message "agent.info.systemData"/></a></li>
+                            <li><a href="#systemData" data-toggle="tab"><@spring.message "agent.info.systemData"/></a></li>
                             <li><a href="#javaData" data-toggle="tab"><@spring.message "agent.info.javaData"/></a></li>
                         </ul>
                         <div class="tab-content">
@@ -111,6 +111,8 @@
 			var sys_usedMemory = new Queue();
 			var jqplots = [];
             $(document).ready(function() {
+            	$("#chartTab a:first").tab('show');
+            	
                 $("#returnBtn").on('click', function() {
                     history.back();
                 });
@@ -147,13 +149,15 @@
                            'imgWidth':700},
                     success: function(res) {
                         if (res.success) {
-                        	getChartData(res);
-                            showChart('CPU', 'cpuDiv', sys_totalCpuValue.getArray(), 0, formatPercentage);
-                            showChart('Memory', 'memoryDiv', sys_usedMemory.getArray(), 1, formatAmount);
-                            showChart('Heap Memory', 'heapMemoryDiv', java_heapUsedMemory.getArray(), 2, formatAmount);
-                            showChart('NonHeap Memory', 'nonHeapMemoryDiv', java_nonHeapUsedMemory.getArray(), 3, formatAmount);
-                            showChart('Thread Count', 'threadCountDiv', java_threadCount.getArray(), 4);
-                            showChart('CPU', 'jvmCpuDiv', java_cpuUsedPercentage.getArray(), 5, formatPercentage);
+                        	if ($("#chartTab li:first").hasClass("active")) {
+                        		showChart('CPU', 'cpuDiv', sys_totalCpuValue.aElement, 0, formatPercentage);
+                            	showChart('Memory', 'memoryDiv', sys_usedMemory.aElement, 1, formatAmount);
+                        	} else {
+	                            showChart('Heap Memory', 'heapMemoryDiv', java_heapUsedMemory.aElement, 2, formatAmount);
+	                            showChart('NonHeap Memory', 'nonHeapMemoryDiv', java_nonHeapUsedMemory.aElement, 3, formatAmount);
+	                            showChart('Thread Count', 'threadCountDiv', java_threadCount.aElement, 4);
+	                            showChart('CPU', 'jvmCpuDiv', java_cpuUsedPercentage.aElement, 5, formatPercentage);
+                        	}
                             return true;
                         } else {
                             showErrorMsg("Get monitor data failed.");
@@ -168,11 +172,12 @@
             }
             
             function showChart(title, id, data, index, formatYaxis) {
-            	if (jqplots[index]) {
-            		jqplots[index].destroy();
+				var pt = jqplots[index];
+            	if (pt) {
+            		replotChart(pt, data);
+            	} else {
+	                jqplots[index] = drawChart(title, id, data, formatYaxis);
             	}
-            	$("#" + id).empty();
-                jqplots[index] = drawChart(title, id, data, formatYaxis);
             }
             
             function getChartData(dataObj) {

@@ -1100,7 +1100,8 @@ div.chart {
 	      	  if (test_tps_data.getSize() > 60) {
 	              test_tps_data.deQueue();
 	          }
-	          showChart('runningTps', test_tps_data.toString());
+	          
+	          showChart('runningTps', test_tps_data.aElement);
 	      });
 	  }
 	  
@@ -1118,13 +1119,13 @@ div.chart {
 			return "" + parseInt(s/86400) + "d "  + parseInt(s%86400/3600) + "h " + parseInt(s%86400%3600/60) + "m " + (s%86400%3600%60) + "s";
 	   }
 
-	  function showChart(containerId, data) {
-	      if (jqplotObj) {
-	          jqplotObj.destroy();
-	      }
-	      $("#runningTps").empty();
-	      jqplotObj = drawChart('TPS', containerId, data);
-	  }
+		function showChart(containerId, data) {
+			if (jqplotObj) {
+				replotChart(jqplotObj, data);
+			} else {
+				jqplotObj = drawChart('TPS', containerId, data);
+			}
+		}
 
 	  function validateHostForm() {
 	      $("#ipInput").blur(function () {

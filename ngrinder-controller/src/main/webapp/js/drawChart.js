@@ -86,3 +86,16 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 
 	return plotObj;
 }
+
+//data is an array object.
+function replotChart(plotObj, data) {
+	var cache = [];
+	var i;
+	for (i = 0; i < data.length; i++) {
+		cache.push([i + 1, data[i]]);
+	}
+
+	plotObj.series[0].data = cache;
+	plotObj.resetAxesScale(); 
+	plotObj.replot();
+}

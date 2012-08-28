@@ -53,8 +53,4 @@ function Queue() {
 		var sResult = this.aElement.toString();
 		return "[" + sResult + "]";
 	};
-	
-	Queue.prototype.getArray = function() {
-		return this.aElement;
-	};
 }
