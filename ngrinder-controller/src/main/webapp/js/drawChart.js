@@ -62,7 +62,6 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 					fontSize : '10pt'
 				}, 
 				tickOptions : {
-					angle : 0,
 					formatter : formatYaxis
 				},
 				min : 0,
