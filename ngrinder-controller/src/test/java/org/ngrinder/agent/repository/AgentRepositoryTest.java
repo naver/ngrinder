@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.model.AgentInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 
 /**
  * Test AgentRepository Class.
@@ -47,6 +48,7 @@ public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 	AgentInfo agentInfo;
 
 	@Before
+	@Rollback(false)
 	public void before() {
 		agentRepository.deleteAll();
 		agentInfo = new AgentInfo();
@@ -54,10 +56,14 @@ public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 		agentInfo.setIp("127.0.0.1");
 		agentInfo.setRegion("world");
 		agentInfo.setStatus(AgentControllerState.BUSY);
+		agentInfo.setApproved(false);
 		agentRepository.save(agentInfo);
 	}
+	
+	
 
 	@Test
+	@Rollback(false)
 	public void testGetByIp() {
 		assertThat(agentRepository.findByIp("127.0.0.1"), notNullValue());
 		assertThat(agentRepository.findByIp("127.0.0.1").getHostName(), is("hello"));

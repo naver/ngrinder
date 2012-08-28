@@ -80,8 +80,8 @@ public class SQLiteDialect extends Dialect {
 	}
 
 	/*
-	 * public boolean supportsInsertSelectIdentity() { return true; // As
-	 * specify in NHibernate dialect }
+	 * public boolean supportsInsertSelectIdentity() { return true; // As specify in NHibernate
+	 * dialect }
 	 */
 	@Override
 	public boolean hasDataTypeInIdentityColumn() {
@@ -107,7 +107,7 @@ public class SQLiteDialect extends Dialect {
 	@Override
 	public String getLimitString(final String query, final boolean hasOffset) {
 		return new StringBuffer(query.length() + GET_LIMIT_BUFFER).append(query)
-				.append(hasOffset ? " limit ? offset ?" : " limit ?").toString();
+						.append(hasOffset ? " limit ? offset ?" : " limit ?").toString();
 	}
 
 	@Override
@@ -177,7 +177,8 @@ public class SQLiteDialect extends Dialect {
 
 	@Override
 	public String getAddForeignKeyConstraintString(final String constraintName, final String[] foreignKey,
-			final String referencedTable, final String[] primaryKey, final boolean referencesPrimaryKey) {
+					final String referencedTable, final String[] primaryKey,
+					final boolean referencesPrimaryKey) {
 		throw new UnsupportedOperationException("No add foreign key syntax supported by SQLiteDialect");
 	}
 

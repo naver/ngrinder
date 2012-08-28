@@ -68,7 +68,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 
 	private String region;
 
-	private boolean approved = false;
+	private Boolean approved;
 
 	public String getIp() {
 		return ip;
@@ -152,11 +152,11 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 		this.agentIdentity = agentIdentity;
 	}
 
-	public boolean isApproved() {
+	public Boolean isApproved() {
 		return approved;
 	}
 
-	public void setApproved(boolean approved) {
+	public void setApproved(Boolean approved) {
 		this.approved = approved;
 	}
 
