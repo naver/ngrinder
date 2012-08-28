@@ -173,7 +173,7 @@ public class AgentManager implements NGrinderConstants {
 		List<AgentInfo> findAll = agentService.getAgentListOnDB();
 		Set<String> ips = new HashSet<String>();
 		for (AgentInfo each : findAll) {
-			if ("A".equals(each.getApproved())) {
+			if (each.isApproved()) {
 				ips.add(each.getIp());
 			}
 		}
