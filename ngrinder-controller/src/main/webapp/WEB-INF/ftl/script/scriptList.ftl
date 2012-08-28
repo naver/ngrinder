@@ -285,26 +285,28 @@
 				var ids = "";
 				var list = $("td input:checked");
 				if(list.length == 0) {
-					alert("<@spring.message "script.list.alert.delete"/>");
+					bootbox.alert("<@spring.message "script.list.alert.delete"/>", "<@spring.message "common.button.ok"/>");
 					return;
 				}
-				if (confirm('<@spring.message "script.list.confirm.delete"/>')) {
-					var agentArray = [];
-					list.each(function() {
-						agentArray.push($(this).val());
-					});
-					ids = agentArray.join(",");
-					$.ajax({
-				          url: "${req.getContextPath()}/script/delete/${currentPath}",
-				          type: 'POST',
-				          data: {
-				              'filesString': ids
-				          },
-				          success: function (res) {
-				          	  document.location.reload();
-				          }
-				    });
-	      		}
+	      		bootbox.confirm("<@spring.message "script.list.confirm.delete"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
+					if (result) {
+						var agentArray = [];
+						list.each(function() {
+							agentArray.push($(this).val());
+						});
+						ids = agentArray.join(",");
+						$.ajax({
+					          url: "${req.getContextPath()}/script/delete/${currentPath}",
+					          type: 'POST',
+					          data: {
+					              'filesString': ids
+					          },
+					          success: function (res) {
+					          	  document.location.reload();
+					          }
+					    });
+					}
+				});
 			});
 			
 			$("#searchBtn").on('click', function() {

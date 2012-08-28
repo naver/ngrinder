@@ -108,7 +108,7 @@
 		function deleteCheckedUsers() {
 			var list = $("input[id='user_info_check']:checked");
 			if(list.length == 0) {
-				showErrorMsg("<@spring.message "user.list.alert.deleteCheck"/>");
+				bootbox.alert("<@spring.message "user.list.alert.delete"/>", "<@spring.message "common.button.ok"/>");
 				return;
 			}
 			var checkedUser = [];
@@ -122,9 +122,11 @@
 		}
 		
 		function deleteUsers(ids) {
-			if (confirm("<@spring.message "user.list.confirm.delete"/> " + ids + "?")) {
-				document.location.href="${req.getContextPath()}/user/delete?userIds=" + ids;
-			}
+			bootbox.confirm("<@spring.message "user.list.confirm.delete"/> " + ids + "?", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
+				if (result) {
+					document.location.href="${req.getContextPath()}/user/delete?userIds=" + ids;
+				}
+			});
 		}
 	</script>
 </body>

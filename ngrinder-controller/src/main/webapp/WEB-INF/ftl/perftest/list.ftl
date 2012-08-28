@@ -139,29 +139,37 @@
 				var ids = "";
 				var list = $("td input:checked");
 				if(list.length == 0) {
-					alert("Please select any tests first.");
+					bootbox.alert("<@spring.message "perfTest.table.message.alert.delete"/>", "<@spring.message "common.button.ok"/>");
 					return;
 				}
-				if (confirm('Are you sure to delete the test(s)?')) {
-					var idArray = [];
-					list.each(function() {
-						idArray.push($(this).val());
-					});
-					
-					deleteTests(idArray.join(","));
-				}
+				
+				bootbox.confirm("<@spring.message "perfTest.table.message.confirm.delete"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
+				    if (result) {
+				    	var idArray = [];
+						list.each(function() {
+							idArray.push($(this).val());
+						});
+						
+						deleteTests(idArray.join(","));
+				    }
+				});
 			});
 			
 			$("i.test-remove").click(function() {
-				if (confirm("Do you want to delete this test(s)?")) {
-					deleteTests($(this).attr("sid"));
-				}
+				var id = $(this).attr("sid");
+				bootbox.confirm("<@spring.message "perfTest.table.message.confirm.delete"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
+				    if (result) {
+				    	deleteTests(id);
+				    }
+				});
 			});
 			
 			$("i.test-stop").click(function() {
-				if (confirm("Do you want to stop this test(s)?")) {
-					stopTests($(this).attr("sid"));
-				}
+				bootbox.confirm("<@spring.message "perfTest.table.message.confirm.stop"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
+					if (result) {
+						stopTests($(this).attr("sid"));
+					}
+				});
 			});
 			
 			<#if testList?has_content>
@@ -200,16 +208,16 @@
 				dataType:'json',
 		    	success: function(res) {
 		    		if (res.success) {
-			    		showSuccessMsg("The test(s) deleted successfully.");
+			    		showSuccessMsg("<@spring.message "perfTest.table.message.success.delete"/>");
 							setTimeout(function() {
 								getList(1);
 							}, 1000);
 		    		} else {
-			    		showErrorMsg("Test(s) deletion failed:" + res.message);
+			    		showErrorMsg("<@spring.message "perfTest.table.message.error.delete"/>:" + res.message);
 		    		}
 		    	},
 		    	error: function() {
-		    		showErrorMsg("Test(s) deletion failed!");
+		    		showErrorMsg("<@spring.message "perfTest.table.message.error.delete"/>!");
 		    	}
 		  	});
 		}
@@ -222,16 +230,16 @@
 				dataType:'json',
 		    	success: function(res) {
 		    		if (res.success) {
-			    		showSuccessMsg("The stop is requested");
+			    		showSuccessMsg("<@spring.message "perfTest.table.message.success.stop"/>");
 							setTimeout(function() {
 								getList(1);
 							}, 1000);
 		    		} else {
-			    		showErrorMsg("Test(s) deletion failed:" + res.message);
+			    		showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>:" + res.message);
 		    		}
 		    	},
 		    	error: function() {
-		    		showErrorMsg("Test(s) deletion failed!");
+		    		showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>!");
 		    	}
 		  	});
 		}
