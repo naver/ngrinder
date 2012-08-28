@@ -149,6 +149,7 @@
                            'imgWidth':700},
                     success: function(res) {
                         if (res.success) {
+                        	getChartData(res);
                         	if ($("#chartTab li:first").hasClass("active")) {
                         		showChart('CPU', 'cpuDiv', sys_totalCpuValue.aElement, 0, formatPercentage);
                             	showChart('Memory', 'memoryDiv', sys_usedMemory.aElement, 1, formatAmount);
