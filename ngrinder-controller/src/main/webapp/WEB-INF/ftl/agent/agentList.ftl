@@ -61,7 +61,7 @@
 							<td>${(agent.region)!}</td>
 							<td>${(agent.status)!}</td>
 							<td>
-								<#if (agent.approved)?? && agent.approved == "A">
+								<#if agent.approved>
 									<@spring.message "agent.table.approved"/> 
 									<button class="btn btn-mini btn-primary" id="unapproveBtn" sid="${agent.ip}" type="button"><@spring.message "agent.table.unapproved"/> </button>
 								<#else>
