@@ -22,7 +22,6 @@
  */
 package org.ngrinder.agent.model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -69,8 +68,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 
 	private String region;
 
-	@Column(length = 2)
-	private String approved = "N";
+	private boolean approved = false;
 
 	public String getIp() {
 		return ip;
@@ -154,11 +152,11 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 		this.agentIdentity = agentIdentity;
 	}
 
-	public String getApproved() {
+	public boolean isApproved() {
 		return approved;
 	}
 
-	public void setApproved(String approved) {
+	public void setApproved(boolean approved) {
 		this.approved = approved;
 	}
 
