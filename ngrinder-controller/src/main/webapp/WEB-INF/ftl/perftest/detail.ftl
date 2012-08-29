@@ -211,10 +211,14 @@ div.chart {
 											}
 										
 											</style>
-											<#assign targetHosts = test.targetHosts/>
+											<#if test??>
+												<#assign targetHosts = test.targetHosts?/>
+											<#else>
+												<#assign targetHosts = ""/>
+											</#if>
 											<div class="controls">
 												<#include "host.ftl">
-											</div>
+											</div> 
 										</div>
 										<hr>
 										<div class="control-group"> 
