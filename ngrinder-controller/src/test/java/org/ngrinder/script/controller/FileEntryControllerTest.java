@@ -98,7 +98,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 
 		FileEntry script = (FileEntry) model.get("file");
 		script.setContent(script.getContent() + "#test comment");
-		scriptController.saveFileEntry(getTestUser(), path, script, model);
+		scriptController.saveFileEntry(getTestUser(), path, script, "", model);
 		// save and get
 		model.clear();
 		scriptController.getDetail(getTestUser(), script.getPath(), -1L, model);
@@ -130,12 +130,12 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		// create
 		scriptController.getCreateForm(getTestUser(), path, "test.com", "file-for-search.py", null, model);
 		FileEntry script = (FileEntry) model.get("file");
-		scriptController.saveFileEntry(getTestUser(), path, script, model);
+		scriptController.saveFileEntry(getTestUser(), path, script, "", model);
 
 		// save another script
 		model.clear();
 		script.setPath(script.getPath().replace("file-for-search", "new-file-for-search"));
-		scriptController.saveFileEntry(getTestUser(), path, script, model);
+		scriptController.saveFileEntry(getTestUser(), path, script, "", model);
 		// save and get
 		model.clear();
 		scriptController.getDetail(getTestUser(), script.getPath(), -1L, model);
@@ -161,7 +161,8 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		scriptController.addFolder(getTestUser(), "", path, model);
 
 		String upFileName = "Uploaded";
-		MultipartFile upFile = new MockMultipartFile("Uploaded.py", "Uploaded.py", null, "#test content...".getBytes());
+		MultipartFile upFile = new MockMultipartFile("Uploaded.py", "Uploaded.py", null,
+						"#test content...".getBytes());
 		path = path + "/" + upFileName;
 		scriptController.uploadFiles(getTestUser(), path, "Uploaded file desc.", upFile, model);
 		model.clear();
