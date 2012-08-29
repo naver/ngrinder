@@ -86,7 +86,8 @@ public class FileEntryController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/validate", method = RequestMethod.POST)
 	public @ResponseBody
-	String validate(User user, FileEntry scriptEntry, @RequestParam(required=false) String hostString) {
+	String validate(User user, FileEntry scriptEntry,
+					@RequestParam(value = "hostString", required = false) String hostString) {
 		return scriptValidationService.validateScript(user, scriptEntry, false, hostString);
 	}
 
@@ -188,6 +189,10 @@ public class FileEntryController extends NGrinderBaseController {
 			return "redirect:/script/list";
 		}
 		model.addAttribute("file", script);
+		String targetHosts = script.getProperties().get("tagetHosts");
+		if (StringUtils.isNotBlank(targetHosts)) {
+			model.addAttribute("targetHosts", targetHosts);
+		}
 		return "script/scriptEditor";
 	}
 
@@ -282,7 +287,13 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return script/scriptList
 	 */
 	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
-	public String saveFileEntry(User user, @RemainedPath String path, FileEntry fileEntry, ModelMap model) {
+	public String saveFileEntry(User user, @RemainedPath String path, FileEntry fileEntry,
+					@RequestParam("targetHosts") String targetHosts, ModelMap model) {
+		if (StringUtils.isNotBlank(targetHosts)) {
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("tagetHosts", StringUtils.trim(targetHosts));
+			fileEntry.setProperties(map);
+		}
 		fileEntryService.save(user, fileEntry);
 		return get(user, path, model);
 	}

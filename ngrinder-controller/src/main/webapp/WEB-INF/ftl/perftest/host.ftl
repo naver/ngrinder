@@ -1,27 +1,9 @@
-<style>
-	div.div-host {
-		border: 1px solid #D6D6D6;
-		height: 50px;
-		margin-bottom: 8px;
-		overflow-y: scroll;
-		border-radius: 3px 3px 3px 3px;
-	}
-	
-	div.div-host .host {
-		color: #666666;
-		display: inline-block;
-		margin-left: 7px;
-		margin-top: 2px;
-		margin-bottom: 2px;
-	}
-</style>
-<div class="controls">
-	<div class="div-host"></div>
-	<input type="hidden" name="targetHosts" id="hostsHidden" value="${(test.targetHosts)!}"> 
-	<a class="btn pull-right btn-mini" data-toggle="modal" href="#addHostModal" style="margin-right:20px;margin-top:-30px">   
-		<@spring.message "perfTest.configuration.add"/>
-	</a>
-</div>
+<div class="div-host"></div>
+<input type="hidden" name="targetHosts" id="hostsHidden" value="${(targetHosts)!}"> 
+<a class="btn pull-right btn-mini addhostbtn" data-toggle="modal" href="#addHostModal">   
+	<@spring.message "perfTest.configuration.add"/>
+</a>
+
 											
 <!-- modal dialog -->
 <div class="modal fade" id="addHostModal">
@@ -83,7 +65,7 @@
 	      $(".icon-remove-circle").live("click", function() {
 	      	deleteHost($(this));
 	      });
-
+	      initHosts();
 	  });
 
       function updateHostHiddenValue() {

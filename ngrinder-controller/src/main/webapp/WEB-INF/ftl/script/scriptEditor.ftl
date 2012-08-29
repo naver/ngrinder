@@ -46,20 +46,38 @@
 							<div style="margin-bottom: 0" class="control-group">
 								<table style="width:100%">
 									<tr>
-										<td style="width:80%">
+										<td style="width:70%">
 											<label class="control-label" for="description"><@spring.message "script.option.commit"/></label>
 											<div class="controls"> 
-												<textarea class="input-xlarge span7" id="descInput" rows="3" name="description" style="resize: none" >${(file.description)!}</textarea>
+												<textarea class="input-xlarge span6" id="descInput" rows="3" name="description" style="resize: none" >${(file.description)!}</textarea>
 											</div> 
 										</td> 
-										<td style="width:20%"> 
-											<span>
-												<div class="span3 div-host" style="bgcolor:#FFFFFF"></div>
-												<input type="hidden" name="targetHosts" id="hostsHidden" value="${(test.targetHosts)!}"> 
-												<a class="btn btn-mini" data-toggle="modal" href="#addHostModal" style="margin-left:0px;margin-top:-30px">   
-													<@spring.message "perfTest.configuration.add"/> 
-												</a> 
-											</span> 
+										<td style="width:30%">  
+										<style>
+											div.div-host {
+												border: 1px solid #D6D6D6;
+												height: 60px;
+												margin-bottom: 0px;
+												overflow-y: scroll;
+												border-radius: 3px 3px 3px 3px;
+												width:220px;
+											}
+	
+											div.div-host .host {
+												color: #666666;
+												display: inline-block;
+												margin-left: 7px;
+												margin-top: 2px;
+												margin-bottom: 2px;
+											}
+											
+											.addhostbtn {
+												margin-right:0px;
+												margin-top:0px;
+											}
+											</style>
+											
+											<#include "../perftest/host.ftl"/>
 										</td> 
 								</table>           
 							</div>
@@ -124,12 +142,13 @@
 			showInformation("<@spring.message "script.editor.message.validate"/>");
 			var scriptContent = editAreaLoader.getValue("display_content");
 			var scriptPath = $("#scriptNameInput").val();
+			var hostString = $("#hostsHidden").val();
 			$('#validateRsPre').attr("class", "prettyprint pre-scrollable hidden");
 			$.ajax({
 		  		url: "${req.getContextPath()}/script/validate",
 		    	async: true,
 		    	type: "POST",
-				data: {'path':scriptPath, 'content': scriptContent},
+				data: {'path':scriptPath, 'content': scriptContent, 'hostString' : hostString},
 		    	success: function(res) {
 					var validationInfo = "";
 					$('#validateRsPre').text(res);

@@ -189,7 +189,32 @@ div.chart {
 
 										<div class="control-group">
 											<label class="control-label"><@spring.message "perfTest.configuration.targetHost"/></label>
-											<#include "host.ftl">
+											<style>
+											div.div-host {
+												border: 1px solid #D6D6D6;
+												height: 50px;
+												margin-bottom: 8px;
+												overflow-y: scroll;
+												border-radius: 3px 3px 3px 3px;
+											}
+	
+											div.div-host .host {
+												color: #666666;
+												display: inline-block;
+												margin-left: 7px;
+												margin-top: 2px;
+												margin-bottom: 2px;
+											}
+											.addhostbtn {
+												margin-right:20px;
+												margin-top:-30px;
+											}
+										
+											</style>
+											<#assign targetHosts = test.targetHosts/>
+											<div class="control">
+												<#include "host.ftl">
+											</div>
 										</div>
 										<hr>
 										<div class="control-group"> 
@@ -817,7 +842,6 @@ div.chart {
 		  });
 		  updateVuserTotal();	
 	      initThresholdChkBox();
-	      initHosts();
 	      initDuration();
 	      updateChart();
 	      resetFooter();
