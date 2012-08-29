@@ -77,7 +77,7 @@ div.chart {
 								<#if test??> 
 									<span id="teststatus_pop_over"
 										rel="popover" data-content='${"${test.progressMessage}/n${test.lastProgressMessage}"?replace('/n', '<br>')?html}'  
-											data-original-title="${test.status}" type="toggle">
+											data-original-title="<@spring.message "${test.status.springMessageKey}"/>" type="toggle">
 										<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
 									</span> 
 								</#if>
@@ -1059,26 +1059,26 @@ div.chart {
 	      });
 	  }
 
-	  function updateStatus(id, status, icon, deletable, stoppable, message) {
-		  if(status == "FINISHED") {
+	  function updateStatus(id,status_id,status_name, icon, deletable, stoppable, message) {
+		  if(status_id == "FINISHED") {
 			  isFinished = true;
 		  }
-		  if ($("#testStatus").val() == status) {
+		  if ($("#testStatus").val() == status_id) {
 		  	return;
 		  }
 	      var ballImg = $("#testStatus_img_id");
 	      
-		  $("#teststatus_pop_over").attr("data-original-title", status);
+		  $("#teststatus_pop_over").attr("data-original-title", status_name);
 		  $("#teststatus_pop_over").attr("data-content", message);
 			
-	      $("#testStatus").val(status);
+	      $("#testStatus").val(status_id);
 	      if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
 	          ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
           }
 	     
-		  if(status == "TESTING") {
+		  if(status_id == "TESTING") {
 		   		displayCfgAndTestRunning();
-		  } else if(status =="FINISHED") { 
+		  } else if(status_id =="FINISHED") { 
 		   		displayCfgAndTestReport();
 		  } else {
 		      	displayCfgOnly();
@@ -1104,7 +1104,7 @@ div.chart {
 	          success: function (data) {
 	              data = eval(data);
 	              for (var i = 0; i < data.length; i++) {
-	                  updateStatus(data[i].id, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
+	                  updateStatus(data[i].id, data[i].status_id, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
 	              }
 	          },
 	          complete: function () {

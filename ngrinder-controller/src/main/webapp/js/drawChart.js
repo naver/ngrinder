@@ -1,17 +1,17 @@
 var formatAmount = function(format, value) {
 	if (value < 1024) {
-		return value.toFixed(2);
+		return value.toFixed(2) + " ";
 	} else if (value < 1048576) {
-		return (value/1024).toFixed(2) + "K";
+		return (value/1024).toFixed(2) + "K ";
 	} else if (value < 1073741824) {
-		return (value/1048576).toFixed(2) + "M";
+		return (value/1048576).toFixed(2) + "M ";
 	} else {
-		return (value/1073741824).toFixed(2) + "G";
+		return (value/1073741824).toFixed(2) + "G ";
 	}	
 };
 
 var formatPercentage = function(format, value) {
-	return value.toFixed(2) + "%";
+	return value.toFixed(2) + "% ";
 };
 
 function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, interval) {
