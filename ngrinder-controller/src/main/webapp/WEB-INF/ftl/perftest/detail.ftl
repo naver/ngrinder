@@ -53,6 +53,26 @@ div.chart {
 	width: 450px;
 	height: 355px
 }
+
+div.div-host {
+	border: 1px solid #D6D6D6;
+	height: 50px;
+	margin-bottom: 8px;
+	overflow-y: scroll;
+	border-radius: 3px 3px 3px 3px;
+}
+
+div.div-host .host {
+	color: #666666;
+	display: inline-block;
+	margin-left: 7px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+.addhostbtn {
+	margin-right:20px;
+	margin-top:-32px;
+}
 </style>
 
 </head>
@@ -177,7 +197,7 @@ div.chart {
 												</#if>
 												</select>
 												<input type="hidden" id="scriptRevision" name="scriptRevision" value="${(test.scriptRevision)!-1}">
-												<button class="pull-right btn btn-mini btn-info" type="button" id="showScript" style="margin-top:3px"><@spring.message "perfTest.configuration.showScript"/></button>
+												<button class="btn btn-mini btn-info pull-right" type="button" id="showScript" style="margin-top:3px"><@spring.message "perfTest.configuration.showScript"/></button>
 											</div> 
 										</div>
 										<div class="control-group">
@@ -189,28 +209,6 @@ div.chart {
 
 										<div class="control-group">
 											<label class="control-label"><@spring.message "perfTest.configuration.targetHost"/></label>
-											<style>
-											div.div-host {
-												border: 1px solid #D6D6D6;
-												height: 50px;
-												margin-bottom: 8px;
-												overflow-y: scroll;
-												border-radius: 3px 3px 3px 3px;
-											}
-	
-											div.div-host .host {
-												color: #666666;
-												display: inline-block;
-												margin-left: 7px;
-												margin-top: 2px;
-												margin-bottom: 2px;
-											}
-											.addhostbtn {
-												margin-right:20px;
-												margin-top:-30px;
-											}
-										
-											</style>
 											<#if test?? && test.targetHosts??>
 												<#assign targetHosts = test.targetHosts>
 											<#else>
@@ -274,7 +272,6 @@ div.chart {
 										/>
 										<h4>
 											<@spring.message "perfTest.configuration.rampEnable"/>
-											<small> <@spring.message "perfTest.configuration.rampUpDes"/></small>
 										</h4>
 									</label>
 								</div>
@@ -326,7 +323,9 @@ div.chart {
 										</td>
 									</tr>
 								</table>
-
+								<div class="page-header center" style="padding-bottom:10px;">
+									<strong><@spring.message "perfTest.configuration.rampUpDes"/></strong>
+								</div>
 								<div id="rampChart" class="rampChart"></div>
 							</div>
 						</div>
@@ -483,8 +482,7 @@ div.chart {
 							</div>
 							<div class="span7">
 								<div class="page-header">
-									<h4><@spring.message "perfTest.testRunning.tpsStatistics"/> <span class="badge badge-success pull-center"><@spring.message "perfTest.testRunning.runTime"/> <data id="running_time"></data></span></h4>
-								   
+									<h4><@spring.message "perfTest.testRunning.tpsStatistics"/> <span class="badge badge-success"><@spring.message "perfTest.testRunning.runTime"/> <data id="running_time"></data></span></h4>
 								</div>
 								<div id="runningTps" class="chart" style="width: 530px; height: 195px"></div>
 								<div class="tabbable">
@@ -709,11 +707,6 @@ div.chart {
 	          }
 	      });
 
-	      
-
-	     
-	      
-	     
 	      $("#saveScheduleBtn").click(function () {
 	          if (!$("#testContentForm").valid()) {
 	              return false;

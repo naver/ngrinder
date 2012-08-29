@@ -96,7 +96,6 @@ function updateChart() {
 	$("#rampChart").empty();
 	
 	$.jqplot("rampChart", [ seriesArray ], {
-		title : "Ramp-Up Chart",
 		axesDefaults : {
 			tickRenderer : $.jqplot.AxisTickRenderer,
 			tickOptions : {

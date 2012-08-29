@@ -36,7 +36,7 @@
 				<table class="table table-striped table-bordered ellipsis" id="testTable">
 					<colgroup>
 						<col width="30">
-						<col width="40">  
+						<col width="55">  
 						<col>
 						<col>
 						<col width="120">
@@ -44,13 +44,13 @@
 						<col width="60">
 						<col width="70"> 
 						<col width="70">
-						<col width="70">
+						<col width="75">
 						<col width="63">
 					</colgroup>
 					<thead>
 						<tr>
 							<th class="nothing"><input id="chkboxAll" type="checkbox" class="checkbox" value=""></th>
-							<th class="nothing"style="text-align:center"> </th>
+							<th class="nothing"><@spring.message "common.label.status"/></th>
 							<th id="testName"><@spring.message "perfTest.table.testName"/></th>
 							<th id="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
 							<th id="startTime"><@spring.message "perfTest.table.startTime"/></th>
@@ -68,13 +68,13 @@
 							<#list testList as test>
 								<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
 								<tr id="tr${test.id}">
-									<td style="text-align:center">
+									<td class="center">
 										<input type="checkbox" class="checkbox perf_test" value="${test.id}" 
 											<#if !(test.status.isDeletable())>disabled</#if> >
 									</td>
-									<td class="ellipsis"  style="text-align:center" id="row_${test.id}">
+									<td class="ellipsis center"  id="row_${test.id}">
 										<div class="ball" id="ball_${test.id}" rel="popover" data-content='${"${test.progressMessage}/n${test.lastProgressMessage}"?replace('/n', '<br>')?html}'>
-											<img src="${req.getContextPath()}/img/ball/${test.status.iconName}"/>
+											<img class="status" src="${req.getContextPath()}/img/ball/${test.status.iconName}"/>
 										</div>
 									</td>
 									<td class="ellipsis">   

@@ -16,10 +16,9 @@
 	<div class="container">
 		<div class="hero-unit"/>	
 			<form class="form-inline" name="quickStart" id="quickStart" action="${req.getContextPath()}/perftest/quickStart" method="POST">
-				<div class="quickStart" 	data-original-title="Please input valid URL" 
-											data-content="URL should start with http(s)://">
-					<input type="text" name="url" id="url" class="span7 url required" placeholder="Type URL..."/> 
-					<button id="startTestBtn" class="btn btn-primary"  type="submit">Start Test</button>
+				<div class="quickStart" data-original-title="<@spring.message "home.tip.url.title"/>" data-content="<@spring.message "home.tip.url.content"/>" rel="popover">
+					<input type="text" name="url" id="url" class="span7 url required" placeholder="<@spring.message "home.placeholder.url"/>"/> 
+					<button id="startTestBtn" class="btn btn-primary"  type="submit"><@spring.message "home.button.startTest"/></button>
 				</div>
 			</form>
 		</div>

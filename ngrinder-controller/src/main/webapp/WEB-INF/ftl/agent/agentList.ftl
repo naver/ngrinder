@@ -44,7 +44,7 @@
 							<th class="noClick"><@spring.message "agent.table.port"/></th>
 							<th><@spring.message "agent.table.name"/></th>
 							<th><@spring.message "agent.table.region"/></th>
-							<th><@spring.message "agent.table.status"/></th>
+							<th><@spring.message "common.label.status"/></th>
 							<th><@spring.message "agent.table.approve"/></th>
 						</tr>
 					</thead>

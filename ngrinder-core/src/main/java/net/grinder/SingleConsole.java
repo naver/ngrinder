@@ -97,6 +97,7 @@ public class SingleConsole implements Listener, SampleListener {
 	public static final Logger LOGGER = LoggerFactory.getLogger(RESOURCE.getString("shortTitle"));
 
 	private static final String REPORT_CSV = "output.csv";
+	private static final String REPORT_DATA = ".data";
 
 	private Condition m_eventSyncCondition = new Condition();
 	private ProcessReports[] processReports;
@@ -475,7 +476,7 @@ public class SingleConsole implements Listener, SampleListener {
 					if (val instanceof Double) {
 						// for debug, maybe there are some fields should not be sum up.
 						LOGGER.warn("Calculate sum for key:{} in statistic", each.getKey());
-						MutableDouble mutableDouble = (MutableDouble) val;
+						MutableDouble mutableDouble =new MutableDouble((Double)val);
 						mutableDouble.add((Double) ObjectUtils.defaultIfNull(each.getValue(), 0D));
 						valueMap.put(each.getKey(), mutableDouble);
 					} else {
@@ -507,7 +508,7 @@ public class SingleConsole implements Listener, SampleListener {
 				}
 
 				for (Entry<String, Object> each : valueMap.entrySet()) {
-					writeReportData(each.getKey(), formatValue(each.getValue()));
+					writeReportData(each.getKey()+REPORT_DATA, formatValue(each.getValue()));
 				}
 				// add total test report into csv file.
 				for (String key : csvHeaderList) {
@@ -640,7 +641,7 @@ public class SingleConsole implements Listener, SampleListener {
 		try {
 			BufferedWriter bw = fileWriterMap.get(name);
 			if (bw == null) {
-				bw = new BufferedWriter(new FileWriter(new File(this.reportPath, name + ".data"), true));
+				bw = new BufferedWriter(new FileWriter(new File(this.reportPath, name), true));
 				fileWriterMap.put(name, bw);
 			}
 

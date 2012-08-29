@@ -5,24 +5,27 @@
 		<#include "../common/common.ftl">
 		<title><@spring.message "script.editor.title"/></title>
 		<style>
-		
-		div.div-host {
-			background-color: #FFFFFF;
-			border: 1px solid #D6D6D6;
-			height: 50px;
-			margin-bottom: 8px;
-			display: inline-block;
-			overflow-y: scroll;
-			border-radius: 3px 3px 3px 3px; 
-		}
-		
-		div.div-host .host {
-			color: #666666;
-			display: inline-block;
-			margin-left: 7px;
-			margin-top: 2px;
-			margin-bottom: 2px;
-		}
+			div.div-host {
+				background-color: #FFFFFF;
+				border: 1px solid #D6D6D6;
+				height: 55px;
+				margin-bottom: 5px;
+				overflow-y: scroll;
+				border-radius: 3px 3px 3px 3px;
+				width:240px;
+			}
+
+			div.div-host .host {
+				color: #666666;
+				display: inline-block;
+				margin-left: 7px;
+				margin-top: 2px;
+				margin-bottom: 2px;
+			}
+			
+			.addhostbtn {
+				margin-right:35px;
+			}
 		</style>
 	</head>
 
@@ -39,8 +42,8 @@
 								<label class="control-label" for="testName"><@spring.message "script.option.name"/></label>
 								<div class="controls">   
 									<input type="text" id="scriptNameInput" class="span7" name="path" value="${file.path!}" readonly/>
-									<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" ><@spring.message "common.button.save"/></a>
-									<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" ><@spring.message "script.editor.button.validate"/></a>
+									<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:27px; width:35px;"><@spring.message "common.button.save"/></a>
+									<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:85px;"><@spring.message "script.editor.button.validate"/></a>
 								</div>
 							</div> 
 							<div style="margin-bottom: 0" class="control-group">
@@ -53,30 +56,6 @@
 											</div> 
 										</td> 
 										<td style="width:30%">  
-										<style>
-											div.div-host {
-												border: 1px solid #D6D6D6;
-												height: 60px;
-												margin-bottom: 0px;
-												overflow-y: scroll;
-												border-radius: 3px 3px 3px 3px;
-												width:220px;
-											}
-	
-											div.div-host .host {
-												color: #666666;
-												display: inline-block;
-												margin-left: 7px;
-												margin-top: 2px;
-												margin-bottom: 2px;
-											}
-											
-											.addhostbtn {
-												margin-right:0px;
-												margin-top:0px;
-											}
-											</style>
-											
 											<#include "../perftest/host.ftl"/>
 										</td> 
 								</table>           
