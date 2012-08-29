@@ -42,9 +42,9 @@
 						<col width="120">
 						<col width="85">
 						<col width="60">
-						<col width="70"> 
+						<col width="90"> 
 						<col width="70">
-						<col width="75">
+						<col width="58">
 						<col width="63">
 					</colgroup>
 					<thead>
@@ -56,7 +56,7 @@
 							<th id="startTime"><@spring.message "perfTest.table.startTime"/></th>
 							<th id="duration"><@spring.message "perfTest.table.duration"/></th>
 							<th id="tps"><@spring.message "perfTest.table.tps"/></th> 
-							<th id="meanTestTime"><@spring.message "perfTest.table.meantime"/><br/><code>MS</code></th>
+							<th id="meanTestTime"><@spring.message "perfTest.table.meantime"/><br/></th>
 							<th id="errors"><@spring.message "perfTest.table.errors"/></th>
 							<th class="nothing"><@spring.message "perfTest.table.vusers"/></th>
 							<th class="nothing"><@spring.message "common.label.actions"/></th>
