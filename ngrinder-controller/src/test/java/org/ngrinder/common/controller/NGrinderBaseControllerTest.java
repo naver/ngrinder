@@ -59,7 +59,7 @@ public class NGrinderBaseControllerTest extends AbstractPerfTestTransactionalTes
 		//to make in auto wired.
 		MessageSource resources = new ClassPathXmlApplicationContext("servlet-context-message.xml");
 		ReflectionTestUtils.setField(perfTestController, "messageSource", resources);
-		String errMsg = perfTestController.getErrorMessages("startTest.scriptError");
+		String errMsg = perfTestController.getMessages("startTest.scriptError");
 		assertThat(errMsg, is("script is not found !"));
 	}
 

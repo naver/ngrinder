@@ -8,11 +8,23 @@
 			div.div-host {
 				background-color: #FFFFFF;
 				border: 1px solid #D6D6D6;
-				height: 50px;
-				margin-bottom: 8px;
-				display: inline-block;
+				height: 55px;
+				margin-bottom: 5px;
 				overflow-y: scroll;
-				border-radius: 3px 3px 3px 3px; 
+				border-radius: 3px 3px 3px 3px;
+				width:240px;
+			}
+
+			div.div-host .host {
+				color: #666666;
+				display: inline-block;
+				margin-left: 7px;
+				margin-top: 2px;
+				margin-bottom: 2px;
+			}
+			
+			.addhostbtn {
+				margin-right:35px;
 			}
 		</style>
 	</head>
@@ -30,25 +42,21 @@
 								<label class="control-label" for="testName"><@spring.message "script.option.name"/></label>
 								<div class="controls">   
 									<input type="text" id="scriptNameInput" class="span7" name="path" value="${file.path!}" readonly/>
-									<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:27px;"><@spring.message "common.button.save"/></a>
-									<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" ><@spring.message "script.editor.button.validate"/></a>
+									<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:27px; width:35px;"><@spring.message "common.button.save"/></a>
+									<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:85px;"><@spring.message "script.editor.button.validate"/></a>
 								</div>
 							</div> 
 							<div style="margin-bottom: 0" class="control-group">
 								<table style="width:100%">
 									<tr>
-										<td style="width:80%">
+										<td style="width:70%">
 											<label class="control-label" for="description"><@spring.message "script.option.commit"/></label>
 											<div class="controls"> 
-												<textarea class="input-xlarge span7" id="descInput" rows="3" name="description" style="resize: none" >${(file.description)!}</textarea>
+												<textarea class="input-xlarge span6" id="descInput" rows="3" name="description" style="resize: none" >${(file.description)!}</textarea>
 											</div> 
 										</td> 
-										<td style="width:20%"> 
-											<div class="span3 div-host"></div>
-											<a class="btn btn-mini pull-right" data-toggle="modal" href="#addHostModal">   
-												<@spring.message "perfTest.configuration.add"/> 
-											</a> 
-											<input type="hidden" name="targetHosts" id="hostsHidden" value="${(test.targetHosts)!}"> 
+										<td style="width:30%">  
+											<#include "../perftest/host.ftl"/>
 										</td> 
 								</table>           
 							</div>
@@ -113,16 +121,17 @@
 			showInformation("<@spring.message "script.editor.message.validate"/>");
 			var scriptContent = editAreaLoader.getValue("display_content");
 			var scriptPath = $("#scriptNameInput").val();
+			var hostString = $("#hostsHidden").val();
 			$('#validateRsPre').attr("class", "prettyprint pre-scrollable hidden");
 			$.ajax({
 		  		url: "${req.getContextPath()}/script/validate",
 		    	async: true,
 		    	type: "POST",
-				data: {'path':scriptPath, 'content': scriptContent},
+				data: {'path':scriptPath, 'content': scriptContent, 'hostString' : hostString},
 		    	success: function(res) {
-					var validationInfo = "";
 					$('#validateRsPre').text(res);
 					$('#validateRsPre').attr("class", "prettyprint pre-scrollable");
+					$("#footDiv").remove();
 		    	},
 		    	error: function() {
 		    		showErrorMsg("<@spring.message "script.editor.error.validate"/>");

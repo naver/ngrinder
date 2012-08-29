@@ -42,7 +42,7 @@
 						<col width="120">
 						<col width="85">
 						<col width="60">
-						<col width="95">
+						<col width="70"> 
 						<col width="70">
 						<col width="75">
 						<col width="63">
@@ -55,8 +55,8 @@
 							<th id="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
 							<th id="startTime"><@spring.message "perfTest.table.startTime"/></th>
 							<th id="duration"><@spring.message "perfTest.table.duration"/></th>
-							<th id="tps"><@spring.message "perfTest.table.tps"/></th>
-							<th id="meanTestTime"><@spring.message "perfTest.table.meantime"/></th>
+							<th id="tps"><@spring.message "perfTest.table.tps"/></th> 
+							<th id="meanTestTime"><@spring.message "perfTest.table.meantime"/><br/><code>MS</code></th>
 							<th id="errors"><@spring.message "perfTest.table.errors"/></th>
 							<th class="nothing"><@spring.message "perfTest.table.vusers"/></th>
 							<th class="nothing"><@spring.message "common.label.actions"/></th>
@@ -79,10 +79,10 @@
 									</td>
 									<td class="ellipsis">   
 										<div rel="popover"
-											 data-content="${test.description?replace('\n', '<br/>')?html}&lt;p&gt;<@spring.message "perfTest.table.testNamepopoverMessage"/> <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm:ss')}</#if>&lt;/p&gt;"  
+											 data-content="${test.description?replace('\n', '<br/>')?html}&lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;"  
 											 data-original-title="${test.testName}">
 											<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
-										</div>  
+										</div>   
 									</td>
 									<td class="ellipsis">
 										<div rel="popover"

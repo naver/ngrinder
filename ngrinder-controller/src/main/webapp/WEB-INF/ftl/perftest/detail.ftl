@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>nGrinder Performance Test Detail</title> <#include "../common/common.ftl"> <#include "../common/jqplot.ftl">
+<title>nGrinder Performance Test Detail</title> 
+<#include "../common/common.ftl"> 
+<#include "../common/jqplot.ftl">
 <link href="${req.getContextPath()}/css/slider.css" rel="stylesheet">
 <link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
 <style>
@@ -21,21 +23,6 @@ div.div-resources .resource {
 	margin-bottom: 2px;
 }
 
-div.div-host {
-	border: 1px solid #D6D6D6;
-	height: 50px;
-	margin-bottom: 8px;
-	overflow-y: scroll;
-	border-radius: 3px 3px 3px 3px;
-}
-
-div.div-host .host {
-	color: #666666;
-	display: inline-block;
-	margin-left: 7px;
-	margin-top: 2px;
-	margin-bottom: 2px;
-}
 
 .select-item {
 	width: 50px;
@@ -65,6 +52,26 @@ div.chart {
 .rampChart {
 	width: 450px;
 	height: 355px
+}
+
+div.div-host {
+	border: 1px solid #D6D6D6;
+	height: 50px;
+	margin-bottom: 8px;
+	overflow-y: scroll;
+	border-radius: 3px 3px 3px 3px;
+}
+
+div.div-host .host {
+	color: #666666;
+	display: inline-block;
+	margin-left: 7px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+}
+.addhostbtn {
+	margin-right:20px;
+	margin-top:-32px;
 }
 </style>
 
@@ -202,13 +209,14 @@ div.chart {
 
 										<div class="control-group">
 											<label class="control-label"><@spring.message "perfTest.configuration.targetHost"/></label>
+											<#if test?? && test.targetHosts??>
+												<#assign targetHosts = test.targetHosts>
+											<#else>
+												<#assign targetHosts = "">
+											</#if>
 											<div class="controls">
-												<div class="div-host"></div>
-												<input type="hidden" name="targetHosts" id="hostsHidden" value="${(test.targetHosts)!}"> 
-												<a class="btn pull-right btn-mini" data-toggle="modal" href="#addHostModal" style="margin-right:20px;margin-top:-32px">   
-													<@spring.message "perfTest.configuration.add"/>
-												</a>
-											</div>
+												<#include "host.ftl">
+											</div> 
 										</div>
 										<hr>
 										<div class="control-group"> 
@@ -488,12 +496,12 @@ div.chart {
 											<table class="table table-striped table-bordered ellipsis" id="lsTable">
 												<colgroup>
 													<col width="30px">
-													<col>
+													<col width="85px">
 													<col width="85px">
 													<col width="55px">
-													<col width="50px">
-													<col width="50px">
-													<col width="50px">
+													<col width="80px">
+													<col width="55px">
+													<col width="55px">
 													<col width="55px">
 												</colgroup>
 												<thead>
@@ -515,13 +523,13 @@ div.chart {
 										<div class="tab-pane active" id="asTab">
 											<table class="table table-striped table-bordered ellipsis" id="asTable">
 												<colgroup>
-													<col width="30px">
-													<col>
+														<col width="30px">
+													<col width="85px">
 													<col width="85px">
 													<col width="55px">
-													<col width="50px">
-													<col width="50px">
-													<col width="50px">
+													<col width="80px">
+													<col width="55px">
+													<col width="55px">
 													<col width="55px">
 												</colgroup>
 												<thead>
@@ -556,36 +564,6 @@ div.chart {
 		</form>
 		<!--content-->
 		<#include "../common/copyright.ftl">
-	</div>
-	<!-- modal -->
-	<div class="modal fade" id="addHostModal">
-		<div class="modal-header">
-			<a class="close" data-dismiss="modal">&times;</a>
-			<h3>
-				Add Host <small>Please input one option at least.</small>
-			</h3>
-		</div>
-		<div class="modal-body">
-			<div class="form-horizontal">
-				<fieldset>
-					<div class="control-group">
-						<label for="domainInput" class="control-label">Domain</label>
-						<div class="controls">
-							<input type="text" id="domainInput"> <span class="help-inline"></span>
-						</div>
-					</div>
-					<div class="control-group">
-						<label for="ipInput" class="control-label">IP</label>
-						<div class="controls">
-							<input type="text" id="ipInput"> <span class="help-inline"></span>
-						</div>
-					</div>
-				</fieldset>
-			</div>
-		</div>
-		<div class="modal-footer">
-			<a class="btn btn-primary" id="addHostBtn"><@spring.message "perfTest.configuration.add"/></a>
-		</div>
 	</div>
 
 	<div class="modal fade" id="scheduleModal">
@@ -689,7 +667,7 @@ div.chart {
 	      }
 
 	      $("#scriptName").change(function () {
-	          updateScriptResources();
+	          updateScriptResources(false);
 	      });
 
 	      $("#hiddenDurationInput").bind("slide", function (e) {
@@ -729,33 +707,6 @@ div.chart {
 	          }
 	      });
 
-	      $("#addHostBtn").click(function () {
-	          var content = [];
-	          if (!checkEmptyByID("domainInput")) {
-	              content.push(getValueByID("domainInput"));
-	          }
-	          if (!checkEmptyByID("ipInput")) {
-	              content.push(getValueByID("ipInput"));
-	          }
-
-	          if (content.length == 0) {
-	              $("#addHostModal small").addClass("errorColor");
-	              return;
-	          }
-
-	          var contentStr = content.join(":");
-	          
-	          $(".div-host").html($(".div-host").html() + hostItem(contentStr));
-	          
-	          updateHostHiddenValue();
-	          $("#addHostModal").modal("hide");
-	          $("#addHostModal small").removeClass("errorColor");
-	      });
-	      
-
-	     
-	      
-	     
 	      $("#saveScheduleBtn").click(function () {
 	          if (!$("#testContentForm").valid()) {
 	              return false;
@@ -888,12 +839,11 @@ div.chart {
 		  });
 		  updateVuserTotal();	
 	      initThresholdChkBox();
-	      initHosts();
 	      initDuration();
 	      updateChart();
 	      resetFooter();
 
-	      updateScriptResources();
+	      updateScriptResources(true);
 	      validateHostForm();
 	      $("#durationSlider").mousedown(function() {
 	    	  $("#durationChkbox").click();
@@ -902,42 +852,9 @@ div.chart {
 	    	  $("#runcountChkbox").click();
 	      });
 	      
-	      $(".icon-remove-circle").live("click", function() {
-	      	deleteHost($(this));
-	      });
 	  });
 	
 	
-      function updateHostHiddenValue() {
-      	  var content = [];
-          $(".host").each(function(index, value) {
-          		content.push($.trim($(this).text()));    
-          });
-          
-          contentStr = content.join(",");
-          $("#hostsHidden").val(contentStr);
-      }
-
-      function hostItem(content) {
-          return "<p class='host'>" + content + "  <a href='javascript:void(0);'><i class='icon-remove-circle'></i></a></p><br style='line-height:0px'/>"
-      }
-
-      function initHosts() {
-          if (checkEmptyByID("hostsHidden")) {
-              return;
-          }
-		  var hosts = $("#hostsHidden").val().split(",");
-		  $.each(hosts, function(index, each) {
-		  	$(".div-host").html( $(".div-host").html() + hostItem(each) );
-		  });
-      }
-	      
-	  function deleteHost(element) {
-		  var elem = element.parents("p");
-		  elem.next("br").remove();
-	      elem.remove();
-	      updateHostHiddenValue();
-	  }
 	  
 	  function updateVuserTotal() {
 	      var agtCount = $("#agentCount").val();
@@ -945,7 +862,7 @@ div.chart {
 	      $("#vuserTotal").text(agtCount * vcount);
 	  }
 
-	  function updateScriptResources() {
+	  function updateScriptResources(first) {
 	      $('#messageDiv').ajaxSend(function (e, xhr, settings) {
 	          var url = settings.url;
 	          if (url.indexOf("refresh") == 0) 
@@ -960,9 +877,14 @@ div.chart {
 	          },
 	          success: function (res) {
 	              var html = "";
-	              var len = res.length;
+	              var len = res.resources.length;
+	              if (first != true) {
+	                  $(".div-host").html("");
+		              $("#hostsHidden").val(res.targetHosts);
+		              initHosts();
+	              }
 	              for (var i = 0; i < len; i++) {
-	                  var value = res[i];
+	                  var value = res.resources[i];
 	                  html = html + "<div class='resource'>" + value + "</div><br/>";
 	              }
 	              $("#scriptResources").html(html);

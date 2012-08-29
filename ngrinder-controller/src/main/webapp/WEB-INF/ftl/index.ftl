@@ -25,7 +25,7 @@
 		<div class="row">
 			<div class="span6">
 				<div class="page-header">
-	 				 <h2><@spring.message "home.qa.title"/></h2> 
+	 				 <h3><@spring.message "home.qa.title"/></h3>  
 				</div>
 				<div class="alert alert-info">
 			  	<@spring.message "home.qa.message"/>
@@ -65,10 +65,10 @@
 			</div>
 			<div class="span6">
 				<div class="page-header">
-	 				 <h2><@spring.message "home.developerResources.title"/></h2> 
+	 				 <h3><@spring.message "home.developerResources.title"/></h3> 
 				</div> 
 				<div class="alert alert-info">
-			  		<@spring.message "home.developerResources.message"/>
+			  		<@spring.message "home.developerResources.message"/> 
 			  	</div> 
 		   		<div class="well">
 			  		<br/>
