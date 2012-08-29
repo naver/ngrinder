@@ -189,7 +189,7 @@ public class FileEntryController extends NGrinderBaseController {
 			return "redirect:/script/list";
 		}
 		model.addAttribute("file", script);
-		String targetHosts = script.getProperties().get("tagetHosts");
+		String targetHosts = script.getProperties().get("targetHosts");
 		if (StringUtils.isNotBlank(targetHosts)) {
 			model.addAttribute("targetHosts", targetHosts);
 		}
@@ -291,7 +291,7 @@ public class FileEntryController extends NGrinderBaseController {
 					@RequestParam("targetHosts") String targetHosts, ModelMap model) {
 		if (StringUtils.isNotBlank(targetHosts)) {
 			Map<String, String> map = new HashMap<String, String>();
-			map.put("tagetHosts", StringUtils.trim(targetHosts));
+			map.put("targetHosts", StringUtils.trim(targetHosts));
 			fileEntry.setProperties(map);
 		}
 		fileEntryService.save(user, fileEntry);

@@ -4,20 +4,19 @@
 	<@spring.message "perfTest.configuration.add"/>
 </a>
 
-											
 <!-- modal dialog -->
 <div class="modal fade" id="addHostModal">
 	<div class="modal-header">
 		<a class="close" data-dismiss="modal">&times;</a>
 		<h3>
-			Add Host <small>Please input one option at least.</small>
+			<@spring.message "perfTest.configuration.addHost"/> <small><@spring.message "perfTest.configuration.pleaseInputOneOptionAtLeast"/></small>
 		</h3>
 	</div>
 	<div class="modal-body">
 		<div class="form-horizontal">
 			<fieldset>
 				<div class="control-group">
-					<label for="domainInput" class="control-label">Domain</label>
+					<label for="domainInput" class="control-label"><@spring.message "perfTest.configuration.domain"/></label>
 					<div class="controls">
 						<input type="text" id="domainInput"> <span class="help-inline"></span>
 					</div>

@@ -212,7 +212,7 @@ div.chart {
 										
 											</style>
 											<#assign targetHosts = test.targetHosts/>
-											<div class="control">
+											<div class="controls">
 												<#include "host.ftl">
 											</div>
 										</div>
@@ -665,7 +665,7 @@ div.chart {
 	      }
 
 	      $("#scriptName").change(function () {
-	          updateScriptResources();
+	          updateScriptResources(false);
 	      });
 
 	      $("#hiddenDurationInput").bind("slide", function (e) {
@@ -846,7 +846,7 @@ div.chart {
 	      updateChart();
 	      resetFooter();
 
-	      updateScriptResources();
+	      updateScriptResources(true);
 	      validateHostForm();
 	      $("#durationSlider").mousedown(function() {
 	    	  $("#durationChkbox").click();
@@ -865,7 +865,7 @@ div.chart {
 	      $("#vuserTotal").text(agtCount * vcount);
 	  }
 
-	  function updateScriptResources() {
+	  function updateScriptResources(first) {
 	      $('#messageDiv').ajaxSend(function (e, xhr, settings) {
 	          var url = settings.url;
 	          if (url.indexOf("refresh") == 0) 
@@ -880,9 +880,14 @@ div.chart {
 	          },
 	          success: function (res) {
 	              var html = "";
-	              var len = res.length;
+	              var len = res.resources.length;
+	              if (first != true) {
+	                  $(".div-host").html("");
+		              $("#hostsHidden").val(res.targetHosts);
+		              initHosts();
+	              }
 	              for (var i = 0; i < len; i++) {
-	                  var value = res[i];
+	                  var value = res.resources[i];
 	                  html = html + "<div class='resource'>" + value + "</div><br/>";
 	              }
 	              $("#scriptResources").html(html);

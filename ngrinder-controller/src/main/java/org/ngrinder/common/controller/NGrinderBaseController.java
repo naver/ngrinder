@@ -37,7 +37,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	public static final String ERROR_PAGE = "errors/error";
 
 	protected static final int DEFAULT_PAGE_LIMIT = 20;
-	
+
 	@Autowired
 	private MessageSource messageSource;
 
@@ -57,14 +57,14 @@ public class NGrinderBaseController implements NGrinderConstants {
 		return new User();
 	}
 
-	protected String getErrorMessages(String key) {
+	protected String getMessages(String key) {
 		Locale locale = null;
 		String message = null;
 		try {
 			locale = new Locale(getCurrentUser().getUserLanguage());
 			message = messageSource.getMessage(key, null, locale);
 		} catch (Exception e) {
-			return "Getting message error:" + e.getMessage();
+			return "Getting message error for key " + key;
 		}
 		return message;
 	}
