@@ -52,7 +52,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.grinder.SingleConsole;
-import net.grinder.SingleConsole.StopReason;
+import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.ConsolePropertiesFactory;

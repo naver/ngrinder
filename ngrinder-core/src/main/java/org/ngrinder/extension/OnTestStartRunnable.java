@@ -22,7 +22,8 @@
  */
 package org.ngrinder.extension;
 
-import net.grinder.SingleConsole.StopReason;
+
+import net.grinder.StopReason;
 
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.service.IPerfTestService;
@@ -55,12 +56,12 @@ public interface OnTestStartRunnable {
 	 * 
 	 * @param perfTest
 	 *            Performance Test
-	 * @param perfTestService
-	 *            perfTestService interface
 	 * @param reason
 	 *            stop reason
+	 * @param perfTestService
+	 *            perfTestService interface
 	 * @param vesion
-	 *            ngrinder version
+	 *            ngrinder version 
 	 */
-	public void finish(PerfTest perfTest, IPerfTestService perfTestService, StopReason reason, String vesion);
+	public void finish(PerfTest perfTest, String stopReason, IPerfTestService perfTestService, String vesion);
 }

@@ -35,6 +35,7 @@ import javax.servlet.ServletContext;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.model.Home;
+import org.ngrinder.extension.OnTestStartRunnable;
 import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.config.Config;
 import org.reflections.Reflections;
@@ -124,6 +125,9 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 		for (Runnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(Runnable.class)) {
 			runnable.run();
 		}
+		
+		List<OnTestStartRunnable> enabledModulesByClass = getEnabledModulesByClass(OnTestStartRunnable.class);
+		System.out.println(enabledModulesByClass.size());
 	}
 
 	/**

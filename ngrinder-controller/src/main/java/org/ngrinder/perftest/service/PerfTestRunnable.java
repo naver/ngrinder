@@ -38,7 +38,7 @@ import java.util.Set;
 
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.ConsoleShutdownListener;
-import net.grinder.SingleConsole.StopReason;
+import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
 
@@ -112,10 +112,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 		if (runCandidate == null) {
 			return;
 		}
-		
+
 		// schedule test
 		Date schedule = runCandidate.getScheduledTime();
-		if (schedule != null && !DateUtil.compareDateEndWithMinute(schedule, new Date(System.currentTimeMillis()))) {
+		if (schedule != null
+						&& !DateUtil.compareDateEndWithMinute(schedule, new Date(System.currentTimeMillis()))) {
 			// this test project is reserved,but it isn't yet going to run test
 			// right now.
 			return;
@@ -128,8 +129,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 							"The test is tried to execute but there is not enough free agents.\n- Current free agent size : "
 											+ size + "  / Requested : " + runCandidate.getAgentCount() + "\n");
 			return;
-		} 
-		
+		}
 
 		// In case of too many trial, cancel running.
 		if (runCandidate.getTestTrialCount() > PERFTEST_MAXIMUM_TRIAL_COUNT) {
@@ -224,7 +224,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	public void notifyFinsish(PerfTest perfTest, StopReason reason) {
 		for (OnTestStartRunnable run : pluginManager.getEnabledModulesByClass(OnTestStartRunnable.class)) {
-			run.finish(perfTest, perfTestService, reason, config.getVesion());
+			run.finish(perfTest, reason.name(), perfTestService, config.getVesion());
 		}
 	}
 
