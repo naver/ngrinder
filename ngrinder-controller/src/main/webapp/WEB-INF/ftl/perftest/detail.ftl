@@ -498,12 +498,12 @@ div.chart {
 											<table class="table table-striped table-bordered ellipsis" id="lsTable">
 												<colgroup>
 													<col width="30px">
-													<col>
+													<col width="85px">
 													<col width="85px">
 													<col width="55px">
-													<col width="50px">
-													<col width="50px">
-													<col width="50px">
+													<col width="80px">
+													<col width="55px">
+													<col width="55px">
 													<col width="55px">
 												</colgroup>
 												<thead>
@@ -525,13 +525,13 @@ div.chart {
 										<div class="tab-pane active" id="asTab">
 											<table class="table table-striped table-bordered ellipsis" id="asTable">
 												<colgroup>
-													<col width="30px">
-													<col>
+														<col width="30px">
+													<col width="85px">
 													<col width="85px">
 													<col width="55px">
-													<col width="50px">
-													<col width="50px">
-													<col width="50px">
+													<col width="80px">
+													<col width="55px">
+													<col width="55px">
 													<col width="55px">
 												</colgroup>
 												<thead>
