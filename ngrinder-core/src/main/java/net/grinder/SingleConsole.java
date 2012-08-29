@@ -555,9 +555,9 @@ public class SingleConsole implements Listener, SampleListener {
 
 				Test test = modelIndex.getTest(i);
 				statistics.put("testNumber", test.getNumber());
-				// statistics.put("testDescription", test.getDescription());
+				statistics.put("testDescription", test.getDescription());
 				lastStatistics.put("testNumber", test.getNumber());
-				// lastStatistics.put("testDescription", test.getDescription());
+				lastStatistics.put("testDescription", test.getDescription());
 
 				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
 				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
@@ -567,21 +567,6 @@ public class SingleConsole implements Listener, SampleListener {
 					lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
 							getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
 				}
-
-				// Tests
-				// Double tests = (Double) statistics.get("Tests");
-				// Double errors = (Double) statistics.get("Errors");
-				// statistics.put("TestsStr", simpleFormatter.format(tests));
-				// statistics.put("ErrorsStr", simpleFormatter.format(errors));
-				// statistics.put("TestsStr", tests);
-				// statistics.put("ErrorsStr", errors);
-
-				// Double lastTests = (Double) lastStatistics.get("Tests");
-				// Double lastErrors = (Double) lastStatistics.get("Errors");
-				// lastStatistics.put("TestsStr", simpleFormatter.format(lastTests));
-				// lastStatistics.put("ErrorsStr", simpleFormatter.format(lastErrors));
-				// lastStatistics.put("TestsStr", lastTests);
-				// lastStatistics.put("ErrorsStr", lastErrors);
 
 				cumulativeStatistics.add(statistics);
 				lastSampleStatistics.add(lastStatistics);
@@ -596,13 +581,6 @@ public class SingleConsole implements Listener, SampleListener {
 			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
 					getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 		}
-
-		// Double tests = (Double) totalStatistics.get("Tests");
-		// Double errors = (Double) totalStatistics.get("Errors");
-		// totalStatistics.put("TestsStr", simpleFormatter.format(tests));
-		// totalStatistics.put("ErrorsStr", simpleFormatter.format(errors));
-		// totalStatistics.put("TestsStr", tests);
-		// totalStatistics.put("ErrorsStr", errors);
 
 		result.put("totalStatistics", totalStatistics);
 		result.put("cumulativeStatistics", cumulativeStatistics);

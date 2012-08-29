@@ -13,9 +13,7 @@
 						<#list item as statistics>
 						<tr id="lsTableItem">
 							<td>${statistics.testNumber!'&nbsp;'}</td>
-							<td>
-			        			${statistics.testDescription!'&nbsp;'}
-							</td>
+							<td>${statistics.testDescription!'&nbsp;'}</td>
 							<td>${statistics.Tests!'&nbsp;'}</td>
 							<td>${statistics.Errors!'&nbsp;'}</td>
 							<td>${statistics['Mean_Test_Time_(ms)']!'&nbsp;'}</td>
@@ -30,15 +28,7 @@
 						<#list item as statistics>
 						<tr id="asTableItem">
 							<td>${statistics.testNumber!'&nbsp;'}</td>
-							<td>
-								<div style="width:100px;white-space:nowrap;">
-								<#if statistics.testDescription?has_content && statistics.testDescription?length gt 25>
-			        				${statistics.testDescription?substring(0,24)}...
-			      				<#else>
-			        				${statistics.testDescription!'&nbsp;'}
-								</#if>
-								
-							</td>
+							<td>${statistics.testDescription!'&nbsp;'}</td>
 							<td>${statistics.Tests!'&nbsp;'}</td>
 							<td>${statistics.Errors!'&nbsp;'}</td>
 							<td>${statistics['Mean_Test_Time_(ms)']!'&nbsp;'}</td>
