@@ -85,8 +85,6 @@ div.div-host .host {
 			<div class="well" style="padding: 10px">
 				<input type="hidden" id="testId" name="id" value="${(test.id)!}"> 
 				<input type="hidden" id="threshold"	name="threshold" value="${(test.threshold)!"D"}"> 
-				<input type="hidden" id="threads" name="threads" value="${(test.threads)!0}"> 
-				<input type="hidden" id="processes" name="processes" value="${(test.processes)!0}">
 
 				<div class="form-horizontal form-horizontal-1">
 					<fieldset>
@@ -177,8 +175,17 @@ div.div-host .host {
 														data-original-title="<@spring.message "perfTest.configuration.vuserPerAgent"/>"><span class="add-on">
 															<@spring.message "perfTest.configuration.max"/> ${(maxVuserPerAgent)}
 														</span>
+													<a href="javascript:void(0)" id="expandAndCollapse"><img src="${req.getContextPath()}/img/icon_expand.png"/></a>			
 												</div>
 												<span class="badge badge-info pull-right" ><span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span id="vuserTotal"></span></span>
+											</div>
+										</div>
+										<div class="control-group" id="processAndThreadPanel">
+											<div class="controls" >
+												<span>
+													<span title='<@spring.message "perfTest.report.process"/>'>P</span> <input class="input required positiveNumber span1" type="text" id="processes" name="processes" value="${(test.processes)!0}"/> 
+													<span title='<@spring.message "perfTest.report.thread"/>'>T</span> <input class="input required positiveNumber span1" type="text" id="threads" name="threads" value="${(test.threads)!0}"/>
+												<span>
 											</div>
 										</div>
 										<div class="control-group">
@@ -842,7 +849,11 @@ div.div-host .host {
 	      initDuration();
 	      updateChart();
 	      resetFooter();
-
+		  $("#processAndThreadPanel").hide();
+		  $("#expandAndCollapse").click(function() {
+		  		$("#processAndThreadPanel").toggle();
+		  	}
+		  );
 	      updateScriptResources(true);
 	      validateHostForm();
 	      $("#durationSlider").mousedown(function() {

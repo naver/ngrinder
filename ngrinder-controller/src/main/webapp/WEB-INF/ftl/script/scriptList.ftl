@@ -81,12 +81,12 @@
 							</td>
 							<td>
 								<#if script.fileType.fileCategory.isEditable()>
-									<a href="${req.getContextPath()}/script/detail/${script.path}" target="_self">${script.fileName}</a>
+									<a href="${req.getContextPath()}/script/detail/${script.path}" target="_self" title="${script.path}">${script.fileName}</a>
 								<#elseif script.fileType == "dir">
-									<a href="${req.getContextPath()}/script/list/${script.path}" target="_self">${script.fileName}</a>
+									<a href="${req.getContextPath()}/script/list/${script.path}" target="_self" title="${script.path}">${script.fileName}</a>
 								<#else>	
-									<a href="${req.getContextPath()}/script/download/${script.path}" target="_blank">${script.fileName}</a>
-								</#if>
+									<a href="${req.getContextPath()}/script/download/${script.path}" target="_blank" title="${script.path}">${script.fileName}</a>
+								</#if> 
 							</td>
 							<td class="ellipsis" title="${(script.description)!}">${(script.description)!}</td>
 							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if></td>

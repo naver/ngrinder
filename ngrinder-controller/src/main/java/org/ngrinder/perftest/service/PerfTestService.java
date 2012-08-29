@@ -609,8 +609,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		if (newVuser == 1) {
 			return new ProcessAndThread(1, 1);
 		}
-		int threadCount = 2;
-		int processCount = newVuser / threadCount + newVuser % threadCount;
+		int processCount = 2;
+		int threadCount = newVuser / processCount + newVuser % processCount;
 		return new ProcessAndThread(processCount, threadCount);
 	}
 
