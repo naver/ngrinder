@@ -9,3 +9,5 @@
 .clover
 target/
 
+/Servers
+/.metadata

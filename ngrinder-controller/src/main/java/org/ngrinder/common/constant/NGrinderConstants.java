@@ -118,6 +118,7 @@ public interface NGrinderConstants {
 	public static final String PARAM_DATA_LIST = "dataList";
 	public static final String PARAM_STATUS_UPDATE_ID = "id";
 	public static final String PARAM_STATUS_UPDATE_STATUS_NAME = "name";
+	public static final String PARAM_STATUS_UPDATE_STATUS_ID = "status_id";
 	public static final String PARAM_STATUS_UPDATE_STATUS_ICON = "icon";
 	public static final String PARAM_STATUS_UPDATE_STATUS_MESSAGE = "message";
 	public static final String PARAM_STATUS_UPDATE_DELETABLE = "deletable";

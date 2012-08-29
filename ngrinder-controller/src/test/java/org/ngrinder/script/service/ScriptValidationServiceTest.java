@@ -78,7 +78,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath("/script.py");
 		fileEntry.setContent(script);
-		String validateScript = scriptValidationService.validateScript(getTestUser(), fileEntry, false);
+		String validateScript = scriptValidationService.validateScript(getTestUser(), fileEntry, false, "");
 		assertThat(validateScript, containsString("Validation should be performed within 10sec. Stop it forcely"));
 	}
 
@@ -88,7 +88,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath("/script2.py");
 		fileEntry.setContent(script);
-		String validateScript = scriptValidationService.validateScript(getTestUser(), fileEntry, false);
+		String validateScript = scriptValidationService.validateScript(getTestUser(), fileEntry, false, "");
 		assertThat(validateScript, not(containsString("Validation should be performed within 10sec. Stop it forcely")));
 		assertThat(validateScript.length(), lessThan(10000));
 	}
@@ -101,7 +101,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 		fileEntry.setContent(script);
 		fileEntryService.save(getTestUser(), fileEntry);
 		fileEntry.setContent("");
-		String validateScript = scriptValidationService.validateScript(getTestUser(), fileEntry, true);
+		String validateScript = scriptValidationService.validateScript(getTestUser(), fileEntry, true, "");
 		assertThat(validateScript, not(containsString("Validation should be performed within 10sec. Stop it forcely")));
 		assertThat(validateScript.length(), lessThan(10000));
 	}

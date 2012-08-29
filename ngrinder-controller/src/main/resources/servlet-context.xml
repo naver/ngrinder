@@ -52,7 +52,6 @@
 		<property name="cache" value="no" />
 	</bean>
 
-	<import resource="servlet-context-message.xml"/>
 
 	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
 		<property name="defaultLocale" value="en" />

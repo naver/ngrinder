@@ -44,7 +44,7 @@
 						<col width="60">
 						<col width="95">
 						<col width="70">
-						<col width="80">
+						<col width="70">
 						<col width="63">
 					</colgroup>
 					<thead>
@@ -165,9 +165,10 @@
 			});
 			
 			$("i.test-stop").click(function() {
+				var id = $(this).attr("sid");
 				bootbox.confirm("<@spring.message "perfTest.table.message.confirm.stop"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
 					if (result) {
-						stopTests($(this).attr("sid"));
+						stopTests(id);
 					}
 				});
 			});

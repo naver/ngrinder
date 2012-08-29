@@ -113,4 +113,8 @@ public enum Status {
 		}
 		return status.toArray(new Status[0]);
 	}
+
+	public String getSpringMessageKey() {
+		return "perftest.status." + name().toLowerCase();
+	}
 }

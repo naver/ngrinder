@@ -90,7 +90,7 @@ div.chart {
 								<#if test??> 
 									<span id="teststatus_pop_over"
 										rel="popover" data-content='${"${test.progressMessage}/n${test.lastProgressMessage}"?replace('/n', '<br>')?html}'  
-											data-original-title="${test.status}" type="toggle">
+											data-original-title="<@spring.message "${test.status.springMessageKey}"/>" type="toggle">
 										<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
 									</span> 
 								</#if>
@@ -154,7 +154,9 @@ div.chart {
 											<div class="controls">
 												<div class="input-append">
 													<input type="text" class="input required positiveNumber span2" number_limit="${(maxAgentSizePerConsole)}"
-														id="agentCount" name="agentCount" value="${(test.agentCount)!}"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
+														id="agentCount" name="agentCount" value="${(test.agentCount)!}"
+														data-content='<@spring.message "perfTest.configuration.inputAgent"/>'
+														data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
 										 		</div>
 											</div>
 										</div>
@@ -164,13 +166,12 @@ div.chart {
 												<div class="input-append">
 													<input type="text" class="input required positiveNumber span2" rel="popover"
 														number_limit="${(maxVuserPerAgent)}" id="vuserPerAgent" name="vuserPerAgent"
-														value="${(test.vuserPerAgent)!}" data-content="Input vuser count for every agent."
-														data-original-title="Vuser count"><span class="add-on">
+														value="${(test.vuserPerAgent)!}" data-content='<@spring.message "perfTest.configuration.inputVuserPerAgent"/>'
+														data-original-title="<@spring.message "perfTest.configuration.vuserPerAgent"/>"><span class="add-on">
 															<@spring.message "perfTest.configuration.max"/> ${(maxVuserPerAgent)}
 														</span>
 												</div>
-												<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 /> 
-												<span class="badge badge-info pull-right" id="vuserTotal"><@spring.message "perfTest.configuration.availVuser"/> ${vuserTotal}</span>
+												<span class="badge badge-info pull-right" ><span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span id="vuserTotal"></span></span>
 											</div>
 										</div>
 										<div class="control-group">
@@ -179,17 +180,16 @@ div.chart {
 												<select id="scriptName" class="required" name="scriptName"> 
 												<#if scriptList?? && scriptList?size &gt; 0> 
 													<#list scriptList as scriptItem> 
-														<#if test?? && scriptItem.fileName == test.scriptName> 
+														<#if  test?? && scriptItem.path == test.scriptName> 
 															<#assign isSelected = "selected"/> 
 														<#else> 
-															<#assign isSelected = ""/> 
+															<#assign isSelected = 	""/> 
 														</#if>
 														<option value="${scriptItem.path}" ${isSelected}>${scriptItem.path}</option> 
 													</#list> 
 												</#if>
 												</select>
 												<input type="hidden" id="scriptRevision" name="scriptRevision" value="${(test.scriptRevision)!-1}">
-												<a href="javascript:void(0);" id="scriptRefresh"><i class="icon-refresh"  style="margin-top:3px"></i></a> 
 												<button class="pull-right btn btn-mini btn-info" type="button" id="showScript" style="margin-top:3px"><@spring.message "perfTest.configuration.showScript"/></button>
 											</div> 
 										</div>
@@ -744,31 +744,18 @@ div.chart {
 	          }
 
 	          var contentStr = content.join(":");
-	          $(".div-host").html(hostItem(contentStr));
-	          $("#hostsHidden").val(contentStr);
+	          
+	          $(".div-host").html($(".div-host").html() + hostItem(contentStr));
+	          
+	          updateHostHiddenValue();
 	          $("#addHostModal").modal("hide");
 	          $("#addHostModal small").removeClass("errorColor");
 	      });
-
-	      function hostItem(content) {
-	          return "<p class='host'>" + content + "  <a href='javascript:void(0);'><i class='icon-remove-circle'></i></a></p><br>"
-	      }
-
-	      function initHosts() {
-	          if (checkEmptyByID("hostsHidden")) {
-	              return;
-	          }
-
-	          $(".div-host").html(hostItem($("#hostsHidden").val()));
-	      }
-
-	      $("i.icon-remove-circle").live('click', function () {
-	          var $elem = $(this).parents("p");
-	          $elem.next("br").remove();
-	          $elem.remove();
-	          $("#hostsHidden").val("");
-	      });
 	      
+
+	     
+	      
+	     
 	      $("#saveScheduleBtn").click(function () {
 	          if (!$("#testContentForm").valid()) {
 	              return false;
@@ -899,7 +886,7 @@ div.chart {
 		      	window.open ("${req.getContextPath()}/script/detail/" + currentScript + "?r=" + scriptRevision, "scriptSource");
 		      }
 		  });
-		  	
+		  updateVuserTotal();	
 	      initThresholdChkBox();
 	      initHosts();
 	      initDuration();
@@ -915,16 +902,47 @@ div.chart {
 	    	  $("#runcountChkbox").click();
 	      });
 	      
-	      $("#scriptRefresh").click(function() {
-	      	$("#scriptRevision").val(-1);
-	      	showSuccessMsg('<@spring.message "perfTest.configuration.scriptNowPointingHeadRevision"/>'); 
+	      $(".icon-remove-circle").live("click", function() {
+	      	deleteHost($(this));
 	      });
 	  });
+	
+	
+      function updateHostHiddenValue() {
+      	  var content = [];
+          $(".host").each(function(index, value) {
+          		content.push($.trim($(this).text()));    
+          });
+          
+          contentStr = content.join(",");
+          $("#hostsHidden").val(contentStr);
+      }
 
+      function hostItem(content) {
+          return "<p class='host'>" + content + "  <a href='javascript:void(0);'><i class='icon-remove-circle'></i></a></p><br style='line-height:0px'/>"
+      }
+
+      function initHosts() {
+          if (checkEmptyByID("hostsHidden")) {
+              return;
+          }
+		  var hosts = $("#hostsHidden").val().split(",");
+		  $.each(hosts, function(index, each) {
+		  	$(".div-host").html( $(".div-host").html() + hostItem(each) );
+		  });
+      }
+	      
+	  function deleteHost(element) {
+		  var elem = element.parents("p");
+		  elem.next("br").remove();
+	      elem.remove();
+	      updateHostHiddenValue();
+	  }
+	  
 	  function updateVuserTotal() {
 	      var agtCount = $("#agentCount").val();
 	      var vcount = $("#vuserPerAgent").val();
-	      $("#vuserTotal").text("Vuser:" + agtCount * vcount);
+	      $("#vuserTotal").text(agtCount * vcount);
 	  }
 
 	  function updateScriptResources() {
@@ -1145,26 +1163,26 @@ div.chart {
 	      });
 	  }
 
-	  function updateStatus(id, status, icon, deletable, stoppable, message) {
-		  if(status == "FINISHED") {
+	  function updateStatus(id,status_id,status_name, icon, deletable, stoppable, message) {
+		  if(status_id == "FINISHED") {
 			  isFinished = true;
 		  }
-		  if ($("#testStatus").val() == status) {
+		  if ($("#testStatus").val() == status_id) {
 		  	return;
 		  }
 	      var ballImg = $("#testStatus_img_id");
 	      
-		  $("#teststatus_pop_over").attr("data-original-title", status);
+		  $("#teststatus_pop_over").attr("data-original-title", status_name);
 		  $("#teststatus_pop_over").attr("data-content", message);
 			
-	      $("#testStatus").val(status);
+	      $("#testStatus").val(status_id);
 	      if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
 	          ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
           }
 	     
-		  if(status == "TESTING") {
+		  if(status_id == "TESTING") {
 		   		displayCfgAndTestRunning();
-		  } else if(status =="FINISHED") { 
+		  } else if(status_id =="FINISHED") { 
 		   		displayCfgAndTestReport();
 		  } else {
 		      	displayCfgOnly();
@@ -1190,7 +1208,7 @@ div.chart {
 	          success: function (data) {
 	              data = eval(data);
 	              for (var i = 0; i < data.length; i++) {
-	                  updateStatus(data[i].id, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
+	                  updateStatus(data[i].id, data[i].status_id, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
 	              }
 	          },
 	          complete: function () {

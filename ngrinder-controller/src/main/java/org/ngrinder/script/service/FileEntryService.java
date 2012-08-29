@@ -50,7 +50,6 @@ import org.ngrinder.script.repository.FileEntryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.core.io.ClassPathResource;
@@ -71,8 +70,8 @@ import freemarker.template.Template;
 /**
  * File entry service class.<br/>
  * 
- * This class is responsible for creating user repo whenever user is created and connection b/w user
- * and underlying svn.
+ * This class is responsible for creating user repo whenever user is created and
+ * connection b/w user and underlying svn.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -80,7 +79,8 @@ import freemarker.template.Template;
 @Service
 public class FileEntryService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(FileEntryService.class);
+	private static final Logger LOG = LoggerFactory
+			.getLogger(FileEntryService.class);
 
 	private SVNClientManager svnClientManager = SVNClientManager.newInstance();
 
@@ -105,23 +105,10 @@ public class FileEntryService {
 		FSHooks.registerHook(new FSHook() {
 			@Override
 			public void onHook(FSHookEvent event) throws SVNException {
-				// FIXME: later
-			}
-		});
-
-		// Add each file size limit hook on pre-commit
-		FSHooks.registerHook(new FSHook() {
-			@Override
-			public void onHook(FSHookEvent event) throws SVNException {
-				// FIXME: later
-			}
-		});
-
-		// Add total storage size hook
-		FSHooks.registerHook(new FSHook() {
-			@Override
-			public void onHook(FSHookEvent event) throws SVNException {
-				// FIXME: later
+				if (event.getType().equals(FSHooks.SVN_REPOS_HOOK_POST_COMMIT)) {
+					String name = event.getReposRootDir().getName();
+					invalidateCache(name);
+				} 
 			}
 		});
 
@@ -133,8 +120,8 @@ public class FileEntryService {
 	 * @param user
 	 *            user.
 	 */
-	public void invalidateCache(User user) {
-		cacheManager.getCache("file_entry_search_cache").evict(user);
+	public void invalidateCache(String userId) {
+		cacheManager.getCache("file_entry_search_cache").evict(userId);
 	}
 
 	/**
@@ -153,25 +140,27 @@ public class FileEntryService {
 				createUserRepo(user, newUserDirectory);
 			}
 		} catch (SVNException e) {
-			LOG.error("Error while prepare user {}'s repo", user.getUserName(), e);
+			LOG.error("Error while prepare user {}'s repo", user.getUserName(),
+					e);
 		}
 	}
 
-	private SVNURL createUserRepo(User user, File newUserDirectory) throws SVNException {
-		return svnClientManager.getAdminClient().doCreateRepository(newUserDirectory, user.getUserId(), true,
-						true);
+	private SVNURL createUserRepo(User user, File newUserDirectory)
+			throws SVNException {
+		return svnClientManager.getAdminClient().doCreateRepository(
+				newUserDirectory, user.getUserId(), true, true);
 	}
 
 	private File getUserRepoDirectory(User user) {
-		return new File(config.getHome().getRepoDirectoryRoot(), checkNotNull(user.getUserId()));
+		return new File(config.getHome().getRepoDirectoryRoot(),
+				checkNotNull(user.getUserId()));
 	}
 
-	@Cacheable("file_entry_search_cache")
+	@Cacheable(value = "file_entry_search_cache", key = "#user.userId")
 	public List<FileEntry> getAllFileEntries(User user) {
 		return fileEntityRepository.findAll(user);
 	}
 
-	@Cacheable("file_entry_search_cache")
 	public List<FileEntry> getAllFileEntries(User user, FileType fileType) {
 		List<FileEntry> fileEntryList = getAllFileEntries(user);
 		// Only python script is allowed right now.
@@ -213,8 +202,8 @@ public class FileEntryService {
 	 * @return single file entity
 	 */
 	public FileEntry getFileEntry(User user, String path, long revision) {
-
-		return fileEntityRepository.findOne(user, path, SVNRevision.create(revision));
+		return fileEntityRepository.findOne(user, path,
+				SVNRevision.create(revision));
 	}
 
 	/**
@@ -274,8 +263,8 @@ public class FileEntryService {
 	 * @return file entity
 	 */
 	public FileEntry getFileEntry(User user, String path, Long revision) {
-		SVNRevision svnRev = (revision == null || revision == -1) ? SVNRevision.HEAD : SVNRevision
-						.create(revision);
+		SVNRevision svnRev = (revision == null || revision == -1) ? SVNRevision.HEAD
+				: SVNRevision.create(revision);
 		return fileEntityRepository.findOne(user, path, svnRev);
 	}
 
@@ -287,7 +276,6 @@ public class FileEntryService {
 	 * @param fileEntity
 	 *            fileEntity to be saved
 	 */
-	@CacheEvict(value = "file_entry_search_cache", allEntries = true)
 	public void save(User user, FileEntry fileEntity) {
 		checkNotEmpty(fileEntity.getPath());
 		fileEntityRepository.save(user, fileEntity, fileEntity.getEncoding());
@@ -315,9 +303,11 @@ public class FileEntryService {
 		URL url;
 		try {
 			url = new URL(urlString);
-			return (url.getHost() + url.getPath()).replaceAll("[\\&\\?\\%\\-]", "_");
+			return (url.getHost() + url.getPath()).replaceAll("[\\&\\?\\%\\-]",
+					"_");
 		} catch (MalformedURLException e) {
-			throw new NGrinderRuntimeException("Error while translating " + urlString, e);
+			throw new NGrinderRuntimeException("Error while translating "
+					+ urlString, e);
 		}
 	}
 
@@ -330,7 +320,8 @@ public class FileEntryService {
 	 * @param url
 	 * @return
 	 */
-	public FileEntry prepareNewEntry(User user, String path, String fileName, String url) {
+	public FileEntry prepareNewEntry(User user, String path, String fileName,
+			String url) {
 		FileEntry fileEntry = new FileEntry();
 		String filePath;
 		if (!StringUtils.isBlank(path)) {
@@ -355,9 +346,11 @@ public class FileEntryService {
 	public FileEntry prepareNewEntryForQuickTest(User user, String urlString) {
 		String testNameFromUrl = getTestNameFromUrl(urlString);
 		// addFolder(user, "", testNameFromUrl);
-		// There might be race condition here... What if a user changes the SVN repo while saving
+		// There might be race condition here... What if a user changes the SVN
+		// repo while saving
 		// newEntry??
-		FileEntry newEntry = prepareNewEntry(user, testNameFromUrl, "script.py", urlString);
+		FileEntry newEntry = prepareNewEntry(user, testNameFromUrl,
+				"script.py", urlString);
 		newEntry.setDescription("Quick test for " + urlString);
 		save(user, newEntry);
 		return getFileEntry(user, testNameFromUrl + "/" + "script.py");
@@ -377,7 +370,8 @@ public class FileEntryService {
 			ClassPathResource cpr = new ClassPathResource("script_template");
 			freemarkerConfig.setDirectoryForTemplateLoading(cpr.getFile());
 			freemarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
-			Template template = freemarkerConfig.getTemplate("basic_template.ftl");
+			Template template = freemarkerConfig
+					.getTemplate("basic_template.ftl");
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("url", url);
 			map.put("user", user);
@@ -391,9 +385,10 @@ public class FileEntryService {
 	}
 
 	public String getSvnUrl(User user, String path) {
-		String contextPath = httpContainerContext.getCurrentRequestUrlFromUserRequest();
-		StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url",
-						contextPath));
+		String contextPath = httpContainerContext
+				.getCurrentRequestUrlFromUserRequest();
+		StringBuilder url = new StringBuilder(config.getSystemProperties()
+				.getProperty("http.url", contextPath));
 		url.append("/svn/").append(user.getUserId());
 		if (StringUtils.isNotEmpty(path)) {
 			url.append("/").append(path.trim());
@@ -406,8 +401,8 @@ public class FileEntryService {
 	}
 
 	/**
-	 * Get Lib and Resources. This method will collect the files of lib and resources folder on the
-	 * same folder whre script is located.
+	 * Get Lib and Resources. This method will collect the files of lib and
+	 * resources folder on the same folder whre script is located.
 	 * 
 	 * @param user
 	 *            user
@@ -415,11 +410,13 @@ public class FileEntryService {
 	 *            path of script
 	 * @return {@link FileEntry} list
 	 */
-	public List<FileEntry> getLibAndResourcesEntries(User user, String scriptPath, Long revision) {
+	public List<FileEntry> getLibAndResourcesEntries(User user,
+			String scriptPath, Long revision) {
 		String path = FilenameUtils.getPath(scriptPath);
 		List<FileEntry> fileList = new ArrayList<FileEntry>();
 
-		List<FileEntry> fileEntries = getFileEntries(user, path + "lib/", revision);
+		List<FileEntry> fileEntries = getFileEntries(user, path + "lib/",
+				revision);
 		for (FileEntry eachFileEntry : fileEntries) {
 			FileType fileType = eachFileEntry.getFileType();
 			if (fileType == FileType.JAR) {
