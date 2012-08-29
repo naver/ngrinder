@@ -25,6 +25,7 @@ package org.ngrinder.script.service;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -39,6 +40,10 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
+import org.python.core.PySyntaxError;
+import org.python.core.PyTuple;
+import org.python.util.PythonInterpreter;
+import org.python.util.jython;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +59,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ScriptValidationService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ScriptValidationService.class);
+	private static final Logger LOG = LoggerFactory
+			.getLogger(ScriptValidationService.class);
 	@Autowired
 	private LocalScriptTestDriveService localScriptTestDriveService;
 
@@ -67,8 +73,9 @@ public class ScriptValidationService {
 	/**
 	 * Validate Script.
 	 * 
-	 * It's quite complex.. to validate script, we need write jar files and script. Furthermore, to
-	 * make a small log.. We have to copy optimized logback_worker.xml
+	 * It's quite complex.. to validate script, we need write jar files and
+	 * script. Furthermore, to make a small log.. We have to copy optimized
+	 * logback_worker.xml
 	 * 
 	 * Finally this method returns the path of validating result file.
 	 * 
@@ -80,20 +87,28 @@ public class ScriptValidationService {
 	 *            true if the script content in SVN is used. otherwise, false
 	 * @return validation result.
 	 */
-	public String validateScript(User user, FileEntry scriptEntry, boolean useScriptInSVN, String hostString) {
+	public String validateScript(User user, FileEntry scriptEntry,
+			boolean useScriptInSVN, String hostString) {
 		try {
 			checkNotNull(scriptEntry, "scriptEntity should be not null");
-			checkNotEmpty(scriptEntry.getPath(), "scriptEntity path should be provided");
+			checkNotEmpty(scriptEntry.getPath(),
+					"scriptEntity path should be provided");
 			if (!useScriptInSVN) {
-				checkNotEmpty(scriptEntry.getContent(), "scriptEntity content should be provided");
+				checkNotEmpty(scriptEntry.getContent(),
+						"scriptEntity content should be provided");
 			}
 			checkNotNull(user, "user should be provided");
-
-			File scriptDirectory = config.getHome().getScriptDirectory(String.valueOf(user.getId()));
+			String result = checkSyntaxErrors(scriptEntry.getContent());
+			if (result != null) {
+				return result;
+			}
+			File scriptDirectory = config.getHome().getScriptDirectory(
+					String.valueOf(user.getId()));
 			File file = new File(scriptDirectory, "validation-0.log");
 			file.delete();
 			// Get all lib and resources in the script path
-			List<FileEntry> fileEntries = fileEntryService.getLibAndResourcesEntries(user,
+			List<FileEntry> fileEntries = fileEntryService
+					.getLibAndResourcesEntries(user,
 							checkNotEmpty(scriptEntry.getPath()), null);
 
 			scriptDirectory.mkdirs();
@@ -104,26 +119,63 @@ public class ScriptValidationService {
 				if (each.getFileType() == FileType.DIR) {
 					continue;
 				}
-				fileEntryService.writeContentTo(user, each.getPath(), scriptDirectory);
+				fileEntryService.writeContentTo(user, each.getPath(),
+						scriptDirectory);
 			}
 			// Copy logback...
-			File logbackXml = new ClassPathResource("/logback/logback-worker.xml").getFile();
-			FileUtils.copyFile(logbackXml, new File(scriptDirectory, "logback-worker.xml"));
-			File scriptFile = new File(scriptDirectory, FilenameUtils.getName(scriptEntry.getPath()));
+			File logbackXml = new ClassPathResource(
+					"/logback/logback-worker.xml").getFile();
+			FileUtils.copyFile(logbackXml, new File(scriptDirectory,
+					"logback-worker.xml"));
+			File scriptFile = new File(scriptDirectory,
+					FilenameUtils.getName(scriptEntry.getPath()));
 
 			if (useScriptInSVN) {
-				fileEntryService.writeContentTo(user, scriptEntry.getPath(), scriptDirectory);
+				fileEntryService.writeContentTo(user, scriptEntry.getPath(),
+						scriptDirectory);
 			} else {
-				FileUtils.writeStringToFile(scriptFile, scriptEntry.getContent(),
-								StringUtils.defaultIfBlank(scriptEntry.getEncoding(), "UTF-8"));
+				FileUtils.writeStringToFile(scriptFile, scriptEntry
+						.getContent(), StringUtils.defaultIfBlank(
+						scriptEntry.getEncoding(), "UTF-8"));
 			}
-			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile,
-							new Condition(), "");
+			File doValidate = localScriptTestDriveService.doValidate(
+					scriptDirectory, scriptFile, new Condition(), "");
 			return FileUtils.readFileToString(doValidate);
 		} catch (IOException e) {
-			LOG.error("Error while distributing files on {} for {}", user, scriptEntry.getPath());
+			LOG.error("Error while distributing files on {} for {}", user,
+					scriptEntry.getPath());
 			LOG.error("Error details ", e);
 		}
 		return StringUtils.EMPTY;
+	}
+
+	/**
+	 * Run jython parser to find out the syntax error..
+	 * 
+	 * @param script
+	 * @return script syntax error message. null otherwise.
+	 */
+	public String checkSyntaxErrors(String script) {
+		try {
+			org.python.core.parser.parse(script, "exec");
+		} catch (PySyntaxError e) {
+			try {
+				PyTuple pyTuple = (PyTuple) ((PyTuple) e.value).get(1);
+				Integer line = (Integer) pyTuple.get(1);
+				Integer column = (Integer) pyTuple.get(2);
+				String lineString = (String) pyTuple.get(3);
+				StringBuilder buf = new StringBuilder(lineString);
+				if (lineString.length() >= column) {
+					buf.insert(column - 1, "^");
+				}
+				return "Error occured\n" + " - Invalid Syntax Error on line "
+						+ line + " / column " + column + "\n" + buf.toString();
+			} catch (Exception ex) {
+				LOG.error("Error occured while evludation PySyntaxError", ex);
+				return "Error occured while evludation PySyntaxError";
+			}
+		}
+		return null;
+
 	}
 }
