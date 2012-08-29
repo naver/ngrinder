@@ -150,9 +150,9 @@
 		    	type: "POST",
 				data: {'path':scriptPath, 'content': scriptContent, 'hostString' : hostString},
 		    	success: function(res) {
-					var validationInfo = "";
 					$('#validateRsPre').text(res);
 					$('#validateRsPre').attr("class", "prettyprint pre-scrollable");
+					$("#footDiv").remove();
 		    	},
 		    	error: function() {
 		    		showErrorMsg("<@spring.message "script.editor.error.validate"/>");
