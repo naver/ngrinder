@@ -14,16 +14,14 @@
 					<li class="dropdown">
 		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">${(currentUser.userId)!}<b class="caret"></b></a>
 		            	<ul class="dropdown-menu">
-							<@security.authorize ifAnyGranted="U, A, S">
-			                	<li><a id="user_profile_id"><@spring.message "navigator.dropdown.profile"/></a></li>
-			                	<li class="divider"/>
-				          		<li><a href="${req.getContextPath()}/logout"><@spring.message "navigator.dropdown.signout"/></a></li>
-			            	</@security.authorize>
+		                	<li><a id="user_profile_id" href="#"><@spring.message "navigator.dropdown.profile"/></a></li>
 			            	<@security.authorize ifAnyGranted="A, S">
 				            	<li class="divider"/>
 		               			<li><a href="${req.getContextPath()}/user/list"><@spring.message "navigator.dropdown.userManagement"/></a></li>
 				                <li><a href="${req.getContextPath()}/agent/list"><@spring.message "navigator.dropdown.agentManagement"/></a></li>
 			            	</@security.authorize>
+		                	<li class="divider"/>
+			          		<li><a href="${req.getContextPath()}/logout"><@spring.message "navigator.dropdown.signout"/></a></li>
 		            	</ul>
 		            </li>
 					<li class="divider-vertical"></li>
@@ -46,12 +44,12 @@
 </div>
 <script type="text/javascript">
 	var myProfile = function(){
-			var url = "${req.getContextPath()}/user/profile";
-			$("#user_profile_id").on('click', function() {
-				$("#user_profile_modal").load(url, function(){
-					$('#userProfileModal').modal('show')
-				});
+		var url = "${req.getContextPath()}/user/profile";
+		$("#user_profile_id").on('click', function() {
+			$("#user_profile_modal").load(url, function(){
+				$('#userProfileModal').modal('show')
 			});
+		});
 	};
 	if(document.loaded) {
 	    myProfile();

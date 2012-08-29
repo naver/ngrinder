@@ -5,24 +5,15 @@
 		<#include "../common/common.ftl">
 		<title><@spring.message "script.editor.title"/></title>
 		<style>
-		
-		div.div-host {
-			background-color: #FFFFFF;
-			border: 1px solid #D6D6D6;
-			height: 50px;
-			margin-bottom: 8px;
-			display: inline-block;
-			overflow-y: scroll;
-			border-radius: 3px 3px 3px 3px; 
-		}
-		
-		div.div-host .host {
-			color: #666666;
-			display: inline-block;
-			margin-left: 7px;
-			margin-top: 2px;
-			margin-bottom: 2px;
-		}
+			div.div-host {
+				background-color: #FFFFFF;
+				border: 1px solid #D6D6D6;
+				height: 50px;
+				margin-bottom: 8px;
+				display: inline-block;
+				overflow-y: scroll;
+				border-radius: 3px 3px 3px 3px; 
+			}
 		</style>
 	</head>
 
@@ -39,7 +30,7 @@
 								<label class="control-label" for="testName"><@spring.message "script.option.name"/></label>
 								<div class="controls">   
 									<input type="text" id="scriptNameInput" class="span7" name="path" value="${file.path!}" readonly/>
-									<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" ><@spring.message "common.button.save"/></a>
+									<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:27px;"><@spring.message "common.button.save"/></a>
 									<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" ><@spring.message "script.editor.button.validate"/></a>
 								</div>
 							</div> 
@@ -53,13 +44,11 @@
 											</div> 
 										</td> 
 										<td style="width:20%"> 
-											<span>
-												<div class="span3 div-host" style="bgcolor:#FFFFFF"></div>
-												<input type="hidden" name="targetHosts" id="hostsHidden" value="${(test.targetHosts)!}"> 
-												<a class="btn btn-mini" data-toggle="modal" href="#addHostModal" style="margin-left:0px;margin-top:-30px">   
-													<@spring.message "perfTest.configuration.add"/> 
-												</a> 
-											</span> 
+											<div class="span3 div-host"></div>
+											<a class="btn btn-mini pull-right" data-toggle="modal" href="#addHostModal">   
+												<@spring.message "perfTest.configuration.add"/> 
+											</a> 
+											<input type="hidden" name="targetHosts" id="hostsHidden" value="${(test.targetHosts)!}"> 
 										</td> 
 								</table>           
 							</div>

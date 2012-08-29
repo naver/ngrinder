@@ -1,6 +1,6 @@
 @charset "utf-8";
 body {
-	padding-top: 80px;
+	padding-top: 80px
 }
 
 .navbar .brand {
@@ -8,12 +8,12 @@ body {
 }
 
 .table thead th, .table tbody td {
-	vertical-align: middle !important;
+	vertical-align: middle !important
 	
 }
 
 h1, h2, h3, h4  {
-	text-rendering : auto !important;
+	text-rendering : auto !important
 }
 
 .form-horizontal .control-label {
@@ -28,20 +28,20 @@ h1, h2, h3, h4  {
 }
 
 .form-horizontal-1 .control-label {
-	width: 120px;
+	width: 120px
 }
 
 .form-horizontal-1 .controls {
-	margin-left: 150px;
+	margin-left: 150px
 }
 
 .form-horizontal-2 .control-label {
 	width: 110px;
-	text-align: left;
+	text-align: left
 }
 
 .form-horizontal-2 .controls {
-	margin-left: 120px;
+	margin-left: 120px
 }
 
 .form-horizontal-3 {
@@ -49,12 +49,12 @@ h1, h2, h3, h4  {
 }
 
 .form-horizontal-3 .control-group {
-	margin-bottom: 10px;
+	margin-bottom: 10px
 }
 
 .form-horizontal-3 .control-label {
 	width: 100px;
-	text-align: left;
+	text-align: left
 }
 
 .form-horizontal-3 .controls {
@@ -67,27 +67,27 @@ h1, h2, h3, h4  {
 }
 
 .form-horizontal-3 .controls strong {
-	color: #6DAFCF;
+	color: #6DAFCF
 }
 
 .form-horizontal-4 .control-label {
-	width: 175px;
+	width: 175px
 }
 
 .form-horizontal-4 .controls {
-	margin-left: 190px;
+	margin-left: 190px
 }
 
 .form-horizontal-left .control-label {
-	text-align: left;
+	text-align: left
 }
 
 .form-horizontal-modal .controls {
-	margin-left: 110px;
+	margin-left: 110px
 }
 
 .form-horizontal-modal .control-label {
-	width: 100px;
+	width: 100px
 }
 
 table.ellipsis {
@@ -97,12 +97,12 @@ table.ellipsis {
 table.ellipsis td.ellipsis {
 	overflow: hidden;
 	white-space: nowrap;
-	text-overflow: ellipsis;
+	text-overflow: ellipsis
 }
 
 .container .well {
 	padding:5px;
-	margin-bottom: 10px;
+	margin-bottom: 10px
 }
 
 .container .searchBar {
@@ -132,11 +132,11 @@ table.ellipsis td.ellipsis {
     top: 40%;
     width: 540px;
     z-index: 1050;
-    opacity:0.9;
+    opacity:0.9
 }
 
 .hidden {
-	display: none;
+	display: none
 }
 
 .errorColor {
@@ -148,5 +148,14 @@ table.ellipsis td.ellipsis {
 }
 
 table td.center {
-	text-align: center;
+	text-align: center
+}
+
+.center {
+	text-align: center
+}
+
+img.status {
+	width: 23px; 
+	height: 23px
 }

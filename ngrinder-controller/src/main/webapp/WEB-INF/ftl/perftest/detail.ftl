@@ -190,7 +190,7 @@ div.chart {
 												</#if>
 												</select>
 												<input type="hidden" id="scriptRevision" name="scriptRevision" value="${(test.scriptRevision)!-1}">
-												<button class="pull-right btn btn-mini btn-info" type="button" id="showScript" style="margin-top:3px"><@spring.message "perfTest.configuration.showScript"/></button>
+												<button class="btn btn-mini btn-info pull-right" type="button" id="showScript" style="margin-top:3px"><@spring.message "perfTest.configuration.showScript"/></button>
 											</div> 
 										</div>
 										<div class="control-group">
@@ -205,7 +205,7 @@ div.chart {
 											<div class="controls">
 												<div class="div-host"></div>
 												<input type="hidden" name="targetHosts" id="hostsHidden" value="${(test.targetHosts)!}"> 
-												<a class="btn pull-right btn-mini" data-toggle="modal" href="#addHostModal" style="margin-right:20px;margin-top:-30px">   
+												<a class="btn pull-right btn-mini" data-toggle="modal" href="#addHostModal" style="margin-right:20px;margin-top:-32px">   
 													<@spring.message "perfTest.configuration.add"/>
 												</a>
 											</div>
@@ -264,7 +264,6 @@ div.chart {
 										/>
 										<h4>
 											<@spring.message "perfTest.configuration.rampEnable"/>
-											<small> <@spring.message "perfTest.configuration.rampUpDes"/></small>
 										</h4>
 									</label>
 								</div>
@@ -316,7 +315,9 @@ div.chart {
 										</td>
 									</tr>
 								</table>
-
+								<div class="page-header center" style="padding-bottom:10px;">
+									<strong><@spring.message "perfTest.configuration.rampUpDes"/></strong>
+								</div>
 								<div id="rampChart" class="rampChart"></div>
 							</div>
 						</div>
@@ -473,8 +474,7 @@ div.chart {
 							</div>
 							<div class="span7">
 								<div class="page-header">
-									<h4><@spring.message "perfTest.testRunning.tpsStatistics"/> <span class="badge badge-success pull-center"><@spring.message "perfTest.testRunning.runTime"/> <data id="running_time"></data></span></h4>
-								   
+									<h4><@spring.message "perfTest.testRunning.tpsStatistics"/> <span class="badge badge-success"><@spring.message "perfTest.testRunning.runTime"/> <data id="running_time"></data></span></h4>
 								</div>
 								<div id="runningTps" class="chart" style="width: 530px; height: 195px"></div>
 								<div class="tabbable">
