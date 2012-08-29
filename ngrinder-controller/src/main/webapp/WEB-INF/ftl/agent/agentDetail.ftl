@@ -181,8 +181,15 @@
             	}
             }
             
-            function getChartData(dataObj) {
-				if (java_heapUsedMemory.getSize() == 60) {
+            function getChartData(dataObj) {				
+				java_heapUsedMemory.enQueue(dataObj.javaData.heapUsedMemory);
+				java_nonHeapUsedMemory.enQueue(dataObj.javaData.nonHeapUsedMemory);
+				java_cpuUsedPercentage.enQueue(dataObj.javaData.cpuUsedPercentage);
+				java_threadCount.enQueue(dataObj.javaData.threadCount);
+				sys_totalCpuValue.enQueue(dataObj.systemData.cpuUsedPercentage);
+				sys_usedMemory.enQueue(dataObj.systemData.totalMemory - dataObj.systemData.freeMemory);
+				
+				if (java_heapUsedMemory.getSize() > 60) {
 					java_heapUsedMemory.deQueue();
 					java_nonHeapUsedMemory.deQueue();
 					java_cpuUsedPercentage.deQueue();
@@ -190,13 +197,6 @@
 					sys_totalCpuValue.deQueue();
 					sys_usedMemory.deQueue();
 				}
-				
-				java_heapUsedMemory.enQueue(dataObj.javaData.heapUsedMemory);
-				java_nonHeapUsedMemory.enQueue(dataObj.javaData.nonHeapUsedMemory);
-				java_cpuUsedPercentage.enQueue(dataObj.javaData.cpuUsedPercentage);
-				java_threadCount.enQueue(dataObj.javaData.threadCount);
-				sys_totalCpuValue.enQueue(dataObj.systemData.cpuUsedPercentage);
-				sys_usedMemory.enQueue(dataObj.systemData.totalMemory - dataObj.systemData.freeMemory);
 			}
 			
 			function cleanChartData() {
