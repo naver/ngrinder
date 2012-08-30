@@ -52,9 +52,9 @@ import org.ngrinder.common.util.DateUtil;
 @Table(name = "PERF_TEST")
 public class PerfTest extends BaseModel<PerfTest> {
 
-	private static final int MAX_STRING_SIZE = 2048;
-	/** UUID. */
 	private static final long serialVersionUID = 1369809450686098944L;
+
+	private static final int MAX_STRING_SIZE = 2048;
 
 	@Column(name = "name")
 	private String testName;

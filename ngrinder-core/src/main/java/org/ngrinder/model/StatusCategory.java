@@ -37,7 +37,6 @@ public enum StatusCategory {
 	 * Processing.
 	 */
 	PROGRESSING("blue_anime.gif", true, false),
-
 	/**
 	 * Testing..
 	 */
@@ -70,7 +69,6 @@ public enum StatusCategory {
 	}
 
 	public String getIconName() {
-
 		return iconName;
 	}
 }

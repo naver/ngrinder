@@ -96,12 +96,15 @@ public enum Status {
 	public static Status[] getProcessingOrTestingTestStatus() {
 		List<Status> status = new ArrayList<Status>();
 		for (Status each : values()) {
-			if (each.getCategory() == StatusCategory.PROGRESSING
-							|| each.getCategory() == StatusCategory.TESTING) {
+			if (isWorkingStatus(each)) {
 				status.add(each);
 			}
 		}
 		return status.toArray(new Status[0]);
+	}
+
+	private static boolean isWorkingStatus(Status status) {
+		return status.getCategory() == StatusCategory.PROGRESSING || status.getCategory() == StatusCategory.TESTING;
 	}
 
 	public static Status[] getTestingTestStates() {
