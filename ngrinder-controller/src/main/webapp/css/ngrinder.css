@@ -31,6 +31,10 @@ h1, h2, h3, h4  {
 	width: 120px
 }
 
+.form-horizontal-1 .control-label {
+	width: 120px
+}
+
 .form-horizontal-1 .controls {
 	margin-left: 150px
 }

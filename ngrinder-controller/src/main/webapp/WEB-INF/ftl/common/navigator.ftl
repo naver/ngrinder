@@ -25,7 +25,7 @@
 		            	</ul>
 		            </li>
 					<li class="divider-vertical"></li>
-					<li class="dropdown"><a href="#"><@spring.message "navigator.help"/></a></li>
+					<li class="dropdown"><a href="http://www.cubrid.org/wiki_ngrinder/entry/user-guide"><@spring.message "navigator.help"/></a></li>
          		</ul>      		    
 			</div>
 		</div>

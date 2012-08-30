@@ -50,7 +50,7 @@ div.chart {
 }
 
 .rampChart {
-	width: 450px;
+	width: 430px;
 	height: 355px
 }
 
@@ -86,7 +86,7 @@ div.div-host .host {
 				<input type="hidden" id="testId" name="id" value="${(test.id)!}"> 
 				<input type="hidden" id="threshold"	name="threshold" value="${(test.threshold)!"D"}"> 
 
-				<div class="form-horizontal form-horizontal-1">
+				<div class="form-horizontal">
 					<fieldset>
 						<div class="control-group">
 							<label for="testName" class="control-label"><@spring.message "perfTest.table.testName"/></label>
@@ -125,6 +125,7 @@ div.div-host .host {
 						</div>
 					</fieldset>
 				</div>
+				
 			</div>
 			<div class="tabbable">
 				<ul class="nav nav-tabs" id="homeTab" style="margin-bottom: 5px">
@@ -185,7 +186,7 @@ div.div-host .host {
 												<span>
 													<span title='<@spring.message "perfTest.report.process"/>'>P</span> <input class="input required positiveNumber span1" type="text" id="processes" name="processes" value="${(test.processes)!0}"/> 
 													<span title='<@spring.message "perfTest.report.thread"/>'>T</span> <input class="input required positiveNumber span1" type="text" id="threads" name="threads" value="${(test.threads)!0}"/>
-												<span>
+												</span>
 											</div>
 										</div>
 										<div class="control-group">
@@ -337,7 +338,7 @@ div.div-host .host {
 							</div>
 						</div>
 					</div>
-					<div class="tab-pane" id="reportContent">
+					<div class="tab-pane" id="reportContent" style="display:none;">
 						<div class="row">
 							<div class="span4">
 								<div class="page-header">
@@ -407,7 +408,7 @@ div.div-host .host {
 							</div>
 						</div>
 					</div>
-					<div class="tab-pane" id="runningContent">
+					<div class="tab-pane" id="runningContent" style="display:none;">
 						<div class="row">
 							<div class="span5">
 								<div class="page-header">
