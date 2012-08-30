@@ -4,6 +4,13 @@
 		<title>nGrinder Performance Test List</title>
 		<#include "../common/common.ftl">
 		<#include "../common/datatables.ftl">
+		<style>
+			td.today {
+				background-image: url('${req.getContextPath()}/img/icon_today.png');
+				background-repeat:no-repeat; 
+				background-position:left top; 
+			}
+		</style>
 	</head>
 
 	<body>
@@ -72,22 +79,20 @@
 										<input type="checkbox" class="checkbox perf_test" value="${test.id}" 
 											<#if !(test.status.isDeletable())>disabled</#if> >
 									</td>
-									<td class="ellipsis center"  id="row_${test.id}">
+									<td class="ellipsis center  ${test.testModifiedDay}"  id="row_${test.id}">
 										<div class="ball" id="ball_${test.id}" rel="popover" data-content='${"${test.progressMessage}/n${test.lastProgressMessage}"?replace('/n', '<br>')?html}'>
 											<img class="status" src="${req.getContextPath()}/img/ball/${test.status.iconName}"/>
 										</div>
 									</td>
+									
 									<td class="ellipsis">   
 										<div rel="popover"
 											 data-content="${test.description?replace('\n', '<br/>')?html}&lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;"  
 											 data-original-title="${test.testName}">
 											<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
-											
-											<#if test.testModifiedDay=='today'>
-												<button class="btn btn-mini btn-success disabled" type="button"><@spring.message "perftest.testDay.today"/></button>
-											<#elseif test.testModifiedDay=='yesterday'>
+											<#if test.testModifiedDay=='yesterday'>
 												<button class="btn btn-mini btn-warning disabled" type="button"><@spring.message "perftest.testDay.yesterday"/></button>
-											<#else>
+											<#elseif test.testModifiedDay=='earlier'>
 												<button class="btn btn-mini disabled" type="button"><@spring.message "perftest.testDay.earlier"/></button>
 											</#if>
 										</div>   
