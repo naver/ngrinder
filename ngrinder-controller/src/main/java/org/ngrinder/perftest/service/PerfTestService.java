@@ -635,7 +635,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * get report data by test id, data type, and image width
+	 * get the test report data as a string.
 	 * 
 	 * @param testId
 	 *            test id
@@ -646,33 +646,86 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return report data
 	 * @throws IOException
 	 */
-	public List<Object> getReportData(long testId, String dataType, int imgWidth) throws IOException {
-		// TODO: later, we can make the file content as the string of list, then
-		// we can
-		// just return the file content directly, it will be much faster.
-		List<Object> reportData = new ArrayList<Object>();
+	public String getReportDataAsString(long testId, String dataType, int imgWidth) {
+		// TODO: not finished yet. It's better to directly get string in js array format.
+		int pointCount = imgWidth / 10;
+		StringBuilder reportData = new StringBuilder("[");
 		File reportFolder = config.getHome().getPerfTestDirectory(
 						testId + File.separator + NGrinderConstants.PATH_REPORT);
 		if (imgWidth < 100) {
 			imgWidth = 100;
 		}
-		int pointCount = imgWidth / 10;
 		int lineNumber;
 		File targetFile = null;
 		targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
-		// if file not found, will throw exception and catched by controller.
+		FileReader reader = null;
+		BufferedReader br = null;
 		LineNumberReader lnr = null;
 		try {
 			lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(targetFile)));
 			lnr.skip(targetFile.length());
 			lineNumber = lnr.getLineNumber() + 1;
 
+			reader = new FileReader(targetFile);
+			br = new BufferedReader(reader);
+			String data = null;
+			int current = 0;
+			int interval = lineNumber / pointCount;
+			// TODO should get average data
+			// FIXME : NEVER NEVER DO IT. Be aware of memory size.!!
+			while (StringUtils.isNotBlank(data = br.readLine())) {
+				if (0 == current) {
+					double number = NumberUtils.createDouble(data);
+					reportData.append(number);
+					reportData.append(",");
+				}
+				if (++current >= interval) {
+					current = 0;
+				}
+			}
+
+			reportData.append("]");
+		} catch (IOException e) {
+			LOGGER.error("Get report data for " + dataType + " failed:" + e.getMessage(), e);
 		} finally {
 			IOUtils.closeQuietly(lnr);
+			IOUtils.closeQuietly(reader);
+			IOUtils.closeQuietly(br);
 		}
+
+		return reportData.toString();
+	}
+	
+	/**
+	 * get report data by test id, data type, and image width
+	 * 
+	 * @param testId
+	 * @param dataType
+	 * @param imgWidth
+	 * @return
+	 */
+	public List<Object> getReportData(long testId, String dataType, int imgWidth) {
+		// TODO: later, we can make the file content as the string of list, then
+		// we can
+		// just return the file content directly, it will be much faster.
+		int pointCount = imgWidth / 10;
+		List<Object> reportData = new ArrayList<Object>(pointCount);
+		File reportFolder = config.getHome().getPerfTestDirectory(
+						testId + File.separator + NGrinderConstants.PATH_REPORT);
+		if (imgWidth < 100) {
+			imgWidth = 100;
+		}
+		int lineNumber;
+		File targetFile = null;
+		targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
 		FileReader reader = null;
 		BufferedReader br = null;
+		LineNumberReader lnr = null;
 		try {
+			lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(targetFile)));
+			lnr.skip(targetFile.length());
+			lineNumber = lnr.getLineNumber() + 1;
+
 			reader = new FileReader(targetFile);
 			br = new BufferedReader(reader);
 			String data = null;
@@ -689,7 +742,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 					current = 0;
 				}
 			}
+		} catch (IOException e) {
+			LOGGER.error("Get report data for " + dataType + " failed:" + e.getMessage(), e);
 		} finally {
+			IOUtils.closeQuietly(lnr);
 			IOUtils.closeQuietly(reader);
 			IOUtils.closeQuietly(br);
 		}

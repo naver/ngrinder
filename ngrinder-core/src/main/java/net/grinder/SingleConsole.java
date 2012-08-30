@@ -475,15 +475,25 @@ public class SingleConsole implements Listener, SampleListener {
 						csvHeader.append(",");
 						csvHeader.append(each.getKey() + "-" + testIndex);
 					}
-					Object val = valueMap.get(each.getKey());
+					Object val = each.getValue();
+					//number value in lastStatistic is Double, we add every test's double value into valueMap, so we use
+					//MutableDouble in valueMap, to avoid creating too many objects.
 					if (val instanceof Double) {
 						// for debug, maybe there are some fields should not be sum up.
 						LOGGER.warn("Calculate sum for key:{} in statistic", each.getKey());
-						MutableDouble mutableDouble = new MutableDouble((Double) val);
-						mutableDouble.add((Double) ObjectUtils.defaultIfNull(each.getValue(), 0D));
-						valueMap.put(each.getKey(), mutableDouble.toDouble());
-					} else {
-						valueMap.put(each.getKey(), each.getValue());
+						MutableDouble mutableDouble = (MutableDouble)valueMap.get(each.getKey());
+						if (mutableDouble == null) {
+							mutableDouble = new MutableDouble(0D);
+							valueMap.put(each.getKey(), mutableDouble);
+						}
+						mutableDouble.add((Double) ObjectUtils.defaultIfNull(val, 0D));
+					} else if (val == null){
+						//if it is null, just assume it is 0.
+						//FIXME if the TPS is too low, but there is no many errors, it is possible that the Double value in
+						//one second is null. Now I treat this value as ZERO. But maybe it is not the most proper solution. 
+						valueMap.put(each.getKey(), new Double(0));
+					} else { //there are some String type object like test description.
+						valueMap.put(each.getKey(), val);
 					}
 				}
 
