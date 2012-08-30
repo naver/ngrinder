@@ -33,6 +33,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 
 import net.grinder.AgentControllerDaemon;
@@ -180,12 +181,13 @@ public class NGrinderStarter {
 		URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
 		URL toolsJarPath = findToolsJarPath();
 		LOG.info("tools.jar is found in {}", checkNotNull(toolsJarPath).toString());
-		ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { toolsJarPath });
-		List<String> libString = new ArrayList<String>();
 
+		ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { toolsJarPath });
+
+		List<String> libString = new ArrayList<String>();
 		File libFolder = new File(".", "lib").getAbsoluteFile();
 		if (!libFolder.exists()) {
-			printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + " does not exist");
+			printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + ") does not exist");
 		}
 		File[] libList = libFolder.listFiles();
 		if (libList == null) {
@@ -193,10 +195,10 @@ public class NGrinderStarter {
 		}
 
 		for (File each : libList) {
-			if (each.getName().endsWith(".jar")) {
+			if (each.getName().toLowerCase(Locale.getDefault()).endsWith(".jar")) {
 				try {
-					ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { checkNotNull(each
-							.toURI().toURL()) });
+					URL jarFileUrl = checkNotNull(each.toURI().toURL());
+					ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { jarFileUrl });
 					libString.add(each.getPath());
 				} catch (MalformedURLException e) {
 					LOG.error(e.getMessage(), e);
@@ -205,8 +207,8 @@ public class NGrinderStarter {
 		}
 		if (!libString.isEmpty()) {
 			String base = System.getProperties().getProperty("java.class.path");
-			System.getProperties().setProperty("java.class.path",
-					base + File.pathSeparator + StringUtils.join(libString, File.pathSeparator));
+			String classpath = base + File.pathSeparator + StringUtils.join(libString, File.pathSeparator);
+			System.getProperties().setProperty("java.class.path", classpath);
 		}
 	}
 
@@ -230,7 +232,7 @@ public class NGrinderStarter {
 			}
 		});
 		if (count == 0) {
-			printHelpAndExit("ngrinder agent should start in the folder which ngrinder agent exists");
+			printHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
 		}
 		NGrinderStarter starter = new NGrinderStarter();
 		agentConfig = new AgentConfig();
@@ -249,7 +251,7 @@ public class NGrinderStarter {
 			MonitorConstants.init(agentConfig);
 			starter.startMonitor();
 		} else {
-			printHelpAndExit("Invalid agent.conf, 'start.mode' must be set as 'monitor' or 'agent'");
+			printHelpAndExit("Invalid agent.conf, 'start.mode' must be set as 'monitor' or 'agent'.");
 		}
 	}
 

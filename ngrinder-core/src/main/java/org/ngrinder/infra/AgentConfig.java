@@ -51,9 +51,6 @@ public class AgentConfig {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentConfig.class);
 
-	/**
-	 * Constructor.
-	 */
 	public AgentConfig() {
 	}
 
@@ -70,17 +67,6 @@ public class AgentConfig {
 		return this;
 	}
 
-	/**
-	 * Load path file from class path.
-	 * 
-	 * @param path
-	 *            path in the classpath
-	 * @return {@link InputStream}
-	 */
-	public InputStream loadFromClassPath(String path) {
-		return AgentConfig.class.getClassLoader().getResourceAsStream(path);
-	}
-
 	private void copyDefaultConfigurationFiles() {
 		checkNotNull(home);
 		InputStream agentConfIO = loadFromClassPath("agent.conf");
@@ -92,25 +78,14 @@ public class AgentConfig {
 	}
 
 	/**
-	 * resolve NGrinder agent home path.
+	 * Load path file from class path.
 	 * 
-	 * @return resolved {@link AgentHome}
+	 * @param path
+	 *            path in the classpath
+	 * @return {@link InputStream}
 	 */
-	protected AgentHome resolveHome() {
-		String userHomeFromEnv = System.getenv("NGRINDER_AGENT_HOME");
-		LOGGER.info("    System Environment:  NGRINDER_HOME={}", userHomeFromEnv);
-		String userHomeFromProperty = System.getProperty("ngrinder.agent.home");
-		LOGGER.info("    Java Sytem Property:  ngrinder.home={}", userHomeFromProperty);
-		if (StringUtils.isNotEmpty(userHomeFromEnv) && !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
-			LOGGER.warn("The path to ngrinder-home is ambiguous:");
-			LOGGER.warn("    '" + userHomeFromProperty + "' is accepted.");
-		}
-		String userHome = null;
-		userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
-		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
-				System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
-
-		return new AgentHome(homeDirectory);
+	public InputStream loadFromClassPath(String path) {
+		return AgentConfig.class.getClassLoader().getResourceAsStream(path);
 	}
 
 	private void loadAgentProperties() {
@@ -118,6 +93,32 @@ public class AgentConfig {
 		Properties properties = home.getProperties("agent.conf");
 		properties.put("NGRINDER_AGENT_HOME", home.getDirectory().getAbsolutePath());
 		agentProperties = new PropertiesWrapper(properties);
+	}
+
+	/**
+	 * resolve NGrinder agent home path.
+	 * 
+	 * @return resolved {@link AgentHome}
+	 */
+	protected AgentHome resolveHome() {
+		String userHomeFromEnv = System.getenv("NGRINDER_AGENT_HOME");
+		LOGGER.info("    System Environment:  NGRINDER_HOME={}", userHomeFromEnv);
+
+		String userHomeFromProperty = System.getProperty("ngrinder.agent.home");
+		LOGGER.info("    Java Sytem Property:  ngrinder.home={}", userHomeFromProperty);
+
+		if (StringUtils.isNotEmpty(userHomeFromEnv) && !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
+			LOGGER.warn("The path to ngrinder-home is ambiguous:");
+			LOGGER.warn("    '{}' is accepted.", userHomeFromProperty);
+		}
+
+		String userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
+		if (StringUtils.isEmpty(userHome)) {
+			userHome = System.getProperty("user.home") + File.separator + NGRINDER_DEFAULT_FOLDER;
+		}
+
+		File homeDirectory = new File(userHome);
+		return new AgentHome(homeDirectory);
 	}
 
 	/**
@@ -137,11 +138,6 @@ public class AgentConfig {
 		return this.home;
 	}
 
-	/**
-	 * Get agent properties.
-	 * 
-	 * @return agent properties.
-	 */
 	public PropertiesWrapper getAgentProperties() {
 		checkNotNull(agentProperties);
 		return agentProperties;

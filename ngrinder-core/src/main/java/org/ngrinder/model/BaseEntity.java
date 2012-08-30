@@ -50,6 +50,7 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
 public class BaseEntity<M> implements Serializable {
 
 	private static final long serialVersionUID = 8571113820348514692L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = false, insertable = true, updatable = false)
@@ -100,19 +101,24 @@ public class BaseEntity<M> implements Serializable {
 
 				// Only copy values values where the source values is not null
 				Object defaultValue = descriptor.getReadMethod().invoke(source);
-				if (null == defaultValue) {
+				if (defaultValue == null) {
 					continue;
 				}
 
-				if ((defaultValue instanceof String && StringUtils.isNotBlank((String) defaultValue))
-						|| !(defaultValue instanceof String)) {
+				if (isNotBlankStringOrNotString(defaultValue)) {
 					descriptor.getWriteMethod().invoke(this, defaultValue);
 				}
 			}
 			return (M) this;
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException(
-					"Exception occurs while merging entities from " + source + " to " + this, e);
+			String message = "Exception occurs while merging entities from " + source + " to " + this;
+			throw new NGrinderRuntimeException(message, e);
 		}
+	}
+
+	private boolean isNotBlankStringOrNotString(Object aValue) {
+		boolean isNotBlankString = aValue instanceof String && StringUtils.isNotBlank((String) aValue);
+		boolean isNotString = !(aValue instanceof String);
+		return isNotBlankString || isNotString;
 	}
 }

@@ -55,10 +55,10 @@ public class AgentHome {
 	 *            agent home directory
 	 */
 	public AgentHome(File directory) {
-		checkNotNull(directory, "directory should not be null").mkdirs();
+		checkNotNull(directory, "The directory should not be null.").mkdirs();
 		if (!directory.canWrite()) {
-			throw new ConfigurationException(String.format(" ngrinder home directory %s is not writable.", directory),
-					null);
+			String message = String.format("nGrinder home directory %s is not writable.", directory);
+			throw new ConfigurationException(message, null);
 		}
 		this.directory = directory;
 	}
@@ -90,7 +90,8 @@ public class AgentHome {
 				FileUtils.writeByteArrayToFile(target, IOUtils.toByteArray(io));
 			}
 		} catch (IOException e) {
-			throw new NGrinderRuntimeException("Fail to write file to " + target.getAbsolutePath(), e);
+			String message = "Failed to write a file to " + target.getAbsolutePath();
+			throw new NGrinderRuntimeException(message, e);
 		}
 	}
 
@@ -117,13 +118,15 @@ public class AgentHome {
 	 */
 	public Properties getProperties(String path) {
 		Properties properties = new Properties();
-		InputStream io;
+		InputStream is = null;
 		try {
-			io = FileUtils.openInputStream(new File(directory, path));
-			properties.load(io);
-			IOUtils.closeQuietly(io);
+			File propertiesFile = new File(directory, path);
+			is = FileUtils.openInputStream(propertiesFile);
+			properties.load(is);
 		} catch (IOException e) {
-			LOGGER.error("can not load property " + path);
+			LOGGER.error("Could not load a properties file on " + path);
+		} finally {
+			IOUtils.closeQuietly(is);
 		}
 		return properties;
 
