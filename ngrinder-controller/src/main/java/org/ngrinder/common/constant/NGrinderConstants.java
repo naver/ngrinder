@@ -126,6 +126,7 @@ public interface NGrinderConstants {
 	public static final String PARAM_STATUS_UPDATE_STOPPABLE = "stoppable";
 	public static final String PARAM_TPS_TOTAL = "tps_total";
 	public static final String PARAM_TPS_FAILED = "tps_failed";
+	public static final String PARAM_TPS = "TPS";
 	public static final String PARAM_VUSER = "vuser";
 	public static final String PARAM_RESPONSE_TIME = "response_time";
 

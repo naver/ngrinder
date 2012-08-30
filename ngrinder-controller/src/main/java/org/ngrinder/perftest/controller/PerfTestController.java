@@ -160,9 +160,6 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute(PARAM_SCRIPT_LIST, allFileEntries);
 
 		addDefaultAttributeOnMode(model);
-		if (test != null) {
-			model.addAttribute("logs", perfTestService.getLogFiles(id));
-		}
 		return "perftest/detail";
 	}
 
@@ -367,18 +364,22 @@ public class PerfTestController extends NGrinderBaseController {
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1 + dataTypes.length);
 		rtnMap.put(JSON_SUCCESS, true);
 		for (String dt : dataTypes) {
-			try {
-				reportData = perfTestService.getReportData(testId, dt, imgWidth);
-				String rtnType = dt.replace("(", "").replace(")", "");
-				rtnMap.put(rtnType, reportData);
-			} catch (Exception e) {
-				// just skip if one report data doesn't exist.
-				rtnMap.put(dt, "Get report data failed. type: " + dt);
-				LOG.error("Get report data failed. type: " + dt, e);
-			}
+			reportData = perfTestService.getReportData(testId, dt, imgWidth);
+			String rtnType = dt.replace("(", "").replace(")", "");
+			rtnMap.put(rtnType, reportData);
 		}
 
 		return JSONUtil.toJson(rtnMap);
+	}
+
+	@RequestMapping(value = "/loadReportDiv")
+	public String getReportDiv(User user, ModelMap model, @RequestParam long testId, @RequestParam int imgWidth) {
+		PerfTest test = checkTestPermissionAndGet(user, testId);
+		String reportData = perfTestService.getReportDataAsString(testId, "TPS", imgWidth);
+		model.addAttribute("logs", perfTestService.getLogFiles(testId));
+		model.addAttribute(PARAM_TEST, test);
+		model.addAttribute(PARAM_TPS, reportData);
+		return "perftest/reportDiv";
 	}
 
 	@RequestMapping(value = "/downloadReportData")
