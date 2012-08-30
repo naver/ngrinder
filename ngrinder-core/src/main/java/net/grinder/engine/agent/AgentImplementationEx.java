@@ -245,7 +245,7 @@ public class AgentImplementationEx implements Agent {
 
 				if (script != null) {
 					String jvmArguments = properties.getProperty("grinder.jvm.arguments", "");
-
+					jvmArguments = addCurrentAgentPath(jvmArguments);
 					jvmArguments = addCustomDns(properties, jvmArguments);
 					final WorkerFactory workerFactory;
 
@@ -365,12 +365,16 @@ public class AgentImplementationEx implements Agent {
 		}
 	}
 
+	private String addCurrentAgentPath(String jvmArguments) {
+		return jvmArguments + " -Dngrinder.exec.path=" + new File(".").getAbsolutePath() + " ";
+	}
+
 	private String addCustomDns(GrinderProperties properties, String jvmArguments) {
 		String etcHost = properties.getProperty("ngrinder.etc.hosts", "");
 		if (StringUtils.isNotEmpty(etcHost)) {
 			jvmArguments = jvmArguments + " -Dngrinder.etc.hosts=" + etcHost + "," + getHostName()
 							+ ":127.0.0.1,localhost:127.0.0.1"
-							+ "-Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns";
+							+ " -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDn ";
 		}
 		return jvmArguments;
 	}
