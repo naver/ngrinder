@@ -36,11 +36,8 @@ import net.grinder.util.thread.Condition;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.constants.ActionMode;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
-import org.ngrinder.policy.generator.DefaultSecurityPolicyGenerator;
-import org.ngrinder.policy.generator.Generators;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.python.core.PySyntaxError;
@@ -133,27 +130,28 @@ public class ScriptValidationService {
 
 			// Write the policy file in the folder: scriptDirectory
 			// Do not limit IP access but file access. (Home folder..)
-			DefaultSecurityPolicyGenerator securityPolicyGenerator = Generators.newDefaultSecurityPolicyGenerator();
+			//DefaultSecurityPolicyGenerator securityPolicyGenerator = Generators.newDefaultSecurityPolicyGenerator();
 			List<String> ipList = this.getHostIP(hostString);
-			for (String ip : ipList) {
-				securityPolicyGenerator.allowNetworkAccess(ip);
-			}
-			// add all file access in current folder
-			securityPolicyGenerator.allowFileAccess("-", ActionMode.FILE_ALL_ACTION);
-			securityPolicyGenerator.allowFileAccess(".", ActionMode.FILE_READ_ACTION);
-			securityPolicyGenerator.allowFileAccess(this.getLibPath() + "*", ActionMode.FILE_READ_ACTION);
+			// for (String ip : ipList) {
+			// securityPolicyGenerator.allowNetworkAccess(ip);
+			// }
+			// // add all file access in current folder
+//			securityPolicyGenerator.allowFileAccess("-", ActionMode.FILE_ALL_ACTION);
+//			securityPolicyGenerator.allowFileAccess(".", ActionMode.FILE_READ_ACTION);
+//			securityPolicyGenerator.allowFileAccess(this.getLibPath() + "*", ActionMode.FILE_READ_ACTION);
 
-			File scriptPolicy = new File(scriptDirectory, "script.policy");
-			try {
-				securityPolicyGenerator.write(scriptPolicy);
-			} catch (IOException e) {
-				LOG.error("Write script's policy file failed.", e);
-			}
+			// File scriptPolicy = new File(scriptDirectory, "script.policy");
+			// try {
+			// // securityPolicyGenerator.write(scriptPolicy);
+			// } catch (IOException e) {
+			// LOG.error("Write script's policy file failed.", e);
+			// }
 			String jvmArguments = "";
-			if (scriptPolicy.exists()) {
-				String policyFilePath = scriptPolicy.getAbsolutePath();
-				jvmArguments = "-Djava.security.policy=" + policyFilePath + " -Djava.security.manager";
-			}
+			// if (scriptPolicy.exists()) {
+			// String policyFilePath = scriptPolicy.getAbsolutePath();
+			// jvmArguments = "-Djava.security.policy=" + policyFilePath +
+			// " -Djava.security.manager";
+			// }
 
 			if (useScriptInSVN) {
 				fileEntryService.writeContentTo(user, scriptEntry.getPath(),
