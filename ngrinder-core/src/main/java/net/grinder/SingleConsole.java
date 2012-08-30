@@ -481,7 +481,7 @@ public class SingleConsole implements Listener, SampleListener {
 						LOGGER.warn("Calculate sum for key:{} in statistic", each.getKey());
 						MutableDouble mutableDouble = new MutableDouble((Double) val);
 						mutableDouble.add((Double) ObjectUtils.defaultIfNull(each.getValue(), 0D));
-						valueMap.put(each.getKey(), mutableDouble);
+						valueMap.put(each.getKey(), mutableDouble.toDouble());
 					} else {
 						valueMap.put(each.getKey(), each.getValue());
 					}

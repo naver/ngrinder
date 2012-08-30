@@ -992,7 +992,6 @@ div.div-host .host {
 	  }
 
 	  function generateReportChart() {
-	      showInformation("<@spring.message "common.message.genTpsChart"/>");
 	      getReportDataTPS();
 	  }
 
