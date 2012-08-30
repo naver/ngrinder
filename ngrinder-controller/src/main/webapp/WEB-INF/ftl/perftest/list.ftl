@@ -10,6 +10,11 @@
 				background-repeat:no-repeat; 
 				background-position:left top; 
 			}
+			td.yesterday {
+				background-image: url('${req.getContextPath()}/img/icon_yesterday.png');
+				background-repeat:no-repeat; 
+				background-position:left top;  
+			}
 		</style>
 	</head>
 
@@ -90,9 +95,7 @@
 											 data-content="${test.description?replace('\n', '<br/>')?html}&lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;"  
 											 data-original-title="${test.testName}">
 											<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
-											<#if test.testModifiedDay=='yesterday'>
-												<button class="btn btn-mini btn-warning disabled" type="button"><@spring.message "perftest.testDay.yesterday"/></button>
-											<#elseif test.testModifiedDay=='earlier'>
+											<#if test.testModifiedDay=='earlier'>
 												<button class="btn btn-mini disabled" type="button"><@spring.message "perftest.testDay.earlier"/></button>
 											</#if>
 										</div>   
