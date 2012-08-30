@@ -26,6 +26,7 @@ import static org.ngrinder.common.util.Preconditions.checkArgument;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.common.util.Preconditions.checkValidURL;
+import static org.ngrinder.common.util.Preconditions.checkState;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -384,6 +385,7 @@ public class PerfTestController extends NGrinderBaseController {
 	public void downloadReportData(User user, HttpServletResponse response, @RequestParam long testId) {
 		checkTestPermissionAndGet(user, testId);
 		File targetFile = perfTestService.getReportFile(testId);
+		checkState(targetFile.exists(), "File " + targetFile.getName() + " doesn't exist!");
 		FileDownloadUtil.downloadFile(response, targetFile);
 	}
 
