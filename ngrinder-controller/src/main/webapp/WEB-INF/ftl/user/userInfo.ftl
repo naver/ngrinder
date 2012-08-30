@@ -1,22 +1,24 @@
 <#import "../common/spring.ftl" as spring/>
 <script type="text/javascript">
+	
 	$(document).ready(function(){
 		<#if !(user?has_content)>
 		$(".collapse").collapse();
 		$("#user_pw_head").attr("href","");
-		
-		$("#userId").blur(function(){
-			var userId = $("#userId").val();
-			
+
+		var userIdValidMsg;
+		jQuery.validator.addMethod("userIdFmt", function(userId, element ) {
 			var patrn = "^[a-zA-Z]{1}([a-zA-Z0-9]|[_]|[-]|[.]){0,19}$";
-				var rule = new RegExp(patrn);
-				if (!rule.test($.trim($("#userId").val()))) {
-						$("userId").parents('.control-group').addClass("error");
-						$("#userIdError_span_id").html("<@spring.message "user.info.warning.userIdError"/>");
-						$("#userIdError_span_id").show();
-					return;
+			var rule = new RegExp(patrn);
+			if (!rule.test($.trim(userId))) {
+				validateError(this);
+				userIdValidMsg = "<@spring.message "user.info.warning.userId.intro"/>";
+				return false;
 			}
-			
+			return true;
+		}, "<@spring.message 'user.info.warning.userId.invalid'/>" );
+
+		jQuery.validator.addMethod("userIdExist", function( userId, element ) {
 			if(userId != null && userId.length > 0){
 				$.ajax({
 					  url: "${req.getContextPath()}/user/checkUserId?userId="+userId,
@@ -25,19 +27,13 @@
 					  type: "GET",
 					  dataType:'json',
 					  success: function(res) {
-					  	  if(!res.success) {
-						  	$("userId").parents('.control-group').addClass("error");
-						  	$("#userIdError_span_id").html("<@spring.message "user.info.warning.userIdExist"/>");
-						  	$("#userIdError_span_id").show();
-					  	  }else{
-					  	  	 $("userId").parents('.control-group').addClass("success");
-					  	  	 $("#userIdError_span_id").html("");
-					  	  	 $("#userIdError_span_id").hide();
-					  	  }
+						  return res.success;
   					  }
 				}); 
 			}
-		});
+			return false;
+		}, "<@spring.message 'user.info.warning.userId.exist'/>");
+		
 		</#if>
 		
 		$('.collapse').on('hidden', function () {
@@ -62,20 +58,8 @@
 	    });
 	    
 	    $("#registerUserForm").validate({
-	        rules:{
-	        	userId:"required",
-	            userName:"required",
-	            email:{
-	                required:true,
-	                email: true
-	            },
-	            mobilePhone:{
-	                required:false,
-	                number: true
-	            }
-	        },
+
 	        messages:{
-	        	userId:"<@spring.message "user.info.warning.userId.intro"/>",
 	            userName:"<@spring.message "user.info.warning.userName"/>",
 	            email:{
 	                required:"<@spring.message "user.info.warning.email.required"/>",
@@ -110,7 +94,7 @@
 		<div class="control-group">
 			<label class="control-label"><@spring.message "user.info.form.userId"/></label>
 			<div class="controls">
-				<input type="text" class="span4" id="userId" name="userId"
+				<input type="text" class="span4 userIdFmt userIdExist" id="userId" name="userId"
 				    rel="popover" value="${(user.userId)!}"
 					data-content="<@spring.message "user.info.warning.userId.intro"/>"
 					data-original-title="<@spring.message "user.info.form.userId"/>"
@@ -123,7 +107,7 @@
 		<div class="control-group">
 			<label class="control-label"><@spring.message "user.option.name"/></label>
 			<div class="controls">
-				<input type="text" class="span4" id="userName"
+				<input type="text" class="span4 required" id="userName"
 					name="userName" rel="popover" value="${(user.userName)!}"
 					data-content="<@spring.message "user.info.warning.userName"/>"
 					data-original-title="<@spring.message "user.option.name"/>">
@@ -146,7 +130,7 @@
 		<div class="control-group">
 			<label class="control-label"><@spring.message "user.info.form.email"/></label>
 			<div class="controls">
-				<input type="text" class="span4" id="email"
+				<input type="text" class="span4 required email" id="email"
 					name="email" rel="popover" value="${(user.email)!}"
 					data-content="<@spring.message "user.info.warning.email.required"/>"
 					data-original-title="<@spring.message "user.info.form.email"/>">
@@ -165,7 +149,7 @@
 		<div class="control-group" >
 			<label class="control-label"><@spring.message "user.info.form.phone"/></label>
 			<div class="controls">
-				<input type="text" class="span4" id="mobilePhone"
+				<input type="text" class="span4 required positiveNumber" id="mobilePhone"
 					name="mobilePhone" rel="popover"
 					value="${(user.mobilePhone)!}"
 					data-content="<@spring.message "user.info.warning.phone.intro"/>"

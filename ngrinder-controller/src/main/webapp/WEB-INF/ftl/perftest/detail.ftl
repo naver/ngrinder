@@ -565,8 +565,9 @@ div.div-host .host {
 			</div>
 			<input type="hidden" id="scheduleInput" name="scheduledTime" /> 
 			<#if test??> 
-				<input type="hidden" id="testStatus" name="status" value="${(test.status)}"> 
-			<#else> 
+				<input type="hidden" id="testStatus" name="status" value="${(test.status)}">
+				<input type="hidden" id="testStatusType" name="statusType" value="${(test.status.category)}"> 
+			<#else>
 				<input type="hidden" id="testStatus" name="status" value="SAVED">
 			</#if>
 		</form>
@@ -638,26 +639,26 @@ div.div-host .host {
 	      $("#sDateInput").val(year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day));
 	      
 		<#if test??>
-			<#if test.status =="TESTING">
+			<#if test.status.category == "TESTING">
 				displayCfgAndTestRunning();
-			<#elseif test.status =="FINISHED">
+				<#elseif test.status.category == "FINISHED" || test.status.category =="STOP" >
 				displayCfgAndTestReport();
 			<#else>
 				displayCfgOnly();
 			</#if>
-					  $("#leaveCommentButton").click(function(){
+			$("#leaveCommentButton").click(function(){
 		    var comment = $("#testComment").val();
-		  	$.post(
-		  		"${req.getContextPath()}/perftest/leaveComment",
-		  		{ 
-		  			"testId": ${test.id},   
-		  			"testComment": comment 
-		  		},
-		  		function() {
-		  			showSuccessMsg("Comment is successfully reflected");
-		  		}
-		     );
-		  });
+			  	$.post(
+			  		"${req.getContextPath()}/perftest/leaveComment",
+			  		{ 
+			  			"testId": ${test.id},   
+			  			"testComment": comment 
+			  		},
+			  		function() {
+			  			showSuccessMsg("Comment is successfully reflected");
+			  		}
+			    );
+		  	});
 			
 		<#else>
 			displayCfgOnly();
@@ -1096,11 +1097,11 @@ div.div-host .host {
 	      });
 	  }
 
-	  function updateStatus(id,status_id,status_name, icon, deletable, stoppable, message) {
-		  if(status_id == "FINISHED") {
+	  function updateStatus(id,status_type,status_name, icon, deletable, stoppable, message) {
+		  if(status_type == "FINISHED") {
 			  isFinished = true;
 		  }
-		  if ($("#testStatus").val() == status_id) {
+		  if ($("#testStatusType").val() == status_type) {
 		  	return;
 		  }
 	      var ballImg = $("#testStatus_img_id");
@@ -1108,14 +1109,14 @@ div.div-host .host {
 		  $("#teststatus_pop_over").attr("data-original-title", status_name);
 		  $("#teststatus_pop_over").attr("data-content", message);
 			
-	      $("#testStatus").val(status_id);
+	      $("#testStatusType").val(status_type);
 	      if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
 	          ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
           }
 	     
-		  if(status_id == "TESTING") {
+		  if(status_type == "TESTING") {
 		   		displayCfgAndTestRunning();
-		  } else if(status_id =="FINISHED") { 
+		  } else if(status_type == "FINISHED" || status_type == "STOP") { 
 		   		displayCfgAndTestReport();
 		  } else {
 		      	displayCfgOnly();
@@ -1141,7 +1142,7 @@ div.div-host .host {
 	          success: function (data) {
 	              data = eval(data);
 	              for (var i = 0; i < data.length; i++) {
-	                  updateStatus(data[i].id, data[i].status_id, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
+	                  updateStatus(data[i].id, data[i].status_type, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
 	              }
 	          },
 	          complete: function () {

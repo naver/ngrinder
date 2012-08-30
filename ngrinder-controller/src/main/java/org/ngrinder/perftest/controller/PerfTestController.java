@@ -278,6 +278,7 @@ public class PerfTestController extends NGrinderBaseController {
 			Map<String, Object> rtnMap = new HashMap<String, Object>(3);
 			rtnMap.put(PARAM_STATUS_UPDATE_ID, each.getId());
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_ID, each.getStatus());
+			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_TYPE, each.getStatus());
 			String errorMessages = getMessages(each.getStatus().getSpringMessageKey());
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_NAME, errorMessages);
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_ICON, each.getStatus().getIconName());
