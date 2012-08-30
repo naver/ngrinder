@@ -590,10 +590,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			fileEntryService.writeContentTo(user, each.getPath(), perfTestDirectory);
 		}
 		LOGGER.info("File write is completed in " + perfTestDirectory);
-
-		// Write the policy file in the folder: perfTestDirectory
-		List<String> targetIPList = perfTest.getTargetHostIP();
-
 		return perfTestDirectory;
 	}
 
