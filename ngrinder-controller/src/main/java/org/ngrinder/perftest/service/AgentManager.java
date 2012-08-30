@@ -113,6 +113,10 @@ public class AgentManager implements NGrinderConstants {
 		});
 	}
 
+	public int getAgentControllerConnectingPort(AgentIdentity agentIdentity) {
+		return agentControllerServer.getAgentControllerConnectingPort(agentIdentity);
+	}
+
 	public AgentControllerState getAgentControllerState(AgentIdentity agentIdentity) {
 		return agentControllerServer.getAgentState(agentIdentity);
 	}

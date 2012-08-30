@@ -82,6 +82,14 @@
 											 data-content="${test.description?replace('\n', '<br/>')?html}&lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;"  
 											 data-original-title="${test.testName}">
 											<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
+											
+											<#if test.testModifiedDay=='today'>
+												<button class="btn btn-mini btn-success disabled" type="button"><@spring.message "perftest.testDay.today"/></button>
+											<#elseif test.testModifiedDay=='yesterday'>
+												<button class="btn btn-mini btn-warning disabled" type="button"><@spring.message "perftest.testDay.yesterday"/></button>
+											<#else>
+												<button class="btn btn-mini disabled" type="button"><@spring.message "perftest.testDay.earlier"/></button>
+											</#if>
 										</div>   
 									</td>
 									<td class="ellipsis">

@@ -25,9 +25,9 @@ package org.ngrinder.script.service;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.grinder.engine.agent.LocalScriptTestDriveService;
@@ -36,14 +36,15 @@ import net.grinder.util.thread.Condition;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.constants.ActionMode;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
+import org.ngrinder.policy.generator.DefaultSecurityPolicyGenerator;
+import org.ngrinder.policy.generator.Generators;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.python.core.PySyntaxError;
 import org.python.core.PyTuple;
-import org.python.util.PythonInterpreter;
-import org.python.util.jython;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,6 +131,30 @@ public class ScriptValidationService {
 			File scriptFile = new File(scriptDirectory,
 					FilenameUtils.getName(scriptEntry.getPath()));
 
+			// Write the policy file in the folder: scriptDirectory
+			// Do not limit IP access but file access. (Home folder..)
+			DefaultSecurityPolicyGenerator securityPolicyGenerator = Generators.newDefaultSecurityPolicyGenerator();
+			List<String> ipList = this.getHostIP(hostString);
+			for (String ip : ipList) {
+				securityPolicyGenerator.allowNetworkAccess(ip);
+			}
+			// add all file access in current folder
+			securityPolicyGenerator.allowFileAccess("-", ActionMode.FILE_ALL_ACTION);
+			securityPolicyGenerator.allowFileAccess(".", ActionMode.FILE_READ_ACTION);
+			securityPolicyGenerator.allowFileAccess(this.getLibPath() + "*", ActionMode.FILE_READ_ACTION);
+
+			File scriptPolicy = new File(scriptDirectory, "script.policy");
+			try {
+				securityPolicyGenerator.write(scriptPolicy);
+			} catch (IOException e) {
+				LOG.error("Write script's policy file failed.", e);
+			}
+			String jvmArguments = "";
+			if (scriptPolicy.exists()) {
+				String policyFilePath = scriptPolicy.getAbsolutePath();
+				jvmArguments = "-Djava.security.policy=" + policyFilePath + " -Djava.security.manager";
+			}
+
 			if (useScriptInSVN) {
 				fileEntryService.writeContentTo(user, scriptEntry.getPath(),
 						scriptDirectory);
@@ -138,8 +163,8 @@ public class ScriptValidationService {
 						.getContent(), StringUtils.defaultIfBlank(
 						scriptEntry.getEncoding(), "UTF-8"));
 			}
-			File doValidate = localScriptTestDriveService.doValidate(
-					scriptDirectory, scriptFile, new Condition(), "");
+			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, new Condition(),
+					jvmArguments);
 			return FileUtils.readFileToString(doValidate);
 		} catch (IOException e) {
 			LOG.error("Error while distributing files on {} for {}", user,
@@ -147,6 +172,32 @@ public class ScriptValidationService {
 			LOG.error("Error details ", e);
 		}
 		return StringUtils.EMPTY;
+	}
+	
+	private String getLibPath() {
+		String path = this.getClass().getResource("/").getPath();
+		path = path.substring(1, path.length() - 1);
+		String str = "classes";
+		int i = path.indexOf(str);
+		if (i > 0) {
+			path = path.substring(0, i);
+			path += "lib/";
+		}
+		return path;
+	}
+
+	private List<String> getHostIP(String hostString) {
+		List<String> ipList = new ArrayList<String>();
+		String[] hostsList = StringUtils.split(hostString, ",");
+		for (String hosts : hostsList) {
+			String[] addresses = StringUtils.split(hosts, ":");
+			if (addresses.length > 0) {
+				ipList.add(addresses[addresses.length - 1]);
+			} else {
+				ipList.add(hosts);
+			}
+		}
+		return ipList;
 	}
 
 	/**
@@ -178,4 +229,5 @@ public class ScriptValidationService {
 		return null;
 
 	}
+
 }

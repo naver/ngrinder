@@ -112,11 +112,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 		if (runCandidate == null) {
 			return;
 		}
-
+		
 		// schedule test
 		Date schedule = runCandidate.getScheduledTime();
 		if (schedule != null
-						&& !DateUtil.compareDateEndWithMinute(schedule, new Date(System.currentTimeMillis()))) {
+				&& !DateUtil.compareDateEndWithMinute(schedule, new Date(System.currentTimeMillis()))) {
 			// this test project is reserved,but it isn't yet going to run test
 			// right now.
 			return;
@@ -129,7 +129,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 							"The test is tried to execute but there is not enough free agents.\n- Current free agent size : "
 											+ size + "  / Requested : " + runCandidate.getAgentCount() + "\n");
 			return;
-		}
+		} 
+		
 
 		// In case of too many trial, cancel running.
 		if (runCandidate.getTestTrialCount() > PERFTEST_MAXIMUM_TRIAL_COUNT) {
@@ -153,6 +154,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		SingleConsole singleConsole = null;
 		try {
 			singleConsole = startConsole(perfTest);
+			beforeStart(perfTest);
 			GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
 			startAgentsOn(perfTest, grinderProperties, singleConsole);
 			distributeFileOn(perfTest, grinderProperties, singleConsole);
@@ -199,7 +201,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 	void distributeFileOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		// Distribute files
 		perfTestService.changePerfTestStatus(perfTest, DISTRIBUTE_FILES);
-		singleConsole.distributeFiles(perfTestService.prepareDistribution(perfTest));
+		// the files have prepared before
+		singleConsole.distributeFiles(perfTestService.getPerfTestDirectory(perfTest));
 		perfTestService.changePerfTestStatus(perfTest, DISTRIBUTE_FILES_FINISHED);
 	}
 
@@ -208,6 +211,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 		agentManager.runAgent(singleConsole, grinderProperties, perfTest.getAgentCount());
 		singleConsole.waitUntilAgentConnected(perfTest.getAgentCount());
 		perfTestService.changePerfTestStatus(perfTest, START_AGENTS_FINISHED);
+	}
+	
+	void beforeStart(PerfTest perfTest) {
+		// Prepare the files before the grinder properties are configured
+		perfTestService.prepareDistribution(perfTest);
 	}
 
 	SingleConsole startConsole(PerfTest perfTest) {

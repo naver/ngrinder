@@ -376,24 +376,25 @@ div.div-host .host {
 							<div class="span8">
 								<div class="page-header">
 									<h4><@spring.message "perfTest.report.tpsgraph"/></h4>
-									<a id="reportDetail" class="btn pull-right" style="margin-top:-10px" href="#"><@spring.message "perfTest.report.reportDetail"/></a>
+									<a id="reportDetail" class="btn pull-right" style="margin-top:-25px" href="#"><@spring.message "perfTest.report.reportDetail"/></a>
 								</div>
 								<div id="tpsDiv" class="chart" style="width: 610px; height: 240px"></div>
 							</div>								
 						</div>
 						<div class="row" style="margin-top: 10px;">
 							<div class="span4">
-								<#if logs??>
-								
 									<div class="page-header">
 										<h4><@spring.message "perfTest.report.logs"/></h4>
 									</div>
-									<div class="form-horizontal form-horizontal-3" style="margin-left: 10px">
-										<#list logs as eachLog>
-											<div><a href="${req.getContextPath()}/perftest/downloadLog/${eachLog}?testId=${test.id}">${eachLog}</a></div> 
-										</#list>									
+									<div style="margin-left: 10px">
+										<#if logs?has_content>
+											<#list logs as eachLog>
+												<div><a href="${req.getContextPath()}/perftest/downloadLog/${eachLog}?testId=${test.id}">${eachLog}</a></div> 
+											</#list>
+										<#else>
+											<@spring.message "perfTest.report.message.noLogs"/>								
+										</#if>
 									</div>
-								</#if>
 							</div>	
 							<div class="span8">
 								<div class="page-header">
@@ -401,7 +402,7 @@ div.div-host .host {
 								</div>
 								<div class="control-group"> 
 									<textarea class="span8" id="testComment" rows="3" name="testComment" style="resize: none"> ${(test.testComment)!} </textarea>							
-                        			<button class="btn btn-mini btn-primary" type="button" id="leaveCommentButton"><@spring.message "perfTest.report.leaveComment"/></button>
+                        			<button class="btn btn-small btn-primary pull-right" type="button" id="leaveCommentButton"><@spring.message "perfTest.report.leaveComment"/></button>
                                 </div> 
 							</div>
 						</div>
@@ -993,7 +994,6 @@ div.div-host .host {
 	  }
 
 	  function generateReportChart() {
-	      showInformation("<@spring.message "common.message.genTpsChart"/>");
 	      getReportDataTPS();
 	  }
 

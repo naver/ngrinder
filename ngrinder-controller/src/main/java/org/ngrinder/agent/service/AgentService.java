@@ -101,7 +101,7 @@ public class AgentService {
 			agentInfo.setIp(agentIdentity.getIp());
 			agentInfo = agentRepository.save(agentInfo);
 		}
-		agentInfo.setPort(agentIdentity.getPort());
+		agentInfo.setPort(agentManager.getAgentControllerConnectingPort(agentIdentity));
 		agentInfo.setStatus(agentManager.getAgentControllerState(agentIdentity));
 		// need to save agent info into DB, like ip and port maybe changed.
 		return agentInfo;
@@ -123,7 +123,7 @@ public class AgentService {
 						.getIp());
 		if (agentIdentity != null) {
 			agentInfo.setStatus(agentManager.getAgentControllerState(agentIdentity));
-			agentInfo.setPort(agentIdentity.getPort());
+			agentInfo.setPort(agentManager.getAgentControllerConnectingPort(agentIdentity));
 			agentInfo.setHostName(agentIdentity.getName());
 			agentInfo.setRegion(agentIdentity.getRegion());
 			agentInfo.setAgentIdentity(agentIdentity);
@@ -162,6 +162,6 @@ public class AgentService {
 			AgentInfo findOne = agentRepository.findOne(each.getId());
 			System.out.println(findOne.isApproved());
 		}
-		
+
 	}
 }

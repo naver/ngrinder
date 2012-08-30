@@ -1,4 +1,4 @@
-<div class="div-host"></div>
+<div class="div-host" data-original-title="<@spring.message "perfTest.configuration.popover.host.title"/>" data-content="<@spring.message "perfTest.configuration.popover.host.content"/>" rel="popover" placement="bottom"></div>
 <input type="hidden" name="targetHosts" id="hostsHidden" value="${(targetHosts)!}"> 
 <a class="btn pull-right btn-mini addhostbtn" data-toggle="modal" href="#addHostModal">   
 	<@spring.message "perfTest.configuration.add"/>
@@ -32,6 +32,7 @@
 	</div>
 	<div class="modal-footer">
 		<a class="btn btn-primary" id="addHostBtn"><@spring.message "perfTest.configuration.add"/></a>
+		<a href="#addHostModal" class="btn" data-toggle="modal"><@spring.message "common.button.cancel"/></a>
 	</div>
 </div>
 

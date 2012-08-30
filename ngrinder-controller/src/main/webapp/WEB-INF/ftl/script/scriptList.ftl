@@ -141,7 +141,7 @@
 						<div class="control-group">
 							<label for="urlInput" class="control-label"><@spring.message "script.list.label.url"/></label>
 							<div class="controls">
-							  <input type="text" id="urlInput" class="url" placeholder="Type URL..."  name="testUrl"/>
+							  <input type="text" id="urlInput" class="url" placeholder="<@spring.message "home.placeholder.url"/>" name="testUrl" data-original-title="<@spring.message "home.tip.url.title"/>" data-content="<@spring.message "home.tip.url.content"/>"/>
 							  <span class="help-inline"></span>
 							</div>
 						</div>					
@@ -151,7 +151,7 @@
 			
 			<div class="modal-footer">
 				<a href="#" class="btn btn-primary" id="createBtn2"><@spring.message "common.button.create"/></a>
-				<a href="#createScriptModal" class="btn" id="cancelBtn" data-toggle="modal"><@spring.message "common.button.cancel"/></a>
+				<a href="#createScriptModal" class="btn" data-toggle="modal"><@spring.message "common.button.cancel"/></a>
 			</div>
 		</div>
 		
@@ -177,7 +177,7 @@
 			
 			<div class="modal-footer">
 				<a href="#" class="btn btn-primary" id="createFolderBtn"><@spring.message "common.button.create"/></a>
-				<a href="#createFolderModal" class="btn" id="cancelBtn" data-toggle="modal"><@spring.message "common.button.cancel"/></a>
+				<a href="#createFolderModal" class="btn" data-toggle="modal"><@spring.message "common.button.cancel"/></a>
 			</div>
 		</div>
 	
@@ -201,7 +201,7 @@
 						<div class="control-group">
 							<label for="fileInput" class="control-label"><@spring.message "script.list.label.file"/></label>
 							<div class="controls">
-							  <input type="file" class="input-file" id="fileInput" name="uploadFile">
+							  <input type="file" class="input-file" id="fileInput" name="uploadFile" data-original-title="<@spring.message "script.list.popover.upload.title"/>" data-content="<@spring.message "script.list.popover.upload.content"/>">
 							  <span class="help-inline"></span>
 							</div>
 						</div>				
@@ -210,6 +210,7 @@
 			</div>
 			<div class="modal-footer">
 				<a href="#" class="btn btn-primary" id="uploadBtn2"><@spring.message "script.list.button.upload"/></a>
+				<a href="#uploadScriptModal" class="btn" data-toggle="modal"><@spring.message "common.button.cancel"/></a>
 			</div>
 		</div>
 	</div>
@@ -217,6 +218,10 @@
 	<script>
 		$(document).ready(function() {
 			$("#n_script").addClass("active");
+			
+			$('form input').hover(function () {
+	        	$(this).popover('show');
+	      	});
 			
 			$("#createBtn2").on('click', function() {
 				var $name = $("#scriptNameInput");

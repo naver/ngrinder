@@ -49,18 +49,20 @@ public class AgentControllerProcessReportMessage implements AddressAwareMessage 
 
 	private final SystemDataModel systemDataModel;
 
+	private int connectingPort = 0;
+
 	/**
 	 * Creates a new <code>AgentProcessReportMessage</code> instance.
 	 * 
 	 * @param state
-	 *            The process state. See
-	 *            {@link net.grinder.common.processidentity.ProcessReport}.
+	 *            The process state. See {@link net.grinder.common.processidentity.ProcessReport}.
 	 */
 	public AgentControllerProcessReportMessage(AgentControllerState state, JavaDataModel javaDataModel,
-			SystemDataModel systemDataModel) {
+					SystemDataModel systemDataModel, int connectingPort) {
 		m_state = state;
 		this.javaDataModel = javaDataModel;
 		this.systemDataModel = systemDataModel;
+		this.connectingPort = connectingPort;
 	}
 
 	/**
@@ -109,6 +111,10 @@ public class AgentControllerProcessReportMessage implements AddressAwareMessage 
 
 	public SystemDataModel getSystemDataModel() {
 		return systemDataModel;
+	}
+
+	public int getConnectingPort() {
+		return connectingPort;
 	}
 
 }
