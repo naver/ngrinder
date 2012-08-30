@@ -23,7 +23,6 @@
 package net.grinder.engine.agent;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
@@ -58,10 +57,7 @@ import net.grinder.util.GrinderClassPathUtils;
 import net.grinder.util.thread.Condition;
 
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.constants.ActionMode;
 import org.ngrinder.infra.AgentConfig;
-import org.ngrinder.policy.generator.DefaultSecurityPolicyGenerator;
-import org.ngrinder.policy.generator.Generators;
 import org.slf4j.Logger;
 
 /**
@@ -249,8 +245,7 @@ public class AgentImplementationEx implements Agent {
 
 				if (script != null) {
 					String jvmArguments = properties.getProperty("grinder.jvm.arguments", "");
-					
-					jvmArguments = addDefaultPolicy(jvmArguments);
+
 					jvmArguments = addCustomDns(properties, jvmArguments);
 					final WorkerFactory workerFactory;
 
@@ -368,33 +363,6 @@ public class AgentImplementationEx implements Agent {
 			m_consoleListener.shutdown();
 			m_logger.info("finished");
 		}
-	}
-
-	/**
-	 * add default policy
-	 * @param jvmArguments
-	 * @return
-	 */
-	private String addDefaultPolicy(String jvmArguments) {
-		if (jvmArguments.contains("-Djava.security.manager")) {
-			// Write the policy file
-			DefaultSecurityPolicyGenerator securityPolicyGenerator = Generators.newDefaultSecurityPolicyGenerator();
-			// Need to add the file access: agent work directory/lib/*
-			securityPolicyGenerator.allowFileAccess(System.getProperty("user.dir") + "/lib/*",
-					ActionMode.FILE_READ_ACTION);
-			// Add network access to the controller server
-			securityPolicyGenerator.allowNetworkAccess(m_agentConfig.getProperty("agent.console.ip", "127.0.0.1"));
-			securityPolicyGenerator.allowFileAccess("-", ActionMode.FILE_ALL_ACTION);
-
-			File defaultAgentPolicy = new File(System.getProperty("user.dir") + "/defaultAgent.policy");
-			try {
-				securityPolicyGenerator.write(defaultAgentPolicy);
-			} catch (IOException e) {
-				m_logger.error("Write performance test's policy file failed.", e);
-			}
-			jvmArguments += " -Djava.security.policy=" + defaultAgentPolicy.getAbsolutePath();
-		}
-		return jvmArguments;
 	}
 
 	private String addCustomDns(GrinderProperties properties, String jvmArguments) {
