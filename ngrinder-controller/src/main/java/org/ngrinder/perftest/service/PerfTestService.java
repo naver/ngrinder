@@ -75,6 +75,8 @@ import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.repository.PerfTestRepository;
+import org.ngrinder.policy.generator.DefaultSecurityPolicyGenerator;
+import org.ngrinder.policy.generator.Generators;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
@@ -532,6 +534,12 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			grinderProperties.setInt(GRINDER_PROP_INITIAL_SLEEP_TIME, perfTest.getInitSleepTime());
 			grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, perfTest.getProcessIncrement());
 			grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT_INTERVAL, perfTest.getProcessIncrementInterval());
+
+			// Provide the JVM arguments to let it use the policy file
+			// The policy file in the directory: ${agent.home}\file-store\current
+			// ${agent.home}\file-store\current is the agent test process's work directory.
+			grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, "-Djava.security.policy=" + "agent.policy"
+					+ " -Djava.security.manager");
 			
 			return grinderProperties;
 		} catch (Exception e) {
@@ -572,6 +580,21 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			fileEntryService.writeContentTo(user, each.getPath(), perfTestDirectory);
 		}
 		LOGGER.info("File write is completed in " + perfTestDirectory);
+		
+		// Write the policy file in the folder: perfTestDirectory
+		List<String> targetIPList = perfTest.getTargetHostIP();
+		DefaultSecurityPolicyGenerator securityPolicyGenerator = Generators.newDefaultSecurityPolicyGenerator();
+		for (String ip : targetIPList) {
+			securityPolicyGenerator.allowNetworkAccess(ip);
+		}
+
+		File perfTestPolicy = new File(perfTestDirectory, "agent.policy");
+		try {
+			securityPolicyGenerator.write(perfTestPolicy);
+		} catch (IOException e) {
+			LOGGER.error("Write performance test's policy file failed.", e);
+		}
+		
 		return perfTestDirectory;
 	}
 
