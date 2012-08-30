@@ -244,7 +244,7 @@
                      		drawChart('JVM Cpu', 'jvmCpuDiv', res.JavaData.jvm_cpu, formatPercentage);
                      		$("div.javachart").css("display", "block");
                     	} else {
-                    		$(div.javachart).css("display", "none");
+                    		$("div.javachart").css("display", "none");
                     	}
                         return true;
                     } else {
