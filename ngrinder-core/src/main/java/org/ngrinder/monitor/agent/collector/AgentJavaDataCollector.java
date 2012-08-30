@@ -31,6 +31,7 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.lang.SystemUtils;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.collector.process.JavaMonitorProcessor;
 import org.ngrinder.monitor.agent.mxbean.JavaMonitoringData;
@@ -48,6 +49,7 @@ public class AgentJavaDataCollector extends AgentDataCollector {
 	private Map<JavaVirtualMachineInfo, JavaMonitorProcessor> processors;
 	private ExecutorService pool;
 	private CompletionService<JavaInfoForEach> cs;
+	private long count = 0;
 
 	@Override
 	public synchronized void refresh() {
@@ -87,12 +89,18 @@ public class AgentJavaDataCollector extends AgentDataCollector {
 			try {
 				javaInfo.addJavaInfoForEach((JavaInfoForEach) cs.take().get());
 			} catch (Exception e) {
-				LOG.warn(e.getMessage());
+				if ((count++) % 60 == 0) {
+					if (SystemUtils.IS_OS_WINDOWS) {
+						LOG.error("Error while getting java perf data");
+						LOG.error("You should run agent in administrator permission");
+					} else {
+						LOG.error("Error while getting java perf data", e);
+					}
+				}
 			}
 		}
 
 		javaInfo.setCollectTime(System.currentTimeMillis());
 		return javaInfo;
 	}
-
 }

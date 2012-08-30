@@ -547,8 +547,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			// Provide the JVM arguments to let it use the policy file
 			// The policy file in the directory: ${agent.home}\file-store\current
 			// ${agent.home}\file-store\current is the agent test process's work directory.
-			grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, "-Djava.security.policy="
-							+ "agent.policy" + " -Djava.security.manager");
+			grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, "");
 
 			return grinderProperties;
 		} catch (Exception e) {

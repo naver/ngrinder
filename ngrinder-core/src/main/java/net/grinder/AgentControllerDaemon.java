@@ -90,7 +90,8 @@ public class AgentControllerDaemon implements Agent {
 	}
 
 	/**
-	 * Run agent controller with the given agent controller host and the agent controller server port.
+	 * Run agent controller with the given agent controller host and the agent
+	 * controller server port.
 	 * 
 	 * @param agentControllerServerHost
 	 *            agent controller server host
@@ -107,9 +108,11 @@ public class AgentControllerDaemon implements Agent {
 		run(properties);
 	}
 
+	private long count = 0;
+
 	/**
-	 * Run agent controller with given {@link GrinderProperties}. server host and port will be gained from
-	 * {@link GrinderProperties}
+	 * Run agent controller with given {@link GrinderProperties}. server host
+	 * and port will be gained from {@link GrinderProperties}
 	 * 
 	 * @param grinderProperties
 	 *            {@link GrinderProperties}
@@ -120,17 +123,20 @@ public class AgentControllerDaemon implements Agent {
 			public void run() {
 				do {
 					try {
-						LOGGER.info("agent controller daemon : started.");
+						if (count % 5 == 0) {
+							LOGGER.info("agent controller daemon : started.");
+						}
 						getAgentController().setAgentConfig(
 								checkNotNull(agentConfig,
 										"agent config should be provided before agent controller start"));
-						getAgentController().run(grinderProperties);
+						getAgentController().run(grinderProperties, count);
 
 						getListeners().apply(new Informer<AgentControllerShutDownListener>() {
 							public void inform(AgentControllerShutDownListener listener) {
 								listener.shutdownAgentController();
 							}
 						});
+						count++;
 					} catch (Exception e) {
 						LOGGER.info("agent controller daemon : crashed.", e);
 					}

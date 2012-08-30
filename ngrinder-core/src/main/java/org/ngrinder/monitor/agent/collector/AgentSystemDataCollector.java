@@ -24,6 +24,7 @@ package org.ngrinder.monitor.agent.collector;
 
 import java.util.concurrent.Callable;
 
+import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.collector.process.LinuxSystemMonitorProcessor;
@@ -37,6 +38,7 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 	private static final Logger LOG = LoggerFactory.getLogger(AgentSystemDataCollector.class);
 
 	private Callable<SystemInfo> processor = null;
+	private long count = 0;
 
 	@Override
 	public synchronized void refresh() {
@@ -70,7 +72,14 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 		try {
 			systemInfo = processor.call();
 		} catch (Exception e) {
-			LOG.error(e.getMessage(), e);
+			if ((count++) % 60 == 0) {
+				if (SystemUtils.IS_OS_WINDOWS) {
+					LOG.error("Error while getting system perf data");
+					LOG.error("You should run agent in administrator permission");
+				} else {
+					LOG.error("Error while getting system perf data", e);
+				}
+			}
 		}
 		systemInfo.setCollectTime(System.currentTimeMillis());
 

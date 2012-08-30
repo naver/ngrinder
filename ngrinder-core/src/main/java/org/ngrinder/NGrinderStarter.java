@@ -25,6 +25,7 @@ package org.ngrinder;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.MalformedURLException;
@@ -209,6 +210,8 @@ public class NGrinderStarter {
 		}
 	}
 
+	static int count = 0;
+
 	/**
 	 * Agent starter
 	 * 
@@ -216,6 +219,19 @@ public class NGrinderStarter {
 	 */
 	public static void main(String[] args) {
 
+		File currentFolder = new File(System.getProperty("user.dir"));
+		currentFolder.list(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				if (name.startsWith("ngrinder") && name.endsWith(".jar")) {
+					count++;
+				}
+				return false;
+			}
+		});
+		if (count == 0) {
+			printHelpAndExit("ngrinder agent should start in the folder which ngrinder agent exists");
+		}
 		NGrinderStarter starter = new NGrinderStarter();
 		agentConfig = new AgentConfig();
 		agentConfig.init();
