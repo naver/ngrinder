@@ -58,7 +58,7 @@ public class AgentControllerServerDaemon {
 	private Thread thread;
 	private AgentControllerServer agentControllerServer;
 	public static final Resources RESOURCES = new ResourcesImplementation(
-			"net.grinder.console.common.resources.Console");
+					"net.grinder.console.common.resources.Console");
 	private Condition m_eventSyncCondition = new Condition();
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(RESOURCES.getString("shortTitle"));
@@ -93,9 +93,10 @@ public class AgentControllerServerDaemon {
 			this.consoleProperties.setConsoleHost(ip);
 			this.consoleProperties.setConsolePort(port);
 			this.agentControllerServer = new AgentControllerServer(RESOURCES, LOGGER, consoleProperties,
-					m_eventSyncCondition);
+							m_eventSyncCondition);
 		} catch (GrinderException e) {
-			throw new NGrinderRuntimeException("Exception occurs while initiating AgentControllerServerDaemon", e);
+			throw new NGrinderRuntimeException(
+							"Exception occurs while initiating AgentControllerServerDaemon", e);
 		}
 	}
 
@@ -152,13 +153,14 @@ public class AgentControllerServerDaemon {
 				thread = null;
 			}
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("Exception occurs while shutting down AgentControllerServerDaemon", e);
+			throw new NGrinderRuntimeException(
+							"Exception occurs while shutting down AgentControllerServerDaemon", e);
 		}
 	}
 
 	public int getAllAttachedAgentsCount() {
-		return ((AgentProcessControl) agentControllerServer.getComponent(AgentProcessControlImplementation.class))
-				.getNumberOfLiveAgents();
+		return ((AgentProcessControl) agentControllerServer
+						.getComponent(AgentProcessControlImplementation.class)).getNumberOfLiveAgents();
 	}
 
 	/**
@@ -171,24 +173,29 @@ public class AgentControllerServerDaemon {
 		getComponent(AgentProcessControlImplementation.class).addLogArrivedListener(logArrivedListener);
 	}
 
+	public int getAgentControllerConnectingPort(AgentIdentity agentIdentity) {
+		return agentControllerServer.getComponent(AgentProcessControlImplementation.class)
+						.getAgentControllerConnectingPort(agentIdentity);
+	}
+
 	public AgentControllerState getAgentState(AgentIdentity agentIdentity) {
-		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgentControllerState(
-				agentIdentity);
+		return agentControllerServer.getComponent(AgentProcessControlImplementation.class)
+						.getAgentControllerState(agentIdentity);
 	}
 
 	public Set<AgentIdentity> getAllFreeAgents() {
 		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgents(
-				AgentControllerState.READY, 0);
+						AgentControllerState.READY, 0);
 	}
 
 	public JavaDataModel getJavaDataModel(AgentIdentity agentIdentity) {
 		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getJavaDataModel(
-				agentIdentity);
+						agentIdentity);
 	}
 
 	public SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {
-		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getSystemDataModel(
-				agentIdentity);
+		return agentControllerServer.getComponent(AgentProcessControlImplementation.class)
+						.getSystemDataModel(agentIdentity);
 	}
 
 	public Set<AgentIdentity> getAllAvailableAgents() {
@@ -219,7 +226,7 @@ public class AgentControllerServerDaemon {
 	public void startAgent(GrinderProperties grinderProperties, AgentIdentity agentIdentity) {
 		LOGGER.info("start agent of {}", agentIdentity);
 		getComponent(ConsoleCommunication.class).sendToAddressedAgents(new AgentAddress(agentIdentity),
-				new StartGrinderMessage(grinderProperties, agentIdentity.getNumber()));
+						new StartGrinderMessage(grinderProperties, agentIdentity.getNumber()));
 	}
 
 	/**
@@ -231,7 +238,7 @@ public class AgentControllerServerDaemon {
 	public void stopAgent(AgentIdentity agentIdentity) {
 		LOGGER.info("start agent of {}", agentIdentity);
 		getComponent(ConsoleCommunication.class).sendToAddressedAgents(new AgentAddress(agentIdentity),
-				new StopGrinderMessage());
+						new StopGrinderMessage());
 	}
 
 }

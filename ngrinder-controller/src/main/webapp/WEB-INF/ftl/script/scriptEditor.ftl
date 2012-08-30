@@ -8,8 +8,7 @@
 			div.div-host {
 				background-color: #FFFFFF;
 				border: 1px solid #D6D6D6;
-				height: 55px;
-				margin-bottom: 5px;
+				height: 60px;
 				overflow-y: scroll;
 				border-radius: 3px 3px 3px 3px;
 				width:240px;
@@ -24,7 +23,8 @@
 			}
 			
 			.addhostbtn {
-				margin-right:35px;
+				margin-top:-25px;
+				margin-right:55px 
 			}
 		</style>
 	</head>

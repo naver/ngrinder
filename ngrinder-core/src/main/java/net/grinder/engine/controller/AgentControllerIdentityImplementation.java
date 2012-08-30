@@ -30,16 +30,14 @@ import net.grinder.common.processidentity.AgentIdentity;
  * 
  * @author JunHo Yoon
  */
-public class AgentControllerIdentityImplementation extends AbstractAgentControllerIdentityImplementation implements
-		AgentIdentity {
+public class AgentControllerIdentityImplementation extends AbstractAgentControllerIdentityImplementation
+				implements AgentIdentity {
 
 	private static final long serialVersionUID = 2;
 
 	private int m_number = -1;
 
 	private final String ip;
-
-	private Integer port;
 
 	private String region;
 
@@ -82,14 +80,6 @@ public class AgentControllerIdentityImplementation extends AbstractAgentControll
 	 */
 	public String getIp() {
 		return ip;
-	}
-
-	public Integer getPort() {
-		return port;
-	}
-
-	public void setPort(Integer port) {
-		this.port = port;
 	}
 
 	public String getRegion() {
