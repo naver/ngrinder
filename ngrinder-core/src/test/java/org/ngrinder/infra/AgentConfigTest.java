@@ -20,17 +20,15 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.common.controller;
+package org.ngrinder.infra;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.ngrinder.model.User;
-import org.ngrinder.perftest.controller.PerfTestController;
-import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Class description.
@@ -38,22 +36,24 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Mavlarn
  * @since
  */
-public class NGrinderBaseControllerTest extends AbstractPerfTestTransactionalTest {
-	
-	//NGrinderBaseController is not a component, use its sub-class to test.
-	@Autowired
-	private PerfTestController perfTestController;
+public class AgentConfigTest {
 
+	/**
+	 * Test method for {@link org.ngrinder.infra.AgentConfig#init()}.
+	 * @throws IOException 
+	 */
 	@Test
-	public void testCurrentUser() {
-		User currUser = perfTestController.currentUser();
-		assertThat(currUser, notNullValue());
-	}
-
-	@Test
-	public void testGetErrorMessages() {
-		String errMsg = perfTestController.getMessages("startTest.scriptError");
-		assertThat(errMsg, is("script is not found !"));
+	public void testInit() throws IOException {
+		AgentConfig config = new AgentConfig();
+		config.init();
+		File homeDir = config.getHome().getDirectory();
+		System.out.println("Home:" + homeDir.getAbsolutePath());
+		
+		System.setProperty("ngrinder.agent.home", "./tmp_agent_home");
+		config.init();
+		homeDir = config.getHome().getDirectory();
+		assertTrue(homeDir.getAbsolutePath().contains("tmp_agent_home"));
+		FileUtils.deleteDirectory(homeDir);
 	}
 
 }

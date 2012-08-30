@@ -98,11 +98,11 @@ public class AgentConfig {
 	 */
 	protected AgentHome resolveHome() {
 		String userHomeFromEnv = System.getenv("NGRINDER_AGENT_HOME");
+		LOGGER.info("    System Environment:  NGRINDER_HOME={}", userHomeFromEnv);
 		String userHomeFromProperty = System.getProperty("ngrinder.agent.home");
+		LOGGER.info("    Java Sytem Property:  ngrinder.home={}", userHomeFromProperty);
 		if (StringUtils.isNotEmpty(userHomeFromEnv) && !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
 			LOGGER.warn("The path to ngrinder-home is ambiguous:");
-			LOGGER.warn("    System Environment:  NGRINDER_HOME=" + userHomeFromEnv);
-			LOGGER.warn("    Java Sytem Property:  ngrinder.home=" + userHomeFromProperty);
 			LOGGER.warn("    '" + userHomeFromProperty + "' is accepted.");
 		}
 		String userHome = null;
