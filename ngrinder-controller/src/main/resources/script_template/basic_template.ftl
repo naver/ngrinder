@@ -19,5 +19,5 @@ class TestRunner:
 
 		# result is a HTTPClient.HTTPResult. We get the message body
 		# using the getText() method.
-		assert result.getStatus() == 200
+		assert result.getStatusCode() == 200
         
