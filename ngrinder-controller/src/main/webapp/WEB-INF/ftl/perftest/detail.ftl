@@ -755,9 +755,7 @@ div.div-host .host {
 	    	  openReportDiv();
 	      });
 
-	      $("#reportDetail").click(function () {
-	          window.open("${req.getContextPath()}/perftest/report?testId=" + $("#testId").val());
-	      });
+
 
 	      $('#tableTab a').click(function (e) {
 	          var $this = $(this);
