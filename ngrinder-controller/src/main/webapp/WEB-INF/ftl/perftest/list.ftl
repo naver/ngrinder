@@ -45,19 +45,19 @@
 						</a>
 					</span>
 				</div>
-				<table class="table table-striped table-bordered ellipsis" id="testTable">
+				<table class="table table-striped table-bordered ellipsis" id="testTable" style="width:940px">  
 					<colgroup>
 						<col width="30">
-						<col width="55">  
-						<col>
-						<col>
-						<col width="120">
-						<col width="85">
-						<col width="60">
-						<col width="90"> 
-						<col width="70">
-						<col width="58">
-						<col width="63">
+						<col width="50">   
+						<col width="170"> 
+						<col width="160"> 
+						<col width="120"> 
+						<col width="80">
+						<col width="65">
+						<col width="65"> 
+						<col width="65">
+						<col width="65">
+						<col width="65">
 					</colgroup>
 					<thead>
 						<tr>
@@ -68,7 +68,7 @@
 							<th id="startTime"><@spring.message "perfTest.table.startTime"/></th>
 							<th id="duration"><@spring.message "perfTest.table.duration"/></th>
 							<th id="tps"><@spring.message "perfTest.table.tps"/></th> 
-							<th id="meanTestTime"><@spring.message "perfTest.table.meantime"/><br/></th>
+							<th id="meanTestTime" title='<@spring.message "perfTest.table.meantime"/>' >MTT(ms)</th>
 							<th id="errors"><@spring.message "perfTest.table.errors"/></th>
 							<th class="nothing"><@spring.message "perfTest.table.vusers"/></th>
 							<th class="nothing"><@spring.message "common.label.actions"/></th>
@@ -84,20 +84,17 @@
 										<input type="checkbox" class="checkbox perf_test" value="${test.id}" 
 											<#if !(test.status.isDeletable())>disabled</#if> >
 									</td>
-									<td class="ellipsis center  ${test.testModifiedDay}"  id="row_${test.id}">
+									<td class="ellipsis center"  id="row_${test.id}">
 										<div class="ball" id="ball_${test.id}" rel="popover" data-content='${"${test.progressMessage}/n${test.lastProgressMessage}"?replace('/n', '<br>')?html}'>
 											<img class="status" src="${req.getContextPath()}/img/ball/${test.status.iconName}"/>
 										</div>
 									</td>
 									
-									<td class="ellipsis">   
+									<td class="ellipsis  ${test.testModifiedDay}">   
 										<div rel="popover"
 											 data-content="${test.description?replace('\n', '<br/>')?html}&lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;"  
 											 data-original-title="${test.testName}">
 											<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
-											<#if test.testModifiedDay=='earlier'>
-												<button class="btn btn-mini disabled" type="button"><@spring.message "perftest.testDay.earlier"/></button>
-											</#if>
 										</div>   
 									</td>
 									<td class="ellipsis">
@@ -108,7 +105,12 @@
 										</div>  
 									</td>
 									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if></td>
-									<td>${(test.durationStr)!}</td> 
+									<td>
+										<#if test.threshold == "D">
+											${(test.durationStr)!}</td>
+										<#else>
+											${(test.runCount)!} <@spring.message "perfTest.table.runcount"/></td>
+										</#if>
 									<td>${(test.tps)!}</td>  
 									<td>${(test.meanTestTime)!0}</td>
 									<td>${(test.errors)!0}</td>
