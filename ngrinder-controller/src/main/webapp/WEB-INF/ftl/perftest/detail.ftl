@@ -357,10 +357,10 @@ i.collapse{
 							</div>
 						</div>
 					</div>
-					<div class="tab-pane" id="reportContent" style="display:none;">
+					<div class="tab-pane" id="reportContent">
 
 					</div>
-					<div class="tab-pane" id="runningContent" style="display:none;">
+					<div class="tab-pane" id="runningContent">
 						<div class="row">
 							<div class="span5">
 								<div class="page-header">
@@ -599,20 +599,6 @@ i.collapse{
 			<#else>
 				displayCfgOnly();
 			</#if>
-			$("#leaveCommentButton").click(function(){
-		    var comment = $("#testComment").val();
-			  	$.post(
-			  		"${req.getContextPath()}/perftest/leaveComment",
-			  		{ 
-			  			"testId": ${test.id},   
-			  			"testComment": comment 
-			  		},
-			  		function() {
-			  			showSuccessMsg("Comment is successfully reflected");
-			  		}
-			    );
-		  	});
-			
 		<#else>
 			displayCfgOnly();
 		</#if>
@@ -773,7 +759,6 @@ i.collapse{
 	      $("#reportLnk").click(function () {
 	    	  openReportDiv();
 	      });
-
 
 	      $('#tableTab a').click(function (e) {
 	          var $this = $(this);
@@ -948,7 +933,6 @@ i.collapse{
 		  $("#reportContent").load("${req.getContextPath()}/perftest/loadReportDiv?testId="+
 				  $("#testId").val()+"&imgWidth=600",
 				  function(){
-				  		$("#reportContent").show();
 			  			drawChart('TPS', 'tpsDiv', $("#tpsData").val());
 		  		});
 	  }
