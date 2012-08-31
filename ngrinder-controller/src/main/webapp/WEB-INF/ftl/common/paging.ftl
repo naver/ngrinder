@@ -35,7 +35,7 @@
 	<div class="dataTables_paginate pagination">
 		<ul>
 			<li <#if pageNo == 1> class="disabled"</#if>>
-				<a href="javascript:doSubmit('${pageNo - 1}')">&larr; <@spring.message "common.paging.previous"/></a>
+				<a href="javascript:<#if pageNo == 1>void(0)<#else>doSubmit('${pageNo - 1}')</#if>">&larr; <@spring.message "common.paging.previous"/></a>
 			</li>
 			<#list startPage..endPage as i>
 				<#if i == pageNo >
@@ -46,7 +46,7 @@
 			</#list>
 			</span>
 			<li <#if pageNo == totalPage> class="disabled"</#if>>
-				<a href="javascript:doSubmit('${pageNo + 1}')"><@spring.message "common.paging.next"/> &rarr;</a>
+				<a href="javascript:<#if pageNo == totalPage>void(0)<#else>doSubmit('${pageNo + 1}')</#if>"><@spring.message "common.paging.next"/> &rarr;</a>
 			</li>
 
 		</ul>
