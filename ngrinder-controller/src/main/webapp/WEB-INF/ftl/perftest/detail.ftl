@@ -73,6 +73,25 @@ div.div-host .host {
 	margin-right:20px;
 	margin-top:-32px;
 }
+
+i.expand {
+	background-image: url('${req.getContextPath()}/img/icon_expand.png');
+	background-repeat:no-repeat;
+	display: inline-block;
+    height: 16px;
+    width: 16px; 
+    line-height: 16px;
+    vertical-align: text-top;
+}
+i.collapse{
+	background-image: url('${req.getContextPath()}/img/icon_collapse.png');
+	background-repeat:no-repeat;
+	display: inline-block;
+    height: 16px;
+    width: 16px;
+    line-height: 16px;
+    vertical-align: text-top;
+}
 </style>
 
 </head>
@@ -176,7 +195,7 @@ div.div-host .host {
 														data-original-title="<@spring.message "perfTest.configuration.vuserPerAgent"/>"><span class="add-on">
 															<@spring.message "perfTest.configuration.max"/> ${(maxVuserPerAgent)}
 														</span>
-													<a href="javascript:void(0)" id="expandAndCollapse"><img src="${req.getContextPath()}/img/icon_expand.png"/></a>			
+													<a href="javascript:void(0)"><i class="expand" id="expandAndCollapse"></i></a>			
 												</div>
 												<span class="badge badge-info pull-right" ><span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span id="vuserTotal"></span></span>
 											</div>
@@ -769,6 +788,7 @@ div.div-host .host {
 	      resetFooter();
 		  $("#processAndThreadPanel").hide();
 		  $("#expandAndCollapse").click(function() {
+		  		$(this).toggleClass("collapse");
 		  		$("#processAndThreadPanel").toggle();
 		  	}
 		  );

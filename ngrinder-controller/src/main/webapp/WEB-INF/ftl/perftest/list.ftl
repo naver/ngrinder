@@ -45,18 +45,24 @@
 						</a>
 					</span>
 				</div>
+				<#if perfTestStatisticsList?has_content>
+					<#list perfTestStatisticsList as eachPerfTestStatistics>
+						${eachPerfTestStatistics.user.userName} runs ${eachPerfTestStatistics.testCount} test(s) with ${eachPerfTestStatistics.agentCount} agent(s).<br/>
+					</#list>
+				</#if>
+				
 				<table class="table table-striped table-bordered ellipsis" id="testTable" style="width:940px">  
 					<colgroup>
 						<col width="30">
 						<col width="50">   
-						<col width="170"> 
 						<col width="160"> 
+						<col> 
 						<col width="120"> 
 						<col width="80">
 						<col width="65">
-						<col width="65"> 
+						<col width="80"> 
 						<col width="65">
-						<col width="65">
+						<col width="75">
 						<col width="65">
 					</colgroup>
 					<thead>
@@ -89,8 +95,8 @@
 											<img class="status" src="${req.getContextPath()}/img/ball/${test.status.iconName}"/>
 										</div>
 									</td>
-									
-									<td class="ellipsis  ${test.testModifiedDay}">   
+
+									<td class="ellipsis ${test.dateString}">   
 										<div rel="popover"
 											 data-content="${test.description?replace('\n', '<br/>')?html}&lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;"  
 											 data-original-title="${test.testName}">
