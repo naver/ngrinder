@@ -79,22 +79,23 @@ function updateChart() {
 		seriesArray.push([ 0, 0 ]);
 		seriesArray.push([ initialSleepTime, 0 ]);
 	}
-	seriesArray.push([ curX, curY ]);
+	seriesArray.push([ curX  + 0.01, curY ]);
 	curX = curX + internalTime;
-	seriesArray.push([ curX, curY ]);
+	seriesArray.push([ curX, curY  ]);
 
 	for ( var step = 1; step <= steps; step++) {
 		curY = curY + processInc;
 		if (curY > processes) {
 			curY = processes;
 		}
-		seriesArray.push([ curX, curY ]);
+		seriesArray.push([ curX  + 0.01, curY ]);
 		curX = curX + internalTime;
-		seriesArray.push([ curX, curY ]);
+		seriesArray.push([ curX, curY]);
 	}
-
-	$("#rampChart").empty();
 	
+	$("#rampChart").empty();
+	var maxY = parseInt((processes / 5) + 1) * 5;
+	var numberOfYTicks = parseInt(processes / 5);
 	$.jqplot("rampChart", [ seriesArray ], {
 		axesDefaults : {
 			tickRenderer : $.jqplot.AxisTickRenderer,
@@ -105,6 +106,33 @@ function updateChart() {
 		seriesDefaults : {
 			showMarker : false,
 			lineWidth : 1.5
+		},
+		
+		axes : {
+			xaxis : {
+				min : 0,
+				pad : 0,
+				tickOptions : {
+					show : true,
+					formatter : function(format, value) {
+						return (value / 1000).toFixed(1);
+					}
+				}
+			},
+			yaxis : {
+				min : 0,
+				pad : 10,
+				max : maxY,
+				numberTicks : numberOfYTicks,
+				tickOptions : {
+					show : true,
+					formatter : function(format, value) {
+						return (value).toFixed(0);
+					}
+				}
+			}
+
 		}
+		
 	});
 }
