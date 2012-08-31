@@ -41,7 +41,7 @@
 							<div class="control-group">
 								<label class="control-label" for="testName"><@spring.message "script.option.name"/></label>
 								<div class="controls">   
-									<input type="text" id="scriptNameInput" class="span7" name="path" value="${file.path!}" readonly/>
+									<input type="text" id="scriptNameInput" class="span7" name="path" value="${(file.path)!}" readonly/>
 									<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:27px; width:35px;"><@spring.message "common.button.save"/></a>
 									<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:85px;"><@spring.message "script.editor.button.validate"/></a>
 								</div>
