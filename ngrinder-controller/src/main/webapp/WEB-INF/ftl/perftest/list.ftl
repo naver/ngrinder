@@ -45,6 +45,12 @@
 						</a>
 					</span>
 				</div>
+				<#if perfTestStatisticsList?has_content>
+					<#list perfTestStatisticsList as eachPerfTestStatistics>
+						${eachPerfTestStatistics.user.userName} runs ${eachPerfTestStatistics.testCount} test(s) with ${eachPerfTestStatistics.agentCount} agent(s).<br/>
+					</#list>
+				</#if>
+				
 				<table class="table table-striped table-bordered ellipsis" id="testTable" style="width:940px">  
 					<colgroup>
 						<col width="30">

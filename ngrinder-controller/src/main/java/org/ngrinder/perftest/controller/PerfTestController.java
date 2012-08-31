@@ -128,7 +128,12 @@ public class PerfTestController extends NGrinderBaseController {
 			model.addAttribute("sortColumn", sortProp.getProperty());
 			model.addAttribute("sortDirection", sortProp.getDirection());
 		}
+		addCurrentlyRunningTest(model);
 		return "perftest/list";
+	}
+
+	private void addCurrentlyRunningTest(ModelMap model) {
+		model.addAttribute("perfTestStatisticsList", perfTestService.getCurrentPerfTestStatistics());
 	}
 
 	/**
@@ -163,6 +168,12 @@ public class PerfTestController extends NGrinderBaseController {
 		return "perftest/detail";
 	}
 
+	/**
+	 * Add the various default configuration values on the model.
+	 * 
+	 * @param model
+	 *            model which will contains that value.
+	 */
 	public void addDefaultAttributeOnMode(ModelMap model) {
 		model.addAttribute(PARAM_CURRENT_FREE_AGENTS_COUNT, agentManager.getAllFreeAgents().size());
 		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, agentManager.getMaxAgentSizePerConsole());
@@ -262,6 +273,15 @@ public class PerfTestController extends NGrinderBaseController {
 		return JSONUtil.returnSuccess();
 	}
 
+	/**
+	 * Get status of perftest
+	 * 
+	 * @param user
+	 *            user
+	 * @param ids
+	 *            comma seperated perftest list
+	 * @return json string which contains perftest status
+	 */
 	@RequestMapping(value = "/updateStatus")
 	public HttpEntity<String> updateSatus(User user, @RequestParam(defaultValue = "") String ids) {
 		String[] numbers = StringUtils.split(ids, ",");
@@ -373,7 +393,8 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = "/loadReportDiv")
-	public String getReportDiv(User user, ModelMap model, @RequestParam long testId, @RequestParam int imgWidth) {
+	public String getReportDiv(User user, ModelMap model, @RequestParam long testId,
+					@RequestParam int imgWidth) {
 		PerfTest test = checkTestPermissionAndGet(user, testId);
 		String reportData = perfTestService.getReportDataAsString(testId, "TPS", imgWidth);
 		model.addAttribute("logs", perfTestService.getLogFiles(testId));

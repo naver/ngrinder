@@ -259,7 +259,7 @@ public class NGrinderStarter {
 				return (name.startsWith("ngrinder-core") && name.endsWith(".jar"));
 			}
 		});
-		return (list == null || list.length == 0);
+		return (list != null && list.length != 0);
 	}
 
 	private static void printHelpAndExit(String message) {
