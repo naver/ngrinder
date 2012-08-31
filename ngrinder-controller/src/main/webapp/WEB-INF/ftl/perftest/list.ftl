@@ -96,7 +96,7 @@
 										</div>
 									</td>
 									
-									<td class="ellipsis  ${test.testModifiedDay}">   
+									<td class="ellipsis  ${test.dateString}">   
 										<div rel="popover"
 											 data-content="${test.description?replace('\n', '<br/>')?html}&lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;"  
 											 data-original-title="${test.testName}">
