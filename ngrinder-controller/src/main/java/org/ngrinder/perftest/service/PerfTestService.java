@@ -44,8 +44,10 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +75,7 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
+import org.ngrinder.perftest.model.PerfTestStatistics;
 import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.ngrinder.script.model.FileEntry;
@@ -695,7 +698,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 		return reportData.toString();
 	}
-	
+
 	/**
 	 * get report data by test id, data type, and image width
 	 * 
@@ -955,6 +958,21 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		PerfTest perfTest = getPerfTest(user, testId);
 		perfTest.setTestComment(testComment);
 		perfTestRepository.save(perfTest);
+	}
+
+	@Transactional
+	public Collection<PerfTestStatistics> getCurrentPerfTestStatistics() {
+		Map<User, PerfTestStatistics> perfTestPerUser = new HashMap<User, PerfTestStatistics>();
+		for (PerfTest each : getTestingPerfTest()) {
+			User lastModifiedUser = each.getLastModifiedUser();
+			PerfTestStatistics perfTestStatistics = perfTestPerUser.get(lastModifiedUser);
+			if (perfTestStatistics == null) {
+				perfTestStatistics = new PerfTestStatistics(lastModifiedUser);
+				perfTestPerUser.put(lastModifiedUser, perfTestStatistics);
+			}
+			perfTestStatistics.addPerfTest(each);
+		}
+		return perfTestPerUser.values();
 	}
 
 }

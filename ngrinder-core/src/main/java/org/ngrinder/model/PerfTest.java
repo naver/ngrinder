@@ -23,7 +23,6 @@
 package org.ngrinder.model;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -158,6 +157,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	@Type(type="true_false")
 	private Boolean stopRequest = null;
+	
+	@Transient
+	private String dateString;
 
 	public String getTestName() {
 		return testName;
@@ -509,17 +511,13 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public void setScriptRevision(Long scriptRevision) {
 		this.scriptRevision = scriptRevision;
 	}
-	
-	public String getTestModifiedDay() {
-		Calendar cal = Calendar.getInstance();
-		Date today = cal.getTime();
-		cal.add(Calendar.DATE, -1);
-		Date yesterday = cal.getTime();
-		if (DateUtil.compareDateEndWithDay(this.getLastModifiedDate(), today))
-			return "today";
-		else if (DateUtil.compareDateEndWithDay(this.getLastModifiedDate(), yesterday))
-			return "yesterday";
-		else
-			return "earlier";
+
+	public String getDateString() {
+		return dateString;
 	}
+
+	public void setDateString(String dateString) {
+		this.dateString = dateString;
+	}
+	
 }

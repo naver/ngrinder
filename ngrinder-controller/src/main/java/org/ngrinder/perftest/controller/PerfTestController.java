@@ -25,11 +25,13 @@ package org.ngrinder.perftest.controller;
 import static org.ngrinder.common.util.Preconditions.checkArgument;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
-import static org.ngrinder.common.util.Preconditions.checkValidURL;
 import static org.ngrinder.common.util.Preconditions.checkState;
+import static org.ngrinder.common.util.Preconditions.checkValidURL;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +44,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.infra.spring.RemainedPath;
@@ -119,6 +122,23 @@ public class PerfTestController extends NGrinderBaseController {
 			pageable = new PageRequest(pageReq.getPageNumber(), pageReq.getPageSize(), sort);
 		}
 		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, onlyFinished, pageable);
+		
+		int rawOffset = getTimeZoneOffSet(user);
+		Calendar cal = Calendar.getInstance();
+		Date localToday = new Date(cal.getTime().getTime() - rawOffset);
+		cal.add(Calendar.DATE, -1);
+		Date localYesterday = new Date(cal.getTime().getTime() - rawOffset);
+
+		for (PerfTest test : testList) {
+			Date localModified = new Date(test.getLastModifiedDate().getTime() - rawOffset);
+			if (DateUtil.compareDateEndWithDay(localModified, localToday))
+				test.setDateString("today");
+			else if (DateUtil.compareDateEndWithDay(localModified, localYesterday))
+				test.setDateString("yesterday");
+			else
+				test.setDateString("earlier");
+		}
+		
 		model.addAttribute("testListPage", testList);
 		model.addAttribute("onlyFinished", onlyFinished);
 		model.addAttribute("query", query);
@@ -128,7 +148,12 @@ public class PerfTestController extends NGrinderBaseController {
 			model.addAttribute("sortColumn", sortProp.getProperty());
 			model.addAttribute("sortDirection", sortProp.getDirection());
 		}
+		addCurrentlyRunningTest(model);
 		return "perftest/list";
+	}
+
+	private void addCurrentlyRunningTest(ModelMap model) {
+		model.addAttribute("perfTestStatisticsList", perfTestService.getCurrentPerfTestStatistics());
 	}
 
 	/**
@@ -163,6 +188,12 @@ public class PerfTestController extends NGrinderBaseController {
 		return "perftest/detail";
 	}
 
+	/**
+	 * Add the various default configuration values on the model.
+	 * 
+	 * @param model
+	 *            model which will contains that value.
+	 */
 	public void addDefaultAttributeOnMode(ModelMap model) {
 		model.addAttribute(PARAM_CURRENT_FREE_AGENTS_COUNT, agentManager.getAllFreeAgents().size());
 		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, agentManager.getMaxAgentSizePerConsole());
@@ -262,6 +293,15 @@ public class PerfTestController extends NGrinderBaseController {
 		return JSONUtil.returnSuccess();
 	}
 
+	/**
+	 * Get status of perftest
+	 * 
+	 * @param user
+	 *            user
+	 * @param ids
+	 *            comma seperated perftest list
+	 * @return json string which contains perftest status
+	 */
 	@RequestMapping(value = "/updateStatus")
 	public HttpEntity<String> updateSatus(User user, @RequestParam(defaultValue = "") String ids) {
 		String[] numbers = StringUtils.split(ids, ",");
@@ -373,7 +413,8 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = "/loadReportDiv")
-	public String getReportDiv(User user, ModelMap model, @RequestParam long testId, @RequestParam int imgWidth) {
+	public String getReportDiv(User user, ModelMap model, @RequestParam long testId,
+					@RequestParam int imgWidth) {
 		PerfTest test = checkTestPermissionAndGet(user, testId);
 		String reportData = perfTestService.getReportDataAsString(testId, "TPS", imgWidth);
 		model.addAttribute("logs", perfTestService.getLogFiles(testId));

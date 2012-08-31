@@ -357,10 +357,10 @@ i.collapse{
 							</div>
 						</div>
 					</div>
-					<div class="tab-pane" id="reportContent">
+					<div class="tab-pane" id="reportContent" style="display:none;">
 
 					</div>
-					<div class="tab-pane" id="runningContent">
+					<div class="tab-pane" id="runningContent" style="display:none;">
 						<div class="row">
 							<div class="span5">
 								<div class="page-header">
@@ -1093,6 +1093,8 @@ i.collapse{
 	  function displayCfgAndTestRunning() {
 	  	$("#runningContent_tab").show();
 		$("#runningContent_tab a").tab('show');
+		$("#runningContent").show();
+		$("#reportContent_tab").hide();
 		
 		objTimer = window.setInterval("refreshData()", 1000);
 	  }
