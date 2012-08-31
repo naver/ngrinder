@@ -73,6 +73,25 @@ div.div-host .host {
 	margin-right:20px;
 	margin-top:-32px;
 }
+
+i.expand {
+	background-image: url('${req.getContextPath()}/img/icon_expand.png');
+	background-repeat:no-repeat;
+	display: inline-block;
+    height: 16px;
+    width: 16px; 
+    line-height: 16px;
+    vertical-align: text-top;
+}
+i.collapse{
+	background-image: url('${req.getContextPath()}/img/icon_collapse.png');
+	background-repeat:no-repeat;
+	display: inline-block;
+    height: 16px;
+    width: 16px;
+    line-height: 16px;
+    vertical-align: text-top;
+}
 </style>
 
 </head>
@@ -176,7 +195,7 @@ div.div-host .host {
 														data-original-title="<@spring.message "perfTest.configuration.vuserPerAgent"/>"><span class="add-on">
 															<@spring.message "perfTest.configuration.max"/> ${(maxVuserPerAgent)}
 														</span>
-													<a href="javascript:void(0)" id="expandAndCollapse"><img src="${req.getContextPath()}/img/icon_expand.png"/></a>			
+													<a href="javascript:void(0)"><i class="expand" id="expandAndCollapse"></i></a>			
 												</div>
 												<span class="badge badge-info pull-right" ><span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span id="vuserTotal"></span></span>
 											</div>
@@ -338,10 +357,10 @@ div.div-host .host {
 							</div>
 						</div>
 					</div>
-					<div class="tab-pane" id="reportContent" style="display:none;">
+					<div class="tab-pane" id="reportContent">
 
 					</div>
-					<div class="tab-pane" id="runningContent" style="display:none;">
+					<div class="tab-pane" id="runningContent">
 						<div class="row">
 							<div class="span5">
 								<div class="page-header">
@@ -580,20 +599,6 @@ div.div-host .host {
 			<#else>
 				displayCfgOnly();
 			</#if>
-			$("#leaveCommentButton").click(function(){
-		    var comment = $("#testComment").val();
-			  	$.post(
-			  		"${req.getContextPath()}/perftest/leaveComment",
-			  		{ 
-			  			"testId": ${test.id},   
-			  			"testComment": comment 
-			  		},
-			  		function() {
-			  			showSuccessMsg("Comment is successfully reflected");
-			  		}
-			    );
-		  	});
-			
 		<#else>
 			displayCfgOnly();
 		</#if>
@@ -755,10 +760,6 @@ div.div-host .host {
 	    	  openReportDiv();
 	      });
 
-	      $("#reportDetail").click(function () {
-	          window.open("${req.getContextPath()}/perftest/report?testId=" + $("#testId").val());
-	      });
-
 	      $('#tableTab a').click(function (e) {
 	          var $this = $(this);
 	          if ($this.hasClass("pull-right")) {} else {
@@ -787,6 +788,7 @@ div.div-host .host {
 	      resetFooter();
 		  $("#processAndThreadPanel").hide();
 		  $("#expandAndCollapse").click(function() {
+		  		$(this).toggleClass("collapse");
 		  		$("#processAndThreadPanel").toggle();
 		  	}
 		  );
@@ -1071,9 +1073,10 @@ div.div-host .host {
 	  }
 	  
 	  function displayCfgAndTestRunning() {
+	  	$("#runningContent_tab").show();
 		$("#runningContent_tab a").tab('show');
+		$("#runningContent").show();
 		$("#reportContent_tab").hide();
-		$("#runningContent_tab").show();
 		
 		objTimer = window.setInterval("refreshData()", 1000);
 	  }

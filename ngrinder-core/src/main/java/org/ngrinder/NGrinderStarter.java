@@ -221,17 +221,7 @@ public class NGrinderStarter {
 	 */
 	public static void main(String[] args) {
 
-		File currentFolder = new File(System.getProperty("user.dir"));
-		currentFolder.list(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				if (name.startsWith("ngrinder") && name.endsWith(".jar")) {
-					count++;
-				}
-				return false;
-			}
-		});
-		if (count == 0) {
+		if (!idValidCurrentDirectory()) {
 			printHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
 		}
 		NGrinderStarter starter = new NGrinderStarter();
@@ -242,7 +232,7 @@ public class NGrinderStarter {
 		if (startMode.equalsIgnoreCase("agent")) {
 			String consoleIP = agentConfig.getAgentProperties().getProperty("agent.console.ip", "127.0.0.1");
 			int consolePort = agentConfig.getAgentProperties().getPropertyInt("agent.console.port",
-					AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+							AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 
 			String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
 
@@ -253,6 +243,23 @@ public class NGrinderStarter {
 		} else {
 			printHelpAndExit("Invalid agent.conf, 'start.mode' must be set as 'monitor' or 'agent'.");
 		}
+	}
+
+	/**
+	 * Check the current directory is valid or not.<br/>
+	 * ngrinder agent should run in the folder agent exists.
+	 * 
+	 * @return true if it's valid
+	 */
+	private static boolean idValidCurrentDirectory() {
+		File currentFolder = new File(System.getProperty("user.dir"));
+		String[] list = currentFolder.list(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return (name.startsWith("ngrinder-core") && name.endsWith(".jar"));
+			}
+		});
+		return (list != null && list.length != 0);
 	}
 
 	private static void printHelpAndExit(String message) {
