@@ -52,7 +52,7 @@
 						<#if agents?has_content>
 						<#list agents as agent>
 						<tr>
-							<td><input type="checkbox" value="${agent.id}"></td>
+							<td class="center"><input type="checkbox" value="${agent.id}"></td>
 							<td>
 								<a href="${req.getContextPath()}/agent/detail?id=${agent.id}" target="_self">${agent.ip}</a>
 							</td>

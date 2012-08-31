@@ -53,17 +53,23 @@
 					<tbody>
 						<#list userList as user>
 						<tr>
-							<td><input type="checkbox" id="user_info_check"<#if user.userId == "admin">disabled</#if>
+							<td class="center"><input type="checkbox" id="user_info_check"<#if user.userId == "admin">disabled</#if>
 								value="${user.userId}" /></td>
 							<td><a href="${req.getContextPath()}/user/detail?userId=${user.userId}">${user.userName!}</a></td>
 							<td>${user.role}</td>
 							<td class="ellipsis">${user.description!}</td>
 							<td><#if user.createdDate?has_content> ${user.createdDate?string("yyyy-MM-dd HH:mm")} </#if></td>
-							<td><a href="${req.getContextPath()}/user/detail?userId=${user.userId}"> <i class="icon-edit"></i>
-							</a></td>
-							<td><#if user.userId != "admin"> <a href="javascript:deleteUsers('${user.userId}');"> <i
-									class="icon-remove"></i>
-							</a> </#if>
+							<td class="center">
+								<a href="${req.getContextPath()}/user/detail?userId=${user.userId}">
+									<i class="icon-edit"></i>
+								</a>
+							</td>
+							<td class="center">
+								<#if user.userId != "admin">
+								<a href="javascript:deleteUsers('${user.userId}');">
+									<i class="icon-remove"></i>
+								</a>
+								</#if>
 							</td>
 						</tr>
 						</#list>

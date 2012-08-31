@@ -118,7 +118,7 @@ i.collapse{
 										<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
 									</span> 
 								</#if>
-								<button type="submit" class="btn btn-primary pull-right" style="margin-left: 5px; margin-right: 70px"
+								<button type="submit" class="btn btn-primary pull-right" style="margin-right: 60px"
 									data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn">
 									<#if test?? && (test.status != "SAVED")>
 										<@spring.message "perfTest.detail.clone"/>
@@ -127,7 +127,7 @@ i.collapse{
 									</#if>
 									&nbsp;<@spring.message "perfTest.detail.andStart"/>
 								</button>
-								<button type="submit" class="btn btn-success  pull-right" style="margin-left: 5px" id="saveTestBtn">
+								<button type="submit" class="btn btn-success  pull-right" style="margin-right: 5px" id="saveTestBtn">
 									<#if test?? && (test.status != "SAVED")>
 										<@spring.message "perfTest.detail.clone"/>
 									<#else>
@@ -146,7 +146,7 @@ i.collapse{
 				</div>
 				
 			</div>
-			<div class="tabbable">
+			<div class="tabbable" style="margin-top: 20px">
 				<ul class="nav nav-tabs" id="homeTab" style="margin-bottom: 5px">
 					<li id="testContent_tab">
 						<a href="#testContent" data-toggle="tab">
