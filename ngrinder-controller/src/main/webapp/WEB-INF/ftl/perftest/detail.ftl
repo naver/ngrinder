@@ -931,6 +931,7 @@ div.div-host .host {
 		  $("#reportContent").load("${req.getContextPath()}/perftest/loadReportDiv?testId="+
 				  $("#testId").val()+"&imgWidth=600",
 				  function(){
+				  		$("#reportContent").show();
 			  			drawChart('TPS', 'tpsDiv', $("#tpsData").val());
 		  		});
 	  }
