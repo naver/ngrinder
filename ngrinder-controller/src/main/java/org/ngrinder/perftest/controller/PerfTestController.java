@@ -25,11 +25,13 @@ package org.ngrinder.perftest.controller;
 import static org.ngrinder.common.util.Preconditions.checkArgument;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
-import static org.ngrinder.common.util.Preconditions.checkValidURL;
 import static org.ngrinder.common.util.Preconditions.checkState;
+import static org.ngrinder.common.util.Preconditions.checkValidURL;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +44,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.infra.spring.RemainedPath;
@@ -119,6 +122,23 @@ public class PerfTestController extends NGrinderBaseController {
 			pageable = new PageRequest(pageReq.getPageNumber(), pageReq.getPageSize(), sort);
 		}
 		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, onlyFinished, pageable);
+		
+		int rawOffset = getTimeZoneOffSet(user);
+		Calendar cal = Calendar.getInstance();
+		Date localToday = new Date(cal.getTime().getTime() - rawOffset);
+		cal.add(Calendar.DATE, -1);
+		Date localYesterday = new Date(cal.getTime().getTime() - rawOffset);
+
+		for (PerfTest test : testList) {
+			Date localModified = new Date(test.getLastModifiedDate().getTime() - rawOffset);
+			if (DateUtil.compareDateEndWithDay(localModified, localToday))
+				test.setDateString("today");
+			else if (DateUtil.compareDateEndWithDay(localModified, localYesterday))
+				test.setDateString("yesterday");
+			else
+				test.setDateString("earlier");
+		}
+		
 		model.addAttribute("testListPage", testList);
 		model.addAttribute("onlyFinished", onlyFinished);
 		model.addAttribute("query", query);
