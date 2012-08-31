@@ -338,10 +338,10 @@ div.div-host .host {
 							</div>
 						</div>
 					</div>
-					<div class="tab-pane" id="reportContent" style="display:none;">
+					<div class="tab-pane" id="reportContent">
 
 					</div>
-					<div class="tab-pane" id="runningContent" style="display:none;">
+					<div class="tab-pane" id="runningContent">
 						<div class="row">
 							<div class="span5">
 								<div class="page-header">
@@ -1071,9 +1071,8 @@ div.div-host .host {
 	  }
 	  
 	  function displayCfgAndTestRunning() {
+	  	$("#runningContent_tab").show();
 		$("#runningContent_tab a").tab('show');
-		$("#reportContent_tab").hide();
-		$("#runningContent_tab").show();
 		
 		objTimer = window.setInterval("refreshData()", 1000);
 	  }
