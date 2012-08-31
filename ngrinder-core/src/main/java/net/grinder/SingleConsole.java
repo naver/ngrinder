@@ -74,7 +74,6 @@ import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.thread.Condition;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableDouble;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -486,12 +485,12 @@ public class SingleConsole implements Listener, SampleListener {
 							mutableDouble = new MutableDouble(0D);
 							valueMap.put(each.getKey(), mutableDouble);
 						}
-						mutableDouble.add((Double) ObjectUtils.defaultIfNull(val, 0D));
+						mutableDouble.add((Double)val);
 					} else if (val == null){
 						//if it is null, just assume it is 0.
 						//FIXME if the TPS is too low, but there is no many errors, it is possible that the Double value in
 						//one second is null. Now I treat this value as ZERO. But maybe it is not the most proper solution. 
-						valueMap.put(each.getKey(), new Double(0));
+						valueMap.put(each.getKey(), new MutableDouble(0D));
 					} else { //there are some String type object like test description.
 						valueMap.put(each.getKey(), val);
 					}

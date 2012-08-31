@@ -55,8 +55,11 @@
 					<colgroup>
 						<col width="30">
 						<col width="50">   
-						<col width="160"> 
+						<col width="90"> 
 						<col> 
+						<@security.authorize ifAnyGranted="A, S">
+				            <col width="80"> 	
+						</@security.authorize>
 						<col width="120"> 
 						<col width="80">
 						<col width="65">
@@ -71,6 +74,10 @@
 							<th class="nothing"><@spring.message "common.label.status"/></th>
 							<th id="testName"><@spring.message "perfTest.table.testName"/></th>
 							<th id="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
+							
+							<@security.authorize ifAnyGranted="A, S">
+				            	<th class="nothing"><@spring.message "perfTest.table.testCreator"/></th>
+							</@security.authorize>
 							<th id="startTime"><@spring.message "perfTest.table.startTime"/></th>
 							<th id="duration"><@spring.message "perfTest.table.duration"/></th>
 							<th id="tps"><@spring.message "perfTest.table.tps"/></th> 
@@ -110,6 +117,12 @@
 											<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}">${test.scriptName}</a> 
 										</div>  
 									</td>
+									
+									<@security.authorize ifAnyGranted="A, S">
+				            			<td class="center">${test.createdUser.userName}</td>
+									</@security.authorize>
+									
+									
 									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if></td>
 									<td>
 										<#if test.threshold == "D">

@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +45,7 @@ import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
+import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.script.service.ScriptValidationService;
 import org.slf4j.Logger;
@@ -105,6 +108,16 @@ public class FileEntryController extends NGrinderBaseController {
 	@RequestMapping({ "/list/**", "" })
 	public String get(User user, @RemainedPath String path, ModelMap model) { // "fileName"
 		List<FileEntry> files = fileEntryService.getFileEntries(user, path, null);
+		Collections.sort(files, new Comparator<FileEntry>() {
+			@Override
+			public int compare(FileEntry o1, FileEntry o2) {
+				if (o1.getFileType() == FileType.DIR && o2.getFileType() != FileType.DIR) {
+					return -1;
+				}
+				return (o1.getFileName().compareTo(o2.getFileName()));
+			}
+
+		});
 		model.addAttribute("files", files);
 		model.addAttribute("currentPath", path);
 		model.addAttribute("svnUrl", fileEntryService.getSvnUrl(user, path));
@@ -162,7 +175,7 @@ public class FileEntryController extends NGrinderBaseController {
 			testUrl = "http://sample.com";
 		}
 		if (fileEntryService.hasFileEntry(user, path + "/" + fileName)) {
-			model.addAttribute("file", fileEntryService.getFileEntry(user, path));
+			model.addAttribute("file", fileEntryService.getFileEntry(user, path + "/" + fileName)); 
 		} else {
 			model.addAttribute("file", fileEntryService.prepareNewEntry(user, path, fileName, testUrl));
 		}
@@ -295,7 +308,8 @@ public class FileEntryController extends NGrinderBaseController {
 			fileEntry.setProperties(map);
 		}
 		fileEntryService.save(user, fileEntry);
-		return get(user, path, model);
+		
+		return "redirect:/script/list/" + FilenameUtils.getPath(fileEntry.getPath());
 	}
 
 	/**

@@ -79,7 +79,7 @@
 									<i class="icon-briefcase"></i>
 								</#if>
 							</td>
-							<td>
+							<td  class="ellipsis">
 								<#if script.fileType.fileCategory.isEditable()>
 									<a href="${req.getContextPath()}/script/detail/${script.path}" target="_self" title="${script.path}">${script.fileName}</a>
 								<#elseif script.fileType == "dir">
@@ -91,7 +91,11 @@
 							<td class="ellipsis" title="${(script.description)!}">${(script.description)!}</td>
 							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if></td>
 							<td>${script.revision}</td>  
-							<td><#assign floatSize = script.fileSize?number/1024>${floatSize?string("0.##")}</td>
+							<td>
+								<#if script.fileType != "dir">
+									<#assign floatSize = script.fileSize?number/1024>${floatSize?string("0.##")}
+								</#if>
+							</td>
 							<td class="center">
 								<#if script.fileType != "dir">
 									<a href="javascript:void(0);"><i class="icon-download-alt script-download" spath="${script.path}" sname="${script.fileName}"></i>
@@ -355,8 +359,8 @@
 					"bFilter": false,
 					"bLengthChange": false,
 					"bInfo": false,
-					"iDisplayLength": 10,
-					"aaSorting": [[2, "asc"]],
+					"iDisplayLength": 15, 
+					"aaSorting": [], 
 					"bProcessing": true,
 					"aoColumns": [{ "asSorting": []}, { "asSorting": []}, null, { "asSorting": []}, null, null, null, { "asSorting": []}],
 					"sPaginationType": "bootstrap",
