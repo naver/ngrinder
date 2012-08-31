@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 	<head>	
-		<meta http-equiv="X-UA-Compatible" content="IE=8" />
 		<#include "../common/common.ftl">
 		<title><@spring.message "script.editor.title"/></title>
 		<style>
+
 			div.div-host {
 				background-color: #FFFFFF;
 				border: 1px solid #D6D6D6;
@@ -34,110 +34,133 @@
 	<div class="container">
 		<div class="row">
 			<div class="span12">
-				<form id="contentForm" method="post" target="_self">
-				<div class="well" style="margin-bottom:20px">
-					<div class="form-horizontal form-horizontal-1">
-						<fieldset>
-							<div class="control-group">
-								<label class="control-label" for="testName"><@spring.message "script.option.name"/></label>
-								<div class="controls">   
-									<input type="text" id="scriptNameInput" class="span7" name="path" value="${(file.path)!}" readonly/>
-									<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:27px; width:35px;"><@spring.message "common.button.save"/></a>
-									<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:85px;"><@spring.message "script.editor.button.validate"/></a>
+				<form id="contentForm" method="post" target="_self" style="margin-bottom: 0px;"> 	
+					<div class="well" style="margin-bottom: 0px;">
+						<div class="form-horizontal form-horizontal-1">
+							<fieldset>
+								<div class="control-group">
+									<label class="control-label" for="testName"><@spring.message "script.option.name"/></label>
+									<div class="controls">   
+										<input type="text" id="scriptNameInput" class="span7" name="path" value="${(file.path)!}" readonly/>
+										<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:27px; width:35px;"><@spring.message "common.button.save"/></a>
+										<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:85px;"><@spring.message "script.editor.button.validate"/></a>
+									</div>
+								</div> 
+								<div style="margin-bottom: 0" class="control-group">
+									<table style="width:100%">
+										<tr>
+											<td style="width:70%">
+												<label class="control-label" for="description"><@spring.message "script.option.commit"/></label>
+												<div class="controls"> 
+													<textarea class="input-xlarge span6" id="descInput" rows="3" name="description" style="resize: none" >${(file.description)!}</textarea>
+												</div> 
+											</td> 
+											<td style="width:30%">  
+												<#include "../perftest/host.ftl"/>
+											</td> 
+									</table>           
 								</div>
-							</div> 
-							<div style="margin-bottom: 0" class="control-group">
-								<table style="width:100%">
-									<tr>
-										<td style="width:70%">
-											<label class="control-label" for="description"><@spring.message "script.option.commit"/></label>
-											<div class="controls"> 
-												<textarea class="input-xlarge span6" id="descInput" rows="3" name="description" style="resize: none" >${(file.description)!}</textarea>
-											</div> 
-										</td> 
-										<td style="width:30%">  
-											<#include "../perftest/host.ftl"/>
-										</td> 
-								</table>           
-							</div>
-						</fieldset>
+							</fieldset>
+						</div>
 					</div>
-				</div>
-				<input type="hidden" id="contentHidden" name="content" value="">
+					<input type="hidden" id="contentHidden" name="content" value=""/>
 				</form>
-				
-				<table style="border:none;width:100%">
-					<tr>
-						<td>
-							<div id="script_1" style="width:100%">
-								<textarea id="display_content" name="content" style="height:550px;width:100%;">${(file.content)!}</textarea>
-							</div>
-						</td>
-					</tr>
-				</table>
-				
+				<textarea id="content" style="position:relative;width:940px;margin-top:0px">${(file.content)!}</textarea>
+				<div class="pull-right" rel="popover" data-original-title="Tip" data-content="
+			      Ctrl-F / Cmd-F : Start searching&lt;br&gt;
+			      Ctrl-G / Cmd-G : Find next&lt;br&gt;
+			      Shift-Ctrl-G / Shift-Cmd-G : Find previous&lt;br&gt;
+			      Shift-Ctrl-F / Cmd-Option-F : Replace&lt;br&gt;
+			      Shift-Ctrl-R / Shift-Cmd-Option-F : Replace all&lt;br&gt;" placement="top"
+			    ><code>Tip</code></div>
+			    
 				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre">
-				</pre>
+				</div>
 			</div>	
 		</div>
 		<#include "../common/copyright.ftl">
 	</div>
+	<script src="${req.getContextPath()}/js/codemirror/codemirror.js" type="text/javascript" charset="utf-8"></script>
+	<link rel="stylesheet" href="${req.getContextPath()}/js/codemirror/codemirror.css"/>
+	<link rel="stylesheet" href="${req.getContextPath()}/js/codemirror/eclipse.css">
+	<script src="${req.getContextPath()}/js/codemirror/lang/python.js"></script>
+	<script src="${req.getContextPath()}/js/codemirror/util/dialog.js"></script>
 	
-	
-	<script src="${req.getContextPath()}/plugins/editarea/edit_area.js"></script>
-	<script>
-		$(document).ready(function() {
-			$("#n_script").addClass("active");
-			
-			editAreaLoader.baseURL = "${req.getContextPath()}/plugins/editarea/"; 
-			
-			editAreaLoader.init({
-				id: "display_content"
-				,is_editable: true
-				,start_highlight: true
-				,allow_resize: false
-				,allow_toggle: false
-				,language: "en"
-				,syntax: "python" 
-				,replace_tab_by_spaces: 4
-				,font_size: "10"
-				,font_family: "verdana, monospace"
+    <link rel="stylesheet" href="${req.getContextPath()}/js/codemirror/util/dialog.css">
+    <script src="${req.getContextPath()}/js/codemirror/util/searchcursor.js"></script>
+    <script src="${req.getContextPath()}/js/codemirror/util/search.js"></script>
+    <script src="${req.getContextPath()}/js/codemirror/util/foldcode.js"></script> 
+    
+    <script>
+    	function isFullScreen(cm) {
+	      return /\bCodeMirror-fullscreen\b/.test(cm.getWrapperElement().className);
+	    }
+	    function winHeight() {
+	      return window.innerHeight || (document.documentElement || document.body).clientHeight;
+	    }
+	    function setFullScreen(cm, full) {
+	      var wrap = cm.getWrapperElement(), scroll = cm.getScrollerElement();
+	      if (full) {
+	        wrap.className += " CodeMirror-fullscreen";
+	        scroll.style.height = winHeight() + "px";
+	        document.documentElement.style.overflow = "hidden";
+	      } else {
+	        wrap.className = wrap.className.replace(" CodeMirror-fullscreen", "");
+	        scroll.style.height = "";
+	        document.documentElement.style.overflow = "";
+	      }
+	      cm.refresh(); 
+	    }
+    	$(document).ready(function() {
+			var editor = CodeMirror.fromTextArea(document.getElementById("content"), {
+			   mode: "python",
+			   theme: "eclipse",
+			   lineNumbers: true,
+			   lineWrapping: true,
+			   indentUnit:4,
+			   extraKeys: {
+		         "F11": function(cm) {
+		           setFullScreen(cm, !isFullScreen(cm));
+		         },
+		         "Esc": function(cm) {
+		           if (isFullScreen(cm)) setFullScreen(cm, false);
+		         },
+		         Tab: "indentMore"
+		       },
+			   onCursorActivity: function() {
+			     editor.setLineClass(hlLine, null, null);
+			     hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
+			   }
 			});
+			var hlLine = editor.setLineClass(0, "activeline");
 			
-			$("#saveBtn").on('click', function() {
-				var scriptContent = editAreaLoader.getValue("display_content");
-				$('#contentHidden').val(scriptContent);
-				
+			$("#saveBtn").click(function() {
+				$('#contentHidden').val(editor.getValue());
 				document.forms.contentForm.action = "${req.getContextPath()}/script/save";
 				document.forms.contentForm.submit();
 			});
 
-			$("#validateBtn").on('click', function() {
-				validateScript();
+			$("#validateBtn").click(function() {
+				showInformation("<@spring.message "script.editor.message.validate"/>");
+				var scriptPath = $("#scriptNameInput").val();
+				var hostString = $("#hostsHidden").val();
+				$('#validateRsPre').hide();
+				$.ajax({
+			  		url: "${req.getContextPath()}/script/validate",
+			    	async: true,
+			    	type: "POST",
+					data: {'path':scriptPath, 'content': editor.getValue(), 'hostString' : hostString},
+			    	success: function(res) {
+						$('#validateRsPre').text(res);
+						$('#validateRsPre').show();
+						$("#footDiv").remove();
+			    	},
+			    	error: function() {
+			    		showErrorMsg("<@spring.message "script.editor.error.validate"/>");
+			    	}
+			  	});
 			});
 		});
-
-		function validateScript() {
-			showInformation("<@spring.message "script.editor.message.validate"/>");
-			var scriptContent = editAreaLoader.getValue("display_content");
-			var scriptPath = $("#scriptNameInput").val();
-			var hostString = $("#hostsHidden").val();
-			$('#validateRsPre').attr("class", "prettyprint pre-scrollable hidden");
-			$.ajax({
-		  		url: "${req.getContextPath()}/script/validate",
-		    	async: true,
-		    	type: "POST",
-				data: {'path':scriptPath, 'content': scriptContent, 'hostString' : hostString},
-		    	success: function(res) {
-					$('#validateRsPre').text(res);
-					$('#validateRsPre').attr("class", "prettyprint pre-scrollable");
-					$("#footDiv").remove();
-		    	},
-		    	error: function() {
-		    		showErrorMsg("<@spring.message "script.editor.error.validate"/>");
-		    	}
-		  	});
-		}
 		</script>
 	</body>
 </html>

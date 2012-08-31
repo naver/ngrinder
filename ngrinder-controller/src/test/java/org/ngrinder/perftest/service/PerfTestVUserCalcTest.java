@@ -10,10 +10,11 @@ public class PerfTestVUserCalcTest {
 
 	@Test
 	public void testPerfTestScript() throws ScriptException {
-		ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
+		ScriptEngine engine = new ScriptEngineManager()
+				.getEngineByName("javascript");
 		engine.put("A", 10);
 		engine.put("B", 4);
-
-		System.out.println(engine.eval(" [(A / 2), (A + 3)];") );
+		System.out.println(engine.eval(" [(A / 2), (A + 3)];"));
 	}
+
 }

@@ -267,6 +267,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		if (perfTest.exist()) {
 			PerfTest existingPerfTest = perfTestRepository.findOne(perfTest.getId());
 			perfTest = existingPerfTest.merge(perfTest);
+		} else {
+			perfTest.clearMessages();
 		}
 		return perfTestRepository.save(perfTest);
 	}

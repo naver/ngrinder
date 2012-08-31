@@ -58,9 +58,9 @@
 						<col width="90"> 
 						<col> 
 						<@security.authorize ifAnyGranted="A, S">
-				            <col width="80"> 	
+				            <col width="78"> 	
 						</@security.authorize>
-						<col width="120"> 
+						<col width="118"> 
 						<col width="80">
 						<col width="65">
 						<col width="80"> 

@@ -43,8 +43,9 @@ import org.hibernate.annotations.Type;
 import org.ngrinder.common.util.DateUtil;
 
 /**
- * Performance Test Entity Use Create user of BaseModel as test owner, use create date of BaseModel as create time, but
- * the created time maybe not the test starting time.
+ * Performance Test Entity Use Create user of BaseModel as test owner, use
+ * create date of BaseModel as create time, but the created time maybe not the
+ * test starting time.
  * 
  */
 @Entity
@@ -87,7 +88,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column
 	private String targetHosts;
 
-	@Type(type="true_false")
+	@Type(type = "true_false")
 	/** The send mail code. */
 	private boolean sendMail;
 
@@ -155,9 +156,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	private Long scriptRevision = -1L;
 
-	@Type(type="true_false")
+	@Type(type = "true_false")
 	private Boolean stopRequest = null;
-	
+
 	@Transient
 	private String dateString;
 
@@ -258,8 +259,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	/**
-	 * Get ip address of target hosts. if target hosts 'a.com:1.1.1.1' add ip: '1.1.1.1' if target hosts ':1.1.1.1' add
-	 * ip: '1.1.1.1' if target hosts '1.1.1.1' add ip: '1.1.1.1'
+	 * Get ip address of target hosts. if target hosts 'a.com:1.1.1.1' add ip:
+	 * '1.1.1.1' if target hosts ':1.1.1.1' add ip: '1.1.1.1' if target hosts
+	 * '1.1.1.1' add ip: '1.1.1.1'
 	 * 
 	 * @return
 	 */
@@ -519,5 +521,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public void setDateString(String dateString) {
 		this.dateString = dateString;
 	}
-	
+
+	public void clearMessages() {
+		setLastProgressMessage("");
+		setProgressMessage(""); 
+	}
+
 }
