@@ -22,6 +22,7 @@
  */
 package net.grinder.engine.agent;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileWriter;
@@ -43,8 +44,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Script validation service.
  * 
- * It works on local instead of remote agent. The reason I located this class in ngrinder-core is...
- * some grinder core class doesn't have public access..
+ * It works on local instead of remote agent. The reason I located this class in
+ * ngrinder-core is... some grinder core class doesn't have public access..
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -88,8 +89,9 @@ public class LocalScriptTestDriveService {
 	 */
 	public File doValidate(File base, File script, Condition m_eventSynchronisation, String jvmArguments) {
 		FanOutStreamSender fanOutStreamSender = null;
-		WorkerLauncher workerLauncher = null;
+		ErrorStreamRedirectWorkerLauncher workerLauncher = null;
 		boolean stopByTooMuchExecution = false;
+		ByteArrayOutputStream byteArrayErrorStream = new ByteArrayOutputStream();
 		try {
 
 			fanOutStreamSender = new FanOutStreamSender(1);
@@ -113,17 +115,17 @@ public class LocalScriptTestDriveService {
 			LOGGER.debug("Validation Class Path " + newClassPath);
 
 			Properties systemProperties = new Properties();
-			systemProperties.put("java.class.path", base.getAbsolutePath() + File.pathSeparator
-							+ newClassPath);
+			systemProperties.put("java.class.path", base.getAbsolutePath() + File.pathSeparator + newClassPath);
 			Directory workingDirectory = new Directory(base);
 			final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
-							systemProperties, jvmArguments, workingDirectory);
+					systemProperties, jvmArguments, workingDirectory);
 
 			ScriptLocation scriptLocation = new ScriptLocation(workingDirectory, script);
 			ProcessWorkerFactory workerFactory = new ProcessWorkerFactory(workerCommandLine, agentIndentity,
-							fanOutStreamSender, false, scriptLocation, properties);
+					fanOutStreamSender, false, scriptLocation, properties);
 
-			workerLauncher = new WorkerLauncher(1, workerFactory, m_eventSynchronisation, LOGGER);
+			workerLauncher = new ErrorStreamRedirectWorkerLauncher(1, workerFactory, m_eventSynchronisation, LOGGER,
+					byteArrayErrorStream);
 
 			// Start
 			workerLauncher.startAllWorkers();
@@ -138,7 +140,7 @@ public class LocalScriptTestDriveService {
 					}
 					if (waitingCount++ > maximumWaitingCount) {
 						LOGGER.error("Validation should be performed within {}. Stop it forcely", sleeptime
-										* waitingCount);
+								* waitingCount);
 						workerLauncher.destroyAllWorkers();
 						stopByTooMuchExecution = true;
 						break;
@@ -170,6 +172,8 @@ public class LocalScriptTestDriveService {
 		}
 
 		File file = new File(base, "validation-0.log");
+		appendingMessageOn(file, byteArrayErrorStream.toString());
+
 		if (stopByTooMuchExecution) {
 			appendingMessageOn(file, "Validation should be performed within 10sec. Stop it forcely");
 		}
