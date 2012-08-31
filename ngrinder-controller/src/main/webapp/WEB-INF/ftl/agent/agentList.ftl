@@ -61,13 +61,10 @@
 							<td>${(agent.region)!}</td>
 							<td>${(agent.status)!}</td>
 							<td>
-								<#if agent.isApproved() == true> 
-									<@spring.message "agent.table.approved"/> 
-									<button class="btn btn-mini btn-primary" id="unapproveBtn" sid="${agent.ip}" type="button"><@spring.message "agent.table.unapproved"/> </button>
-								<#else>
-									<@spring.message "agent.table.unapproved"/> 
-									<button class="btn btn-mini btn-primary" id="approveBtn" sid="${agent.ip}" type="button"><@spring.message "agent.table.approved"/> </button>
-								</#if>
+								<div class="btn-group" data-toggle="buttons-radio">
+									<button type="button" class="btn btn-mini btn-primary <#if agent.isApproved() == false>active</#if>" id="unapproveBtn" sid="${agent.ip}"><@spring.message "agent.table.unapproved"/> </button>
+									<button type="button" class="btn btn-mini btn-primary <#if agent.isApproved() == true>active</#if>" id="approveBtn" sid="${agent.ip}"><@spring.message "agent.table.approved"/> </button>
+								</div>
 							</td> 
 							
 						</tr> 
