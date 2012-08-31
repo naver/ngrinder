@@ -68,3 +68,26 @@
                                 </div> 
 							</div>
 						</div>
+						
+						<script>
+						$(document).ready(function () {
+							$("#leaveCommentButton").click(function(){
+							    var comment = $("#testComment").val();
+							  	$.post(
+							  		"${req.getContextPath()}/perftest/leaveComment",
+							  		{ 
+							  			"testId": ${test.id},   
+							  			"testComment": comment 
+							  		},
+							  		function() {
+							  			showSuccessMsg("Comment is successfully reflected");
+							  		}
+							    );
+							});
+						    $("#reportDetail").click(function () {
+						    	window.open("${req.getContextPath()}/perftest/report?testId=" + $("#testId").val());
+						    });
+						});
+							
+						
+						</script>

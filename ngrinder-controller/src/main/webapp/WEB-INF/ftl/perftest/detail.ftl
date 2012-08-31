@@ -338,10 +338,10 @@ div.div-host .host {
 							</div>
 						</div>
 					</div>
-					<div class="tab-pane" id="reportContent" style="display:none;">
+					<div class="tab-pane" id="reportContent">
 
 					</div>
-					<div class="tab-pane" id="runningContent" style="display:none;">
+					<div class="tab-pane" id="runningContent">
 						<div class="row">
 							<div class="span5">
 								<div class="page-header">
@@ -580,20 +580,6 @@ div.div-host .host {
 			<#else>
 				displayCfgOnly();
 			</#if>
-			$("#leaveCommentButton").click(function(){
-		    var comment = $("#testComment").val();
-			  	$.post(
-			  		"${req.getContextPath()}/perftest/leaveComment",
-			  		{ 
-			  			"testId": ${test.id},   
-			  			"testComment": comment 
-			  		},
-			  		function() {
-			  			showSuccessMsg("Comment is successfully reflected");
-			  		}
-			    );
-		  	});
-			
 		<#else>
 			displayCfgOnly();
 		</#if>
@@ -753,10 +739,6 @@ div.div-host .host {
 
 	      $("#reportLnk").click(function () {
 	    	  openReportDiv();
-	      });
-
-	      $("#reportDetail").click(function () {
-	          window.open("${req.getContextPath()}/perftest/report?testId=" + $("#testId").val());
 	      });
 
 	      $('#tableTab a').click(function (e) {
