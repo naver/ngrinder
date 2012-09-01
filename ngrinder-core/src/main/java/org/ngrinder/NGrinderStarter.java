@@ -212,8 +212,6 @@ public class NGrinderStarter {
 		}
 	}
 
-	static int count = 0;
-
 	/**
 	 * Agent starter
 	 * 
