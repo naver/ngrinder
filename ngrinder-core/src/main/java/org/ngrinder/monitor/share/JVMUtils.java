@@ -73,11 +73,12 @@ public class JVMUtils {
 		} catch (MonitorException mx) {
 			throw new InternalError(mx.getMessage());
 		}
+
 		for (Object vmidObject : vms) {
 			if (vmidObject instanceof Integer) {
 				int vmid = ((Integer) vmidObject).intValue();
-				if (!MonitorContext.getInstance().getJvmPids().isEmpty()
-						&& !MonitorContext.getInstance().getJvmPids().contains(vmid)) {
+				Set<Integer> jvmPids = MonitorContext.getInstance().getJvmPids();
+				if (!jvmPids.isEmpty() && !jvmPids.contains(vmid)) {
 					continue;
 				}
 				name = vmidObject.toString();
@@ -103,8 +104,8 @@ public class JVMUtils {
 		for (VirtualMachineDescriptor vmd : virtualMachines) {
 			try {
 				Integer vmid = Integer.valueOf(vmd.id());
-				if (!MonitorContext.getInstance().getJvmPids().isEmpty()
-						&& !MonitorContext.getInstance().getJvmPids().contains(vmid)) {
+				Set<Integer> jvmPids = MonitorContext.getInstance().getJvmPids();
+				if (!jvmPids.isEmpty() && !jvmPids.contains(vmid)) {
 					continue;
 				}
 				if (!map.containsKey(vmid)) {

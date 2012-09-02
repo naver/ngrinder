@@ -69,8 +69,7 @@ public final class ReflectionUtil {
 		checkArgument(StringUtils.isNotBlank(fieldName));
 
 		// CHECKSTYLE:OFF
-		for (Class<?> superClass = object.getClass(); superClass != Object.class; superClass = superClass
-				.getSuperclass()) {
+		for (Class<?> superClass = object.getClass(); superClass != Object.class; superClass = superClass.getSuperclass()) {
 			try {
 				return superClass.getDeclaredField(fieldName);
 			} catch (NoSuchFieldException e) {

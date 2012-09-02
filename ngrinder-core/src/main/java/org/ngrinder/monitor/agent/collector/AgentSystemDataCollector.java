@@ -38,7 +38,7 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 	private static final Logger LOG = LoggerFactory.getLogger(AgentSystemDataCollector.class);
 
 	private Callable<SystemInfo> processor = null;
-	private long count = 0;
+	private long failedCount = 0;
 
 	@Override
 	public synchronized void refresh() {
@@ -52,7 +52,6 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 			// linux
 			processor = new LinuxSystemMonitorProcessor();
 		}
-
 	}
 
 	@Override
@@ -72,7 +71,7 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 		try {
 			systemInfo = processor.call();
 		} catch (Exception e) {
-			if ((count++) % 60 == 0) {
+			if ((failedCount++) % 60 == 0) {
 				if (SystemUtils.IS_OS_WINDOWS) {
 					LOG.error("Error while getting system perf data");
 					LOG.error("You should run agent in administrator permission");

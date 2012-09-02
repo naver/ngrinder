@@ -30,16 +30,8 @@ package org.ngrinder.common.exception;
  */
 @SuppressWarnings("serial")
 public class ConfigurationException extends RuntimeException {
-	/**
-	 * Constructor.
-	 * 
-	 * @param message
-	 *            message
-	 * @param t
-	 *            exception
-	 */
+
 	public ConfigurationException(String message, Throwable t) {
 		super(message, t);
 	}
-
 }

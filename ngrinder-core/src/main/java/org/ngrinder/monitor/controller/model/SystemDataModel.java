@@ -59,7 +59,8 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	private String crtime;
 	private String message;
 	
-	public SystemDataModel() {};
+	public SystemDataModel() {
+	}
 	
 	public SystemDataModel (SystemInfo systemInfo) {
 		system = String.valueOf(systemInfo.getSystem());
@@ -193,5 +194,4 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-
 }

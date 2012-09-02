@@ -36,8 +36,9 @@ import org.slf4j.LoggerFactory;
 
 public class WindowSystemMonitorProcessor implements Callable<SystemInfo> {
 	private static final Logger LOG = LoggerFactory.getLogger(WindowSystemMonitorProcessor.class);
-	// typeperf "\Processor(_Total)\% Processor Time" "\Memory\Available KBytes"
-	// -sc 1
+	// cmd.exe /c typeperf "\Processor(_Total)\% Processor Time" "\Memory\Available KBytes" -sc 1
+	// "(PDH-CSV 4.0)","\\ISAIAH-PC\Processor(_Total)\% Processor Time","\\ISAIAH-PC\Memory\Available KBytes"
+	// "09/02/2012 16:42:50.960","21.507119","682904.000000"
 	private static final String WINDOWS_TYPEPERF_PARAM = "\"\\Processor(_Total)\\% Processor Time\" "
 			+ "\"\\Memory\\Available KBytes\"";
 
@@ -51,7 +52,7 @@ public class WindowSystemMonitorProcessor implements Callable<SystemInfo> {
 		try {
 			// String pcName = InetAddress.getLocalHost().getHostName();
 			Process proc = Runtime.getRuntime().exec(
-					new String[] { "cmd.exe", "/c", "typeperf " + WINDOWS_TYPEPERF_PARAM + "  -sc 1" });
+					new String[] { "cmd.exe", "/c", "typeperf " + WINDOWS_TYPEPERF_PARAM + " -sc 1" });
 			String line = null;
 			
 			input = new BufferedReader(new InputStreamReader(proc.getInputStream()));

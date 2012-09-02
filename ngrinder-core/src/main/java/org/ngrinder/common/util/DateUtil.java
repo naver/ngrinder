@@ -44,12 +44,9 @@ import org.apache.commons.lang.StringUtils;
  */
 public abstract class DateUtil {
 
-	private static final SimpleDateFormat FULL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
-			Locale.getDefault());
+	private static final SimpleDateFormat FULL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 	private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-
 	private static final SimpleDateFormat dateFormatEndWithMinute = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
 	private static final SimpleDateFormat collectTimeFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 
 	private static final int CONSTANT_10 = 10;
@@ -128,29 +125,29 @@ public abstract class DateUtil {
 		return FULL_DATE_FORMAT.parse(strDate);
 	}
 
-	/**
-	 * get start day of a given date. Because the default start day of Calendar is "Sunday", when the given date is
-	 * "Sunday", we need to add "-7" to date field to get previous week.
-	 * 
-	 * @param date
-	 *            calendar
-	 * @return week start
-	 */
-	// public static Calendar getWeekStart(Calendar date) {
-	// Calendar calendar = Calendar.getInstance();
-	// calendar.setTimeInMillis(date.getTimeInMillis());
-	// // Calendar.MONDAY is 2
-	// boolean isSunday = false;
-	// if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-	// isSunday = true;
-	// }
-	// calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-	// if (isSunday) {
-	// calendar.add(Calendar.DAY_OF_WEEK, CONSTANT_MINUS_7);
-	// }
-	// return calendar;
-	//
-	// }
+//	/**
+//	 * get start day of a given date. Because the default start day of Calendar is "Sunday", when the given date is
+//	 * "Sunday", we need to add "-7" to date field to get previous week.
+//	 * 
+//	 * @param date
+//	 *            calendar
+//	 * @return week start
+//	 */
+//	public static Calendar getWeekStart(Calendar date) {
+//		Calendar calendar = Calendar.getInstance();
+//		calendar.setTimeInMillis(date.getTimeInMillis());
+//		// Calendar.MONDAY is 2
+//		boolean isSunday = false;
+//		if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+//			isSunday = true;
+//		}
+//		calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+//		if (isSunday) {
+//			calendar.add(Calendar.DAY_OF_WEEK, CONSTANT_MINUS_7);
+//		}
+//		return calendar;
+//
+//	}
 
 	/**
 	 * Format date with given pattern.
@@ -237,5 +234,4 @@ public abstract class DateUtil {
 		else
 			return false;
 	}
-
 }

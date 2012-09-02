@@ -93,18 +93,15 @@ public final class AgentMonitorServer {
 		MonitorContext.getInstance().setJvmPids(jvmPid);
 
 		this.port = port;
+		this.rmiRegistry = LocateRegistry.createRegistry(port);
+		this.mBeanServer = ManagementFactory.getPlatformMBeanServer();
 
-		rmiRegistry = LocateRegistry.createRegistry(port);
-
-		mBeanServer = ManagementFactory.getPlatformMBeanServer();
 		final String hostname = InetAddress.getLocalHost().getHostName();
-		JMXServiceURL url = new JMXServiceURL("service:jmx:rmi://" + hostname + ":" + port + "/jndi/rmi://" + hostname
-				+ ":" + port + "/jmxrmi");
-		jmxServer = JMXConnectorServerFactory.newJMXConnectorServer(url, null, mBeanServer);
-
+		final String jmxUrlString = "service:jmx:rmi://" + hostname + ":" + port + "/jndi/rmi://" + hostname + ":" + port + "/jmxrmi";
+		JMXServiceURL jmxUrl = new JMXServiceURL(jmxUrlString);
+		this.jmxServer = JMXConnectorServerFactory.newJMXConnectorServer(jmxUrl, null, mBeanServer);
 		AgentRegisterMXBean.getInstance().addDefaultMXBean(mBeanServer);
-
-		LOG.info("Service URL:{} is initiated.", url);
+		LOG.info("Service URL:{} is initiated.", jmxUrl);
 	}
 
 	public void addMXBean(String subDomainName, MXBean mxBean) throws MalformedObjectNameException,
@@ -171,5 +168,4 @@ public final class AgentMonitorServer {
 		stop();
 		start();
 	}
-
 }

@@ -30,30 +30,14 @@ package org.ngrinder.common.exception;
  */
 public class NoElementFoundException extends RuntimeException {
 
-	/** UUID. */
 	private static final long serialVersionUID = 484963219098378067L;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param message
-	 *            message
-	 * @param t
-	 *            exception to be thrown
-	 */
 	public NoElementFoundException(String message, Throwable t) {
 		super(message, t);
 
 	}
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param message
-	 *            message
-	 */
 	public NoElementFoundException(String message) {
 		super(message);
 	}
-
 }

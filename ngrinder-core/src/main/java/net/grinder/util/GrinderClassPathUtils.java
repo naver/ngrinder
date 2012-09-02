@@ -53,24 +53,40 @@ public class GrinderClassPathUtils {
 	public static String filterClassPath(String classPath, Logger logger) {
 		List<String> classPathList = new ArrayList<String>();
 		for (String eachClassPath : checkNotNull(classPath).split(File.pathSeparator)) {
-			String name = FilenameUtils.getName(eachClassPath);
-			// Exclude not necessary jars..
-			if ("jar".equals(FilenameUtils.getExtension(name))
-							&& (name.contains("ngrinder-core") || name.contains("ngrinder-controller") || name
-											.contains("spring"))) {
+			String filename = FilenameUtils.getName(eachClassPath);
+			if (isNotJarOrUselessJar(filename)) {
 				continue;
 			}
-			// Include necessary jars..
-			if (name.contains("dns") || name.contains("grinder") || name.contains("asm")
-							|| name.contains("picocontainer") || name.contains("jython")
-							|| name.contains("slf4j-api") || name.contains("logback")
-							|| name.contains("jsr173") || name.contains("xmlbeans")
-							|| name.contains("stax-api")) {
-				logger.trace("classpath :" + eachClassPath);
-				classPathList.add(eachClassPath);
-			}
+
+			logger.trace("classpath :" + eachClassPath);
+			classPathList.add(eachClassPath);
 		}
 		return StringUtils.join(classPathList, File.pathSeparator);
+	}
+
+	private static boolean isNotJarOrUselessJar(String jarFilename) {
+		// TODO: Should it a jar file? Is it useless except jar files?
+		if (!"jar".equals(FilenameUtils.getExtension(jarFilename))) {
+			return true;
+		}
+
+		if (jarFilename.contains("ngrinder-core") 
+				|| jarFilename.contains("ngrinder-controller") 
+				|| jarFilename.contains("spring")) {
+			return true;
+		}
+
+		// TODO: If we have need another jar files, we should append it on the follow conditions.
+		if (jarFilename.contains("dns") 
+				|| jarFilename.contains("grinder") || jarFilename.contains("asm")
+				|| jarFilename.contains("picocontainer") || jarFilename.contains("jython")
+				|| jarFilename.contains("slf4j-api") || jarFilename.contains("logback")
+				|| jarFilename.contains("jsr173") || jarFilename.contains("xmlbeans")
+				|| jarFilename.contains("stax-api")) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

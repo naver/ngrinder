@@ -33,24 +33,10 @@ public class NGrinderRuntimeException extends RuntimeException {
 
 	private static final long serialVersionUID = 8662535812004958944L;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param message
-	 *            message
-	 */
 	public NGrinderRuntimeException(String message) {
 		super(message);
 	}
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param message
-	 *            message
-	 * @param e
-	 *            thrown exception
-	 */
 	public NGrinderRuntimeException(String message, Throwable e) {
 		super(message, e);
 	}
