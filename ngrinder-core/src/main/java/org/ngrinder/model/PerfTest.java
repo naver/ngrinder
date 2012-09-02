@@ -92,6 +92,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/** The send mail code. */
 	private boolean sendMail;
 
+
+	@Type(type = "true_false")
+	/** Use rampup or not. */
+	private boolean useRampUp;
+	
 	/** The threshold code, R for run count; D for duration. */
 	private String threshold;
 
@@ -525,6 +530,14 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public void clearMessages() {
 		setLastProgressMessage("");
 		setProgressMessage(""); 
+	}
+
+	public boolean isUseRampUp() {
+		return useRampUp;
+	}
+
+	public void setUseRampUp(boolean useRampUp) {
+		this.useRampUp = useRampUp;
 	}
 
 }

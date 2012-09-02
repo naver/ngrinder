@@ -20,57 +20,35 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.agent.repository;
+package org.ngrinder.perftest.service;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import net.grinder.message.console.AgentControllerState;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.agent.model.AgentInfo;
+import org.ngrinder.perftest.model.ProcessAndThread;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Test AgentRepository Class.
+ * {@link PerfTestService} test
  * 
- * @author Mavlarn
- * @since
+ * @author JunHo Yoon
+ * @since 3.0
  */
-public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
+public class PerfTestProcessAndThreadPolicyServiceTest extends
+		AbstractPerfTestTransactionalTest {
 
 	@Autowired
-	private AgentRepository agentRepository;
-
-	AgentInfo agentInfo;
-
-	@Before
-	public void before() {
-		agentRepository.deleteAll();
-		agentInfo = new AgentInfo();
-		agentInfo.setHostName("hello");
-		agentInfo.setIp("127.0.0.1");
-		agentInfo.setRegion("world");
-		agentInfo.setStatus(AgentControllerState.BUSY);
-		agentInfo.setApproved(false);
-		agentRepository.save(agentInfo);
-		
-	}
-	
-	
+	private PerfTestService perfTestService;
 
 	@Test
-	public void testGetByIp() {
-		AgentInfo findByIp = agentRepository.findByIp("127.0.0.1");
-		assertThat(findByIp.isApproved(), is(false));
-		findByIp.setApproved(true);
-		agentRepository.save(findByIp);
-		findByIp = agentRepository.findByIp("127.0.0.1");
-		assertThat(findByIp.isApproved(), is(true));
-		assertThat(findByIp, notNullValue());
-		assertThat(findByIp.getHostName(), is("hello"));
-		assertThat(findByIp.getRegion(), is("world"));
+	public void testVUser() {
+		assertThat(perfTestService.getProcessAndThreadPolicyScript(),
+				notNullValue());
+		ProcessAndThread calcProcessAndThread = perfTestService
+				.calcProcessAndThread(100);
+		assertThat(calcProcessAndThread, notNullValue());
+		System.out.println(calcProcessAndThread);
+
 	}
 }

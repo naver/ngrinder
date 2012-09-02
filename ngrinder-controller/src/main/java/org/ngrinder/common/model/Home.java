@@ -132,9 +132,6 @@ public class Home implements NGrinderConstants {
 		return getSubFile(DOWNLOAD_PATH);
 	}
 
-	public void getUserScriptValidationDriectory(User user) {
-		// TODO Auto-generated method stub
-		
-	}
+
 
 }

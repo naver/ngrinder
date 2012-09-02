@@ -194,36 +194,51 @@ i.collapse{
 											<label for="agentCount" class="control-label"><@spring.message "perfTest.configuration.agent"/></label>
 											<div class="controls">
 												<div class="input-append">
-													<input type="text" class="input required positiveNumber span2" number_limit="${(maxAgentSizePerConsole)}"
+													<input type="text" class="input required positiveNumber span1" number_limit="${(maxAgentSizePerConsole)}"
 														id="agentCount" name="agentCount" value="${(test.agentCount)!}"
 														data-content='<@spring.message "perfTest.configuration.inputAgent"/>'
 														data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
-										 		</div>
+										 		</div> 
 											</div>
 										</div>
 										<div class="control-group">
 											<label for="vuserPerAgent" class="control-label"><@spring.message "perfTest.configuration.vuserPerAgent"/></label>
 											<div class="controls">
-												<div class="input-append">
-													<input type="text" class="input required positiveNumber span2" rel="popover"
-														number_limit="${(maxVuserPerAgent)}" id="vuserPerAgent" name="vuserPerAgent"
-														value="${(test.vuserPerAgent)!}" data-content='<@spring.message "perfTest.configuration.inputVuserPerAgent"/>'
-														data-original-title="<@spring.message "perfTest.configuration.vuserPerAgent"/>"><span class="add-on">
-															<@spring.message "perfTest.configuration.max"/> ${(maxVuserPerAgent)}
-														</span>
-													<a href="javascript:void(0)"><i class="expand" id="expandAndCollapse"></i></a>			
-												</div>
-												<span class="badge badge-info pull-right" ><span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span id="vuserTotal"></span></span>
+												<table style="wdith:100%">
+													<colgroups>
+														<col width="200px"/>
+														<col width="*"/>
+													</colgroups>
+													<tr>
+														<td>
+															<div class="input-append">
+																<input type="text" class="input required positiveNumber span1" rel="popover"
+																	number_limit="${(maxVuserPerAgent)}" id="vuserPerAgent" name="vuserPerAgent"
+																	value="${(test.vuserPerAgent)!}" data-content='<@spring.message "perfTest.configuration.inputVuserPerAgent"/>'
+																	data-original-title="<@spring.message "perfTest.configuration.vuserPerAgent"/>"><span class="add-on">
+																		<@spring.message "perfTest.configuration.max"/> ${(maxVuserPerAgent)}
+																	</span>
+																<a href="javascript:void(0)"><i class="expand" id="expandAndCollapse"></i></a>			
+															</div>
+														</td> 
+														<td>
+															<span class="badge badge-info pull-right" ><span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span id="vuserTotal"></span></span> 
+														</td>
+													</tr>
+													<tr id="processAndThreadPanel">
+														<td colspan="2">
+															<div class="input-prepend">
+																<span class="add-on" title='<@spring.message "perfTest.report.process"/>'><@spring.message "perfTest.report.process"/></span><input class="input required positiveNumber span1" type="text" id="processes" name="processes" value="${(test.processes)!0}"/> 
+															</div>
+															<div class="input-prepend">
+																<span class="add-on" title='<@spring.message "perfTest.report.thread"/>'><@spring.message "perfTest.report.thread"/></span><input class="input required positiveNumber span1" type="text" id="threads" name="threads" value="${(test.threads)!0}"/>
+															</div> 
+														</td>
+													</tr>
+												</table>
 											</div>
 										</div>
-										<div class="control-group" id="processAndThreadPanel">
-											<div class="controls" >
-												<span>
-													<span title='<@spring.message "perfTest.report.process"/>'>P</span> <input class="input required positiveNumber span1" type="text" id="processes" name="processes" value="${(test.processes)!0}"/> 
-													<span title='<@spring.message "perfTest.report.thread"/>'>T</span> <input class="input required positiveNumber span1" type="text" id="threads" name="threads" value="${(test.threads)!0}"/>
-												</span>
-											</div>
-										</div>
+										
 										<div class="control-group">
 											<label for="scriptName" class="control-label"><@spring.message "perfTest.configuration.script"/></label>
 											<div class="controls">
@@ -323,8 +338,8 @@ i.collapse{
 							<div class="span6">
 								<div class="page-header">
 									<label class="checkbox" style="margin-bottom: 0"> 
-										<input type="checkbox" id="rampupCheckbox"
-											<#if test?? && test.processes &gt; test.initProcesses>checked</#if> 
+										<input type="checkbox" id="rampupCheckbox" name="useRampUp"
+											<#if test?? && test.useRampUp == true>checked</#if> 
 										/>
 										<h4>
 											<@spring.message "perfTest.configuration.rampEnable"/>
@@ -587,6 +602,10 @@ i.collapse{
 	<script src="${req.getContextPath()}/js/rampup.js"></script>
 	<script src="${req.getContextPath()}/js/bootstrap-slider.min.js"></script>
  	<script src="${req.getContextPath()}/js/queue.js"></script>
+ 	<script>
+ 		// vuser calc
+ 		${processthread_policy_script}
+ 	</script>
 	<script>
 	  var jqplotObj;
 	  var objTimer;
@@ -619,19 +638,19 @@ i.collapse{
 	      var month = date.getMonth() + 1;
 	      var day = date.getDate();
 	      $("#sDateInput").val(year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day));
-	      
-		<#if test??>
-			<#if test.status.category == "TESTING">
-				displayCfgAndTestRunning();
-				<#elseif test.status.category == "FINISHED" || test.status.category =="STOP" >
-				displayCfgAndTestReport();
-			<#else>
-				displayCfgOnly();
-			</#if>
-		<#else>
+
+	      <#if test??> 
+	      	<#if test.status.category == "TESTING"> 
+		      displayCfgAndTestRunning(); 
+		      <#elseif test.status.category == "FINISHED" || test.status.category == "STOP"> 
+		      displayCfgAndTestReport(); 
+		      <#else>
+		      displayCfgOnly(); 
+	          </#if>
+		  <#else>
 			displayCfgOnly();
-		</#if>
-	      $("#tableTab a:first").tab('show');
+		  </#if>
+		  $("#tableTab a:first").tab('show');
 
 	      $('#testContentForm input').hover(function () {
 	          $(this).popover('show')
@@ -654,16 +673,16 @@ i.collapse{
 	      });
 
 	      $("#testContentForm").validate({
-		      	 rules:{
-		            testName:"required",
-		            agentCount:"required",
-		            vuserPerAgent:"required"
-		        },
-		        messages:{
-		            testName:"<@spring.message "perfTest.warning.testName"/>",
-		            agentCount:"<@spring.message "perfTest.warning.agentNumber"/>",
-		            vuserPerAgent:"<@spring.message "perfTest.warning.vuserPerAgent"/>"
-		        },
+	          rules: {
+	              testName: "required",
+	              agentCount: "required",
+	              vuserPerAgent: "required"
+	          },
+	          messages: {
+	              testName: "<@spring.message "perfTest.warning.testName"/>",
+	              agentCount: "<@spring.message "perfTest.warning.agentNumber"/>",
+	              vuserPerAgent: "<@spring.message "perfTest.warning.vuserPerAgent"/>"
+	          },
 	          ignore: "", //make the validation on hidden input work
 	          errorClass: "help-inline",
 	          errorElement: "span",
@@ -684,18 +703,22 @@ i.collapse{
 	          }
 	      });
 
+		  $("#vuserPerAgent").rules("add", {
+		  		max:${(maxVuserPerAgent)}
+		  });
+		  
 	      $("#saveScheduleBtn").click(function () {
 	          if (!$("#testContentForm").valid()) {
 	              return false;
 	          }
 	      });
-	      
+
 	      $("#saveTestBtn").click(function () {
 	          if (!$("#testContentForm").valid()) {
 	              return false;
 	          }
 	          if ($("#testStatus").val() != "SAVED") {
-	        	  $("#testId").val("");  
+	              $("#testId").val("");
 	          }
 	          $("#testStatus").val("SAVED");
 	          $("#scheduleInput").attr('name', '');
@@ -707,7 +730,7 @@ i.collapse{
 	          $("#scheduleModal small").html("");
 	          $("#scheduleInput").attr('name', '');
 	          if ($("#testStatus").val() != "SAVED") {
-	        	  $("#testId").val("");  
+	              $("#testId").val("");
 	          }
 	          $("#testStatus").val("READY");
 	          document.testContentForm.submit();
@@ -733,7 +756,7 @@ i.collapse{
 	      });
 
 
-          
+
 	      $('#sDateInput').datepicker({
 	          format: 'yyyy-mm-dd'
 	      });
@@ -777,16 +800,42 @@ i.collapse{
 
 	      $("#agentCount").change(function () {
 	          updateVuserTotal();
+	          $("#vuserPerAgent").validate();
 	      });
-
+          
+          $("#threads").change(function() {
+			  var processes = $("#processes").val();
+          	  $("#vuserPerAgent").val($("#processes").val() * $("#threads").val());
+   		  	  if ( $("#vuserPerAgent").valid()) {
+	              updateVuserTotal(); 
+	          }
+          });
+          
+          $("#processes").change(function() {
+			  var processes = $("#processes").val();
+          	  $("#vuserPerAgent").val($("#processes").val() * $("#threads").val());
+   		  	  if ( $("#vuserPerAgent").valid()) {
+	              updateVuserGraph(processes);
+	              updateVuserTotal();
+	          }
+          });
+          
+          
 	      $("#vuserPerAgent").change(function () {
-	          if ($(this).valid()) {
-	          	updateVuserPolicy();
+	          var vuserElement = $(this);
+	          var processCount = $("#processes").val();    
+	          if (vuserElement.valid()) {
+	              var result = updateVuserPolicy(vuserElement.val());
+	              $(this).val(result[0] * result[1]);
+	              if (processCount != result[0]) {
+	              	updateVuserGraph(result[0]);
+	              }
+	              updateVuserTotal();
 	          }
 	      });
 
 	      $("#reportLnk").click(function () {
-	    	  openReportDiv();
+	          openReportDiv();
 	      });
 
 	      $('#tableTab a').click(function (e) {
@@ -801,39 +850,38 @@ i.collapse{
 	      $("#homeTab a").click(function () {
 	          resetFooter();
 	      });
-			
-			
-		  $("#showScript").click(function() {
-		  	  var currentScript = $("#scriptName").val();
-		      if (currentScript != "") {
-		      	var scriptRevision = $("#scriptRevision").val();
-		      	window.open ("${req.getContextPath()}/script/detail/" + currentScript + "?r=" + scriptRevision, "scriptSource");
-		      }
-		  });
-		  updateVuserTotal();	
+
+
+	      $("#showScript").click(function () {
+	          var currentScript = $("#scriptName").val();
+	          if (currentScript != "") {
+	              var scriptRevision = $("#scriptRevision").val();
+	              window.open("${req.getContextPath()}/script/detail/" + currentScript + "?r=" + scriptRevision, "scriptSource");
+	          }
+	      });
+	      updateVuserTotal();
 	      initThresholdChkBox();
 	      initDuration();
 	      updateChart();
 	      resetFooter();
-		  $("#processAndThreadPanel").hide();
-		  $("#expandAndCollapse").click(function() {
-		  		$(this).toggleClass("collapse");
-		  		$("#processAndThreadPanel").toggle();
-		  	}
-		  );
+	      $("#processAndThreadPanel").hide();
+	      $("#expandAndCollapse").click(function () {
+	          $(this).toggleClass("collapse");
+	          $("#processAndThreadPanel").toggle();
+	      });
 	      updateScriptResources(true);
 	      validateHostForm();
-	      $("#durationSlider").mousedown(function() {
-	    	  $("#durationChkbox").click();
+	      $("#durationSlider").mousedown(function () {
+	          $("#durationChkbox").click();
 	      });
-	      $("#runCount").focus(function() {
-	    	  $("#runcountChkbox").click();
+	      $("#runCount").focus(function () {
+	          $("#runcountChkbox").click();
 	      });
-	      
+
 	  });
-	
-	
-	  
+
+
+
 	  function updateVuserTotal() {
 	      var agtCount = $("#agentCount").val();
 	      var vcount = $("#vuserPerAgent").val();
@@ -843,23 +891,22 @@ i.collapse{
 	  function updateScriptResources(first) {
 	      $('#messageDiv').ajaxSend(function (e, xhr, settings) {
 	          var url = settings.url;
-	          if (url.indexOf("refresh") == 0) 
-	          	showInformation("<@spring.message "perfTest.detail.message.updateResource"/>");
+	          if (url.indexOf("refresh") == 0) showInformation("<@spring.message "perfTest.detail.message.updateResource"/>");
 	      });
 	      $.ajax({
 	          url: "${req.getContextPath()}/perftest/getResourcesOnScriptFolder",
 	          dataType: 'json',
 	          data: {
 	              'scriptPath': $("#scriptName").val(),
-	              'r':$("#scriptRevision").val()
+	              'r': $("#scriptRevision").val()
 	          },
 	          success: function (res) {
 	              var html = "";
 	              var len = res.resources.length;
 	              if (first != true) {
 	                  $(".div-host").html("");
-		              $("#hostsHidden").val(res.targetHosts);
-		              initHosts();
+	                  $("#hostsHidden").val(res.targetHosts);
+	                  initHosts();
 	              }
 	              for (var i = 0; i < len; i++) {
 	                  var value = res.resources[i];
@@ -874,41 +921,22 @@ i.collapse{
 	      });
 	  }
 
-	  function updateVuserPolicy() {
-	      updateVuserTotal();
-	      showInformation("<@spring.message "perfTest.detail.message.calculatePolicy"/>");
-
-	      $.ajax({
-	          url: "${req.getContextPath()}/perftest/updateVuser",
-	          dataType: 'json',
-	          data: {
-	              'newVuser': $("#vuserPerAgent").val()
-	          },
-	          success: function (res) {
-	              if (res.success) {
-	                  var processCount = res.processCount;
-	                  var threadCount = res.threadCount;
-	                  $('#processes').val(processCount);
-	                  $('#threads').val(threadCount);
-
-	                  //if ramp-up chart is not enabled, update init process count as total 
-	                  if (!$("#rampupCheckbox")[0].checked) {
-	                      $('#initProcesses').val($('#processes').val());
-	                  }
-	                  updateChart();
-	                  return true;
-	              } else {
-	                  showErrorMsg("<@spring.message "perfTest.detail.error.updateVuser"/>" + res.message);
-	                  return false;
-	              }
-	          },
-	          error: function () {
-	              showErrorMsg("Error!");
-	              return false;
-	          }
-	      });
+	  function updateVuserPolicy(vuser) {
+	      var processCount = getProcessCount(vuser);
+	      var threadCount = getThreadCount(vuser);
+	      $('#processes').val(processCount);
+	      $('#threads').val(threadCount);
+	      
+	      return [processCount, threadCount];
 	  }
-
+	
+	  function updateVuserGraph(processCount) {
+		  //if ramp-up chart is not enabled, update init process count as total 
+	      if ($("#rampupCheckbox")[0].checked) {
+	     	 updateChart();
+	      }
+	  }
+	  
 	  function initThresholdChkBox() {
 	      if ($("#threshold").val() == "R") { //runcount
 	          $("#runcountChkbox").attr("checked", "checked");
@@ -950,20 +978,18 @@ i.collapse{
 
 	  function getOption(cnt) {
 	      var contents = [];
-
 	      for (i = 0; i < cnt; i++) {
 	          contents.push("<option value='" + i + "'>" + i + "</option>");
 	      }
-
 	      return contents.join("\n");
 	  }
-	  
+
 	  function openReportDiv() {
-		  $("#reportContent").load("${req.getContextPath()}/perftest/loadReportDiv?testId="+
-				  $("#testId").val()+"&imgWidth=600",
-				  function(){
-			  			drawChart('TPS', 'tpsDiv', $("#tpsData").val());
-		  		});
+	      $("#reportContent").load("${req.getContextPath()}/perftest/loadReportDiv?testId=" + $("#testId").val() + "&imgWidth=600",
+
+	      function () {
+	          drawChart('TPS', 'tpsDiv', $("#tpsData").val());
+	      });
 	  }
 
 	  function refreshData() {
@@ -980,48 +1006,48 @@ i.collapse{
 
 	              $("#process_data").text(refreshDiv.find("#input_process").val());
 	              $("#thread_data").text(refreshDiv.find("#input_thread").val());
-	              
+
 	              $("#running_time").text(showRunTime(refreshDiv.find("#test_time").val()));
 
 	              test_tps_data.enQueue(refreshDiv.find("#tpsChartData").val());
 	          } else {
-	             if($('#runningContent_tab:hidden')[0]){
-	             	window.clearInterval(objTimer);
-	             	return;
-	             }else{
-	             	test_tps_data.enQueue(0);
-	             }
+	              if ($('#runningContent_tab:hidden')[0]) {
+	                  window.clearInterval(objTimer);
+	                  return;
+	              } else {
+	                  test_tps_data.enQueue(0);
+	              }
 	          }
-	          
-	      	  if (test_tps_data.getSize() > 60) {
+
+	          if (test_tps_data.getSize() > 60) {
 	              test_tps_data.deQueue();
 	          }
-	          
+
 	          showChart('runningTps', test_tps_data.aElement);
 	      });
 	  }
-	  
-	  function showRunTime(s) {
-			if (s < 60) {
-				return "" + s + "s";
-			}
-			if (s < 3600) {
-				return "" + parseInt(s/60) + "m " + (s%60) + "s";
-			}
-			if (s < 86400) {
-				return "" + parseInt(s/3600) + "h " + parseInt(s%3600/60) + "m " + (s%3600%60) + "s";
-			}
-			
-			return "" + parseInt(s/86400) + "d "  + parseInt(s%86400/3600) + "h " + parseInt(s%86400%3600/60) + "m " + (s%86400%3600%60) + "s";
-	   }
 
-		function showChart(containerId, data) {
-			if (jqplotObj) {
-				replotChart(jqplotObj, data);
-			} else {
-				jqplotObj = drawChart('TPS', containerId, data);
-			}
-		}
+	  function showRunTime(s) {
+	      if (s < 60) {
+	          return "" + s + "s";
+	      }
+	      if (s < 3600) {
+	          return "" + parseInt(s / 60) + "m " + (s % 60) + "s";
+	      }
+	      if (s < 86400) {
+	          return "" + parseInt(s / 3600) + "h " + parseInt(s % 3600 / 60) + "m " + (s % 3600 % 60) + "s";
+	      }
+
+	      return "" + parseInt(s / 86400) + "d " + parseInt(s % 86400 / 3600) + "h " + parseInt(s % 86400 % 3600 / 60) + "m " + (s % 86400 % 3600 % 60) + "s";
+	  }
+
+	  function showChart(containerId, data) {
+	      if (jqplotObj) {
+	          replotChart(jqplotObj, data);
+	      } else {
+	          jqplotObj = drawChart('TPS', containerId, data);
+	      }
+	  }
 
 	  function validateHostForm() {
 	      $("#ipInput").blur(function () {
@@ -1041,33 +1067,33 @@ i.collapse{
 	      });
 	  }
 
-	  function updateStatus(id,status_type,status_name, icon, deletable, stoppable, message) {
-		  if(status_type == "FINISHED") {
-			  isFinished = true;
-		  }
-		  if ($("#testStatusType").val() == status_type) {
-		  	return;
-		  }
+	  function updateStatus(id, status_type, status_name, icon, deletable, stoppable, message) {
+	      if (status_type == "FINISHED") {
+	          isFinished = true;
+	      }
+	      if ($("#testStatusType").val() == status_type) {
+	          return;
+	      }
 	      var ballImg = $("#testStatus_img_id");
-	      
-		  $("#teststatus_pop_over").attr("data-original-title", status_name);
-		  $("#teststatus_pop_over").attr("data-content", message);
-			
+
+	      $("#teststatus_pop_over").attr("data-original-title", status_name);
+	      $("#teststatus_pop_over").attr("data-content", message);
+
 	      $("#testStatusType").val(status_type);
 	      if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
 	          ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
-          }
-	     
-		  if(status_type == "TESTING") {
-		   		displayCfgAndTestRunning();
-		  } else if(status_type == "FINISHED" || status_type == "STOP") { 
-		   		displayCfgAndTestReport();
-		  } else {
-		      	displayCfgOnly();
-		  }
-	    
+	      }
+
+	      if (status_type == "TESTING") {
+	          displayCfgAndTestRunning();
+	      } else if (status_type == "FINISHED" || status_type == "STOP") {
+	          displayCfgAndTestReport();
+	      } else {
+	          displayCfgOnly();
+	      }
+
 	  }
-	
+
 	  var isFinished = false;
 	  // Wrap this function in a closure so we don't pollute the namespace
 	  (function refreshContent() {
@@ -1094,30 +1120,30 @@ i.collapse{
 	          }
 	      });
 	  })();
-	  
+
 	  function displayCfgOnly() {
-		$("#testContent_tab a").tab('show');
-		$("#runningContent_tab").hide();
-		$("#reportContent_tab").hide();
+	      $("#testContent_tab a").tab('show');
+	      $("#runningContent_tab").hide();
+	      $("#reportContent_tab").hide();
 	  }
-	  
+
 	  function displayCfgAndTestRunning() {
-	  	$("#runningContent_tab").show();
-		$("#runningContent_tab a").tab('show');
-		$("#runningContent").show();
-		$("#reportContent_tab").hide();
-		
-		objTimer = window.setInterval("refreshData()", 1000);
+	      $("#runningContent_tab").show();
+	      $("#runningContent_tab a").tab('show');
+	      $("#runningContent").show();
+	      $("#reportContent_tab").hide();
+
+	      objTimer = window.setInterval("refreshData()", 1000);
 	  }
-	  
+
 	  function displayCfgAndTestReport() {
-		$("#testContent_tab a").tab('show');
-		$("#runningContent_tab").hide();
-		$("#reportContent_tab").show();
-		
-		if (objTimer) {
-	  		window.clearInterval(objTimer);
-	  	}
+	      $("#testContent_tab a").tab('show');
+	      $("#runningContent_tab").hide();
+	      $("#reportContent_tab").show();
+
+	      if (objTimer) {
+	          window.clearInterval(objTimer);
+	      }
 	  }
 	</script>
 	</body>

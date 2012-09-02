@@ -23,7 +23,7 @@ function rampup(obj) {
 }
 
 function disableRampup() {
-	$('#initProcesses').val($('#processes').val());
+	$('#initProcesses').val(0);
 	$('#initProcesses').attr("readonly", "readonly");
 	$('#initSleepTime').attr("readonly", "readonly");
 	$('#processIncrement').attr("readonly", "readonly");

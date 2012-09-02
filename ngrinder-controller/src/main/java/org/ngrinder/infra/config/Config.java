@@ -33,6 +33,7 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.ConfigurationException;
@@ -44,7 +45,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 /**
- * Spring component which is responsible to get the nGrinder config which is stored ${NGRINDER_HOME}.
+ * Spring component which is responsible to get the nGrinder config which is
+ * stored ${NGRINDER_HOME}.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -72,13 +74,16 @@ public class Config {
 			loadDatabaseProperties();
 			loadSystemProperties();
 		} catch (IOException e) {
-			throw new ConfigurationException("Error while loading NGRINDER_HOME", e);
+			throw new ConfigurationException(
+					"Error while loading NGRINDER_HOME", e);
 		}
 	}
 
 	private void copyDefaultConfigurationFiles() throws IOException {
 		checkNotNull(home);
-		home.copyFrom(new ClassPathResource("ngrinder_home_template").getFile(), false);
+		home.copyFrom(
+				new ClassPathResource("ngrinder_home_template").getFile(),
+				false);
 		home.makeSubPath(PLUGIN_PATH);
 		home.makeSubPath(PERF_TEST_PATH);
 		home.makeSubPath(DOWNLOAD_PATH);
@@ -93,16 +98,21 @@ public class Config {
 	private Home resolveHome() {
 		String userHomeFromEnv = System.getenv("NGRINDER_HOME");
 		String userHomeFromProperty = System.getProperty("ngrinder.home");
-		if (StringUtils.isNotEmpty(userHomeFromEnv) && !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
+		if (StringUtils.isNotEmpty(userHomeFromEnv)
+				&& !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
 			logger.warn("The path to ngrinder-home is ambiguous:");
-			logger.warn("    System Environment:  NGRINDER_HOME=" + userHomeFromEnv);
-			logger.warn("    Java Sytem Property:  ngrinder.home=" + userHomeFromProperty);
+			logger.warn("    System Environment:  NGRINDER_HOME="
+					+ userHomeFromEnv);
+			logger.warn("    Java Sytem Property:  ngrinder.home="
+					+ userHomeFromProperty);
 			logger.warn("    '" + userHomeFromProperty + "' is accepted.");
 		}
 		String userHome = null;
-		userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
-		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
-				System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
+		userHome = StringUtils.defaultIfEmpty(userHomeFromProperty,
+				userHomeFromEnv);
+		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(
+				userHome) : new File(System.getProperty("user.home"),
+				NGRINDER_DEFAULT_FOLDER);
 
 		return new Home(homeDirectory);
 	}
@@ -142,7 +152,8 @@ public class Config {
 	 * @return
 	 */
 	public boolean isPluginSupported() {
-		return (BooleanUtils.toBoolean(getSystemProperty("pluginsupport", "true")) || !isTestMode());
+		return (BooleanUtils.toBoolean(getSystemProperty("pluginsupport",
+				"true")) || !isTestMode());
 	}
 
 	String getSystemProperty(String key, String defaultValue) {
@@ -160,6 +171,31 @@ public class Config {
 
 	public String getVesion() {
 		return "3.0";
+	}
+
+	/**
+	 * Policy file which determine the process and thread
+	 */
+	private String policyScript = "";
+
+	/**
+	 * Get the content of process_and_thread_policy.js file"
+	 * 
+	 * @return file content.
+	 */
+	public String getProcessAndThreadPolicyScript() {
+		if (StringUtils.isEmpty(policyScript)) {
+			try {
+				policyScript = FileUtils.readFileToString(getHome().getSubFile(
+						"process_and_thread_policy.js"));
+				return policyScript;
+			} catch (IOException e) {
+				logger.error("Error while load process_and_thread_policy.js", e);
+				return "";
+			}
+		} else {
+			return policyScript;
+		}
 	}
 
 }
