@@ -76,7 +76,7 @@
 							<th id="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
 							
 							<@security.authorize ifAnyGranted="A, S">
-				            	<th class="nothing"><@spring.message "perfTest.table.testCreator"/></th>
+				            	<th class="nothing"><@spring.message "perfTest.table.creator"/></th>
 							</@security.authorize>
 							<th id="startTime"><@spring.message "perfTest.table.startTime"/></th>
 							<th id="duration"><@spring.message "perfTest.table.duration"/></th>

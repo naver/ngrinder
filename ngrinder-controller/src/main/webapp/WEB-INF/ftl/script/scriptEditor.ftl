@@ -67,12 +67,15 @@
 				</form>
 				<textarea id="content" style="position:relative;width:940px;margin-top:0px">${(file.content)!}</textarea>
 				<div class="pull-right" rel="popover" data-original-title="Tip" data-content="
-			      Ctrl-F / Cmd-F : Start searching&lt;br&gt;
-			      Ctrl-G / Cmd-G : Find next&lt;br&gt;
-			      Shift-Ctrl-G / Shift-Cmd-G : Find previous&lt;br&gt;
-			      Shift-Ctrl-F / Cmd-Option-F : Replace&lt;br&gt;
-			      Shift-Ctrl-R / Shift-Cmd-Option-F : Replace all&lt;br&gt;" placement="top"
-			    ><code>Tip</code></div>
+			      Ctrl-F / Cmd-F : <@spring.message "script.editor.tip.startSearching"/>&lt;br&gt;
+			      Ctrl-G / Cmd-G : <@spring.message "script.editor.tip.findNext"/>&lt;br&gt;
+			      Shift-Ctrl-G / Shift-Cmd-G : <@spring.message "script.editor.tip.findPrev"/>&lt;br&gt;
+			      Shift-Ctrl-F / Cmd-Option-F : <@spring.message "script.editor.tip.replace"/>&lt;br&gt;
+			      Shift-Ctrl-R / Shift-Cmd-Option-F : <@spring.message "script.editor.tip.replaceAll"/>&lt;br&gt;
+			      F12 : <@spring.message "script.editor.tip.fullScreen"/>&lt;br&gt;
+			      ESC : <@spring.message "script.editor.tip.back"/>&lt;br&gt;
+			      " placement="top"
+			    ><code>Tip</code></div> 
 			    
 				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre">
 				</div>
