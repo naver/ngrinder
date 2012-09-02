@@ -118,6 +118,9 @@
 			   lineNumbers: true,
 			   lineWrapping: true,
 			   indentUnit:4,
+			   tabSize:4,
+			   indentWithTabs:true,
+			   smartIndent:false,
 			   extraKeys: {
 		         "F11": function(cm) {
 		           setFullScreen(cm, !isFullScreen(cm));

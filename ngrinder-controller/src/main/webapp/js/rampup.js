@@ -95,7 +95,10 @@ function updateChart() {
 	
 	$("#rampChart").empty();
 	var maxY = parseInt((processes / 5) + 1) * 5;
-	var numberOfYTicks = parseInt(processes / 5);
+	var numberOfYTicks = processes;
+	if (numberOfYTicks > 5) { 
+		numberOfYTicks = 5;
+	} 
 	$.jqplot("rampChart", [ seriesArray ], {
 		axesDefaults : {
 			tickRenderer : $.jqplot.AxisTickRenderer,
@@ -115,7 +118,11 @@ function updateChart() {
 				tickOptions : {
 					show : true,
 					formatter : function(format, value) {
-						return (value / 1000).toFixed(1);
+						if (seriesArray.length < 5) {
+							return (value / 1000).toFixed(1);							
+						} else {
+							return ((value / 1000) + 0.5).toFixed(0);
+						}
 					}
 				}
 			},

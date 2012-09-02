@@ -224,7 +224,20 @@ i.collapse{
 												</#if>
 												</select>
 												<input type="hidden" id="scriptRevision" name="scriptRevision" value="${(test.scriptRevision)!-1}">
-												<button class="btn btn-mini btn-info pull-right" type="button" id="showScript" style="margin-top:3px"><@spring.message "perfTest.configuration.showScript"/></button>
+												<button class="btn btn-mini btn-info pull-right" type="button" id="showScript" style="margin-top:3px">
+													<#if test?? && test.scriptRevision != -1>
+														${test.scriptRevision}
+													<#else>
+														HEAD
+													</#if> 
+												</button>
+												<script>
+													$(document).ready(function() {
+														$("#scriptName").change(function(selected) {
+															$("#showScript").val(selected);
+														});
+													});
+												</script>
 											</div> 
 										</div>
 										<div class="control-group">

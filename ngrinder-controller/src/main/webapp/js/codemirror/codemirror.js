@@ -1452,11 +1452,23 @@ window.CodeMirror = (function() {
         if (n) indentation = getLine(n-1).indentation(options.tabSize);
         else indentation = 0;
       }
-      else if (how == "add") indentation = curSpace + options.indentUnit;
-      else if (how == "subtract") indentation = curSpace - options.indentUnit;
+      else if (how == "add") {
+    	  indentation = curSpace + options.indentUnit;
+      }
+      else if (how == "subtract") {
+    	  indentation = curSpace - options.indentUnit;
+      }
       indentation = Math.max(0, indentation);
       var diff = indentation - curSpace;
-
+      // NHN Fix
+      if (how == "prev") {
+	      var prevLine = getLine(n-1).text;
+	      var end = prevLine.search(/[^\s\u00a0]/);
+	      if (end == -1) end = prevLine.length;
+	      indentString = prevLine.substring(0, end);
+	      replaceRange(indentString, {line: n, ch: 0}, {line: n, ch: curSpaceString.length});
+	      return; 
+	  } 
       var indentString = "", pos = 0;
       if (options.indentWithTabs)
         for (var i = Math.floor(indentation / options.tabSize); i; --i) {pos += options.tabSize; indentString += "\t";}
@@ -1465,7 +1477,7 @@ window.CodeMirror = (function() {
       if (indentString != curSpaceString)
         replaceRange(indentString, {line: n, ch: 0}, {line: n, ch: curSpaceString.length});
     }
-
+    
     function loadMode() {
       mode = CodeMirror.getMode(options, options.mode);
       doc.iter(0, doc.size, function(line) { line.stateAfter = null; });
