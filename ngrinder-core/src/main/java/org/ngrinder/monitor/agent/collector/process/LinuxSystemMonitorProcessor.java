@@ -81,38 +81,38 @@ public class LinuxSystemMonitorProcessor implements Callable<SystemInfo> {
 	private SystemInfo parse(String result) {
 		SystemInfo systemInfo = new SystemInfo();
 		String[] splittedLines = result.split("\n");
-		for (int i = 0; i < splittedLines.length; i++) { // line number
-			String[] splitteds = splittedLines[i].split(MonitorConstants.P_COMMA);
+		for (int row = 0; row < splittedLines.length; row++) { // line number
+			String[] splitteds = splittedLines[row].split(MonitorConstants.P_COMMA);
 			if (splitteds.length < 1) {
 				continue;
 			}
 
-			for (int j = 0; j < splitteds.length; j++) {
-				if (splitteds[j].contains("kB")) {
-					splitteds[j] = splitteds[j].replace("kB", "");
+			for (int column = 0; column < splitteds.length; column++) {
+				if (splitteds[column].contains("kB")) {
+					splitteds[column] = splitteds[column].replace("kB", "");
 				}
-				Object l;
-				if (splitteds[j].contains(".")) {
-					l = get(splitteds[j], Double.class);
+				Object value;
+				if (splitteds[column].contains(".")) {
+					value = parseRealNumber(splitteds[column], Double.class);
 				} else {
-					l = get(splitteds[j], Long.class);
+					value = parseRealNumber(splitteds[column], Long.class);
 				}
-				setData(i, j, l, systemInfo);
+
+				setData(row, column, value, systemInfo);
 			}
 		}
-		if (systemInfo.getTotalCpuValue() == 0) {
-			systemInfo.setCPUUsedPercentage(0f);
-		} else {
-			// TODO: systemInfo.getTotalCpuValue() should not be less then 0.
-			systemInfo
-					.setCPUUsedPercentage((float) ((systemInfo.getTotalCpuValue() - systemInfo.getIdlecpu()) / (float) systemInfo
-							.getTotalCpuValue()) * 100);
+
+		float usedCpuPct = 0f;
+		if (systemInfo.getTotalCpuValue() != 0) {
+			long usedCpuValue = systemInfo.getTotalCpuValue() - systemInfo.getIdlecpu();
+			usedCpuPct = (float) (usedCpuValue / (float) systemInfo.getTotalCpuValue()) * 100;
 		}
+		systemInfo.setCPUUsedPercentage(usedCpuPct);
 		systemInfo.setSystem(SystemInfo.System.LINUX);
 		return systemInfo;
 	}
 
-	private void setData(int i, int j, Object value, SystemInfo systemInfo) {
+	private void setData(int row, int column, Object value, SystemInfo systemInfo) {
 		long lvalue = 0L;
 		double fvalue = 0.0;
 		if (value instanceof Long) {
@@ -121,30 +121,30 @@ public class LinuxSystemMonitorProcessor implements Callable<SystemInfo> {
 			fvalue = (Double) value;
 		}
 
-		if (i == 0) {// cpu total, cpu idle info
-			if (j == 0) {
+		if (row == 0) {// cpu total, cpu idle info
+			if (column == 0) {
 				systemInfo.setTotalCpuValue(lvalue);
-			} else if (j == 1) {
+			} else if (column == 1) {
 				systemInfo.setIdleCpuValue(lvalue);
 			}
-		} else if (i == 1) { // load averages
-			if (j == 0) {
+		} else if (row == 1) { // load averages
+			if (column == 0) {
 				systemInfo.setLoadAvgs(fvalue);
-			} else if (j == 1) {
+			} else if (column == 1) {
 				systemInfo.setLoadAvgs5(fvalue);
-			} else if (j == 2) {
+			} else if (column == 2) {
 				systemInfo.setLoadAvgs15(fvalue);
 			}
-		} else if (i == 2) { // total free memory
-			if (j == 0) {
+		} else if (row == 2) { // total free memory
+			if (column == 0) {
 				systemInfo.setTotalMemory(lvalue);
-			} else if (j == 1) {
+			} else if (column == 1) {
 				systemInfo.setFreeMemory(lvalue);
 			}
 		}
 	}
 
-	protected Object get(String string, Class<? extends Number> classType) {
+	private Object parseRealNumber(String string, Class<? extends Number> classType) {
 		Object value = null;
 		if (classType.isAssignableFrom(Long.class)) {
 			value = Long.parseLong(string.trim());
@@ -153,5 +153,4 @@ public class LinuxSystemMonitorProcessor implements Callable<SystemInfo> {
 		}
 		return value;
 	}
-
 }

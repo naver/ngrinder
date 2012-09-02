@@ -25,6 +25,7 @@ package org.ngrinder.monitor;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.infra.AgentConfig;
 
 /**
@@ -77,11 +78,10 @@ public class MonitorConstants {
 	 *            {@link AgentConfig} from which the property is loaded.
 	 */
 	public static void init(AgentConfig agentConfig) {
-		DEFAULT_AGENT_PORT = agentConfig.getAgentProperties().getPropertyInt("monitor.listen.port", 3243);
-		DEFAULT_AGENT_COLLECTOR_INTERVAL = agentConfig.getAgentProperties().getPropertyInt("monitor.collector.interval",
-				1);
-		DEFAULT_CONTROLLER_CACHE_SIZE = agentConfig.getAgentProperties().getPropertyInt("monitor.controller.cache.size", 128);
-		DEFAULT_CONTROLLER_INTERVAL = agentConfig.getAgentProperties().getPropertyInt("monitor.collector.interval",
-				1);
+		PropertiesWrapper agentProperties = agentConfig.getAgentProperties();
+		DEFAULT_AGENT_PORT = agentProperties.getPropertyInt("monitor.listen.port", 3243);
+		DEFAULT_AGENT_COLLECTOR_INTERVAL = agentProperties.getPropertyInt("monitor.collector.interval", 1);
+		DEFAULT_CONTROLLER_CACHE_SIZE = agentProperties.getPropertyInt("monitor.controller.cache.size", 128);
+		DEFAULT_CONTROLLER_INTERVAL = agentProperties.getPropertyInt("monitor.collector.interval", 1);
 	}
 }

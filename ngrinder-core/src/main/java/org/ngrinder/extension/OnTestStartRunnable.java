@@ -23,8 +23,6 @@
 package org.ngrinder.extension;
 
 
-import net.grinder.StopReason;
-
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.service.IPerfTestService;
 

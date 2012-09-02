@@ -53,8 +53,8 @@ public abstract class ConsolePropertiesFactory {
 
 			return consoleProperties;
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("Exception occurs while merging entities while creating empty console",
-					e);
+			String message = "Exception occurs while merging entities while creating empty console";
+			throw new NGrinderRuntimeException(message, e);
 		} finally {
 			FileUtils.deleteQuietly(tmpFile);
 		}

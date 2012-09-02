@@ -29,14 +29,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.ngrinder.monitor.agent.mxbean.core.MXBean;
 
 public final class AgentMXBeanStorage {
-	private Map<String, MXBean> cache = new ConcurrentHashMap<String, MXBean>();
+	private Map<String, MXBean> cachedMxBeans = new ConcurrentHashMap<String, MXBean>();
 	private static final AgentMXBeanStorage INSTANCE = new AgentMXBeanStorage();
 
 	private AgentMXBeanStorage() {
 	}
 
 	public int getSize() {
-		return cache.size();
+		return cachedMxBeans.size();
 	}
 
 	public static AgentMXBeanStorage getInstance() {
@@ -44,14 +44,14 @@ public final class AgentMXBeanStorage {
 	}
 
 	public MXBean getMXBean(String key) {
-		return cache.get(key);
+		return cachedMxBeans.get(key);
 	}
 
 	public void addMXBean(String key, MXBean mxBean) {
-		cache.put(key, mxBean);
+		cachedMxBeans.put(key, mxBean);
 	}
 
 	public Collection<MXBean> getMXBeans() {
-		return cache.values();
+		return cachedMxBeans.values();
 	}
 }

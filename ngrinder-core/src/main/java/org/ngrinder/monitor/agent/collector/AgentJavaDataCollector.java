@@ -45,28 +45,25 @@ import org.slf4j.LoggerFactory;
 public class AgentJavaDataCollector extends AgentDataCollector {
 	private static final Logger LOG = LoggerFactory.getLogger(AgentJavaDataCollector.class);
 
-	private Map<Integer, JavaVirtualMachineInfo> cache;
-	private Map<JavaVirtualMachineInfo, JavaMonitorProcessor> processors;
-	private ExecutorService pool;
-	private CompletionService<JavaInfoForEach> cs;
-	private long count = 0;
+	private Map<Integer, JavaVirtualMachineInfo> vmInfoSnapshot;
+	private Map<JavaVirtualMachineInfo, JavaMonitorProcessor> javaMonitorProcessors;
+	private CompletionService<JavaInfoForEach> javaMemoryStatService;
+	private long failedCount = 0;
 
 	@Override
 	public synchronized void refresh() {
-		cache = JVMUtils.getAllJVMs();
+		vmInfoSnapshot = JVMUtils.getAllJVMs();
 
-		processors = new HashMap<JavaVirtualMachineInfo, JavaMonitorProcessor>();
-		Iterator<Integer> keys = cache.keySet().iterator();
+		javaMonitorProcessors = new HashMap<JavaVirtualMachineInfo, JavaMonitorProcessor>();
+		Iterator<Integer> keys = vmInfoSnapshot.keySet().iterator();
 		while (keys.hasNext()) {
-			Integer key = keys.next();
-			JavaVirtualMachineInfo jvmInfo = cache.get(key);
+			JavaVirtualMachineInfo jvmInfo = vmInfoSnapshot.get(keys.next());
 			JavaMonitorProcessor processor = new JavaMonitorProcessor(jvmInfo);
-			processors.put(jvmInfo, processor);
-
+			javaMonitorProcessors.put(jvmInfo, processor);
 		}
 
-		pool = Executors.newFixedThreadPool(cache.size() == 0 ? 1 : cache.size());
-		cs = new ExecutorCompletionService<JavaInfoForEach>(pool);
+		ExecutorService executorService = Executors.newFixedThreadPool(vmInfoSnapshot.size() == 0 ? 1 : vmInfoSnapshot.size());
+		javaMemoryStatService = new ExecutorCompletionService<JavaInfoForEach>(executorService);
 	}
 
 	@Override
@@ -80,16 +77,16 @@ public class AgentJavaDataCollector extends AgentDataCollector {
 	public synchronized JavaInfo execute() {
 		JavaInfo javaInfo = new JavaInfo();
 
-		for (Entry<JavaVirtualMachineInfo, JavaMonitorProcessor> jj : processors.entrySet()) {
-			JavaMonitorProcessor processor = jj.getValue();
-			cs.submit(processor);
+		for (Entry<JavaVirtualMachineInfo, JavaMonitorProcessor> entry : javaMonitorProcessors.entrySet()) {
+			JavaMonitorProcessor processor = entry.getValue();
+			javaMemoryStatService.submit(processor);
 		}
 
-		for (int i = 0; i < processors.size(); i++) {
+		for (int i = 0; i < javaMonitorProcessors.size(); i++) {
 			try {
-				javaInfo.addJavaInfoForEach((JavaInfoForEach) cs.take().get());
+				javaInfo.addJavaInfoForEach((JavaInfoForEach) javaMemoryStatService.take().get());
 			} catch (Exception e) {
-				if ((count++) % 60 == 0) {
+				if ((failedCount++) % 60 == 0) {
 					if (SystemUtils.IS_OS_WINDOWS) {
 						LOG.error("Error while getting java perf data");
 						LOG.error("You should run agent in administrator permission");
