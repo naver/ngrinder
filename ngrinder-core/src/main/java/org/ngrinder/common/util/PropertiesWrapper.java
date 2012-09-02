@@ -24,6 +24,7 @@ package org.ngrinder.common.util;
 
 import java.util.Properties;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
@@ -82,7 +83,7 @@ public class PropertiesWrapper {
 	public String getProperty(String key, String defaultValue) {
 		return getProperty(key, defaultValue, DEFAULT_ERROR_MESSGAE);
 	}
-	
+
 	public void addProperty(String key, String value) {
 		this.properties.put(key, value);
 	}
@@ -99,5 +100,10 @@ public class PropertiesWrapper {
 	public int getPropertyInt(String key, int defaultValue) {
 		String property = getProperty(key, String.valueOf(defaultValue), DEFAULT_ERROR_MESSGAE);
 		return NumberUtils.toInt(property, defaultValue);
+	}
+
+	public boolean getPropertyBoolean(String key, boolean b) {
+		String property = getProperty(key, String.valueOf(b), DEFAULT_ERROR_MESSGAE);
+		return BooleanUtils.toBoolean(property);
 	}
 }

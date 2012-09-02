@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+	<appender name="log-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_DIRECTORY}/agent.log</file>
+ 
+		<encoder>
+			<pattern>%d{HH:mm:ss} %-5level %logger{36}  %marker:  %message%n</pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<fileNamePattern>${PREFIX}.log%i</fileNamePattern>
+			<minIndex>1</minIndex>
+			<maxIndex>4</maxIndex>
+		</rollingPolicy>
+		
+		<triggeringPolicy class="net.grinder.util.logback.RollOnStartUp" />
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<maxFileSize>20MB</maxFileSize>
+		</triggeringPolicy>
+
+	</appender>
+
+	<root>
+		<level value="${LOG_LEVEL}" />
+		<appender-ref ref="log-file" />
+	</root>
+</configuration>

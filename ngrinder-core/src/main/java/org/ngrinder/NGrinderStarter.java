@@ -48,6 +48,10 @@ import org.ngrinder.monitor.agent.AgentMonitorServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.Context;
+import ch.qos.logback.core.joran.spi.JoranException;
+
 /**
  * Main class to start agent or monitor.
  * 
@@ -212,6 +216,22 @@ public class NGrinderStarter {
 		}
 	}
 
+	private static void configureLogging(boolean verbose, File logDirectory) {
+
+		final Context context = (Context) LoggerFactory.getILoggerFactory();
+
+		final JoranConfigurator configurator = new JoranConfigurator();
+		configurator.setContext(context);
+		context.putProperty("LOG_LEVEL", verbose ? "TRACE" : "INFO");
+		context.putProperty("LOG_DIRECTORY", logDirectory.getAbsolutePath());
+		try {
+			configurator.doConfigure(NGrinderStarter.class.getResource("/logback-agent.xml"));
+		} catch (JoranException e) {
+			printHelpAndExit("Can not configure logger on " + logDirectory.getAbsolutePath()
+					+ ".\n Please check if it's writable.");
+		}
+	}
+
 	/**
 	 * Agent starter
 	 * 
@@ -222,21 +242,29 @@ public class NGrinderStarter {
 		if (!idValidCurrentDirectory()) {
 			printHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
 		}
-		NGrinderStarter starter = new NGrinderStarter();
 		agentConfig = new AgentConfig();
 		agentConfig.init();
-
+		
 		String startMode = agentConfig.getAgentProperties().getProperty("start.mode", "agent");
+		
+		// Configure log.
+		Boolean verboseMode = agentConfig.getAgentProperties().getPropertyBoolean("verbose", false);
+		File logDirectory = agentConfig.getHome().getLogDirectory();
+		configureLogging(verboseMode, logDirectory);
+		
+		NGrinderStarter starter = new NGrinderStarter();
+	
 		if (startMode.equalsIgnoreCase("agent")) {
 			String consoleIP = agentConfig.getAgentProperties().getProperty("agent.console.ip", "127.0.0.1");
 			int consolePort = agentConfig.getAgentProperties().getPropertyInt("agent.console.port",
-							AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+					AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 
 			String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
-
+			LOG.info("Agent is started");
 			starter.startAgent(region, consoleIP, consolePort);
 		} else if (startMode.equalsIgnoreCase("monitor")) {
 			MonitorConstants.init(agentConfig);
+			LOG.info("Monitor is started");
 			starter.startMonitor();
 		} else {
 			printHelpAndExit("Invalid agent.conf, 'start.mode' must be set as 'monitor' or 'agent'.");
