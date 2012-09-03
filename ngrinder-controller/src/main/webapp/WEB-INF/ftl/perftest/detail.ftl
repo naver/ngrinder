@@ -883,13 +883,12 @@ i.collapse{
 	      updateChart();
 	      resetFooter();
 	      $("#processAndThreadPanel").hide();
-	      $("#processAndThreadPanelDiv").hide();
+	      //$("#processAndThreadPanelDiv").hide();
 	      
 	      $("#expandAndCollapse").click(function () {
 	          $(this).toggleClass("collapse");
 	          $("#processAndThreadPanelDiv").toggle();
 	          $("#processAndThreadPanel").toggle();
-	          
 	      });
 	      updateScriptResources(true);
 	      validateHostForm();
