@@ -41,7 +41,6 @@ import net.grinder.SingleConsole.ConsoleShutdownListener;
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
-import net.grinder.console.model.SampleModelImplementationEx;
 
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.service.MonitorAgentService;
