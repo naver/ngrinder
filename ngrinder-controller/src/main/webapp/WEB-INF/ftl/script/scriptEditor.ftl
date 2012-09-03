@@ -101,7 +101,7 @@
 			    ><code>Tip</code></div> 
 			    
 				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre">
-				</div>
+				</pre>
 			</div>
 			<#include "../common/copyright.ftl">	
 		</div>

@@ -104,6 +104,7 @@ public interface NGrinderConstants {
 	public static final String USER_REPO_PATH = "repos";
 	public static final String PERF_TEST_PATH = "perftest";
 	public static final String DOWNLOAD_PATH = "download";
+	public static final String GLOBAL_LOG_PATH = "logs";
 
 	public static final String DEFAULT_GRINDER_PROPERTIES_PATH = "grinder.properties";
 
