@@ -78,7 +78,8 @@ public class HomeController extends NGrinderBaseController {
 		timeZones = new ArrayList<TimeZone>();
 		final String[] timeZoneIds = TimeZone.getAvailableIDs();
 		for (final String id : timeZoneIds) {
-			if (id.matches(TIMEZONE_ID_PREFIXES) && !TimeZone.getTimeZone(id).getDisplayName().contains("GMT")) {
+			if (id.matches(TIMEZONE_ID_PREFIXES)
+							&& !TimeZone.getTimeZone(id).getDisplayName().contains("GMT")) {
 				timeZones.add(TimeZone.getTimeZone(id));
 			}
 		}
@@ -127,11 +128,16 @@ public class HomeController extends NGrinderBaseController {
 		localeEditor.setAsText(lan);
 		localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
 	}
-	
+
 	@RequestMapping(value = "/login")
-	public String login(ModelMap model) {
+	public String login(ModelMap model, HttpServletResponse response) {
 		setLoginPageDate(model);
-		return "login";
+		try {
+			getCurrentUser();
+		} catch (Exception e) {
+			return "login";
+		}
+		return "redirect:/";
 	}
 
 	public void setLoginPageDate(ModelMap model) {
@@ -158,14 +164,4 @@ public class HomeController extends NGrinderBaseController {
 		model.addAttribute("timeZones", DateUtil.getFilteredTimeZoneMap());
 		return "allTimeZone";
 	}
-
-	// user save/modification is in UserController
-	// @RequestMapping("/profile/save")
-	// public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User
-	// updatedUser) {
-	// if (updatedUser.exist()) {
-	// getUserService().modifyUser(updatedUser);
-	// }
-	// return "/";
-	// }
 }

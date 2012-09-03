@@ -57,11 +57,24 @@
 						</tr> 
 					</table>
 				</div>
-				<#if perfTestStatisticsList?has_content>
-					<#list perfTestStatisticsList as eachPerfTestStatistics>
-						${eachPerfTestStatistics.user.userName} runs ${eachPerfTestStatistics.testCount} test(s) with ${eachPerfTestStatistics.agentCount} agent(s).<br/>
-					</#list>
-				</#if>
+
+				<div class="pull-right"> 
+					<#if perfTestStatisticsList?has_content>
+						<img class="status" src="${req.getContextPath()}/img/ball/green_anime.gif">
+						<#assign perfPeopleSize = perfTestStatisticsList?size>
+					<#else>
+						<#assign perfPeopleSize = 0>
+					</#if>
+					<code id="currentRunning" style="width:300px"> <@spring.messageArgs "perfTest.currentRunning.summary", ["${perfPeopleSize}"]/></code>
+					<div class="hidden" id="currentRunningDiv">
+						<#if perfTestStatisticsList?has_content>
+							<#list perfTestStatisticsList as eachPerfTestStatistics>
+							<@spring.messageArgs "perfTest.currentRunning.each", ["${eachPerfTestStatistics.user.userName}", "${eachPerfTestStatistics.testCount}", "${eachPerfTestStatistics.agentCount}"]/>
+							</#list>  
+						</#if>
+					</div>	
+				</div>
+				
 				
 				<table class="table table-striped table-bordered ellipsis" id="testTable" style="width:940px">  
 					<colgroup>
@@ -248,6 +261,11 @@
 				getList(1);
 			});
 			</#if>
+			
+			$("#currentRunning").click(function() {
+				$("#currentRunningDiv").toggle();
+			});
+ 
 		});
 		
 		function deleteTests(ids) {

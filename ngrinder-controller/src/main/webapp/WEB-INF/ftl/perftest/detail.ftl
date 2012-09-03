@@ -269,6 +269,7 @@ i.collapse{
 													<td>
 														<input type="hidden" id="scriptRevision" name="scriptRevision" value="${(test.scriptRevision)!-1}">
 														<button class="btn btn-mini btn-info pull-right" type="button" id="showScript" style="margin-top:3px">
+														REV:
 														<#if test?? && test.scriptRevision != -1>
 															${test.scriptRevision}
 														<#else>
@@ -886,8 +887,9 @@ i.collapse{
 	      
 	      $("#expandAndCollapse").click(function () {
 	          $(this).toggleClass("collapse");
-	          $("#processAndThreadPanel").toggle();
 	          $("#processAndThreadPanelDiv").toggle();
+	          $("#processAndThreadPanel").toggle();
+	          
 	      });
 	      updateScriptResources(true);
 	      validateHostForm();

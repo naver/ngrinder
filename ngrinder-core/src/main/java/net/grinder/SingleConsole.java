@@ -479,9 +479,9 @@ public class SingleConsole implements Listener, SampleListener {
 					//MutableDouble in valueMap, to avoid creating too many objects.
 					if (val instanceof Double) {
 						// for debug, maybe there are some fields should not be sum up.
-						LOGGER.warn("Calculate sum for key:{} in statistic", each.getKey());
+						LOGGER.debug("Calculate sum for key:{} in statistic", each.getKey());
 						MutableDouble mutableDouble = (MutableDouble)valueMap.get(each.getKey());
-						if (mutableDouble == null) {
+						if (mutableDouble == null) { 
 							mutableDouble = new MutableDouble(0D);
 							valueMap.put(each.getKey(), mutableDouble);
 						}
