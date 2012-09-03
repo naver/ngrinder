@@ -42,7 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
-	private AgentRepository agentRepository;
+	private AgentManagerRepository agentRepository;
 
 	AgentInfo agentInfo;
 

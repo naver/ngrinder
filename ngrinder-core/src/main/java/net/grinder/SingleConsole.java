@@ -105,6 +105,8 @@ public class SingleConsole implements Listener, SampleListener {
 
 	// for displaying tps graph in running page
 	private double tpsValue = 0;
+	// for displaying tps graph in running page
+	private double peakTpsForGraph = 0;
 	private SampleModel sampleModel;
 	private SampleModelViews modelView;
 	private long startTime = 0;
@@ -412,6 +414,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	public void setTpsValue(double newValue) {
+		peakTpsForGraph = Math.max(peakTpsForGraph, newValue);
 		tpsValue = newValue;
 	}
 
@@ -600,8 +603,8 @@ public class SingleConsole implements Listener, SampleListener {
 		result.put("totalStatistics", totalStatistics);
 		result.put("cumulativeStatistics", cumulativeStatistics);
 		result.put("lastSampleStatistics", lastSampleStatistics);
-
 		result.put("tpsChartData", this.getTpsValues());
+		result.put("peakTpsForGraph", this.peakTpsForGraph);
 
 		MutablePicoContainer container = (MutablePicoContainer) consoleFoundation.getContainer();
 		ProcessControl processControl = (ProcessControl) container.getComponent(ProcessControl.class);

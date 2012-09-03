@@ -1016,6 +1016,7 @@ i.collapse{
 	  function refreshData() {
 	      var refreshDiv = $("<div></div>");
 	      var url = "${req.getContextPath()}/perftest/running/refresh?testId=" + $("#testId").val();
+	      var peakTps = 50;
 	      refreshDiv.load(url, function () {
 	          var succesVal = refreshDiv.find("#input_status").val();
 
@@ -1029,7 +1030,7 @@ i.collapse{
 	              $("#thread_data").text(refreshDiv.find("#input_thread").val());
 
 	              $("#running_time").text(showRunTime(refreshDiv.find("#test_time").val()));
-
+				  peakTps = parseInt(refreshDiv.find("#peak_tps").val());
 	              test_tps_data.enQueue(refreshDiv.find("#tpsChartData").val());
 	          } else {
 	              if ($('#runningContent_tab:hidden')[0]) {
@@ -1044,7 +1045,7 @@ i.collapse{
 	              test_tps_data.deQueue();
 	          }
 
-	          showChart('runningTps', test_tps_data.aElement);
+	          showChart('runningTps', test_tps_data.aElement, peakTps);
 	      });
 	  }
 
@@ -1062,9 +1063,9 @@ i.collapse{
 	      return "" + parseInt(s / 86400) + "d " + parseInt(s % 86400 / 3600) + "h " + parseInt(s % 86400 % 3600 / 60) + "m " + (s % 86400 % 3600 % 60) + "s";
 	  }
 
-	  function showChart(containerId, data) {
+	  function showChart(containerId, data, peakTps) {
 	      if (jqplotObj) {
-	          replotChart(jqplotObj, data);
+	          replotChart(jqplotObj, data, peakTps);
 	      } else {
 	          jqplotObj = drawChart('TPS', containerId, data);
 	      }

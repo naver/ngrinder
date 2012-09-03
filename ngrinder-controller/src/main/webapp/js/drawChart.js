@@ -88,7 +88,7 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 }
 
 //data is an array object.
-function replotChart(plotObj, data) {
+function replotChart(plotObj, data, ymax) {
 	var cache = [];
 	var i;
 	for (i = 0; i < data.length; i++) {
@@ -97,5 +97,13 @@ function replotChart(plotObj, data) {
 
 	plotObj.series[0].data = cache;
 	plotObj.resetAxesScale(); 
+	plotObj.axes.yaxis.max = ymax;
+	plotObj.axes.yaxis.min = 0; 
+	plotObj.axes.yaxis.tickOptions = {
+		show : true,
+		formatter : function(format, value) {
+			return value.toFixed(0);
+		}
+	};
 	plotObj.replot();
 }
