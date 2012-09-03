@@ -42,12 +42,19 @@ div.chart {
 	margin-bottom: 12px;
 }
 
-.jqplot-yaxis {
-    margin-right: 10px;
-}
+
 .table thead th {
 	vertical-align: middle;
 }
+
+
+.jqplot-yaxis {
+    margin-right: 20px; 
+}
+
+.jqplot-xaxis {
+    margin-top: 20px; 
+} 
 
 .rampChart {
 	width: 430px;
