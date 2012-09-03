@@ -130,7 +130,7 @@ public class HomeController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = "/login")
-	public String login(ModelMap model, HttpServletResponse response) {
+	public String login(ModelMap model) {
 		setLoginPageDate(model);
 		try {
 			getCurrentUser();

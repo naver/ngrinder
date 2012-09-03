@@ -195,6 +195,7 @@ public class ConsoleManager {
 	public void returnBackConsole(SingleConsole console) {
 		synchronized (this) {
 			try {
+				console.unregisterSampling();
 				console.sendStopMessageToAgents();
 			} catch (Exception e) {
 				LOG.error("Exception occurs while shuttdowning console in returnback process", e);
