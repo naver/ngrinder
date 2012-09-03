@@ -179,6 +179,16 @@
 					<generateHtml>true</generateHtml>
 					<generateXml>true</generateXml>
 					<jdk>${jdk-version}</jdk>
+					<excludes>
+						<exclude>org/ngrinder/*/model/*.java</exclude>
+						<exclude>org/ngrinder/dns/*.java</exclude>
+						<exclude>org/ngrinder/sm/*.java</exclude>
+						<exclude>org/ngrinder/monitor/controller/model/*.java</exclude>
+						<exclude>org/hibernate/dialect/*.java</exclude>
+						<exclude>org/ngrinder/common/util/Preconditions.java</exclude>
+						<exclude>**/DavSvnController.java</exclude>
+						<exclude>**/Main.java</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -250,6 +260,8 @@
 					<jdk>${jdk-version}</jdk>
 					<excludes>
 						<exclude>org/ngrinder/*/model/*.java</exclude>
+						<exclude>org/ngrinder/dns/*.java</exclude>
+						<exclude>org/ngrinder/sm/*.java</exclude>
 						<exclude>org/ngrinder/monitor/controller/model/*.java</exclude>
 						<exclude>org/hibernate/dialect/*.java</exclude>
 						<exclude>org/ngrinder/common/util/Preconditions.java</exclude>
