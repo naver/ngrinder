@@ -29,21 +29,33 @@
 				<input type="hidden" id="sortDirection" name="page.sort.dir" value="${(sortDirection)!'desc'}">
 		
 				<div class="well form-inline searchBar">
-					<input type="text" class="search-query" placeholder="Keywords" name ="query" id="query" value="${query!}">
-					<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
-					<label class="checkbox" style="position:relative;">
-						<input type="checkbox" id="onlyFinished" name="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> <@spring.message "perfTest.formInline.onlyFinished"/>
-					</label>
-					<span class="pull-right">
-						<a class="btn btn-primary" href="${req.getContextPath()}/perftest/detail" id="createBtn" data-toggle="modal">
-							<i class="icon-file"></i>
-							<@spring.message "perfTest.formInline.createTest"/>
-						</a>
-						<a class="btn btn-danger" href="javascript:void(0);" id="deleteBtn">
-							<i class="icon-remove"></i>
-							<@spring.message "perfTest.formInline.deletetSelectedTest"/>
-						</a>
-					</span>
+					<table style="width:100%">
+						<colspan>
+							<col width="*"/>
+							<col width="300px"/> 
+						</colspan>
+						<tr>
+							<td>
+								<input type="text" class="search-query" placeholder="Keywords" name ="query" id="query" value="${query!}">
+								<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
+								<label class="checkbox" style="position:relative;">
+									<input type="checkbox" id="onlyFinished" name="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> <@spring.message "perfTest.formInline.onlyFinished"/>
+								</label>
+							</td>
+							<td>
+								<span class="pull-right">
+									<a class="btn btn-primary" href="${req.getContextPath()}/perftest/detail" id="createBtn" data-toggle="modal">
+										<i class="icon-file"></i>
+										<@spring.message "perfTest.formInline.createTest"/>
+									</a>
+									<a class="btn btn-danger" href="javascript:void(0);" id="deleteBtn">
+										<i class="icon-remove"></i>
+										<@spring.message "perfTest.formInline.deletetSelectedTest"/>
+									</a>
+								</span>
+							</td>
+						</tr> 
+					</table>
 				</div>
 				<#if perfTestStatisticsList?has_content>
 					<#list perfTestStatisticsList as eachPerfTestStatistics>
