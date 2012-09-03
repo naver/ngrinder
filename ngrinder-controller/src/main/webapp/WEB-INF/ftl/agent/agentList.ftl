@@ -32,10 +32,10 @@
 						<col width="30">
 						<col width="150">
 						<col width="100">
-						<col>
+						<col width="*">
 						<col width="150">
 						<col width="100">
-						<col width="120"> 
+						<col width="150">   
 					</colgroup>
 					<thead>
 						<tr>
