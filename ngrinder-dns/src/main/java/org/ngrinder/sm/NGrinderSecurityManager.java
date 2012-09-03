@@ -41,7 +41,29 @@ public class NGrinderSecurityManager extends SecurityManager {
 	private String workDirectory = System.getProperty("user.dir");
 	private String agentExecDirectory = System.getProperty("ngrinder.exec.path", workDirectory);
 	private String etcHosts = System.getProperty("ngridner.etc.hosts", "");
-	private List<String> hostIPList = this.getHostIP(etcHosts);
+	private String consoleIP = System.getProperty("ngrinder.console.ip", "127.0.0.1");
+	private List<String> allowedHostIP = new ArrayList<String>();
+
+	{
+		/**
+		 * Get ip address of target hosts. <br>
+		 * if target hosts 'a.com:1.1.1.1' add ip: '1.1.1.1' <br>
+		 * if target hosts ':1.1.1.1' add ip: '1.1.1.1' <br>
+		 * if target hosts '1.1.1.1' add ip: '1.1.1.1' <br>
+		 */
+		String[] hostsList = StringUtils.split(etcHosts, ",");
+		for (String hosts : hostsList) {
+			String[] addresses = StringUtils.split(hosts, ":");
+			if (addresses.length > 0) {
+				allowedHostIP.add(addresses[addresses.length - 1]);
+			} else {
+				allowedHostIP.add(hosts);
+			}
+		}
+
+		// add controler host
+		allowedHostIP.add(consoleIP);
+	}
 
 	@Override
 	public void checkPropertiesAccess() {
@@ -55,30 +77,22 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	@Override
 	public void checkRead(String file) {
-		if (!(fileAccessAllowedInWorkDirectory(file) || fileAccessAllowedInAgentExecDirectory(file))) {
-			throw new SecurityException("File read access on " + file + " is not allowed.");
-		}
+		this.fileAccessReadAllowed(file);
 	}
 
 	@Override
 	public void checkRead(String file, Object context) {
-		if (!(fileAccessAllowedInWorkDirectory(file) || fileAccessAllowedInAgentExecDirectory(file))) {
-			throw new SecurityException("File read access on " + file + " is not allowed.");
-		}
+		this.fileAccessReadAllowed(file);
 	}
 
 	@Override
 	public void checkWrite(String file) {
-		if (!(fileAccessAllowedInWorkDirectory(file))) {
-			throw new SecurityException("File write read access on " + file + " is not allowed.");
-		}
+		this.fileAccessWriteDeleteAllowed(file);
 	}
 
 	@Override
 	public void checkDelete(String file) {
-		if (!(fileAccessAllowedInWorkDirectory(file))) {
-			throw new SecurityException("File delete read access on " + file + " is not allowed.");
-		}
+		this.fileAccessWriteDeleteAllowed(file);
 	}
 
 	@Override
@@ -87,21 +101,30 @@ public class NGrinderSecurityManager extends SecurityManager {
 	}
 
 	/**
-	 * File access is allowed on "user.dir"
+	 * File read access is allowed on <br>
+	 * "agent.exec.folder" and "agent.exec.folder"
 	 * 
 	 * @param file
 	 */
-	private boolean fileAccessAllowedInWorkDirectory(String file) {
-		return new File(file).getAbsolutePath().startsWith(workDirectory);
+	private void fileAccessReadAllowed(String file) {
+		if (new File(file).getAbsolutePath().startsWith(workDirectory)
+				|| new File(file).getAbsolutePath().startsWith(agentExecDirectory)) {
+			return;
+		}
+		throw new SecurityException("File read access on " + file + " is not allowed.");
 	}
 
 	/**
-	 * File access is allowed on "agent.exec.folder"
+	 * File write & delete access is allowed <br>
+	 * on "agent.exec.folder"
 	 * 
 	 * @param file
 	 */
-	private boolean fileAccessAllowedInAgentExecDirectory(String file) {
-		return new File(file).getAbsolutePath().startsWith(agentExecDirectory);
+	private void fileAccessWriteDeleteAllowed(String file) {
+		if (new File(file).getAbsolutePath().startsWith(workDirectory)) {
+			return;
+		}
+		throw new SecurityException("File write & delete access on " + file + " is not allowed.");
 	}
 
 	@Override
@@ -131,31 +154,10 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * @param host
 	 */
 	private void netWorkAccessAllowed(String host) {
-		if (hostIPList.contains(host)) {
+		if (allowedHostIP.contains(host)) {
 			return;
 		}
 		throw new SecurityException("NetWork access on " + host + " is not allowed.");
 	}
 
-	/**
-	 * Get ip address of target hosts. <br>
-	 * if target hosts 'a.com:1.1.1.1' add ip: '1.1.1.1' <br>
-	 * if target hosts ':1.1.1.1' add ip: '1.1.1.1' <br>
-	 * if target hosts '1.1.1.1' add ip: '1.1.1.1' <br>
-	 * 
-	 * @return
-	 */
-	private List<String> getHostIP(String hostString) {
-		List<String> ipList = new ArrayList<String>();
-		String[] hostsList = StringUtils.split(hostString, ",");
-		for (String hosts : hostsList) {
-			String[] addresses = StringUtils.split(hosts, ":");
-			if (addresses.length > 0) {
-				ipList.add(addresses[addresses.length - 1]);
-			} else {
-				ipList.add(hosts);
-			}
-		}
-		return ipList;
-	}
 }
