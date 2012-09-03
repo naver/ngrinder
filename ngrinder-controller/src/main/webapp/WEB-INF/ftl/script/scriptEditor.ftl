@@ -85,7 +85,7 @@
 					</div>
 					<input type="hidden" id="contentHidden" name="content" value=""/>
 				</form>
-				<textarea id="content" style="position:relative;width:940px;margin-top:0px">${(file.content)!}</textarea>
+				<textarea id="codemirrorContent" style="position:relative;width:940px;margin-top:0px">${(file.content)!}</textarea>
 				<div class="pull-right" rel="popover" data-original-title="Tip" data-content="
 			      Ctrl-F / Cmd-F : <@spring.message "script.editor.tip.startSearching"/>&lt;br&gt;
 			      Ctrl-G / Cmd-G : <@spring.message "script.editor.tip.findNext"/>&lt;br&gt;
@@ -135,7 +135,7 @@
 	      cm.refresh(); 
 	    }
     	$(document).ready(function() {
-			var editor = CodeMirror.fromTextArea(document.getElementById("content"), {
+			var editor = CodeMirror.fromTextArea(document.getElementById("codemirrorContent"), {
 			   mode: "python",
 			   theme: "eclipse",
 			   lineNumbers: true,
