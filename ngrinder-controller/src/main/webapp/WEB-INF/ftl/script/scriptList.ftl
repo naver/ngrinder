@@ -360,9 +360,8 @@
 					"bLengthChange": false,
 					"bInfo": false,
 					"iDisplayLength": 15, 
-					"aaSorting": [], 
-					"bProcessing": true,
-					"aoColumns": [{ "asSorting": []}, { "asSorting": []}, null, { "asSorting": []}, null, null, null, { "asSorting": []}],
+					"aaSorting": [],
+					"aoColumns": [{"asSorting": []}, {"asSorting": []}, null, {"asSorting": []}, null, null, null, {"asSorting": []}],
 					"sPaginationType": "bootstrap",
 					"oLanguage": {
 						"oPaginate": {
