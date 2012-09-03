@@ -33,6 +33,8 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentRepository;
 import org.ngrinder.perftest.service.AgentManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -49,6 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AgentService {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(AgentService.class);
 	@Autowired
 	private AgentManager agentManager;
 
@@ -160,7 +163,11 @@ public class AgentService {
 			each.setApproved(approve);
 			agentRepository.save(each);
 			AgentInfo findOne = agentRepository.findOne(each.getId());
-			System.out.println(findOne.isApproved());
+			if (approve) {
+				LOGGER.info("agent {} is approved", ip);
+			} else {
+				LOGGER.info("agent {} is not approved", ip);
+			}
 		}
 
 	}
