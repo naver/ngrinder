@@ -181,7 +181,7 @@
 	                            maxNonHeapMemory = getMax(maxNonHeapMemory, java_nonHeapUsedMemory.aElement);
 	                            showChart('NonHeap Memory', 'nonHeapMemoryDiv', java_nonHeapUsedMemory.aElement, 3, formatAmount, maxNonHeapMemory);
 	                            maxThreadCount = getMax(maxThreadCount, java_threadCount.aElement);
-	                            showChart('Thread Count', 'threadCountDiv', java_threadCount.aElement, 4, maxThreadCount);
+	                            showChart('Thread Count', 'threadCountDiv', java_threadCount.aElement, 4, formatAmount, maxThreadCount);
 	                            maxJVMCpu = getMax(maxJVMCpu, java_cpuUsedPercentage.aElement);
 	                            showChart('CPU', 'jvmCpuDiv', java_cpuUsedPercentage.aElement, 5, formatPercentage, maxJVMCpu);
                         	}
