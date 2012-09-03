@@ -141,6 +141,25 @@
                 getMonitorData();
                 $("#rinterval").blur();
             });
+            var maxCPU = 0;
+            var maxMemory = 0;
+            var maxHeapMemory = 0;
+            var maxNonHeapMemory = 0;
+            var maxThreadCount = 0;
+            var maxJVMCpu = 0;
+            
+            function getMax(prev, current) {
+            	var currentMax = 0;
+            	for (var i = 0; current.length > i; i++) {
+	            	if (current[i] > currentMax) {
+	            		currentMax = current[i];
+	            	}
+            	}
+            	if (prev > currentMax) {
+            		return prev;
+            	}
+            	return currentMax;
+            }
             function getMonitorData(){
                 $.ajax({
                     url: "${req.getContextPath()}/monitor/getCurrentMonitorData",
@@ -151,13 +170,20 @@
                         if (res.success) {
                         	getChartData(res);
                         	if ($("#chartTab li:first").hasClass("active")) {
-                        		showChart('CPU', 'cpuDiv', sys_totalCpuValue.aElement, 0, formatPercentage);
-                            	showChart('Memory', 'memoryDiv', sys_usedMemory.aElement, 1, formatAmount);
+                        		maxCPU = getMax(maxCPU, sys_totalCpuValue.aElement);
+                        		showChart('CPU', 'cpuDiv', sys_totalCpuValue.aElement, 0, formatPercentage, maxCPU);
+                        		maxMemory = getMax(maxMemory, sys_usedMemory.aElement);
+                            	showChart('Memory', 'memoryDiv', sys_usedMemory.aElement, 1, formatAmount, maxMemory);
                         	} else {
-	                            showChart('Heap Memory', 'heapMemoryDiv', java_heapUsedMemory.aElement, 2, formatAmount);
-	                            showChart('NonHeap Memory', 'nonHeapMemoryDiv', java_nonHeapUsedMemory.aElement, 3, formatAmount);
-	                            showChart('Thread Count', 'threadCountDiv', java_threadCount.aElement, 4);
-	                            showChart('CPU', 'jvmCpuDiv', java_cpuUsedPercentage.aElement, 5, formatPercentage);
+                        		
+                        		maxHeapMemory = getMax(maxHeapMemory, java_heapUsedMemory.aElement);
+	                            showChart('Heap Memory', 'heapMemoryDiv', java_heapUsedMemory.aElement, 2, formatAmount, maxHeapMemory);
+	                            maxNonHeapMemory = getMax(maxNonHeapMemory, java_nonHeapUsedMemory.aElement);
+	                            showChart('NonHeap Memory', 'nonHeapMemoryDiv', java_nonHeapUsedMemory.aElement, 3, formatAmount, maxNonHeapMemory);
+	                            maxThreadCount = getMax(maxThreadCount, java_threadCount.aElement);
+	                            showChart('Thread Count', 'threadCountDiv', java_threadCount.aElement, 4, maxThreadCount);
+	                            maxJVMCpu = getMax(maxJVMCpu, java_cpuUsedPercentage.aElement);
+	                            showChart('CPU', 'jvmCpuDiv', java_cpuUsedPercentage.aElement, 5, formatPercentage, maxJVMCpu);
                         	}
                             return true;
                         } else {
@@ -172,10 +198,10 @@
                 });
             }
             
-            function showChart(title, id, data, index, formatYaxis) {
+            function showChart(title, id, data, index, formatYaxis, maxY) {
 				var pt = jqplots[index];
             	if (pt) {
-            		replotChart(pt, data);
+            		replotChart(pt, data, maxY);
             	} else {
 	                jqplots[index] = drawChart(title, id, data, formatYaxis);
             	}

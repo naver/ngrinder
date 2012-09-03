@@ -477,7 +477,7 @@ public class SingleConsole implements Listener, SampleListener {
 					}
 					Object val = each.getValue();
 					LOGGER.debug("statistic data key:{}", each.getKey());
-					LOGGER.debug("               value:{}, value type:{}", val, val.getClass().getName());
+					LOGGER.debug("- value:{}, value type:{}", val, val.getClass().getName());
 					// number value in lastStatistic is Double, we add every test's double value
 					// into valueMap, so we use
 					// MutableDouble in valueMap, to avoid creating too many objects.
