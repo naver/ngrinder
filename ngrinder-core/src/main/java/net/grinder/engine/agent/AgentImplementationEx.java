@@ -246,6 +246,7 @@ public class AgentImplementationEx implements Agent {
 				if (script != null) {
 					String jvmArguments = properties.getProperty("grinder.jvm.arguments", "");
 					jvmArguments = addCurrentAgentPath(jvmArguments);
+					jvmArguments = addConsoleIP(jvmArguments);
 					jvmArguments = addCustomDns(properties, jvmArguments);
 					final WorkerFactory workerFactory;
 
@@ -367,6 +368,10 @@ public class AgentImplementationEx implements Agent {
 
 	private String addCurrentAgentPath(String jvmArguments) {
 		return jvmArguments + " -Dngrinder.exec.path=" + new File(".").getAbsolutePath() + " ";
+	}
+
+	private String addConsoleIP(String jvmArguments) {
+		return jvmArguments + " -Dngrinder.console.ip=" + m_agentConfig.getProperty("agent.console.ip", "127.0.0.1");
 	}
 
 	private String addCustomDns(GrinderProperties properties, String jvmArguments) {

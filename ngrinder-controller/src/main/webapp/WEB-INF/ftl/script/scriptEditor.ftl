@@ -8,10 +8,11 @@
 			div.div-host {
 				background-color: #FFFFFF;
 				border: 1px solid #D6D6D6;
-				height: 60px;
+				height: 55px;
 				overflow-y: scroll;
 				border-radius: 3px 3px 3px 3px;
-				width:240px;
+				width:250px; 
+				margin-bottom:-5px;
 			}
 
 			div.div-host .host {
@@ -23,8 +24,11 @@
 			}
 			
 			.addhostbtn {
-				margin-top:-25px;
-				margin-right:55px 
+				margin-top:-20px;
+				margin-right:70px 
+			}
+			.CodeMirror-scroll {
+			    height: 500px !important;   
 			}
 		</style>
 	</head>
@@ -36,28 +40,47 @@
 			<div class="span12">
 				<form id="contentForm" method="post" target="_self" style="margin-bottom: 0px;"> 	
 					<div class="well" style="margin-bottom: 0px;">
-						<div class="form-horizontal form-horizontal-1">
+						<div class="form-horizontal">
 							<fieldset>
 								<div class="control-group">
-									<label class="control-label" for="testName"><@spring.message "script.option.name"/></label>
-									<div class="controls">   
-										<input type="text" id="scriptNameInput" class="span7" name="path" value="${(file.path)!}" readonly/>
-										<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:27px; width:35px;"><@spring.message "common.button.save"/></a>
-										<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:85px;"><@spring.message "script.editor.button.validate"/></a>
-									</div>
+										<table style="width:100%">
+											<colgroup>
+												<col width="150px"/>
+												<col width="*"/>
+												<col width="300px"/>
+											</colgroup>
+											<tr>
+												<td>
+													<label class="control-label" for="testName"><@spring.message "script.option.name"/></label>
+												</td>
+												<td>
+													<input type="text" id="scriptNameInput" class="span7" name="path" value="${(file.path)!}" readonly/>
+												</td>
+												<td>
+													<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:27px; width:35px;"><@spring.message "common.button.save"/></a>
+													<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:85px;"><@spring.message "script.editor.button.validate"/></a>
+												</td>
+											</tr> 
+										</table>
 								</div> 
 								<div style="margin-bottom: 0" class="control-group">
-									<table style="width:100%">
+									<table style="width:100%"> 
+										<colgroup> 
+											<col width="150px"/>
+											<col width="*"/> 
+											<col width="300px"/>
+										</colgroup>
 										<tr>
-											<td style="width:70%">
+											<td>
 												<label class="control-label" for="description"><@spring.message "script.option.commit"/></label>
-												<div class="controls"> 
-													<textarea class="input-xlarge span6" id="descInput" rows="3" name="description" style="resize: none" >${(file.description)!}</textarea>
-												</div> 
+											</td>
+											<td>
+												<textarea class="input-xlarge span6" id="descInput" rows="3" name="description" style="resize: none" >${(file.description)!}</textarea>
 											</td> 
-											<td style="width:30%">  
+											<td>  
 												<#include "../perftest/host.ftl"/>
 											</td> 
+										</tr>
 									</table>           
 								</div>
 							</fieldset>
@@ -65,7 +88,7 @@
 					</div>
 					<input type="hidden" id="contentHidden" name="content" value=""/>
 				</form>
-				<textarea id="content" style="position:relative;width:940px;margin-top:0px">${(file.content)!}</textarea>
+				<textarea id="codemirrorContent" style="position:relative;width:940px;margin-top:0px">${(file.content)!}</textarea>
 				<div class="pull-right" rel="popover" data-original-title="Tip" data-content="
 			      Ctrl-F / Cmd-F : <@spring.message "script.editor.tip.startSearching"/>&lt;br&gt;
 			      Ctrl-G / Cmd-G : <@spring.message "script.editor.tip.findNext"/>&lt;br&gt;
@@ -79,9 +102,10 @@
 			    
 				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre">
 				</div>
-			</div>	
+			</div>
+			<#include "../common/copyright.ftl">	
 		</div>
-		<#include "../common/copyright.ftl">
+		
 	</div>
 	<script src="${req.getContextPath()}/js/codemirror/codemirror.js" type="text/javascript" charset="utf-8"></script>
 	<link rel="stylesheet" href="${req.getContextPath()}/js/codemirror/codemirror.css"/>
@@ -115,7 +139,7 @@
 	      cm.refresh(); 
 	    }
     	$(document).ready(function() {
-			var editor = CodeMirror.fromTextArea(document.getElementById("content"), {
+			var editor = CodeMirror.fromTextArea(document.getElementById("codemirrorContent"), {
 			   mode: "python",
 			   theme: "eclipse",
 			   lineNumbers: true,

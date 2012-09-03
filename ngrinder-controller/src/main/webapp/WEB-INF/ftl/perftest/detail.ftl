@@ -205,10 +205,10 @@ i.collapse{
 											<label for="vuserPerAgent" class="control-label"><@spring.message "perfTest.configuration.vuserPerAgent"/></label>
 											<div class="controls">
 												<table style="wdith:100%">
-													<colgroups>
-														<col width="200px"/>
+													<colgroup>
+														<col width="300px"/>
 														<col width="*"/>
-													</colgroups>
+													</colgroup>
 													<tr>
 														<td>
 															<div class="input-append">
@@ -222,17 +222,21 @@ i.collapse{
 															</div>
 														</td> 
 														<td>
-															<span class="badge badge-info pull-right" ><span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span id="vuserTotal"></span></span> 
+															<div class="pull-right">
+																<span class="badge badge-info pull-right" ><span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span id="vuserTotal"></span></span>
+															</div> 
 														</td>
 													</tr>
 													<tr id="processAndThreadPanel">
 														<td colspan="2">
+															<span id="processAndThreadPanelDiv">
 															<div class="input-prepend">
 																<span class="add-on" title='<@spring.message "perfTest.report.process"/>'><@spring.message "perfTest.report.process"/></span><input class="input required positiveNumber span1" type="text" id="processes" name="processes" value="${(test.processes)!0}"/> 
 															</div>
 															<div class="input-prepend">
 																<span class="add-on" title='<@spring.message "perfTest.report.thread"/>'><@spring.message "perfTest.report.thread"/></span><input class="input required positiveNumber span1" type="text" id="threads" name="threads" value="${(test.threads)!0}"/>
-															</div> 
+															</div>
+															</span> 
 														</td>
 													</tr>
 												</table>
@@ -242,26 +246,39 @@ i.collapse{
 										<div class="control-group">
 											<label for="scriptName" class="control-label"><@spring.message "perfTest.configuration.script"/></label>
 											<div class="controls">
-												<select id="scriptName" class="required" name="scriptName"> 
-												<#if scriptList?? && scriptList?size &gt; 0> 
-													<#list scriptList as scriptItem> 
-														<#if  test?? && scriptItem.path == test.scriptName> 
-															<#assign isSelected = "selected"/> 
-														<#else> 
-															<#assign isSelected = 	""/> 
+												<table style="wdith:100%">
+													<colgroup>
+														<col width="*"/>
+														<col width="100px"/>
+													</colgroup>
+													<tr>
+													<td>
+														<select id="scriptName" class="required" name="scriptName"> 
+														<#if scriptList?? && scriptList?size &gt; 0> 
+															<#list scriptList as scriptItem> 
+																<#if  test?? && scriptItem.path == test.scriptName> 
+																	<#assign isSelected = "selected"/> 
+																<#else> 
+																	<#assign isSelected = 	""/> 
+																</#if>
+																<option value="${scriptItem.path}" ${isSelected}>${scriptItem.path}</option> 
+															</#list> 
 														</#if>
-														<option value="${scriptItem.path}" ${isSelected}>${scriptItem.path}</option> 
-													</#list> 
-												</#if>
-												</select>
-												<input type="hidden" id="scriptRevision" name="scriptRevision" value="${(test.scriptRevision)!-1}">
-												<button class="btn btn-mini btn-info pull-right" type="button" id="showScript" style="margin-top:3px">
-													<#if test?? && test.scriptRevision != -1>
-														${test.scriptRevision}
-													<#else>
-														HEAD
-													</#if> 
-												</button>
+														</select>
+													</td>
+													<td>
+														<input type="hidden" id="scriptRevision" name="scriptRevision" value="${(test.scriptRevision)!-1}">
+														<button class="btn btn-mini btn-info pull-right" type="button" id="showScript" style="margin-top:3px">
+														<#if test?? && test.scriptRevision != -1>
+															${test.scriptRevision}
+														<#else>
+															HEAD
+														</#if>
+														</button>
+													</td>
+													</tr>
+												</table> 
+												
 												<script>
 													$(document).ready(function() {
 														$("#scriptName").change(function(selected) {
@@ -865,9 +882,12 @@ i.collapse{
 	      updateChart();
 	      resetFooter();
 	      $("#processAndThreadPanel").hide();
+	      //$("#processAndThreadPanelDiv").hide();
+	      
 	      $("#expandAndCollapse").click(function () {
 	          $(this).toggleClass("collapse");
 	          $("#processAndThreadPanel").toggle();
+	          //$("#processAndThreadPanelDiv").toggle();
 	      });
 	      updateScriptResources(true);
 	      validateHostForm();
