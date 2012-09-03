@@ -133,9 +133,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 		// In case of too many trial, cancel running.
 		if (runCandidate.getTestTrialCount() > PERFTEST_MAXIMUM_TRIAL_COUNT) {
-			perfTestService.markPerfTestError(runCandidate,
-							"The test is tried to execute but there is not enough free agents.\n- Current free agent size : "
-											+ size + "  / Requested : " + runCandidate.getAgentCount() + "\n");
+			perfTestService.markPerfTestError(runCandidate, "Too many trial count");
 			return;
 		}
 		doTest(runCandidate);
@@ -184,8 +182,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// use perf test id as key for the set of target server.
 		monitorDataService.addMonitorTarget("PerfTest-" + perfTest.getId(), agents);
 
-		
-	
 		// Run test
 		perfTestService.changePerfTestStatus(perfTest, START_TESTING);
 		singleConsole.addListener(new ConsoleShutdownListener() {
@@ -195,7 +191,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 				System.out.println("Abnormal test " + stopReason.name());
 			}
 		});
-		
+
 		singleConsole.startSampling();
 		long startTime = singleConsole.startTest(grinderProperties);
 		perfTestService.setRecodingStarting(perfTest, startTime);

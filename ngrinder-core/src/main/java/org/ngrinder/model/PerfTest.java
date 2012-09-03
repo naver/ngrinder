@@ -492,7 +492,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public String getLastProgressMessage() {
 		return StringUtils.defaultIfEmpty(lastProgressMessage, "");
 	}
-
+	
+	public void clearLstProgressMessage() {
+		this.lastProgressMessage = "";
+	}
+	
 	public void setLastProgressMessage(String lastProgressMessage) {
 		if (StringUtils.isEmpty(lastProgressMessage)) {
 			return;
@@ -528,7 +532,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public void clearMessages() {
-		setLastProgressMessage("");
+		clearLstProgressMessage();
 		setProgressMessage(""); 
 	}
 
