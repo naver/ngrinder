@@ -27,6 +27,9 @@
 				margin-top:-20px;
 				margin-right:70px 
 			}
+			.CodeMirror-scroll {
+			    height: 500px !important;   
+			}
 		</style>
 	</head>
 
@@ -99,9 +102,10 @@
 			    
 				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre">
 				</div>
-			</div>	
+			</div>
+			<#include "../common/copyright.ftl">	
 		</div>
-		<#include "../common/copyright.ftl">
+		
 	</div>
 	<script src="${req.getContextPath()}/js/codemirror/codemirror.js" type="text/javascript" charset="utf-8"></script>
 	<link rel="stylesheet" href="${req.getContextPath()}/js/codemirror/codemirror.css"/>
