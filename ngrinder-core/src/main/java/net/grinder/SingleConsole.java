@@ -481,17 +481,17 @@ public class SingleConsole implements Listener, SampleListener {
 						LOGGER.debug("Calculate sum for key:{} in statistic", each.getKey());
 						MutableDouble mutableDouble = (MutableDouble) valueMap.get(each.getKey());
 						if (mutableDouble == null) {
-							mutableDouble = new MutableDouble(0D);
+							mutableDouble = new MutableDouble(0);
 							valueMap.put(each.getKey(), mutableDouble);
 						}
 						mutableDouble.add((Double) val);
-					} else if (val == null) {
-						// if it is null, just assume it is 0.
+					} else if (String.valueOf(val).equals("null")) {
+						// if it is null, just assume it is 0. The value is a String "null"
 						// FIXME if the TPS is too low, but there is no many errors, it is possible
 						// that the Double value in
 						// one second is null. Now I treat this value as ZERO. But maybe it is not
 						// the most proper solution.
-						valueMap.put(each.getKey(), new MutableDouble(0D));
+						valueMap.put(each.getKey(), new MutableDouble(0));
 					} else { // there are some String type object like test description.
 						valueMap.put(each.getKey(), val);
 					}
