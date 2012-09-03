@@ -118,7 +118,7 @@ i.collapse{
 									</colgroup>
 									<tr>
 										<td>
-											<input class="span3 required" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
+											<input class="span3 required" maxlength="100" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
 											<#if test??> 
 												<span id="teststatus_pop_over"
 													rel="popover" data-content='${"${test.progressMessage}/n${test.lastProgressMessage}"?replace('/n', '<br>')?html}'  
