@@ -44,9 +44,8 @@
 	<div class="span8">
 		<div class="page-header">
 			<h4><@spring.message "perfTest.report.tpsgraph"/></h4>
-			<a id="reportDetail" class="btn pull-right" style="margin-top: -25px"
-				href="javscript:void(0))"><@spring.message
-				"perfTest.report.reportDetail"/></a>
+			<a id="reportDetail" class="btn pull-right" style="margin-top: -25px">
+				<@spring.message "perfTest.report.reportDetail"/></a>
 		</div>
 		<div id="tpsDiv" class="chart" style="width: 610px; height: 240px"></div>
 	</div>
