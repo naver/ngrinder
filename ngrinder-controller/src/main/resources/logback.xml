@@ -8,7 +8,7 @@
 		</encoder>
 	</appender>
 
-	<logger name="net.grinder" level="INFO" additivity="false">
+	<logger name="net.grinder" level="DEBUG" additivity="false">
 		<appender-ref ref="console" />
 	</logger>
 
