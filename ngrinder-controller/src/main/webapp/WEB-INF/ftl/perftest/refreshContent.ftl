@@ -19,7 +19,6 @@
 							<td>${statistics.Errors!'&nbsp;'}</td>
 							<td>${statistics['Mean_Test_Time_(ms)']!'&nbsp;'}</td>
 							<td>${statistics.TPS!'&nbsp;'}</td>
-							<td>${statistics.Peak_TPS!'&nbsp;'}</td>
 							<td>${statistics['Test_Time_Standard_Deviation_(ms)']!'&nbsp;'}</td>
 						</tr>
 						</#list>
@@ -34,7 +33,6 @@
 							<td>${statistics.Errors!'&nbsp;'}</td>
 							<td>${statistics['Mean_Test_Time_(ms)']!'&nbsp;'}</td>
 							<td>${statistics.TPS!'&nbsp;'}</td>
-							<td>${statistics.Peak_TPS!'&nbsp;'}</td>
 							<td>${statistics['Test_Time_Standard_Deviation_(ms)']!'&nbsp;'}</td>
 						</tr>
 						</#list>

@@ -490,7 +490,6 @@ i.collapse{
 														<th class="noClick"><@spring.message "perfTest.table.errors"/></th>
 														<th class="noClick"><@spring.message "perfTest.table.meantime"/></th>
 														<th class="noClick"><@spring.message "perfTest.table.tps"/></th>
-														<th class="noClick"><@spring.message "perfTest.detail.peakTPS"/></th>
 														<th class="noClick"><@spring.message "perfTest.testRunning.mtsd"/></th>
 													</tr>
 												</thead>
@@ -518,7 +517,6 @@ i.collapse{
 														<th class="noClick"><@spring.message "perfTest.table.errors"/></th>
 														<th class="noClick"><@spring.message "perfTest.table.meantime"/></th>
 														<th class="noClick"><@spring.message "perfTest.table.tps"/></th>
-														<th class="noClick"><@spring.message "perfTest.detail.peakTPS"/></th>
 														<th class="noClick"><@spring.message "perfTest.testRunning.mtsd"/></th>
 													</tr>
 												</thead>
