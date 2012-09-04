@@ -20,6 +20,7 @@
 
 		jQuery.validator.addMethod("userIdExist", function( userId, element ) {
 			if(userId != null && userId.length > 0){
+				var result ;
 				$.ajax({
 					  url: "${req.getContextPath()}/user/checkUserId?userId="+userId,
 					  async: false,
@@ -27,9 +28,10 @@
 					  type: "GET",
 					  dataType:'json',
 					  success: function(res) {
-						  return res.success;
+					  	result = res.success;
   					  }
 				}); 
+				return result;
 			}
 			return false;
 		}, "<@spring.message 'user.info.warning.userId.exist'/>");
@@ -52,7 +54,7 @@
 
 		});
 		
-	
+		
 		$('#registerUserForm input').hover(function() {
 	        $(this).popover('show')
 	    });
@@ -86,6 +88,8 @@
 	        }
 	    });
 	});
+	
+	
 </script>
 
 <form action="${req.getContextPath()}/user/save"
@@ -149,7 +153,7 @@
 		<div class="control-group" >
 			<label class="control-label"><@spring.message "user.info.form.phone"/></label>
 			<div class="controls">
-				<input type="text" class="span4 required positiveNumber" id="mobilePhone"
+				<input type="text" class="span4 required positiveNumber" id="mobilePhone" 
 					name="mobilePhone" rel="popover"
 					value="${(user.mobilePhone)!}"
 					data-content="<@spring.message "user.info.warning.phone.intro"/>"
