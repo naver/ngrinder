@@ -553,9 +553,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, 0);
 			}
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, perfTest.getIgnoreSampleCount());
+			boolean securityEnabled = config.isSecurityEnabled();
+			grinderProperties.setBoolean(GRINDER_PROP_SECURITY, securityEnabled);
 			// set security.manager argument
-			String jvmArguments = "-Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager";
-			grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, jvmArguments);
+			if (securityEnabled) {
+				String jvmArguments = "-Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager";
+				grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, jvmArguments);
+			}
 
 			return grinderProperties;
 		} catch (Exception e) {
@@ -680,7 +684,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		FileReader reader = null;
 		BufferedReader br = null;
 		LineNumberReader lnr = null;
-	
+
 		FileInputStream in = null;
 		InputStreamReader isr = null;
 		try {
@@ -739,14 +743,14 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		if (imgWidth < 100) {
 			imgWidth = 100;
 		}
-		
+
 		int lineNumber;
 		File targetFile = null;
 		targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
 		if (!targetFile.exists()) {
 			LOGGER.error("Report data for {} in {} does not exisit.", testId, dataType);
 			return reportData;
-		} 
+		}
 		FileReader reader = null;
 		BufferedReader br = null;
 		LineNumberReader lnr = null;
