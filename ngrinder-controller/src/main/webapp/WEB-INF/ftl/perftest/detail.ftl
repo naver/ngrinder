@@ -342,6 +342,13 @@ i.collapse{
 												</div>
 											</div>
 										</div>
+										<div class="control-group">
+											<label for="ignoreSampleCount" class="control-label"> <@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
+											<div class="controls">
+												<input type="text" class="input required CountNumber" id="ignoreSampleCount" name="ignoreSampleCount"
+													value="${(test.ignoreSampleCount)!0}">
+											</div>
+										</div>
 									</fieldset>
 								</div>
 							</div>
@@ -464,6 +471,12 @@ i.collapse{
 											<div class="controls">
 												<span>${(test.durationStr)!}</span>
 												<code>HH:MM:SS</code>
+											</div>
+										</div>
+										<div class="control-group">
+											<label for="ignoreSampleCount" class="control-label"><@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
+											<div class="controls">
+												<span>0</span> 
 											</div>
 										</div>
 									</fieldset>
