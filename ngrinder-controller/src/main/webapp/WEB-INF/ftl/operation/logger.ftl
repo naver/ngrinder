@@ -33,6 +33,7 @@
 			    		if (eachLog.attr("id") != data.modification) {
 			    			eachLog.html(data.log);
 			    			eachLog.attr("id", data.modification);
+			    			resetFooter();
 			    		}
 			    	} else {
 			    		var logentries = $("#log_container tr")
@@ -40,8 +41,9 @@
 			    			logentries.first().remove();
 			    		}
 			    		$("#log_container").append($("<tr id='" + data.index + "'><td id='" + data.modification + "'>" + data.log + "</td></tr>"));
+			    		resetFooter(); 
 			    	}
-			    	resetFooter();
+			    	
 			    	setTimeout(pollingLogs, 5000);
 			    }
 		    });

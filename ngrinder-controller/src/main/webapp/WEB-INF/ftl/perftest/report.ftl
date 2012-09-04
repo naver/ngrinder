@@ -128,7 +128,7 @@
 					</div>
 			    	<div class="chart" id="tpsDiv"></div>
     				<div class="page-header">
-						<h4><@spring.message "perfTest.report.header.meantime"/><code>ms</code></h4>
+						<h4><@spring.message "perfTest.report.header.meantime"/>&nbsp;&nbsp;<code>ms</code></h4>
 					</div>
     				<div class="chart" id="meanTimeDiv"></div>
     				<div class="page-header">

@@ -94,7 +94,7 @@ public class AgentController implements Agent {
 	private AgentSystemDataCollector agentSystemDataCollector = new AgentSystemDataCollector();
 
 	private int m_connectionPort = 0;
-
+	private boolean windows = false;
 	/**
 	 * Constructor.
 	 * 
@@ -120,6 +120,13 @@ public class AgentController implements Agent {
 		// after a test has started.
 		agentJavaDataCollector.refresh();
 		agentSystemDataCollector.refresh();
+		windows = isWindows();
+	}
+
+	public static boolean isWindows() {
+		String os = System.getProperty("os.name").toLowerCase();
+		// windows
+		return (os.indexOf("win") >= 0);
 	}
 
 	/**
@@ -186,9 +193,7 @@ public class AgentController implements Agent {
 							m_logger.info("connected to agent controller server at {}",
 											connector.getEndpointAsString());
 						} catch (CommunicationException e) {
-							if (logCount % 5 == 0) {
-								m_logger.error(e.getMessage());
-							}
+							m_logger.error(e.getMessage(), e);
 							return;
 						}
 					}
@@ -386,6 +391,9 @@ public class AgentController implements Agent {
 	 */
 	public JavaDataModel getJavaDataModel() {
 		try {
+			if (windows) {
+				return emptyJavaDataModel;
+			}
 			JavaInfo javaInfo = agentJavaDataCollector.execute();
 			JavaDataModel javaDataModel = new JavaDataModel(javaInfo);
 

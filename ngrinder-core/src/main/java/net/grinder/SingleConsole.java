@@ -92,8 +92,7 @@ public class SingleConsole implements Listener, SampleListener {
 	private final ConsoleProperties consoleProperties;
 	private Thread thread;
 	private ConsoleFoundationEx consoleFoundation;
-	public static final Resources RESOURCE = new ResourcesImplementation(
-					"net.grinder.console.common.resources.Console");
+	public static final Resources RESOURCE = new ResourcesImplementation("net.grinder.console.common.resources.Console");
 	public static final Logger LOGGER = LoggerFactory.getLogger(RESOURCE.getString("shortTitle"));
 
 	private static final String REPORT_CSV = "output.csv";
@@ -168,8 +167,7 @@ public class SingleConsole implements Listener, SampleListener {
 		try {
 			this.getConsoleProperties().setConsoleHost(ip);
 			this.getConsoleProperties().setConsolePort(port);
-			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties,
-							m_eventSyncCondition);
+			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties, m_eventSyncCondition);
 
 			modelView = getConsoleComponent(SampleModelViews.class);
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
@@ -181,7 +179,8 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Simple constructor only setting port. It automatically binds all ip addresses.
+	 * Simple constructor only setting port. It automatically binds all ip
+	 * addresses.
 	 * 
 	 * @param port
 	 *            PORT number
@@ -206,8 +205,7 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	public String getConsoleHost() {
 		try {
-			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress
-							.getLocalHost().getHostAddress());
+			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress.getLocalHost().getHostAddress());
 		} catch (UnknownHostException e) {
 			return "";
 		}
@@ -265,8 +263,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	public int getAllAttachedAgentsCount() {
-		return ((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class))
-						.getNumberOfLiveAgents();
+		return ((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class)).getNumberOfLiveAgents();
 	}
 
 	/**
@@ -276,10 +273,9 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	public List<AgentIdentity> getAllAttachedAgents() {
 		final List<AgentIdentity> agentIdentities = new ArrayList<AgentIdentity>();
-		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(
-						ReflectionUtil.getFieldValue((ProcessControlImplementation) consoleFoundation
-										.getComponent(ProcessControl.class), "m_agentNumberMap"),
-						"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
+		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(ReflectionUtil.getFieldValue(
+				(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class), "m_agentNumberMap"),
+				"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
 			public void objectAndNumber(Object object, int number) {
 				agentIdentities.add((AgentIdentity) object);
@@ -397,8 +393,8 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Check all test is finished. To be safe, this counts thread count and not finished
-	 * workprocess. If one of them is 0, It thinks test is finished.
+	 * Check all test is finished. To be safe, this counts thread count and not
+	 * finished workprocess. If one of them is 0, It thinks test is finished.
 	 * 
 	 * @return true if finished
 	 */
@@ -458,8 +454,7 @@ public class SingleConsole implements Listener, SampleListener {
 
 		statisticData = this.getStatistics();
 		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) statisticData
-						.get("lastSampleStatistics");
+		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) statisticData.get("lastSampleStatistics");
 
 		if (lastSampleStatistics != null) {
 			double tpsSum = 0;
@@ -478,19 +473,23 @@ public class SingleConsole implements Listener, SampleListener {
 
 				for (Entry<String, Object> each : lastStatistic.entrySet()) {
 					if (!headerAdded) {
-						csvHeaderList.add(each.getKey());
-						csvHeader.append(",");
-						csvHeader.append(each.getKey() + "-" + testIndex);
+						if (!each.getKey().contains("Peak_TPS")) {
+							csvHeaderList.add(each.getKey());
+							csvHeader.append(",");
+							csvHeader.append(each.getKey() + "-" + testIndex);
+						}
 					}
 					Object val = each.getValue();
 					LOGGER.debug("statistic data key:{}", each.getKey());
-					LOGGER.debug("- value:{}, value type:{}", val, val != null ? val.getClass().getName()
-									: null);
-					// number value in lastStatistic is Double, we add every test's double value
+					LOGGER.debug("- value:{}, value type:{}", val, val != null ? val.getClass().getName() : null);
+					// number value in lastStatistic is Double, we add every
+					// test's double value
 					// into valueMap, so we use
-					// MutableDouble in valueMap, to avoid creating too many objects.
+					// MutableDouble in valueMap, to avoid creating too many
+					// objects.
 					if (val instanceof Double) {
-						// for debug, maybe there are some fields should not be sum up.
+						// for debug, maybe there are some fields should not be
+						// sum up.
 						LOGGER.debug("Calculate sum for key:{} in statistic", each.getKey());
 						MutableDouble mutableDouble = (MutableDouble) valueMap.get(each.getKey());
 						if (mutableDouble == null) {
@@ -499,12 +498,15 @@ public class SingleConsole implements Listener, SampleListener {
 						}
 						mutableDouble.add((Double) val);
 					} else if (String.valueOf(val).equals("null")) {
-						// if it is null, just assume it is 0. The value is a String "null"
+						// if it is null, just assume it is 0. The value is a
+						// String "null"
 						// that the Double value in
-						// one second is null. Now I treat this value as ZERO. But maybe it is not
+						// one second is null. Now I treat this value as ZERO.
+						// But maybe it is not
 						// the most proper solution.
 						valueMap.put(each.getKey(), new MutableDouble(0));
-					} else { // there are some String type object like test description.
+					} else { // there are some String type object like test
+								// description.
 						valueMap.put(each.getKey(), val);
 					}
 				}
@@ -514,19 +516,24 @@ public class SingleConsole implements Listener, SampleListener {
 				// but the system can not make sure about that.
 				csvLine.append(DateUtil.dateToString(new Date()));
 
-				// FIXME we should also save vuser number, to describe the current vuser count in
+				// FIXME we should also save vuser number, to describe the
+				// current vuser count in
 				// this secons.
 				for (String key : csvHeaderList) {
-					csvLine.append(",");
-					csvLine.append(formatValue(lastStatistic.get(key)));
+					if (!key.contains("Peak_TPS")) {
+						csvLine.append(",");
+						csvLine.append(formatValue(lastStatistic.get(key)));
+					}
 				}
 			}
 			try {
 				// add header into csv file.
 				if (!headerAdded) {
 					for (Entry<String, Object> each : valueMap.entrySet()) {
-						csvHeader.append(",");
-						csvHeader.append(each.getKey());
+						if (!each.getKey().contains("Peak_TPS")) {
+							csvHeader.append(",");
+							csvHeader.append(each.getKey());
+						}
 					}
 					writeCSVDataLine(csvHeader.toString());
 					headerAdded = true;
@@ -537,8 +544,10 @@ public class SingleConsole implements Listener, SampleListener {
 				}
 				// add total test report into csv file.
 				for (String key : csvHeaderList) {
-					csvLine.append(",");
-					csvLine.append(formatValue(valueMap.get(key)));
+					if (!key.contains("Peak_TPS")) {
+						csvLine.append(",");
+						csvLine.append(formatValue(valueMap.get(key)));
+					}
 				}
 
 				writeCSVDataLine(csvLine.toString());
@@ -581,8 +590,10 @@ public class SingleConsole implements Listener, SampleListener {
 
 				Test test = modelIndex.getTest(i);
 				statistics.put("testNumber", test.getNumber());
-				// remove description from statistic, otherwise, it will be saved in report data.
-				// and the character like ',' in this field will affect the csv file too.
+				// remove description from statistic, otherwise, it will be
+				// saved in report data.
+				// and the character like ',' in this field will affect the csv
+				// file too.
 				// statistics.put("testDescription", test.getDescription());
 				lastStatistics.put("testNumber", test.getNumber());
 				// lastStatistics.put("testDescription", test.getDescription());
@@ -590,11 +601,10 @@ public class SingleConsole implements Listener, SampleListener {
 				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
 				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
 				for (ExpressionView expressionView : views) {
-					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-									getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
-					lastStatistics.put(
-									expressionView.getDisplayName().replaceAll("\\s+", "_"),
-									getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
+					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"), getRealDoubleValue(expressionView
+							.getExpression().getDoubleValue(set)));
+					lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"), getRealDoubleValue(expressionView
+							.getExpression().getDoubleValue(lastSet)));
 				}
 
 				cumulativeStatistics.add(statistics);
@@ -607,8 +617,8 @@ public class SingleConsole implements Listener, SampleListener {
 
 		for (ExpressionView expressionView : views) { // TODO : expressionView
 														// == null ?
-			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-							getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
+			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"), getRealDoubleValue(expressionView.getExpression()
+					.getDoubleValue(totalSet)));
 		}
 
 		result.put("totalStatistics", totalStatistics);
@@ -682,7 +692,8 @@ public class SingleConsole implements Listener, SampleListener {
 		if (val instanceof Double) {
 			return formatter.format(val);
 		} else if (val == null) {
-			// if target server is too slow, there is no response in this second, then the
+			// if target server is too slow, there is no response in this
+			// second, then the
 			// satatistic data
 			// like mean time will be null.
 			// currently, we set these kind of value as 0.

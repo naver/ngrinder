@@ -488,6 +488,7 @@ i.collapse{
 														<th class="noClick"><@spring.message "perfTest.table.errors"/></th>
 														<th class="noClick"><@spring.message "perfTest.table.meantime"/></th>
 														<th class="noClick"><@spring.message "perfTest.table.tps"/></th>
+														<th class="noClick"><@spring.message "perfTest.detail.peakTPS"/></th>
 														<th class="noClick"><@spring.message "perfTest.testRunning.mtsd"/></th>
 													</tr>
 												</thead>
@@ -515,6 +516,7 @@ i.collapse{
 														<th class="noClick"><@spring.message "perfTest.table.errors"/></th>
 														<th class="noClick"><@spring.message "perfTest.table.meantime"/></th>
 														<th class="noClick"><@spring.message "perfTest.table.tps"/></th>
+														<th class="noClick"><@spring.message "perfTest.detail.peakTPS"/></th>
 														<th class="noClick"><@spring.message "perfTest.testRunning.mtsd"/></th>
 													</tr>
 												</thead>
@@ -601,7 +603,14 @@ i.collapse{
 	      }
 	  }
 	  var test_tps_data = new Queue();
+	  function initChartData() {
+                for (var i = 0; i < 60; i++) {
+		        	test_tps_data.enQueue(0);
+           	}	
+      }
+	  
 	  $(document).ready(function () {
+	  	  initChartData();
 	      var date = new Date();
 	      var year = date.getFullYear();
 	      var month = date.getMonth() + 1;
@@ -849,6 +858,10 @@ i.collapse{
 	      $("#runCount").focus(function () {
 	          $("#runcountChkbox").click();
 	      });
+	      
+	      $("#testContent").click(function() {
+	      	resetFooter();
+	      });
 
 	  });
 
@@ -1090,7 +1103,7 @@ i.collapse{
 	      $("#runningContent_tab a").tab('show');
 	      $("#runningContent").show();
 	      $("#reportContent_tab").hide();
-		  resetFooter();
+		  
 	      objTimer = window.setInterval("refreshData()", 1000);
 	  }
 

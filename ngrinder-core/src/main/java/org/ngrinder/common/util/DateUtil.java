@@ -42,7 +42,7 @@ import org.apache.commons.lang.StringUtils;
  * @author JunHo Yoon
  * @since 3.0
  */
-public abstract class DateUtil {
+public abstract class DateUtil { 
 
 	private static final SimpleDateFormat FULL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 	private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
