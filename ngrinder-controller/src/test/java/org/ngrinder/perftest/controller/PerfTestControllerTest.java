@@ -205,7 +205,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		otherTestUser.setPassword("testUser");
 		otherTestUser.setRole(Role.USER);
 		otherTestUser = userService.saveUser(otherTestUser);
-
+		otherTestUser.setTimeZone("Asia/Seoul");
 		controller.getPerfTestList(otherTestUser, null, false, null, model);
 		@SuppressWarnings("unchecked")
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
@@ -237,16 +237,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		assertThat(testList.size(), is(1));
 	}
 
-	@Test
-	public void testUpdateVuser() {
-		String rtn = controller.updateVuser(20);
-		JsonParser parser = new JsonParser();
-		JsonObject json = (JsonObject) parser.parse(rtn);
-		int threadCount = json.get(PARAM_THREAD_COUNT).getAsInt();
-		int processCount = json.get(PARAM_PROCESS_COUNT).getAsInt();
-		assertThat(threadCount, is(2));
-		assertThat(processCount, is(10));
-	}
+	
 
 	@Test
 	public void testGetReportData() {

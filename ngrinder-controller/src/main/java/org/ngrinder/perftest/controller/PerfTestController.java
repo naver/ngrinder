@@ -270,23 +270,6 @@ public class PerfTestController extends NGrinderBaseController {
 		return "redirect:/perftest/list";
 	}
 
-	/**
-	 * Calculate vuser assignment policy based on request vuser number.
-	 * 
-	 * @param newVuser
-	 *            how many vusers will be used.
-	 * @return JSON
-	 */
-	@RequestMapping(value = "/updateVuser")
-	public @ResponseBody
-	String updateVuser(@RequestParam int newVuser) {
-		ProcessAndThread processAndThread = perfTestService.calcProcessAndThread(newVuser);
-		Map<String, Object> rtnMap = new HashMap<String, Object>(3);
-		rtnMap.put(JSON_SUCCESS, true);
-		rtnMap.put(PARAM_THREAD_COUNT, processAndThread.getThreadCount());
-		rtnMap.put(PARAM_PROCESS_COUNT, processAndThread.getProcessCount());
-		return JSONUtil.toJson(rtnMap);
-	}
 
 	/**
 	 * leave comment on the perftest

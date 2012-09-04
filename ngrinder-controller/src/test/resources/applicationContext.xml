@@ -16,7 +16,7 @@
 	<import resource="applicationContext-springdata.xml" />
 	<import resource="applicationContext-ehcache.xml" />
 	<import resource="applicationContext-external.xml" />
-	
+	<import resource="applicationContext-message.xml" />
 	<bean id="shaPasswordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder" />
 
 	<bean id="reflectionSaltSource" class="org.springframework.security.authentication.dao.ReflectionSaltSource">

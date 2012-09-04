@@ -51,9 +51,9 @@ public class NGrinderBaseControllerTest extends AbstractPerfTestTransactionalTes
 	}
 
 	@Test
-	public void testGetErrorMessages() {
-		String errMsg = perfTestController.getMessages("startTest.scriptError");
-		assertThat(errMsg, is("script is not found !"));
+	public void testGetMessages() {
+		String errMsg = perfTestController.getMessages("home.qa.message");
+		assertThat(errMsg, is("You can ask a question and track the progress."));
 	}
 
 }
