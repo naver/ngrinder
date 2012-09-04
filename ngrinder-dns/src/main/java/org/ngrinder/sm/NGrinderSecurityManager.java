@@ -47,9 +47,9 @@ public class NGrinderSecurityManager extends SecurityManager {
 	{
 		/**
 		 * Get ip address of target hosts. <br>
-		 * if target hosts 'a.com:1.1.1.1' add ip: '1.1.1.1' <br>
-		 * if target hosts ':1.1.1.1' add ip: '1.1.1.1' <br>
-		 * if target hosts '1.1.1.1' add ip: '1.1.1.1' <br>
+		 * if target hosts 'a.com:1.1.1.1' add 'a.com' & '1.1.1.1' <br>
+		 * if target hosts ':1.1.1.1' add : '1.1.1.1' <br>
+		 * if target hosts '1.1.1.1' add : '1.1.1.1' <br>
 		 */
 		String[] hostsList = etcHosts.split(",");
 		for (String hosts : hostsList) {
