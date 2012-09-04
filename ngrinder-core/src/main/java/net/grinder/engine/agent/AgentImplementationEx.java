@@ -385,9 +385,13 @@ public class AgentImplementationEx implements Agent {
 		List<?> nameservers = sun.net.dns.ResolverConfiguration.open().nameservers();
 		StringBuilder sb = new StringBuilder();
 		for (Object dns : nameservers) {
-			sb.append(dns + " ");
+			sb.append(dns).append(',');
 		}
-		return jvmArguments + " -Dngrinder.dns.ip=" + sb.toString();
+		String tmpString = sb.toString();
+		if (sb.length() > 0) {
+			tmpString = sb.substring(0, sb.length() - 1);
+		}
+		return jvmArguments + " -Dngrinder.dns.ip=" + tmpString;
 	}
 
 	private String addCustomDns(GrinderProperties properties, String jvmArguments) {
