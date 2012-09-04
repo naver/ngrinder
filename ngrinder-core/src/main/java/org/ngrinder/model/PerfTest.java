@@ -65,15 +65,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Enumerated(EnumType.STRING)
 	private Status status = Status.READY;
 
-	/** The sampling Interval value, default to 1000ms. */
-	private Integer sampleInterval = 1000;
-
-	/** ignoreSampleCount value, default to 0. */
-	private Integer ignoreSampleCount;
-
-	/** ignoreSampleCount value, default to 0, 0 means collect forever. */
-	private Integer collectSampleCount = 0;
-
 	/** the scheduled time of this test. */
 	@Index(name = "scheduled_time_index")
 	private Date scheduledTime;
@@ -221,30 +212,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setScriptName(String scriptName) {
 		this.scriptName = scriptName;
-	}
-
-	public Integer getSampleInterval() {
-		return sampleInterval;
-	}
-
-	public void setSampleInterval(Integer sampleInterval) {
-		this.sampleInterval = sampleInterval;
-	}
-
-	public Integer getIgnoreSampleCount() {
-		return ignoreSampleCount;
-	}
-
-	public void setIgnoreSampleCount(Integer ignoreSampleCount) {
-		this.ignoreSampleCount = ignoreSampleCount;
-	}
-
-	public void setCollectSampleCount(Integer collectSampleCount) {
-		this.collectSampleCount = collectSampleCount;
-	}
-
-	public Integer getCollectSampleCount() {
-		return collectSampleCount;
 	}
 
 	public String getDescription() {

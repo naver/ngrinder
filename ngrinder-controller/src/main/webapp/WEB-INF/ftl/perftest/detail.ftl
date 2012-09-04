@@ -342,21 +342,6 @@ i.collapse{
 												</div>
 											</div>
 										</div>
-										<div class="control-group">
-											<label for="ignoreSampleCount" class="control-label"> <@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
-											<div class="controls">
-												<input type="text" class="input required CountNumber" id="ignoreSampleCount" name="ignoreSampleCount"
-													value="${(test.ignoreSampleCount)!0}">
-											</div>
-										</div>
-										<div class="control-group">
-											<label for="sampleInterval" class="control-label"> <@spring.message "perfTest.configuration.sampleInterval"/> </label>
-											<div class="controls">
-												<input type="text" class="input required positiveNumber" id="sampleInterval" name="sampleInterval"
-													value="${(test.sampleInterval)!1000}">
-												<code>MS</code>
-											</div>
-										</div>
 									</fieldset>
 								</div>
 							</div>
@@ -481,32 +466,6 @@ i.collapse{
 												<code>HH:MM:SS</code>
 											</div>
 										</div>
-										<div class="control-group">
-											<label for="ignoreSampleCount" class="control-label"><@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
-											<div class="controls">
-												<span>0</span> 
-											</div>
-										</div>
-										<hr>
-										<div class="control-group">
-											<label for="sampleInterval" class="control-label"><@spring.message "perfTest.configuration.sampleInterval"/> </label>
-											<div class="controls" style="margin-top: 0">
-												<input type="text" class="input span2" id="sampleInterval" name="sampleInterval"
-													value="${(test.sampleInterval)!1000}">
-												<code>MS</code>
-											</div>
-										</div>
-										<!--
-										<div class="control-group">
-											<label for="collectSample" class="control-label">
-												Collect Sample Forever
-											</label>
-											<div class="controls">
-												<input type="text" class="input span2" id="collectSample" name="collectSample" value="${(test.collectSample)!1000}">
-												<code>MS</code>
-											</div>
-										</div>
-										-->
 									</fieldset>
 								</div>
 							</div>
