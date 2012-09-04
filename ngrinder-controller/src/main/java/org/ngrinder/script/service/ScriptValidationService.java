@@ -130,7 +130,7 @@ public class ScriptValidationService {
 			// set security.manager argument
 			String jvmArguments = "-Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager ";
 			jvmArguments += " -Dngrinder.exec.path=" + getLibPath();
-			jvmArguments += " -Dngrinder.console.ip=" + hostString;
+			jvmArguments += " -Dngridner.etc.hosts=" + hostString;
 			
 			if (useScriptInSVN) {
 				fileEntryService.writeContentTo(user, scriptEntry.getPath(),
