@@ -19,20 +19,6 @@
 			return true;
 		}, "<@spring.message 'user.info.warning.userId.invalid'/>" );
 		
-		
-		jQuery.validator.addMethod("userPhoneNumber", function(mobilePhone, element ) {
-			
-			var patrn = /^\d{2}-\d{4}-\d{5}/;
-			var rule = new RegExp(patrn);
-			if (!rule.test($.trim($("#mobilePhone").val()))) {
-				userIdValidMsg = "<@spring.message "user.info.warning.userId.intro"/>";
-				return false;
-			}
-			return true;
-		}, "<@spring.message 'user.info.warning.userId.invalid'/>" );
-		
-		
-		
 
 		jQuery.validator.addMethod("userIdExist", function( userId, element ) {
 			if(userId != null && userId.length > 0){
@@ -53,6 +39,18 @@
 		}, "<@spring.message 'user.info.warning.userId.exist'/>");
 		
 		</#if>
+		
+		jQuery.validator.addMethod("userPhoneNumber", function(mobilePhone, element ) {
+			
+			var patrn = /^\d{2}-\d{4}-\d{5}/;
+			var rule = new RegExp(patrn);
+			if (!rule.test($.trim($("#mobilePhone").val()))) {
+				userIdValidMsg = "<@spring.message "user.info.warning.phone.intro"/>";
+				return false;
+			}
+			return true;
+		}, "<@spring.message 'user.info.warning.phone.intro'/>" );
+		
 		
 		$('.collapse').on('hidden', function () {
   			$("#password").removeClass("required");
