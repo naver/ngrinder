@@ -8,12 +8,12 @@
             .left { border-right: 1px solid #878988 }
             div.chart { border: 1px solid #878988; height:250px; min-width:615px; margin-bottom:12px; padding: 5px }
             .jqplot-yaxis {
-			    margin-right: 20px; 
+			    margin-right: 10px; 
 			}
 			
 			.jqplot-xaxis {
-			    margin-top: 20px; 
-			}
+			    margin-top: 5px; 
+			} 
         </style>
     </head>
 

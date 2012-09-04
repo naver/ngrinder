@@ -1,17 +1,21 @@
 var formatAmount = function(format, value) {
 	if (value < 1024) {
-		return value.toFixed(2) + " ";
+		return value.toFixed(1) + " ";
 	} else if (value < 1048576) {
-		return (value/1024).toFixed(2) + "K ";
+		return (value/1024).toFixed(1) + "K ";
 	} else if (value < 1073741824) {
-		return (value/1048576).toFixed(2) + "M ";
+		return (value/1048576).toFixed(1) + "M ";
 	} else {
-		return (value/1073741824).toFixed(2) + "G ";
+		return (value/1073741824).toFixed(1) + "G ";
 	}	
 };
 
 var formatPercentage = function(format, value) {
-	return value.toFixed(2) + "% ";
+	if (value < 10) {
+		return value.toFixed(1) + "% ";
+	} else {
+		return value.toFixed(0) + "% ";
+	}
 };
 
 function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, interval) {
@@ -34,8 +38,9 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 		ymax = 5;
 	}
 	
-	ymax = parseInt((ymax / 5) + 0.5) * 5;
-
+	ymax = parseInt((ymax / 5) + 0.5) * 6;
+	
+	
 	if (formatYaxis === undefined) {
 		formatYaxis = function(format, value) {
 			return value.toFixed(0);
@@ -88,7 +93,7 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 				},
 				max : ymax,
 				min : 0,
-				numberTicks : 6,
+				numberTicks : 7,
 				pad : 3,
 				show : true
 			},
@@ -119,7 +124,9 @@ function replotChart(plotObj, data, ymax) {
 	}
 
 	plotObj.series[0].data = cache;
+	var prevFormatter = plotObj.axes.yaxis.tickOptions.formatter;
 	plotObj.resetAxesScale(); 
+	
 	if (ymax < 5) {
 		ymax = 5;
 	}
@@ -128,15 +135,15 @@ function replotChart(plotObj, data, ymax) {
 	} else {
 		plotObj.axes.xaxis.numberTicks = cache.length;
 	}
-	ymax = parseInt((ymax / 5) + 0.5) * 5;
-	plotObj.axes.yaxis.numberTicks = 6;
+	ymax = parseInt((ymax / 5) + 0.5) * 6;
+	
+	plotObj.axes.yaxis.numberTicks = 7;
 	plotObj.axes.yaxis.max = ymax;
+	
 	plotObj.axes.yaxis.min = 0; 
 	plotObj.axes.yaxis.tickOptions = {
 		show : true,
-		formatter : function(format, value) {
-			return value.toFixed(0);
-		}
+		formatter : prevFormatter
 	};
 	plotObj.replot();
 }
