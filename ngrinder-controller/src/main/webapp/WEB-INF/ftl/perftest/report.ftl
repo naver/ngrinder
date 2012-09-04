@@ -67,10 +67,6 @@
                            <tr>
                                 <td colspan=2></td>
                            </tr>
-                           <tr>                               
-                               <th><@spring.message "perfTest.configuration.sampleInterval"/></th>
-                               <td><span>${(test.sampleInterval)!1000}</span> <code>ms</code></td>
-                           </tr>
                            <tr>
                                 <td colspan=2></td>
                            </tr>

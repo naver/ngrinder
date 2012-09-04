@@ -231,6 +231,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.ignoreSampleCount = ignoreSampleCount;
 	}
 
+	public String getScriptNameInShort() {
+		return StringUtils.abbreviate(getScriptName(), 30);
+	}
+	
 	public String getDescription() {
 		return StringUtils.abbreviate(description, 2040);
 	}
