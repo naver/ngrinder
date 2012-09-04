@@ -60,8 +60,8 @@
 					<td>${(agent.status)!}</td>
 					<td>
 						<div class="btn-group" data-toggle="buttons-radio">
-							<button type="button" class="btn btn-mini btn-primary <#if agent.isApproved() == false>active</#if>" id="unapproveBtn" sid="${agent.ip}"><@spring.message "agent.table.unapproved"/> </button>
-							<button type="button" class="btn btn-mini btn-primary <#if agent.isApproved() == true>active</#if>" id="approveBtn" sid="${agent.ip}"><@spring.message "agent.table.approved"/> </button>
+							<button type="button" class="btn btn-mini btn-primary unapproved <#if agent.isApproved() == false>active</#if>" sid="${agent.ip}"><@spring.message "agent.table.unapproved"/> </button>
+							<button type="button" class="btn btn-mini btn-primary approved <#if agent.isApproved() == true>active</#if>" sid="${agent.ip}"><@spring.message "agent.table.approved"/> </button>
 						</div>
 					</td> 
 					
@@ -99,7 +99,7 @@
 				
 				removeClick();
 				
-				$("#approveBtn").click(function() {
+				$(".approved").click(function() {
 					var sid = $(this).attr("sid");
 					$.post(
 				  		"${req.getContextPath()}/agent/approve",
@@ -114,7 +114,7 @@
 				     );
 				});
 				
-				$("#unapproveBtn").click(function() {
+				$(".unapproved").click(function() {
 					var sid = $(this).attr("sid");
 					$.post(
 				  		"${req.getContextPath()}/agent/approve",
