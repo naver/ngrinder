@@ -25,6 +25,7 @@ package net.grinder.engine.agent;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -247,6 +248,7 @@ public class AgentImplementationEx implements Agent {
 					String jvmArguments = properties.getProperty("grinder.jvm.arguments", "");
 					jvmArguments = addCurrentAgentPath(jvmArguments);
 					jvmArguments = addConsoleIP(jvmArguments);
+					jvmArguments = addDNSIP(jvmArguments);
 					jvmArguments = addCustomDns(properties, jvmArguments);
 					final WorkerFactory workerFactory;
 
@@ -365,13 +367,28 @@ public class AgentImplementationEx implements Agent {
 			m_logger.info("finished");
 		}
 	}
-
+	
 	private String addCurrentAgentPath(String jvmArguments) {
-		return jvmArguments + " -Dngrinder.exec.path=" + new File(".").getAbsolutePath() + " ";
+		StringBuilder sb = new StringBuilder();
+		sb.append(jvmArguments).append(" -Dngrinder.exec.path=").append(new File(".").getAbsolutePath()).append(' ');
+		return sb.toString();
 	}
 
 	private String addConsoleIP(String jvmArguments) {
-		return jvmArguments + " -Dngrinder.console.ip=" + m_agentConfig.getProperty("agent.console.ip", "127.0.0.1");
+		StringBuilder sb = new StringBuilder();
+		sb.append(jvmArguments).append(" -Dngrinder.console.ip=")
+				.append(m_agentConfig.getProperty("agent.console.ip", "127.0.0.1"));
+		return sb.toString();
+	}
+
+	private String addDNSIP(String jvmArguments) {
+		@SuppressWarnings("restriction")
+		List<?> nameservers = sun.net.dns.ResolverConfiguration.open().nameservers();
+		StringBuilder sb = new StringBuilder();
+		for (Object dns : nameservers) {
+			sb.append(dns + " ");
+		}
+		return jvmArguments + " -Dngrinder.dns.ip=" + sb.toString();
 	}
 
 	private String addCustomDns(GrinderProperties properties, String jvmArguments) {

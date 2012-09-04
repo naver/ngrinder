@@ -127,8 +127,11 @@ public class ScriptValidationService {
 			File scriptFile = new File(scriptDirectory,
 					FilenameUtils.getName(scriptEntry.getPath()));
 
-			String jvmArguments = "";
-
+			// set security.manager argument
+			String jvmArguments = "-Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager ";
+			jvmArguments += " -Dngrinder.exec.path=" + getLibPath();
+			jvmArguments += " -Dngrinder.console.ip=" + hostString;
+			
 			if (useScriptInSVN) {
 				fileEntryService.writeContentTo(user, scriptEntry.getPath(),
 						scriptDirectory);
@@ -146,6 +149,18 @@ public class ScriptValidationService {
 			LOG.error("Error details ", e);
 		}
 		return StringUtils.EMPTY;
+	}
+
+	private String getLibPath() {
+		String path = this.getClass().getResource("/").getPath();
+		path = path.substring(1, path.length() - 1);
+		String str = "classes";
+		int i = path.indexOf(str);
+		if (i > 0) {
+			path = path.substring(0, i);
+			path += "lib/";
+		}
+		return new File(path).getAbsolutePath();
 	}
 
 	/**
