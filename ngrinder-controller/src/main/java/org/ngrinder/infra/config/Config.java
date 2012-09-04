@@ -34,7 +34,6 @@ import java.util.Properties;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.model.Home;
@@ -109,7 +108,6 @@ public class Config {
 		home.makeSubPath(PLUGIN_PATH);
 		home.makeSubPath(PERF_TEST_PATH);
 		home.makeSubPath(DOWNLOAD_PATH);
-
 	}
 
 	/**
@@ -149,6 +147,7 @@ public class Config {
 		properties.put("NGRINDER_HOME", home.getDirectory().getAbsolutePath());
 		systemProperties = new PropertiesWrapper(properties);
 	}
+	
 
 	public PropertiesWrapper getDatabaseProperties() {
 		checkNotNull(databaseProperties);

@@ -19,12 +19,24 @@
 				</div> 
 				<form action="${req.getContextPath()}/operation/scriptConsole" name="scriptForm" method="POST"
 					style="margin-bottom: 0;">
-					<button type="submit" class="btn btn-success pull-right" id="runBtn" style="margin-top:-55px;">Submit</button>			
+					<button type="submit" class="btn btn-success pull-right" id="runBtn" style="margin-top:-55px;">Run Script</button>			
 					<textarea class="input-xlarge span12"  id="scriptEditor" rows="20" name="scriptEditor" style="resize: none">${(script)!}</textarea>
 					 
 					<input type="hidden" id="script" name="script" value=""/>
 				</form>
-				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable" id="validateRsPre">${(result)!}</pre>
+				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable" id="validateRsPre"><#if result??>${(result)!}<#else>
+You can write python code to monitor ngrinder internal status.
+Following variables are available.
+- applicationContext
+- agentManager
+- consoleManager
+- perfTestService
+- fileEntryService	
+
+Please type following and click Submit button as a example
+
+print agentManager.getAllAttachedAgents()
+				</#if></pre>
 			</div>
 			
 		</div>

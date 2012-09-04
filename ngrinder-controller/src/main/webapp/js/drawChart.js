@@ -46,10 +46,14 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 			return value.toFixed(0);
 		};
 	}
+	var numberOfXTicks = 10;
 	
+	if (values[0] !== undefined && values[0].length == 60) {
+		numberOfXTicks = 13;
+	}
 	var plotObj = $.jqplot(containerId, values, {
 
-        gridPadding: {top:15, right:15, bottom:25, left:60},
+        gridPadding : {top:20, right:20, bottom:35, left:60}, 
 	
 		seriesDefaults : {
 			markerRenderer : $.jqplot.MarkerRenderer,
@@ -58,13 +62,12 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 				color : '#555555'
 			},
 			lineWidth : 1.0
-		},
+		}, 
 		axes : {
 			xaxis : {
 				min : 0,
 				pad : 0,
-				numberTicks : 5,
-				tickRenderer : $.jqplot.AxisTickRenderer,
+				numberTicks : numberOfXTicks,
 				tickOptions : {
 					show : true,
 					formatter : function(format, value) {
@@ -81,8 +84,6 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 				}
 			},
 			yaxis : {
-				tickRenderer : $.jqplot.CanvasAxisTickRenderer,
-				labelRenderer : $.jqplot.CanvasAxisLabelRenderer,
 				label : yLabel,
 				labelOptions : {
 					fontFamily : 'Helvetica',
@@ -122,7 +123,6 @@ function replotChart(plotObj, data, ymax) {
 	for (i = 0; i < data.length; i++) {
 		cache.push([i + 1, data[i]]);
 	}
-
 	plotObj.series[0].data = cache;
 	var prevFormatter = plotObj.axes.yaxis.tickOptions.formatter;
 	plotObj.resetAxesScale(); 
@@ -130,11 +130,7 @@ function replotChart(plotObj, data, ymax) {
 	if (ymax < 5) {
 		ymax = 5;
 	}
-	if (cache.length > 10) {
-		plotObj.axes.xaxis.numberTicks = 10;
-	} else {
-		plotObj.axes.xaxis.numberTicks = cache.length;
-	}
+	
 	ymax = parseInt((ymax / 5) + 0.5) * 6;
 	
 	plotObj.axes.yaxis.numberTicks = 7;

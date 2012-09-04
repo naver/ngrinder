@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/operation/scriptConsole")
 @PreAuthorize("hasAnyRole('A', 'S')")
-public class ScriptRunnerController extends NGrinderBaseController implements
+public class ScriptConsoleController extends NGrinderBaseController implements
 		ApplicationContextAware {
 	@Autowired
 	private Config config;
@@ -92,7 +92,7 @@ public class ScriptRunnerController extends NGrinderBaseController implements
 			return bos.toString();
 		} catch (Exception e) {
 			String message = ExceptionUtils.getMessage(e);
-			message = message + ExceptionUtils.getStackTrace(e);
+			message = message +"\n"+ ExceptionUtils.getStackTrace(e);
 			return message;
 		}
 	}

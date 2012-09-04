@@ -42,7 +42,7 @@
 		
 		jQuery.validator.addMethod("userPhoneNumber", function(mobilePhone, element ) {
 			
-			var patrn = /^\d{2}-\d{4}-\d{5}/;
+			var patrn = /^\d{2,3}-\d{3,5}-\d{3,5}/;
 			var rule = new RegExp(patrn);
 			if (!rule.test($.trim($("#mobilePhone").val()))) {
 				userIdValidMsg = "<@spring.message "user.info.warning.phone.intro"/>";
@@ -103,42 +103,7 @@
 	    });
 	});
 	
-	function FormatPhone (e,input) { 
-        /* to prevent backspace, enter and other keys from  
-         interfering w mask code apply by attribute  
-         onkeydown=FormatPhone(control) 
-        */ 
-        evt = e || window.event; /* firefox uses reserved object e for event */ 
-		var pressedkey = evt.which || evt.keyCode; 
-        var BlockedKeyCodes = new Array(8,27,13,9); //8 is backspace key 
-        var len = BlockedKeyCodes.length; 
-        var block = false; 
-        var str = ''; 
-        for (i=0; i<len; i++){ 
-           str=BlockedKeyCodes[i].toString(); 
-           if (str.indexOf(pressedkey) >=0 ) block=true;  
-        } 
-        if (block) return true; 
-	 
-       s = input.value; 
-       if (s.charAt(0) =='+') return false; 
-       filteredValues = '"`!@#$%^&*()_+|~-=\QWERT YUIOP{}ASDFGHJKL:ZXCVBNM<>?qwertyuiop[]asdfghjkl;zxcvbnm,./\\\'';  
-       var i; 
-       var returnString = ''; 
-       /* Search through string and append to unfiltered values  
-          to returnString. */ 
-       for (i = 0; i < s.length; i++) {  
-             var c = s.charAt(i); 
-             if ((filteredValues.indexOf(c) == -1) & (returnString.length <  12 )) { 
-        	     if (returnString.length==2) returnString +='-'; 
-	             if (returnString.length==7) returnString +='-'; 
-	             returnString += c; 
-        	     } 
-       	} 
-       input.value = returnString; 
-        
-       return false 
-   } 
+	
 	
 </script>
 
@@ -149,6 +114,7 @@
 			<label class="control-label"><@spring.message "user.info.form.userId"/></label>
 			<div class="controls">
 				<input type="text" class="span4 required userIdFmt userIdExist" id="userId" name="userId"
+				    maxlength="15"
 				    rel="popover" value="${(user.userId)!}"
 					data-content="<@spring.message "user.info.warning.userId.intro"/>"
 					data-original-title="<@spring.message "user.info.form.userId"/>"
@@ -162,6 +128,7 @@
 			<label class="control-label"><@spring.message "user.option.name"/></label>
 			<div class="controls">
 				<input type="text" class="span4 required" id="userName"
+	                maxlength="15"
 					name="userName" rel="popover" value="${(user.userName)!}"
 					data-content="<@spring.message "user.info.warning.userName"/>"
 					data-original-title="<@spring.message "user.option.name"/>">
@@ -184,7 +151,7 @@
 		<div class="control-group">
 			<label class="control-label"><@spring.message "user.info.form.email"/></label>
 			<div class="controls">
-				<input type="text" class="span4 required email" id="email"
+				<input type="text" class="span4 required email" id="email" maxlength="30"
 					name="email" rel="popover" value="${(user.email)!}"
 					data-content="<@spring.message "user.info.warning.email.required"/>"
 					data-original-title="<@spring.message "user.info.form.email"/>">
@@ -203,7 +170,7 @@
 		<div class="control-group" >
 			<label class="control-label"><@spring.message "user.info.form.phone"/></label>
 			<div class="controls">
-				<input type="text" class="span4 userPhoneNumber" id="mobilePhone" onkeypress="FormatPhone (event,mobilePhone);" 
+				<input type="text" class="span4 userPhoneNumber" id="mobilePhone"  
 					name="mobilePhone" rel="popover"
 					value="${(user.mobilePhone)!}"
 					data-content="<@spring.message "user.info.warning.phone.intro"/>"
@@ -223,7 +190,8 @@
             			<div class="control-group" >
 								<label class="control-label"><@spring.message "user.info.form.pwd"/></label>
 								<div class="controls">
-									<input type="password" class="span4" id="password"  minlength="4"
+									<input type="password" class="span4" id="password"  minlength="4" 	maxlength="15"
+									
 										name="password" rel="popover" value="${(user.psw)!}"
 										data-content="<@spring.message "user.info.warning.pwd.minLength"/>"
 										data-original-title="<@spring.message "user.info.form.pwd"/>">
@@ -233,7 +201,7 @@
 						<div class="control-group" >
 								<label class="control-label"><@spring.message "user.info.form.cpwd"/></label>
 								<div class="controls">
-									<input type="password" class="span4" id="cpwd" 
+									<input type="password" class="span4" id="cpwd" minlength="4" maxlength="15"
 										name="cpwd" rel="popover" value="${(user.psw)!}"
 										data-content="<@spring.message "user.info.warning.cpwd.equalTo"/>"
 										data-original-title="<@spring.message "user.info.form.cpwd"/>">

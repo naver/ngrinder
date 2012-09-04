@@ -116,6 +116,7 @@
 			var java_threadCount = new Queue();
 			var sys_totalCpuValue = new Queue();
 			var sys_usedMemory = new Queue();
+			initChartData();
 			var jqplots = [];
             $(document).ready(function() {
             	$("#chartTab a:first").tab('show');
@@ -215,6 +216,17 @@
             	}
             }
             
+            function initChartData() {
+                for (var i = 0; i < 60; i++) {
+		        	java_heapUsedMemory.enQueue(0);
+		        	java_nonHeapUsedMemory.enQueue(0);
+		        	java_cpuUsedPercentage.enQueue(0);
+		        	java_threadCount.enQueue(0);
+		        	sys_totalCpuValue.enQueue(0);
+		        	sys_usedMemory.enQueue(0);
+            	}	
+            }
+            
             function getChartData(dataObj) {				
 				java_heapUsedMemory.enQueue(dataObj.javaData.heapUsedMemory);
 				java_nonHeapUsedMemory.enQueue(dataObj.javaData.nonHeapUsedMemory);
@@ -240,6 +252,7 @@
 				java_threadCount.makeEmpty();
 				sys_totalCpuValue.makeEmpty();
 				sys_usedMemory.makeEmpty();
+				initChartData();
 			}
         </script>
     </body>

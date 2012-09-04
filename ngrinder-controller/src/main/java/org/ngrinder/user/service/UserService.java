@@ -144,6 +144,7 @@ public class UserService implements IUserService {
 	 * @param user
 	 * @return result.
 	 */
+	@Transactional
 	public String modifyUser(User user) {
 		checkNotNull(user, "user should be not null, when modifying user");
 		checkNotNull(user.getId(), "user id should be provided when modifying user");
@@ -161,6 +162,7 @@ public class UserService implements IUserService {
 	 *            the user id string
 	 * @return true, if successful
 	 */
+	@Transactional
 	public void deleteUsers(List<String> userIds) {
 		// TODO: delete user, how about the projects created by user
 		for (String userId : userIds) {
