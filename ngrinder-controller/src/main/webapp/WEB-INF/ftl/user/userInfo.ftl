@@ -1,4 +1,5 @@
 <#import "../common/spring.ftl" as spring/>
+<script src="${req.getContextPath()}/js/jquery.validate.js"></script>
 <script type="text/javascript">
 	
 	$(document).ready(function(){
@@ -17,9 +18,11 @@
 			}
 			return true;
 		}, "<@spring.message 'user.info.warning.userId.invalid'/>" );
+		
 
 		jQuery.validator.addMethod("userIdExist", function( userId, element ) {
 			if(userId != null && userId.length > 0){
+				var result ;
 				$.ajax({
 					  url: "${req.getContextPath()}/user/checkUserId?userId="+userId,
 					  async: false,
@@ -27,14 +30,27 @@
 					  type: "GET",
 					  dataType:'json',
 					  success: function(res) {
-						  return res.success;
+					  	result = res.success;
   					  }
 				}); 
+				return result;
 			}
 			return false;
 		}, "<@spring.message 'user.info.warning.userId.exist'/>");
 		
 		</#if>
+		
+		jQuery.validator.addMethod("userPhoneNumber", function(mobilePhone, element ) {
+			
+			var patrn = /^\d{2}-\d{4}-\d{5}/;
+			var rule = new RegExp(patrn);
+			if (!rule.test($.trim($("#mobilePhone").val()))) {
+				userIdValidMsg = "<@spring.message "user.info.warning.phone.intro"/>";
+				return false;
+			}
+			return true;
+		}, "<@spring.message 'user.info.warning.phone.intro'/>" );
+		
 		
 		$('.collapse').on('hidden', function () {
   			$("#password").removeClass("required");
@@ -52,7 +68,7 @@
 
 		});
 		
-	
+		
 		$('#registerUserForm input').hover(function() {
 	        $(this).popover('show')
 	    });
@@ -86,6 +102,44 @@
 	        }
 	    });
 	});
+	
+	function FormatPhone (e,input) { 
+        /* to prevent backspace, enter and other keys from  
+         interfering w mask code apply by attribute  
+         onkeydown=FormatPhone(control) 
+        */ 
+        evt = e || window.event; /* firefox uses reserved object e for event */ 
+		var pressedkey = evt.which || evt.keyCode; 
+        var BlockedKeyCodes = new Array(8,27,13,9); //8 is backspace key 
+        var len = BlockedKeyCodes.length; 
+        var block = false; 
+        var str = ''; 
+        for (i=0; i<len; i++){ 
+           str=BlockedKeyCodes[i].toString(); 
+           if (str.indexOf(pressedkey) >=0 ) block=true;  
+        } 
+        if (block) return true; 
+	 
+       s = input.value; 
+       if (s.charAt(0) =='+') return false; 
+       filteredValues = '"`!@#$%^&*()_+|~-=\QWERT YUIOP{}ASDFGHJKL:ZXCVBNM<>?qwertyuiop[]asdfghjkl;zxcvbnm,./\\\'';  
+       var i; 
+       var returnString = ''; 
+       /* Search through string and append to unfiltered values  
+          to returnString. */ 
+       for (i = 0; i < s.length; i++) {  
+             var c = s.charAt(i); 
+             if ((filteredValues.indexOf(c) == -1) & (returnString.length <  12 )) { 
+        	     if (returnString.length==2) returnString +='-'; 
+	             if (returnString.length==7) returnString +='-'; 
+	             returnString += c; 
+        	     } 
+       	} 
+       input.value = returnString; 
+        
+       return false 
+   } 
+	
 </script>
 
 <form action="${req.getContextPath()}/user/save"
@@ -94,7 +148,7 @@
 		<div class="control-group">
 			<label class="control-label"><@spring.message "user.info.form.userId"/></label>
 			<div class="controls">
-				<input type="text" class="span4 userIdFmt userIdExist" id="userId" name="userId"
+				<input type="text" class="span4 required userIdFmt userIdExist" id="userId" name="userId"
 				    rel="popover" value="${(user.userId)!}"
 					data-content="<@spring.message "user.info.warning.userId.intro"/>"
 					data-original-title="<@spring.message "user.info.form.userId"/>"
@@ -149,7 +203,7 @@
 		<div class="control-group" >
 			<label class="control-label"><@spring.message "user.info.form.phone"/></label>
 			<div class="controls">
-				<input type="text" class="span4 required positiveNumber" id="mobilePhone"
+				<input type="text" class="span4 userPhoneNumber" id="mobilePhone" onkeypress="FormatPhone (event,mobilePhone);" 
 					name="mobilePhone" rel="popover"
 					value="${(user.mobilePhone)!}"
 					data-content="<@spring.message "user.info.warning.phone.intro"/>"

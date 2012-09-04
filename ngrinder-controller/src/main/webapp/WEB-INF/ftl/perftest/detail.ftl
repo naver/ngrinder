@@ -53,7 +53,7 @@ div.chart {
 }
 
 .jqplot-xaxis {
-    margin-top: 20px; 
+    margin-top: 5px; 
 } 
 
 .rampChart {
@@ -270,14 +270,6 @@ i.collapse{
 													</td>
 													</tr>
 												</table> 
-												
-												<script>
-													$(document).ready(function() {
-														$("#scriptName").change(function(selected) {
-															$("#showScript").val(selected);
-														});
-													});
-												</script>
 											</div> 
 										</div>
 										<div class="control-group">
@@ -414,18 +406,18 @@ i.collapse{
 								<div class="form-horizontal form-horizontal-3" style="margin-top: 10px;">
 									<fieldset>
 										<div class="control-group">
-											<label for="agentCount" class="control-label"><@spring.message "perfTest.testRunning.scriptName"/></label>
-											<div class="controls">${(test.scriptName)!}</div>
+											<label for="scriptName" class="control-label"><@spring.message "perfTest.testRunning.scriptName"/></label>
+											<div class="controls" title="${(test.scriptName)!}">${(test.scriptNameInShort)!}</div> 
 										</div>
 										<hr>
 										<div class="control-group">
-											<label for="vuserPerAgent" class="control-label"><@spring.message "perfTest.table.vusers"/></label>
+											<label for="vuserPerAgent" class="control-label"><@spring.message "perfTest.testRunning.vusers"/></label>
 											<div class="controls">
 												<strong>${(test.vuserPerAgent)!}</strong>
 											</div>
 										</div>
 										<div class="control-group">
-											<label for="scriptName" class="control-label"><@spring.message "perfTest.testRunning.agents"/></label>
+											<label for="agentCount" class="control-label"><@spring.message "perfTest.testRunning.agents"/></label>
 											<div class="controls">
 												<span>${(test.agentCount)!}</span>
 												<!--<a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>-->
@@ -470,7 +462,7 @@ i.collapse{
 								<div class="page-header">
 									<h4><@spring.message "perfTest.testRunning.tpsStatistics"/> <span class="badge badge-success"><@spring.message "perfTest.testRunning.runTime"/> <data id="running_time"></data></span></h4>
 								</div>
-								<div id="runningTps" class="chart" style="width: 530px; height: 195px"></div>
+								<div id="runningTps" class="chart" style="width: 530px; height: 250px"></div>
 								<div class="tabbable">
 									<ul class="nav nav-pills" style="" id="tableTab">
 										<li><a href="#lsTab" tid="ls"><@spring.message "perfTest.testRunning.latestsample"/></a></li>
@@ -632,7 +624,7 @@ i.collapse{
 			displayCfgOnly();
 		  </#if>
 		  $("#tableTab a:first").tab('show');
-
+			
 	      $('#testContentForm input').hover(function () {
 	          $(this).popover('show')
 	      });
@@ -643,7 +635,8 @@ i.collapse{
 	          }
 	      }
 
-	      $("#scriptName").change(function () {
+	      $("#scriptName").change(function (selected) {
+	    	  $("#showScript").val(selected);
 	          updateScriptResources(false);
 	      });
 
@@ -1125,7 +1118,7 @@ i.collapse{
 	      $("#testContent_tab a").tab('show');
 	      $("#runningContent_tab").hide();
 	      $("#reportContent_tab").show();
-
+		
 	      if (objTimer) {
 	          window.clearInterval(objTimer);
 	      }

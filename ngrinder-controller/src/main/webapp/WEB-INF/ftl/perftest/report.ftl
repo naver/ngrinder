@@ -13,8 +13,12 @@
 			div.chart { border: 1px solid #878988; height:250px; min-width:615px; margin-bottom:12px }
 			td strong { color: #6DAFCF }
 			.jqplot-yaxis {
-			    margin-right: 10px;
+			    margin-right: 20px;
 			}
+			.jqplot-xaxis {
+			    margin-right: 5px; 
+			} 
+			.compactpadding th {padding-left:5px;padding-right:5px} 
 		</style>
 
 		<input type="hidden" id="contextPath" value="${req.getContextPath()}">
@@ -36,7 +40,7 @@
 	   </form>
 		<div class="row">
 			<div class="span3">
-					   <table class="table table-bordered">
+					   <table class="table table-bordered compactpadding">
 					       <tr>
 					       	   <th><@spring.message "perfTest.report.vusersPerAgent"/></th>
 					           <td><strong>${(test.vuserPerAgent)!}</strong></td>
@@ -67,10 +71,6 @@
                            <tr>
                                 <td colspan=2></td>
                            </tr>
-                           <tr>                               
-                               <th><@spring.message "perfTest.configuration.sampleInterval"/></th>
-                               <td><span>${(test.sampleInterval)!1000}</span> <code>ms</code></td>
-                           </tr>
                            <tr>
                                 <td colspan=2></td>
                            </tr>
@@ -80,8 +80,9 @@
                                <td><strong>Total ${(test.tps)!}</strong></td>
                            </tr>
                            <tr>
-                               <th><@spring.message "perfTest.table.meantime"/></th>
-                               <td><span>${(test.meanTestTime)!}</span> <code>ms</code></td>
+                               <th><@spring.message "perfTest.report.meantime"/></th>
+                               <td><span>${(test.meanTestTime)!}</span>&nbsp;&nbsp; <code>ms</code></td>
+                               
                            </tr>
                            <tr>
                                <th>Peak TPS</th>
@@ -123,7 +124,7 @@
                    </tr>  
                </table>
                <div class="row" style="margin-bottom:10px">
-	                <button class="btn btn-large pull-right" id="downloadReportData"><i class="icon-download-alt"></i><strong><@spring.message "perfTest.report.downloadCSV"/></strong></button>
+	                <button class="btn btn-middle btn-primary pull-right" id="downloadReportData"><i class="icon-download-alt"></i><strong><@spring.message "perfTest.report.downloadCSV"/></strong></button>
 	           </div>
 			    <div id="performanceDiv">
 			    	<div class="page-header">
@@ -131,11 +132,11 @@
 					</div>
 			    	<div class="chart" id="tpsDiv"></div>
     				<div class="page-header">
-						<h4>Mean Time to Test</h4>
+						<h4><@spring.message "perfTest.report.header.meantime"/><code>ms</code></h4>
 					</div>
     				<div class="chart" id="meanTimeDiv"></div>
     				<div class="page-header">
-						<h4>Errors</h4>
+						<h4><@spring.message "perfTest.report.header.errors"/></h4>
 					</div>
     				<div class="chart" id="errorDiv"></div>
 				</div>

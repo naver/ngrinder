@@ -21,8 +21,17 @@
 
 	</appender>
 
+	<logger name="net.grinder" level="${LOG_LEVEL}" additivity="false">
+	  <appender-ref ref="log-file" />
+	</logger> 
+	
+	<logger name="org.ngrinder" level="${LOG_LEVEL}" additivity="false">
+	  <appender-ref ref="log-file" />
+    </logger>
+
+
 	<root>
-		<level value="${LOG_LEVEL}" />
+		<level value="WARN" />
 		<appender-ref ref="log-file" />
 	</root>
 </configuration>
