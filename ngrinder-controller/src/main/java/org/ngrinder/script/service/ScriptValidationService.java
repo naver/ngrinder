@@ -133,7 +133,7 @@ public class ScriptValidationService {
 			if (securityEnabled) {
 				jvmArguments = "-Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager ";
 				jvmArguments += " -Dngrinder.exec.path=" + getLibPath();
-				jvmArguments += " -Dngridner.etc.hosts=" + hostString;
+				jvmArguments += " -Dngrinder.etc.hosts=" + hostString;
 			}
 			
 			if (useScriptInSVN) {
