@@ -15,6 +15,7 @@
 			.jqplot-yaxis {
 			    margin-right: 10px;
 			}
+			.compactpadding th {padding-left:5px;padding-right:5px} 
 		</style>
 
 		<input type="hidden" id="contextPath" value="${req.getContextPath()}">
@@ -36,7 +37,7 @@
 	   </form>
 		<div class="row">
 			<div class="span3">
-					   <table class="table table-bordered">
+					   <table class="table table-bordered compactpadding">
 					       <tr>
 					       	   <th><@spring.message "perfTest.report.vusersPerAgent"/></th>
 					           <td><strong>${(test.vuserPerAgent)!}</strong></td>
@@ -77,7 +78,8 @@
                            </tr>
                            <tr>
                                <th><@spring.message "perfTest.report.meantime"/></th>
-                               <td><span>${(test.meanTestTime)!}</span> <code>ms</code></td>
+                               <td><span>${(test.meanTestTime)!}</span>&nbsp;&nbsp; <code>ms</code></td>
+                               
                            </tr>
                            <tr>
                                <th>Peak TPS</th>
@@ -119,7 +121,7 @@
                    </tr>  
                </table>
                <div class="row" style="margin-bottom:10px">
-	                <button class="btn btn-large pull-right" id="downloadReportData"><i class="icon-download-alt"></i><strong><@spring.message "perfTest.report.downloadCSV"/></strong></button>
+	                <button class="btn btn-middle btn-primary pull-right" id="downloadReportData"><i class="icon-download-alt"></i><strong><@spring.message "perfTest.report.downloadCSV"/></strong></button>
 	           </div>
 			    <div id="performanceDiv">
 			    	<div class="page-header">

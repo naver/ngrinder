@@ -53,7 +53,7 @@ div.chart {
 }
 
 .jqplot-xaxis {
-    margin-top: 20px; 
+    margin-top: 5px; 
 } 
 
 .rampChart {
@@ -1141,7 +1141,7 @@ i.collapse{
 	      $("#testContent_tab a").tab('show');
 	      $("#runningContent_tab").hide();
 	      $("#reportContent_tab").show();
-
+		
 	      if (objTimer) {
 	          window.clearInterval(objTimer);
 	      }
