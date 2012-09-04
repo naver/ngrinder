@@ -72,10 +72,6 @@
                                 <td colspan=2></td>
                            </tr>
                            <tr>
-                                <td colspan=2></td>
-                           </tr>
-
-                           <tr>
                                <th>TPS</th>
                                <td><strong>Total ${(test.tps)!}</strong></td>
                            </tr>

@@ -128,9 +128,13 @@ public class ScriptValidationService {
 					FilenameUtils.getName(scriptEntry.getPath()));
 
 			// set security.manager argument
-			String jvmArguments = "-Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager ";
-			jvmArguments += " -Dngrinder.exec.path=" + getLibPath();
-			jvmArguments += " -Dngrinder.console.ip=" + hostString;
+			String jvmArguments = "";
+			boolean securityEnabled = config.isSecurityEnabled();
+			if (securityEnabled) {
+				jvmArguments = "-Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager ";
+				jvmArguments += " -Dngrinder.exec.path=" + getLibPath();
+				jvmArguments += " -Dngridner.etc.hosts=" + hostString;
+			}
 			
 			if (useScriptInSVN) {
 				fileEntryService.writeContentTo(user, scriptEntry.getPath(),

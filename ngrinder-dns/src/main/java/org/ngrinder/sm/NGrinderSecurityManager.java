@@ -42,29 +42,30 @@ public class NGrinderSecurityManager extends SecurityManager {
 	private String javaHomeDirectory = System.getenv("JAVA_HOME");
 	private String etcHosts = System.getProperty("ngridner.etc.hosts", "");
 	private String consoleIP = System.getProperty("ngrinder.console.ip", "127.0.0.1");
-	private List<String> allowedHostIP = new ArrayList<String>();
+	private List<String> allowedHost = new ArrayList<String>();
 
 	{
 		/**
 		 * Get ip address of target hosts. <br>
-		 * if target hosts 'a.com:1.1.1.1' add ip: '1.1.1.1' <br>
-		 * if target hosts ':1.1.1.1' add ip: '1.1.1.1' <br>
-		 * if target hosts '1.1.1.1' add ip: '1.1.1.1' <br>
+		 * if target hosts 'a.com:1.1.1.1' add 'a.com' & '1.1.1.1' <br>
+		 * if target hosts ':1.1.1.1' add : '1.1.1.1' <br>
+		 * if target hosts '1.1.1.1' add : '1.1.1.1' <br>
 		 */
 		String[] hostsList = etcHosts.split(",");
 		for (String hosts : hostsList) {
 			String[] addresses = hosts.split(":");
 			if (addresses.length > 0) {
-				allowedHostIP.add(addresses[addresses.length - 1]);
+				allowedHost.add(addresses[0]);
+				allowedHost.add(addresses[addresses.length - 1]);
 			} else {
-				allowedHostIP.add(hosts);
+				allowedHost.add(hosts);
 			}
 		}
 
 		/**
 		 * add controler host
 		 */
-		allowedHostIP.add(consoleIP);
+		allowedHost.add(consoleIP);
 	}
 
 	@Override
@@ -191,7 +192,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * @param host
 	 */
 	private void netWorkAccessAllowed(String host) {
-		if (allowedHostIP.contains(host)) {
+		if (allowedHost.contains(host)) {
 			return;
 		}
 		throw new SecurityException("NetWork access on " + host + " is not allowed.");
