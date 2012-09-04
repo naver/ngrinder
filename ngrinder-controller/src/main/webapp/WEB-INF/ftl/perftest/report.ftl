@@ -13,8 +13,11 @@
 			div.chart { border: 1px solid #878988; height:250px; min-width:615px; margin-bottom:12px }
 			td strong { color: #6DAFCF }
 			.jqplot-yaxis {
-			    margin-right: 10px;
+			    margin-right: 20px;
 			}
+			.jqplot-xaxis {
+			    margin-right: 5px; 
+			} 
 			.compactpadding th {padding-left:5px;padding-right:5px} 
 		</style>
 
