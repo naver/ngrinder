@@ -87,9 +87,9 @@
 					</div>
 					<input type="hidden" id="contentHidden" name="content" value=""/>
 				</form>
-				<textarea id="codemirrorContent" style="width:930px; margin-top:10px">${(file.content)!}</textarea>
-				<div class="pull-right" rel="popover" data-original-title="Tip" data-content="
-			      Ctrl-F / Cmd-F : <@spring.message "script.editor.tip.startSearching"/>&lt;br&gt;
+				<textarea id="codemirrorContent" style="width:930px; margin-top:10px;z-index:100">${(file.content)!}</textarea>
+				<div class="pull-right" rel="popover" style="position:float;margin-top:-20px;margin-right:-30px" data-original-title="Tip" data-content="
+			      Ctrl-F / Cmd-F : <@spring.message "script.editor.tip.startSearching"/>&lt;br&gt; 
 			      Ctrl-G / Cmd-G : <@spring.message "script.editor.tip.findNext"/>&lt;br&gt;
 			      Shift-Ctrl-G / Shift-Cmd-G : <@spring.message "script.editor.tip.findPrev"/>&lt;br&gt;
 			      Shift-Ctrl-F / Cmd-Option-F : <@spring.message "script.editor.tip.replace"/>&lt;br&gt;
@@ -181,13 +181,41 @@
 			    	success: function(res) {
 						$('#validateRsPre').text(res);
 						$('#validateRsPre').show();
-						$("#footDiv").remove();
+						resetFooter();
 			    	},
 			    	error: function() {
 			    		showErrorMsg("<@spring.message "script.editor.error.validate"/>");
 			    	}
 			  	});
 			});
+			
+			
+	      $("#contentForm").validate({
+	          rules: {
+	          },
+	          messages: {
+	              
+	          },
+	          ignore: "", //make the validation on hidden input work
+	          errorClass: "help-inline",
+	          errorElement: "span",
+	          errorPlacement: function (error, element) {
+	              if (element.next().attr("class") == "add-on") {
+	                  error.insertAfter(element.next());
+	              } else {
+	                  error.insertAfter(element);
+	              }
+	          },
+	          highlight: function (element, errorClass, validClass) {
+	              $(element).parents('.control-group').addClass('error');
+	              $(element).parents('.control-group').removeClass('success');
+	          },
+	          unhighlight: function (element, errorClass, validClass) {
+	              $(element).parents('.control-group').removeClass('error');
+	              $(element).parents('.control-group').addClass('success');
+	          }
+	      });
+	      
 		});
 		</script>
 	</body>

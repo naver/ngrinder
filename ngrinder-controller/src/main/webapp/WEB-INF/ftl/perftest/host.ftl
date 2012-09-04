@@ -37,9 +37,29 @@
 </div>
 
 <script>
+	 function validateHostForm() {
+	      $("#ipInput").blur(function () {
+	          var $this = $(this);
+	          if (!checkEmptyByObj($this)) {
+	              markInput($this, isIPByObj($this), "<@spring.message "perfTest.configuration.addHost.inputTargetIp"/>");
+	          }
+	      });
+	      $("#domainInput").blur(function () {
+	          if (!checkEmptyByID("domainInput")) {
+	              var $this = $(this);
+	              var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$";
+	              var str = $this.val();
+	              markInput($this, checkStringFormat(str, rule), "<@spring.message "perfTest.configuration.addHost.inputTargetDomain"/>");
+	          }
+	      });
+	}
+	  
 	$(document).ready(function() {
+	      validateHostForm();
+		  
 	      $("#addHostBtn").click(function () {
 	          var content = [];
+	             
 	          if (!checkEmptyByID("domainInput")) {
 	              content.push(getValueByID("domainInput"));
 	          }
@@ -52,6 +72,9 @@
 	              return;
 	          }
 
+			  if (!$("#domainInput").valid() &&  !$("#ipInput").valid()) {
+		  	     return;
+		      } 
 	          var contentStr = content.join(":");
 	          
 	          $(".div-host").html($(".div-host").html() + hostItem(contentStr));

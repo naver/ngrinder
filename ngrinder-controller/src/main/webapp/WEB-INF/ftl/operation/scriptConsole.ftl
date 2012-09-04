@@ -38,7 +38,6 @@ Please type following and click Submit button as a example
 print agentManager.getAllAttachedAgents()
 				</#if></pre>
 			</div>
-			
 		</div>
 		<#include "../common/copyright.ftl">
 	</div>

@@ -1,8 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="chrome=1">
-<meta name="description" content="nGrinder Performance Test Detail">
-<meta name="author" content="AlexQin">
 
 <link rel="shortcut icon" type="image/png" href="${req.getContextPath()}/img/favicon.png" />
 <link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
@@ -16,18 +14,18 @@
 <#if currentUser?? && currentUser.timeZone??>
 	<#setting time_zone="${currentUser.timeZone}"> 
 </#if>  
+<#import "spring.ftl" as spring/>
 <script>
 	//common validation function and options. 
 	$.validator.addMethod('positiveNumber',
 		    function (value) { 
 		        return Number(value) > 0;
-		    }, 'Enter a positive number.');
-	$.validator.addMethod('CountNumber',
+		    }, '<@spring.message "common.form.validate.positiveNumber"/>');
+	$.validator.addMethod('countNumber',
 		    function (value) { 
 		        return Number(value) >= 0;
-		    }, 'Enter a Non-negative number.');
+		    }, '<@spring.message "common.form.validate.countNumber"/>');
 </script> 
 
 <input type="hidden" id="contextPath" value="${req.getContextPath()}">
 <#setting number_format="computer">
-<#import "spring.ftl" as spring/>

@@ -66,13 +66,7 @@
 						<#assign perfPeopleSize = 0>
 					</#if>
 					<code id="currentRunning" style="width:300px"> <@spring.messageArgs "perfTest.currentRunning.summary", ["${perfPeopleSize}"]/></code>
-					<div class="hidden" id="currentRunningDiv">
-						<#if perfTestStatisticsList?has_content>
-							<#list perfTestStatisticsList as eachPerfTestStatistics>
-							<@spring.messageArgs "perfTest.currentRunning.each", ["${eachPerfTestStatistics.user.userName}", "${eachPerfTestStatistics.testCount}", "${eachPerfTestStatistics.agentCount}"]/>
-							</#list>  
-						</#if>
-					</div>	
+					
 				</div>
 				
 				

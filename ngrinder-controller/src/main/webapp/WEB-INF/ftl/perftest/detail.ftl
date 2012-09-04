@@ -195,7 +195,7 @@ i.collapse{
 										<div class="control-group">
 											<label for="vuserPerAgent" class="control-label"><@spring.message "perfTest.configuration.vuserPerAgent"/></label>
 											<div class="controls">
-												<table style="wdith:100%">
+												<table style="width:100%">
 													<colgroup>
 														<col width="300px"/>
 														<col width="*"/>
@@ -206,9 +206,7 @@ i.collapse{
 																<input type="text" class="input required positiveNumber span1" rel="popover"
 																	number_limit="${(maxVuserPerAgent)}" id="vuserPerAgent" name="vuserPerAgent"
 																	value="${(test.vuserPerAgent)!}" data-content='<@spring.message "perfTest.configuration.inputVuserPerAgent"/>'
-																	data-original-title="<@spring.message "perfTest.configuration.vuserPerAgent"/>"><span class="add-on">
-																		<@spring.message "perfTest.configuration.max"/> ${(maxVuserPerAgent)}
-																	</span>
+																	data-original-title="<@spring.message "perfTest.configuration.vuserPerAgent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxVuserPerAgent)}</span>
 																<a href="javascript:void(0)"><i class="expand" id="expandAndCollapse"></i></a>			
 															</div>
 														</td> 
@@ -237,7 +235,7 @@ i.collapse{
 										<div class="control-group">
 											<label for="scriptName" class="control-label"><@spring.message "perfTest.configuration.script"/></label>
 											<div class="controls">
-												<table style="wdith:100%">
+												<table style="width:100%">
 													<colgroup>
 														<col width="*"/>
 														<col width="100px"/>
@@ -321,7 +319,7 @@ i.collapse{
 										<div class="control-group">
 											<label for="ignoreSampleCount" class="control-label"> <@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
 											<div class="controls">
-												<input type="text" class="input required CountNumber" id="ignoreSampleCount" name="ignoreSampleCount"
+												<input type="text" class="input required countNumber" id="ignoreSampleCount" name="ignoreSampleCount"
 													value="${(test.ignoreSampleCount)!0}">
 											</div>
 										</div>
@@ -347,7 +345,7 @@ i.collapse{
 													<div class="control-group">
 														<label for="initProcesses" class="control-label"> <@spring.message "perfTest.configuration.initalProcesses"/> </label>
 														<div class="controls">
-															<input type="text" class="input input-mini required CountNumber" id="initProcesses" name="initProcesses"
+															<input type="text" class="input input-mini required countNumber" id="initProcesses" name="initProcesses"
 																value="${(test.initProcesses)!0}" />
 														</div>
 													</div>
@@ -367,7 +365,7 @@ i.collapse{
 													<div class="control-group">
 														<label for="initSleepTime" class="control-label"> <@spring.message "perfTest.configuration.initalSleepTime"/> </label>
 														<div class="controls">
-															<input type="text" class="input input-mini required CountNumber" id="initSleepTime" name="initSleepTime"
+															<input type="text" class="input input-mini required countNumber" id="initSleepTime" name="initSleepTime"
 																value="${(test.initSleepTime)!0}">
 															<code>MS</code>
 														</div>
@@ -845,7 +843,6 @@ i.collapse{
 	          $("#processAndThreadPanel").toggle();
 	      });
 	      updateScriptResources(true);
-	      validateHostForm();
 	      $("#durationSlider").mousedown(function () {
 	          $("#durationChkbox").click();
 	      });
@@ -1025,23 +1022,7 @@ i.collapse{
 	      }
 	  }
 
-	  function validateHostForm() {
-	      $("#ipInput").blur(function () {
-	          var $this = $(this);
-	          if (!checkEmptyByObj($this)) {
-	              markInput($this, isIPByObj($this), "IP is invalid.");
-	          }
-	      });
-
-	      $("#domainInput").blur(function () {
-	          if (!checkEmptyByID("domainInput")) {
-	              var $this = $(this);
-	              var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$";
-	              var str = $this.val();
-	              markInput($this, checkStringFormat(str, rule), "Domain is invalid.");
-	          }
-	      });
-	  }
+	  
 
 	  function updateStatus(id, status_type, status_name, icon, deletable, stoppable, message) {
 	      if (status_type == "FINISHED") {
@@ -1101,6 +1082,7 @@ i.collapse{
 	      $("#testContent_tab a").tab('show');
 	      $("#runningContent_tab").hide();
 	      $("#reportContent_tab").hide();
+	      resetFooter();
 	  }
 
 	  function displayCfgAndTestRunning() {
@@ -1108,7 +1090,7 @@ i.collapse{
 	      $("#runningContent_tab a").tab('show');
 	      $("#runningContent").show();
 	      $("#reportContent_tab").hide();
-
+		  resetFooter();
 	      objTimer = window.setInterval("refreshData()", 1000);
 	  }
 
@@ -1116,7 +1098,7 @@ i.collapse{
 	      $("#testContent_tab a").tab('show');
 	      $("#runningContent_tab").hide();
 	      $("#reportContent_tab").show();
-		
+		  resetFooter();
 	      if (objTimer) {
 	          window.clearInterval(objTimer);
 	      }
