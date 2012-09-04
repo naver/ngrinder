@@ -81,8 +81,9 @@ public class AgentImplementationEx implements Agent {
 	private FanOutStreamSender m_fanOutStreamSender;
 	private final ConnectorFactory m_connectorFactory = new ConnectorFactory(ConnectionType.AGENT);
 	/**
-	 * We use an most one file store throughout an agent's life, but can't Initialize it until we've
-	 * read the properties and connected to the console.
+	 * We use an most one file store throughout an agent's life, but can't
+	 * Initialize it until we've read the properties and connected to the
+	 * console.
 	 */
 
 	private volatile FileStore m_fileStore;
@@ -97,12 +98,12 @@ public class AgentImplementationEx implements Agent {
 	 * @param agentConfig
 	 *            which contains basic agent configuration
 	 * @param proceedWithoutConsole
-	 *            <code>true</code> => proceed if a console connection could not be made.
+	 *            <code>true</code> => proceed if a console connection could not
+	 *            be made.
 	 * @throws GrinderException
 	 *             If an error occurs.
 	 */
-	public AgentImplementationEx(Logger logger, AgentConfig agentConfig, boolean proceedWithoutConsole)
-					throws GrinderException {
+	public AgentImplementationEx(Logger logger, AgentConfig agentConfig, boolean proceedWithoutConsole) throws GrinderException {
 
 		m_logger = logger;
 		m_agentConfig = agentConfig;
@@ -139,7 +140,8 @@ public class AgentImplementationEx implements Agent {
 	 * Run the Grinder agent process.
 	 * 
 	 * @param grinderProperties
-	 *            {@link GrinderProperties} which contains grinder agent base configuration.
+	 *            {@link GrinderProperties} which contains grinder agent base
+	 *            configuration.
 	 * @throws GrinderException
 	 *             If an error occurs.
 	 */
@@ -156,16 +158,14 @@ public class AgentImplementationEx implements Agent {
 				GrinderProperties properties;
 
 				do {
-					properties = createAndMergeProperties(grinderProperties,
-									startMessage != null ? startMessage.getProperties() : null);
+					properties = createAndMergeProperties(grinderProperties, startMessage != null ? startMessage.getProperties() : null);
 
 					m_agentIdentity.setName(properties.getProperty("grinder.hostID", getHostName()));
 
-					final Connector connector = properties.getBoolean("grinder.useConsole", true) ? m_connectorFactory
-									.create(properties) : null;
+					final Connector connector = properties.getBoolean("grinder.useConsole", true) ? m_connectorFactory.create(properties)
+							: null;
 					// We only reconnect if the connection details have changed.
-					if (consoleCommunication != null
-									&& !consoleCommunication.getConnector().equals(connector)) {
+					if (consoleCommunication != null && !consoleCommunication.getConnector().equals(connector)) {
 						shutdownConsoleCommunication(consoleCommunication);
 						consoleCommunication = null;
 						// Accept any startMessage from previous console - see
@@ -180,8 +180,7 @@ public class AgentImplementationEx implements Agent {
 						} catch (CommunicationException e) {
 							if (m_proceedWithoutConsole) {
 								m_logger.warn("{}, proceeding without the console; set "
-												+ "grinder.useConsole=false to disable this warning.",
-												e.getMessage());
+										+ "grinder.useConsole=false to disable this warning.", e.getMessage());
 							} else {
 								m_logger.error(e.getMessage());
 								return;
@@ -208,18 +207,16 @@ public class AgentImplementationEx implements Agent {
 						final Directory fileStoreDirectory = m_fileStore.getDirectory();
 
 						// Convert relative path to absolute path.
-						messageProperties.setAssociatedFile(fileStoreDirectory.getFile(messageProperties
-										.getAssociatedFile()));
+						messageProperties.setAssociatedFile(fileStoreDirectory.getFile(messageProperties.getAssociatedFile()));
 
-						final File consoleScript = messageProperties.resolveRelativeFile(messageProperties
-										.getFile(GrinderProperties.SCRIPT, GrinderProperties.DEFAULT_SCRIPT));
+						final File consoleScript = messageProperties.resolveRelativeFile(messageProperties.getFile(
+								GrinderProperties.SCRIPT, GrinderProperties.DEFAULT_SCRIPT));
 
 						// We only fall back to the agent properties if the
 						// start message
 						// doesn't specify a script and there is no default
 						// script.
-						if (messageProperties.containsKey(GrinderProperties.SCRIPT)
-										|| consoleScript.canRead()) {
+						if (messageProperties.containsKey(GrinderProperties.SCRIPT) || consoleScript.canRead()) {
 							// The script directory may not be the file's direct
 							// parent.
 							script = new ScriptLocation(fileStoreDirectory, consoleScript);
@@ -231,8 +228,8 @@ public class AgentImplementationEx implements Agent {
 					}
 
 					if (script == null) {
-						final File scriptFile = properties.resolveRelativeFile(properties.getFile(
-										GrinderProperties.SCRIPT, GrinderProperties.DEFAULT_SCRIPT));
+						final File scriptFile = properties.resolveRelativeFile(properties.getFile(GrinderProperties.SCRIPT,
+								GrinderProperties.DEFAULT_SCRIPT));
 
 						script = new ScriptLocation(scriptFile);
 					}
@@ -246,50 +243,47 @@ public class AgentImplementationEx implements Agent {
 
 				if (script != null) {
 					String jvmArguments = properties.getProperty("grinder.jvm.arguments", "");
-					jvmArguments = addCurrentAgentPath(jvmArguments);
-					jvmArguments = addConsoleIP(jvmArguments);
-					jvmArguments = addDNSIP(jvmArguments);
+					if (properties.getBoolean("grinder.security", false)) {
+						jvmArguments = addCurrentAgentPath(jvmArguments);
+						jvmArguments = addConsoleIP(jvmArguments);
+						jvmArguments = addDNSIP(jvmArguments);
+					}
 					jvmArguments = addCustomDns(properties, jvmArguments);
 					final WorkerFactory workerFactory;
 
 					if (!properties.getBoolean("grinder.debug.singleprocess", false)) {
 						// Fix to provide empty system classpath to speed up
-						final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(
-										properties, filterSystemClassPath(System.getProperties(), m_logger),
-										jvmArguments, script.getDirectory());
+						final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties, filterSystemClassPath(
+								System.getProperties(), m_logger), jvmArguments, script.getDirectory());
 
 						m_logger.info("Worker process command line: {}", workerCommandLine);
 
-						workerFactory = new ProcessWorkerFactory(workerCommandLine, m_agentIdentity,
-										m_fanOutStreamSender, consoleCommunication != null, script,
-										properties);
+						workerFactory = new ProcessWorkerFactory(workerCommandLine, m_agentIdentity, m_fanOutStreamSender,
+								consoleCommunication != null, script, properties);
 					} else {
 						m_logger.info("DEBUG MODE: Spawning threads rather than processes");
 
 						if (jvmArguments != null) {
-							m_logger.warn("grinder.jvm.arguments ({}) ignored in single process mode",
-											jvmArguments);
+							m_logger.warn("grinder.jvm.arguments ({}) ignored in single process mode", jvmArguments);
 						}
 
-						workerFactory = new DebugThreadWorkerFactory(m_agentIdentity, m_fanOutStreamSender,
-										consoleCommunication != null, script, properties);
+						workerFactory = new DebugThreadWorkerFactory(m_agentIdentity, m_fanOutStreamSender, consoleCommunication != null,
+								script, properties);
 					}
 
-					final WorkerLauncher workerLauncher = new WorkerLauncher(properties.getInt(
-									"grinder.processes", 1), workerFactory, m_eventSynchronisation, m_logger);
+					final WorkerLauncher workerLauncher = new WorkerLauncher(properties.getInt("grinder.processes", 1), workerFactory,
+							m_eventSynchronisation, m_logger);
 
 					final int increment = properties.getInt("grinder.processIncrement", 0);
 
 					if (increment > 0) {
-						final boolean moreProcessesToStart = workerLauncher.startSomeWorkers(properties
-										.getInt("grinder.initialProcesses", increment));
+						final boolean moreProcessesToStart = workerLauncher.startSomeWorkers(properties.getInt("grinder.initialProcesses",
+								increment));
 
 						if (moreProcessesToStart) {
-							final int incrementInterval = properties.getInt(
-											"grinder.processIncrementInterval", 60000);
+							final int incrementInterval = properties.getInt("grinder.processIncrementInterval", 60000);
 
-							final RampUpTimerTask rampUpTimerTask = new RampUpTimerTask(workerLauncher,
-											increment);
+							final RampUpTimerTask rampUpTimerTask = new RampUpTimerTask(workerLauncher, increment);
 
 							m_timer.scheduleAtFixedRate(rampUpTimerTask, incrementInterval, incrementInterval);
 						}
@@ -303,14 +297,11 @@ public class AgentImplementationEx implements Agent {
 						long consoleSignalTime = -1;
 
 						while (!workerLauncher.allFinished()) {
-							if (consoleSignalTime == -1
-											&& m_consoleListener.checkForMessage(ConsoleListener.ANY
-															^ ConsoleListener.START)) {
+							if (consoleSignalTime == -1 && m_consoleListener.checkForMessage(ConsoleListener.ANY ^ ConsoleListener.START)) {
 								workerLauncher.dontStartAnyMore();
 								consoleSignalTime = System.currentTimeMillis();
 							}
-							if (consoleSignalTime >= 0
-											&& System.currentTimeMillis() - consoleSignalTime > maximumShutdownTime) {
+							if (consoleSignalTime >= 0 && System.currentTimeMillis() - consoleSignalTime > maximumShutdownTime) {
 
 								m_logger.info("forcibly terminating unresponsive processes");
 
@@ -366,7 +357,7 @@ public class AgentImplementationEx implements Agent {
 			m_logger.info("finished");
 		}
 	}
-	
+
 	private String addCurrentAgentPath(String jvmArguments) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(jvmArguments).append(" -Dngrinder.exec.path=").append(new File(".").getAbsolutePath()).append(' ');
@@ -375,8 +366,7 @@ public class AgentImplementationEx implements Agent {
 
 	private String addConsoleIP(String jvmArguments) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(jvmArguments).append(" -Dngrinder.console.ip=")
-				.append(m_agentConfig.getProperty("agent.console.ip", "127.0.0.1"));
+		sb.append(jvmArguments).append(" -Dngrinder.console.ip=").append(m_agentConfig.getProperty("agent.console.ip", "127.0.0.1"));
 		return sb.toString();
 	}
 
@@ -397,9 +387,8 @@ public class AgentImplementationEx implements Agent {
 	private String addCustomDns(GrinderProperties properties, String jvmArguments) {
 		String etcHost = properties.getProperty("ngrinder.etc.hosts", "");
 		if (StringUtils.isNotEmpty(etcHost)) {
-			jvmArguments = jvmArguments + " -Dngrinder.etc.hosts=" + etcHost + "," + getHostName()
-							+ ":127.0.0.1,localhost:127.0.0.1"
-							+ " -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDn ";
+			jvmArguments = jvmArguments + " -Dngrinder.etc.hosts=" + etcHost + "," + getHostName() + ":127.0.0.1,localhost:127.0.0.1"
+					+ " -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDn ";
 		}
 		return jvmArguments;
 	}
@@ -424,14 +413,14 @@ public class AgentImplementationEx implements Agent {
 
 	public static final String GRINDER_PROP_TEST_ID = "grinder.test.id";
 
-	private GrinderProperties createAndMergeProperties(GrinderProperties properties,
-					GrinderProperties startMessageProperties) throws PersistenceException {
+	private GrinderProperties createAndMergeProperties(GrinderProperties properties, GrinderProperties startMessageProperties)
+			throws PersistenceException {
 
 		if (startMessageProperties != null) {
 			properties.putAll(startMessageProperties);
 		}
-		properties.setFile(GrinderProperties.LOG_DIRECTORY, new File(m_agentConfig.getHome()
-						.getLogDirectory(), properties.getProperty(GRINDER_PROP_TEST_ID, "default")));
+		properties.setFile(GrinderProperties.LOG_DIRECTORY,
+				new File(m_agentConfig.getHome().getLogDirectory(), properties.getProperty(GRINDER_PROP_TEST_ID, "default")));
 		return properties;
 	}
 
@@ -497,22 +486,18 @@ public class AgentImplementationEx implements Agent {
 		private final TimerTask m_reportRunningTask;
 		private final MessagePump m_messagePump;
 
-		public ConsoleCommunication(Connector connector) throws CommunicationException,
-						FileStore.FileStoreException {
+		public ConsoleCommunication(Connector connector) throws CommunicationException, FileStore.FileStoreException {
 
-			final ClientReceiver receiver = ClientReceiver.connect(connector, new AgentAddress(
-							m_agentIdentity));
+			final ClientReceiver receiver = ClientReceiver.connect(connector, new AgentAddress(m_agentIdentity));
 			m_sender = ClientSender.connect(receiver);
 			m_connector = connector;
 
 			if (m_fileStore == null) {
 				// Only create the file store if we connected.
-				m_fileStore = new FileStore(new File(m_agentConfig.getHome().getDirectory(), "file-store"),
-								m_logger);
+				m_fileStore = new FileStore(new File(m_agentConfig.getHome().getDirectory(), "file-store"), m_logger);
 			}
 
-			m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_STARTED, m_fileStore
-							.getCacheHighWaterMark()));
+			m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_STARTED, m_fileStore.getCacheHighWaterMark()));
 
 			final MessageDispatchSender fileStoreMessageDispatcher = new MessageDispatchSender();
 			m_fileStore.registerMessageHandlers(fileStoreMessageDispatcher);
@@ -522,16 +507,14 @@ public class AgentImplementationEx implements Agent {
 
 			// Everything that the file store doesn't handle is tee'd to the
 			// worker processes and our message handlers.
-			fileStoreMessageDispatcher.addFallback(new TeeSender(messageDispatcher, new IgnoreShutdownSender(
-							m_fanOutStreamSender)));
+			fileStoreMessageDispatcher.addFallback(new TeeSender(messageDispatcher, new IgnoreShutdownSender(m_fanOutStreamSender)));
 
 			m_messagePump = new MessagePump(receiver, fileStoreMessageDispatcher, 1);
 
 			m_reportRunningTask = new TimerTask() {
 				public void run() {
 					try {
-						m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_RUNNING, m_fileStore
-										.getCacheHighWaterMark()));
+						m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_RUNNING, m_fileStore.getCacheHighWaterMark()));
 					} catch (CommunicationException e) {
 						cancel();
 						m_logger.error("Error while pumping up the AgentPrcessReportMessage", e);
@@ -543,8 +526,7 @@ public class AgentImplementationEx implements Agent {
 
 		public void start() {
 			m_messagePump.start();
-			m_timer.schedule(m_reportRunningTask, GrinderConstants.AGENT_HEARTBEAT_DELAY,
-							GrinderConstants.AGENT_HEARTBEAT_INTERVAL);
+			m_timer.schedule(m_reportRunningTask, GrinderConstants.AGENT_HEARTBEAT_DELAY, GrinderConstants.AGENT_HEARTBEAT_INTERVAL);
 		}
 
 		public Connector getConnector() {
@@ -555,8 +537,7 @@ public class AgentImplementationEx implements Agent {
 			m_reportRunningTask.cancel();
 
 			try {
-				m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_FINISHED, m_fileStore
-								.getCacheHighWaterMark()));
+				m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_FINISHED, m_fileStore.getCacheHighWaterMark()));
 				m_logger.debug("agent is running");
 			} catch (CommunicationException e) {
 				// Ignore - peer has probably shut down.
