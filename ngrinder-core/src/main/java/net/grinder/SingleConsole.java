@@ -124,6 +124,9 @@ public class SingleConsole implements Listener, SampleListener {
 	private boolean headerAdded = false;
 
 	Map<String, BufferedWriter> fileWriterMap = new HashMap<String, BufferedWriter>();
+	private long samplingCount = 0;
+	/** The count of ignoring sampling */
+	private int ignoreSampleCount;
 
 	/**
 	 * Constructor with console ip and port.
@@ -246,6 +249,7 @@ public class SingleConsole implements Listener, SampleListener {
 					thread.interrupt();
 					thread.join(1000);
 				}
+				samplingCount = 0;
 
 			}
 
@@ -428,6 +432,9 @@ public class SingleConsole implements Listener, SampleListener {
 
 	@Override
 	public void update(StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
+		if (samplingCount++ < ignoreSampleCount) {
+			return;
+		}
 		double tps = sampleModel.getTPSExpression().getDoubleValue(intervalStatistics);
 		// If the tps is low that it's can be the agents or scripts goes wrong.
 		if (tps < 0.001) {
@@ -477,7 +484,8 @@ public class SingleConsole implements Listener, SampleListener {
 					}
 					Object val = each.getValue();
 					LOGGER.debug("statistic data key:{}", each.getKey());
-					LOGGER.debug("- value:{}, value type:{}", val, val != null ? val.getClass().getName() : null);
+					LOGGER.debug("- value:{}, value type:{}", val, val != null ? val.getClass().getName()
+									: null);
 					// number value in lastStatistic is Double, we add every test's double value
 					// into valueMap, so we use
 					// MutableDouble in valueMap, to avoid creating too many objects.
@@ -700,7 +708,8 @@ public class SingleConsole implements Listener, SampleListener {
 		getConsoleComponent(ProcessControl.class).stopAgentAndWorkerProcesses();
 	}
 
-	public void startSampling() {
+	public void startSampling(int ignoreSampleCount) {
+		this.ignoreSampleCount = ignoreSampleCount;
 		sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 		sampleModel.addTotalSampleListener(this);
 	}

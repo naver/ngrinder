@@ -552,11 +552,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			} else {
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, 0);
 			}
-			// Provide the JVM arguments to let it use the policy file
-			// The policy file in the directory:
-			// ${agent.home}\file-store\current
-			// ${agent.home}\file-store\current is the agent test process's work
-			// directory.
+			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, perfTest.getIgnoreSampleCount());
 			grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, "");
 
 			return grinderProperties;
@@ -675,11 +671,20 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		int lineNumber;
 		File targetFile = null;
 		targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
+		if (!targetFile.exists()) {
+			LOGGER.error("Report data for {} in {} does not exisit.", testId, dataType);
+			return "[ ]";
+		}
 		FileReader reader = null;
 		BufferedReader br = null;
 		LineNumberReader lnr = null;
+	
+		FileInputStream in = null;
+		InputStreamReader isr = null;
 		try {
-			lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(targetFile)));
+			in = new FileInputStream(targetFile);
+			isr = new InputStreamReader(in);
+			lnr = new LineNumberReader(isr);
 			lnr.skip(targetFile.length());
 			lineNumber = lnr.getLineNumber() + 1;
 
@@ -704,8 +709,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			LOGGER.error("Get report data for " + dataType + " failed:" + e.getMessage(), e);
 		} finally {
 			IOUtils.closeQuietly(lnr);
+			IOUtils.closeQuietly(isr);
 			IOUtils.closeQuietly(reader);
 			IOUtils.closeQuietly(br);
+			IOUtils.closeQuietly(in);
 		}
 
 		return reportData.toString();
@@ -730,9 +737,14 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		if (imgWidth < 100) {
 			imgWidth = 100;
 		}
+		
 		int lineNumber;
 		File targetFile = null;
 		targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
+		if (!targetFile.exists()) {
+			LOGGER.error("Report data for {} in {} does not exisit.", testId, dataType);
+			return reportData;
+		} 
 		FileReader reader = null;
 		BufferedReader br = null;
 		LineNumberReader lnr = null;
