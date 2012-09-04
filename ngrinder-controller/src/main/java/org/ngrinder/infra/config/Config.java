@@ -49,8 +49,8 @@ import ch.qos.logback.core.Context;
 import ch.qos.logback.core.joran.spi.JoranException;
 
 /**
- * Spring component which is responsible to get the nGrinder config which is
- * stored ${NGRINDER_HOME}.
+ * Spring component which is responsible to get the nGrinder config which is stored
+ * ${NGRINDER_HOME}.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -79,25 +79,25 @@ public class Config {
 			loadSystemProperties();
 			initLogger();
 		} catch (IOException e) {
-			throw new ConfigurationException(
-					"Error while loading NGRINDER_HOME", e);
+			throw new ConfigurationException("Error while loading NGRINDER_HOME", e);
 		}
 	}
 
+	/**
+	 * Initialize Logger
+	 */
 	public void initLogger() {
 		File gloablLogFile = getHome().getGloablLogFile();
-		boolean verbose = getSystemProperties().getPropertyBoolean("verbose",
-				false);
+		boolean verbose = getSystemProperties().getPropertyBoolean("verbose", false);
 
 		final Context context = (Context) LoggerFactory.getILoggerFactory();
 
 		final JoranConfigurator configurator = new JoranConfigurator();
 		configurator.setContext(context);
-		context.putProperty("LOG_LEVEL", verbose ? "TRACE" : "INFO");
+		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
 		context.putProperty("LOG_DIRECTORY", gloablLogFile.getAbsolutePath());
 		try {
-			configurator.doConfigure(Config.class
-					.getResource("/logback-ngrinder.xml"));
+			configurator.doConfigure(Config.class.getResource("/logback-ngrinder.xml"));
 		} catch (JoranException e) {
 			e.printStackTrace();
 		}
@@ -105,9 +105,7 @@ public class Config {
 
 	private void copyDefaultConfigurationFiles() throws IOException {
 		checkNotNull(home);
-		home.copyFrom(
-				new ClassPathResource("ngrinder_home_template").getFile(),
-				false);
+		home.copyFrom(new ClassPathResource("ngrinder_home_template").getFile(), false);
 		home.makeSubPath(PLUGIN_PATH);
 		home.makeSubPath(PERF_TEST_PATH);
 		home.makeSubPath(DOWNLOAD_PATH);
@@ -123,20 +121,16 @@ public class Config {
 		String userHomeFromEnv = System.getenv("NGRINDER_HOME");
 		String userHomeFromProperty = System.getProperty("ngrinder.home");
 		if (StringUtils.isNotEmpty(userHomeFromEnv)
-				&& !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
+						&& !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
 			logger.warn("The path to ngrinder-home is ambiguous:");
-			logger.warn("    System Environment:  NGRINDER_HOME="
-					+ userHomeFromEnv);
-			logger.warn("    Java Sytem Property:  ngrinder.home="
-					+ userHomeFromProperty);
+			logger.warn("    System Environment:  NGRINDER_HOME=" + userHomeFromEnv);
+			logger.warn("    Java Sytem Property:  ngrinder.home=" + userHomeFromProperty);
 			logger.warn("    '" + userHomeFromProperty + "' is accepted.");
 		}
 		String userHome = null;
-		userHome = StringUtils.defaultIfEmpty(userHomeFromProperty,
-				userHomeFromEnv);
-		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(
-				userHome) : new File(System.getProperty("user.home"),
-				NGRINDER_DEFAULT_FOLDER);
+		userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
+		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
+						System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
 
 		return new Home(homeDirectory);
 	}
@@ -176,8 +170,7 @@ public class Config {
 	 * @return
 	 */
 	public boolean isPluginSupported() {
-		return (BooleanUtils.toBoolean(getSystemProperty("pluginsupport",
-				"true")) || !isTestMode());
+		return (BooleanUtils.toBoolean(getSystemProperty("pluginsupport", "true")) || !isTestMode());
 	}
 
 	String getSystemProperty(String key, String defaultValue) {
@@ -210,8 +203,8 @@ public class Config {
 	public String getProcessAndThreadPolicyScript() {
 		if (StringUtils.isEmpty(policyScript)) {
 			try {
-				policyScript = FileUtils.readFileToString(getHome().getSubFile(
-						"process_and_thread_policy.js"));
+				policyScript = FileUtils.readFileToString(getHome()
+								.getSubFile("process_and_thread_policy.js"));
 				return policyScript;
 			} catch (IOException e) {
 				logger.error("Error while load process_and_thread_policy.js", e);
