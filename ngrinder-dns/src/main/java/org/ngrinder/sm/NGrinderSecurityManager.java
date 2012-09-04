@@ -40,7 +40,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	private String workDirectory = System.getProperty("user.dir");
 	private String agentExecDirectory = System.getProperty("ngrinder.exec.path", workDirectory);
 	private String javaHomeDirectory = System.getenv("JAVA_HOME");
-	private String etcHosts = System.getProperty("ngridner.etc.hosts", "");
+	private String etcHosts = System.getProperty("ngrinder.etc.hosts", "");
 	private String consoleIP = System.getProperty("ngrinder.console.ip", "127.0.0.1");
 	private List<String> allowedHost = new ArrayList<String>();
 
@@ -165,13 +165,6 @@ public class NGrinderSecurityManager extends SecurityManager {
 	}
 
 	@Override
-	public void checkExit(int status) {
-		// Always block
-		// throw new
-		// SecurityException("System.exit execution of  is not allowed.");
-	}
-
-	@Override
 	public void checkMulticast(InetAddress maddr) {
 		throw new SecurityException("Multicast on " + maddr.toString() + " is not always allowed.");
 	}
@@ -187,7 +180,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	}
 
 	/**
-	 * NetWork access is allowed on "ngridner.etc.hosts"
+	 * NetWork access is allowed on "ngrinder.etc.hosts"
 	 * 
 	 * @param host
 	 */
