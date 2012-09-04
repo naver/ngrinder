@@ -553,7 +553,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, 0);
 			}
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, perfTest.getIgnoreSampleCount());
-			grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, "");
+			// set security.manager argument
+			String jvmArguments = "-Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager";
+			grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, jvmArguments);
 
 			return grinderProperties;
 		} catch (Exception e) {

@@ -39,7 +39,7 @@
 	<div class="span8">
 		<div class="page-header">
 			<h4><@spring.message "perfTest.report.tpsgraph"/></h4>
-			<a id="reportDetail" class="btn pull-right" style="margin-top: -25px">
+			<a id="reportDetail" class="btn pull-right btn-small btn-primary" style="margin-top: -25px">
 				<@spring.message "perfTest.report.reportDetail"/></a>
 		</div>
 		<div id="tpsDiv" class="chart" style="width: 610px; height: 240px"></div>
@@ -51,25 +51,27 @@
 			<h4><@spring.message "perfTest.report.logs"/></h4>
 		</div>
 		<div style="margin-left: 10px">
-			<#if logs?has_content> <#list logs as eachLog>
-			<div>
-				<a
-					href="${req.getContextPath()}/perftest/downloadLog/${eachLog}?testId=${test.id}">${eachLog}</a>
-			</div>
-			</#list> <#else> <@spring.message "common.message.noData"/>
+			<#if logs?has_content> 
+				<#list logs as eachLog>
+					<div>
+						<a href="${req.getContextPath()}/perftest/downloadLog/${eachLog}?testId=${test.id}">${eachLog}</a>
+					</div>
+				</#list> 
+			<#else> 
+				<@spring.message "common.message.noData"/>
 			</#if>
 		</div>
 	</div>
 	<div class="span8">
 		<div class="page-header">
-			<h4><@spring.message "perfTest.report.testcomment"/></h4>
+			<h4><@spring.message "perfTest.report.longtestcomment"/></h4>
 		</div>
 		<div class="control-group">
+			<button class="btn btn-small btn-primary pull-right" type="button"
+				 style="margin-top:-60px" id="leaveCommentButton"><@spring.message "perfTest.report.leaveComment"/></button>
 			<textarea class="span8" id="testComment" rows="3" name="testComment"
 				style="resize: none"> ${(test.testComment)!} </textarea>
-			<button class="btn btn-small btn-primary pull-right" type="button"
-				id="leaveCommentButton"><@spring.message
-				"perfTest.report.leaveComment"/></button>
+			
 		</div>
 	</div>
 </div>
