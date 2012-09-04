@@ -86,6 +86,8 @@ public class AgentJavaDataCollector extends AgentDataCollector {
 			try {
 				javaInfo.addJavaInfoForEach((JavaInfoForEach) javaMemoryStatService.take().get());
 			} catch (Exception e) {
+				//if some JVM is stopped, then the VM can't be connected any more, should refresh the monitored VMs
+				refresh();
 				if ((failedCount++) % 60 == 0) {
 					if (SystemUtils.IS_OS_WINDOWS) {
 						LOG.error("Error while getting java perf data");

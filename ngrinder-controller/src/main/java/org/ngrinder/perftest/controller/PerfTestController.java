@@ -237,6 +237,7 @@ public class PerfTestController extends NGrinderBaseController {
 		scriptList.add(newEntry);
 		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
 		addDefaultAttributeOnMode(model);
+		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		return "perftest/detail";
 	}
 
@@ -282,6 +283,13 @@ public class PerfTestController extends NGrinderBaseController {
 				"test vuser shoule be within "
 						+ agentManager.getMaxVuserPerAgent());
 		test.setScriptRevision(-1L);
+		
+		//deal with different time zone between user Local and Server 
+		Date scheduleDate = test.getScheduledTime();
+		if (scheduleDate != null) {
+			int rawOffset = getTimeZoneOffSet(user);
+			test.setScheduledTime(new Date(scheduleDate.getTime() + rawOffset));
+		}
 		perfTestService.savePerfTest(user, test);
 		return "redirect:/perftest/list";
 	}

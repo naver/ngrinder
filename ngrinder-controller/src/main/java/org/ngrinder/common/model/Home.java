@@ -32,7 +32,6 @@ import org.apache.commons.io.FileUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.ngrinder.model.User;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
@@ -130,6 +129,12 @@ public class Home implements NGrinderConstants {
 
 	public File getDownloadDirectory() {
 		return getSubFile(DOWNLOAD_PATH);
+	}
+
+	public File getGloablLogFile() {
+		File subFile = getSubFile(GLOBAL_LOG_PATH);
+		subFile.mkdirs();
+		return subFile;
 	}
 
 

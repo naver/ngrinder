@@ -127,6 +127,10 @@ table.ellipsis td.ellipsis {
 	padding-bottom: 5px
 }
 
+
+*:first-child+html .pageHeader {margin-top:0px;} 
+*:first-child+html .table TH {padding-left:2px;padding-right:2px}
+
 .messageDiv {
     box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
     left: 50%;

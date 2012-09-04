@@ -51,7 +51,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.gson.Gson;
 
 /**
- * Class description.
+ * Monitor controller.
  * 
  * @author Mavlarn
  * @since 3.0
@@ -127,76 +127,6 @@ public class MonitorController extends NGrinderBaseController {
 		return JSONUtil.toJson(rtnMap);
 	}
 
-	/**
-	 * get java monitor data of agents
-	 * 
-	 * @param model
-	 * @param ip
-	 * @param startTime
-	 * @param finishTime
-	 * @param imgWidth
-	 * @return
-	 */
-	//not used anymore
-//	@RequestMapping("/getMonitorDataJava")
-//	public @ResponseBody
-//	String getMonitorDataJava(ModelMap model, @RequestParam String ip, @RequestParam(required = false) Date startTime,
-//			@RequestParam(required = false) Date finishTime, @RequestParam int imgWidth) {
-//
-//		if (null == finishTime) {
-//			finishTime = new Date();
-//		}
-//		if (null == startTime) {
-//			startTime = new Date(finishTime.getTime() - 30 * 1000);
-//		}
-//		long st = NumberUtils.toLong(df.format(startTime));
-//		long et = NumberUtils.toLong(df.format(finishTime));
-//
-//		if (imgWidth < 100) {
-//			imgWidth = 100;
-//		}
-//
-//		Map<String, Object> rtnMap = new HashMap<String, Object>(5);
-//		this.getMonitorDataJava(rtnMap, ip, st, et, imgWidth);
-//		rtnMap.put(JSON_SUCCESS, true);
-//		return JSONUtil.toJson(rtnMap);
-//	}
-
-	/**
-	 * get system monitor data of agents
-	 * 
-	 * @param model
-	 * @param ip
-	 * @param startTime
-	 * @param finishTime
-	 * @param imgWidth
-	 * @return
-	 */
-	//not used anymore
-//	@RequestMapping("/getMonitorDataSystem")
-//	public @ResponseBody
-//	String getMonitorDataSystem(ModelMap model, @RequestParam String ip,
-//			@RequestParam(required = false) Date startTime, @RequestParam(required = false) Date finishTime,
-//			@RequestParam int imgWidth) {
-//
-//		if (null == finishTime) {
-//			finishTime = new Date();
-//		}
-//		if (null == startTime) {
-//			startTime = new Date(finishTime.getTime() - 30 * 1000);
-//		}
-//		long st = NumberUtils.toLong(df.format(startTime));
-//		long et = NumberUtils.toLong(df.format(finishTime));
-//
-//		if (imgWidth < 100) {
-//			imgWidth = 100;
-//		}
-//
-//		Map<String, Object> rtnMap = new HashMap<String, Object>(3);
-//		this.getMonitorDataSystem(rtnMap, ip, st, et, imgWidth);
-//		rtnMap.put(JSON_SUCCESS, true);
-//		return JSONUtil.toJson(rtnMap);
-//	}
 
 	private Map<String, Object> getMonitorDataJava(String ip, long startTime, long finishTime, int imgWidth) {
 		Map<String, Object> rtnMap = new HashMap<String, Object>();

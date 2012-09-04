@@ -48,7 +48,7 @@ import net.grinder.util.thread.ExecutorFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.AgentInfo;
-import org.ngrinder.agent.service.AgentService;
+import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
@@ -79,7 +79,7 @@ public class AgentManager implements NGrinderConstants {
 	private Config config;
 
 	@Autowired
-	private AgentService agentService;
+	private AgentManagerService agentService;
 
 	/**
 	 * Initialize agent manager.

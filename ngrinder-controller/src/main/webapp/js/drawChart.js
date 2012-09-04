@@ -20,7 +20,29 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 	//startTime is a Date object.
 	//interval is second amount.
 	//startTime and interval are optional.
-	var plotObj = $.jqplot(containerId, [ eval(data) ], {
+	var values = [ eval(data) ];
+	var ymax = 0;
+	for (var i = 0;  i < values.length; i++) {
+		for (var j = 0;  j < values[i].length; j++) {
+			if (values[i][j] > ymax) {
+				ymax = values[i][j]; 
+			}
+		}
+	}
+	
+	if (ymax < 5) {
+		ymax = 5;
+	}
+	
+	ymax = parseInt((ymax / 5) + 0.5) * 5;
+
+	if (formatYaxis === undefined) {
+		formatYaxis = function(format, value) {
+			return value.toFixed(0);
+		};
+	}
+	
+	var plotObj = $.jqplot(containerId, values, {
 
         gridPadding: {top:15, right:15, bottom:25, left:60},
 	
@@ -64,8 +86,9 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 				tickOptions : {
 					formatter : formatYaxis
 				},
+				max : ymax,
 				min : 0,
-				numberTicks : 5,
+				numberTicks : 6,
 				pad : 3,
 				show : true
 			},
@@ -88,7 +111,7 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 }
 
 //data is an array object.
-function replotChart(plotObj, data) {
+function replotChart(plotObj, data, ymax) {
 	var cache = [];
 	var i;
 	for (i = 0; i < data.length; i++) {
@@ -97,5 +120,23 @@ function replotChart(plotObj, data) {
 
 	plotObj.series[0].data = cache;
 	plotObj.resetAxesScale(); 
+	if (ymax < 5) {
+		ymax = 5;
+	}
+	if (cache.length > 10) {
+		plotObj.axes.xaxis.numberTicks = 10;
+	} else {
+		plotObj.axes.xaxis.numberTicks = cache.length;
+	}
+	ymax = parseInt((ymax / 5) + 0.5) * 5;
+	plotObj.axes.yaxis.numberTicks = 6;
+	plotObj.axes.yaxis.max = ymax;
+	plotObj.axes.yaxis.min = 0; 
+	plotObj.axes.yaxis.tickOptions = {
+		show : true,
+		formatter : function(format, value) {
+			return value.toFixed(0);
+		}
+	};
 	plotObj.replot();
 }

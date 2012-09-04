@@ -36,7 +36,7 @@ import org.springframework.stereotype.Repository;
  * @since 3.0
  */
 @Repository
-public interface AgentRepository extends JpaRepository<AgentInfo, Long> {
+public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long> {
 
 	/**
 	 * Find {@link AgentInfo} by ip.

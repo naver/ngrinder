@@ -112,6 +112,10 @@ public class AgentController implements Agent {
 		m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, m_logger);
 		m_agentIdentity = new AgentControllerIdentityImplementation(getHostName(), getHostAddress());
 
+		//set monitored VMs during starting agents.
+		//FIXME when a test is started, there will be some worker processes to run, these worker processes
+		//should be within the java monitor scope. So we should call this refresh to update the monitored Vms
+		//after a test has started.
 		agentJavaDataCollector.refresh();
 		agentSystemDataCollector.refresh();
 	}

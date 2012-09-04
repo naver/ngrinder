@@ -112,7 +112,8 @@ public class MBeanClient {
 		try {
 			connectClient();
 		} catch (IOException ex) {
-			LOG.error(ex.getMessage(), ex.getCause());
+			LOG.error(ex.getMessage());
+			LOG.trace(ex.getMessage(), ex.getCause());
 			bConnect = false;
 		}
 

@@ -44,6 +44,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
+import ch.qos.logback.classic.joran.JoranConfigurator;
+import ch.qos.logback.core.Context;
+import ch.qos.logback.core.joran.spi.JoranException;
+
 /**
  * Spring component which is responsible to get the nGrinder config which is
  * stored ${NGRINDER_HOME}.
@@ -73,9 +77,29 @@ public class Config {
 			copyDefaultConfigurationFiles();
 			loadDatabaseProperties();
 			loadSystemProperties();
+			initLogger();
 		} catch (IOException e) {
 			throw new ConfigurationException(
 					"Error while loading NGRINDER_HOME", e);
+		}
+	}
+
+	public void initLogger() {
+		File gloablLogFile = getHome().getGloablLogFile();
+		boolean verbose = getSystemProperties().getPropertyBoolean("verbose",
+				false);
+
+		final Context context = (Context) LoggerFactory.getILoggerFactory();
+
+		final JoranConfigurator configurator = new JoranConfigurator();
+		configurator.setContext(context);
+		context.putProperty("LOG_LEVEL", verbose ? "TRACE" : "INFO");
+		context.putProperty("LOG_DIRECTORY", gloablLogFile.getAbsolutePath());
+		try {
+			configurator.doConfigure(Config.class
+					.getResource("/logback-ngrinder.xml"));
+		} catch (JoranException e) {
+			e.printStackTrace();
 		}
 	}
 

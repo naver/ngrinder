@@ -105,6 +105,8 @@ public class SingleConsole implements Listener, SampleListener {
 
 	// for displaying tps graph in running page
 	private double tpsValue = 0;
+	// for displaying tps graph in running page
+	private double peakTpsForGraph = 0;
 	private SampleModel sampleModel;
 	private SampleModelViews modelView;
 	private long startTime = 0;
@@ -165,8 +167,7 @@ public class SingleConsole implements Listener, SampleListener {
 			this.getConsoleProperties().setConsolePort(port);
 			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties,
 							m_eventSyncCondition);
-			sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
-			sampleModel.addTotalSampleListener(this);
+
 			modelView = getConsoleComponent(SampleModelViews.class);
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
 
@@ -362,8 +363,7 @@ public class SingleConsole implements Listener, SampleListener {
 				}
 
 			} catch (FileContents.FileContentsException e) {
-				// FIXME : Forward this error to controller.!!
-				e.printStackTrace();
+				throw new NGrinderRuntimeException("Error while distribute files for " + getConsolePort());
 			}
 			// The cache status is updated asynchronously by agent reports.
 			// If we have a listener, we wait for up to five seconds for all
@@ -414,6 +414,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	public void setTpsValue(double newValue) {
+		peakTpsForGraph = Math.max(peakTpsForGraph, newValue);
 		tpsValue = newValue;
 	}
 
@@ -432,8 +433,8 @@ public class SingleConsole implements Listener, SampleListener {
 		if (tps < 0.001) {
 			if (TPS_LESSTHAN_ZREO_TIME == null) {
 				TPS_LESSTHAN_ZREO_TIME = new Date();
-			} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= 10000) {
-				LOGGER.warn("Test has been forced to stop because of tps is less than 0.001 and sustain more than one minitue.");
+			} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= 120000) {
+				LOGGER.warn("Test has been forced to stop because of tps is less than 0.001 and sustain more than two minitue.");
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
 					public void inform(ConsoleShutdownListener listener) {
 						listener.readyToStop(StopReason.TOO_LOW_TPS);
@@ -475,23 +476,28 @@ public class SingleConsole implements Listener, SampleListener {
 						csvHeader.append(each.getKey() + "-" + testIndex);
 					}
 					Object val = each.getValue();
-					//number value in lastStatistic is Double, we add every test's double value into valueMap, so we use
-					//MutableDouble in valueMap, to avoid creating too many objects.
+					LOGGER.debug("statistic data key:{}", each.getKey());
+					LOGGER.debug("- value:{}, value type:{}", val, val.getClass().getName());
+					// number value in lastStatistic is Double, we add every test's double value
+					// into valueMap, so we use
+					// MutableDouble in valueMap, to avoid creating too many objects.
 					if (val instanceof Double) {
 						// for debug, maybe there are some fields should not be sum up.
-						LOGGER.warn("Calculate sum for key:{} in statistic", each.getKey());
-						MutableDouble mutableDouble = (MutableDouble)valueMap.get(each.getKey());
+						LOGGER.debug("Calculate sum for key:{} in statistic", each.getKey());
+						MutableDouble mutableDouble = (MutableDouble) valueMap.get(each.getKey());
 						if (mutableDouble == null) {
-							mutableDouble = new MutableDouble(0D);
+							mutableDouble = new MutableDouble(0);
 							valueMap.put(each.getKey(), mutableDouble);
 						}
-						mutableDouble.add((Double)val);
-					} else if (val == null){
-						//if it is null, just assume it is 0.
-						//FIXME if the TPS is too low, but there is no many errors, it is possible that the Double value in
-						//one second is null. Now I treat this value as ZERO. But maybe it is not the most proper solution. 
-						valueMap.put(each.getKey(), new MutableDouble(0D));
-					} else { //there are some String type object like test description.
+						mutableDouble.add((Double) val);
+					} else if (String.valueOf(val).equals("null")) {
+						// if it is null, just assume it is 0. The value is a String "null"
+						// FIXME if the TPS is too low, but there is no many errors, it is possible
+						// that the Double value in
+						// one second is null. Now I treat this value as ZERO. But maybe it is not
+						// the most proper solution.
+						valueMap.put(each.getKey(), new MutableDouble(0));
+					} else { // there are some String type object like test description.
 						valueMap.put(each.getKey(), val);
 					}
 				}
@@ -568,9 +574,11 @@ public class SingleConsole implements Listener, SampleListener {
 
 				Test test = modelIndex.getTest(i);
 				statistics.put("testNumber", test.getNumber());
-				statistics.put("testDescription", test.getDescription());
+				//remove description from statistic, otherwise, it will be saved in report data.
+				//and the character like ',' in this field will affect the csv file too.
+				//statistics.put("testDescription", test.getDescription());
 				lastStatistics.put("testNumber", test.getNumber());
-				lastStatistics.put("testDescription", test.getDescription());
+				//lastStatistics.put("testDescription", test.getDescription());
 
 				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
 				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
@@ -599,8 +607,8 @@ public class SingleConsole implements Listener, SampleListener {
 		result.put("totalStatistics", totalStatistics);
 		result.put("cumulativeStatistics", cumulativeStatistics);
 		result.put("lastSampleStatistics", lastSampleStatistics);
-
 		result.put("tpsChartData", this.getTpsValues());
+		result.put("peakTpsForGraph", this.peakTpsForGraph);
 
 		MutablePicoContainer container = (MutablePicoContainer) consoleFoundation.getContainer();
 		ProcessControl processControl = (ProcessControl) container.getComponent(ProcessControl.class);
@@ -691,6 +699,16 @@ public class SingleConsole implements Listener, SampleListener {
 
 	public void sendStopMessageToAgents() {
 		getConsoleComponent(ProcessControl.class).stopAgentAndWorkerProcesses();
+	}
+
+	public void startSampling() {
+		sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
+		sampleModel.addTotalSampleListener(this);
+	}
+
+	public void unregisterSampling() {
+		SampleModel sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
+		sampleModel.reset();
 	}
 
 }

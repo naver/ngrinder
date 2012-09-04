@@ -9,33 +9,28 @@
 			style="margin-left: 10px">
 			<fieldset>
 				<div class="control-group">
-					<label for="agentInput" class="control-label control-label-1"><@spring.message
-						"perfTest.table.tps"/></label>
+					<label for="agentInput" class="control-label control-label-1"><@spring.message "perfTest.table.tps"/></label>
 					<div class="controls">
 						<strong>Total ${(test.tps)!}</strong>
 					</div>
 				</div>
 				<div class="control-group">
-					<label for="agentInput" class="control-label"><@spring.message
-						"perfTest.table.meantime"/></label>
+					<label for="agentInput" class="control-label"><@spring.message "perfTest.table.meantime"/></label>
 					<div class="controls">
 						${(test.meanTestTime)!}
 						<code>MS</code>
 					</div>
 				</div>
 				<div class="control-group">
-					<label for="agentInput" class="control-label"><@spring.message
-						"perfTest.detail.peakTPS"/></label>
+					<label for="agentInput" class="control-label"><@spring.message "perfTest.detail.peakTPS"/></label>
 					<div class="controls">${(test.peakTps)!}</div>
 				</div>
 				<div class="control-group">
-					<label for="agentInput" class="control-label"><@spring.message
-						"perfTest.report.finishedTest"/></label>
+					<label for="agentInput" class="control-label"><@spring.message "perfTest.report.finishedTest"/></label>
 					<div class="controls">${(test.tests)!}</div>
 				</div>
 				<div class="control-group">
-					<label for="agentInput" class="control-label"><@spring.message
-						"perfTest.table.errors"/></label>
+					<label for="agentInput" class="control-label"><@spring.message "perfTest.table.errors"/></label>
 					<div class="controls">${(test.errors)!}</div>
 				</div>
 			</fieldset>
@@ -44,9 +39,8 @@
 	<div class="span8">
 		<div class="page-header">
 			<h4><@spring.message "perfTest.report.tpsgraph"/></h4>
-			<a id="reportDetail" class="btn pull-right" style="margin-top: -25px"
-				href="javscript:void(0))"><@spring.message
-				"perfTest.report.reportDetail"/></a>
+			<a id="reportDetail" class="btn pull-right" style="margin-top: -25px">
+				<@spring.message "perfTest.report.reportDetail"/></a>
 		</div>
 		<div id="tpsDiv" class="chart" style="width: 610px; height: 240px"></div>
 	</div>
@@ -62,7 +56,7 @@
 				<a
 					href="${req.getContextPath()}/perftest/downloadLog/${eachLog}?testId=${test.id}">${eachLog}</a>
 			</div>
-			</#list> <#else> <@spring.message "perfTest.report.message.noLogs"/>
+			</#list> <#else> <@spring.message "common.message.noData"/>
 			</#if>
 		</div>
 	</div>
@@ -85,12 +79,12 @@
 		$.post("${req.getContextPath()}/perftest/leaveComment",
 					{"testId": ${test.id}, "testComment": comment},
 				function() {
-					showSuccessMsg("Comment is successfully reflected");
+					showSuccessMsg("<@spring.message "perfTest.report.message.leaveComment"/>");
 				}
 		);
 	});
 
 	$("#reportDetail").click(function () {
-	          window.open("${req.getContextPath()}/perftest/report?testId=" + $("#testId").val());
+		window.open("${req.getContextPath()}/perftest/report?testId=" + $("#testId").val());
 	});
 </script>

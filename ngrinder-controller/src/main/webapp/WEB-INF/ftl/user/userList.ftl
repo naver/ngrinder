@@ -16,7 +16,7 @@
 					<h3><@spring.message "user.list.header"/></h3>
 				</div>
 				<div class="well form-inline searchBar">
-					<input type="text" class="input-medium search-query span4" placeholder="Keywords" id="searchText"
+					<input type="text" class="search-query" placeholder="Keywords" id="searchText"
 						value="${keywords!}">
 					<button type="submit" class="btn" id="search_user">
 						<i class="icon-search"></i> <@spring.message "common.button.search"/>
@@ -27,7 +27,6 @@
 							"user.list.button.delete"/>
 					</a>
 					</span>
-
 				</div>
 				<table class="table table-striped table-bordered ellipsis" id="userTable">
 					<colgroup>
@@ -41,7 +40,7 @@
 					</colgroup>
 					<thead>
 						<tr>
-							<th><input type="checkbox" class="checkbox" value=""></th>
+							<th class="noClick"><input type="checkbox" class="checkbox" value=""></th>
 							<th><@spring.message "user.option.name"/></th>
 							<th><@spring.message "user.option.role"/></th>
 							<th class="noClick"><@spring.message "common.label.description"/></th>
@@ -96,8 +95,7 @@
 				"bInfo": false,
 				"iDisplayLength": 15,
 				"aaSorting": [[1, "asc"]],
-				"bProcessing": true,
-				"aoColumns": [{ "asSorting": []}, null, null, { "asSorting": []}, null, { "asSorting": []}, { "asSorting": []}],
+				"aoColumns": [{"asSorting": []}, null, null, {"asSorting": []}, null, {"asSorting": []}, {"asSorting": []}],
 				"sPaginationType": "bootstrap",
 				"oLanguage": {
 					"oPaginate": {

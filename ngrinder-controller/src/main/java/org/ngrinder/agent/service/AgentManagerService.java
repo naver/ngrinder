@@ -31,8 +31,10 @@ import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.AgentInfo;
-import org.ngrinder.agent.repository.AgentRepository;
+import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.perftest.service.AgentManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -47,13 +49,14 @@ import org.springframework.transaction.annotation.Transactional;
  * @since 3.0
  */
 @Service
-public class AgentService {
+public class AgentManagerService {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(AgentManagerService.class);
 	@Autowired
 	private AgentManager agentManager;
 
 	@Autowired
-	private AgentRepository agentRepository;
+	private AgentManagerRepository agentRepository;
 
 	/**
 	 * Get agents. agent list is obtained from DB and {@link AgentManager}
@@ -159,8 +162,12 @@ public class AgentService {
 		for (AgentInfo each : found) {
 			each.setApproved(approve);
 			agentRepository.save(each);
-			AgentInfo findOne = agentRepository.findOne(each.getId());
-			System.out.println(findOne.isApproved());
+			agentRepository.findOne(each.getId());
+			if (approve) {
+				LOGGER.info("agent {} is approved", ip);
+			} else {
+				LOGGER.info("agent {} is not approved", ip);
+			}
 		}
 
 	}

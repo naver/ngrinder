@@ -40,7 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
-	private AgentService agentService;
+	private AgentManagerService agentService;
 
 	@Test
 	public void testSaveGetDeleteAgent() {
