@@ -678,8 +678,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		FileReader reader = null;
 		BufferedReader br = null;
 		LineNumberReader lnr = null;
+	
+		FileInputStream in = null;
+		InputStreamReader isr = null;
 		try {
-			lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(targetFile)));
+			in = new FileInputStream(targetFile);
+			isr = new InputStreamReader(in);
+			lnr = new LineNumberReader(isr);
 			lnr.skip(targetFile.length());
 			lineNumber = lnr.getLineNumber() + 1;
 
@@ -704,8 +709,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			LOGGER.error("Get report data for " + dataType + " failed:" + e.getMessage(), e);
 		} finally {
 			IOUtils.closeQuietly(lnr);
+			IOUtils.closeQuietly(isr);
 			IOUtils.closeQuietly(reader);
 			IOUtils.closeQuietly(br);
+			IOUtils.closeQuietly(in);
 		}
 
 		return reportData.toString();
