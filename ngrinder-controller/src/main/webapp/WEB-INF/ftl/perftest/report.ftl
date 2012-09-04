@@ -76,7 +76,7 @@
                                <td><strong>Total ${(test.tps)!}</strong></td>
                            </tr>
                            <tr>
-                               <th><@spring.message "perfTest.table.meantime"/></th>
+                               <th><@spring.message "perfTest.report.meantime"/></th>
                                <td><span>${(test.meanTestTime)!}</span> <code>ms</code></td>
                            </tr>
                            <tr>
@@ -127,11 +127,11 @@
 					</div>
 			    	<div class="chart" id="tpsDiv"></div>
     				<div class="page-header">
-						<h4>Mean Time to Test</h4>
+						<h4><@spring.message "perfTest.report.header.meantime"/><code>ms</code></h4>
 					</div>
     				<div class="chart" id="meanTimeDiv"></div>
     				<div class="page-header">
-						<h4>Errors</h4>
+						<h4><@spring.message "perfTest.report.header.errors"/></h4>
 					</div>
     				<div class="chart" id="errorDiv"></div>
 				</div>
