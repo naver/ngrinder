@@ -4,15 +4,13 @@
 		<#include "../common/common.ftl">
 		<title><@spring.message "script.editor.title"/></title>
 		<style>
-
 			div.div-host {
 				background-color: #FFFFFF;
 				border: 1px solid #D6D6D6;
-				height: 55px;
+				height: 63px;
 				overflow-y: scroll;
 				border-radius: 3px 3px 3px 3px;
-				width:250px; 
-				margin-bottom:-5px;
+				width:250px;
 			}
 
 			div.div-host .host {
@@ -24,9 +22,10 @@
 			}
 			
 			.addhostbtn {
-				margin-top:-20px;
-				margin-right:70px 
+				margin-top:-25px;
+				margin-right:67px 
 			}
+			
 			.CodeMirror-scroll {
 			    height: 500px !important;   
 			}
@@ -57,7 +56,7 @@
 													<input type="text" id="scriptNameInput" class="span7" name="path" value="${(file.path)!}" readonly/>
 												</td>
 												<td>
-													<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:27px; width:35px;"><@spring.message "common.button.save"/></a>
+													<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:18px; width:35px;"><@spring.message "common.button.save"/></a>
 													<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:85px;"><@spring.message "script.editor.button.validate"/></a>
 												</td>
 											</tr> 
@@ -75,7 +74,7 @@
 												<label class="control-label" for="description"><@spring.message "script.option.commit"/></label>
 											</td>
 											<td>
-												<textarea class="input-xlarge span6" id="descInput" rows="3" name="description" style="resize: none" >${(file.description)!}</textarea>
+												<textarea class="input-xlarge span6" id="descInput" rows="3" name="description" style="resize: none; height: 55px" >${(file.description)!}</textarea>
 											</td> 
 											<td>  
 												<#include "../perftest/host.ftl"/>
@@ -88,7 +87,7 @@
 					</div>
 					<input type="hidden" id="contentHidden" name="content" value=""/>
 				</form>
-				<textarea id="codemirrorContent" style="position:relative;width:940px;margin-top:0px">${(file.content)!}</textarea>
+				<textarea id="codemirrorContent" style="width:930px; margin-top:10px">${(file.content)!}</textarea>
 				<div class="pull-right" rel="popover" data-original-title="Tip" data-content="
 			      Ctrl-F / Cmd-F : <@spring.message "script.editor.tip.startSearching"/>&lt;br&gt;
 			      Ctrl-G / Cmd-G : <@spring.message "script.editor.tip.findNext"/>&lt;br&gt;
@@ -97,15 +96,14 @@
 			      Shift-Ctrl-R / Shift-Cmd-Option-F : <@spring.message "script.editor.tip.replaceAll"/>&lt;br&gt;
 			      F12 : <@spring.message "script.editor.tip.fullScreen"/>&lt;br&gt;
 			      ESC : <@spring.message "script.editor.tip.back"/>&lt;br&gt;
-			      " placement="top"
+			      " placement="left"
 			    ><code>Tip</code></div> 
 			    
 				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre">
 				</pre>
 			</div>
-			<#include "../common/copyright.ftl">	
 		</div>
-		
+		<#include "../common/copyright.ftl">	
 	</div>
 	<script src="${req.getContextPath()}/js/codemirror/codemirror.js" type="text/javascript" charset="utf-8"></script>
 	<link rel="stylesheet" href="${req.getContextPath()}/js/codemirror/codemirror.css"/>

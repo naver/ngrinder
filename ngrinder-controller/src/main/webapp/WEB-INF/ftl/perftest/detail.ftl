@@ -108,7 +108,7 @@ i.collapse{
 	<div class="container">
 		<form id="testContentForm" name="testContentForm" action="${req.getContextPath()}/perftest/create" method="POST"
 			style="margin-bottom: 0;">
-			<div class="well" style="padding: 10px">
+			<div class="well">
 				<input type="hidden" id="testId" name="id" value="${(test.id)!}"> 
 				<input type="hidden" id="threshold"	name="threshold" value="${(test.threshold)!"D"}"> 
 
@@ -117,46 +117,30 @@ i.collapse{
 						<div class="control-group">
 							<label for="testName" class="control-label"><@spring.message "perfTest.table.testName"/></label>
 							<div class="controls">
-								<table width="100%">
-									<colgroup>
-										<col width="*">
-										<col width="140">   
-										<col width="170">   
-									</colgroup>
-									<tr>
-										<td>
-											<input class="span3 required" maxlength="100" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
-											<#if test??> 
-												<span id="teststatus_pop_over"
-													rel="popover" data-content='${"${test.progressMessage}/n${test.lastProgressMessage}"?replace('/n', '<br>')?html}'  
-														data-original-title="<@spring.message "${test.status.springMessageKey}"/>" type="toggle">
-													<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
-												</span> 
-											</#if>
-										</td>
-									
-										<td>
-											<button type="submit" class="btn btn-success pull-right" id="saveTestBtn">
-												<#if test?? && (test.status != "SAVED")>
-													<@spring.message "perfTest.detail.clone"/>
-												<#else>
-													<@spring.message "common.button.save"/>
-												</#if>
-											</button>
-										</td>
-										<td>
-											<button type="submit" class="btn btn-primary pull-left"  style="margin-left:10px"
-												data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn">
-												<#if test?? && (test.status != "SAVED")>
-													<@spring.message "perfTest.detail.clone"/>
-												<#else>
-													<@spring.message "common.button.save"/>
-												</#if>
-												&nbsp;<@spring.message "perfTest.detail.andStart"/>
-											</button>
-										</td>
-									</tr>
-								</table> 
+								<input class="span3 required" maxlength="100" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
+								<#if test??> 
+									<span id="teststatus_pop_over"
+										rel="popover" data-content='${"${test.progressMessage}/n${test.lastProgressMessage}"?replace('/n', '<br>')?html}'  
+											data-original-title="<@spring.message "${test.status.springMessageKey}"/>" type="toggle">
+										<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
+									</span> 
+								</#if>
+								<button type="submit" class="btn btn-success" id="saveTestBtn" style="margin-left:249px; width:55px">
+									<#if test?? && (test.status != "SAVED")>
+										<@spring.message "perfTest.detail.clone"/>
+									<#else>
+										<@spring.message "common.button.save"/>
+									</#if>
+								</button>
+								<button type="submit" class="btn btn-primary" style="margin-left:10px; width:120px"
+									data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn">
+									<#if test?? && (test.status != "SAVED")>
+										<@spring.message "perfTest.detail.clone"/>
+									<#else>
+										<@spring.message "common.button.save"/>
+									</#if>
+									&nbsp;<@spring.message "perfTest.detail.andStart"/>
+								</button>
 							</div>
 						</div>
 						<div class="control-group" style="margin-bottom: 0">

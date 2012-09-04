@@ -61,11 +61,13 @@
 											<@spring.message "script.list.label.upload"/>
 										</a>
 								</td>
-								<td> 
-									<a class="btn btn-danger pull-right" href="javascript:void(0);" id="deleteBtn">
-										<i class="icon-remove"></i>
-										<@spring.message "script.list.button.delete"/>
-									</a>
+								<td>
+									<div style="margin-top:10px">
+										<a class="btn btn-danger pull-right" href="javascript:void(0);" id="deleteBtn">
+											<i class="icon-remove"></i>
+											<@spring.message "script.list.button.delete"/>
+										</a>
+									</div>
 								</td> 
 							</tr>
 						</table>
