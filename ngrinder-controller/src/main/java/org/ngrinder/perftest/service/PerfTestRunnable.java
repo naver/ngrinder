@@ -188,11 +188,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 			@Override
 			public void readyToStop(StopReason stopReason) {
 				perfTestService.markAbromalTermination(perfTest, stopReason);
-				System.out.println("Abnormal test " + stopReason.name());
+				LOG.error("Abnormal test {} by {}", perfTest.getId() + stopReason.name());
 			}
 		});
-
-		singleConsole.startSampling();
+		singleConsole.startSampling(grinderProperties.getInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, 0));
 		long startTime = singleConsole.startTest(grinderProperties);
 		perfTestService.setRecodingStarting(perfTest, startTime);
 		perfTestService.changePerfTestStatus(perfTest, TESTING);

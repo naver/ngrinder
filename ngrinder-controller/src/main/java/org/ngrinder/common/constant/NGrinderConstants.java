@@ -166,7 +166,8 @@ public interface NGrinderConstants {
 	public static final String GRINDER_PROP_INITIAL_SLEEP_TIME = "grinder.initialSleepTime";
 	public static final String GRINDER_PROP_REPORT_TIMES_TO_CONSOLE = "grinder.reportTimesToConsole";
 	public static final String GRINDER_PROP_TEST_ID = "grinder.test.id";
-
+	public static final String GRINDER_PROP_IGNORE_SAMPLE_COUNT = "grinder.ignoreSampleCount";
+	
 	// ngrinder setting.
 	public static final String NGRINDER_PROP_ETC_HOSTS = "ngrinder.etc.hosts";
 	public static final String NGRINDER_PROP_CONSOLE_PORT_BASE = "ngrinder.consolePortBase";
