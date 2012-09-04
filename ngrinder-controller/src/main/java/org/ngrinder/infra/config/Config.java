@@ -161,7 +161,16 @@ public class Config {
 	 * @return
 	 */
 	public boolean isTestMode() {
-		return BooleanUtils.toBoolean(getSystemProperty("testmode", "false"));
+		return getSystemProperties().getPropertyBoolean("testmode", false);
+	}
+
+	/**
+	 * if there is testmode property in system.properties.. return true
+	 * 
+	 * @return
+	 */
+	public boolean isSecurityEnabled() {
+		return getSystemProperties().getPropertyBoolean("security", false);
 	}
 
 	/**
@@ -170,7 +179,7 @@ public class Config {
 	 * @return
 	 */
 	public boolean isPluginSupported() {
-		return (BooleanUtils.toBoolean(getSystemProperty("pluginsupport", "true")) || !isTestMode());
+		return (getSystemProperties().getPropertyBoolean("pluginsupport", true)) || !isTestMode();
 	}
 
 	String getSystemProperty(String key, String defaultValue) {

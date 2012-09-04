@@ -51,7 +51,8 @@ public class SystemMonitorProcessorTest {
 		}
 		
 		try {
-			processor.call();
+			SystemInfo info = processor.call();
+			System.out.println("System info:" + info);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

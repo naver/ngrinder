@@ -102,8 +102,8 @@ public class PropertiesWrapper {
 		return NumberUtils.toInt(property, defaultValue);
 	}
 
-	public boolean getPropertyBoolean(String key, boolean b) {
-		String property = getProperty(key, String.valueOf(b), DEFAULT_ERROR_MESSGAE);
+	public boolean getPropertyBoolean(String key, boolean defaultValue) {
+		String property = getProperty(key, String.valueOf(defaultValue), DEFAULT_ERROR_MESSGAE);
 		return BooleanUtils.toBoolean(property);
 	}
 }
