@@ -26,6 +26,8 @@ import java.io.Serializable;
 
 import javax.management.openmbean.CompositeData;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 public class SystemInfo extends MonitorInfo implements Serializable {
 
 	private static final long serialVersionUID = -2995334644975166549L;
@@ -146,4 +148,8 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		this.totalMemory = totalMemory;
 	}
 
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
 }
