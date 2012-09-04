@@ -8,8 +8,8 @@
 
 	<body>
     <#include "../common/navigator.ftl">
-    <form id="downloadForm"></form>
 	<div class="container">
+		<img src="${req.getContextPath()}/img/bg_script_banner.png" style="margin-top:-20px;margin-bottom:10px"/>
 		<div class="well form-inline searchBar" style="margin-top:0;">
 			<table style="width:100%">
 				<tr>
@@ -392,7 +392,7 @@
 					"bFilter": false,
 					"bLengthChange": false,
 					"bInfo": false,
-					"iDisplayLength": 15, 
+					"iDisplayLength": 10, 
 					"aaSorting": [],
 					"aoColumns": [{"asSorting": []}, {"asSorting": []}, null, {"asSorting": []}, null, null, null, {"asSorting": []}],
 					"sPaginationType": "bootstrap",
