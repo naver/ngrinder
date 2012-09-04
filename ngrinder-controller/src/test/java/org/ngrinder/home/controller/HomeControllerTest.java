@@ -36,7 +36,7 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 	public void testLogin() {
 		ModelMap model = new ModelMap();
 		String viewName = homeController.login(model);
-		assertThat(viewName, is("login"));
+		assertThat(viewName, is("redirect:/"));
 	}
 
 	@Test

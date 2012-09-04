@@ -252,10 +252,6 @@ public class FileEntryRepository {
 			}
 			script.setDescription(info.getCommitMessage());
 			script.setRevision(lastRevision);
-
-			final List<Long> revisions = new ArrayList<Long>();
-			// TODO: version list is not got yet
-			script.setRevisions(revisions);
 		} catch (Exception e) {
 			LOG.error("Error while fetching a file from SVN {} {}", user.getUserId(), path);
 			return null;

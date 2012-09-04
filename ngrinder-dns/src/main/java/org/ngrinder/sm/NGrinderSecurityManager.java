@@ -24,10 +24,9 @@ package org.ngrinder.sm;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * nGrinder security manager
@@ -40,6 +39,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	private String workDirectory = System.getProperty("user.dir");
 	private String agentExecDirectory = System.getProperty("ngrinder.exec.path", workDirectory);
+	private String javaHomeDirectory = System.getenv("JAVA_HOME");
 	private String etcHosts = System.getProperty("ngridner.etc.hosts", "");
 	private String consoleIP = System.getProperty("ngrinder.console.ip", "127.0.0.1");
 	private List<String> allowedHostIP = new ArrayList<String>();
@@ -51,9 +51,9 @@ public class NGrinderSecurityManager extends SecurityManager {
 		 * if target hosts ':1.1.1.1' add ip: '1.1.1.1' <br>
 		 * if target hosts '1.1.1.1' add ip: '1.1.1.1' <br>
 		 */
-		String[] hostsList = StringUtils.split(etcHosts, ",");
+		String[] hostsList = etcHosts.split(",");
 		for (String hosts : hostsList) {
-			String[] addresses = StringUtils.split(hosts, ":");
+			String[] addresses = hosts.split(":");
 			if (addresses.length > 0) {
 				allowedHostIP.add(addresses[addresses.length - 1]);
 			} else {
@@ -61,18 +61,40 @@ public class NGrinderSecurityManager extends SecurityManager {
 			}
 		}
 
-		// add controler host
+		/**
+		 * add controler host
+		 */
 		allowedHostIP.add(consoleIP);
 	}
 
 	@Override
-	public void checkPropertiesAccess() {
-		// allow all properties access
+	public void checkPermission(Permission permission) {
+		if (permission instanceof java.lang.RuntimePermission) {
+			// except setSecurityManager
+			String permissionName = permission.getName();
+			if ("setSecurityManager".equals(permissionName)) {
+				throw new SecurityException("java.lang.RuntimePermission: setSecurityManager is not allowed.");
+			}
+		} else if (permission instanceof java.security.UnresolvedPermission) {
+			throw new SecurityException("java.security.UnresolvedPermission is not allowed.");
+		} else if (permission instanceof java.awt.AWTPermission) {
+			throw new SecurityException("java.awt.AWTPermission is not allowed.");
+		} else if (permission instanceof javax.security.auth.AuthPermission) {
+			throw new SecurityException("javax.security.auth.AuthPermission is not allowed.");
+		} else if (permission instanceof javax.security.auth.PrivateCredentialPermission) {
+			throw new SecurityException("javax.security.auth.PrivateCredentialPermission is not allowed.");
+		} else if (permission instanceof javax.security.auth.kerberos.DelegationPermission) {
+			throw new SecurityException("javax.security.auth.kerberos.DelegationPermission is not allowed.");
+		} else if (permission instanceof javax.security.auth.kerberos.ServicePermission) {
+			throw new SecurityException("javax.security.auth.kerberos.ServicePermission is not allowed.");
+		} else if (permission instanceof javax.sound.sampled.AudioPermission) {
+			throw new SecurityException("javax.sound.sampled.AudioPermission is not allowed.");
+		}
 	}
 
 	@Override
-	public void checkPropertyAccess(String key) {
-		// allow all properties access
+	public void checkPermission(Permission permission, Object context) {
+		this.checkPermission(permission);
 	}
 
 	@Override
@@ -87,12 +109,12 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	@Override
 	public void checkWrite(String file) {
-		this.fileAccessWriteDeleteAllowed(file);
+		this.fileAccessWriteAllowed(file);
 	}
 
 	@Override
 	public void checkDelete(String file) {
-		this.fileAccessWriteDeleteAllowed(file);
+		this.fileAccessDeleteAllowed(file);
 	}
 
 	@Override
@@ -107,30 +129,45 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * @param file
 	 */
 	private void fileAccessReadAllowed(String file) {
-		if (new File(file).getAbsolutePath().startsWith(workDirectory)
-				|| new File(file).getAbsolutePath().startsWith(agentExecDirectory)) {
+		String filePath = new File(file).getAbsolutePath();
+		if (filePath.startsWith(workDirectory) || filePath.startsWith(agentExecDirectory)
+				|| filePath.startsWith(javaHomeDirectory)) {
 			return;
 		}
-		throw new SecurityException("File read access on " + file + " is not allowed.");
+		super.checkRead(file);
 	}
 
 	/**
-	 * File write & delete access is allowed <br>
+	 * File write access is allowed <br>
 	 * on "agent.exec.folder"
 	 * 
 	 * @param file
 	 */
-	private void fileAccessWriteDeleteAllowed(String file) {
+	private void fileAccessWriteAllowed(String file) {
 		if (new File(file).getAbsolutePath().startsWith(workDirectory)) {
 			return;
 		}
-		throw new SecurityException("File write & delete access on " + file + " is not allowed.");
+		super.checkWrite(file);
+	}
+
+	/**
+	 * File delete access is allowed <br>
+	 * on "agent.exec.folder"
+	 * 
+	 * @param file
+	 */
+	private void fileAccessDeleteAllowed(String file) {
+		if (new File(file).getAbsolutePath().startsWith(workDirectory)) {
+			return;
+		}
+		super.checkDelete(file);
 	}
 
 	@Override
 	public void checkExit(int status) {
 		// Always block
-		throw new SecurityException("System.exit execution of  is not allowed.");
+		// throw new
+		// SecurityException("System.exit execution of  is not allowed.");
 	}
 
 	@Override

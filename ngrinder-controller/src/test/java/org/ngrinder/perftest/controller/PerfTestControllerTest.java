@@ -83,8 +83,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.READY, new Date());
 		ModelMap model = new ModelMap();
-		controller.deletePerfTests(getTestUser(), model,
-				String.valueOf(test.getId()));
+		controller.deletePerfTests(getTestUser(), model, String.valueOf(test.getId()));
 
 		model.clear();
 		controller.getPerfTestDetail(getTestUser(), test.getId(), model);
@@ -109,8 +108,8 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	}
 
 	/**
-	 * for "saved" or "ready" test, can be modified, but for running or finished
-	 * test, can not modify
+	 * for "saved" or "ready" test, can be modified, but for running or finished test, can not
+	 * modify
 	 */
 	@Test
 	public void testSavePerfTestExist() {
@@ -178,6 +177,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		testAdmin.setUserId("testAdmin");
 		testAdmin.setPassword("testAdmin");
 		testAdmin.setRole(Role.ADMIN);
+		testAdmin.setTimeZone("Asia/Seoul");
 		testAdmin = userService.saveUser(testAdmin);
 
 		controller.getPerfTestList(testAdmin, null, false, null, model);
@@ -205,7 +205,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		otherTestUser.setPassword("testUser");
 		otherTestUser.setRole(Role.USER);
 		otherTestUser = userService.saveUser(otherTestUser);
-
+		otherTestUser.setTimeZone("Asia/Seoul");
 		controller.getPerfTestList(otherTestUser, null, false, null, model);
 		@SuppressWarnings("unchecked")
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
@@ -224,28 +224,16 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 		Sort sort = new Sort("testName");
 		Pageable pageable = new PageRequest(0, 10, sort);
-		controller.getPerfTestList(getTestUser(), strangeName, false, pageable,
-				model);
+		controller.getPerfTestList(getTestUser(), strangeName, false, pageable, model);
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
 
-		controller.getPerfTestList(getTestUser(), strangeName.substring(2, 10),
-				false, new PageRequest(0, 10), model);
+		controller.getPerfTestList(getTestUser(), strangeName.substring(2, 10), false,
+						new PageRequest(0, 10), model);
 		testPage = (Page<PerfTest>) model.get("testListPage");
 		testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
-	}
-
-	@Test
-	public void testUpdateVuser() {
-		String rtn = controller.updateVuser(20);
-		JsonParser parser = new JsonParser();
-		JsonObject json = (JsonObject) parser.parse(rtn);
-		int threadCount = json.get(PARAM_THREAD_COUNT).getAsInt();
-		int processCount = json.get(PARAM_PROCESS_COUNT).getAsInt();
-		assertThat(threadCount, is(2));
-		assertThat(processCount, is(10));
 	}
 
 	@Test
@@ -285,8 +273,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.TESTING, new Date());
 		String testName2 = "test1";
-		PerfTest test2 = createPerfTest(testName2, Status.START_AGENTS,
-				new Date());
+		PerfTest test2 = createPerfTest(testName2, Status.START_AGENTS, new Date());
 
 		String ids = test.getId() + "," + test2.getId();
 		HttpEntity<String> rtnJson = controller.updateSatus(getTestUser(), ids);

@@ -56,7 +56,7 @@
 				<a
 					href="${req.getContextPath()}/perftest/downloadLog/${eachLog}?testId=${test.id}">${eachLog}</a>
 			</div>
-			</#list> <#else> <@spring.message "perfTest.report.message.noLogs"/>
+			</#list> <#else> <@spring.message "common.message.noData"/>
 			</#if>
 		</div>
 	</div>
@@ -79,12 +79,12 @@
 		$.post("${req.getContextPath()}/perftest/leaveComment",
 					{"testId": ${test.id}, "testComment": comment},
 				function() {
-					showSuccessMsg("Comment is successfully reflected");
+					showSuccessMsg("<@spring.message "perfTest.report.message.leaveComment"/>");
 				}
 		);
 	});
 
 	$("#reportDetail").click(function () {
-	          window.open("${req.getContextPath()}/perftest/report?testId=" + $("#testId").val());
+		window.open("${req.getContextPath()}/perftest/report?testId=" + $("#testId").val());
 	});
 </script>

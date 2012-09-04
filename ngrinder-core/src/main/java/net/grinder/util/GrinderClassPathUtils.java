@@ -65,24 +65,21 @@ public class GrinderClassPathUtils {
 	}
 
 	private static boolean isNotJarOrUselessJar(String jarFilename) {
-		// TODO: Should it a jar file? Is it useless except jar files?
 		if (!"jar".equals(FilenameUtils.getExtension(jarFilename))) {
 			return true;
 		}
 
-		if (jarFilename.contains("ngrinder-core") 
-				|| jarFilename.contains("ngrinder-controller") 
-				|| jarFilename.contains("spring")) {
+		if (jarFilename.contains("ngrinder-core") || jarFilename.contains("ngrinder-controller")
+						|| jarFilename.contains("spring")) {
 			return true;
 		}
 
 		// TODO: If we have need another jar files, we should append it on the follow conditions.
-		if (jarFilename.contains("dns") 
-				|| jarFilename.contains("grinder") || jarFilename.contains("asm")
-				|| jarFilename.contains("picocontainer") || jarFilename.contains("jython")
-				|| jarFilename.contains("slf4j-api") || jarFilename.contains("logback")
-				|| jarFilename.contains("jsr173") || jarFilename.contains("xmlbeans")
-				|| jarFilename.contains("stax-api")) {
+		if (jarFilename.contains("dns") || jarFilename.contains("grinder") || jarFilename.contains("asm")
+						|| jarFilename.contains("picocontainer") || jarFilename.contains("jython")
+						|| jarFilename.contains("slf4j-api") || jarFilename.contains("logback")
+						|| jarFilename.contains("jsr173") || jarFilename.contains("xmlbeans")
+						|| jarFilename.contains("stax-api")) {
 			return false;
 		}
 
