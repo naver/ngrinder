@@ -492,7 +492,6 @@ public class SingleConsole implements Listener, SampleListener {
 						mutableDouble.add((Double) val);
 					} else if (String.valueOf(val).equals("null")) {
 						// if it is null, just assume it is 0. The value is a String "null"
-						// FIXME if the TPS is too low, but there is no many errors, it is possible
 						// that the Double value in
 						// one second is null. Now I treat this value as ZERO. But maybe it is not
 						// the most proper solution.
@@ -574,11 +573,11 @@ public class SingleConsole implements Listener, SampleListener {
 
 				Test test = modelIndex.getTest(i);
 				statistics.put("testNumber", test.getNumber());
-				//remove description from statistic, otherwise, it will be saved in report data.
-				//and the character like ',' in this field will affect the csv file too.
-				//statistics.put("testDescription", test.getDescription());
+				// remove description from statistic, otherwise, it will be saved in report data.
+				// and the character like ',' in this field will affect the csv file too.
+				// statistics.put("testDescription", test.getDescription());
 				lastStatistics.put("testNumber", test.getNumber());
-				//lastStatistics.put("testDescription", test.getDescription());
+				// lastStatistics.put("testDescription", test.getDescription());
 
 				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
 				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);

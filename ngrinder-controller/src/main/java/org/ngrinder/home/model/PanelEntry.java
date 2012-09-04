@@ -75,7 +75,7 @@ public class PanelEntry implements Comparable<PanelEntry> {
 	}
 
 	@Override
-	public int compareTo(PanelEntry o) { // TODO: if the o can be a null?
+	public int compareTo(PanelEntry o) {
 		return o.lastUpdatedDate.compareTo(lastUpdatedDate);
 	}
 }

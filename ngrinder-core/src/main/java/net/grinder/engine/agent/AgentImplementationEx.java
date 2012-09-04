@@ -353,7 +353,6 @@ public class AgentImplementationEx implements Agent {
 		} catch (Exception e) {
 			m_logger.error("Exception occurs in the agent message loop", e);
 		} finally {
-			// FIXME.. it doens't close
 			if (m_timer != null) {
 				m_timer.cancel();
 				m_timer = null;
@@ -503,9 +502,7 @@ public class AgentImplementationEx implements Agent {
 			m_connector = connector;
 
 			if (m_fileStore == null) {
-				// FIXME : store the log in ngrinder home
 				// Only create the file store if we connected.
-
 				m_fileStore = new FileStore(new File(m_agentConfig.getHome().getDirectory(), "file-store"),
 								m_logger);
 			}

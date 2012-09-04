@@ -17,9 +17,9 @@
 				<span class="add-on" style="cursor:default">Agent Download
 				</span><span class="input-xlarge uneditable-input span6" style="cursor:text">
 					<#if downloadLinks?has_content>
-					<#list downloadLinks as each>  
-					<div><a href="${each}">${each}</a></div>
-					</#list>  
+						<#list downloadLinks as each>  
+							<div><a href="${each}">${each}</a></div>
+						</#list>  
 					</#if>  
 				</span> 
 			</div>

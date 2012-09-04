@@ -107,7 +107,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 */
 	@RequestMapping({ "/list/**", "" })
 	public String get(User user, @RemainedPath String path, ModelMap model) { // "fileName"
-		
+
 		List<FileEntry> files = fileEntryService.getFileEntries(user, path, null);
 		Collections.sort(files, new Comparator<FileEntry>() {
 			@Override
@@ -176,7 +176,7 @@ public class FileEntryController extends NGrinderBaseController {
 			testUrl = "http://sample.com";
 		}
 		if (fileEntryService.hasFileEntry(user, path + "/" + fileName)) {
-			model.addAttribute("file", fileEntryService.getFileEntry(user, path + "/" + fileName)); 
+			model.addAttribute("file", fileEntryService.getFileEntry(user, path + "/" + fileName));
 		} else {
 			model.addAttribute("file", fileEntryService.prepareNewEntry(user, path, fileName, testUrl));
 		}
@@ -230,17 +230,16 @@ public class FileEntryController extends NGrinderBaseController {
 		}
 		response.reset();
 		try {
-			// FIXME Is it proper to use "euc-kr" encoding?
 			response.addHeader(
 							"Content-Disposition",
 							"attachment;filename="
 											+ java.net.URLEncoder.encode(
 															FilenameUtils.getName(fileEntry.getPath()),
-															"euc-kr"));
+															"utf8"));
 		} catch (UnsupportedEncodingException e1) {
 			LOG.error(e1.getMessage(), e1);
 		}
-		response.setContentType("application/octet-stream");
+		response.setContentType("application/octet-stream; charset=UTF-8");
 		response.addHeader("Content-Length", "" + fileEntry.getFileSize());
 		byte[] buffer = new byte[4096];
 		ByteArrayInputStream fis = null;
@@ -309,7 +308,7 @@ public class FileEntryController extends NGrinderBaseController {
 			fileEntry.setProperties(map);
 		}
 		fileEntryService.save(user, fileEntry);
-		
+
 		return "redirect:/script/list/" + FilenameUtils.getPath(fileEntry.getPath());
 	}
 

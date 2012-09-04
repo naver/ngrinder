@@ -424,8 +424,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 			try {
 				setAddress(address);
 			} catch (CommunicationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error("Error while setAdress" + address, e);
 			}
 		}
 

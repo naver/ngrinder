@@ -631,7 +631,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	/**
 	 * Get the optimal process and thread count.
 	 * 
-	 * FIXME : This method should be optimized more.
 	 * 
 	 * @param newVuser
 	 *            the count of virtual users per agent
@@ -642,11 +641,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			String script = getProcessAndThreadPolicyScript();
 			ScriptEngine engine = new ScriptEngineManager().getEngineByName("javascript");
 			engine.eval(script);
-
 			int processCount = ((Double) engine.eval("getProcessCount(" + newVuser + ")")).intValue();
-
 			int threadCount = ((Double) engine.eval("getThreadCount(" + newVuser + ")")).intValue();
-
 			return new ProcessAndThread(processCount, threadCount);
 		} catch (ScriptException e) {
 			LOGGER.error("Error occurs while calc process and thread", e);
@@ -692,8 +688,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			String data = null;
 			int current = 0;
 			int interval = lineNumber / pointCount;
-			// TODO should get average data
-			// FIXME : NEVER NEVER DO IT. Be aware of memory size.!!
 			while (StringUtils.isNotBlank(data = br.readLine())) {
 				if (0 == current) {
 					double number = NumberUtils.createDouble(data);
@@ -753,7 +747,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			int current = 0;
 			int interval = lineNumber / pointCount;
 			// TODO should get average data
-			// FIXME : NEVER NEVER DO IT. Be aware of memory size.!!
 			while (StringUtils.isNotBlank(data = br.readLine())) {
 				if (0 == current) {
 					double number = NumberUtils.createDouble(data);

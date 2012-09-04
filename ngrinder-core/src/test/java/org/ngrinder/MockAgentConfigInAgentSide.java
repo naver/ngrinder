@@ -10,7 +10,6 @@ public class MockAgentConfigInAgentSide extends AgentConfig {
 
 	@Override
 	protected AgentHome resolveHome() {
-		// TODO Auto-generated method stub
 		AgentHome resolveHome = super.resolveHome();
 		resolveHome = new AgentHome(new File(resolveHome.getDirectory(), "tmp_" + String.valueOf(counter++)));
 		return resolveHome;
