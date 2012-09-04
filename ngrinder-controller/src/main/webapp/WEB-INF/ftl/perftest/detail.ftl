@@ -286,14 +286,6 @@ i.collapse{
 													</td>
 													</tr>
 												</table> 
-												
-												<script>
-													$(document).ready(function() {
-														$("#scriptName").change(function(selected) {
-															$("#showScript").val(selected);
-														});
-													});
-												</script>
 											</div> 
 										</div>
 										<div class="control-group">
@@ -431,7 +423,7 @@ i.collapse{
 									<fieldset>
 										<div class="control-group">
 											<label for="scriptName" class="control-label"><@spring.message "perfTest.testRunning.scriptName"/></label>
-											<div class="controls" title="${(test.scriptName)}">${(test.scriptNameInShort)!}</div> 
+											<div class="controls" title="${(test.scriptName)!}">${(test.scriptNameInShort)!}</div> 
 										</div>
 										<hr>
 										<div class="control-group">
@@ -648,7 +640,7 @@ i.collapse{
 			displayCfgOnly();
 		  </#if>
 		  $("#tableTab a:first").tab('show');
-
+			
 	      $('#testContentForm input').hover(function () {
 	          $(this).popover('show')
 	      });
@@ -659,7 +651,8 @@ i.collapse{
 	          }
 	      }
 
-	      $("#scriptName").change(function () {
+	      $("#scriptName").change(function (selected) {
+	    	  $("#showScript").val(selected);
 	          updateScriptResources(false);
 	      });
 
