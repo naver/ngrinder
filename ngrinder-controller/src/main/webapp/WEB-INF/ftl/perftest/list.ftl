@@ -116,7 +116,7 @@
 						<#assign testList = testListPage.content/>
 						<#if testList?has_content>
 							<#list testList as test>
-								<#assign vuserTotal = (test.vuserPerAgent)!0 * (test.agentCount)!0 />
+								<#assign vuserTotal = (test.vuserPerAgent) * (test.agentCount) />
 								<tr id="tr${test.id}">
 									<td class="center">
 										<input type="checkbox" class="checkbox perf_test" value="${test.id}" 
@@ -128,7 +128,7 @@
 										</div>
 									</td>
 
-									<td class="ellipsis ${test.dateString}">   
+									<td class="ellipsis ${test.dateString}">  
 										<div rel="popover"
 											 data-content="${test.description?replace('\n', '<br/>')?html}&lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;"  
 											 data-original-title="${test.testName}">
@@ -158,7 +158,7 @@
 									<td>${(test.tps)!}</td>  
 									<td>${(test.meanTestTime)!0}</td>
 									<td>${(test.errors)!0}</td>
-									<td>${vuserTotal}</td>
+									<td>${vuserTotal} </td>
 									<td class="center">
 										<a href="javascript:void(0)"><i title="<@spring.message "common.button.delete"/>"id="delete_${test.id}" style="display: none;" class="icon-remove test-remove" sid="${test.id}"></i></a>
 										<a href="javascript:void(0)"><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" style="display: none;" class="icon-stop test-stop" sid="${test.id}"></i></a>
