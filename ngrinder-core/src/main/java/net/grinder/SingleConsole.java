@@ -574,9 +574,11 @@ public class SingleConsole implements Listener, SampleListener {
 
 				Test test = modelIndex.getTest(i);
 				statistics.put("testNumber", test.getNumber());
-				statistics.put("testDescription", test.getDescription());
+				//remove description from statistic, otherwise, it will be saved in report data.
+				//and the character like ',' in this field will affect the csv file too.
+				//statistics.put("testDescription", test.getDescription());
 				lastStatistics.put("testNumber", test.getNumber());
-				lastStatistics.put("testDescription", test.getDescription());
+				//lastStatistics.put("testDescription", test.getDescription());
 
 				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
 				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
