@@ -124,10 +124,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 		// Fistly start on start plugin
 		for (Runnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(Runnable.class)) {
 			runnable.run();
-		}
-		
-		List<OnTestStartRunnable> enabledModulesByClass = getEnabledModulesByClass(OnTestStartRunnable.class);
-		System.out.println(enabledModulesByClass.size());
+		}		
 	}
 
 	/**

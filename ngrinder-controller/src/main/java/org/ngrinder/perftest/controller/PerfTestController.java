@@ -403,8 +403,11 @@ public class PerfTestController extends NGrinderBaseController {
 	public String getReportDiv(User user, ModelMap model, @RequestParam long testId,
 					@RequestParam int imgWidth) {
 		PerfTest test = checkTestPermissionAndGet(user, testId);
-		String reportData = perfTestService.getReportDataAsString(testId, "TPS", imgWidth);
-		model.addAttribute("logs", perfTestService.getLogFiles(testId));
+
+		String reportData = perfTestService.getReportDataAsString(testId,
+				"TPS", imgWidth);
+		model.addAttribute(PARAM_LOG_LIST, perfTestService.getLogFiles(testId));
+
 		model.addAttribute(PARAM_TEST, test);
 		model.addAttribute(PARAM_TPS, reportData);
 		return "perftest/reportDiv";

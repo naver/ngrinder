@@ -25,6 +25,7 @@ package org.ngrinder.home.controller;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -39,6 +40,7 @@ import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.home.service.HomeService;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,13 +94,12 @@ public class HomeController extends NGrinderBaseController {
 
 	@RequestMapping(value = { "/home", "/" })
 	public String home(User user, ModelMap model, HttpServletResponse response, HttpServletRequest request) {
-		String roles = null;
+		Role role = null;
 		try {
 			// set local language
 			setLanguage(user.getUserLanguage(), response, request);
 			setLoginPageDate(model);
-			roles = user.getRole().getShortName();
-
+			role = user.getRole();
 		} catch (AuthenticationCredentialsNotFoundException e) {
 			return "login";
 		}
@@ -106,10 +107,10 @@ public class HomeController extends NGrinderBaseController {
 		model.addAttribute("right_panel_entries", homeService.getRightPanelEntries());
 		model.addAttribute("left_panel_entries", homeService.getLeftPanelEntries());
 
-		if (roles.contains("A") || roles.contains("U")) {
+		if (role == Role.ADMIN || role == Role.SUPER_USER || role == Role.USER) {
 			return "index";
 		} else {
-			LOG.info("Invalid user role:{}", roles);
+			LOG.info("Invalid user role:{}", role.getFullName());
 			return "login";
 		}
 	}
