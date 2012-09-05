@@ -53,8 +53,9 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 
 	@Autowired
 	private UserService userService;
-	
+
 	private PythonInterpreter interp;
+
 	@PostConstruct
 	public void init() {
 		interp = new PythonInterpreter();
@@ -84,17 +85,28 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	 *            script
 	 * @return stdout and err
 	 */
-	public synchronized String processPython(String script) {
+	public String processPython(final String script) {
 		try {
-			interp.cleanup();
-			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			interp.setOut(bos);
-			interp.setErr(bos);
-			interp.exec(script);
-			interp.cleanup();
+			final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			synchronized (interp) {
+				Thread thread = new Thread(new Runnable() {
+					@Override
+					public void run() {
+						interp.cleanup();
+						interp.setOut(bos);
+						interp.setErr(bos);
+						interp.exec(script);
+						interp.cleanup();
+					}
+				});
+				thread.run();
+				thread.join(30000);
+				if (thread.isAlive()) {
+					thread.interrupt();
+				}
+			}
 			return bos.toString();
 		} catch (Exception e) {
-			
 			String message = ExceptionUtils.getMessage(e);
 			message = message + "\n" + ExceptionUtils.getStackTrace(e);
 			return message;
