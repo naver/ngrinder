@@ -12,6 +12,7 @@ import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.ConsoleManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.service.FileEntryService;
+import org.ngrinder.user.service.UserService;
 import org.python.util.PythonInterpreter;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/operation/scriptConsole")
 @PreAuthorize("hasAnyRole('A', 'S')")
-public class ScriptConsoleController extends NGrinderBaseController implements
-		ApplicationContextAware {
+public class ScriptConsoleController extends NGrinderBaseController implements ApplicationContextAware {
 	@Autowired
 	private Config config;
 
@@ -51,15 +51,24 @@ public class ScriptConsoleController extends NGrinderBaseController implements
 	@Autowired
 	private FileEntryService fileEntryService;
 
+	@Autowired
+	private UserService userService;
+	
+	private PythonInterpreter interp;
 	@PostConstruct
 	public void init() {
-
+		interp = new PythonInterpreter();
+		interp.set("applicationContext", this.applicationContext);
+		interp.set("agentManager", this.agentManager);
+		interp.set("consoleManager", this.consoleManager);
+		interp.set("userService", this.userService);
+		interp.set("perfTestService", this.perfTestService);
+		interp.set("fileEntryService", this.fileEntryService);
+		interp.set("config", this.config);
 	}
 
 	@RequestMapping("")
-	public String runScript(
-			@RequestParam(value = "script", required = false) String script,
-			Model model) {
+	public String runScript(@RequestParam(value = "script", required = false) String script, Model model) {
 		if (StringUtils.isNotBlank(script)) {
 			String result = processPython(script);
 			model.addAttribute("script", script);
@@ -75,31 +84,25 @@ public class ScriptConsoleController extends NGrinderBaseController implements
 	 *            script
 	 * @return stdout and err
 	 */
-	public String processPython(String script) {
+	public synchronized String processPython(String script) {
 		try {
+			interp.cleanup();
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			PythonInterpreter interp = new PythonInterpreter();
-			interp.set("applicationContext", this.applicationContext);
-			interp.set("agentManager", this.agentManager);
-			interp.set("consoleManager", this.consoleManager);
-			interp.set("perfTestService", this.perfTestService);
-			interp.set("fileEntryService", this.fileEntryService);
-			interp.set("config", this.config);
 			interp.setOut(bos);
 			interp.setErr(bos);
 			interp.exec(script);
 			interp.cleanup();
 			return bos.toString();
 		} catch (Exception e) {
+			
 			String message = ExceptionUtils.getMessage(e);
-			message = message +"\n"+ ExceptionUtils.getStackTrace(e);
+			message = message + "\n" + ExceptionUtils.getStackTrace(e);
 			return message;
 		}
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 }

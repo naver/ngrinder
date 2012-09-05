@@ -26,16 +26,22 @@
 				</form>
 				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable" id="validateRsPre"><#if result??>${(result)!}<#else>
 You can write python code to monitor ngrinder internal status.
-Following variables are available.
-- applicationContext
-- agentManager
-- consoleManager
-- perfTestService
-- fileEntryService	
 
-Please type following and click Submit button as a example
+Following variables are available.
+
+- applicationContext (org.springframework.context.ApplicationContext)
+- agentManager (org.ngrinder.perftest.service.AgentManager)
+- consoleManager (org.ngrinder.perftest.service.ConsoleManager)
+- userService (org.ngrinder.user.service.UserService)
+- perfTestService  (org.ngrinder.perftest.service.PerfTestService)
+- fileEntryService	(org.ngrinder.script.service.FileEntryService)
+- config (org.ngrinder.infra.config.Config)
+
+Please type following and click the Submit button as a example
 
 print agentManager.getAllAttachedAgents()
+
+please refer nGrinder javadoc to find out more APIs on the given variables.
 				</#if></pre>
 			</div>
 		</div>
