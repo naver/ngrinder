@@ -35,9 +35,9 @@ import javax.servlet.ServletContext;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.model.Home;
-import org.ngrinder.extension.OnTestStartRunnable;
 import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.logger.CoreLogger;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,8 +64,9 @@ import com.atlassian.plugin.osgi.hostcomponents.HostComponentProvider;
 @RuntimeOnlyComponent
 public class PluginManager implements ServletContextAware, NGrinderConstants {
 
-	private static final Logger LOG = LoggerFactory.getLogger(PluginManager.class);
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(PluginManager.class);
+	
+	
 	private AtlassianPlugins plugins;
 	private ServletContext servletContext;
 
@@ -89,6 +90,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	 * 
 	 */
 	public void initPluginFramework() {
+		CoreLogger.LOGGER.info("Initializing Plugin System");
 		// waiting for sqlmap and grinder to start
 		// Determine which packages to expose to plugins
 		DefaultPackageScannerConfiguration scannerConfig = new DefaultPackageScannerConfiguration();
@@ -124,7 +126,8 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 		// Fistly start on start plugin
 		for (Runnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(Runnable.class)) {
 			runnable.run();
-		}		
+		}	
+		CoreLogger.LOGGER.info("Plugin System is started.");
 	}
 
 	/**
@@ -154,14 +157,14 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 		for (Class<? extends AbstractModuleDescriptor> pluginDescriptor : pluginDescriptors) {
 			PluginDescriptor pluginDescriptorAnnotation = pluginDescriptor.getAnnotation(PluginDescriptor.class);
 			if (pluginDescriptorAnnotation == null) {
-				LOG.error("plugin descriptor " + pluginDescriptor.getName()
+				LOGGER.error("plugin descriptor " + pluginDescriptor.getName()
 						+ " doesn't have PluginDescriptor annotation. Skip..");
 			} else if (StringUtils.isEmpty(pluginDescriptorAnnotation.value())) {
-				LOG.error("plugin descriptor " + pluginDescriptor.getName()
+				LOGGER.error("plugin descriptor " + pluginDescriptor.getName()
 						+ " doesn't have corresponding plugin key. Skip..");
 			} else {
 				modules.addModuleDescriptor(pluginDescriptorAnnotation.value(), pluginDescriptor);
-				LOG.info("plugin descriptor " + pluginDescriptor.getName() + " with "
+				LOGGER.info("plugin descriptor " + pluginDescriptor.getName() + " with "
 						+ pluginDescriptorAnnotation.value() + " is initiated.");
 			}
 		}

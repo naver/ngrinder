@@ -56,6 +56,7 @@ public class MonitorService {
 	
 	@PostConstruct
 	public void initMonitorEnv() {
+		// Which it use agent congig.. here... 
 		AgentConfig agentConfig = new AgentConfig();
 		agentConfig.init();
 		MonitorConstants.init(agentConfig);

@@ -50,8 +50,10 @@ public class AgentConfig {
 	public static final String AGENT_HOSTID = "agent.hostid";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentConfig.class);
+	private final boolean agentSide;
 
 	public AgentConfig() {
+		this.agentSide = false;
 	}
 
 	private AgentHome home = null;
@@ -102,13 +104,13 @@ public class AgentConfig {
 	 */
 	protected AgentHome resolveHome() {
 		String userHomeFromEnv = System.getenv("NGRINDER_AGENT_HOME");
-		LOGGER.info("    System Environment:  NGRINDER_HOME={}", userHomeFromEnv);
+		LOGGER.info("    System Environment:  NGRINDER_AGENT_HOME={}", StringUtils.trimToEmpty(userHomeFromEnv));
 
 		String userHomeFromProperty = System.getProperty("ngrinder.agent.home");
-		LOGGER.info("    Java Sytem Property:  ngrinder.home={}", userHomeFromProperty);
+		LOGGER.info("    Java Sytem Property:  ngrinder.agent.home={}", StringUtils.trimToEmpty(userHomeFromProperty));
 
 		if (StringUtils.isNotEmpty(userHomeFromEnv) && !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
-			LOGGER.warn("The path to ngrinder-home is ambiguous:");
+			LOGGER.warn("The path to ngrinder agent home is ambiguous:");
 			LOGGER.warn("    '{}' is accepted.", userHomeFromProperty);
 		}
 

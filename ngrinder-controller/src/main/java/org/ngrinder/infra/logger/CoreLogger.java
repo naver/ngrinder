@@ -20,36 +20,22 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.infra.spring;
+package org.ngrinder.infra.logger;
 
-import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
-import org.ngrinder.infra.init.MockSpringContext;
-import org.springframework.web.context.request.RequestContextHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Convenient class to determine if the current runtime is in the spring context
+ * Provide core logger which does always report LOG..
+ * 
+ * This logger is subject to used to report major execution steps on ngrinder.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
-@RuntimeOnlyComponent
-public class SpringContext {
+public class CoreLogger {
 	/**
-	 * Determine if the current thread is from servlet context
-	 * 
-	 * @return true if it's servlet context.
+	 * Core logger
 	 */
-	public boolean isServletRequestContext() {
-		return RequestContextHolder.getRequestAttributes() != null;
-	}
-
-	/**
-	 * Determine if this context is on unit test.
-	 * 
-	 * @see MockSpringContext
-	 * @return always false.
-	 */
-	public boolean isUnitTestContext() {
-		return false;
-	}
+	public static final Logger LOGGER = LoggerFactory.getLogger(CoreLogger.class);
 }

@@ -11,6 +11,12 @@ import org.ngrinder.infra.spring.SpringContext;
  */
 @TestOnlyComponent
 public class MockSpringContext extends SpringContext {
+	/**
+	 * Determine if this context is on unit test.
+	 * 
+	 * @see SpringContext
+	 * @return always true.
+	 */
 	@Override
 	public boolean isUnitTestContext() {
 		return true;

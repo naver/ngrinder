@@ -38,6 +38,7 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.PropertiesWrapper;
+import org.ngrinder.infra.logger.CoreLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -71,12 +72,14 @@ public class Config {
 
 	@PostConstruct
 	public void init() {
+		
 		try {
 			home = resolveHome();
 			copyDefaultConfigurationFiles();
-			loadDatabaseProperties();
 			loadSystemProperties();
 			initLogger();
+			CoreLogger.LOGGER.info("NGrinder is starting...");
+			loadDatabaseProperties();
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while loading NGRINDER_HOME", e);
 		}

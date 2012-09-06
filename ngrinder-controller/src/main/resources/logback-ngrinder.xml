@@ -29,7 +29,14 @@
 	  <appender-ref ref="log-file" />
     </logger>
 
-
+	<logger name="org.ngrinder.infra.logger.CoreLogger" level="INFO" additivity="false">
+	  <appender-ref ref="log-file" />
+    </logger>
+    
+	<logger name="org.twdata.pkgscanner" level="ERROR" additivity="false">
+	  <appender-ref ref="log-file" />
+    </logger>
+    
 	<root>
 		<level value="WARN" />
 		<appender-ref ref="log-file" />

@@ -105,7 +105,7 @@ public enum Database {
 				return database;
 			}
 		}
-		logger.error("[FATAL] Database type %s is not supported. Please check the ${NFORGE_HOME}/database.properties. Use H2 istead.",
+		logger.error("[FATAL] Database type {} is not supported. Please check the ${NFORGE_HOME}/database.conf. This time, Use H2 istead.",
 						type);
 		return H2;
 	}
