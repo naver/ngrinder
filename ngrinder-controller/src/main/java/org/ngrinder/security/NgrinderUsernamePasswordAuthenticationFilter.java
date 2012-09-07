@@ -42,7 +42,7 @@ public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswo
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
 		Authentication auth = super.attemptAuthentication(request, response);
-		String timezone = (String) request.getParameter("user_locale");
+		String timezone = (String) request.getParameter("user_timezone");
 		String language = (String) request.getParameter("native_language");
 		SecuredUser user = (SecuredUser) auth.getPrincipal();
 		user.getUser().setTimeZone(timezone);

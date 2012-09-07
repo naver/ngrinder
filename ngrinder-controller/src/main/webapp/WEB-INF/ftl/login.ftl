@@ -50,7 +50,7 @@
 				</div>
 				
 				<div class="prompt">
-					<select  id="user_locale"  name="user_locale" style="width:240px">
+					<select  id="user_timezone"  name="user_locale" style="width:240px">
 					  <#list timezones as eachtimezone>
 						  <option value="${eachtimezone.ID}">${eachtimezone.ID} - ${eachtimezone.displayName}</option>
 				      </#list>
@@ -66,7 +66,6 @@
 	$.ajaxSetup({ cache: false });
 	$(function(){
 		var language=getCookie("org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE");
-		$("#user_locale").val("${defaultTime!''}");
 		if (language.indexOf("kr") > -1){
 			$("#native_language").val("kr");
 		} else if (language.indexOf("cn") > -1) {
@@ -75,9 +74,9 @@
 			$("#native_language").val("en");
 		}
 		
-		$("#user_locale").change(function() {
-			if ($("#user_locale option:selected").val() == "all") {
-				$("#user_locale").load("${req.getContextPath()}/allTimeZone");
+		$("#user_timezone").change(function() {
+			if ($("#user_timezone option:selected").val() == "all") {
+				$("#user_timezone").load("${req.getContextPath()}/allTimeZone");
 			}
 		});
 	});
@@ -87,11 +86,11 @@
 	});
 	
 	$(document).ready(function() {
-		$("#user_locale").select2({
+		$("#user_timezone").select2({
 			placeholder: "Select a Timezone"
 		});
 		var timezone = jstz.determine();
-		$("option[value='" + timezone.name() +"']").attr("selected", "selected");
+		$("#user_timezone").select2("val", timezone.name());
 	});
 </script>
 </body>
