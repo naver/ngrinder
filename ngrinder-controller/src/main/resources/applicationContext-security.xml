@@ -30,6 +30,7 @@
 	<!-- custom-filter extends UsernamePasswordAuthenticationFilter -->
 	<beans:bean id="customFilter" class="org.ngrinder.security.NgrinderUsernamePasswordAuthenticationFilter">
 		<beans:property name="filterProcessesUrl" value="/form_Login" />
+		<beans:property name="rememberMeServices" ref="rememberMeServices" />
 		<beans:property name="authenticationSuccessHandler" ref="loginLogAuthenticationSuccessHandler" />
 		<beans:property name="authenticationFailureHandler" ref="simpleUrlAuthenticationFailureHandler" />
 		<beans:property name="authenticationManager" ref="authenticationManager" />
@@ -45,7 +46,6 @@
 	<beans:bean id="simpleUrlAuthenticationFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
 		<beans:property name="defaultFailureUrl" value="/login" />
 	</beans:bean>
-
 	<beans:bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
 		<beans:constructor-arg name="loginFormUrl" value="/login" />
 	</beans:bean>
@@ -84,11 +84,14 @@
 
 		<session-management invalid-session-url="/login" session-fixation-protection="migrateSession" />
 
-		<remember-me key="ngrinder" />
-
+		<remember-me key="ngrinder"/>
 	</http>
 
-
+	<beans:bean id="rememberMeServices"
+		class="org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices">
+		<beans:property name="userDetailsService" ref="ngrinderUserDetailsService" />
+		<beans:property name="key" value="ngrinder"/>
+	</beans:bean>
 	<authentication-manager alias="authenticationManager">
 		<authentication-provider ref="ngrinderAuthenticationProvider" />
 	</authentication-manager>

@@ -27,7 +27,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 /**
  * User managed by nGrinder.
@@ -64,10 +63,8 @@ public class User extends BaseModel<User> {
 
 	private String description;
 
-	@Transient
 	private String timeZone;
 
-	@Transient
 	private String userLanguage;
 
 	private String mobilePhone;
