@@ -413,7 +413,7 @@ public class FileEntryService {
 		fileEntries = getFileEntries(user, path + "resources/", revision);
 		for (FileEntry eachFileEntry : fileEntries) {
 			FileType fileType = eachFileEntry.getFileType();
-			if (fileType != FileType.DIR && fileType != FileType.UNKNOWN) {
+			if (fileType != FileType.DIR) {
 				fileList.add(eachFileEntry);
 			}
 		}

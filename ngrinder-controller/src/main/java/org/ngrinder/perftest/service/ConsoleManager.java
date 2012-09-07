@@ -203,6 +203,7 @@ public class ConsoleManager {
 				// FIXME : Is it OK?
 			} finally {
 				try {
+					Thread.sleep(1000);
 					console.shutdown();
 				} catch (Exception e) {
 					LOG.error("Exception occurs while shuttdowning console in returnback process", e);

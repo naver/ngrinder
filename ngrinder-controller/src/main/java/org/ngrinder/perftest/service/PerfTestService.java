@@ -598,7 +598,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			}
 			LOGGER.info("{} is being written in {} for test {}", new Object[] { each.getPath(),
 					perfTestDirectory.toString(), perfTest.getId() });
-			fileEntryService.writeContentTo(user, each.getPath(), perfTestDirectory);
+			fileEntryService.writeContentTo(user, each.getPath(), new File(perfTestDirectory, FilenameUtils.getPath(each.getPath())));
 		}
 		LOGGER.info("File write is completed in " + perfTestDirectory);
 		return perfTestDirectory;
