@@ -50,7 +50,7 @@
 				</div>
 				
 				<div class="prompt">
-					<select  id="user_timezone"  name="user_locale" style="width:240px">
+					<select  id="user_timezone"  name="user_timezone" style="width:240px">
 					  <#list timezones as eachtimezone>
 						  <option value="${eachtimezone.ID}">${eachtimezone.ID} - ${eachtimezone.displayName}</option>
 				      </#list>
