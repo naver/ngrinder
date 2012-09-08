@@ -705,7 +705,7 @@ public class SingleConsole implements Listener, SampleListener {
 		} else if (val == null) {
 			// if target server is too slow, there is no response in this
 			// second, then the
-			// satatistic data
+			// statistic data
 			// like mean time will be null.
 			// currently, we set these kind of value as 0.
 			return "0";
