@@ -65,7 +65,7 @@ public class AgentControllerDaemon implements Agent {
 	public AgentControllerDaemon() {
 		try {
 			properties = new GrinderProperties(GrinderProperties.DEFAULT_PROPERTIES);
-			agentController = new AgentController(LOGGER, m_eventSyncCondition);
+			agentController = new AgentController(m_eventSyncCondition);
 		} catch (GrinderException e) {
 			throw new NGrinderRuntimeException("Exception occurs while initiating agent controller deamon", e);
 		}

@@ -150,11 +150,13 @@ public class AgentControllerServerDaemon {
 			agentControllerServer.shutdown();
 			if (thread != null && thread.isAlive()) {
 				thread.join(AGENT_CONTROLLER_SERVER_SHUTDOWN_WAITING_TIMEOUT);
-				thread = null;
+				thread.interrupt();
 			}
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException(
 							"Exception occurs while shutting down AgentControllerServerDaemon", e);
+		} finally {
+			thread = null;
 		}
 	}
 

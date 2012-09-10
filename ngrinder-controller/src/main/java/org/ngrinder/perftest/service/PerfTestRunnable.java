@@ -292,7 +292,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		perfTestService.markProgressAndStatus(perfTest, Status.STOP_ON_ERROR, "Stoped by error");
-
 		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 		if (singleConsoleInUse != null) {
 			// need to finish test as error
@@ -318,22 +317,29 @@ public class PerfTestRunnable implements NGrinderConstants {
 			monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 			return;
 		}
-		long startLastingTime = System.currentTimeMillis() - singleConsoleInUse.getStartTime();
+		long duration = System.currentTimeMillis() - singleConsoleInUse.getStartTime();
+
+		// FIXME : There must be a condition for RunCount..		
+		// In case of.. perftest is not ready to finish(all test are not finished..), stop sampling is better..
+		if ("D".equals(perfTest.getThreshold()) && duration > perfTest.getDuration()) {
+			singleConsoleInUse.unregisterSampling();
+		}
 		// because It will take some seconds to start testing sometimes , if the
 		// test is not started
 		// after some seconds, will set it as finished.
-		if (singleConsoleInUse.isAllTestFinished() && startLastingTime > WAIT_TEST_START_SECOND) {
+		if (singleConsoleInUse.isAllTestFinished() && duration > WAIT_TEST_START_SECOND) {
 			// stop target host monitor
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest,
-							((isAbormalFinishing(perfTest)) ? Status.STOP_ON_ERROR : Status.FINISHED), "");
+							((isAbormalFinishing(singleConsoleInUse, perfTest)) ? Status.STOP_ON_ERROR : Status.FINISHED), "");
 			monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 			consoleManager.returnBackConsole(singleConsoleInUse);
 		}
 	}
 
-	public boolean isAbormalFinishing(PerfTest perfTest) {
+	public boolean isAbormalFinishing(SingleConsole singleConsoleInUse, PerfTest perfTest) {
+		// FIXME : There must be a condition for RunCount.. 
 		if ("D".equals(perfTest.getThreshold())) {
-			if ((new Date().getTime() - perfTest.getStartTime().getTime()) < perfTest.getDuration()) {
+			if (singleConsoleInUse.getCurrentRunningTime() < perfTest.getDuration()) {
 				return true;
 			}
 		}

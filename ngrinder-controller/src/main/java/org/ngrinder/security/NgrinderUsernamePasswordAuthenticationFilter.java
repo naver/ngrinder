@@ -28,12 +28,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.ngrinder.user.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
+	@Autowired
+	private UserRepository userRepository;
+	
 	public NgrinderUsernamePasswordAuthenticationFilter() {
 		super();
 	}
@@ -42,11 +47,12 @@ public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswo
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
 		Authentication auth = super.attemptAuthentication(request, response);
-		String timezone = (String) request.getParameter("user_locale");
+		String timezone = (String) request.getParameter("user_timezone");
 		String language = (String) request.getParameter("native_language");
 		SecuredUser user = (SecuredUser) auth.getPrincipal();
 		user.getUser().setTimeZone(timezone);
 		user.getUser().setUserLanguage(language);
+		userRepository.save(user.getUser());
 		return auth;
 	}
 
