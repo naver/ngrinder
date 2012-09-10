@@ -791,11 +791,13 @@ i.collapse{
           });
           
           $("#processes").change(function() {
-			  var processes = $("#processes").val();
-          	  $("#vuserPerAgent").val($("#processes").val() * $("#threads").val());
+			  var $processes = $("#processes");
+          	  $("#vuserPerAgent").val($processes.val() * $("#threads").val());
    		  	  if ( $("#vuserPerAgent").valid()) {
 	              updateVuserGraph(processes);
 	              updateVuserTotal();
+	          } else {
+	        	  console.log("ooo");
 	          }
           });
           
