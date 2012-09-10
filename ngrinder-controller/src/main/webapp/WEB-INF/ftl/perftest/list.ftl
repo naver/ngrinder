@@ -79,7 +79,7 @@
 						<@security.authorize ifAnyGranted="A, S">
 				            <col width="78"> 	
 						</@security.authorize>
-						<col width="118"> 
+						<col width="120"> 
 						<col width="80">
 						<col width="65">
 						<col width="80"> 
@@ -184,8 +184,6 @@
 	</div>
 </div>
 	<script>
-		console.log(${testListPage.totalElements} + "," + ${testListPage.number} + "," + ${testListPage.size});
-			
 		$(document).ready(function() {
 			$("#n_test").addClass("active");
 			
@@ -336,10 +334,9 @@
 		}
 		// Wrap this function in a closure so we don't pollute the namespace
 		(function refreshContent() {
-			var ids = [];
-			$('.perf_test').map(function(i,n) {
-		        	return ids.push($(n).val());
-		  	});
+			var ids = $('.perf_test').map(function() {
+		    	return this.value;
+		  	}).get();
 			if (ids.length == 0) {
 				return;
 			}
