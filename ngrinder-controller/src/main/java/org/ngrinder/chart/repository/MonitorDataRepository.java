@@ -27,6 +27,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
 import org.ngrinder.monitor.controller.domain.MonitorRecoder;
@@ -69,7 +70,8 @@ public class MonitorDataRepository implements MonitorRecoder {
 			javaDataModel.setKey(agentInfo.getIp());
 			javaDataModel.setIp(agentInfo.getIp());
 			javaDataModel.setPort(agentInfo.getPort());
-			javaDataModel.setDisplayName(javaInfoForEach.getDisplayName());
+			String newDispName = StringUtils.abbreviate(javaInfoForEach.getDisplayName(), 200);
+			javaDataModel.setDisplayName(newDispName);
 			javaDataModel.setHeapMaxMemory(javaInfoForEach.getHeapMemory().getMax());
 			javaDataModel.setHeapUsedMemory(javaInfoForEach.getHeapMemory().getUsed());
 			javaDataModel.setNonHeapMaxMemory(javaInfoForEach.getNonHeapMemory().getMax());

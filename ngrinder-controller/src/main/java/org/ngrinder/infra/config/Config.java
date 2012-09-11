@@ -77,7 +77,9 @@ public class Config {
 			home = resolveHome();
 			copyDefaultConfigurationFiles();
 			loadSystemProperties();
-			initLogger();
+			if (isTestMode()) {
+				initLogger();
+			}
 			CoreLogger.LOGGER.info("NGrinder is starting...");
 			loadDatabaseProperties();
 		} catch (IOException e) {
@@ -101,7 +103,7 @@ public class Config {
 		try {
 			configurator.doConfigure(Config.class.getResource("/logback-ngrinder.xml"));
 		} catch (JoranException e) {
-			e.printStackTrace();
+			CoreLogger.LOGGER.error(e.getMessage(), e);
 		}
 	}
 

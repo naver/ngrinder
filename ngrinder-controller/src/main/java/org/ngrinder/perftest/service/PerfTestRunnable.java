@@ -48,7 +48,6 @@ import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.extension.OnTestStartRunnable;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;

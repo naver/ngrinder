@@ -58,8 +58,6 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 
 		SystemMonitoringData systemMonitoringData = (SystemMonitoringData) getMXBean(MonitorConstants.SYSTEM);
 		SystemInfo systemInfo = execute();
-
-		LOG.debug("systemInfo ifno: {}", systemInfo);
 		systemMonitoringData.addNotification(systemInfo);
 		systemMonitoringData.setSystemInfo(systemInfo);
 	}
