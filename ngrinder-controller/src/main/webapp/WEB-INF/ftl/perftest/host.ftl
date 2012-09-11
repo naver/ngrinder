@@ -37,7 +37,7 @@
 </div>
 
 <script>
-	 function validateHostForm() {
+	 /*function validateHostForm() {
 	      $("#ipInput").blur(function () {
 	          var $this = $(this);
 	          if (!checkEmptyByObj($this)) {
@@ -45,19 +45,42 @@
 	          }
 	      });
 	      $("#domainInput").blur(function () {
-	          if (!checkEmptyByID("domainInput")) {
-	              var $this = $(this);
+	          var $this = $(this);
+	          if (!checkEmptyByObj($this)) {
 	              var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$";
 	              var str = $this.val();
 	              markInput($this, checkStringFormat(str, rule), "<@spring.message "perfTest.configuration.addHost.inputTargetDomain"/>");
 	          }
 	      });
-	}
+	}*/
+	function validateHost() {
+	      var ipValue = $("#ipInput");
+          if (!checkEmptyByObj(ipValue)) {
+              if(!isIPByObj(ipValue)){
+                  markInput(ipValue, false, "<@spring.message "perfTest.configuration.addHost.inputTargetIp"/>");
+                  return false;
+              }
+          }
+          var domainValue = $("#domainInput");
+          if (!checkEmptyByObj(domainValue)) {
+              var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$";
+              var str = domainValue.val();
+              if(!checkStringFormat(str, rule)){
+                  markInput(domainValue, false, "<@spring.message "perfTest.configuration.addHost.inputTargetDomain"/>");
+                  return false;
+              }
+          }
+          return true;
+    }
 	  
 	$(document).ready(function() {
-	      validateHostForm();
+	      // validateHostForm();
 		  
 	      $("#addHostBtn").click(function () {
+	          if(!validateHost()){
+	              return;
+	          }
+	          
 	          var content = [];
 	             
 	          if (!checkEmptyByID("domainInput")) {
