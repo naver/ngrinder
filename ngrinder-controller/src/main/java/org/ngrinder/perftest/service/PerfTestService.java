@@ -335,7 +335,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return saved {@link PerfTest}
 	 */
 	@Transactional
-	public PerfTest changePerfTestStatus(PerfTest perfTest, Status status) {
+	public PerfTest changePerfTestStatus(PerfTest perfTest, Status status, String message) {
 		checkNotNull(perfTest);
 		checkNotNull(perfTest.getId(), "perfTest with status should save Id");
 		perfTest.setStatus(checkNotNull(status, "status should not be null"));
@@ -344,6 +344,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			return null;
 		}
 		findOne.setStatus(status);
+		findOne.setLastProgressMessage(message);
 		return perfTestRepository.save(findOne);
 	}
 
