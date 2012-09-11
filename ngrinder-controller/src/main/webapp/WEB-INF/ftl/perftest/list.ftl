@@ -322,14 +322,14 @@
 			$("#ball_" + id).attr("data-original-title", status);
 			$("#ball_" + id).attr("data-content", message);
 			if (stoppable == true) {
-				$("#stop_" + id).parent().show();
+				$("#stop_" + id).show();
 			} else {
-				$("#stop_" + id).parent().hide();
+				$("#stop_" + id).hide();
 			}
 			if (deletable == true) {
-				$("#delete_" + id).parent().show();
+				$("#delete_" + id).show();
 			} else { 
-				$("#delete_" + id).parent().hide();
+				$("#delete_" + id).hide();
 			}
 		}
 		// Wrap this function in a closure so we don't pollute the namespace
