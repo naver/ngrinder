@@ -49,7 +49,6 @@ import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.ConsoleFoundationEx;
 import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
-import net.grinder.console.communication.NGrinderConsoleCommunicationService;
 import net.grinder.console.communication.ProcessControl;
 import net.grinder.console.communication.ProcessControl.Listener;
 import net.grinder.console.communication.ProcessControl.ProcessReports;
@@ -84,9 +83,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Single console for multiple test.
+ * Single console for multiple test. This is the customized version of {@link Console} which grinder
+ * has.
+ * 
  * 
  * @author JunHo Yoon
+ * @since 3.0
  */
 public class SingleConsole implements Listener, SampleListener {
 	private final ConsoleProperties consoleProperties;
@@ -124,9 +126,25 @@ public class SingleConsole implements Listener, SampleListener {
 	private boolean headerAdded = false;
 
 	Map<String, BufferedWriter> fileWriterMap = new HashMap<String, BufferedWriter>();
+	/** Current count of sampling */
 	private long samplingCount = 0;
 	/** The count of ignoring sampling */
 	private int ignoreSampleCount;
+
+	/**
+	 * Currently running thread
+	 */
+	private int runningThread = 0;
+
+	/**
+	 * Currently running process
+	 */
+	private int runningProcess = 0;
+
+	/**
+	 * Currently not finished process count.
+	 */
+	private int currentNotFinishedProcessCount = 0;
 
 	/**
 	 * Constructor with console ip and port.
@@ -403,18 +421,17 @@ public class SingleConsole implements Listener, SampleListener {
 	 * @return true if finished
 	 */
 	public boolean isAllTestFinished() {
-		int workingThreadNum = 0;
-		int notFinishedWorkerCount = 0;
-		for (ProcessReports processReport : this.processReports) {
-			WorkerProcessReport[] reports = processReport.getWorkerProcessReports();
-			for (WorkerProcessReport report : reports) {
-				if (report.getState() != 3) {
-					notFinishedWorkerCount++;
-				}
-				workingThreadNum += report.getNumberOfRunningThreads();
+		synchronized (this) {
+			// Mostly running thread count is ok to determine it's finished.
+			if (this.runningThread == 0) {
+				return true;
+			// However sometimes runningThread is over 0 but all processs is marked as FINISHED.. It can be treated as finished status as well.
+			} else if (this.currentNotFinishedProcessCount == 0) {
+				System.out.println(this.currentNotFinishedProcessCount);
+				return true;
 			}
+			return false;
 		}
-		return notFinishedWorkerCount == 0 || workingThreadNum == 0;
 	}
 
 	public void setTpsValue(double newValue) {
@@ -439,28 +456,9 @@ public class SingleConsole implements Listener, SampleListener {
 		if (samplingCount++ < ignoreSampleCount) {
 			return;
 		}
-		double tps = sampleModel.getTPSExpression().getDoubleValue(intervalStatistics);
-		// If the tps is low that it's can be the agents or scripts goes wrong.
-		if (tps < 0.001) {
-			if (TPS_LESSTHAN_ZREO_TIME == null) {
-				TPS_LESSTHAN_ZREO_TIME = new Date();
-			} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= 120000) {
-				LOGGER.warn("Test has been forced to stop because of tps is less than 0.001 and sustain more than two minitue.");
-				getListeners().apply(new Informer<ConsoleShutdownListener>() {
-					public void inform(ConsoleShutdownListener listener) {
-						listener.readyToStop(StopReason.TOO_LOW_TPS);
-					}
-				});
-				TPS_LESSTHAN_ZREO_TIME = null;
-
-			}
-		} else {
-			TPS_LESSTHAN_ZREO_TIME = null;
-			// only if tps value is not too small ,It should be displayed
-		}
-		setTpsValue(tps);
-
-		statisticData = this.getStatistics();
+		setTpsValue(sampleModel.getTPSExpression().getDoubleValue(intervalStatistics));
+		checkTooLowTps(getTpsValues());
+		updateStatistics();
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) statisticData
 						.get("lastSampleStatistics");
@@ -482,6 +480,7 @@ public class SingleConsole implements Listener, SampleListener {
 
 				for (Entry<String, Object> each : lastStatistic.entrySet()) {
 					if (!headerAdded) {
+						// Peak TPS is not meaningfule for CSV report.
 						if (!each.getKey().contains("Peak_TPS")) {
 							csvHeaderList.add(each.getKey());
 							csvHeader.append(",");
@@ -565,29 +564,71 @@ public class SingleConsole implements Listener, SampleListener {
 			} catch (IOException e) {
 				LOGGER.error("Write report data failed : ", e);
 			}
-			if (tpsSum / 2 < errors) {
-				if (ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME == null) {
-					ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME = new Date();
-				} else if (new Date().getTime() - ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME.getTime() >= 10000) {
-					LOGGER.warn("Test has been forced to stop because of error is more than half of total tps and sustain more than ten second.");
-					getListeners().apply(new Informer<ConsoleShutdownListener>() {
-						public void inform(ConsoleShutdownListener listener) {
-							listener.readyToStop(StopReason.TOO_MANY_ERRORS);
-						}
-					});
-					ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME = null;
-				}
-			}
+			// In case of error..
+			checkTooManyError(tpsSum, errors);
 		}
 
 	}
 
 	/**
-	 * To get statistics data when test is running
+	 * Check if the TPS is too low. the TPS is lower than 0.001 for 2 minutes, It notifies it to the
+	 * {@link ConsoleShutdownListener}
+	 * 
+	 * @param tps
+	 *            current TPS
 	 */
-	private Map<String, Object> getStatistics() {
+	private void checkTooLowTps(double tps) {
+		// If the tps is low that it's can be the agents or scripts goes wrong.
+		if (tps < 0.001) {
+			if (TPS_LESSTHAN_ZREO_TIME == null) {
+				TPS_LESSTHAN_ZREO_TIME = new Date();
+			} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= 120000) {
+				LOGGER.warn("Test has been forced to stop because of tps is less than 0.001 and sustain more than two minitue.");
+				getListeners().apply(new Informer<ConsoleShutdownListener>() {
+					public void inform(ConsoleShutdownListener listener) {
+						listener.readyToStop(StopReason.TOO_LOW_TPS);
+					}
+				});
+				TPS_LESSTHAN_ZREO_TIME = null;
+
+			}
+		} else {
+			TPS_LESSTHAN_ZREO_TIME = null;
+			// only if tps value is not too small ,It should be displayed
+		}
+	}
+
+	/**
+	 * Check if too many error occurs. If the half of total transaction is error for 10 sec. It
+	 * notifies the {@link ConsoleShutdownListener}
+	 * 
+	 * @param tpsSum
+	 *            sum of tps
+	 * @param errors
+	 *            count of errors.
+	 */
+	private void checkTooManyError(double tpsSum, double errors) {
+		if (tpsSum / 2 < errors) {
+			if (ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME == null) {
+				ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME = new Date();
+			} else if (new Date().getTime() - ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME.getTime() >= 10000) {
+				LOGGER.warn("Test has been forced to stop because of error is more than half of total tps and sustain more than ten second.");
+				getListeners().apply(new Informer<ConsoleShutdownListener>() {
+					public void inform(ConsoleShutdownListener listener) {
+						listener.readyToStop(StopReason.TOO_MANY_ERRORS);
+					}
+				});
+				ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME = null;
+			}
+		}
+	}
+
+	/**
+	 * To update statistics data while test is running
+	 */
+	private void updateStatistics() {
 		Map<String, Object> result = new HashMap<String, Object>();
-		result.put("test_time", (new Date().getTime() - getStartTime()) / 1000);
+		result.put("test_time", getCurrentRunningTime() / 1000);
 
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
@@ -599,14 +640,13 @@ public class SingleConsole implements Listener, SampleListener {
 				Map<String, Object> lastStatistics = new HashMap<String, Object>();
 
 				Test test = modelIndex.getTest(i);
+
 				statistics.put("testNumber", test.getNumber());
 				// remove description from statistic, otherwise, it will be
 				// saved in report data.
 				// and the character like ',' in this field will affect the csv
 				// file too.
-				// statistics.put("testDescription", test.getDescription());
 				lastStatistics.put("testNumber", test.getNumber());
-				// lastStatistics.put("testDescription", test.getDescription());
 
 				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
 				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
@@ -635,16 +675,16 @@ public class SingleConsole implements Listener, SampleListener {
 		result.put("totalStatistics", totalStatistics);
 		result.put("cumulativeStatistics", cumulativeStatistics);
 		result.put("lastSampleStatistics", lastSampleStatistics);
-		result.put("tpsChartData", this.getTpsValues());
+		result.put("tpsChartData", getTpsValues());
 		result.put("peakTpsForGraph", this.peakTpsForGraph);
+		synchronized (this) {
+			result.put(GrinderConstants.P_PROCESS, this.runningProcess);
+			result.put(GrinderConstants.P_THREAD, this.runningThread);
+			result.put("success", !isAllTestFinished());
+		}
 
-		MutablePicoContainer container = (MutablePicoContainer) consoleFoundation.getContainer();
-		ProcessControl processControl = (ProcessControl) container.getComponent(ProcessControl.class);
-		NGrinderConsoleCommunicationService.collectWorkerAndThreadInfo(processControl, result);
-
-		result.put("success", !this.isAllTestFinished());
-
-		return result;
+		// Finally overwrite.. current one.
+		this.statisticData = result;
 	}
 
 	private static Object getRealDoubleValue(Double doubleValue) {
@@ -654,28 +694,85 @@ public class SingleConsole implements Listener, SampleListener {
 		return doubleValue;
 	}
 
+	/**
+	 * Listener interface to detect console shutdown condition.
+	 * 
+	 * @author JunHo Yoon
+	 */
+	public interface ConsoleShutdownListener {
+		/**
+		 * Called when the console should be shutdowned.
+		 * 
+		 * @param stopReason
+		 *            the reason of shutdown..
+		 */
+		void readyToStop(StopReason stopReason);
+	}
+
+	/**
+	 * get the list of added {@link ConsoleShutdownListener}.
+	 * 
+	 * @return the list of added {@link ConsoleShutdownListener}.
+	 * @see ConsoleShutdownListener
+	 */
 	public ListenerSupport<ConsoleShutdownListener> getListeners() {
 		return this.m_shutdownListeners;
 	}
 
+	/**
+	 * Add {@link ConsoleShutdownListener} to get notified when console is shutdowned.
+	 * 
+	 * @param listener
+	 *            listener to be used.
+	 */
 	public void addListener(ConsoleShutdownListener listener) {
 		m_shutdownListeners.add(listener);
 	}
 
+	/**
+	 * Update process status of agents. In this method
+	 */
 	@Override
 	public void update(ProcessReports[] processReports) {
 		synchronized (m_eventSyncCondition) {
 			this.processReports = processReports;
+			// The reason I passed porcessReport as parameter here is to prevent the synchronization
+			// problem.
+			updateCurrentProcessAndThread(processReports);
 			m_eventSyncCondition.notifyAll();
 		}
 	}
 
-	public interface ConsoleShutdownListener {
-		void readyToStop(StopReason stopReason);
+	/**
+	 * Update current processes and threads
+	 * 
+	 * @param processReports
+	 *            ProcessReports array.
+	 */
+	private void updateCurrentProcessAndThread(ProcessReports[] processReports) {
+		int notFinishedWorkerCount = 0;
+		int processCount = 0;
+		int threadCount = 0;
+		// Per agents
+		for (ProcessReports agentReport : processReports) {
+			// Per process
+			processCount += processReports.length;
+			for (WorkerProcessReport processReport : agentReport.getWorkerProcessReports()) {
+				// There might be the processes which is not finished but no running thread in it.
+				if (processReport.getState() != 3) {
+					notFinishedWorkerCount++;
+				}
+				threadCount += processReport.getNumberOfRunningThreads();
+			}
+		}
+		synchronized (this) {
+			this.runningProcess = processCount;
+			this.runningThread = threadCount;
+			this.currentNotFinishedProcessCount = notFinishedWorkerCount;
+		}
 	}
 
 	private void writeReportData(String name, String value) throws IOException {
-
 		try {
 			BufferedWriter bw = fileWriterMap.get(name);
 			if (bw == null) {
@@ -713,29 +810,58 @@ public class SingleConsole implements Listener, SampleListener {
 		return String.valueOf(val);
 	}
 
-	public File getReportPath() {
-		return reportPath;
-	}
-
+	/**
+	 * Get the statistics data. This method returns the map whose key is string and it's mapped to
+	 * specific value. Please refer {@link #updateStatistics()}
+	 * 
+	 * @return map which contains statistics data
+	 */
 	public Map<String, Object> getStatictisData() {
 		return this.statisticData;
 	}
 
-	public void setReportPath(File reportDir) {
-		checkNotNull(reportDir, "report folder should not be empty!").mkdirs();
-		this.reportPath = reportDir;
+	/**
+	 * Get report path
+	 * 
+	 * @return report path
+	 */
+	public File getReportPath() {
+		return reportPath;
 	}
 
+	/**
+	 * Set report path
+	 * 
+	 * @param reportPath
+	 *            path in which report will be stored.
+	 */
+	public void setReportPath(File reportPath) {
+		checkNotNull(reportPath, "report folder should not be empty!").mkdirs();
+		this.reportPath = reportPath;
+	}
+
+	/**
+	 * Send stop message to attached agents to shutdown.
+	 */
 	public void sendStopMessageToAgents() {
 		getConsoleComponent(ProcessControl.class).stopAgentAndWorkerProcesses();
 	}
 
+	/**
+	 * Start sampling with ignore count.
+	 * 
+	 * @param ignoreSampleCount
+	 *            the count how many sample will be ignored.
+	 */
 	public void startSampling(int ignoreSampleCount) {
 		this.ignoreSampleCount = ignoreSampleCount;
 		sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 		sampleModel.addTotalSampleListener(this);
 	}
 
+	/**
+	 * Stop sampling
+	 */
 	public void unregisterSampling() {
 		SampleModel sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 		sampleModel.reset();
