@@ -1,41 +1,7 @@
 var tooltips = {
-	project_detail_processes:"Agent가 시작하기 위한 작업 프로세스의 수",
-	project_detail_threads:"각 작업 프로세스별 작업 쓰레드의 수",
-	project_detail_duration:"실행되어야 하는 각 작업 프로세스의 최대 시간 (밀리초). grinder.duration은 grinder.run과 함께 지정이 가능하며, 실행 시간 또는 실행 회수가 초과되면 정지됩니다.",
-	project_detail_runcnt:"각 쓰레드별 수행되는 테스트 스크립트 실행 개수. 0은 제한 없이 실행한다는 의미이며, 테스트 실행을 제어하기 위해 사용될 수 있다.",
-	project_detail_ignoreSampleCount:"테스트 동안 무시한 샘플의 개수.",
-	project_detail_sampleInterval:"Agent로부터 통계 정보를 수집하기 위해 소요된 시간(밀리초).",
-	project_detail_logDirectory:"로그파일을 위한 디렉토리이며, 없을 경우 생성된다.",
-	project_detail_useConsole:"콘솔 사용여부, 사용하지 않을 경우 Agent와 작업 프로세스는 통계 정보를 콘솔로 보내지 않는다.",
-	project_detail_reportTimesConsole:"타이밍 정보를 콘솔로 전송할 것인지 설정하며 사용하지 않을 경우 타이밍 정보이외의 정보만 전송된다.",
-	project_detail_debugSingleProcess:"Agent 프로세스에서 쓰레드를 구동하여 프로세스를 시뮬레이션하여 테스트. 주로 개발시 디버깅 용도로 사용됨.",
-	project_detail_instrumentation:"고급 사용자만 사용, 새로운 instrumentation 엔진을 사용한다.",
-	project_detail_reportConsoleInterval:"고급 사용자만 사용, 각 작업 프로세스는 콘솔로 갱신을 전송하는 기간.",
-	project_detail_sleepTimeVariation:"스크립트의 sleep 시간 변수",
-	project_detail_sleepTimeFactor:"쓰레드 sleep 시간 팩터는 스크립트 안에 있는 grinder.sleep() 메소드에만 영향을 미친다.",
-	project_detail_debugSingleProcessshares:"고급 사용자만 사용, grinder.debug.singleprocess = true 이면, 작업 엔진 사이에 공유되어야 하는 클래스들을 코머(,)로 구분된 클래스명 목록으로 정의한다. 클래스명은 와일드카드(*)를 사용할 수 있다.",
-	project_detail_hostId:"로그 파일명과 로그에서 사용되는 호스트 문자열을 교체한다.",
-	project_detail_consoleHost:"Grinder 콘솔 주소 또는 호스트명",
-	project_detail_consolePort:"Grinder 콘솔 포트 번호",
-	project_detail_jvm:"작업 프로세스를 위한 별도의 JVM을 사용 합니다.",
-	project_detail_jvmArguments:"JVM 워크 프로세스를 위한 추가 파라미터를 설정합니다.",
-	project_detail_jvmClasspath:"JVM의 작업 프로세스를 위한 classpath를 조정한다. 테스트 스크립트를 추가하여 실행해야할 경우 사용되는 서드파티 jar은 여기에 설정된 classpath에 추가할 수 있으며, Grinder 프로세스가 실행될 경우 자동으로 로드된다.",
-	project_detail_sendMail:"테스트가 종료되었을 때 테스트 유저에게 보고서 메일을 보냅니다.",
-	reservation_sendMail:"종료시간이 다가올 경우 예약한 사용자에게 경고 메일을 보냅니다."
+	sample_tooltip_message:"sample tooltip message",
 };
 
-var advances = {
-	project_detail_processes:"CPU 개수와 동일해야 합니다.",
-	project_detail_threads:"추천값 15.\n테스트 응답 시간과 Agent의 로드와 관련이 있습니다.\nAgent의 load 값이 높지 않으면, tread count를 증가시킬 수 있습니다.",
-	project_detail_runcnt:"너무 작은 값은 설정할 수 없습니다. 이 경우, 테스트는 콘솔이 통계 정보를 수집하기 이전에 종료될 것입니다.",
-	project_detail_sampleInterval:"기본값 1,000 밀리초.",
-	project_detail_logDirectory:"'grinder_logs'로 자동으로 생성될 수 있습니다.",
-	project_detail_useConsole:"nGrinder에서 TRUE가 되어야 합니다.",
-	project_detail_debugSingleProcess:"개발자 디버깅 전용이므로 TRUE로 설정할 수 없습니다.",
-	project_detail_instrumentation:"고급 사용 전용이므로 TRUE로 설정할 수 없습니다.",
-	project_detail_consoleHost:"수동으로 설정할 수 없으며 자동으로 찾을 수 있습니다.",
-	project_detail_consolePort:"수동으로 설정할 수 없으며 자동으로 찾을 수 있습니다.",
-	project_detail_jvm:"시스템 Java 경로만 사용할 수 있습니다. 변경하시려면 관리자와 상의하세요.",
-	project_detail_jvmArguments:"설정할 필요가 없습니다.",
-	project_detail_jvmClasspath:"설정할 필요가 없습니다."
+var advices = {
+	sample_advice_message:"sample advice message",
 };
