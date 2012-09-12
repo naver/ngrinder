@@ -201,21 +201,22 @@ public class ConsoleManager {
 		}
 		synchronized (this) {
 			try {
-				console.unregisterSampling();
 				console.sendStopMessageToAgents();
 			} catch (Exception e) {
 				LOG.error("Exception is occured while shuttdowning console in returnback process for test {}.", testIdentifier, e);
 				// But the port is getting back.
-				// FIXME : Is it OK?
 			} finally {
+				// This is very careful implmenetation.. even though we
 				try {
 					// Wait console is completely shutdown...
-					Thread.sleep(3000);
-					console.shutdown();
+					console.waitUntilAllAgentDisconnected();
 				} catch (Exception e) {
 					LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.", testIdentifier, e);
-					// But the port is getting back.
-					// FIXME : Is it OK?
+				}
+				try {
+					console.shutdown();
+				} catch(Exception e){
+					LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.", testIdentifier, e);
 				}
 			}
 			ConsoleEntry consoleEntry = new ConsoleEntry(console.getConsolePort());

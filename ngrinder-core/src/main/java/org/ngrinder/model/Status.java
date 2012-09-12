@@ -58,7 +58,7 @@ public enum Status {
 	ABNORMAL_TESTING(StatusCategory.TESTING),
 	/** Test finished. */
 	FINISHED(StatusCategory.FINISHED),
-	/** Stopped by error. */
+	/** Test finished. but contains lots of error*/
 	STOP_ON_ERROR(StatusCategory.STOP),
 	/** Test cancel. */
 	CANCELED(StatusCategory.STOP),

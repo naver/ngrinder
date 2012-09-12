@@ -121,7 +121,7 @@ i.collapse{
 								<#if test??> 
 									<span id="teststatus_pop_over"
 										rel="popover" data-content='${"${test.progressMessage}/n${test.lastProgressMessage}"?replace('/n', '<br>')?html}'  
-											data-original-title="<@spring.message "${test.status.springMessageKey}"/>" type="toggle">
+											data-original-title="<@spring.message "${test.status.springMessageKey}"/>" type="toggle" placement="bottom">
 										<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
 									</span> 
 								</#if>
@@ -441,11 +441,22 @@ i.collapse{
 										</div>
 										<hr>
 										<div class="control-group">
-											<label class="control-label"> <@spring.message "perfTest.table.duration"/> </label>
-											<div class="controls">
-												<span>${(test.durationStr)!}</span>
-												<code>HH:MM:SS</code>
-											</div>
+											<#if test??>
+												<#if test.threshold == "D">
+													<label class="control-label"> <@spring.message "perfTest.table.duration"/> </label>
+													<div class="controls">
+														<span>${(test.durationStr)!}</span>
+														<code>HH:MM:SS</code>
+													</div>
+												<#else>
+													<label class="control-label"> <@spring.message "perfTest.configuration.runCount"/> </label>
+													<div class="controls">
+														<span>${(test.runCount)!}</span>
+													</div>
+												</#if>
+											</#if>
+											
+											
 										</div>
 										<div class="control-group">
 											<label for="ignoreSampleCount" class="control-label"><@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
@@ -996,7 +1007,7 @@ i.collapse{
 
 	              $("#process_data").text(curRunningProcesses);
 	              $("#thread_data").text(curRunningThreads);
-	              $("#running_time").text(curRunningTime);
+	              $("#running_time").text(showRunTime(curRunningTime));
 				  peakTps = curPeakTps;
 	              test_tps_data.enQueue(curTps);
 	          } else {
@@ -1041,7 +1052,7 @@ i.collapse{
 	  
 
 	  function updateStatus(id, status_type, status_name, icon, deletable, stoppable, message) {
-	      if (status_type == "FINISHED") {
+	      if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR") {
 	          isFinished = true;
 	      }
 	      if ($("#testStatusType").val() == status_type) {
@@ -1059,7 +1070,7 @@ i.collapse{
 
 	      if (status_type == "TESTING") {
 	          displayCfgAndTestRunning();
-	      } else if (status_type == "FINISHED" || status_type == "STOP") {
+	      } else if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR" || status_type == "STOP") {
 	          displayCfgAndTestReport();
 	      } else {
 	          displayCfgOnly();
