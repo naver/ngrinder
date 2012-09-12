@@ -147,7 +147,9 @@
 										<#if test.threshold == "D">
 											${(test.durationStr)!}</td>
 										<#else>
-											${(test.runCount)!}</td>
+											${(test.runCount)!}
+											<@spring.message "perfTest.table.runcount"/>
+											</td>
 										</#if>
 									<td>${(test.tps)!}</td>  
 									<td>${(test.meanTestTime)!0}</td>

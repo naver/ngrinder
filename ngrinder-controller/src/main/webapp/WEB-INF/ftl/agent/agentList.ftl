@@ -9,7 +9,7 @@
 	<#include "../common/navigator.ftl">
 	<div class="container">
 		<div class="page-header pageHeader" style="margin-bottom: 10px">
-			<h3><@spring.message "agent.managerment.title"/></h3>
+			<h3><@spring.message "agent.management.title"/></h3>
 		</div>
 		<div class="well searchBar">
 			<input type="text" style="visibility:hidden; margin:0">

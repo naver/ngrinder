@@ -76,7 +76,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
@@ -407,13 +406,12 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	@Transactional
-	public void markPerfTestConsoleStart(PerfTest perfTest, int consolePort, Integer testTrialCount) {
+	public void markPerfTestConsoleStart(PerfTest perfTest, int consolePort) {
 		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
 		if (findOne == null) {
 			return;
 		}
 		findOne.setPort(consolePort);
-		findOne.setTestTrialCount(++testTrialCount);
 		findOne.setStatus(Status.START_CONSOLE_FINISHED);
 		findOne.setLastProgressMessage("Console is started on port " + consolePort);
 		perfTestRepository.save(findOne);

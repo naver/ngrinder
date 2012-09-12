@@ -9,20 +9,20 @@
 			style="margin-left: 10px">
 			<fieldset>
 				<div class="control-group">
-					<label for="agentInput" class="control-label control-label-1"><@spring.message "perfTest.table.tps"/></label>
+					<label for="agentInput" class="control-label control-label-1"><@spring.message "perfTest.report.tps"/></label>
 					<div class="controls">
 						<strong>Total ${(test.tps)!}</strong>
 					</div>
 				</div>
 				<div class="control-group">
-					<label for="agentInput" class="control-label"><@spring.message "perfTest.table.meantime"/></label>
+					<label for="agentInput" class="control-label"><@spring.message "perfTest.report.meantime"/></label>
 					<div class="controls">
 						${(test.meanTestTime)!}
 						<code>MS</code>
 					</div>
 				</div>
 				<div class="control-group">
-					<label for="agentInput" class="control-label"><@spring.message "perfTest.detail.peakTPS"/></label>
+					<label for="agentInput" class="control-label"><@spring.message "perfTest.report.peakTPS"/></label>
 					<div class="controls">${(test.peakTps)!}</div>
 				</div>
 				<div class="control-group">
@@ -30,7 +30,7 @@
 					<div class="controls">${(test.tests)!}</div>
 				</div>
 				<div class="control-group">
-					<label for="agentInput" class="control-label"><@spring.message "perfTest.table.errors"/></label>
+					<label for="agentInput" class="control-label"><@spring.message "perfTest.report.errors"/></label>
 					<div class="controls">${(test.errors)!}</div>
 				</div>
 			</fieldset>

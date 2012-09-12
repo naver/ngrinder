@@ -65,16 +65,14 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Enumerated(EnumType.STRING)
 	private Status status = Status.READY;
 
-	
-	
 	/** The sampling Interval value, default to 1000ms. */
-//	private Integer sampleInterval = 1000;
+	// private Integer sampleInterval = 1000;
 
 	/** ignoreSampleCount value, default to 0. */
 	private Integer ignoreSampleCount;
 
 	/** ignoreSampleCount value, default to 0, 0 means collect forever. */
-//	private Integer collectSampleCount = 0;
+	// private Integer collectSampleCount = 0;
 
 	/** the scheduled time of this test. */
 	@Index(name = "scheduled_time_index")
@@ -94,11 +92,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/** The send mail code. */
 	private boolean sendMail;
 
-
 	@Type(type = "true_false")
 	/** Use rampup or not. */
 	private boolean useRampUp;
-	
+
 	/** The threshold code, R for run count; D for duration. */
 	private String threshold;
 
@@ -141,6 +138,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/** Console port for this test. This is the identifier for console */
 	private Integer port;
 
+	@Deprecated
 	private Integer testTrialCount = 0;
 
 	@Enumerated(EnumType.STRING)
@@ -171,6 +169,16 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public String getTestIdentifier() {
 		return "perftest_" + getId() + "_" + getLastModifiedUser().getUserId();
+	}
+
+	/**
+	 * Get total required run count. This is caculated by multiplying
+	 * agentcount, threads, processes, runcount.
+	 * 
+	 * @return runcount
+	 */
+	public long getTotalRunCount() {
+		return getAgentCount() * getThreads() * getProcesses() * (long) getRunCount();
 	}
 
 	public String getTestName() {
@@ -240,7 +248,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public String getScriptNameInShort() {
 		return StringUtils.abbreviate(getScriptName(), 30);
 	}
-	
+
 	public String getDescription() {
 		return StringUtils.abbreviate(description, 2040);
 	}
@@ -486,11 +494,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public String getLastProgressMessage() {
 		return StringUtils.defaultIfEmpty(lastProgressMessage, "");
 	}
-	
+
 	public void clearLstProgressMessage() {
 		this.lastProgressMessage = "";
 	}
-	
+
 	public void setLastProgressMessage(String lastProgressMessage) {
 		if (StringUtils.isEmpty(lastProgressMessage)) {
 			return;
@@ -527,7 +535,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void clearMessages() {
 		clearLstProgressMessage();
-		setProgressMessage(""); 
+		setProgressMessage("");
 	}
 
 	public boolean isUseRampUp() {

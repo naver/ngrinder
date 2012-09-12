@@ -40,6 +40,7 @@ import net.grinder.console.model.ConsoleProperties;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.perftest.model.NullSingleConsole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -201,12 +202,13 @@ public class ConsoleManager {
 		}
 		synchronized (this) {
 			try {
+				console.unregisterSampling();
 				console.sendStopMessageToAgents();
 			} catch (Exception e) {
 				LOG.error("Exception is occured while shuttdowning console in returnback process for test {}.", testIdentifier, e);
 				// But the port is getting back.
 			} finally {
-				// This is very careful implmenetation.. even though we
+				// This is very careful implementation.. 
 				try {
 					// Wait console is completely shutdown...
 					console.waitUntilAllAgentDisconnected();
@@ -219,12 +221,16 @@ public class ConsoleManager {
 					LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.", testIdentifier, e);
 				}
 			}
-			ConsoleEntry consoleEntry = new ConsoleEntry(console.getConsolePort());
+			int consolePort = console.getConsolePort();
+			if (consolePort == 0) {
+				return;
+			}
+			ConsoleEntry consoleEntry = new ConsoleEntry(consolePort);
 
 			if (!consoleQueue.contains(consoleEntry)) {
 				consoleQueue.add(consoleEntry);
 				if (!getConsoleInUse().contains(console)) {
-					LOG.error("Try to return back the not used console on {} port", console.getConsolePort());
+					LOG.error("Try to return back the not used console on {} port", consolePort);
 				}
 				getConsoleInUse().remove(console);
 			}
@@ -254,7 +260,7 @@ public class ConsoleManager {
 	 * 
 	 * @param port
 	 *            port which will be checked against
-	 * @return {@link SingleConsole} instance if found. Otherwise, null
+	 * @return {@link SingleConsole} instance if found. Otherwise, {@link NullSingleConsole} instance.
 	 */
 	public SingleConsole getConsoleUsingPort(int port) {
 		for (SingleConsole each : consoleInUse) {
@@ -262,7 +268,7 @@ public class ConsoleManager {
 				return each;
 			}
 		}
-		return null;
+		return new NullSingleConsole();
 	}
 
 }

@@ -193,7 +193,8 @@ public class AgentController implements Agent {
 							consoleCommunication.start();
 							m_logger.info("connected to agent controller server at {}", connector.getEndpointAsString());
 						} catch (CommunicationException e) {
-							m_logger.error(e.getMessage(), e);
+							m_logger.error("Error while connecting to {} : {}" , connector.getEndpointAsString(), e.getMessage());
+							m_logger.debug(e.getMessage(), e);
 							return;
 						}
 					}
@@ -206,7 +207,7 @@ public class AgentController implements Agent {
 						if (m_agentControllerServerListener.received(AgentControllerServerListener.START)) {
 							startMessage = m_agentControllerServerListener.getLastStartGrinderMessage();
 
-							m_logger.info("agent start message is revcieved from console " + startMessage);
+							m_logger.info("agent start message is revcieved from console {}", startMessage);
 							continue;
 						} else {
 							break; // Another message, check at end of outer
