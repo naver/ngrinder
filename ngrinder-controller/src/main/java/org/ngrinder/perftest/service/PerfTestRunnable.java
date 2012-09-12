@@ -89,9 +89,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	@Autowired
 	private Config config;
-	// wait 10 seconds until agents start the test running.
-	private static final int WAIT_TEST_START_SECOND = 50000;
-
+	
 	/**
 	 * Scheduled method for test execution.
 	 */
@@ -115,8 +113,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 		// schedule test
 		Date schedule = runCandidate.getScheduledTime();
-		if (schedule != null
-						&& !DateUtil.compareDateEndWithMinute(schedule, new Date(System.currentTimeMillis()))) {
+		if (schedule != null && !DateUtil.compareDateEndWithMinute(schedule, new Date(System.currentTimeMillis()))) {
 			// this test project is reserved,but it isn't yet going to run test
 			// right now.
 			return;
@@ -164,10 +161,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 		}
 	}
 
-
 	/**
 	 * Start console.
-	 * @param perfTest perftest
+	 * 
+	 * @param perfTest
+	 *            perftest
 	 * @return started console console
 	 */
 	SingleConsole startConsole(PerfTest perfTest) {
@@ -177,32 +175,34 @@ public class PerfTestRunnable implements NGrinderConstants {
 		SingleConsole singleConsole = consoleManager.getAvailableConsole(perfTest.getTestIdentifier(), consoleProperty);
 		// increase trial count
 		singleConsole.start();
-		perfTestService.markPerfTestConsoleStart(perfTest, singleConsole.getConsolePort(),
-						perfTest.getTestTrialCount());
+		perfTestService.markPerfTestConsoleStart(perfTest, singleConsole.getConsolePort(), perfTest.getTestTrialCount());
 		return singleConsole;
 	}
 
 	/**
 	 * Prepare files to be distributed.
 	 * 
-	 * @param perfTest perftest
+	 * @param perfTest
+	 *            perftest
 	 */
 	void prepareFiles(PerfTest perfTest) {
 		// Prepare the files before the grinder properties are configured
 		perfTestService.prepareDistribution(perfTest);
 	}
-	
+
 	/**
-	 * Distribute files 
+	 * Distribute files
 	 * 
-	 * @param perfTest perftest
-	 * @param grinderProperties grinder properties
-	 * @param singleConsole console
+	 * @param perfTest
+	 *            perftest
+	 * @param grinderProperties
+	 *            grinder properties
+	 * @param singleConsole
+	 *            console
 	 */
 	void distributeFileOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		// Distribute files
-		perfTestService.changePerfTestStatus(perfTest, DISTRIBUTE_FILES,
-						"All necessary files are distributing.");
+		perfTestService.changePerfTestStatus(perfTest, DISTRIBUTE_FILES, "All necessary files are distributing.");
 		// the files have prepared before
 		singleConsole.distributeFiles(perfTestService.getPerfTestDirectory(perfTest));
 		perfTestService.changePerfTestStatus(perfTest, DISTRIBUTE_FILES_FINISHED,
@@ -210,25 +210,26 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Start agents 
-	 * @param perfTest perftest
-	 * @param grinderProperties grinder properties
-	 * @param singleConsole console
+	 * Start agents
+	 * 
+	 * @param perfTest
+	 *            perftest
+	 * @param grinderProperties
+	 *            grinder properties
+	 * @param singleConsole
+	 *            console
 	 */
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
-		perfTestService.changePerfTestStatus(perfTest, START_AGENTS, perfTest.getAgentCount()
-						+ " agents are starting.");
+		perfTestService.changePerfTestStatus(perfTest, START_AGENTS, perfTest.getAgentCount() + " agents are starting.");
 		agentManager.runAgent(singleConsole, grinderProperties, perfTest.getAgentCount());
 		singleConsole.waitUntilAgentConnected(perfTest.getAgentCount());
 		perfTestService.changePerfTestStatus(perfTest, START_AGENTS_FINISHED, perfTest.getAgentCount()
 						+ " agents are started.");
 	}
 
-	
-	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties,
-					final SingleConsole singleConsole) {
+	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties, final SingleConsole singleConsole) {
 		// start target monitor
-		
+
 		for (OnTestStartRunnable run : pluginManager.getEnabledModulesByClass(OnTestStartRunnable.class)) {
 			run.start(perfTest, perfTestService, config.getVesion());
 		}
@@ -259,13 +260,14 @@ public class PerfTestRunnable implements NGrinderConstants {
 		perfTestService.setRecodingStarting(perfTest, startTime);
 		perfTestService.changePerfTestStatus(perfTest, TESTING, "The test is started.");
 	}
-	
 
 	/**
 	 * Run plugins' test finish methods
 	 * 
-	 * @param perfTest PerfTest 
-	 * @param reason the reason of test finish..
+	 * @param perfTest
+	 *            PerfTest
+	 * @param reason
+	 *            the reason of test finish..
 	 * @see OnTestStartRunnable
 	 */
 	public void notifyFinsish(PerfTest perfTest, StopReason reason) {
@@ -275,12 +277,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Scheduled method for test finish.
-	 * There are three types of finish. <br/>
+	 * Scheduled method for test finish. There are three types of finish. <br/>
 	 * <ul>
-	 * 	<li>Abnormal test finish : when TPS is too low or too many errors occurs</li>
-	 *  <li>User requested test finish : when user requested to finish test from the UI</li> 
-	 *  <li>Normal test finish : when test goes over the planned duration and run count.</li>
+	 * <li>Abnormal test finish : when TPS is too low or too many errors occurs</li>
+	 * <li>User requested test finish : when user requested to finish test from the UI</li>
+	 * <li>Normal test finish : when test goes over the planned duration and run count.</li>
 	 * </ul>
 	 */
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
@@ -303,9 +304,22 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 		for (PerfTest each : perfTestService.getTestingPerfTest()) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
-			doFinish(each, consoleUsingPort);
-			notifyFinsish(each, StopReason.NORMAL);
+			if (isTestAboutToFinish(each, consoleUsingPort)) {
+				doFinish(each, consoleUsingPort);
+				notifyFinsish(each, StopReason.NORMAL);
+			}
 		}
+	}
+
+	private boolean isTestAboutToFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+		if ("D".equals(perfTest.getThreshold()) && singleConsoleInUse.getCurrentRunningTime() > (perfTest.getDuration() + 5000)) {
+			return true;
+		} else if ("R".equals(perfTest.getThreshold())
+						&& singleConsoleInUse.getCurrentTestsCount() >= perfTest.getRunCount()) {
+			LOG.debug("Current : {}, Planned : {}", singleConsoleInUse.getCurrentTestsCount(), perfTest.getRunCount());
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -318,8 +332,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	public void doStop(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		perfTestService.updatePerfTestAfterTestFinish(perfTest);
-		perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED,
-						"Stop requested by user");
+		perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED, "Stop requested by user");
 		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 		if (singleConsoleInUse != null) {
 			consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
@@ -361,29 +374,19 @@ public class PerfTestRunnable implements NGrinderConstants {
 			// need to finish test as error
 			perfTestService.changePerfTestStatus(perfTest, Status.STOP_ON_ERROR,
 							"Console is not availble for this test.");
-			monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 			return;
 		}
-		// FIXME : There must be a condition for RunCount..
-		// In case of.. perftest is not ready to finish(all test are not finished..), stop sampling
-		// is better..
-		if ("D".equals(perfTest.getThreshold())
-						&& singleConsoleInUse.getCurrentRunningTime() > perfTest.getDuration()) {
-			singleConsoleInUse.unregisterSampling();
+		singleConsoleInUse.unregisterSampling();
+		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
+		LOG.debug("PerfTest {} status - currentRunningTime {} ", perfTest.getId(),
+						singleConsoleInUse.getCurrentRunningTime());
+		// stop target host monitor
+		if (singleConsoleInUse.isTooManyError()) {
+			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.FINISHED_BUT_ERRORS, "The test is finished. but contains a lot of errors");
+		} else {
+			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.FINISHED, "The test is finished successfully");
 		}
-		// because It will take some seconds to start testing sometimes , if the
-		// test is not started
-		// after some seconds, will set it as finished.
-
-		LOG.debug("PerfTest {} status - finished {} - currentRunningTime {} ",
-						new Object[] { perfTest.getId(), singleConsoleInUse.isAllTestFinished(),
-								singleConsoleInUse.getCurrentRunningTime() });
-		if (singleConsoleInUse.isAllTestFinished()
-						&& singleConsoleInUse.getCurrentRunningTime() > WAIT_TEST_START_SECOND) {
-			// stop target host monitor
-			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.FINISHED, "");
-			monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
-			consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
-		}
+		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
+		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
 }

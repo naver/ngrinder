@@ -76,7 +76,7 @@ public interface NGrinderConstants {
 	/**
 	 * Initial Max run count.
 	 */
-	public static final int MAX_RUN_COUNT = 1000;
+	public static final int MAX_RUN_COUNT = 100000;
 
 	/**
 	 * Maximum waiting seconds until all agents are connected.

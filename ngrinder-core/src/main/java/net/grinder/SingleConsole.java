@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
@@ -72,6 +73,7 @@ import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.thread.Condition;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableDouble;
@@ -94,7 +96,7 @@ public class SingleConsole implements Listener, SampleListener {
 	private Thread thread;
 	private ConsoleFoundationEx consoleFoundation;
 	public static final Resources RESOURCE = new ResourcesImplementation("net.grinder.console.common.resources.Console");
-	public static final Logger LOGGER = LoggerFactory.getLogger(RESOURCE.getString("shortTitle"));
+	public static final Logger LOGGER = LoggerFactory.getLogger(SingleConsole.class);
 
 	private static final String REPORT_CSV = "output.csv";
 	private static final String REPORT_DATA = ".data";
@@ -412,6 +414,25 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
+	 * Wait until runningThread is 0. If it's over 10 seconds, Exception occurs
+	 */
+	public void waitUntilAllAgentDisconnected() {
+		int trial = 1;
+		while (trial++ < 20) {
+			// when agent finished one test, processReports will be updated as
+			// null
+			if (this.runningThread != 0) {
+				synchronized (m_eventSyncCondition) {
+					m_eventSyncCondition.waitNoInterrruptException(500);
+				}
+			} else {
+				return;
+			}
+		}
+		throw new NGrinderRuntimeException("Connection is not completed until 10 sec");
+	}
+
+	/**
 	 * Check all test is finished. To be safe, this counts thread count and not finished
 	 * workprocess. If one of them is 0, It thinks test is finished.
 	 * 
@@ -627,7 +648,7 @@ public class SingleConsole implements Listener, SampleListener {
 	 * To update statistics data while test is running
 	 */
 	private void updateStatistics() {
-		Map<String, Object> result = new HashMap<String, Object>();
+		Map<String, Object> result = new ConcurrentHashMap<String, Object>();
 		result.put("test_time", getCurrentRunningTime() / 1000);
 
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
@@ -681,14 +702,21 @@ public class SingleConsole implements Listener, SampleListener {
 			result.put(GrinderConstants.P_THREAD, this.runningThread);
 			result.put("success", !isAllTestFinished());
 		}
-
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("total Statistics : {}", totalStatistics);
+		}
 		// Finally overwrite.. current one.
 		this.statisticData = result;
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Total Statistics : {}", totalStatistics);
-			LOGGER.debug("Last Cumulative Statistics : {}", cumulativeStatistics);
-			LOGGER.debug("Last Sample Statistics : {}", lastSampleStatistics);
+	}
+
+	public Long getCurrentTestsCount() {
+		if (this.statisticData == null) {
+			return 0L;
 		}
+		Double testCount = MapUtils.getDoubleValue((Map<?, ?>) this.statisticData.get("totalStatistics"), "Tests", 0D);
+		Double errorCount = MapUtils
+						.getDoubleValue((Map<?, ?>) this.statisticData.get("totalStatistics"), "Errors", 0D);
+		return testCount.longValue() + errorCount.longValue();
 	}
 
 	private static Object getRealDoubleValue(Double doubleValue) {
@@ -714,7 +742,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * get the list of added {@link ConsoleShutdownListener}.
+	 * get the list of added {@link ConsoleShutdownListener}. +
 	 * 
 	 * @return the list of added {@link ConsoleShutdownListener}.
 	 * @see ConsoleShutdownListener
@@ -870,8 +898,6 @@ public class SingleConsole implements Listener, SampleListener {
 	 * Stop sampling
 	 */
 	public void unregisterSampling() {
-		this.runningProcess = 0;
-		this.runningThread = 0;
 		this.currentNotFinishedProcessCount = 0;
 		this.sampling = false;
 		LOGGER.info("Sampling is stopped");
@@ -879,4 +905,20 @@ public class SingleConsole implements Listener, SampleListener {
 		this.sampleModel.reset();
 	}
 
+	/**
+	 * If the test error is over 20%.. return true;
+	 * 
+	 * @return
+	 */
+	public boolean isTooManyError() {
+		if (this.statisticData == null) {
+			return false;
+		}
+		long currentTestsCount = getCurrentTestsCount().longValue();
+		double errors = MapUtils.getDoubleValue((Map<?, ?>) this.statisticData.get("totalStatistics"), "Errors", 0D);
+		if (currentTestsCount == 0) {
+			return false;
+		}
+		return (errors / currentTestsCount) > 0.2;
+	}
 }

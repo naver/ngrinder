@@ -27,10 +27,10 @@ public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testConsoleManager() {
 		int initialSize = manager.getAvailableConsoleSize();
-		SingleConsole availableConsole = manager.getAvailableConsole(ConsolePropertiesFactory
+		SingleConsole availableConsole = manager.getAvailableConsole("test", ConsolePropertiesFactory
 				.createEmptyConsoleProperties());
 		assertThat(manager.getAvailableConsoleSize(), is(initialSize - 1));
-		manager.returnBackConsole(availableConsole);
+		manager.returnBackConsole("test", availableConsole);
 		assertThat(manager.getAvailableConsoleSize(), is(initialSize));
 	}
 
@@ -41,7 +41,7 @@ public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 		int initialSize = manager.getAvailableConsoleSize();
 		SingleConsole availableConsole = null;
 		for (int i = 1; i <= initialSize; i++) {
-			availableConsole = manager.getAvailableConsole(ConsolePropertiesFactory.createEmptyConsoleProperties());
+			availableConsole = manager.getAvailableConsole("test", ConsolePropertiesFactory.createEmptyConsoleProperties());
 		}
 		final SingleConsole lastConsole = availableConsole;
 		assertThat(manager.getAvailableConsoleSize(), is(0));
@@ -49,7 +49,7 @@ public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 		elapseTime.start();
 		// Try to get more console, it will take time
 		try {
-			manager.getAvailableConsole(ConsolePropertiesFactory.createEmptyConsoleProperties());
+			manager.getAvailableConsole("test", ConsolePropertiesFactory.createEmptyConsoleProperties());
 			fail("should throw Exception");
 		} catch (NGrinderRuntimeException e) {
 		}
@@ -61,7 +61,7 @@ public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 			public void run() {
 				try {
 					Thread.sleep(1000);
-					manager.returnBackConsole(lastConsole);
+					manager.returnBackConsole("test", lastConsole);
 				} catch (InterruptedException e) {
 				}
 
@@ -72,15 +72,15 @@ public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 		thread.start();
 		// Try to get more console, it will return console just after console is
 		// returned back
-		SingleConsole anotherConsole = manager.getAvailableConsole(ConsolePropertiesFactory
+		SingleConsole anotherConsole = manager.getAvailableConsole("test", ConsolePropertiesFactory
 				.createEmptyConsoleProperties());
 		elapseTime.stop();
 		assertThat(elapseTime.getTotalTimeSeconds(), lessThan(3000D));
 		assertThat(manager.getAvailableConsoleSize(), is(0));
-		manager.returnBackConsole(anotherConsole);
+		manager.returnBackConsole("test", anotherConsole);
 
 		// return console again is always allowed
-		manager.returnBackConsole(anotherConsole);
+		manager.returnBackConsole("test", anotherConsole);
 
 		assertThat(manager.getAvailableConsoleSize(), is(1));
 		assertThat(manager.getConsoleInUse().size(), is(initialSize - 1));
