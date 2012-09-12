@@ -242,10 +242,11 @@ i.collapse{
 													</colgroup>
 													<tr>
 													<td>
-														<select id="scriptName" class="required" name="scriptName"> 
+														<select id="scriptName" class="required" name="scriptName">
+															<option value="">---</option>
 														<#if scriptList?? && scriptList?size &gt; 0> 
 															<#list scriptList as scriptItem> 
-																<#if  test?? && scriptItem.path == test.scriptName> 
+																<#if  test?? && scriptItem.path == test.scriptName && test.createdUser.userId == currentUser.userId> 
 																	<#assign isSelected = "selected"/> 
 																<#else> 
 																	<#assign isSelected = 	""/> 
