@@ -53,7 +53,7 @@ public final class ReflectionUtil {
 	 */
 	public static Object getFieldValue(final Object object, final String fieldName) {
 		Field field = getDeclaredField(object, fieldName);
-		checkNotNull(field, "Could not find field [" + fieldName + "] on target [" + object + "]");
+		checkNotNull(field, "Could not find field [%s] on target [%s]" ,fieldName, object);
 		makeAccessible(field);
 
 		try {

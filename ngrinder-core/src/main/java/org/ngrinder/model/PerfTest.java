@@ -246,7 +246,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public String getLastModifiedDateToStr() {
-		return DateUtil.formatDate(getLastModifiedDate(), "yyyy-MM-dd  HH:mm:ss");
+		return DateUtil.dateToString(getLastModifiedDate());
 	}
 
 	public void setDescription(String description) {

@@ -22,8 +22,6 @@
  */
 package org.ngrinder.common.util;
 
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -123,44 +121,6 @@ public abstract class DateUtil {
 	 */
 	public static Date toDate(String strDate) throws ParseException {
 		return FULL_DATE_FORMAT.parse(strDate);
-	}
-
-//	/**
-//	 * get start day of a given date. Because the default start day of Calendar is "Sunday", when the given date is
-//	 * "Sunday", we need to add "-7" to date field to get previous week.
-//	 * 
-//	 * @param date
-//	 *            calendar
-//	 * @return week start
-//	 */
-//	public static Calendar getWeekStart(Calendar date) {
-//		Calendar calendar = Calendar.getInstance();
-//		calendar.setTimeInMillis(date.getTimeInMillis());
-//		// Calendar.MONDAY is 2
-//		boolean isSunday = false;
-//		if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-//			isSunday = true;
-//		}
-//		calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-//		if (isSunday) {
-//			calendar.add(Calendar.DAY_OF_WEEK, CONSTANT_MINUS_7);
-//		}
-//		return calendar;
-//
-//	}
-
-	/**
-	 * Format date with given pattern.
-	 * 
-	 * @param date
-	 *            date
-	 * @param pattern
-	 *            pattern
-	 * @return formatted date string
-	 */
-	public static String formatDate(Date date, String pattern) {
-		SimpleDateFormat formatter = new SimpleDateFormat(checkNotNull(pattern, "pattern is null"));
-		return formatter.format(checkNotNull(date, "date is null"));
 	}
 
 	/**

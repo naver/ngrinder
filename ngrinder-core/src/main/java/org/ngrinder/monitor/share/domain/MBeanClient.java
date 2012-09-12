@@ -84,7 +84,7 @@ public class MBeanClient {
 		this.jvmInfo = jvmInfo;
 		if (!this.jvmInfo.isManageable()) {
 			this.jvmInfo.loadAgent();
-			checkArgument(jvmInfo.isManageable(), this.jvmInfo + " not manageable");
+			checkArgument(jvmInfo.isManageable(), "%s not manageable", this.jvmInfo);
 		}
 		this.jmxUrl = new JMXServiceURL(this.jvmInfo.getAddress());
 	}
