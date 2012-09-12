@@ -26,7 +26,9 @@ import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import net.grinder.engine.agent.LocalScriptTestDriveService;
@@ -34,6 +36,7 @@ import net.grinder.util.thread.Condition;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
@@ -56,8 +59,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ScriptValidationService {
 
-	private static final Logger LOG = LoggerFactory
-			.getLogger(ScriptValidationService.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ScriptValidationService.class);
 	@Autowired
 	private LocalScriptTestDriveService localScriptTestDriveService;
 
@@ -70,9 +72,8 @@ public class ScriptValidationService {
 	/**
 	 * Validate Script.
 	 * 
-	 * It's quite complex.. to validate script, we need write jar files and
-	 * script. Furthermore, to make a small log.. We have to copy optimized
-	 * logback_worker.xml
+	 * It's quite complex.. to validate script, we need write jar files and script. Furthermore, to
+	 * make a small log.. We have to copy optimized logback_worker.xml
 	 * 
 	 * Finally this method returns the path of validating result file.
 	 * 
@@ -84,31 +85,43 @@ public class ScriptValidationService {
 	 *            true if the script content in SVN is used. otherwise, false
 	 * @return validation result.
 	 */
-	public String validateScript(User user, FileEntry scriptEntry,
-			boolean useScriptInSVN, String hostString) {
+	public String validateScript(User user, FileEntry scriptEntry, boolean useScriptInSVN, String hostString) {
 		try {
 			checkNotNull(scriptEntry, "scriptEntity should be not null");
-			checkNotEmpty(scriptEntry.getPath(),
-					"scriptEntity path should be provided");
+			checkNotEmpty(scriptEntry.getPath(), "scriptEntity path should be provided");
 			if (!useScriptInSVN) {
-				checkNotEmpty(scriptEntry.getContent(),
-						"scriptEntity content should be provided");
+				checkNotEmpty(scriptEntry.getContent(), "scriptEntity content should be provided");
 			}
 			checkNotNull(user, "user should be provided");
 			String result = checkSyntaxErrors(scriptEntry.getContent());
 			if (result != null) {
 				return result;
 			}
-			File scriptDirectory = config.getHome().getScriptDirectory(
-					String.valueOf(user.getId()));
+			File scriptDirectory = config.getHome().getScriptDirectory(String.valueOf(user.getId()));
 			File file = new File(scriptDirectory, "validation-0.log");
 			file.delete();
-			// Get all lib and resources in the script path
-			List<FileEntry> fileEntries = fileEntryService
-					.getLibAndResourcesEntries(user,
-							checkNotEmpty(scriptEntry.getPath()), null);
 
 			scriptDirectory.mkdirs();
+
+			// Copy logback... first
+			InputStream io = null;
+			FileOutputStream fos = null;
+			try {
+				io = new ClassPathResource("/logback/logback-worker.xml").getInputStream();
+				fos = new FileOutputStream(new File(scriptDirectory, "logback-worker.xml"));
+				IOUtils.copy(io, fos);
+			} catch (IOException e) {
+				LOG.error("error while writing logback-worker", e);
+			} finally {
+				IOUtils.closeQuietly(io);
+				IOUtils.closeQuietly(fos);
+			}
+
+			String basePath = FilenameUtils.getPath(scriptEntry.getPath());
+
+			// Get all lib and resources in the script path
+			List<FileEntry> fileEntries = fileEntryService.getLibAndResourcesEntries(user,
+							checkNotEmpty(scriptEntry.getPath()), null);
 
 			// Distribute each files in that folder.
 			for (FileEntry each : fileEntries) {
@@ -116,16 +129,13 @@ public class ScriptValidationService {
 				if (each.getFileType() == FileType.DIR) {
 					continue;
 				}
-				fileEntryService.writeContentTo(user, each.getPath(),
-						scriptDirectory);
+				String path = FilenameUtils.getPath(each.getPath());
+				path = path.substring(basePath.length());
+				File toDir = new File(scriptDirectory, path);
+				fileEntryService.writeContentTo(user, each.getPath(), toDir);
 			}
-			// Copy logback...
-			File logbackXml = new ClassPathResource(
-					"/logback/logback-worker.xml").getFile();
-			FileUtils.copyFile(logbackXml, new File(scriptDirectory,
-					"logback-worker.xml"));
-			File scriptFile = new File(scriptDirectory,
-					FilenameUtils.getName(scriptEntry.getPath()));
+
+			File scriptFile = new File(scriptDirectory, FilenameUtils.getName(scriptEntry.getPath()));
 
 			// set security.manager argument
 			String jvmArguments = "";
@@ -135,21 +145,18 @@ public class ScriptValidationService {
 				jvmArguments += " -Dngrinder.exec.path=" + getLibPath();
 				jvmArguments += " -Dngrinder.etc.hosts=" + hostString;
 			}
-			
+
 			if (useScriptInSVN) {
-				fileEntryService.writeContentTo(user, scriptEntry.getPath(),
-						scriptDirectory);
+				fileEntryService.writeContentTo(user, scriptEntry.getPath(), scriptDirectory);
 			} else {
-				FileUtils.writeStringToFile(scriptFile, scriptEntry
-						.getContent(), StringUtils.defaultIfBlank(
-						scriptEntry.getEncoding(), "UTF-8"));
+				FileUtils.writeStringToFile(scriptFile, scriptEntry.getContent(),
+								StringUtils.defaultIfBlank(scriptEntry.getEncoding(), "UTF-8"));
 			}
-			File doValidate = localScriptTestDriveService.doValidate(
-					scriptDirectory, scriptFile, new Condition(), jvmArguments);
+			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, new Condition(),
+							jvmArguments);
 			return FileUtils.readFileToString(doValidate);
 		} catch (IOException e) {
-			LOG.error("Error while distributing files on {} for {}", user,
-					scriptEntry.getPath());
+			LOG.error("Error while distributing files on {} for {}", user, scriptEntry.getPath());
 			LOG.error("Error details ", e);
 		}
 		return StringUtils.EMPTY;
@@ -186,8 +193,8 @@ public class ScriptValidationService {
 				if (lineString.length() >= column) {
 					buf.insert(column - 1, "^");
 				}
-				return "Error occured\n" + " - Invalid Syntax Error on line "
-						+ line + " / column " + column + "\n" + buf.toString();
+				return "Error occured\n" + " - Invalid Syntax Error on line " + line + " / column " + column + "\n"
+								+ buf.toString();
 			} catch (Exception ex) {
 				LOG.error("Error occured while evludation PySyntaxError", ex);
 				return "Error occured while evludation PySyntaxError";

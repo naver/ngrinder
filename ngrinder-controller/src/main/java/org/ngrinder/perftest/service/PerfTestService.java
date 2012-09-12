@@ -36,8 +36,11 @@ import static org.ngrinder.perftest.repository.PerfTestSpecification.statusSetEq
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.text.DecimalFormat;
@@ -74,6 +77,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
@@ -89,6 +93,7 @@ import org.ngrinder.service.IPerfTestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specifications;
@@ -514,6 +519,25 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 						checkNotZero(perfTest.getId(), "perftest id should not be 0 or zero").toString());
 	}
 
+	public String getCustomClassPath(PerfTest perfTest) {
+		File perfTestDirectory = getPerfTestDirectory(perfTest);
+		File libFolder = new File(perfTestDirectory, "lib");
+		final StringBuffer customClassPath = new StringBuffer();
+		customClassPath.append(".").append(File.pathSeparator).append("lib");
+		if (libFolder.exists()) {
+			libFolder.list(new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					if (name.endsWith(".jar")) {
+						customClassPath.append(File.pathSeparator).append("lib/").append(name);
+					}
+					return true;
+				}
+			});
+		}
+		return customClassPath.toString();
+	}
+
 	/**
 	 * Create {@link GrinderProperties} based on the passed {@link PerfTest}
 	 * 
@@ -550,6 +574,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			} else {
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, 0);
 			}
+			grinderProperties.setProperty(GRINDER_PROP_JVM_CLASSPATH, getCustomClassPath(perfTest));
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, perfTest.getIgnoreSampleCount());
 			boolean securityEnabled = config.isSecurityEnabled();
 			grinderProperties.setBoolean(GRINDER_PROP_SECURITY, securityEnabled);
@@ -558,7 +583,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				String jvmArguments = "-Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager";
 				grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, jvmArguments);
 			}
-
+			LOGGER.debug("Grinder Properties : {} ", grinderProperties);
 			return grinderProperties;
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("error while prepare grinder property for " + perfTest.getTestName(), e);
@@ -587,7 +612,20 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 		perfTestDirectory.mkdirs();
 		String basePath = FilenameUtils.getPath(scriptEntry.getPath());
-
+		
+		
+		InputStream io = null;
+		FileOutputStream fos = null;
+		try {
+			io = new ClassPathResource("/logback/logback-worker.xml").getInputStream();
+			fos = new FileOutputStream(new File(perfTestDirectory, "logback-worker.xml"));
+			IOUtils.copy(io, fos);
+		} catch (IOException e) {
+			LOGGER.error("error while writing logback-worker", e);
+		} finally {
+			IOUtils.closeQuietly(io);
+			IOUtils.closeQuietly(fos);
+		}
 		// Distribute each files in that folder.
 		for (FileEntry each : fileEntries) {
 			// Directory is not subject to be distributed.
