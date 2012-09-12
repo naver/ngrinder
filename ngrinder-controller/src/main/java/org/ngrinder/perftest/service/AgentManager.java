@@ -112,38 +112,73 @@ public class AgentManager implements NGrinderConstants {
 			}
 		});
 	}
-
-	public int getAgentControllerConnectingPort(AgentIdentity agentIdentity) {
-		return agentControllerServer.getAgentControllerConnectingPort(agentIdentity);
+	
+	/**
+	 * Get the port which given agent is connecting to.
+	 * @param agentIdentity agent identity
+	 * @return port
+	 */
+	public int getAgentConnectingPort(AgentIdentity agentIdentity) {
+		return agentControllerServer.getAgentConnectingPort(agentIdentity);
 	}
 
-	public AgentControllerState getAgentControllerState(AgentIdentity agentIdentity) {
+	/**
+	 * Get the agent status of the given agent.
+	 * @param agentIdentity
+	 * @return
+	 */
+	public AgentControllerState getAgentState(AgentIdentity agentIdentity) {
 		return agentControllerServer.getAgentState(agentIdentity);
 	}
 
+	/**
+	 * Get all agents which is connected to agent controller.
+	 * @return agents set
+	 */
 	public Set<AgentIdentity> getAllAttachedAgents() {
 		return agentControllerServer.getAllAvailableAgents();
 	}
 
+	/**
+	 * Get max agent size per console.
+	 * @return max agent size per console
+	 */
 	public int getMaxAgentSizePerConsole() {
 		return config.getSystemProperties().getPropertyInt("agent.maxsize",
 						NGrinderConstants.MAX_AGENT_SIZE_PER_CONSOLE);
 	}
 
+	/**
+	 * Get max vuser per agent.
+	 * @return max vuser per agent
+	 */
 	public int getMaxVuserPerAgent() {
 		return config.getSystemProperties().getPropertyInt("agent.maxvuser",
 						NGrinderConstants.MAX_VUSER_PER_AGENT);
 	}
 
+	/**
+	 * Get max run count per thread.
+	 * @return max run count per thread
+	 */
 	public int getMaxRunCount() {
 		return config.getSystemProperties().getPropertyInt("agent.maxruncount",
 						NGrinderConstants.MAX_RUN_COUNT);
 	}
 
+	/**
+	 * Get max run hour.
+	 * @return max run hour
+	 */
 	public int getMaxRunHour() {
 		return config.getSystemProperties().getPropertyInt("agent.maxhour", NGrinderConstants.MAX_RUN_HOUR);
 	}
 
+	/**
+	 * Get {@link AgentIdentity} which as give ip.
+	 * @param agentIP agent ip
+	 * @return {@link AgentControllerIdentityImplementation}
+	 */
 	public AgentControllerIdentityImplementation getAgentIdentityByIp(String agentIP) {
 		for (AgentIdentity agentIdentity : getAllAttachedAgents()) {
 			AgentControllerIdentityImplementation eachAgentIdentity = (AgentControllerIdentityImplementation) agentIdentity;
@@ -154,10 +189,18 @@ public class AgentManager implements NGrinderConstants {
 		return null;
 	}
 
+	/**
+	 * Get all agents which are not used.
+	 * @return AgentIndentity set
+	 */
 	public Set<AgentIdentity> getAllFreeAgents() {
 		return agentControllerServer.getAllFreeAgents();
 	}
 
+	/**
+	 * Get all approved agents which are not used.
+	 * @return AgentIndentity set
+	 */
 	public Set<AgentIdentity> getAllFreeApprovedAgents() {
 		Set<AgentIdentity> allFreeAgents = agentControllerServer.getAllFreeAgents();
 		return filterApprovedAgents(allFreeAgents);
@@ -190,10 +233,20 @@ public class AgentManager implements NGrinderConstants {
 		return approvedAgent;
 	}
 
+	/**
+	 * Get the current java performance status of the given agent.
+	 * @param agentIdentity {@link AgentIdentity}
+	 * @return {@link JavaDataModel} instance.
+	 */
 	public JavaDataModel getJavaDataModel(AgentIdentity agentIdentity) {
 		return agentControllerServer.getJavaDataModel(agentIdentity);
 	}
 
+	/**
+	 * Get the current system performance status of the given agent.
+	 * @param agentIdentity {@link AgentIdentity}
+	 * @return {@link SystemDataModel} instance.
+	 */
 	public SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {
 		return agentControllerServer.getSystemDataModel(agentIdentity);
 	}

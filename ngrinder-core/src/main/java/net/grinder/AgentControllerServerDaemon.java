@@ -175,9 +175,9 @@ public class AgentControllerServerDaemon {
 		getComponent(AgentProcessControlImplementation.class).addLogArrivedListener(logArrivedListener);
 	}
 
-	public int getAgentControllerConnectingPort(AgentIdentity agentIdentity) {
+	public int getAgentConnectingPort(AgentIdentity agentIdentity) {
 		return agentControllerServer.getComponent(AgentProcessControlImplementation.class)
-						.getAgentControllerConnectingPort(agentIdentity);
+						.getAgentConnectingPort(agentIdentity);
 	}
 
 	public AgentControllerState getAgentState(AgentIdentity agentIdentity) {

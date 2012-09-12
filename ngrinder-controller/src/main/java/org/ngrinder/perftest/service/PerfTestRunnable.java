@@ -92,7 +92,9 @@ public class PerfTestRunnable implements NGrinderConstants {
 	private Config config;
 
 	/**
-	 * Scheduled method for test execution.
+	 * Scheduled method for test execution. This method dispatches the test
+	 * candidates and run one of them. This method is responsible until a test
+	 * is executed.
 	 */
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
 	public void startTest() {
@@ -220,6 +222,17 @@ public class PerfTestRunnable implements NGrinderConstants {
 		perfTestService.changePerfTestStatus(perfTest, START_AGENTS_FINISHED, perfTest.getAgentCount() + " agents are started.");
 	}
 
+	/**
+	 * Run a test with given {@link GrinderProperties} and {@link SingleConsole}
+	 * .
+	 * 
+	 * @param perfTest
+	 *            perftest
+	 * @param grinderProperties
+	 *            the grinder information
+	 * @param singleConsole
+	 *            console to be used.
+	 */
 	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties, final SingleConsole singleConsole) {
 		// start target monitor
 
@@ -297,14 +310,23 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 		for (PerfTest each : perfTestService.getTestingPerfTest()) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
-			if (isTestAboutToFinish(each, consoleUsingPort)) {
+			if (isTestFinishCandidate(each, consoleUsingPort)) {
 				doFinish(each, consoleUsingPort);
 				notifyFinsish(each, StopReason.NORMAL);
 			}
 		}
 	}
 
-	private boolean isTestAboutToFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+	/**
+	 * Check this test is ready to finish.
+	 * 
+	 * @param perfTest
+	 *            perf test
+	 * @param singleConsoleInUse
+	 *            singleConsole
+	 * @return true if it's a candiate.
+	 */
+	private boolean isTestFinishCandidate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		// Give 5 seconds to be finished
 		if ("D".equals(perfTest.getThreshold()) && singleConsoleInUse.getCurrentRunningTime() > (perfTest.getDuration() + 5000)) {
 			return true;
@@ -359,7 +381,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	public void doFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		// FIXME... it should found abnormal test status..
 		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
-	
+
 		LOG.debug("PerfTest {} status - currentRunningTime {} ", perfTest.getId(), singleConsoleInUse.getCurrentRunningTime());
 		// stop target host monitor
 		if (singleConsoleInUse.isTooManyError()) {

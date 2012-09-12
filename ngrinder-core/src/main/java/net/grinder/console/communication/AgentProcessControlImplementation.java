@@ -449,7 +449,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	}
 
 	@Override
-	public int getAgentControllerConnectingPort(AgentIdentity agentIdentity) {
+	public int getAgentConnectingPort(AgentIdentity agentIdentity) {
 		return getAgentStatus(agentIdentity).getConnectingPort();
 	}
 
