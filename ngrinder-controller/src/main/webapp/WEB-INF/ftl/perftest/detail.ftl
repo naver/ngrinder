@@ -978,26 +978,28 @@ i.collapse{
 	          drawChart('TPS', 'tpsDiv', $("#tpsData").val());
 	      });
 	  }
-
+	  var curPeakTps = 0;
+	  var curTps = 0;
+	  var curRunningTime = 0;
+	  var curRunningProcesses = 0;
+	  var curRunningThreads = 0;
+	  var curStatus = false;
 	  function refreshData() {
 	      var refreshDiv = $("<div></div>");
 	      var url = "${req.getContextPath()}/perftest/running/refresh?testId=" + $("#testId").val();
 	      var peakTps = 50;
 	      refreshDiv.load(url, function () {
-	          var succesVal = refreshDiv.find("#input_status").val();
-
-	          if (succesVal == 'SUCCESS') {
+	          if (curStatus == true) {
 	              $("#lsTable tbody").empty();
 	              $("#asTable tbody").empty();
 	              $("#lsTable tbody").prepend(refreshDiv.find("#lsTableItem"));
 	              $("#asTable tbody").prepend(refreshDiv.find("#asTableItem"));
 
-	              $("#process_data").text(refreshDiv.find("#input_process").val());
-	              $("#thread_data").text(refreshDiv.find("#input_thread").val());
-
-	              $("#running_time").text(showRunTime(refreshDiv.find("#test_time").val()));
-				  peakTps = parseInt(refreshDiv.find("#peak_tps").val());
-	              test_tps_data.enQueue(refreshDiv.find("#tpsChartData").val());
+	              $("#process_data").text(curRunningProcesses);
+	              $("#thread_data").text(curRunningThreads);
+	              $("#running_time").text(curRunningTime);
+				  peakTps = curPeakTps;
+	              test_tps_data.enQueue(curTps);
 	          } else {
 	              if ($('#runningContent_tab:hidden')[0]) {
 	                  window.clearInterval(objTimer);

@@ -1,11 +1,12 @@
 <#if resultsub?exists>
-	<INPUT type="hidden" id="input_process" value="${resultsub.process!'&nbsp;'}">
-	<INPUT type="hidden" id="input_thread"  value="${resultsub.thread!'&nbsp;'}">
-	<INPUT type="hidden" id="tpsChartData"  value="${resultsub.tpsChartData!}">
-	<INPUT type="hidden" id="test_time"  value="${resultsub.test_time!}">
-	<INPUT type="hidden" id="peak_tps"  value="${resultsub.peakTpsForGraph!}">
-	<INPUT type="hidden" id="input_status"  value="<#if resultsub.success?? && resultsub.success>SUCCESS<#else>FAIL</#if>">
- 
+	<script>
+			curPeakTps = ${resultsub.peakTpsForGraph!0};
+	  		curTps = ${resultsub.tpsChartData!0};
+	  		curRunningTime = ${resultsub.test_time!0};
+	  		curRunningProcesses = ${resultsub.process!0};
+	  		curRunningThreads = ${resultsub.thread!0};
+	  		curStatus = <#if resultsub.success?? && resultsub.success>true<#else>false</#if>
+	</script>
 	<table>
 		<tbody>	
 		    <#list resultsub?keys as mKey>

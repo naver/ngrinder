@@ -165,8 +165,9 @@ public class ConsoleManager {
 	 *            base {@link ConsoleProperties}
 	 * @return console
 	 */
-	public SingleConsole getAvailableConsole(ConsoleProperties baseConsoleProperties) {
+	public SingleConsole getAvailableConsole(String testIdentifier, ConsoleProperties baseConsoleProperties) {
 		ConsoleEntry consoleEntry;
+		SingleConsole singleConsole = null;
 		try {
 			consoleEntry = consoleQueue.poll(getMaxWaitingMiliSecond(), TimeUnit.MILLISECONDS);
 			if (consoleEntry == null) {
@@ -174,11 +175,12 @@ public class ConsoleManager {
 			}
 			synchronized (this) {
 				// FIXME : It might fail here
-				SingleConsole singleConsole = new SingleConsole(consoleEntry.getPort(), baseConsoleProperties);
+				singleConsole = new SingleConsole(consoleEntry.getPort(), baseConsoleProperties);
 				getConsoleInUse().add(singleConsole);
 				return singleConsole;
 			}
 		} catch (InterruptedException e) {
+			returnBackConsole(testIdentifier, singleConsole);
 			throw new NGrinderRuntimeException("no console entry available");
 		}
 	}
@@ -192,21 +194,26 @@ public class ConsoleManager {
 	 *            console which will be returned back.
 	 * 
 	 */
-	public void returnBackConsole(SingleConsole console) {
+	public void returnBackConsole(String testIdentifier, SingleConsole console) {
+		if (console == null) {
+			LOG.error("Attemp to return back null console for {}.", testIdentifier);
+			return;
+		}
 		synchronized (this) {
 			try {
 				console.unregisterSampling();
 				console.sendStopMessageToAgents();
 			} catch (Exception e) {
-				LOG.error("Exception occurs while shuttdowning console in returnback process", e);
+				LOG.error("Exception is occured while shuttdowning console in returnback process for test {}.", testIdentifier, e);
 				// But the port is getting back.
 				// FIXME : Is it OK?
 			} finally {
 				try {
-					Thread.sleep(1000);
+					// Wait console is completely shutdown...
+					Thread.sleep(3000);
 					console.shutdown();
 				} catch (Exception e) {
-					LOG.error("Exception occurs while shuttdowning console in returnback process", e);
+					LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.", testIdentifier, e);
 					// But the port is getting back.
 					// FIXME : Is it OK?
 				}

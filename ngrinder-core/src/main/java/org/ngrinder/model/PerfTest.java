@@ -65,6 +65,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Enumerated(EnumType.STRING)
 	private Status status = Status.READY;
 
+	
+	
 	/** The sampling Interval value, default to 1000ms. */
 //	private Integer sampleInterval = 1000;
 
@@ -166,6 +168,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	@Transient
 	private String dateString;
+
+	public String getTestIdentifier() {
+		return "perftest_" + getId() + "_" + getLastModifiedUser().getUserId();
+	}
 
 	public String getTestName() {
 		return testName;

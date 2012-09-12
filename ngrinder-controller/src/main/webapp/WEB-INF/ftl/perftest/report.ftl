@@ -110,9 +110,9 @@
 					</colgroup>
                    <tr>
                        <th><@spring.message "perfTest.table.startTime"/></th>
-                       <td><span><#if test.startTime??>${test.startTime?string('yyyy-MM-dd HH:mm')}<#else>&nbsp;</#if></span></td>
+                       <td><span><#if test.startTime??>${test.startTime?string('yyyy-MM-dd HH:mm:ss')}<#else>&nbsp;</#if></span></td>
                        <th><@spring.message "perfTest.table.finishTime"/></th>
-                       <td><span><#if test.finishTime??>${test.finishTime?string('yyyy-MM-dd HH:mm')}<#else>&nbsp;</#if></span></td>
+                       <td><span><#if test.finishTime??>${test.finishTime?string('yyyy-MM-dd HH:mm:ss')}<#else>&nbsp;</#if></span></td>
                    </tr>
                    <tr>
                      	<th><@spring.message "perfTest.report.testcomment"/></th>

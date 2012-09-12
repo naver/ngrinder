@@ -370,8 +370,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	@Transactional
-	public PerfTest markProgressAndStatusAndFinishTimeAndStatistics(PerfTest perfTest, Status status,
-					String message) {
+	public PerfTest markProgressAndStatusAndFinishTimeAndStatistics(PerfTest perfTest, Status status, String message) {
 		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
 		if (findOne == null) {
 			return null;
@@ -433,8 +432,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	@Transactional
 	public PerfTest getPerfTestCandiate() {
-		List<PerfTest> readyPerfTests = perfTestRepository
-						.findAllByStatusOrderByScheduledTimeAsc(Status.READY);
+		List<PerfTest> readyPerfTests = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY);
 		List<PerfTest> usersFirstPerfTests = filterCurrentlyRunningTestUsersTest(readyPerfTests);
 		return usersFirstPerfTests.isEmpty() ? null : readyPerfTests.get(0);
 	}
@@ -466,8 +464,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			@Override
 			public boolean evaluate(Object object) {
 				PerfTest perfTest = (PerfTest) object;
-				return !currentlyRunningTestOwners.contains(ObjectUtils.defaultIfNull(
-								perfTest.getLastModifiedUser(), perfTest.getCreatedUser()));
+				return !currentlyRunningTestOwners.contains(ObjectUtils.defaultIfNull(perfTest.getLastModifiedUser(),
+								perfTest.getCreatedUser()));
 			}
 		});
 		return perfTestLists;
@@ -526,8 +524,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public GrinderProperties getGrinderProperties(PerfTest perfTest) {
 		try {
 			// Copy grinder properties
-			File userGrinderPropertiesPath = new File(getPerfTestDirectory(perfTest),
-							DEFAULT_GRINDER_PROPERTIES_PATH);
+			File userGrinderPropertiesPath = new File(getPerfTestDirectory(perfTest), DEFAULT_GRINDER_PROPERTIES_PATH);
 			FileUtils.copyFile(config.getHome().getDefaultGrinderProperties(), userGrinderPropertiesPath);
 			GrinderProperties grinderProperties = new GrinderProperties(userGrinderPropertiesPath);
 			grinderProperties.setAssociatedFile(new File(userGrinderPropertiesPath.getName()));
@@ -564,8 +561,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 			return grinderProperties;
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("error while prepare grinder property for "
-							+ perfTest.getTestName(), e);
+			throw new NGrinderRuntimeException("error while prepare grinder property for " + perfTest.getTestName(), e);
 		}
 	}
 
@@ -584,12 +580,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		// Get all files in the script path
 		FileEntry scriptEntry = fileEntryService.getFileEntry(user, perfTest.getScriptName(),
 						perfTest.getScriptRevision());
-		List<FileEntry> fileEntries = fileEntryService.getLibAndResourcesEntries(user,
-						checkNotEmpty(scriptName), perfTest.getScriptRevision());
+		List<FileEntry> fileEntries = fileEntryService.getLibAndResourcesEntries(user, checkNotEmpty(scriptName),
+						perfTest.getScriptRevision());
 		File perfTestDirectory = getPerfTestDirectory(perfTest);
 		fileEntries.add(scriptEntry);
 
 		perfTestDirectory.mkdirs();
+		String basePath = FilenameUtils.getPath(scriptEntry.getPath());
 
 		// Distribute each files in that folder.
 		for (FileEntry each : fileEntries) {
@@ -597,9 +594,12 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			if (each.getFileType() == FileType.DIR) {
 				continue;
 			}
-			LOGGER.info("{} is being written in {} for test {}", new Object[] { each.getPath(),
-					perfTestDirectory.toString(), perfTest.getId() });
-			fileEntryService.writeContentTo(user, each.getPath(), new File(perfTestDirectory, FilenameUtils.getPath(each.getPath())));
+			String path = FilenameUtils.getPath(each.getPath());
+			path = path.substring(basePath.length());
+			File toDir = new File(perfTestDirectory, path);
+			LOGGER.info("{} is being written in {} for test {}", new Object[] { each.getPath(), toDir.toString(),
+					perfTest.getTestIdentifier() });
+			fileEntryService.writeContentTo(user, each.getPath(), toDir);
 		}
 		LOGGER.info("File write is completed in " + perfTestDirectory);
 		return perfTestDirectory;
@@ -814,8 +814,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 
 	public File getLogFileDirectory(long testId) {
-		return new File(config.getHome().getPerfTestDirectory(String.valueOf(testId)),
-						NGrinderConstants.PATH_LOG);
+		return new File(config.getHome().getPerfTestDirectory(String.valueOf(testId)), NGrinderConstants.PATH_LOG);
 	}
 
 	/**
@@ -840,8 +839,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 
 	public File getReportFileDirectory(long testId) {
-		return new File(config.getHome().getPerfTestDirectory(String.valueOf(testId)),
-						NGrinderConstants.PATH_REPORT);
+		return new File(config.getHome().getPerfTestDirectory(String.valueOf(testId)), NGrinderConstants.PATH_REPORT);
 	}
 
 	/**
@@ -901,6 +899,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		}
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = (Map<String, Object>) result.get("totalStatistics");
+		System.out.println(totalStatistics);
 		perfTest.setErrors((int) ((Double) totalStatistics.get("Errors")).doubleValue());
 		perfTest.setTps(Double.parseDouble(formatter.format(totalStatistics.get("TPS"))));
 		perfTest.setMeanTestTime(Double.parseDouble(formatter.format(ObjectUtils.defaultIfNull(

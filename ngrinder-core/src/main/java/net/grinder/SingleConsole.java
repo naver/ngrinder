@@ -78,7 +78,6 @@ import org.apache.commons.lang.mutable.MutableDouble;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.ReflectionUtil;
-import org.picocontainer.MutablePicoContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,8 +93,7 @@ public class SingleConsole implements Listener, SampleListener {
 	private final ConsoleProperties consoleProperties;
 	private Thread thread;
 	private ConsoleFoundationEx consoleFoundation;
-	public static final Resources RESOURCE = new ResourcesImplementation(
-					"net.grinder.console.common.resources.Console");
+	public static final Resources RESOURCE = new ResourcesImplementation("net.grinder.console.common.resources.Console");
 	public static final Logger LOGGER = LoggerFactory.getLogger(RESOURCE.getString("shortTitle"));
 
 	private static final String REPORT_CSV = "output.csv";
@@ -121,7 +119,7 @@ public class SingleConsole implements Listener, SampleListener {
 	// private NumberFormat simpleFormatter = new DecimalFormat("###");
 
 	private Map<String, Object> statisticData;
-
+	private boolean sampling = false;
 	private List<String> csvHeaderList = new ArrayList<String>();
 	private boolean headerAdded = false;
 
@@ -186,8 +184,7 @@ public class SingleConsole implements Listener, SampleListener {
 		try {
 			this.getConsoleProperties().setConsoleHost(ip);
 			this.getConsoleProperties().setConsolePort(port);
-			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties,
-							m_eventSyncCondition);
+			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties, m_eventSyncCondition);
 
 			modelView = getConsoleComponent(SampleModelViews.class);
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
@@ -224,8 +221,8 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	public String getConsoleHost() {
 		try {
-			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress
-							.getLocalHost().getHostAddress());
+			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress.getLocalHost()
+							.getHostAddress());
 		} catch (UnknownHostException e) {
 			return "";
 		}
@@ -294,9 +291,9 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	public List<AgentIdentity> getAllAttachedAgents() {
 		final List<AgentIdentity> agentIdentities = new ArrayList<AgentIdentity>();
-		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(
-						ReflectionUtil.getFieldValue((ProcessControlImplementation) consoleFoundation
-										.getComponent(ProcessControl.class), "m_agentNumberMap"),
+		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(ReflectionUtil.getFieldValue(
+						(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
+						"m_agentNumberMap"),
 						"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
 			public void objectAndNumber(Object object, int number) {
@@ -425,7 +422,8 @@ public class SingleConsole implements Listener, SampleListener {
 			// Mostly running thread count is ok to determine it's finished.
 			if (this.runningThread == 0) {
 				return true;
-			// However sometimes runningThread is over 0 but all processs is marked as FINISHED.. It can be treated as finished status as well.
+				// However sometimes runningThread is over 0 but all processs is marked as
+				// FINISHED.. It can be treated as finished status as well.
 			} else if (this.currentNotFinishedProcessCount == 0) {
 				System.out.println(this.currentNotFinishedProcessCount);
 				return true;
@@ -453,6 +451,9 @@ public class SingleConsole implements Listener, SampleListener {
 
 	@Override
 	public void update(StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
+		if (!sampling) {
+			return;
+		}
 		if (samplingCount++ < ignoreSampleCount) {
 			return;
 		}
@@ -489,8 +490,7 @@ public class SingleConsole implements Listener, SampleListener {
 					}
 					Object val = each.getValue();
 					LOGGER.debug("statistic data key:{}", each.getKey());
-					LOGGER.debug("- value:{}, value type:{}", val, val != null ? val.getClass().getName()
-									: null);
+					LOGGER.debug("- value:{}, value type:{}", val, val != null ? val.getClass().getName() : null);
 					// number value in lastStatistic is Double, we add every
 					// test's double value
 					// into valueMap, so we use
@@ -653,8 +653,7 @@ public class SingleConsole implements Listener, SampleListener {
 				for (ExpressionView expressionView : views) {
 					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
 									getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
-					lastStatistics.put(
-									expressionView.getDisplayName().replaceAll("\\s+", "_"),
+					lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
 									getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
 				}
 
@@ -685,6 +684,11 @@ public class SingleConsole implements Listener, SampleListener {
 
 		// Finally overwrite.. current one.
 		this.statisticData = result;
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Total Statistics : {}", totalStatistics);
+			LOGGER.debug("Last Cumulative Statistics : {}", cumulativeStatistics);
+			LOGGER.debug("Last Sample Statistics : {}", lastSampleStatistics);
+		}
 	}
 
 	private static Object getRealDoubleValue(Double doubleValue) {
@@ -756,12 +760,12 @@ public class SingleConsole implements Listener, SampleListener {
 		// Per agents
 		for (ProcessReports agentReport : processReports) {
 			// Per process
-			processCount += processReports.length;
 			for (WorkerProcessReport processReport : agentReport.getWorkerProcessReports()) {
 				// There might be the processes which is not finished but no running thread in it.
 				if (processReport.getState() != 3) {
 					notFinishedWorkerCount++;
 				}
+				processCount++;
 				threadCount += processReport.getNumberOfRunningThreads();
 			}
 		}
@@ -855,16 +859,24 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	public void startSampling(int ignoreSampleCount) {
 		this.ignoreSampleCount = ignoreSampleCount;
-		sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
-		sampleModel.addTotalSampleListener(this);
+		this.sampling = true;
+		LOGGER.info("Sampling is started");
+		this.sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
+		this.sampleModel.addTotalSampleListener(this);
+
 	}
 
 	/**
 	 * Stop sampling
 	 */
 	public void unregisterSampling() {
-		SampleModel sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
-		sampleModel.reset();
+		this.runningProcess = 0;
+		this.runningThread = 0;
+		this.currentNotFinishedProcessCount = 0;
+		this.sampling = false;
+		LOGGER.info("Sampling is stopped");
+		this.sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
+		this.sampleModel.reset();
 	}
 
 }

@@ -154,8 +154,8 @@
 									<td>${(test.errors)!0}</td>
 									<td>${vuserTotal} </td>
 									<td class="center">
-										<a href="javascript:void(0)"><i title="<@spring.message "common.button.delete"/>"id="delete_${test.id}" style="display: none;" class="icon-remove test-remove" sid="${test.id}"></i></a>
-										<a href="javascript:void(0)"><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" style="display: none;" class="icon-stop test-stop" sid="${test.id}"></i></a>
+										<a href="javascript:void(0)"  style="display: none;" ><i title="<@spring.message "common.button.delete"/>"id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>
+										<a href="javascript:void(0)"  style="display: none;" ><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" class="icon-stop test-stop" sid="${test.id}"></i></a>
 									</td>  
 								</tr>  
 							</#list> 
@@ -322,14 +322,14 @@
 			$("#ball_" + id).attr("data-original-title", status);
 			$("#ball_" + id).attr("data-content", message);
 			if (stoppable == true) {
-				$("#stop_" + id).show();
+				$("#stop_" + id).parent().show();
 			} else {
-				$("#stop_" + id).hide();
+				$("#stop_" + id).parent().hide();
 			}
 			if (deletable == true) {
-				$("#delete_" + id).show();
+				$("#delete_" + id).parent().show();
 			} else { 
-				$("#delete_" + id).hide();
+				$("#delete_" + id).parent().hide(); 
 			}
 		}
 		// Wrap this function in a closure so we don't pollute the namespace
