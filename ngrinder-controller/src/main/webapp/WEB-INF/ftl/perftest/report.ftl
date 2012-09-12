@@ -16,8 +16,9 @@
 			    margin-right: 20px;
 			}
 			.jqplot-xaxis {
-			    margin-right: 5px; 
-			} 
+			    margin-right: 5px;
+       			margin-top: 5px; 
+			}
 			.compactpadding th {padding-left:5px;padding-right:5px} 
 		</style>
 
@@ -95,7 +96,7 @@
                        <#if test.targetHostIP?exists>	
 						   <ul class="unstyled"><i class="icon-tags"></i> <@spring.message "perfTest.report.targetHost"/>
                          		<#list test.targetHostIP as targetIp>
-	                         		<li><i class="icon-chevron-right"></i><a id="targetMontor" href="javascript:void(0);" ip="${targetIp}">${targetIp}</a></li>
+	                         		<li><i class="icon-chevron-right"></i><a class="targetMontor" href="javascript:void(0);" ip="${targetIp}">${targetIp}</a></li>
 	                         	</#list> 
                            </ul> 
                        </#if>
@@ -140,7 +141,7 @@
 				    <h6>System Data</h6>
                     <div class="chart" id="cpuDiv"></div>
                     <div class="chart" id="memoryDiv"></div>
-                    <h6>Java Data</h6>
+                    <h6 class="javachart" >Java Data</h6>
                     <div class="chart javachart" id="heapMemoryDiv"></div>
                     <div class="chart javachart" id="nonHeapMemoryDiv"></div>
                     <div class="chart javachart" id="threadCountDiv"></div>
@@ -169,7 +170,7 @@
 		        $("#monitorDiv").hide();
 		        getPerformanceData();
 		    });
-		    $("#targetMontor").click(function() {
+		    $("a.targetMontor").click(function() {
                 $("#performanceDiv").hide();
                 $("#monitorDiv").show();
                 var $elem = $(this);
@@ -196,10 +197,11 @@
                        'imgWidth':700},
                 success: function(res) {
                     if (res.success) {
-                        drawChart('Transactions Per Second', 'tpsDiv', res.TPS);
-                        drawChart('Mean Time', 'meanTimeDiv', res.Mean_Test_Time_ms);
+                    	var st = new Date($('#startTime').val());
+                        drawChart('Transactions Per Second', 'tpsDiv', res.TPS, undefined, undefined, undefined, res.chartInterval);
+                        drawChart('Mean Time', 'meanTimeDiv', res.Mean_Test_Time_ms, undefined, undefined, undefined, res.chartInterval);
                         //drawChart('Running Vusers', 'vuserDiv', res.vuser);
-                        drawChart('Errors Per Second', 'errorDiv', res.Errors);
+                        drawChart('Errors Per Second', 'errorDiv', res.Errors, undefined, undefined, undefined, res.chartInterval);
                         return true;
                     } else {
                         showErrorMsg("Get report data failed.");
@@ -233,9 +235,9 @@
                         	drawChart('NonHeap Memory', 'nonHeapMemoryDiv', res.JavaData.non_heap_memory, formatAmount);
                         	drawChart('Thread Count', 'threadCountDiv', res.JavaData.thread_count);
                      		drawChart('JVM Cpu', 'jvmCpuDiv', res.JavaData.jvm_cpu, formatPercentage);
-                     		$("div.javachart").css("display", "block");
+                     		$(".javachart").css("display", "block");
                     	} else {
-                    		$("div.javachart").css("display", "none");
+                    		$(".javachart").css("display", "none");
                     	}
                         return true;
                     } else {

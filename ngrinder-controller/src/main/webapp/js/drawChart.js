@@ -47,9 +47,13 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 		};
 	}
 	var numberOfXTicks = 10;
-	
-	if (values[0] !== undefined && values[0].length == 60) {
-		numberOfXTicks = 13;
+
+	if (!interval) {
+		interval = 1;
+	}
+	var startTimeLong = 0;
+	if (startTime) {
+		var startTimeLong = startTime.getTime();
 	}
 	var plotObj = $.jqplot(containerId, values, {
 
@@ -70,16 +74,35 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 				numberTicks : numberOfXTicks,
 				tickOptions : {
 					show : true,
+					angle : -30,
 					formatter : function(format, value) {
 						if (startTime) {
-							if (interval) {
-								return new Date(startTime.getTime() + value * interval * 1000).toLocaleString();
-							} else {
-								return new Date(startTime.getTime() + value * 1000).toLocaleString();
+							var pointDate = new Date(startTimeLong + value * interval * 1000);
+							var hour = pointDate.getHours();
+							var min = pointDate.getMinutes();
+							if (min < 10) { 
+								min = '0' + min;
 							}
+							var sec = pointDate.getSeconds();
+							return hour+":"+min+":"+sec;
 						} else {
-							return value.toFixed(0);
+							var usedTime = parseInt(value * interval);
+							var hour = parseInt((usedTime % (60 * 60 * 24)) / 3600);
+						    var min = parseInt((usedTime % 3600) / 60);
+							var sec = parseInt(usedTime % 60);
+						    if (sec < 10) {
+						    	sec = "0" + sec;
+						    }
+						    var display = min + ":" + sec;
+							if (0 < min < 10) { 
+								display = '0' + display;
+							}
+							if (hour > 0) { 
+								display = hour + ":" + display;
+							}
+							return display;
 						}
+
 					}
 				}
 			},

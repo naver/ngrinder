@@ -248,15 +248,15 @@ public class PerfTestController extends NGrinderBaseController {
 						"save test only support for SAVE or READY status");
 		checkArgument(test.getDuration() == null
 						|| test.getDuration() <= (1000 * 60 * 60 * agentManager.getMaxRunHour()),
-						"test duration should be within " + agentManager.getMaxRunHour());
+						"test duration should be within %s", agentManager.getMaxRunHour());
 		checkArgument(test.getRunCount() == null || test.getRunCount() <= agentManager.getMaxRunCount(),
-						"test run count should be within " + agentManager.getMaxRunCount());
+						"test run count should be within %s", agentManager.getMaxRunCount());
 		checkArgument(test.getAgentCount() == null
 						|| test.getAgentCount() <= agentManager.getMaxAgentSizePerConsole(),
-						"test agent shoule be within " + agentManager.getMaxAgentSizePerConsole());
+						"test agent shoule be within %s", agentManager.getMaxAgentSizePerConsole());
 		checkArgument(test.getVuserPerAgent() == null
 						|| test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
-						"test vuser shoule be within " + agentManager.getMaxVuserPerAgent());
+						"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());
 		test.setScriptRevision(-1L);
 
 		// deal with different time zone between user Local and Server
@@ -386,16 +386,20 @@ public class PerfTestController extends NGrinderBaseController {
 	String getReportData(User user, ModelMap model, @RequestParam long testId,
 					@RequestParam(required = true) String dataType, @RequestParam int imgWidth) {
 		checkTestPermissionAndGet(user, testId);
-		List<Object> reportData = null;
 		String[] dataTypes = StringUtils.split(dataType, ",");
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1 + dataTypes.length);
+		if (dataTypes.length <= 0) {
+			return JSONUtil.returnError();
+		}
 		rtnMap.put(JSON_SUCCESS, true);
+		int interval = perfTestService.getReportDataInterval(testId, dataTypes[0], imgWidth);
 		for (String dt : dataTypes) {
-			reportData = perfTestService.getReportData(testId, dt, imgWidth);
+			String reportData = perfTestService.getReportDataAsString(testId, dt, interval);
 			String rtnType = dt.replace("(", "").replace(")", "");
 			rtnMap.put(rtnType, reportData);
 		}
 
+		rtnMap.put(PARAM_TEST_CHART_INTERVAL, interval);
 		return JSONUtil.toJson(rtnMap);
 	}
 
@@ -403,11 +407,11 @@ public class PerfTestController extends NGrinderBaseController {
 	public String getReportDiv(User user, ModelMap model, @RequestParam long testId,
 					@RequestParam int imgWidth) {
 		PerfTest test = checkTestPermissionAndGet(user, testId);
-
-		String reportData = perfTestService.getReportDataAsString(testId,
-				"TPS", imgWidth);
+		int interval = perfTestService.getReportDataInterval(testId, "TPS", imgWidth);
+		String reportData = perfTestService.getReportDataAsString(testId, "TPS", interval);
 		model.addAttribute(PARAM_LOG_LIST, perfTestService.getLogFiles(testId));
 
+		model.addAttribute(PARAM_TEST_CHART_INTERVAL, interval);
 		model.addAttribute(PARAM_TEST, test);
 		model.addAttribute(PARAM_TPS, reportData);
 		return "perftest/reportDiv";
@@ -417,7 +421,7 @@ public class PerfTestController extends NGrinderBaseController {
 	public void downloadReportData(User user, HttpServletResponse response, @RequestParam long testId) {
 		checkTestPermissionAndGet(user, testId);
 		File targetFile = perfTestService.getReportFile(testId);
-		checkState(targetFile.exists(), "File " + targetFile.getName() + " doesn't exist!");
+		checkState(targetFile.exists(), "File %s doesn't exist!", targetFile.getName());
 		FileDownloadUtil.downloadFile(response, targetFile);
 	}
 

@@ -45,7 +45,6 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -690,6 +689,51 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		}
 		return new ProcessAndThread(1, 1);
 	}
+	
+	/**
+	 * get the data point interval of report data.
+	 * 
+	 * @param testId
+	 * @param dataType
+	 * @param imgWidth
+	 * @return interval value
+	 */
+	public int getReportDataInterval(long testId, String dataType, int imgWidth){
+		int pointCount = imgWidth / 10;
+		File reportFolder = config.getHome().getPerfTestDirectory(
+						testId + File.separator + NGrinderConstants.PATH_REPORT);
+		if (imgWidth < 100) {
+			imgWidth = 100;
+		}
+		int lineNumber;
+		int interval = 0;
+		File targetFile = null;
+		targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
+		if (!targetFile.exists()) {
+			LOGGER.error("Report data for {} in {} does not exisit.", testId, dataType);
+			return 0;
+		}
+		LineNumberReader lnr = null;
+
+		FileInputStream in = null;
+		InputStreamReader isr = null;
+		try {
+			in = new FileInputStream(targetFile);
+			isr = new InputStreamReader(in);
+			lnr = new LineNumberReader(isr);
+			lnr.skip(targetFile.length());
+			lineNumber = lnr.getLineNumber() + 1;
+			interval = lineNumber / pointCount;
+		} catch (Exception e) {
+			LOGGER.error("Get report data for " + dataType + " failed:" + e.getMessage(), e);
+		} finally {
+			IOUtils.closeQuietly(lnr);
+			IOUtils.closeQuietly(isr);
+			IOUtils.closeQuietly(in);
+		}
+		
+		return interval;
+	}
 
 	/**
 	 * get the test report data as a string.
@@ -703,17 +747,12 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return report data
 	 * @throws IOException
 	 */
-	public String getReportDataAsString(long testId, String dataType, int imgWidth) {
-		// TODO: not finished yet. It's better to directly get string in js
-		// array format.
-		int pointCount = imgWidth / 10;
+	public String getReportDataAsString(long testId, String dataType, int interval) {
+
 		StringBuilder reportData = new StringBuilder("[");
 		File reportFolder = config.getHome().getPerfTestDirectory(
 						testId + File.separator + NGrinderConstants.PATH_REPORT);
-		if (imgWidth < 100) {
-			imgWidth = 100;
-		}
-		int lineNumber;
+
 		File targetFile = null;
 		targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
 		if (!targetFile.exists()) {
@@ -722,22 +761,11 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		}
 		FileReader reader = null;
 		BufferedReader br = null;
-		LineNumberReader lnr = null;
-
-		FileInputStream in = null;
-		InputStreamReader isr = null;
 		try {
-			in = new FileInputStream(targetFile);
-			isr = new InputStreamReader(in);
-			lnr = new LineNumberReader(isr);
-			lnr.skip(targetFile.length());
-			lineNumber = lnr.getLineNumber() + 1;
-
 			reader = new FileReader(targetFile);
 			br = new BufferedReader(reader);
 			String data = null;
 			int current = 0;
-			int interval = lineNumber / pointCount;
 			while (StringUtils.isNotBlank(data = br.readLine())) {
 				if (0 == current) {
 					double number = NumberUtils.createDouble(data);
@@ -753,75 +781,11 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		} catch (IOException e) {
 			LOGGER.error("Get report data for " + dataType + " failed:" + e.getMessage(), e);
 		} finally {
-			IOUtils.closeQuietly(lnr);
-			IOUtils.closeQuietly(isr);
 			IOUtils.closeQuietly(reader);
 			IOUtils.closeQuietly(br);
-			IOUtils.closeQuietly(in);
 		}
 
 		return reportData.toString();
-	}
-
-	/**
-	 * get report data by test id, data type, and image width
-	 * 
-	 * @param testId
-	 * @param dataType
-	 * @param imgWidth
-	 * @return
-	 */
-	public List<Object> getReportData(long testId, String dataType, int imgWidth) {
-		// TODO: later, we can make the file content as the string of list, then
-		// we can
-		// just return the file content directly, it will be much faster.
-		int pointCount = imgWidth / 10;
-		List<Object> reportData = new ArrayList<Object>(pointCount);
-		File reportFolder = config.getHome().getPerfTestDirectory(
-						testId + File.separator + NGrinderConstants.PATH_REPORT);
-		if (imgWidth < 100) {
-			imgWidth = 100;
-		}
-
-		int lineNumber;
-		File targetFile = null;
-		targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
-		if (!targetFile.exists()) {
-			LOGGER.error("Report data for {} in {} does not exisit.", testId, dataType);
-			return reportData;
-		}
-		FileReader reader = null;
-		BufferedReader br = null;
-		LineNumberReader lnr = null;
-		try {
-			lnr = new LineNumberReader(new InputStreamReader(new FileInputStream(targetFile)));
-			lnr.skip(targetFile.length());
-			lineNumber = lnr.getLineNumber() + 1;
-
-			reader = new FileReader(targetFile);
-			br = new BufferedReader(reader);
-			String data = null;
-			int current = 0;
-			int interval = lineNumber / pointCount;
-			// TODO should get average data
-			while (StringUtils.isNotBlank(data = br.readLine())) {
-				if (0 == current) {
-					double number = NumberUtils.createDouble(data);
-					reportData.add(number);
-				}
-				if (++current >= interval) {
-					current = 0;
-				}
-			}
-		} catch (IOException e) {
-			LOGGER.error("Get report data for " + dataType + " failed:" + e.getMessage(), e);
-		} finally {
-			IOUtils.closeQuietly(lnr);
-			IOUtils.closeQuietly(reader);
-			IOUtils.closeQuietly(br);
-		}
-
-		return reportData;
 	}
 
 	/**
