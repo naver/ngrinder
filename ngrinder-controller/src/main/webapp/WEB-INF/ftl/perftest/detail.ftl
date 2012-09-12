@@ -786,6 +786,7 @@ i.collapse{
 			  var processes = $("#processes").val();
           	  $("#vuserPerAgent").val($("#processes").val() * $("#threads").val());
    		  	  if ( $("#vuserPerAgent").valid()) {
+   		  		  updateVuserGraph(processes);
 	              updateVuserTotal(); 
 	          }
           });
@@ -796,8 +797,6 @@ i.collapse{
    		  	  if ( $("#vuserPerAgent").valid()) {
 	              updateVuserGraph(processes);
 	              updateVuserTotal();
-	          } else {
-	        	  console.log("ooo");
 	          }
           });
           

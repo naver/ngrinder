@@ -68,6 +68,12 @@ public class PropertiesWrapperTest {
 		assertThat(newValue4, is("value4"));
 		nullValueStr = propWrapper.getProperty("NoValueKey", "null", "No value found for:{}");
 		assertThat(nullValueStr, is("null"));
+		
+		boolean boolVal = propWrapper.getPropertyBoolean("BoolKey", false);
+		assertThat(boolVal, is(false));
+		prop.put("BoolKey", "true");		
+		boolVal = propWrapper.getPropertyBoolean("BoolKey", false);
+		assertThat(boolVal, is(true));
 	
 	}
 }
