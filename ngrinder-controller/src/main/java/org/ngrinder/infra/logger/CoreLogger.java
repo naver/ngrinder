@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Provide core logger which does always report LOG..
  * 
- * This logger is subject to used to report major execution steps on ngrinder.
+ * This logger is subject to used to report the major execution steps on ngrinder.
  * 
  * @author JunHo Yoon
  * @since 3.0

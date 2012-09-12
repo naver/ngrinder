@@ -39,6 +39,9 @@ public class DataInit {
 	@Autowired
 	private HomeAsyncService homeAsyncService;
 
+	/**
+	 * Initialize the any data which is necessary during bootup.
+	 */
 	@PostConstruct
 	public void init() {
 		homeAsyncService.getLeftPanelEntries();

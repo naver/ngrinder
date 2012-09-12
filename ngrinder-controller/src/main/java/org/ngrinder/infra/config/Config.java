@@ -49,8 +49,8 @@ import ch.qos.logback.core.Context;
 import ch.qos.logback.core.joran.spi.JoranException;
 
 /**
- * Spring component which is responsible to get the nGrinder config which is stored
- * ${NGRINDER_HOME}.
+ * Spring component which is responsible to get the nGrinder config which is
+ * stored ${NGRINDER_HOME}.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -70,9 +70,14 @@ public class Config {
 	private Home home = null;
 	private PropertiesWrapper systemProperties;
 
+	/**
+	 * Initialize Config. This method mainly perform NGRINDER_HOME resolution
+	 * and system properties load. In addition, Logger is initialized and
+	 * default configuration file is copied into NGRINDER_HOME if it's the first
+	 */
 	@PostConstruct
 	public void init() {
-		
+
 		try {
 			home = resolveHome();
 			copyDefaultConfigurationFiles();
@@ -88,7 +93,7 @@ public class Config {
 	}
 
 	/**
-	 * Initialize Logger
+	 * Initialize Logger.
 	 */
 	public void initLogger() {
 		File gloablLogFile = getHome().getGloablLogFile();
@@ -123,8 +128,7 @@ public class Config {
 	private Home resolveHome() {
 		String userHomeFromEnv = System.getenv("NGRINDER_HOME");
 		String userHomeFromProperty = System.getProperty("ngrinder.home");
-		if (StringUtils.isNotEmpty(userHomeFromEnv)
-						&& !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
+		if (StringUtils.isNotEmpty(userHomeFromEnv) && !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
 			logger.warn("The path to ngrinder-home is ambiguous:");
 			logger.warn("    System Environment:  NGRINDER_HOME=" + userHomeFromEnv);
 			logger.warn("    Java Sytem Property:  ngrinder.home=" + userHomeFromProperty);
@@ -132,8 +136,8 @@ public class Config {
 		}
 		String userHome = null;
 		userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
-		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
-						System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
+		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(System.getProperty("user.home"),
+				NGRINDER_DEFAULT_FOLDER);
 
 		return new Home(homeDirectory);
 	}
@@ -152,7 +156,6 @@ public class Config {
 		properties.put("NGRINDER_HOME", home.getDirectory().getAbsolutePath());
 		systemProperties = new PropertiesWrapper(properties);
 	}
-	
 
 	public PropertiesWrapper getDatabaseProperties() {
 		checkNotNull(databaseProperties);
@@ -162,43 +165,67 @@ public class Config {
 	/**
 	 * if there is testmode property in system.properties.. return true
 	 * 
-	 * @return
+	 * @return true if test mode
 	 */
 	public boolean isTestMode() {
 		return getSystemProperties().getPropertyBoolean("testmode", false);
 	}
 
 	/**
-	 * if there is testmode property in system.properties.. return true
+	 * if there is security property in system.properties.. return true
 	 * 
-	 * @return
+	 * @return true if security mode.
 	 */
 	public boolean isSecurityEnabled() {
 		return getSystemProperties().getPropertyBoolean("security", false);
 	}
 
 	/**
-	 * if there is testmode property in system.properties.. return true
+	 * if there is pluginsupport property in system.properties.. return true
 	 * 
-	 * @return
+	 * @return true if plugin is supported.
 	 */
 	public boolean isPluginSupported() {
 		return (getSystemProperties().getPropertyBoolean("pluginsupport", true)) || !isTestMode();
 	}
 
+	/**
+	 * This method is specified for mocking. Only used for unit test
+	 * 
+	 * @param key
+	 *            key
+	 * @param defaultValue
+	 *            default value.
+	 * @return system property for the given key.
+	 */
 	String getSystemProperty(String key, String defaultValue) {
 		return getSystemProperties().getProperty(key, defaultValue);
 	}
 
+	/**
+	 * Get resolved home folder.
+	 * 
+	 * @return home
+	 */
 	public Home getHome() {
 		return this.home;
 	}
 
+	/**
+	 * Get system properties.
+	 * 
+	 * @return {@link PropertiesWrapper} which loaded system.conf.
+	 */
 	public PropertiesWrapper getSystemProperties() {
 		checkNotNull(systemProperties);
 		return systemProperties;
 	}
 
+	/**
+	 * Get nGrinder version number.
+	 * 
+	 * @return nGrinder version number.
+	 */
 	public String getVesion() {
 		return "3.0";
 	}
@@ -216,8 +243,7 @@ public class Config {
 	public String getProcessAndThreadPolicyScript() {
 		if (StringUtils.isEmpty(policyScript)) {
 			try {
-				policyScript = FileUtils.readFileToString(getHome()
-								.getSubFile("process_and_thread_policy.js"));
+				policyScript = FileUtils.readFileToString(getHome().getSubFile("process_and_thread_policy.js"));
 				return policyScript;
 			} catch (IOException e) {
 				logger.error("Error while load process_and_thread_policy.js", e);

@@ -52,6 +52,11 @@ public class DatabaseConfig implements NGrinderConstants {
 	@Autowired
 	private Config config;
 
+	/**
+	 * Get the dataSource based on the configuration.
+	 * 
+	 * @return dataSource
+	 */
 	@Bean(name = "dataSource", destroyMethod = "close")
 	public BasicDataSource dataSource() {
 		BasicDataSource dataSource = new BasicDataSource();
@@ -62,6 +67,14 @@ public class DatabaseConfig implements NGrinderConstants {
 		return dataSource;
 	}
 
+	/**
+	 * Create EntityManagerFactory for Hibernate. General Hibernate doesn't
+	 * support the search for the {@link Entity} classes in the Jar files. So in
+	 * this method, by dropping Hibernate entity class search and directly
+	 * search the {@link Entity} classes with {@link Reflections}
+	 * 
+	 * @return {@link LocalContainerEntityManagerFactoryBean}
+	 */
 	@Bean(name = "emf")
 	public LocalContainerEntityManagerFactoryBean emf() {
 		LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
@@ -92,6 +105,11 @@ public class DatabaseConfig implements NGrinderConstants {
 		return emf;
 	}
 
+	/**
+	 * Create the transactionManager.
+	 * 
+	 * @return {@link JpaTransactionManager}
+	 */
 	@Bean
 	public JpaTransactionManager transactionManager() {
 		JpaTransactionManager transactionManager = new JpaTransactionManager();

@@ -5,10 +5,11 @@ import java.io.File;
 import net.grinder.SingleConsole;
 
 /**
- * Null Object for {@link SingleConsole}
+ * Null Object for {@link SingleConsole}.
+ * This class is for invalidating default {@link SingleConsole} behavior.
  * 
  * @author JunHo Yoon
- * 
+ * @since 3.0 
  */
 public class NullSingleConsole extends SingleConsole {
 

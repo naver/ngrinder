@@ -1,3 +1,25 @@
+/*
+ * Copyright (C) 2012 - 2012 NHN Corporation
+ * All rights reserved.
+ *
+ * This file is part of The nGrinder software distribution. Refer to
+ * the file LICENSE which is part of The nGrinder distribution for
+ * licensing details. The nGrinder distribution is available on the
+ * Internet at http://nhnopensource.org/ngrinder
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package org.ngrinder.operation.cotroller;
 
 import java.io.ByteArrayOutputStream;
@@ -26,6 +48,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Script Runner for maintenance.
+ * 
+ * This class has the jython instance and put the most important class instances
+ * as variable in the jython. Admin and super user can run any jython code to
+ * print out or modify the internal ngrinder status.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -56,6 +82,10 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 
 	private PythonInterpreter interp;
 
+	/**
+	 * Initialize Jython and puts several managers and services into jython
+	 * context.
+	 */
 	@PostConstruct
 	public void init() {
 		interp = new PythonInterpreter();
@@ -68,6 +98,15 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 		interp.set("config", this.config);
 	}
 
+	/**
+	 * Run script. The run result is stored in "result" of the given model.
+	 * 
+	 * @param script
+	 *            script
+	 * @param model
+	 *            model
+	 * @return "operation/scriptConsole"
+	 */
 	@RequestMapping("")
 	public String runScript(@RequestParam(value = "script", required = false) String script, Model model) {
 		if (StringUtils.isNotBlank(script)) {
@@ -83,7 +122,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	 * 
 	 * @param script
 	 *            script
-	 * @return stdout and err
+	 * @return result printed in stdout and err
 	 */
 	public String processPython(final String script) {
 		try {
@@ -113,6 +152,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 		}
 	}
 
+	
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
