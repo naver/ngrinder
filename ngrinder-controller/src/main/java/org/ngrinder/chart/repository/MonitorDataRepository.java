@@ -24,17 +24,9 @@ package org.ngrinder.chart.repository;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
 import org.ngrinder.monitor.controller.domain.MonitorRecoder;
-import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
-import org.ngrinder.monitor.share.domain.JavaInfo;
-import org.ngrinder.monitor.share.domain.JavaInfoForEach;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -49,41 +41,11 @@ import org.springframework.stereotype.Component;
 public class MonitorDataRepository implements MonitorRecoder {
 
 	@Autowired
-	private JavaMonitorRepository javaMonitorRepository;
-
-	@Autowired
 	private SystemMonitorRepository systemMonitorRepository;
 	
 	@Override
 	public void before() {
 		// do nothing
-	}
-
-	@Override
-	public void recoderJavaInfo(String key, JavaInfo javaInfo, MonitorAgentInfo agentInfo) {
-		checkNotNull(javaInfo);
-		List<JavaInfoForEach> javaInfoForEachs = javaInfo.getJavaInfoForEach();
-		long collTime = DateUtil.getCollectTimeInLong(new Date(javaInfo.getCollectTime()));
-		for (JavaInfoForEach javaInfoForEach : javaInfoForEachs) {
-			JavaDataModel javaDataModel = new JavaDataModel();
-			javaDataModel.setCollectTime(collTime);
-			javaDataModel.setKey(agentInfo.getIp());
-			javaDataModel.setIp(agentInfo.getIp());
-			javaDataModel.setPort(agentInfo.getPort());
-			String newDispName = StringUtils.abbreviate(javaInfoForEach.getDisplayName(), 200);
-			javaDataModel.setDisplayName(newDispName);
-			javaDataModel.setHeapMaxMemory(javaInfoForEach.getHeapMemory().getMax());
-			javaDataModel.setHeapUsedMemory(javaInfoForEach.getHeapMemory().getUsed());
-			javaDataModel.setNonHeapMaxMemory(javaInfoForEach.getNonHeapMemory().getMax());
-			javaDataModel.setNonHeapUsedMemory(javaInfoForEach.getNonHeapMemory().getUsed());
-			javaDataModel.setCpuUsedPercentage(javaInfoForEach.getJavaCpuUsedPercentage());
-			javaDataModel.setPid(javaInfoForEach.getPid());
-			javaDataModel.setThreadCount(javaInfoForEach.getThreadCount());
-			javaDataModel.setUptime(javaInfoForEach.getUptime());
-
-			javaMonitorRepository.save(javaDataModel);
-		}
-
 	}
 
 	@Override

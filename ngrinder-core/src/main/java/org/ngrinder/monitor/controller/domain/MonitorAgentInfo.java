@@ -42,18 +42,6 @@ public class MonitorAgentInfo {
 		this.recoder = recoder;
 	}
 
-	public static MonitorAgentInfo getAgentMonitor(String ip, int port, MonitorRecoder recoder) {
-		return new MonitorAgentInfo(ip, port, MonitorCollection.getAgentMonitorCollection(), recoder);
-	}
-
-	public static MonitorAgentInfo getTargetMonitor(String ip, int port, MonitorRecoder recoder) {
-		return new MonitorAgentInfo(ip, port, MonitorCollection.getTargetMonitorCollection(), recoder);
-	}
-
-	public static MonitorAgentInfo getJavaMonitor(String ip, int port, MonitorRecoder recoder) {
-		return new MonitorAgentInfo(ip, port, MonitorCollection.getJavaMonitorCollection(), recoder);
-	}
-
 	public static MonitorAgentInfo getSystemMonitor(String ip, int port, MonitorRecoder recoder) {
 		return new MonitorAgentInfo(ip, port, MonitorCollection.getSystemMonitorCollection(), recoder);
 	}

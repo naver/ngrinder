@@ -22,13 +22,10 @@
  */
 package org.ngrinder.monitor.controller.domain;
 
-import org.ngrinder.monitor.share.domain.JavaInfo;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
 public interface MonitorRecoder {
 	void before();
-
-	void recoderJavaInfo(final String key, final JavaInfo javaInfo, final MonitorAgentInfo agentInfo);
 
 	void recoderSystemInfo(final String key, final SystemInfo systemInfo, final MonitorAgentInfo agentInfo);
 

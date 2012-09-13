@@ -48,24 +48,8 @@ public class MonitorAgentService {
 
 	@Autowired
 	private MonitorDataRepository monitorDataRepository;
-	
-	private static final String agentType = "A";
-	private static final String monitorType = "M"; 
 
-	/**
-	 * Add agents to be monitored
-	 * 
-	 * @param agent
-	 */
-	public void addMonitorAgent(String key, Set<AgentInfo> agents) {
-		addMonitor(key, agents, agentType);
-	}
-	
-	public void addMonitorTarget(String key, Set<AgentInfo> agents) {
-		addMonitor(key, agents, monitorType);
-	}
-
-	private void addMonitor(String key, Set<AgentInfo> agents, String type) {
+	public void addMonitor(String key, Set<AgentInfo> agents) {
 		MonitorExecuteManager manager = MonitorExecuteCache.getInstance().getCache(key);
 		if (null != manager) {
 			LOG.debug("Monitor agent/target:{} is already exists.", key);
@@ -76,9 +60,7 @@ public class MonitorAgentService {
 
 		Set<MonitorAgentInfo> agentInfoSet = new HashSet<MonitorAgentInfo>();
 		for (AgentInfo agent : agents) {
-			MonitorAgentInfo monitorAgentInfo = type.equals(agentType)
-					? MonitorAgentInfo.getAgentMonitor(agent.getIp(), agent.getPort(), monitorDataRepository)
-					: MonitorAgentInfo.getTargetMonitor(agent.getIp(), agent.getPort(), monitorDataRepository);
+			MonitorAgentInfo monitorAgentInfo = MonitorAgentInfo.getSystemMonitor(agent.getIp(), agent.getPort(), monitorDataRepository);
 			agentInfoSet.add(monitorAgentInfo);
 		}
 

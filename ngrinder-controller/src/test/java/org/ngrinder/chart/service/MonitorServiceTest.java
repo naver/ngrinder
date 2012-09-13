@@ -31,7 +31,6 @@ import java.util.List;
 import org.apache.commons.lang.math.NumberUtils;
 import org.junit.Test;
 import org.ngrinder.chart.AbstractChartTransactionalTest;
-import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -45,18 +44,6 @@ public class MonitorServiceTest extends AbstractChartTransactionalTest {
 	
 	@Autowired
 	private MonitorService monitorService;
-
-	/**
-	 * Test method for {@link org.ngrinder.chart.service.MonitorService#saveJavaMonitorInfo(org.ngrinder.monitor.controller.model.JavaDataModel)}.
-	 */
-	@Test
-	public void testSaveAndGetJavaMonitorInfo() {
-		long startTime = NumberUtils.toLong(df.format(new Date()));
-		JavaDataModel javaInfo = newJavaData(startTime, "10.0.0.1");
-		monitorService.saveJavaMonitorInfo(javaInfo);
-		List<JavaDataModel> infoList = monitorService.getJavaMonitorData("10.0.0.1", startTime, startTime);
-		assertThat(infoList.size(), is(1));
-	}
 
 	/**
 	 * Test method for {@link org.ngrinder.chart.service.MonitorService#saveSystemMonitorInfo(org.ngrinder.monitor.controller.model.SystemDataModel)}.

@@ -53,7 +53,7 @@ public final class AgentDataCollectManager {
 	}
 
 	public int getInterval() {
-		return MonitorConstants.DEFAULT_AGENT_COLLECTOR_INTERVAL;
+		return MonitorConstants.DEFAULT_MONITOR_COLLECTOR_INTERVAL;
 	}
 
 	public void start() {

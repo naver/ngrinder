@@ -59,11 +59,8 @@ import net.grinder.util.thread.Condition;
 
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.infra.AgentConfig;
-import org.ngrinder.monitor.agent.collector.AgentJavaDataCollector;
 import org.ngrinder.monitor.agent.collector.AgentSystemDataCollector;
-import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
-import org.ngrinder.monitor.share.domain.JavaInfo;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,11 +88,11 @@ public class AgentController implements Agent {
 
 	private GrinderProperties m_grinderProperties;
 
-	private AgentJavaDataCollector agentJavaDataCollector = new AgentJavaDataCollector();
 	private AgentSystemDataCollector agentSystemDataCollector = new AgentSystemDataCollector();
 
 	private int m_connectionPort = 0;
-	private boolean windows = false;
+
+	private static SystemDataModel emptySystemDataModel = new SystemDataModel();
 
 	/**
 	 * Constructor.
@@ -114,23 +111,7 @@ public class AgentController implements Agent {
 		m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, m_logger);
 		m_agentIdentity = new AgentControllerIdentityImplementation(getHostName(), getHostAddress());
 
-		// set monitored VMs during starting agents.
-		// FIXME when a test is started, there will be some worker processes to
-		// run, these worker
-		// processes
-		// should be within the java monitor scope. So we should call this
-		// refresh to update the
-		// monitored Vms
-		// after a test has started.
-		agentJavaDataCollector.refresh();
 		agentSystemDataCollector.refresh();
-		windows = isWindows();
-	}
-
-	public static boolean isWindows() {
-		String os = System.getProperty("os.name").toLowerCase();
-		// windows
-		return (os.indexOf("win") >= 0);
 	}
 
 	/**
@@ -194,7 +175,7 @@ public class AgentController implements Agent {
 							m_logger.info("connected to agent controller server at {}", connector.getEndpointAsString());
 						} catch (CommunicationException e) {
 							m_logger.error("Error while connecting to {} : {}" , connector.getEndpointAsString(), e.getMessage());
-							m_logger.debug(e.getMessage(), e);
+							m_logger.error(e.getMessage(), e);
 							return;
 						}
 					}
@@ -333,7 +314,7 @@ public class AgentController implements Agent {
 			try {
 				consoleCommunication.sendCurrentState();
 			} catch (CommunicationException e) {
-				m_logger.error("Error while sending current state", e.getMessage());
+				m_logger.error("Error while sending current state" + e.getMessage(), e);
 			}
 		}
 	}
@@ -375,38 +356,9 @@ public class AgentController implements Agent {
 			SystemInfo systemInfo = agentSystemDataCollector.execute();
 			return new SystemDataModel(systemInfo);
 		} catch (Exception e) {
-			m_logger.error("Error while get system perf data model : " + e.getMessage());
+			m_logger.error("Error while get system perf data model : " + e.getMessage(), e);
 			return emptySystemDataModel;
 		}
-	}
-
-	private static JavaDataModel emptyJavaDataModel = new JavaDataModel();
-	private static SystemDataModel emptySystemDataModel = new SystemDataModel();
-
-	/**
-	 * Get current java performance.
-	 * 
-	 * @return {@link JavaDataModel} instance
-	 */
-	public JavaDataModel getJavaDataModel() {
-		try {
-			if (windows) {
-				return emptyJavaDataModel;
-			}
-			JavaInfo javaInfo = agentJavaDataCollector.execute();
-			JavaDataModel javaDataModel = new JavaDataModel(javaInfo);
-
-			javaDataModel.setKey(getHostAddress());
-			javaDataModel.setIp(getHostAddress());
-			javaDataModel.setPort(m_grinderProperties.getInt(AgentConfig.AGENT_CONTROLER_SERVER_PORT,
-					AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT));
-
-			return javaDataModel;
-		} catch (Exception e) {
-			m_logger.error("Error while get java perf data model : " + e.getMessage());
-			return emptyJavaDataModel;
-		}
-
 	}
 
 	public AgentConfig getAgentConfig() {
@@ -426,7 +378,7 @@ public class AgentController implements Agent {
 			final ClientReceiver receiver = ClientReceiver.connect(connector, new AgentAddress(m_agentIdentity));
 			m_sender = ClientSender.connect(receiver);
 
-			m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.STARTED, getJavaDataModel(), getSystemDataModel(),
+			m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.STARTED, getSystemDataModel(),
 					m_connectionPort));
 			final MessageDispatchSender messageDispatcher = new MessageDispatchSender();
 			m_agentControllerServerListener.registerMessageHandlers(messageDispatcher);
@@ -439,8 +391,7 @@ public class AgentController implements Agent {
 						sendCurrentState();
 					} catch (CommunicationException e) {
 						cancel();
-						m_logger.error("Error while sending current state.");
-						m_logger.debug("Error while sending current state." + e.getMessage());
+						m_logger.error("Error while sending current state:" + e.getMessage(), e);
 					}
 				}
 			};
@@ -450,12 +401,12 @@ public class AgentController implements Agent {
 			try {
 				m_sender.send(message);
 			} catch (CommunicationException e) {
-				m_logger.error(e.getMessage());
+				m_logger.error(e.getMessage(), e);
 			}
 		}
 
 		public void sendCurrentState() throws CommunicationException {
-			sendMessage(new AgentControllerProcessReportMessage(m_state, getJavaDataModel(), getSystemDataModel(), m_connectionPort));
+			sendMessage(new AgentControllerProcessReportMessage(m_state, getSystemDataModel(), m_connectionPort));
 		}
 
 		public void start() {
@@ -466,7 +417,7 @@ public class AgentController implements Agent {
 		public void shutdown() {
 			m_reportRunningTask.cancel();
 			try {
-				m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.FINISHED, null, null, 0));
+				m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.FINISHED, null, 0));
 			} catch (CommunicationException e) {
 				// Fall through
 				// Ignore - peer has probably shut down.

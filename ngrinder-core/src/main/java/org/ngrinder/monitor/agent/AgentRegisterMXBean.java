@@ -31,14 +31,12 @@ import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.MonitorContext;
-import org.ngrinder.monitor.agent.mxbean.JavaMonitoringData;
 import org.ngrinder.monitor.agent.mxbean.SystemMonitoringData;
 import org.ngrinder.monitor.agent.mxbean.core.MXBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class AgentRegisterMXBean {
 	private static final Logger LOG = LoggerFactory.getLogger(AgentRegisterMXBean.class);
@@ -51,9 +49,7 @@ public final class AgentRegisterMXBean {
 			InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException,
 			NullPointerException {
 		Set<String> dataCollectors = MonitorContext.getInstance().getDataCollectors();
-		if (dataCollectors.contains(MonitorConstants.JAVA)) {
-			addMXBean(mbeanServer, MonitorConstants.JAVA, new JavaMonitoringData());
-		}
+
 		if (dataCollectors.contains(MonitorConstants.SYSTEM)) {
 			addMXBean(mbeanServer, MonitorConstants.SYSTEM, new SystemMonitoringData());
 		}

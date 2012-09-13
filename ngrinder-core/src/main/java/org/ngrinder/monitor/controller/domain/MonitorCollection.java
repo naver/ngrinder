@@ -27,61 +27,26 @@ import java.util.List;
 
 import javax.management.ObjectName;
 
+import org.ngrinder.monitor.MonitorConstants;
+import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.monitor.share.domain.JavaInfo;
-import org.ngrinder.monitor.share.domain.SystemInfo;
 
 public class MonitorCollection {
 	private static final Logger LOG = LoggerFactory.getLogger(MonitorCollection.class);
 	protected List<MonitorCollectionInfoDomain> collectionList = new ArrayList<MonitorCollectionInfoDomain>();
 
-	private static final MonitorCollection AGENT_MONITOR_COLLECTION_INSTANCE = new MonitorCollection();
-	private static final MonitorCollection TARGET_MONITOR_COLLECTION_INSTANCE = new MonitorCollection();
-	private static final MonitorCollection JAVA_MONITOR_COLLECTION_INSTANCE = new MonitorCollection();
 	private static final MonitorCollection SYSTEM_MONITOR_COLLECTION_INSTANCE = new MonitorCollection();
 
 	static {
-		AGENT_MONITOR_COLLECTION_INSTANCE.addJavaMonitorCollection();
-		AGENT_MONITOR_COLLECTION_INSTANCE.addSystemMonitorCollection();
-
-		TARGET_MONITOR_COLLECTION_INSTANCE.addSystemMonitorCollection();
-
-		JAVA_MONITOR_COLLECTION_INSTANCE.addJavaMonitorCollection();
-
 		SYSTEM_MONITOR_COLLECTION_INSTANCE.addSystemMonitorCollection();
-
 	}
 
 	private MonitorCollection() {
 	}
 
-	static MonitorCollection getAgentMonitorCollection() {
-		return AGENT_MONITOR_COLLECTION_INSTANCE;
-	}
-
-	static MonitorCollection getTargetMonitorCollection() {
-		return TARGET_MONITOR_COLLECTION_INSTANCE;
-	}
-
-	static MonitorCollection getJavaMonitorCollection() {
-		return JAVA_MONITOR_COLLECTION_INSTANCE;
-	}
-
 	static MonitorCollection getSystemMonitorCollection() {
 		return SYSTEM_MONITOR_COLLECTION_INSTANCE;
-	}
-
-	private void addJavaMonitorCollection() {
-		try {
-			String objNameStr = MonitorConstants.DEFAULT_MONITOR_DOMAIN + ":" + MonitorConstants.JAVA;
-			ObjectName javaBasicName = new ObjectName(objNameStr);
-			collectionList.add(new MonitorCollectionInfoDomain(javaBasicName, "JavaInfo", JavaInfo.class));
-		} catch (Exception e) {
-			LOG.error(e.getMessage(), e);
-		}
 	}
 
 	private void addSystemMonitorCollection() {

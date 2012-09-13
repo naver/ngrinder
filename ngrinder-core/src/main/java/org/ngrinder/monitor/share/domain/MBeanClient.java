@@ -22,9 +22,6 @@
  */
 package org.ngrinder.monitor.share.domain;
 
-import static org.ngrinder.common.util.Preconditions.checkArgument;
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
@@ -57,8 +54,6 @@ public class MBeanClient {
 
 	private ConnectionState connectionState = ConnectionState.DISCONNECTED;
 
-	private JavaVirtualMachineInfo jvmInfo;
-
 	private String hostName = null;
 	private int port = 0;
 	private JMXServiceURL jmxUrl = null;
@@ -73,21 +68,6 @@ public class MBeanClient {
 	private ThreadMXBean threadMBean = null;
 
 	private OperatingSystemMXBean sunOperatingSystemMXBean = null;
-
-	/**
-	 * used to connect local JVM
-	 * @param jvmInfo
-	 * @throws IOException
-	 */
-	public MBeanClient(JavaVirtualMachineInfo jvmInfo) throws IOException {
-		checkNotNull(jvmInfo);
-		this.jvmInfo = jvmInfo;
-		if (!this.jvmInfo.isManageable()) {
-			this.jvmInfo.loadAgent();
-			checkArgument(jvmInfo.isManageable(), "%s not manageable", this.jvmInfo);
-		}
-		this.jmxUrl = new JMXServiceURL(this.jvmInfo.getAddress());
-	}
 
 	/**
 	 * Used to connect remote monitor JMX

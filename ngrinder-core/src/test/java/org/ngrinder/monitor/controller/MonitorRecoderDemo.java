@@ -24,7 +24,6 @@ package org.ngrinder.monitor.controller;
 
 import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
 import org.ngrinder.monitor.controller.domain.MonitorRecoder;
-import org.ngrinder.monitor.share.domain.JavaInfo;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
 /**
@@ -43,15 +42,8 @@ public class MonitorRecoderDemo implements MonitorRecoder {
 	}
 
 	@Override
-	public void recoderJavaInfo(String key, JavaInfo javaInfo, MonitorAgentInfo agentInfo) {
-		System.out.println(key);
-		System.out.println(javaInfo);
-	}
-
-	@Override
 	public void recoderSystemInfo(String key, SystemInfo systemInfo, MonitorAgentInfo agentInfo) {
-		System.out.println(key);
-		System.out.println(systemInfo);
+		System.out.println("Record system info: " + systemInfo + " for:" + key);
 	}
 
 	@Override

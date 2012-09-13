@@ -22,14 +22,13 @@
  */
 package net.grinder.message.console;
 
-import org.ngrinder.monitor.controller.model.JavaDataModel;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
-
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.communication.Address;
 import net.grinder.communication.AddressAwareMessage;
 import net.grinder.communication.CommunicationException;
 import net.grinder.messages.console.AgentAddress;
+
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 
 /**
  * Message for informing the console of agent process status.
@@ -45,8 +44,6 @@ public class AgentControllerProcessReportMessage implements AddressAwareMessage 
 
 	private transient AgentAddress m_processAddress;
 
-	private final JavaDataModel javaDataModel;
-
 	private final SystemDataModel systemDataModel;
 
 	private int connectingPort = 0;
@@ -57,10 +54,9 @@ public class AgentControllerProcessReportMessage implements AddressAwareMessage 
 	 * @param state
 	 *            The process state. See {@link net.grinder.common.processidentity.ProcessReport}.
 	 */
-	public AgentControllerProcessReportMessage(AgentControllerState state, JavaDataModel javaDataModel,
+	public AgentControllerProcessReportMessage(AgentControllerState state,
 					SystemDataModel systemDataModel, int connectingPort) {
 		m_state = state;
-		this.javaDataModel = javaDataModel;
 		this.systemDataModel = systemDataModel;
 		this.connectingPort = connectingPort;
 	}
@@ -103,10 +99,6 @@ public class AgentControllerProcessReportMessage implements AddressAwareMessage 
 	 */
 	public AgentControllerState getState() {
 		return m_state;
-	}
-
-	public JavaDataModel getJavaDataModel() {
-		return javaDataModel;
 	}
 
 	public SystemDataModel getSystemDataModel() {

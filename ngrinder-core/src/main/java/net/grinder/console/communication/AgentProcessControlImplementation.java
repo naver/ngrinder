@@ -46,7 +46,6 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 
-import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -294,15 +293,8 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 		public void setAgentProcessStatus(AgentControllerProcessReportMessage message) {
 			logger.trace("agent perf status on {} is {}", message.getAgentIdentity(),
-							message.getJavaDataModel());
-			logger.trace("agent perf status on {} is {}", message.getAgentIdentity(),
 							message.getSystemDataModel());
 			m_agentReference = new AgentReference(message);
-		}
-
-		public JavaDataModel getJavaDataModel() {
-			return m_agentReference == null ? null : m_agentReference.m_agentProcessReportMessage
-							.getJavaDataModel();
 		}
 
 		public SystemDataModel getSystemDataModel() {
@@ -420,7 +412,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		 *            {@link AgentAddress} in which the agent process is not known.
 		 */
 		public UnknownAgentProcessReport(AgentAddress address) {
-			super(AgentControllerState.UNKNOWN, null, null, 0);
+			super(AgentControllerState.UNKNOWN, null, 0);
 			try {
 				setAddress(address);
 			} catch (CommunicationException e) {
@@ -436,11 +428,6 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	@Override
 	public AgentControllerState getAgentControllerState(AgentIdentity agentIdentity) {
 		return getAgentStatus(agentIdentity).getAgentControllerState();
-	}
-
-	@Override
-	public JavaDataModel getJavaDataModel(AgentIdentity agentIdentity) {
-		return getAgentStatus(agentIdentity).getJavaDataModel();
 	}
 
 	@Override

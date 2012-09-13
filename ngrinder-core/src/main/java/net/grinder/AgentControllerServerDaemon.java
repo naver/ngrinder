@@ -42,7 +42,6 @@ import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.thread.Condition;
 
 import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,11 +187,6 @@ public class AgentControllerServerDaemon {
 	public Set<AgentIdentity> getAllFreeAgents() {
 		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgents(
 						AgentControllerState.READY, 0);
-	}
-
-	public JavaDataModel getJavaDataModel(AgentIdentity agentIdentity) {
-		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getJavaDataModel(
-						agentIdentity);
 	}
 
 	public SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {

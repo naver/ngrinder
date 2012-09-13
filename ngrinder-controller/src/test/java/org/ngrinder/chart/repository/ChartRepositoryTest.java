@@ -32,7 +32,6 @@ import java.util.List;
 import org.apache.commons.lang.math.NumberUtils;
 import org.junit.Test;
 import org.ngrinder.chart.AbstractChartTransactionalTest;
-import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -43,9 +42,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 3.0
  */
 public class ChartRepositoryTest extends AbstractChartTransactionalTest {
-	
-	@Autowired
-	private JavaMonitorRepository javaRepository;
 
 	@Autowired
 	private SystemMonitorRepository systemRepository;
@@ -57,15 +53,7 @@ public class ChartRepositoryTest extends AbstractChartTransactionalTest {
 	public void addMockMonitorData() {
 		int i = 1000 * 20;
 		long colTime = 20120719010101L;
-		while (i > 0) {
-			JavaDataModel javaInfo = newJavaData(colTime, "127.0.0.1");
-			javaRepository.save(javaInfo);
-			colTime++;
-			i--;
-		}
 
-		i = 1000 * 20;
-		colTime = 20120719010101L;
 		while (i > 0) {
 			SystemDataModel sysInfo = newSysData(colTime, "127.0.0.1");
 			systemRepository.save(sysInfo);
@@ -82,29 +70,6 @@ public class ChartRepositoryTest extends AbstractChartTransactionalTest {
 		SystemDataModel infoInDb = systemRepository.findOne(sysInfo.getId());
 		assertTrue(infoInDb.getId().equals(sysInfo.getId())
 				&& infoInDb.getCpuUsedPercentage() == sysInfo.getCpuUsedPercentage());
-	}
-
-	@Test
-	public void testGetJavaMonitorData() {
-		
-		//insert one record and get to check
-		long startTime = NumberUtils.toLong(df.format(new Date()));
-		JavaDataModel javaInfo = newJavaData(startTime, "10.0.0.1");
-		javaRepository.save(javaInfo);
-		JavaDataModel infoInDb = javaRepository.findOne(javaInfo.getId());
-		assertTrue(infoInDb.getId().equals(javaInfo.getId())
-				&& infoInDb.getCpuUsedPercentage() == javaInfo.getCpuUsedPercentage());
-		
-		long endTime = startTime + 100;
-		List<JavaDataModel> infoList = javaRepository.findAllByIpAndCollectTimeBetween("10.0.0.1", startTime, endTime);
-		assertThat(infoList.size(), is(1));
-
-		//insert another to check
-		javaInfo = newJavaData(startTime + 1, "10.0.0.1");
-		javaRepository.save(javaInfo);
-		infoList = javaRepository.findAllByIpAndCollectTimeBetween("10.0.0.1", startTime, endTime);
-		assertThat(infoList.size(), is(2));
-		
 	}
 
 	@Test

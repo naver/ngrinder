@@ -50,11 +50,6 @@ public class AgentConfig {
 	public static final String AGENT_HOSTID = "agent.hostid";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentConfig.class);
-	private final boolean agentSide;
-
-	public AgentConfig() {
-		this.agentSide = false;
-	}
 
 	private AgentHome home = null;
 	private PropertiesWrapper agentProperties;

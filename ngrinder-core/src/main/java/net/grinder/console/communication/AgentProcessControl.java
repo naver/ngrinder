@@ -24,12 +24,11 @@ package net.grinder.console.communication;
 
 import java.util.Set;
 
-import org.ngrinder.monitor.controller.model.JavaDataModel;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
-
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.message.console.AgentControllerState;
+
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 
 /**
  * AgentProcessControl interface.
@@ -93,13 +92,6 @@ public interface AgentProcessControl {
 	 * @return {@link JavaDataModel} instance if available. null otherwise
 	 */
 	SystemDataModel getSystemDataModel(AgentIdentity agentIdentity);
-
-	/**
-	 * Get {@link SystemDataModel} for given {@link AgentIdentity}
-	 * 
-	 * @return {@link SystemDataModel} instance if available. null otherwise
-	 */
-	JavaDataModel getJavaDataModel(AgentIdentity agentIdentity);
 
 	/**
 	 * Get agent controller state for the given agent identity.

@@ -30,7 +30,6 @@ import java.util.Date;
 import org.junit.Test;
 import org.ngrinder.chart.AbstractChartTransactionalTest;
 import org.ngrinder.chart.service.MonitorService;
-import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
@@ -73,9 +72,7 @@ public class MonitorControllerTest extends AbstractChartTransactionalTest {
 		long endTimelong = Long.valueOf(df.format(new Date()));
 		long startTimeLong = endTimelong - 10 *60 * 1000; //10 minutes before
 
-		//add 2 record, make sure getMonitorData() can get data
-		JavaDataModel javaInfo = newJavaData(endTimelong, "10.0.0.1");
-		monitorService.saveJavaMonitorInfo(javaInfo);
+		//add record, make sure getMonitorData() can get data
 		SystemDataModel systemInfo = newSysData(endTimelong, "10.0.0.1");
 		monitorService.saveSystemMonitorInfo(systemInfo);
 		

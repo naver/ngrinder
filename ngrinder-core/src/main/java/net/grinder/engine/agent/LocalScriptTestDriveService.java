@@ -154,7 +154,7 @@ public class LocalScriptTestDriveService {
 				}
 			}
 		} catch (Exception e) {
-			LOGGER.error("error while executing {}", script, e);
+			LOGGER.error("error while executing {}, because:{}", script, e.getMessage());
 		} finally {
 			if (workerLauncher != null) {
 				workerLauncher.shutdown();

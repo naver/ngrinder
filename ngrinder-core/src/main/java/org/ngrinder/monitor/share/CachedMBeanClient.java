@@ -25,21 +25,10 @@ package org.ngrinder.monitor.share;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.ngrinder.monitor.share.domain.JavaVirtualMachineInfo;
 import org.ngrinder.monitor.share.domain.MBeanClient;
 
 public class CachedMBeanClient {
 	private static ConcurrentHashMap<String, MBeanClient> cache = new ConcurrentHashMap<String, MBeanClient>();
-
-	public static MBeanClient getMBeanClient(JavaVirtualMachineInfo jvmInfo) throws IOException {
-		final String key = getCacheKey(jvmInfo);
-		MBeanClient mc = cache.get(key);
-		if (mc == null) {
-			mc = new MBeanClient(jvmInfo);
-			cache.putIfAbsent(key, mc);
-		}
-		return mc;
-	}
 
 	public static MBeanClient getMBeanClient(String hostName, int port) throws IOException {
 		final String key = getCacheKey(hostName, port);
@@ -55,7 +44,4 @@ public class CachedMBeanClient {
 		return (hostName == null ? "" : hostName) + "_" + port;
 	}
 
-	private static String getCacheKey(JavaVirtualMachineInfo jvmInfo) {
-		return String.valueOf(jvmInfo.getVmid());
-	}
 }

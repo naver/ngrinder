@@ -27,7 +27,6 @@ import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang.math.RandomUtils;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 
 /**
@@ -40,22 +39,6 @@ public abstract class AbstractChartTransactionalTest extends AbstractNGrinderTra
 
 	protected static final String DATE_FORMAT = "yyyyMMddHHmmss";
 	protected static final DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-	
-	protected JavaDataModel newJavaData(long colTime, String ip) {
-		JavaDataModel javaInfo = new JavaDataModel();
-		javaInfo.setIp(ip);
-		javaInfo.setCollectTime(colTime);
-		javaInfo.setCpuUsedPercentage(RandomUtils.nextFloat());
-		javaInfo.setHeapMaxMemory(2048000);
-		int used = RandomUtils.nextInt(2048000);
-		javaInfo.setHeapUsedMemory(used);
-		javaInfo.setNonHeapMaxMemory(1024000);
-		used = RandomUtils.nextInt(1024000);
-		javaInfo.setNonHeapUsedMemory(1024000 - used);
-		javaInfo.setThreadCount(RandomUtils.nextInt(20));
-		javaInfo.setPort(12345);
-		return javaInfo;
-	}
 
 	protected SystemDataModel newSysData(long colTime, String ip) {
 		SystemDataModel sysInfo = new SystemDataModel();

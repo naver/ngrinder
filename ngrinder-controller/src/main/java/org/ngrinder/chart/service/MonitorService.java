@@ -26,13 +26,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
-import org.ngrinder.chart.repository.JavaMonitorRepository;
 import org.ngrinder.chart.repository.SystemMonitorRepository;
-import org.ngrinder.infra.AgentConfig;
-import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,34 +43,13 @@ import org.springframework.stereotype.Service;
 public class MonitorService {
 
 	@Autowired
-	private JavaMonitorRepository javaMonitorRepository;
-
-	@Autowired
 	private SystemMonitorRepository sysMonitorRepository;
-	
-	@PostConstruct
-	public void initMonitorEnv() {
-		// Which it use agent congig.. here... 
-		AgentConfig agentConfig = new AgentConfig();
-		agentConfig.init();
-		MonitorConstants.init(agentConfig);
-	}
-
-
-	public JavaDataModel saveJavaMonitorInfo(JavaDataModel data) {
-		checkNotNull(data);
-		return javaMonitorRepository.save(data);
-	}
 
 	public SystemDataModel saveSystemMonitorInfo(SystemDataModel data) {
 		checkNotNull(data);
 		return sysMonitorRepository.save(data);
 	}
-	
-	public List<JavaDataModel> getJavaMonitorData(String ip, long startTime, long endTime) {
-		return javaMonitorRepository.findAllByIpAndCollectTimeBetween(ip, startTime, endTime);
-	}
-	
+
 	public List<SystemDataModel> getSystemMonitorData(String ip, long startTime, long endTime) {
 		return sysMonitorRepository.findAllByIpAndCollectTimeBetween(ip, startTime, endTime);
 	}

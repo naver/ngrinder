@@ -41,7 +41,7 @@ public class MonitorExecuteManagerTest {
 	@Test
 	public void getMonitorData() {
 		Set<MonitorAgentInfo> agentInfo = new HashSet<MonitorAgentInfo>();
-		MonitorAgentInfo monitorAgentInfo = MonitorAgentInfo.getAgentMonitor("127.0.0.1", 4096,
+		MonitorAgentInfo monitorAgentInfo = MonitorAgentInfo.getSystemMonitor("127.0.0.1", 4096,
 				new MonitorRecoderDemo());
 		agentInfo.add(monitorAgentInfo);
 		MonitorExecuteManager monitorExecuteManager = new MonitorExecuteManager("127.0.0.1", 2, 1, agentInfo);
