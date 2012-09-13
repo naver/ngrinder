@@ -23,7 +23,6 @@
 package org.ngrinder.infra.spring;
 
 import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
-import org.ngrinder.infra.init.MockSpringContext;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /**

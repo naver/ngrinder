@@ -22,7 +22,7 @@ public class NullSingleConsole extends SingleConsole {
 		return Long.MAX_VALUE;
 	}
 
-	@Override
+	@Override	
 	public long getCurrentTestsCount() {
 		return Long.MAX_VALUE;
 	}

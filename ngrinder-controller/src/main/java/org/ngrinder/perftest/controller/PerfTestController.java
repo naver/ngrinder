@@ -35,8 +35,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletResponse;
+
+import net.grinder.common.processidentity.AgentIdentity;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -52,6 +55,7 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.model.FileEntry;
@@ -250,9 +254,9 @@ public class PerfTestController extends NGrinderBaseController {
 		checkArgument(test.getRunCount() == null || test.getRunCount() <= agentManager.getMaxRunCount(),
 						"test run count should be within %s", agentManager.getMaxRunCount());
 		checkArgument(test.getAgentCount() == null || test.getAgentCount() <= agentManager.getMaxAgentSizePerConsole(),
-				"test agent shoule be within %s", agentManager.getMaxAgentSizePerConsole());
+						"test agent shoule be within %s", agentManager.getMaxAgentSizePerConsole());
 		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
-				"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());
+						"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());
 		test.setScriptRevision(-1L);
 
 		// deal with different time zone between user Local and Server
@@ -265,7 +269,6 @@ public class PerfTestController extends NGrinderBaseController {
 		return "redirect:/perftest/list";
 	}
 
-
 	/**
 	 * leave comment on the perftest
 	 * 
@@ -277,8 +280,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/leaveComment", method = RequestMethod.POST)
 	public @ResponseBody
-	String leaveComment(User user, @RequestParam("testComment") String testComment,
-					@RequestParam("testId") Long testId) {
+	String leaveComment(User user, @RequestParam("testComment") String testComment, @RequestParam("testId") Long testId) {
 		perfTestService.addCommentOn(user, testId, testComment);
 		return JSONUtil.returnSuccess();
 	}
@@ -402,8 +404,8 @@ public class PerfTestController extends NGrinderBaseController {
 		PerfTest test = checkTestPermissionAndGet(user, testId);
 		int interval = perfTestService.getReportDataInterval(testId, "TPS", imgWidth);
 		String reportData = perfTestService.getReportDataAsString(testId, "TPS", interval);
-		model.addAttribute(PARAM_LOG_LIST, perfTestService.getLogFiles(testId));
 
+		model.addAttribute(PARAM_LOG_LIST, perfTestService.getLogFiles(testId));
 		model.addAttribute(PARAM_TEST_CHART_INTERVAL, interval);
 		model.addAttribute(PARAM_TEST, test);
 		model.addAttribute(PARAM_TPS, reportData);

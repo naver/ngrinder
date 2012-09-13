@@ -218,6 +218,7 @@
                 return;
             }
             monitorInit[ip] = true;
+            var startdate = new Date($("#startTime").val());
             $.ajax({
                 url: "${req.getContextPath()}/monitor/getMonitorData",
                 dataType:'json',

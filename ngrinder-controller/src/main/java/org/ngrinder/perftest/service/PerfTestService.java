@@ -62,7 +62,9 @@ import javax.script.ScriptException;
 import net.grinder.SingleConsole;
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
+import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.model.ConsoleProperties;
+import net.grinder.engine.agent.AgentImplementationEx;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.Directory;
 
@@ -81,6 +83,7 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.model.PerfTestStatistics;
 import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.repository.PerfTestRepository;
@@ -101,8 +104,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * {@link PerfTest} Service Class.
  * 
- * This class contains various method which mainly get the {@link PerfTest}
- * matching specific conditions from DB.
+ * This class contains various method which mainly get the {@link PerfTest} matching specific
+ * conditions from DB.
  * 
  * @author Mavlarn
  * @author JunHo Yoon
@@ -120,6 +123,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 	@Autowired
 	private ConsoleManager consoleManager;
+
+	@Autowired
+	private AgentManager agentManager;
 
 	@Autowired
 	private Config config;
@@ -164,9 +170,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.ngrinder.perftest.service.IPerfTestService#getPerfTest(org.ngrinder
-	 * .model.User, java.lang.Integer)
+	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTest(org.ngrinder .model.User,
+	 * java.lang.Integer)
 	 */
 	@Override
 	public PerfTest getPerfTest(User user, Long id) {
@@ -183,9 +188,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.ngrinder.perftest.service.IPerfTestService#getPerfTest(org.ngrinder
-	 * .model.User, java.lang.Integer[])
+	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTest(org.ngrinder .model.User,
+	 * java.lang.Integer[])
 	 */
 	@Override
 	public List<PerfTest> getPerfTest(User user, Long[] ids) {
@@ -204,8 +208,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.ngrinder.perftest.service.IPerfTestService#getPerfTestCount(org.ngrinder
+	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTestCount(org.ngrinder
 	 * .model.User, org.ngrinder.perftest.model.Status)
 	 */
 	@Override
@@ -227,9 +230,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.ngrinder.perftest.service.IPerfTestService#getPerfTest(org.ngrinder
-	 * .model.User, org.ngrinder.perftest.model.Status)
+	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTest(org.ngrinder .model.User,
+	 * org.ngrinder.perftest.model.Status)
 	 */
 	@Override
 	public List<PerfTest> getPerfTest(User user, Status... statuses) {
@@ -249,9 +251,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.ngrinder.perftest.service.IPerfTestService#savePerfTest(org.ngrinder
-	 * .model.User, org.ngrinder.perftest.model.PerfTest)
+	 * @see org.ngrinder.perftest.service.IPerfTestService#savePerfTest(org.ngrinder .model.User,
+	 * org.ngrinder.perftest.model.PerfTest)
 	 */
 	@Override
 	@Transactional
@@ -267,8 +268,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.ngrinder.perftest.service.IPerfTestService#savePerfTest(org.ngrinder
+	 * @see org.ngrinder.perftest.service.IPerfTestService#savePerfTest(org.ngrinder
 	 * .perftest.model.PerfTest )
 	 */
 	@Override
@@ -397,9 +397,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Add a progress message on the given perfTest and change the status. In
-	 * addition, the finish time and various test statistic are recorded as
-	 * well.
+	 * Add a progress message on the given perfTest and change the status. In addition, the finish
+	 * time and various test statistic are recorded as well.
 	 * 
 	 * @param perfTest
 	 *            perf test
@@ -496,14 +495,15 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		List<PerfTest> currentlyRunningTests = getCurrentlyRunningTest();
 		final Set<User> currentlyRunningTestOwners = new HashSet<User>();
 		for (PerfTest each : currentlyRunningTests) {
-			currentlyRunningTestOwners.add((User) ObjectUtils.defaultIfNull(each.getLastModifiedUser(), each.getCreatedUser()));
+			currentlyRunningTestOwners.add((User) ObjectUtils.defaultIfNull(each.getLastModifiedUser(),
+							each.getCreatedUser()));
 		}
 		CollectionUtils.filter(perfTestLists, new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
 				PerfTest perfTest = (PerfTest) object;
 				return !currentlyRunningTestOwners.contains(ObjectUtils.defaultIfNull(perfTest.getLastModifiedUser(),
-						perfTest.getCreatedUser()));
+								perfTest.getCreatedUser()));
 			}
 		});
 		return perfTestLists;
@@ -543,21 +543,23 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.ngrinder.perftest.service.IPerfTestService#getPerfTestFilePath(org
+	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTestFilePath(org
 	 * .ngrinder.perftest. model.PerfTest)
 	 */
 	@Override
 	public File getPerfTestFilePath(PerfTest perfTest) {
-		return config.getHome().getPerfTestDirectory(checkNotZero(perfTest.getId(), "perftest id should not be 0 or zero").toString());
+		return config.getHome().getPerfTestDirectory(
+						checkNotZero(perfTest.getId(), "perftest id should not be 0 or zero").toString());
 	}
 
 	public String getCustomClassPath(PerfTest perfTest) {
 		File perfTestDirectory = getPerfTestDirectory(perfTest);
 		File libFolder = new File(perfTestDirectory, "lib");
+		
 		final StringBuffer customClassPath = new StringBuffer();
-		customClassPath.append(".").append(File.pathSeparator).append("lib");
+		customClassPath.append(".");
 		if (libFolder.exists()) {
+			customClassPath.append(File.pathSeparator).append("lib");
 			libFolder.list(new FilenameFilter() {
 				@Override
 				public boolean accept(File dir, String name) {
@@ -585,7 +587,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			FileUtils.copyFile(config.getHome().getDefaultGrinderProperties(), userGrinderPropertiesPath);
 			GrinderProperties grinderProperties = new GrinderProperties(userGrinderPropertiesPath);
 			grinderProperties.setAssociatedFile(new File(userGrinderPropertiesPath.getName()));
-			grinderProperties.setProperty(GrinderProperties.SCRIPT, FilenameUtils.getName(checkNotEmpty(perfTest.getScriptName())));
+			grinderProperties.setProperty(GrinderProperties.SCRIPT,
+							FilenameUtils.getName(checkNotEmpty(perfTest.getScriptName())));
 
 			grinderProperties.setProperty(GRINDER_PROP_TEST_ID, "test_" + perfTest.getId());
 			grinderProperties.setInt(GRINDER_PROP_THREAD, perfTest.getThreads());
@@ -595,11 +598,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			} else {
 				grinderProperties.setInt(GRINDER_PROP_RUNS, perfTest.getRunCount());
 			}
-			grinderProperties.setProperty(NGRINDER_PROP_ETC_HOSTS, StringUtils.defaultIfBlank(perfTest.getTargetHosts(), ""));
+			grinderProperties.setProperty(NGRINDER_PROP_ETC_HOSTS,
+							StringUtils.defaultIfBlank(perfTest.getTargetHosts(), ""));
 			grinderProperties.setBoolean(GRINDER_PROP_USE_CONSOLE, true);
 			if (perfTest.isUseRampUp()) {
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, perfTest.getProcessIncrement());
-				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT_INTERVAL, perfTest.getProcessIncrementInterval());
+				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT_INTERVAL,
+								perfTest.getProcessIncrementInterval());
 				grinderProperties.setInt(GRINDER_PROP_INITIAL_SLEEP_TIME, perfTest.getInitSleepTime());
 			} else {
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, 0);
@@ -634,9 +639,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		User user = perfTest.getCreatedUser();
 
 		// Get all files in the script path
-		FileEntry scriptEntry = fileEntryService.getFileEntry(user, perfTest.getScriptName(), perfTest.getScriptRevision());
+		FileEntry scriptEntry = fileEntryService.getFileEntry(user, perfTest.getScriptName(),
+						perfTest.getScriptRevision());
 		List<FileEntry> fileEntries = fileEntryService.getLibAndResourcesEntries(user, checkNotEmpty(scriptName),
-				perfTest.getScriptRevision());
+						perfTest.getScriptRevision());
 		File perfTestDirectory = getPerfTestDirectory(perfTest);
 		fileEntries.add(scriptEntry);
 
@@ -665,8 +671,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			String path = FilenameUtils.getPath(each.getPath());
 			path = path.substring(basePath.length());
 			File toDir = new File(perfTestDirectory, path);
-			LOGGER.info("{} is being written in {} for test {}",
-					new Object[] { each.getPath(), toDir.toString(), perfTest.getTestIdentifier() });
+			LOGGER.info("{} is being written in {} for test {}", new Object[] { each.getPath(), toDir.toString(),
+					perfTest.getTestIdentifier() });
 			fileEntryService.writeContentTo(user, each.getPath(), toDir);
 		}
 		LOGGER.info("File write is completed in " + perfTestDirectory);
@@ -676,8 +682,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.ngrinder.perftest.service.IPerfTestService#getPerfTestBaseDirectory
+	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTestBaseDirectory
 	 * (org.ngrinder.perftest .model.PerfTest)
 	 */
 	@Override
@@ -688,8 +693,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.ngrinder.perftest.service.IPerfTestService#getPerfTestDirectory(org
+	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTestDirectory(org
 	 * .ngrinder.perftest .model.PerfTest)
 	 */
 	@Override
@@ -738,7 +742,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	public int getReportDataInterval(long testId, String dataType, int imgWidth) {
 		int pointCount = imgWidth / 10;
-		File reportFolder = config.getHome().getPerfTestDirectory(testId + File.separator + NGrinderConstants.PATH_REPORT);
+		File reportFolder = config.getHome().getPerfTestDirectory(
+						testId + File.separator + NGrinderConstants.PATH_REPORT);
 		if (imgWidth < 100) {
 			imgWidth = 100;
 		}
@@ -787,7 +792,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public String getReportDataAsString(long testId, String dataType, int interval) {
 
 		StringBuilder reportData = new StringBuilder("[");
-		File reportFolder = config.getHome().getPerfTestDirectory(testId + File.separator + NGrinderConstants.PATH_REPORT);
+		File reportFolder = config.getHome().getPerfTestDirectory(
+						testId + File.separator + NGrinderConstants.PATH_REPORT);
 
 		File targetFile = null;
 		targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
@@ -881,18 +887,29 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * To get statistics data when test is running If the console is not
-	 * available.. it returns empty map.
+	 * To get statistics data when test is running If the console is not available.. it returns
+	 * empty map.
 	 */
 	public Map<String, Object> getStatistics(int port) {
-		SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(port);
-		if (consoleUsingPort == null) {
-			LOGGER.warn("console using {} port is not available", port);
-			// return null if there is no console. We will check null after
-			// calling this method.
-			return null;
+		return consoleManager.getConsoleUsingPort(port).getStatictisData();
+	}
+
+	/**
+	 * To get statistics data when test is running If the console is not available.. it returns
+	 * empty map.
+	 */
+	public Map<AgentIdentity, SystemDataModel> getAgentsInfo(int port) {
+		List<AgentIdentity> allAttachedAgents = consoleManager.getConsoleUsingPort(port).getAllAttachedAgents();
+		Set<AgentIdentity> allControllerAgents = agentManager.getAllAttachedAgents();
+		Map<AgentIdentity, SystemDataModel> result = new HashMap<AgentIdentity, SystemDataModel>();
+		for (AgentIdentity eachAgent : allAttachedAgents) {
+			for (AgentIdentity eachControllerAgent : allControllerAgents) {
+				if (eachControllerAgent.getName().equals(eachAgent.getName())) {
+					result.put(eachControllerAgent, agentManager.getSystemDataModel(eachControllerAgent));
+				}
+			}
 		}
-		return consoleUsingPort.getStatictisData();
+		return result;
 	}
 
 	/*
@@ -906,8 +923,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Create {@link ConsoleProperties} based on given {@link PerfTest}
-	 * instance.
+	 * Create {@link ConsoleProperties} based on given {@link PerfTest} instance.
 	 * 
 	 * @param perfTest
 	 *            perfTest
@@ -941,9 +957,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		System.out.println(totalStatistics);
 		perfTest.setErrors((int) ((Double) totalStatistics.get("Errors")).doubleValue());
 		perfTest.setTps(Double.parseDouble(formatter.format(totalStatistics.get("TPS"))));
-		perfTest.setMeanTestTime(Double.parseDouble(formatter.format(ObjectUtils.defaultIfNull(totalStatistics.get("Mean_Test_Time_(ms)"),
-				0D))));
-		perfTest.setPeakTps(Double.parseDouble(formatter.format(ObjectUtils.defaultIfNull(totalStatistics.get("Peak_TPS"), 0D))));
+		perfTest.setMeanTestTime(Double.parseDouble(formatter.format(ObjectUtils.defaultIfNull(
+						totalStatistics.get("Mean_Test_Time_(ms)"), 0D))));
+		perfTest.setPeakTps(Double.parseDouble(formatter.format(ObjectUtils.defaultIfNull(
+						totalStatistics.get("Peak_TPS"), 0D))));
 		perfTest.setTests((int) ((Double) totalStatistics.get("Tests")).doubleValue());
 	}
 
@@ -954,8 +971,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	public int getMaximumConcurrentTestCount() {
 		if (MaximumConcurrentTestCount == 0) {
-			MaximumConcurrentTestCount = config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
-					NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
+			MaximumConcurrentTestCount = config.getSystemProperties().getPropertyInt(
+							NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
+							NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
 		}
 		return MaximumConcurrentTestCount;
 	}
@@ -972,9 +990,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.ngrinder.perftest.service.IPerfTestService#stopPerfTest(org.ngrinder
-	 * .model.User, java.lang.Long)
+	 * @see org.ngrinder.perftest.service.IPerfTestService#stopPerfTest(org.ngrinder .model.User,
+	 * java.lang.Long)
 	 */
 	@Override
 	@Transactional
@@ -1000,8 +1017,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.ngrinder.perftest.service.IPerfTestService#getStopRequestedPerfTest()
+	 * @see org.ngrinder.perftest.service.IPerfTestService#getStopRequestedPerfTest()
 	 */
 	@Override
 	public List<PerfTest> getStopRequestedPerfTest() {
@@ -1018,9 +1034,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.ngrinder.perftest.service.IPerfTestService#addCommentOn(org.ngrinder
-	 * .model.User, int, java.lang.String)
+	 * @see org.ngrinder.perftest.service.IPerfTestService#addCommentOn(org.ngrinder .model.User,
+	 * int, java.lang.String)
 	 */
 	@Override
 	@Transactional

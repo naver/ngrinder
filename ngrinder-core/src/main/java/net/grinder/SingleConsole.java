@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.grinder.common.GrinderException;
@@ -145,6 +146,7 @@ public class SingleConsole implements Listener, SampleListener {
 	 * Currently not finished process count.
 	 */
 	private int currentNotFinishedProcessCount = 0;
+	private Set<AgentIdentity> agents;
 
 	/**
 	 * Constructor with console ip and port.
@@ -920,5 +922,13 @@ public class SingleConsole implements Listener, SampleListener {
 			return false;
 		}
 		return (errors / currentTestsCount) > 0.2;
+	}
+
+	public void setConnectingAgents(Set<AgentIdentity> agents) {
+		this.agents = agents;
+	}
+	
+	public Set<AgentIdentity> getConnectingAgents() {
+		return this.agents;
 	}
 }
