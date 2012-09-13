@@ -242,7 +242,7 @@ public class ConsoleManager {
 				}
 			}
 			int consolePort = console.getConsolePort();
-			if (consolePort == 0) {
+			if (consolePort == 1) {
 				return;
 			}
 			ConsoleEntry consoleEntry = new ConsoleEntry(consolePort);

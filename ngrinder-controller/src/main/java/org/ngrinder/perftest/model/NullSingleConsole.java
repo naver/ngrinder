@@ -14,7 +14,7 @@ import net.grinder.SingleConsole;
 public class NullSingleConsole extends SingleConsole {
 
 	public NullSingleConsole() {
-		super(0);
+		super(1);
 	}
 
 	@Override
