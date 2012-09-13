@@ -219,6 +219,7 @@
                 return;
             }
             monitorInit[ip] = true;
+            var startdate = new Date($("#startTime").val());
             $.ajax({
                 url: "${req.getContextPath()}/monitor/getMonitorData",
                 dataType:'json',
@@ -228,8 +229,8 @@
                        'imgWidth':700},
                 success: function(res) {
                     if (res.success) {
-                        drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage);
-                        drawChart('System Memory', 'memoryDiv', res.SystemData.memory, formatAmount);
+                        drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, undefined, startdate, res.SystemData.interval);
+                        drawChart('System Memory', 'memoryDiv', res.SystemData.memory, formatAmount, undefined, startdate, res.SystemData.interval);
                         if (hasJava) {
                         	drawChart('Heap Memory', 'heapMemoryDiv', res.JavaData.heap_memory, formatAmount);
                         	drawChart('NonHeap Memory', 'nonHeapMemoryDiv', res.JavaData.non_heap_memory, formatAmount);
