@@ -184,9 +184,8 @@ public class MonitorController extends NGrinderBaseController {
 			// TODO should get average data
 			for (SystemDataModel sdm : systemMonitorData) {
 				if (0 == current) {
-					// multiplied 100 when data collecting
 					cpuData.add(sdm.getCpuUsedPercentage());
-					memoryData.add((sdm.getTotalMemory() - sdm.getFreeMemory()) * 1024);
+					memoryData.add(sdm.getTotalMemory() - sdm.getFreeMemory());
 				}
 				if (++current >= interval) {
 					current = 0;
