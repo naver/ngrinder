@@ -1,13 +1,11 @@
-var formatAmount = function(format, value) {
+var formatMemory = function(format, value) {
 	if (value < 1024) {
-		return value.toFixed(1) + " ";
-	} else if (value < 1048576) {
-		return (value/1024).toFixed(1) + "K ";
-	} else if (value < 1073741824) {
-		return (value/1048576).toFixed(1) + "M ";
+		return value.toFixed(1) + "K ";
+	} else if (value < 1048576) { //1024 * 1024
+		return (value/1024).toFixed(1) + "M ";
 	} else {
-		return (value/1073741824).toFixed(1) + "G ";
-	}	
+		return (value/1048576).toFixed(2) + "G ";
+	}
 };
 
 var formatPercentage = function(format, value) {
@@ -53,7 +51,7 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 	}
 	var startTimeLong = 0;
 	if (startTime) {
-		var startTimeLong = startTime.getTime();
+		startTimeLong = startTime.getTime();
 	}
 	var plotObj = $.jqplot(containerId, values, {
 

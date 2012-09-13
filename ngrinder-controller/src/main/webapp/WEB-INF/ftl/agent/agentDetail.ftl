@@ -68,7 +68,6 @@
 					<div class="tabbable" style="margin-left:20px">
                         <ul class="nav nav-tabs" id="chartTab">
                             <li><a href="#systemData" data-toggle="tab"><@spring.message "agent.info.systemData"/></a></li>
-                            <li><a href="#javaData" data-toggle="tab"><@spring.message "agent.info.javaData"/></a></li>
                         </ul>
                         <div class="tab-content">
                             <div class="tab-pane active" id="systemData">
@@ -110,10 +109,6 @@
         <script>
             var interval;
             var timer;
-            var java_heapUsedMemory = new Queue();
-			var java_nonHeapUsedMemory = new Queue();
-			var java_cpuUsedPercentage = new Queue();
-			var java_threadCount = new Queue();
 			var sys_totalCpuValue = new Queue();
 			var sys_usedMemory = new Queue();
 			initChartData();
@@ -151,10 +146,6 @@
             });
             var maxCPU = 0;
             var maxMemory = 0;
-            var maxHeapMemory = 0;
-            var maxNonHeapMemory = 0;
-            var maxThreadCount = 0;
-            var maxJVMCpu = 0;
             
             function getMax(prev, current) {
             	var currentMax = 0;
@@ -171,6 +162,8 @@
             function getMonitorData(){
                 $.ajax({
                     url: "${req.getContextPath()}/monitor/getCurrentMonitorData",
+                    async: false,
+					cache: false,
                     dataType:'json',
                     data: {'ip': '${(agent.ip)!}',
                            'imgWidth':700},
@@ -181,17 +174,9 @@
                         		maxCPU = getMax(maxCPU, sys_totalCpuValue.aElement);
                         		showChart('CPU', 'cpuDiv', sys_totalCpuValue.aElement, 0, formatPercentage, maxCPU);
                         		maxMemory = getMax(maxMemory, sys_usedMemory.aElement);
-                            	showChart('Memory', 'memoryDiv', sys_usedMemory.aElement, 1, formatAmount, maxMemory);
+                            	showChart('Memory', 'memoryDiv', sys_usedMemory.aElement, 1, formatMemory, maxMemory);
                         	} else {
                         		
-                        		maxHeapMemory = getMax(maxHeapMemory, java_heapUsedMemory.aElement);
-	                            showChart('Heap Memory', 'heapMemoryDiv', java_heapUsedMemory.aElement, 2, formatAmount, maxHeapMemory);
-	                            maxNonHeapMemory = getMax(maxNonHeapMemory, java_nonHeapUsedMemory.aElement);
-	                            showChart('NonHeap Memory', 'nonHeapMemoryDiv', java_nonHeapUsedMemory.aElement, 3, formatAmount, maxNonHeapMemory);
-	                            maxThreadCount = getMax(maxThreadCount, java_threadCount.aElement);
-	                            showChart('Thread Count', 'threadCountDiv', java_threadCount.aElement, 4, formatAmount, maxThreadCount);
-	                            maxJVMCpu = getMax(maxJVMCpu, java_cpuUsedPercentage.aElement);
-	                            showChart('CPU', 'jvmCpuDiv', java_cpuUsedPercentage.aElement, 5, formatPercentage, maxJVMCpu);
                         	}
                             return true;
                         } else {
@@ -218,38 +203,22 @@
             
             function initChartData() {
                 for (var i = 0; i < 60; i++) {
-		        	java_heapUsedMemory.enQueue(0);
-		        	java_nonHeapUsedMemory.enQueue(0);
-		        	java_cpuUsedPercentage.enQueue(0);
-		        	java_threadCount.enQueue(0);
 		        	sys_totalCpuValue.enQueue(0);
 		        	sys_usedMemory.enQueue(0);
             	}	
             }
             
             function getChartData(dataObj) {				
-				java_heapUsedMemory.enQueue(dataObj.javaData.heapUsedMemory);
-				java_nonHeapUsedMemory.enQueue(dataObj.javaData.nonHeapUsedMemory);
-				java_cpuUsedPercentage.enQueue(dataObj.javaData.cpuUsedPercentage);
-				java_threadCount.enQueue(dataObj.javaData.threadCount);
 				sys_totalCpuValue.enQueue(dataObj.systemData.cpuUsedPercentage);
 				sys_usedMemory.enQueue(dataObj.systemData.totalMemory - dataObj.systemData.freeMemory);
 				
-				if (java_heapUsedMemory.getSize() > 60) {
-					java_heapUsedMemory.deQueue();
-					java_nonHeapUsedMemory.deQueue();
-					java_cpuUsedPercentage.deQueue();
-					java_threadCount.deQueue();
+				if (sys_totalCpuValue.getSize() > 60) {
 					sys_totalCpuValue.deQueue();
 					sys_usedMemory.deQueue();
 				}
 			}
 			
 			function cleanChartData() {
-	            java_heapUsedMemory.makeEmpty();
-				java_nonHeapUsedMemory.makeEmpty();
-				java_cpuUsedPercentage.makeEmpty();
-				java_threadCount.makeEmpty();
 				sys_totalCpuValue.makeEmpty();
 				sys_usedMemory.makeEmpty();
 				initChartData();

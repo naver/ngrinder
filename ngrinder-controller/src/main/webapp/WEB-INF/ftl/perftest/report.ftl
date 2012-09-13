@@ -13,7 +13,7 @@
 			div.chart { border: 1px solid #878988; height:250px; min-width:615px; margin-bottom:12px }
 			td strong { color: #6DAFCF }
 			.jqplot-yaxis {
-			    margin-right: 20px;
+			    margin-right: 10px;
 			}
 			.jqplot-xaxis {
 			    margin-right: 5px;
@@ -138,14 +138,13 @@
     				<div class="chart" id="errorDiv"></div>
 				</div>
 				<div id="monitorDiv" style="display:none">
-				    <h6>System Data</h6>
+	    			<div class="page-header">
+						<h4>System Data</h4>
+					</div>
+				    <h6>CPU</h6>
                     <div class="chart" id="cpuDiv"></div>
+					<h6>Memory</h6>
                     <div class="chart" id="memoryDiv"></div>
-                    <h6 class="javachart" >Java Data</h6>
-                    <div class="chart javachart" id="heapMemoryDiv"></div>
-                    <div class="chart javachart" id="nonHeapMemoryDiv"></div>
-                    <div class="chart javachart" id="threadCountDiv"></div>
-                    <div class="chart javachart" id="jvmCpuDiv"></div>
                 </div>
 			</div>
 		</div>
@@ -214,7 +213,7 @@
                 }
             });
         }
-        function getMonitorData(ip, hasJava){
+        function getMonitorData(ip){
             if(monitorInit[ip]){
                 return;
             }
@@ -228,17 +227,8 @@
                        'imgWidth':700},
                 success: function(res) {
                     if (res.success) {
-                        drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage);
-                        drawChart('System Memory', 'memoryDiv', res.SystemData.memory, formatAmount);
-                        if (hasJava) {
-                        	drawChart('Heap Memory', 'heapMemoryDiv', res.JavaData.heap_memory, formatAmount);
-                        	drawChart('NonHeap Memory', 'nonHeapMemoryDiv', res.JavaData.non_heap_memory, formatAmount);
-                        	drawChart('Thread Count', 'threadCountDiv', res.JavaData.thread_count);
-                     		drawChart('JVM Cpu', 'jvmCpuDiv', res.JavaData.jvm_cpu, formatPercentage);
-                     		$(".javachart").css("display", "block");
-                    	} else {
-                    		$(".javachart").css("display", "none");
-                    	}
+                        drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, undefined, undefined, res.SystemData.interval);
+                        drawChart('System Memory', 'memoryDiv', res.SystemData.memory, formatMemory, undefined, undefined, res.SystemData.interval);
                         return true;
                     } else {
                         showErrorMsg("Get monitor data failed.");

@@ -184,8 +184,7 @@ public class PerfTestController extends NGrinderBaseController {
 
 		model.addAttribute(PARAM_SCRIPT_LIST, allFileEntries);
 
-		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT,
-						perfTestService.getProcessAndThreadPolicyScript());
+		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		addDefaultAttributeOnMode(model);
 		return "perftest/detail";
 	}
@@ -224,8 +223,7 @@ public class PerfTestController extends NGrinderBaseController {
 		scriptList.add(newEntry);
 		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
 		addDefaultAttributeOnMode(model);
-		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT,
-						perfTestService.getProcessAndThreadPolicyScript());
+		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		return "perftest/detail";
 	}
 
@@ -251,12 +249,10 @@ public class PerfTestController extends NGrinderBaseController {
 						"test duration should be within %s", agentManager.getMaxRunHour());
 		checkArgument(test.getRunCount() == null || test.getRunCount() <= agentManager.getMaxRunCount(),
 						"test run count should be within %s", agentManager.getMaxRunCount());
-		checkArgument(test.getAgentCount() == null
-						|| test.getAgentCount() <= agentManager.getMaxAgentSizePerConsole(),
-						"test agent shoule be within %s", agentManager.getMaxAgentSizePerConsole());
-		checkArgument(test.getVuserPerAgent() == null
-						|| test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
-						"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());
+		checkArgument(test.getAgentCount() == null || test.getAgentCount() <= agentManager.getMaxAgentSizePerConsole(),
+				"test agent shoule be within %s", agentManager.getMaxAgentSizePerConsole());
+		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
+				"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());
 		test.setScriptRevision(-1L);
 
 		// deal with different time zone between user Local and Server
@@ -315,10 +311,8 @@ public class PerfTestController extends NGrinderBaseController {
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_NAME, errorMessages);
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_ICON, each.getStatus().getIconName());
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_MESSAGE,
-							StringUtils.replace(
-											each.getProgressMessage() + "\n<b>"
-															+ each.getLastProgressMessage() + "</b>\n"
-															+ each.getLastModifiedDateToStr(), "\n", "<br/>"));
+							StringUtils.replace(each.getProgressMessage() + "\n<b>" + each.getLastProgressMessage()
+											+ "</b>\n" + each.getLastModifiedDateToStr(), "\n", "<br/>"));
 			rtnMap.put(PARAM_STATUS_UPDATE_DELETABLE, each.getStatus().isDeletable());
 			rtnMap.put(PARAM_STATUS_UPDATE_STOPPABLE, each.getStatus().isStoppable());
 			statusList.add(rtnMap);
@@ -338,7 +332,7 @@ public class PerfTestController extends NGrinderBaseController {
 				checkTestPermissionAndGet(user, delId);
 				perfTestService.deletePerfTest(delId);
 			} catch (NumberFormatException e) {
-				LOG.error("Can't delete a test (id=" + idStr + ") : {}", e);
+				LOG.error("Can't delete a test (id=" + idStr + ")", e);
 			}
 		}
 		return JSONUtil.returnSuccess();
@@ -404,8 +398,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = "/loadReportDiv")
-	public String getReportDiv(User user, ModelMap model, @RequestParam long testId,
-					@RequestParam int imgWidth) {
+	public String getReportDiv(User user, ModelMap model, @RequestParam long testId, @RequestParam int imgWidth) {
 		PerfTest test = checkTestPermissionAndGet(user, testId);
 		int interval = perfTestService.getReportDataInterval(testId, "TPS", imgWidth);
 		String reportData = perfTestService.getReportDataAsString(testId, "TPS", interval);
@@ -438,12 +431,27 @@ public class PerfTestController extends NGrinderBaseController {
 		checkTestPermissionAndGet(user, testId);
 		PerfTest test = perfTestService.getPerfTest(testId);
 		checkNotNull(test);
-		Map<String, Object> result = null;
 		if (test.getStatus() == Status.TESTING) {
-			result = perfTestService.getStatistics(test.getPort());
-			model.addAttribute(PARAM_RESULT_SUB, result);
+			model.addAttribute(PARAM_RESULT_AGENT_PERF,
+							getAgentPerfString(perfTestService.getAgentsInfo(test.getPort())));
+			model.addAttribute(PARAM_RESULT_SUB, perfTestService.getStatistics(test.getPort()));
 		}
 		return "perftest/refreshContent";
+	}
+	
+	private String getAgentPerfString(Map<AgentIdentity, SystemDataModel> agentPerfMap) {
+		List<String> perfStringList = new ArrayList<String>();
+		for (Entry<AgentIdentity, SystemDataModel> each : agentPerfMap.entrySet()) {
+			SystemDataModel value = each.getValue();
+			long totalMemory = value.getTotalMemory();
+			float usage = 0;
+			if (totalMemory != 0) {
+				usage = (totalMemory - value.getFreeMemory()) / totalMemory;
+			}
+			perfStringList.add(String.format(" {'agent' : '%s', 'cpu' : %3.2f, 'mem' : %3.2f }", each.getKey().getName(),
+							value.getCpuUsedPercentage(), usage));
+		}
+		return StringUtils.join(perfStringList, ",");
 	}
 
 	@RequestMapping(value = "/report")

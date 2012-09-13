@@ -52,7 +52,6 @@ import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -234,15 +233,6 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Get the current java performance status of the given agent.
-	 * @param agentIdentity {@link AgentIdentity}
-	 * @return {@link JavaDataModel} instance.
-	 */
-	public JavaDataModel getJavaDataModel(AgentIdentity agentIdentity) {
-		return agentControllerServer.getJavaDataModel(agentIdentity);
-	}
-
-	/**
 	 * Get the current system performance status of the given agent.
 	 * @param agentIdentity {@link AgentIdentity}
 	 * @return {@link SystemDataModel} instance.
@@ -280,6 +270,7 @@ public class AgentManager implements NGrinderConstants {
 				});
 			}
 			execService.awaitTermination(AGENT_RUN_TIMEOUT_SECOND, TimeUnit.SECONDS);
+			singleConsole.setConnectingAgents(neccessaryAgents);
 		} catch (InterruptedException e) {
 			throw new NGrinderRuntimeException("Error while running agent", e);
 		} finally {
