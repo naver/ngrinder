@@ -138,13 +138,24 @@
     				<div class="chart" id="errorDiv"></div>
 				</div>
 				<div id="monitorDiv" style="display:none">
-				    <h6>System Data</h6>
+	    			<div class="page-header">
+						<h4>System Data</h4>
+					</div>
+				    <h6>CPU</h6>
                     <div class="chart" id="cpuDiv"></div>
+					<h6>Memory</h6>
                     <div class="chart" id="memoryDiv"></div>
-                    <h6 class="javachart" >Java Data</h6>
+                    <h6 class="javachart" ></h6>
+                    <div class="page-header">
+						<h4>Java Data</h4>
+					</div>
+					<h6>Heap Memory</h6>
                     <div class="chart javachart" id="heapMemoryDiv"></div>
+					<h6>NonHeap Memory</h6>
                     <div class="chart javachart" id="nonHeapMemoryDiv"></div>
+					<h6>Thread Count</h6>
                     <div class="chart javachart" id="threadCountDiv"></div>
+					<h6>CPU</h6>
                     <div class="chart javachart" id="jvmCpuDiv"></div>
                 </div>
 			</div>
