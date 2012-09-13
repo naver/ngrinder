@@ -42,7 +42,7 @@
 		
 		jQuery.validator.addMethod("userPhoneNumber", function(mobilePhone, element ) {
 			
-			var patrn = /^\d{2,3}-\d{3,5}-\d{3,5}/;
+			var patrn = /^\+?\d{2,3}-?\d{2,5}(-?\d+)?/;
 			var rule = new RegExp(patrn);
 			if (!rule.test($.trim($("#mobilePhone").val()))) {
 				userIdValidMsg = "<@spring.message "user.info.warning.phone.intro"/>";

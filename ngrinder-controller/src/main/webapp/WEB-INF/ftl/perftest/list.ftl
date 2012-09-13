@@ -116,25 +116,20 @@
 										<input type="checkbox" class="checkbox perf_test" value="${test.id}" 
 											<#if !(test.status.isDeletable())>disabled</#if> >
 									</td>
-									<td class="ellipsis center"  id="row_${test.id}">
+									<td class="center"  id="row_${test.id}">
 										<div class="ball" id="ball_${test.id}" rel="popover" data-content='${"${test.progressMessage}/n${test.lastProgressMessage}"?replace('/n', '<br>')?html}'>
 											<img class="status" src="${req.getContextPath()}/img/ball/${test.status.iconName}"/>
 										</div>
 									</td>
 
-									<td class="ellipsis ${test.dateString}">  
-										<div rel="popover"
-											 data-content="${test.description?replace('\n', '<br/>')?html}&lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;"  
+									<td class="ellipsis ${test.dateString}" data-content="${test.description?replace('\n', '<br/>')?html}&lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;"  
 											 data-original-title="${test.testName}">
-											<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
-										</div>   
+										<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
 									</td>
-									<td class="ellipsis">
-										<div rel="popover"
-											 data-content="${test.scriptName} &lt;br&gt;&lt;br&gt; - <@spring.message "script.list.table.revision"/> : ${(test.scriptRevision)!'HEAD'}"  
-											 data-original-title="<@spring.message "perfTest.table.scriptName"/>">								
-											<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}">${test.scriptName}</a> 
-										</div>  
+									<td class="ellipsis"
+										data-content="${test.scriptName} &lt;br&gt;&lt;br&gt; - <@spring.message "script.list.table.revision"/> : ${(test.scriptRevision)!'HEAD'}" 
+										data-original-title="<@spring.message "perfTest.table.scriptName"/>">								
+										<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}">${test.scriptName}</a> 
 									</td>
 									
 									<@security.authorize ifAnyGranted="A, S">
@@ -187,6 +182,10 @@
 </div>
 	<script>
 		$(document).ready(function() {
+			$('td.ellipsis').hover(function () {
+	          $(this).popover('show');
+	      	});
+	      	
 			$("#n_test").addClass("active");
 			
 			enableChkboxSelectAll();
