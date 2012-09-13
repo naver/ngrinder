@@ -433,7 +433,7 @@ public class PerfTestController extends NGrinderBaseController {
 		checkTestPermissionAndGet(user, testId);
 		PerfTest test = perfTestService.getPerfTest(testId);
 		checkNotNull(test);
-		if (test.getStatus() == Status.TESTING) {
+		if (test.getStatus().equals(Status.TESTING)) {
 			model.addAttribute(PARAM_RESULT_AGENT_PERF,
 							getAgentPerfString(perfTestService.getAgentsInfo(test.getPort())));
 			model.addAttribute(PARAM_RESULT_SUB, perfTestService.getStatistics(test.getPort()));

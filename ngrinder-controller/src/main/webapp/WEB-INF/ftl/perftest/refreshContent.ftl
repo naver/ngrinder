@@ -1,3 +1,4 @@
+<#setting number_format="computer">
 <#if resultsub?exists>
 	<script>
 			curPeakTps = ${resultsub.peakTpsForGraph!0};
