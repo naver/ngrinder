@@ -40,13 +40,20 @@ import net.grinder.console.model.ConsoleProperties;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.perftest.model.NullSingleConsole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Console manager class which is responsible to console instance management.
+ * Console manager class which is responsible to console instance management. A
+ * number of consoles(specified in ngrinder.maxConcurrentTest in system.conf are
+ * pooled. Actually console itself is not pooled. Instead, the
+ * {@link ConsoleEntry} which contains console information are pooled. Whenever
+ * user requests a new console, it get the one {@link ConsoleEntry} from pool
+ * and creates new console with the {@link ConsoleEntry}. Currently using
+ * consoles are kept in {@link #consoleInUse} member variable.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -72,11 +79,24 @@ public class ConsoleManager {
 		}
 	}
 
+	/**
+	 * Get the base port number of console. It can be specified at
+	 * ngrinder.consolePortBase in system.conf.
+	 * Each console will be created from that port.
+	 * 
+	 * @return base port number
+	 */
 	protected int getConsolePortBase() {
 		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_CONSOLE_PORT_BASE,
 				NGrinderConstants.NGRINDER_PROP_CONSOLE_PORT_BASE_VALUE);
 	}
 
+	/**
+	 * Get the console pool size. It can be specified at
+	 * ngrinder.maxConcurrentTest in system.conf.
+	 * 
+	 * @return console size.
+	 */
 	protected int getConsoleSize() {
 		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
 				NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
@@ -157,8 +177,9 @@ public class ConsoleManager {
 	/**
 	 * Get available console.
 	 * 
-	 * If there is no available console, it waits until available console is returned back. If the specific time is
-	 * elapsed, the timeout error occurs and throw {@link NGrinderRuntimeException}. timeout can be adjusted by
+	 * If there is no available console, it waits until available console is
+	 * returned back. If the specific time is elapsed, the timeout error occurs
+	 * and throw {@link NGrinderRuntimeException}. timeout can be adjusted by
 	 * overriding {@link #getMaxWaitingMiliSecond()}.
 	 * 
 	 * @param baseConsoleProperties
@@ -201,12 +222,13 @@ public class ConsoleManager {
 		}
 		synchronized (this) {
 			try {
+				console.unregisterSampling();
 				console.sendStopMessageToAgents();
 			} catch (Exception e) {
 				LOG.error("Exception is occured while shuttdowning console in returnback process for test {}.", testIdentifier, e);
 				// But the port is getting back.
 			} finally {
-				// This is very careful implmenetation.. even though we
+				// This is very careful implementation..
 				try {
 					// Wait console is completely shutdown...
 					console.waitUntilAllAgentDisconnected();
@@ -215,16 +237,20 @@ public class ConsoleManager {
 				}
 				try {
 					console.shutdown();
-				} catch(Exception e){
+				} catch (Exception e) {
 					LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.", testIdentifier, e);
 				}
 			}
-			ConsoleEntry consoleEntry = new ConsoleEntry(console.getConsolePort());
+			int consolePort = console.getConsolePort();
+			if (consolePort == 1) {
+				return;
+			}
+			ConsoleEntry consoleEntry = new ConsoleEntry(consolePort);
 
 			if (!consoleQueue.contains(consoleEntry)) {
 				consoleQueue.add(consoleEntry);
 				if (!getConsoleInUse().contains(console)) {
-					LOG.error("Try to return back the not used console on {} port", console.getConsolePort());
+					LOG.error("Try to return back the not used console on {} port", consolePort);
 				}
 				getConsoleInUse().remove(console);
 			}
@@ -254,7 +280,8 @@ public class ConsoleManager {
 	 * 
 	 * @param port
 	 *            port which will be checked against
-	 * @return {@link SingleConsole} instance if found. Otherwise, null
+	 * @return {@link SingleConsole} instance if found. Otherwise,
+	 *         {@link NullSingleConsole} instance.
 	 */
 	public SingleConsole getConsoleUsingPort(int port) {
 		for (SingleConsole each : consoleInUse) {
@@ -262,7 +289,7 @@ public class ConsoleManager {
 				return each;
 			}
 		}
-		return null;
+		return new NullSingleConsole();
 	}
 
 }

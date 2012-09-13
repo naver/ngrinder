@@ -709,7 +709,7 @@ public class SingleConsole implements Listener, SampleListener {
 		this.statisticData = result;
 	}
 
-	public Long getCurrentTestsCount() {
+	public long getCurrentTestsCount() {
 		if (this.statisticData == null) {
 			return 0L;
 		}
@@ -914,7 +914,7 @@ public class SingleConsole implements Listener, SampleListener {
 		if (this.statisticData == null) {
 			return false;
 		}
-		long currentTestsCount = getCurrentTestsCount().longValue();
+		long currentTestsCount = getCurrentTestsCount();
 		double errors = MapUtils.getDoubleValue((Map<?, ?>) this.statisticData.get("totalStatistics"), "Errors", 0D);
 		if (currentTestsCount == 0) {
 			return false;

@@ -33,7 +33,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 /**
  * {@link HandlerMethodArgumentResolver} for {@link User} argument.
  * 
- * It passes current user instance on {@link User} argument.
+ * It passes the current user instance on {@link User} argument.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -48,15 +48,28 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	}
 
 	@Override
-	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
+			WebDataBinderFactory binderFactory) throws Exception {
 		return getUserContext().getCurrentUser();
 	}
 
+	/**
+	 * Get current user context. This method is provided for XML based spring
+	 * bean injection.
+	 * 
+	 * @return user context
+	 */
 	public UserContext getUserContext() {
 		return userContext;
 	}
 
+	/**
+	 * Set current user context.This method is provided for XML based spring
+	 * bean injection.
+	 * 
+	 * @param userContext
+	 *            user context.
+	 */
 	public void setUserContext(UserContext userContext) {
 		this.userContext = userContext;
 	}

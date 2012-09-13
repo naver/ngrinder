@@ -75,7 +75,6 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 
 	/**
 	 * Initialize plugin component.
-	 * 
 	 */
 	@PostConstruct
 	public void init() {

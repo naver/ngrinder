@@ -36,7 +36,10 @@ public class OnlyOnePageRequest extends PageRequest {
 	 * UUID
 	 */
 	private static final long serialVersionUID = -7852729644522630091L;
-
+	
+	/**
+	 * Constructor.
+	 */
 	public OnlyOnePageRequest() {
 		super(0, 1);
 	}

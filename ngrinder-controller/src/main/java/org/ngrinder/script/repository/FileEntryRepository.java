@@ -501,9 +501,9 @@ public class FileEntryRepository {
 				throw new NGrinderRuntimeException("It's not pssible write directory. nodeKind is "
 								+ nodeKind);
 			}
+			toPath.mkdirs();
 			File destFile = new File(toPath, FilenameUtils.getName(path));
 			// Prepare parent folders
-			toPath.mkdirs();
 			fileOutputStream = new FileOutputStream(destFile);
 			SVNProperties fileProperty = new SVNProperties();
 			// Get file.

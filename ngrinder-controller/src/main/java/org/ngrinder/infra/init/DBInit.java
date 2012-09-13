@@ -36,11 +36,22 @@ import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Database Initialization. When the first bootup, some data should be inserted
+ * into DB.
+ * 
+ * And... It's the perfect place to upgrade DB.
+ * 
+ * @author JunHo Yoon
+ */
 @Service
 public class DBInit {
 	@Autowired
 	private UserRepository userRepository;
 
+	/**
+	 * Initalize DB
+	 */
 	@PostConstruct
 	@Transactional
 	public void init() {
@@ -53,6 +64,20 @@ public class DBInit {
 	@Autowired
 	public PasswordEncoder passwordEncoder;
 
+	/**
+	 * Create users
+	 * 
+	 * @param userId
+	 *            userId
+	 * @param password
+	 *            raw user password
+	 * @param role
+	 *            role
+	 * @param userName
+	 *            user name
+	 * @param email
+	 *            email
+	 */
 	public void createUser(String userId, String password, Role role, String userName, String email) {
 		if (userRepository.findOneByUserId(userId) == null) {
 
@@ -71,6 +96,9 @@ public class DBInit {
 
 	}
 
+	/**
+	 * Create users..
+	 */
 	private void createDefaultUserIfNecessary() {
 		// If there is no users.. make admin and user and U, S, A roles.
 		if (userRepository.count() < 2) {

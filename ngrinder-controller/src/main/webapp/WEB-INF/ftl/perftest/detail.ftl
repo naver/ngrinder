@@ -187,7 +187,7 @@ i.collapse{
 												<div class="input-append">
 													<input type="text" class="input required positiveNumber span1" number_limit="${(maxAgentSizePerConsole)}"
 														id="agentCount" name="agentCount" value="${(test.agentCount)!}"
-														data-content='<@spring.message "perfTest.configuration.inputAgent"/>'
+														data-content='<@spring.message "perfTest.configuration.agent.help"/>'
 														data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
 										 		</div> 
 											</div>
@@ -205,7 +205,9 @@ i.collapse{
 															<div class="input-append">
 																<input type="text" class="input required positiveNumber span1" rel="popover"
 																	number_limit="${(maxVuserPerAgent)}" id="vuserPerAgent" name="vuserPerAgent"
-																	value="${(test.vuserPerAgent)!}" data-content='<@spring.message "perfTest.configuration.inputVuserPerAgent"/>'
+																	value="${(test.vuserPerAgent)!}" 
+																	rel="popover"	
+																	data-content='<@spring.message "perfTest.configuration.vuserPerAgent.help"/>'
 																	data-original-title="<@spring.message "perfTest.configuration.vuserPerAgent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxVuserPerAgent)}</span>
 																<a href="javascript:void(0)"><i class="expand" id="expandAndCollapse"></i></a>			
 															</div>
@@ -312,7 +314,11 @@ i.collapse{
 											</label>
 											<div class="controls">
 												<div class="input-append">
-													<input type="text" id="runCount" class="input span2" number_limit="${(maxRunCount)}" name="runCount"
+													<input type="text" 
+														data-original-title="<@spring.message "perfTest.configuration.runCount"/>"
+														data-content="<@spring.message "perfTest.configuration.runCount.help"/>"	
+														rel="popover"												
+														id="runCount" class="input span2" number_limit="${(maxRunCount)}" name="runCount"
 														value="${(test.runCount)!0}"><span class="add-on"><@spring.message "perfTest.configuration.max"/> ${(maxRunCount)}</span>
 												</div>
 											</div>
@@ -320,7 +326,11 @@ i.collapse{
 										<div class="control-group">
 											<label for="ignoreSampleCount" class="control-label"> <@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
 											<div class="controls">
-												<input type="text" class="input required countNumber" id="ignoreSampleCount" name="ignoreSampleCount"
+												<input type="text" class="input required countNumber" 
+													data-original-title="<@spring.message "perfTest.configuration.ignoreSampleCount"/>"
+													data-content='<@spring.message "perfTest.configuration.ignoreSampleCount.help"/>'
+													rel="popover"												
+													id="ignoreSampleCount" name="ignoreSampleCount"
 													value="${(test.ignoreSampleCount)!0}">
 											</div>
 										</div>

@@ -23,7 +23,8 @@
 package org.ngrinder.perftest.service;
 
 /**
- * Console information which contains console's characteristics for example port.
+ * Console information which contains console's characteristics. Port is most
+ * important one.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -31,6 +32,9 @@ package org.ngrinder.perftest.service;
  */
 public class ConsoleEntry {
 
+	/**
+	 * Console port number.
+	 */
 	private Integer port;
 
 	/**
@@ -43,10 +47,21 @@ public class ConsoleEntry {
 		this.port = port;
 	}
 
+	/**
+	 * Get port
+	 * 
+	 * @return port
+	 */
 	public Integer getPort() {
 		return port;
 	}
 
+	/**
+	 * Set port
+	 * 
+	 * @param port
+	 *            port number
+	 */
 	public void setPort(Integer port) {
 		this.port = port;
 	}

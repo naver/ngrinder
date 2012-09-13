@@ -48,8 +48,7 @@ import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 
 /**
- * Data retriever for index page display.
- * 
+ * nGrinder index page data service.
  * 
  * @author JunHo Yoon
  * @since 3.1
@@ -78,13 +77,12 @@ public class HomeService {
 			List<PanelEntry> panelEntries = new ArrayList<PanelEntry>();
 			reader = new XmlReader(new URL(NGrinderConstants.NGRINDER_NEWS_RSS_URL));
 			SyndFeed feed = input.build(reader);
-			List<SyndEntryImpl> entries = (List<SyndEntryImpl>) (feed.getEntries().size() >= 8 ? feed.getEntries()
-					.subList(0, 7) : feed.getEntries());
+			List<SyndEntryImpl> entries = (List<SyndEntryImpl>) (feed.getEntries().size() >= 8 ? feed.getEntries().subList(0, 7) : feed
+					.getEntries());
 			for (SyndEntryImpl each : entries) {
 				PanelEntry entry = new PanelEntry();
 				entry.setAuthor(each.getAuthor());
-				entry.setLastUpdatedDate(each.getUpdatedDate() == null ? each.getPublishedDate() : each
-						.getUpdatedDate());
+				entry.setLastUpdatedDate(each.getUpdatedDate() == null ? each.getPublishedDate() : each.getUpdatedDate());
 				entry.setTitle(each.getTitle());
 				entry.setLink(each.getLink());
 				panelEntries.add(entry);

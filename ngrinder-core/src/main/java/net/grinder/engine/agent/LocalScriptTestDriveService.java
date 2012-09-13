@@ -26,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -56,22 +57,26 @@ public class LocalScriptTestDriveService {
 	/**
 	 * Build custom class path based on the jar files on given base path
 	 * 
-	 * @param base
+	 * @param base 
 	 *            base path in which jar file is located
 	 * @return classpath string
 	 */
 	public String buildCustomClassPath(File base) {
-		final StringBuilder builder = new StringBuilder();
-		base.listFiles(new FileFilter() {
-			@Override
-			public boolean accept(File pathname) {
-				if (FilenameUtils.getExtension(pathname.getName()).equals("jar")) {
-					builder.append(File.pathSeparator).append(pathname.getAbsolutePath());
+		File libFolder = new File(base, "lib");
+		final StringBuffer customClassPath = new StringBuffer();
+		customClassPath.append(".").append(File.pathSeparator).append("lib");
+		if (libFolder.exists()) {
+			libFolder.list(new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					if (name.endsWith(".jar")) {
+						customClassPath.append(File.pathSeparator).append("lib/").append(name);
+					}
+					return true;
 				}
-				return false;
-			}
-		});
-		return builder.toString();
+			});
+		}
+		return customClassPath.toString();
 	}
 
 	/**

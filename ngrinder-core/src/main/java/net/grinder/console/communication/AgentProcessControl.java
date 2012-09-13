@@ -117,5 +117,5 @@ public interface AgentProcessControl {
 	 *            agent identity
 	 * @return {@link AgentControllerState} member
 	 */
-	int getAgentControllerConnectingPort(AgentIdentity agentIdentity);
+	int getAgentConnectingPort(AgentIdentity agentIdentity);
 }

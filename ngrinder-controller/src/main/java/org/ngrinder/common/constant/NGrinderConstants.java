@@ -23,7 +23,7 @@
 package org.ngrinder.common.constant;
 
 /**
- * nGrinder specific contants.
+ * nGrinder specific constants.
  * 
  * @author JunHo Yoon
  * @since 3.0
