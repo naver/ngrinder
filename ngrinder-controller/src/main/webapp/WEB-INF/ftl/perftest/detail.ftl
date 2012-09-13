@@ -151,8 +151,9 @@ i.collapse{
 						</div>
 					</fieldset>
 				</div>
-				
 			</div>
+			<!-- end well -->
+			
 			<div class="tabbable" style="margin-top: 20px">
 				<ul class="nav nav-tabs" id="homeTab" style="margin-bottom: 5px">
 					<li id="testContent_tab">
@@ -337,6 +338,8 @@ i.collapse{
 									</fieldset>
 								</div>
 							</div>
+							<!-- end test content left -->
+							
 							<div class="span6">
 								<div class="page-header">
 									<label class="checkbox" style="margin-bottom: 0"> 
@@ -357,7 +360,7 @@ i.collapse{
 														<label for="initProcesses" class="control-label"> <@spring.message "perfTest.configuration.initalProcesses"/> </label>
 														<div class="controls">
 															<input type="text" class="input input-mini required countNumber" id="initProcesses" name="initProcesses"
-																value="${(test.initProcesses)!0}" />
+																value="${(test.initProcesses)!0}"/>
 														</div>
 													</div>
 													<div class="control-group">
@@ -401,11 +404,15 @@ i.collapse{
 								</div>
 								<div id="rampChart" class="rampChart"></div>
 							</div>
+							<!-- end test content right -->
 						</div>
 					</div>
+					<!-- end test content -->
+					
 					<div class="tab-pane" id="reportContent">
 
 					</div>
+					
 					<div class="tab-pane" id="runningContent">
 						<div class="row">
 							<div class="span5">
@@ -478,6 +485,8 @@ i.collapse{
 									</fieldset>
 								</div>
 							</div>
+							<!-- end ruuning content left -->
+							
 							<div class="span7">
 								<div class="page-header">
 									<h4><@spring.message "perfTest.testRunning.tpsStatistics"/> <span class="badge badge-success"><@spring.message "perfTest.testRunning.runTime"/> <data id="running_time"></data></span></h4>
@@ -549,10 +558,14 @@ i.collapse{
 									</div>
 								</div>
 							</div>
+							<!-- end running content right -->
 						</div>
 					</div>
+					<!-- end running content -->
 				</div>
+				<!-- end tab content -->
 			</div>
+			<!-- end tabbable -->
 			<input type="hidden" id="scheduleInput" name="scheduledTime" /> 
 			<#if test??> 
 				<input type="hidden" id="testStatus" name="status" value="${(test.status)}">
@@ -561,9 +574,9 @@ i.collapse{
 				<input type="hidden" id="testStatus" name="status" value="SAVED">
 			</#if>
 		</form>
-		<!--content-->
 		<#include "../common/copyright.ftl">
 	</div>
+	<!--end container-->
 
 	<div class="modal fade" id="scheduleModal">
 		<div class="modal-header">
