@@ -482,6 +482,12 @@ i.collapse{
 												<span>0</span> 
 											</div>
 										</div>
+										<div class="control-group">
+											<label for="agentStatus" class="control-label">Agent Status</label>
+											<div class="controls" id="agent_status">
+												
+											</div>
+										</div>
 									</fieldset>
 								</div>
 							</div>
@@ -1018,6 +1024,7 @@ i.collapse{
 	  var curRunningProcesses = 0;
 	  var curRunningThreads = 0;
 	  var curStatus = false;
+	  var curAgentPerfStates = []; 
 	  function refreshData() {
 	      var refreshDiv = $("<div></div>");
 	      var url = "${req.getContextPath()}/perftest/running/refresh?testId=" + $("#testId").val();
@@ -1032,6 +1039,12 @@ i.collapse{
 	              $("#process_data").text(curRunningProcesses);
 	              $("#thread_data").text(curRunningThreads);
 	              $("#running_time").text(showRunTime(curRunningTime));
+	              var agentStatusString = "";
+	              for (var i = 0; i < curAgentPerfStates.length; i++) {
+	              	agentStatusString = agentStatusString + "\n " + curAgentPerfStates[i].agent + "   CPU - " + curAgentPerfStates[i].cpu + "   MEM - " + curAgentPerfStates[i].mem;
+	              }
+	              
+	              $("#agent_status").text(agentStatusString);
 				  peakTps = curPeakTps;
 	              test_tps_data.enQueue(curTps);
 	          } else {

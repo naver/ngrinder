@@ -280,6 +280,7 @@ public class AgentManager implements NGrinderConstants {
 				});
 			}
 			execService.awaitTermination(AGENT_RUN_TIMEOUT_SECOND, TimeUnit.SECONDS);
+			singleConsole.setConnectingAgents(neccessaryAgents);
 		} catch (InterruptedException e) {
 			throw new NGrinderRuntimeException("Error while running agent", e);
 		} finally {

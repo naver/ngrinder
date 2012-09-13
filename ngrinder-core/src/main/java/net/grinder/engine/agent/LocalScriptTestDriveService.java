@@ -64,8 +64,9 @@ public class LocalScriptTestDriveService {
 	public String buildCustomClassPath(File base) {
 		File libFolder = new File(base, "lib");
 		final StringBuffer customClassPath = new StringBuffer();
-		customClassPath.append(".").append(File.pathSeparator).append("lib");
+		customClassPath.append(".");
 		if (libFolder.exists()) {
+			customClassPath.append(File.pathSeparator).append("lib");
 			libFolder.list(new FilenameFilter() {
 				@Override
 				public boolean accept(File dir, String name) {

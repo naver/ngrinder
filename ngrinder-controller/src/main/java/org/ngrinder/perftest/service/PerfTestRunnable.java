@@ -52,6 +52,7 @@ import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.monitor.MonitorConstants;
+import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -381,7 +382,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 	public void doFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		// FIXME... it should found abnormal test status..
 		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
-
 		LOG.debug("PerfTest {} status - currentRunningTime {} ", perfTest.getId(), singleConsoleInUse.getCurrentRunningTime());
 		// stop target host monitor
 		if (singleConsoleInUse.isTooManyError()) {

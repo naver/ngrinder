@@ -146,6 +146,7 @@ public interface NGrinderConstants {
 	public static final String PARAM_MAX_RUN_HOUR = "maxRunHour";
 
 	public static final String PARAM_RESULT_SUB = "resultsub";
+	public static final String PARAM_RESULT_AGENT_PERF = "result_agent_perf";
 
 	public static final String PARAM_AGENTS = "agents";
 
