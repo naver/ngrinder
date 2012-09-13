@@ -1,26 +1,15 @@
+var plotObj;
+
 $(document).ready(function() {
-	var $rampupCheckbox = $("#rampupCheckbox");
-	
-	$rampupCheckbox.on("click", function() {
-		rampup($(this));
+	$("#rampupCheckbox").on("click", function() {
 		updateChart();
 	});
-	
-	rampup($rampupCheckbox);
 	
 	$("#initProcesses, #initSleepTime, #processIncrement, #processIncrementInterval").on(
 		"change", function() {
 			updateChart();
 	});
 });
-
-function rampup(obj) {
-	if (obj[0].checked) {
-		enableRampup();
-	} else {
-		disableRampup();
-	}
-}
 
 function disableRampup() {
 	$('#initProcesses').val(0);
@@ -71,32 +60,55 @@ function updateChart() {
 	}
 
 	var initialSleepTime = parseInt($('#initSleepTime').val());
-
-	var curX = initialSleepTime;
-	var curY = initialProcesses;
-	var seriesArray = [];
-	if (initialSleepTime > 0) {
-		seriesArray.push([ 0, 0 ]);
-		seriesArray.push([ initialSleepTime, 0 ]);
-	}
-	seriesArray.push([ curX  + 0.01, curY ]);
-	curX = curX + internalTime;
-	seriesArray.push([ curX, curY  ]);
-
-	for ( var step = 1; step <= steps; step++) {
-		curY = curY + processInc;
-		if (curY > processes) {
-			curY = processes;
-		}
-		seriesArray.push([ curX  + 0.01, curY ]);
-		curX = curX + internalTime;
-		seriesArray.push([ curX, curY]);
-	}
-	
-	$("#rampChart").empty();
 	var maxY = parseInt((processes / 5) + 1) * 5;
+	var seriesArray = [];
+	
+	if ($("#rampupCheckbox")[0].checked) {
+		enableRampup();
 
-	$.jqplot("rampChart", [ seriesArray ], {
+		var curX = initialSleepTime;
+		var curY = initialProcesses;
+		if (initialSleepTime > 0) {
+			seriesArray.push([0, 0]);
+			seriesArray.push([initialSleepTime, 0]);
+		}
+		seriesArray.push([curX  + 0.01, curY]);
+		curX = curX + internalTime;
+		seriesArray.push([curX, curY]);
+
+		for ( var step = 1; step <= steps; step++) {
+			curY = curY + processInc;
+			if (curY > processes) {
+				curY = processes;
+			}
+			seriesArray.push([curX  + 0.01, curY]);
+			curX = curX + internalTime;
+			seriesArray.push([curX, curY]);
+		}
+		
+		$("#rampChart").empty();
+		drawRampup(seriesArray, internalTime, maxY);
+	} else {
+		disableRampup();
+		
+		var curX = 0;
+		for ( var step = 0; step <= steps; step++) {
+			seriesArray.push([curX  + 0.01, processes]);
+			curX = curX + internalTime;
+			seriesArray.push([curX, processes]);
+		}
+		
+		if (plotObj) {
+			plotObj.series[0].data = seriesArray;
+			plotObj.replot();
+		} else {
+			drawRampup(seriesArray, internalTime, maxY);
+		}
+	}
+}
+
+function drawRampup(data, internalTime, maxY) {
+	plotObj = $.jqplot("rampChart", [data], {
 		axesDefaults : {
 			tickRenderer : $.jqplot.AxisTickRenderer,
 			tickOptions : {
@@ -134,8 +146,7 @@ function updateChart() {
 					}
 				}
 			}
-
+	
 		}
-		
 	});
 }

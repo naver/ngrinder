@@ -53,7 +53,7 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 	}
 	var startTimeLong = 0;
 	if (startTime) {
-		var startTimeLong = startTime.getTime();
+		startTimeLong = startTime.getTime();
 	}
 	var plotObj = $.jqplot(containerId, values, {
 
