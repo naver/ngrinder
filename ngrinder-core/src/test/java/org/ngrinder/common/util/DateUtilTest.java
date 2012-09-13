@@ -81,15 +81,6 @@ public class DateUtilTest {
 	}
 
 	/**
-	 * Test method for {@link org.ngrinder.common.util.DateUtil#formatDate(java.util.Date, java.lang.String)}.
-	 */
-	@Test
-	public void testFormatDate() {
-		String dateStr = DateUtil.formatDate(new Date(), "MM-dd-yyyy");
-		assertThat(dateStr, notNullValue());
-	}
-
-	/**
 	 * Test method for {@link org.ngrinder.common.util.DateUtil#addDay(java.util.Date, int)}.
 	 */
 	@Test
