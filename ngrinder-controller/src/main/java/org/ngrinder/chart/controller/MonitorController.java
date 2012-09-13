@@ -186,7 +186,7 @@ public class MonitorController extends NGrinderBaseController {
 				if (0 == current) {
 					// multiplied 100 when data collecting
 					cpuData.add(sdm.getCpuUsedPercentage());
-					memoryData.add(sdm.getTotalMemory() - sdm.getFreeMemory());
+					memoryData.add((sdm.getTotalMemory() - sdm.getFreeMemory()) * 1024);
 				}
 				if (++current >= interval) {
 					current = 0;
