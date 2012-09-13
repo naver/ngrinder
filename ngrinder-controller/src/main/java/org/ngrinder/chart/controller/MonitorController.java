@@ -149,7 +149,8 @@ public class MonitorController extends NGrinderBaseController {
 					heapMemoryData.add(jdm.getHeapUsedMemory());
 					nonHeapMemoryData.add(jdm.getNonHeapUsedMemory());
 					threadCountData.add(jdm.getThreadCount());
-					jvmCpuData.add(jdm.getCpuUsedPercentage() * 100);
+					// multiplied 100 when data collecting
+					jvmCpuData.add(jdm.getCpuUsedPercentage());
 				}
 				if (++current >= interval) {
 					current = 0;
@@ -183,7 +184,8 @@ public class MonitorController extends NGrinderBaseController {
 			// TODO should get average data
 			for (SystemDataModel sdm : systemMonitorData) {
 				if (0 == current) {
-					cpuData.add(sdm.getCpuUsedPercentage() * 100);
+					// multiplied 100 when data collecting
+					cpuData.add(sdm.getCpuUsedPercentage());
 					memoryData.add(sdm.getTotalMemory() - sdm.getFreeMemory());
 				}
 				if (++current >= interval) {
