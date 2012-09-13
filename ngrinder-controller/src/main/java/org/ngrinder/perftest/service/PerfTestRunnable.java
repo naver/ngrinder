@@ -52,7 +52,6 @@ import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.monitor.controller.model.JavaDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

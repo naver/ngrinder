@@ -64,7 +64,6 @@ import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.model.ConsoleProperties;
-import net.grinder.engine.agent.AgentImplementationEx;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.Directory;
 
