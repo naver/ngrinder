@@ -24,9 +24,9 @@ package org.ngrinder.infra.config;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -94,5 +94,11 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests {
 	public void testPolicyFileLoad() {
 		String processAndThreadPolicyScript = config.getProcessAndThreadPolicyScript();
 		assertThat(processAndThreadPolicyScript, containsString("function"));
+	}
+	
+	@Test
+	public void testVersionString() {
+		String version = config.getVesion();
+		assertThat(version, not("UNKNOWN"));
 	}
 }

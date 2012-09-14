@@ -9,16 +9,11 @@
 	<#include "../common/navigator.ftl">
 
 	<div class="container">
-		<div class="row">
-			<#include "leftButton.ftl"/>
-			
-			<div class="span10">
-				<div class="page-header pageHeader">
-					<h3><@spring.message "user.detail.header"/></h3>
-				</div>
-				<#include "userInfo.ftl">
-			</div>
+		<div class="page-header pageHeader">
+				<h3><@spring.message "user.detail.header"/></h3>
 		</div>
+		<#include "roleSelector.ftl">
+		<#include "userInfo.ftl"> 
 		<#include "../common/copyright.ftl">
 	</div>
 	

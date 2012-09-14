@@ -55,9 +55,11 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 		SystemInfo systemInfo = new SystemInfo();
 		try {
 			systemInfo.setCPUUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
-			systemInfo.setTotalMemory(sigar.getMem().getTotal() / 1024);
-			systemInfo.setFreeMemory((sigar.getMem().getTotal() - sigar.getMem().getUsed()) / 1024);
-//			systemInfo.setFreeMemory(sigar.getMem().getActualFree() / 1024);
+			systemInfo.setTotalCpuValue(sigar.getCpu().getTotal());
+			systemInfo.setIdleCpuValue(sigar.getCpu().getIdle());
+			systemInfo.setTotalMemory(sigar.getMem().getTotal() / 1024L);
+			systemInfo.setFreeMemory(sigar.getMem().getFree() / 1024L);
+			systemInfo.setLoadAvgs(sigar.getLoadAverage());
 			systemInfo.setSystem(OperatingSystem.IS_WIN32 ? SystemInfo.System.WINDOW : SystemInfo.System.LINUX);
 		} catch (Exception e) {
 			if (failedCount++ == 60) {

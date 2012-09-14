@@ -1,105 +1,105 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>nGrinder Performance Test Detail</title> 
-<#include "../common/common.ftl"> 
-<#include "../common/jqplot.ftl">
-<link href="${req.getContextPath()}/css/slider.css" rel="stylesheet">
-<link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
-<style>
-div.div-resources {
-	border: 1px solid #D6D6D6;
-	height: 50px;
-	margin-bottom: 8px;
-	overflow-y: scroll;
-	border-radius: 3px 3px 3px 3px;
-}
-
-div.div-resources .resource {
-	color: #666666;
-	display: inline-block;
-	margin-left: 7px;
-	margin-top: 2px;
-	margin-bottom: 2px;
-}
-
-
-.select-item {
-	width: 50px;
-}
-
-.control-label input {
-	vertical-align: top;
-	margin-left: 2px
-}
-
-.controls code {
-	vertical-align: middle;
-}
-
-div.chart {
-	border: 1px solid #878988;
-	margin-bottom: 12px;
-}
-
-
-.table thead th {
-	vertical-align: middle;
-}
-
-
-.jqplot-yaxis {
-    margin-right: 20px; 
-}
-
-.jqplot-xaxis {
-    margin-top: 5px; 
-} 
-
-.rampChart {
-	width: 430px;
-	height: 355px
-}
-
-div.div-host {
-	border: 1px solid #D6D6D6;
-	height: 50px;
-	margin-bottom: 8px;
-	overflow-y: scroll;
-	border-radius: 3px 3px 3px 3px;
-}
-
-div.div-host .host {
-	color: #666666;
-	display: inline-block;
-	margin-left: 7px;
-	margin-top: 2px;
-	margin-bottom: 2px;
-}
-.addhostbtn {
-	margin-right:20px;
-	margin-top:-32px;
-}
-
-i.expand {
-	background-image: url('${req.getContextPath()}/img/icon_expand.png');
-	background-repeat:no-repeat;
-	display: inline-block;
-    height: 16px;
-    width: 16px; 
-    line-height: 16px;
-    vertical-align: text-top;
-}
-i.collapse{
-	background-image: url('${req.getContextPath()}/img/icon_collapse.png');
-	background-repeat:no-repeat;
-	display: inline-block;
-    height: 16px;
-    width: 16px;
-    line-height: 16px;
-    vertical-align: text-top;
-}
-</style>
+	<title>nGrinder Performance Test Detail</title> 
+	<#include "../common/common.ftl"> 
+	<#include "../common/jqplot.ftl">
+	<link href="${req.getContextPath()}/css/slider.css" rel="stylesheet">
+	<link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
+	<style>
+	div.div-resources {
+		border: 1px solid #D6D6D6;
+		height: 50px;
+		margin-bottom: 8px;
+		overflow-y: scroll;
+		border-radius: 3px 3px 3px 3px;
+	}
+	
+	div.div-resources .resource {
+		color: #666666;
+		display: inline-block;
+		margin-left: 7px;
+		margin-top: 2px;
+		margin-bottom: 2px;
+	}
+	
+	
+	.select-item {
+		width: 50px;
+	}
+	
+	.control-label input {
+		vertical-align: top;
+		margin-left: 2px
+	}
+	
+	.controls code {
+		vertical-align: middle;
+	}
+	
+	div.chart {
+		border: 1px solid #878988;
+		margin-bottom: 12px;
+	}
+	
+	
+	.table thead th {
+		vertical-align: middle;
+	}
+	
+	
+	.jqplot-yaxis {
+	    margin-right: 20px; 
+	}
+	
+	.jqplot-xaxis {
+	    margin-top: 5px; 
+	} 
+	
+	.rampChart {
+		width: 430px;
+		height: 355px
+	}
+	
+	div.div-host {
+		border: 1px solid #D6D6D6;
+		height: 50px;
+		margin-bottom: 8px;
+		overflow-y: scroll;
+		border-radius: 3px 3px 3px 3px;
+	}
+	
+	div.div-host .host {
+		color: #666666;
+		display: inline-block;
+		margin-left: 7px;
+		margin-top: 2px;
+		margin-bottom: 2px;
+	}
+	.addhostbtn {
+		margin-right:20px;
+		margin-top:-32px;
+	}
+	
+	i.expand {
+		background-image: url('${req.getContextPath()}/img/icon_expand.png');
+		background-repeat:no-repeat;
+		display: inline-block;
+	    height: 16px;
+	    width: 16px; 
+	    line-height: 16px;
+	    vertical-align: text-top;
+	}
+	i.collapse{
+		background-image: url('${req.getContextPath()}/img/icon_collapse.png');
+		background-repeat:no-repeat;
+		display: inline-block;
+	    height: 16px;
+	    width: 16px;
+	    line-height: 16px;
+	    vertical-align: text-top;
+	}
+	</style>
 
 </head>
 
@@ -161,13 +161,13 @@ i.collapse{
 							<@spring.message "perfTest.configuration.testConfiguration"/>
 						</a>
 					</li> 
-					<li id="runningContent_tab">
+					<li id="runningContent_tab" style="display: none; ">
 						<a href="#runningContent" data-toggle="tab">
 							<@spring.message "perfTest.testRunning.title"/>
 						</a>
 					</li>
 				
-					<li id="reportContent_tab">
+					<li id="reportContent_tab" style="display: none; ">
 						<a href="#reportContent" data-toggle="tab" id="reportLnk">
 							<@spring.message "perfTest.report.title"/>
 						</a>
@@ -1044,7 +1044,7 @@ i.collapse{
 	              for (var i = 0; i < curAgentPerfStates.length; i++) {
 	                var eachAgent = curAgentPerfStates[i];
 	                if (agentPerfStates[eachAgent.agent] === undefined) {
-	                	agentPerfStates[eachAgent.agent] = { "cpu" : {}, "mem' : {}};
+	                	agentPerfStates[eachAgent.agent] = { "cpu" : {}, "mem" : {} };
 	                }
 	                agentPerfStates[eachAgent.agent].cpu.push(eachAgent.cpu);
 	                agentPerfStates[eachAgent.agent].mem.push(eachAgent.mem);      

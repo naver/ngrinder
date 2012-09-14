@@ -46,11 +46,12 @@ import cubrid.jdbc.driver.CUBRIDDriver;
 public enum Database {
 
 	// SQLite
-	sqlite(JDBC.class, SQLiteDialect.class, "jdbc:sqlite:%s/ngrinder.sqlite3") {
+	sqlite(JDBC.class, SQLiteDialect.class, "jdbc:sqlite:%s/db/ngrinder.sqlite3") {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
-
-			dataSource.setUrl(String.format(getUrlTemplate(), databaseProperties.getProperty("NGRINDER_HOME", "."), " is not defined"));
+	
+			String property = databaseProperties.getProperty("NGRINDER_HOME", ".");
+			dataSource.setUrl(String.format(getUrlTemplate(), property, " is not defined"));
 			dataSource.setUsername(databaseProperties.getProperty("database_username", "ngrinder"));
 			dataSource.setPassword(databaseProperties.getProperty("database_password", "ngrinder"));
 		}

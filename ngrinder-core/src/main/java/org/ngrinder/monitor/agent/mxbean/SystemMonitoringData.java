@@ -29,8 +29,6 @@ import org.ngrinder.monitor.agent.mxbean.core.SystemMXBean;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
 public class SystemMonitoringData extends MXBean implements SystemMXBean {
-	// private static final Log LOG =
-	// LogFactory.getLog(SystemMonitoringData.class);
 
 	private static final long serialVersionUID = -3568524400212296536L;
 	private SystemInfo systemInfo;

@@ -76,7 +76,7 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 			this.cpuUsedPercentage = getFloat(cd, "CPUUsedPercentage");
 		}
 		if (cd.containsKey("loadAvgs")) {
-			this.loadAvgs = (double[]) cd.get("loadAvgs");
+			this.setLoadAvgs((double[]) cd.get("loadAvgs"));
 		}
 	}
 
@@ -108,6 +108,10 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		return totalCpuValue;
 	}
 
+	public void setLoadAvgs(double[] loadAvgs) {
+		this.loadAvgs = loadAvgs;
+	}
+	
 	public double[] getLoadAvgs() {
 		return loadAvgs;
 	}
@@ -122,18 +126,6 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 
 	public void setIdleCpuValue(long idleCpuValue) {
 		this.idleCpuValue = idleCpuValue;
-	}
-
-	public void setLoadAvgs(double loadAvgs) {
-		this.loadAvgs[0] = loadAvgs;
-	}
-
-	public void setLoadAvgs5(double loadAvgs) {
-		this.loadAvgs[1] = loadAvgs;
-	}
-
-	public void setLoadAvgs15(double loadAvgs) {
-		this.loadAvgs[2] = loadAvgs;
 	}
 
 	public void setFreeMemory(long freeMemory) {
@@ -152,4 +144,6 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}
+
+
 }

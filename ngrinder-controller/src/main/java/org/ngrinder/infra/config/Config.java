@@ -29,11 +29,13 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.model.Home;
@@ -59,16 +61,17 @@ import ch.qos.logback.core.joran.spi.JoranException;
 public class Config {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
 	private static final Logger logger = LoggerFactory.getLogger(Config.class);
+	private Home home = null;
+	private PropertiesWrapper internalProperties;
+	private PropertiesWrapper systemProperties;
 	private PropertiesWrapper databaseProperties;
+	private static String versionString = "";
 
 	/**
 	 * Make it singleton
 	 */
 	Config() {
 	}
-
-	private Home home = null;
-	private PropertiesWrapper systemProperties;
 
 	/**
 	 * Initialize Config. This method mainly perform NGRINDER_HOME resolution
@@ -77,14 +80,15 @@ public class Config {
 	 */
 	@PostConstruct
 	public void init() {
-
 		try {
 			home = resolveHome();
 			copyDefaultConfigurationFiles();
+			loadIntrenalProperties();
 			loadSystemProperties();
 			initLogger(isTestMode());
 			CoreLogger.LOGGER.info("NGrinder is starting...");
 			loadDatabaseProperties();
+			versionString = getVesion();
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while loading NGRINDER_HOME", e);
 		}
@@ -96,7 +100,7 @@ public class Config {
 	public void initLogger(boolean forceToVerbose) {
 		File gloablLogFile = getHome().getGloablLogFile();
 		boolean verbose = (forceToVerbose) ? true : getSystemProperties().getPropertyBoolean("verbose", false);
-		
+
 		final Context context = (Context) LoggerFactory.getILoggerFactory();
 
 		final JoranConfigurator configurator = new JoranConfigurator();
@@ -110,6 +114,12 @@ public class Config {
 		}
 	}
 
+	/**
+	 * Copy default files.
+	 * 
+	 * @throws IOException
+	 *             occurs when there is no such a files.
+	 */
 	private void copyDefaultConfigurationFiles() throws IOException {
 		checkNotNull(home);
 		home.copyFrom(new ClassPathResource("ngrinder_home_template").getFile(), false);
@@ -140,21 +150,53 @@ public class Config {
 		return new Home(homeDirectory);
 	}
 
-	private void loadDatabaseProperties() throws IOException {
+	/**
+	 * Load properties which is not modifiable.
+	 */
+	protected void loadIntrenalProperties() {
+		InputStream inputStream = null;
+		Properties properties = new Properties();
+		try {
+			inputStream = new ClassPathResource("/internal.properties").getInputStream();
+			properties.load(inputStream);
+			internalProperties = new PropertiesWrapper(properties);
+		} catch (IOException e) {
+			logger.error("Error while load internal.properties", e);
+			internalProperties = new PropertiesWrapper(properties);
+		} finally {
+			IOUtils.closeQuietly(inputStream);
+		}
+	}
+
+	/**
+	 * Load database related properties
+	 * 
+	 * @throws IOException
+	 */
+	protected void loadDatabaseProperties() {
 		checkNotNull(home);
 		Properties properties = home.getProperties("database.conf");
 		properties.put("NGRINDER_HOME", home.getDirectory().getAbsolutePath());
 		databaseProperties = new PropertiesWrapper(properties);
-
 	}
 
-	private void loadSystemProperties() {
+	/**
+	 * Load system related properties
+	 * 
+	 * @throws IOException
+	 */
+	protected void loadSystemProperties() {
 		checkNotNull(home);
 		Properties properties = home.getProperties("system.conf");
 		properties.put("NGRINDER_HOME", home.getDirectory().getAbsolutePath());
 		systemProperties = new PropertiesWrapper(properties);
 	}
 
+	/**
+	 * Get database properties.
+	 * 
+	 * @return database properties
+	 */
 	public PropertiesWrapper getDatabaseProperties() {
 		checkNotNull(databaseProperties);
 		return databaseProperties;
@@ -179,8 +221,10 @@ public class Config {
 	}
 
 	/**
-	 * if there is pluginsupport property in system.properties.. return true
-	 * in test mode, plugin is disabled, because it takes time to initialize plugin system.
+	 * if there is pluginsupport property in system.properties.. return true in
+	 * test mode, plugin is disabled, because it takes time to initialize plugin
+	 * system.
+	 * 
 	 * @return true if plugin is supported.
 	 */
 	public boolean isPluginSupported() {
@@ -212,7 +256,7 @@ public class Config {
 	 * @return nGrinder version number.
 	 */
 	public String getVesion() {
-		return getSystemProperties().getProperty("version", "3.0");
+		return getInternalProperties().getProperty("version", "UNKNOWN");
 	}
 
 	/**
@@ -237,6 +281,19 @@ public class Config {
 		} else {
 			return policyScript;
 		}
+	}
+
+	public PropertiesWrapper getInternalProperties() {
+		return internalProperties;
+	}
+
+	/**
+	 * Get nGrinder version in static way
+	 * 
+	 * @return nGrinder version.
+	 */
+	public static String getVerionString() {
+		return versionString;
 	}
 
 }

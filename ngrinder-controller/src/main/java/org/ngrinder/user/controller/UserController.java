@@ -101,6 +101,10 @@ public class UserController extends NGrinderBaseController {
 	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser) {
 
 		checkArgument(updatedUser.validate());
+		// General user can not change their role.
+		if (user.getRole() != Role.ADMIN || user.getRole() != Role.SUPER_USER) {
+			user.setRole(null);
+		}
 		if (updatedUser.exist()) {
 			userService.modifyUser(updatedUser);
 		} else {

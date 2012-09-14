@@ -73,7 +73,7 @@
                            </tr>
                            <tr>
                                <th>TPS</th>
-                               <td><strong>Total ${(test.tps)!}</strong></td>
+                               <td><strong>${(test.tps)!}</strong></td>
                            </tr>
                            <tr>
                                <th><@spring.message "perfTest.report.meantime"/></th>

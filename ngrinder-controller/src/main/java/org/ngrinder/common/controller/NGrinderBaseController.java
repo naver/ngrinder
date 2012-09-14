@@ -26,6 +26,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,12 @@ import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+/**
+ * Controller base which is reused widely.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
 public class NGrinderBaseController implements NGrinderConstants {
 
 	public static final String ERROR_PAGE = "errors/error";
@@ -45,10 +52,18 @@ public class NGrinderBaseController implements NGrinderConstants {
 	@Autowired
 	private UserContext userContext;
 
+	/**
+	 * Get current user
+	 * @return
+	 */
 	public User getCurrentUser() {
 		return userContext.getCurrentUser();
 	}
 
+	/**
+	 * Provide current login user as a model attributes. If it's not found, return empty user.
+	 * @return login user
+	 */
 	@ModelAttribute("currentUser")
 	public User currentUser() {
 		try {
@@ -58,6 +73,20 @@ public class NGrinderBaseController implements NGrinderConstants {
 		return new User();
 	}
 
+	/**
+	 * Provide ngrinder version as a model attributes
+	 * @return ngrinder version
+	 */
+	@ModelAttribute("nGrinderVersion") 
+	public String nGrinderVersion() {
+		return Config.getVerionString();
+	}
+	
+	/**
+	 * Get message from messageSource by key.
+	 * @param key key of message
+	 * @return found message. If not found, error message will return.
+	 */
 	protected String getMessages(String key) {
 		Locale locale = null;
 		String message = null;
@@ -70,6 +99,11 @@ public class NGrinderBaseController implements NGrinderConstants {
 		return message;
 	}
 	
+	/**
+	 * Get the given user timezone offset from system time.
+	 * @param user user
+	 * @return offset. if the user timezone is not set, return 0;
+	 */
 	protected int getTimeZoneOffSet(User user) {
 		TimeZone userLocal = TimeZone.getTimeZone(user.getTimeZone());
 		if (userLocal == null) {

@@ -188,11 +188,11 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	 */
 	public <M> List<M> getEnabledModulesByClass(Class<M> moduleClass, M defaultPlugin) {
 		ArrayList<M> pluginClasses = new ArrayList<M>();
-		if (plugins == null) {
-			return pluginClasses;
-		}
 		if (defaultPlugin != null) {
 			pluginClasses.add(defaultPlugin);
+		}
+		if (plugins == null) {
+			return pluginClasses;
 		}
 		pluginClasses.addAll(plugins.getPluginAccessor().getEnabledModulesByClass(moduleClass));
 		return pluginClasses;

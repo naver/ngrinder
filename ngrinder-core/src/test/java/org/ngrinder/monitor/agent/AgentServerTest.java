@@ -22,7 +22,6 @@
  */
 package org.ngrinder.monitor.agent;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
@@ -31,7 +30,6 @@ import javax.management.MBeanRegistrationException;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.SigarTestBase;
 import org.ngrinder.common.util.ThreadUtil;

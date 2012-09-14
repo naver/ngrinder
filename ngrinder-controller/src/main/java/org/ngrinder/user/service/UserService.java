@@ -85,6 +85,10 @@ public class UserService implements IUserService {
 		return userRepository.findOneByUserName(userName);
 	}
 
+	/**
+	 * Encoding given user's password
+	 * @param user user
+	 */
 	public void encodePassword(User user) {
 		if (StringUtils.isNotBlank(user.getPassword())) {
 			SecuredUser securedUser = new SecuredUser(user, null);
