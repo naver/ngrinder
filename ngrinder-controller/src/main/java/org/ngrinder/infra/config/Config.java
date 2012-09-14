@@ -82,9 +82,7 @@ public class Config {
 			home = resolveHome();
 			copyDefaultConfigurationFiles();
 			loadSystemProperties();
-			if (isTestMode()) {
-				initLogger();
-			}
+			initLogger(isTestMode());
 			CoreLogger.LOGGER.info("NGrinder is starting...");
 			loadDatabaseProperties();
 		} catch (IOException e) {
@@ -95,10 +93,10 @@ public class Config {
 	/**
 	 * Initialize Logger.
 	 */
-	public void initLogger() {
+	public void initLogger(boolean forceToVerbose) {
 		File gloablLogFile = getHome().getGloablLogFile();
-		boolean verbose = getSystemProperties().getPropertyBoolean("verbose", false);
-
+		boolean verbose = (forceToVerbose) ? true : getSystemProperties().getPropertyBoolean("verbose", false);
+		
 		final Context context = (Context) LoggerFactory.getILoggerFactory();
 
 		final JoranConfigurator configurator = new JoranConfigurator();
