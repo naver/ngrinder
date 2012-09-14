@@ -74,7 +74,11 @@
 			<scope>system</scope>
 			<systemPath>${toolsjar}</systemPath>
 		</dependency>
-
+		<dependency>
+			<groupId>org.fusesource</groupId>
+			<artifactId>sigar</artifactId>
+			<version>1.6.4</version>
+		</dependency>
 		<dependency>
 			<groupId>net.sf.grinder</groupId>
 			<artifactId>grinder</artifactId>

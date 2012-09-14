@@ -22,12 +22,10 @@
  */
 package org.ngrinder.monitor.agent.collector;
 
-import java.util.concurrent.Callable;
-
 import org.apache.commons.lang.SystemUtils;
+import org.hyperic.sigar.OperatingSystem;
+import org.hyperic.sigar.Sigar;
 import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.monitor.agent.collector.process.LinuxSystemMonitorProcessor;
-import org.ngrinder.monitor.agent.collector.process.WindowSystemMonitorProcessor;
 import org.ngrinder.monitor.agent.mxbean.SystemMonitoringData;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
@@ -36,25 +34,16 @@ import org.slf4j.LoggerFactory;
 public class AgentSystemDataCollector extends AgentDataCollector {
 	private static final Logger LOG = LoggerFactory.getLogger(AgentSystemDataCollector.class);
 
-	private Callable<SystemInfo> processor = null;
 	private long failedCount = 0;
+	private Sigar sigar = new Sigar();
 
 	@Override
 	public synchronized void refresh() {
-		final String osSystem = System.getProperty("os.name");
-		// ExecutorService executor = Executors.newSingleThreadExecutor();
-		if (osSystem.toLowerCase().indexOf("windows") > -1) {
-			// windows
-			processor = new WindowSystemMonitorProcessor();
-		} else {
-			// linux
-			processor = new LinuxSystemMonitorProcessor();
-		}
+
 	}
 
 	@Override
 	public void run() {
-
 		SystemMonitoringData systemMonitoringData = (SystemMonitoringData) getMXBean(MonitorConstants.SYSTEM);
 		SystemInfo systemInfo = execute();
 		systemMonitoringData.addNotification(systemInfo);
@@ -62,10 +51,13 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 	}
 
 	public synchronized SystemInfo execute() {
-
 		SystemInfo systemInfo = new SystemInfo();
 		try {
-			systemInfo = processor.call();
+			systemInfo.setCPUUsedPercentage(sigar.getMem().getUsed());
+			systemInfo.setCPUUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
+			systemInfo.setTotalMemory(sigar.getMem().getTotal() / 1024);
+			systemInfo.setFreeMemory(sigar.getMem().getFree() / 1024);
+			systemInfo.setSystem(OperatingSystem.IS_WIN32 ? SystemInfo.System.WINDOW : SystemInfo.System.LINUX);
 		} catch (Exception e) {
 			if ((failedCount++) % 60 == 0) {
 				if (SystemUtils.IS_OS_WINDOWS) {
@@ -77,7 +69,6 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 			}
 		}
 		systemInfo.setCollectTime(System.currentTimeMillis());
-
 		return systemInfo;
 	}
 }

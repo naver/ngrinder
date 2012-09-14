@@ -18,5 +18,12 @@
       	<exclude>lib/tools.jar</exclude>
       </excludes>
     </fileSet>
+    <fileSet>
+      <directory>${project.basedir}</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>native_lib/*.*</include>
+      </includes>
+    </fileSet>
   </fileSets>
 </assembly>

@@ -70,6 +70,7 @@ public class NGrinderStarter {
 	public NGrinderStarter() {
 		try {
 			addClassPath();
+			addLibarayPath();
 			Class.forName("com.sun.tools.attach.VirtualMachine");
 			Class.forName("sun.management.ConnectorAddressLink");
 			localAttachmentSupported = true;
@@ -81,6 +82,8 @@ public class NGrinderStarter {
 			localAttachmentSupported = false;
 		}
 	}
+
+	
 
 	public void startMonitor() {
 
@@ -178,6 +181,11 @@ public class NGrinderStarter {
 		return null;
 	}
 
+	private void addLibarayPath() {
+		String property = StringUtils.trimToEmpty(System.getProperty("java.library.path"));
+		System.setProperty("java.library.path", property + File.pathSeparator + new File("./native_lib").getAbsolutePath());
+		LOG.info("java.library.path : {} ", System.getProperty("java.library.path"));
+	}
 	/**
 	 * Add tools.jar classpath. This contains hack
 	 */

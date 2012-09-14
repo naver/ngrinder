@@ -448,8 +448,9 @@ public class PerfTestController extends NGrinderBaseController {
 			long totalMemory = value.getTotalMemory();
 			float usage = 0;
 			if (totalMemory != 0) {
-				usage = (totalMemory - value.getFreeMemory()) / totalMemory;
+				usage = (((float)(totalMemory - value.getFreeMemory())) / totalMemory) * 100;
 			}
+			System.out.println(usage);
 			perfStringList.add(String.format(" {'agent' : '%s', 'cpu' : %3.2f, 'mem' : %3.2f }", each.getKey().getName(),
 							value.getCpuUsedPercentage(), usage));
 		}
