@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
+import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,12 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	public UserRepository userRepository;
-
+	@Autowired
+	private PerfTestRepository perfTestRepository;
+	
 	@Before
 	public void before() {
+		perfTestRepository.deleteAll();
 		userRepository.deleteAll();
 	}
 

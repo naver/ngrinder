@@ -175,29 +175,16 @@ public class Config {
 	 * @return true if security mode.
 	 */
 	public boolean isSecurityEnabled() {
-		return getSystemProperties().getPropertyBoolean("security", false);
+		return !isTestMode() && getSystemProperties().getPropertyBoolean("security", false);
 	}
 
 	/**
 	 * if there is pluginsupport property in system.properties.. return true
-	 * 
+	 * in test mode, plugin is disabled, because it takes time to initialize plugin system.
 	 * @return true if plugin is supported.
 	 */
 	public boolean isPluginSupported() {
-		return (getSystemProperties().getPropertyBoolean("pluginsupport", true)) || !isTestMode();
-	}
-
-	/**
-	 * This method is specified for mocking. Only used for unit test
-	 * 
-	 * @param key
-	 *            key
-	 * @param defaultValue
-	 *            default value.
-	 * @return system property for the given key.
-	 */
-	String getSystemProperty(String key, String defaultValue) {
-		return getSystemProperties().getProperty(key, defaultValue);
+		return !isTestMode() && (getSystemProperties().getPropertyBoolean("pluginsupport", true));
 	}
 
 	/**
@@ -225,7 +212,7 @@ public class Config {
 	 * @return nGrinder version number.
 	 */
 	public String getVesion() {
-		return "3.0";
+		return getSystemProperties().getProperty("version", "3.0");
 	}
 
 	/**

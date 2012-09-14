@@ -22,6 +22,8 @@
  */
 package org.ngrinder.monitor.controller;
 
+import static org.junit.Assert.fail;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,11 +35,10 @@ import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
  * Class description.
  * 
  * @author Tobi
- * @since
+ * @since 3.0
  * @date 2012-7-20
  */
 public class MonitorExecuteManagerTest {
-
 	@Test
 	public void getMonitorData() {
 		Set<MonitorAgentInfo> agentInfo = new HashSet<MonitorAgentInfo>();
@@ -47,5 +48,6 @@ public class MonitorExecuteManagerTest {
 		MonitorExecuteManager monitorExecuteManager = new MonitorExecuteManager("127.0.0.1", 2, 1, agentInfo);
 		monitorExecuteManager.start();
 		ThreadUtil.sleep(10000);
+		fail("NEVER NEVER Write this kind of test code please");
 	}
 }

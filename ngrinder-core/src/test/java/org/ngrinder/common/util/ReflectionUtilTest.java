@@ -22,16 +22,14 @@
  */
 package org.ngrinder.common.util;
 
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Map.Entry;
 
 import org.junit.Test;
 import org.ngrinder.NGrinderStarter;
@@ -39,48 +37,45 @@ import org.ngrinder.model.User;
 
 /**
  * Class description.
- *
+ * 
  * @author Mavlarn
  * @since
  */
 public class ReflectionUtilTest {
 
 	/**
-	 * Test method for {@link net.grinder.util.ReflectionUtil#getFieldValue(java.lang.Object, java.lang.String)}.
+	 * Test method for
+	 * {@link net.grinder.util.ReflectionUtil#getFieldValue(java.lang.Object, java.lang.String)}
+	 * .
 	 */
 	@Test
 	public void testGetFieldValue() {
-		
 		User testUser = new User();
 		testUser.setUserId("TMP_UID");
-		String rtnUid = (String)ReflectionUtil.getFieldValue(testUser, "userId");
+		String rtnUid = (String) ReflectionUtil.getFieldValue(testUser, "userId");
 		assertThat(rtnUid, is("TMP_UID"));
-	}
-
-	/**
-	 * Test method for {@link net.grinder.util.ReflectionUtil#invokePrivateMethod(java.lang.Object, java.lang.String, java.lang.Object[])}.
-	 */
-	@Test
-	public void testInvokePrivateMethod() {
-		fail("Not yet implemented");
 	}
 
 	@Test
 	public void testReflectionUtil() throws MalformedURLException {
-		for (Entry<Object, Object> each : System.getProperties().entrySet()) {
-			System.out.println(each.getKey() + "=" + each.getValue());
-		}
 		URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-		ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { new File("c:/hello").toURI()
-				.toURL() });
+		ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { new File("hello").toURI().toURL() });
 
 	}
 
 	@Test
 	public void testToolsJarPath() {
-		NGrinderStarter starter = new NGrinderStarter();
+		NGrinderStarter starter = new NGrinderStarter() {
+			@Override
+			protected void printHelpAndExit(String message) {
+			}
+
+			@Override
+			protected void printHelpAndExit(String message, Exception e) {
+			}
+		};
 		URL findToolsJarPath = starter.findToolsJarPath();
 		assertThat(findToolsJarPath, notNullValue());
 	}
-	
+
 }

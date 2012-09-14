@@ -22,6 +22,7 @@
  */
 package org.ngrinder.monitor.agent;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
@@ -30,19 +31,21 @@ import javax.management.MBeanRegistrationException;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.SigarTestBase;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AgentServerTest {
+public class AgentServerTest extends SigarTestBase {
 	private static final Logger LOG = LoggerFactory.getLogger(AgentServerTest.class);
 
 	@Test
-	public void startMonitor() throws MalformedObjectNameException, InstanceAlreadyExistsException,
-			MBeanRegistrationException, NotCompliantMBeanException, NullPointerException, IOException {
+	public void startMonitor() throws MalformedObjectNameException, InstanceAlreadyExistsException, MBeanRegistrationException,
+			NotCompliantMBeanException, NullPointerException, IOException {
 		int port = 4096;
 		Set<String> dataCollectors = MonitorConstants.SYSTEM_DATA_COLLECTOR;
 

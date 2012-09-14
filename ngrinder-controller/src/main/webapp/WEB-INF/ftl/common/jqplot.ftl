@@ -8,3 +8,4 @@
 <script src="${req.getContextPath()}/plugins/jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
 <script src="${req.getContextPath()}/plugins/jqplot/plugins/jqplot.canvasAxisLabelRenderer.min.js"></script>
 <script src="${req.getContextPath()}/js/drawChart.js"></script>
+<script src="${req.getContextPath()}/js/jquery.sparkline.min.js"></script>

@@ -86,7 +86,6 @@ public class NGrinderStarter {
 	
 
 	public void startMonitor() {
-
 		LOG.info("**************************");
 		LOG.info("* Start nGrinder Monitor *");
 		LOG.info("**************************");
@@ -116,6 +115,10 @@ public class NGrinderStarter {
 			printHelpAndExit("Error while starting Agent", e);
 		}
 	}
+
+	
+
+
 
 	public static int getCurrentJVMPid() {
 		RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
@@ -189,7 +192,7 @@ public class NGrinderStarter {
 	/**
 	 * Add tools.jar classpath. This contains hack
 	 */
-	private void addClassPath() {
+	protected void addClassPath() {
 		URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
 		URL toolsJarPath = findToolsJarPath();
 		LOG.info("tools.jar is found in {}", checkNotNull(toolsJarPath).toString());
@@ -200,10 +203,12 @@ public class NGrinderStarter {
 		File libFolder = new File(".", "lib").getAbsoluteFile();
 		if (!libFolder.exists()) {
 			printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + ") does not exist");
+			return;
 		}
 		File[] libList = libFolder.listFiles();
 		if (libList == null) {
 			printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + ") has no content");
+			return;
 		}
 
 		for (File each : libList) {
@@ -235,10 +240,28 @@ public class NGrinderStarter {
 		try {
 			configurator.doConfigure(NGrinderStarter.class.getResource("/logback-agent.xml"));
 		} catch (JoranException e) {
-			printHelpAndExit("Can not configure logger on " + logDirectory.getAbsolutePath()
+			staticPrintHelpAndExit("Can not configure logger on " + logDirectory.getAbsolutePath()
 					+ ".\n Please check if it's writable.");
 		}
 	}
+
+	/**
+	 * print help and exit. This is provided for mocking.
+	 * @param message message
+	 */
+	protected void printHelpAndExit(String message) {
+		staticPrintHelpAndExit(message);
+	}
+
+	/**
+	 * print help and exit. This is provided for mocking.
+	 * @param message message
+	 * @param e exception
+	 */
+	protected void printHelpAndExit(String message, Exception e) {
+		staticPrintHelpAndExit(message, e);
+	}
+
 
 	/**
 	 * Agent starter
@@ -248,7 +271,7 @@ public class NGrinderStarter {
 	public static void main(String[] args) {
 
 		if (!idValidCurrentDirectory()) {
-			printHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
+			staticPrintHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
 		}
 		agentConfig = new AgentConfig();
 		agentConfig.init();
@@ -275,7 +298,7 @@ public class NGrinderStarter {
 			LOG.info("Monitor is started");
 			starter.startMonitor();
 		} else {
-			printHelpAndExit("Invalid agent.conf, 'start.mode' must be set as 'monitor' or 'agent'.");
+			staticPrintHelpAndExit("Invalid agent.conf, 'start.mode' must be set as 'monitor' or 'agent'.");
 		}
 	}
 
@@ -296,11 +319,11 @@ public class NGrinderStarter {
 		return (list != null && list.length != 0);
 	}
 
-	private static void printHelpAndExit(String message) {
-		printHelpAndExit(message, null);
+	private static void staticPrintHelpAndExit(String message) {
+		staticPrintHelpAndExit(message, null);
 	}
 
-	private static void printHelpAndExit(String message, Exception e) {
+	private static void staticPrintHelpAndExit(String message, Exception e) {
 		LOG.error(message);
 		System.exit(-1);
 	}

@@ -35,6 +35,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.ngrinder.SigarTestBase;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.AbstractChartTransactionalTest;
 import org.ngrinder.common.util.ThreadUtil;
@@ -59,6 +60,7 @@ public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
 	@Autowired
 	private MonitorService monitorService;
 	
+
 	@BeforeClass
 	public static void startMonitorServer() {
 		AgentConfig agentConfig = new AgentConfig();

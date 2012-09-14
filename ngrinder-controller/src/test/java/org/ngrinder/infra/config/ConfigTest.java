@@ -22,8 +22,10 @@
  */
 package org.ngrinder.infra.config;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +33,7 @@ import java.io.File;
 
 import org.junit.Test;
 import org.ngrinder.common.model.Home;
+import org.ngrinder.common.util.PropertiesWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -39,7 +42,7 @@ import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 public class ConfigTest extends AbstractJUnit4SpringContextTests {
 
 	@Autowired
-	public Config config;
+	public MockConfig config;
 
 	@Test
 	public void testDefaultHome() {
@@ -52,25 +55,44 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests {
 
 	@Test
 	public void testTestMode() {
-		Config spiedConfig = spy(config);
+		PropertiesWrapper wrapper = mock(PropertiesWrapper.class);
+		config.setSystemProperties(wrapper);
 		// When testmode false and pluginsupport is true, it should be true
-		when(spiedConfig.getSystemProperty("testmode", "false")).thenReturn("false");
-		when(spiedConfig.getSystemProperty("pluginsupport", "true")).thenReturn("false");
-		assertThat(spiedConfig.isPluginSupported(), is(true));
+		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(false);
+		when(wrapper.getPropertyBoolean("pluginsupport", true)).thenReturn(false);
+		assertThat(config.isPluginSupported(), is(false));
 
 		// When testmode true and pluginsupport is false, it should be false
-		when(spiedConfig.getSystemProperty("testmode", "false")).thenReturn("true");
-		when(spiedConfig.getSystemProperty("pluginsupport", "true")).thenReturn("false");
-		assertThat(spiedConfig.isPluginSupported(), is(false));
+		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(true);
+		when(wrapper.getPropertyBoolean("pluginsupport", true)).thenReturn(false);
+		assertThat(config.isPluginSupported(), is(false));
 
 		// When testmode false and pluginsupport is false, it should be false
-		when(spiedConfig.getSystemProperty("testmode", "false")).thenReturn("true");
-		when(spiedConfig.getSystemProperty("pluginsupport", "true")).thenReturn("false");
-		assertThat(spiedConfig.isPluginSupported(), is(false));
+		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(false);
+		when(wrapper.getPropertyBoolean("pluginsupport", true)).thenReturn(false);
+		assertThat(config.isPluginSupported(), is(false));
 
 		// When testmode true and pluginsupport is true, it should be false
-		when(spiedConfig.getSystemProperty("testmode", "false")).thenReturn("true");
-		when(spiedConfig.getSystemProperty("pluginsupport", "true")).thenReturn("true");
-		assertThat(spiedConfig.isPluginSupported(), is(true));
+		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(true);
+		when(wrapper.getPropertyBoolean("pluginsupport", true)).thenReturn(true);
+		assertThat(config.isPluginSupported(), is(false));
+		
+		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(true);
+		when(wrapper.getPropertyBoolean("security", false)).thenReturn(true);
+		assertThat(config.isSecurityEnabled(), is(false));
+		
+		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(false);
+		when(wrapper.getPropertyBoolean("security", false)).thenReturn(true);
+		assertThat(config.isSecurityEnabled(), is(true));
+		
+		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(false);
+		when(wrapper.getPropertyBoolean("security", false)).thenReturn(false);
+		assertThat(config.isSecurityEnabled(), is(false));
+	}
+	
+	@Test
+	public void testPolicyFileLoad() {
+		String processAndThreadPolicyScript = config.getProcessAndThreadPolicyScript();
+		assertThat(processAndThreadPolicyScript, containsString("function"));
 	}
 }

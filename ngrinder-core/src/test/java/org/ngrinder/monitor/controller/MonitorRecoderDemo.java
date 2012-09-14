@@ -37,8 +37,6 @@ public class MonitorRecoderDemo implements MonitorRecoder {
 
 	@Override
 	public void before() {
-		System.out.println("before");
-
 	}
 
 	@Override

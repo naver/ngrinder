@@ -1025,6 +1025,7 @@ i.collapse{
 	  var curRunningThreads = 0;
 	  var curStatus = false;
 	  var curAgentPerfStates = []; 
+	  var agentPerfStates = {}; 
 	  function refreshData() {
 	      var refreshDiv = $("<div></div>");
 	      var url = "${req.getContextPath()}/perftest/running/refresh?testId=" + $("#testId").val();
@@ -1041,9 +1042,15 @@ i.collapse{
 	              $("#running_time").text(showRunTime(curRunningTime));
 	              var agentStatusString = "";
 	              for (var i = 0; i < curAgentPerfStates.length; i++) {
+	                var eachAgent = curAgentPerfStates[i];
+	                if (agentPerfStates[eachAgent.agent] === undefined) {
+	                	agentPerfStates[eachAgent.agent] = { "cpu" : {}, "mem' : {}};
+	                }
+	                agentPerfStates[eachAgent.agent].cpu.push(eachAgent.cpu);
+	                agentPerfStates[eachAgent.agent].mem.push(eachAgent.mem);      
+	                // Use sparkle line...     
 	              	agentStatusString = agentStatusString + curAgentPerfStates[i].agent + "   CPU - " + curAgentPerfStates[i].cpu + "   MEM - " + curAgentPerfStates[i].mem + "<br/>" ;
-	              }
-	              
+	              }	              
 	              $("#agent_status").html(agentStatusString);
 				  peakTps = curPeakTps;
 	              test_tps_data.enQueue(curTps);
