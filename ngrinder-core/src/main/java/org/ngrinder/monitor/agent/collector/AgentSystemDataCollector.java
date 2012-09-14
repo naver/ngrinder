@@ -53,7 +53,7 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 		try {
 			systemInfo.setCPUUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
 			systemInfo.setTotalMemory(sigar.getMem().getTotal() / 1024);
-			systemInfo.setFreeMemory(sigar.getMem().getFree() / 1024);
+			systemInfo.setFreeMemory(sigar.getMem().getActualFree() / 1024);
 			systemInfo.setSystem(OperatingSystem.IS_WIN32 ? SystemInfo.System.WINDOW : SystemInfo.System.LINUX);
 		} catch (Exception e) {
 			if (failedCount++ == 60) {
