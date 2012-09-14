@@ -250,6 +250,11 @@ public class AgentImplementationEx implements Agent {
 					}
 					jvmArguments = addCustomDns(properties, jvmArguments);
 					final WorkerFactory workerFactory;
+					m_logger.info("grinder properties {}", grinderProperties);
+
+					if (properties.getInt("grinder.runs", 0) == 1) {
+						properties.setInt("grinder.runs", 0);
+					}
 
 					if (!properties.getBoolean("grinder.debug.singleprocess", false)) {
 						// Fix to provide empty system classpath to speed up
