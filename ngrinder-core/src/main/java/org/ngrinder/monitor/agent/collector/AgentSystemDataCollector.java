@@ -53,7 +53,6 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 	public synchronized SystemInfo execute() {
 		SystemInfo systemInfo = new SystemInfo();
 		try {
-			systemInfo.setCPUUsedPercentage(sigar.getMem().getUsed());
 			systemInfo.setCPUUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
 			systemInfo.setTotalMemory(sigar.getMem().getTotal() / 1024);
 			systemInfo.setFreeMemory(sigar.getMem().getFree() / 1024);
