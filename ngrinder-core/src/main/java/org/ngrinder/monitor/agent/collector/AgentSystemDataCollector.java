@@ -41,7 +41,6 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 
 	@Override
 	public synchronized void refresh() {
-
 		final String osSystem = System.getProperty("os.name");
 		// ExecutorService executor = Executors.newSingleThreadExecutor();
 		if (osSystem.toLowerCase().indexOf("windows") > -1) {

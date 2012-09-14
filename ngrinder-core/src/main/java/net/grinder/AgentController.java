@@ -58,6 +58,7 @@ import net.grinder.util.LogCompressUtil;
 import net.grinder.util.thread.Condition;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.agent.collector.AgentSystemDataCollector;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -110,7 +111,6 @@ public class AgentController implements Agent {
 		m_eventSyncCondition = eventSyncCondition;
 		m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, m_logger);
 		m_agentIdentity = new AgentControllerIdentityImplementation(getHostName(), getHostAddress());
-
 		agentSystemDataCollector.refresh();
 	}
 
@@ -218,6 +218,7 @@ public class AgentController implements Agent {
 					agent.addListener(new AgentShutDownListener() {
 						@Override
 						public void shutdownAgent() {
+							m_logger.info("send log for {}", testId);
 							sendLog(conCom, testId);
 							m_state = AgentControllerState.READY;
 							m_connectionPort = 0;
@@ -288,7 +289,7 @@ public class AgentController implements Agent {
 				return (name.endsWith("-0.log"));
 			}
 		});
-		if (list == null || list.length != 1) {
+		if (ArrayUtils.isEmpty(list)) {
 			m_logger.error("there is no log exists under {}", logFolder.getAbsolutePath());
 			return;
 		}
@@ -314,7 +315,7 @@ public class AgentController implements Agent {
 			try {
 				consoleCommunication.sendCurrentState();
 			} catch (CommunicationException e) {
-				m_logger.error("Error while sending current state" + e.getMessage());
+				m_logger.error("Error while sending current state {}.", e.getMessage());
 				m_logger.debug("Error is ", e);
 			}
 		}
@@ -357,8 +358,8 @@ public class AgentController implements Agent {
 			SystemInfo systemInfo = agentSystemDataCollector.execute();
 			return new SystemDataModel(systemInfo);
 		} catch (Exception e) {
-			m_logger.error("Error while get system perf data model : " + e.getMessage());
-			m_logger.debug("Error is ", e);
+			m_logger.error("Error while get system perf data model : {} ", e.getMessage());
+			m_logger.debug("Error Trace is ", e);
 			return emptySystemDataModel;
 		}
 	}

@@ -252,7 +252,8 @@ public class AgentImplementationEx implements Agent {
 					final WorkerFactory workerFactory;
 					m_logger.info("grinder properties {}", grinderProperties);
 
-					if (properties.getInt("grinder.runs", 0) == 1) {
+					// To be safe...
+					if (properties.containsKey("grinder.duration") && !properties.containsKey("grinder.runs")) {
 						properties.setInt("grinder.runs", 0);
 					}
 
@@ -301,11 +302,10 @@ public class AgentImplementationEx implements Agent {
 					synchronized (m_eventSynchronisation) {
 						final long maximumShutdownTime = 5000;
 						long consoleSignalTime = -1;
-						m_logger.info("waiting for all worker is finished {}", workerLauncher.allFinished());
 						while (!workerLauncher.allFinished()) {
-							m_logger.info("waiting for all worker is finished {}", workerLauncher.allFinished());
+							m_logger.info("waiting until all workers are finished");
 							if (consoleSignalTime == -1 && m_consoleListener.checkForMessage(ConsoleListener.ANY ^ ConsoleListener.START)) {
-								m_logger.info("dont start anymore");
+								m_logger.info("dont start anymore by message from controller.");
 								workerLauncher.dontStartAnyMore();
 								consoleSignalTime = System.currentTimeMillis();
 							}
@@ -320,7 +320,7 @@ public class AgentImplementationEx implements Agent {
 
 							m_eventSynchronisation.waitNoInterrruptException(maximumShutdownTime);
 						}
-						m_logger.debug("waiting for all worker is finished {}", workerLauncher.allFinished());
+						m_logger.info("all workers are finished");
 					}
 					m_logger.debug("normal shutdown");
 					workerLauncher.shutdown();

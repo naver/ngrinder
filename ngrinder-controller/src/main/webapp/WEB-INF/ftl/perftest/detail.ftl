@@ -120,7 +120,7 @@ i.collapse{
 								<input class="span3 required" maxlength="100" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
 								<#if test??> 
 									<span id="teststatus_pop_over"
-										rel="popover" data-content='${"${test.progressMessage}/n${test.lastProgressMessage}"?replace('/n', '<br>')?html}'  
+										rel="popover" data-content='${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}'  
 											data-original-title="<@spring.message "${test.status.springMessageKey}"/>" type="toggle" placement="bottom">
 										<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
 									</span> 
@@ -1041,10 +1041,10 @@ i.collapse{
 	              $("#running_time").text(showRunTime(curRunningTime));
 	              var agentStatusString = "";
 	              for (var i = 0; i < curAgentPerfStates.length; i++) {
-	              	agentStatusString = agentStatusString + "\n " + curAgentPerfStates[i].agent + "   CPU - " + curAgentPerfStates[i].cpu + "   MEM - " + curAgentPerfStates[i].mem;
+	              	agentStatusString = agentStatusString + curAgentPerfStates[i].agent + "   CPU - " + curAgentPerfStates[i].cpu + "   MEM - " + curAgentPerfStates[i].mem + "<br/>" ;
 	              }
 	              
-	              $("#agent_status").text(agentStatusString);
+	              $("#agent_status").html(agentStatusString);
 				  peakTps = curPeakTps;
 	              test_tps_data.enQueue(curTps);
 	          } else {

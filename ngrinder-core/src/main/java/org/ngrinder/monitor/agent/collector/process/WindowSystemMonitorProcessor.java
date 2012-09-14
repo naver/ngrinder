@@ -29,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.Callable;
 
+import org.apache.commons.io.IOUtils;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
@@ -36,9 +37,6 @@ import org.slf4j.LoggerFactory;
 
 public class WindowSystemMonitorProcessor implements Callable<SystemInfo> {
 	private static final Logger LOG = LoggerFactory.getLogger(WindowSystemMonitorProcessor.class);
-	// cmd.exe /c typeperf "\Processor(_Total)\% Processor Time" "\Memory\Available KBytes" -sc 1
-	// "(PDH-CSV 4.0)","\\ISAIAH-PC\Processor(_Total)\% Processor Time","\\ISAIAH-PC\Memory\Available KBytes"
-	// "09/02/2012 16:42:50.960","21.507119","682904.000000"
 	private static final String WINDOWS_TYPEPERF_PARAM = "\"\\Processor(_Total)\\% Processor Time\" "
 			+ "\"\\Memory\\Available KBytes\"";
 
@@ -49,27 +47,24 @@ public class WindowSystemMonitorProcessor implements Callable<SystemInfo> {
 		SystemInfo systemInfo = new SystemInfo();
 		StringBuilder result = new StringBuilder();
 		BufferedReader input = null;
+		InputStreamReader in = null;
 		try {
 			// String pcName = InetAddress.getLocalHost().getHostName();
 			Process proc = Runtime.getRuntime().exec(
 					new String[] { "cmd.exe", "/c", "typeperf " + WINDOWS_TYPEPERF_PARAM + " -sc 1" });
 			String line = null;
-			
-			input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+			in = new InputStreamReader(proc.getInputStream());
+			input = new BufferedReader(in);
 			while ((line = input.readLine()) != null) {
 				result.append(line).append("\n");
 			}
 
 		} catch (IOException e) {
-			LOG.error(e.getMessage(), e);
+			LOG.error("Error while running typeperf : {}.", e.getMessage());
+			LOG.debug("Trace is ", e);
 		} finally {
-			try {
-				if (null != input) {
-					input.close();
-				}
-			} catch (IOException e) {
-				LOG.error(e.getMessage(), e);
-			}
+			IOUtils.closeQuietly(in);
+			IOUtils.closeQuietly(input);
 		}
 		parse(systemInfo, result.toString());
 		systemInfo.setSystem(SystemInfo.System.WINDOW);
