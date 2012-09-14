@@ -314,7 +314,8 @@ public class AgentController implements Agent {
 			try {
 				consoleCommunication.sendCurrentState();
 			} catch (CommunicationException e) {
-				m_logger.error("Error while sending current state" + e.getMessage(), e);
+				m_logger.error("Error while sending current state" + e.getMessage());
+				m_logger.debug("Error is ", e);
 			}
 		}
 	}
@@ -356,7 +357,8 @@ public class AgentController implements Agent {
 			SystemInfo systemInfo = agentSystemDataCollector.execute();
 			return new SystemDataModel(systemInfo);
 		} catch (Exception e) {
-			m_logger.error("Error while get system perf data model : " + e.getMessage(), e);
+			m_logger.error("Error while get system perf data model : " + e.getMessage());
+			m_logger.debug("Error is ", e);
 			return emptySystemDataModel;
 		}
 	}
@@ -391,7 +393,8 @@ public class AgentController implements Agent {
 						sendCurrentState();
 					} catch (CommunicationException e) {
 						cancel();
-						m_logger.error("Error while sending current state:" + e.getMessage(), e);
+						m_logger.error("Error while sending current state:" + e.getMessage());
+						m_logger.debug("The error is", e);
 					}
 				}
 			};

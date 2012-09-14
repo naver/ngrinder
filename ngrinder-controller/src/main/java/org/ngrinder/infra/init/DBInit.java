@@ -28,6 +28,7 @@ import javax.annotation.PostConstruct;
 
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
+import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.security.SecuredUser;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,8 @@ public class DBInit {
 	@Autowired
 	public PasswordEncoder passwordEncoder;
 
+	@Autowired
+	public FileEntryService fileEntryService;
 	/**
 	 * Create users
 	 * 
@@ -80,18 +83,17 @@ public class DBInit {
 	 */
 	public void createUser(String userId, String password, Role role, String userName, String email) {
 		if (userRepository.findOneByUserId(userId) == null) {
-
-			User adminUser = new User();
-			adminUser.setUserId(userId);
-			SecuredUser securedUser = new SecuredUser(adminUser, null);
+			User user = new User();
+			user.setUserId(userId);
+			SecuredUser securedUser = new SecuredUser(user, null);
 			Object salt = saltSource.getSalt(securedUser);
-			adminUser.setPassword(passwordEncoder.encodePassword(password, salt));
-			adminUser.setRole(role);
-			adminUser.setUserName(userName);
-			adminUser.setEmail(email);
-			adminUser.setCreatedDate(new Date());
-
-			userRepository.save(adminUser);
+			user.setPassword(passwordEncoder.encodePassword(password, salt));
+			user.setRole(role);
+			user.setUserName(userName);
+			user.setEmail(email);
+			user.setCreatedDate(new Date());
+			user = userRepository.save(user);
+			fileEntryService.prepare(user);
 		}
 
 	}

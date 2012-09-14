@@ -383,7 +383,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 		LOG.debug("PerfTest {} status - currentRunningTime {} ", perfTest.getId(), singleConsoleInUse.getCurrentRunningTime());
 		// stop target host monitor
-		if (singleConsoleInUse.isTooManyError()) {
+		if (singleConsoleInUse.hasTooManyError()) {
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR,
 					"The test is finished. but contains a lot of errors");
 		} else {

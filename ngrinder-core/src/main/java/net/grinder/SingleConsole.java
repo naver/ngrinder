@@ -448,7 +448,6 @@ public class SingleConsole implements Listener, SampleListener {
 				// However sometimes runningThread is over 0 but all processs is marked as
 				// FINISHED.. It can be treated as finished status as well.
 			} else if (this.currentNotFinishedProcessCount == 0) {
-				System.out.println(this.currentNotFinishedProcessCount);
 				return true;
 			}
 			return false;
@@ -912,7 +911,7 @@ public class SingleConsole implements Listener, SampleListener {
 	 * 
 	 * @return
 	 */
-	public boolean isTooManyError() {
+	public boolean hasTooManyError() {
 		if (this.statisticData == null) {
 			return false;
 		}

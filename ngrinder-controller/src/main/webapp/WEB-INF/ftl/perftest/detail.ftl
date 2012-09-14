@@ -1089,7 +1089,7 @@ i.collapse{
 	  
 
 	  function updateStatus(id, status_type, status_name, icon, deletable, stoppable, message) {
-	      if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR") {
+	      if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR" || status_type == "CANCELED") {
 	          isFinished = true;
 	      }
 	      if ($("#testStatusType").val() == status_type) {
@@ -1107,7 +1107,7 @@ i.collapse{
 
 	      if (status_type == "TESTING") {
 	          displayCfgAndTestRunning();
-	      } else if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR" || status_type == "STOP") {
+	      } else if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR" || status_type == "CANCELED") {
 	          displayCfgAndTestReport();
 	      } else {
 	          displayCfgOnly();

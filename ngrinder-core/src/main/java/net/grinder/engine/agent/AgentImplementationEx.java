@@ -270,12 +270,11 @@ public class AgentImplementationEx implements Agent {
 						workerFactory = new DebugThreadWorkerFactory(m_agentIdentity, m_fanOutStreamSender, consoleCommunication != null,
 								script, properties);
 					}
-
+					m_logger.debug("worker launcher is prepared.");
 					final WorkerLauncher workerLauncher = new WorkerLauncher(properties.getInt("grinder.processes", 1), workerFactory,
 							m_eventSynchronisation, m_logger);
-
 					final int increment = properties.getInt("grinder.processIncrement", 0);
-
+					m_logger.debug("rampup mode by {}.", increment);
 					if (increment > 0) {
 						final boolean moreProcessesToStart = workerLauncher.startSomeWorkers(properties.getInt("grinder.initialProcesses",
 								increment));
@@ -288,16 +287,20 @@ public class AgentImplementationEx implements Agent {
 							m_timer.scheduleAtFixedRate(rampUpTimerTask, incrementInterval, incrementInterval);
 						}
 					} else {
+						m_logger.debug("start all workers");
 						workerLauncher.startAllWorkers();
 					}
-
+					
+					
 					// Wait for a termination event.
 					synchronized (m_eventSynchronisation) {
 						final long maximumShutdownTime = 5000;
 						long consoleSignalTime = -1;
-
+						m_logger.info("waiting for all worker is finished {}", workerLauncher.allFinished());
 						while (!workerLauncher.allFinished()) {
+							m_logger.info("waiting for all worker is finished {}", workerLauncher.allFinished());
 							if (consoleSignalTime == -1 && m_consoleListener.checkForMessage(ConsoleListener.ANY ^ ConsoleListener.START)) {
+								m_logger.info("dont start anymore");
 								workerLauncher.dontStartAnyMore();
 								consoleSignalTime = System.currentTimeMillis();
 							}
@@ -312,13 +315,15 @@ public class AgentImplementationEx implements Agent {
 
 							m_eventSynchronisation.waitNoInterrruptException(maximumShutdownTime);
 						}
+						m_logger.debug("waiting for all worker is finished {}", workerLauncher.allFinished());
 					}
-
+					m_logger.debug("normal shutdown");
 					workerLauncher.shutdown();
 					break;
 				}
 
 				if (consoleCommunication == null) {
+					m_logger.debug("console communication death");
 					break;
 				} else {
 					// Ignore any pending start messages.
@@ -326,7 +331,7 @@ public class AgentImplementationEx implements Agent {
 
 					if (!m_consoleListener.received(ConsoleListener.ANY)) {
 						// We've got here naturally, without a console signal.
-						m_logger.info("test is finished, waiting for console signal");
+						m_logger.debug("test is finished, waiting for console signal");
 						m_consoleListener.waitForMessage();
 					}
 
@@ -334,8 +339,10 @@ public class AgentImplementationEx implements Agent {
 						startMessage = m_consoleListener.getLastStartGrinderMessage();
 
 					} else if (m_consoleListener.received(ConsoleListener.STOP | ConsoleListener.SHUTDOWN)) {
+						m_logger.debug("get shutdown message");
 						break;
 					} else {
+						m_logger.debug("natural death");
 						// ConsoleListener.RESET or natural death.
 						startMessage = null;
 					}
@@ -517,7 +524,8 @@ public class AgentImplementationEx implements Agent {
 						m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_RUNNING, m_fileStore.getCacheHighWaterMark()));
 					} catch (CommunicationException e) {
 						cancel();
-						m_logger.error("Error while pumping up the AgentPrcessReportMessage", e);
+						m_logger.error("Error while pumping up the AgentPrcessReportMessage", e.getMessage());
+						m_logger.debug("Stack trace is : ", e);
 					}
 
 				}
@@ -538,7 +546,7 @@ public class AgentImplementationEx implements Agent {
 
 			try {
 				m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_FINISHED, m_fileStore.getCacheHighWaterMark()));
-				m_logger.debug("agent is running");
+				m_logger.debug("shut down message is sent");
 			} catch (CommunicationException e) {
 				// Ignore - peer has probably shut down.
 			} finally {

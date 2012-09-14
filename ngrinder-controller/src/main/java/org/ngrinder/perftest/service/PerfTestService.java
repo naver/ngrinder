@@ -554,7 +554,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public String getCustomClassPath(PerfTest perfTest) {
 		File perfTestDirectory = getPerfTestDirectory(perfTest);
 		File libFolder = new File(perfTestDirectory, "lib");
-		
+
 		final StringBuffer customClassPath = new StringBuffer();
 		customClassPath.append(".");
 		if (libFolder.exists()) {
@@ -594,6 +594,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			grinderProperties.setInt(GRINDER_PROP_PROCESSES, perfTest.getProcesses());
 			if ("D".equals(perfTest.getThreshold())) {
 				grinderProperties.setLong(GRINDER_PROP_DURATION, perfTest.getDuration());
+				grinderProperties.setInt(GRINDER_PROP_RUNS, 0);
 			} else {
 				grinderProperties.setInt(GRINDER_PROP_RUNS, perfTest.getRunCount());
 			}
@@ -953,7 +954,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		}
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = (Map<String, Object>) result.get("totalStatistics");
-		System.out.println(totalStatistics);
 		perfTest.setErrors((int) ((Double) totalStatistics.get("Errors")).doubleValue());
 		perfTest.setTps(Double.parseDouble(formatter.format(totalStatistics.get("TPS"))));
 		perfTest.setMeanTestTime(Double.parseDouble(formatter.format(ObjectUtils.defaultIfNull(
@@ -961,6 +961,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		perfTest.setPeakTps(Double.parseDouble(formatter.format(ObjectUtils.defaultIfNull(
 						totalStatistics.get("Peak_TPS"), 0D))));
 		perfTest.setTests((int) ((Double) totalStatistics.get("Tests")).doubleValue());
+		LOGGER.info("Total Statics for test {}  is {}", perfTest.getId(), totalStatistics);
 	}
 
 	/**

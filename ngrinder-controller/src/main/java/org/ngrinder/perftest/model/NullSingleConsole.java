@@ -28,7 +28,7 @@ public class NullSingleConsole extends SingleConsole {
 	}
 
 	@Override
-	public boolean isTooManyError() {
+	public boolean hasTooManyError() {
 		return true;
 	}
 
