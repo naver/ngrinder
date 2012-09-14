@@ -102,7 +102,7 @@ public class UserController extends NGrinderBaseController {
 
 		checkArgument(updatedUser.validate());
 		// General user can not change their role.
-		if (user.getRole() != Role.ADMIN || user.getRole() != Role.SUPER_USER) {
+		if (user.getRole() == Role.USER) {
 			user.setRole(null);
 		}
 		if (updatedUser.exist()) {
