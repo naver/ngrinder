@@ -1,6 +1,6 @@
 <#if resultsub?exists>
 	<script>
-			curPeakTps = ${resultsub.peakTpsForGraph!0};
+			curPeakTps = ${(resultsub.peakTpsForGraph!0)?c};
 	  		curTps = ${(resultsub.tpsChartData!0)?c};
 	  		curRunningTime = ${resultsub.test_time!0};
 	  		curRunningProcesses = ${resultsub.process!0};
