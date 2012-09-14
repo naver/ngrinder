@@ -597,6 +597,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				grinderProperties.setInt(GRINDER_PROP_RUNS, 0);
 			} else {
 				grinderProperties.setInt(GRINDER_PROP_RUNS, perfTest.getRunCount());
+				if (grinderProperties.containsKey(GRINDER_PROP_DURATION)) {
+					grinderProperties.remove(GRINDER_PROP_DURATION);
+				}
 			}
 			grinderProperties.setProperty(NGRINDER_PROP_ETC_HOSTS,
 							StringUtils.defaultIfBlank(perfTest.getTargetHosts(), ""));
@@ -618,7 +621,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				String jvmArguments = "-Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager";
 				grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, jvmArguments);
 			}
-			LOGGER.debug("Grinder Properties : {} ", grinderProperties);
+			LOGGER.info("Grinder Properties : {} ", grinderProperties);
 			return grinderProperties;
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("error while prepare grinder property for " + perfTest.getTestName(), e);

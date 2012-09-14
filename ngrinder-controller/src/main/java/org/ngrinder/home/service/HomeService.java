@@ -37,8 +37,10 @@ import org.eclipse.egit.github.core.RepositoryId;
 import org.eclipse.egit.github.core.service.IssueService;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.home.model.PanelEntry;
+import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -68,6 +70,9 @@ public class HomeService {
 		closeIssueQuery.put("labels", "announcement");
 	}
 
+	@Autowired
+	private Config config;
+
 	@SuppressWarnings("unchecked")
 	@Cacheable(value = "left_panel_entries")
 	public List<PanelEntry> getLeftPanelEntries() {
@@ -75,14 +80,17 @@ public class HomeService {
 		XmlReader reader = null;
 		try {
 			List<PanelEntry> panelEntries = new ArrayList<PanelEntry>();
-			reader = new XmlReader(new URL(NGrinderConstants.NGRINDER_NEWS_RSS_URL));
+			URL url = new URL(config.getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_FRONT_PAGE_RSS,
+							NGrinderConstants.NGRINDER_NEWS_RSS_URL));
+			reader = new XmlReader(url);
 			SyndFeed feed = input.build(reader);
-			List<SyndEntryImpl> entries = (List<SyndEntryImpl>) (feed.getEntries().size() >= 8 ? feed.getEntries().subList(0, 7) : feed
-					.getEntries());
+			List<SyndEntryImpl> entries = (List<SyndEntryImpl>) (feed.getEntries().size() >= 8 ? feed.getEntries()
+							.subList(0, 7) : feed.getEntries());
 			for (SyndEntryImpl each : entries) {
 				PanelEntry entry = new PanelEntry();
 				entry.setAuthor(each.getAuthor());
-				entry.setLastUpdatedDate(each.getUpdatedDate() == null ? each.getPublishedDate() : each.getUpdatedDate());
+				entry.setLastUpdatedDate(each.getUpdatedDate() == null ? each.getPublishedDate() : each
+								.getUpdatedDate());
 				entry.setTitle(each.getTitle());
 				entry.setLink(each.getLink());
 				panelEntries.add(entry);
