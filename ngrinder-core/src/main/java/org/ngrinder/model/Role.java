@@ -22,7 +22,12 @@
  */
 package org.ngrinder.model;
 
-/** Role of the User */
+/**
+ * Role of the User
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
 public enum Role {
 	/**
 	 * General user role who can create performance test entry
@@ -45,15 +50,33 @@ public enum Role {
 
 	private final String fullName;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param shortName
+	 *            short name of role... usually 1 sing char
+	 * @param fullName
+	 *            full name of role
+	 */
 	Role(String shortName, String fullName) {
 		this.shortName = shortName;
 		this.fullName = fullName;
 	}
 
+	/**
+	 * Get the short name
+	 * 
+	 * @return
+	 */
 	public String getShortName() {
 		return shortName;
 	}
 
+	/**
+	 * Get full name
+	 * 
+	 * @return full name
+	 */
 	public String getFullName() {
 		return fullName;
 	}

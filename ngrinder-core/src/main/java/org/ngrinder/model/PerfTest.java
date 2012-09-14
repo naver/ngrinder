@@ -43,7 +43,7 @@ import org.hibernate.annotations.Type;
 import org.ngrinder.common.util.DateUtil;
 
 /**
- * Performance Test Entity Use Create user of BaseModel as test owner, use
+ * Performance Test Entity. Use Create user of BaseModel as test owner, use
  * create date of BaseModel as create time, but the created time maybe not the
  * test starting time.
  * 
