@@ -22,7 +22,6 @@
  */
 package org.ngrinder.monitor.agent.collector;
 
-import org.apache.commons.lang.SystemUtils;
 import org.hyperic.sigar.OperatingSystem;
 import org.hyperic.sigar.Sigar;
 import org.ngrinder.monitor.MonitorConstants;
@@ -39,7 +38,6 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 
 	@Override
 	public synchronized void refresh() {
-
 	}
 
 	@Override
@@ -58,13 +56,10 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 			systemInfo.setFreeMemory(sigar.getMem().getFree() / 1024);
 			systemInfo.setSystem(OperatingSystem.IS_WIN32 ? SystemInfo.System.WINDOW : SystemInfo.System.LINUX);
 		} catch (Exception e) {
-			if ((failedCount++) % 60 == 0) {
-				if (SystemUtils.IS_OS_WINDOWS) {
-					LOG.error("Error while getting system perf data");
-					LOG.error("You should run agent in administrator permission");
-				} else {
-					LOG.error("Error while getting system perf data", e);
-				}
+			if (failedCount++ == 60) {
+				failedCount = 0;
+				LOG.error("Error while getting system perf data", e.getMessage());
+				LOG.debug("Error trace is ", e);
 			}
 		}
 		systemInfo.setCollectTime(System.currentTimeMillis());
