@@ -26,6 +26,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,5 +106,9 @@ public class PropertiesWrapper {
 	public boolean getPropertyBoolean(String key, boolean defaultValue) {
 		String property = getProperty(key, String.valueOf(defaultValue), DEFAULT_ERROR_MESSGAE);
 		return BooleanUtils.toBoolean(property);
+	}
+	
+	public String toString() {
+		return ToStringBuilder.reflectionToString(properties);
 	}
 }

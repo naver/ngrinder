@@ -650,6 +650,11 @@
            	}	
       }
 	  
+	  var $durationHSelectElem = $("#hSelect");
+	  var $durationMSelectElem = $("#mSelect");
+	  var $durationSSelectElem = $("#sSelect");
+	  var $durationElem = $("#duration")
+	  
 	  $(document).ready(function () {
 	  	  initChartData();
 	      var date = new Date();
@@ -676,7 +681,7 @@
 	      });
 
 	      for (var i = 0; i <= sliderMax; i++) {
-	          if (durationMap[i] * 60000 == $("#duration").val()) {
+	          if (durationMap[i] * 60000 == $durationElem.val()) {
 	              $("#hiddenDurationInput").val(i);
 	          }
 	      }
@@ -687,9 +692,9 @@
 	      });
 
 	      $("#hiddenDurationInput").bind("slide", function (e) {
-	          $("#duration").val(durationMap[this.value] * 60000);
+	          $durationElem.val(durationMap[this.value] * 60000);
 	          initDuration();
-	          $("#duration").valid();
+	          $durationElem.valid();
 	      });
 
 	      $("#testContentForm").validate({
@@ -737,10 +742,11 @@
 	          if (!$("#testContentForm").valid()) {
 	              return false;
 	          }
-	          if ($("#testStatus").val() != "SAVED") {
+	          var $testStatusElem = $("#testStatus");
+	          if ($testStatusElem.val() != "SAVED") {
 	              $("#testId").val("");
 	          }
-	          $("#testStatus").val("SAVED");
+	          $testStatusElem.val("SAVED");
 	          $("#scheduleInput").attr('name', '');
 	          return true;
 	      });
@@ -749,10 +755,11 @@
 	          $("#scheduleModal").modal("hide");
 	          $("#scheduleModal small").html("");
 	          $("#scheduleInput").attr('name', '');
-	          if ($("#testStatus").val() != "SAVED") {
+	          var $testStatusElem = $("#testStatus");
+	          if ($testStatusElem.val() != "SAVED") {
 	              $("#testId").val("");
 	          }
-	          $("#testStatus").val("READY");
+	          $testStatusElem.val("READY");
 	          document.testContentForm.submit();
 	      });
 
@@ -781,14 +788,14 @@
 	          format: 'yyyy-mm-dd'
 	      });
 
-	      $("#hSelect").append(getOption(7 + 1));
-	      $("#hSelect").change(getDurationMS);
+	      $durationHSelectElem.append(getOption(7 + 1));
+	      $durationHSelectElem.change(getDurationMS);
 
-	      $("#mSelect").append(getOption(60));
-	      $("#mSelect").change(getDurationMS);
+	      $durationMSelectElem.append(getOption(60));
+	      $durationMSelectElem.change(getDurationMS);
 
-	      $("#sSelect").append(getOption(60));
-	      $("#sSelect").change(getDurationMS);
+	      $durationSSelectElem.append(getOption(60));
+	      $durationSSelectElem.change(getDurationMS);
 
 	      $("#shSelect").append(getOption(24));
 	      $("#smSelect").append(getOption(60));
@@ -800,20 +807,20 @@
 	              $("#runCount").addClass("required");
 	              $("#runCount").addClass("positiveNumber");
 	              $("#durationChkbox").removeAttr("checked");
-	              $("#duration").removeClass("required");
-	              $("#duration").removeClass("positiveNumber");
-	              $("#duration").valid();
+	              $durationElem.removeClass("required");
+	              $durationElem.removeClass("positiveNumber");
+	              $durationElem.valid();
 	              $("#runCount").valid();
 	          }
 	      });
 	      $("#durationChkbox").change(function () {
 	          if ($("#durationChkbox").attr("checked") == "checked") {
 	              $("#threshold").val("D");
-	              $("#duration").addClass("required positiveNumber");
+	              $durationElem.addClass("required positiveNumber");
 	              $("#runcountChkbox").removeAttr("checked");
 	              $("#runCount").removeClass("required");
 	              $("#runCount").removeClass("positiveNumber");
-	              $("#duration").valid();
+	              $durationElem.valid();
 	              $("#runCount").valid();
 	          }
 	      });
@@ -975,25 +982,25 @@
 	  }
 
 	  function initDuration() {
-	      var duration = $("#duration").val();
+	      var duration = $durationElem.val();
 	      var durationInSec = parseInt(duration / 1000);
 	      var durationH = parseInt((durationInSec % (60 * 60 * 24)) / 3600);
 	      var durationM = parseInt((durationInSec % 3600) / 60);
 	      var durationS = durationInSec % 60;
 
-	      $("#hSelect").val(durationH);
-	      $("#mSelect").val(durationM);
-	      $("#sSelect").val(durationS);
+	      $durationHSelectElem.val(durationH);
+	      $durationMSelectElem.val(durationM);
+	      $durationSSelectElem.val(durationS);
 	  }
 
 	  function getDurationMS() {
-	      var durationH = parseInt($("#hSelect").val());
-	      var durationM = parseInt($("#mSelect").val());
-	      var durationS = parseInt($("#sSelect").val());
+	      var durationH = parseInt($durationHSelectElem.val());
+	      var durationM = parseInt($durationMSelectElem.val());
+	      var durationS = parseInt($durationSSelectElem.val());
 	      var durationMs = (durationS + durationM * 60 + durationH * 3600) * 1000;
-	      var durationObj = $("#duration");
-	      durationObj.val(durationMs);
-	      durationObj.valid(); //trigger validation
+
+	      $durationElem.val(durationMs);
+	      $durationElem.valid(); //trigger validation
 	      return durationMs;
 	  }
 
@@ -1025,17 +1032,18 @@
 	  var curRunningThreads = 0;
 	  var curStatus = false;
 	  var curAgentPerfStates = []; 
-	  var agentPerfStates = []; 
 	  function refreshData() {
 	      var refreshDiv = $("<div></div>");
 	      var url = "${req.getContextPath()}/perftest/running/refresh?testId=" + $("#testId").val();
 	      var peakTps = 50;
 	      refreshDiv.load(url, function () {
 	          if (curStatus == true) {
-	              $("#lsTable tbody").empty();
-	              $("#asTable tbody").empty();
-	              $("#lsTable tbody").prepend(refreshDiv.find("#lsTableItem"));
-	              $("#asTable tbody").prepend(refreshDiv.find("#asTableItem"));
+	        	  var $lsTableElem = $("#lsTable tbody");
+	        	  var $asTableElem = $("#asTable tbody");
+	              $lsTableElem.empty();
+	              $asTableElem.empty();
+	              $lsTableElem.prepend(refreshDiv.find("#lsTableItem"));
+	              $asTableElem.prepend(refreshDiv.find("#asTableItem"));
 
 	              $("#process_data").text(curRunningProcesses);
 	              $("#thread_data").text(curRunningThreads);
@@ -1091,9 +1099,7 @@
 	      } else {
 	          jqplotObj = drawChart('TPS', containerId, data);
 	      }
-	  }
-
-	  
+	  }	  
 
 	  function updateStatus(id, status_type, status_name, icon, deletable, stoppable, message) {
 	      if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR" || status_type == "CANCELED") {
@@ -1103,9 +1109,10 @@
 	          return;
 	      }
 	      var ballImg = $("#testStatus_img_id");
-
-	      $("#teststatus_pop_over").attr("data-original-title", status_name);
-	      $("#teststatus_pop_over").attr("data-content", message);
+		  
+	      var $statusPopElem = $("#teststatus_pop_over");
+	      $statusPopElem.attr("data-original-title", status_name);
+	      $statusPopElem.attr("data-content", message);
 
 	      $("#testStatusType").val(status_type);
 	      if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
@@ -1123,10 +1130,9 @@
 	  }
 
 	  var isFinished = false;
+	  var testId = $('#testId').val();
 	  // Wrap this function in a closure so we don't pollute the namespace
 	  (function refreshContent() {
-	      var ids = [];
-	      var testId = $('#testId').val();
 	      if (testId == "" || isFinished) {
 	          return;
 	      }
