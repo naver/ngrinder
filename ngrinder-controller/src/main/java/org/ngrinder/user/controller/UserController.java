@@ -24,6 +24,7 @@ package org.ngrinder.user.controller;
 
 import static org.ngrinder.common.util.Preconditions.checkArgument;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,9 +102,20 @@ public class UserController extends NGrinderBaseController {
 	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser) {
 
 		checkArgument(updatedUser.validate());
-		// General user can not change their role.
 		if (user.getRole() == Role.USER) {
-			user.setRole(null);
+			// General user can not change their role.
+			User updatedUserInDb = userService.getUserById(updatedUser.getUserId());
+			checkNotNull(updatedUserInDb);
+			updatedUser.setRole(updatedUserInDb.getRole());
+			
+			// prevent user to modify with other id
+			checkArgument(updatedUserInDb.getId().equals(updatedUser.getId()), "Illegal request to update user:%s",
+					updatedUser);
+
+			// General user can only change their own detail.
+			checkArgument(user.getId().equals(updatedUser.getId()), "Illegal request to update user:%s",
+					updatedUser);
+			
 		}
 		if (updatedUser.exist()) {
 			userService.modifyUser(updatedUser);
