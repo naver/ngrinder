@@ -30,10 +30,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-
 /**
  * 
  * @author Tobi
@@ -49,7 +45,7 @@ public class SecurityManagerTest {
 		smt.testNGrinderSecurityManager2();
 	}
 
-	@BeforeClass
+	// @BeforeClass
 	public static void init() {
 		System.setProperty("ngrinder.exec.path", new File("E:/temp/").getAbsolutePath());
 		System.setProperty("ngridner.etc.hosts", "10.34.63.53");
@@ -57,15 +53,13 @@ public class SecurityManagerTest {
 		System.setSecurityManager(new NGrinderSecurityManager());
 	}
 
-	@Test
-	@Ignore
+	// @Test
 	public void testNGrinderSecurityManager1() {
 		System.out.println(new File("hell").getAbsolutePath());
 		System.out.println(System.getProperty("user.home"));
 	}
 
-	@Test
-	@Ignore
+	// @Test
 	public void testNGrinderSecurityManager2() {
 		try {
 			BufferedReader fis = new BufferedReader(new FileReader("E:/temp/input.txt"));
