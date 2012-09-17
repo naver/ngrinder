@@ -1025,7 +1025,7 @@
 	  var curRunningThreads = 0;
 	  var curStatus = false;
 	  var curAgentPerfStates = []; 
-	  var agentPerfStates = {}; 
+	  var agentPerfStates = []; 
 	  function refreshData() {
 	      var refreshDiv = $("<div></div>");
 	      var url = "${req.getContextPath()}/perftest/running/refresh?testId=" + $("#testId").val();
@@ -1046,8 +1046,8 @@
 	                if (agentPerfStates[eachAgent.agent] === undefined) {
 	                	agentPerfStates[eachAgent.agent] = { "cpu" : {}, "mem" : {} };
 	                }
-	                agentPerfStates[eachAgent.agent].cpu.push(eachAgent.cpu);
-	                agentPerfStates[eachAgent.agent].mem.push(eachAgent.mem);      
+	                agentPerfStates[eachAgent.agent].cpu = eachAgent.cpu ;
+	                agentPerfStates[eachAgent.agent].mem = eachAgent.mem ;      
 	                // Use sparkle line...     
 	              	agentStatusString = agentStatusString + curAgentPerfStates[i].agent + "   CPU - " + curAgentPerfStates[i].cpu + "   MEM - " + curAgentPerfStates[i].mem + "<br/>" ;
 	              }	              
