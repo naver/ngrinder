@@ -86,7 +86,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 
 		config.getSystemProperties().addProperty("http.url", "http://127.0.0.1:80");
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSaveAndGet() {
@@ -99,6 +99,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		FileEntry script = (FileEntry) model.get("file");
 		script.setContent(script.getContent() + "#test comment");
 		scriptController.saveFileEntry(getTestUser(), path, script, "", model);
+		scriptController.validate(getTestUser(), script, "test.com");
 		// save and get
 		model.clear();
 		scriptController.getDetail(getTestUser(), script.getPath(), -1L, model);
