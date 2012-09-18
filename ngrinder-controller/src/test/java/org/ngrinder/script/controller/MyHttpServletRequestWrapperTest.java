@@ -38,7 +38,7 @@ public class MyHttpServletRequestWrapperTest extends AbstractNGrinderTransaction
 
 	@Test
 	public void testHandleRequest() {
-		HttpServletRequest req = new MockHttpServletRequest(getTestUser().getUserId(), "");
+		HttpServletRequest req = new MockHttpServletRequest(getTestUser().getUserId(), "http://127.0.0.1:80");
 		wrapper =new MyHttpServletRequestWrapper(req);
 		String path = wrapper.getPathInfo();
 		assertThat(path, notNullValue());

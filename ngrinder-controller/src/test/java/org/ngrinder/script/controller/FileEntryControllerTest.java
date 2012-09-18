@@ -24,6 +24,7 @@ package org.ngrinder.script.controller;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.io.File;
 import java.io.IOException;
@@ -170,5 +171,21 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		scriptController.searchFileEntity(getTestUser(), "Uploaded", model);
 		Collection<FileEntry> searchResult = (Collection<FileEntry>) model.get("files");
 		assertThat(searchResult.size(), is(1));
+	}
+	
+	@Test
+	public void testDownload() {
+		ModelMap model = new ModelMap();
+		String path = "download-path";
+		String fileName = "download_file.py";
+		scriptController.addFolder(getTestUser(), "", path, model);
+		scriptController.getCreateForm(getTestUser(), path, "test.com", fileName, null, model);
+
+		FileEntry script = (FileEntry) model.get("file");
+		script.setContent(script.getContent() + "#test comment");
+		scriptController.saveFileEntry(getTestUser(), path, script, "", model);
+		MockHttpServletResponse response = new MockHttpServletResponse();
+		path = path + "/"+ fileName;
+		scriptController.download(getTestUser(), path, response);
 	}
 }
