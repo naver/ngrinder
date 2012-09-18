@@ -184,6 +184,9 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		FileEntry script = (FileEntry) model.get("file");
 		script.setContent(script.getContent() + "#test comment");
 		scriptController.saveFileEntry(getTestUser(), path, script, "", model);
+
+		scriptController.getCreateForm(getTestUser(), path, "", fileName, null, model);
+
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		path = path + "/"+ fileName;
 		scriptController.download(getTestUser(), path, response);
