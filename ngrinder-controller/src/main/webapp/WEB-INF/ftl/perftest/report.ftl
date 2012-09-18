@@ -142,7 +142,7 @@
 					</div>
 				    <h6>CPU</h6>
                     <div class="chart" id="cpuDiv"></div>
-					<h6>Memory</h6>
+					<h6>Used Memory</h6>
                     <div class="chart" id="memoryDiv"></div>
                 </div>
 			</div>
@@ -228,7 +228,7 @@
                 success: function(res) {
                     if (res.success) {
                         drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, undefined, undefined, res.SystemData.interval);
-                        drawChart('System Memory', 'memoryDiv', res.SystemData.memory, formatMemory, undefined, undefined, res.SystemData.interval);
+                        drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, undefined, undefined, res.SystemData.interval);
                         return true;
                     } else {
                         showErrorMsg("Get monitor data failed.");

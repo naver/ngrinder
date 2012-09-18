@@ -76,27 +76,9 @@
 								</div>
                                 <div class="chart" id="cpuDiv"></div>
 								<div class="page-header">
-									<h4>Memory</h4>
+									<h4>Used Memory</h4>
 								</div>
                                 <div class="chart" id="memoryDiv"></div>
-                            </div>
-                            <div class="tab-pane" id="javaData">
-								<div class="page-header">
-									<h4>Heap Memory</h4>
-								</div>
-                                <div class="chart" id="heapMemoryDiv"></div>
-								<div class="page-header">
-									<h4>NonHeap Memory</h4>
-								</div>
-                                <div class="chart" id="nonHeapMemoryDiv"></div>
-								<div class="page-header">
-									<h4>Thread Count</h4>
-								</div>
-                                <div class="chart" id="threadCountDiv"></div>
-								<div class="page-header">
-									<h4>CPU</h4>
-								</div>
-                                <div class="chart" id="jvmCpuDiv"></div>
                             </div>
 					     </div>
                     </div>
@@ -174,7 +156,7 @@
                         		maxCPU = getMax(maxCPU, sys_totalCpuValue.aElement);
                         		showChart('CPU', 'cpuDiv', sys_totalCpuValue.aElement, 0, formatPercentage, maxCPU);
                         		maxMemory = getMax(maxMemory, sys_usedMemory.aElement);
-                            	showChart('Memory', 'memoryDiv', sys_usedMemory.aElement, 1, formatMemory, maxMemory);
+                            	showChart('Used Memory', 'memoryDiv', sys_usedMemory.aElement, 1, formatMemory, maxMemory);
                         	} else {
                         		
                         	}
