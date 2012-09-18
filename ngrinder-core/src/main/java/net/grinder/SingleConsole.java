@@ -511,8 +511,6 @@ public class SingleConsole implements Listener, SampleListener {
 						}
 					}
 					Object val = each.getValue();
-					LOGGER.debug("statistic data key:{}", each.getKey());
-					LOGGER.debug("- value:{}, value type:{}", val, val != null ? val.getClass().getName() : null);
 					// number value in lastStatistic is Double, we add every
 					// test's double value
 					// into valueMap, so we use
@@ -521,7 +519,6 @@ public class SingleConsole implements Listener, SampleListener {
 					if (val instanceof Double) {
 						// for debug, maybe there are some fields should not be
 						// sum up.
-						LOGGER.debug("Calculate sum for key:{} in statistic", each.getKey());
 						MutableDouble mutableDouble = (MutableDouble) valueMap.get(each.getKey());
 						if (mutableDouble == null) {
 							mutableDouble = new MutableDouble(0);

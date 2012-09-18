@@ -380,7 +380,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	public void doFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		// FIXME... it should found abnormal test status..
-		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
 		LOG.debug("PerfTest {} status - currentRunningTime {} ", perfTest.getId(), singleConsoleInUse.getCurrentRunningTime());
 		// stop target host monitor
 		if (singleConsoleInUse.hasTooManyError()) {
