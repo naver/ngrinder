@@ -24,13 +24,8 @@ package org.ngrinder.monitor.share.domain;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.lang.management.RuntimeMXBean;
-import java.lang.management.ThreadMXBean;
 
-import javax.management.InstanceNotFoundException;
 import javax.management.MBeanServerConnection;
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
@@ -40,9 +35,6 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.management.OperatingSystemMXBean;
-
-@SuppressWarnings("restriction")
 public class MBeanClient {
 	private static final Logger LOG = LoggerFactory.getLogger(MBeanClient.class);
 
@@ -63,14 +55,9 @@ public class MBeanClient {
 	private MBeanServerConnection server = null;
 	private JMXConnector jmxConnector = null;
 
-	private MemoryMXBean memoryMBean = null;
-	private RuntimeMXBean runtimeMBean = null;
-	private ThreadMXBean threadMBean = null;
-
-	private OperatingSystemMXBean sunOperatingSystemMXBean = null;
-
 	/**
 	 * Used to connect remote monitor JMX
+	 * 
 	 * @param hostName
 	 * @param port
 	 * @throws IOException
@@ -107,10 +94,6 @@ public class MBeanClient {
 	public void disconnect() {
 		IOUtils.closeQuietly(jmxConnector);
 
-		memoryMBean = null;
-		runtimeMBean = null;
-		threadMBean = null;
-		sunOperatingSystemMXBean = null;
 		server = null;
 
 		if (!isDead) {
@@ -119,52 +102,8 @@ public class MBeanClient {
 		}
 	}
 
-	// public void flush() {
-	// if (server != null) {
-	// server.flush();
-	// }
-	// }
-
 	public Object getAttribute(ObjectName objName, String attrName) throws Exception {
 		return server.getAttribute(objName, attrName);
-	}
-
-	public synchronized OperatingSystemMXBean getSunOperatingSystemMXBean() throws IOException,
-			MalformedObjectNameException, NullPointerException, InstanceNotFoundException {
-
-		ObjectName on = new ObjectName(ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME);
-		if (sunOperatingSystemMXBean == null) {
-			if (server.isInstanceOf(on, "com.sun.management.OperatingSystemMXBean")) {
-				sunOperatingSystemMXBean = ManagementFactory.newPlatformMXBeanProxy(server,
-								ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME,
-								OperatingSystemMXBean.class);
-			}
-		}
-		return sunOperatingSystemMXBean;
-	}
-
-	public synchronized MemoryMXBean getMemoryMXBean() throws IOException {
-		if (memoryMBean == null) {
-			memoryMBean = ManagementFactory.newPlatformMXBeanProxy(server,
-							ManagementFactory.MEMORY_MXBEAN_NAME, MemoryMXBean.class);
-		}
-		return memoryMBean;
-	}
-
-	public synchronized RuntimeMXBean getRuntimeMXBean() throws IOException {
-		if (runtimeMBean == null) {
-			runtimeMBean = ManagementFactory.newPlatformMXBeanProxy(server,
-							ManagementFactory.RUNTIME_MXBEAN_NAME, RuntimeMXBean.class);
-		}
-		return runtimeMBean;
-	}
-
-	public synchronized ThreadMXBean getThreadMXBean() throws IOException {
-		if (threadMBean == null) {
-			threadMBean = ManagementFactory.newPlatformMXBeanProxy(server,
-							ManagementFactory.THREAD_MXBEAN_NAME, ThreadMXBean.class);
-		}
-		return threadMBean;
 	}
 
 	private void connectClient() throws IOException {
@@ -177,16 +116,10 @@ public class MBeanClient {
 		this.isDead = false;
 	}
 
-//	public static ProxyMBeanServerConnection newProxyMBeanServerConnection(MBeanServerConnection mbsc) {
-//		return (ProxyMBeanServerConnection) Proxy.newProxyInstance(MBeanClient.class.getClassLoader(),
-//						new Class[] { ProxyMBeanServerConnection.class },
-//						new ProxyMBeanServerInvocationHandler(mbsc));
-//	}
-
 	private void setConnectionState(ConnectionState connectionState) {
 		this.connectionState = connectionState;
 	}
-	
+
 	public ConnectionState getConnectionState() {
 		return connectionState;
 	}

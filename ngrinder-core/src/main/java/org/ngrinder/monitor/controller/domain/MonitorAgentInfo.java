@@ -50,32 +50,16 @@ public class MonitorAgentInfo {
 		return ip;
 	}
 
-	public void setIp(String ip) {
-		this.ip = ip;
-	}
-
 	public int getPort() {
 		return port;
-	}
-
-	public void setPort(int port) {
-		this.port = port;
 	}
 
 	public MonitorCollection getCollection() {
 		return collection;
 	}
 
-	public void setCollection(MonitorCollection collection) {
-		this.collection = collection;
-	}
-
 	public MonitorRecoder getRecoder() {
 		return recoder;
-	}
-
-	public void setRecoder(MonitorRecoder recoder) {
-		this.recoder = recoder;
 	}
 
 	public String toString() {
