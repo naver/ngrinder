@@ -108,14 +108,9 @@ public class UserController extends NGrinderBaseController {
 			checkNotNull(updatedUserInDb);
 			updatedUser.setRole(updatedUserInDb.getRole());
 			
-			// prevent user to modify with other id
+			// prevent user to modify with other user id
 			checkArgument(updatedUserInDb.getId().equals(updatedUser.getId()), "Illegal request to update user:%s",
-					updatedUser);
-
-			// General user can only change their own detail.
-			checkArgument(user.getId().equals(updatedUser.getId()), "Illegal request to update user:%s",
-					updatedUser);
-			
+					updatedUser);			
 		}
 		if (updatedUser.exist()) {
 			userService.modifyUser(updatedUser);
