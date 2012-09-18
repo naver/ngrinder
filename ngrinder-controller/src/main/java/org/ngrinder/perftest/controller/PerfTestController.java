@@ -29,6 +29,7 @@ import static org.ngrinder.common.util.Preconditions.checkState;
 import static org.ngrinder.common.util.Preconditions.checkValidURL;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -221,16 +222,17 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping("/quickStart")
 	public String getQuickStart(User user, @RequestParam(value = "url", required = true) String urlString,
 					ModelMap model) {
-		checkValidURL(urlString);
+		URL url = checkValidURL(urlString);
 		List<FileEntry> scriptList = new ArrayList<FileEntry>();
 		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString);
 		scriptList.add(newEntry);
+		model.addAttribute(PARAM_TARGET_HOST, url.getHost());
 		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
 		addDefaultAttributeOnMode(model);
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		return "perftest/detail";
 	}
-
+	
 	/**
 	 * Create a new test or clone a current test.
 	 * 
