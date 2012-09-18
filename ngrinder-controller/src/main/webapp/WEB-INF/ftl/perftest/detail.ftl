@@ -445,13 +445,13 @@
 											<label class="control-label"><@spring.message "perfTest.testRunning.processes"/></label>
 											<div class="controls">
 												${(test.processes)!} 
-												<span class="badge badge-info pull-right"><@spring.message "perfTest.testRunning.running"/> <data id="process_data"></data></span>
+												<span class="badge badge-info pull-right"><@spring.message "perfTest.testRunning.running"/> <span id="process_data"></span></span>
 											</div>
 										</div>
 										<div class="control-group">
 											<label class="control-label"><@spring.message "perfTest.testRunning.threads"/></label>
 											<div class="controls">
-												${(test.threads)!} <span class="badge badge-info pull-right"><@spring.message "perfTest.testRunning.running"/> <data id="thread_data"></data></span>
+												${(test.threads)!} <span class="badge badge-info pull-right"><@spring.message "perfTest.testRunning.running"/> <span id="thread_data"></span></span>
 											</div>
 										</div>
 										<hr>
@@ -497,7 +497,7 @@
 							
 							<div class="span7">
 								<div class="page-header">
-									<h4><@spring.message "perfTest.testRunning.tpsStatistics"/> <span class="badge badge-success"><@spring.message "perfTest.testRunning.runTime"/> <data id="running_time"></data></span></h4>
+									<h4><@spring.message "perfTest.testRunning.tpsStatistics"/> <span class="badge badge-success"><@spring.message "perfTest.testRunning.runTime"/> <span id="running_time"></span></span></h4>
 								</div>
 								<div id="runningTps" class="chart" style="width: 530px; height: 250px"></div>
 								<div class="tabbable">
@@ -653,6 +653,9 @@
       }
 	  
 	  $(document).ready(function () {
+	  	  $.ajaxSetup ({
+   			cache: false //close AJAX cache
+  }		  );
 	  	  initChartData();
 	      var date = new Date();
 	      var year = date.getFullYear();
