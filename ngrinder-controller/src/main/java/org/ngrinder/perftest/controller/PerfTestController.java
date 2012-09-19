@@ -245,7 +245,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return redirect:/perftest/list
 	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public String savePerfTest(User user, ModelMap model, PerfTest test) {
+	public String savePerfTest(User user, ModelMap model, PerfTest test,
+			@RequestParam(value = "isClone", required = false, defaultValue = "false") String isClone) {
 		test.setTestName(StringUtils.trimToEmpty(test.getTestName()));
 		checkNotEmpty(test.getTestName(), "test name should be provided");
 		checkArgument(test.getStatus().equals(Status.READY) || test.getStatus().equals(Status.SAVED),
@@ -266,6 +267,31 @@ public class PerfTestController extends NGrinderBaseController {
 		if (scheduleDate != null) {
 			int rawOffset = getTimeZoneOffSet(user);
 			test.setScheduledTime(new Date(scheduleDate.getTime() + rawOffset));
+		}
+		// change the cloned perftest's name, change to testName+[copy_NUM]
+		if (Boolean.valueOf(isClone)) {
+			Long testId = test.getId();
+			PerfTest oldTest = perfTestService.getPerfTest(testId);
+			String oldTestName = oldTest.getTestName();
+			String newTestName = test.getTestName();
+			if (newTestName.equals(oldTestName)) {
+				// Not very rigorous
+				Page<PerfTest> testPage = perfTestService.getPerfTestList(user, oldTestName + "[", false, null);
+				List<PerfTest> testList = testPage.getContent();
+				List<String> testNameList = new ArrayList<String>();
+				for (PerfTest pt : testList) {
+					testNameList.add(pt.getTestName());
+				}
+				String testName;
+				for (int i = 0; i <= testNameList.size(); i++) {
+					testName = newTestName + "[" + (i + 1) + "]";
+					if (!testNameList.contains(testName)) {
+						test.setTestName(testName);
+						break;
+					}
+				}
+			}
+			test.setId(null);
 		}
 		perfTestService.savePerfTest(user, test);
 		return "redirect:/perftest/list";

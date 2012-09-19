@@ -220,7 +220,7 @@
                 data: {'ip': ip,
                        'startTime': $("#startTime").val(),
                        'finishTime': $("#finishTime").val(),
-                       'imgWidth':700},
+                       'imgWidth' : 700},
                 success: function(res) {
                     if (res.success) {
                     	var plotKeyCpu = ip + "-cpu";

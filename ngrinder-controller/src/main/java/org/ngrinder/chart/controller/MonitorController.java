@@ -99,26 +99,23 @@ public class MonitorController extends NGrinderBaseController {
 	public @ResponseBody
 	String getMonitorData(ModelMap model, @RequestParam String ip, @RequestParam(required = false) Date startTime,
 			@RequestParam(required = false) Date finishTime, @RequestParam int imgWidth) {
-
 		if (null == finishTime) {
 			finishTime = new Date();
 		}
 		if (null == startTime) {
 			startTime = new Date(finishTime.getTime() - 60 * 1000);//default getting one minute's monitor data
 		}
+		
 		long st = NumberUtils.toLong(df.format(startTime));
 		long et = NumberUtils.toLong(df.format(finishTime));
 		checkNotZero(st, "Invalid start time!");
 		checkNotZero(et, "Invalid end time!");
-		
-		if (imgWidth < 100) {
-			imgWidth = 100;
-		}
 
 		Map<String, Object> rtnMap = new HashMap<String, Object>(7);
 		rtnMap.put("SystemData", this.getMonitorDataSystem(ip, st, et, imgWidth));
 		rtnMap.put("startTime", startTime);
 		rtnMap.put(JSON_SUCCESS, true);
+		
 		return JSONUtil.toJson(rtnMap);
 	}
 
@@ -126,27 +123,26 @@ public class MonitorController extends NGrinderBaseController {
 			int imgWidth) {
 		Map<String, Object> rtnMap = new HashMap<String, Object>();
 		List<SystemDataModel> systemMonitorData = monitorService.getSystemMonitorData(ip, startTime, finishTime);
-
-
+		
+		if (imgWidth < 100) {
+			imgWidth = 100;
+		}
 		if (null != systemMonitorData && !systemMonitorData.isEmpty()) {
-			int pointCount = imgWidth / 10;
-			int lineObject, current, interval = 0;
+			int dataAmount = systemMonitorData.size();
+			int pointCount = imgWidth;
+			int interval = dataAmount / pointCount;
+			pointCount = interval > 0 ? pointCount : dataAmount;
 			
 			List<Object> cpuData = new ArrayList<Object>(pointCount);
 			List<Object> memoryData = new ArrayList<Object>(pointCount);
-			current = 0;
-			lineObject = systemMonitorData.size();
-			interval = lineObject / pointCount;
-			// TODO should get average data
-			for (SystemDataModel sdm : systemMonitorData) {
-				if (0 == current) {
-					cpuData.add(sdm.getCpuUsedPercentage());
-					memoryData.add(sdm.getTotalMemory() - sdm.getFreeMemory());
-				}
-				if (++current >= interval) {
-					current = 0;
-				}
+			
+			SystemDataModel sdm;
+			for (int i = 0; i < dataAmount; i += interval) {
+				sdm = systemMonitorData.get(i);
+				cpuData.add(sdm.getCpuUsedPercentage());
+				memoryData.add(sdm.getTotalMemory() - sdm.getFreeMemory());
 			}
+			
 			rtnMap.put("cpu", cpuData);
 			rtnMap.put("memory", memoryData);
 			rtnMap.put("interval", interval);
@@ -154,5 +150,4 @@ public class MonitorController extends NGrinderBaseController {
 
 		return rtnMap;
 	}
-
 }
