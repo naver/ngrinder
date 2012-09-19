@@ -33,6 +33,10 @@
 					<label for="agentInput" class="control-label"><@spring.message "perfTest.report.errors"/></label>
 					<div class="controls">${(test.errors)!}</div>
 				</div>
+				<div class="control-group">
+                    <label for="agentInput" class="control-label"><@spring.message "perfTest.report.runtime"/></label>
+                    <div class="controls">${(test.runtimeStr)!}</div>
+                </div>
 			</fieldset>
 		</div>
 	</div>

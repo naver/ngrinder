@@ -470,6 +470,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return DateUtil.ms2Time(this.duration);
 	}
 
+	public String getRuntimeStr() {
+		return DateUtil.ms2Time(this.finishTime.getTime() - this.startTime.getTime());
+	}
+
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
