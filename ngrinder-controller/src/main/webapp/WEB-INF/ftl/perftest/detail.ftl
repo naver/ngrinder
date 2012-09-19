@@ -126,7 +126,7 @@
 									</span> 
 								</#if>
 								<button type="submit" class="btn btn-success" id="saveTestBtn" style="margin-left:249px; width:55px">
-									<#if test?? && (test.status != "SAVED" || test.createdUser.userId == currentUser.userId)>
+									<#if test?? && (test.status != "SAVED" || test.createdUser.userId != currentUser.userId)>
 										<input type="hidden" id="isClone" value="true">
 										<@spring.message "perfTest.detail.clone"/>
 									<#else>
