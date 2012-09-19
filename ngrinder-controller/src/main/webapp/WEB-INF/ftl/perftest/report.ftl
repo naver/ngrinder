@@ -224,7 +224,7 @@
                 data: {'ip': ip,
                        'startTime': $("#startTime").val(),
                        'finishTime': $("#finishTime").val(),
-                       'imgWidth':700},
+                       'imgWidth' : 700},
                 success: function(res) {
                     if (res.success) {
                         drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, undefined, undefined, res.SystemData.interval);

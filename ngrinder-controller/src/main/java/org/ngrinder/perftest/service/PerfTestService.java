@@ -744,12 +744,12 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return interval value
 	 */
 	public int getReportDataInterval(long testId, String dataType, int imgWidth) {
-		int pointCount = imgWidth / 10;
-		File reportFolder = config.getHome().getPerfTestDirectory(
-						testId + File.separator + NGrinderConstants.PATH_REPORT);
 		if (imgWidth < 100) {
 			imgWidth = 100;
 		}
+		int pointCount = imgWidth;
+		File reportFolder = config.getHome().getPerfTestDirectory(
+						testId + File.separator + NGrinderConstants.PATH_REPORT);
 		int lineNumber;
 		int interval = 0;
 		File targetFile = null;
