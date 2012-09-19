@@ -684,8 +684,7 @@ public class SingleConsole implements Listener, SampleListener {
 		StatisticsSet totalSet = sampleModel.getTotalCumulativeStatistics();
 		Map<String, Object> totalStatistics = new HashMap<String, Object>();
 
-		for (ExpressionView expressionView : views) { // TODO : expressionView
-														// == null ?
+		for (ExpressionView expressionView : views) {
 			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
 							getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 		}
@@ -699,9 +698,6 @@ public class SingleConsole implements Listener, SampleListener {
 			result.put(GrinderConstants.P_PROCESS, this.runningProcess);
 			result.put(GrinderConstants.P_THREAD, this.runningThread);
 			result.put("success", !isAllTestFinished());
-		}
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("total Statistics : {}", totalStatistics);
 		}
 		// Finally overwrite.. current one.
 		this.statisticData = result;
