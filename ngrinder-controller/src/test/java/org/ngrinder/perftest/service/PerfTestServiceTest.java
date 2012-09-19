@@ -56,7 +56,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		
 		createPerfTest("new Test1", Status.TESTING, new Date());
 		createPerfTest("new Test2", Status.FINISHED, new Date());
-		
+
 		Pageable pageable = new PageRequest(0, 10);
 		Page<PerfTest> testList = testService.getPerfTestList(getTestUser(), null, false, pageable);
 		assertThat(testList.getContent().size(), is(2));
@@ -71,6 +71,24 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 		List<PerfTest> list = testService.getTestingPerfTest();
 		assertThat(list.size(), is(1));
+		
+		for (PerfTest test : list) {
+			long systemTimeMills = System.currentTimeMillis();
+			testService.setRecodingStarting(test, systemTimeMills);
+			
+			PerfTest testTemp = testService.getPerfTest(getTestUser(), test.getId());
+			assertThat(testTemp.getId(), is(test.getId()));
+			assertThat(testTemp.getStartTime().getTime(), is(systemTimeMills));
+
+			
+			
+			List<PerfTest> testingList  = testService.getPerfTest(getTestUser(), Status.TESTING);
+			assertThat(testingList.size(), is(1));
+			
+			Long testCount = testService.getPerfTestCount(getTestUser(), Status.TESTING);
+			assertThat(testCount, is(1L));
+		}
+	
 
 		createPerfTest("new Test2", Status.getProcessingOrTestingTestStatus()[0], new Date());
 		list = testService.getCurrentlyRunningTest();
