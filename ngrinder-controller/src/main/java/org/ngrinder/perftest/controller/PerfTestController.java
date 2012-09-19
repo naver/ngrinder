@@ -276,7 +276,7 @@ public class PerfTestController extends NGrinderBaseController {
 			String newTestName = test.getTestName();
 			if (newTestName.equals(oldTestName)) {
 				// Not very rigorous
-				Page<PerfTest> testPage = perfTestService.getPerfTestList(user, oldTestName + "[copy_", false, null);
+				Page<PerfTest> testPage = perfTestService.getPerfTestList(user, oldTestName + "[", false, null);
 				List<PerfTest> testList = testPage.getContent();
 				List<String> testNameList = new ArrayList<String>();
 				for (PerfTest pt : testList) {
@@ -284,7 +284,7 @@ public class PerfTestController extends NGrinderBaseController {
 				}
 				String testName;
 				for (int i = 0; i <= testNameList.size(); i++) {
-					testName = newTestName + "[copy_" + (i + 1) + "]";
+					testName = newTestName + "[" + (i + 1) + "]";
 					if (!testNameList.contains(testName)) {
 						test.setTestName(testName);
 						break;
