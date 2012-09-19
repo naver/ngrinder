@@ -27,11 +27,13 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
+import net.grinder.console.model.ConsoleProperties;
 
 import org.junit.Test;
 import org.ngrinder.model.PerfTest;
@@ -119,6 +121,31 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		List<PerfTest> errorList = testService.getPerfTest(getTestUser(), Status.START_AGENTS);
 		assertThat(errorList.size(), is(1));
 		testService.markPerfTestError(errorList.get(0), "this is error test");
+	}
+	
+	@Test
+	public void testTestScriptAll() {
+		int maxConcurrent = testService.getMaximumConcurrentTestCount();
+		assertThat(maxConcurrent, is(10));
+
+		PerfTest testScript = createPerfTest("new TestScript", Status.READY, new Date());
+		testService.addCommentOn(getTestUser(), testScript.getId(), "this is TestScript method");
+		
+		PerfTest testing = testService.markProgressAndStatus(testScript, Status.TESTING, "It is testing from ready");
+		assertThat(testing.getStatus(), is(Status.TESTING));
+
+		File testPath = testService.getPerfTestFilePath(testScript);
+		assertThat(testPath, not(nullValue()));
+
+		List<String> fileList = testService.getLogFiles(testScript.getId());
+		assertThat(fileList, not(nullValue()));
+		
+		File scriptFile = testService.getLogFile(testScript.getId(), testScript.getScriptName());
+		assertThat(scriptFile, not(nullValue()));
+		
+		ConsoleProperties consoleProperties = testService.createConsoleProperties(testScript);
+		assertThat(consoleProperties, not(nullValue()));
+		
 	}
 
 }
