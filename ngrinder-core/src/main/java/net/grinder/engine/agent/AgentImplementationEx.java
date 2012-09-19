@@ -303,7 +303,7 @@ public class AgentImplementationEx implements Agent {
 						final long maximumShutdownTime = 5000;
 						long consoleSignalTime = -1;
 						while (!workerLauncher.allFinished()) {
-							m_logger.info("waiting until all workers are finished");
+							m_logger.debug("waiting until all workers are finished");
 							if (consoleSignalTime == -1 && m_consoleListener.checkForMessage(ConsoleListener.ANY ^ ConsoleListener.START)) {
 								m_logger.info("dont start anymore by message from controller.");
 								workerLauncher.dontStartAnyMore();

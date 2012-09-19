@@ -33,12 +33,7 @@ function formatTimeForXaxis(timeInSecond) {
 	return display;
 }
 
-function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, interval) {
-	//title, containerId and data is necessary.
-	//formatYaxis is the formatter function for y-axis, can be set undefined means don't format.
-	//startTime is a Date object.
-	//interval is second amount.
-	//startTime and interval are optional.
+function getMaxValue(data) {
 	var values = [ eval(data) ];
 	var ymax = 0;
 	for (var i = 0;  i < values.length; i++) {
@@ -48,13 +43,22 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 			}
 		}
 	}
-	
+	return ymax;
+}
+
+function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, interval) {
+	//title, containerId and data is necessary.
+	//formatYaxis is the formatter function for y-axis, can be set undefined means don't format.
+	//startTime is a Date object.
+	//interval is second amount.
+	//startTime and interval are optional.
+	var values = [ eval(data) ];
+	var ymax = getMaxValue(data);
 	if (ymax < 5) {
 		ymax = 5;
 	}
 	
 	ymax = parseInt((ymax / 5) + 0.5) * 6;
-	
 	
 	if (formatYaxis === undefined) {
 		formatYaxis = function(format, value) {

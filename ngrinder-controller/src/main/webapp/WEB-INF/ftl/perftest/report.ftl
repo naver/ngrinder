@@ -34,7 +34,7 @@
 	<div class="container">
 	   
 	   <input type="hidden" id="startTime" name="startTime" value="${(test.startTime)!}">
-	   <input type="hidden" id="finishTime" name="finishTime" value="${(test.finishTime)!}">
+	   <input type="hidden" id="startTime" name="startTime" value="${(test.startTime)!}">
 	   <form name="downloadForm">
 	       <input type="hidden" id="testId" name="testId" value="${(test.id)!}">
 	   </form>
@@ -160,7 +160,7 @@
 	</div>
 	<script>
 	    var performanceInit = false;
-	    var monitorInit = new Array();
+	    var targetMonitorPlot = {};
 		$(document).ready(function() {
 		    // TODO need to add cache here
 		    $("#testPerformance").click(function() {
@@ -213,10 +213,6 @@
             });
         }
         function getMonitorData(ip){
-            if(monitorInit[ip]){
-                return;
-            }
-            monitorInit[ip] = true;
             var startdate = new Date($("#startTime").val());
             $.ajax({
                 url: "${req.getContextPath()}/monitor/getMonitorData",
@@ -227,8 +223,21 @@
                        'imgWidth':700},
                 success: function(res) {
                     if (res.success) {
-                        drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, undefined, undefined, res.SystemData.interval);
-                        drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, undefined, undefined, res.SystemData.interval);
+                    	var plotKeyCpu = ip + "-cpu";
+                    	var plotKeyMem = ip + "-mem";
+                    	var ymax = 0;
+                    	if (targetMonitorPlot.plotKeyCpu) {
+                    		ymax = getMaxValue(res.SystemData.cpu);
+                    		replotChart(targetMonitorPlot.plotKeyCpu, res.SystemData.cpu, ymax);
+                    	} else {
+                    		targetMonitorPlot.plotKeyCpu = drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, undefined, undefined, res.SystemData.interval);
+                    		}
+                    	if (targetMonitorPlot.plotKeyMem) {
+                    		ymax = getMaxValue(res.SystemData.memory);
+                    		replotChart(targetMonitorPlot.plotKeyMem, res.SystemData.memory, ymax);
+                    	} else {
+                    		targetMonitorPlot.plotKeyMem = drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, undefined, undefined, res.SystemData.interval);
+                    	}
                         return true;
                     } else {
                         showErrorMsg("Get monitor data failed.");
