@@ -137,6 +137,7 @@ public interface NGrinderConstants {
 	public static final String PARAM_TEST_CHART_INTERVAL = "chartInterval";
 
 	public static final String PARAM_SCRIPT_LIST = "scriptList";
+	public static final String PARAM_TARGET_HOST = "targetHostString";
 	public static final String PARAM_PROCESSTHREAD_POLICY_SCRIPT = "processthread_policy_script";
 	
 	public static final String PARAM_CURRENT_FREE_AGENTS_COUNT = "currentFreeAgentsCount";

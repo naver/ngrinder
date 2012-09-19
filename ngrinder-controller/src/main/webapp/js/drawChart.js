@@ -16,6 +16,23 @@ var formatPercentage = function(format, value) {
 	}
 };
 
+function formatTimeForXaxis(timeInSecond) {
+	var hour = parseInt((timeInSecond % (60 * 60 * 24)) / 3600);
+    var min = parseInt((timeInSecond % 3600) / 60);
+	var sec = parseInt(timeInSecond % 60);
+    if (sec < 10) {
+    	sec = "0" + sec;
+    }
+    var display = min + ":" + sec;
+	if (min < 10) { 
+		display = '0' + display;
+	}
+	if (hour > 0) { 
+		display = hour + ":" + display;
+	}
+	return display;
+}
+
 function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, interval) {
 	//title, containerId and data is necessary.
 	//formatYaxis is the formatter function for y-axis, can be set undefined means don't format.
@@ -84,21 +101,7 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 							var sec = pointDate.getSeconds();
 							return hour+":"+min+":"+sec;
 						} else {
-							var usedTime = parseInt(value * interval);
-							var hour = parseInt((usedTime % (60 * 60 * 24)) / 3600);
-						    var min = parseInt((usedTime % 3600) / 60);
-							var sec = parseInt(usedTime % 60);
-						    if (sec < 10) {
-						    	sec = "0" + sec;
-						    }
-						    var display = min + ":" + sec;
-							if (0 < min < 10) { 
-								display = '0' + display;
-							}
-							if (hour > 0) { 
-								display = hour + ":" + display;
-							}
-							return display;
+							return formatTimeForXaxis(parseInt(value * interval));
 						}
 
 					}

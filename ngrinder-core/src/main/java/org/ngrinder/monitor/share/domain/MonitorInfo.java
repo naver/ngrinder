@@ -22,6 +22,8 @@
  */
 package org.ngrinder.monitor.share.domain;
 
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
 import javax.management.openmbean.CompositeData;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -34,36 +36,26 @@ public abstract class MonitorInfo {
 
 	protected long collectTime;
 
-	// public abstract MonitorInfo from(CompositeData cd);
-
 	public abstract void parse(CompositeData cd);
 
-	protected static String getString(CompositeData cd, String itemName) {
-		if (cd == null)
-			throw new IllegalArgumentException("Null CompositeData");
+	private static Object getObject(CompositeData cd, String itemName) {
+		return checkNotNull(cd, "CompositeData shoule be not null when it's used to get item").get(itemName);
+	}
 
-		return (String) cd.get(itemName);
+	protected static String getString(CompositeData cd, String itemName) {
+		return (String) getObject(cd, itemName);
 	}
 
 	protected static long getLong(CompositeData cd, String itemName) {
-		if (cd == null)
-			throw new IllegalArgumentException("Null CompositeData");
-
-		return ((Long) cd.get(itemName)).longValue();
+		return (Long) getObject(cd, itemName);
 	}
 
 	protected static int getInt(CompositeData cd, String itemName) {
-		if (cd == null)
-			throw new IllegalArgumentException("Null CompositeData");
-
-		return ((Integer) cd.get(itemName)).intValue();
+		return (Integer) getObject(cd, itemName);
 	}
 
 	protected static float getFloat(CompositeData cd, String itemName) {
-		if (cd == null)
-			throw new IllegalArgumentException("Null CompositeData");
-
-		return ((Float) cd.get(itemName)).floatValue();
+		return (Float) getObject(cd, itemName);
 	}
 
 	public long getCollectTime() {

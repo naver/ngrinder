@@ -89,7 +89,27 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		User user = (User)model.get("user");
 		assertThat(user.getUserName(), is("new name"));
 		assertThat(user.getPassword(), is(currUser.getPassword()));
+	}
+	
+	@Test
+	public void testUpdateCurrentUserRole() {
+		//test update the role of current user.
+		ModelMap model = new ModelMap();
+		User currUser = getTestUser();
+		assertThat(currUser.getRole(), is(Role.USER)); //current test user is "USER"
 		
+		User updatedUser = new User(currUser.getUserId(), currUser.getUserName(), currUser.getPassword(),
+				currUser.getRole());
+		updatedUser.setId(currUser.getId());
+		updatedUser.setEmail("test@test.com");
+		updatedUser.setRole(Role.ADMIN); //Attempt to modify himself as ADMIN
+		userController.saveOrUpdateUserDetail(currUser, model, updatedUser);
+		
+		userController.getUserDetail(getTestUser(), model, currUser.getUserId());
+		User user = (User)model.get("user");
+		assertThat(user.getUserName(), is(currUser.getUserName()));
+		assertThat(user.getPassword(), is(currUser.getPassword()));
+		assertThat(user.getRole(), is(Role.USER));
 	}
 
 	private void saveTestUser(String userId, String userName) {

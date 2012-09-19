@@ -29,11 +29,9 @@ public class MonitorContext {
 
 	private static final MonitorContext INSTANCE = new MonitorContext();
 
-	private Set<Integer> jvmPids = new HashSet<Integer>();
-	
 	private MonitorContext() {
 	}
-	
+
 	public static MonitorContext getInstance() {
 		return INSTANCE;
 	}
@@ -44,32 +42,8 @@ public class MonitorContext {
 		this.dataCollectors = dataCollectors;
 	}
 
-	public void setJvmPids(Set<Integer> jvmPids) {
-		this.jvmPids = jvmPids;
-	}
-
 	public Set<String> getDataCollectors() {
 		return dataCollectors;
-	}
-
-	public void addDataCollector(String dataCollector) {
-		this.dataCollectors.add(dataCollector);
-	}
-
-	public void removeDataCollector(String dataCollector) {
-		this.dataCollectors.remove(dataCollector);
-	}
-
-	public Set<Integer> getJvmPids() {
-		return jvmPids;
-	}
-
-	public void addJvmPid(Integer jvmPid) {
-		this.jvmPids.add(jvmPid);
-	}
-
-	public void removeJvmPid(Integer jvmPid) {
-		this.jvmPids.remove(jvmPid);
 	}
 
 }

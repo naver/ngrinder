@@ -38,6 +38,9 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 
 	@Override
 	public synchronized void refresh() {
+		if (sigar == null) {
+			sigar = new Sigar();
+		}
 	}
 
 	@Override
