@@ -23,10 +23,15 @@
 package org.ngrinder.perftest.service;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.Date;
 import java.util.List;
+
+import net.grinder.StopReason;
+import net.grinder.common.GrinderProperties;
 
 import org.junit.Test;
 import org.ngrinder.model.PerfTest;
@@ -50,12 +55,15 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
 	PerfTestRepository perfTestRepository;
-	
+
 	@Test
 	public void testGetTestListAll() {
-		
+
 		createPerfTest("new Test1", Status.TESTING, new Date());
 		createPerfTest("new Test2", Status.FINISHED, new Date());
+
+		PerfTest candiate = testService.getPerfTestCandiate();
+		assertThat(candiate, nullValue());
 
 		Pageable pageable = new PageRequest(0, 10);
 		Page<PerfTest> testList = testService.getPerfTestList(getTestUser(), null, false, pageable);
@@ -71,36 +79,46 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 		List<PerfTest> list = testService.getTestingPerfTest();
 		assertThat(list.size(), is(1));
-		
+
 		for (PerfTest test : list) {
 			long systemTimeMills = System.currentTimeMillis();
 			testService.setRecodingStarting(test, systemTimeMills);
-			
+
 			PerfTest testTemp = testService.getPerfTest(getTestUser(), test.getId());
 			assertThat(testTemp.getId(), is(test.getId()));
 			assertThat(testTemp.getStartTime().getTime(), is(systemTimeMills));
 
-			
-			
-			List<PerfTest> testingList  = testService.getPerfTest(getTestUser(), Status.TESTING);
+			testService.markAbromalTermination(testTemp, StopReason.STOP_BY_USER);
+			testService.markProgress(testTemp, "this test will be TESTING again");
+			testService.changePerfTestStatus(testTemp, Status.TESTING, "this is just test unit");
+
+			List<PerfTest> testingList = testService.getPerfTest(getTestUser(), Status.TESTING);
 			assertThat(testingList.size(), is(1));
-			
+
 			Long testCount = testService.getPerfTestCount(getTestUser(), Status.TESTING);
 			assertThat(testCount, is(1L));
+
+			GrinderProperties properties = testService.getGrinderProperties(test);
+			assertThat(properties, not(nullValue()));
+
 		}
-	
 
 		createPerfTest("new Test2", Status.getProcessingOrTestingTestStatus()[0], new Date());
 		list = testService.getCurrentlyRunningTest();
 		assertThat(list.size(), is(2));
-		
+
 		PerfTest finishedTest = createPerfTest("new Test3", Status.ABNORMAL_TESTING, new Date());
-		finishedTest.setPort(0); //need port number for finishing
+		finishedTest.setPort(0); // need port number for finishing
 		list = testService.getAbnoramlTestingPerfTest();
 		assertThat(list.size(), is(1));
-		
+
 		testService.updatePerfTestAfterTestFinish(finishedTest);
+
+		createPerfTest("new Test3", Status.START_AGENTS, new Date());
+
+		List<PerfTest> errorList = testService.getPerfTest(getTestUser(), Status.START_AGENTS);
+		assertThat(errorList.size(), is(1));
+		testService.markPerfTestError(errorList.get(0), "this is error test");
 	}
-	
 
 }
