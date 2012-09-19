@@ -127,10 +127,10 @@
 								</#if>
 								<button type="submit" class="btn btn-success" id="saveTestBtn" style="margin-left:249px; width:55px">
 									<#if test?? && (test.status != "SAVED" || test.createdUser.userId != currentUser.userId)>
-										<input type="hidden" id="isClone" value="true">
+										<input type="hidden" id="isClone" name="isClone" value="true">
 										<@spring.message "perfTest.detail.clone"/>
 									<#else>
-										<input type="hidden" id="isClone" value="false">
+										<input type="hidden" id="isClone" name="isClone" value="false">
 										<@spring.message "common.button.save"/>
 									</#if>
 								</button>
@@ -744,9 +744,9 @@
 	          if (!$("#testContentForm").valid()) {
 	              return false;
 	          }
-	          if ($("#isClone").val() == "true") {
-	              $("#testId").val("");
-	          }
+	          //if ($("#isClone").val() == "true") {
+	          //    $("#testId").val("");
+	          //}
 	          $("#testStatus").val("SAVED");
 	          $("#scheduleInput").attr('name', '');
 	          return true;
@@ -756,9 +756,9 @@
 	          $("#scheduleModal").modal("hide");
 	          $("#scheduleModal small").html("");
 	          $("#scheduleInput").attr('name', '');
-	          if ($("#isClone").val() == "true") {
-	              $("#testId").val("");
-	          }
+	          //if ($("#isClone").val() == "true") {
+	          //    $("#testId").val("");
+	          //}
 	          $("#testStatus").val("READY");
 	          document.testContentForm.submit();
 	      });
