@@ -128,7 +128,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		newTest.setScriptName(test.getScriptName());
 
 		ModelMap model = new ModelMap();
-		controller.savePerfTest(getTestUser(), model, newTest);
+		controller.savePerfTest(getTestUser(), model, newTest,"false");
 		controller.getPerfTestDetail(getTestUser(), newTest.getId(), model);
 		PerfTest testInDB = (PerfTest) model.get(PARAM_TEST);
 		assertThat(testInDB.getTestName(), is(newName));
@@ -136,7 +136,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 		model.clear();
 		newTest.setStatus(Status.READY);
-		controller.savePerfTest(getTestUser(), model, newTest);
+		controller.savePerfTest(getTestUser(), model, newTest,"false");
 		controller.getPerfTestDetail(getTestUser(), newTest.getId(), model);
 		testInDB = (PerfTest) model.get(PARAM_TEST);
 		assertThat(testInDB.getTestName(), is(newName));
@@ -146,7 +146,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		newTest.setStatus(Status.START_TESTING);
 		try {
 			newTest.setStatus(Status.START_TESTING);
-			controller.savePerfTest(getTestUser(), model, newTest);
+			controller.savePerfTest(getTestUser(), model, newTest,"false");
 			fail("test status id START_TESTING, can not be saved");
 		} catch (IllegalArgumentException e) {
 
