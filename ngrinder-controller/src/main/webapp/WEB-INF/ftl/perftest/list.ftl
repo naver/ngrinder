@@ -82,7 +82,7 @@
 						<col width="120"> 
 						<col width="80">
 						<col width="65">
-						<col width="80"> 
+						<col width="65"> 
 						<col width="65">
 						<col width="75">
 						<col width="65">
@@ -100,7 +100,7 @@
 							<th id="startTime"><@spring.message "perfTest.table.startTime"/></th>
 							<th id="duration"><@spring.message "perfTest.table.duration"/></th>
 							<th id="tps"><@spring.message "perfTest.table.tps"/></th> 
-							<th id="meanTestTime" title='<@spring.message "perfTest.table.meantime"/>' >MTT(ms)</th>
+							<th id="meanTestTime" title='<@spring.message "perfTest.table.meantime"/>' >MTT</th>
 							<th id="errors"><@spring.message "perfTest.table.errors"/></th>
 							<th class="nothing"><@spring.message "perfTest.table.vusers"/></th>
 							<th class="nothing"><@spring.message "common.label.actions"/></th>
