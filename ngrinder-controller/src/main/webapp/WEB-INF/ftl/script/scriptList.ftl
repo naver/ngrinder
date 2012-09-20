@@ -47,7 +47,7 @@
 							</colgroup>
 							<tr>
 								<td>
-						        	<div style="margin-top:10px">
+						        	<div style="margin-top:5px">
 										<a class="btn btn-primary" href="#createScriptModal" id="createBtn" data-toggle="modal">
 											<i class="icon-file"></i>
 											<@spring.message "script.list.button.createScript"/>
@@ -62,7 +62,7 @@
 										</a>
 								</td>
 								<td>
-									<div style="margin-top:10px">
+									<div style="margin-top:5px">
 										<a class="btn btn-danger pull-right" href="javascript:void(0);" id="deleteBtn">
 											<i class="icon-remove"></i>
 											<@spring.message "script.list.button.delete"/>

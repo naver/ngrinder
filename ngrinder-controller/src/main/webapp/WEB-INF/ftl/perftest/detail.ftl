@@ -125,7 +125,7 @@
 										<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
 									</span> 
 								</#if>
-								<button type="submit" class="btn btn-success" id="saveTestBtn" style="margin-left:285px; width:55px">
+								<button type="submit" class="btn btn-success" id="saveTestBtn" style="margin-left:<#if test??>249<#else>285</#if>px; width:55px">
 									<#if test?? && (test.status != "SAVED" || test.createdUser.userId != currentUser.userId)>
 										<input type="hidden" id="isClone" name="isClone" value="true">
 										<@spring.message "perfTest.detail.clone"/>
