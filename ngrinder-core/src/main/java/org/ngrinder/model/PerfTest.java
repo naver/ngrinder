@@ -471,7 +471,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public String getRuntimeStr() {
-		return DateUtil.ms2Time(this.finishTime.getTime() - this.startTime.getTime());
+		long ms = (this.finishTime == null || this.startTime == null) ? 0 : this.finishTime.getTime() - this.startTime.getTime();
+		return DateUtil.ms2Time(ms);
 	}
 
 	@Override

@@ -268,29 +268,30 @@ public class PerfTestController extends NGrinderBaseController {
 			int rawOffset = getTimeZoneOffSet(user);
 			test.setScheduledTime(new Date(scheduleDate.getTime() + rawOffset));
 		}
-		// change the cloned perftest's name, change to testName+[copy_NUM]
+		// NGRINDER-236 hehe
+//		// change the cloned perftest's name, change to testName+[copy_NUM]
 		if (Boolean.valueOf(isClone)) {
-			Long testId = test.getId();
-			PerfTest oldTest = perfTestService.getPerfTest(testId);
-			String oldTestName = oldTest.getTestName();
-			String newTestName = test.getTestName();
-			if (newTestName.equals(oldTestName)) {
-				// Not very rigorous
-				Page<PerfTest> testPage = perfTestService.getPerfTestList(user, oldTestName + "[", false, null);
-				List<PerfTest> testList = testPage.getContent();
-				List<String> testNameList = new ArrayList<String>();
-				for (PerfTest pt : testList) {
-					testNameList.add(pt.getTestName());
-				}
-				String testName;
-				for (int i = 0; i <= testNameList.size(); i++) {
-					testName = newTestName + "[" + (i + 1) + "]";
-					if (!testNameList.contains(testName)) {
-						test.setTestName(testName);
-						break;
-					}
-				}
-			}
+//			Long testId = test.getId();
+//			PerfTest oldTest = perfTestService.getPerfTest(testId);
+//			String oldTestName = oldTest.getTestName();
+//			String newTestName = test.getTestName();
+//			if (newTestName.equals(oldTestName)) {
+//				// Not very rigorous
+//				Page<PerfTest> testPage = perfTestService.getPerfTestList(user, oldTestName + "[", false, null);
+//				List<PerfTest> testList = testPage.getContent();
+//				List<String> testNameList = new ArrayList<String>();
+//				for (PerfTest pt : testList) {
+//					testNameList.add(pt.getTestName());
+//				}
+//				String testName;
+//				for (int i = 0; i <= testNameList.size(); i++) {
+//					testName = newTestName + "[" + (i + 1) + "]";
+//					if (!testNameList.contains(testName)) {
+//						test.setTestName(testName);
+//						break;
+//					}
+//				}
+//			}
 			test.setId(null);
 		}
 		perfTestService.savePerfTest(user, test);
