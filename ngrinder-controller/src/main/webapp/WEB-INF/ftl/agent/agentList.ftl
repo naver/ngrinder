@@ -33,7 +33,7 @@
 				<col width="*">
 				<col width="150">
 				<col width="100">
-				<col width="160">   
+				<col width="165">   
 			</colgroup>
 			<thead>
 				<tr>

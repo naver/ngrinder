@@ -23,7 +23,6 @@
 		margin-bottom: 2px;
 	}
 	
-	
 	.select-item {
 		width: 50px;
 	}
@@ -46,7 +45,6 @@
 	.table thead th {
 		vertical-align: middle;
 	}
-	
 	
 	.jqplot-yaxis {
 	    margin-right: 20px; 
@@ -76,6 +74,7 @@
 		margin-top: 2px;
 		margin-bottom: 2px;
 	}
+	
 	.addhostbtn {
 		margin-right:20px;
 		margin-top:-32px;
@@ -90,6 +89,7 @@
 	    line-height: 16px;
 	    vertical-align: text-top;
 	}
+	
 	i.collapse{
 		background-image: url('${req.getContextPath()}/img/icon_collapse.png');
 		background-repeat:no-repeat;
