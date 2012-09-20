@@ -22,8 +22,9 @@
  */
 package org.ngrinder.agent.service;
 
-import junit.framework.Assert;
+import java.util.List;
 
+import junit.framework.Assert;
 import net.grinder.message.console.AgentControllerState;
 
 import org.junit.Test;
@@ -41,32 +42,28 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private AgentManagerService agentService;
-
+	
 	@Test
 	public void testSaveGetDeleteAgent() {
 		AgentInfo agent = this.saveAgent("save");
 		AgentInfo agent2 = agentService.getAgent(agent.getId());
 		Assert.assertNotNull(agent2);
+
+		List<AgentInfo> agentListDB = agentService.getAgentListOnDB();
+		Assert.assertNotNull(agentListDB);
+
+		agentService.approve("1.1.1.1", true);
 		
 		agentService.deleteAgent(agent.getId());
 		agent2 = agentService.getAgent(agent.getId());
 		Assert.assertNull(agent2);
 	}
 
-	@Test
-	public void testGetAgents() {
-		// Page<AgentInfo> page1 = agentService.getAgents("testRegion", null);
-		// this.saveAgent("get1");
-		// this.saveAgent("get2");
-		// this.saveAgent("get3");
-		// Page<AgentInfo> page2 = agentService.getAgents("testRegion", null);
-		// Assert.assertEquals(page1.getTotalElements() + 3,
-		// page2.getTotalElements());
-	}
+	
 
 	private AgentInfo saveAgent(String key) {
 		AgentInfo agent = new AgentInfo();
-		agent.setIp("1.1.1.1" + key);
+		agent.setIp("1.1.1.1");
 		agent.setHostName("testAppName" + key);
 		agent.setPort(8080);
 		agent.setRegion("testRegion" + key);

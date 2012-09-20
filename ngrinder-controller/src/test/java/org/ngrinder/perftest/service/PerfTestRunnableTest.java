@@ -10,10 +10,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import net.grinder.AgentControllerDaemon;
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
+import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.console.communication.ProcessControl.Listener;
@@ -25,6 +27,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
@@ -41,9 +44,9 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	private MockPerfTestRunnable perfTestRunnable;
 
 	AgentControllerDaemon agentControllerDaemon;
-	AgentControllerDaemon agentControllerDaemon2;
-
 	@Autowired
+	private AgentManagerService agentService;
+	
 	private AgentManager agentManager;
 
 	@Autowired
@@ -53,36 +56,52 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	private Object processCountSync = new Object();
 
 	@Before
-	public void before() {
+	public void before() throws IOException {
+		agentManager = new AgentManager();
+		CompressionUtil compressUtil = new CompressionUtil();
+
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
 		fileEntityRepository.setUserRepository(new File(tempRepo, getTestUser().getUserId()));
+		File testUserRoot = fileEntityRepository.getUserRepoDirectory(getTestUser()).getParentFile();
 
+		testUserRoot.mkdirs();
+		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
+		testUserRoot.deleteOnExit();
+
+		FileEntry fileEntry = new FileEntry();
+		fileEntry.setPath("test1.py");
+		String worldString = IOUtils.toString(new ClassPathResource("world.py").getInputStream());
+		if (fileEntry.getFileType().isEditable()) {
+			fileEntry.setContent(worldString);
+		} else {
+			fileEntry.setContentBytes(worldString.getBytes());
+		}
+		fileEntityRepository.save(getTestUser(), fileEntry, "UTF-8");
+		
 		clearAllPerfTest();
-		createPerfTest("test1", Status.READY, new Date());
-		createPerfTest("test2", Status.READY, new Date());
+		createPerfTest("test1", Status.READY, null);
 		List<PerfTest> allPerfTest = perfTestService.getAllPerfTest();
-		assertThat(allPerfTest.size(), is(2));
+		assertThat(allPerfTest.size(), is(1));
 
 		agentControllerDaemon = new AgentControllerDaemon();
 		agentControllerDaemon.setAgentConfig(agentConfig1);
 		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
-		agentControllerDaemon2 = new AgentControllerDaemon();
-		agentControllerDaemon2.setAgentConfig(agentConfig2);
-		agentControllerDaemon2.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
-
+		
 		sleep(4000);
-		assertThat(agentManager.getAllAttachedAgents().size(), is(2));
+
+		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
+		Set<AgentIdentity> allFreeAgents = agentManager.getAllFreeAgents();
+		assertThat(agentManager.getAllAttachedAgents().size(), is(1));
 	}
 
 	@After
 	public void after() {
 		agentControllerDaemon.shutdown();
-		agentControllerDaemon2.shutdown();
 		sleep(2000);
 	}
 
 	@Test
-	public void testDoTest() {
+	public void testDoTest() throws IOException {
 		perfTestRunnable.startTest();
 
 	}
