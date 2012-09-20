@@ -17,7 +17,7 @@
 				<div class="control-group">
 					<label for="agentInput" class="control-label"><@spring.message "perfTest.report.meantime"/></label>
 					<div class="controls">
-						${(test.meanTestTime)!}
+						${((test.meanTestTime)!0)?round}
 						<code>MS</code>
 					</div>
 				</div>

@@ -77,7 +77,7 @@
                            </tr>
                            <tr>
                                <th><@spring.message "perfTest.report.meantime"/></th>
-                               <td><span>${(test.meanTestTime)!0}</span>&nbsp;&nbsp; <code>ms</code></td>
+                               <td><span>${((test.meanTestTime)!0)?round}</span>&nbsp;&nbsp; <code>ms</code></td>
                                
                            </tr>
                            <tr>

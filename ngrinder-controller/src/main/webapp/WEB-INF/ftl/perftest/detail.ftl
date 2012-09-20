@@ -23,7 +23,6 @@
 		margin-bottom: 2px;
 	}
 	
-	
 	.select-item {
 		width: 50px;
 	}
@@ -46,7 +45,6 @@
 	.table thead th {
 		vertical-align: middle;
 	}
-	
 	
 	.jqplot-yaxis {
 	    margin-right: 20px; 
@@ -76,6 +74,7 @@
 		margin-top: 2px;
 		margin-bottom: 2px;
 	}
+	
 	.addhostbtn {
 		margin-right:20px;
 		margin-top:-32px;
@@ -90,6 +89,7 @@
 	    line-height: 16px;
 	    vertical-align: text-top;
 	}
+	
 	i.collapse{
 		background-image: url('${req.getContextPath()}/img/icon_collapse.png');
 		background-repeat:no-repeat;
@@ -125,7 +125,7 @@
 										<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
 									</span> 
 								</#if>
-								<button type="submit" class="btn btn-success" id="saveTestBtn" style="margin-left:249px; width:55px">
+								<button type="submit" class="btn btn-success" id="saveTestBtn" style="margin-left:<#if test??>249<#else>285</#if>px; width:55px">
 									<#if test?? && (test.status != "SAVED" || test.createdUser.userId != currentUser.userId)>
 										<input type="hidden" id="isClone" name="isClone" value="true">
 										<@spring.message "perfTest.detail.clone"/>
