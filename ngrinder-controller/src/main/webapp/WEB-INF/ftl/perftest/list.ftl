@@ -147,7 +147,7 @@
 											</td>
 										</#if>
 									<td>${(test.tps)!}</td>  
-									<td>${(test.meanTestTime)!0}</td>
+									<td>${((test.meanTestTime)!0)?round}</td>
 									<td>${(test.errors)!0}</td>
 									<td>${vuserTotal} </td>
 									<td class="center">
