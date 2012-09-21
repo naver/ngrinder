@@ -76,6 +76,7 @@ import net.grinder.util.thread.Condition;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableDouble;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -701,6 +702,7 @@ public class SingleConsole implements Listener, SampleListener {
 			result.put("success", !isAllTestFinished());
 		}
 		// Finally overwrite.. current one.
+
 		this.statisticData = result;
 	}
 
@@ -843,8 +845,15 @@ public class SingleConsole implements Listener, SampleListener {
 	 * 
 	 * @return map which contains statistics data
 	 */
+	@SuppressWarnings("unchecked")
 	public Map<String, Object> getStatictisData() {
-		return this.statisticData;
+		return (Map<String, Object>) ObjectUtils.defaultIfNull(this.statisticData, getNullStatictisData());
+	}
+	
+	public Map<String, Object> getNullStatictisData(){
+		Map<String, Object> result = new ConcurrentHashMap<String, Object>();
+		result.put("test_time", getCurrentRunningTime() / 1000);
+		return result;
 	}
 
 	/**

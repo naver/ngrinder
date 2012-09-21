@@ -1047,6 +1047,7 @@
 	      var url = "${req.getContextPath()}/perftest/running/refresh?testId=" + $("#testId").val();
 	      var peakTps = 50;
 	      refreshDiv.load(url, function () {
+	      	  $("#running_time").text(showRunTime(curRunningTime));
 	          if (curStatus == true) {
 	              $("#lsTable tbody").empty();
 	              $("#asTable tbody").empty();
@@ -1055,7 +1056,6 @@
 
 	              $("#process_data").text(curRunningProcesses);
 	              $("#thread_data").text(curRunningThreads);
-	              $("#running_time").text(showRunTime(curRunningTime));
 	              var agentStatusString = "";
 	              for (var i = 0; i < curAgentPerfStates.length; i++) {
 	                var eachAgent = curAgentPerfStates[i];
