@@ -8,14 +8,12 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
+import java.net.InetAddress;
 import java.util.List;
-import java.util.Set;
 
 import net.grinder.AgentControllerDaemon;
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
-import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.console.communication.ProcessControl.Listener;
@@ -44,11 +42,13 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	private MockPerfTestRunnable perfTestRunnable;
 
 	AgentControllerDaemon agentControllerDaemon;
+	
+	@Autowired
+	private AgentManager agentManager;
+	
 	@Autowired
 	private AgentManagerService agentService;
 	
-	private AgentManager agentManager;
-
 	@Autowired
 	public MockFileEntityRepsotory fileEntityRepository;
 
@@ -57,7 +57,9 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	@Before
 	public void before() throws IOException {
-		agentManager = new AgentManager();
+		System.setProperty("java.library.path",
+				System.getProperty("java.library.path") + File.pathSeparator + new File("./src/test/resources/native_lib").getAbsolutePath());
+		
 		CompressionUtil compressUtil = new CompressionUtil();
 
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
@@ -87,23 +89,24 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		agentControllerDaemon.setAgentConfig(agentConfig1);
 		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		
-		sleep(4000);
+		sleep(12000);
+		agentService.getAgentList();
+		int agentCount = agentManager.getAllAttachedAgents().size();
+        String ip = InetAddress.getLocalHost().getHostAddress();
 
-		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
-		Set<AgentIdentity> allFreeAgents = agentManager.getAllFreeAgents();
-		assertThat(agentManager.getAllAttachedAgents().size(), is(1));
+		agentService.approve(ip, true);
+		assertThat(agentCount, is(1));
 	}
 
 	@After
 	public void after() {
 		agentControllerDaemon.shutdown();
-		sleep(2000);
+		sleep(6000);
 	}
 
 	@Test
 	public void testDoTest() throws IOException {
 		perfTestRunnable.startTest();
-
 	}
 
 	@Test
@@ -119,11 +122,10 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		assertThat(singleConsole.getConsolePort(), is(perfTest.getPort()));
 
 		// Start agents
-		perfTest.setAgentCount(2);
+		perfTest.setAgentCount(1);
 		GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
 		singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest.getId()));
 		perfTestRunnable.startAgentsOn(perfTest, grinderProperties, singleConsole);
-		assertThat(agentManager.getAllFreeAgents().size(), is(0));
 
 		// Distribute files
 		prepareUserRepo();

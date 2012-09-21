@@ -222,7 +222,6 @@ public class ConsoleManager {
 		}
 		synchronized (this) {
 			try {
-				console.unregisterSampling();
 				console.sendStopMessageToAgents();
 			} catch (Exception e) {
 				LOG.error("Exception is occured while shuttdowning console in returnback process for test {}.", testIdentifier, e);
@@ -236,6 +235,7 @@ public class ConsoleManager {
 					LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.", testIdentifier, e);
 				}
 				try {
+					console.unregisterSampling();
 					console.shutdown();
 				} catch (Exception e) {
 					LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.", testIdentifier, e);

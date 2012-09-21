@@ -30,7 +30,8 @@
 		</li>
 	</ul>
 	<div class="container">
-	   <input type="hidden" id="startTime" name="startTime" value="${test.startTime}">
+	   <input type="hidden" id="startTime" name="startTime" value="${(test.startTime)!}">
+	   <input type="hidden" id="finishTime" name="finishTime" value="${(test.finishTime)!}">
 	   <form name="downloadForm">
 	       <input type="hidden" id="testId" name="testId" value="${test.id}">
 	   </form>
