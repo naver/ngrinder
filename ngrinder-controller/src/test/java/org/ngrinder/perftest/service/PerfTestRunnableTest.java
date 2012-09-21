@@ -89,7 +89,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		agentControllerDaemon.setAgentConfig(agentConfig1);
 		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		
-		sleep(8000);
+		sleep(12000);
 		agentService.getAgentList();
 		int agentCount = agentManager.getAllAttachedAgents().size();
         String ip = InetAddress.getLocalHost().getHostAddress();
@@ -101,7 +101,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	@After
 	public void after() {
 		agentControllerDaemon.shutdown();
-		sleep(2000);
+		sleep(6000);
 	}
 
 	@Test
@@ -122,7 +122,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		assertThat(singleConsole.getConsolePort(), is(perfTest.getPort()));
 
 		// Start agents
-		perfTest.setAgentCount(2);
+		perfTest.setAgentCount(1);
 		GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
 		singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest.getId()));
 		perfTestRunnable.startAgentsOn(perfTest, grinderProperties, singleConsole);
