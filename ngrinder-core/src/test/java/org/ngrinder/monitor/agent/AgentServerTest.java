@@ -23,61 +23,30 @@
 package org.ngrinder.monitor.agent;
 
 import java.io.IOException;
-import java.util.Set;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 
+import junit.framework.Assert;
+
+import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.SigarTestBase;
-import org.ngrinder.common.util.ThreadUtil;
-import org.ngrinder.infra.AgentConfig;
-import org.ngrinder.monitor.MonitorConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AgentServerTest extends SigarTestBase {
-	private static final Logger LOG = LoggerFactory.getLogger(AgentServerTest.class);
 
-	@Test
-	public void startMonitor() throws MalformedObjectNameException, InstanceAlreadyExistsException, MBeanRegistrationException,
-			NotCompliantMBeanException, NullPointerException, IOException {
-		int port = 4096;
-		Set<String> dataCollectors = MonitorConstants.SYSTEM_DATA_COLLECTOR;
-
-		LOG.info("******************************");
-		LOG.info("* Start nGrinder Monitor Agent *");
-		LOG.info("******************************");
-		LOG.info("* Local JVM link support :{}", localAttachmentSupported);
-
-		AgentConfig config = new AgentConfig();
-		config.init();
-		LOG.info("Is in test mode:{}", config.isTestMode());
-		MonitorConstants.init(config);
-
-		AgentMonitorServer.getInstance().init(port, dataCollectors);
-		AgentMonitorServer.getInstance().start();
-
-		ThreadUtil.sleep(5000);
+	@Before
+	public void start() throws MalformedObjectNameException, InstanceAlreadyExistsException,
+			MBeanRegistrationException, NotCompliantMBeanException, IOException {
+		MockAgentServer.startServer();
 	}
 
-	private static final boolean localAttachmentSupported;
-	static {
-		boolean supported;
-		try {
-			Class.forName("com.sun.tools.attach.VirtualMachine");
-			Class.forName("sun.management.ConnectorAddressLink");
-			supported = true;
-		} catch (NoClassDefFoundError x) {
-			LOG.error(x.getMessage(), x);
-			supported = false;
-		} catch (ClassNotFoundException x) {
-			LOG.error(x.getMessage(), x);
-			supported = false;
-		}
-		localAttachmentSupported = supported;
+	@Test
+	public void testMonitor() {
+		int port = AgentMonitorServer.getInstance().getPort();
+		Assert.assertEquals(MockAgentServer.MOCK_MONITOR_AGENT_PORT, port);
 	}
 
 }

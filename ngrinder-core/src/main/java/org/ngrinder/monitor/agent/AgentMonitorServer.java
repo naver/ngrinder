@@ -42,7 +42,6 @@ import javax.management.remote.JMXServiceURL;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.MonitorContext;
 import org.ngrinder.monitor.agent.collector.AgentDataCollectManager;
-import org.ngrinder.monitor.agent.mxbean.core.MXBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,12 +97,6 @@ public final class AgentMonitorServer {
 		LOG.info("Service URL:{} is initiated.", jmxUrl);
 	}
 
-	public void addMXBean(String subDomainName, MXBean mxBean) throws MalformedObjectNameException,
-			InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException,
-			NullPointerException {
-		AgentRegisterMXBean.getInstance().addMXBean(mBeanServer, subDomainName, mxBean);
-	}
-
 	public boolean isRunning() {
 		return isRunning;
 	}
@@ -129,8 +122,4 @@ public final class AgentMonitorServer {
 		}
 	}
 
-	public void restart() throws IOException {
-		stop();
-		start();
-	}
 }
