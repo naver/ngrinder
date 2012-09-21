@@ -131,8 +131,10 @@ public class MonitorController extends NGrinderBaseController {
 			int dataAmount = systemMonitorData.size();
 			int pointCount = imgWidth;
 			int interval = dataAmount / pointCount;
-			pointCount = interval > 0 ? pointCount : dataAmount;
-			
+			if (interval == 0) {
+				pointCount = dataAmount;
+				interval = 1;
+			}
 			List<Object> cpuData = new ArrayList<Object>(pointCount);
 			List<Object> memoryData = new ArrayList<Object>(pointCount);
 			

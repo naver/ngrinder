@@ -171,6 +171,10 @@ public enum Database {
 		dataSource.setMaxWait(3000);
 		dataSource.setPoolPreparedStatements(true);
 		dataSource.setMaxOpenPreparedStatements(50);
+		dataSource.setTestWhileIdle(true);
+		dataSource.setTestOnBorrow(true);
+		dataSource.setTestOnReturn(true);
+		dataSource.setValidationQuery("SELECT 1");
 	}
 
 	public String getDialect() {
