@@ -138,10 +138,8 @@
 								</#if>
 								<button type="submit" class="btn btn-success" id="saveTestBtn" style="margin-left:<#if test??>249<#else>285</#if>px; width:55px">
 									<#if isClone>
-										<input type="hidden" id="isClone" name="isClone" value="true">
 										<@spring.message "perfTest.detail.clone"/>
 									<#else>
-										<input type="hidden" id="isClone" name="isClone" value="false">
 										<@spring.message "common.button.save"/>
 									</#if>
 								</button>
