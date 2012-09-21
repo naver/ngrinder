@@ -138,7 +138,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 						interp.cleanup();
 					}
 				});
-				thread.run();
+				thread.start();
 				thread.join(30000);
 				if (thread.isAlive()) {
 					thread.interrupt();

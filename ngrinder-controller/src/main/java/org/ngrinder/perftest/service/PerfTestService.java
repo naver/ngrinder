@@ -642,8 +642,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		User user = perfTest.getCreatedUser();
 
 		// Get all files in the script path
-		FileEntry scriptEntry = fileEntryService.getFileEntry(user, perfTest.getScriptName(),
-						perfTest.getScriptRevision());
+		FileEntry scriptEntry = checkNotNull(fileEntryService.getFileEntry(user, perfTest.getScriptName(),
+						perfTest.getScriptRevision()), "script should not exist");
+		
 		List<FileEntry> fileEntries = fileEntryService.getLibAndResourcesEntries(user, checkNotEmpty(scriptName),
 						perfTest.getScriptRevision());
 		File perfTestDirectory = getPerfTestDirectory(perfTest);

@@ -42,13 +42,13 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	private MockPerfTestRunnable perfTestRunnable;
 
 	AgentControllerDaemon agentControllerDaemon;
-	
+
 	@Autowired
 	private AgentManager agentManager;
-	
+
 	@Autowired
 	private AgentManagerService agentService;
-	
+
 	@Autowired
 	public MockFileEntityRepsotory fileEntityRepository;
 
@@ -57,16 +57,11 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	@Before
 	public void before() throws IOException {
-		File nativeLib = new File("./src/test/resources/native_lib");
-		if (!nativeLib.exists()) {
-			nativeLib = new File("ngrinder-controller/src/test/resources/native_lib");
-			if (!nativeLib.exists()) {
-				throw new RuntimeException("native_lib location is different.");
-			}
-		}
+		ClassPathResource classPathResource = new ClassPathResource("native_lib/.sigar_shellrc");
+		String nativeLib = classPathResource.getFile().getParentFile().getAbsolutePath();
 		System.setProperty("java.library.path",
-				System.getProperty("java.library.path") + File.pathSeparator + nativeLib.getAbsolutePath());
-		
+						nativeLib + File.pathSeparator + System.getProperty("java.library.path"));
+		System.out.println("Java Lib Path : " + System.getProperty("java.library.path"));
 		CompressionUtil compressUtil = new CompressionUtil();
 
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
@@ -86,7 +81,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 			fileEntry.setContentBytes(worldString.getBytes());
 		}
 		fileEntityRepository.save(getTestUser(), fileEntry, "UTF-8");
-		
+
 		clearAllPerfTest();
 		createPerfTest("test1", Status.READY, null);
 		List<PerfTest> allPerfTest = perfTestService.getAllPerfTest();
@@ -95,11 +90,11 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		agentControllerDaemon = new AgentControllerDaemon();
 		agentControllerDaemon.setAgentConfig(agentConfig1);
 		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
-		
+
 		sleep(12000);
 		agentService.getAgentList();
 		int agentCount = agentManager.getAllAttachedAgents().size();
-        String ip = InetAddress.getLocalHost().getHostAddress();
+		String ip = InetAddress.getLocalHost().getHostAddress();
 
 		agentService.approve(ip, true);
 		assertThat(agentCount, is(1));
@@ -138,23 +133,22 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		prepareUserRepo();
 		perfTestRunnable.distributeFileOn(perfTest, grinderProperties, singleConsole);
 
-		singleConsole.getConsoleComponent(ProcessControlImplementation.class).addProcessStatusListener(
-						new Listener() {
+		singleConsole.getConsoleComponent(ProcessControlImplementation.class).addProcessStatusListener(new Listener() {
 
-							@Override
-							public void update(ProcessReports[] processReports) {
-								synchronized (processCountSync) {
-									currentProcessCount = 0;
-									for (ProcessReports each : processReports) {
-										for (WorkerProcessReport eachWorker : each.getWorkerProcessReports()) {
-											if (eachWorker.getState() == 2) {
-												currentProcessCount++;
-											}
-										}
-									}
-								}
+			@Override
+			public void update(ProcessReports[] processReports) {
+				synchronized (processCountSync) {
+					currentProcessCount = 0;
+					for (ProcessReports each : processReports) {
+						for (WorkerProcessReport eachWorker : each.getWorkerProcessReports()) {
+							if (eachWorker.getState() == 2) {
+								currentProcessCount++;
 							}
-						});
+						}
+					}
+				}
+			}
+		});
 
 		// Run test
 		perfTestRunnable.runTestOn(perfTest, grinderProperties, singleConsole);
@@ -175,13 +169,11 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		fail("Process is not finished within 100 sec");
 	}
 
-
 	private void prepareUserRepo() throws IOException {
 		CompressionUtil compressUtil = new CompressionUtil();
 		File userRepoDirectory = fileEntityRepository.getUserRepoDirectory(null);
 		FileUtils.deleteQuietly(userRepoDirectory);
-		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(),
-						userRepoDirectory.getParentFile());
+		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), userRepoDirectory.getParentFile());
 		FileEntry fileEntryDir = new FileEntry();
 		fileEntryDir.setPath("/hello");
 		fileEntryDir.setFileType(FileType.DIR);
