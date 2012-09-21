@@ -123,10 +123,21 @@
 										rel="popover" data-content='${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}'  
 											data-original-title="<@spring.message "${test.status.springMessageKey}"/>" type="toggle" placement="bottom">
 										<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
-									</span> 
+									</span>
+
+									<#if test.status != "SAVED" || test.createdUser.userId != currentUser.userId>
+										<input type="hidden" id="isClone" name="isClone" value="true">
+										<#assign isClone = true/>
+									<#else>
+										<input type="hidden" id="isClone" name="isClone" value="false">
+										<#assign isClone = false/> 
+									</#if>
+								<#else>
+									<input type="hidden" id="isClone" name="isClone" value="false">
+									<#assign isClone = false/> 
 								</#if>
 								<button type="submit" class="btn btn-success" id="saveTestBtn" style="margin-left:<#if test??>249<#else>285</#if>px; width:55px">
-									<#if test?? && (test.status != "SAVED" || test.createdUser.userId != currentUser.userId)>
+									<#if isClone>
 										<input type="hidden" id="isClone" name="isClone" value="true">
 										<@spring.message "perfTest.detail.clone"/>
 									<#else>
@@ -136,7 +147,7 @@
 								</button>
 								<button type="submit" class="btn btn-primary" style="margin-left:10px; width:120px"
 									data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn">
-									<#if test?? && (test.status != "SAVED")>
+									<#if isClone>
 										<@spring.message "perfTest.detail.clone"/>
 									<#else>
 										<@spring.message "common.button.save"/>
