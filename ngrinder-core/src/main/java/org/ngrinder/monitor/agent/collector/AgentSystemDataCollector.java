@@ -64,7 +64,7 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 			systemInfo.setFreeMemory(sigar.getMem().getFree() / 1024L);
 			systemInfo.setLoadAvgs(sigar.getLoadAverage());
 			systemInfo.setSystem(OperatingSystem.IS_WIN32 ? SystemInfo.System.WINDOW : SystemInfo.System.LINUX);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			if (failedCount++ == 60) {
 				failedCount = 0;
 				LOG.error("Error while getting system perf data", e.getMessage());
