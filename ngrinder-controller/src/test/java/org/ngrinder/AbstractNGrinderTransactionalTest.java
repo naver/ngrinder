@@ -50,6 +50,10 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 		}
 		return testUser;
 	}
+	
+	public User getAdminUser() {
+		return userRepository.findOneByUserId("admin");
+	}
 
 	public void sleep(long miliseconds) {
 		try {

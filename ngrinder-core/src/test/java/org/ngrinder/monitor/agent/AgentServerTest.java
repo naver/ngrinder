@@ -31,22 +31,30 @@ import javax.management.NotCompliantMBeanException;
 
 import junit.framework.Assert;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.SigarTestBase;
+import org.ngrinder.monitor.MonitorConstants;
 
 public class AgentServerTest extends SigarTestBase {
 
 	@Before
 	public void start() throws MalformedObjectNameException, InstanceAlreadyExistsException,
 			MBeanRegistrationException, NotCompliantMBeanException, IOException {
-		MockAgentServer.startServer();
+		AgentMonitorServer.getInstance().init();
+		AgentMonitorServer.getInstance().start();
+	}
+
+	@After
+	public void after() throws IOException {
+		AgentMonitorServer.getInstance().stop();
 	}
 
 	@Test
 	public void testMonitor() {
 		int port = AgentMonitorServer.getInstance().getPort();
-		Assert.assertEquals(MockAgentServer.MOCK_MONITOR_AGENT_PORT, port);
+		Assert.assertEquals(MonitorConstants.DEFAULT_MONITOR_PORT, port);
 	}
 
 }

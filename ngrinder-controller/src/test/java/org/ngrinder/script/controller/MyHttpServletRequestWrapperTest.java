@@ -22,26 +22,32 @@
  */
 package org.ngrinder.script.controller;
 
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+public class MyHttpServletRequestWrapperTest  {
 
-public class MyHttpServletRequestWrapperTest extends AbstractNGrinderTransactionalTest {
-	
-	MyHttpServletRequestWrapper wrapper ;
+	MyHttpServletRequestWrapper wrapper;
 
 	@Test
 	public void testHandleRequest() {
-		HttpServletRequest req = new MockHttpServletRequest(getTestUser().getUserId(), "http://127.0.0.1:80");
-		wrapper =new MyHttpServletRequestWrapper(req);
+		HttpServletRequest req = new MockHttpServletRequest("GET", "http://127.0.0.1:80/hello/svn/admin/한글");
+		wrapper = new MyHttpServletRequestWrapper(req) {
+			public String getRequestURI() {
+				return "/hello/svn/admin/한글";
+			}
+			
+			@Override
+			public String getContextPath() {
+				return "/hello";
+			}
+		};
 		String path = wrapper.getPathInfo();
-		assertThat(path, notNullValue());
+		assertThat(path, is("/admin/%ED%95%9C%EA%B8%80"));
 	}
-	
 }

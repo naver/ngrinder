@@ -57,8 +57,15 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	@Before
 	public void before() throws IOException {
+		File nativeLib = new File("./src/test/resources/native_lib");
+		if (!nativeLib.exists()) {
+			nativeLib = new File("ngrinder-controller/src/test/resources/native_lib");
+			if (!nativeLib.exists()) {
+				throw new RuntimeException("native_lib location is different.");
+			}
+		}
 		System.setProperty("java.library.path",
-				System.getProperty("java.library.path") + File.pathSeparator + new File("./src/test/resources/native_lib").getAbsolutePath());
+				System.getProperty("java.library.path") + File.pathSeparator + nativeLib.getAbsolutePath());
 		
 		CompressionUtil compressUtil = new CompressionUtil();
 
