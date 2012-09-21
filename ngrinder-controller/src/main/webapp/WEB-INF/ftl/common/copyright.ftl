@@ -13,6 +13,10 @@
 	});
 	
 	function resetFooter() {
+		setTimeout("reset()", 500);
+	}
+	
+	function reset() {
 		var $elem = $("#footDiv");
 		var i = $elem[0];
 		if (i) {
