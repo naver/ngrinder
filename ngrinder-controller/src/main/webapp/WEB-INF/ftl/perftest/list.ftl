@@ -142,13 +142,13 @@
 										<#if test.threshold == "D">
 											${(test.durationStr)!}</td>
 										<#else>
-											${(test.runCount)!}
+											${test.runCount}
 											<@spring.message "perfTest.table.runcount"/>
 											</td>
 										</#if>
-									<td>${(test.tps)!}</td>  
-									<td>${((test.meanTestTime)!0)?round}</td>
-									<td>${(test.errors)!0}</td>
+									<td>${(test.tps)?string("0.#")}</td>  
+									<td>${(test.meanTestTime)?string("0.##")}</td>
+									<td>${test.errors}</td>
 									<td>${vuserTotal} </td>
 									<td class="center">
 										<a href="javascript:void(0)"  style="display: none;" ><i title="<@spring.message "common.button.delete"/>"id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>

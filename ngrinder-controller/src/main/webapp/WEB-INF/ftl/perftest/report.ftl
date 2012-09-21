@@ -21,84 +21,81 @@
 			}
 			.compactpadding th {padding-left:5px;padding-right:5px} 
 		</style>
-
-		<input type="hidden" id="contextPath" value="${req.getContextPath()}">
 	</head>
 
 	<body>
 	<ul class="breadcrumb">
 		<li>
-			<h3><@spring.message "perfTest.report.reportPage"/> ${(test.testName!)}</h3>
+			<h3><@spring.message "perfTest.report.reportPage"/> ${test.testName}</h3>
 		</li>
 	</ul>
 	<div class="container">
-	   
 	   <input type="hidden" id="startTime" name="startTime" value="${(test.startTime)!}">
-	   <input type="hidden" id="startTime" name="startTime" value="${(test.startTime)!}">
+	   <input type="hidden" id="finishTime" name="finishTime" value="${(test.finishTime)!}">
 	   <form name="downloadForm">
-	       <input type="hidden" id="testId" name="testId" value="${(test.id)!}">
+	       <input type="hidden" id="testId" name="testId" value="${test.id}">
 	   </form>
 		<div class="row">
 			<div class="span3">
-					   <table class="table table-bordered compactpadding">
-					       <tr>
-					       	   <th><@spring.message "perfTest.report.vusersPerAgent"/></th>
-					           <td><strong>${(test.vuserPerAgent)!}</strong></td>
-					       </tr>
-					       <tr>
-                               <th><@spring.message "perfTest.report.agent"/></th>
-                               <td><span>${(test.agentCount)!}</span>&nbsp;&nbsp;<a class="btn btn-mini btn-info hidden" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a></td>
-                           </tr>
-                           <tr>
-                               <th><@spring.message "perfTest.report.process"/></th>
-                               <td>${(test.processes)!0}</td>
-                           </tr>
-                           <tr>
-                               <th><@spring.message "perfTest.report.thread"/></th>
-                               <td>${(test.threads)!0}</td>
-                           </tr>
-                           <tr>
-                                <td colspan=2></td>
-                           </tr>
-                           <tr> 
-                               <th><@spring.message "perfTest.table.duration"/></th>
-                               <td><span>${(test.durationStr)!}</span> <code>HH:MM:SS</code></td>
-                           </tr>
-                           <tr>
-                               <th><@spring.message "perfTest.configuration.ignoreSampleCount"/></th>
-                               <td><span>${(test.ignoreSampleCount)!0}</span></td> 
-                           </tr>
-                           <tr>
-                                <td colspan=2></td>
-                           </tr>
-                           <tr>
-                               <th>TPS</th>
-                               <td><strong>${(test.tps)!}</strong></td>
-                           </tr>
-                           <tr>
-                               <th><@spring.message "perfTest.report.meantime"/></th>
-                               <td><span>${((test.meanTestTime)!0)?round}</span>&nbsp;&nbsp; <code>ms</code></td>
-                               
-                           </tr>
-                           <tr>
-                               <th>Peak TPS</th>
-                               <td><strong>${(test.peakTps)!}</strong></td>
-                           </tr>
-                           <tr>
-                               <th><@spring.message "perfTest.report.finishedTest"/></th>
-                               <td>${(test.tests)!}</td>
-                           </tr>
-					   </table>
-					   <ul class="unstyled">
-                         <li><i class="icon-tag"></i> <a id="testPerformance" href="javascript:void(0);"><@spring.message "perfTest.report.performanceReport"/></a></li>
-                       </ul>
-                       <#if test.targetHostIP?exists>	
-						   <ul class="unstyled"><i class="icon-tags"></i> <@spring.message "perfTest.report.targetHost"/>
-                         		<#list test.targetHostIP as targetIp>
-	                         		<li><i class="icon-chevron-right"></i><a class="targetMontor" href="javascript:void(0);" ip="${targetIp}">${targetIp}</a></li>
-	                         	</#list> 
-                           </ul> 
-                       </#if>
+			   <table class="table table-bordered compactpadding">
+			       <tr>
+			       	   <th><@spring.message "perfTest.report.vusersPerAgent"/></th>
+			           <td><strong>${test.vuserPerAgent}</strong></td>
+			       </tr>
+			       <tr>
+                       <th><@spring.message "perfTest.report.agent"/></th>
+                       <td><span>${test.agentCount}</span>&nbsp;&nbsp;<a class="btn btn-mini btn-info hidden" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a></td>
+                   </tr>
+                   <tr>
+                       <th><@spring.message "perfTest.report.process"/></th>
+                       <td>${test.processes}</td>
+                   </tr>
+                   <tr>
+                       <th><@spring.message "perfTest.report.thread"/></th>
+                       <td>${test.threads}</td>
+                   </tr>
+                   <tr>
+                        <td colspan=2></td>
+                   </tr>
+                   <tr> 
+                       <th><@spring.message "perfTest.table.duration"/></th>
+                       <td><span>${test.durationStr}</span> <code>HH:MM:SS</code></td>
+                   </tr>
+                   <tr>
+                       <th><@spring.message "perfTest.configuration.ignoreSampleCount"/></th>
+                       <td><span>${test.ignoreSampleCount}</span></td> 
+                   </tr>
+                   <tr>
+                        <td colspan=2></td>
+                   </tr>
+                   <tr>
+                       <th>TPS</th>
+                       <td><strong>${test.tps}</strong></td>
+                   </tr>
+                   <tr>
+                       <th><@spring.message "perfTest.report.meantime"/></th>
+                       <td><span>${(test.meanTestTime)?string("0.##")}</span>&nbsp;&nbsp; <code>ms</code></td>
+                       
+                   </tr>
+                   <tr>
+                       <th>Peak TPS</th>
+                       <td><strong>${test.peakTps}</strong></td>
+                   </tr>
+                   <tr>
+                       <th><@spring.message "perfTest.report.finishedTest"/></th>
+                       <td>${test.tests}</td>
+                   </tr>
+			   </table>
+			   <ul class="unstyled">
+                 <li><i class="icon-tag"></i> <a id="testPerformance" href="javascript:void(0);"><@spring.message "perfTest.report.performanceReport"/></a></li>
+               </ul>
+               <#if test.targetHostIP?exists>	
+				   <ul class="unstyled"><i class="icon-tags"></i> <@spring.message "perfTest.report.targetHost"/>
+                 		<#list test.targetHostIP as targetIp>
+                     		<li><i class="icon-chevron-right"></i><a class="targetMontor" href="javascript:void(0);" ip="${targetIp}">${targetIp}</a></li>
+                     	</#list> 
+                   </ul> 
+               </#if>
 			</div>
 			<div class="span9">
 			    <table class="table table-bordered" style="margin-bottom:10px">

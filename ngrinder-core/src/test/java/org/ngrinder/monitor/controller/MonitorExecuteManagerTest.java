@@ -24,11 +24,22 @@ package org.ngrinder.monitor.controller;
 
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.SigarTestBase;
 import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.monitor.MonitorConstants;
+import org.ngrinder.monitor.agent.AgentMonitorServer;
 import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
 
 /**
@@ -38,16 +49,29 @@ import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
  * @since 3.0
  * @date 2012-7-20
  */
-public class MonitorExecuteManagerTest {
+public class MonitorExecuteManagerTest extends SigarTestBase{
+
+	@Before
+	public void start() throws MalformedObjectNameException, InstanceAlreadyExistsException,
+			MBeanRegistrationException, NotCompliantMBeanException, IOException {
+		AgentMonitorServer.getInstance().init();
+		AgentMonitorServer.getInstance().start();
+	}
+
 	@Test
 	public void getMonitorData() {
 		Set<MonitorAgentInfo> agentInfo = new HashSet<MonitorAgentInfo>();
-		MonitorAgentInfo monitorAgentInfo = MonitorAgentInfo.getSystemMonitor("127.0.0.1", 4096,
-				new MonitorRecoderDemo());
+		MonitorRecoderDemo mrd = new MonitorRecoderDemo();
+		MonitorAgentInfo monitorAgentInfo = MonitorAgentInfo.getSystemMonitor("127.0.0.1",
+				MonitorConstants.DEFAULT_MONITOR_PORT, mrd);
 		agentInfo.add(monitorAgentInfo);
-		MonitorExecuteManager monitorExecuteManager = new MonitorExecuteManager("127.0.0.1", 2, 1, agentInfo);
+		MonitorExecuteManager monitorExecuteManager = new MonitorExecuteManager("127.0.0.1", 1, 1, agentInfo);
 		monitorExecuteManager.start();
-		ThreadUtil.sleep(10000);
+		Assert.assertTrue(mrd.isRunning());
+		ThreadUtil.sleep(5000);
+		Assert.assertTrue(!mrd.getData().isEmpty());
+		monitorExecuteManager.stop();
+		Assert.assertFalse(mrd.isRunning());
 		fail("NEVER NEVER Write this kind of test code please");
 	}
 }
