@@ -22,6 +22,9 @@
  */
 package org.ngrinder.monitor.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
 import org.ngrinder.monitor.controller.domain.MonitorRecoder;
 import org.ngrinder.monitor.share.domain.SystemInfo;
@@ -35,18 +38,30 @@ import org.ngrinder.monitor.share.domain.SystemInfo;
  */
 public class MonitorRecoderDemo implements MonitorRecoder {
 
+	private boolean running = false;
+	private List<String> data = new ArrayList<String>();
+
 	@Override
 	public void before() {
+		running = true;
 	}
 
 	@Override
 	public void recoderSystemInfo(String key, SystemInfo systemInfo, MonitorAgentInfo agentInfo) {
 		System.out.println("Record system info: " + systemInfo + " for:" + key);
+		data.add("Record system info: " + systemInfo + " for:" + key);
 	}
 
 	@Override
 	public void after() {
-		System.out.println("after");
+		running = false;
 	}
 
+	public boolean isRunning() {
+		return running;
+	}
+
+	public List<String> getData() {
+		return data;
+	}
 }
