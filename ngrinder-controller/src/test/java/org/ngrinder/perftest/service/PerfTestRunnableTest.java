@@ -46,8 +46,6 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	@Autowired
 	private AgentManager agentManager;
 	
-	@Autowired
-	private AgentManagerService agentService;
 	
 	@Autowired
 	public MockFileEntityRepsotory fileEntityRepository;
@@ -59,7 +57,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	public void before() throws IOException {
 		System.setProperty("java.library.path",
 				System.getProperty("java.library.path") + File.pathSeparator + new File("./src/test/resources/native_lib").getAbsolutePath());
-		
+		AgentManagerService agentService = new AgentManagerService();
 		CompressionUtil compressUtil = new CompressionUtil();
 
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
@@ -90,8 +88,8 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		
 		sleep(12000);
-		agentService.getAgentList();
-		int agentCount = agentManager.getAllAttachedAgents().size();
+		
+		int agentCount = agentService.getAgentList().size();
         String ip = InetAddress.getLocalHost().getHostAddress();
 
 		agentService.approve(ip, true);
