@@ -1,7 +1,7 @@
 <#import "../common/spring.ftl" as spring/>
 <div class="row">
 	<div class="span4">
-		<input type="hidden" id="tpsData" name="tpsData" value="${(TPS)!}">
+		<input type="hidden" id="tpsData" name="tpsData" value="${TPS!}">
 		<div class="page-header">
 			<h4><@spring.message "perfTest.report.summary"/></h4>
 		</div>
@@ -11,31 +11,31 @@
 				<div class="control-group">
 					<label for="agentInput" class="control-label control-label-1"><@spring.message "perfTest.report.tps"/></label>
 					<div class="controls">
-						<strong>Total ${(test.tps)!}</strong>
+						<strong>Total ${test.tps}</strong>
 					</div>
 				</div>
 				<div class="control-group">
 					<label for="agentInput" class="control-label"><@spring.message "perfTest.report.meantime"/></label>
 					<div class="controls">
-						${((test.meanTestTime)!0)?round}
+						${(test.meanTestTime)?string("0.##")}
 						<code>MS</code>
 					</div>
 				</div>
 				<div class="control-group">
 					<label for="agentInput" class="control-label"><@spring.message "perfTest.report.peakTPS"/></label>
-					<div class="controls">${(test.peakTps)!}</div>
+					<div class="controls">${test.peakTps}</div>
 				</div>
 				<div class="control-group">
 					<label for="agentInput" class="control-label"><@spring.message "perfTest.report.finishedTest"/></label>
-					<div class="controls">${(test.tests)!}</div>
+					<div class="controls">${test.tests}</div>
 				</div>
 				<div class="control-group">
 					<label for="agentInput" class="control-label"><@spring.message "perfTest.report.errors"/></label>
-					<div class="controls">${(test.errors)!}</div>
+					<div class="controls">${test.errors}</div>
 				</div>
 				<div class="control-group">
                     <label for="agentInput" class="control-label"><@spring.message "perfTest.report.runtime"/></label>
-                    <div class="controls">${(test.runtimeStr)!}</div>
+                    <div class="controls">${test.runtimeStr}</div>
                 </div>
 			</fieldset>
 		</div>

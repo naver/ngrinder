@@ -290,7 +290,7 @@ public class AgentController implements Agent {
 			}
 		});
 		if (ArrayUtils.isEmpty(list)) {
-			m_logger.error("there is no log exists under {}", logFolder.getAbsolutePath());
+			m_logger.error("No log exists under {}", logFolder.getAbsolutePath());
 			return;
 		}
 		consoleCommunication.sendMessage(new LogReportGrinderMessage(testId, LogCompressUtil.compressFile(new File(logFolder, list[0])),

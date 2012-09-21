@@ -66,19 +66,10 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 	public void before() throws IOException {
 		CompressionUtil compressUtil = new CompressionUtil();
 
-		// FileEntryService service = (FileEntryService) ReflectionTestUtils
-		// .getField(scriptController, "fileEntryService");
-		// MockFileEntityRepsotory repo = new MockFileEntityRepsotory();
-		// File file = new File(System.getProperty("java.io.tmpdir"), "repo");
-		// FileUtils.deleteQuietly(file);
-		// compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), file);
-		// repo.setUserRepository(new File(file, getTestUser().getUserId()));
-		// ReflectionTestUtils.setField(service, "fileEntityRepository", repo);
-		// file.deleteOnExit();
 
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
 		fileEntityRepository.setUserRepository(new File(tempRepo, getTestUser().getUserId()));
-
+		tempRepo.deleteOnExit();
 		File testUserRoot = fileEntityRepository.getUserRepoDirectory(getTestUser()).getParentFile();
 		FileUtils.deleteQuietly(testUserRoot);
 		testUserRoot.mkdirs();

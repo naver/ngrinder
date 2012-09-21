@@ -36,8 +36,10 @@ import javax.management.NotCompliantMBeanException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.SigarTestBase;
 import org.ngrinder.common.util.ThreadUtil;
-import org.ngrinder.monitor.agent.MockAgentServer;
+import org.ngrinder.monitor.MonitorConstants;
+import org.ngrinder.monitor.agent.AgentMonitorServer;
 import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
 
 /**
@@ -47,12 +49,13 @@ import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
  * @since 3.0
  * @date 2012-7-20
  */
-public class MonitorExecuteManagerTest {
+public class MonitorExecuteManagerTest extends SigarTestBase{
 
 	@Before
 	public void start() throws MalformedObjectNameException, InstanceAlreadyExistsException,
 			MBeanRegistrationException, NotCompliantMBeanException, IOException {
-		MockAgentServer.startServer();
+		AgentMonitorServer.getInstance().init();
+		AgentMonitorServer.getInstance().start();
 	}
 
 	@Test
@@ -60,7 +63,7 @@ public class MonitorExecuteManagerTest {
 		Set<MonitorAgentInfo> agentInfo = new HashSet<MonitorAgentInfo>();
 		MonitorRecoderDemo mrd = new MonitorRecoderDemo();
 		MonitorAgentInfo monitorAgentInfo = MonitorAgentInfo.getSystemMonitor("127.0.0.1",
-				MockAgentServer.MOCK_MONITOR_AGENT_PORT, mrd);
+				MonitorConstants.DEFAULT_MONITOR_PORT, mrd);
 		agentInfo.add(monitorAgentInfo);
 		MonitorExecuteManager monitorExecuteManager = new MonitorExecuteManager("127.0.0.1", 1, 1, agentInfo);
 		monitorExecuteManager.start();

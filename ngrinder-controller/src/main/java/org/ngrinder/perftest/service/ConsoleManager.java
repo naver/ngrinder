@@ -47,13 +47,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Console manager class which is responsible to console instance management. A
- * number of consoles(specified in ngrinder.maxConcurrentTest in system.conf are
- * pooled. Actually console itself is not pooled. Instead, the
- * {@link ConsoleEntry} which contains console information are pooled. Whenever
- * user requests a new console, it get the one {@link ConsoleEntry} from pool
- * and creates new console with the {@link ConsoleEntry}. Currently using
- * consoles are kept in {@link #consoleInUse} member variable.
+ * Console manager class which is responsible to console instance management. A number of
+ * consoles(specified in ngrinder.maxConcurrentTest in system.conf are pooled. Actually console
+ * itself is not pooled. Instead, the {@link ConsoleEntry} which contains console information are
+ * pooled. Whenever user requests a new console, it get the one {@link ConsoleEntry} from pool and
+ * creates new console with the {@link ConsoleEntry}. Currently using consoles are kept in
+ * {@link #consoleInUse} member variable.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -80,26 +79,24 @@ public class ConsoleManager {
 	}
 
 	/**
-	 * Get the base port number of console. It can be specified at
-	 * ngrinder.consolePortBase in system.conf.
-	 * Each console will be created from that port.
+	 * Get the base port number of console. It can be specified at ngrinder.consolePortBase in
+	 * system.conf. Each console will be created from that port.
 	 * 
 	 * @return base port number
 	 */
 	protected int getConsolePortBase() {
 		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_CONSOLE_PORT_BASE,
-				NGrinderConstants.NGRINDER_PROP_CONSOLE_PORT_BASE_VALUE);
+						NGrinderConstants.NGRINDER_PROP_CONSOLE_PORT_BASE_VALUE);
 	}
 
 	/**
-	 * Get the console pool size. It can be specified at
-	 * ngrinder.maxConcurrentTest in system.conf.
+	 * Get the console pool size. It can be specified at ngrinder.maxConcurrentTest in system.conf.
 	 * 
 	 * @return console size.
 	 */
 	protected int getConsoleSize() {
 		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
-				NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
+						NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
 	}
 
 	/**
@@ -109,7 +106,7 @@ public class ConsoleManager {
 	 */
 	protected long getMaxWaitingMiliSecond() {
 		return config.getSystemProperties().getPropertyInt(NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS,
-				NGrinderConstants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS_VALUE);
+						NGrinderConstants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS_VALUE);
 	}
 
 	/**
@@ -177,17 +174,16 @@ public class ConsoleManager {
 	/**
 	 * Get available console.
 	 * 
-	 * If there is no available console, it waits until available console is
-	 * returned back. If the specific time is elapsed, the timeout error occurs
-	 * and throw {@link NGrinderRuntimeException}. timeout can be adjusted by
-	 * overriding {@link #getMaxWaitingMiliSecond()}.
+	 * If there is no available console, it waits until available console is returned back. If the
+	 * specific time is elapsed, the timeout error occurs and throw {@link NGrinderRuntimeException}
+	 * . timeout can be adjusted by overriding {@link #getMaxWaitingMiliSecond()}.
 	 * 
 	 * @param baseConsoleProperties
 	 *            base {@link ConsoleProperties}
 	 * @return console
 	 */
 	public SingleConsole getAvailableConsole(String testIdentifier, ConsoleProperties baseConsoleProperties) {
-		ConsoleEntry consoleEntry;
+		ConsoleEntry consoleEntry = null;
 		SingleConsole singleConsole = null;
 		try {
 			consoleEntry = consoleQueue.poll(getMaxWaitingMiliSecond(), TimeUnit.MILLISECONDS);
@@ -200,8 +196,10 @@ public class ConsoleManager {
 				getConsoleInUse().add(singleConsole);
 				return singleConsole;
 			}
-		} catch (InterruptedException e) {
-			returnBackConsole(testIdentifier, singleConsole);
+		} catch (Exception e) {
+			if (consoleEntry != null) {
+				consoleQueue.add(consoleEntry);
+			}
 			throw new NGrinderRuntimeException("no console entry available");
 		}
 	}
@@ -224,7 +222,8 @@ public class ConsoleManager {
 			try {
 				console.sendStopMessageToAgents();
 			} catch (Exception e) {
-				LOG.error("Exception is occured while shuttdowning console in returnback process for test {}.", testIdentifier, e);
+				LOG.error("Exception is occured while shuttdowning console in returnback process for test {}.",
+								testIdentifier, e);
 				// But the port is getting back.
 			} finally {
 				// This is very careful implementation..
@@ -232,13 +231,15 @@ public class ConsoleManager {
 					// Wait console is completely shutdown...
 					console.waitUntilAllAgentDisconnected();
 				} catch (Exception e) {
-					LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.", testIdentifier, e);
+					LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.",
+									testIdentifier, e);
 				}
 				try {
 					console.unregisterSampling();
 					console.shutdown();
 				} catch (Exception e) {
-					LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.", testIdentifier, e);
+					LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.",
+									testIdentifier, e);
 				}
 			}
 			int consolePort = console.getConsolePort();
@@ -280,8 +281,8 @@ public class ConsoleManager {
 	 * 
 	 * @param port
 	 *            port which will be checked against
-	 * @return {@link SingleConsole} instance if found. Otherwise,
-	 *         {@link NullSingleConsole} instance.
+	 * @return {@link SingleConsole} instance if found. Otherwise, {@link NullSingleConsole}
+	 *         instance.
 	 */
 	public SingleConsole getConsoleUsingPort(int port) {
 		for (SingleConsole each : consoleInUse) {
