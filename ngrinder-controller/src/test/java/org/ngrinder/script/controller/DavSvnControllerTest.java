@@ -22,6 +22,9 @@
  */
 package org.ngrinder.script.controller;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -81,8 +84,8 @@ public class DavSvnControllerTest extends AbstractNGrinderTransactionalTest {
 	 */
 	@Test
 	public void testIsHTTPServerError() {
-		DavSvnController.isHTTPServerError(404);
-		DavSvnController.isHTTPServerError(104);
+		assertThat(DavSvnController.isHTTPServerError(404), is(false));
+		assertThat(DavSvnController.isHTTPServerError(550), is(true));
 	}
 
 	@Test

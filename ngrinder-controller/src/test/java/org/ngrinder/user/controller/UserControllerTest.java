@@ -121,7 +121,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		newUser.setCreatedDate(new Date());
 		newUser.setRole(Role.USER);
 		ModelMap model = new ModelMap();
-		userController.saveOrUpdateUserDetail(getTestUser(), model, newUser);
+		userController.saveOrUpdateUserDetail(getAdminUser(), model, newUser);
 	}
 	/**
 	 * Test method for {@link org.ngrinder.user.controller.UserController#deleteUser(org.springframework.ui.ModelMap, java.lang.String)}.
