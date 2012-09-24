@@ -153,13 +153,9 @@ public class PerfTestController extends NGrinderBaseController {
 			model.addAttribute("sortColumn", sortProp.getProperty());
 			model.addAttribute("sortDirection", sortProp.getDirection());
 		}
-		addCurrentlyRunningTest(model);
 		return "perftest/list";
 	}
 
-	private void addCurrentlyRunningTest(ModelMap model) {
-		model.addAttribute("perfTestStatisticsList", perfTestService.getCurrentPerfTestStatistics());
-	}
 
 	/**
 	 * Get performance test detail on give perf test id
@@ -343,16 +339,20 @@ public class PerfTestController extends NGrinderBaseController {
 			String errorMessages = getMessages(each.getStatus().getSpringMessageKey());
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_NAME, errorMessages);
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_ICON, each.getStatus().getIconName());
-			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_MESSAGE,
-							StringUtils.replace(each.getProgressMessage() + "\n<b>" + each.getLastProgressMessage()
-											+ "</b>\n" + each.getLastModifiedDateToStr(), "\n", "<br/>"));
+			rtnMap.put(
+					PARAM_STATUS_UPDATE_STATUS_MESSAGE,
+					StringUtils.replace(each.getProgressMessage() + "\n<b>" + each.getLastProgressMessage() + "</b>\n"
+							+ each.getLastModifiedDateToStr(), "\n", "<br/>"));
 			rtnMap.put(PARAM_STATUS_UPDATE_DELETABLE, each.getStatus().isDeletable());
 			rtnMap.put(PARAM_STATUS_UPDATE_STOPPABLE, each.getStatus().isStoppable());
 			statusList.add(rtnMap);
 		}
+		Map<String, Object> result = new HashMap<String, Object>(2);
+		result.put("perfTestInfo", perfTestService.getCurrentPerfTestStatistics());
+		result.put("statusList", statusList);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set("content-type", "application/json; charset=UTF-8");
-		return new HttpEntity<String>(JSONUtil.toJson(statusList), responseHeaders);
+		return new HttpEntity<String>(JSONUtil.toJson(result), responseHeaders);
 	}
 
 	@RequestMapping(value = "/deleteTests", method = RequestMethod.POST)
