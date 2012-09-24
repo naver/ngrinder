@@ -72,14 +72,16 @@ public enum Database {
 	H2(org.h2.Driver.class, H2Dialect.class, "jdbc:h2:%s/db/h2") {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
-			String format = String.format(getUrlTemplate(), databaseProperties.getProperty("NGRINDER_HOME", "."), " is not defined");
+			String format = 
+					String.format(getUrlTemplate(), 
+							databaseProperties.getProperty("NGRINDER_HOME", "."), " is not defined");
 			dataSource.setUrl(format);
 			dataSource.setUsername(databaseProperties.getProperty("database_username", "ngrinder"));
 			dataSource.setPassword(databaseProperties.getProperty("database_password", "ngrinder"));
 		}
 	};
 
-	private static final Logger logger = LoggerFactory.getLogger(Database.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Database.class);
 	private final String urlTemplate;
 	private final String jdbcDriverName;
 	private final String dialect;
@@ -132,8 +134,10 @@ public enum Database {
 				return database;
 			}
 		}
-		logger.error("[FATAL] Database type {} is not supported. Please check the ${NFORGE_HOME}/database.conf. This time, Use H2 istead.",
-				type);
+		LOG.error(
+				"[FATAL] Database type {} is not supported. " +
+				"Please check the ${NFORGE_HOME}/database.conf. " +
+				"This time, Use H2 istead.", type);
 		return H2;
 	}
 
@@ -155,7 +159,7 @@ public enum Database {
 	 * @param dataSource dataSource
 	 * @param propertiesWrapper database.conf's properties. 
 	 */
-	abstract protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper propertiesWrapper);
+	protected abstract void setupVariants(BasicDataSource dataSource, PropertiesWrapper propertiesWrapper);
 
 	/**
 	 * Common setup among databases.

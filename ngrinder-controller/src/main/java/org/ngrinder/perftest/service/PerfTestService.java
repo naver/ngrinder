@@ -134,7 +134,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 	private NumberFormat formatter = new DecimalFormat("###.###");
 
-	private int MaximumConcurrentTestCount = 0;
+	private int maximumConcurrentTestCount = 0;
 
 	/**
 	 * Get {@link PerfTest} list on the user.
@@ -810,9 +810,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		try {
 			reader = new FileReader(targetFile);
 			br = new BufferedReader(reader);
-			String data = null;
+			String data = br.readLine();
 			int current = 0;
-			while (StringUtils.isNotBlank(data = br.readLine())) {
+			while (StringUtils.isNotBlank(data)) {
 				if (0 == current) {
 					double number = NumberUtils.createDouble(data);
 					reportData.append(number);
@@ -821,6 +821,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				if (++current >= interval) {
 					current = 0;
 				}
+				
+				data = br.readLine();
 			}
 
 			reportData.append("]");
@@ -974,12 +976,12 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return maximum concurrent test
 	 */
 	public int getMaximumConcurrentTestCount() {
-		if (MaximumConcurrentTestCount == 0) {
-			MaximumConcurrentTestCount = config.getSystemProperties().getPropertyInt(
+		if (maximumConcurrentTestCount == 0) {
+			maximumConcurrentTestCount = config.getSystemProperties().getPropertyInt(
 							NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
 							NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
 		}
-		return MaximumConcurrentTestCount;
+		return maximumConcurrentTestCount;
 	}
 
 	/**

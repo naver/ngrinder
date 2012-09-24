@@ -124,8 +124,9 @@ public class PerfTestRunnable implements NGrinderConstants {
 		int size = agentManager.getAllFreeApprovedAgents().size();
 		if (runCandidate.getAgentCount() > size) {
 			perfTestService.markProgress(runCandidate,
-							"The test is tried to execute but there is not enough free agents.\n- Current free agent size : "
-											+ size + "  / Requested : " + runCandidate.getAgentCount() + "\n");
+							"The test is tried to execute but there is not enough free agents." +
+							"\n- Current free agent size : " 
+									+ size + "  / Requested : " + runCandidate.getAgentCount() + "\n");
 			return;
 		}
 
@@ -215,7 +216,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            console
 	 */
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
-		perfTestService.changePerfTestStatus(perfTest, START_AGENTS, perfTest.getAgentCount() + " agents are starting.");
+		perfTestService.changePerfTestStatus(
+				perfTest, START_AGENTS, perfTest.getAgentCount() + " agents are starting.");
 		agentManager.runAgent(singleConsole, grinderProperties, perfTest.getAgentCount());
 		singleConsole.waitUntilAgentConnected(perfTest.getAgentCount());
 		perfTestService.changePerfTestStatus(perfTest, START_AGENTS_FINISHED, perfTest.getAgentCount()

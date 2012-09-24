@@ -135,12 +135,13 @@ public class PerfTestController extends NGrinderBaseController {
 
 		for (PerfTest test : testList) {
 			Date localModified = new Date(test.getLastModifiedDate().getTime() - rawOffset);
-			if (DateUtil.compareDateEndWithDay(localModified, localToday))
+			if (DateUtil.compareDateEndWithDay(localModified, localToday)) {
 				test.setDateString("today");
-			else if (DateUtil.compareDateEndWithDay(localModified, localYesterday))
+			} else if (DateUtil.compareDateEndWithDay(localModified, localYesterday)) {
 				test.setDateString("yesterday");
-			else
+			} else {
 				test.setDateString("earlier");
+			}
 		}
 
 		model.addAttribute("testListPage", testList);
@@ -309,7 +310,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/leaveComment", method = RequestMethod.POST)
 	public @ResponseBody
-	String leaveComment(User user, @RequestParam("testComment") String testComment, @RequestParam("testId") Long testId) {
+	String leaveComment(User user, @RequestParam("testComment") String testComment, 
+			@RequestParam("testId") Long testId) {
 		perfTestService.addCommentOn(user, testId, testComment);
 		return JSONUtil.returnSuccess();
 	}
@@ -477,10 +479,11 @@ public class PerfTestController extends NGrinderBaseController {
 			long totalMemory = value.getTotalMemory();
 			float usage = 0;
 			if (totalMemory != 0) {
-				usage = (((float)(totalMemory - value.getFreeMemory())) / totalMemory) * 100;
+				usage = (((float) (totalMemory - value.getFreeMemory())) / totalMemory) * 100;
 			}
-			perfStringList.add(String.format(" {'agent' : '%s', 'cpu' : %3.2f, 'mem' : %3.2f }", each.getKey().getName(),
-							value.getCpuUsedPercentage(), usage));
+			perfStringList.add(
+					String.format(" {'agent' : '%s', 'cpu' : %3.2f, 'mem' : %3.2f }", 
+							each.getKey().getName(), value.getCpuUsedPercentage(), usage));
 		}
 		return StringUtils.join(perfStringList, ",");
 	}

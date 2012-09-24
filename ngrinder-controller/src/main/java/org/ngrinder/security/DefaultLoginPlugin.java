@@ -42,7 +42,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DefaultLoginPlugin implements OnLoginRunnable {
 
-	protected static final Logger logger = LoggerFactory.getLogger(DefaultLoginPlugin.class);
+	protected static final Logger LOG = LoggerFactory.getLogger(DefaultLoginPlugin.class);
 
 	@Autowired
 	private UserService userService;
@@ -58,7 +58,7 @@ public class DefaultLoginPlugin implements OnLoginRunnable {
 	@Override
 	public boolean validateUser(String userId, String password, String encPass, Object encoder, Object salt) {
 		if (!((PasswordEncoder) encoder).isPasswordValid(password, encPass, salt)) {
-			logger.debug("Authentication failed: password does not match stored value");
+			LOG.debug("Authentication failed: password does not match stored value");
 
 			throw new BadCredentialsException(messages.getMessage(
 					"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"), userId);

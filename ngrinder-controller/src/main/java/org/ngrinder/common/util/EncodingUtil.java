@@ -52,7 +52,7 @@ public abstract class EncodingUtil {
 		detector.setText(data);
 		CharsetMatch cm = detector.detect();
 		String estimatedEncoding = cm.getName();
-		boolean isReliable = (true == Charset.isSupported(estimatedEncoding) && cm.getConfidence() >= 50);
-		return (isReliable) ? estimatedEncoding : defaultEncoding;
+		boolean isReliable = Charset.isSupported(estimatedEncoding) && cm.getConfidence() >= 50;
+		return isReliable ? estimatedEncoding : defaultEncoding;
 	}
 }

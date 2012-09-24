@@ -84,7 +84,7 @@ public class UserController extends NGrinderBaseController {
 
 	@RequestMapping("/detail")
 	@PreAuthorize("hasAnyRole('A', 'S') or #user.userId == #userId")
-	public String getUserDetail(User user, final ModelMap model, final @RequestParam(required = false) String userId) {
+	public String getUserDetail(User user, final ModelMap model, @RequestParam(required = false) final String userId) {
 
 		List<User> userList = userService.getAllUserByRole(null);
 		model.addAttribute("userList", userList);

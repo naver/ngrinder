@@ -30,6 +30,9 @@ package org.ngrinder.common.util;
  * 
  */
 public class PathUtil {
+	
+	private PathUtil() {}
+	
 	/**
 	 * Remove prepending / on path
 	 * 

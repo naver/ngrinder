@@ -70,7 +70,8 @@ public class HomeController extends NGrinderBaseController {
 	@Autowired
 	private HomeService homeService;
 
-	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
+	private static final String TIMEZONE_ID_PREFIXES = 
+			"^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
 
 	private List<TimeZone> timeZones = null;
 

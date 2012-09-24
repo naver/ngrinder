@@ -40,7 +40,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.authentication.dao.SaltSource;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -51,7 +50,7 @@ import org.springframework.util.Assert;
 @Service("ngrinderAuthenticationProvider")
 public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
-	protected static final Logger logger = LoggerFactory.getLogger(NGrinderAuthenticationProvider.class);
+	protected static final Logger LOG = LoggerFactory.getLogger(NGrinderAuthenticationProvider.class);
 
 	@Autowired
 	private PluginManager pluginManager;
@@ -81,7 +80,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 	@SuppressWarnings("deprecation")
 	protected void additionalAuthenticationChecks(UserDetails userDetails,
-					UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+					UsernamePasswordAuthenticationToken authentication) {
 		Object salt = null;
 
 		if (this.saltSource != null) {
@@ -89,7 +88,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		}
 
 		if (authentication.getCredentials() == null) {
-			logger.debug("Authentication failed: no credentials provided");
+			LOG.debug("Authentication failed: no credentials provided");
 
 			throw new BadCredentialsException(messages.getMessage(
 							"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"),
@@ -158,7 +157,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	}
 
 	protected final UserDetails retrieveUser(String username,
-					UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+					UsernamePasswordAuthenticationToken authentication) {
 		UserDetails loadedUser;
 
 		try {
@@ -198,7 +197,8 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		}
 
 		if (passwordEncoder instanceof org.springframework.security.crypto.password.PasswordEncoder) {
-			final org.springframework.security.crypto.password.PasswordEncoder delegate = (org.springframework.security.crypto.password.PasswordEncoder) passwordEncoder;
+			final org.springframework.security.crypto.password.PasswordEncoder delegate = 
+					(org.springframework.security.crypto.password.PasswordEncoder) passwordEncoder;
 			this.passwordEncoder = new PasswordEncoder() {
 				public String encodePassword(String rawPass, Object salt) {
 					checkSalt(salt);

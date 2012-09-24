@@ -60,7 +60,8 @@ public class MonitorAgentService {
 
 		Set<MonitorAgentInfo> agentInfoSet = new HashSet<MonitorAgentInfo>();
 		for (AgentInfo agent : agents) {
-			MonitorAgentInfo monitorAgentInfo = MonitorAgentInfo.getSystemMonitor(agent.getIp(), agent.getPort(), monitorDataRepository);
+			MonitorAgentInfo monitorAgentInfo = 
+					MonitorAgentInfo.getSystemMonitor(agent.getIp(), agent.getPort(), monitorDataRepository);
 			agentInfoSet.add(monitorAgentInfo);
 		}
 

@@ -71,7 +71,8 @@ public class AgentManagerService {
 		List<AgentInfo> agents = agentRepository.findAll();
 		List<AgentInfo> agentList = new ArrayList<AgentInfo>(allAttachedAgents.size());
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
-			AgentControllerIdentityImplementation agentControllerIdentity = (AgentControllerIdentityImplementation) eachAgentIdentity;
+			AgentControllerIdentityImplementation agentControllerIdentity = 
+					(AgentControllerIdentityImplementation) eachAgentIdentity;
 			agentList.add(creatAgentInfo(agentControllerIdentity, agents));
 		}
 		return agentList;

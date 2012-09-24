@@ -89,8 +89,8 @@ public class AgentManager implements NGrinderConstants {
 		agentControllerServer.addLogArrivedListener(new LogArrivedListener() {
 			@Override
 			public void logArrived(String testId, AgentAddress agentAddress, byte[] logs) {
-				AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) agentAddress
-								.getIdentity();
+				AgentControllerIdentityImplementation agentIdentity = 
+						(AgentControllerIdentityImplementation) agentAddress.getIdentity();
 
 				if (logs == null || logs.length == 0) {
 					LOGGER.error("Log is arrived from {} but no log content", agentIdentity.getIp());
@@ -180,7 +180,8 @@ public class AgentManager implements NGrinderConstants {
 	 */
 	public AgentControllerIdentityImplementation getAgentIdentityByIp(String agentIP) {
 		for (AgentIdentity agentIdentity : getAllAttachedAgents()) {
-			AgentControllerIdentityImplementation eachAgentIdentity = (AgentControllerIdentityImplementation) agentIdentity;
+			AgentControllerIdentityImplementation eachAgentIdentity = 
+					(AgentControllerIdentityImplementation) agentIdentity;
 			if (StringUtils.equals(eachAgentIdentity.getIp(), agentIP)) {
 				return eachAgentIdentity;
 			}

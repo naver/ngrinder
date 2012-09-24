@@ -68,7 +68,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 
 	private String region;
 
-	@org.hibernate.annotations.Type(type="true_false")
+	@org.hibernate.annotations.Type(type = "true_false")
 	private boolean approved = false;
 
 	public String getIp() {

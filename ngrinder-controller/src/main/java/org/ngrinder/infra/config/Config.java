@@ -60,7 +60,7 @@ import ch.qos.logback.core.joran.spi.JoranException;
 @Component
 public class Config {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
-	private static final Logger logger = LoggerFactory.getLogger(Config.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Config.class);
 	private Home home = null;
 	private PropertiesWrapper internalProperties;
 	private PropertiesWrapper systemProperties;
@@ -137,14 +137,15 @@ public class Config {
 		String userHomeFromEnv = System.getenv("NGRINDER_HOME");
 		String userHomeFromProperty = System.getProperty("ngrinder.home");
 		if (StringUtils.isNotEmpty(userHomeFromEnv) && !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
-			logger.warn("The path to ngrinder-home is ambiguous:");
-			logger.warn("    System Environment:  NGRINDER_HOME=" + userHomeFromEnv);
-			logger.warn("    Java Sytem Property:  ngrinder.home=" + userHomeFromProperty);
-			logger.warn("    '" + userHomeFromProperty + "' is accepted.");
+			LOG.warn("The path to ngrinder-home is ambiguous:");
+			LOG.warn("    System Environment:  NGRINDER_HOME=" + userHomeFromEnv);
+			LOG.warn("    Java Sytem Property:  ngrinder.home=" + userHomeFromProperty);
+			LOG.warn("    '" + userHomeFromProperty + "' is accepted.");
 		}
 		String userHome = null;
 		userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
-		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(System.getProperty("user.home"),
+		File homeDirectory = (
+				StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(System.getProperty("user.home"),
 				NGRINDER_DEFAULT_FOLDER);
 
 		return new Home(homeDirectory);
@@ -161,7 +162,7 @@ public class Config {
 			properties.load(inputStream);
 			internalProperties = new PropertiesWrapper(properties);
 		} catch (IOException e) {
-			logger.error("Error while load internal.properties", e);
+			LOG.error("Error while load internal.properties", e);
 			internalProperties = new PropertiesWrapper(properties);
 		} finally {
 			IOUtils.closeQuietly(inputStream);
@@ -275,7 +276,7 @@ public class Config {
 				policyScript = FileUtils.readFileToString(getHome().getSubFile("process_and_thread_policy.js"));
 				return policyScript;
 			} catch (IOException e) {
-				logger.error("Error while load process_and_thread_policy.js", e);
+				LOG.error("Error while load process_and_thread_policy.js", e);
 				return "";
 			}
 		} else {

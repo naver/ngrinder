@@ -35,6 +35,9 @@ import org.springframework.data.jpa.domain.Specification;
  * @author JunHo Yoon
  */
 public class UserSpecification {
+	
+	private UserSpecification() {}
+	
 	public static Specification<User> nameLike(final String query) {
 		return new Specification<User>() {
 			@Override

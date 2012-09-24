@@ -183,7 +183,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Type(type = "true_false")
 	private Boolean stopRequest = null;
 
-	@Column(name = "date_string")
 	@Transient
 	private String dateString;
 

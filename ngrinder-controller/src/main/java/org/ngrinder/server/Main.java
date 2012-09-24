@@ -30,8 +30,10 @@ public class Main {
 		ServletContextHandler handler = new ServletContextHandler(ServletContextHandler.SESSIONS) {
 			@Override
 			protected boolean isProtectedTarget(String target) {
-				while (target.startsWith("//"))
+				while (target.startsWith("//")) {
 					target = URIUtil.compactPath(target);
+				}
+				
 				return StringUtil.startsWithIgnoreCase(target, "/web-inf")
 						|| StringUtil.startsWithIgnoreCase(target, "/meta-inf");
 			}
