@@ -22,12 +22,9 @@
  */
 package org.ngrinder.monitor.controller;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
@@ -53,7 +50,7 @@ import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
 public class MonitorExecuteManagerTest extends SigarTestBase{
 
 	@Before
-	public void start() throws MalformedObjectNameException, InstanceAlreadyExistsException,
+	public void startMonitorServer() throws MalformedObjectNameException, InstanceAlreadyExistsException,
 			MBeanRegistrationException, NotCompliantMBeanException, IOException {
 		AgentMonitorServer.getInstance().init();
 		AgentMonitorServer.getInstance().start();
@@ -71,18 +68,17 @@ public class MonitorExecuteManagerTest extends SigarTestBase{
 		assertTrue(MonitorConstants.DEFAULT_MONITOR_PORT == port);
 		assertTrue(AgentMonitorServer.getInstance().isRunning());
 		
-		Set<MonitorAgentInfo> agentInfo = new HashSet<MonitorAgentInfo>();
 		MonitorRecoderDemo mrd = new MonitorRecoderDemo();
 		MonitorAgentInfo monitorAgentInfo = MonitorAgentInfo.getSystemMonitor("127.0.0.1",
 				MonitorConstants.DEFAULT_MONITOR_PORT, mrd);
-		agentInfo.add(monitorAgentInfo);
-		MonitorExecuteManager monitorExecuteManager = new MonitorExecuteManager("127.0.0.1", 1, 1, agentInfo);
-		monitorExecuteManager.start();
 
+		MonitorExecuteManager.getInstance().addAgentMonitor("127.0.0.1", monitorAgentInfo);
+		
 		assertTrue(mrd.isRunning());
 		ThreadUtil.sleep(5000);
 		assertTrue(!mrd.getData().isEmpty());
-		monitorExecuteManager.stop();
-		assertFalse(mrd.isRunning());
+		
+		MonitorExecuteManager.getInstance().removeAgentMonitor("127.0.0.1");
+		assertTrue(!mrd.isRunning());
 	}
 }

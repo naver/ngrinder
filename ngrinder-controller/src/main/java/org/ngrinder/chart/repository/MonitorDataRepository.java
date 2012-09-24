@@ -50,7 +50,7 @@ public class MonitorDataRepository implements MonitorRecoder {
 	public void recoderSystemInfo(String key, SystemInfo systemInfo, MonitorAgentInfo agentInfo) {
 		checkNotNull(systemInfo);
 		SystemDataModel systemDataModel = new SystemDataModel(systemInfo);
-		systemDataModel.setKey(agentInfo.getIp());
+		systemDataModel.setKey(key);
 		systemDataModel.setIp(agentInfo.getIp());
 		systemDataModel.setPort(agentInfo.getPort());
 		systemMonitorRepository.save(systemDataModel);

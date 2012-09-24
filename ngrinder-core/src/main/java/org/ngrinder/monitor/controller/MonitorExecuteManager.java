@@ -22,60 +22,77 @@
  */
 package org.ngrinder.monitor.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * Used to manage the monitoring job.
+ *
+ * @author Mavlarn
+ * @since 3.0
+ */
 public class MonitorExecuteManager {
-	private ScheduledExecutorService scheduler;
-	private long firstTime;
-	private long interval;
-	private Set<MonitorAgentInfo> agentInfo;
-	private boolean running;
-	private String key;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(MonitorExecuteManager.class);
+	private long firstTime = 1;
+	private long interval = 1;
 
-	private List<MonitorExecuteWorker> monitorExecuteWorkers = new ArrayList<MonitorExecuteWorker>();
-
-	public MonitorExecuteManager(final String key, final int interval, final Set<MonitorAgentInfo> agentInfo) {
-		this(key, interval, interval, agentInfo);
+	private Map<String, ScheduledExecutorService> schedulerMap = new HashMap<String, ScheduledExecutorService>();
+	private Map<String, MonitorExecuteWorker> monitorWorkerMap = new HashMap<String, MonitorExecuteWorker>();
+	
+	private static MonitorExecuteManager instance = new MonitorExecuteManager();
+	
+	//instance class, avoid creating object
+	private MonitorExecuteManager() {}
+	
+	public static MonitorExecuteManager getInstance() {
+		return instance;
 	}
-
-	public MonitorExecuteManager(final String key, final int interval, final long firstTime,
-			final Set<MonitorAgentInfo> agentInfo) {
-		this.key = key;
-		this.interval = interval;
-		this.firstTime = firstTime;
-		this.agentInfo = agentInfo;
-		scheduler = Executors.newScheduledThreadPool(this.agentInfo.size());
+	
+	/**
+	 * add a new monitoring job.
+	 * If there is already a job monitoring on that server, just increase the counter.
+	 * @param key
+	 * @param agent
+	 */
+	public void addAgentMonitor(String key, MonitorAgentInfo agent) {
+		MonitorExecuteWorker worker = monitorWorkerMap.get(agent.getIp());
+		if (worker == null) {
+			worker = new MonitorExecuteWorker(key, agent);
+			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+			scheduler.scheduleAtFixedRate(worker, firstTime, interval, TimeUnit.SECONDS);
+			monitorWorkerMap.put(agent.getIp(), worker);
+			schedulerMap.put(agent.getIp(), scheduler);
+			LOG.debug("Add monitoring worker for {} successfully.", agent.getIp());
+		} else {
+			worker.increaseCounter();
+			LOG.debug("Monitoring worker for {} already exist.", agent.getIp());
+		}
 	}
-
-	public void start() {
-		if (!isRunning()) {
-			for (MonitorAgentInfo monitorAgentInfo : agentInfo) {
-				MonitorExecuteWorker mew = new MonitorExecuteWorker(key, monitorAgentInfo);
-				monitorExecuteWorkers.add(mew);
-				scheduler.scheduleAtFixedRate(mew, firstTime, interval, TimeUnit.SECONDS);
-			}
-			running = true;
+	
+	/**
+	 * remove a monitoring job if there is only one test monitoring on this server.
+	 * @param agent
+	 */
+	public void removeAgentMonitor(String agentIP) {
+		MonitorExecuteWorker worker = monitorWorkerMap.get(agentIP);
+		checkNotNull(worker);
+		worker.decreaseCounter();
+		if (worker.getCounter() <= 0) {
+			schedulerMap.get(agentIP).shutdown();
+			worker.close();
+			monitorWorkerMap.remove(agentIP);
 		}
 	}
 
-	public void stop() {
-		if (isRunning()) {
-			scheduler.shutdown();
-			for (MonitorExecuteWorker mew : monitorExecuteWorkers) {
-				mew.close();
-			}
-			running = false;
-		}
-	}
-
-	public boolean isRunning() {
-		return running;
-	}
 }

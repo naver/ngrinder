@@ -28,9 +28,6 @@ import java.util.List;
 
 import javax.management.openmbean.CompositeData;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
 import org.ngrinder.monitor.controller.domain.MonitorCollection;
@@ -39,7 +36,19 @@ import org.ngrinder.monitor.controller.domain.MonitorRecoder;
 import org.ngrinder.monitor.share.CachedMBeanClient;
 import org.ngrinder.monitor.share.domain.MBeanClient;
 import org.ngrinder.monitor.share.domain.MonitorInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * This is monitor executing worker class.
+ * During monitoring, there maybe more than one test want to monitor the same target server. But we just use one
+ * monitor worker for one target server. And the member "referenceCounter" will save the number of tests which
+ * are monitoring this target. 
+ *
+ * @author Mavlarn
+ * @since
+ */
 public class MonitorExecuteWorker implements Runnable {
 	private static final Logger LOG = LoggerFactory.getLogger(MonitorExecuteWorker.class);
 
@@ -48,9 +57,9 @@ public class MonitorExecuteWorker implements Runnable {
 	private MonitorRecoder recoder;
 	private MonitorAgentInfo agentInfo;
 	private String key;
-	private int interval = 1;
-
-	private static final int ERRORS = 5;
+	
+	//used to save the counter of how many reference to use this monitor worker.
+	private int referenceCounter = 1;
 
 	public MonitorExecuteWorker(final String key, final MonitorAgentInfo agentInfo) {
 		this.key = key;
@@ -66,16 +75,22 @@ public class MonitorExecuteWorker implements Runnable {
 			LOG.error(e.getMessage(), e);
 		}
 	}
+	
+	public void increaseCounter() {
+		referenceCounter++;
+	}
+	
+	public void decreaseCounter() {
+		referenceCounter--;
+	}
+	
+	public int getCounter() {
+		return referenceCounter;
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void run() {
-		// If an error occurs, then skip 5 times
-		if (--interval > 0) {
-			interval = 1;
-			return;
-		}
-
 		// First try to connect
 		if (!mbeanClient.isConnected()) {
 			mbeanClient.connect();
@@ -83,7 +98,7 @@ public class MonitorExecuteWorker implements Runnable {
 
 		// If it can not be connected, make an error message.
 		if (!mbeanClient.isConnected()) {
-			interval = ERRORS;
+			LOG.error("mbeanClient is not connected.");
 			return;
 		}
 

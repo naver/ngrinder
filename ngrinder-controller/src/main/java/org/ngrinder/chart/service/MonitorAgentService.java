@@ -22,12 +22,10 @@
  */
 package org.ngrinder.chart.service;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.repository.MonitorDataRepository;
-import org.ngrinder.monitor.controller.MonitorExecuteCache;
 import org.ngrinder.monitor.controller.MonitorExecuteManager;
 import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
 import org.slf4j.Logger;
@@ -49,45 +47,28 @@ public class MonitorAgentService {
 	@Autowired
 	private MonitorDataRepository monitorDataRepository;
 
+	/**
+	 * add a set of agents to the monitor manager, and start the monitor job. 
+	 * @param key
+	 * @param agents
+	 */
 	public void addMonitor(String key, Set<AgentInfo> agents) {
-		MonitorExecuteManager manager = MonitorExecuteCache.getInstance().getCache(key);
-		if (null != manager) {
-			LOG.debug("Monitor agent/target:{} is already exists.", key);
-			return;
-		}
-
-		int interval = 1, delay = 0;
-
-		Set<MonitorAgentInfo> agentInfoSet = new HashSet<MonitorAgentInfo>();
 		for (AgentInfo agent : agents) {
 			MonitorAgentInfo monitorAgentInfo = 
 					MonitorAgentInfo.getSystemMonitor(agent.getIp(), agent.getPort(), monitorDataRepository);
-			agentInfoSet.add(monitorAgentInfo);
+			MonitorExecuteManager.getInstance().addAgentMonitor(agent.getIp(), monitorAgentInfo);
 		}
-
-		manager = new MonitorExecuteManager(key, interval, delay, agentInfoSet);
-		manager.start();
-
-		MonitorExecuteCache.getInstance().setCache(key, manager);
-		LOG.debug("Init nGrinder Monitor Controller:{} successfully.", key);
+		LOG.debug("Init nGrinder Monitor for:{} successfully.", key);
 	}
 
 	/**
-	 * Remove agents to be monitored.
+	 * Remove agents, and stop monitoring.
 	 * 
 	 * @param agent
 	 */
-	public void removeMonitorAgents(String key) {
-		MonitorExecuteManager manager = MonitorExecuteCache.getInstance().getCache(key);
-		if (null == manager) {
-			LOG.debug("Agent monitor:{} is not exists.", key);
-			return;
-		}
-
-		manager.stop();
-
-		MonitorExecuteCache.getInstance().remove(key);
-		LOG.debug("Remove nGrinder Monitor Controller:{} successfully.", key);
+	public void removeMonitorAgents(String agentIP) {
+		MonitorExecuteManager.getInstance().removeAgentMonitor(agentIP);
+		LOG.debug("Remove nGrinder Monitor for:{} successfully.", agentIP);
 	}
 
 }
