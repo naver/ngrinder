@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 public class AgentSystemDataCollector extends AgentDataCollector {
 	private static final Logger LOG = LoggerFactory.getLogger(AgentSystemDataCollector.class);
 
-	private long failedCount = 0;
 	private Sigar sigar = null;
 
 	@Override
@@ -62,14 +61,15 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 			systemInfo.setIdleCpuValue(sigar.getCpu().getIdle());
 			systemInfo.setTotalMemory(sigar.getMem().getTotal() / 1024L);
 			systemInfo.setFreeMemory(sigar.getMem().getFree() / 1024L);
-			systemInfo.setLoadAvgs(sigar.getLoadAverage());
-			systemInfo.setSystem(OperatingSystem.IS_WIN32 ? SystemInfo.System.WINDOW : SystemInfo.System.LINUX);
-		} catch (Throwable e) {
-			if (failedCount++ == 60) {
-				failedCount = 0;
-				LOG.error("Error while getting system perf data", e.getMessage());
-				LOG.debug("Error trace is ", e);
+			if (OperatingSystem.IS_WIN32) {
+				systemInfo.setSystem(SystemInfo.System.WINDOW);
+			} else {
+				systemInfo.setLoadAvgs(sigar.getLoadAverage());
+				systemInfo.setSystem(SystemInfo.System.LINUX);
 			}
+		} catch (Throwable e) {
+			LOG.error("Error while getting system perf data", e.getMessage());
+			LOG.debug("Error trace is ", e);
 		}
 		systemInfo.setCollectTime(System.currentTimeMillis());
 		return systemInfo;

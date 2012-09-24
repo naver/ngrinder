@@ -22,6 +22,9 @@
  */
 package org.ngrinder.monitor.controller;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,7 +34,7 @@ import javax.management.MBeanRegistrationException;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 
-import org.junit.Assert;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.SigarTestBase;
@@ -55,9 +58,19 @@ public class MonitorExecuteManagerTest extends SigarTestBase{
 		AgentMonitorServer.getInstance().init();
 		AgentMonitorServer.getInstance().start();
 	}
+	
+	@After
+	public void stopMonitorServer() throws IOException {
+		AgentMonitorServer.getInstance().stop();
+	}
 
 	@Test
 	public void getMonitorData() {
+
+		int port = AgentMonitorServer.getInstance().getPort();
+		assertTrue(MonitorConstants.DEFAULT_MONITOR_PORT == port);
+		assertTrue(AgentMonitorServer.getInstance().isRunning());
+		
 		Set<MonitorAgentInfo> agentInfo = new HashSet<MonitorAgentInfo>();
 		MonitorRecoderDemo mrd = new MonitorRecoderDemo();
 		MonitorAgentInfo monitorAgentInfo = MonitorAgentInfo.getSystemMonitor("127.0.0.1",
@@ -65,10 +78,11 @@ public class MonitorExecuteManagerTest extends SigarTestBase{
 		agentInfo.add(monitorAgentInfo);
 		MonitorExecuteManager monitorExecuteManager = new MonitorExecuteManager("127.0.0.1", 1, 1, agentInfo);
 		monitorExecuteManager.start();
-		Assert.assertTrue(mrd.isRunning());
+
+		assertTrue(mrd.isRunning());
 		ThreadUtil.sleep(5000);
-		Assert.assertTrue(!mrd.getData().isEmpty());
+		assertTrue(!mrd.getData().isEmpty());
 		monitorExecuteManager.stop();
-		Assert.assertFalse(mrd.isRunning());
+		assertFalse(mrd.isRunning());
 	}
 }

@@ -30,40 +30,53 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
+
 /**
  * 
  * @author Tobi
  * @since 3.0
  */
 public class SecurityManagerTest {
+	
+	private static final String tmpDir = "tmp"; 
 
-	public static void main(String[] args) {
-
-		SecurityManagerTest.init();
-		SecurityManagerTest smt = new SecurityManagerTest();
-		smt.testNGrinderSecurityManager1();
-		smt.testNGrinderSecurityManager2();
-	}
-
-	// @BeforeClass
-	public static void init() {
-		System.setProperty("ngrinder.exec.path", new File("E:/temp/").getAbsolutePath());
+	@BeforeClass
+	public static void init() throws IOException {
+		System.setProperty("ngrinder.exec.path", new File(tmpDir).getAbsolutePath());
+		File tmpDirFile = new File(tmpDir);
+		tmpDirFile.createNewFile();
+		File inputFile = new File(tmpDir + "/input.txt");
+		inputFile.createNewFile();
+		BufferedWriter fos = new BufferedWriter(new FileWriter(inputFile));
+		fos.write("Fir line string.\n");
+		fos.write("second line string.\n");
 		System.setProperty("ngridner.etc.hosts", "10.34.63.53");
 
 		System.setSecurityManager(new NGrinderSecurityManager());
 	}
+	
+	@AfterClass
+	public static void after() {
+		new File(tmpDir).delete();
+	}
 
-	// @Test
+	@Test
+	@Ignore
 	public void testNGrinderSecurityManager1() {
 		System.out.println(new File("hell").getAbsolutePath());
 		System.out.println(System.getProperty("user.home"));
 	}
 
-	// @Test
+	@Test
+	@Ignore
 	public void testNGrinderSecurityManager2() {
 		try {
-			BufferedReader fis = new BufferedReader(new FileReader("E:/temp/input.txt"));
-			BufferedWriter fos = new BufferedWriter(new FileWriter("E:/temp/output.txt"));
+			BufferedReader fis = new BufferedReader(new FileReader(tmpDir + "/input.txt"));
+			BufferedWriter fos = new BufferedWriter(new FileWriter(tmpDir + "/output.txt"));
 			String inputString;
 			while ((inputString = fis.readLine()) != null) {
 				fos.write(inputString);
