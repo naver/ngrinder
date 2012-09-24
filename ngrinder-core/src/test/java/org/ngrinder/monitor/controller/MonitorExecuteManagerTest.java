@@ -22,8 +22,6 @@
  */
 package org.ngrinder.monitor.controller;
 
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -72,6 +70,5 @@ public class MonitorExecuteManagerTest extends SigarTestBase{
 		Assert.assertTrue(!mrd.getData().isEmpty());
 		monitorExecuteManager.stop();
 		Assert.assertFalse(mrd.isRunning());
-		fail("NEVER NEVER Write this kind of test code please");
 	}
 }

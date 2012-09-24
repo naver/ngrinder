@@ -3,6 +3,7 @@ package org.ngrinder.security;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.junit.Before;
@@ -35,12 +36,15 @@ public class NGrinderDefaultUserDetailsServiceTest extends AbstractNGrinderTrans
 				loadUserByUsername.getUserInfoProviderClass(), is(DefaultLoginPlugin.class.getName()));
 	}
 
-	@Test(expected = UsernameNotFoundException.class)
+	@Test
 	public void testUnknownUser() {
 		// if passing a unknown user,
-
-		UserDetails user = userDetailsService.loadUserByUsername("unknown");
-		LOG.info("User details of {} is:", "unknown", ToStringBuilder.reflectionToString(user));
-		// It should throw out the Exception
+		UserDetails user = null;
+		try {
+			user = userDetailsService.loadUserByUsername("unknown22");
+		} catch(Exception e) {
+			return;
+		}
+		fail("Exception should occus " + ToStringBuilder.reflectionToString(user));
 	}
 }
