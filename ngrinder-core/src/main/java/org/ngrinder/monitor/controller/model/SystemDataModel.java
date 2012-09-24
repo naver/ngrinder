@@ -42,21 +42,44 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	@Column(name = "monitor_key")
 	@Index(name = "monitor_key_index")
 	private String key;
+	
 	@Index(name = "ip_index")
 	private String ip;
+	
 	private int port;
+	
 	private String system;
+	
+	@Column(name = "collect_time")
 	@Index(name = "collect_time_index")
 	private long collectTime;
+	
+	@Column(name = "total_cpu_value")
 	private float totalCpuValue;
+	
+	@Column(name = "idle_cpu_value")
 	private float idleCpuValue;
+	
+	@Column(name = "load_avg_1")
 	private double loadAvg1;
+	
+	@Column(name = "load_avg_5")
 	private double loadAvg5;
+	
+	@Column(name = "load_avg_15")
 	private double loadAvg15;
+	
+	@Column(name = "free_memory")
 	private long freeMemory;
+	
+	@Column(name = "total_memory")
 	private long totalMemory;
+	
+	@Column(name = "cpu_used_percentage")
 	private float cpuUsedPercentage;
+	
 	private String crtime;
+	
 	private String message;
 	
 	public SystemDataModel() {

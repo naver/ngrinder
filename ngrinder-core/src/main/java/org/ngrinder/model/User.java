@@ -40,15 +40,12 @@ public class User extends BaseModel<User> {
 
 	private static final long serialVersionUID = 7398072895183814285L;
 
-	/**
-	 * User Id
-	 */
-	@Column(unique = true, nullable = false)
+	@Column(name = "user_id", unique = true, nullable = false)
+	/** User Id */
 	private String userId;
 
-	/**
-	 * User Name e.g) Jone Dogh.
-	 */
+	@Column(name = "user_name")
+	/** User Name e.g) Jone Dogh. */
 	private String userName;
 
 	private String password;
@@ -65,13 +62,16 @@ public class User extends BaseModel<User> {
 
 	private String timeZone;
 
+	@Column(name = "user_language")
 	private String userLanguage;
 
+	@Column(name = "mobile_phone")
 	private String mobilePhone;
 
 	@Column(name = "is_external")
 	private boolean external = false;
 
+	@Column(name = "authentication_provider_class")
 	/** Who provide the authentication */
 	private String authProviderClass;
 

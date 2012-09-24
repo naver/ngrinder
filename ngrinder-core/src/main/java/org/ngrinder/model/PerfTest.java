@@ -69,29 +69,35 @@ public class PerfTest extends BaseModel<PerfTest> {
 	// private Integer sampleInterval = 1000;
 
 	/** ignoreSampleCount value, default to 0. */
+	@Column(name = "ignore_sample_count")
 	private Integer ignoreSampleCount;
 
 	/** ignoreSampleCount value, default to 0, 0 means collect forever. */
 	// private Integer collectSampleCount = 0;
 
-	/** the scheduled time of this test. */
+	@Column(name = "scheduled_time")
 	@Index(name = "scheduled_time_index")
+	/** the scheduled time of this test. */
 	private Date scheduledTime;
 
+	@Column(name = "start_time")
 	/** the start time of this test. */
 	private Date startTime;
 
+	@Column(name = "finish_time")
 	/** the finish time of this test. */
 	private Date finishTime;
 
+	@Column(name = "target_hosts")
 	/** the target host to test. */
-	@Column
 	private String targetHosts;
 
+	@Column(name = "send_mail")
 	@Type(type = "true_false")
 	/** The send mail code. */
 	private boolean sendMail;
 
+	@Column(name = "use_rampup")
 	@Type(type = "true_false")
 	/** Use rampup or not. */
 	private boolean useRampUp;
@@ -99,25 +105,33 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/** The threshold code, R for run count; D for duration. */
 	private String threshold;
 
+	@Column(name = "script_name")
 	// default script name to run test
 	private String scriptName;
 
 	private Long duration;
 
+	@Column(name = "run_count")
 	private Integer runCount = 0;
 
+	@Column(name = "agent_count")
 	private Integer agentCount = 0;
 
+	@Column(name = "vuser_per_agent")
 	private Integer vuserPerAgent = 0;
 
 	private Integer processes = 0;
 
+	@Column(name = "init_processes")
 	private Integer initProcesses = 0;
 
+	@Column(name = "init_sleep_time")
 	private Integer initSleepTime = 0;
 
+	@Column(name = "process_increment")
 	private Integer processIncrement = 0;
 
+	@Column(name = "process_increment_interval")
 	private Integer processIncrementInterval = 0;
 
 	private Integer threads = 0;
@@ -127,43 +141,49 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	private Integer errors = 0;
 
+	@Column(name = "mean_test_time")
 	private Double meanTestTime = 0d;
 
+	@Column(name = "test_time_standard_deviation")
 	private Double testTimeStandardDeviation = 0d;
 
 	private Double tps = 0d;
 
+	@Column(name = "peak_tps")
 	private Double peakTps = 0d;
 
 	/** Console port for this test. This is the identifier for console */
 	private Integer port;
 
-	@Deprecated
-	private Integer testTrialCount = 0;
-
+	@Column(name = "test_error_cause")
 	@Enumerated(EnumType.STRING)
 	private Status testErrorCause = Status.UNKNOWN;
 
+	@Column(name = "grinder_properties")
 	@Transient
 	private GrinderProperties grinderProperties;
 
+	@Column(name = "distribution_path")
 	/** The path used for file distribution */
 	private String distributionPath;
 
-	@Column(length = MAX_STRING_SIZE)
+	@Column(name = "progress_message", length = MAX_STRING_SIZE)
 	private String progressMessage = "";
 
-	@Column(length = MAX_STRING_SIZE)
+	@Column(name = "last_progress_message", length = MAX_STRING_SIZE)
 	private String lastProgressMessage = "";
 
-	@Column(length = MAX_STRING_SIZE)
+	@Column(name = "test_comment", length = MAX_STRING_SIZE)
 	private String testComment = "";
 
+	@Column(name = "script_revistion")
 	private Long scriptRevision = -1L;
 
+	@Column(name = "stop_request")
 	@Type(type = "true_false")
 	private Boolean stopRequest = null;
 
+	@Column(name = "date_string")
 	@Transient
 	private String dateString;
 
@@ -440,14 +460,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setPort(Integer port) {
 		this.port = port;
-	}
-
-	public Integer getTestTrialCount() {
-		return testTrialCount;
-	}
-
-	public void setTestTrialCount(Integer testTrialCount) {
-		this.testTrialCount = testTrialCount;
 	}
 
 	public Status getTestErrorCause() {
