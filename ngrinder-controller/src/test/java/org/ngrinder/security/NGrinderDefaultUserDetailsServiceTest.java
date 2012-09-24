@@ -12,7 +12,6 @@ import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.plugin.MockPluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class NGrinderDefaultUserDetailsServiceTest extends AbstractNGrinderTransactionalTest {
 	@Autowired

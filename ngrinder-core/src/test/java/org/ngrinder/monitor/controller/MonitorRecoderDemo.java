@@ -28,6 +28,8 @@ import java.util.List;
 import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
 import org.ngrinder.monitor.controller.domain.MonitorRecoder;
 import org.ngrinder.monitor.share.domain.SystemInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class description.
@@ -37,6 +39,8 @@ import org.ngrinder.monitor.share.domain.SystemInfo;
  * @date 2012-7-20
  */
 public class MonitorRecoderDemo implements MonitorRecoder {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(MonitorRecoderDemo.class);
 
 	private boolean running = false;
 	private List<String> data = new ArrayList<String>();
@@ -48,8 +52,9 @@ public class MonitorRecoderDemo implements MonitorRecoder {
 
 	@Override
 	public void recoderSystemInfo(String key, SystemInfo systemInfo, MonitorAgentInfo agentInfo) {
-		System.out.println("Record system info: " + systemInfo + " for:" + key);
-		data.add("Record system info: " + systemInfo + " for:" + key);
+		String record = String.format("Record system info: %s for key:%s", systemInfo, key);
+		LOG.debug(record);
+		data.add(record);
 	}
 
 	@Override
