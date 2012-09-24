@@ -113,7 +113,7 @@ public enum Database {
 	}
 
 	/**
-	 * Get the database url template
+	 * Get the database url template.
 	 * 
 	 * @return databsae url template
 	 */

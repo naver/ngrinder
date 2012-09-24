@@ -53,7 +53,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	private UserContext userContext;
 
 	/**
-	 * Get current user
+	 * Get current user.
 	 * @return
 	 */
 	public User getCurrentUser() {
@@ -74,8 +74,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Provide ngrinder version as a model attributes
-	 * @return ngrinder version
+	 * Provide nGrinder version as a model attributes.
+	 * @return nGrinder version
 	 */
 	@ModelAttribute("nGrinderVersion") 
 	public String nGrinderVersion() {

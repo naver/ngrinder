@@ -25,7 +25,7 @@ public class ClassPathInit {
 	private static final Logger LOG = LoggerFactory.getLogger(ClassPathInit.class);
 
 	/**
-	 * Initialize
+	 * Initialize.
 	 */
 	@PostConstruct
 	public void init() {

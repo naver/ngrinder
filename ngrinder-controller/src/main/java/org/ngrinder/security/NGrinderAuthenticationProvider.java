@@ -131,7 +131,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	}
 
 	/**
-	 * Check if given clazz has the given clazzName
+	 * Check if given clazz has the given clazzName.
 	 * 
 	 * @param clazz
 	 *            class

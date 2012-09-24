@@ -33,7 +33,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
- * {@link UserDetails} implementation
+ * {@link UserDetails} implementation.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -49,7 +49,7 @@ public class SecuredUser implements UserDetails {
 	private final User user;
 
 	/**
-	 * User instance used for SpringSecurity
+	 * User instance used for SpringSecurity.
 	 * 
 	 * @param user
 	 *            real user info
@@ -74,7 +74,7 @@ public class SecuredUser implements UserDetails {
 	}
 
 	/**
-	 * Return password
+	 * Return password.
 	 */
 	@Override
 	public String getPassword() {
@@ -82,7 +82,7 @@ public class SecuredUser implements UserDetails {
 	}
 
 	/**
-	 * Return Username (Actually user id)
+	 * Return Username (Actually user id).
 	 */
 	@Override
 	public String getUsername() {

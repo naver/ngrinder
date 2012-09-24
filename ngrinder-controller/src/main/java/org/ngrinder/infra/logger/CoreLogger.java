@@ -38,7 +38,7 @@ public class CoreLogger {
 	private CoreLogger() {}
 	
 	/**
-	 * Core logger
+	 * Core logger.
 	 */
 	public static final Logger LOGGER = LoggerFactory.getLogger(CoreLogger.class);
 }

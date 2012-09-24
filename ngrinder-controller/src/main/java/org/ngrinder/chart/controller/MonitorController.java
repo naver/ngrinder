@@ -85,7 +85,7 @@ public class MonitorController extends NGrinderBaseController {
 	}
 	
 	/**
-	 * get monitor data of agents
+	 * Get monitor data of agents.
 	 * 
 	 * @param model
 	 * @param ip

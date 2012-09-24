@@ -26,7 +26,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Collection utilities
+ * Collection utilities.
  * 
  * @author JunHo Yoon
  * @since 3.0

@@ -123,7 +123,7 @@ public class PerfTestSpecification {
 	}
 
 	/**
-	 * Get createBy specification to get the {@link PerfTest} whose creator or last modifier is the given user
+	 * Get createBy specification to get the {@link PerfTest} whose creator or last modifier is the given user.
 	 * 
 	 * @param user
 	 *            user

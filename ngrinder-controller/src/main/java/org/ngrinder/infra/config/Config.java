@@ -68,7 +68,7 @@ public class Config {
 	private static String versionString = "";
 
 	/**
-	 * Make it singleton
+	 * Make it singleton.
 	 */
 	Config() {
 	}
@@ -129,7 +129,7 @@ public class Config {
 	}
 
 	/**
-	 * NGrinder home path
+	 * NGrinder home path.
 	 * 
 	 * @return
 	 */
@@ -170,7 +170,7 @@ public class Config {
 	}
 
 	/**
-	 * Load database related properties
+	 * Load database related properties.
 	 * 
 	 * @throws IOException
 	 */
@@ -182,7 +182,7 @@ public class Config {
 	}
 
 	/**
-	 * Load system related properties
+	 * Load system related properties.
 	 * 
 	 * @throws IOException
 	 */
@@ -204,7 +204,7 @@ public class Config {
 	}
 
 	/**
-	 * if there is testmode property in system.properties.. return true
+	 * If there is testmode property in system.properties.. return true.
 	 * 
 	 * @return true if test mode
 	 */
@@ -261,12 +261,12 @@ public class Config {
 	}
 
 	/**
-	 * Policy file which determine the process and thread
+	 * Policy file which determine the process and thread.
 	 */
 	private String policyScript = "";
 
 	/**
-	 * Get the content of process_and_thread_policy.js file"
+	 * Get the content of process_and_thread_policy.js file".
 	 * 
 	 * @return file content.
 	 */
@@ -289,7 +289,7 @@ public class Config {
 	}
 
 	/**
-	 * Get nGrinder version in static way
+	 * Get nGrinder version in static way.
 	 * 
 	 * @return nGrinder version.
 	 */

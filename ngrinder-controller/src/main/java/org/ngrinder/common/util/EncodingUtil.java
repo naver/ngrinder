@@ -29,7 +29,7 @@ import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 
 /**
- * Encoding detection utility from byte array
+ * Encoding detection utility from byte array.
  * 
  * @author JunHo Yoon
  * @since 3.0

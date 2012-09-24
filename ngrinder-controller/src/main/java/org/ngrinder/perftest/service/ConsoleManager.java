@@ -148,7 +148,7 @@ public class ConsoleManager {
 	}
 
 	/**
-	 * Check the given port is empty
+	 * Check the given port is empty.
 	 * 
 	 * @param port
 	 *            port to be checked

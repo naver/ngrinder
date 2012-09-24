@@ -51,7 +51,7 @@ public class DBInit {
 	private UserRepository userRepository;
 
 	/**
-	 * Initalize DB
+	 * Initalize DB.
 	 */
 	@PostConstruct
 	@Transactional
@@ -67,8 +67,9 @@ public class DBInit {
 
 	@Autowired
 	public FileEntryService fileEntryService;
+	
 	/**
-	 * Create users
+	 * Create users.
 	 * 
 	 * @param userId
 	 *            userId

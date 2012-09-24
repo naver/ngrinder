@@ -187,7 +187,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Distribute files
+	 * Distribute files.
 	 * 
 	 * @param perfTest
 	 *            perftest
@@ -206,7 +206,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Start agents
+	 * Start agents.
 	 * 
 	 * @param perfTest
 	 *            perftest
@@ -269,7 +269,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Run plugins' test finish methods
+	 * Run plugins' test finish methods.
 	 * 
 	 * @param perfTest
 	 *            PerfTest

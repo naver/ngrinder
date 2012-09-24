@@ -35,7 +35,7 @@ import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.stereotype.Service;
 
 /**
- * This detault Plugin
+ * This is default Plugin.
  * @author nhn
  *
  */

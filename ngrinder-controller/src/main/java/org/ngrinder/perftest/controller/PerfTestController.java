@@ -162,7 +162,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get performance test detail on give perf test id
+	 * Get performance test detail on give perf test id.
 	 * 
 	 * @param user
 	 *            user
@@ -210,7 +210,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * get details view for quickStart
+	 * get details view for quickStart.
 	 * 
 	 * @param user
 	 *            user
@@ -300,7 +300,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * leave comment on the perftest
+	 * Leave comment on the perftest.
 	 * 
 	 * @param testComment
 	 *            trest comment
@@ -317,7 +317,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get status of perftest
+	 * Get status of perftest.
 	 * 
 	 * @param user
 	 *            user

@@ -71,7 +71,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	private long modification = 0;
 
 	/**
-	 * Initialize the {@link Tailer}
+	 * Initialize the {@link Tailer}.
 	 */
 	@PostConstruct
 	public void init() {
@@ -106,7 +106,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Logger first page
+	 * Logger first page.
 	 * 
 	 * @return "operation/logger"
 	 */
@@ -116,7 +116,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get the last log
+	 * Get the last log.
 	 * 
 	 * @return log json
 	 */

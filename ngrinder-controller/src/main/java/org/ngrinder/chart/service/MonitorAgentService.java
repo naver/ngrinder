@@ -36,7 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * agent monitor data service.
+ * Agent monitor data service.
  * 
  * @author Tobi
  * @since 3.0
@@ -73,7 +73,7 @@ public class MonitorAgentService {
 	}
 
 	/**
-	 * Remove agents to be monitored
+	 * Remove agents to be monitored.
 	 * 
 	 * @param agent
 	 */

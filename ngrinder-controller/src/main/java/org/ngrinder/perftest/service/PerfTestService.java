@@ -308,7 +308,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Mark test error on {@link PerfTest} instance
+	 * Mark test error on {@link PerfTest} instance.
 	 * 
 	 * @param perfTest
 	 *            {@link PerfTest}
@@ -357,7 +357,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Add a progress message on the given perfTest
+	 * Add a progress message on the given perfTest.
 	 * 
 	 * @param perfTest
 	 *            perf test
@@ -421,7 +421,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Mark test error on {@link PerfTest} instance
+	 * Mark test error on {@link PerfTest} instance.
 	 * 
 	 * @param perfTest
 	 *            {@link PerfTest}
@@ -573,7 +573,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Create {@link GrinderProperties} based on the passed {@link PerfTest}
+	 * Create {@link GrinderProperties} based on the passed {@link PerfTest}.
 	 * 
 	 * @param perfTest
 	 *            base data
@@ -868,7 +868,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Get log files list on the given test
+	 * Get log files list on the given test.
 	 * 
 	 * @param testId
 	 * @return

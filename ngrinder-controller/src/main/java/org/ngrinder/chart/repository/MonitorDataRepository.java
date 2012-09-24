@@ -34,8 +34,6 @@ import org.springframework.stereotype.Component;
  * Monitor data repository.
  * 
  * @author Tobi
- * @since
- * @date 2012-7-23
  */
 @Component
 public class MonitorDataRepository implements MonitorRecoder {

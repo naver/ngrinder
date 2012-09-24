@@ -1,5 +1,5 @@
 /**
- * AOP support package
+ * AOP support package.
  */
 package org.ngrinder.common.service;
 

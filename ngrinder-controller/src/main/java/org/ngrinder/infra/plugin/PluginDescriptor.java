@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
 
 /**
  * Plugin descriptor annotation which marks the corresponding plugin setting key
- * on the {@link AbstractModuleDescriptor}
+ * on the {@link AbstractModuleDescriptor}.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -40,7 +40,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface PluginDescriptor {
 	/**
-	 * Plugin Descriptor Key
+	 * Plugin Descriptor Key.
 	 * 
 	 * @return
 	 */

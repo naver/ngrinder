@@ -53,11 +53,12 @@ public class FileEntry extends BaseModel<FileEntry> {
 	private String content;
 
 	/**
-	 * File properties
+	 * File properties.
 	 */
 	private Map<String, String> properties = new HashMap<String, String>();
+	
 	/**
-	 * Revisions on this entity. This fields are sometimes empty depending on the {@link FileEntryRepository}
+	 * Revisions on this entity. This fields are sometimes empty depending on the {@link FileEntryRepository}.
 	 */
 	private List<Long> revisions;
 
