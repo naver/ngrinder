@@ -26,9 +26,16 @@ package org.ngrinder.sm;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+
+import junit.framework.Assert;
+
+import org.apache.commons.io.IOUtils;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * 
@@ -45,39 +52,53 @@ public class SecurityManagerTest {
 		smt.testNGrinderSecurityManager2();
 	}
 
-	// @BeforeClass
-	public static void init() {
-		System.setProperty("ngrinder.exec.path", new File("E:/temp/").getAbsolutePath());
-		System.setProperty("ngridner.etc.hosts", "10.34.63.53");
+	private static final String PATH = new File("/").getAbsolutePath();
 
+	@BeforeClass
+	// @Ignore
+	public static void init() {
+		System.setProperty("ngrinder.exec.path", PATH);
+		System.setProperty("ngrinder.etc.hosts", "10.34.64.36,CN14748-D-1:127.0.0.1,localhost:127.0.0.1");
+		System.setProperty("ngrinder.console.ip", "10.34.63.53");
+		// -Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager
 		System.setSecurityManager(new NGrinderSecurityManager());
 	}
 
-	// @Test
+	@Test
+	// @Ignore
 	public void testNGrinderSecurityManager1() {
 		System.out.println(new File("hell").getAbsolutePath());
 		System.out.println(System.getProperty("user.home"));
 	}
 
-	// @Test
+	@Test
+	// @Ignore
 	public void testNGrinderSecurityManager2() {
+		boolean readTag = false, writeTag = false;
+		BufferedReader fis = null;
+		BufferedWriter fos = null;
 		try {
-			BufferedReader fis = new BufferedReader(new FileReader("E:/temp/input.txt"));
-			BufferedWriter fos = new BufferedWriter(new FileWriter("E:/temp/output.txt"));
-			String inputString;
-			while ((inputString = fis.readLine()) != null) {
-				fos.write(inputString);
-				fos.write('\n');
-			}
-			fis.close();
-			fos.close();
+			fis = new BufferedReader(new FileReader(PATH + "/input.txt"));
+		} catch (FileNotFoundException ioe) {
+			readTag = true;
+		} finally {
+			IOUtils.closeQuietly(fis);
+		}
+		Assert.assertTrue(readTag);
+
+		try {
+			fos = new BufferedWriter(new FileWriter(PATH + "/output.txt"));
+			fos.write("Hello SecurityManager.");
 		} catch (IOException ioe) {
 			System.out.println("I/O failed for SecurityManagerTest.");
 			System.err.println(ioe);
 		} catch (SecurityException e) {
-			System.out.println("Do not have the file write access in \"ngrinder.exec.path\"");
-			System.err.println(e);
+			System.err.println("Do not have the file write access in \"ngrinder.exec.path\"");
+			writeTag = true;
+		} finally {
+			IOUtils.closeQuietly(fos);
 		}
+		Assert.assertTrue(writeTag);
 	}
 
 }
