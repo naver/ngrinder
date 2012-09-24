@@ -17,10 +17,8 @@
     <div id="header_wrap" class="outer">
         <header class="inner">
           <a id="forkme_banner" href="https://github.com/nhnopensource/ngrinder">View on GitHub</a>
-
           <h1 id="project_title">nGrinder</h1>
           <h2 id="project_tagline">enterprise level performance testing solution</h2>
-
         </header>
     </div>
 
@@ -30,36 +28,40 @@
 
 <h1>nGrinder </h1>
 <ul>
-<li>nGrinder 3.0 is now being developed. It'll be released around October 2012.</li>
-<li>nGrinder 2.X can be downloaded in <a href="http://www.nhnopensource.org/ngrinder_download">here</a></li>
+<li>nGrinder 3.0 is now being developed. It'll be released at the end of Sep. 2012.</li>
 </ul>
 <p>nGrinder is the platform of stress tests which enables you to execute script creation, test execution, monitoring, and result report generator simultaneously. The opensource nGrinder offers easy ways to conduct stress tests by eliminating inconveniences and providing integrated environments.</p>
 
-<p>To get started, checkout <a href="http://www.nhnopensource.org/ngrinder_document">http://www.nhnopensource.org/ngrinder_document</a>!</p>
-
+<p>To get started, checkout <a href="http://www.cubrid.org/wiki_ngrinder/entry/user-guide">http://www.cubrid.org/wiki_ngrinder/entry/user-guide</a>!</p>
 <p>nGrinder consists of two major components. </p>
-
 <ul>
-<li>nGrinder controller is a web application which let performance tester create test script and configure test run</li>
-<li>nGrinder agent is a virtual user generator which makes loads. </li>
-</ul><p>Currently nGrinder depends on CUBRID(<a href="http://www.cubrid.org">http://www.cubrid.org</a>) for database layer. </p>
-
+<li>nGrinder controller
+	<blockquote>
+    a web application which let performance tester create test script and configure test run
+    </blockquote>
+</li>    
+<li>nGrinder agent 
+   	<blockquote>
+   	 virtual user generator which makes loads. 
+   	 </blockquote>
+</li>
+</ul>
 <ul>
 </ul>
 <h2>Features</h2>
 <ul>
-<li>Use Jython script to create scenario and generating stress in JVM. </li>
-<li>Provide web-based interface for project management, monitoring, result management and report management. </li>
-<li>Enable to monitor the state of agents generating stress and target machines receiving stress</li>
-<li>Enable to inquire past test results by saving test history and provide absolute link to share with those who do not have private account. </li>
-<li>Enable to converse image and csv from original results. </li>
+	<li>Use Jython script to create test scenario and generate stress in JVM using multiple agents. </li>
+	<li>Provide web-based interface for project management, monitoring, result management and report management. </li>
+	<li>Run multiple tests concurrently. Assign the preinstalled multiple agents to maximize the agent's utilization.<li>
+	<li>Embed Subversion to manage scripts.
+	<li>Enable to monitor the state of agents generating stress and target machines receiving stress</li>
+	<li>Support Enable to monitor the state of agents generating stress and target machines receiving stress</li>
 </ul>
-<h2>Road Map</h2>
-TBD
 
-<h2>Quick Start</h2>
+<h2>Download</h2>
+<p>nGrinder 3.0 is not officially released. However you can download pre-beta version in the following location</p>
+<h2>Documentation</h2>
 <p>You can find out usage videos in the following location</p>
-
 <ul>
 <li><a href="http://www.youtube.com/user/ngrinderdev">http://www.youtube.com/user/ngrinderdev</a></li>
 </ul>
@@ -67,35 +69,48 @@ TBD
 <ul>
 <li><a href="http://www.cubrid.org/wiki_ngrinder/entry/installation-guide">http://www.cubrid.org/wiki_ngrinder/entry/installation-guide</a></li>
 </ul>
-<p>How to clone the repo </p>
+<h2>Road Map</h2>
 <ul>
-	<li>nGrinder 2.0</li>
-	<ul>
-		<li>Controller: 'git clone https://github.com/nhnopensource/ngrinder_controller.git'</li>
-		<li>Agent: 'git clone https://github.com/nhnopensource/ngrinder_agent.git'</li>
-	</ul>
+	<li>3.0 Beta(30. Sep. 2012)
+		<ul>
+			<li>Completely rewrite the code</li>
+			<li>Support multiple concurrent tests</li>
+			<li>Support subversion for scripts management</li>
+		</ul>
+	</li>	
+	<li>3.0(Oct. 2012)
+		<ul>
+			<li>First stable version.</li>
+			<li>Enhance the usability</li>
+		</ul>
+	</li>
+	<li>3.1(Dec. 2012)
+		<ul>
+			<li>Enhance the usability</li>
+			<li>Support controller clustering</li>
+		</ul>
+	</li>	
+	<li>4.0(May. 2013)
+		<ul>
+			<li>Support site monitoring feature</li>
+		</ul>
+	</li>
 </ul>
+<p>How to clone the repo </p>
 <ul>
 	<li>nGrinder 3.0 : 'git clone git://github.com/nhnopensource/ngrinder.git'</li>
 </ul>
 <h2>Versioning</h2>
-
 <p>For transparency and insight into our release cycle, and for striving to maintain backward compatibility, nGrinder will be maintained under the Semantic Versioning guidelines as much as possible.</p>
-
 <p>Releases will be numbered with the follow format:</p>
-
 <p><code>&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;</code></p>
-
 <p>And constructed with the following guidelines:</p>
-
 <ul>
 <li>Breaking backward compatibility bumps the major (and resets the minor and patch)</li>
 <li>New additions without breaking backward compatibility bumps the minor (and resets the patch)</li>
 <li>Bug fixes and misc changes bumps the patch</li>
 </ul><h2>Q/A and Bug tracker</h2>
-
 <p>Have a bug or enhancement idea? Please create an issue here on GitHub if you want just notify to us! </p>
-
 <ul>
 <li><a href="https://github.com/nhnopensource/ngrinder/issues">https://github.com/nhnopensource/ngrinder/issues</a>
 </li>
