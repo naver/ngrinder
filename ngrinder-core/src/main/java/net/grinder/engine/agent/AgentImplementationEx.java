@@ -372,7 +372,7 @@ public class AgentImplementationEx implements Agent {
 
 	private String addCurrentAgentPath(String jvmArguments) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(jvmArguments).append(" -Dngrinder.exec.path=").append(new File("").getAbsolutePath()).append(' ');
+		sb.append(jvmArguments).append(" -Dngrinder.exec.path=").append(new File(".").getAbsolutePath()).append(' ');
 		return sb.toString();
 	}
 
