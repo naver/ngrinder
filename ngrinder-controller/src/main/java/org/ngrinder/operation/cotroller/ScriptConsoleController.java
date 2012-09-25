@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.ConsoleManager;
 import org.ngrinder.perftest.service.PerfTestService;
@@ -79,6 +80,9 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private PluginManager pluginManager;
+	
 	private PythonInterpreter interp;
 
 	/**
@@ -95,6 +99,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 		interp.set("perfTestService", this.perfTestService);
 		interp.set("fileEntryService", this.fileEntryService);
 		interp.set("config", this.config);
+		interp.set("pluginManager", this.pluginManager);
 	}
 
 	/**
