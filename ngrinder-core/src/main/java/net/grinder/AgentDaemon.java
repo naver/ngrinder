@@ -30,6 +30,7 @@ import net.grinder.engine.agent.AgentImplementationEx;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.ThreadUtil;
@@ -161,6 +162,21 @@ public class AgentDaemon implements Agent {
 		return this.m_listeners;
 	}
 
+	public void resetListeners() {
+		final ListenerSupport<AgentShutDownListener> backup = new ListenerSupport<AgentDaemon.AgentShutDownListener>();
+		getListeners().apply(new Informer<AgentShutDownListener>() {
+			public void inform(AgentShutDownListener listener) {
+				backup.add(listener);
+			}
+		});
+		
+		backup.apply(new Informer<AgentShutDownListener>() {
+			public void inform(AgentShutDownListener listener) {
+				getListeners().remove(listener);
+			}
+		});
+	}
+	
 	/**
 	 * Add AgentShutdownListener.
 	 * 

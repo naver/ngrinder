@@ -57,6 +57,8 @@ import net.grinder.util.Directory;
 import net.grinder.util.GrinderClassPathUtils;
 import net.grinder.util.thread.Condition;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
@@ -249,9 +251,10 @@ public class AgentImplementationEx implements Agent {
 						jvmArguments = addDNSIP(jvmArguments);
 					}
 					jvmArguments = addCustomDns(properties, jvmArguments);
+					rebaseCustomClassPath(properties, script.getDirectory());
 					final WorkerFactory workerFactory;
-					m_logger.info("grinder properties {}", grinderProperties);
-
+					m_logger.info("grinder properties {}", properties);
+					
 					// To be safe...
 					if (properties.containsKey("grinder.duration") && !properties.containsKey("grinder.runs")) {
 						properties.setInt("grinder.runs", 0);
@@ -368,6 +371,21 @@ public class AgentImplementationEx implements Agent {
 			m_consoleListener.shutdown();
 			m_logger.info("finished");
 		}
+	}
+
+	private void rebaseCustomClassPath(GrinderProperties properties, Directory directory) {
+		String property = properties.getProperty("grinder.jvm.classpath","");
+		StringBuilder newClassPath = new StringBuilder();
+		boolean isFirst = true;
+		for (String each : property.split(File.pathSeparator)) {
+			File file = new File(directory.getFile(), each);
+			if (!isFirst) {
+				newClassPath.append(File.pathSeparator);
+			}
+			isFirst = false;
+			newClassPath.append(FilenameUtils.normalize(file.getAbsolutePath()));
+		}
+		properties.setProperty("grinder.jvm.classpath", newClassPath.toString());
 	}
 
 	private String addCurrentAgentPath(String jvmArguments) {

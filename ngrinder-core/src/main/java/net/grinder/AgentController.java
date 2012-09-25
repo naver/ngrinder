@@ -215,6 +215,7 @@ public class AgentController implements Agent {
 					// FIXME : Is it safe to add listener here? no possibility
 					// for duplicated
 					// listener?
+					agent.resetListeners();
 					agent.addListener(new AgentShutDownListener() {
 						@Override
 						public void shutdownAgent() {
