@@ -46,8 +46,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
+import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.Context;
 import ch.qos.logback.core.joran.spi.JoranException;
 
 /**
@@ -98,22 +98,25 @@ public class Config {
 	 * Initialize Logger.
 	 */
 	public void initLogger(boolean forceToVerbose) {
+		setupLogger((forceToVerbose) ? true : getSystemProperties().getPropertyBoolean("verbose", false));
+	}
+
+	public void setupLogger(boolean verbose){
 		File gloablLogFile = getHome().getGloablLogFile();
-		boolean verbose = (forceToVerbose) ? true : getSystemProperties().getPropertyBoolean("verbose", false);
-
-		final Context context = (Context) LoggerFactory.getILoggerFactory();
-
+		final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+		context.reset();
 		final JoranConfigurator configurator = new JoranConfigurator();
 		configurator.setContext(context);
 		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
 		context.putProperty("LOG_DIRECTORY", gloablLogFile.getAbsolutePath());
 		try {
-			configurator.doConfigure(Config.class.getResource("/logback-ngrinder.xml"));
+			configurator.doConfigure(new ClassPathResource("/logback-ngrinder.xml").getFile());
 		} catch (JoranException e) {
+			CoreLogger.LOGGER.error(e.getMessage(), e);
+		} catch (IOException e) {
 			CoreLogger.LOGGER.error(e.getMessage(), e);
 		}
 	}
-
 	/**
 	 * Copy default files.
 	 * 
@@ -186,7 +189,7 @@ public class Config {
 	 * 
 	 * @throws IOException
 	 */
-	protected void loadSystemProperties() {
+	public void loadSystemProperties() {
 		checkNotNull(home);
 		Properties properties = home.getProperties("system.conf");
 		properties.put("NGRINDER_HOME", home.getDirectory().getAbsolutePath());

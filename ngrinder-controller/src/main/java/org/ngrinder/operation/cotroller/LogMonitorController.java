@@ -40,6 +40,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Log monitor controller.
@@ -75,8 +76,16 @@ public class LogMonitorController extends NGrinderBaseController {
 	 */
 	@PostConstruct
 	public void init() {
+		initTailer();
+		responseHeaders = new HttpHeaders();
+		responseHeaders.set("content-type", "application/json; charset=UTF-8");
+	}
+
+	private void initTailer() {
 		File logFile = new File(config.getHome().getGloablLogFile(), "ngrinder.log");
-		
+		if (tailer != null) {
+			tailer.stop();
+		}
 		tailer = Tailer.create(logFile, new TailerListenerAdapter() {
 			/**
 			 * Handles a line from a Tailer.
@@ -96,9 +105,6 @@ public class LogMonitorController extends NGrinderBaseController {
 				}
 			}
 		}, 1000, true);
-
-		responseHeaders = new HttpHeaders();
-		responseHeaders.set("content-type", "application/json; charset=UTF-8");
 	}
 
 	@PreDestroy
@@ -127,6 +133,23 @@ public class LogMonitorController extends NGrinderBaseController {
 		map.put("index", count);
 		map.put("modification", modification);
 		map.put("log", stringBuffer);
+		return new HttpEntity<String>(JSONUtil.toJson(map), responseHeaders);
+	}
+	
+	@RequestMapping("/verbose")
+	public HttpEntity<String> enableVerbose(@RequestParam(value="verbose", defaultValue="false") Boolean verbose) {
+		config.initLogger(verbose);
+		initTailer();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("success", true);
+		return new HttpEntity<String>(JSONUtil.toJson(map), responseHeaders);
+	}
+	
+	@RequestMapping("/refresh")
+	public HttpEntity<String> refreshSystemProperties() {
+		config.loadSystemProperties();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("success", true);
 		return new HttpEntity<String>(JSONUtil.toJson(map), responseHeaders);
 	}
 }
