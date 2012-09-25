@@ -323,7 +323,19 @@ public class FileEntryService {
 		}
 		fileEntry.setPath(filePath);
 		fileEntry.setContent(loadFreeMarkerTemplate(user, url));
+		addHostProperties(fileEntry, url);
 		return fileEntry;
+	}
+	
+	private void addHostProperties(FileEntry fileEntry, String url) {
+		Map<String, String> map = new HashMap<String, String>();
+		String host;
+		try {
+			host = new URL(url).getHost();
+			map.put("targetHosts", StringUtils.trim(host));
+			fileEntry.setProperties(map);
+		} catch (MalformedURLException e) {
+		}
 	}
 
 	/**

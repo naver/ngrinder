@@ -85,8 +85,7 @@ public class MonitorExecuteManager {
 	 * @param agent
 	 */
 	public void removeAgentMonitor(String agentIP) {
-		MonitorExecuteWorker worker = monitorWorkerMap.get(agentIP);
-		checkNotNull(worker);
+		MonitorExecuteWorker worker = checkNotNull(monitorWorkerMap.get(agentIP));
 		worker.decreaseCounter();
 		if (worker.getCounter() <= 0) {
 			schedulerMap.get(agentIP).shutdown();

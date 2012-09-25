@@ -94,6 +94,7 @@ import org.ngrinder.service.IPerfTestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -1042,6 +1043,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		perfTestRepository.save(perfTest);
 	}
 
+	@Cacheable("current_perftest_statistics")
 	@Transactional
 	public Collection<PerfTestStatistics> getCurrentPerfTestStatistics() {
 		Map<User, PerfTestStatistics> perfTestPerUser = new HashMap<User, PerfTestStatistics>();

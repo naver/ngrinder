@@ -265,7 +265,11 @@
 																<#if  test?? && scriptItem.path == test.scriptName && test.createdUser.userId == currentUser.userId> 
 																	<#assign isSelected = "selected"/> 
 																<#else> 
-																	<#assign isSelected = 	""/> 
+																	<#if quickScript?? && quickScript == scriptItem.path>
+																		<#assign isSelected = "selected"/> 
+																	<#else>
+																		<#assign isSelected = 	""/>
+																	</#if> 
 																</#if>
 																<option value="${scriptItem.path}" ${isSelected}>${scriptItem.path}</option> 
 															</#list> 

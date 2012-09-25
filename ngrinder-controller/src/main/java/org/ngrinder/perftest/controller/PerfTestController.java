@@ -223,6 +223,7 @@ public class PerfTestController extends NGrinderBaseController {
 		List<FileEntry> scriptList = new ArrayList<FileEntry>();
 		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString);
 		scriptList.add(newEntry);
+		model.addAttribute("quickScript", newEntry.getPath());
 		model.addAttribute(PARAM_TARGET_HOST, url.getHost());
 		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
 		addDefaultAttributeOnMode(model);

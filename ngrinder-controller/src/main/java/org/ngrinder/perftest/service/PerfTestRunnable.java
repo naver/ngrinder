@@ -398,7 +398,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 	private void removeMonitorTargets(PerfTest perfTest) {
 		List<String> targetIPList = perfTest.getTargetHostIP();
 		for (String targetIP : targetIPList) {
-			monitorDataService.removeMonitorAgents(targetIP);
+			try {
+				monitorDataService.removeMonitorAgents(targetIP);
+			} catch(Exception e) {
+				LOG.error("Error while deleting monitor for {}", targetIP);
+			}
 		}
 	}
 }

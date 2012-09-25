@@ -76,6 +76,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	@PostConstruct
 	public void init() {
 		File logFile = new File(config.getHome().getGloablLogFile(), "ngrinder.log");
+		
 		tailer = Tailer.create(logFile, new TailerListenerAdapter() {
 			/**
 			 * Handles a line from a Tailer.
@@ -94,7 +95,7 @@ public class LogMonitorController extends NGrinderBaseController {
 					stringBuffer.append("<br/>").append(line.replace("\n", "<br/>"));
 				}
 			}
-		});
+		}, 1000, true);
 
 		responseHeaders = new HttpHeaders();
 		responseHeaders.set("content-type", "application/json; charset=UTF-8");
