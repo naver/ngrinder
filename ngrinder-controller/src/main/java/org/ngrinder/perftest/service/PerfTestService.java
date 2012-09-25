@@ -956,6 +956,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		int port = perfTest.getPort();
 		Map<String, Object> result = getStatistics(port);
 		if (result == null || result.get("totalStatistics") == null) {
+			perfTest.setStatus(Status.STOP_ON_ERROR);
 			return;
 		}
 		@SuppressWarnings("unchecked")
