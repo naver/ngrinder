@@ -520,7 +520,7 @@
 										<!--<li class="pull-right"><a href="#" target="_blank">Expand View</a></li>-->
 									</ul>
 									<div class="tab-content">
-										<div class="tab-pane active" id="lsTab">
+										<div class="tab-pane" id="lsTab">
 											<table class="table table-striped table-bordered ellipsis" id="lsTable">
 												<colgroup>
 													<col width="30px">
@@ -548,7 +548,7 @@
 												</tbody>
 											</table>
 										</div>
-										<div class="tab-pane active" id="asTab">
+										<div class="tab-pane" id="asTab">
 											<table class="table table-striped table-bordered ellipsis" id="asTable">
 												<colgroup>
 														<col width="30px">
@@ -647,7 +647,8 @@ $(document).ready(function () {
 	initDurationMap();
 	initChartData();
 	initScheduleDate();
-
+	$("#tableTab a:first").tab('show');
+	
 	<#if test??>
 		<#if test.status.category == "TESTING"> 
   			displayCfgAndTestRunning(); 
