@@ -46,6 +46,7 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 
+import org.apache.commons.io.IOUtils;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -292,8 +293,10 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		}
 
 		public void setAgentProcessStatus(AgentControllerProcessReportMessage message) {
-			logger.trace("agent perf status on {} is {}", message.getAgentIdentity(),
-							message.getSystemDataModel());
+			if (logger.isTraceEnabled()) {
+				logger.trace("agent perf status on {} is {}", message.getAgentIdentity(),
+								message.getSystemDataModel());
+			}
 			m_agentReference = new AgentReference(message);
 		}
 
