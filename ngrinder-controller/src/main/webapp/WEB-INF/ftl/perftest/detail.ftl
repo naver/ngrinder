@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>nGrinder Performance Test Detail</title> 
+	<title>nGrinder Performance Test Detail</title>
+	<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
+	<META HTTP-EQUIV="Expires" CONTENT="-1">
 	<#include "../common/common.ftl"> 
 	<#include "../common/jqplot.ftl">
 	<link href="${req.getContextPath()}/css/slider.css" rel="stylesheet">
@@ -623,574 +625,575 @@
 		</div>
 	</div>
 
-	<script src="${req.getContextPath()}/plugins/datepicker/js/bootstrap-datepicker.js"></script>
-	<script src="${req.getContextPath()}/js/rampup.js"></script>
-	<script src="${req.getContextPath()}/js/bootstrap-slider.min.js"></script>
- 	<script src="${req.getContextPath()}/js/queue.js"></script>
- 	<script>
- 		// vuser calc
- 		${processthread_policy_script}
- 	</script>
-	<script>
-	  var jqplotObj;
-	  var objTimer;
-	  var sliderMax = 40;
-	  var durationMap = [];
-	  durationMap[0] = 0;
-	  for (var i = 1; i <= sliderMax; i++) {
-	      if (i <= 10) {
-	          durationMap[i] = durationMap[i - 1] + 1;
-	      } else if (i <= 20) {
-	          durationMap[i] = durationMap[i - 1] + 5;
-	      } else if (i <= 32) { //untill 180 min
-	          durationMap[i] = durationMap[i - 1] + 10;
-	      } else if (i <= 38) { //360 min
-	          durationMap[i] = durationMap[i - 1] + 30;
-	      } else if (i <= 56) { //24 hours
-	          durationMap[i] = durationMap[i - 1] + 60;
-	      } else if (i <= 72) {
-	          durationMap[i] = durationMap[i - 1] + 60 * 6;
-	      } else if (i <= 78) {
-	          durationMap[i] = durationMap[i - 1] + 60 * 12;
-	      } else {
-	          durationMap[i] = durationMap[i - 1] + 60 * 24;
-	      }
-	  }
-	  var test_tps_data = new Queue();
-	  function initChartData() {
-                for (var i = 0; i < 60; i++) {
-		        	test_tps_data.enQueue(0);
-           	}	
-      }
+<script src="${req.getContextPath()}/plugins/datepicker/js/bootstrap-datepicker.js"></script>
+<script src="${req.getContextPath()}/js/rampup.js"></script>
+<script src="${req.getContextPath()}/js/bootstrap-slider.min.js"></script>
+<script src="${req.getContextPath()}/js/queue.js"></script>
+<script>
+// vuser calc
+${processthread_policy_script}
+
+var jqplotObj;
+var objTimer;
+var sliderMax = 40;
+var test_tps_data = new Queue();
+var durationMap = [];
 	  
-	  $(document).ready(function () {
-	  	  $.ajaxSetup ({
-   			cache: false //close AJAX cache
-  }		  );
-	  	  initChartData();
-	      var date = new Date();
-	      var year = date.getFullYear();
-	      var month = date.getMonth() + 1;
-	      var day = date.getDate();
-	      $("#sDateInput").val(year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day));
-
-	      <#if test??> 
-	      	<#if test.status.category == "TESTING"> 
-		      displayCfgAndTestRunning(); 
-		      <#elseif test.status.category == "FINISHED" || test.status.category == "STOP"> 
-		      displayCfgAndTestReport(); 
-		      <#else>
-		      displayCfgOnly(); 
-	          </#if>
-		  <#else>
-			displayCfgOnly();
-		  </#if>
-		  $("#tableTab a:first").tab('show');
-			
-	      $('#testContentForm input').hover(function () {
-	          $(this).popover('show')
-	      });
-
-	      for (var i = 0; i <= sliderMax; i++) {
-	          if (durationMap[i] * 60000 == $("#duration").val()) {
-	              $("#hiddenDurationInput").val(i);
-	          }
-	      }
-
-	      $("#scriptName").change(function (selected) {
-	    	  $("#showScript").val(selected);
-	          updateScriptResources(false);
-	      });
-
-	      $("#hiddenDurationInput").bind("slide", function (e) {
-	          $("#duration").val(durationMap[this.value] * 60000);
-	          initDuration();
-	          $("#duration").valid();
-	      });
-
-	      $("#testContentForm").validate({
-	          rules: {
-	              testName: "required",
-	              agentCount: "required",
-	              vuserPerAgent: "required"
-	          },
-	          messages: {
-	              testName: "<@spring.message "perfTest.warning.testName"/>",
-	              agentCount: "<@spring.message "perfTest.warning.agentNumber"/>",
-	              vuserPerAgent: "<@spring.message "perfTest.warning.vuserPerAgent"/>"
-	          },
-	          ignore: "", //make the validation on hidden input work
-	          errorClass: "help-inline",
-	          errorElement: "span",
-	          errorPlacement: function (error, element) {
-	              if (element.next().attr("class") == "add-on") {
-	                  error.insertAfter(element.next());
-	              } else {
-	                  error.insertAfter(element);
-	              }
-	          },
-	          highlight: function (element, errorClass, validClass) {
-	              $(element).parents('.control-group').addClass('error');
-	              $(element).parents('.control-group').removeClass('success');
-	          },
-	          unhighlight: function (element, errorClass, validClass) {
-	              $(element).parents('.control-group').removeClass('error');
-	              $(element).parents('.control-group').addClass('success');
-	          }
-	      });
-
-		  $("#vuserPerAgent").rules("add", {
-		  		max:${(maxVuserPerAgent)}
-		  });
-		  
-	      $("#saveScheduleBtn").click(function () {
-	          if (!$("#testContentForm").valid()) {
-	              return false;
-	          }
-	      });
-
-	      $("#saveTestBtn").click(function () {
-	          if (!$("#testContentForm").valid()) {
-	              return false;
-	          }
-	          //if ($("#isClone").val() == "true") {
-	          //    $("#testId").val("");
-	          //}
-	          $("#testStatus").val("SAVED");
-	          $("#scheduleInput").attr('name', '');
-	          return true;
-	      });
-
-	      $("#runNowBtn").click(function () {
-	          $("#scheduleModal").modal("hide");
-	          $("#scheduleModal small").html("");
-	          $("#scheduleInput").attr('name', '');
-	          //if ($("#isClone").val() == "true") {
-	          //    $("#testId").val("");
-	          //}
-	          $("#testStatus").val("READY");
-	          document.testContentForm.submit();
-	      });
-
-	      $("#addScheduleBtn").click(function () {
-	          if (checkEmptyByID("sDateInput")) {
-	              $("#scheduleModal small").html("<@spring.message "perfTest.detail.message.setScheduleDate"/>");
-	              return;
-	          }
-
-	          var timeStr = $("#sDateInput").val() + " " + $("#shSelect").val() + ":" + $("#smSelect").val() + ":0";
-	          var scheduledTime = new Date(timeStr.replace(/-/g, "/"));
-	          if (new Date() > scheduledTime) {
-	              $("#scheduleModal small").html("<@spring.message "perfTest.detail.message.errScheduleDate"/>");
-	              return;
-	          }
-	          $("#scheduleInput").val(scheduledTime);
-	          $("#scheduleModal").modal("hide");
-	          $("#scheduleModal small").html("");
-	          $("#testStatus").val("READY");
-	          document.testContentForm.submit();
-	      });
-
-
-
-	      $('#sDateInput').datepicker({
-	          format: 'yyyy-mm-dd'
-	      });
-
-	      $("#hSelect").append(getOption(7 + 1));
-	      $("#hSelect").change(getDurationMS);
-
-	      $("#mSelect").append(getOption(60));
-	      $("#mSelect").change(getDurationMS);
-
-	      $("#sSelect").append(getOption(60));
-	      $("#sSelect").change(getDurationMS);
-
-	      $("#shSelect").append(getOption(24));
-	      $("#smSelect").append(getOption(60));
-
-	      //add toggle event to threshold
-	      $("#runcountChkbox").change(function () {
-	          if ($("#runcountChkbox").attr("checked") == "checked") {
-	              $("#threshold").val("R");
-	              $("#runCount").addClass("required");
-	              $("#runCount").addClass("positiveNumber");
-	              $("#durationChkbox").removeAttr("checked");
-	              $("#duration").removeClass("required");
-	              $("#duration").removeClass("positiveNumber");
-	              $("#duration").valid();
-	              $("#runCount").valid();
-	          }
-	      });
-	      $("#durationChkbox").change(function () {
-	          if ($("#durationChkbox").attr("checked") == "checked") {
-	              $("#threshold").val("D");
-	              $("#duration").addClass("required positiveNumber");
-	              $("#runcountChkbox").removeAttr("checked");
-	              $("#runCount").removeClass("required");
-	              $("#runCount").removeClass("positiveNumber");
-	              $("#duration").valid();
-	              $("#runCount").valid();
-	          }
-	      });
-
-	      $("#agentCount").change(function () {
-	          updateVuserTotal();
-	          $("#vuserPerAgent").validate();
-	      });
-          
-          $("#threads").change(function() {
-			  var processes = $("#processes").val();
-          	  $("#vuserPerAgent").val($("#processes").val() * $("#threads").val());
-   		  	  if ( $("#vuserPerAgent").valid()) {
-   		  		  updateVuserGraph(processes);
-	              updateVuserTotal(); 
-	          }
-          });
-          
-          $("#processes").change(function() {
-			  var $processes = $("#processes");
-          	  $("#vuserPerAgent").val($processes.val() * $("#threads").val());
-   		  	  if ( $("#vuserPerAgent").valid()) {
-	              updateVuserGraph(processes);
-	              updateVuserTotal();
-	          }
-          });
-          
-          
-	      $("#vuserPerAgent").change(function () {
-	          var vuserElement = $(this);
-	          var processCount = $("#processes").val();    
-	          if (vuserElement.valid()) {
-	              var result = updateVuserPolicy(vuserElement.val());
-	              $(this).val(result[0] * result[1]);
-	              if (processCount != result[0]) {
-	              	updateVuserGraph(result[0]);
-	              }
-	              updateVuserTotal();
-	          }
-	      });
-
-	      $("#reportLnk").click(function () {
-	          openReportDiv();
-	      });
-
-	      $('#tableTab a').click(function (e) {
-	          var $this = $(this);
-	          if ($this.hasClass("pull-right")) {} else {
-	              e.preventDefault();
-	              $this.attr("tid");
-	              $this.tab('show');
-	          }
-	      });
-
-	      $("#homeTab a").click(function () {
-	          resetFooter();
-	      });
-
-
-	      $("#showScript").click(function () {
-	          var currentScript = $("#scriptName").val();
-	          if (currentScript != "") {
-	              var scriptRevision = $("#scriptRevision").val();
-	              window.open("${req.getContextPath()}/script/detail/" + currentScript + "?r=" + scriptRevision, "scriptSource");
-	          }
-	      });
-	      updateVuserTotal();
-	      initThresholdChkBox();
-	      initDuration();
-	      updateChart();
-	      resetFooter();
-	      $("#processAndThreadPanel").hide();
-	      //$("#processAndThreadPanelDiv").hide();
-	      
-	      $("#expandAndCollapse").click(function () {
-	          $(this).toggleClass("collapse");
-	          $("#processAndThreadPanelDiv").toggle();
-	          $("#processAndThreadPanel").toggle();
-	      });
-	      updateScriptResources(true);
-	      $("#durationSlider").mousedown(function () {
-	          $("#durationChkbox").click();
-	      });
-	      $("#runCount").focus(function () {
-	          $("#runcountChkbox").click();
-	      });
-	      
-	      $("#testContent").click(function() {
-	      	resetFooter();
-	      });
-
-	  });
-
-
-
-	  function updateVuserTotal() {
-	      var agtCount = $("#agentCount").val();
-	      var vcount = $("#vuserPerAgent").val();
-	      $("#vuserTotal").text(agtCount * vcount);
-	  }
-
-	  function updateScriptResources(first) {
-	      $('#messageDiv').ajaxSend(function (e, xhr, settings) {
-	          var url = settings.url;
-	          if (url.indexOf("refresh") == 0) showInformation("<@spring.message "perfTest.detail.message.updateResource"/>");
-	      });
-	      $.ajax({
-	          url: "${req.getContextPath()}/perftest/getResourcesOnScriptFolder",
-	          dataType: 'json',
-	          data: {
-	              'scriptPath': $("#scriptName").val(),
-	              'r': $("#scriptRevision").val()
-	          },
-	          success: function (res) {
-	              var html = "";
-	              var len = res.resources.length;
-	              if (first != true) {
-	                  $(".div-host").html("");
-	                  $("#hostsHidden").val(res.targetHosts);
-	                  initHosts();
-	              }
-	              for (var i = 0; i < len; i++) {
-	                  var value = res.resources[i];
-	                  html = html + "<div class='resource'>" + value + "</div><br/>";
-	              }
-	              $("#scriptResources").html(html);
-	          },
-	          error: function () {
-	              showErrorMsg("<@spring.message "common.error.error"/>");
-	              return false;
-	          }
-	      });
-	  }
-
-	  function updateVuserPolicy(vuser) {
-	      var processCount = getProcessCount(vuser);
-	      var threadCount = getThreadCount(vuser);
-	      $('#processes').val(processCount);
-	      $('#threads').val(threadCount);
-	      
-	      return [processCount, threadCount];
-	  }
+$(document).ready(function () {
+	$.ajaxSetup({
+		cache : false //close AJAX cache
+	});
 	
-	  function updateVuserGraph(processCount) {
-		  //if ramp-up chart is not enabled, update init process count as total 
-	      if ($("#rampupCheckbox")[0].checked) {
-	     	 updateChart();
-	      }
-	  }
-	  
-	  function initThresholdChkBox() {
-	      if ($("#threshold").val() == "R") { //runcount
-	          $("#runcountChkbox").attr("checked", "checked");
-	          $("#durationChkbox").removeAttr("checked");
-	      } else { //duration
-	          $("#durationChkbox").attr("checked", "checked");
-	          $("#runcountChkbox").removeAttr("checked");
-	      }
-	  }
+	initDurationMap();
+	initChartData();
+	initScheduleDate();
 
-	  function initDuration() {
-	      var duration = $("#duration").val();
-	      var durationInSec = parseInt(duration / 1000);
-	      var durationH = parseInt((durationInSec % (60 * 60 * 24)) / 3600);
-	      var durationM = parseInt((durationInSec % 3600) / 60);
-	      var durationS = durationInSec % 60;
+	<#if test??>
+		<#if test.status.category == "TESTING"> 
+  			displayCfgAndTestRunning(); 
+		<#elseif test.status.category == "FINISHED" || test.status.category == "STOP"> 
+			displayCfgAndTestReport(); 
+		<#else>
+			displayCfgOnly(); 
+		</#if>
+	<#else>
+		displayCfgOnly();
+	</#if>
+	
+	$('#testContentForm input').hover(function() {
+		$(this).popover('show');
+	});
+	
+	for ( var i = 0; i <= sliderMax; i++) {
+		if (durationMap[i] * 60000 == $("#duration").val()) {
+			$("#hiddenDurationInput").val(i);
+		}
+	}
+	
+	$("#scriptName").change(function(selected) {
+		$("#showScript").val(selected);
+		updateScriptResources(false);
+	});
+	
+	$("#hiddenDurationInput").bind("slide", function(e) {
+		$("#duration").val(durationMap[this.value] * 60000);
+		initDuration();
+		$("#duration").valid();
+	});
 
-	      $("#hSelect").val(durationH);
-	      $("#mSelect").val(durationM);
-	      $("#sSelect").val(durationS);
-	  }
+	$("#testContentForm").validate({
+		rules : {
+			testName : "required",
+			agentCount : "required",
+			vuserPerAgent : "required"
+		},
+	    messages: {
+	        testName: "<@spring.message "perfTest.warning.testName"/>",
+	        agentCount: "<@spring.message "perfTest.warning.agentNumber"/>",
+	        vuserPerAgent: "<@spring.message "perfTest.warning.vuserPerAgent"/>"
+	    },
+		ignore : "", // make the validation on hidden input work
+		errorClass : "help-inline",
+		errorElement : "span",
+		errorPlacement : function(error, element) {
+			if (element.next().attr("class") == "add-on") {
+				error.insertAfter(element.next());
+			} else {
+				error.insertAfter(element);
+			}
+		},
+		highlight : function(element, errorClass, validClass) {
+			$(element).parents('.control-group').addClass('error');
+			$(element).parents('.control-group').removeClass('success');
+		},
+		unhighlight : function(element, errorClass, validClass) {
+			$(element).parents('.control-group').removeClass('error');
+			$(element).parents('.control-group').addClass('success');
+		}
+	});
 
-	  function getDurationMS() {
-	      var durationH = parseInt($("#hSelect").val());
-	      var durationM = parseInt($("#mSelect").val());
-	      var durationS = parseInt($("#sSelect").val());
-	      var durationMs = (durationS + durationM * 60 + durationH * 3600) * 1000;
-	      var durationObj = $("#duration");
-	      durationObj.val(durationMs);
-	      durationObj.valid(); //trigger validation
-	      return durationMs;
-	  }
+	$("#vuserPerAgent").rules("add", {
+		max:${(maxVuserPerAgent)}
+	});
 
-	  function toggleThreshold() {
-	      $("#runcountChkbox").toggle();
-	      $("#durationChkbox").toggle();
-	  }
+	$("#saveScheduleBtn").click(function() {
+		if (!$("#testContentForm").valid()) {
+			return false;
+		}
+	});
+	
+	$("#saveTestBtn").click(function() {
+		if (!$("#testContentForm").valid()) {
+			return false;
+		}
+		//if ($("#isClone").val() == "true") {
+		//    $("#testId").val("");
+		//}
+		$("#testStatus").val("SAVED");
+		$("#scheduleInput").attr('name', '');
+		return true;
+	});
+	
+	$("#runNowBtn").click(function() {
+		$("#scheduleModal").modal("hide");
+		$("#scheduleModal small").html("");
+		$("#scheduleInput").attr('name', '');
+		//if ($("#isClone").val() == "true") {
+		//    $("#testId").val("");
+		//}
+		$("#testStatus").val("READY");
+		document.testContentForm.submit();
+	});
 
+	$("#addScheduleBtn").click(function() {
+		if (checkEmptyByID("sDateInput")) {
+			$("#scheduleModal small").html("<@spring.message "perfTest.detail.message.setScheduleDate"/>");
+			return;
+		}
+	
+		var timeStr = $("#sDateInput").val() + " " + $("#shSelect").val() + ":" + $("#smSelect").val() + ":0";
+		var scheduledTime = new Date(timeStr.replace(/-/g, "/"));
+		if (new Date() > scheduledTime) {
+			$("#scheduleModal small").html("<@spring.message "perfTest.detail.message.errScheduleDate"/>");
+			return;
+		}
+		$("#scheduleInput").val(scheduledTime);
+		$("#scheduleModal").modal("hide");
+		$("#scheduleModal small").html("");
+		$("#testStatus").val("READY");
+		document.testContentForm.submit();
+	});
 
-	  function getOption(cnt) {
-	      var contents = [];
-	      for (i = 0; i < cnt; i++) {
-	          contents.push("<option value='" + i + "'>" + i + "</option>");
-	      }
-	      return contents.join("\n");
-	  }
+	$('#sDateInput').datepicker({
+		format : 'yyyy-mm-dd'
+	});
+	
+	$("#hSelect").append(getOption(7 + 1));
+	$("#hSelect").change(getDurationMS);
+	
+	$("#mSelect").append(getOption(60));
+	$("#mSelect").change(getDurationMS);
+	
+	$("#sSelect").append(getOption(60));
+	$("#sSelect").change(getDurationMS);
+	
+	$("#shSelect").append(getOption(24));
+	$("#smSelect").append(getOption(60));
 
-	  function openReportDiv() {
-	      $("#reportContent").load("${req.getContextPath()}/perftest/loadReportDiv?testId=" + $("#testId").val() + "&imgWidth=600",
+	$("#runcountChkbox").change(function() {
+		if ($("#runcountChkbox").attr("checked") == "checked") {
+			$("#threshold").val("R");
+			$("#runCount").addClass("required");
+			$("#runCount").addClass("positiveNumber");
+			$("#durationChkbox").removeAttr("checked");
+			$("#duration").removeClass("required");
+			$("#duration").removeClass("positiveNumber");
+			$("#duration").valid();
+			$("#runCount").valid();
+		}
+	});
+	
+	$("#durationChkbox").change(function() {
+		if ($("#durationChkbox").attr("checked") == "checked") {
+			$("#threshold").val("D");
+			$("#duration").addClass("required positiveNumber");
+			$("#runcountChkbox").removeAttr("checked");
+			$("#runCount").removeClass("required");
+			$("#runCount").removeClass("positiveNumber");
+			$("#duration").valid();
+			$("#runCount").valid();
+		}
+	});
+	
+	$("#agentCount").change(function() {
+		updateVuserTotal();
+		$("#vuserPerAgent").validate();
+	});
+	
+	$("#threads").change(function() {
+		var processes = $("#processes").val();
+		$("#vuserPerAgent").val($("#processes").val() * $("#threads").val());
+		if ($("#vuserPerAgent").valid()) {
+			updateVuserGraph(processes);
+			updateVuserTotal();
+		}
+	});
+	
+	$("#processes").change(function() {
+		var $processes = $("#processes");
+		$("#vuserPerAgent").val($processes.val() * $("#threads").val());
+		if ($("#vuserPerAgent").valid()) {
+			updateVuserGraph(processes);
+			updateVuserTotal();
+		}
+	});
+	
+	$("#vuserPerAgent").change(function() {
+		var vuserElement = $(this);
+		var processCount = $("#processes").val();
+		if (vuserElement.valid()) {
+			var result = updateVuserPolicy(vuserElement.val());
+			$(this).val(result[0] * result[1]);
+			if (processCount != result[0]) {
+				updateVuserGraph(result[0]);
+			}
+			updateVuserTotal();
+		}
+	});
+	
+	$("#reportLnk").click(function() {
+		openReportDiv();
+	});
+	
+	$('#tableTab a').click(function(e) {
+		var $this = $(this);
+		if (!$this.hasClass("pull-right")) {
+			e.preventDefault();
+			$this.attr("tid");
+			$this.tab('show');
+		}
+	});
+	
+	$("#homeTab a").click(function() {
+		resetFooter();
+	});
 
-	      function () {
-	          drawChart('TPS', 'tpsDiv', $("#tpsData").val());
-	      });
-	  }
-	  var curPeakTps = 0;
-	  var curTps = 0;
-	  var curRunningTime = 0;
-	  var curRunningProcesses = 0;
-	  var curRunningThreads = 0;
-	  var curStatus = false;
-	  var curAgentPerfStates = []; 
-	  var agentPerfStates = []; 
-	  function refreshData() {
-	      var refreshDiv = $("<div></div>");
-	      var url = "${req.getContextPath()}/perftest/running/refresh?testId=" + $("#testId").val();
-	      var peakTps = 50;
-	      refreshDiv.load(url, function () {
-	      	  $("#running_time").text(showRunTime(curRunningTime));
-	          if (curStatus == true) {
-	              $("#lsTable tbody").empty();
-	              $("#asTable tbody").empty();
-	              $("#lsTable tbody").prepend(refreshDiv.find("#lsTableItem"));
-	              $("#asTable tbody").prepend(refreshDiv.find("#asTableItem"));
+	$("#showScript").click(function() {
+		var currentScript = $("#scriptName").val();
+		if (currentScript != "") {
+			var scriptRevision = $("#scriptRevision").val();
+			window.open("${req.getContextPath()}/script/detail/" + currentScript + "?r=" + scriptRevision, "scriptSource");
+		}
+	});
+	
+	updateVuserTotal();
+	initThresholdChkBox();
+	initDuration();
+	updateChart();
+	resetFooter();
+	$("#processAndThreadPanel").hide();
+	
+	$("#expandAndCollapse").click(function() {
+		$(this).toggleClass("collapse");
+		$("#processAndThreadPanelDiv").toggle();
+		$("#processAndThreadPanel").toggle();
+	});
+	updateScriptResources(true);
+	$("#durationSlider").mousedown(function() {
+		$("#durationChkbox").click();
+	});
+	$("#runCount").focus(function() {
+		$("#runcountChkbox").click();
+	});
+	
+	$("#testContent").click(function() {
+		resetFooter();
+	});
+});
 
-	              $("#process_data").text(curRunningProcesses);
-	              $("#thread_data").text(curRunningThreads);
-	              var agentStatusString = "";
-	              for (var i = 0; i < curAgentPerfStates.length; i++) {
-	                var eachAgent = curAgentPerfStates[i];
-	                if (agentPerfStates[eachAgent.agent] === undefined) {
-	                	agentPerfStates[eachAgent.agent] = { "cpu" : {}, "mem" : {} };
-	                }
-	                agentPerfStates[eachAgent.agent].cpu = eachAgent.cpu ;
-	                agentPerfStates[eachAgent.agent].mem = eachAgent.mem ;      
-	                // Use sparkle line...     
-	              	agentStatusString = agentStatusString + curAgentPerfStates[i].agent + "   CPU - " + curAgentPerfStates[i].cpu + "   MEM - " + curAgentPerfStates[i].mem + "<br/>" ;
-	              }	              
-	              $("#agent_status").html(agentStatusString);
-				  peakTps = curPeakTps;
-	              test_tps_data.enQueue(curTps);
-	          } else {
-	              if ($('#runningContent_tab:hidden')[0]) {
-	                  window.clearInterval(objTimer);
-	                  return;
-	              } else {
-	                  test_tps_data.enQueue(0);
-	              }
-	          }
+function initScheduleDate() {
+	var date = new Date();
+	var year = date.getFullYear();
+	var month = date.getMonth() + 1;
+	var day = date.getDate();
+	$("#sDateInput").val(year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day));
+}
 
-	          if (test_tps_data.getSize() > 60) {
-	              test_tps_data.deQueue();
-	          }
+function initDurationMap() {
+	durationMap[0] = 0;
+	for ( var i = 1; i <= sliderMax; i++) {
+		if (i <= 10) {
+			durationMap[i] = durationMap[i - 1] + 1;
+		} else if (i <= 20) {
+			durationMap[i] = durationMap[i - 1] + 5;
+		} else if (i <= 32) { //untill 180 min
+			durationMap[i] = durationMap[i - 1] + 10;
+		} else if (i <= 38) { //360 min
+			durationMap[i] = durationMap[i - 1] + 30;
+		} else if (i <= 56) { //24 hours
+			durationMap[i] = durationMap[i - 1] + 60;
+		} else if (i <= 72) {
+			durationMap[i] = durationMap[i - 1] + 60 * 6;
+		} else if (i <= 78) {
+			durationMap[i] = durationMap[i - 1] + 60 * 12;
+		} else {
+			durationMap[i] = durationMap[i - 1] + 60 * 24;
+		}
+	}
+}
+function updateVuserTotal() {
+	var agtCount = $("#agentCount").val();
+	var vcount = $("#vuserPerAgent").val();
+	$("#vuserTotal").text(agtCount * vcount);
+}
 
-	          showChart('runningTps', test_tps_data.aElement, peakTps);
-	      });
-	  }
+function initChartData() {
+	for ( var i = 0; i < 60; i++) {
+		test_tps_data.enQueue(0);
+	}
+}
 
-	  function showRunTime(s) {
-	      if (s < 60) {
-	          return "" + s + "s";
-	      }
-	      if (s < 3600) {
-	          return "" + parseInt(s / 60) + "m " + (s % 60) + "s";
-	      }
-	      if (s < 86400) {
-	          return "" + parseInt(s / 3600) + "h " + parseInt(s % 3600 / 60) + "m " + (s % 3600 % 60) + "s";
-	      }
+function updateScriptResources(first) {
+	$('#messageDiv').ajaxSend(function(e, xhr, settings) {
+		var url = settings.url;
+		if (url.indexOf("refresh") == 0) {
+			showInformation("<@spring.message "perfTest.detail.message.updateResource"/>");
+		}
+	});
+	$.ajax({
+		url : "${req.getContextPath()}/perftest/getResourcesOnScriptFolder",
+		dataType : 'json',
+		data : {
+			'scriptPath' : $("#scriptName").val(),
+			'r' : $("#scriptRevision").val()
+		},
+		success : function(res) {
+			var html = "";
+			var len = res.resources.length;
+			if (first != true) {
+				$(".div-host").html("");
+				$("#hostsHidden").val(res.targetHosts);
+				initHosts();
+			}
+			for ( var i = 0; i < len; i++) {
+				var value = res.resources[i];
+				html = html + "<div class='resource'>" + value + "</div><br/>";
+			}
+			$("#scriptResources").html(html);
+		},
+		error : function() {
+			showErrorMsg("<@spring.message "common.error.error"/>");
+			return false;
+		}
+	});
+}
 
-	      return "" + parseInt(s / 86400) + "d " + parseInt(s % 86400 / 3600) + "h " + parseInt(s % 86400 % 3600 / 60) + "m " + (s % 86400 % 3600 % 60) + "s";
-	  }
+function updateVuserPolicy(vuser) {
+	var processCount = getProcessCount(vuser);
+	var threadCount = getThreadCount(vuser);
+	$('#processes').val(processCount);
+	$('#threads').val(threadCount);
 
-	  function showChart(containerId, data, peakTps) {
-	      if (jqplotObj) {
-	          replotChart(jqplotObj, data, peakTps);
-	      } else {
-	          jqplotObj = drawChart('TPS', containerId, data);
-	      }
-	  }
+	return [ processCount, threadCount ];
+}
 
-	  
+function updateVuserGraph(processCount) {
+	//if ramp-up chart is not enabled, update init process count as total 
+	if ($("#rampupCheckbox")[0].checked) {
+		updateChart();
+	}
+}
 
-	  function updateStatus(id, status_type, status_name, icon, deletable, stoppable, message) {
-	      if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR" || status_type == "CANCELED") {
-	          isFinished = true;
-	      }
-	      if ($("#testStatusType").val() == status_type) {
-	          return;
-	      }
-	      var ballImg = $("#testStatus_img_id");
+function initThresholdChkBox() {
+	if ($("#threshold").val() == "R") { //runcount
+		$("#runcountChkbox").attr("checked", "checked");
+		$("#durationChkbox").removeAttr("checked");
+	} else { //duration
+		$("#durationChkbox").attr("checked", "checked");
+		$("#runcountChkbox").removeAttr("checked");
+	}
+}
 
-	      $("#teststatus_pop_over").attr("data-original-title", status_name);
-	      $("#teststatus_pop_over").attr("data-content", message);
+function initDuration() {
+	var duration = $("#duration").val();
+	var durationInSec = parseInt(duration / 1000);
+	var durationH = parseInt((durationInSec % (60 * 60 * 24)) / 3600);
+	var durationM = parseInt((durationInSec % 3600) / 60);
+	var durationS = durationInSec % 60;
 
-	      $("#testStatusType").val(status_type);
-	      if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
-	          ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
-	      }
+	$("#hSelect").val(durationH);
+	$("#mSelect").val(durationM);
+	$("#sSelect").val(durationS);
+}
 
-	      if (status_type == "TESTING") {
-	          displayCfgAndTestRunning();
-	      } else if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR" || status_type == "CANCELED") {
-	          displayCfgAndTestReport();
-	      } else {
-	          displayCfgOnly();
-	      }
+function getDurationMS() {
+	var durationH = parseInt($("#hSelect").val());
+	var durationM = parseInt($("#mSelect").val());
+	var durationS = parseInt($("#sSelect").val());
+	var durationMs = (durationS + durationM * 60 + durationH * 3600) * 1000;
+	var durationObj = $("#duration");
+	durationObj.val(durationMs);
+	durationObj.valid(); //trigger validation
+	return durationMs;
+}
 
-	  }
+function toggleThreshold() {
+	$("#runcountChkbox").toggle();
+	$("#durationChkbox").toggle();
+}
 
-	  var isFinished = false;
-      var testId = $('#testId').val();
-	  // Wrap this function in a closure so we don't pollute the namespace
-	  (function refreshContent() {
-	      var ids = [];
-	      if (testId == "" || isFinished) {
-	          return;
-	      }
+function getOption(cnt) {
+	var contents = [];
+	for (i = 0; i < cnt; i++) {
+		contents.push("<option value='" + i + "'>" + i + "</option>");
+	}
+	return contents.join("\n");
+}
 
-	      $.ajax({
-	          url: '${req.getContextPath()}/perftest/updateStatus',
-	          type: 'GET',
-	          data: {
-	              "ids": testId
-	          },
-	          success: function(perfTestData) {
-			    	perfTestData = eval(perfTestData); 
-			    	data = perfTestData.statusList
-	              for (var i = 0; i < data.length; i++) {
-	                  updateStatus(data[i].id, data[i].status_type, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
-	              }
-	          },
-	          complete: function () {
-	              setTimeout(refreshContent, 5000);
-	          }
-	      });
-	  })();
+function openReportDiv() {
+	$("#reportContent").load("${req.getContextPath()}/perftest/loadReportDiv?testId=" + $("#testId").val() + "&imgWidth=600",
+		function() {
+			drawChart('TPS', 'tpsDiv', $("#tpsData").val());
+	});
+}
 
-	  function displayCfgOnly() {
-	      $("#testContent_tab a").tab('show');
-	      $("#runningContent_tab").hide();
-	      $("#reportContent_tab").hide();
-	      resetFooter();
-	  }
+var curPeakTps = 0;
+var curTps = 0;
+var curRunningTime = 0;
+var curRunningProcesses = 0;
+var curRunningThreads = 0;
+var curStatus = false;
+var curAgentPerfStates = [];
+var agentPerfStates = [];
+function refreshData() {
+	var refreshDiv = $("<div></div>");
+	var url = "${req.getContextPath()}/perftest/running/refresh?testId=" + $("#testId").val();
+	var peakTps = 50;
+	refreshDiv.load(url, function() {
+		$("#running_time").text(showRunTime(curRunningTime));
+		if (curStatus == true) {
+			$("#lsTable tbody").empty();
+			$("#asTable tbody").empty();
+			$("#lsTable tbody").prepend(refreshDiv.find("#lsTableItem"));
+			$("#asTable tbody").prepend(refreshDiv.find("#asTableItem"));
 
-	  function displayCfgAndTestRunning() {
-	      $("#runningContent_tab").show();
-	      $("#runningContent_tab a").tab('show');
-	      $("#runningContent").show();
-	      $("#reportContent_tab").hide();
-		  
-	      objTimer = window.setInterval("refreshData()", 1000);
-	  }
+			$("#process_data").text(curRunningProcesses);
+			$("#thread_data").text(curRunningThreads);
+			var agentStatusString = "";
+			for ( var i = 0; i < curAgentPerfStates.length; i++) {
+				var eachAgent = curAgentPerfStates[i];
+				if (agentPerfStates[eachAgent.agent] === undefined) {
+					agentPerfStates[eachAgent.agent] = {"cpu" : {}, "mem" : {}};
+				}
+				agentPerfStates[eachAgent.agent].cpu = eachAgent.cpu;
+				agentPerfStates[eachAgent.agent].mem = eachAgent.mem;
+				// Use sparkle line...     
+				agentStatusString = agentStatusString
+						+ curAgentPerfStates[i].agent + "   CPU - "
+						+ curAgentPerfStates[i].cpu + "   MEM - "
+						+ curAgentPerfStates[i].mem + "<br/>";
+			}
+			$("#agent_status").html(agentStatusString);
+			peakTps = curPeakTps;
+			test_tps_data.enQueue(curTps);
+		} else {
+			if ($('#runningContent_tab:hidden')[0]) {
+				window.clearInterval(objTimer);
+				return;
+			} else {
+				test_tps_data.enQueue(0);
+			}
+		}
 
-	  function displayCfgAndTestReport() {
-	      $("#testContent_tab a").tab('show');
-	      $("#runningContent_tab").hide();
-	      $("#reportContent_tab").show();
-		  resetFooter();
-	      if (objTimer) {
-	          window.clearInterval(objTimer);
-	      }
-	  }
-	</script>
+		if (test_tps_data.getSize() > 60) {
+			test_tps_data.deQueue();
+		}
+
+		showChart('runningTps', test_tps_data.aElement, peakTps);
+	});
+}
+
+function showRunTime(s) {
+	if (s < 60) {
+		return "" + s + "s";
+	}
+	if (s < 3600) {
+		return "" + parseInt(s / 60) + "m " + (s % 60) + "s";
+	}
+	if (s < 86400) {
+		return "" + parseInt(s / 3600) + "h " + parseInt(s % 3600 / 60) + "m " + (s % 3600 % 60) + "s";
+	}
+
+	return "" + parseInt(s / 86400) + "d " + parseInt(s % 86400 / 3600) + "h " + parseInt(s % 86400 % 3600 / 60) + "m " + (s % 86400 % 3600 % 60) + "s";
+}
+
+function showChart(containerId, data, peakTps) {
+	if (jqplotObj) {
+		replotChart(jqplotObj, data, peakTps);
+	} else {
+		jqplotObj = drawChart('TPS', containerId, data);
+	}
+}
+
+function updateStatus(id, status_type, status_name, icon, deletable, stoppable, message) {
+	if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR" || status_type == "CANCELED") {
+		isFinished = true;
+	}
+	if ($("#testStatusType").val() == status_type) {
+		return;
+	}
+	var ballImg = $("#testStatus_img_id");
+
+	$("#teststatus_pop_over").attr("data-original-title", status_name);
+	$("#teststatus_pop_over").attr("data-content", message);
+
+	$("#testStatusType").val(status_type);
+	if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
+		ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
+	}
+
+	if (status_type == "TESTING") {
+		displayCfgAndTestRunning();
+	} else if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR" || status_type == "CANCELED") {
+		displayCfgAndTestReport();
+	} else {
+		displayCfgOnly();
+	}
+}
+
+var isFinished = false;
+var testId = $('#testId').val();
+// Wrap this function in a closure so we don't pollute the namespace
+(function refreshContent() {
+	var ids = [];
+	if (testId == "" || isFinished) {
+		return;
+	}
+
+	$.ajax({
+		url : '${req.getContextPath()}/perftest/updateStatus',
+		type : 'GET',
+		data : {
+			"ids" : testId
+		},
+		success : function(perfTestData) {
+			perfTestData = eval(perfTestData);
+			data = perfTestData.statusList
+			for ( var i = 0; i < data.length; i++) {
+				updateStatus(data[i].id, data[i].status_type, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
+			}
+		},
+		complete : function() {
+			setTimeout(refreshContent, 5000);
+		}
+	});
+})();
+
+function displayCfgOnly() {
+	$("#testContent_tab a").tab('show');
+	$("#runningContent_tab").hide();
+	$("#reportContent_tab").hide();
+	resetFooter();
+}
+
+function displayCfgAndTestRunning() {
+	$("#runningContent_tab").show();
+	$("#runningContent_tab a").tab('show');
+	$("#runningContent").show();
+	$("#reportContent_tab").hide();
+
+	objTimer = window.setInterval("refreshData()", 1000);
+}
+
+function displayCfgAndTestReport() {
+	$("#testContent_tab a").tab('show');
+	$("#runningContent_tab").hide();
+	$("#reportContent_tab").show();
+	resetFooter();
+	if (objTimer) {
+		window.clearInterval(objTimer);
+	}
+}
+</script>
 	</body>
 </html>
