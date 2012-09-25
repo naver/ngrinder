@@ -955,19 +955,21 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		checkNotNull(perfTest);
 		int port = perfTest.getPort();
 		Map<String, Object> result = getStatistics(port);
-		if (result == null) {
+		if (result == null || result.get("totalStatistics") == null) {
 			return;
 		}
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = (Map<String, Object>) result.get("totalStatistics");
-		perfTest.setErrors((int) ((Double) totalStatistics.get("Errors")).doubleValue());
-		perfTest.setTps(Double.parseDouble(formatter.format(totalStatistics.get("TPS"))));
-		perfTest.setMeanTestTime(Double.parseDouble(formatter.format(ObjectUtils.defaultIfNull(
-						totalStatistics.get("Mean_Test_Time_(ms)"), 0D))));
-		perfTest.setPeakTps(Double.parseDouble(formatter.format(ObjectUtils.defaultIfNull(
-						totalStatistics.get("Peak_TPS"), 0D))));
-		perfTest.setTests((int) ((Double) totalStatistics.get("Tests")).doubleValue());
-		LOGGER.info("Total Statics for test {}  is {}", perfTest.getId(), totalStatistics);
+		LOGGER.info("Total Statistics for test {}  is {}", perfTest.getId(), totalStatistics);
+		//if the test is finished abnormally, sometime, there is no statistic data can be got.
+		if (totalStatistics.containsKey("TPS")) {
+			//if "TPS" data exist, all the other should exist too, so I didn't check Null value in map
+			perfTest.setErrors((int) ((Double) totalStatistics.get("Errors")).doubleValue());
+			perfTest.setTps(Double.parseDouble(formatter.format(totalStatistics.get("TPS"))));
+			perfTest.setMeanTestTime(Double.parseDouble(formatter.format(totalStatistics.get("Mean_Test_Time_(ms)"))));
+			perfTest.setPeakTps(Double.parseDouble(formatter.format(totalStatistics.get("Peak_TPS"))));
+			perfTest.setTests((int) ((Double) totalStatistics.get("Tests")).doubleValue());
+		}
 	}
 
 	/**
