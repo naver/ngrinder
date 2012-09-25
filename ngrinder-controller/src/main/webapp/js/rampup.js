@@ -2,12 +2,12 @@ var plotObj;
 
 $(document).ready(function() {
 	$("#rampupCheckbox").on("click", function() {
-		updateChart();
+		updateRampupChart();
 	});
 	
 	$("#initProcesses, #initSleepTime, #processIncrement, #processIncrementInterval").on(
 		"change", function() {
-			updateChart();
+			updateRampupChart();
 	});
 });
 
@@ -26,7 +26,7 @@ function enableRampup() {
 	$('#processIncrementInterval').removeAttr("readonly");
 }
 
-function updateChart() {
+function updateRampupChart() {
 	var $processes = $('#processes');
 	var $processInc = $('#processIncrement');
 	var $initialProcesses = $('#initProcesses');

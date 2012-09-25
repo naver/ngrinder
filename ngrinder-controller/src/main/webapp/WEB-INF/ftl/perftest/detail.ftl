@@ -635,7 +635,6 @@ ${processthread_policy_script}
 
 var jqplotObj;
 var objTimer;
-var sliderMax = 40;
 var test_tps_data = new Queue();
 var durationMap = [];
 	  
@@ -644,10 +643,19 @@ $(document).ready(function () {
 		cache : false //close AJAX cache
 	});
 	
-	initDurationMap();
+	initDuration();
 	initChartData();
 	initScheduleDate();
+	initThresholdChkBox();
 	$("#tableTab a:first").tab('show');
+	$("#testContent_tab a").tab('show');
+	$("#processAndThreadPanel").hide();
+	
+	addValidation();
+	bindEvent();
+	updateScriptResources(true);
+	updateVuserTotal();
+	updateRampupChart();
 	
 	<#if test??>
 		<#if test.status.category == "TESTING"> 
@@ -660,28 +668,69 @@ $(document).ready(function () {
 	<#else>
 		displayCfgOnly();
 	</#if>
+
+	resetFooter();
+});
+
+function initScheduleDate() {
+	var date = new Date();
+	var year = date.getFullYear();
+	var month = date.getMonth() + 1;
+	var day = date.getDate();
+	$("#sDateInput").val(year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day));
 	
-	$('#testContentForm input').hover(function() {
-		$(this).popover('show');
+	$('#sDateInput').datepicker({
+		format : 'yyyy-mm-dd'
 	});
+}
+
+function initDuration() {
+	var sliderMax = 40;
+	durationMap[0] = 0;
+	
+	for ( var i = 1; i <= sliderMax; i++) {
+		if (i <= 10) {
+			durationMap[i] = durationMap[i - 1] + 1;
+		} else if (i <= 20) {
+			durationMap[i] = durationMap[i - 1] + 5;
+		} else if (i <= 32) { //untill 180 min
+			durationMap[i] = durationMap[i - 1] + 10;
+		} else if (i <= 38) { //360 min
+			durationMap[i] = durationMap[i - 1] + 30;
+		} else if (i <= 56) { //24 hours
+			durationMap[i] = durationMap[i - 1] + 60;
+		} else if (i <= 72) {
+			durationMap[i] = durationMap[i - 1] + 60 * 6;
+		} else if (i <= 78) {
+			durationMap[i] = durationMap[i - 1] + 60 * 12;
+		} else {
+			durationMap[i] = durationMap[i - 1] + 60 * 24;
+		}
+	}
 	
 	for ( var i = 0; i <= sliderMax; i++) {
 		if (durationMap[i] * 60000 == $("#duration").val()) {
 			$("#hiddenDurationInput").val(i);
+			break;
 		}
 	}
 	
-	$("#scriptName").change(function(selected) {
-		$("#showScript").val(selected);
-		updateScriptResources(false);
-	});
+	$("#hSelect").append(getOption(7 + 1));
+	$("#hSelect").change(getDurationMS);
 	
-	$("#hiddenDurationInput").bind("slide", function(e) {
-		$("#duration").val(durationMap[this.value] * 60000);
-		initDuration();
-		$("#duration").valid();
-	});
+	$("#mSelect").append(getOption(60));
+	$("#mSelect").change(getDurationMS);
+	
+	$("#sSelect").append(getOption(60));
+	$("#sSelect").change(getDurationMS);
+	
+	$("#shSelect").append(getOption(24));
+	$("#smSelect").append(getOption(60));
+	
+	setDuration();
+}
 
+function addValidation() {
 	$("#testContentForm").validate({
 		rules : {
 			testName : "required",
@@ -716,7 +765,24 @@ $(document).ready(function () {
 	$("#vuserPerAgent").rules("add", {
 		max:${(maxVuserPerAgent)}
 	});
+}
 
+function bindEvent() {
+	$('#testContentForm input').hover(function() {
+		$(this).popover('show');
+	});
+	
+	$("#scriptName").change(function(selected) {
+		$("#showScript").val(selected);
+		updateScriptResources(false);
+	});
+	
+	$("#hiddenDurationInput").bind("slide", function(e) {
+		$("#duration").val(durationMap[this.value] * 60000);
+		setDuration();
+		$("#duration").valid();
+	});
+	
 	$("#saveScheduleBtn").click(function() {
 		if (!$("#testContentForm").valid()) {
 			return false;
@@ -765,22 +831,6 @@ $(document).ready(function () {
 		document.testContentForm.submit();
 	});
 
-	$('#sDateInput').datepicker({
-		format : 'yyyy-mm-dd'
-	});
-	
-	$("#hSelect").append(getOption(7 + 1));
-	$("#hSelect").change(getDurationMS);
-	
-	$("#mSelect").append(getOption(60));
-	$("#mSelect").change(getDurationMS);
-	
-	$("#sSelect").append(getOption(60));
-	$("#sSelect").change(getDurationMS);
-	
-	$("#shSelect").append(getOption(24));
-	$("#smSelect").append(getOption(60));
-
 	$("#runcountChkbox").change(function() {
 		if ($("#runcountChkbox").attr("checked") == "checked") {
 			$("#threshold").val("R");
@@ -812,19 +862,17 @@ $(document).ready(function () {
 	});
 	
 	$("#threads").change(function() {
-		var processes = $("#processes").val();
 		$("#vuserPerAgent").val($("#processes").val() * $("#threads").val());
 		if ($("#vuserPerAgent").valid()) {
-			updateVuserGraph(processes);
+			updateVuserGraph();
 			updateVuserTotal();
 		}
 	});
 	
 	$("#processes").change(function() {
-		var $processes = $("#processes");
-		$("#vuserPerAgent").val($processes.val() * $("#threads").val());
+		$("#vuserPerAgent").val($("#processes").val() * $("#threads").val());
 		if ($("#vuserPerAgent").valid()) {
-			updateVuserGraph(processes);
+			updateVuserGraph();
 			updateVuserTotal();
 		}
 	});
@@ -836,7 +884,7 @@ $(document).ready(function () {
 			var result = updateVuserPolicy(vuserElement.val());
 			$(this).val(result[0] * result[1]);
 			if (processCount != result[0]) {
-				updateVuserGraph(result[0]);
+				updateVuserGraph();
 			}
 			updateVuserTotal();
 		}
@@ -867,22 +915,16 @@ $(document).ready(function () {
 		}
 	});
 	
-	updateVuserTotal();
-	initThresholdChkBox();
-	initDuration();
-	updateChart();
-	resetFooter();
-	$("#processAndThreadPanel").hide();
-	
 	$("#expandAndCollapse").click(function() {
 		$(this).toggleClass("collapse");
 		$("#processAndThreadPanelDiv").toggle();
 		$("#processAndThreadPanel").toggle();
 	});
-	updateScriptResources(true);
+	
 	$("#durationSlider").mousedown(function() {
 		$("#durationChkbox").click();
 	});
+	
 	$("#runCount").focus(function() {
 		$("#runcountChkbox").click();
 	});
@@ -890,38 +932,8 @@ $(document).ready(function () {
 	$("#testContent").click(function() {
 		resetFooter();
 	});
-});
-
-function initScheduleDate() {
-	var date = new Date();
-	var year = date.getFullYear();
-	var month = date.getMonth() + 1;
-	var day = date.getDate();
-	$("#sDateInput").val(year + "-" + (month < 10 ? "0" + month : month) + "-" + (day < 10 ? "0" + day : day));
 }
 
-function initDurationMap() {
-	durationMap[0] = 0;
-	for ( var i = 1; i <= sliderMax; i++) {
-		if (i <= 10) {
-			durationMap[i] = durationMap[i - 1] + 1;
-		} else if (i <= 20) {
-			durationMap[i] = durationMap[i - 1] + 5;
-		} else if (i <= 32) { //untill 180 min
-			durationMap[i] = durationMap[i - 1] + 10;
-		} else if (i <= 38) { //360 min
-			durationMap[i] = durationMap[i - 1] + 30;
-		} else if (i <= 56) { //24 hours
-			durationMap[i] = durationMap[i - 1] + 60;
-		} else if (i <= 72) {
-			durationMap[i] = durationMap[i - 1] + 60 * 6;
-		} else if (i <= 78) {
-			durationMap[i] = durationMap[i - 1] + 60 * 12;
-		} else {
-			durationMap[i] = durationMap[i - 1] + 60 * 24;
-		}
-	}
-}
 function updateVuserTotal() {
 	var agtCount = $("#agentCount").val();
 	var vcount = $("#vuserPerAgent").val();
@@ -978,10 +990,10 @@ function updateVuserPolicy(vuser) {
 	return [ processCount, threadCount ];
 }
 
-function updateVuserGraph(processCount) {
+function updateVuserGraph() {
 	//if ramp-up chart is not enabled, update init process count as total 
 	if ($("#rampupCheckbox")[0].checked) {
-		updateChart();
+		updateRampupChart();
 	}
 }
 
@@ -995,7 +1007,7 @@ function initThresholdChkBox() {
 	}
 }
 
-function initDuration() {
+function setDuration() {
 	var duration = $("#duration").val();
 	var durationInSec = parseInt(duration / 1000);
 	var durationH = parseInt((durationInSec % (60 * 60 * 24)) / 3600);
