@@ -75,9 +75,25 @@ public class MonitorExecuteManagerTest extends SigarTestBase{
 		MonitorExecuteManager.getInstance().addAgentMonitor("127.0.0.1", monitorAgentInfo);
 		
 		assertTrue(mrd.isRunning());
-		ThreadUtil.sleep(5000);
-		assertTrue(!mrd.getData().isEmpty());
+		ThreadUtil.sleep(3000);
+		int recordCount = mrd.getData().size();
+		assertTrue(recordCount > 0);
 		
+		MonitorExecuteManager.getInstance().removeAgentMonitor("127.0.0.1");
+		ThreadUtil.sleep(3000);
+		assertTrue(!mrd.isRunning());
+		
+		//make sure no monitoring record saved anymore
+		assertTrue(mrd.getData().size() == recordCount);
+		
+		//test adding 2 monitoring job on same target
+		MonitorExecuteManager.getInstance().addAgentMonitor("127.0.0.1", monitorAgentInfo);
+		ThreadUtil.sleep(2000);
+		MonitorExecuteManager.getInstance().addAgentMonitor("127.0.0.1", monitorAgentInfo);
+		ThreadUtil.sleep(2000);
+
+		MonitorExecuteManager.getInstance().removeAgentMonitor("127.0.0.1");
+		assertTrue(mrd.isRunning()); //monitoring job is still running
 		MonitorExecuteManager.getInstance().removeAgentMonitor("127.0.0.1");
 		assertTrue(!mrd.isRunning());
 	}

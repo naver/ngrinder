@@ -354,7 +354,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	public void doStop(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		perfTestService.updatePerfTestAfterTestFinish(perfTest);
 		perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED, "Stop requested by user");
-		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
+		removeMonitorTargets(perfTest);
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
 
@@ -369,7 +369,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		perfTestService.updatePerfTestAfterTestFinish(perfTest);
 		perfTestService.markProgressAndStatus(perfTest, Status.STOP_ON_ERROR, "Stoped by error");
-		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
+		removeMonitorTargets(perfTest);
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
 
@@ -393,7 +393,14 @@ public class PerfTestRunnable implements NGrinderConstants {
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.FINISHED,
 							"The test is finished successfully");
 		}
-		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
+		removeMonitorTargets(perfTest);
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
+	}
+	
+	private void removeMonitorTargets(PerfTest perfTest) {
+		List<String> targetIPList = perfTest.getTargetHostIP();
+		for (String targetIP : targetIPList) {
+			monitorDataService.removeMonitorAgents(targetIP);
+		}
 	}
 }

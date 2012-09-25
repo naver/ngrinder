@@ -23,6 +23,7 @@
 package org.ngrinder.chart.service;
 
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
@@ -105,10 +106,16 @@ public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
 		ThreadUtil.sleep(3000);
 		long endTime = NumberUtils.toLong(df.format(new Date()));
 		List<SystemDataModel> infoList = monitorService.getSystemMonitorData("127.0.0.1", startTime, endTime);
-		assertThat(infoList.size(), greaterThan(0));
+		int size = infoList.size();
+		assertThat(size, greaterThan(0));
 		
-		monitorDataService.removeMonitorAgents("127.0.0.1_test");
+		monitorDataService.removeMonitorAgents("127.0.0.1");
 		
+		//sleep a while to check whether the monitoring is stopped.
+		ThreadUtil.sleep(3000);
+		endTime = NumberUtils.toLong(df.format(new Date()));
+		infoList = monitorService.getSystemMonitorData("127.0.0.1", startTime, endTime);
+		assertThat(size, is(infoList.size()));		
 	}
 
 }
