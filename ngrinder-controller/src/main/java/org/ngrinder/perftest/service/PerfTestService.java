@@ -409,15 +409,15 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 	@Transactional
 	public PerfTest markProgressAndStatusAndFinishTimeAndStatistics(PerfTest perfTest, Status status, String message) {
-		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
-		if (findOne == null) {
-			return null;
-		}
-		findOne.setStatus(status);
-		findOne.setLastProgressMessage(message);
-		findOne.setFinishTime(new Date());
-		updatePerfTestAfterTestFinish(findOne);
-		return perfTestRepository.save(findOne);
+//		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
+//		if (findOne == null) {
+//			return null;
+//		}
+		perfTest.setStatus(status);
+		perfTest.setLastProgressMessage(message);
+		perfTest.setFinishTime(new Date());
+		updatePerfTestAfterTestFinish(perfTest);
+		return perfTestRepository.save(perfTest);
 	}
 
 	/**
