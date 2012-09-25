@@ -57,7 +57,6 @@ import net.grinder.util.Directory;
 import net.grinder.util.GrinderClassPathUtils;
 import net.grinder.util.thread.Condition;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.AgentConfig;
@@ -390,7 +389,7 @@ public class AgentImplementationEx implements Agent {
 
 	private String addCurrentAgentPath(String jvmArguments) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(jvmArguments).append(" -Dngrinder.exec.path=").append(new File(".").getAbsolutePath()).append(' ');
+		sb.append(jvmArguments).append(" -Dngrinder.exec.path=").append(new File("").getAbsolutePath()).append(' ');
 		return sb.toString();
 	}
 
