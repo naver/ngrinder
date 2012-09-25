@@ -418,7 +418,7 @@ public class AgentImplementationEx implements Agent {
 		String etcHost = properties.getProperty("ngrinder.etc.hosts", "");
 		if (StringUtils.isNotEmpty(etcHost)) {
 			jvmArguments = jvmArguments + " -Dngrinder.etc.hosts=" + etcHost + "," + getHostName() + ":127.0.0.1,localhost:127.0.0.1"
-					+ " -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDn ";
+					+ " -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns";
 		}
 		return jvmArguments;
 	}
