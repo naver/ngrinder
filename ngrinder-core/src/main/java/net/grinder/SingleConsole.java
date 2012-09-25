@@ -602,8 +602,8 @@ public class SingleConsole implements Listener, SampleListener {
 		if (tps < 0.001) {
 			if (TPS_LESSTHAN_ZREO_TIME == null) {
 				TPS_LESSTHAN_ZREO_TIME = new Date();
-			} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= 120000) {
-				LOGGER.warn("Test has been forced to stop because of tps is less than 0.001 and sustain more than two minitue.");
+			} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= 60000) {
+				LOGGER.warn("Test has been forced to stop because of tps is less than 0.001 and sustain more than 1 minitue.");
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
 					public void inform(ConsoleShutdownListener listener) {
 						listener.readyToStop(StopReason.TOO_LOW_TPS);

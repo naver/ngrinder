@@ -85,6 +85,10 @@
                        <th><@spring.message "perfTest.report.finishedTest"/></th>
                        <td>${test.tests}</td>
                    </tr>
+                   <tr>
+                       <th><@spring.message "perfTest.report.errors"/></th>
+                       <td>${test.errors}</td> 
+                   </tr>
 			   </table>
 			   <ul class="unstyled">
                  <li><i class="icon-tag"></i> <a id="testPerformance" href="javascript:void(0);"><@spring.message "perfTest.report.performanceReport"/></a></li>

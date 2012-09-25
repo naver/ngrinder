@@ -46,8 +46,8 @@ public class AgentControllerServer {
 	 * @throws GrinderException
 	 *             occurs when error is
 	 */
-	public AgentControllerServer(Resources resources, Logger logger, ConsoleProperties properties,
-			Condition eventSyncCondition) throws GrinderException {
+	public AgentControllerServer(Resources resources, Logger logger, ConsoleProperties properties, Condition eventSyncCondition)
+			throws GrinderException {
 		m_eventSyncCondition = eventSyncCondition;
 		m_container = new DefaultPicoContainer(new Caching());
 		m_container.addComponent(logger);
@@ -93,7 +93,10 @@ public class AgentControllerServer {
 	public void shutdown() {
 		m_shutdown = true;
 		m_container.getComponent(ConsoleCommunication.class).shutdown();
-		m_timer.cancel();
+		try {
+			m_timer.cancel();
+		} catch (Exception e) {
+		}
 		if (m_container.getLifecycleState().isStarted()) {
 			m_container.stop();
 		}

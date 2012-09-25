@@ -127,7 +127,7 @@ public class AgentControllerServerDaemon {
 				startSync();
 			}
 		});
-		thread.setDaemon(false);
+		thread.setDaemon(true);
 		thread.start();
 		synchronized (m_eventSyncCondition) {
 			m_eventSyncCondition.waitNoInterrruptException(AGENT_CONTROLLER_SERVER_EVENT_EXPIRATION_TIMEOUT);
@@ -147,7 +147,7 @@ public class AgentControllerServerDaemon {
 	public void shutdown() {
 		try {
 			agentControllerServer.shutdown();
-			if (thread != null && thread.isAlive()) {
+			if (thread != null) {
 				thread.join(AGENT_CONTROLLER_SERVER_SHUTDOWN_WAITING_TIMEOUT);
 				thread.interrupt();
 			}

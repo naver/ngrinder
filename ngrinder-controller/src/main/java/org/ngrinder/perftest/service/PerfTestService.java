@@ -68,6 +68,7 @@ import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.Directory;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -386,13 +387,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	@Transactional
 	public PerfTest markProgressAndStatus(PerfTest perfTest, Status status, String message) {
-		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
-		if (findOne == null) {
-			return null;
-		}
-		findOne.setStatus(status);
-		findOne.setLastProgressMessage(message);
-		return perfTestRepository.save(findOne);
+		perfTest.setStatus(status);
+		perfTest.setLastProgressMessage(message);
+		return perfTestRepository.save(perfTest);
 	}
 
 	/**
@@ -409,10 +406,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 	@Transactional
 	public PerfTest markProgressAndStatusAndFinishTimeAndStatistics(PerfTest perfTest, Status status, String message) {
-//		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
-//		if (findOne == null) {
-//			return null;
-//		}
 		perfTest.setStatus(status);
 		perfTest.setLastProgressMessage(message);
 		perfTest.setFinishTime(new Date());
@@ -814,7 +807,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			int current = 0;
 			while (StringUtils.isNotBlank(data)) {
 				if (0 == current) {
-					double number = NumberUtils.createDouble(data);
+					double number = NumberUtils.createDouble(StringUtils.defaultIfBlank(data, "0"));
 					reportData.append(number);
 					reportData.append(",");
 				}
@@ -953,24 +946,19 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	public void updatePerfTestAfterTestFinish(PerfTest perfTest) {
 		checkNotNull(perfTest);
-		int port = perfTest.getPort();
-		Map<String, Object> result = getStatistics(port);
-		if (result == null || result.get("totalStatistics") == null) {
-			perfTest.setStatus(Status.STOP_ON_ERROR);
-			return;
-		}
+		Map<String, Object> result = getStatistics(perfTest.getPort());
+		
 		@SuppressWarnings("unchecked")
-		Map<String, Object> totalStatistics = (Map<String, Object>) result.get("totalStatistics");
+		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
 		LOGGER.info("Total Statistics for test {}  is {}", perfTest.getId(), totalStatistics);
 		//if the test is finished abnormally, sometime, there is no statistic data can be got.
-		if (totalStatistics.containsKey("TPS")) {
 			//if "TPS" data exist, all the other should exist too, so I didn't check Null value in map
-			perfTest.setErrors((int) ((Double) totalStatistics.get("Errors")).doubleValue());
-			perfTest.setTps(Double.parseDouble(formatter.format(totalStatistics.get("TPS"))));
-			perfTest.setMeanTestTime(Double.parseDouble(formatter.format(totalStatistics.get("Mean_Test_Time_(ms)"))));
-			perfTest.setPeakTps(Double.parseDouble(formatter.format(totalStatistics.get("Peak_TPS"))));
-			perfTest.setTests((int) ((Double) totalStatistics.get("Tests")).doubleValue());
-		}
+		perfTest.setErrors(MapUtils.getDouble(totalStatistics, "Errors", 0D).intValue());
+		perfTest.setTps(Double.parseDouble(formatter.format(MapUtils.getDouble(totalStatistics, "TPS", 0D))));
+		perfTest.setMeanTestTime(Double.parseDouble(formatter.format(MapUtils.getDouble(totalStatistics, "Mean_Test_Time_(ms)", 0D))));
+		perfTest.setPeakTps(Double.parseDouble(formatter.format(MapUtils.getDouble(totalStatistics, "Peak_TPS", 0D))));
+		perfTest.setTests(MapUtils.getDouble(totalStatistics, "Tests", 0D).intValue());
+		
 	}
 
 	/**

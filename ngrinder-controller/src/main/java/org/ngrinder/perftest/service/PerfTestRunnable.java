@@ -352,7 +352,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            {@link SingleConsole} which is being using for {@link PerfTest}
 	 */
 	public void doStop(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		perfTestService.updatePerfTestAfterTestFinish(perfTest);
 		perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED, "Stop requested by user");
 		removeMonitorTargets(perfTest);
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
@@ -367,8 +366,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            {@link SingleConsole} which is being using for {@link PerfTest}
 	 */
 	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		perfTestService.updatePerfTestAfterTestFinish(perfTest);
-		perfTestService.markProgressAndStatus(perfTest, Status.STOP_ON_ERROR, "Stoped by error");
+		perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR, "Stoped by error");
 		removeMonitorTargets(perfTest);
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}

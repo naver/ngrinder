@@ -183,7 +183,12 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 		m_acceptorProblemListener = new Thread("Acceptor problem listener") {
 			public void run() {
 				while (true) {
-					final Exception exception = m_acceptor.getPendingException();
+					
+					Exception exception = null;
+					try {
+						exception = m_acceptor.getPendingException();
+					} catch(Exception e) {
+					}
 
 					if (exception == null) {
 						// Acceptor is shutting down.

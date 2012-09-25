@@ -33,6 +33,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import net.grinder.AgentControllerServerDaemon;
 import net.grinder.SingleConsole;
@@ -69,8 +70,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AgentManager implements NGrinderConstants {
 	public static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);
-	private final AgentControllerServerDaemon agentControllerServer = new AgentControllerServerDaemon(
-					AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+	private AgentControllerServerDaemon agentControllerServer;
 	private static final int NUMBER_OF_THREAD = 3;
 	private static final int AGENT_RUN_TIMEOUT_SECOND = 10;
 
@@ -85,6 +85,8 @@ public class AgentManager implements NGrinderConstants {
 	 */
 	@PostConstruct
 	public void init() {
+		agentControllerServer = new AgentControllerServerDaemon(
+				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		agentControllerServer.start();
 		agentControllerServer.addLogArrivedListener(new LogArrivedListener() {
 			@Override
@@ -112,6 +114,10 @@ public class AgentManager implements NGrinderConstants {
 		});
 	}
 	
+	@PreDestroy
+	public void destroy() {
+		agentControllerServer.shutdown();
+	}
 	/**
 	 * Get the port which given agent is connecting to.
 	 * @param agentIdentity agent identity
