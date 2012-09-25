@@ -31,10 +31,13 @@ import org.ngrinder.model.User;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
- * User entity Specification Holder
+ * User entity Specification Holder.
  * @author JunHo Yoon
  */
 public class UserSpecification {
+	
+	private UserSpecification() {}
+	
 	public static Specification<User> nameLike(final String query) {
 		return new Specification<User>() {
 			@Override

@@ -36,7 +36,6 @@ import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.service.UserService;
 import org.python.util.PythonInterpreter;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -154,7 +153,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 
 	
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 	}
 }

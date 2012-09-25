@@ -25,7 +25,7 @@ package org.ngrinder.infra.spring;
 import org.springframework.data.domain.PageRequest;
 
 /**
- * Convenient class for when requesting only one element
+ * Convenient class for when requesting only one element.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -33,7 +33,7 @@ import org.springframework.data.domain.PageRequest;
 public class OnlyOnePageRequest extends PageRequest {
 
 	/**
-	 * UUID
+	 * UUID.
 	 */
 	private static final long serialVersionUID = -7852729644522630091L;
 	

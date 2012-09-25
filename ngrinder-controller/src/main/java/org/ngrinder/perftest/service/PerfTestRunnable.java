@@ -124,8 +124,9 @@ public class PerfTestRunnable implements NGrinderConstants {
 		int size = agentManager.getAllFreeApprovedAgents().size();
 		if (runCandidate.getAgentCount() > size) {
 			perfTestService.markProgress(runCandidate,
-							"The test is tried to execute but there is not enough free agents.\n- Current free agent size : "
-											+ size + "  / Requested : " + runCandidate.getAgentCount() + "\n");
+							"The test is tried to execute but there is not enough free agents." +
+							"\n- Current free agent size : " 
+									+ size + "  / Requested : " + runCandidate.getAgentCount() + "\n");
 			return;
 		}
 
@@ -186,7 +187,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Distribute files
+	 * Distribute files.
 	 * 
 	 * @param perfTest
 	 *            perftest
@@ -205,7 +206,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Start agents
+	 * Start agents.
 	 * 
 	 * @param perfTest
 	 *            perftest
@@ -215,7 +216,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            console
 	 */
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
-		perfTestService.changePerfTestStatus(perfTest, START_AGENTS, perfTest.getAgentCount() + " agents are starting.");
+		perfTestService.changePerfTestStatus(
+				perfTest, START_AGENTS, perfTest.getAgentCount() + " agents are starting.");
 		agentManager.runAgent(singleConsole, grinderProperties, perfTest.getAgentCount());
 		singleConsole.waitUntilAgentConnected(perfTest.getAgentCount());
 		perfTestService.changePerfTestStatus(perfTest, START_AGENTS_FINISHED, perfTest.getAgentCount()
@@ -267,7 +269,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Run plugins' test finish methods
+	 * Run plugins' test finish methods.
 	 * 
 	 * @param perfTest
 	 *            PerfTest
@@ -352,7 +354,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	public void doStop(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		perfTestService.updatePerfTestAfterTestFinish(perfTest);
 		perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED, "Stop requested by user");
-		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
+		removeMonitorTargets(perfTest);
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
 
@@ -367,7 +369,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		perfTestService.updatePerfTestAfterTestFinish(perfTest);
 		perfTestService.markProgressAndStatus(perfTest, Status.STOP_ON_ERROR, "Stoped by error");
-		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
+		removeMonitorTargets(perfTest);
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
 
@@ -391,7 +393,14 @@ public class PerfTestRunnable implements NGrinderConstants {
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.FINISHED,
 							"The test is finished successfully");
 		}
-		monitorDataService.removeMonitorAgents("PerfTest-" + perfTest.getId());
+		removeMonitorTargets(perfTest);
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
+	}
+	
+	private void removeMonitorTargets(PerfTest perfTest) {
+		List<String> targetIPList = perfTest.getTargetHostIP();
+		for (String targetIP : targetIPList) {
+			monitorDataService.removeMonitorAgents(targetIP);
+		}
 	}
 }

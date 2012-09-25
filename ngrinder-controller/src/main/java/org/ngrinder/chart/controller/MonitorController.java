@@ -59,8 +59,7 @@ import com.google.gson.Gson;
 @RequestMapping("/monitor")
 public class MonitorController extends NGrinderBaseController {
 
-	private static final String DATE_FORMAT = "yyyyMMddHHmmss";
-	private static final DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+	private static final DateFormat DATE_FORMATER = new SimpleDateFormat("yyyyMMddHHmmss");
 
 	@Autowired
 	private MonitorService monitorService;
@@ -68,7 +67,7 @@ public class MonitorController extends NGrinderBaseController {
 	@Autowired
 	private AgentManager agentManager;
 	
-	private static final Gson gson = new Gson();
+	private static final Gson GSON = new Gson();
 
 	@RequestMapping("/getCurrentMonitorData")
 	public @ResponseBody String getCurrentMonitorData(ModelMap model, @RequestParam String ip) {
@@ -82,11 +81,11 @@ public class MonitorController extends NGrinderBaseController {
 		systemData = systemData != null ? systemData : new SystemDataModel();
 		returnMap.put(JSON_SUCCESS, true);
 		returnMap.put("systemData", systemData);
-		return gson.toJson(returnMap);
+		return GSON.toJson(returnMap);
 	}
 	
 	/**
-	 * get monitor data of agents
+	 * Get monitor data of agents.
 	 * 
 	 * @param model
 	 * @param ip
@@ -103,11 +102,11 @@ public class MonitorController extends NGrinderBaseController {
 			finishTime = new Date();
 		}
 		if (null == startTime) {
-			startTime = new Date(finishTime.getTime() - 60 * 1000);//default getting one minute's monitor data
+			startTime = new Date(finishTime.getTime() - 60 * 1000); //default getting one minute's monitor data
 		}
 		
-		long st = NumberUtils.toLong(df.format(startTime));
-		long et = NumberUtils.toLong(df.format(finishTime));
+		long st = NumberUtils.toLong(DATE_FORMATER.format(startTime));
+		long et = NumberUtils.toLong(DATE_FORMATER.format(finishTime));
 		checkNotZero(st, "Invalid start time!");
 		checkNotZero(et, "Invalid end time!");
 

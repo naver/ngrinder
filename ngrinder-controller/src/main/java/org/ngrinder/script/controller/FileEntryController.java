@@ -81,7 +81,7 @@ public class FileEntryController extends NGrinderBaseController {
 	private ScriptValidationService scriptValidationService;
 
 	/**
-	 * Validate the script
+	 * Validate the script.
 	 * 
 	 * @param user
 	 * @param scriptEntry

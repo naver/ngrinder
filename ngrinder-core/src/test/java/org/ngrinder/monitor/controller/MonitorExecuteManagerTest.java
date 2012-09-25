@@ -22,16 +22,16 @@
  */
 package org.ngrinder.monitor.controller;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 
-import org.junit.Assert;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.SigarTestBase;
@@ -50,25 +50,51 @@ import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
 public class MonitorExecuteManagerTest extends SigarTestBase{
 
 	@Before
-	public void start() throws MalformedObjectNameException, InstanceAlreadyExistsException,
+	public void startMonitorServer() throws MalformedObjectNameException, InstanceAlreadyExistsException,
 			MBeanRegistrationException, NotCompliantMBeanException, IOException {
 		AgentMonitorServer.getInstance().init();
 		AgentMonitorServer.getInstance().start();
 	}
+	
+	@After
+	public void stopMonitorServer() throws IOException {
+		AgentMonitorServer.getInstance().stop();
+	}
 
 	@Test
 	public void getMonitorData() {
-		Set<MonitorAgentInfo> agentInfo = new HashSet<MonitorAgentInfo>();
+
+		int port = AgentMonitorServer.getInstance().getPort();
+		assertTrue(MonitorConstants.DEFAULT_MONITOR_PORT == port);
+		assertTrue(AgentMonitorServer.getInstance().isRunning());
+		
 		MonitorRecoderDemo mrd = new MonitorRecoderDemo();
 		MonitorAgentInfo monitorAgentInfo = MonitorAgentInfo.getSystemMonitor("127.0.0.1",
 				MonitorConstants.DEFAULT_MONITOR_PORT, mrd);
-		agentInfo.add(monitorAgentInfo);
-		MonitorExecuteManager monitorExecuteManager = new MonitorExecuteManager("127.0.0.1", 1, 1, agentInfo);
-		monitorExecuteManager.start();
-		Assert.assertTrue(mrd.isRunning());
-		ThreadUtil.sleep(5000);
-		Assert.assertTrue(!mrd.getData().isEmpty());
-		monitorExecuteManager.stop();
-		Assert.assertFalse(mrd.isRunning());
+
+		MonitorExecuteManager.getInstance().addAgentMonitor("127.0.0.1", monitorAgentInfo);
+		
+		assertTrue(mrd.isRunning());
+		ThreadUtil.sleep(3000);
+		int recordCount = mrd.getData().size();
+		assertTrue(recordCount > 0);
+		
+		MonitorExecuteManager.getInstance().removeAgentMonitor("127.0.0.1");
+		ThreadUtil.sleep(3000);
+		assertTrue(!mrd.isRunning());
+		
+		//make sure no monitoring record saved anymore
+		assertTrue(mrd.getData().size() == recordCount);
+		
+		//test adding 2 monitoring job on same target
+		MonitorExecuteManager.getInstance().addAgentMonitor("127.0.0.1", monitorAgentInfo);
+		ThreadUtil.sleep(2000);
+		MonitorExecuteManager.getInstance().addAgentMonitor("127.0.0.1", monitorAgentInfo);
+		ThreadUtil.sleep(2000);
+
+		MonitorExecuteManager.getInstance().removeAgentMonitor("127.0.0.1");
+		assertTrue(mrd.isRunning()); //monitoring job is still running
+		MonitorExecuteManager.getInstance().removeAgentMonitor("127.0.0.1");
+		assertTrue(!mrd.isRunning());
 	}
 }

@@ -59,14 +59,7 @@
 				</div>
 
 				<div class="pull-right"> 
-					<#if perfTestStatisticsList?has_content>
-						<img class="status" src="${req.getContextPath()}/img/ball/green_anime.gif">
-						<#assign perfPeopleSize = perfTestStatisticsList?size>
-					<#else>
-						<#assign perfPeopleSize = 0>
-					</#if>
-					<code id="currentRunning" style="width:300px"> <@spring.messageArgs "perfTest.currentRunning.summary", ["${perfPeopleSize}"]/></code>
-					
+					<code id="currentRunning" style="width:300px"></code>
 				</div>
 				
 				
@@ -182,6 +175,7 @@
 </div>
 	<script>
 		$(document).ready(function() {
+		
 			$('td.ellipsis').hover(function () {
 	          $(this).popover('show');
 	      	});
@@ -335,18 +329,26 @@
 		}
 		// Wrap this function in a closure so we don't pollute the namespace
 		(function refreshContent() {
+		
 			var ids = $('.perf_test').map(function() {
 		    	return this.value;
 		  	}).get();
 			if (ids.length == 0) {
+				var springMessage =  "0 <@spring.message "perfTest.currentRunning.summary"/>";
+			    $("#currentRunning").text(springMessage);
 				return;
 			}
 		    $.ajax({
 			    url: '${req.getContextPath()}/perftest/updateStatus', 
 			    type: 'POST',
 			    data: {"ids": ids.join(",")},
-			    success: function(data) {
-			    	data = eval(data); 
+			    success: function(perfTestData) {
+			    	perfTestData = eval(perfTestData); 
+			    	data = perfTestData.statusList
+			    	var perfTest = perfTestData.perfTestInfo;
+			    	var springMessage = perfTest.length + " <@spring.message "perfTest.currentRunning.summary"/>";
+			    	
+			    	$("#currentRunning").text(springMessage);
 			    	for (var i = 0; i < data.length; i++) { 
 			    		updateStatus(data[i].id, data[i].name, data[i].icon, data[i].stoppable, data[i].deletable, data[i].message);
 			    	}

@@ -40,28 +40,16 @@ public class ConsoleEntry {
 	/**
 	 * Constructor.
 	 * 
-	 * @param port
-	 *            port
+	 * @param port port
 	 */
 	public ConsoleEntry(Integer port) {
 		this.port = port;
 	}
 
-	/**
-	 * Get port
-	 * 
-	 * @return port
-	 */
 	public Integer getPort() {
 		return port;
 	}
 
-	/**
-	 * Set port
-	 * 
-	 * @param port
-	 *            port number
-	 */
 	public void setPort(Integer port) {
 		this.port = port;
 	}
@@ -95,5 +83,4 @@ public class ConsoleEntry {
 		}
 		return true;
 	}
-
 }

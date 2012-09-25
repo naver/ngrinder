@@ -96,7 +96,7 @@ public class FileEntryService {
 	private FileEntryRepository fileEntityRepository;
 
 	/**
-	 * Initialize {@link FileEntryService}
+	 * Initialize {@link FileEntryService}.
 	 */
 	@PostConstruct
 	public void init() {
@@ -230,7 +230,7 @@ public class FileEntryService {
 	}
 
 	/**
-	 * Add folder on the given path
+	 * Add folder on the given path.
 	 * 
 	 * @param user
 	 *            user

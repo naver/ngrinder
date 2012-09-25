@@ -1,5 +1,5 @@
 /**
- * package containing spring extensions
+ * package containing spring extensions.
  */
 package org.ngrinder.infra.spring;
 

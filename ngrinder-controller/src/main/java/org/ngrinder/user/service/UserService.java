@@ -86,7 +86,7 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * Encoding given user's password
+	 * Encoding given user's password.
 	 * @param user user
 	 */
 	public void encodePassword(User user) {
@@ -132,7 +132,7 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * Add normal user
+	 * Add normal user.
 	 * 
 	 * @param user
 	 */
@@ -186,7 +186,7 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * get Role object based on role name
+	 * get Role object based on role name.
 	 * 
 	 * @param roleName
 	 * @return

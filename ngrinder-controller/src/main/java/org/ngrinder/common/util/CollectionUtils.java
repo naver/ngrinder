@@ -26,12 +26,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Collection utilities
+ * Collection utilities.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
 public class CollectionUtils {
+	
+	private CollectionUtils() {}
+	
 	public static <T> Set<T> selectSome(Set<T> set, int count) {
 		Set<T> newSet = new HashSet<T>();
 		int i = 0;

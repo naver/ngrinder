@@ -34,7 +34,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 /**
- * Performance Test Repository
+ * Performance Test Repository.
  * 
  * @author junHo Yoon
  * @since 3.0

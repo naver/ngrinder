@@ -29,7 +29,7 @@ import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 
 /**
- * Encoding detection utility from byte array
+ * Encoding detection utility from byte array.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -52,7 +52,7 @@ public abstract class EncodingUtil {
 		detector.setText(data);
 		CharsetMatch cm = detector.detect();
 		String estimatedEncoding = cm.getName();
-		boolean isReliable = (true == Charset.isSupported(estimatedEncoding) && cm.getConfidence() >= 50);
-		return (isReliable) ? estimatedEncoding : defaultEncoding;
+		boolean isReliable = Charset.isSupported(estimatedEncoding) && cm.getConfidence() >= 50;
+		return isReliable ? estimatedEncoding : defaultEncoding;
 	}
 }

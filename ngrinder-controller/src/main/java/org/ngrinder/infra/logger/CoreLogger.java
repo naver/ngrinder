@@ -34,8 +34,11 @@ import org.slf4j.LoggerFactory;
  * @since 3.0
  */
 public class CoreLogger {
+	
+	private CoreLogger() {}
+	
 	/**
-	 * Core logger
+	 * Core logger.
 	 */
 	public static final Logger LOGGER = LoggerFactory.getLogger(CoreLogger.class);
 }

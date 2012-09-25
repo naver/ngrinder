@@ -23,15 +23,18 @@
 package org.ngrinder.common.util;
 
 /**
- * Utility class for path manipulation
+ * Utility class for path manipulation.
  * 
  * @author JunHo Yoon
  * @since 3.0
  * 
  */
 public class PathUtil {
+	
+	private PathUtil() {}
+	
 	/**
-	 * Remove prepending / on path
+	 * Remove prepending / on path.
 	 * 
 	 * @param path
 	 *            path containning /
@@ -45,7 +48,7 @@ public class PathUtil {
 	}
 	
 	/**
-	 * Remove prepending / on path
+	 * Remove prepending / on path.
 	 * 
 	 * @param path
 	 *            path containning /

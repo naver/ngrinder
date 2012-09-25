@@ -39,6 +39,9 @@ import org.springframework.data.jpa.domain.Specification;
  * @since 3.0
  */
 public class PerfTestSpecification {
+	
+	private PerfTestSpecification() {}
+	
 	/**
 	 * Get the Specification which check the {@link PerfTest} has one of given statuses.
 	 * 
@@ -120,7 +123,7 @@ public class PerfTestSpecification {
 	}
 
 	/**
-	 * Get createBy specification to get the {@link PerfTest} whose creator or last modifier is the given user
+	 * Get createBy specification to get the {@link PerfTest} whose creator or last modifier is the given user.
 	 * 
 	 * @param user
 	 *            user

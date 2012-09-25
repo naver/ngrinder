@@ -140,7 +140,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	}
 
 	/**
-	 * Collect plugin descriptors by scanning
+	 * Collect plugin descriptors by scanning.
 	 * 
 	 * @param modules
 	 *            module factory
@@ -199,7 +199,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	}
 
 	/**
-	 * Stop plugin framework
+	 * Stop plugin framework.
 	 */
 	@PreDestroy
 	public void destroy() {

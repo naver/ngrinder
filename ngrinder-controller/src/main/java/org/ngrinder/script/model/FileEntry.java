@@ -30,7 +30,6 @@ import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.ngrinder.model.BaseModel;
-import org.ngrinder.script.repository.FileEntryRepository;
 
 /**
  * File entity which will be stored in SVN.
@@ -54,11 +53,12 @@ public class FileEntry extends BaseModel<FileEntry> {
 	private String content;
 
 	/**
-	 * File properties
+	 * File properties.
 	 */
 	private Map<String, String> properties = new HashMap<String, String>();
+	
 	/**
-	 * Revisions on this entity. This fields are sometimes empty depending on the {@link FileEntryRepository}
+	 * Revisions on this entity. This fields are sometimes empty depending on the {@link FileEntryRepository}.
 	 */
 	private List<Long> revisions;
 

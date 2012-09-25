@@ -23,16 +23,13 @@
 package org.ngrinder.common.util;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLClassLoader;
 
 import org.junit.Test;
-import org.ngrinder.NGrinderStarter;
 import org.ngrinder.model.User;
 
 /**
@@ -61,21 +58,6 @@ public class ReflectionUtilTest {
 		URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
 		ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { new File("hello").toURI().toURL() });
 
-	}
-
-	@Test
-	public void testToolsJarPath() {
-		NGrinderStarter starter = new NGrinderStarter() {
-			@Override
-			protected void printHelpAndExit(String message) {
-			}
-
-			@Override
-			protected void printHelpAndExit(String message, Exception e) {
-			}
-		};
-		URL findToolsJarPath = starter.findToolsJarPath();
-		assertThat(findToolsJarPath, notNullValue());
 	}
 
 }

@@ -54,7 +54,7 @@ public class Home implements NGrinderConstants {
 	}
 
 	/**
-	 * Get home directory
+	 * Get home directory.
 	 * 
 	 * @return
 	 */

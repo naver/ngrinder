@@ -46,7 +46,7 @@ import org.springframework.stereotype.Service;
 @Service("ngrinderUserDetailsService")
 public class NGrinderUserDetailsService implements UserDetailsService {
 
-	protected static final Logger logger = LoggerFactory.getLogger(NGrinderUserDetailsService.class);
+	protected static final Logger LOG = LoggerFactory.getLogger(NGrinderUserDetailsService.class);
 
 	@Autowired
 	private PluginManager pluginManager;
@@ -55,7 +55,7 @@ public class NGrinderUserDetailsService implements UserDetailsService {
 	private DefaultLoginPlugin defaultPlugin;
 
 	@Override
-	public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String userId) {
 		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class, defaultPlugin)) {
 			try {
 				User user = each.loadUser(userId);
@@ -69,7 +69,7 @@ public class NGrinderUserDetailsService implements UserDetailsService {
 					return new SecuredUser(user, each.getClass().getName());
 				}
 			} catch (NullPointerException e) {
-				logger.error("User Info retrieval is failed", e);
+				LOG.error("User Info retrieval is failed", e);
 			}
 		}
 		throw new UsernameNotFoundException(userId + " is not found.");

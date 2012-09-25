@@ -40,6 +40,8 @@ import org.slf4j.LoggerFactory;
 public class FileDownloadUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileDownloadUtil.class);
+	
+	private FileDownloadUtil() {}
 
 	public static boolean downloadFile(HttpServletResponse response, String desFilePath) {
 		File desFile = new File(desFilePath);

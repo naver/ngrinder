@@ -48,7 +48,8 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	}
 
 	@Override
-	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
+	public Object resolveArgument(
+			MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
 			WebDataBinderFactory binderFactory) throws Exception {
 		return getUserContext().getCurrentUser();
 	}

@@ -134,7 +134,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 	private NumberFormat formatter = new DecimalFormat("###.###");
 
-	private int MaximumConcurrentTestCount = 0;
+	private int maximumConcurrentTestCount = 0;
 
 	/**
 	 * Get {@link PerfTest} list on the user.
@@ -308,7 +308,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Mark test error on {@link PerfTest} instance
+	 * Mark test error on {@link PerfTest} instance.
 	 * 
 	 * @param perfTest
 	 *            {@link PerfTest}
@@ -357,7 +357,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Add a progress message on the given perfTest
+	 * Add a progress message on the given perfTest.
 	 * 
 	 * @param perfTest
 	 *            perf test
@@ -409,19 +409,19 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 	@Transactional
 	public PerfTest markProgressAndStatusAndFinishTimeAndStatistics(PerfTest perfTest, Status status, String message) {
-		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
-		if (findOne == null) {
-			return null;
-		}
-		findOne.setStatus(status);
-		findOne.setLastProgressMessage(message);
-		findOne.setFinishTime(new Date());
-		updatePerfTestAfterTestFinish(findOne);
-		return perfTestRepository.save(findOne);
+//		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
+//		if (findOne == null) {
+//			return null;
+//		}
+		perfTest.setStatus(status);
+		perfTest.setLastProgressMessage(message);
+		perfTest.setFinishTime(new Date());
+		updatePerfTestAfterTestFinish(perfTest);
+		return perfTestRepository.save(perfTest);
 	}
 
 	/**
-	 * Mark test error on {@link PerfTest} instance
+	 * Mark test error on {@link PerfTest} instance.
 	 * 
 	 * @param perfTest
 	 *            {@link PerfTest}
@@ -573,7 +573,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Create {@link GrinderProperties} based on the passed {@link PerfTest}
+	 * Create {@link GrinderProperties} based on the passed {@link PerfTest}.
 	 * 
 	 * @param perfTest
 	 *            base data
@@ -810,9 +810,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		try {
 			reader = new FileReader(targetFile);
 			br = new BufferedReader(reader);
-			String data = null;
+			String data = br.readLine();
 			int current = 0;
-			while (StringUtils.isNotBlank(data = br.readLine())) {
+			while (StringUtils.isNotBlank(data)) {
 				if (0 == current) {
 					double number = NumberUtils.createDouble(data);
 					reportData.append(number);
@@ -821,6 +821,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				if (++current >= interval) {
 					current = 0;
 				}
+				
+				data = br.readLine();
 			}
 
 			reportData.append("]");
@@ -866,7 +868,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Get log files list on the given test
+	 * Get log files list on the given test.
 	 * 
 	 * @param testId
 	 * @return
@@ -953,19 +955,22 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		checkNotNull(perfTest);
 		int port = perfTest.getPort();
 		Map<String, Object> result = getStatistics(port);
-		if (result == null) {
+		if (result == null || result.get("totalStatistics") == null) {
+			perfTest.setStatus(Status.STOP_ON_ERROR);
 			return;
 		}
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = (Map<String, Object>) result.get("totalStatistics");
-		perfTest.setErrors((int) ((Double) totalStatistics.get("Errors")).doubleValue());
-		perfTest.setTps(Double.parseDouble(formatter.format(totalStatistics.get("TPS"))));
-		perfTest.setMeanTestTime(Double.parseDouble(formatter.format(ObjectUtils.defaultIfNull(
-						totalStatistics.get("Mean_Test_Time_(ms)"), 0D))));
-		perfTest.setPeakTps(Double.parseDouble(formatter.format(ObjectUtils.defaultIfNull(
-						totalStatistics.get("Peak_TPS"), 0D))));
-		perfTest.setTests((int) ((Double) totalStatistics.get("Tests")).doubleValue());
-		LOGGER.info("Total Statics for test {}  is {}", perfTest.getId(), totalStatistics);
+		LOGGER.info("Total Statistics for test {}  is {}", perfTest.getId(), totalStatistics);
+		//if the test is finished abnormally, sometime, there is no statistic data can be got.
+		if (totalStatistics.containsKey("TPS")) {
+			//if "TPS" data exist, all the other should exist too, so I didn't check Null value in map
+			perfTest.setErrors((int) ((Double) totalStatistics.get("Errors")).doubleValue());
+			perfTest.setTps(Double.parseDouble(formatter.format(totalStatistics.get("TPS"))));
+			perfTest.setMeanTestTime(Double.parseDouble(formatter.format(totalStatistics.get("Mean_Test_Time_(ms)"))));
+			perfTest.setPeakTps(Double.parseDouble(formatter.format(totalStatistics.get("Peak_TPS"))));
+			perfTest.setTests((int) ((Double) totalStatistics.get("Tests")).doubleValue());
+		}
 	}
 
 	/**
@@ -974,12 +979,12 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return maximum concurrent test
 	 */
 	public int getMaximumConcurrentTestCount() {
-		if (MaximumConcurrentTestCount == 0) {
-			MaximumConcurrentTestCount = config.getSystemProperties().getPropertyInt(
+		if (maximumConcurrentTestCount == 0) {
+			maximumConcurrentTestCount = config.getSystemProperties().getPropertyInt(
 							NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST,
 							NGrinderConstants.NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE);
 		}
-		return MaximumConcurrentTestCount;
+		return maximumConcurrentTestCount;
 	}
 
 	/**

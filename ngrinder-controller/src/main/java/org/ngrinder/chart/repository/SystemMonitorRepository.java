@@ -28,7 +28,7 @@ import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * Performance Test Repository
+ * Performance Test Repository.
  * 
  * @author Mavlarn
  * @since 3.0

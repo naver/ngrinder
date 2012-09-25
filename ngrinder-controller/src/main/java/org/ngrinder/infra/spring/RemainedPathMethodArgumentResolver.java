@@ -19,17 +19,13 @@ import org.ngrinder.common.util.PathUtil;
 import org.springframework.core.MethodParameter;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerMapping;
 
-/**
- * {@link WebArgumentResolver} which puts the PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE attribute to parameter with the
- * RemainedPath annotation.
- * 
+/** 
  * <pre>
  *  @RequestMapping("hello/**")
  * 	public String handleURL(@RemainedPath String path) {

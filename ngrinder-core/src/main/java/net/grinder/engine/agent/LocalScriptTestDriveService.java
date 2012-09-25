@@ -64,14 +64,14 @@ public class LocalScriptTestDriveService {
 	public String buildCustomClassPath(File base) {
 		File libFolder = new File(base, "lib");
 		final StringBuffer customClassPath = new StringBuffer();
-		customClassPath.append(".");
+		customClassPath.append(FilenameUtils.normalize(base.getAbsolutePath()));
 		if (libFolder.exists()) {
-			customClassPath.append(File.pathSeparator).append("lib");
+			customClassPath.append(File.pathSeparator).append(FilenameUtils.normalize(new File(base, "lib").getAbsolutePath()));
 			libFolder.list(new FilenameFilter() {
 				@Override
 				public boolean accept(File dir, String name) {
 					if (name.endsWith(".jar")) {
-						customClassPath.append(File.pathSeparator).append("lib/").append(name);
+						customClassPath.append(File.pathSeparator).append(FilenameUtils.normalize(new File(dir, name).getAbsolutePath()));
 					}
 					return true;
 				}
@@ -119,7 +119,7 @@ public class LocalScriptTestDriveService {
 
 			String newClassPath = GrinderClassPathUtils.buildClasspathBasedOnCurrentClassLoader(LOGGER);
 			LOGGER.debug("Validation Class Path " + newClassPath);
-
+			
 			Properties systemProperties = new Properties();
 			systemProperties.put("java.class.path", base.getAbsolutePath() + File.pathSeparator + newClassPath);
 			Directory workingDirectory = new Directory(base);

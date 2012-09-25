@@ -28,11 +28,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
-
 /**
  * Plugin descriptor annotation which marks the corresponding plugin setting key
- * on the {@link AbstractModuleDescriptor}
+ * on the {@link AbstractModuleDescriptor}.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -42,7 +40,7 @@ import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
 @Documented
 public @interface PluginDescriptor {
 	/**
-	 * Plugin Descriptor Key
+	 * Plugin Descriptor Key.
 	 * 
 	 * @return
 	 */

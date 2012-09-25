@@ -51,7 +51,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 /**
- * Script Validation Service
+ * Script Validation Service.
  * 
  * @author JunHo Yoon
  * @since 3.0

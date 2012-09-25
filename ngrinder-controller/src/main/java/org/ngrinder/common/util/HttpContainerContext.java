@@ -59,7 +59,8 @@ public class HttpContainerContext {
 		}
 
 		// if empty
-		SecurityContextHolderAwareRequestWrapper request = (SecurityContextHolderAwareRequestWrapper) RequestContextHolder
+		SecurityContextHolderAwareRequestWrapper request = 
+				(SecurityContextHolderAwareRequestWrapper) RequestContextHolder
 						.currentRequestAttributes().resolveReference("request");
 		int serverPort = request.getServerPort();
 		// If it's http default port it will ignore the port part.
@@ -77,7 +78,8 @@ public class HttpContainerContext {
 	 * @return true if unix.
 	 */
 	public boolean isUnixUser() {
-		SecurityContextHolderAwareRequestWrapper request = (SecurityContextHolderAwareRequestWrapper) RequestContextHolder
+		SecurityContextHolderAwareRequestWrapper request = 
+				(SecurityContextHolderAwareRequestWrapper) RequestContextHolder
 						.currentRequestAttributes().resolveReference("request");
 		return !StringUtils.containsIgnoreCase(request.getHeader("User-Agent"), "Win");
 	}

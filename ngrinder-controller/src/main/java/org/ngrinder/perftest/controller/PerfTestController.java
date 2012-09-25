@@ -135,12 +135,13 @@ public class PerfTestController extends NGrinderBaseController {
 
 		for (PerfTest test : testList) {
 			Date localModified = new Date(test.getLastModifiedDate().getTime() - rawOffset);
-			if (DateUtil.compareDateEndWithDay(localModified, localToday))
+			if (DateUtil.compareDateEndWithDay(localModified, localToday)) {
 				test.setDateString("today");
-			else if (DateUtil.compareDateEndWithDay(localModified, localYesterday))
+			} else if (DateUtil.compareDateEndWithDay(localModified, localYesterday)) {
 				test.setDateString("yesterday");
-			else
+			} else {
 				test.setDateString("earlier");
+			}
 		}
 
 		model.addAttribute("testListPage", testList);
@@ -152,16 +153,12 @@ public class PerfTestController extends NGrinderBaseController {
 			model.addAttribute("sortColumn", sortProp.getProperty());
 			model.addAttribute("sortDirection", sortProp.getDirection());
 		}
-		addCurrentlyRunningTest(model);
 		return "perftest/list";
 	}
 
-	private void addCurrentlyRunningTest(ModelMap model) {
-		model.addAttribute("perfTestStatisticsList", perfTestService.getCurrentPerfTestStatistics());
-	}
 
 	/**
-	 * Get performance test detail on give perf test id
+	 * Get performance test detail on give perf test id.
 	 * 
 	 * @param user
 	 *            user
@@ -209,7 +206,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * get details view for quickStart
+	 * get details view for quickStart.
 	 * 
 	 * @param user
 	 *            user
@@ -269,37 +266,19 @@ public class PerfTestController extends NGrinderBaseController {
 			test.setScheduledTime(new Date(scheduleDate.getTime() + rawOffset));
 		}
 		// NGRINDER-236 hehe
-//		// change the cloned perftest's name, change to testName+[copy_NUM]
 		if (Boolean.valueOf(isClone)) {
-//			Long testId = test.getId();
-//			PerfTest oldTest = perfTestService.getPerfTest(testId);
-//			String oldTestName = oldTest.getTestName();
-//			String newTestName = test.getTestName();
-//			if (newTestName.equals(oldTestName)) {
-//				// Not very rigorous
-//				Page<PerfTest> testPage = perfTestService.getPerfTestList(user, oldTestName + "[", false, null);
-//				List<PerfTest> testList = testPage.getContent();
-//				List<String> testNameList = new ArrayList<String>();
-//				for (PerfTest pt : testList) {
-//					testNameList.add(pt.getTestName());
-//				}
-//				String testName;
-//				for (int i = 0; i <= testNameList.size(); i++) {
-//					testName = newTestName + "[" + (i + 1) + "]";
-//					if (!testNameList.contains(testName)) {
-//						test.setTestName(testName);
-//						break;
-//					}
-//				}
-//			}
 			test.setId(null);
+			test.setCreatedUser(null);
+			test.setCreatedDate(null);
+			test.setLastModifiedDate(null);
+			test.setLastModifiedUser(null);
 		}
 		perfTestService.savePerfTest(user, test);
 		return "redirect:/perftest/list";
 	}
 
 	/**
-	 * leave comment on the perftest
+	 * Leave comment on the perftest.
 	 * 
 	 * @param testComment
 	 *            trest comment
@@ -309,13 +288,14 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/leaveComment", method = RequestMethod.POST)
 	public @ResponseBody
-	String leaveComment(User user, @RequestParam("testComment") String testComment, @RequestParam("testId") Long testId) {
+	String leaveComment(User user, @RequestParam("testComment") String testComment, 
+			@RequestParam("testId") Long testId) {
 		perfTestService.addCommentOn(user, testId, testComment);
 		return JSONUtil.returnSuccess();
 	}
 
 	/**
-	 * Get status of perftest
+	 * Get status of perftest.
 	 * 
 	 * @param user
 	 *            user
@@ -341,16 +321,20 @@ public class PerfTestController extends NGrinderBaseController {
 			String errorMessages = getMessages(each.getStatus().getSpringMessageKey());
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_NAME, errorMessages);
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_ICON, each.getStatus().getIconName());
-			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_MESSAGE,
-							StringUtils.replace(each.getProgressMessage() + "\n<b>" + each.getLastProgressMessage()
-											+ "</b>\n" + each.getLastModifiedDateToStr(), "\n", "<br/>"));
+			rtnMap.put(
+					PARAM_STATUS_UPDATE_STATUS_MESSAGE,
+					StringUtils.replace(each.getProgressMessage() + "\n<b>" + each.getLastProgressMessage() + "</b>\n"
+							+ each.getLastModifiedDateToStr(), "\n", "<br/>"));
 			rtnMap.put(PARAM_STATUS_UPDATE_DELETABLE, each.getStatus().isDeletable());
 			rtnMap.put(PARAM_STATUS_UPDATE_STOPPABLE, each.getStatus().isStoppable());
 			statusList.add(rtnMap);
 		}
+		Map<String, Object> result = new HashMap<String, Object>(2);
+		result.put("perfTestInfo", perfTestService.getCurrentPerfTestStatistics());
+		result.put("statusList", statusList);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set("content-type", "application/json; charset=UTF-8");
-		return new HttpEntity<String>(JSONUtil.toJson(statusList), responseHeaders);
+		return new HttpEntity<String>(JSONUtil.toJson(result), responseHeaders);
 	}
 
 	@RequestMapping(value = "/deleteTests", method = RequestMethod.POST)
@@ -477,10 +461,11 @@ public class PerfTestController extends NGrinderBaseController {
 			long totalMemory = value.getTotalMemory();
 			float usage = 0;
 			if (totalMemory != 0) {
-				usage = (((float)(totalMemory - value.getFreeMemory())) / totalMemory) * 100;
+				usage = (((float) (totalMemory - value.getFreeMemory())) / totalMemory) * 100;
 			}
-			perfStringList.add(String.format(" {'agent' : '%s', 'cpu' : %3.2f, 'mem' : %3.2f }", each.getKey().getName(),
-							value.getCpuUsedPercentage(), usage));
+			perfStringList.add(
+					String.format(" {'agent' : '%s', 'cpu' : %3.2f, 'mem' : %3.2f }", 
+							each.getKey().getName(), value.getCpuUsedPercentage(), usage));
 		}
 		return StringUtils.join(perfStringList, ",");
 	}

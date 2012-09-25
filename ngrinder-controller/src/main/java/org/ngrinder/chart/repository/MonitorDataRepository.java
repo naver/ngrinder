@@ -34,8 +34,6 @@ import org.springframework.stereotype.Component;
  * Monitor data repository.
  * 
  * @author Tobi
- * @since
- * @date 2012-7-23
  */
 @Component
 public class MonitorDataRepository implements MonitorRecoder {
@@ -52,7 +50,7 @@ public class MonitorDataRepository implements MonitorRecoder {
 	public void recoderSystemInfo(String key, SystemInfo systemInfo, MonitorAgentInfo agentInfo) {
 		checkNotNull(systemInfo);
 		SystemDataModel systemDataModel = new SystemDataModel(systemInfo);
-		systemDataModel.setKey(agentInfo.getIp());
+		systemDataModel.setKey(key);
 		systemDataModel.setIp(agentInfo.getIp());
 		systemDataModel.setPort(agentInfo.getPort());
 		systemMonitorRepository.save(systemDataModel);

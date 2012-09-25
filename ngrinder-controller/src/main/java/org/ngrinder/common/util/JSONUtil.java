@@ -30,12 +30,13 @@ import org.ngrinder.common.constant.NGrinderConstants;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-public class JSONUtil implements NGrinderConstants{
+public class JSONUtil implements NGrinderConstants {
 	
 	private static String successJson;
 	private static String errorJson;
-	
 	private static Gson gson = new Gson();
+	
+	private JSONUtil() {}
 	
 	static {
 		JsonObject rtnJson = new JsonObject();
@@ -67,11 +68,11 @@ public class JSONUtil implements NGrinderConstants{
 		return errorJson;
 	}
 	
-	public static String toJson (List<?> list) {
+	public static String toJson(List<?> list) {
 		return gson.toJson(list);
 	}
 	
-	public static String toJson (Map<String, Object> map) {
+	public static String toJson(Map<String, Object> map) {
 		return gson.toJson(map);
 	}
 

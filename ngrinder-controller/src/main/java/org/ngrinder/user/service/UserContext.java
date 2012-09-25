@@ -30,7 +30,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * User Context which return current user;
+ * User Context which return current user.
  * 
  * @author Tobi
  * @author JunHo Yoon
@@ -41,7 +41,7 @@ public class UserContext {
 
 
 	/**
-	 * Get current user object from context
+	 * Get current user object from context.
 	 * 
 	 * @return
 	 */

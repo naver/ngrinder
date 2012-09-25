@@ -23,7 +23,7 @@
 package org.ngrinder.user.model;
 
 /**
- * JSON Bean
+ * JSON Bean.
  * 
  * @author maoyb
  * @since3.0

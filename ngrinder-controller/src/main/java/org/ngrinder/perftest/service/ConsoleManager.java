@@ -60,8 +60,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConsoleManager {
 	private static final Logger LOG = LoggerFactory.getLogger(ConsoleManager.class);
-	volatile private ArrayBlockingQueue<ConsoleEntry> consoleQueue;
-	volatile private List<SingleConsole> consoleInUse = Collections.synchronizedList(new ArrayList<SingleConsole>());
+	private volatile ArrayBlockingQueue<ConsoleEntry> consoleQueue;
+	private volatile List<SingleConsole> consoleInUse = Collections.synchronizedList(new ArrayList<SingleConsole>());
 
 	@Autowired
 	private Config config;
@@ -148,7 +148,7 @@ public class ConsoleManager {
 	}
 
 	/**
-	 * Check the given port is empty
+	 * Check the given port is empty.
 	 * 
 	 * @param port
 	 *            port to be checked
