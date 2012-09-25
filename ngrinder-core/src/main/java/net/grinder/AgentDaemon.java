@@ -30,7 +30,6 @@ import net.grinder.engine.agent.AgentImplementationEx;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.ThreadUtil;

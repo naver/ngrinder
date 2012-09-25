@@ -46,7 +46,6 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 
-import org.apache.commons.io.IOUtils;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

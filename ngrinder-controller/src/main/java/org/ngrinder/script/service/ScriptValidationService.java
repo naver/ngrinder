@@ -33,7 +33,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import net.grinder.common.GrinderProperties;
 import net.grinder.engine.agent.LocalScriptTestDriveService;
 import net.grinder.util.thread.Condition;
 
