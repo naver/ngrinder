@@ -38,19 +38,62 @@ import java.util.List;
 public class NGrinderSecurityManager extends SecurityManager {
 
 	private String workDirectory = System.getProperty("user.dir");
+	private String logDirectory = null;
 	private String agentExecDirectory = System.getProperty("ngrinder.exec.path", workDirectory);
 	private String javaHomeDirectory = System.getenv("JAVA_HOME");
+	private String jreHomeDirectory = null;
+	private String javaExtDirectory = System.getProperty("java.ext.dirs");
 	private String etcHosts = System.getProperty("ngrinder.etc.hosts", "");
 	private String consoleIP = System.getProperty("ngrinder.console.ip", "127.0.0.1");
+
 	private List<String> allowedHost = new ArrayList<String>();
+	private List<String> readAllowedDirectory = new ArrayList<String>();
+	private List<String> writeAllowedDirectory = new ArrayList<String>();
+	private List<String> deleteAllowedDirectory = new ArrayList<String>();
 
 	{
-		/**
-		 * Get ip address of target hosts. <br>
-		 * if target hosts 'a.com:1.1.1.1' add 'a.com' & '1.1.1.1' <br>
-		 * if target hosts ':1.1.1.1' add : '1.1.1.1' <br>
-		 * if target hosts '1.1.1.1' add : '1.1.1.1' <br>
-		 */
+		this.initAccessOfDirectories();
+		this.initAccessOfHosts();
+	}
+
+	/**
+	 * Set default accessed of directories <br>
+	 */
+	private void initAccessOfDirectories() {
+		workDirectory = new File(workDirectory).getAbsolutePath();
+		logDirectory = workDirectory.substring(0, workDirectory.lastIndexOf(File.separator));
+		logDirectory = logDirectory.substring(0, workDirectory.lastIndexOf(File.separator)) + File.separator + "log";
+		agentExecDirectory = new File(agentExecDirectory).getAbsolutePath();
+		javaHomeDirectory = new File(javaHomeDirectory).getAbsolutePath();
+		jreHomeDirectory = javaHomeDirectory.substring(0, javaHomeDirectory.lastIndexOf(File.separator))
+				+ File.separator + "jre";
+		readAllowedDirectory.add(workDirectory);
+		readAllowedDirectory.add(logDirectory);
+		readAllowedDirectory.add(agentExecDirectory);
+		readAllowedDirectory.add(javaHomeDirectory);
+		readAllowedDirectory.add(jreHomeDirectory);
+		String[] jed = javaExtDirectory.split(";");
+		for (String je : jed) {
+			je = new File(je).getAbsolutePath();
+			readAllowedDirectory.add(je);
+		}
+
+		writeAllowedDirectory.add(workDirectory);
+		writeAllowedDirectory.add(logDirectory);
+
+		deleteAllowedDirectory.add(workDirectory);
+	}
+
+	/**
+	 * Get ip address of target hosts. <br>
+	 * if target hosts 'a.com:1.1.1.1' add 'a.com' & '1.1.1.1' <br>
+	 * if target hosts ':1.1.1.1' add : '1.1.1.1' <br>
+	 * if target hosts '1.1.1.1' add : '1.1.1.1' <br>
+	 * <br>
+	 * Add controller host<br>
+	 */
+	private void initAccessOfHosts() {
+
 		String[] hostsList = etcHosts.split(",");
 		for (String hosts : hostsList) {
 			String[] addresses = hosts.split(":");
@@ -62,9 +105,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 			}
 		}
 
-		/**
-		 * add controler host
-		 */
+		// add controller host
 		allowedHost.add(consoleIP);
 	}
 
@@ -131,11 +172,12 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 */
 	private void fileAccessReadAllowed(String file) {
 		String filePath = new File(file).getAbsolutePath();
-		if (filePath.startsWith(workDirectory) || filePath.startsWith(agentExecDirectory)
-				|| filePath.startsWith(javaHomeDirectory)) {
-			return;
+		for (String dir : readAllowedDirectory) {
+			if (filePath.startsWith(dir)) {
+				return;
+			}
 		}
-		super.checkRead(file);
+		throw new SecurityException("File read access on " + file + " is not allowed.");
 	}
 
 	/**
@@ -145,10 +187,13 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * @param file
 	 */
 	private void fileAccessWriteAllowed(String file) {
-		if (new File(file).getAbsolutePath().startsWith(workDirectory)) {
-			return;
+		String filePath = new File(file).getAbsolutePath();
+		for (String dir : writeAllowedDirectory) {
+			if (filePath.startsWith(dir)) {
+				return;
+			}
 		}
-		super.checkWrite(file);
+		throw new SecurityException("File write access on " + file + " is not allowed.");
 	}
 
 	/**
@@ -158,10 +203,13 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * @param file
 	 */
 	private void fileAccessDeleteAllowed(String file) {
-		if (new File(file).getAbsolutePath().startsWith(workDirectory)) {
-			return;
+		String filePath = new File(file).getAbsolutePath();
+		for (String dir : deleteAllowedDirectory) {
+			if (filePath.startsWith(dir)) {
+				return;
+			}
 		}
-		super.checkDelete(file);
+		throw new SecurityException("File delete access on " + file + " is not allowed.");
 	}
 
 	@Override

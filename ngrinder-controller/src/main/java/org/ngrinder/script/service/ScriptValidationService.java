@@ -29,8 +29,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 
+import net.grinder.common.GrinderProperties;
 import net.grinder.engine.agent.LocalScriptTestDriveService;
 import net.grinder.util.thread.Condition;
 
@@ -143,9 +146,9 @@ public class ScriptValidationService {
 			if (securityEnabled) {
 				jvmArguments = "-Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager ";
 				jvmArguments += " -Dngrinder.exec.path=" + getLibPath();
-				jvmArguments += " -Dngrinder.etc.hosts=" + hostString;
 			}
-
+			jvmArguments += addCustomDns(hostString, jvmArguments);
+			
 			if (useScriptInSVN) {
 				fileEntryService.writeContentTo(user, scriptEntry.getPath(), scriptDirectory);
 			} else {
@@ -162,6 +165,24 @@ public class ScriptValidationService {
 		return StringUtils.EMPTY;
 	}
 
+
+	private String getHostName() {
+		try {
+			return InetAddress.getLocalHost().getHostName();
+		} catch (UnknownHostException e) {
+			return "UNNAMED HOST";
+		}
+	}
+	
+	private String addCustomDns(String hostString, String jvmArguments) {
+		if (StringUtils.isNotEmpty(hostString)) {
+			jvmArguments = jvmArguments + " -Dngrinder.etc.hosts=" + hostString + "," + getHostName() + ":127.0.0.1,localhost:127.0.0.1"
+					+ " -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns";
+		}
+		return jvmArguments;
+	}
+	
+	
 	private String getLibPath() {
 		String path = this.getClass().getResource("/").getPath();
 		path = path.substring(1, path.length() - 1);
