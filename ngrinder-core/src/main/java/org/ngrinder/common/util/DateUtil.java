@@ -177,7 +177,7 @@ public abstract class DateUtil {
 		return ((long) CONSTANT_1000) * (((day * CONSTANT_24 + hour) * CONSTANT_60 + min) * CONSTANT_60 + sec);
 	}
 
-	public static Boolean compareDateEndWithMinute(Date d1, Date d2) {
+	public static boolean compareDateEndWithMinute(Date d1, Date d2) {
 		String s1 = dateFormatEndWithMinute.format(d1);
 		String s2 = dateFormatEndWithMinute.format(d2);
 		if (s1.equals(s2))

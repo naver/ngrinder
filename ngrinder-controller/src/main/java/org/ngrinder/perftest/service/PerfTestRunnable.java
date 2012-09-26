@@ -45,7 +45,6 @@ import net.grinder.console.model.ConsoleProperties;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.service.MonitorAgentService;
 import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.extension.OnTestStartRunnable;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.plugin.PluginManager;
@@ -114,7 +113,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 		// schedule test
 		Date schedule = runCandidate.getScheduledTime();
-		if (schedule != null && !DateUtil.compareDateEndWithMinute(schedule, new Date(System.currentTimeMillis()))) {
+		long scheduleLong = schedule.getTime();
+		scheduleLong = scheduleLong / 1000 / 60;
+		scheduleLong = scheduleLong * 1000 * 60; //convert the time as the beginning of that minute.
+		if (schedule != null && System.currentTimeMillis() < scheduleLong) {
 			// this test project is reserved,but it isn't yet going to run test
 			// right now.
 			return;
