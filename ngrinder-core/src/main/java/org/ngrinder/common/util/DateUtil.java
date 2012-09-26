@@ -186,7 +186,7 @@ public abstract class DateUtil {
 			return false;
 	}
 	
-	public static Boolean compareDateEndWithDay(Date date1,Date date2) {
+	public static boolean compareDateEndWithDay(Date date1,Date date2) {
 		String dateStr1 = SIMPLE_DATE_FORMAT.format(date1);
 		String dateStr2 = SIMPLE_DATE_FORMAT.format(date2);
 		if(dateStr1.equals(dateStr2))
