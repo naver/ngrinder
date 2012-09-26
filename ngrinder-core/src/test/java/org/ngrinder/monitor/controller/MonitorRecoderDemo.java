@@ -52,9 +52,11 @@ public class MonitorRecoderDemo implements MonitorRecoder {
 
 	@Override
 	public void recoderSystemInfo(String key, SystemInfo systemInfo, MonitorAgentInfo agentInfo) {
-		String record = String.format("Record system info: %s for key:%s", systemInfo, key);
-		LOG.debug(record);
-		data.add(record);
+		if (running) {
+			String record = String.format("Record system info: %s for key:%s", systemInfo, key);
+			LOG.debug(record);
+			data.add(record);
+		}
 	}
 
 	@Override

@@ -69,7 +69,7 @@ public class NGrinderPluginUserDetailsServiceTest extends AbstractNGrinderTransa
 		user.setUserId("hello");
 		user.setEmail("helloworld@gmail.com");
 		user.setRole(Role.SUPER_USER);
-		when(mockLoginPlugin.loadUser(anyString())).thenReturn(user);
+		when(mockLoginPlugin.loadUser("hello")).thenReturn(user);
 		when(mockLoginPlugin.validateUser(anyString(), anyString(), anyString(), any(), any())).thenReturn(true);
 
 		// Then, Auth should be succeeded.
