@@ -1,31 +1,17 @@
 package org.ngrinder;
 
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.net.URL;
-
-import javax.annotation.PostConstruct;
 
 import org.junit.Test;
 
 public class NGrinderStarterTest {
 	
-	private NGrinderStarter starter;
+	private NGrinderStarter starter = new TmpNGrinderStarter();
 	
-	@PostConstruct
-	public void init() {
-		starter = new NGrinderStarter() {
-			@Override
-			protected void printHelpAndExit(String message) {
-			}
-
-			@Override
-			protected void printHelpAndExit(String message, Exception e) {
-			}
-		};
-	}
 	@Test
 	public void testNGrinderStarterJarResolution() {
 		String path = ClassLoader.getSystemClassLoader().getResource(".").getPath();
@@ -43,5 +29,15 @@ public class NGrinderStarterTest {
 		//default start mode is monitor
 		String startMode = starter.getStartMode();
 		assertEquals(startMode, "monitor");
+	}
+}
+
+class TmpNGrinderStarter extends NGrinderStarter{
+	@Override
+	protected void printHelpAndExit(String message) {
+	}
+
+	@Override
+	protected void printHelpAndExit(String message, Exception e) {
 	}
 }

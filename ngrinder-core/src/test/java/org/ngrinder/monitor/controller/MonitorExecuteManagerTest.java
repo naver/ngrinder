@@ -22,7 +22,9 @@
  */
 package org.ngrinder.monitor.controller;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 
@@ -80,11 +82,12 @@ public class MonitorExecuteManagerTest extends SigarTestBase{
 		assertTrue(recordCount > 0);
 		
 		MonitorExecuteManager.getInstance().removeAgentMonitor("127.0.0.1");
+		recordCount = mrd.getData().size(); //get latest record count
 		ThreadUtil.sleep(3000);
 		assertTrue(!mrd.isRunning());
 		
 		//make sure no monitoring record saved anymore
-		assertTrue(mrd.getData().size() == recordCount);
+		assertThat(mrd.getData().size(), is(recordCount));
 		
 		//test adding 2 monitoring job on same target
 		MonitorExecuteManager.getInstance().addAgentMonitor("127.0.0.1", monitorAgentInfo);
