@@ -42,6 +42,7 @@ import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.service.MonitorAgentService;
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -112,7 +113,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 		}
 
 		// schedule test
-		Date schedule = runCandidate.getScheduledTime();
+		
+		Date schedule = (Date)ObjectUtils.defaultIfNull(runCandidate.getScheduledTime(), new Date());
 		long scheduleLong = schedule.getTime();
 		scheduleLong = scheduleLong / 1000 / 60;
 		scheduleLong = scheduleLong * 1000 * 60; //convert the time as the beginning of that minute.
