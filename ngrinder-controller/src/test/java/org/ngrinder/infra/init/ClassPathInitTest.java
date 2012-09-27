@@ -5,7 +5,9 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.util.Collection;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 public class ClassPathInitTest {
@@ -25,14 +27,12 @@ public class ClassPathInitTest {
 				final File f = new File(pathEntry).getParentFile();
 				final File parentFile = f != null ? f : new File(".");
 
-				final File[] children = parentFile.listFiles();
+				final Collection<File> children = FileUtils.listFiles(parentFile, null, false);
 
-				if (children != null) {
-					for (File candidate : children) {
-						final String name = candidate.getName();
-						if (name.startsWith("grinder-dcr-agent") && name.endsWith(".jar")) {
-							return name;
-						}
+				for (File candidate : children) {
+					final String name = candidate.getName();
+					if (name.startsWith("grinder-dcr-agent") && name.endsWith(".jar")) {
+						return name;
 					}
 				}
 			}

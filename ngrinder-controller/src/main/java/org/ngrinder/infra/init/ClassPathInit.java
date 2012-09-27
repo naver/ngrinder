@@ -1,11 +1,14 @@
 package org.ngrinder.infra.init;
 
 import java.io.File;
+import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 
 import net.grinder.util.GrinderClassPathUtils;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -29,27 +32,22 @@ public class ClassPathInit {
 	 */
 	@PostConstruct
 	public void init() {
-		final String systemClasspath = System.getProperty("java.class.path");
-		if (systemClasspath != null) {
-			for (String pathEntry : systemClasspath.split(File.pathSeparator)) {
-				final File f = new File(pathEntry).getParentFile();
-				final File parentFile = f != null ? f : new File(".");
+		final String systemClasspath = System.getProperty("java.class.path", StringUtils.EMPTY);
+		for (String pathEntry : systemClasspath.split(File.pathSeparator)) {
+			final File f = new File(pathEntry).getParentFile();
+			final File parentFile = f != null ? f : new File(".");
 
-				final File[] children = parentFile.listFiles();
-
-				if (children != null) {
-					for (File candidate : children) {
-						final String name = candidate.getName();
-						if (name.startsWith("grinder-dcr-agent") && name.endsWith(".jar")
-										&& (name.contains("javadoc") || name.contains("source"))) {
-							candidate.delete();
-						}
-					}
+			String[] exts = new String[]{".jar"};
+			final Collection<File> childrenFileList = FileUtils.listFiles(parentFile, exts, false);
+			for (File candidate : childrenFileList) {
+				final String name = candidate.getName();
+				if (name.startsWith("grinder-dcr-agent") && (name.contains("javadoc") || name.contains("source"))) {
+					candidate.delete();
 				}
 			}
 		}
 		LOG.info("===========================================================================");
 		LOG.info("Total Class Path for validation is {}",
-						GrinderClassPathUtils.buildClasspathBasedOnCurrentClassLoader(LOG));
+				GrinderClassPathUtils.buildClasspathBasedOnCurrentClassLoader(LOG));
 	}
 }

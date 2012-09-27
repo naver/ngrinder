@@ -163,8 +163,8 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 						+ " doesn't have corresponding plugin key. Skip..");
 			} else {
 				modules.addModuleDescriptor(pluginDescriptorAnnotation.value(), pluginDescriptor);
-				LOGGER.info("plugin descriptor " + pluginDescriptor.getName() + " with "
-						+ pluginDescriptorAnnotation.value() + " is initiated.");
+				LOGGER.info("plugin descriptor {} with {} is initiated.", pluginDescriptor.getName(),
+						pluginDescriptorAnnotation.value());
 			}
 		}
 	}

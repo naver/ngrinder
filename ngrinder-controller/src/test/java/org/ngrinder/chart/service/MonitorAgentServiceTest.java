@@ -25,7 +25,6 @@ package org.ngrinder.chart.service;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -84,12 +83,8 @@ public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
 	
 	@AfterClass
 	public static void stopMonitorServer() {
-		try {
-			AgentMonitorServer.getInstance().stop();
-			ThreadUtil.sleep(1000);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		AgentMonitorServer.getInstance().stop();
+		ThreadUtil.sleep(1000);
 	}	
 
 	/**
