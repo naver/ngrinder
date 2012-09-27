@@ -42,10 +42,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
  */
 public class FileDownloadUtilTest {
 
-	/**
-	 * Test method for {@link org.ngrinder.common.util.FileDownloadUtil#downloadFile(javax.servlet.http.HttpServletResponse, java.lang.String)}.
-	 * @throws IOException 
-	 */
 	@Test
 	public void testDownloadFileHttpServletResponseString() throws IOException {
 		File downFile = new ClassPathResource("TEST_USER.zip").getFile();
@@ -55,6 +51,18 @@ public class FileDownloadUtilTest {
 		String lengthHeaader = resp.getHeader("Content-Length");
 
 		assertThat(lengthHeaader, is(String.valueOf(downFile.length())));
+	}
+	
+	@Test
+	public void testDownloadNotExistFile() throws IOException {
+		File downFile = null;
+		HttpServletResponse resp = new MockHttpServletResponse();
+		boolean result = FileDownloadUtil.downloadFile(resp, downFile);
+		assertThat(result, is(false));
+		
+		downFile = new File("Not-existed-file");
+		result = FileDownloadUtil.downloadFile(resp, downFile);
+		assertThat(result, is(false));
 	}
 
 }

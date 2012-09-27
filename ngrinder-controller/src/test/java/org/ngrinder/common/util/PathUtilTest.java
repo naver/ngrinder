@@ -41,8 +41,11 @@ public class PathUtilTest {
 	public void testRemovePrependedSlash() {
 		String path = "/aaa/bbb/vvv";
 		String newPath = PathUtil.removePrependedSlash(path);
-
 		assertTrue(path.contains(newPath));
+
+		String path2 = "//aaa/bbb/vvv";
+		newPath = PathUtil.removePrependedSlash(path2);
+		assertTrue(newPath.equals(path));
 	}
 
 }

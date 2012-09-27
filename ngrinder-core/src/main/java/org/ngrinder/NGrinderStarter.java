@@ -227,7 +227,7 @@ public class NGrinderStarter {
 			printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + ") does not exist");
 			return;
 		}
-		String[] exts = new String[]{".jar"};
+		String[] exts = new String[]{"jar"};
 		Collection<File> libList = FileUtils.listFiles(libFolder, exts, false);
 
 		for (File each : libList) {

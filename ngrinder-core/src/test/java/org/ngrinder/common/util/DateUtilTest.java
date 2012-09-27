@@ -94,8 +94,34 @@ public class DateUtilTest {
 	 */
 	@Test
 	public void testMs2Time() {
-		String durationStr = DateUtil.ms2Time(new Date().getTime());
-		assertThat(durationStr, notNullValue());
+		final long secTime = 1000;
+		long timeMs = 10 * secTime;
+		String durationStr = DateUtil.ms2Time(timeMs);
+		assertThat(durationStr, is("00:00:10"));
+
+		timeMs = 10 * secTime + 33;
+		durationStr = DateUtil.ms2Time(timeMs);
+		assertThat(durationStr, is("00:00:10"));
+
+		timeMs = 10 * secTime;
+		durationStr = DateUtil.ms2Time(timeMs);
+		assertThat(durationStr, is("00:00:10"));
+
+		timeMs = 10 * secTime + 3 * 60 * secTime;
+		durationStr = DateUtil.ms2Time(timeMs);
+		assertThat(durationStr, is("00:03:10"));
+
+		timeMs = timeMs + 10 * 60 * secTime;
+		durationStr = DateUtil.ms2Time(timeMs);
+		assertThat(durationStr, is("00:13:10"));
+
+		timeMs = timeMs + 3 * 60 * 60 * secTime;
+		durationStr = DateUtil.ms2Time(timeMs);
+		assertThat(durationStr, is("03:13:10"));
+
+		timeMs = timeMs + 10 * 60 * 60 * secTime;
+		durationStr = DateUtil.ms2Time(timeMs);
+		assertThat(durationStr, is("13:13:10"));
 	}
 
 	@Test
@@ -130,11 +156,14 @@ public class DateUtilTest {
 		Date date2 = new Date(date1.getTime());
 		date2.setSeconds(10);
 		assertTrue(DateUtil.compareDateEndWithMinute(date1, date2));
-
 		assertTrue(DateUtil.compareDateEndWithMinute(date1, date1));
 
 		date2 = new Date(date1.getTime());
-		date2.setMinutes(date1.getMinutes() + 1);
+		if (date1.getMinutes() > 1) {
+			date2.setMinutes(date1.getMinutes() - 1);
+		} else {
+			date2.setMinutes(date1.getMinutes() + 1);
+		}
 		assertTrue(!DateUtil.compareDateEndWithMinute(date1, date2));
 
 	}

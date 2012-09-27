@@ -129,8 +129,6 @@ public class AgentManagerController extends NGrinderBaseController {
 	@RequestMapping(value = "/download/{fileName}")
 	public void downloadAgent(@PathVariable String fileName, HttpServletResponse response) {
 		File ngrinderFile = new File(config.getHome().getDownloadDirectory(), fileName);
-		if (ngrinderFile.exists()) {
-			FileDownloadUtil.downloadFile(response, ngrinderFile);
-		}
+		FileDownloadUtil.downloadFile(response, ngrinderFile);
 	}
 }

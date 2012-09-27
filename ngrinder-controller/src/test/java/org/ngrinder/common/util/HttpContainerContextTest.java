@@ -70,7 +70,7 @@ public class HttpContainerContextTest extends AbstractNGrinderTransactionalTest 
 		assertTrue(requestUrl.startsWith("http://"));
 
 		String httpUrl = config.getSystemProperties().getProperty("http.url", "");
-		if (StringUtils.isBlank(httpUrl)) {
+		if (StringUtils.isNotBlank(httpUrl)) {
 			config.getSystemProperties().addProperty("http.url", "");
 		} else {
 			config.getSystemProperties().addProperty("http.url", "http://aa.com");

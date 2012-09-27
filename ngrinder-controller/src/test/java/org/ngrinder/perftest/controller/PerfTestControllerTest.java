@@ -23,6 +23,7 @@
 package org.ngrinder.perftest.controller;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -36,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.Status;
@@ -71,6 +73,26 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	}
 
 	@Test
+	public void testGetPerfTestDetail() {
+		ModelMap model = new ModelMap();
+		controller.getPerfTestDetail(getTestUser(), null, model);
+
+		model.clear();
+		controller.getPerfTestDetail(getTestUser(), 0L, model);
+		PerfTest testInDB = (PerfTest) model.get(PARAM_TEST);
+		assertThat(testInDB, nullValue());
+		
+		model.clear();
+		try {
+			long invalidId = 1234567890;
+			controller.getPerfTestDetail(getTestUser(), invalidId, model);
+			assertTrue(false);
+		} catch (NGrinderRuntimeException e) {
+			assertTrue(true);
+		}
+	}
+
+	@Test
 	public void testGetResourcesOnScriptFolder() {
 		controller.getResourcesOnScriptFolder(getTestUser(), "", null);
 	}
@@ -102,6 +124,32 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		controller.getPerfTestDetail(getTestUser(), test2.getId(), model);
 		testInDB = (PerfTest) model.get(PARAM_TEST);
 		assertThat(testInDB, nullValue());
+	}
+
+	@Test
+	public void testSavePerfTestCloneAndLeaveCommentAndStop() {
+		String testName = "test1";
+		PerfTest test = createPerfTest(testName, Status.READY, null);
+		long preId = test.getId();
+		
+		PerfTest cloneTest = newPerfTest(testName, Status.READY, null);
+		cloneTest.setId(test.getId()); //set cloned test's ID as previous test
+
+		ModelMap model = new ModelMap();
+		controller.savePerfTest(getTestUser(), model, cloneTest, "true");
+		assertThat(preId, not(cloneTest.getId()));
+		
+		//test leave comment
+		controller.leaveComment(getTestUser(), "TestComment", cloneTest.getId());
+		model.clear();
+		controller.getPerfTestDetail(getTestUser(), cloneTest.getId(), model);
+		PerfTest testInDB = (PerfTest) model.get(PARAM_TEST);
+		assertThat(testInDB.getTestComment(), is("TestComment"));
+		
+		//test stop test
+		cloneTest.setStatus(Status.TESTING);
+		controller.savePerfTest(getTestUser(), model, cloneTest, null);
+		controller.stopPerfTests(getTestUser(), model, String.valueOf(cloneTest.getId()));
 	}
 
 	/**
@@ -193,7 +241,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	@Test
 	public void testGetTestListByOtherUser() {
 		String testName = "new test1";
-		createPerfTest(testName, Status.READY, new Date());
+		PerfTest test = createPerfTest(testName, Status.READY, new Date());
 
 		ModelMap model = new ModelMap();
 
@@ -209,6 +257,15 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		List<PerfTest> testList = testPage.getContent();
 
 		assertThat(testList.size(), is(0));
+		
+		//test no permission for other user
+		model.clear();
+		try {
+			controller.getPerfTestDetail(otherTestUser, test.getId(), model);
+			assertTrue(false);
+		} catch (NGrinderRuntimeException e) {
+			assertTrue(true);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -241,6 +298,10 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		controller.getReport(getTestUser(), model, test.getId());
 
 		model.clear();
+		controller.getReportData(getTestUser(), model, test.getId(), "TPS,mean_time(ms)", 0);
+
+		model.clear();
+		controller.getReportDiv(getTestUser(), model, test.getId(), 700);
 	}
 
 	@Test
@@ -254,6 +315,8 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 			//the report file doesn'r exist
 			assertTrue(true);
 		}
+		resp.reset();
+		controller.downloadLogData(getTestUser(), "", test.getId(), resp);
 	}
 
 	@Test
