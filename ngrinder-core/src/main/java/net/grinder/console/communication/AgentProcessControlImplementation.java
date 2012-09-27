@@ -292,10 +292,8 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		}
 
 		public void setAgentProcessStatus(AgentControllerProcessReportMessage message) {
-			if (logger.isTraceEnabled()) {
-				logger.trace("agent perf status on {} is {}", message.getAgentIdentity(),
-								message.getSystemDataModel());
-			}
+			logger.trace("agent perf status on {} is {}", message.getAgentIdentity(), message.getSystemDataModel());
+
 			m_agentReference = new AgentReference(message);
 		}
 

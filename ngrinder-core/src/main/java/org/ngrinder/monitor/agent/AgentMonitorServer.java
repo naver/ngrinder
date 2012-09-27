@@ -113,12 +113,19 @@ public final class AgentMonitorServer {
 		}
 	}
 
-	public void stop() throws IOException {
-		if (isRunning()) {
-			isRunning = false;
+	public void stop() {
+		LOG.info("Stop monitor.");
+		if (!isRunning) {
+			LOG.info("Monitoring is not started!");
+			return;
+		}
+		isRunning = false;
+		try {
 			jmxServer.stop();
 			AgentDataCollectManager.getInstance().stop();
 			UnicastRemoteObject.unexportObject(rmiRegistry, true);
+		} catch (IOException e) {
+			LOG.error(e.getMessage(), e);
 		}
 	}
 

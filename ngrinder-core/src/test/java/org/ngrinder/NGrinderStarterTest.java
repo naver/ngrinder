@@ -7,6 +7,8 @@ import static org.junit.Assert.assertThat;
 import java.net.URL;
 
 import org.junit.Test;
+import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.infra.AgentConfig;
 
 public class NGrinderStarterTest {
 	
@@ -29,6 +31,21 @@ public class NGrinderStarterTest {
 		//default start mode is monitor
 		String startMode = starter.getStartMode();
 		assertEquals(startMode, "monitor");
+	}
+	
+	@Test
+	public void testStartAgent() {		
+		starter.startAgent(); //there is no agent properties, it can be started with default setting
+		ThreadUtil.sleep(3000);
+		starter.stopAgent();
+	}
+	
+	@Test
+	public void testStartMonitor() {		
+		starter.startMonitor();
+		ThreadUtil.sleep(3000);
+		starter.stopMonitor();
+		starter.stopMonitor();
 	}
 }
 

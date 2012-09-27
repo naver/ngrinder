@@ -368,12 +368,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	@Transactional
 	public void markProgress(PerfTest perfTest, String message) {
-		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
-		if (findOne == null) {
-			return;
-		}
-		findOne.setLastProgressMessage(message);
-		perfTestRepository.save(findOne);
+		perfTest.setLastProgressMessage(message);
+		perfTestRepository.save(perfTest);
 	}
 
 	/**
@@ -952,8 +948,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
 		LOGGER.info("Total Statistics for test {}  is {}", perfTest.getId(), totalStatistics);
-		//if the test is finished abnormally, sometime, there is no statistic data can be got.
-			//if "TPS" data exist, all the other should exist too, so I didn't check Null value in map
 		perfTest.setErrors(MapUtils.getDouble(totalStatistics, "Errors", 0D).intValue());
 		perfTest.setTps(Double.parseDouble(formatter.format(MapUtils.getDouble(totalStatistics, "TPS", 0D))));
 		perfTest.setMeanTestTime(Double.parseDouble(formatter.format(MapUtils.getDouble(totalStatistics, "Mean_Test_Time_(ms)", 0D))));

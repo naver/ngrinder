@@ -46,8 +46,8 @@ public class AgentControllerServer {
 	 * @throws GrinderException
 	 *             occurs when error is
 	 */
-	public AgentControllerServer(Resources resources, Logger logger, ConsoleProperties properties, Condition eventSyncCondition)
-			throws GrinderException {
+	public AgentControllerServer(Resources resources, Logger logger, ConsoleProperties properties,
+			Condition eventSyncCondition) {
 		m_eventSyncCondition = eventSyncCondition;
 		m_container = new DefaultPicoContainer(new Caching());
 		m_container.addComponent(logger);

@@ -25,13 +25,17 @@ package org.ngrinder.agent.controller;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.model.AgentInfo;
+import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
@@ -50,6 +54,9 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 	@Autowired
 	AgentManagerController agentController;
 
+	@Autowired
+	private Config config;
+	
 	@Before
 	public void setMockRequest() {
 		MockHttpServletRequest req = new MockHttpServletRequest();
@@ -67,6 +74,24 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetAgentList() {
+		//create a temp download dir and file for this function
+		File directory = config.getHome().getDownloadDirectory();
+		if (!directory.exists()) {
+			try {
+				FileUtils.forceMkdir(directory);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		File tmpDownFile;
+		try {
+			tmpDownFile = File.createTempFile("ngrinder", "zip", directory);
+			FileUtils.writeStringToFile(tmpDownFile, "test data");
+			tmpDownFile.deleteOnExit();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		ModelMap model = new ModelMap();
 		agentController.getAgentList(model);
 		List<AgentInfo> agents = (List<AgentInfo>) model.get("agents");

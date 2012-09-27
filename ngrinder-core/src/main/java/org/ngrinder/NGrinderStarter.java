@@ -64,6 +64,8 @@ public class NGrinderStarter {
 	private boolean localAttachmentSupported;
 
 	private AgentConfig agentConfig;
+	
+	AgentControllerDaemon agentController;
 
 	public NGrinderStarter() {
 		try {
@@ -78,23 +80,25 @@ public class NGrinderStarter {
 			addClassPath();
 			addLibarayPath();
 			
-			
 			Class.forName("com.sun.tools.attach.VirtualMachine");
 			Class.forName("sun.management.ConnectorAddressLink");
 			localAttachmentSupported = true;
-		} catch (NoClassDefFoundError x) {
-			LOG.error("Local attachement is not supported", x);
-			localAttachmentSupported = false;
 		} catch (ClassNotFoundException x) {
 			LOG.error("Local attachement is not supported", x);
 			localAttachmentSupported = false;
 		}
 	}
 
+	/*
+	 * get the start mode, "agent" or "monitor". If it is not set in configuration, it will return "agent".
+	 */
 	public String getStartMode() {
 		return agentConfig.getAgentProperties().getProperty("start.mode", "agent");
 	}
 
+	/**
+	 * Start the performance monitor
+	 */
 	public void startMonitor() {
 		LOG.info("**************************");
 		LOG.info("* Start nGrinder Monitor *");
@@ -112,8 +116,15 @@ public class NGrinderStarter {
 			printHelpAndExit("Error while starting Monitor", e);
 		}
 	}
+	
+	public void stopMonitor() {
+		AgentMonitorServer.getInstance().stop();
+	}
 
-	private void startAgent() {
+	/**
+	 * Start ngrinder agent
+	 */
+	public void startAgent() {
 		LOG.info("*************************");
 		LOG.info("Start nGrinder Agent ...");
 
@@ -123,7 +134,7 @@ public class NGrinderStarter {
 		String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
 		LOG.info("with console: {}:{}", consoleIP, consolePort);
 		try {
-			AgentControllerDaemon agentController = new AgentControllerDaemon();
+			agentController = new AgentControllerDaemon();
 			agentController.setRegion(region);
 			agentController.setAgentConfig(agentConfig);
 			agentController.run(consoleIP, consolePort);
@@ -132,6 +143,15 @@ public class NGrinderStarter {
 			printHelpAndExit("Error while starting Agent", e);
 		}
 	}
+	
+	/**
+	 * stop the ngrinder agent
+	 */
+	public void stopAgent() {
+		LOG.info("Stop nGrinder agent!");
+		agentController.shutdown();
+	}
+	
 
 	/**
 	 * Do best to find tools.jar path.

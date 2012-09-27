@@ -104,7 +104,7 @@ public class AgentImplementationEx implements Agent {
 	 * @throws GrinderException
 	 *             If an error occurs.
 	 */
-	public AgentImplementationEx(Logger logger, AgentConfig agentConfig, boolean proceedWithoutConsole) throws GrinderException {
+	public AgentImplementationEx(Logger logger, AgentConfig agentConfig, boolean proceedWithoutConsole) {
 
 		m_logger = logger;
 		m_agentConfig = agentConfig;
@@ -123,7 +123,7 @@ public class AgentImplementationEx implements Agent {
 	 * @throws GrinderException
 	 *             occurs when initialization is failed.
 	 */
-	public AgentImplementationEx(Logger logger, AgentConfig agentConfig) throws GrinderException {
+	public AgentImplementationEx(Logger logger, AgentConfig agentConfig) {
 		this(logger, agentConfig, false);
 	}
 
@@ -270,10 +270,7 @@ public class AgentImplementationEx implements Agent {
 								consoleCommunication != null, script, properties);
 					} else {
 						m_logger.info("DEBUG MODE: Spawning threads rather than processes");
-
-						if (jvmArguments != null) {
-							m_logger.warn("grinder.jvm.arguments ({}) ignored in single process mode", jvmArguments);
-						}
+						m_logger.warn("grinder.jvm.arguments ({}) ignored in single process mode", jvmArguments);
 
 						workerFactory = new DebugThreadWorkerFactory(m_agentIdentity, m_fanOutStreamSender, consoleCommunication != null,
 								script, properties);
