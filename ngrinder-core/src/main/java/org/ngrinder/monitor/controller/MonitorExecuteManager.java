@@ -24,8 +24,8 @@ package org.ngrinder.monitor.controller;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -47,8 +47,8 @@ public class MonitorExecuteManager {
 	private long firstTime = 1;
 	private long interval = 1;
 
-	private Map<String, ScheduledExecutorService> schedulerMap = new HashMap<String, ScheduledExecutorService>();
-	private Map<String, MonitorExecuteWorker> monitorWorkerMap = new HashMap<String, MonitorExecuteWorker>();
+	private Map<String, ScheduledExecutorService> schedulerMap = new ConcurrentHashMap<String, ScheduledExecutorService>();
+	private Map<String, MonitorExecuteWorker> monitorWorkerMap = new ConcurrentHashMap<String, MonitorExecuteWorker>();
 	
 	private static MonitorExecuteManager instance = new MonitorExecuteManager();
 	

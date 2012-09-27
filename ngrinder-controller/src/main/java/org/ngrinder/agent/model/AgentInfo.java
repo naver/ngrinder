@@ -29,12 +29,14 @@ import javax.persistence.Transient;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.message.console.AgentControllerState;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.ngrinder.model.BaseEntity;
 
 /**
  * Agent model.
  * 
  * @author Tobi
+ * @author JunHo Yoon
  * @since 3.0
  */
 @Entity
@@ -160,5 +162,9 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	public void setApproved(boolean approved) {
 		this.approved = approved;
 	}
-
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
 }

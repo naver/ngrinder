@@ -91,23 +91,26 @@ public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
 	 * In this test, system data can't be got, because the sigar native libraries are in ngrinder-core project.
 	 * So the record count is not checked. 
 	 */
+	@SuppressWarnings("serial")
 	@Test
 	public void testAddRemoveMonitorTargets() {
 		
 		long startTime = NumberUtils.toLong(df.format(new Date()));
 		Set<AgentInfo> agents = new HashSet<AgentInfo>();
-		AgentInfo targetServer = new AgentInfo();
+		final AgentInfo targetServer = new AgentInfo();
 		targetServer.setIp("127.0.0.1");
 		targetServer.setPort(MonitorConstants.DEFAULT_MONITOR_PORT);
 		agents.add(targetServer);
-		monitorDataService.addMonitor("127.0.0.1_test", agents);
+		monitorDataService.addMonitorAgents(agents);
 		ThreadUtil.sleep(2000);
 		long endTime = NumberUtils.toLong(df.format(new Date()));
 		List<SystemDataModel> infoList = monitorService.getSystemMonitorData("127.0.0.1", startTime, endTime);
 		int size = infoList.size();
 		//assertThat(size, greaterThan(0)); //there is no record is inserted in DB
 		
-		monitorDataService.removeMonitorAgents("127.0.0.1");
+		monitorDataService.removeMonitorAgents(new HashSet<AgentInfo>(){{
+			add(targetServer);
+		}});
 		
 		//sleep a while to check whether the monitoring is stopped.
 		ThreadUtil.sleep(2000);

@@ -86,8 +86,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Single console for multiple test. This is the customized version of {@link Console} which grinder
- * has.
+ * Single console for multiple test. This is the customized version of
+ * {@link Console} which grinder has.
  * 
  * 
  * @author JunHo Yoon
@@ -117,6 +117,7 @@ public class SingleConsole implements Listener, SampleListener {
 	private Date TPS_LESSTHAN_ZREO_TIME;
 	private Date ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME;
 	private final ListenerSupport<ConsoleShutdownListener> m_shutdownListeners = new ListenerSupport<ConsoleShutdownListener>();
+	private final ListenerSupport<SamplingLifeCycleListener> m_samplingLifeCycleListener = new ListenerSupport<SamplingLifeCycleListener>();
 
 	private File reportPath;
 	private NumberFormat formatter = new DecimalFormat("###.###");
@@ -132,7 +133,7 @@ public class SingleConsole implements Listener, SampleListener {
 	private long samplingCount = 0;
 	/** The count of ignoring sampling */
 	private int ignoreSampleCount;
-
+	private boolean firstSampling = true;
 	/**
 	 * Currently running thread
 	 */
@@ -148,7 +149,7 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	private int currentNotFinishedProcessCount = 0;
 	private Set<AgentIdentity> agents;
-	
+
 	private static final int TOO_LOW_TPS_TIME = 60000;
 	private static final int TOO_MANY_ERROR_TIME = 10000;
 
@@ -204,7 +205,8 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Simple constructor only setting port. It automatically binds all ip addresses.
+	 * Simple constructor only setting port. It automatically binds all ip
+	 * addresses.
 	 * 
 	 * @param port
 	 *            PORT number
@@ -229,8 +231,7 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	public String getConsoleHost() {
 		try {
-			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress.getLocalHost()
-							.getHostAddress());
+			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress.getLocalHost().getHostAddress());
 		} catch (UnknownHostException e) {
 			return "";
 		}
@@ -288,8 +289,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	public int getAllAttachedAgentsCount() {
-		return ((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class))
-						.getNumberOfLiveAgents();
+		return ((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class)).getNumberOfLiveAgents();
 	}
 
 	/**
@@ -300,9 +300,8 @@ public class SingleConsole implements Listener, SampleListener {
 	public List<AgentIdentity> getAllAttachedAgents() {
 		final List<AgentIdentity> agentIdentities = new ArrayList<AgentIdentity>();
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(ReflectionUtil.getFieldValue(
-						(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
-						"m_agentNumberMap"),
-						"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
+				(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class), "m_agentNumberMap"),
+				"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
 			public void objectAndNumber(Object object, int number) {
 				agentIdentities.add((AgentIdentity) object);
@@ -406,7 +405,8 @@ public class SingleConsole implements Listener, SampleListener {
 	public void waitUntilAgentConnected(int size) {
 		int trial = 1;
 		while (trial++ < 10) {
-			// when agent finished one test, processReports will be updated as null
+			// when agent finished one test, processReports will be updated as
+			// null
 			if (processReports == null || this.processReports.length != size) {
 				synchronized (m_eventSyncCondition) {
 					m_eventSyncCondition.waitNoInterrruptException(1000);
@@ -438,8 +438,8 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Check all test is finished. To be safe, this counts thread count and not finished
-	 * workprocess. If one of them is 0, It thinks test is finished.
+	 * Check all test is finished. To be safe, this counts thread count and not
+	 * finished workprocess. If one of them is 0, It thinks test is finished.
 	 * 
 	 * @return true if finished
 	 */
@@ -448,7 +448,8 @@ public class SingleConsole implements Listener, SampleListener {
 			// Mostly running thread count is ok to determine it's finished.
 			if (this.runningThread == 0) {
 				return true;
-				// However sometimes runningThread is over 0 but all processs is marked as
+				// However sometimes runningThread is over 0 but all processs is
+				// marked as
 				// FINISHED.. It can be treated as finished status as well.
 			} else if (this.currentNotFinishedProcessCount == 0) {
 				return true;
@@ -482,12 +483,21 @@ public class SingleConsole implements Listener, SampleListener {
 		if (samplingCount++ < ignoreSampleCount) {
 			return;
 		}
+
+		if (firstSampling == true) {
+			firstSampling = false;
+			m_samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
+				@Override
+				public void inform(SamplingLifeCycleListener listener) {
+					listener.onSamplingStarted();
+				}
+			});
+		}
 		setTpsValue(sampleModel.getTPSExpression().getDoubleValue(intervalStatistics));
 		checkTooLowTps(getTpsValues());
 		updateStatistics();
 		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) statisticData
-						.get("lastSampleStatistics");
+		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) statisticData.get("lastSampleStatistics");
 
 		if (lastSampleStatistics != null) {
 			double tpsSum = 0;
@@ -506,7 +516,8 @@ public class SingleConsole implements Listener, SampleListener {
 
 				for (Entry<String, Object> each : lastStatistic.entrySet()) {
 					if (!headerAdded) {
-						// Peak TPS is not meaningful for CSV report for every second.
+						// Peak TPS is not meaningful for CSV report for every
+						// second.
 						if (!each.getKey().contains("Peak_TPS")) {
 							csvHeaderList.add(each.getKey());
 							csvHeader.append(",");
@@ -551,7 +562,8 @@ public class SingleConsole implements Listener, SampleListener {
 				// current vuser count in
 				// this secons.
 				for (String key : csvHeaderList) {
-					//if (!key.contains("Peak_TPS")) {Peak_TPS is not put into csvHeaderList
+					// if (!key.contains("Peak_TPS")) {Peak_TPS is not put into
+					// csvHeaderList
 					csvLine.append(",");
 					csvLine.append(formatValue(lastStatistic.get(key)));
 
@@ -591,8 +603,8 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Check if the TPS is too low. the TPS is lower than 0.001 for 2 minutes, It notifies it to the
-	 * {@link ConsoleShutdownListener}
+	 * Check if the TPS is too low. the TPS is lower than 0.001 for 2 minutes,
+	 * It notifies it to the {@link ConsoleShutdownListener}
 	 * 
 	 * @param tps
 	 *            current TPS
@@ -603,8 +615,7 @@ public class SingleConsole implements Listener, SampleListener {
 			if (TPS_LESSTHAN_ZREO_TIME == null) {
 				TPS_LESSTHAN_ZREO_TIME = new Date();
 			} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= TOO_LOW_TPS_TIME) {
-				LOGGER.warn("Stop the test because its tps is less than 0.001 for more than {} minitue.",
-						TOO_LOW_TPS_TIME / 60000);
+				LOGGER.warn("Stop the test because its tps is less than 0.001 for more than {} minitue.", TOO_LOW_TPS_TIME / 60000);
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
 					public void inform(ConsoleShutdownListener listener) {
 						listener.readyToStop(StopReason.TOO_LOW_TPS);
@@ -620,8 +631,8 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Check if too many error occurs. If the half of total transaction is error for 10 sec. It
-	 * notifies the {@link ConsoleShutdownListener}
+	 * Check if too many error occurs. If the half of total transaction is error
+	 * for 10 sec. It notifies the {@link ConsoleShutdownListener}
 	 * 
 	 * @param tpsSum
 	 *            sum of tps
@@ -674,10 +685,10 @@ public class SingleConsole implements Listener, SampleListener {
 				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
 				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
 				for (ExpressionView expressionView : views) {
-					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-									getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
-					lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-									getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
+					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"), getRealDoubleValue(expressionView
+							.getExpression().getDoubleValue(set)));
+					lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"), getRealDoubleValue(expressionView
+							.getExpression().getDoubleValue(lastSet)));
 				}
 
 				cumulativeStatistics.add(statistics);
@@ -689,8 +700,8 @@ public class SingleConsole implements Listener, SampleListener {
 		Map<String, Object> totalStatistics = new HashMap<String, Object>();
 
 		for (ExpressionView expressionView : views) {
-			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-							getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
+			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"), getRealDoubleValue(expressionView.getExpression()
+					.getDoubleValue(totalSet)));
 		}
 
 		result.put("totalStatistics", totalStatistics);
@@ -713,8 +724,7 @@ public class SingleConsole implements Listener, SampleListener {
 			return 0L;
 		}
 		Double testCount = MapUtils.getDoubleValue((Map<?, ?>) this.statisticData.get("totalStatistics"), "Tests", 0D);
-		Double errorCount = MapUtils
-						.getDoubleValue((Map<?, ?>) this.statisticData.get("totalStatistics"), "Errors", 0D);
+		Double errorCount = MapUtils.getDoubleValue((Map<?, ?>) this.statisticData.get("totalStatistics"), "Errors", 0D);
 		return testCount.longValue() + errorCount.longValue();
 	}
 
@@ -723,6 +733,24 @@ public class SingleConsole implements Listener, SampleListener {
 			return null;
 		}
 		return doubleValue;
+	}
+
+	/**
+	 * Listener interface to detect sampling start and end point.
+	 * 
+	 * @author JunHo Yoon
+	 */
+	public interface SamplingLifeCycleListener {
+		/**
+		 * Called when the sampling is started.
+		 */
+		void onSamplingStarted();
+
+		/**
+		 * Called when the sampling is started.
+		 */
+		void onSamplingEnded();
+
 	}
 
 	/**
@@ -751,7 +779,8 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Add {@link ConsoleShutdownListener} to get notified when console is shutdowned.
+	 * Add {@link ConsoleShutdownListener} to get notified when console is
+	 * shutdowned.
 	 * 
 	 * @param listener
 	 *            listener to be used.
@@ -761,13 +790,26 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
+	 * Add {@link SamplingLifeCycleListener} to get notified when sampling is
+	 * started and ended.
+	 * 
+	 * @param listener
+	 *            listener to be used.
+	 * 
+	 */
+	public void addSamplingLifeCyleListener(SamplingLifeCycleListener listener) {
+		m_samplingLifeCycleListener.add(listener);
+	}
+
+	/**
 	 * Update process status of agents. In this method
 	 */
 	@Override
 	public void update(ProcessReports[] processReports) {
 		synchronized (m_eventSyncCondition) {
 			this.processReports = processReports;
-			// The reason I passed porcessReport as parameter here is to prevent the synchronization
+			// The reason I passed porcessReport as parameter here is to prevent
+			// the synchronization
 			// problem.
 			updateCurrentProcessAndThread(processReports);
 			m_eventSyncCondition.notifyAll();
@@ -788,7 +830,8 @@ public class SingleConsole implements Listener, SampleListener {
 		for (ProcessReports agentReport : processReports) {
 			// Per process
 			for (WorkerProcessReport processReport : agentReport.getWorkerProcessReports()) {
-				// There might be the processes which is not finished but no running thread in it.
+				// There might be the processes which is not finished but no
+				// running thread in it.
 				if (processReport.getState() != 3) {
 					notFinishedWorkerCount++;
 				}
@@ -842,8 +885,9 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Get the statistics data. This method returns the map whose key is string and it's mapped to
-	 * specific value. Please refer {@link #updateStatistics()}
+	 * Get the statistics data. This method returns the map whose key is string
+	 * and it's mapped to specific value. Please refer
+	 * {@link #updateStatistics()}
 	 * 
 	 * @return map which contains statistics data
 	 */
@@ -851,8 +895,8 @@ public class SingleConsole implements Listener, SampleListener {
 	public Map<String, Object> getStatictisData() {
 		return (Map<String, Object>) ObjectUtils.defaultIfNull(this.statisticData, getNullStatictisData());
 	}
-	
-	public Map<String, Object> getNullStatictisData(){
+
+	public Map<String, Object> getNullStatictisData() {
 		Map<String, Object> result = new ConcurrentHashMap<String, Object>();
 		result.put("test_time", getCurrentRunningTime() / 1000);
 		return result;
@@ -909,6 +953,12 @@ public class SingleConsole implements Listener, SampleListener {
 		LOGGER.info("Sampling is stopped");
 		this.sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 		this.sampleModel.reset();
+		m_samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
+			@Override
+			public void inform(SamplingLifeCycleListener listener) {
+				listener.onSamplingEnded();
+			}
+		});
 	}
 
 	/**
@@ -931,7 +981,7 @@ public class SingleConsole implements Listener, SampleListener {
 	public void setConnectingAgents(Set<AgentIdentity> agents) {
 		this.agents = agents;
 	}
-	
+
 	public Set<AgentIdentity> getConnectingAgents() {
 		return this.agents;
 	}

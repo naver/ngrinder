@@ -38,6 +38,7 @@ import java.util.Set;
 
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.ConsoleShutdownListener;
+import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
@@ -239,21 +240,25 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties, final SingleConsole singleConsole) {
 		// start target monitor
-
 		for (OnTestStartRunnable run : pluginManager.getEnabledModulesByClass(OnTestStartRunnable.class)) {
 			run.start(perfTest, perfTestService, config.getVesion());
 		}
 
-		Set<AgentInfo> agents = new HashSet<AgentInfo>();
-		List<String> targetIPList = perfTest.getTargetHostIP();
-		for (String targetIP : targetIPList) {
-			AgentInfo targetServer = new AgentInfo();
-			targetServer.setIp(targetIP);
-			targetServer.setPort(MonitorConstants.DEFAULT_MONITOR_PORT);
-			agents.add(targetServer);
-		}
-		// use perf test id as key for the set of target server.
-		monitorDataService.addMonitor("PerfTest-" + perfTest.getId(), agents);
+		// Add monitors when sampling is started.
+		final Set<AgentInfo> agents = createMonitorTargets(perfTest);
+		singleConsole.addSamplingLifeCyleListener(new SamplingLifeCycleListener() {
+			@Override
+			public void onSamplingStarted() {
+				LOG.info("add monitors on {} for perftest {}", agents, perfTest.getId());
+				monitorDataService.addMonitorAgents(agents);
+			}
+			
+			@Override
+			public void onSamplingEnded() {
+				LOG.info("remove monitors on {} for perftest {}", agents, perfTest.getId());
+				monitorDataService.removeMonitorAgents(agents);
+			}
+		});
 
 		// Run test
 		perfTestService.changePerfTestStatus(perfTest, START_TESTING, "Now the test is ready to start.");
@@ -269,6 +274,19 @@ public class PerfTestRunnable implements NGrinderConstants {
 		long startTime = singleConsole.startTest(grinderProperties);
 		perfTestService.setRecodingStarting(perfTest, startTime);
 		perfTestService.changePerfTestStatus(perfTest, TESTING, "The test is started.");
+	}
+
+	
+	private Set<AgentInfo> createMonitorTargets(final PerfTest perfTest) {
+		final Set<AgentInfo> agents = new HashSet<AgentInfo>();
+		List<String> targetIPList = perfTest.getTargetHostIP();
+		for (String targetIP : targetIPList) {
+			AgentInfo targetServer = new AgentInfo();
+			targetServer.setIp(targetIP);
+			targetServer.setPort(MonitorConstants.DEFAULT_MONITOR_PORT);
+			agents.add(targetServer);
+		}
+		return agents;
 	}
 
 	/**
@@ -356,7 +374,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	public void doStop(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED, "Stop requested by user");
-		removeMonitorTargets(perfTest);
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
 
@@ -370,7 +387,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR, "Stoped by error");
-		removeMonitorTargets(perfTest);
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
 
@@ -394,18 +410,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.FINISHED,
 							"The test is finished successfully");
 		}
-		removeMonitorTargets(perfTest);
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
 	
-	private void removeMonitorTargets(PerfTest perfTest) {
-		List<String> targetIPList = perfTest.getTargetHostIP();
-		for (String targetIP : targetIPList) {
-			try {
-				monitorDataService.removeMonitorAgents(targetIP);
-			} catch(Exception e) {
-				LOG.error("Error while deleting monitor for {}", targetIP);
-			}
-		}
-	}
+	
 }

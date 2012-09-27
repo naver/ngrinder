@@ -48,27 +48,31 @@ public class MonitorAgentService {
 	private MonitorDataRepository monitorDataRepository;
 
 	/**
-	 * add a set of agents to the monitor manager, and start the monitor job. 
-	 * @param key
-	 * @param agents
+	 * add a set of agents to the monitor manager, and start the monitor job.
+	 * @param {@link AgentInfo} set
 	 */
-	public void addMonitor(String key, Set<AgentInfo> agents) {
+	public void addMonitorAgents(Set<AgentInfo> agents) {
 		for (AgentInfo agent : agents) {
 			MonitorAgentInfo monitorAgentInfo = 
 					MonitorAgentInfo.getSystemMonitor(agent.getIp(), agent.getPort(), monitorDataRepository);
 			MonitorExecuteManager.getInstance().addAgentMonitor(agent.getIp(), monitorAgentInfo);
 		}
-		LOG.debug("Init nGrinder Monitor for:{} successfully.", key);
 	}
-
+	
 	/**
 	 * Remove agents, and stop monitoring.
 	 * 
-	 * @param agent
+	 * @param agents {@link AgentInfo} set
 	 */
-	public void removeMonitorAgents(String agentIP) {
-		MonitorExecuteManager.getInstance().removeAgentMonitor(agentIP);
-		LOG.debug("Remove nGrinder Monitor for:{} successfully.", agentIP);
+	public void removeMonitorAgents(Set<AgentInfo> agents) {
+		for (AgentInfo agent : agents) {
+			try {
+				MonitorExecuteManager.getInstance().removeAgentMonitor(agent.getIp());
+				LOG.debug("Remove nGrinder Monitor for:{} successfully.", agent.getIp());
+			} catch (Exception e) {
+				LOG.error("Error occurs while remove monitor for {}", agent.getIp());
+			}
+		}
 	}
 
 }
