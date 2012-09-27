@@ -118,7 +118,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		long scheduleLong = schedule.getTime();
 		scheduleLong = scheduleLong / 1000 / 60;
 		scheduleLong = scheduleLong * 1000 * 60; //convert the time as the beginning of that minute.
-		if (schedule != null && System.currentTimeMillis() < scheduleLong) {
+		if (System.currentTimeMillis() < scheduleLong) {
 			// this test project is reserved,but it isn't yet going to run test
 			// right now.
 			return;
@@ -146,9 +146,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            perftest instance;
 	 */
 	public void doTest(PerfTest perfTest) {
-		SingleConsole singleConsole = null;
 		try {
-			singleConsole = startConsole(perfTest);
+			SingleConsole singleConsole = startConsole(perfTest);
 			prepareFiles(perfTest);
 			GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
 			startAgentsOn(perfTest, grinderProperties, singleConsole);
@@ -298,14 +297,14 @@ public class PerfTestRunnable implements NGrinderConstants {
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
 	public void finishTest() {
 		for (PerfTest each : perfTestService.getAbnoramlTestingPerfTest()) {
-			LOG.error("Terminate " + each.getId());
+			LOG.error("Terminate {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			doTerminate(each, consoleUsingPort);
 			notifyFinsish(each, StopReason.TOO_MANY_ERRORS);
 		}
 
 		for (PerfTest each : perfTestService.getStopRequestedPerfTest()) {
-			LOG.error("Stop " + each.getId());
+			LOG.error("Stop test {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			doStop(each, consoleUsingPort);
 			notifyFinsish(each, StopReason.STOP_BY_USER);

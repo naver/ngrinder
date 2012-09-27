@@ -30,13 +30,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map.Entry;
 
 import net.grinder.AgentControllerDaemon;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.ngrinder.common.util.ReflectionUtil;
@@ -190,13 +191,11 @@ public class NGrinderStarter {
 				if (toolsJarPath.exists()) {
 					return toolsJarPath.toURI().toURL();
 				}
-				File[] fileList = parentFile.listFiles();
-				if (fileList != null) {
-					for (File eachCandidate : fileList) {
-						toolsJarPath = new File(eachCandidate, toolsJar);
-						if (toolsJarPath.exists()) {
-							return toolsJarPath.toURI().toURL();
-						}
+				Collection<File> fileList = FileUtils.listFiles(parentFile, null, false);
+				for (File eachCandidate : fileList) {
+					toolsJarPath = new File(eachCandidate, toolsJar);
+					if (toolsJarPath.exists()) {
+						return toolsJarPath.toURI().toURL();
 					}
 				}
 			}
@@ -228,21 +227,16 @@ public class NGrinderStarter {
 			printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + ") does not exist");
 			return;
 		}
-		File[] libList = libFolder.listFiles();
-		if (libList == null) {
-			printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + ") has no content");
-			return;
-		}
+		String[] exts = new String[]{".jar"};
+		Collection<File> libList = FileUtils.listFiles(libFolder, exts, false);
 
 		for (File each : libList) {
-			if (each.getName().toLowerCase(Locale.getDefault()).endsWith(".jar")) {
-				try {
-					URL jarFileUrl = checkNotNull(each.toURI().toURL());
-					ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { jarFileUrl });
-					libString.add(each.getPath());
-				} catch (MalformedURLException e) {
-					LOG.error(e.getMessage(), e);
-				}
+			try {
+				URL jarFileUrl = checkNotNull(each.toURI().toURL());
+				ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { jarFileUrl });
+				libString.add(each.getPath());
+			} catch (MalformedURLException e) {
+				LOG.error(e.getMessage(), e);
 			}
 		}
 		if (!libString.isEmpty()) {

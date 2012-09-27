@@ -8,7 +8,6 @@ import java.net.URL;
 
 import org.junit.Test;
 import org.ngrinder.common.util.ThreadUtil;
-import org.ngrinder.infra.AgentConfig;
 
 public class NGrinderStarterTest {
 	

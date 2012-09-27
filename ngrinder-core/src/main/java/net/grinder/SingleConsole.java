@@ -148,6 +148,9 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	private int currentNotFinishedProcessCount = 0;
 	private Set<AgentIdentity> agents;
+	
+	private static final int TOO_LOW_TPS_TIME = 60000;
+	private static final int TOO_MANY_ERROR_TIME = 10000;
 
 	/**
 	 * Constructor with console ip and port.
@@ -403,8 +406,7 @@ public class SingleConsole implements Listener, SampleListener {
 	public void waitUntilAgentConnected(int size) {
 		int trial = 1;
 		while (trial++ < 10) {
-			// when agent finished one test, processReports will be updated as
-			// null
+			// when agent finished one test, processReports will be updated as null
 			if (processReports == null || this.processReports.length != size) {
 				synchronized (m_eventSyncCondition) {
 					m_eventSyncCondition.waitNoInterrruptException(1000);
@@ -504,7 +506,7 @@ public class SingleConsole implements Listener, SampleListener {
 
 				for (Entry<String, Object> each : lastStatistic.entrySet()) {
 					if (!headerAdded) {
-						// Peak TPS is not meaningfule for CSV report.
+						// Peak TPS is not meaningful for CSV report for every second.
 						if (!each.getKey().contains("Peak_TPS")) {
 							csvHeaderList.add(each.getKey());
 							csvHeader.append(",");
@@ -549,10 +551,10 @@ public class SingleConsole implements Listener, SampleListener {
 				// current vuser count in
 				// this secons.
 				for (String key : csvHeaderList) {
-					if (!key.contains("Peak_TPS")) {
-						csvLine.append(",");
-						csvLine.append(formatValue(lastStatistic.get(key)));
-					}
+					//if (!key.contains("Peak_TPS")) {Peak_TPS is not put into csvHeaderList
+					csvLine.append(",");
+					csvLine.append(formatValue(lastStatistic.get(key)));
+
 				}
 			}
 			try {
@@ -573,16 +575,14 @@ public class SingleConsole implements Listener, SampleListener {
 				}
 				// add total test report into csv file.
 				for (String key : csvHeaderList) {
-					if (!key.contains("Peak_TPS")) {
-						csvLine.append(",");
-						csvLine.append(formatValue(valueMap.get(key)));
-					}
+					csvLine.append(",");
+					csvLine.append(formatValue(valueMap.get(key)));
 				}
 
 				writeCSVDataLine(csvLine.toString());
 
 			} catch (IOException e) {
-				LOGGER.error("Write report data failed : ", e);
+				LOGGER.error("Write report data failed :" + e.getMessage(), e);
 			}
 			// In case of error..
 			checkTooManyError(tpsSum, errors);
@@ -602,8 +602,9 @@ public class SingleConsole implements Listener, SampleListener {
 		if (tps < 0.001) {
 			if (TPS_LESSTHAN_ZREO_TIME == null) {
 				TPS_LESSTHAN_ZREO_TIME = new Date();
-			} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= 60000) {
-				LOGGER.warn("Test has been forced to stop because of tps is less than 0.001 and sustain more than 1 minitue.");
+			} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= TOO_LOW_TPS_TIME) {
+				LOGGER.warn("Stop the test because its tps is less than 0.001 for more than {} minitue.",
+						TOO_LOW_TPS_TIME / 60000);
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
 					public void inform(ConsoleShutdownListener listener) {
 						listener.readyToStop(StopReason.TOO_LOW_TPS);
@@ -631,8 +632,9 @@ public class SingleConsole implements Listener, SampleListener {
 		if (tpsSum / 2 < errors) {
 			if (ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME == null) {
 				ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME = new Date();
-			} else if (new Date().getTime() - ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME.getTime() >= 10000) {
-				LOGGER.warn("Test has been forced to stop because of error is more than half of total tps and sustain more than ten second.");
+			} else if (new Date().getTime() - ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME.getTime() >= TOO_MANY_ERROR_TIME) {
+				LOGGER.warn("Stop the test because test error is more than half of total tps for more than {} seconds.",
+						TOO_MANY_ERROR_TIME / 1000);
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
 					public void inform(ConsoleShutdownListener listener) {
 						listener.readyToStop(StopReason.TOO_MANY_ERRORS);

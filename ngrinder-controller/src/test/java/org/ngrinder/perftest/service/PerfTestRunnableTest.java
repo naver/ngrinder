@@ -109,6 +109,8 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	@Test
 	public void testDoTest() throws IOException {
 		perfTestRunnable.startTest();
+		sleep(10000);
+		perfTestRunnable.finishTest();
 	}
 
 	@Test

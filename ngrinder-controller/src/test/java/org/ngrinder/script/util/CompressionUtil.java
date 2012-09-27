@@ -15,7 +15,6 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
 public class CompressionUtil {
-	private static boolean debug = false;
 
 	public void unzip(File zippedFile) throws IOException {
 		unzip(zippedFile, Charset.defaultCharset().name());
@@ -52,7 +51,6 @@ public class CompressionUtil {
 			target = new File(destDir, name);
 			if (entry.isDirectory()) {
 				target.mkdirs(); /* does it always work? */
-				debug("dir  : " + name);
 			} else {
 				target.createNewFile();
 				bos = new BufferedOutputStream(new FileOutputStream(target));
@@ -60,7 +58,6 @@ public class CompressionUtil {
 					bos.write(buf, 0, nWritten);
 				}
 				bos.close();
-				debug("file : " + name);
 			}
 		}
 		zis.close();
@@ -170,7 +167,6 @@ public class CompressionUtil {
 			File f = stack.pop();
 			name = toPath(root, f);
 			if (f.isDirectory()) {
-				debug("dir  : " + name);
 				File[] fs = f.listFiles();
 				for (int i = 0; i < fs.length; i++) {
 					if (fs[i].isDirectory())
@@ -179,7 +175,6 @@ public class CompressionUtil {
 						stack.add(0, fs[i]);
 				}
 			} else {
-				debug("file : " + name);
 				ze = new ZipArchiveEntry(name);
 				zos.putArchiveEntry(ze);
 				fis = new FileInputStream(f);
@@ -201,10 +196,5 @@ public class CompressionUtil {
 		if (dir.isDirectory() && !path.endsWith("/"))
 			path += "/";
 		return path;
-	}
-
-	private static void debug(String msg) {
-		if (debug)
-			System.out.println(msg);
 	}
 }
