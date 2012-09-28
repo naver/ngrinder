@@ -37,6 +37,7 @@ import net.grinder.common.processidentity.AgentIdentity;
 import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.chart.service.MonitorService;
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
@@ -100,9 +101,13 @@ public class MonitorController extends NGrinderBaseController {
 			@RequestParam(required = false) Date finishTime, @RequestParam int imgWidth) {
 		if (null == finishTime) {
 			finishTime = new Date();
+		} else {
+			finishTime = DateUtil.convertToServerDate(getCurrentUser().getTimeZone(), finishTime);
 		}
 		if (null == startTime) {
 			startTime = new Date(finishTime.getTime() - 60 * 1000); //default getting one minute's monitor data
+		} else {
+			startTime = DateUtil.convertToServerDate(getCurrentUser().getTimeZone(), startTime);
 		}
 		
 		long st = NumberUtils.toLong(DATE_FORMATER.format(startTime));

@@ -59,8 +59,45 @@ public abstract class DateUtil {
 
 	private static Map<String, String> timezoneIDMap;
 
+	/**
+	 * get the time in long format : "yyyyMMddHHmmss".
+	 * @param date
+	 * 			  date to be format
+	 * @return time
+	 * 			  time in format of long type
+	 */
 	public static long getCollectTimeInLong(Date date) {
 		return Long.valueOf(collectTimeFormat.format(date));
+	}
+	
+	/**
+	 * convert user date to new date with server side Locale.
+	 * @param userTimeZone
+	 * 			  user TimeZone id
+	 * @param userDate
+	 * 			  date in user's Local
+	 * @return serverDate
+	 * 			  data in server's Local
+	 */
+	public static Date convertToServerDate(String userTimeZone, Date userDate) {
+		TimeZone userLocal = TimeZone.getTimeZone(userTimeZone);
+		int rawOffset = TimeZone.getDefault().getRawOffset() - userLocal.getRawOffset();
+		return new Date(userDate.getTime() + rawOffset);
+	}
+	
+	/**
+	 * convert server date to new date with user Locale.
+	 * @param userTimeZone
+	 * 			  user TimeZone id
+	 * @param serverDate
+	 * 			  date in server's Local
+	 * @return serverDate
+	 * 			  data in user's Local
+	 */
+	public static Date convertToUserDate(String userTimeZone, Date serverDate) {
+		TimeZone userLocal = TimeZone.getTimeZone(userTimeZone);
+		int rawOffset = userLocal.getRawOffset() - TimeZone.getDefault().getRawOffset();
+		return new Date(serverDate.getTime() + rawOffset);
 	}
 
 	/**
@@ -185,13 +222,5 @@ public abstract class DateUtil {
 		else
 			return false;
 	}
-	
-	public static boolean compareDateEndWithDay(Date date1,Date date2) {
-		String dateStr1 = SIMPLE_DATE_FORMAT.format(date1);
-		String dateStr2 = SIMPLE_DATE_FORMAT.format(date2);
-		if(dateStr1.equals(dateStr2))
-			return true;
-		else
-			return false;
-	}
+
 }

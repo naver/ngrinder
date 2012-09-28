@@ -51,6 +51,27 @@ public class DateUtilTest {
 	}
 
 	@Test
+	public void testConvertToServerDate() {
+		String userLocaleId = "Asia/Seoul";
+		Date userDate = new Date();
+		Date serverDate = DateUtil.convertToServerDate(userLocaleId, userDate);
+		//userDate - serverDate should be equal as offset
+		assertThat((userDate.getTime() - serverDate.getTime()), is(60L * 60 * 1000));
+	}
+
+	@Test
+	public void testConvertToUserDate() {
+		String userLocaleId = "Asia/Seoul";
+		Date serverDate = new Date();
+		Date userDate = DateUtil.convertToUserDate(userLocaleId, serverDate);
+		assertThat((userDate.getTime() - serverDate.getTime()), is(60L * 60 * 1000));
+		
+		//convert the server date back to test.
+		Date newServerDate = DateUtil.convertToServerDate(userLocaleId, userDate);
+		assertThat(serverDate.getTime(), is(newServerDate.getTime()));
+	}
+	
+	@Test
 	public void testGetFilteredTimeZoneMap() {
 		Map<String, String> tzMap = DateUtil.getFilteredTimeZoneMap();
 		assertThat(tzMap, notNullValue());
