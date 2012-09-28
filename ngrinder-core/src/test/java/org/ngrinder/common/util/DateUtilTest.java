@@ -26,6 +26,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -52,6 +53,7 @@ public class DateUtilTest {
 
 	@Test
 	public void testConvertToServerDate() {
+		fail("This test is only working in china... Please fix it");
 		String userLocaleId = "Asia/Seoul";
 		Date userDate = new Date();
 		Date serverDate = DateUtil.convertToServerDate(userLocaleId, userDate);
@@ -61,6 +63,7 @@ public class DateUtilTest {
 
 	@Test
 	public void testConvertToUserDate() {
+		fail("This test is only working in china... Please fix it");
 		String userLocaleId = "Asia/Seoul";
 		Date serverDate = new Date();
 		Date userDate = DateUtil.convertToUserDate(userLocaleId, serverDate);
