@@ -1,0 +1,20 @@
+The open source community has been flooded with lots of nearly identical licenses.
+We'd like to see projects standardize on the most popular, time-tested ones. For
+that reason, we encourage projects that we host to use one of the licenses listed
+on our project creation page. The offered licenses offer enough diversity to meet
+most developer needs, while minimizing license proliferation.
+
+Apache License 2.0
+Artistic License/GPL
+Eclipse Public License 1.0
+GPL v2
+GPL v3
+LGPL
+MIT License
+Mozilla Public License 1.1
+New BSD License
+
+If for some reason, your project cannot use one of the ones listed, there is an option
+in the license selector to allow the use other OSI approved licenses. Simply select 
+¡°Other Open Source¡± and indicate in your LICENSING, COPYING or similar file which 
+license you are using.

@@ -1,0 +1,97 @@
+The Grinder
+Copyright (c) 2000 Paco Gomez
+Copyright (c) 2000-2011 Philip Aston
+All rights reserved.
+
+Additional contributions have been made by individuals listed in the
+AUTHORS file supplied with this distribution. Each individual's claim
+to copyright is asserted in the files to which they contributed.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+      copyright notice, this list of conditions and the following
+      disclaimer in the documentation and/or other materials provided
+      with the distribution.
+    * Neither the names of the copyright holders nor the names of the
+      contributors may be used to endorse or promote products derived
+      from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
+TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGE.
+
+
+The Grinder includes Ronald Tschalýr's HTTPClient library
+(http://www.innovation.ch/java/HTTPClient/index.html). The HTTPClient
+library is distributed under the GNU Lesser Public License. Under the
+term 6 of the GNU Lesser Public License, The Grinder is a "work that
+uses the Library". See the file LICENSE-HTTPClient for license and
+copyright details.
+
+The Grinder includes the software Jython, created by Jim Hugunin,
+Barry Warsaw and the Jython team (http://www.jython.org/). See the
+file LICENSE-Jython for license and copyright details.
+
+The Grinder includes the jEdit Syntax highlighting package
+(http://syntax.jedit.org/). See the file LICENSE-jEditSyntax for
+license and copyright details.
+
+The Grinder includes Apache XMLBeans (http://xmlbeans.apache.org),
+under the terms of the Apache Software License Version 2.0.
+
+   =========================================================================
+   ==  NOTICE file corresponding to section 4(d) of the Apache License,   ==
+   ==  Version 2.0, in this case for the Apache XmlBeans distribution.    ==
+   =========================================================================
+
+   This product includes software developed by
+   The Apache Software Foundation (http://www.apache.org/).
+
+   Portions of this software were originally based on the following:
+     - software copyright (c) 2000-2003, BEA Systems,
+     <http://www.bea.com/>.
+
+   Aside from contributions to the Apache XMLBeans project, this
+   software also includes:
+
+    - one or more source files from the Apache Xerces-J and Apache
+      Axis products, Copyright (c) 1999-2003 Apache Software
+      Foundation
+
+    - W3C XML Schema documents Copyright 2001-2003 (c) World Wide Web
+      Consortium (Massachusetts Institute of Technology, European
+      Research Consortium for Informatics and Mathematics, Keio
+      University)
+
+    - Piccolo XML Parser for Java from http://piccolo.sourceforge.net/,
+      Copyright 2002 Yuval Oren under the terms of the Apache Software
+      License 2.0
+
+    - JSR-173 Streaming API for XML from
+      http://sourceforge.net/projects/xmlpullparser/,
+      Copyright 2005 BEA under the terms of the Apache Software
+      License 2.0
+
+The Grinder includes PicoContainer
+(http://picocontainer.codehaus.org/). See the file
+LICENSE-PicoContainer for license and copyright details.
+
+The Grinder includes ASM (http://asm.objectweb.org/). See the file
+LICENSE-ASM for license and copyright details.
+
+The Grinder includes components from the extra166y package. This package
+is in the public domain. See http://g.oswego.edu/dl/concurrency-interest/.
