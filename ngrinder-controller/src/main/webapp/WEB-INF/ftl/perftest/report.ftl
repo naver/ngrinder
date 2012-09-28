@@ -24,11 +24,13 @@
 	</head>
 
 	<body>
-	<ul class="breadcrumb">
-		<li>
-			<h3><@spring.message "perfTest.report.reportPage"/> ${test.testName}</h3>
-		</li>
-	</ul>
+	<div class="container">
+		<ul class="breadcrumb">
+			<li>
+				<h3><@spring.message "perfTest.report.reportPage"/> ${test.testName}</h3>
+			</li>
+		</ul>
+	</div>
 	<div class="container">
 	   <input type="hidden" id="startTime" name="startTime" value="${(test.startTime)!}">
 	   <input type="hidden" id="finishTime" name="finishTime" value="${(test.finishTime)!}">

@@ -93,7 +93,7 @@ public class AgentManagerService {
 					List<AgentInfo> agents) {
 		AgentInfo agentInfo = new AgentInfo();
 		for (AgentInfo each : agents) {
-			if (StringUtils.equals(each.getIp(), agentIdentity.getIp())) {
+			if (each != null && StringUtils.equals(each.getIp(), agentIdentity.getIp())) {
 				agentInfo = each;
 				break;
 			}

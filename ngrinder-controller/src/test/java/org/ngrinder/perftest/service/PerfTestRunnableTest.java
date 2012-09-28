@@ -91,7 +91,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		agentControllerDaemon.setAgentConfig(agentConfig1);
 		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 
-		sleep(12000);
+		sleep(6000);
 		agentService.getAgentList();
 		int agentCount = agentManager.getAllAttachedAgents().size();
 		String ip = InetAddress.getLocalHost().getHostAddress();

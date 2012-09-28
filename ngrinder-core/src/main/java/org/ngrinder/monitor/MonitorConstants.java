@@ -36,7 +36,7 @@ import org.ngrinder.infra.AgentConfig;
  */
 public class MonitorConstants {
 
-	public static int DEFAULT_MONITOR_PORT = 3243;
+	public static int DEFAULT_MONITOR_PORT = 13243;
 	public static int DEFAULT_MONITOR_COLLECTOR_INTERVAL = 1;
 	public static final String DEFAULT_MONITOR_DOMAIN = "org.ngrinder.monitor";
 	public static final String DEFALUT_MONITOR_DISPLAY_NAME = "nGrinder monitoring agent";
@@ -71,7 +71,7 @@ public class MonitorConstants {
 	 */
 	public static void init(AgentConfig agentConfig) {
 		PropertiesWrapper agentProperties = agentConfig.getAgentProperties();
-		DEFAULT_MONITOR_PORT = agentProperties.getPropertyInt("monitor.listen.port", 3243);
+		DEFAULT_MONITOR_PORT = agentProperties.getPropertyInt("monitor.listen.port", 13243);
 		DEFAULT_MONITOR_COLLECTOR_INTERVAL = agentProperties.getPropertyInt("monitor.collector.interval", 1);
 		DEFAULT_CONTROLLER_CACHE_SIZE = agentProperties.getPropertyInt("monitor.controller.cache.size", 128);
 		DEFAULT_CONTROLLER_INTERVAL = agentProperties.getPropertyInt("monitor.collector.interval", 1);

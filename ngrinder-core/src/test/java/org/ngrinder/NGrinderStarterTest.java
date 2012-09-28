@@ -3,6 +3,7 @@ package org.ngrinder;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.net.URL;
 
@@ -27,6 +28,7 @@ public class NGrinderStarterTest {
 	
 	@Test
 	public void testGetStartMode() {
+		fail("This test is only working when user doesn't install his agent in local... Please fix it");
 		//default start mode is monitor
 		String startMode = starter.getStartMode();
 		assertEquals(startMode, "monitor");

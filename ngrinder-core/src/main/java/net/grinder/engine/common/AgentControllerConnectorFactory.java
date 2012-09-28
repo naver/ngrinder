@@ -32,7 +32,7 @@ import org.ngrinder.infra.AgentConfig;
 /**
  * ConnectorFactory.
  * 
- * @author Philip Aston
+ * @author JunHo Yoon
  */
 public class AgentControllerConnectorFactory {
 
