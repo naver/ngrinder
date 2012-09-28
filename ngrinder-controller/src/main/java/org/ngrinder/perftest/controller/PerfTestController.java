@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -46,6 +47,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
@@ -127,17 +129,20 @@ public class PerfTestController extends NGrinderBaseController {
 		}
 		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, onlyFinished, pageable);
 
-		int rawOffset = getTimeZoneOffSet(user);
-		Calendar cal = Calendar.getInstance();
-		Date localToday = new Date(cal.getTime().getTime() - rawOffset);
-		cal.add(Calendar.DATE, -1);
-		Date localYesterday = new Date(cal.getTime().getTime() - rawOffset);
-
+		//convert the last modified date to user Local, and check whether it is user's today.
+		//Date userToday = DateUtil.convertToUserDate(getCurrentUser().getTimeZone(), new Date());
+		TimeZone userTZ = TimeZone.getTimeZone(getCurrentUser().getTimeZone());
+		Calendar userToday = Calendar.getInstance(userTZ);
+		Calendar userYesterday = Calendar.getInstance(userTZ);
+		userYesterday.add(Calendar.DATE, -1);
+		
 		for (PerfTest test : testList) {
-			Date localModified = new Date(test.getLastModifiedDate().getTime() - rawOffset);
-			if (DateUtil.compareDateEndWithDay(localModified, localToday)) {
+			Calendar localedModified = Calendar.getInstance(userTZ);
+			localedModified.setTime(DateUtil.convertToUserDate(getCurrentUser().getTimeZone(),
+					test.getLastModifiedDate()));
+			if (DateUtils.isSameDay(userToday, localedModified)) {
 				test.setDateString("today");
-			} else if (DateUtil.compareDateEndWithDay(localModified, localYesterday)) {
+			} else if (DateUtils.isSameDay(userYesterday, localedModified)) {
 				test.setDateString("yesterday");
 			} else {
 				test.setDateString("earlier");
@@ -264,8 +269,7 @@ public class PerfTestController extends NGrinderBaseController {
 		// deal with different time zone between user Local and Server
 		Date scheduleDate = test.getScheduledTime();
 		if (scheduleDate != null) {
-			int rawOffset = getTimeZoneOffSet(user);
-			test.setScheduledTime(new Date(scheduleDate.getTime() + rawOffset));
+			test.setScheduledTime(DateUtil.convertToServerDate(user.getTimeZone(), scheduleDate));
 		}
 		// NGRINDER-236 hehe
 		if (Boolean.valueOf(isClone)) {

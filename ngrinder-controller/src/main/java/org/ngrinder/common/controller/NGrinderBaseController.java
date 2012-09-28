@@ -23,7 +23,6 @@
 package org.ngrinder.common.controller;
 
 import java.util.Locale;
-import java.util.TimeZone;
 
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.infra.config.Config;
@@ -97,19 +96,6 @@ public class NGrinderBaseController implements NGrinderConstants {
 			return "Getting message error for key " + key;
 		}
 		return message;
-	}
-	
-	/**
-	 * Get the given user timezone offset from system time.
-	 * @param user user
-	 * @return offset. if the user timezone is not set, return 0;
-	 */
-	protected int getTimeZoneOffSet(User user) {
-		TimeZone userLocal = TimeZone.getTimeZone(user.getTimeZone());
-		if (userLocal == null) {
-			return 0;
-		}
-		return TimeZone.getDefault().getRawOffset() - TimeZone.getTimeZone(userLocal.getID()).getRawOffset();
 	}
 
 }
