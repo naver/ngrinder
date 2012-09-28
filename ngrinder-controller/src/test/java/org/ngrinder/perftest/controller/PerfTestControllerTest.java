@@ -81,15 +81,12 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		controller.getPerfTestDetail(getTestUser(), 0L, model);
 		PerfTest testInDB = (PerfTest) model.get(PARAM_TEST);
 		assertThat(testInDB, nullValue());
-		
+
 		model.clear();
-		try {
-			long invalidId = 1234567890;
-			controller.getPerfTestDetail(getTestUser(), invalidId, model);
-			assertTrue(false);
-		} catch (NGrinderRuntimeException e) {
-			assertTrue(true);
-		}
+		long invalidId = 1234567890;
+		controller.getPerfTestDetail(getTestUser(), invalidId, model);
+		assertTrue(true);
+
 	}
 
 	@Test
@@ -148,7 +145,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		
 		//test stop test
 		cloneTest.setStatus(Status.TESTING);
-		controller.savePerfTest(getTestUser(), model, cloneTest, null);
+		perfTestService.savePerfTest(cloneTest);
 		controller.stopPerfTests(getTestUser(), model, String.valueOf(cloneTest.getId()));
 	}
 
