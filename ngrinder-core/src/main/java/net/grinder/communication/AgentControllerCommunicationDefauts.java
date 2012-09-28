@@ -34,11 +34,6 @@ public abstract class AgentControllerCommunicationDefauts {
 	public static final String DEFAULT_AGENT_CONTROLLER_SERVER_HOST = "";
 
 	/** Default agent controller daemon port. */
-	public static final int DEFAULT_AGENT_CONTROLLER_SERVER_PORT = 7001;
+	public static final int DEFAULT_AGENT_CONTROLLER_SERVER_PORT = 16001;
 
-	/** Minimum value for ports. */
-	public static final int MIN_PORT = 7002;
-
-	/** Maximum value for ports. */
-	public static final int MAX_PORT = 0xFFFF;
 }

@@ -18,11 +18,11 @@ class TestRunner:
 		result = request1.GET("${url}")
 
 		# result is a HTTPClient.HTTPResult. 
-		# We get the message body
-		# using the getText() method.
-		# assert result.getText().contains("HELLO WORLD")
+		# We get the message body using the getText() method.
+		# assert result.getText().find("HELLO WORLD") != -1;
 		
-		# if you want to print out log.. Don't use print.
+		# if you want to print out log.. 
+		# Don't use print keyword. This will make the output lost.
 		# instead use following.
 		# grinder.logger.info("Hello World")
 		
