@@ -114,11 +114,15 @@ public class AgentManager implements NGrinderConstants {
 		});
 	}
 	
+	/**
+	 * shutdown agent controller server.
+	 */
 	@PreDestroy
 	public void destroy() {
 		agentControllerServer.shutdown();
 	}
 	/**
+	 * 
 	 * Get the port which given agent is connecting to.
 	 * @param agentIdentity agent identity
 	 * @return port
@@ -130,7 +134,9 @@ public class AgentManager implements NGrinderConstants {
 	/**
 	 * Get the agent status of the given agent.
 	 * @param agentIdentity
-	 * @return
+	 *            agentIdentity of one agent
+	 * @return status
+	 *            agent controller status of one agent
 	 */
 	public AgentControllerState getAgentState(AgentIdentity agentIdentity) {
 		return agentControllerServer.getAgentState(agentIdentity);

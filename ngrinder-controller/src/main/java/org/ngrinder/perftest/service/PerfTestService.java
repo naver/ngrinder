@@ -144,6 +144,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @param user
 	 *            user
 	 * @param query
+	 * 			  query string on test name or description
 	 * @param isFinished
 	 *            only find finished test
 	 * @param pageable
@@ -293,8 +294,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * 
 	 * @param perfTest
 	 *            {@link PerfTest} instance which will be saved.
-	 * @param status
-	 *            Status to be assigned
+	 * @param systemTimeMills
+	 *            test start time in ms
 	 * @return saved {@link PerfTest}
 	 */
 	@Transactional
@@ -314,11 +315,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * 
 	 * @param perfTest
 	 *            {@link PerfTest}
-	 * @param singleConsole
-	 *            console in use
-	 * @param e
-	 *            exception occurs.
-	 * @return
+	 * @param reason
+	 *            stop reason
+	 * @return perftest with updated data
 	 */
 	public PerfTest markAbromalTermination(PerfTest perfTest, StopReason reason) {
 		// Leave last status as test error cause
@@ -342,6 +341,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            {@link PerfTest} instance which will be saved.
 	 * @param status
 	 *            Status to be assigned
+	 * @param message
+	 *            progress message
 	 * @return saved {@link PerfTest}
 	 */
 	@Transactional
@@ -381,6 +382,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            status to be recorded.
 	 * @param message
 	 *            message to be recored.
+	 * @return perftest with latest status and data
 	 */
 	@Transactional
 	public PerfTest markProgressAndStatus(PerfTest perfTest, Status status, String message) {
@@ -399,8 +401,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            status to be recorded.
 	 * @param message
 	 *            message to be recored.
+	 * @return perftest with latest status and data
 	 */
-
 	@Transactional
 	public PerfTest markProgressAndStatusAndFinishTimeAndStatistics(PerfTest perfTest, Status status, String message) {
 		perfTest.setStatus(status);
@@ -415,8 +417,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * 
 	 * @param perfTest
 	 *            {@link PerfTest}
-	 * @param reason
-	 *            error reason
+	 * @param message
+	 * 				progress message
 	 */
 	@Transactional
 	public void markPerfTestError(PerfTest perfTest, String message) {
@@ -430,6 +432,14 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		perfTestRepository.save(findOne);
 	}
 
+	/**
+	 * mark the perftest as {@link Status.START_CONSOLE_FINISHED}}.
+	 * 
+	 * @param perfTest
+	 * 				perftest to mark
+	 * @param consolePort
+	 * 				port of the console, on which the test is running 
+	 */
 	@Transactional
 	public void markPerfTestConsoleStart(PerfTest perfTest, int consolePort) {
 		PerfTest findOne = perfTestRepository.findOne(perfTest.getId());
@@ -455,7 +465,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	/**
 	 * Get next runnable PerfTest list.
 	 * 
-	 * @return found {@link PerfTest}, null otherwise
+	 * @return found {@link PerfTest} which is ready to run, null otherwise
 	 */
 	@Transactional
 	public PerfTest getPerfTestCandiate() {
@@ -467,7 +477,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	/**
 	 * Get currently running {@link PerfTest} list.
 	 * 
-	 * @return
+	 * @return running test list 
 	 */
 	public List<PerfTest> getCurrentlyRunningTest() {
 		return getPerfTest(null, Status.getProcessingOrTestingTestStatus());
@@ -727,12 +737,18 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * get the data point interval of report data.
+	 * get the data point interval of report data. Use dataPointCount / imgWidth as the interval.
+	 * if interval is 1, it means we will get all point from report. If interval is 2, it means we will get 1 point
+	 * from every 2 data.
 	 * 
 	 * @param testId
+	 * 			test id
 	 * @param dataType
+	 * 			data type
 	 * @param imgWidth
-	 * @return interval value
+	 * 			image width
+	 * @return interval
+	 * 			interval value
 	 */
 	public int getReportDataInterval(long testId, String dataType, int imgWidth) {
 		if (imgWidth < 100) {
@@ -772,16 +788,17 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * get the test report data as a string.
+	 * get the test report data as a string. Use interval to control the data point count.
+	 * interval is 1, mean get all data point.
 	 * 
 	 * @param testId
 	 *            test id
 	 * @param dataType
 	 *            data type
-	 * @param imgWidth
-	 *            image width
+	 * @param interval
+	 *            interval to collect data
 	 * @return report data
-	 * @throws IOException
+	 * 			  report data of that type
 	 */
 	public String getReportDataAsString(long testId, String dataType, int interval) {
 
@@ -827,10 +844,12 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Get report file name for give test id.
+	 * Get report file(csv data) for give test id.
 	 * 
 	 * @param testId
-	 * @return report file path
+	 * 			test id
+	 * @return reportFile
+	 * 			data report file
 	 */
 	public File getReportFile(long testId) {
 		return new File(getReportFileDirectory(testId), NGrinderConstants.REPORT_CSV);
@@ -840,7 +859,11 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * Get log file names for give test id.
 	 * 
 	 * @param testId
-	 * @return report file path
+	 * 			test id
+	 * @param fileName
+	 * 			file name of one logs of the test
+	 * @return file
+	 * 			report file path
 	 */
 	public File getLogFile(long testId, String fileName) {
 		return new File(getLogFileDirectory(testId), fileName);
@@ -850,7 +873,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * Get report file directory for give test id.
 	 * 
 	 * @param testId
-	 * @return report file path
+	 * 				test id
+	 * @return logDir
+	 * 				log file path of the test
 	 */
 
 	public File getLogFileDirectory(long testId) {
@@ -861,7 +886,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * Get log files list on the given test.
 	 * 
 	 * @param testId
-	 * @return
+	 * 			test id
+	 * @return logFilesList
+	 * 			log file list of that test
 	 */
 	public List<String> getLogFiles(long testId) {
 		File logFileDirectory = getLogFileDirectory(testId);
@@ -875,7 +902,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * Get report file directory for give test id.
 	 * 
 	 * @param testId
-	 * @return report file path
+	 * 				test id
+	 * @return reportDir
+	 * 				report file path
 	 */
 
 	public File getReportFileDirectory(long testId) {
@@ -883,16 +912,25 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * To get statistics data when test is running If the console is not available.. it returns
+	 * To get statistics data when test is running. If the console is not available, it returns
 	 * empty map.
+	 * 
+	 * @param port
+	 * 			port number of console
+	 * @return statistic map
+	 * 			statistic data map of the test in that console
 	 */
 	public Map<String, Object> getStatistics(int port) {
 		return consoleManager.getConsoleUsingPort(port).getStatictisData();
 	}
 
 	/**
-	 * To get statistics data when test is running If the console is not available.. it returns
-	 * empty map.
+	 * To get system monitor data of all agents connected to one console. If the console is not available,
+	 * it returns empty map.
+	 * @param port
+	 * 			port number of console
+	 * @return agent system data map
+	 * 			map containing all agents which connected to that console.
 	 */
 	public Map<AgentIdentity, SystemDataModel> getAgentsInfo(int port) {
 		List<AgentIdentity> allAttachedAgents = consoleManager.getConsoleUsingPort(port).getAllAttachedAgents();
@@ -1037,6 +1075,12 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		perfTestRepository.save(perfTest);
 	}
 
+	/**
+	 * get current running test status, which is, how many user run how many tests with some agents.
+	 * 
+	 * @return PerfTestStatisticsList
+	 * 			  PerfTestStatistics list
+	 */
 	@Cacheable("current_perftest_statistics")
 	@Transactional
 	public Collection<PerfTestStatistics> getCurrentPerfTestStatistics() {

@@ -95,6 +95,14 @@ public class AgentManagerController extends NGrinderBaseController {
 		return "agent/agentList";
 	}
 
+	/**
+	 * approve agent, so that it can accept test to run on.
+	 * @param ip
+	 * 			IP address of the agent to be approved
+	 * @param approve
+	 * 			approve or not
+	 * @return
+	 */
 	@RequestMapping(value = "approve", method = RequestMethod.POST)
 	public String approveAgent(@RequestParam("ip") String ip,
 					@RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve) {

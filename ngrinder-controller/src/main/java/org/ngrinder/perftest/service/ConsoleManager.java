@@ -36,8 +36,6 @@ import javax.annotation.PostConstruct;
 
 import net.grinder.SingleConsole;
 import net.grinder.console.model.ConsoleProperties;
-import net.grinder.plugin.http.HTTPPluginControl;
-import net.grinder.plugin.http.HTTPRequest;
 
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;

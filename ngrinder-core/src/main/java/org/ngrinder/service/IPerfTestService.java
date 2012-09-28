@@ -9,8 +9,27 @@ import org.ngrinder.model.User;
 
 public interface IPerfTestService {
 
+	/**
+	 * get test detail.
+	 * 
+	 * @param user
+	 * 			  current operation user.
+	 * @param id
+	 * 			  test id
+	 * @return perftestDetail
+	 * 			  perftest detail
+	 */
 	public abstract PerfTest getPerfTest(User user, Long id);
 
+	/**
+	 * get {@link PerfTest}} list of some IDs.
+	 * @param user
+	 * 			  current operation user
+	 * @param ids
+	 * 			  test IDs, which is in format: "1,3,6,11"
+	 * @return perftestList
+	 * 			  test list of those IDs
+	 */
 	public abstract List<PerfTest> getPerfTest(User user, Long[] ids);
 
 	/**
@@ -81,19 +100,22 @@ public interface IPerfTestService {
 	public abstract File getPerfTestFilePath(PerfTest perfTest);
 
 	/**
-	 * Get perf test base directory
+	 * Get perf test base directory.
 	 * 
 	 * @param perfTest
 	 *            perfTest
-	 * @return prefTest base path
+	 * @return directory
+	 * 			  prefTest base path
 	 */
 	public abstract File getPerfTestBaseDirectory(PerfTest perfTest);
 
 	/**
-	 * Get user perf test directory fot
+	 * Get perf test directory of a test.
 	 * 
 	 * @param perfTest
-	 * @param subDir
+	 * 			  performance test
+	 * @param directory
+	 * 			  directory of the test
 	 * @return
 	 */
 	public abstract File getPerfTestDirectory(PerfTest perfTest);
@@ -109,7 +131,7 @@ public interface IPerfTestService {
 	public abstract List<PerfTest> getAllPerfTest();
 
 	/**
-	 * Mark Stop on {@link PerfTest}
+	 * Mark Stop on {@link PerfTest}.
 	 * 
 	 * @param user
 	 *            user
@@ -119,16 +141,17 @@ public interface IPerfTestService {
 	public abstract void stopPerfTest(User user, Long id);
 
 	/**
-	 * Return stop requested test
+	 * Return stop requested test.
 	 * 
 	 * @return stop requested perf test
 	 */
 	public abstract List<PerfTest> getStopRequestedPerfTest();
 
 	/**
-	 * Add comment on {@link PerfTest}
+	 * Add comment on {@link PerfTest}.
 	 * 
 	 * @param user
+	 * 			  current operated user
 	 * @param testId
 	 *            perftest id
 	 * @param testComment

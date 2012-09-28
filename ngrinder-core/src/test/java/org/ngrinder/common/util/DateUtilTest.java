@@ -26,11 +26,11 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.junit.Test;
 
@@ -53,21 +53,36 @@ public class DateUtilTest {
 
 	@Test
 	public void testConvertToServerDate() {
-		fail("This test is only working in china... Please fix it");
 		String userLocaleId = "Asia/Seoul";
+		TimeZone tz = TimeZone.getTimeZone(userLocaleId);
+		
 		Date userDate = new Date();
 		Date serverDate = DateUtil.convertToServerDate(userLocaleId, userDate);
 		//userDate - serverDate should be equal as offset
-		assertThat((userDate.getTime() - serverDate.getTime()), is(60L * 60 * 1000));
+		assertThat((int)(userDate.getTime() - serverDate.getTime()),
+				is(tz.getRawOffset() - TimeZone.getDefault().getRawOffset()));
+	}
+
+	@Test
+	public void testConvertToServerDateSameLocal() {
+		String userLocaleId = "Asia/Shanghai";
+		TimeZone tz = TimeZone.getTimeZone(userLocaleId);
+		
+		Date userDate = new Date();
+		Date serverDate = DateUtil.convertToServerDate(userLocaleId, userDate);
+		//userDate - serverDate should be equal as offset
+		assertThat((int)(userDate.getTime() - serverDate.getTime()),
+				is(tz.getRawOffset() - TimeZone.getDefault().getRawOffset()));
 	}
 
 	@Test
 	public void testConvertToUserDate() {
-		fail("This test is only working in china... Please fix it");
 		String userLocaleId = "Asia/Seoul";
+		TimeZone tz = TimeZone.getTimeZone(userLocaleId);
 		Date serverDate = new Date();
 		Date userDate = DateUtil.convertToUserDate(userLocaleId, serverDate);
-		assertThat((userDate.getTime() - serverDate.getTime()), is(60L * 60 * 1000));
+		assertThat((int)(userDate.getTime() - serverDate.getTime()),
+				is(tz.getRawOffset() - TimeZone.getDefault().getRawOffset()));
 		
 		//convert the server date back to test.
 		Date newServerDate = DateUtil.convertToServerDate(userLocaleId, userDate);
