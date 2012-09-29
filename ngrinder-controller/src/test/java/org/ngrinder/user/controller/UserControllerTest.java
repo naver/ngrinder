@@ -30,7 +30,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.common.util.JSONUtil;
+import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,12 +162,13 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	 */
 	@Test
 	public void testCheckUserId() {
+		NGrinderBaseController ngridnerBaseController = new NGrinderBaseController();
 		ModelMap model = new ModelMap();
 		String rtnStr = userController.checkUserId(model, "not-exist");
-		assertThat(rtnStr, is(JSONUtil.returnSuccess()));
+		assertThat(rtnStr, is(ngridnerBaseController.returnSuccess()));
 
 		rtnStr = userController.checkUserId(model, getTestUser().getUserId());
-		assertThat(rtnStr, is(JSONUtil.returnError()));
+		assertThat(rtnStr, is(ngridnerBaseController.returnError()));
 	}
 	
 	@Test

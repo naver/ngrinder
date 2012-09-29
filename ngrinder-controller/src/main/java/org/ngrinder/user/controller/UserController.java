@@ -33,7 +33,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
-import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
@@ -138,11 +137,7 @@ public class UserController extends NGrinderBaseController {
 	public @ResponseBody
 	String checkUserId(ModelMap model, @RequestParam String userId) {
 		User user = userService.getUserById(userId);
-		if (user == null) {
-			return JSONUtil.returnSuccess();
-		} else {
-			return JSONUtil.returnError();
-		}
+		return (user == null) ? returnSuccess() : returnError();
 	}
 	
 	@RequestMapping("/profile")

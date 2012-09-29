@@ -66,6 +66,7 @@ public class Config {
 	private PropertiesWrapper systemProperties;
 	private PropertiesWrapper databaseProperties;
 	private static String versionString = "";
+	private boolean verbose;
 
 	/**
 	 * Make it singleton.
@@ -102,13 +103,13 @@ public class Config {
 	}
 
 	public void setupLogger(boolean verbose){
-		File gloablLogFile = getHome().getGloablLogFile();
+		this.verbose = verbose;
 		final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 		context.reset();
 		final JoranConfigurator configurator = new JoranConfigurator();
 		configurator.setContext(context);
 		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
-		context.putProperty("LOG_DIRECTORY", gloablLogFile.getAbsolutePath());
+		context.putProperty("LOG_DIRECTORY", getHome().getGloablLogFile().getAbsolutePath());
 		try {
 			configurator.doConfigure(new ClassPathResource("/logback-ngrinder.xml").getFile());
 		} catch (JoranException e) {
@@ -299,5 +300,10 @@ public class Config {
 	public static String getVerionString() {
 		return versionString;
 	}
+
+	public boolean isVerbose() {
+		return verbose;
+	}
+
 
 }

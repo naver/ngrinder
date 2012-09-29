@@ -97,7 +97,7 @@ public interface IPerfTestService {
 	 *            pefTest from which distribution dire.ctory calculated
 	 * @return path on in files are saved.
 	 */
-	public abstract File getPerfTestFilePath(PerfTest perfTest);
+	public abstract File getPerfTestDistributionPath(PerfTest perfTest);
 
 	/**
 	 * Get perf test base directory.
@@ -106,17 +106,6 @@ public interface IPerfTestService {
 	 *            perfTest
 	 * @return directory
 	 * 			  prefTest base path
-	 */
-	public abstract File getPerfTestBaseDirectory(PerfTest perfTest);
-
-	/**
-	 * Get perf test directory of a test.
-	 * 
-	 * @param perfTest
-	 * 			  performance test
-	 * @param directory
-	 * 			  directory of the test
-	 * @return
 	 */
 	public abstract File getPerfTestDirectory(PerfTest perfTest);
 

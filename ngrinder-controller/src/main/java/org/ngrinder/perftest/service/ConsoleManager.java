@@ -284,7 +284,7 @@ public class ConsoleManager {
 	 * @return {@link SingleConsole} instance if found. Otherwise, {@link NullSingleConsole}
 	 *         instance.
 	 */
-	public SingleConsole getConsoleUsingPort(int port) {
+	public SingleConsole getConsoleUsingPort(Integer port) {
 		for (SingleConsole each : consoleInUse) {
 			if (each.getConsolePort() == port) {
 				return each;

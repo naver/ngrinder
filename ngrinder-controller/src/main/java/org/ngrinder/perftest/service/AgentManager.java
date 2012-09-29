@@ -47,6 +47,7 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.thread.ExecutorFactory;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.service.AgentManagerService;
@@ -62,7 +63,8 @@ import org.springframework.stereotype.Component;
 /**
  * Agent manager class.
  * 
- * This class runs {@link AgentControllerServerDaemon} internally and manage to agent connection.
+ * This class runs {@link AgentControllerServerDaemon} internally and manage to
+ * agent connection.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -85,35 +87,28 @@ public class AgentManager implements NGrinderConstants {
 	 */
 	@PostConstruct
 	public void init() {
-		agentControllerServer = new AgentControllerServerDaemon(
-				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+		agentControllerServer = new AgentControllerServerDaemon(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		agentControllerServer.start();
 		agentControllerServer.addLogArrivedListener(new LogArrivedListener() {
 			@Override
 			public void logArrived(String testId, AgentAddress agentAddress, byte[] logs) {
-				AgentControllerIdentityImplementation agentIdentity = 
-						(AgentControllerIdentityImplementation) agentAddress.getIdentity();
-
-				if (logs == null || logs.length == 0) {
+				AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) agentAddress.getIdentity();
+				if (ArrayUtils.isEmpty(logs)) {
 					LOGGER.error("Log is arrived from {} but no log content", agentIdentity.getIp());
 				}
-				File logDirectory = new File(config.getHome().getPerfTestDirectory(
-								testId.replace("test_", "")), "logs");
-				logDirectory.mkdirs();
 				File logFile = null;
 				try {
-					logFile = new File(logDirectory, agentIdentity.getIp() + "-" + agentIdentity.getName()
-									+ "-" + agentIdentity.getRegion() + "-log.zip");
+					logFile = new File(config.getHome().getPerfTestLogDirectory(testId.replace("test_", "")), agentIdentity.getName()
+							+ "-" + agentIdentity.getRegion() + "-log.zip");
 					FileUtils.writeByteArrayToFile(logFile, logs);
 				} catch (IOException e) {
-					LOGGER.error("Error while write logs from {} to {}",
-									agentAddress.getIdentity().getName(), logFile.getAbsolutePath());
+					LOGGER.error("Error while write logs from {} to {}", agentAddress.getIdentity().getName(), logFile.getAbsolutePath());
 					LOGGER.error("Error is following", e);
 				}
 			}
 		});
 	}
-	
+
 	/**
 	 * shutdown agent controller server.
 	 */
@@ -121,10 +116,13 @@ public class AgentManager implements NGrinderConstants {
 	public void destroy() {
 		agentControllerServer.shutdown();
 	}
+
 	/**
 	 * 
 	 * Get the port which given agent is connecting to.
-	 * @param agentIdentity agent identity
+	 * 
+	 * @param agentIdentity
+	 *            agent identity
 	 * @return port
 	 */
 	public int getAgentConnectingPort(AgentIdentity agentIdentity) {
@@ -133,10 +131,10 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get the agent status of the given agent.
+	 * 
 	 * @param agentIdentity
 	 *            agentIdentity of one agent
-	 * @return status
-	 *            agent controller status of one agent
+	 * @return status agent controller status of one agent
 	 */
 	public AgentControllerState getAgentState(AgentIdentity agentIdentity) {
 		return agentControllerServer.getAgentState(agentIdentity);
@@ -144,6 +142,7 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get all agents which is connected to agent controller.
+	 * 
 	 * @return agents set
 	 */
 	public Set<AgentIdentity> getAllAttachedAgents() {
@@ -152,33 +151,34 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get max agent size per console.
+	 * 
 	 * @return max agent size per console
 	 */
 	public int getMaxAgentSizePerConsole() {
-		return config.getSystemProperties().getPropertyInt("agent.maxsize",
-						NGrinderConstants.MAX_AGENT_SIZE_PER_CONSOLE);
+		return config.getSystemProperties().getPropertyInt("agent.maxsize", NGrinderConstants.MAX_AGENT_SIZE_PER_CONSOLE);
 	}
 
 	/**
 	 * Get max vuser per agent.
+	 * 
 	 * @return max vuser per agent
 	 */
 	public int getMaxVuserPerAgent() {
-		return config.getSystemProperties().getPropertyInt("agent.maxvuser",
-						NGrinderConstants.MAX_VUSER_PER_AGENT);
+		return config.getSystemProperties().getPropertyInt("agent.maxvuser", NGrinderConstants.MAX_VUSER_PER_AGENT);
 	}
 
 	/**
 	 * Get max run count per thread.
+	 * 
 	 * @return max run count per thread
 	 */
 	public int getMaxRunCount() {
-		return config.getSystemProperties().getPropertyInt("agent.maxruncount",
-						NGrinderConstants.MAX_RUN_COUNT);
+		return config.getSystemProperties().getPropertyInt("agent.maxruncount", NGrinderConstants.MAX_RUN_COUNT);
 	}
 
 	/**
 	 * Get max run hour.
+	 * 
 	 * @return max run hour
 	 */
 	public int getMaxRunHour() {
@@ -187,13 +187,14 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get {@link AgentIdentity} which as give ip.
-	 * @param agentIP agent ip
+	 * 
+	 * @param agentIP
+	 *            agent ip
 	 * @return {@link AgentControllerIdentityImplementation}
 	 */
 	public AgentControllerIdentityImplementation getAgentIdentityByIp(String agentIP) {
 		for (AgentIdentity agentIdentity : getAllAttachedAgents()) {
-			AgentControllerIdentityImplementation eachAgentIdentity = 
-					(AgentControllerIdentityImplementation) agentIdentity;
+			AgentControllerIdentityImplementation eachAgentIdentity = (AgentControllerIdentityImplementation) agentIdentity;
 			if (StringUtils.equals(eachAgentIdentity.getIp(), agentIP)) {
 				return eachAgentIdentity;
 			}
@@ -203,6 +204,7 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get all agents which are not used.
+	 * 
 	 * @return AgentIndentity set
 	 */
 	public Set<AgentIdentity> getAllFreeAgents() {
@@ -211,6 +213,7 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get all approved agents which are not used.
+	 * 
 	 * @return AgentIndentity set
 	 */
 	public Set<AgentIdentity> getAllFreeApprovedAgents() {
@@ -247,7 +250,9 @@ public class AgentManager implements NGrinderConstants {
 
 	/**
 	 * Get the current system performance status of the given agent.
-	 * @param agentIdentity {@link AgentIdentity}
+	 * 
+	 * @param agentIdentity
+	 *            {@link AgentIdentity}
 	 * @return {@link SystemDataModel} instance.
 	 */
 	public SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {
@@ -264,8 +269,7 @@ public class AgentManager implements NGrinderConstants {
 	 * @param agentCount
 	 *            how much agent are necessary.
 	 */
-	public synchronized void runAgent(final SingleConsole singleConsole,
-					final GrinderProperties grinderProperties, final Integer agentCount) {
+	public synchronized void runAgent(final SingleConsole singleConsole, final GrinderProperties grinderProperties, final Integer agentCount) {
 		final Set<AgentIdentity> allFreeAgents = getAllFreeApprovedAgents();
 		final Set<AgentIdentity> neccessaryAgents = selectSome(allFreeAgents, agentCount);
 		ExecutorService execService = null;
@@ -283,9 +287,8 @@ public class AgentManager implements NGrinderConstants {
 				});
 			}
 			execService.awaitTermination(AGENT_RUN_TIMEOUT_SECOND, TimeUnit.SECONDS);
-			singleConsole.setConnectingAgents(neccessaryAgents);
 		} catch (InterruptedException e) {
-			throw new NGrinderRuntimeException("Error while running agent", e);
+			throw new NGrinderRuntimeException("Error while running agent. Starting agent is interrupted.", e);
 		} finally {
 			if (execService != null) {
 				execService.shutdown();

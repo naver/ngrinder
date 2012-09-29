@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
-import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.home.service.HomeService;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Role;
@@ -157,7 +156,7 @@ public class HomeController extends NGrinderBaseController {
 	@RequestMapping(value = "/changeTimeZone")
 	public String changeTimeZone(User user, String timeZone) {
 		user.setTimeZone(timeZone);
-		return JSONUtil.returnSuccess();
+		return returnSuccess();
 	}
 
 	@RequestMapping(value = "/allTimeZone")

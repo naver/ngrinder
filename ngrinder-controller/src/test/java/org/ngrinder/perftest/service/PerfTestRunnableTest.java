@@ -128,15 +128,13 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		// Start agents
 		perfTest.setAgentCount(1);
 		GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
-		singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest.getId()));
+		singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest));
 		perfTestRunnable.startAgentsOn(perfTest, grinderProperties, singleConsole);
 
 		// Distribute files
 		prepareUserRepo();
 		perfTestRunnable.distributeFileOn(perfTest, grinderProperties, singleConsole);
-
 		singleConsole.getConsoleComponent(ProcessControlImplementation.class).addProcessStatusListener(new Listener() {
-
 			@Override
 			public void update(ProcessReports[] processReports) {
 				synchronized (processCountSync) {

@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
 
-public class ScriptConsoleControllerTest  extends AbstractNGrinderTransactionalTest {
+public class ScriptConsoleControllerTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	ScriptConsoleController scriptController;
 

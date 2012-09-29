@@ -11,7 +11,7 @@
 				<div class="control-group">
 					<label for="agentInput" class="control-label control-label-1"><@spring.message "perfTest.report.tps"/></label>
 					<div class="controls">
-						<strong>Total ${test.tps}</strong>
+						<strong>Total <#if test.tps??>${(test.tps)?string("0.#")}</#if></strong>
 					</div>
 				</div>
 				<div class="control-group">
@@ -49,7 +49,7 @@
 		<div id="tpsDiv" class="chart" style="width: 610px; height: 240px"></div>
 	</div>
 </div>
-<div class="row" style="margin-top: 10px;">
+<div class="row" >
 	<div class="span4">
 		<div class="page-header">
 			<h4><@spring.message "perfTest.report.logs"/></h4>
@@ -57,7 +57,7 @@
 		<div style="margin-left: 10px">
 			<#if logs?has_content> 
 				<#list logs as eachLog>
-					<div>
+					<div style="width:100%; text-overflow:ellipsis; overflow:hidden;white-space: nowrap;">
 						<a href="${req.getContextPath()}/perftest/downloadLog/${eachLog}?testId=${test.id}">${eachLog}</a>
 					</div>
 				</#list> 

@@ -32,13 +32,13 @@ import javax.annotation.PreDestroy;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 import org.ngrinder.common.controller.NGrinderBaseController;
-import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -57,7 +57,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/operation/log")
 @PreAuthorize("hasAnyRole('A', 'S')")
 public class LogMonitorController extends NGrinderBaseController {
-	private HttpHeaders responseHeaders;
+	
 	@Autowired
 	private Config config;
 
@@ -66,6 +66,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	 */
 	private volatile StringBuffer stringBuffer = new StringBuffer(10000);
 
+	private HttpHeaders commonResponseHeaders;
 	private Tailer tailer;
 
 	private long count = 0;
@@ -77,12 +78,16 @@ public class LogMonitorController extends NGrinderBaseController {
 	@PostConstruct
 	public void init() {
 		initTailer();
-		responseHeaders = new HttpHeaders();
-		responseHeaders.set("content-type", "application/json; charset=UTF-8");
+		commonResponseHeaders = new HttpHeaders();
+		commonResponseHeaders.set("content-type", "application/json; charset=UTF-8");
+		commonResponseHeaders.setPragma("no-cache");
 	}
 
+	/**
+	 * Initialize tailer
+	 */
 	private void initTailer() {
-		File logFile = new File(config.getHome().getGloablLogFile(), "ngrinder.log");
+		File logFile = getLogFile();
 		if (tailer != null) {
 			tailer.stop();
 		}
@@ -107,6 +112,14 @@ public class LogMonitorController extends NGrinderBaseController {
 		}, 1000, true);
 	}
 
+	/**
+	 * Get log file
+	 * @return log file
+	 */
+	File getLogFile() {
+		return new File(config.getHome().getGloablLogFile(), "ngrinder.log");
+	}
+
 	@PreDestroy
 	public void destroy() {
 		tailer.stop();
@@ -118,7 +131,8 @@ public class LogMonitorController extends NGrinderBaseController {
 	 * @return "operation/logger"
 	 */
 	@RequestMapping("")
-	public String getLog() {
+	public String getLog(Model model) {
+		model.addAttribute("verbose", config.isVerbose());
 		return "operation/logger";
 	}
 
@@ -133,23 +147,31 @@ public class LogMonitorController extends NGrinderBaseController {
 		map.put("index", count);
 		map.put("modification", modification);
 		map.put("log", stringBuffer);
-		return new HttpEntity<String>(JSONUtil.toJson(map), responseHeaders);
+		return new HttpEntity<String>(toJson(map), commonResponseHeaders);
 	}
 	
+	/**
+	 * Turn on verbose log mode
+	 * @return success message if successful
+	 */
 	@RequestMapping("/verbose")
 	public HttpEntity<String> enableVerbose(@RequestParam(value="verbose", defaultValue="false") Boolean verbose) {
 		config.initLogger(verbose);
 		initTailer();
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("success", true);
-		return new HttpEntity<String>(JSONUtil.toJson(map), responseHeaders);
+		return new HttpEntity<String>(toJson(map), commonResponseHeaders);
 	}
 	
+	/**
+	 * Reload System properties.
+	 * @return success message if successful
+	 */
 	@RequestMapping("/refresh")
 	public HttpEntity<String> refreshSystemProperties() {
 		config.loadSystemProperties();
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("success", true);
-		return new HttpEntity<String>(JSONUtil.toJson(map), responseHeaders);
+		return new HttpEntity<String>(toJson(map), commonResponseHeaders);
 	}
 }

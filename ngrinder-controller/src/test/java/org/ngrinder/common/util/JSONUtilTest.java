@@ -22,6 +22,8 @@
  */
 package org.ngrinder.common.util;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -30,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
-import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.controller.NGrinderBaseController;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -41,7 +43,7 @@ import com.google.gson.JsonParser;
  * @author Mavlarn
  * @since
  */
-public class JSONUtilTest implements NGrinderConstants {
+public class JSONUtilTest extends NGrinderBaseController {
 
 	JsonParser parser = new JsonParser();
 
@@ -51,7 +53,7 @@ public class JSONUtilTest implements NGrinderConstants {
 	
 	@Test
 	public void testReturnSuccessString() {
-		String rtnStr = JSONUtil.returnSuccess("return message");
+		String rtnStr = returnSuccess("return message");
 		JsonObject json = (JsonObject)parser.parse(rtnStr);
 		assertTrue(json.get(JSON_SUCCESS).getAsBoolean());
 		assertTrue(json.get(JSON_MESSAGE).getAsString().contains("return message"));
@@ -62,7 +64,7 @@ public class JSONUtilTest implements NGrinderConstants {
 	 */
 	@Test
 	public void testReturnErrorString() {
-		String rtnStr = JSONUtil.returnError("return message");
+		String rtnStr = returnError("return message");
 		JsonObject json = (JsonObject)parser.parse(rtnStr);
 		assertTrue(!json.get(JSON_SUCCESS).getAsBoolean());
 		assertTrue(json.get(JSON_MESSAGE).getAsString().contains("return message"));
@@ -73,7 +75,7 @@ public class JSONUtilTest implements NGrinderConstants {
 	 */
 	@Test
 	public void testReturnSuccess() {
-		String rtnStr = JSONUtil.returnSuccess();
+		String rtnStr = returnSuccess();
 		JsonObject json = (JsonObject)parser.parse(rtnStr);
 		assertTrue(json.get(JSON_SUCCESS).getAsBoolean());
 	}
@@ -83,7 +85,7 @@ public class JSONUtilTest implements NGrinderConstants {
 	 */
 	@Test
 	public void testReturnError() {
-		String rtnStr = JSONUtil.returnError();
+		String rtnStr = returnError();
 		JsonObject json = (JsonObject)parser.parse(rtnStr);
 		assertTrue(!json.get(JSON_SUCCESS).getAsBoolean());
 	}
@@ -97,7 +99,7 @@ public class JSONUtilTest implements NGrinderConstants {
 		intList.add(1);
 		intList.add(2);
 		intList.add(3);
-		JSONUtil.toJson(intList);
+		toJson(intList);
 	}
 
 	/**
@@ -108,7 +110,9 @@ public class JSONUtilTest implements NGrinderConstants {
 		Map<String, Object> intMap = new HashMap<String, Object>();
 		intMap.put("kay1", 1);
 		intMap.put("kay2", 2);
-		JSONUtil.toJson(intMap);
+		JsonObject json = (JsonObject)parser.parse(toJson(intMap));
+		assertThat(json.get("kay1").getAsInt(), is(1));
+		assertThat(json.get("kay2").getAsInt(), is(2));
 	}
 
 }

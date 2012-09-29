@@ -84,15 +84,15 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 		for (PerfTest test : list) {
 			long systemTimeMills = System.currentTimeMillis();
-			testService.setRecodingStarting(test, systemTimeMills);
+			test.setStartTime(new Date(systemTimeMills));
 
 			PerfTest testTemp = testService.getPerfTest(getTestUser(), test.getId());
 			assertThat(testTemp.getId(), is(test.getId()));
 			assertThat(testTemp.getStartTime().getTime(), is(systemTimeMills));
 
-			testService.markAbromalTermination(testTemp, StopReason.STOP_BY_USER);
+			testService.markAbromalTermination(testTemp, StopReason.CANCEL_BY_USER);
 			testService.markProgress(testTemp, "this test will be TESTING again");
-			testService.changePerfTestStatus(testTemp, Status.TESTING, "this is just test unit");
+			testService.markStatusAndProgress(testTemp, Status.TESTING, "this is just test unit");
 
 			List<PerfTest> testingList = testService.getPerfTest(getTestUser(), Status.TESTING);
 			assertThat(testingList.size(), is(1));
@@ -120,7 +120,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 		List<PerfTest> errorList = testService.getPerfTest(getTestUser(), Status.START_AGENTS);
 		assertThat(errorList.size(), is(1));
-		testService.markPerfTestError(errorList.get(0), "this is error test");
+		testService.markAbromalTermination(errorList.get(0), "this is error test");
 	}
 	
 	@Test
@@ -134,7 +134,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		PerfTest testing = testService.markProgressAndStatus(testScript, Status.TESTING, "It is testing from ready");
 		assertThat(testing.getStatus(), is(Status.TESTING));
 
-		File testPath = testService.getPerfTestFilePath(testScript);
+		File testPath = testService.getPerfTestDistributionPath(testScript);
 		assertThat(testPath, not(nullValue()));
 
 		List<String> fileList = testService.getLogFiles(testScript.getId());

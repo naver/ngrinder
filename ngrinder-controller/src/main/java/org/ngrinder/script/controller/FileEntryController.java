@@ -41,7 +41,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
-import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
@@ -370,7 +369,7 @@ public class FileEntryController extends NGrinderBaseController {
 		fileEntryService.delete(user, path, files);
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1);
 		rtnMap.put(JSON_SUCCESS, true);
-		return JSONUtil.toJson(rtnMap);
+		return toJson(rtnMap);
 	}
 
 }

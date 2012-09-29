@@ -38,7 +38,6 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.chart.service.MonitorService;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.util.DateUtil;
-import org.ngrinder.common.util.JSONUtil;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +46,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.google.gson.Gson;
 
 /**
  * Monitor controller.
@@ -68,21 +65,19 @@ public class MonitorController extends NGrinderBaseController {
 	@Autowired
 	private AgentManager agentManager;
 	
-	private static final Gson GSON = new Gson();
-
 	@RequestMapping("/getCurrentMonitorData")
 	public @ResponseBody String getCurrentMonitorData(ModelMap model, @RequestParam String ip) {
 		Map<String, Object> returnMap = new HashMap<String, Object>(3);
 		
 		AgentIdentity agentId = agentManager.getAgentIdentityByIp(ip);
 		if (agentId == null) {
-			return JSONUtil.returnError("Agent " + ip + " doesn't exist!");
+			return returnError("Agent " + ip + " doesn't exist!");
 		}
 		SystemDataModel systemData = agentManager.getSystemDataModel(agentId);
 		systemData = systemData != null ? systemData : new SystemDataModel();
 		returnMap.put(JSON_SUCCESS, true);
 		returnMap.put("systemData", systemData);
-		return GSON.toJson(returnMap);
+		return toJson(returnMap);
 	}
 	
 	/**
@@ -120,7 +115,7 @@ public class MonitorController extends NGrinderBaseController {
 		rtnMap.put("startTime", startTime);
 		rtnMap.put(JSON_SUCCESS, true);
 		
-		return JSONUtil.toJson(rtnMap);
+		return toJson(rtnMap);
 	}
 
 	private Map<String, Object> getMonitorDataSystem(String ip, long startTime, long finishTime,

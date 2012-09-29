@@ -32,6 +32,8 @@ import org.apache.commons.io.FileUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.model.PerfTest;
+import org.ngrinder.model.User;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
@@ -39,6 +41,7 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
  * Home class which enable you to easily access resources in Home directory.
  * 
  * @author JunHo Yoon
+ * @since 3.0
  */
 public class Home implements NGrinderConstants {
 
@@ -99,8 +102,8 @@ public class Home implements NGrinderConstants {
 		return getSubFile(SCRIPT_PATH);
 	}
 	
-	public File getScriptDirectory(String subPath) {
-		return new File(getSubFile(SCRIPT_PATH), subPath);
+	public File getScriptDirectory(User user) {
+		return new File(getSubFile(SCRIPT_PATH), user.getUserId());
 	}
 
 	public File getPluginsDirectory() {
@@ -119,10 +122,46 @@ public class Home implements NGrinderConstants {
 		return getSubFile(PERF_TEST_PATH);
 	}
 
+	private File getPerfTestSubDirectory(PerfTest perfTest, String subPath) {
+		return new File(getPerfTestDirectory(perfTest), subPath);
+	}
+	
+	
+	public File getPerfTestSubDirectory(String id, String subPath) {
+		File file = new File(getPerfTestDirectory(id), subPath);
+		file.mkdirs();
+		return file;
+	}
+	
+	
 	public File getPerfTestDirectory(String subPath) {
 		return new File(getPerfTestDirectory(), subPath);
 	}
+	
+	public File getPerfTestDirectory(PerfTest perfTest) {
+		return getPerfTestDirectory(String.valueOf(perfTest.getId()));
+	}
 
+	public File getPerfTestLogDirectory(String id) {
+		return getPerfTestSubDirectory(id, PATH_LOG);
+	}
+	
+	public File getPerfTestLogDirectory(PerfTest perfTest) {
+		return getPerfTestSubDirectory(perfTest, PATH_LOG);
+	}
+	
+	public File getPerfTestDistDirectory(PerfTest perfTest) {
+		return getPerfTestSubDirectory(perfTest, PATH_DIST);
+	}
+	
+	public File getPerfTestReportDirectory(String id) {
+		return getPerfTestSubDirectory(id, PATH_REPORT);
+	}
+	
+	public File getPerfTestReportDirectory(PerfTest perfTest) {
+		return getPerfTestSubDirectory(perfTest, PATH_REPORT);
+	}
+	
 	public File getDefaultGrinderProperties() {
 		return getSubFile(DEFAULT_GRINDER_PROPERTIES_PATH);
 	}

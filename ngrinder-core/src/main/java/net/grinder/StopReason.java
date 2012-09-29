@@ -26,14 +26,17 @@ package net.grinder;
  * Stop Reason of Test.
  * 
  * @author JunHo Yoon
+ * @since 3.0
  */
 public enum StopReason {
 	/** If tps is too low */
 	TOO_LOW_TPS,
 	/** If too many error happen */
 	TOO_MANY_ERRORS,
+	/** Error while test preparation */
+	ERROR_WHILE_PREPARE,
 	/** Normal Stop */
 	NORMAL,
-	/** Stop By User */
-	STOP_BY_USER
+	/** Cancel By User */
+	CANCEL_BY_USER
 }

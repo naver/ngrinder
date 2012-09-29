@@ -40,7 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.grinder.common.GrinderException;
@@ -76,7 +75,6 @@ import net.grinder.util.thread.Condition;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableDouble;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -94,7 +92,6 @@ import org.slf4j.LoggerFactory;
  * @since 3.0
  */
 public class SingleConsole implements Listener, SampleListener {
-	private final ConsoleProperties consoleProperties;
 	private Thread thread;
 	private ConsoleFoundationEx consoleFoundation;
 	public static final Resources RESOURCE = new ResourcesImplementation("net.grinder.console.common.resources.Console");
@@ -103,7 +100,7 @@ public class SingleConsole implements Listener, SampleListener {
 	private static final String REPORT_CSV = "output.csv";
 	private static final String REPORT_DATA = ".data";
 
-	private Condition m_eventSyncCondition = new Condition();
+	private Condition eventSyncCondition = new Condition();
 	private ProcessReports[] processReports;
 	private boolean cancel = false;
 
@@ -148,7 +145,6 @@ public class SingleConsole implements Listener, SampleListener {
 	 * Currently not finished process count.
 	 */
 	private int currentNotFinishedProcessCount = 0;
-	private Set<AgentIdentity> agents;
 
 	private static final int TOO_LOW_TPS_TIME = 60000;
 	private static final int TOO_MANY_ERROR_TIME = 10000;
@@ -188,12 +184,10 @@ public class SingleConsole implements Listener, SampleListener {
 	 *            {@link ConsoleProperties} used.
 	 */
 	public SingleConsole(String ip, int port, ConsoleProperties consoleProperties) {
-		this.consoleProperties = consoleProperties;
-
 		try {
-			this.getConsoleProperties().setConsoleHost(ip);
-			this.getConsoleProperties().setConsolePort(port);
-			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties, m_eventSyncCondition);
+			consoleProperties.setConsoleHost(ip);
+			consoleProperties.setConsolePort(port);
+			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties, eventSyncCondition);
 
 			modelView = getConsoleComponent(SampleModelViews.class);
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
@@ -242,7 +236,7 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	public void start() {
 
-		synchronized (m_eventSyncCondition) {
+		synchronized (eventSyncCondition) {
 			thread = new Thread(new Runnable() {
 				public void run() {
 					consoleFoundation.run();
@@ -251,7 +245,7 @@ public class SingleConsole implements Listener, SampleListener {
 			thread.setDaemon(true);
 			thread.start();
 			// 10 second is too big?
-			m_eventSyncCondition.waitNoInterrruptException(10000);
+			eventSyncCondition.waitNoInterrruptException(10000);
 		}
 	}
 
@@ -274,7 +268,6 @@ public class SingleConsole implements Listener, SampleListener {
 					thread.join(1000);
 				}
 				samplingCount = 0;
-
 			}
 
 		} catch (Exception e) {
@@ -288,6 +281,11 @@ public class SingleConsole implements Listener, SampleListener {
 		}
 	}
 
+	/**
+	 * Get all attached agents count.
+	 * 
+	 * @return count of agents
+	 */
 	public int getAllAttachedAgentsCount() {
 		return ((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class)).getNumberOfLiveAgents();
 	}
@@ -323,10 +321,23 @@ public class SingleConsole implements Listener, SampleListener {
 		return consoleFoundation.getComponent(componentType);
 	}
 
+	/**
+	 * Get {@link ConsoleProperties} which is used to configure
+	 * {@link SingleConsole}.
+	 * 
+	 * @return {@link ConsoleProperties}
+	 */
 	public ConsoleProperties getConsoleProperties() {
-		return consoleProperties;
+		return getConsoleComponent(ConsoleProperties.class);
 	}
 
+	/**
+	 * Start test with given {@link GrinderProperties}
+	 * 
+	 * @param properties
+	 *            {@link GrinderProperties}
+	 * @return current time
+	 */
 	public long startTest(GrinderProperties properties) {
 		properties.setInt(GrinderProperties.CONSOLE_PORT, getConsolePort());
 		getConsoleComponent(ProcessControl.class).startWorkerProcesses(properties);
@@ -335,7 +346,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	public void setDistributionDirectory(File filePath) {
-		final ConsoleProperties properties = (ConsoleProperties) getConsoleComponent(ConsoleProperties.class);
+		final ConsoleProperties properties = getConsoleComponent(ConsoleProperties.class);
 		Directory directory;
 		try {
 			directory = new Directory(filePath);
@@ -408,9 +419,11 @@ public class SingleConsole implements Listener, SampleListener {
 			// when agent finished one test, processReports will be updated as
 			// null
 			if (processReports == null || this.processReports.length != size) {
-				synchronized (m_eventSyncCondition) {
-					m_eventSyncCondition.waitNoInterrruptException(1000);
+				synchronized (eventSyncCondition) {
+					eventSyncCondition.waitNoInterrruptException(1000);
 				}
+			} else if (isCanceled()) {
+				return;
 			} else {
 				return;
 			}
@@ -427,8 +440,8 @@ public class SingleConsole implements Listener, SampleListener {
 			// when agent finished one test, processReports will be updated as
 			// null
 			if (this.runningThread != 0) {
-				synchronized (m_eventSyncCondition) {
-					m_eventSyncCondition.waitNoInterrruptException(500);
+				synchronized (eventSyncCondition) {
+					eventSyncCondition.waitNoInterrruptException(500);
 				}
 			} else {
 				return;
@@ -486,12 +499,7 @@ public class SingleConsole implements Listener, SampleListener {
 
 		if (firstSampling == true) {
 			firstSampling = false;
-			m_samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
-				@Override
-				public void inform(SamplingLifeCycleListener listener) {
-					listener.onSamplingStarted();
-				}
-			});
+			informTestSamplingStart();
 		}
 		setTpsValue(sampleModel.getTPSExpression().getDoubleValue(intervalStatistics));
 		checkTooLowTps(getTpsValues());
@@ -662,7 +670,6 @@ public class SingleConsole implements Listener, SampleListener {
 	private void updateStatistics() {
 		Map<String, Object> result = new ConcurrentHashMap<String, Object>();
 		result.put("test_time", getCurrentRunningTime() / 1000);
-
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
 		ExpressionView[] views = modelView.getCumulativeStatisticsView().getExpressionViews();
@@ -715,24 +722,18 @@ public class SingleConsole implements Listener, SampleListener {
 			result.put("success", !isAllTestFinished());
 		}
 		// Finally overwrite.. current one.
-
 		this.statisticData = result;
 	}
 
-	public long getCurrentTestsCount() {
-		if (this.statisticData == null) {
-			return 0L;
-		}
-		Double testCount = MapUtils.getDoubleValue((Map<?, ?>) this.statisticData.get("totalStatistics"), "Tests", 0D);
-		Double errorCount = MapUtils.getDoubleValue((Map<?, ?>) this.statisticData.get("totalStatistics"), "Errors", 0D);
+	public long getCurrentExecutionCount() {
+		Map<?, ?> totalStatistics = (Map<?, ?>) getStatictisData().get("totalStatistics");
+		Double testCount = MapUtils.getDoubleValue(totalStatistics, "Tests", 0D);
+		Double errorCount = MapUtils.getDoubleValue(totalStatistics, "Errors", 0D);
 		return testCount.longValue() + errorCount.longValue();
 	}
 
 	private static Object getRealDoubleValue(Double doubleValue) {
-		if (doubleValue.isInfinite() || doubleValue.isNaN()) {
-			return null;
-		}
-		return doubleValue;
+		return (doubleValue.isInfinite() || doubleValue.isNaN()) ? null : doubleValue;
 	}
 
 	/**
@@ -806,13 +807,13 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	@Override
 	public void update(ProcessReports[] processReports) {
-		synchronized (m_eventSyncCondition) {
+		synchronized (eventSyncCondition) {
 			this.processReports = processReports;
 			// The reason I passed porcessReport as parameter here is to prevent
 			// the synchronization
 			// problem.
 			updateCurrentProcessAndThread(processReports);
-			m_eventSyncCondition.notifyAll();
+			eventSyncCondition.notifyAll();
 		}
 	}
 
@@ -853,7 +854,6 @@ public class SingleConsole implements Listener, SampleListener {
 				bw = new BufferedWriter(new FileWriter(new File(this.reportPath, name), true));
 				fileWriterMap.put(name, bw);
 			}
-
 			bw.write(value);
 			bw.newLine();
 			bw.flush();
@@ -891,12 +891,11 @@ public class SingleConsole implements Listener, SampleListener {
 	 * 
 	 * @return map which contains statistics data
 	 */
-	@SuppressWarnings("unchecked")
 	public Map<String, Object> getStatictisData() {
-		return (Map<String, Object>) ObjectUtils.defaultIfNull(this.statisticData, getNullStatictisData());
+		return this.statisticData != null ? this.statisticData : getNullStatictisData();
 	}
 
-	public Map<String, Object> getNullStatictisData() {
+	private Map<String, Object> getNullStatictisData() {
 		Map<String, Object> result = new ConcurrentHashMap<String, Object>();
 		result.put("test_time", getCurrentRunningTime() / 1000);
 		return result;
@@ -950,9 +949,22 @@ public class SingleConsole implements Listener, SampleListener {
 	public void unregisterSampling() {
 		this.currentNotFinishedProcessCount = 0;
 		this.sampling = false;
-		LOGGER.info("Sampling is stopped");
 		this.sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 		this.sampleModel.reset();
+		LOGGER.info("Sampling is stopped");
+		informTestSamplingEnd();
+	}
+
+	private void informTestSamplingStart() {
+		m_samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
+			@Override
+			public void inform(SamplingLifeCycleListener listener) {
+				listener.onSamplingStarted();
+			}
+		});
+	}
+
+	private void informTestSamplingEnd() {
 		m_samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
 			@Override
 			public void inform(SamplingLifeCycleListener listener) {
@@ -964,25 +976,21 @@ public class SingleConsole implements Listener, SampleListener {
 	/**
 	 * If the test error is over 20%.. return true;
 	 * 
-	 * @return
+	 * @return true if error is over 20%
 	 */
 	public boolean hasTooManyError() {
-		if (this.statisticData == null) {
-			return false;
-		}
-		long currentTestsCount = getCurrentTestsCount();
-		double errors = MapUtils.getDoubleValue((Map<?, ?>) this.statisticData.get("totalStatistics"), "Errors", 0D);
-		if (currentTestsCount == 0) {
-			return false;
-		}
-		return (errors / currentTestsCount) > 0.2;
+		long currentTestsCount = getCurrentExecutionCount();
+		double errors = MapUtils.getDoubleValue((Map<?, ?>) getStatictisData().get("totalStatistics"), "Errors", 0D);
+		return currentTestsCount == 0 ? false : (errors / currentTestsCount) > 0.2;
 	}
 
-	public void setConnectingAgents(Set<AgentIdentity> agents) {
-		this.agents = agents;
+	/**
+	 * Check this singleConsole is canceled.
+	 * 
+	 * @return true if yes.
+	 */
+	public boolean isCanceled() {
+		return cancel;
 	}
 
-	public Set<AgentIdentity> getConnectingAgents() {
-		return this.agents;
-	}
 }

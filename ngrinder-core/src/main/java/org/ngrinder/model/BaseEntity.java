@@ -27,6 +27,7 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -91,29 +92,35 @@ public class BaseEntity<M> implements Serializable {
 	 */
 	@SuppressWarnings("unchecked")
 	public M merge(M source) {
+		PropertyDescriptor forError = null;
 		try {
 			BeanInfo beanInfo = Introspector.getBeanInfo(getClass());
 			// Iterate over all the attributes
 			for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
+				forError = descriptor;
 				// Only copy writable attributes
 				if (descriptor.getWriteMethod() == null) {
 					continue;
 				}
-
+				
 				// Only copy values values where the source values is not null
-				Object defaultValue = descriptor.getReadMethod().invoke(source);
+				Method readMethod = descriptor.getReadMethod();
+				if (readMethod == null) {
+					continue;
+				}
+				
+				Object defaultValue = readMethod.invoke(source);
 				if (defaultValue == null) {
 					continue;
 				}
 
 				if (isNotBlankStringOrNotString(defaultValue)) {
 					descriptor.getWriteMethod().invoke(this, defaultValue);
-				}
+				} 
 			}
 			return (M) this;
 		} catch (Exception e) {
-			String message = "Exception occurs while merging entities from " + source + " to " + this;
-			throw new NGrinderRuntimeException(message, e);
+			throw new NGrinderRuntimeException(forError.getDisplayName() + " - Exception occurs while merging entities from " + source + " to " + this, e);
 		}
 	}
 

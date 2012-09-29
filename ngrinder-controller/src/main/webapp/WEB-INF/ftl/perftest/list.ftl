@@ -115,7 +115,7 @@
 										</div>
 									</td>
 
-									<td class="ellipsis ${test.dateString}" data-content="${test.description?replace('\n', '<br/>')?html}&lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;"  
+									<td class="ellipsis ${test.dateString}" data-content="${test.description?replace('\n', '<br/>')?html} &lt;p&gt;${test.testComment?replace('\n', '<br/>')?html}&lt;/p&gt;  &lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;"  
 											 data-original-title="${test.testName}">
 										<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
 									</td>
@@ -139,10 +139,10 @@
 											<@spring.message "perfTest.table.runcount"/>
 											</td>
 										</#if>
-									<td>${(test.tps)?string("0.#")}</td>  
-									<td>${(test.meanTestTime)?string("0.##")}</td>
-									<td>${test.errors}</td>
-									<td>${vuserTotal} </td>
+									<td><#if test.tps??>${(test.tps)?string("0.#")}</#if></td>  
+									<td><#if test.meanTestTime??>${(test.meanTestTime)?string("0.##")}</#if></td>
+									<td><#if test.errors??>${test.errors}</#if></td>
+									<td>${vuserTotal}</td>
 									<td class="center">
 										<a href="javascript:void(0)"  style="display: none;" ><i title="<@spring.message "common.button.delete"/>"id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>
 										<a href="javascript:void(0)"  style="display: none;" ><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" class="icon-stop test-stop" sid="${test.id}"></i></a>

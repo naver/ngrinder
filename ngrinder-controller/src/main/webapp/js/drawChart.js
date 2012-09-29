@@ -53,6 +53,9 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 	//interval is second amount.
 	//startTime and interval are optional.
 	var values = [ eval(data) ];
+	if (values[0].length == 0) {
+		return;
+	}
 	var ymax = getMaxValue(data);
 	if (ymax < 5) {
 		ymax = 5;

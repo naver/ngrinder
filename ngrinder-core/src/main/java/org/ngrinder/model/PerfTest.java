@@ -43,9 +43,7 @@ import org.hibernate.annotations.Type;
 import org.ngrinder.common.util.DateUtil;
 
 /**
- * Performance Test Entity. Use Create user of BaseModel as test owner, use
- * create date of BaseModel as create time, but the created time maybe not the
- * test starting time.
+ * Performance Test Entity. <br/>
  * 
  */
 @Entity
@@ -63,105 +61,103 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private String description;
 
 	@Enumerated(EnumType.STRING)
+	@Column(name = "status")
 	private Status status = Status.READY;
-
-	/** The sampling Interval value, default to 1000ms. */
-	// private Integer sampleInterval = 1000;
 
 	/** ignoreSampleCount value, default to 0. */
 	@Column(name = "ignore_sample_count")
-	private Integer ignoreSampleCount;
+	private Integer ignoreSampleCount = 0;
 
-	/** ignoreSampleCount value, default to 0, 0 means collect forever. */
-	// private Integer collectSampleCount = 0;
-
+	/** the scheduled time of this test. */
 	@Column(name = "scheduled_time")
 	@Index(name = "scheduled_time_index")
-	/** the scheduled time of this test. */
 	private Date scheduledTime;
 
-	@Column(name = "start_time")
 	/** the start time of this test. */
+	@Column(name = "start_time")
 	private Date startTime;
 
-	@Column(name = "finish_time")
 	/** the finish time of this test. */
+	@Column(name = "finish_time")
 	private Date finishTime;
 
-	@Column(name = "target_hosts")
 	/** the target host to test. */
+	@Column(name = "target_hosts")
 	private String targetHosts;
 
+	/** The send mail code. */
 	@Column(name = "send_mail")
 	@Type(type = "true_false")
-	/** The send mail code. */
-	private boolean sendMail;
+	private Boolean sendMail;
 
+	/** Use rampup or not. */
 	@Column(name = "use_rampup")
 	@Type(type = "true_false")
-	/** Use rampup or not. */
-	private boolean useRampUp;
+	private Boolean useRampUp = false;
 
 	/** The threshold code, R for run count; D for duration. */
+	@Column(name = "threshold")
 	private String threshold;
 
 	@Column(name = "script_name")
-	// default script name to run test
 	private String scriptName;
 
+	@Column(name = "duration")
 	private Long duration;
 
 	@Column(name = "run_count")
-	private Integer runCount = 0;
+	private Integer runCount;
 
 	@Column(name = "agent_count")
-	private Integer agentCount = 0;
+	private Integer agentCount;
 
 	@Column(name = "vuser_per_agent")
-	private Integer vuserPerAgent = 0;
+	private Integer vuserPerAgent;
 
-	private Integer processes = 0;
+	@Column(name = "processes")
+	private Integer processes;
 
 	@Column(name = "init_processes")
-	private Integer initProcesses = 0;
+	private Integer initProcesses;
 
 	@Column(name = "init_sleep_time")
-	private Integer initSleepTime = 0;
+	private Integer initSleepTime;
 
 	@Column(name = "process_increment")
-	private Integer processIncrement = 0;
+	private Integer processIncrement;
 
 	@Column(name = "process_increment_interval")
-	private Integer processIncrementInterval = 0;
+	private Integer processIncrementInterval;
 
-	private Integer threads = 0;
+	@Column(name = "threads")
+	private Integer threads;
 
 	// followings are test result members
-	private Integer tests = 0;
+	@Column(name = "tests")
+	private Integer tests;
 
-	private Integer errors = 0;
-
+	@Column(name = "errors")
+	private Integer errors;
+ 
 	@Column(name = "mean_test_time")
-	private Double meanTestTime = 0d;
+	private Double meanTestTime;
 
 	@Column(name = "test_time_standard_deviation")
-	private Double testTimeStandardDeviation = 0d;
+	private Double testTimeStandardDeviation;
 
-	private Double tps = 0d;
+	@Column(name = "tps")
+	private Double tps;
 
 	@Column(name = "peak_tps")
-	private Double peakTps = 0d;
+	private Double peakTps;
 
 	/** Console port for this test. This is the identifier for console */
-	private Integer port;
+	@Column(name = "port")
+	private Integer port = 0;
 
 	@Column(name = "test_error_cause")
 	@Enumerated(EnumType.STRING)
 	private Status testErrorCause = Status.UNKNOWN;
-
-	@Column(name = "grinder_properties")
-	@Transient
-	private GrinderProperties grinderProperties;
 
 	@Column(name = "distribution_path")
 	/** The path used for file distribution */
@@ -181,17 +177,20 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	@Column(name = "stop_request")
 	@Type(type = "true_false")
-	private Boolean stopRequest = null;
+	private Boolean stopRequest;
 
 	@Transient
 	private String dateString;
+
+	@Transient
+	private GrinderProperties grinderProperties;
 
 	public String getTestIdentifier() {
 		return "perftest_" + getId() + "_" + getLastModifiedUser().getUserId();
 	}
 
 	/**
-	 * Get total required run count. This is caculated by multiplying
+	 * Get total required run count. This is calculated by multiplying
 	 * agentcount, threads, processes, runcount.
 	 * 
 	 * @return runcount
@@ -293,7 +292,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 */
 	public List<String> getTargetHostIP() {
 		List<String> targetIPList = new ArrayList<String>();
-		String[] hostsList = StringUtils.split(targetHosts, ",");
+		String[] hostsList = StringUtils.split(StringUtils.trimToEmpty(targetHosts), ",");
 		for (String hosts : hostsList) {
 			String[] addresses = StringUtils.split(hosts, ":");
 			if (addresses.length > 0) {
@@ -309,18 +308,20 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.targetHosts = theTarget;
 	}
 
-	public boolean isSendMail() {
-		return sendMail;
-	}
 
-	public void setSendMail(boolean sendMail) {
-		this.sendMail = sendMail;
-	}
 
 	public String getThreshold() {
 		return threshold;
 	}
 
+	public boolean isThreshholdDuration() {
+		return "D".equals(getThreshold());
+	}
+	
+	public boolean isThreshholdRunCount() {
+		return "R".equals(getThreshold());
+	}
+	
 	public void setThreshold(String threshold) {
 		this.threshold = threshold;
 	}
@@ -530,7 +531,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public void setTestComment(String testComment) {
-		this.testComment = StringUtils.defaultIfEmpty(StringUtils.right(testComment, MAX_STRING_SIZE), "");
+		this.testComment = StringUtils.trimToEmpty(StringUtils.right(testComment, MAX_STRING_SIZE));
 	}
 
 	public Long getScriptRevision() {
@@ -554,12 +555,20 @@ public class PerfTest extends BaseModel<PerfTest> {
 		setProgressMessage("");
 	}
 
-	public boolean isUseRampUp() {
+	public Boolean getUseRampUp() {
 		return useRampUp;
 	}
 
-	public void setUseRampUp(boolean useRampUp) {
+	public void setUseRampUp(Boolean useRampUp) {
 		this.useRampUp = useRampUp;
+	}
+
+	public Boolean getSendMail() {
+		return sendMail;
+	}
+
+	public void setSendMail(Boolean sendMail) {
+		this.sendMail = sendMail;
 	}
 
 }

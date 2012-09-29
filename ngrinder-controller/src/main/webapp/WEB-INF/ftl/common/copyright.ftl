@@ -7,31 +7,4 @@
 	</div>
 </div>
 
-<script type="text/javascript">
-	$(document).ready(function() {
-		resetFooter();
-	});
-	
-	function resetFooter() {
-		setTimeout("reset()", 500);
-	}
-	
-	function reset() {
-		var $elem = $("#footDiv");
-		var i = $elem[0];
-		if (i) {
-			var ll = i.offsetTop;
-			var prt = i.offsetParent;
-			while(i != null && i != prt){
-				ll += prt.offsetTop;
-				i = prt;
-			}
-			
-			if (ll < 800) {
-				$elem.addClass("footDiv");
-			} else {
-				$elem.removeClass("footDiv");
-			}	
-		}	
-	}
-</script>
+

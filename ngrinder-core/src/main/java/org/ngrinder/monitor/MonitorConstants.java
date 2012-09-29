@@ -25,7 +25,6 @@ package org.ngrinder.monitor;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.infra.AgentConfig;
 
 /**
@@ -36,17 +35,14 @@ import org.ngrinder.infra.AgentConfig;
  */
 public class MonitorConstants {
 
-	public static int DEFAULT_MONITOR_PORT = 13243;
-	public static int DEFAULT_MONITOR_COLLECTOR_INTERVAL = 1;
+	public static final int DEFAULT_MONITOR_PORT = 13243;
+	public static final int DEFAULT_MONITOR_COLLECTOR_INTERVAL = 1;
 	public static final String DEFAULT_MONITOR_DOMAIN = "org.ngrinder.monitor";
 	public static final String DEFALUT_MONITOR_DISPLAY_NAME = "nGrinder monitoring agent";
-
 	public static final String RECODER_METHOD_PREFIX = "recoder";
-
 	public static final String SYSTEM = "name=System";
-
-	public static int DEFAULT_CONTROLLER_CACHE_SIZE = 128;
-	public static int DEFAULT_CONTROLLER_INTERVAL = 1;
+	public static final int DEFAULT_CONTROLLER_CACHE_SIZE = 128;
+	public static final int DEFAULT_CONTROLLER_INTERVAL = 1;
 
 	public static final Set<String> SYSTEM_DATA_COLLECTOR = new HashSet<String>();
 	static {
@@ -70,10 +66,10 @@ public class MonitorConstants {
 	 *            {@link AgentConfig} from which the property is loaded.
 	 */
 	public static void init(AgentConfig agentConfig) {
-		PropertiesWrapper agentProperties = agentConfig.getAgentProperties();
-		DEFAULT_MONITOR_PORT = agentProperties.getPropertyInt("monitor.listen.port", 13243);
-		DEFAULT_MONITOR_COLLECTOR_INTERVAL = agentProperties.getPropertyInt("monitor.collector.interval", 1);
-		DEFAULT_CONTROLLER_CACHE_SIZE = agentProperties.getPropertyInt("monitor.controller.cache.size", 128);
-		DEFAULT_CONTROLLER_INTERVAL = agentProperties.getPropertyInt("monitor.collector.interval", 1);
+//		PropertiesWrapper agentProperties = agentConfig.getAgentProperties();
+//		DEFAULT_MONITOR_PORT = agentProperties.getPropertyInt("monitor.listen.port", DEFAULT_MONITOR_PORT);
+//		DEFAULT_MONITOR_COLLECTOR_INTERVAL = agentProperties.getPropertyInt("monitor.collector.interval", DEFAULT_MONITOR_COLLECTOR_INTERVAL);
+//		DEFAULT_CONTROLLER_CACHE_SIZE = agentProperties.getPropertyInt("monitor.controller.cache.size", DEFAULT_CONTROLLER_CACHE_SIZE);
+//		DEFAULT_CONTROLLER_INTERVAL = agentProperties.getPropertyInt("monitor.collector.interval", DEFAULT_CONTROLLER_INTERVAL);
 	}
 }

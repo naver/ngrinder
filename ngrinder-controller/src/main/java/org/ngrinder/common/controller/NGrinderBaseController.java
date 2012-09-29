@@ -22,7 +22,11 @@
  */
 package org.ngrinder.common.controller;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
 
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.infra.config.Config;
@@ -32,6 +36,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.web.bind.annotation.ModelAttribute;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 /**
  * Controller base which is reused widely.
@@ -51,8 +58,18 @@ public class NGrinderBaseController implements NGrinderConstants {
 	@Autowired
 	private UserContext userContext;
 
+	@PostConstruct
+	void initJSON() {
+		JsonObject rtnJson = new JsonObject();
+		rtnJson.addProperty(JSON_SUCCESS, true);
+		successJson = rtnJson.toString();
+		rtnJson.addProperty(JSON_SUCCESS, false);
+		errorJson = rtnJson.toString();
+	}
+
 	/**
 	 * Get current user.
+	 * 
 	 * @return
 	 */
 	public User getCurrentUser() {
@@ -60,7 +77,9 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Provide current login user as a model attributes. If it's not found, return empty user.
+	 * Provide current login user as a model attributes. If it's not found,
+	 * return empty user.
+	 * 
 	 * @return login user
 	 */
 	@ModelAttribute("currentUser")
@@ -74,16 +93,19 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Provide nGrinder version as a model attributes.
+	 * 
 	 * @return nGrinder version
 	 */
-	@ModelAttribute("nGrinderVersion") 
+	@ModelAttribute("nGrinderVersion")
 	public String nGrinderVersion() {
 		return Config.getVerionString();
 	}
-	
+
 	/**
 	 * Get message from messageSource by key.
-	 * @param key key of message
+	 * 
+	 * @param key
+	 *            key of message
 	 * @return found message. If not found, error message will return.
 	 */
 	protected String getMessages(String key) {
@@ -96,6 +118,40 @@ public class NGrinderBaseController implements NGrinderConstants {
 			return "Getting message error for key " + key;
 		}
 		return message;
+	}
+
+	private static String successJson;
+	private static String errorJson;
+	private static Gson gson = new Gson();
+
+	public String returnSuccess(String message) {
+		JsonObject rtnJson = new JsonObject();
+		rtnJson.addProperty(JSON_SUCCESS, true);
+		rtnJson.addProperty(JSON_MESSAGE, message);
+		return rtnJson.toString();
+	}
+
+	public String returnError(String message) {
+		JsonObject rtnJson = new JsonObject();
+		rtnJson.addProperty(JSON_SUCCESS, false);
+		rtnJson.addProperty(JSON_MESSAGE, message);
+		return rtnJson.toString();
+	}
+
+	public String returnSuccess() {
+		return successJson;
+	}
+
+	public String returnError() {
+		return errorJson;
+	}
+
+	public String toJson(List<?> list) {
+		return gson.toJson(list);
+	}
+
+	public String toJson(Map<String, Object> map) {
+		return gson.toJson(map);
 	}
 
 }

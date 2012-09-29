@@ -37,14 +37,12 @@ public interface NGrinderConstants {
 	public static final String SCRIPT_PROPERTIES = "script.properties";
 
 	public static final String PATH_LOG = "logs";
-
 	public static final String PATH_REPORT = "report";
+	public static final String PATH_DIST = "dist";
 
-	public static final String PATH_HISTORY = "histories";
 
 	public static final String CACHE_NAME = "cache";
 
-	public static final String PATH_DIST = "dist";
 
 	public static final String COMMA = ",";
 

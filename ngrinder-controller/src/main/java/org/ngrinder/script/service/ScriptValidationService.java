@@ -99,7 +99,7 @@ public class ScriptValidationService {
 			if (result != null) {
 				return result;
 			}
-			File scriptDirectory = config.getHome().getScriptDirectory(String.valueOf(user.getId()));
+			File scriptDirectory = config.getHome().getScriptDirectory(user);
 			File file = new File(scriptDirectory, "validation-0.log");
 			file.delete();
 

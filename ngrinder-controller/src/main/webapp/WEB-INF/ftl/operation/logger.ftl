@@ -41,7 +41,6 @@
 			    			logentries.first().remove();
 			    		}
 			    		$("#log_container").append($("<tr id='" + data.index + "'><td id='" + data.modification + "'>" + data.log + "</td></tr>"));
-			    		resetFooter(); 
 			    	}
 			    	
 			    	setTimeout(pollingLogs, 5000);
