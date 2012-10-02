@@ -84,6 +84,16 @@ public interface IPerfTestService {
 	public abstract PerfTest getPerfTest(Long testId);
 
 	/**
+	 * Get PerfTest with tag infos by testId.
+	 * 
+	 * @param testId
+	 *            PerfTest id
+	 * @return found {@link PerfTest}, null otherwise
+	 */
+	public abstract PerfTest getPerfTestWithTag(Long testId);
+
+	
+	/**
 	 * Get currently testing PerfTest.
 	 * 
 	 * @return found {@link PerfTest} list

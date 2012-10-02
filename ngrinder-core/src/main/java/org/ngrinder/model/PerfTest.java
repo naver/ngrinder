@@ -25,11 +25,17 @@ package org.ngrinder.model;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.SortedSet;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -39,6 +45,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
 import org.ngrinder.common.util.DateUtil;
 
@@ -56,6 +64,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	@Column(name = "name")
 	private String testName;
+
+	@Transient
+	private String tagString;
 
 	@Column(length = 2048)
 	private String description;
@@ -138,7 +149,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	@Column(name = "errors")
 	private Integer errors;
- 
+
 	@Column(name = "mean_test_time")
 	private Double meanTestTime;
 
@@ -184,6 +195,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	@Transient
 	private GrinderProperties grinderProperties;
+
+	@ManyToMany(fetch=FetchType.LAZY, cascade={CascadeType.ALL})
+	@JoinTable(name = "PERF_TEST_TAG", joinColumns = @JoinColumn(name = "perf_test_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @Sort(comparator=Tag.class, type=SortType.COMPARATOR)
+	private SortedSet<Tag> tags;
 
 	public String getTestIdentifier() {
 		return "perftest_" + getId() + "_" + getLastModifiedUser().getUserId();
@@ -308,8 +324,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.targetHosts = theTarget;
 	}
 
-
-
 	public String getThreshold() {
 		return threshold;
 	}
@@ -317,11 +331,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public boolean isThreshholdDuration() {
 		return "D".equals(getThreshold());
 	}
-	
+
 	public boolean isThreshholdRunCount() {
 		return "R".equals(getThreshold());
 	}
-	
+
 	public void setThreshold(String threshold) {
 		this.threshold = threshold;
 	}
@@ -569,6 +583,22 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setSendMail(Boolean sendMail) {
 		this.sendMail = sendMail;
+	}
+
+	public String getTagString() {
+		return tagString;
+	}
+
+	public void setTagString(String tagString) {
+		this.tagString = tagString;
+	}
+
+	public SortedSet<Tag> getTags() {
+		return tags;
+	}
+
+	public void setTags(SortedSet<Tag> tags) {
+		this.tags = tags;
 	}
 
 }

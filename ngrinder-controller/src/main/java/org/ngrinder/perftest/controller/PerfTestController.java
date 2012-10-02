@@ -118,8 +118,11 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return perftest/list
 	 */
 	@RequestMapping({ "/list", "/" })
-	public String getPerfTestList(User user, @RequestParam(required = false) String query,
-			@RequestParam(required = false) boolean onlyFinished, @PageableDefaults(pageNumber = 0, value = 10) Pageable pageable,
+	public String getPerfTestList(User user, 
+			@RequestParam(required = false) String query,
+			@RequestParam(required = false) String tag,
+			@RequestParam(required = false) boolean onlyFinished, 
+			@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable,
 			ModelMap model) {
 		PageRequest pageReq = ((PageRequest) pageable);
 		Sort sort = pageReq == null ? null : pageReq.getSort();
@@ -127,7 +130,7 @@ public class PerfTestController extends NGrinderBaseController {
 			sort = new Sort(Direction.DESC, "lastModifiedDate");
 			pageable = new PageRequest(pageReq.getPageNumber(), pageReq.getPageSize(), sort);
 		}
-		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, onlyFinished, pageable);
+		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, tag, onlyFinished, pageable);
 
 		TimeZone userTZ = TimeZone.getTimeZone(getCurrentUser().getTimeZone());
 		Calendar userToday = Calendar.getInstance(userTZ);
@@ -173,7 +176,7 @@ public class PerfTestController extends NGrinderBaseController {
 	public String getPerfTestDetail(User user, @RequestParam(required = false) Long id, ModelMap model) {
 		PerfTest test = null;
 		if (id != null) {
-			test = checkPermission(user, id);
+			test = getPerfTestWithPermissionCheck(user, id, true);
 		}
 
 		model.addAttribute(PARAM_TEST, test);
@@ -383,7 +386,7 @@ public class PerfTestController extends NGrinderBaseController {
 	public @ResponseBody
 	String getReportData(User user, ModelMap model, @RequestParam long testId, @RequestParam(required = true, defaultValue="") String dataType,
 			@RequestParam int imgWidth) {
-		checkPermission(user, testId);
+		getPerfTestWithPermissionCheck(user, testId, false);
 		String[] dataTypes = StringUtils.split(dataType, ",");
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1 + dataTypes.length);
 		if (dataTypes.length <= 0) {
@@ -403,10 +406,9 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/loadReportDiv")
 	public String getReportDiv(User user, ModelMap model, @RequestParam long testId, @RequestParam int imgWidth) {
-		PerfTest test = checkPermission(user, testId);
+		PerfTest test = getPerfTestWithPermissionCheck(user, testId, false);
 		int interval = perfTestService.getReportDataInterval(testId, "TPS", imgWidth);
 		String reportData = perfTestService.getReportDataAsString(testId, "TPS", interval);
-
 		model.addAttribute(PARAM_LOG_LIST, perfTestService.getLogFiles(testId));
 		model.addAttribute(PARAM_TEST_CHART_INTERVAL, interval);
 		model.addAttribute(PARAM_TEST, test);
@@ -416,7 +418,7 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/downloadReportData")
 	public void downloadReportData(User user, HttpServletResponse response, @RequestParam long testId) {
-		PerfTest test = checkPermission(user, testId);
+		PerfTest test = getPerfTestWithPermissionCheck(user, testId, false);
 		File targetFile = perfTestService.getReportFile(test);
 		checkState(targetFile.exists(), "File %s doesn't exist!", targetFile.getName());
 		FileDownloadUtil.downloadFile(response, targetFile);
@@ -424,14 +426,14 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/downloadLog/**")
 	public void downloadLogData(User user, @RemainedPath String path, @RequestParam long testId, HttpServletResponse response) {
-		checkPermission(user, testId);
+		getPerfTestWithPermissionCheck(user, testId, false);
 		File targetFile = perfTestService.getLogFile(testId, path);
 		FileDownloadUtil.downloadFile(response, targetFile);
 	}
 
 	@RequestMapping(value = "/running/refresh")
 	public String refreshTestRunning(User user, ModelMap model, @RequestParam long testId) {
-		PerfTest test = checkNotNull(checkPermission(user, testId), "given test should be exist : " + testId);
+		PerfTest test = checkNotNull(getPerfTestWithPermissionCheck(user, testId, false), "given test should be exist : " + testId);
 		if (test.getStatus().equals(Status.TESTING)) {
 			model.addAttribute(PARAM_RESULT_AGENT_PERF, getAgentPerfString(perfTestService.getAgentsInfo(test.getPort())));
 			model.addAttribute(PARAM_RESULT_SUB, perfTestService.getStatistics(test.getPort()));
@@ -456,21 +458,20 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@RequestMapping(value = "/report")
 	public String getReport(User user, ModelMap model, @RequestParam long testId) {
-		checkPermission(user, testId);
-		PerfTest test = perfTestService.getPerfTest(testId);
-		model.addAttribute("test", test);
+		model.addAttribute("test", getPerfTestWithPermissionCheck(user, testId, false));
 		return "perftest/report";
 	}
 
-	private PerfTest checkPermission(User user, Long id) {
-		PerfTest test = perfTestService.getPerfTest(id);
+	
+	private PerfTest getPerfTestWithPermissionCheck(User user, Long id, boolean withTag) {
+		PerfTest perfTest = withTag ? perfTestService.getPerfTestWithTag(id) : perfTestService.getPerfTest(id);
 		if (user.getRole().equals(Role.ADMIN) || user.getRole().equals(Role.SUPER_USER)) {
-			return test;
+			return perfTest;
 		}
-		if (test != null && !user.equals(test.getLastModifiedUser())) {
+		if (perfTest != null && !user.equals(perfTest.getLastModifiedUser())) {
 			throw new NGrinderRuntimeException("User " + user.getUserId() + " has no right on PerfTest ");
 		}
-		return test;
+		return perfTest;
 	}
 
 }

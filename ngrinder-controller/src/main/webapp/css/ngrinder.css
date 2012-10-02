@@ -171,3 +171,13 @@ img.status {
 	width: 23px; 
 	height: 23px
 }
+
+.select2-choices {
+	-webkit-border-radius: 3px;-moz-border-radius: 3px;border-radius: 3px;
+}
+.header-control-label {
+	width: 100px !important;
+}
+.header-controls {
+	margin-left: 120px !important;
+}

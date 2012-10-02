@@ -27,6 +27,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.model.Status.getProcessingOrTestingTestStatus;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.emptyPredicate;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.idEqual;
+import static org.ngrinder.perftest.repository.PerfTestSpecification.hasTag;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.idSetEqual;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.lastModifiedOrCreatedBy;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.likeTestNameOrDescription;
@@ -75,6 +76,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.hibernate.Hibernate;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
@@ -148,7 +150,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            paging info
 	 * @return found {@link PerfTest} list
 	 */
-	public Page<PerfTest> getPerfTestList(User user, String query, boolean isFinished, Pageable pageable) {
+	public Page<PerfTest> getPerfTestList(User user, String query, String tag, boolean isFinished, Pageable pageable) {
 
 		Specifications<PerfTest> spec = Specifications.where(emptyPredicate());
 
@@ -156,7 +158,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		if (user.getRole().equals(Role.USER)) {
 			spec = spec.and(lastModifiedOrCreatedBy(user));
 		}
-
+		
+		if (StringUtils.isNotBlank(tag)) {
+			spec = spec.and(hasTag(tag));
+		}
 		if (isFinished) {
 			spec = spec.and(statusSetEqual(Status.FINISHED));
 		}
@@ -403,6 +408,18 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return markProgressAndStatus(perfTest, Status.START_CONSOLE_FINISHED, "Console is started on port " + consolePort);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTest(long)
+	 */
+	@Override
+	public PerfTest getPerfTestWithTag(Long testId) {
+		PerfTest findOne = perfTestRepository.findOne(testId);
+		Hibernate.initialize(findOne.getTags());
+		return findOne;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 

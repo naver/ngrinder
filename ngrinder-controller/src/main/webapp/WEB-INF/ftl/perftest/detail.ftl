@@ -6,6 +6,8 @@
 	<META HTTP-EQUIV="Expires" CONTENT="-1">
 	<#include "../common/common.ftl"> 
 	<#include "../common/jqplot.ftl">
+	<link href="${req.getContextPath()}/js/select2/select2.css" rel="stylesheet"/>
+	<script src="${req.getContextPath()}/js/select2/select2.js"></script>
 	<link href="${req.getContextPath()}/css/slider.css" rel="stylesheet">
 	<link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
 	<style>
@@ -117,9 +119,11 @@
 				<div class="form-horizontal">
 					<fieldset>
 						<div class="control-group">
-							<label for="testName" class="control-label"><@spring.message "perfTest.table.testName"/></label>
-							<div class="controls">
-								<input class="span3 required" maxlength="100" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
+							<label for="testName" class="header-control-label control-label"><@spring.message "perfTest.table.testName"/></label>
+							<div class="header-controls">
+								<input class="required pull-left" maxlength="80" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
+								<input class="required span3" maxlength="80" size="60" type="text" id="tagString" name="tagString" value="${(test.tagString)!}">
+								
 								<#if test??> 
 									<span id="teststatus_pop_over"
 										rel="popover" data-content='${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}'  
@@ -138,7 +142,7 @@
 									<input type="hidden" id="isClone" name="isClone" value="false">
 									<#assign isClone = false/> 
 								</#if>
-								<button type="submit" class="btn btn-success" id="saveTestBtn" style="margin-left:<#if test??>249<#else>285</#if>px; width:55px">
+								<button type="submit" class="btn btn-success" id="saveTestBtn" style="">
 									<#if isClone>
 										<@spring.message "perfTest.detail.clone"/>
 									<#else>
@@ -157,8 +161,8 @@
 							</div>
 						</div>
 						<div class="control-group" style="margin-bottom: 0">
-							<label for="description" class="control-label"><@spring.message "common.label.description"/></label>
-							<div class="controls">
+							<label for="description" class="header-control-label control-label"><@spring.message "common.label.description"/></label>
+							<div class="header-controls controls">
 								<textarea class="input-xlarge span9" id="description" rows="3" name="description" style="resize: none">${(test.description)!}</textarea>
 							</div>
 						</div>
@@ -494,7 +498,7 @@ $(document).ready(function () {
 	$.ajaxSetup({
 		cache : false //close AJAX cache
 	});
-	
+	initTags();
 	initDuration();
 	initChartData();
 	initScheduleDate();
@@ -521,6 +525,10 @@ $(document).ready(function () {
 		displayCfgOnly();
 	</#if>
 });
+
+function initTags() {
+	$("#tagString").select2({tags:[]});
+}
 
 function initScheduleDate() {
 	var date = new Date();
@@ -643,9 +651,6 @@ function bindEvent() {
 		if (!$("#testContentForm").valid()) {
 			return false;
 		}
-		//if ($("#isClone").val() == "true") {
-		//    $("#testId").val("");
-		//}
 		$("#testStatus").val("SAVED");
 		$("#scheduleInput").attr('name', '');
 		return true;
@@ -655,9 +660,6 @@ function bindEvent() {
 		$("#scheduleModal").modal("hide");
 		$("#scheduleModal small").html("");
 		$("#scheduleInput").attr('name', '');
-		//if ($("#isClone").val() == "true") {
-		//    $("#testId").val("");
-		//}
 		$("#testStatus").val("READY");
 		document.testContentForm.submit();
 	});

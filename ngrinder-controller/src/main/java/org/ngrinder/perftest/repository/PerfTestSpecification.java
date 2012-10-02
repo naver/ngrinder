@@ -26,6 +26,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.SetJoin;
 
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
@@ -58,6 +59,23 @@ public class PerfTestSpecification {
 		};
 	}
 
+	/**
+	 * Get the Specification which check the {@link PerfTest} has one of given tag.
+	 * 
+	 * @param statuses
+	 *            status set
+	 * @return {@link Specification}
+	 */
+	public static Specification<PerfTest> hasTag(final String tag) {
+		return new Specification<PerfTest>() {
+			@Override
+			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				SetJoin<Object, Object> join = root.joinSet("tags");
+				return cb.equal(join.get("tagValue"), tag);
+			}
+		};
+	}
+	
 	/**
 	 * Get the Specification which check the {@link PerfTest} has one of given id.
 	 * 
