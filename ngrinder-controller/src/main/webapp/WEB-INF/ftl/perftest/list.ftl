@@ -3,7 +3,9 @@
 	<head>
 		<title>nGrinder Performance Test List</title>
 		<#include "../common/common.ftl">
-		<#include "../common/datatables.ftl">
+		<#include "../common/datatables.ftl">	
+		<link href="${req.getContextPath()}/js/select2/select2.css" rel="stylesheet"/>
+		<script src="${req.getContextPath()}/js/select2/select2.js"></script>
 		<style>
 			td.today {
 				background-image: url('${req.getContextPath()}/img/icon_today.png');
@@ -37,6 +39,14 @@
 						<tr>
 							<td>
 								<input type="text" class="search-query" placeholder="Keywords" name ="query" id="query" value="${query!}">
+								<select id="tag" name="tag" style="width:100px">
+								<#if availTags?has_content>
+								    <#list availTags as eachTag> 
+								  	   <option value="${eachTag.tagValue}" <#if tag?? && eachTag.tagValue == tag>selected </#if> >${eachTag.tagValue}</option>
+							        </#list>
+							    </#if>
+								</select> 
+								
 								<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
 								<label class="checkbox" style="position:relative;">
 									<input type="checkbox" id="onlyFinished" name="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> <@spring.message "perfTest.formInline.onlyFinished"/>
@@ -175,7 +185,7 @@
 </div>
 	<script>
 		$(document).ready(function() {
-		
+			$("#tag").select2();
 			$('td.ellipsis').hover(function () {
 	          $(this).popover('show');
 	      	});

@@ -26,6 +26,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.SetJoin;
 
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Tag;
@@ -42,6 +43,19 @@ public class TagSpecification {
 	
 	private TagSpecification() {}
 	
+	/**
+	 * Get the Specification which provide empty predicate. This is for the base element for "and" or "or" combination.
+	 * 
+	 * @return {@link Specification}
+	 */
+	public static Specification<Tag> emptyPredicate() {
+		return new Specification<Tag>() {
+			@Override
+			public Predicate toPredicate(Root<Tag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				return root.get("id").isNotNull();
+			}
+		};
+	}
 	/**
 	 * Get the Specification which check the {@link Tag} has one of given value.
 	 * 
@@ -74,4 +88,20 @@ public class TagSpecification {
 		};
 	}
 
+	/**
+	 * Get the Specification which check the tag has corresponding perfTest.
+	 * 
+	 * @param statuses
+	 *            status set
+	 * @return {@link Specification}
+	 */
+	public static Specification<Tag> hasPerfTest() {
+		return new Specification<Tag>() {
+			@Override
+			public Predicate toPredicate(Root<Tag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				SetJoin<Object, Object> join = root.joinSet("perfTests");
+				return join.get("id").isNotNull();
+			}
+		};
+	}
 }

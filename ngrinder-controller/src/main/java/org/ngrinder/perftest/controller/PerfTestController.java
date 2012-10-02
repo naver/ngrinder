@@ -60,6 +60,7 @@ import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
+import org.ngrinder.perftest.service.TagService;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
@@ -104,6 +105,8 @@ public class PerfTestController extends NGrinderBaseController {
 	@Autowired
 	private AgentManager agentManager;
 
+	@Autowired
+	private TagService tagService;
 	/**
 	 * Get Performance test lists.
 	 * 
@@ -148,7 +151,8 @@ public class PerfTestController extends NGrinderBaseController {
 				test.setDateString("earlier");
 			}
 		}
-
+		model.addAttribute("tag", tag);
+		model.addAttribute("availTags", tagService.getAllTags(user));
 		model.addAttribute("testListPage", testList);
 		model.addAttribute("onlyFinished", onlyFinished);
 		model.addAttribute("query", query);

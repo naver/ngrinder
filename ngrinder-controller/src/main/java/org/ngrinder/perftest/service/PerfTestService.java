@@ -26,8 +26,8 @@ import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.model.Status.getProcessingOrTestingTestStatus;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.emptyPredicate;
-import static org.ngrinder.perftest.repository.PerfTestSpecification.idEqual;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.hasTag;
+import static org.ngrinder.perftest.repository.PerfTestSpecification.idEqual;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.idSetEqual;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.lastModifiedOrCreatedBy;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.likeTestNameOrDescription;
@@ -135,8 +135,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	@Autowired
 	private FileEntryService fileEntryService;
 
-	private NumberFormat formatter = new DecimalFormat("###.###");
-
+	@Autowired 
+	private TagService tagSerivce;
+	
+	
 	/**
 	 * Get {@link PerfTest} list on the user.
 	 * 
@@ -266,6 +268,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			long revision = scriptEntry != null ? scriptEntry.getRevision() : -1;
 			perfTest.setScriptRevision(revision);
 		}
+		perfTest.setTags(tagSerivce.addTags(user, StringUtils.split(perfTest.getTagString(), ",")));
 		return savePerfTest(perfTest);
 	}
 
@@ -413,6 +416,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * 
 	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTest(long)
 	 */
+	@Transactional
 	@Override
 	public PerfTest getPerfTestWithTag(Long testId) {
 		PerfTest findOne = perfTestRepository.findOne(testId);
@@ -963,6 +967,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            perfTest
 	 */
 	public void updatePerfTestAfterTestFinish(PerfTest perfTest) {
+		NumberFormat formatter = new DecimalFormat("###.###");
 		checkNotNull(perfTest);
 		Map<String, Object> result = getStatistics(perfTest.getPort());
 		@SuppressWarnings("unchecked")

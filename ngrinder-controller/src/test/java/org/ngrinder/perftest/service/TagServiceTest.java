@@ -24,11 +24,15 @@ package org.ngrinder.perftest.service;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.ngrinder.perftest.repository.TagSpecification.hasPerfTest;
 
+import java.util.Date;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.model.PerfTest;
+import org.ngrinder.model.Status;
 import org.ngrinder.model.Tag;
 import org.ngrinder.perftest.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +50,9 @@ public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 	
 	@Autowired
 	private TagRepository tagRepository;
+	
+	@Autowired
+	private PerfTestService perfTestService;
 	
 	@Before
 	public void beforeTag() {
@@ -65,6 +72,18 @@ public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 		addTags = tagService.addTags(getTestUser(), new String[]{"HELLO", "world"});
 		assertThat(addTags.size(), is(2));
 		assertThat(tagRepository.findAll().size(), is(3));
+	}
+	
+	@Test
+	public void testPerfTestTagging() {
+		PerfTest newPerfTest = newPerfTest("hello", Status.SAVED, new Date());
+		newPerfTest.setTags(tagService.addTags(getTestUser(), new String[]{"HELLO", "world"}));
+		createPerfTest(newPerfTest);
+		newPerfTest.setTags(tagService.addTags(getTestUser(), new String[]{"HELLO", "WORLD"}));
+		PerfTest createPerfTest = createPerfTest(newPerfTest);
+		PerfTest perfTestWithTag = perfTestService.getPerfTestWithTag(createPerfTest.getId());
+		System.out.println(perfTestWithTag.getTags());
+		assertThat(tagRepository.count(hasPerfTest()), is(2L));
 	}
 
 }

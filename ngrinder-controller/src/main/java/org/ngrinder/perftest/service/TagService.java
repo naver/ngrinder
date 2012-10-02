@@ -22,14 +22,17 @@
  */
 package org.ngrinder.perftest.service;
 
+import static org.ngrinder.perftest.repository.TagSpecification.emptyPredicate;
+import static org.ngrinder.perftest.repository.TagSpecification.hasPerfTest;
 import static org.ngrinder.perftest.repository.TagSpecification.lastModifiedOrCreatedBy;
 import static org.ngrinder.perftest.repository.TagSpecification.valueIn;
 
+import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.Tag;
@@ -53,7 +56,7 @@ public class TagService {
 	private TagRepository tagRepository;
 
 	@Transactional
-	public Set<Tag> addTags(User user, String[] tags) {
+	public SortedSet<Tag> addTags(User user, String[] tags) {
 		Specifications<Tag> spec = Specifications.where(valueIn(tags));
 
 		if (user.getRole() == Role.USER) {
@@ -62,11 +65,26 @@ public class TagService {
 		List<Tag> foundTags = tagRepository.findAll(spec);
 		SortedSet<Tag> allTags = new TreeSet<Tag>(foundTags);
 		for (String each : tags) {
-			Tag newTag = new Tag(each);
+			Tag newTag = new Tag(StringUtils.trimToEmpty(each));
 			if (!foundTags.contains(newTag)) {
-				allTags.add(tagRepository.save(newTag));
+				allTags.add(saveTag(user, newTag));
 			}
 		}
 		return allTags;
+	}
+	
+	public List<Tag> getAllTags(User user) {
+		Specifications<Tag> spec = Specifications.where(emptyPredicate());
+		spec.and(hasPerfTest());
+		if (user.getRole() == Role.USER) {
+			spec = spec.and(lastModifiedOrCreatedBy(user));
+		}
+		return tagRepository.findAll(spec);
+	}
+	
+	public Tag saveTag(User user, Tag tag) {
+		tag.setCreatedUser(user);
+		tag.setCreatedDate(new Date());
+		return tagRepository.save(tag);
 	}
 }

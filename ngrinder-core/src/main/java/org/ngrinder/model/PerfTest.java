@@ -65,7 +65,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "name")
 	private String testName;
 
-	@Transient
+	@Column(name = "tag_string")
 	private String tagString;
 
 	@Column(length = 2048)

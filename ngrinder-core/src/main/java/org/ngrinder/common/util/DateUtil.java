@@ -42,11 +42,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public abstract class DateUtil { 
 
-	private static final SimpleDateFormat FULL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-	private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-	private static final SimpleDateFormat dateFormatEndWithMinute = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-	private static final SimpleDateFormat collectTimeFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-
+	
 	private static final int CONSTANT_10 = 10;
 	private static final int CONSTANT_24 = 24;
 	private static final int CONSTANT_60 = 60;
@@ -67,6 +63,7 @@ public abstract class DateUtil {
 	 * 			  time in format of long type
 	 */
 	public static long getCollectTimeInLong(Date date) {
+		SimpleDateFormat collectTimeFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		return Long.valueOf(collectTimeFormat.format(date));
 	}
 	
@@ -108,6 +105,7 @@ public abstract class DateUtil {
 	 * @return formated string
 	 */
 	public static String dateToString(Date date) {
+		SimpleDateFormat FULL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 		return FULL_DATE_FORMAT.format(date);
 	}
 
@@ -143,7 +141,8 @@ public abstract class DateUtil {
 	 *             occurs when given steDate is not {@link #SIMPLE_DATE_FORMAT}
 	 */
 	public static Date toSimpleDate(String strDate) throws ParseException {
-		return SIMPLE_DATE_FORMAT.parse(strDate);
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+		return simpleDateFormat.parse(strDate);
 	}
 
 	/**
@@ -157,7 +156,8 @@ public abstract class DateUtil {
 	 *             occurs when given steDate is not {@link #FULL_DATE_FORMAT}
 	 */
 	public static Date toDate(String strDate) throws ParseException {
-		return FULL_DATE_FORMAT.parse(strDate);
+		SimpleDateFormat fullDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+		return fullDateFormat.parse(strDate);
 	}
 
 	/**
@@ -215,6 +215,7 @@ public abstract class DateUtil {
 	}
 
 	public static boolean compareDateEndWithMinute(Date d1, Date d2) {
+		SimpleDateFormat dateFormatEndWithMinute = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		String s1 = dateFormatEndWithMinute.format(d1);
 		String s2 = dateFormatEndWithMinute.format(d2);
 		if (s1.equals(s2))
