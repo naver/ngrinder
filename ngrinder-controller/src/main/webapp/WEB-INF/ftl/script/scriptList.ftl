@@ -3,6 +3,7 @@
 	<head>
 		<#include "../common/common.ftl">
 		<#include "../common/datatables.ftl">
+		<script src="${req.getContextPath()}/js/bootstrap-filestyle-1.0.min.js"></script>
 		<title><@spring.message "script.list.title"/></title>
 	</head>
 
@@ -241,7 +242,7 @@
 							<label for="fileInput" class="control-label"><@spring.message "script.list.label.file"/></label>
 							<div class="controls">
 							  <input type="file" class="input-file" id="fileInput" name="uploadFile" data-original-title="<@spring.message "script.list.popover.upload.title"/>" data-content="<@spring.message "script.list.popover.upload.content"/>">
-							  <span class="help-inline"></span>
+							  
 							</div>
 						</div>				
 					</fieldset>
@@ -261,6 +262,11 @@
 			$('form input').hover(function () {
 	        	$(this).popover('show');
 	      	});
+	      	
+	      	$("#fileInput").filestyle({ 
+			    buttonText: "<@spring.message 'script.list.button.choose.file'/>",
+			    icon: true 
+			});
 			
 			$("#createBtn2").on('click', function() {
 				var $name = $("#scriptNameInput");
