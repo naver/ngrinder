@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.Tag;
+import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.ngrinder.perftest.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -54,8 +55,13 @@ public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 	@Autowired
 	private PerfTestService perfTestService;
 	
+	@Autowired
+	private PerfTestRepository perfTestRepository;
+	
+	
 	@Before
 	public void beforeTag() {
+		perfTestRepository.deleteAll();
 		tagRepository.deleteAll();
 	}
 

@@ -28,6 +28,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Tag;
 import org.ngrinder.model.User;
@@ -100,8 +101,27 @@ public class TagSpecification {
 			@Override
 			public Predicate toPredicate(Root<Tag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				SetJoin<Object, Object> join = root.joinSet("perfTests");
+				query.groupBy(root.get("id"));
 				return join.get("id").isNotNull();
 			}
 		};
 	}
+	
+	/**
+	 * Get query specification to get the {@link Tag} whose value starts with given query.
+	 * 
+	 * @param query
+	 *            query
+	 * @return {@link Specification}
+	 */
+	public static Specification<Tag> isStartWith(final String queryString) {
+		return new Specification<Tag>() {
+			@Override
+			public Predicate toPredicate(Root<Tag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				String replacedQueryString = StringUtils.replace(queryString, "%", "\\%");
+				return cb.like(cb.lower(root.get("tagValue").as(String.class)), StringUtils.lowerCase(replacedQueryString) + "%");
+			}
+		};
+	}
+
 }

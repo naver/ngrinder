@@ -507,13 +507,17 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @param id
 	 *            {@link PerfTest} id
 	 */
+	@Transactional
 	public void deletePerfTest(User user, long id) {
 		PerfTest perfTest = getPerfTest(id);
 		// If it's not requested by user who started job. It's wrong request.
 		if (!hasPermission(perfTest, user)) {
 			return;
 		}
+		perfTest.getTags().clear();
+		perfTestRepository.save(perfTest);
 		perfTestRepository.delete(perfTest);	
+		
 		File perfTestDirectory = config.getHome().getPerfTestDirectory(perfTest);
 		FileUtils.deleteQuietly(perfTestDirectory);
 	}

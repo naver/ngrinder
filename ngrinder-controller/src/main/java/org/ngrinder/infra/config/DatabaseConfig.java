@@ -86,9 +86,8 @@ public class DatabaseConfig implements NGrinderConstants {
 				"[FATAL] Database type is not sepecfied. In default, use H2."));
 
 		hibernateJpaVendorAdapter.setDatabasePlatform(database.getDialect());
-		hibernateJpaVendorAdapter.setShowSql(true);
+		hibernateJpaVendorAdapter.setShowSql(false);
 		hibernateJpaVendorAdapter.setGenerateDdl(true);
-
 		emf.setJpaVendorAdapter(hibernateJpaVendorAdapter);
 		// To search entity packages from other jar files..
 		emf.setPackagesToScan("empty");

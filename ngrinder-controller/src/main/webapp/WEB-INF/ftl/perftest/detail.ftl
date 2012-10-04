@@ -119,10 +119,11 @@
 				<div class="form-horizontal">
 					<fieldset>
 						<div class="control-group">
-							<label for="testName" class="header-control-label control-label"><@spring.message "perfTest.table.testName"/></label>
+							<label for="testName" class="header-control-label control-label"><@spring.message "perfTest.configuration.testName"/></label>
 							<div class="header-controls">
-								<input class="required pull-left" maxlength="80" size="40" type="text" id="testName" name="testName" value="${(test.testName)!}">
-								<input class="required span3" maxlength="80" size="60" type="text" id="tagString" name="tagString" value="${(test.tagString)!}">
+								<input class="required span2 left-float" maxlength="80" size="30" type="text" id="testName" name="testName" value="${(test.testName)!}">
+								<label for="testName" class="header-control-label control-label"><@spring.message "perfTest.configuration.tags"/></label>
+								<input class="span3" maxlength="80" size="60" type="text" id="tagString" name="tagString" value="${(test.tagString)!}">
 								
 								<#if test??> 
 									<span id="teststatus_pop_over"
@@ -130,7 +131,9 @@
 											data-original-title="<@spring.message "${test.status.springMessageKey}"/>" type="toggle" placement="bottom">
 										<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
 									</span>
-
+								</#if>
+								<span class="pull-right">
+								<#if test??>
 									<#if test.status != "SAVED" || test.createdUser.userId != currentUser.userId>
 										<input type="hidden" id="isClone" name="isClone" value="true">
 										<#assign isClone = true/>
@@ -149,7 +152,8 @@
 										<@spring.message "common.button.save"/>
 									</#if>
 								</button>
-								<button type="submit" class="btn btn-primary" style="margin-left:10px; width:120px"
+								
+								<button type="submit" class="btn btn-primary" style="margin-left:10px;margin-right:20px"
 									data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn">
 									<#if isClone>
 										<@spring.message "perfTest.detail.clone"/>
@@ -158,12 +162,13 @@
 									</#if>
 									&nbsp;<@spring.message "perfTest.detail.andStart"/>
 								</button>
+								</span>
 							</div>
 						</div>
 						<div class="control-group" style="margin-bottom: 0">
 							<label for="description" class="header-control-label control-label"><@spring.message "common.label.description"/></label>
 							<div class="header-controls controls">
-								<textarea class="input-xlarge span9" id="description" rows="3" name="description" style="resize: none">${(test.description)!}</textarea>
+								<textarea class="input-xlarge span10" id="description" rows="3" name="description" style="resize: none">${(test.description)!}</textarea>
 							</div>
 						</div>
 					</fieldset>
@@ -262,8 +267,7 @@
 													</colgroup>
 													<tr>
 													<td>
-														<select id="scriptName" class="required" name="scriptName">
-															<option value="">---</option>
+														<select id="scriptName" class="required span3" name="scriptName"> 
 														<#if scriptList?? && scriptList?size &gt; 0> 
 															<#list scriptList as scriptItem> 
 																<#if  test?? && scriptItem.path == test.scriptName && test.createdUser.userId == currentUser.userId> 
@@ -527,7 +531,41 @@ $(document).ready(function () {
 });
 
 function initTags() {
-	$("#tagString").select2({tags:[]});
+	$("#tagString").select2(
+		{	
+			tokenSeparators:[',', ' '],
+			tags:[""],
+			placeholder: '<@spring.message "perfTest.configuration.tagInput"/>',
+			initSelection : function (element, callback) {
+       			var data = [];
+      			$(element.val().split(",")).each(function () {
+       			    data.push({id: "q_" + this, text: this});
+      			});
+        		callback(data);
+    		},
+			query: function(query) {
+				console.log(query.term);
+				var data = {results:[]};
+				$.ajax({
+					url : "${req.getContextPath()}/perftest/tagSearch",
+					dataType : 'json',
+					type : 'POST',
+					data : {
+						'query' : query.term
+					},
+					success : function(res) {
+						for (var i = 0; i < res.length; i++) {
+							data.results.push({id:"q_" + res[i], text:res[i]});
+						} 
+						query.callback(data);
+					}
+				});
+			}
+		}
+	);
+	$("#scriptName").select2({
+		placeholder: '<@spring.message "perfTest.configuration.scriptInput"/>'
+	});
 }
 
 function initScheduleDate() {
@@ -653,6 +691,14 @@ function bindEvent() {
 		}
 		$("#testStatus").val("SAVED");
 		$("#scheduleInput").attr('name', '');
+		var k = $("#tagString").select2("data");
+		var tagString = [];
+		for (var i = 0; i < k.length; i++) {
+		    if (jQuery.inArray(k[i].text, tagString) == -1) {
+		    	tagString.push(k[i].text);
+		    }
+		}
+		$("#tagString").val(tagString.join(","));
 		return true;
 	});
 	

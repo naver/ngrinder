@@ -99,10 +99,10 @@ public class BaseEntity<M> implements Serializable {
 			for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
 				forError = descriptor;
 				// Only copy writable attributes
-				if (descriptor.getWriteMethod() == null) {
+				Method writeMethod = descriptor.getWriteMethod();
+				if (writeMethod == null) {
 					continue;
 				}
-				
 				// Only copy values values where the source values is not null
 				Method readMethod = descriptor.getReadMethod();
 				if (readMethod == null) {
@@ -113,9 +113,9 @@ public class BaseEntity<M> implements Serializable {
 				if (defaultValue == null) {
 					continue;
 				}
-
-				if (isNotBlankStringOrNotString(defaultValue)) {
-					descriptor.getWriteMethod().invoke(this, defaultValue);
+					
+				if (writeMethod.getAnnotation(ForceMergable.class) != null || isNotBlankStringOrNotString(defaultValue)) {
+					writeMethod.invoke(this, defaultValue);
 				} 
 			}
 			return (M) this;

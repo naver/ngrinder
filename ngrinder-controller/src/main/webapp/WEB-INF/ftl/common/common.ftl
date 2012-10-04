@@ -16,6 +16,7 @@
 </#if>  
 <#import "spring.ftl" as spring/>
 <script>
+   
 	//common validation function and options. 
 	$.validator.addMethod('positiveNumber',
 		    function (value) { 
@@ -25,6 +26,8 @@
 		    function (value) { 
 		        return Number(value) >= 0;
 		    }, '<@spring.message "common.form.validate.countNumber"/>');
+	$.extend(jQuery.validator.messages, {
+	    required: "<@spring.message "common.form.validate.empty"/>"});
 </script> 
 
 <input type="hidden" id="contextPath" value="${req.getContextPath()}">

@@ -38,14 +38,16 @@
 						</colspan>
 						<tr>
 							<td>
-								<input type="text" class="search-query" placeholder="Keywords" name ="query" id="query" value="${query!}">
-								<select id="tag" name="tag" style="width:100px">
+								<select id="tag" name="tag" style="width:150px"> 
+								<option value=""></option>
 								<#if availTags?has_content>
 								    <#list availTags as eachTag> 
-								  	   <option value="${eachTag.tagValue}" <#if tag?? && eachTag.tagValue == tag>selected </#if> >${eachTag.tagValue}</option>
+								  	   <option value="${eachTag}" <#if tag?? && eachTag == tag>selected </#if> >${eachTag}</option>
 							        </#list>
 							    </#if>
 								</select> 
+								<input type="text" class="search-query search-query-without-radios span2" placeholder="Keywords" name ="query" id="query" value="${query!}">
+								
 								
 								<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
 								<label class="checkbox" style="position:relative;">
@@ -125,7 +127,7 @@
 										</div>
 									</td>
 
-									<td class="ellipsis ${test.dateString}" data-content="${test.description?replace('\n', '<br/>')?html} &lt;p&gt;${test.testComment?replace('\n', '<br/>')?html}&lt;/p&gt;  &lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;"  
+									<td class="ellipsis ${test.dateString}" data-content="${test.description?replace('\n', '<br/>')?html} &lt;p&gt;${test.testComment?replace('\n', '<br/>')?html}&lt;/p&gt;  &lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;&lt;p&gt;<@spring.message "perfTest.table.tag"/> : ${test.tagString!""}&lt;/p&gt;"  
 											 data-original-title="${test.testName}">
 										<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
 									</td>
@@ -185,7 +187,12 @@
 </div>
 	<script>
 		$(document).ready(function() {
-			$("#tag").select2();
+			$("#tag").select2({
+				placeholder: '<@spring.message "perfTest.table.selectATag"/>'
+			});
+			$("#tag").change(function() {
+				$("#searchBtn").click();
+			});
 			$('td.ellipsis').hover(function () {
 	          $(this).popover('show');
 	      	});

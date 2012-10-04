@@ -181,3 +181,13 @@ img.status {
 .header-controls {
 	margin-left: 120px !important;
 }
+
+.search-query-without-radios {
+	-webkit-border-radius: 5px !important;
+	-moz-border-radius: 5px !important;
+	border-radius: 5px !important;
+}
+
+.left-float {
+ 	float: left !important;
+}

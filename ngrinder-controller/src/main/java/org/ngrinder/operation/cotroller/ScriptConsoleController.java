@@ -34,6 +34,7 @@ import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.ConsoleManager;
 import org.ngrinder.perftest.service.PerfTestService;
+import org.ngrinder.perftest.service.TagService;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.service.UserService;
 import org.python.util.PythonInterpreter;
@@ -83,6 +84,9 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	@Autowired
 	private PluginManager pluginManager;
 	
+	@Autowired
+	private TagService tagService;
+	
 	private PythonInterpreter interp;
 
 	/**
@@ -97,6 +101,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 		interp.set("consoleManager", this.consoleManager);
 		interp.set("userService", this.userService);
 		interp.set("perfTestService", this.perfTestService);
+		interp.set("tagService", this.tagService);
 		interp.set("fileEntryService", this.fileEntryService);
 		interp.set("config", this.config);
 		interp.set("pluginManager", this.pluginManager);

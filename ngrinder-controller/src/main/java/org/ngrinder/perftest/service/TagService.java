@@ -24,14 +24,18 @@ package org.ngrinder.perftest.service;
 
 import static org.ngrinder.perftest.repository.TagSpecification.emptyPredicate;
 import static org.ngrinder.perftest.repository.TagSpecification.hasPerfTest;
+import static org.ngrinder.perftest.repository.TagSpecification.isStartWith;
 import static org.ngrinder.perftest.repository.TagSpecification.lastModifiedOrCreatedBy;
 import static org.ngrinder.perftest.repository.TagSpecification.valueIn;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
@@ -57,7 +61,7 @@ public class TagService {
 
 	@Transactional
 	public SortedSet<Tag> addTags(User user, String[] tags) {
-		Specifications<Tag> spec = Specifications.where(valueIn(tags));
+		Specifications<Tag> spec = ArrayUtils.isEmpty(tags) ? Specifications.where(emptyPredicate()) :Specifications.where(valueIn(tags));
 
 		if (user.getRole() == Role.USER) {
 			spec = spec.and(lastModifiedOrCreatedBy(user));
@@ -65,7 +69,10 @@ public class TagService {
 		List<Tag> foundTags = tagRepository.findAll(spec);
 		SortedSet<Tag> allTags = new TreeSet<Tag>(foundTags);
 		for (String each : tags) {
-			Tag newTag = new Tag(StringUtils.trimToEmpty(each));
+			Tag newTag = new Tag(StringUtils.trimToEmpty(StringUtils.replace(each, ",", "")));
+			if (allTags.contains(newTag)) {
+				continue;
+			}
 			if (!foundTags.contains(newTag)) {
 				allTags.add(saveTag(user, newTag));
 			}
@@ -73,13 +80,24 @@ public class TagService {
 		return allTags;
 	}
 	
-	public List<Tag> getAllTags(User user) {
-		Specifications<Tag> spec = Specifications.where(emptyPredicate());
-		spec.and(hasPerfTest());
+	public List<Tag> getAllTags(User user, String query) {
+		Specifications<Tag> spec = Specifications.where(hasPerfTest());
 		if (user.getRole() == Role.USER) {
 			spec = spec.and(lastModifiedOrCreatedBy(user));
 		}
-		return tagRepository.findAll(spec);
+		if (StringUtils.isNotBlank(query)) {
+			spec = spec.and(isStartWith(StringUtils.trimToEmpty(query)));
+		}
+		return  tagRepository.findAll(spec);
+	}
+	
+	public List<String> getAllStrings(User user, String query) {
+		List<String> allString = new ArrayList<String>();
+		for (Tag each : getAllTags(user, query)) {
+			allString.add(each.getTagValue());
+		}
+		Collections.sort(allString);
+		return allString;
 	}
 	
 	public Tag saveTag(User user, Tag tag) {
@@ -87,4 +105,10 @@ public class TagService {
 		tag.setCreatedDate(new Date());
 		return tagRepository.save(tag);
 	}
+
+	public void removeTag(Tag tag) {
+		tagRepository.delete(tag);
+	}
+
+	
 }
