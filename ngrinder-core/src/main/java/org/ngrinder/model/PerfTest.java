@@ -197,7 +197,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Transient
 	private GrinderProperties grinderProperties;
 
-	@ManyToMany(fetch=FetchType.LAZY, cascade={CascadeType.PERSIST})
+	@ManyToMany(fetch=FetchType.LAZY, cascade={CascadeType.ALL})
 	@JoinTable(name = "PERF_TEST_TAG", joinColumns = @JoinColumn(name = "perf_test_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @Sort(comparator=Tag.class, type=SortType.COMPARATOR)
 	private SortedSet<Tag> tags;

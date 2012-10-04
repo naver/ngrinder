@@ -691,6 +691,11 @@ function bindEvent() {
 		}
 		$("#testStatus").val("SAVED");
 		$("#scheduleInput").attr('name', '');
+		$("#tagString").val(buildTagString())
+		return true;
+	});
+	
+	function buildTagString() {
 		var k = $("#tagString").select2("data");
 		var tagString = [];
 		for (var i = 0; i < k.length; i++) {
@@ -698,9 +703,8 @@ function bindEvent() {
 		    	tagString.push(k[i].text);
 		    }
 		}
-		$("#tagString").val(tagString.join(","));
-		return true;
-	});
+		return tagString.join(",");
+	}
 	
 	$("#runNowBtn").click(function() {
 		$("#scheduleModal").modal("hide");

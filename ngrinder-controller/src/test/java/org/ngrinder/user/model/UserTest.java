@@ -4,13 +4,16 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.repository.PerfTestRepository;
+import org.ngrinder.perftest.repository.TagRepository;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +24,23 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	public UserRepository userRepository;
 	@Autowired
+
 	private PerfTestRepository perfTestRepository;
+
+	@Autowired
+	private TagRepository tagRepository;
+
 	
 	@Before
 	public void before() {
+		List<PerfTest> findAll = perfTestRepository.findAll();
+		for (PerfTest perfTest : findAll) {
+			perfTest.getTags().clear();
+		}
+		perfTestRepository.save(findAll);
+		perfTestRepository.flush();
 		perfTestRepository.deleteAll();
+		tagRepository.deleteAll();
 		userRepository.deleteAll();
 	}
 
@@ -53,10 +68,9 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 
 		assertThat(userRepository.findAll(UserSpecification.emailLike("gmail")).size(), is(1));
 
-		assertThat(
-				userRepository.findAll(
+		assertThat(userRepository.findAll(
 						Specifications.where(UserSpecification.emailLike("@paran")).and(
-								UserSpecification.nameLike("MyName2"))).size(), is(1));
+										UserSpecification.nameLike("MyName2"))).size(), is(1));
 
 	}
 }

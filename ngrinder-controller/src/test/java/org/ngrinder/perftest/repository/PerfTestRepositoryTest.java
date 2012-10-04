@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
-	public PerfTestRepository repo;
+	public PerfTestRepository perfTestRepository;
 
 	@Autowired
 	private TagRepository tagRepository;
@@ -26,7 +26,13 @@ public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 	
 	@Before
 	public void before() {
-		repo.deleteAll();
+		List<PerfTest> findAll = perfTestRepository.findAll();
+		for (PerfTest perfTest : findAll) {
+			perfTest.getTags().clear();
+		}
+		perfTestRepository.save(findAll);
+		perfTestRepository.flush();
+		perfTestRepository.deleteAll();
 		tagRepository.deleteAll();
 	}
 
@@ -35,18 +41,18 @@ public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 		// Given 3 tests with different status
 		PerfTest entity = new PerfTest();
 		entity.setStatus(Status.FINISHED);
-		repo.save(entity);
+		perfTestRepository.save(entity);
 		PerfTest entity2 = new PerfTest();
 		entity2.setStatus(Status.CANCELED);
-		repo.save(entity2);
+		perfTestRepository.save(entity2);
 		PerfTest entity3 = new PerfTest();
 		entity3.setStatus(Status.READY);
-		repo.save(entity3);
+		perfTestRepository.save(entity3);
 
 		// Then all should be 3
-		assertThat(repo.findAll().size(), is(3));
+		assertThat(perfTestRepository.findAll().size(), is(3));
 		// Then finished and canceled perftest should 2
-		assertThat(repo.findAll(PerfTestSpecification.statusSetEqual(Status.FINISHED, Status.CANCELED)).size(), is(2));
+		assertThat(perfTestRepository.findAll(PerfTestSpecification.statusSetEqual(Status.FINISHED, Status.CANCELED)).size(), is(2));
 	}
 
 	@SuppressWarnings("serial")
@@ -60,8 +66,8 @@ public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 				add(new Tag("world"));
 			}
 		});
-		entity = repo.save(entity);
-		PerfTest findOne = repo.findOne(entity.getId());
+		entity = perfTestRepository.save(entity);
+		PerfTest findOne = perfTestRepository.findOne(entity.getId());
 		SortedSet<Tag> tags = findOne.getTags();
 		assertThat(tags.first(), is(new Tag("hello")));
 		assertThat(tags.last(), is(new Tag("world")));
@@ -83,7 +89,7 @@ public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 				add(world);
 			}
 		});
-		entity = repo.save(entity);
+		entity = perfTestRepository.save(entity);
 		SortedSet<Tag> tags2 = entity.getTags();
 		assertThat(tags2.first(), is(hello));
 		assertThat(tags2.last(), is(world));
@@ -96,16 +102,16 @@ public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 				add(world2);
 			}
 		});
-		repo.save(entity2);
+		perfTestRepository.save(entity2);
 		assertThat(tagRepository.findAll().size(), is(3));
-		assertThat(repo.findAll(PerfTestSpecification.hasTag("world")).size(), is(1));
-		assertThat(repo.findAll(PerfTestSpecification.hasTag("hello")).size(), is(2));
+		assertThat(perfTestRepository.findAll(PerfTestSpecification.hasTag("world")).size(), is(1));
+		assertThat(perfTestRepository.findAll(PerfTestSpecification.hasTag("hello")).size(), is(2));
 		
 	
 		List<Tag> findAll = tagRepository.findAll();
 	
 		for (Tag tag : findAll) {
-			System.out.println(tag.getId() + " - " + tag.getPerfTests());
+			
 		}
 		assertThat(findAll.size(), is(3));
 	}

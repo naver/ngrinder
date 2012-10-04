@@ -153,9 +153,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return found {@link PerfTest} list
 	 */
 	public Page<PerfTest> getPerfTestList(User user, String query, String tag, boolean isFinished, Pageable pageable) {
-
 		Specifications<PerfTest> spec = Specifications.where(emptyPredicate());
-
 		// User can see only his own test
 		if (user.getRole().equals(Role.USER)) {
 			spec = spec.and(lastModifiedOrCreatedBy(user));
@@ -172,6 +170,25 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		}
 		return perfTestRepository.findAll(spec, pageable);
 	}
+	
+	/**
+	 * Get {@link PerfTest} list on the user.
+	 * 
+	 * @param user
+	 *            user
+	 * @param query
+	 * 			  query string on test name or description
+	 * @param isFinished
+	 *            only find finished test
+	 * @param pageable
+	 *            paging info
+	 * @return found {@link PerfTest} list
+	 */
+	List<PerfTest> getPerfTestList(User user) {
+		Specifications<PerfTest> spec = Specifications.where(lastModifiedOrCreatedBy(user));
+		return perfTestRepository.findAll(spec);
+	}
+	
 
 	/*
 	 * (non-Javadoc)
@@ -268,7 +285,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			long revision = scriptEntry != null ? scriptEntry.getRevision() : -1;
 			perfTest.setScriptRevision(revision);
 		}
-		perfTest.setTags(tagSerivce.addTags(user, StringUtils.split(perfTest.getTagString(), ",")));
+		perfTest.setTags(tagSerivce.addTags(user, StringUtils.split(StringUtils.trimToEmpty(perfTest.getTagString()), ",")));
 		return savePerfTest(perfTest);
 	}
 
@@ -517,7 +534,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		perfTest.getTags().clear();
 		perfTestRepository.save(perfTest);
 		perfTestRepository.delete(perfTest);	
-		
+		deletePerfTestDirectory(perfTest);
+	}
+
+	private void deletePerfTestDirectory(PerfTest perfTest) {
 		File perfTestDirectory = config.getHome().getPerfTestDirectory(perfTest);
 		FileUtils.deleteQuietly(perfTestDirectory);
 	}
@@ -1068,9 +1088,11 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	@Override
 	@Transactional
-	public void addCommentOn(User user, Long testId, String testComment) {
+	public void addCommentOn(User user, Long testId, String testComment, String tagString) {
 		PerfTest perfTest = getPerfTest(user, testId);
 		perfTest.setTestComment(testComment);
+		perfTest.setTagString(tagString);
+		perfTest.setTags(tagSerivce.addTags(user, StringUtils.split(StringUtils.trimToEmpty(tagString), ",")));
 		perfTestRepository.save(perfTest);
 	}
 
@@ -1100,5 +1122,18 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public File getPerfTestDirectory(PerfTest perfTest) {
 		return config.getHome().getPerfTestDirectory(perfTest);
 	}
+
+	@Transactional
+	public List<PerfTest> deletePerfTests(User user) {
+		List<PerfTest> perfTestList = getPerfTestList(user);
+		for (PerfTest each : perfTestList) {
+			each.getTags().clear();
+		}
+		perfTestRepository.save(perfTestList);
+		perfTestRepository.flush();
+		perfTestRepository.delete(perfTestList);
+		return perfTestList;
+	}
+
 
 }

@@ -309,8 +309,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/leaveComment", method = RequestMethod.POST)
 	public @ResponseBody
-	String leaveComment(User user, @RequestParam("testComment") String testComment, @RequestParam("testId") Long testId) {
-		perfTestService.addCommentOn(user, testId, testComment);
+	String leaveComment(User user, @RequestParam("testComment") String testComment, @RequestParam(value="tagString", required=false) String tagString, @RequestParam("testId") Long testId) {
+		perfTestService.addCommentOn(user, testId, testComment, tagString);
 		return returnSuccess();
 	}
 

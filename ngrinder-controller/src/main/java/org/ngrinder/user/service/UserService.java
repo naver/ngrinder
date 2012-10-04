@@ -26,9 +26,14 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.infra.config.Config;
+import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
+import org.ngrinder.perftest.service.PerfTestService;
+import org.ngrinder.perftest.service.TagService;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.security.SecuredUser;
 import org.ngrinder.service.IUserService;
@@ -53,6 +58,9 @@ public class UserService implements IUserService {
 	private UserRepository userRepository;
 
 	@Autowired
+	private PerfTestService perfTestService;
+	
+	@Autowired
 	private FileEntryService scriptService;
 
 	@Autowired
@@ -64,6 +72,11 @@ public class UserService implements IUserService {
 	@Autowired
 	public UserContext userContext;
 
+	@Autowired
+	public Config config;
+	
+	@Autowired
+	public TagService tagService;
 	/**
 	 * get user by user id.
 	 * 
@@ -160,7 +173,7 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * Delete user.
+	 * Delete user. All corresponding perftest and directories are deleted as well.
 	 * 
 	 * @param userIds
 	 *            the user id string
@@ -168,9 +181,17 @@ public class UserService implements IUserService {
 	 */
 	@Transactional
 	public void deleteUsers(List<String> userIds) {
-		// TODO: delete user, how about the projects created by user
 		for (String userId : userIds) {
-			userRepository.deleteByUserId(userId);
+			User userById = getUserById(userId);
+			List<PerfTest> deletePerfTests = perfTestService.deletePerfTests(userById);
+			tagService.deleteTags(userById);
+			userRepository.delete(userById);
+			
+			for (PerfTest perfTest : deletePerfTests) {
+				FileUtils.deleteQuietly(config.getHome().getPerfTestDirectory(perfTest));
+			}
+			FileUtils.deleteQuietly(config.getHome().getScriptDirectory(userById));
+			FileUtils.deleteQuietly(config.getHome().getUserRepoDirectory(userById));
 		}
 	}
 

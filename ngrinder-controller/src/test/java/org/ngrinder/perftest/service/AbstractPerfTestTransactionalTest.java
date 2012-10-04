@@ -1,6 +1,7 @@
 package org.ngrinder.perftest.service;
 
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Before;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
@@ -40,6 +41,12 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 	protected PerfTestRepository perfTestRepository;
 
 	public void clearAllPerfTest() {
+		List<PerfTest> findAll = perfTestRepository.findAll();
+		for (PerfTest perfTest : findAll) {
+			perfTest.getTags().clear();
+		}
+		perfTestRepository.save(findAll);
+		perfTestRepository.flush();
 		perfTestRepository.deleteAll();
 	}
 

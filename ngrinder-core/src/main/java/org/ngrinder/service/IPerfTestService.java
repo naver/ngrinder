@@ -155,7 +155,9 @@ public interface IPerfTestService {
 	 *            perftest id
 	 * @param testComment
 	 *            comment
+	 * @param tagString tagString
 	 */
-	public abstract void addCommentOn(User user, Long testId, String testComment);
+	public abstract void addCommentOn(User user, Long testId, String testComment, String tagString);
+
 
 }

@@ -22,6 +22,7 @@
  */
 package org.ngrinder.perftest.service;
 
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.perftest.repository.TagSpecification.emptyPredicate;
 import static org.ngrinder.perftest.repository.TagSpecification.hasPerfTest;
 import static org.ngrinder.perftest.repository.TagSpecification.isStartWith;
@@ -61,11 +62,8 @@ public class TagService {
 
 	@Transactional
 	public SortedSet<Tag> addTags(User user, String[] tags) {
-		Specifications<Tag> spec = ArrayUtils.isEmpty(tags) ? Specifications.where(emptyPredicate()) :Specifications.where(valueIn(tags));
-
-		if (user.getRole() == Role.USER) {
-			spec = spec.and(lastModifiedOrCreatedBy(user));
-		}
+		Specifications<Tag> spec = ArrayUtils.isEmpty(checkNotNull(tags)) ? Specifications.where(emptyPredicate()) :Specifications.where(valueIn(tags));
+		spec = spec.and(lastModifiedOrCreatedBy(user));
 		List<Tag> foundTags = tagRepository.findAll(spec);
 		SortedSet<Tag> allTags = new TreeSet<Tag>(foundTags);
 		for (String each : tags) {
@@ -108,6 +106,11 @@ public class TagService {
 
 	public void removeTag(Tag tag) {
 		tagRepository.delete(tag);
+	}
+
+	public void deleteTags(User userById) {
+		Specifications<Tag> spec = Specifications.where(lastModifiedOrCreatedBy(userById));
+		tagRepository.delete(tagRepository.findAll(spec));
 	}
 
 	

@@ -52,6 +52,7 @@ public class UserController extends NGrinderBaseController {
 	@Autowired
 	private UserService userService;
 
+	
 	@PreAuthorize("hasAnyRole('A', 'S')")
 	@RequestMapping("/list")
 	public String getUserList(ModelMap model, @RequestParam(required = false) String roleName,

@@ -27,6 +27,7 @@ import static org.junit.Assert.assertThat;
 import static org.ngrinder.perftest.repository.TagSpecification.hasPerfTest;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
@@ -61,6 +62,12 @@ public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 	
 	@Before
 	public void beforeTag() {
+		List<PerfTest> findAll = perfTestRepository.findAll();
+		for (PerfTest perfTest : findAll) {
+			perfTest.getTags().clear();
+		}
+		perfTestRepository.save(findAll);
+		perfTestRepository.flush();
 		perfTestRepository.deleteAll();
 		tagRepository.deleteAll();
 	}
@@ -88,8 +95,8 @@ public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 		newPerfTest.setTags(tagService.addTags(getTestUser(), new String[]{"HELLO", "WORLD"}));
 		PerfTest createPerfTest = createPerfTest(newPerfTest);
 		PerfTest perfTestWithTag = perfTestService.getPerfTestWithTag(createPerfTest.getId());
-		System.out.println(perfTestWithTag.getTags());
-		assertThat(tagRepository.count(hasPerfTest()), is(2L));
+		assertThat(tagRepository.count(hasPerfTest()), is(1L));
+		assertThat(perfTestWithTag.getTags().size(), is(2));
 	}
 
 }

@@ -129,7 +129,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		assertThat(maxConcurrent, is(10));
 
 		PerfTest testScript = createPerfTest("new TestScript", Status.READY, new Date());
-		testService.addCommentOn(getTestUser(), testScript.getId(), "this is TestScript method");
+		testService.addCommentOn(getTestUser(), testScript.getId(), "this is TestScript method", "");
 		
 		PerfTest testing = testService.markProgressAndStatus(testScript, Status.TESTING, "It is testing from ready");
 		assertThat(testing.getStatus(), is(Status.TESTING));

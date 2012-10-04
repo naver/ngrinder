@@ -25,7 +25,7 @@ public class LogMonitorControllerTest extends AbstractNGrinderTransactionalTest{
 	public void testLogMonitorController() {
 		CoreLogger.LOGGER.info("Core Logger");
 		LOGGER.debug("TEST TEST");
-		sleep(2000);
+		sleep(3000);
 		assertThat(getLastMessage(), not(containsString("TEST TEST")));
 		assertThat(getLastMessage(), containsString("Core Logger"));
 
