@@ -74,7 +74,6 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		userIds.add(user.getUserId());
 		userService.deleteUsers(userIds);
 		User userById = userService.getUserById(user.getUserId());
-
 		Assert.assertNull(userById);
 	}
 
@@ -105,12 +104,12 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 	@SuppressWarnings("serial")
 	@Test
 	public void testUserDelete() {
-		final User user = createTestUser("testId1");
+		final User user = getTestUser();
 		File scriptDirectory = config.getHome().getScriptDirectory(user);
 		scriptDirectory.mkdirs();
 		PerfTest perfTest = new PerfTest();
 		perfTest.setTestName("Hello");
-		
+		perfTest.setTagString("Hello,World");
 		perfTest = perfTestService.savePerfTest(user, perfTest);
 		userService.deleteUsers(new ArrayList<String>() {{
 			add(user.getUserId());

@@ -151,7 +151,7 @@ public class PerfTestController extends NGrinderBaseController {
 			}
 		}
 		model.addAttribute("tag", tag);
-		model.addAttribute("availTags", tagService.getAllStrings(user, StringUtils.EMPTY));
+		model.addAttribute("availTags", tagService.getAllTagStrings(user, StringUtils.EMPTY));
 		model.addAttribute("testListPage", testList);
 		model.addAttribute("onlyFinished", onlyFinished);
 		model.addAttribute("query", query);
@@ -202,7 +202,7 @@ public class PerfTestController extends NGrinderBaseController {
 	public HttpEntity<String> searchTag(User user, @RequestParam(required=false) String query) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set("content-type", "application/json; charset=UTF-8");
-		List<String> allStrings = tagService.getAllStrings(user, query);
+		List<String> allStrings = tagService.getAllTagStrings(user, query);
 		if (StringUtils.isNotBlank(query)) {
 			allStrings.add(query);
 		}
@@ -276,8 +276,8 @@ public class PerfTestController extends NGrinderBaseController {
 						"test agent shoule be within %s", agentManager.getMaxAgentSizePerConsole());
 		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
 						"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());
-		checkArgument(0 != test.getProcesses(), "test process should not be 0");
-		checkArgument(0 != test.getThreads(), "test thread should not be 0");
+		checkArgument(test.getProcesses() != null && 0 != test.getProcesses(), "test process should not be 0");
+		checkArgument(test.getThreads() != null && 0 != test.getThreads(), "test thread should not be 0");
 		// Point to the head revision
 		test.setScriptRevision(-1L);
 		// deal with different time zone between user Local and Server

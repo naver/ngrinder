@@ -33,7 +33,9 @@ public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 		perfTestRepository.save(findAll);
 		perfTestRepository.flush();
 		perfTestRepository.deleteAll();
+		perfTestRepository.flush();
 		tagRepository.deleteAll();
+		tagRepository.flush();
 	}
 
 	@Test
@@ -106,13 +108,6 @@ public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 		assertThat(tagRepository.findAll().size(), is(3));
 		assertThat(perfTestRepository.findAll(PerfTestSpecification.hasTag("world")).size(), is(1));
 		assertThat(perfTestRepository.findAll(PerfTestSpecification.hasTag("hello")).size(), is(2));
-		
-	
-		List<Tag> findAll = tagRepository.findAll();
-	
-		for (Tag tag : findAll) {
-			
-		}
-		assertThat(findAll.size(), is(3));
+		assertThat(tagRepository.findAll().size(), is(3));
 	}
 }

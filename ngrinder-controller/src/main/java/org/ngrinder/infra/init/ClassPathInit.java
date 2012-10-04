@@ -37,7 +37,7 @@ public class ClassPathInit {
 			final File f = new File(pathEntry).getParentFile();
 			final File parentFile = f != null ? f : new File(".");
 
-			String[] exts = new String[]{".jar"};
+			String[] exts = new String[]{"jar"};
 			final Collection<File> childrenFileList = FileUtils.listFiles(parentFile, exts, false);
 			for (File candidate : childrenFileList) {
 				final String name = candidate.getName();

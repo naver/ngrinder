@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.ui.ModelMap;
 
-public class PerfTestCanclationTest extends AbstractPerfTestTransactionalTest implements NGrinderConstants {
+public class PerfTestCancellationTest extends AbstractPerfTestTransactionalTest implements NGrinderConstants {
 
 	@Autowired
 	private MockPerfTestRunnableForCanclation perfTestRunnable;
@@ -65,6 +65,7 @@ public class PerfTestCanclationTest extends AbstractPerfTestTransactionalTest im
 		perfTest = createPerfTest("test1", Status.READY, null);
 		List<PerfTest> allPerfTest = perfTestService.getAllPerfTest();
 		assertThat(allPerfTest.size(), is(1));
+		assertThat(consoleManager.getConsoleInUse().size(), is(0));
 	}
 
 
@@ -88,10 +89,11 @@ public class PerfTestCanclationTest extends AbstractPerfTestTransactionalTest im
 				perfTestController.stopPerfTests(getTestUser(), new ModelMap(), String.valueOf(perfTest.getId()));
 			}
 		}, 1);
-		perfTestRunnable.startTest();
+		perfTestRunnable.testDrive();
 		List<PerfTest> allPerfTest = perfTestService.getAllPerfTest();
 		// Then
 		assertThat(allPerfTest.get(0).getStatus(), is(Status.CANCELED));
+		assertThat(consoleManager.getConsoleInUse().size(), is(0));
 	}
 	
 	@Test

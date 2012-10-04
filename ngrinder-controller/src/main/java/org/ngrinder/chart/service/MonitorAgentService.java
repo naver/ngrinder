@@ -75,4 +75,11 @@ public class MonitorAgentService {
 		}
 	}
 
+	/**
+	 * Only for UnitTest.
+	 */
+	void removeAllAgent() {
+		MonitorExecuteManager.getInstance().removeAllAgent();
+	}
+
 }

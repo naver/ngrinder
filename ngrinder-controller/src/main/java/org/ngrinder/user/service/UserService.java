@@ -182,16 +182,14 @@ public class UserService implements IUserService {
 	@Transactional
 	public void deleteUsers(List<String> userIds) {
 		for (String userId : userIds) {
-			User userById = getUserById(userId);
-			List<PerfTest> deletePerfTests = perfTestService.deletePerfTests(userById);
-			tagService.deleteTags(userById);
-			userRepository.delete(userById);
-			
+			User user = getUserById(userId);
+			List<PerfTest> deletePerfTests = perfTestService.deleteAllPerfTests(user);
+			userRepository.delete(user);			
 			for (PerfTest perfTest : deletePerfTests) {
 				FileUtils.deleteQuietly(config.getHome().getPerfTestDirectory(perfTest));
 			}
-			FileUtils.deleteQuietly(config.getHome().getScriptDirectory(userById));
-			FileUtils.deleteQuietly(config.getHome().getUserRepoDirectory(userById));
+			FileUtils.deleteQuietly(config.getHome().getScriptDirectory(user));
+			FileUtils.deleteQuietly(config.getHome().getUserRepoDirectory(user));
 		}
 	}
 

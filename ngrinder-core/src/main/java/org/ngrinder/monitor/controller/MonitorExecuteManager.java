@@ -25,6 +25,7 @@ package org.ngrinder.monitor.controller;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -78,6 +79,18 @@ public class MonitorExecuteManager {
 			worker.increaseCounter();
 			LOG.debug("Monitoring worker for {} already exist.", agent.getIp());
 		}
+	}
+	
+	/**
+	 * remove a monitoring job if there is only one test monitoring on this server.
+	 * @param agent
+	 */
+	public void removeAllAgent() {
+		for (Entry<String, MonitorExecuteWorker> each: monitorWorkerMap.entrySet()) {
+			schedulerMap.get(each.getKey()).shutdown();
+			each.getValue().close();
+		}
+		monitorWorkerMap.clear();
 	}
 	
 	/**

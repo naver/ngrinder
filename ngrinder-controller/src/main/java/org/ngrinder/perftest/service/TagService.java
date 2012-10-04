@@ -23,7 +23,6 @@
 package org.ngrinder.perftest.service;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
-import static org.ngrinder.perftest.repository.TagSpecification.emptyPredicate;
 import static org.ngrinder.perftest.repository.TagSpecification.hasPerfTest;
 import static org.ngrinder.perftest.repository.TagSpecification.isStartWith;
 import static org.ngrinder.perftest.repository.TagSpecification.lastModifiedOrCreatedBy;
@@ -33,13 +32,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.PerfTest;
-import org.ngrinder.model.Role;
 import org.ngrinder.model.Tag;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.repository.TagRepository;
@@ -57,13 +56,29 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class TagService {
+
 	@Autowired
 	private TagRepository tagRepository;
 
+	@Autowired
+	private PerfTestService perfTestService;
+
+	/**
+	 * Add tags.
+	 * 
+	 * @param user
+	 *            user
+	 * @param tags
+	 *            tag string list
+	 * @return inserted tags
+	 */
 	@Transactional
 	public SortedSet<Tag> addTags(User user, String[] tags) {
-		Specifications<Tag> spec = ArrayUtils.isEmpty(checkNotNull(tags)) ? Specifications.where(emptyPredicate()) :Specifications.where(valueIn(tags));
-		spec = spec.and(lastModifiedOrCreatedBy(user));
+		if (ArrayUtils.isEmpty(checkNotNull(tags))) {
+			return new TreeSet<Tag>();
+		}
+
+		Specifications<Tag> spec = Specifications.where(lastModifiedOrCreatedBy(user)).and(valueIn(tags));
 		List<Tag> foundTags = tagRepository.findAll(spec);
 		SortedSet<Tag> allTags = new TreeSet<Tag>(foundTags);
 		for (String each : tags) {
@@ -77,19 +92,35 @@ public class TagService {
 		}
 		return allTags;
 	}
-	
-	public List<Tag> getAllTags(User user, String query) {
+
+	/**
+	 * Get all tags which belongs to given user and start with given string.
+	 * 
+	 * @param user
+	 *            user.
+	 * @param startWith
+	 *            string
+	 * @return found tags
+	 */
+	public List<Tag> getAllTags(User user, String startWith) {
 		Specifications<Tag> spec = Specifications.where(hasPerfTest());
-		if (user.getRole() == Role.USER) {
-			spec = spec.and(lastModifiedOrCreatedBy(user));
+		spec = spec.and(lastModifiedOrCreatedBy(user));
+		if (StringUtils.isNotBlank(startWith)) {
+			spec = spec.and(isStartWith(StringUtils.trimToEmpty(startWith)));
 		}
-		if (StringUtils.isNotBlank(query)) {
-			spec = spec.and(isStartWith(StringUtils.trimToEmpty(query)));
-		}
-		return  tagRepository.findAll(spec);
+		return tagRepository.findAll(spec);
 	}
-	
-	public List<String> getAllStrings(User user, String query) {
+
+	/**
+	 * Get all tags which belongs to given user and start with given string.
+	 * 
+	 * @param user
+	 *            user.
+	 * @param startWith
+	 *            string
+	 * @return found tag string lists
+	 */
+	public List<String> getAllTagStrings(User user, String query) {
 		List<String> allString = new ArrayList<String>();
 		for (Tag each : getAllTags(user, query)) {
 			allString.add(each.getTagValue());
@@ -97,21 +128,58 @@ public class TagService {
 		Collections.sort(allString);
 		return allString;
 	}
-	
+
+	/**
+	 * Save Tag. Because this method can be called in {@link TagService}
+	 * internally, so created user / data should be set directly.
+	 * 
+	 * @param user
+	 *            user
+	 * @param tag
+	 *            tag
+	 * @return saved {@link Tag} instance
+	 */
 	public Tag saveTag(User user, Tag tag) {
-		tag.setCreatedUser(user);
-		tag.setCreatedDate(new Date());
+		Date createdDate = new Date();
+		if (tag.getCreatedUser() == null) {
+			tag.setCreatedUser(user);
+			tag.setCreatedDate(createdDate);
+		}
+		tag.setLastModifiedUser(user);
+		tag.setLastModifiedDate(createdDate);
 		return tagRepository.save(tag);
 	}
 
-	public void removeTag(Tag tag) {
+	/**
+	 * Delete a tag.
+	 * 
+	 * @param user
+	 *            user
+	 * @param tag
+	 *            tag
+	 */
+	@Transactional
+	public void deleteTag(User user, Tag tag) {
+		perfTestService.removeTag(tag.getPerfTests(), tag);
 		tagRepository.delete(tag);
 	}
 
-	public void deleteTags(User userById) {
-		Specifications<Tag> spec = Specifications.where(lastModifiedOrCreatedBy(userById));
-		tagRepository.delete(tagRepository.findAll(spec));
+	/**
+	 * Delete all tags belonging to given user.
+	 * 
+	 * @param user
+	 *            user
+	 */
+	@Transactional
+	public void deleteTags(User user) {
+		Specifications<Tag> spec = Specifications.where(lastModifiedOrCreatedBy(user));
+		List<Tag> userTags = tagRepository.findAll(spec);
+		for (Tag each : userTags) {
+			Set<PerfTest> perfTests = each.getPerfTests();
+			if (perfTests != null){
+				perfTestService.removeTag(perfTests, each);
+			}
+		}
+		tagRepository.delete(userTags);
 	}
-
-	
 }

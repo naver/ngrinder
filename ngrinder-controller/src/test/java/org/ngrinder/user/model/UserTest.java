@@ -38,10 +38,12 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 			perfTest.getTags().clear();
 		}
 		perfTestRepository.save(findAll);
-		perfTestRepository.flush();
 		perfTestRepository.deleteAll();
+		perfTestRepository.flush();
 		tagRepository.deleteAll();
+		tagRepository.flush();
 		userRepository.deleteAll();
+		userRepository.flush();
 	}
 
 	@Test
@@ -53,9 +55,8 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 		user.setCreatedDate(new Date());
 		user.setUserId("hello");
 		user.setRole(Role.USER);
-		userRepository.save(user);
+		user = userRepository.save(user);
 		User user2 = new User();
-
 		user2.setUserId("hello2");
 		user2.setUserName("MyName2");
 		user2.setEmail("junoyoon@paran.com");

@@ -50,6 +50,7 @@ import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.service.MonitorAgentService;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.extension.OnTestStartRunnable;
+import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.PerfTest;
@@ -59,7 +60,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 /**
  * {@link PerfTest} test running run scheduler.
@@ -71,7 +71,7 @@ import org.springframework.stereotype.Component;
  * @author JunHo Yoon
  * @since 3.0
  */
-@Component
+@RuntimeOnlyComponent
 public class PerfTestRunnable implements NGrinderConstants {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PerfTestRunnable.class);

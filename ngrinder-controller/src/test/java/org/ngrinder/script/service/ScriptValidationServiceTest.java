@@ -19,6 +19,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.infra.init.ClassPathInit;
 import org.ngrinder.infra.init.DBInit;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.repository.MockFileEntityRepsotory;
@@ -49,6 +50,8 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 	@Autowired
 	public DBInit dbinit;
 
+	@Autowired
+	public ClassPathInit classPathInit;
 	/**
 	 * Locate dumped user1 repo into tempdir
 	 * 
@@ -62,6 +65,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 		FileUtils.deleteQuietly(file);
 		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), file);
 		repo.setUserRepository(new File(file, getTestUser().getUserId()));
+		
 	}
 
 	@Test

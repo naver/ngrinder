@@ -76,16 +76,21 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	public void testGetPerfTestDetail() {
 		ModelMap model = new ModelMap();
 		controller.getPerfTestDetail(getTestUser(), null, model);
-	
+
 		model.clear();
 		controller.getPerfTestDetail(getTestUser(), 0L, model);
-		PerfTest testInDB = (PerfTest) model.get(PARAM_TEST);
-		assertThat(testInDB, nullValue());
-
+		
+		assertThat(model.get(PARAM_TEST), nullValue());
 		model.clear();
 		long invalidId = 1234567890;
 		controller.getPerfTestDetail(getTestUser(), invalidId, model);
-		assertTrue(true);
+		assertThat(model.get(PARAM_TEST), nullValue());
+
+
+		PerfTest createPerfTest = createPerfTest("hello", Status.READY, new Date());
+		model.clear();
+		controller.getPerfTestDetail(getTestUser(), createPerfTest.getId(), model);
+		assertThat(model.get(PARAM_TEST), notNullValue());
 
 	}
 
@@ -171,7 +176,9 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		newTest.setIgnoreSampleCount(test.getIgnoreSampleCount());
 		newTest.setTargetHosts(test.getTargetHosts());
 		newTest.setScriptName(test.getScriptName());
-
+		newTest.setProcesses(1);
+		newTest.setThreads(1);
+		
 		ModelMap model = new ModelMap();
 		controller.savePerfTest(getTestUser(), model, newTest, false);
 		controller.getPerfTestDetail(getTestUser(), newTest.getId(), model);

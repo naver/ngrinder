@@ -35,6 +35,7 @@ import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
@@ -58,6 +59,10 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 	@Autowired
 	PerfTestRepository perfTestRepository;
 
+	@Before
+	public void clearPerfTest() {
+		clearAllPerfTest();
+	}
 	@Test
 	public void testGetTestListAll() {
 

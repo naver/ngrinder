@@ -10,6 +10,7 @@ import org.ngrinder.infra.config.MockAgentConfigInControllerSide;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
+import org.ngrinder.perftest.repository.TagRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,14 +41,19 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 	@Autowired
 	protected PerfTestRepository perfTestRepository;
 
+	@Autowired
+	protected TagRepository tagRepository;
+	
 	public void clearAllPerfTest() {
 		List<PerfTest> findAll = perfTestRepository.findAll();
 		for (PerfTest perfTest : findAll) {
 			perfTest.getTags().clear();
 		}
 		perfTestRepository.save(findAll);
-		perfTestRepository.flush();
 		perfTestRepository.deleteAll();
+		perfTestRepository.flush();
+		tagRepository.deleteAll();
+		tagRepository.flush();
 	}
 
 	public PerfTest newPerfTest(String testName, Status status, Date scheduledTime) {
