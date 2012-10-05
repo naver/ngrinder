@@ -23,6 +23,12 @@ public class LogMonitorControllerTest extends AbstractNGrinderTransactionalTest{
 	
 	@Test
 	public void testLogMonitorController() {
+		logMonitorController.enableVerbose(false);
+		StringBuffer buffer = new StringBuffer();
+		for (int i = 0; i < 100; i++) {
+			buffer.append("====================================");
+		}
+		CoreLogger.LOGGER.info(buffer.toString());
 		CoreLogger.LOGGER.info("Core Logger");
 		LOGGER.debug("TEST TEST");
 		sleep(3000);
