@@ -6,7 +6,13 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
 
-
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+		  <property name="locations">  
+	          <list>  
+	                <value>classpath:internal.properties</value>
+	          </list>
+		   </property>  
+	</bean>
 	<!-- Configures support for @Controllers -->
 	<mvc:annotation-driven>
 		<mvc:argument-resolvers>
@@ -30,8 +36,6 @@
 		</property>
 	</bean>
 
-
-
 	<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
 		<property name="templateLoaderPath" value="/WEB-INF/ftl/" />
 		<property name="freemarkerSettings">
@@ -47,9 +51,14 @@
 		<property name="prefix" value="/" />
 		<property name="suffix" value=".ftl" />
 		<property name="requestContextAttribute" value="req" />
+		<property name="attributes">
+			<props>
+				<prop key="nGrinderVersion">${ngrinder.version}</prop>
+			</props> 
+		</property>
 		<property name="contentType" value="text/html;charset=UTF-8" />
 		<property name="exposeSpringMacroHelpers" value="true" />
-		<property name="cache" value="no" />
+		<property name="cache" value="yes" /> 
 	</bean>
 
 

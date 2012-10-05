@@ -22,7 +22,7 @@
 							<tr>
 								<td>
 									<!--<legend>introduction</legend>-->
-									<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
+									<input type="text" class="search-query search-query-without-radios" placeholder="Keywords" id="searchText" value="${keywords!}">
 									<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
 								</td>
 								<td>

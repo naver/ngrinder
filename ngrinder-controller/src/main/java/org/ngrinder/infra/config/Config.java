@@ -118,9 +118,7 @@ public class Config {
 		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
 		context.putProperty("LOG_DIRECTORY", getHome().getGloablLogFile().getAbsolutePath());
 		try {
-			System.out.println(verbose);
-			configurator.doConfigure(new ClassPathResource("/logback-ngrinder.xml").getFile());
-			
+			configurator.doConfigure(new ClassPathResource("/logback/logback-ngrinder.xml").getFile());			
 		} catch (JoranException e) {
 			CoreLogger.LOGGER.error(e.getMessage(), e);
 		} catch (IOException e) {
@@ -269,7 +267,7 @@ public class Config {
 	 * @return nGrinder version number.
 	 */
 	public String getVesion() {
-		return getInternalProperties().getProperty("version", "UNKNOWN");
+		return getInternalProperties().getProperty("ngrinder.version", "UNKNOWN");
 	}
 
 	/**
