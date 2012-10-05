@@ -22,6 +22,8 @@
  */
 package org.ngrinder.common.controller;
 
+import static org.ngrinder.common.util.NoOp.noOp;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -88,6 +90,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 			return getCurrentUser();
 		} catch (AuthenticationCredentialsNotFoundException e) {
 			// Fall through
+			noOp();
 		}
 		return new User();
 	}

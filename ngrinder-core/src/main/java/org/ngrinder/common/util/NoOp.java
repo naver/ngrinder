@@ -20,41 +20,17 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.user.service;
-
-import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
-import org.ngrinder.model.User;
-import org.ngrinder.security.SecuredUser;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+package org.ngrinder.common.util;
 
 /**
- * User Context which return current user.
- * 
- * @author Tobi
+ * No operation class to remove checkstyle's fall-through try/catch block.
  * @author JunHo Yoon
  * @since 3.0
  */
-@RuntimeOnlyComponent
-public class UserContext {
-
-
+public class NoOp {
 	/**
-	 * Get current user object from context.
-	 * 
-	 * @return current user;
+	 * No operation.
 	 */
-	public User getCurrentUser() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth == null) {
-			throw new AuthenticationCredentialsNotFoundException("No athenticated");
-		}
-		Object obj = auth.getPrincipal();
-		if (!(obj instanceof SecuredUser)) {
-			throw new AuthenticationCredentialsNotFoundException("Invalid athentication");
-		}
-		SecuredUser securedUser = (SecuredUser) obj;
-		return securedUser.getUser();
+	public static void noOp() {
 	}
 }

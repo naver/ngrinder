@@ -138,8 +138,8 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return redirect:/script/list/${path}
 	 */
 	@RequestMapping(value = "/create/**", params = "type=folder", method = RequestMethod.POST)
-	public String addFolder(User user, @RemainedPath String path,
-					@RequestParam("folderName") String folderName, ModelMap model) { // "fileName"
+	public String addFolder(User user, @RemainedPath String path, @RequestParam("folderName") String folderName,
+					ModelMap model) { // "fileName"
 		try {
 			fileEntryService.addFolder(user, path, StringUtils.trimToEmpty(folderName));
 		} catch (Exception e) {
@@ -189,13 +189,15 @@ public class FileEntryController extends NGrinderBaseController {
 	 *            user
 	 * @param path
 	 *            user
+	 * @param revision
+	 *            revision. -1 if HEAD
 	 * @param model
 	 *            model
 	 * @return script/scriptEditor
 	 */
 	@RequestMapping("/detail/**")
 	public String getDetail(User user, @RemainedPath String path,
-					@RequestParam(value = "r", required = false) Long revision, ModelMap model) { // "fileName"
+					@RequestParam(value = "r", required = false) Long revision, ModelMap model) {
 		FileEntry script = fileEntryService.getFileEntry(user, path, revision);
 		if (script == null || !script.getFileType().isEditable()) {
 			LOG.error("Error while getting file detail on {}. the file does not exist or not editable", path);
@@ -210,18 +212,17 @@ public class FileEntryController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get the details of given path.
+	 * Download file entry of given path.
 	 * 
 	 * @param user
 	 *            user
 	 * @param path
 	 *            user
-	 * @param model
-	 *            model
-	 * @return script/scriptEditor
+	 * @param response
+	 *            response
 	 */
 	@RequestMapping("/download/**")
-	public void download(User user, @RemainedPath String path, HttpServletResponse response) { // "fileName"
+	public void download(User user, @RemainedPath String path, HttpServletResponse response) {
 		FileEntry fileEntry = fileEntryService.getFileEntry(user, path);
 		if (fileEntry == null) {
 			LOG.error("{} requested to download not existing file entity {}", user.getUserId(), path);
@@ -232,8 +233,7 @@ public class FileEntryController extends NGrinderBaseController {
 			response.addHeader(
 							"Content-Disposition",
 							"attachment;filename="
-											+ java.net.URLEncoder.encode(
-															FilenameUtils.getName(fileEntry.getPath()),
+											+ java.net.URLEncoder.encode(FilenameUtils.getName(fileEntry.getPath()),
 															"utf8"));
 		} catch (UnsupportedEncodingException e1) {
 			LOG.error(e1.getMessage(), e1);
@@ -271,8 +271,8 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return script/scriptList
 	 */
 	@RequestMapping(value = "/search/**")
-	public String searchFileEntity(User user,
-					@RequestParam(required = true, value = "query") final String query, ModelMap model) {
+	public String searchFileEntity(User user, @RequestParam(required = true, value = "query") final String query,
+					ModelMap model) {
 		Collection<FileEntry> searchResult = Collections2.filter(fileEntryService.getAllFileEntries(user),
 						new Predicate<FileEntry>() {
 							@Override
@@ -327,8 +327,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return script/scriptList
 	 */
 	@RequestMapping(value = "/upload/**", method = RequestMethod.POST)
-	public String uploadFiles(User user, @RemainedPath String path,
-					@RequestParam("description") String description,
+	public String uploadFiles(User user, @RemainedPath String path, @RequestParam("description") String description,
 					@RequestParam("uploadFile") MultipartFile file, ModelMap model) {
 		try {
 			FileEntry fileEntry = new FileEntry();
@@ -338,8 +337,7 @@ public class FileEntryController extends NGrinderBaseController {
 				fileEntry.setContentBytes(file.getBytes());
 			}
 			fileEntry.setDescription(description);
-			fileEntry.setPath(FilenameUtils.separatorsToUnix(FilenameUtils.concat(path,
-							file.getOriginalFilename())));
+			fileEntry.setPath(FilenameUtils.separatorsToUnix(FilenameUtils.concat(path, file.getOriginalFilename())));
 			fileEntryService.save(user, fileEntry);
 			return "redirect:/script/list/" + path;
 		} catch (IOException e) {
@@ -363,8 +361,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/delete/**", method = RequestMethod.POST)
 	public @ResponseBody
-	String delete(User user, @RemainedPath String path, @RequestParam("filesString") String filesString,
-					ModelMap model) {
+	String delete(User user, @RemainedPath String path, @RequestParam("filesString") String filesString, ModelMap model) {
 		String[] files = filesString.split(",");
 		fileEntryService.delete(user, path, files);
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1);

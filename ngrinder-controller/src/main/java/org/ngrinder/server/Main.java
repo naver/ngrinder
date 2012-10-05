@@ -10,36 +10,49 @@ import org.eclipse.jetty.util.URIUtil;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.servlet.DispatcherServlet;
 
-public class Main {
+/**
+ * nGrinder controller startup class with embedded war (Jetty).
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
+public final class Main {
 
-	public Main() {
+	private static final int DEFAULT_PORT = 80;
+	private static final int DISPATCHER_SERVLET_INIT_ORDER = 3;
+	private static final int MAX_FORM_CONTENT_SIZE = 512 * 1024 * 1024;
+
+	/**
+	 * Constructor.
+	 */
+	private Main() {
 	}
 
-	public void configure(Server server) {
+	private void configure(Server server) {
 		setConnector(server);
 		setHandler(server);
 	}
 
-	public void setConnector(Server server) {
+	private void setConnector(Server server) {
 		SelectChannelConnector connector = new SelectChannelConnector();
-		connector.setPort(8080);
+		connector.setPort(DEFAULT_PORT);
 		server.addConnector(connector);
 	}
 
-	public void setHandler(Server server) {
+	private void setHandler(Server server) {
 		ServletContextHandler handler = new ServletContextHandler(ServletContextHandler.SESSIONS) {
 			@Override
 			protected boolean isProtectedTarget(String target) {
 				while (target.startsWith("//")) {
 					target = URIUtil.compactPath(target);
 				}
-				
+
 				return StringUtil.startsWithIgnoreCase(target, "/web-inf")
-						|| StringUtil.startsWithIgnoreCase(target, "/meta-inf");
+								|| StringUtil.startsWithIgnoreCase(target, "/meta-inf");
 			}
 		};
 		handler.setContextPath("/");
-		handler.setMaxFormContentSize(512 * 1024 * 1024);
+		handler.setMaxFormContentSize(MAX_FORM_CONTENT_SIZE);
 		addContextLoaderListener(handler);
 		addDispatcherServlet(handler);
 
@@ -47,19 +60,19 @@ public class Main {
 		server.setHandler(handler);
 	}
 
-	public void addContextLoaderListener(ServletContextHandler handler) {
+	private void addContextLoaderListener(ServletContextHandler handler) {
 		handler.addEventListener(new ContextLoaderListener());
 		handler.setInitParameter("contextConfigLocation", "classpath:applicationContext.xml");
 	}
 
-	public void addDispatcherServlet(ServletContextHandler handler) {
+	private void addDispatcherServlet(ServletContextHandler handler) {
 		ServletHolder holder = new ServletHolder(new DispatcherServlet());
 		holder.setInitParameter("contextConfigLocation", "classpath:servlet-context.xml");
-		holder.setInitOrder(3);
+		holder.setInitOrder(DISPATCHER_SERVLET_INIT_ORDER);
 		handler.addServlet(holder, "/");
 	}
 
-	public void addDefaultServlet(ServletContextHandler handler) {
+	private void addDefaultServlet(ServletContextHandler handler) {
 		ServletHolder holder = new ServletHolder(new DefaultServlet());
 		// holder.setInitParameter("resourceBase", "");
 		holder.setInitParameter("dirAllowed", "true");
@@ -70,6 +83,12 @@ public class Main {
 		handler.addServlet(holder, "*.ico");
 	}
 
+	/**
+	 * Main method for nGrinder startup.
+	 * 
+	 * @param args
+	 *            arguments
+	 */
 	public static void main(String[] args) {
 		try {
 			Server server = new Server();

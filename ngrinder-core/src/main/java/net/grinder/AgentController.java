@@ -22,6 +22,7 @@
  */
 package net.grinder;
 
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
@@ -149,7 +150,8 @@ public class AgentController implements Agent {
 	 * @param logCount
 	 * 
 	 */
-	public void run(GrinderProperties grinderProperties, long logCount) throws GrinderException {
+	public void run(GrinderProperties grinderProperties, long logCount) 
+					throws GrinderException {
 		StartGrinderMessage startMessage = null;
 		ConsoleCommunication consoleCommunication = null;
 		m_fanOutStreamSender = new FanOutStreamSender(GrinderConstants.AGENT_CONTROLLER_FANOUT_STREAM_THREAD_COUNT);
@@ -160,9 +162,7 @@ public class AgentController implements Agent {
 		m_grinderProperties = grinderProperties;
 		try {
 			while (true) {
-				// GrinderProperties properties;
 				do {
-					// properties = grinderProperties;
 					m_agentIdentity.setName(agentConfig.getProperty(AgentConfig.AGENT_HOSTID, getHostName()));
 					m_agentIdentity.setRegion(agentConfig.getProperty(AgentConfig.AGENT_REGION, ""));
 					final Connector connector = m_connectorFactory.create(m_grinderProperties);
@@ -194,13 +194,13 @@ public class AgentController implements Agent {
 							break; // Another message, check at end of outer
 									// while loop.
 						}
-
 					}
 
 					if (startMessage != null) {
 						m_agentIdentity.setNumber(startMessage.getAgentNumber());
 					}
-				} while (checkNotNull(startMessage, "start method should be exist in messaging loop").getProperties() == null);
+				} while (checkNotNull(startMessage, "start method should be exist in messaging loop")
+								.getProperties() == null);
 
 				// Here the agent run code goes..
 				if (startMessage != null) {
@@ -211,10 +211,6 @@ public class AgentController implements Agent {
 					agent.run(startMessage.getProperties());
 
 					final ConsoleCommunication conCom = consoleCommunication;
-					// It's normal shutdown..
-					// FIXME : Is it safe to add listener here? no possibility
-					// for duplicated
-					// listener?
 					agent.resetListeners();
 					agent.addListener(new AgentShutDownListener() {
 						@Override
@@ -233,7 +229,6 @@ public class AgentController implements Agent {
 					// We've got here naturally, without a console signal.
 					LOGGER.info("agent started. waiting for agent controller signal");
 					m_agentControllerServerListener.waitForMessage();
-
 				}
 
 				if (m_agentControllerServerListener.received(AgentControllerServerListener.START)) {
@@ -426,6 +421,7 @@ public class AgentController implements Agent {
 			} catch (CommunicationException e) {
 				// Fall through
 				// Ignore - peer has probably shut down.
+				noOp();
 			} finally {
 				m_messagePump.shutdown();
 			}

@@ -22,6 +22,8 @@
  */
 package net.grinder;
 
+import static org.ngrinder.common.util.NoOp.noOp;
+
 import java.util.Timer;
 
 import net.grinder.console.common.ErrorQueue;
@@ -101,6 +103,7 @@ public class AgentControllerServer {
 		}
 		// CHECKSTYLE:OFF
 		while (communication.processOneMessage()) {
+			noOp();
 			// Fall through
 			// Process until communication is shut down.
 		}
@@ -117,6 +120,7 @@ public class AgentControllerServer {
 			m_timer.cancel();
 		} catch (Exception e) {
 			// Fall through
+			noOp();
 		}
 		if (m_container.getLifecycleState().isStarted()) {
 			m_container.stop();

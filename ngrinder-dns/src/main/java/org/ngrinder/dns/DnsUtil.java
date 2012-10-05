@@ -29,7 +29,7 @@ package org.ngrinder.dns;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class DnsUtil {
+public abstract class DnsUtil {
 	// CHECKSTYLE:OFF
 	public static final int INADDRSZ = 4;
 

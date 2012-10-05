@@ -23,6 +23,7 @@
 package org.ngrinder.perftest.service;
 
 import static org.ngrinder.common.constant.NGrinderConstants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS;
+import static org.ngrinder.common.util.NoOp.noOp;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -59,6 +60,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ConsoleManager {
+	private static final int MAX_PORT_NUMBER = 65000;
 	private static final Logger LOG = LoggerFactory.getLogger(ConsoleManager.class);
 	private volatile ArrayBlockingQueue<ConsoleEntry> consoleQueue;
 	private volatile List<SingleConsole> consoleInUse = Collections.synchronizedList(new ArrayList<SingleConsole>());
@@ -141,7 +143,7 @@ public class ConsoleManager {
 			if (checkExactPortAvailability(scanStartPort)) {
 				return scanStartPort;
 			}
-			if (scanStartPort++ > 65000) {
+			if (scanStartPort++ > MAX_PORT_NUMBER) {
 				throw new NGrinderRuntimeException("no port for console is available");
 			}
 		}
@@ -167,6 +169,7 @@ public class ConsoleManager {
 					socket.close();
 				} catch (IOException e) {
 					// FALL THROUGH
+					noOp();
 				}
 			}
 		}

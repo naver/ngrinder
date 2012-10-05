@@ -47,6 +47,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+/**
+ * nGrinder authentication provide. This class is for the plugin system of user authentication.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ * 
+ */
 @Service("ngrinderAuthenticationProvider")
 public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
@@ -67,7 +74,6 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	@Autowired
 	@Qualifier("reflectionSaltSource")
 	private SaltSource saltSource;
-	
 
 	@Autowired
 	private UserDetailsService userDetailsService;
@@ -91,7 +97,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 			LOG.debug("Authentication failed: no credentials provided");
 
 			throw new BadCredentialsException(messages.getMessage(
-							"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"),
+							"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"), 
 							userDetails);
 		}
 
@@ -104,13 +110,11 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 			if (StringUtils.isEmpty(user.getAuthProviderClass())
 							&& isClassEqual(each.getClass(), defaultLoginPlugin.getClass().getName())) {
-				each.validateUser(user.getUsername(), user.getPassword(), presentedPassword, passwordEncoder,
-								salt);
+				each.validateUser(user.getUsername(), user.getPassword(), presentedPassword, passwordEncoder, salt);
 				authorized = true;
 				break;
 			} else if (isClassEqual(each.getClass(), user.getAuthProviderClass())) {
-				each.validateUser(user.getUsername(), user.getPassword(), presentedPassword, passwordEncoder,
-								salt);
+				each.validateUser(user.getUsername(), user.getPassword(), presentedPassword, passwordEncoder, salt);
 				authorized = true;
 				break;
 			}
@@ -119,8 +123,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 		if (!authorized) {
 			throw new BadCredentialsException(messages.getMessage(
-							"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"),
-							user);
+							"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"), user);
 		}
 
 		// If It's the first time to login
@@ -143,6 +146,12 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		return clazz.getName().equals(clazzName);
 	}
 
+	/**
+	 * Add new user into local db.
+	 * 
+	 * @param securedUser
+	 *            user
+	 */
 	@Transactional
 	public void addNewUserIntoLocal(SecuredUser securedUser) {
 		User user = securedUser.getUser();
@@ -156,8 +165,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		Assert.notNull(this.userDetailsService, "A UserDetailsService must be set");
 	}
 
-	protected final UserDetails retrieveUser(String username,
-					UsernamePasswordAuthenticationToken authentication) {
+	protected final UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) {
 		UserDetails loadedUser;
 
 		try {
@@ -197,8 +205,8 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		}
 
 		if (passwordEncoder instanceof org.springframework.security.crypto.password.PasswordEncoder) {
-			final org.springframework.security.crypto.password.PasswordEncoder delegate = 
-					(org.springframework.security.crypto.password.PasswordEncoder) passwordEncoder;
+			final org.springframework.security.crypto.password.PasswordEncoder delegate 
+				= (org.springframework.security.crypto.password.PasswordEncoder) passwordEncoder;
 			this.passwordEncoder = new PasswordEncoder() {
 				public String encodePassword(String rawPass, Object salt) {
 					checkSalt(salt);
@@ -211,8 +219,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 				}
 
 				private void checkSalt(Object salt) {
-					Assert.isNull(salt,
-									"Salt value must be null when used with crypto module PasswordEncoder");
+					Assert.isNull(salt, "Salt value must be null when used with crypto module PasswordEncoder");
 				}
 			};
 

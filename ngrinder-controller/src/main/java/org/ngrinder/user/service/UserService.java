@@ -33,7 +33,6 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.PerfTestService;
-import org.ngrinder.perftest.service.TagService;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.security.SecuredUser;
 import org.ngrinder.service.IUserService;
@@ -64,19 +63,15 @@ public class UserService implements IUserService {
 	private FileEntryService scriptService;
 
 	@Autowired
-	public SaltSource saltSource;
+	private SaltSource saltSource;
 
 	@Autowired
-	public PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
+
 
 	@Autowired
-	public UserContext userContext;
-
-	@Autowired
-	public Config config;
+	private Config config;
 	
-	@Autowired
-	public TagService tagService;
 	/**
 	 * get user by user id.
 	 * 
@@ -91,7 +86,7 @@ public class UserService implements IUserService {
 	/**
 	 * get user by userName.
 	 * 
-	 * @param userName
+	 * @param userName userName
 	 * @return user
 	 */
 	public User getUserByUserName(String userName) {
@@ -114,7 +109,8 @@ public class UserService implements IUserService {
 	/**
 	 * get all users by role.
 	 * 
-	 * @return user map.
+	 * @param roleName role name
+	 * @return found user list
 	 */
 	public List<User> getAllUserByRole(String roleName) {
 		if (StringUtils.isBlank(roleName)) {
@@ -145,9 +141,10 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * Add normal user.
+	 * Add user.
 	 * 
-	 * @param user
+	 * @param user user
+	 * @param role role
 	 */
 	public void saveUser(User user, Role role) {
 		encodePassword(user);
@@ -158,8 +155,8 @@ public class UserService implements IUserService {
 	/**
 	 * modify user information.
 	 * 
-	 * @param user
-	 * @return result.
+	 * @param user user
+	 * @return user id
 	 */
 	@Transactional
 	public String modifyUser(User user) {
@@ -176,8 +173,7 @@ public class UserService implements IUserService {
 	 * Delete user. All corresponding perftest and directories are deleted as well.
 	 * 
 	 * @param userIds
-	 *            the user id string
-	 * @return true, if successful
+	 *            the user id string list
 	 */
 	@Transactional
 	public void deleteUsers(List<String> userIds) {
@@ -194,10 +190,10 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * get user list by role.
+	 * get the user list by the given role.
 	 * 
-	 * @param paramMap
-	 * @return user list
+	 * @param role role
+	 * @return found user list
 	 * @throws Exception
 	 */
 	public List<User> getUserListByRole(Role role) {
@@ -207,8 +203,8 @@ public class UserService implements IUserService {
 	/**
 	 * get Role object based on role name.
 	 * 
-	 * @param roleName
-	 * @return
+	 * @param roleName role name
+	 * @return found Role
 	 */
 	public Role getRole(String roleName) {
 		if (Role.ADMIN.getFullName().equals(roleName)) {
@@ -224,7 +220,12 @@ public class UserService implements IUserService {
 		}
 	}
 
-	public List<User> getUserListByKeyWord(String keyword) {
-		return userRepository.findAll(UserSpecification.nameLike(keyword));
+	/**
+	 * Get the user list by nameLike spec.
+	 * @param name name of user
+	 * @return found user list
+	 */
+	public List<User> getUserListByKeyWord(String name) {
+		return userRepository.findAll(UserSpecification.nameLike(name));
 	}
 }

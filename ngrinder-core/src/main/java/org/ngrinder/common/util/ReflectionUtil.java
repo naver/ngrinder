@@ -22,6 +22,7 @@
  */
 package org.ngrinder.common.util;
 
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkArgument;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
@@ -39,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author JunHo Yoon
  * @since 3.0
  */
-public final class ReflectionUtil {
+public abstract class ReflectionUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ReflectionUtil.class);
 
@@ -76,6 +77,7 @@ public final class ReflectionUtil {
 				return superClass.getDeclaredField(fieldName);
 			} catch (NoSuchFieldException e) {
 				// Fall through
+				noOp();
 			}
 		}
 		return null;
@@ -141,6 +143,7 @@ public final class ReflectionUtil {
 				return superClass.getDeclaredMethod(methodName, parameters);
 			} catch (Exception e) {
 				// Fall through
+				noOp();
 			}
 		}
 		return null;

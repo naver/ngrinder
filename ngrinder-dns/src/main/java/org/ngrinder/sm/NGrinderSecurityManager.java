@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * nGrinder security manager
+ * nGrinder security manager.
  * 
  * @author JunHo Yoon
  * @author Tobi
@@ -57,7 +57,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	}
 
 	/**
-	 * Set default accessed of directories <br>
+	 * Set default accessed of directories. <br>
 	 */
 	private void initAccessOfDirectories() {
 		workDirectory = new File(workDirectory).getAbsolutePath();
@@ -166,9 +166,9 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	/**
 	 * File read access is allowed on <br>
-	 * "agent.exec.folder" and "agent.exec.folder"
+	 * "agent.exec.folder" and "agent.exec.folder".
 	 * 
-	 * @param file
+	 * @param file file path
 	 */
 	private void fileAccessReadAllowed(String file) {
 		String filePath = new File(file).getAbsolutePath();
@@ -182,9 +182,9 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	/**
 	 * File write access is allowed <br>
-	 * on "agent.exec.folder"
+	 * on "agent.exec.folder".
 	 * 
-	 * @param file
+	 * @param file file path
 	 */
 	private void fileAccessWriteAllowed(String file) {
 		String filePath = new File(file).getAbsolutePath();
@@ -198,9 +198,9 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	/**
 	 * File delete access is allowed <br>
-	 * on "agent.exec.folder"
+	 * on "agent.exec.folder".
 	 * 
-	 * @param file
+	 * @param file file path
 	 */
 	private void fileAccessDeleteAllowed(String file) {
 		String filePath = new File(file).getAbsolutePath();
@@ -228,9 +228,9 @@ public class NGrinderSecurityManager extends SecurityManager {
 	}
 
 	/**
-	 * NetWork access is allowed on "ngrinder.etc.hosts"
+	 * NetWork access is allowed on "ngrinder.etc.hosts".
 	 * 
-	 * @param host
+	 * @param host host name
 	 */
 	private void netWorkAccessAllowed(String host) {
 		if (allowedHost.contains(host)) {

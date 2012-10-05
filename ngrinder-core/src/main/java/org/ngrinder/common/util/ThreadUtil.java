@@ -22,6 +22,8 @@
  */
 package org.ngrinder.common.util;
 
+import static org.ngrinder.common.util.NoOp.noOp;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ThreadUtil {
 
+	private static final int RETRY_MILLISECOND = 5000;
 	private static final int THREAD_WAITING_TIME = 5000;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ThreadUtil.class);
 
@@ -68,16 +71,19 @@ public abstract class ThreadUtil {
 			thread.join(THREAD_WAITING_TIME);
 		} catch (Exception e) {
 			// Fall through
+			noOp();
 		}
 		try {
 			thread.interrupt();
 		} catch (Exception e) {
+			noOp();
 		}
 		try {
 			// Again Wait 5000 second.
-			thread.join(5000);
+			thread.join(RETRY_MILLISECOND);
 		} catch (Exception e) {
 			// Fall through
+			noOp();
 		}
 		try {
 			// Force to Stop
@@ -87,6 +93,7 @@ public abstract class ThreadUtil {
 			}
 		} catch (Exception e) {
 			// Fall through
+			noOp();
 		}
 	}
 

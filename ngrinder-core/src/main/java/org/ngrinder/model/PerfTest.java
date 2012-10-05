@@ -58,6 +58,12 @@ import org.ngrinder.common.util.DateUtil;
 @Table(name = "PERF_TEST")
 public class PerfTest extends BaseModel<PerfTest> {
 
+	private static final int MARGIN_FOR_ABBREVIATATION = 8;
+
+	private static final int MAX_SHORT_STRING_SIZE = 30;
+
+	private static final int MAX_LONG_STRING_SIZE = 2048;
+
 	private static final long serialVersionUID = 1369809450686098944L;
 
 	private static final int MAX_STRING_SIZE = 2048;
@@ -68,7 +74,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "tag_string")
 	private String tagString;
 
-	@Column(length = 2048)
+	@Column(length = MAX_LONG_STRING_SIZE)
 	private String description;
 
 	@Enumerated(EnumType.STRING)
@@ -197,7 +203,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private GrinderProperties grinderProperties;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-	@JoinTable(name = "PERF_TEST_TAG", joinColumns = @JoinColumn(name = "perf_test_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+	@JoinTable(name = "PERF_TEST_TAG", 
+			joinColumns = @JoinColumn(name = "perf_test_id"), 
+			inverseJoinColumns = @JoinColumn(name = "tag_id"))
 	@Sort(comparator = Tag.class, type = SortType.COMPARATOR)
 	private SortedSet<Tag> tags;
 
@@ -280,11 +288,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public String getScriptNameInShort() {
-		return StringUtils.abbreviate(getScriptName(), 30);
+		return StringUtils.abbreviate(getScriptName(), MAX_SHORT_STRING_SIZE);
 	}
 
 	public String getDescription() {
-		return StringUtils.abbreviate(description, 2040);
+		return StringUtils.abbreviate(description, MAX_LONG_STRING_SIZE - MARGIN_FOR_ABBREVIATATION);
 	}
 
 	public String getLastModifiedDateToStr() {
@@ -303,7 +311,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	 * Get ip address of target hosts. if target hosts 'a.com:1.1.1.1' add ip: '1.1.1.1' if target
 	 * hosts ':1.1.1.1' add ip: '1.1.1.1' if target hosts '1.1.1.1' add ip: '1.1.1.1'
 	 * 
-	 * @return
+	 * @return host ip list
 	 */
 	public List<String> getTargetHostIP() {
 		List<String> targetIPList = new ArrayList<String>();
@@ -495,6 +503,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return DateUtil.ms2Time(this.duration);
 	}
 
+	/**
+	 * Get Runtime in HH:MM:SS style.
+	 * 
+	 * @return formatted runtime string
+	 */
 	public String getRuntimeStr() {
 		long ms = (this.finishTime == null || this.startTime == null) ? 0 : this.finishTime.getTime()
 						- this.startTime.getTime();
@@ -526,10 +539,19 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return StringUtils.defaultIfEmpty(lastProgressMessage, "");
 	}
 
-	public void clearLstProgressMessage() {
+	/**
+	 * Clear the last progress message.
+	 */
+	public void clearLastProgressMessage() {
 		this.lastProgressMessage = "";
 	}
 
+	/**
+	 * Set the last progress message.
+	 * 
+	 * @param lastProgressMessage
+	 *            message
+	 */
 	public void setLastProgressMessage(String lastProgressMessage) {
 		if (StringUtils.isEmpty(lastProgressMessage)) {
 			return;
@@ -564,8 +586,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.dateString = dateString;
 	}
 
+	/**
+	 * Clear all messages.
+	 */
 	public void clearMessages() {
-		clearLstProgressMessage();
+		clearLastProgressMessage();
 		setProgressMessage("");
 	}
 

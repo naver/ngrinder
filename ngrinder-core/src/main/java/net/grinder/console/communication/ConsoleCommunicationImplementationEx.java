@@ -21,6 +21,8 @@
 
 package net.grinder.console.communication;
 
+import static org.ngrinder.common.util.NoOp.noOp;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -189,6 +191,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 						exception = m_acceptor.getPendingException();
 					} catch(Exception e) {
 						// FALL THROUGH
+						noOp();
 					}
 
 					if (exception == null) {

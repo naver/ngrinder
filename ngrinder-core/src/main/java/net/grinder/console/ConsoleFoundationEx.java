@@ -1,5 +1,7 @@
 package net.grinder.console;
 
+import static org.ngrinder.common.util.NoOp.noOp;
+
 import java.util.Timer;
 
 import net.grinder.common.GrinderException;
@@ -61,12 +63,13 @@ public class ConsoleFoundationEx {
 	 *            Logger.
 	 * @param properties
 	 *            The properties.
-	 * 
+	 * @param eventSyncCondition
+	 *            event synchonization condition.
 	 * @exception GrinderException
 	 *                If an error occurs.
 	 */
 	public ConsoleFoundationEx(Resources resources, Logger logger, ConsoleProperties properties,
-			Condition eventSyncCondition) throws GrinderException {
+					Condition eventSyncCondition) throws GrinderException {
 		m_eventSyncCondition = eventSyncCondition;
 		m_container = new DefaultPicoContainer(new Caching());
 		m_container.addComponent(logger);
@@ -83,13 +86,11 @@ public class ConsoleFoundationEx {
 		m_timer = new Timer(true);
 		m_container.addComponent(m_timer);
 
-		m_container.addComponent(
-				FileDistributionImplementation.class,
-				FileDistributionImplementation.class,
-				new Parameter[] { new ComponentParameter(DistributionControlImplementation.class),
-						new ComponentParameter(ProcessControlImplementation.class),
-						new ConstantParameter(properties.getDistributionDirectory()),
-						new ConstantParameter(properties.getDistributionFileFilterPattern()), });
+		m_container.addComponent(FileDistributionImplementation.class, FileDistributionImplementation.class,
+						new Parameter[] { new ComponentParameter(DistributionControlImplementation.class),
+								new ComponentParameter(ProcessControlImplementation.class),
+								new ConstantParameter(properties.getDistributionDirectory()),
+								new ConstantParameter(properties.getDistributionFileFilterPattern()), });
 
 		m_container.addComponent(DispatchClientCommands.class);
 		m_container.addComponent(WireFileDistribution.class);
@@ -101,6 +102,15 @@ public class ConsoleFoundationEx {
 		errorQueue.setErrorHandler(new ErrorHandlerImplementation(logger));
 	}
 
+	/**
+	 * Get the component of the given type.
+	 * 
+	 * @param <T>
+	 *            component type
+	 * @param componentType
+	 *            component type class
+	 * @return component
+	 */
 	public <T> T getComponent(Class<T> componentType) {
 		return m_container.getComponent(componentType);
 	}
@@ -115,20 +125,22 @@ public class ConsoleFoundationEx {
 		try {
 			m_timer.cancel();
 		} catch (Exception e) {
+			noOp();
 		}
-		if (m_container.getLifecycleState().isStarted())
+		if (m_container.getLifecycleState().isStarted()) {
 			m_container.stop();
+		}
 	}
 
 	private String getConsoleInfo() {
 		ConsoleProperties consoleProperties = m_container.getComponent(ConsoleProperties.class);
 		return StringUtils.defaultIfBlank(consoleProperties.getConsoleHost(), "localhost") + ":"
-				+ consoleProperties.getConsolePort();
+						+ consoleProperties.getConsolePort();
 	}
 
 	/**
-	 * Console message event loop. Dispatches communication messages appropriately. Blocks until we are
-	 * {@link #shutdown()}.
+	 * Console message event loop. Dispatches communication messages appropriately. Blocks until we
+	 * are {@link #shutdown()}.
 	 */
 	public void run() {
 		if (m_shutdown) {
@@ -146,6 +158,7 @@ public class ConsoleFoundationEx {
 		}
 		while (communication.processOneMessage()) {
 			// Process until communication is shut down.
+			noOp();
 		}
 
 	}
@@ -181,7 +194,7 @@ public class ConsoleFoundationEx {
 		 *            Client command dispatcher.
 		 */
 		public WireMessageDispatch(ConsoleCommunication communication, final SampleModel model,
-				final SampleModelViews sampleModelViews, DispatchClientCommands dispatchClientCommands) {
+						final SampleModelViews sampleModelViews, DispatchClientCommands dispatchClientCommands) {
 
 			final MessageDispatchRegistry messageDispatchRegistry = communication.getMessageDispatchRegistry();
 
@@ -198,11 +211,11 @@ public class ConsoleFoundationEx {
 			});
 
 			messageDispatchRegistry.set(RegisterExpressionViewMessage.class,
-					new AbstractHandler<RegisterExpressionViewMessage>() {
-						public void handle(RegisterExpressionViewMessage message) {
-							sampleModelViews.registerStatisticExpression(message.getExpressionView());
-						}
-					});
+							new AbstractHandler<RegisterExpressionViewMessage>() {
+								public void handle(RegisterExpressionViewMessage message) {
+									sampleModelViews.registerStatisticExpression(message.getExpressionView());
+								}
+							});
 
 			dispatchClientCommands.registerMessageHandlers(messageDispatchRegistry);
 		}

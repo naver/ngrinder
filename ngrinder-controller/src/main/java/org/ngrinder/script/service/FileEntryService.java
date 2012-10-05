@@ -22,6 +22,7 @@
  */
 package org.ngrinder.script.service;
 
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
@@ -357,6 +358,7 @@ public class FileEntryService {
 			fileEntry.setProperties(map);
 		} catch (MalformedURLException e) {
 			// FALL THROUGH
+			noOp();
 		}
 	}
 

@@ -118,6 +118,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
+	private static final int MAX_POINT_COUNT = 100;
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(PerfTestService.class);
 
 	private static final String DATA_FILE_EXTENSION = ".data";
@@ -745,7 +747,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return interval interval value
 	 */
 	public int getReportDataInterval(long testId, String dataType, int imgWidth) {
-		int pointCount = Math.max(imgWidth, 100);
+		int pointCount = Math.max(imgWidth, MAX_POINT_COUNT);
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
 		int lineNumber;
 		int interval = 0;

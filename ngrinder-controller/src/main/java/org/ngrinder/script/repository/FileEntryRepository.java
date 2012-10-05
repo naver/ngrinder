@@ -22,6 +22,8 @@
  */
 package org.ngrinder.script.repository;
 
+import static org.ngrinder.common.util.NoOp.noOp;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -315,6 +317,7 @@ public class FileEntryRepository {
 					editor.addDir(fullPath, null, -1);
 				} catch (Exception e) {
 					// FALL THROUGH
+					noOp();
 				}
 			}
 
@@ -381,6 +384,7 @@ public class FileEntryRepository {
 			editor.abortEdit();
 		} catch (SVNException e) {
 			// FALL THROUGH
+			noOp();
 		}
 	}
 
@@ -401,13 +405,16 @@ public class FileEntryRepository {
 			}
 		} catch (EmptyStackException e) {
 			// FALL THROUGH
+			noOp();
 		} catch (SVNException e) {
 			// FALL THROUGH
+			noOp();
 		} finally {
 			try {
 				editor.closeEdit();
 			} catch (SVNException e) {
 				// FALL THROUGH
+				noOp();
 			}
 		}
 	}

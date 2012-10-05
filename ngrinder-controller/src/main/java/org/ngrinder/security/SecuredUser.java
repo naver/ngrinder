@@ -115,6 +115,10 @@ public class SecuredUser implements UserDetails {
 		return userInfoProviderClass;
 	}
 
+	/**
+	 * Get auth provider class name.
+	 * @return auth provider class
+	 */
 	public String getAuthProviderClass() {
 		if (StringUtils.isNotEmpty(user.getAuthProviderClass())) {
 			return user.getAuthProviderClass();

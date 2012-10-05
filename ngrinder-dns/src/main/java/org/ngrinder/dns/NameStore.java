@@ -41,6 +41,9 @@ public class NameStore {
 		globalNames = new ConcurrentHashMap<String, String>();
 	}
 
+	/**
+	 * Initialize NameStore based on the ngrinder.etc.hosts system properties.
+	 */
 	public void initFromSystemProperty() {
 		String hostPair = System.getProperty("ngrinder.etc.hosts");
 		if (!DnsUtil.isEmpty(hostPair)) {
@@ -55,6 +58,11 @@ public class NameStore {
 		}
 	}
 
+	/**
+	 * Get the instance.
+	 * 
+	 * @return {@link NameStore} instance
+	 */
 	public static NameStore getInstance() {
 		if (singleton == null) {
 			singleton = new NameStore();
@@ -96,6 +104,13 @@ public class NameStore {
 		return globalNames.get(hostName);
 	}
 
+	/**
+	 * Get the hostname for the given ip.
+	 * 
+	 * @param ip
+	 *            ip
+	 * @return resolved host name. Null if not found.
+	 */
 	public String getReveredHost(String ip) {
 		for (String hostName : globalNames.keySet()) {
 			if (globalNames.get(hostName).equals(ip)) {

@@ -409,7 +409,7 @@ public final class SampleModelImplementationEx implements SampleModel {
 		private volatile long msampleCount = 1;
 
 		public void newTestReport(TestStatisticsMap testStatisticsMap) {
-			testStatisticsMap.new ForEach() {
+			(testStatisticsMap.new ForEach() {
 				public void next(Test test, StatisticsSet statistics) {
 					final SampleAccumulator sampleAccumulator = m_accumulators.get(test);
 
@@ -432,7 +432,7 @@ public final class SampleModelImplementationEx implements SampleModel {
 					}
 				}
 				// CHECKSTYLE:OFF
-			}.iterate();
+			}).iterate();
 		}
 
 		protected void schedule() {
