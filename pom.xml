@@ -129,6 +129,20 @@
 		</dependency>
 
 	</dependencies>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.ngrinder</groupId>
+				<artifactId>ngrinder-core</artifactId>
+				<version>${ngrinder.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.ngrinder</groupId>
+				<artifactId>ngrinder-dns</artifactId>
+				<version>${ngrinder.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<profiles>
 		<profile>
 			<id>klocwork</id>
@@ -158,7 +172,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-reactor-plugin</artifactId>
-				<version>1.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

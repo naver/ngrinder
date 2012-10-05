@@ -1,0 +1,2 @@
+3.0-b1 (2012.10.05)
+- First beta version.

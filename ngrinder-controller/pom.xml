@@ -96,7 +96,6 @@
 		<dependency>
 			<groupId>org.ngrinder</groupId>
 			<artifactId>ngrinder-core</artifactId>
-			<version>${ngrinder.version}</version>
 		</dependency>
 
 		<dependency>
