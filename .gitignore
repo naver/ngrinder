@@ -11,4 +11,4 @@ target/
 
 /Servers
 /.metadata
-/ngrinder-core-3.0-SNAPSHOT
+/ngrinder-core-3.*
