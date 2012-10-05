@@ -53,11 +53,11 @@ public class MonitorConstants {
 	public static final Set<String> DEFAULT_DATA_COLLECTOR = SYSTEM_DATA_COLLECTOR;
 
 	/**
-	 * empty means all processes
+	 * empty means all processes.
 	 */
-	public static Set<Integer> DEFAULT_JVM_PID = new HashSet<Integer>();
+	public static final Set<Integer> DEFAULT_JVM_PID = new HashSet<Integer>();
 
-	public static String P_COMMA = ",";
+	public static final String P_COMMA = ",";
 
 	/**
 	 * Initialize the Monitor configuration.

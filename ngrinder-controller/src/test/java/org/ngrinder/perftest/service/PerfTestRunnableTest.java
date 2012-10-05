@@ -95,7 +95,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		int checkLoop = 0;
 		while (true) {
 			agentCount = agentManager.getAllAttachedAgents().size();
-			if (agentCount != 0 || checkLoop++ > 15) {
+			if (agentCount != 0 || checkLoop++ > 20) {
 				break;
 			}
 			System.out.println("WAIT UNTIL AGENT IS CONNECTED - TRY COUNT " + checkLoop);
