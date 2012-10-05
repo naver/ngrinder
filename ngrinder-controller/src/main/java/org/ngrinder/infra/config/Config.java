@@ -112,13 +112,15 @@ public class Config {
 	public void setupLogger(boolean verbose) {
 		this.verbose = verbose;
 		final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-		context.reset();
 		final JoranConfigurator configurator = new JoranConfigurator();
 		configurator.setContext(context);
+		context.reset();
 		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
 		context.putProperty("LOG_DIRECTORY", getHome().getGloablLogFile().getAbsolutePath());
 		try {
+			System.out.println(verbose);
 			configurator.doConfigure(new ClassPathResource("/logback-ngrinder.xml").getFile());
+			
 		} catch (JoranException e) {
 			CoreLogger.LOGGER.error(e.getMessage(), e);
 		} catch (IOException e) {

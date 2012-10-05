@@ -16,11 +16,11 @@ import org.springframework.http.HttpEntity;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-public class LogMonitorControllerTest extends AbstractNGrinderTransactionalTest{
+public class LogMonitorControllerTest extends AbstractNGrinderTransactionalTest {
 	public static final Logger LOGGER = LoggerFactory.getLogger(LogMonitorControllerTest.class);
 	@Autowired
 	private LogMonitorController logMonitorController;
-	
+
 	@Test
 	public void testLogMonitorController() {
 		logMonitorController.enableVerbose(false);
@@ -39,7 +39,7 @@ public class LogMonitorControllerTest extends AbstractNGrinderTransactionalTest{
 		LOGGER.debug("TEST TEST");
 		sleep(3000);
 		assertThat(getLastMessage(), containsString("TEST TEST"));
-		
+
 	}
 
 	private String getLastMessage() {
