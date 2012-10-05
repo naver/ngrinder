@@ -191,3 +191,9 @@ img.status {
 .left-float {
  	float: left !important;
 }
+
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

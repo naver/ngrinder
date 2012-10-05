@@ -109,8 +109,7 @@
 	<link rel="stylesheet" href="${req.getContextPath()}/js/codemirror/codemirror.css"/>
 	<link rel="stylesheet" href="${req.getContextPath()}/js/codemirror/eclipse.css">
 	<script src="${req.getContextPath()}/js/codemirror/lang/python.js"></script>
-	<script src="${req.getContextPath()}/js/codemirror/util/dialog.js"></script>
-	
+	<script src="${req.getContextPath()}/js/codemirror/util/dialog.js"></script>	
     <link rel="stylesheet" href="${req.getContextPath()}/js/codemirror/util/dialog.css">
     <script src="${req.getContextPath()}/js/codemirror/util/searchcursor.js"></script>
     <script src="${req.getContextPath()}/js/codemirror/util/search.js"></script>
