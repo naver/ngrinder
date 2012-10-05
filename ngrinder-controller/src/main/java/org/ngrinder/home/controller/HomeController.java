@@ -22,6 +22,8 @@
  */
 package org.ngrinder.home.controller;
 
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,10 +36,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.ngrinder.common.controller.NGrinderBaseController;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.home.service.HomeService;
-import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.slf4j.Logger;
@@ -64,23 +65,24 @@ public class HomeController extends NGrinderBaseController {
 	private static final Logger LOG = LoggerFactory.getLogger(HomeController.class);
 
 	@Autowired
-	private Config config;
-
-	@Autowired
 	private HomeService homeService;
 
-	private static final String TIMEZONE_ID_PREFIXES = 
-			"^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
+	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
 
 	private List<TimeZone> timeZones = null;
 
+	/**
+	 * Initialize {@link HomeController}.
+	 * <ul>
+	 * <li>Get all timezones.</li>
+	 * </ul>
+	 */
 	@PostConstruct
 	public void init() {
 		timeZones = new ArrayList<TimeZone>();
 		final String[] timeZoneIds = TimeZone.getAvailableIDs();
 		for (final String id : timeZoneIds) {
-			if (id.matches(TIMEZONE_ID_PREFIXES)
-							&& !TimeZone.getTimeZone(id).getDisplayName().contains("GMT")) {
+			if (id.matches(TIMEZONE_ID_PREFIXES) && !TimeZone.getTimeZone(id).getDisplayName().contains("GMT")) {
 				timeZones.add(TimeZone.getTimeZone(id));
 			}
 		}
@@ -91,6 +93,19 @@ public class HomeController extends NGrinderBaseController {
 		});
 	}
 
+	/**
+	 * Home.
+	 * 
+	 * @param user
+	 *            user
+	 * @param model
+	 *            model
+	 * @param response
+	 *            {@link HttpServletResponse}
+	 * @param request
+	 *            {@link HttpServletRequest}
+	 * @return "index" if loggined. "login", otherwise.
+	 */
 	@RequestMapping(value = { "/home", "/" })
 	public String home(User user, ModelMap model, HttpServletResponse response, HttpServletRequest request) {
 		Role role = null;
@@ -100,9 +115,9 @@ public class HomeController extends NGrinderBaseController {
 			setLoginPageDate(model);
 			role = user.getRole();
 		} catch (AuthenticationCredentialsNotFoundException e) {
+			CoreLogger.LOGGER.info("Login Failure", e);
 			return "login";
 		}
-
 		model.addAttribute("right_panel_entries", homeService.getRightPanelEntries());
 		model.addAttribute("left_panel_entries", homeService.getLeftPanelEntries());
 
@@ -114,42 +129,35 @@ public class HomeController extends NGrinderBaseController {
 		}
 	}
 
-	public void setLanguage(String lan, HttpServletResponse response, HttpServletRequest request) {
-		LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request);
-		if (lan == null) {
-			throw new NGrinderRuntimeException("No User Language found!");
-		}
-
-		if (localeResolver == null) {
-			throw new NGrinderRuntimeException("No LocaleResolver found!");
-		}
-
+	private void setLanguage(String lan, HttpServletResponse response, HttpServletRequest request) {
+		LocaleResolver localeResolver = checkNotNull(RequestContextUtils.getLocaleResolver(request),
+						"No LocaleResolver found!");
 		LocaleEditor localeEditor = new LocaleEditor();
-		localeEditor.setAsText(lan);
+		localeEditor.setAsText(checkNotNull(lan, "No User Language found!"));
 		localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
 	}
 
+	/**
+	 * Provide login page.
+	 * @param model model
+	 * @return "login" if not loggined. Otherwise, "/"
+	 */
 	@RequestMapping(value = "/login")
 	public String login(ModelMap model) {
 		setLoginPageDate(model);
 		try {
 			getCurrentUser();
 		} catch (Exception e) {
+			CoreLogger.LOGGER.info("Login Failure");
 			return "login";
 		}
 		return "redirect:/";
 	}
 
-	public void setLoginPageDate(ModelMap model) {
+	private void setLoginPageDate(ModelMap model) {
 		TimeZone defaultTime = TimeZone.getDefault();
-		model.addAttribute("version", config.getSystemProperties().getProperty("VERSION", "UNKNOWN"));
 		model.addAttribute("timezones", timeZones);
 		model.addAttribute("defaultTime", defaultTime.getID());
-	}
-
-	@RequestMapping(value = "/help")
-	public String openHelp(ModelMap model) {
-		return "help";
 	}
 
 	@ResponseBody

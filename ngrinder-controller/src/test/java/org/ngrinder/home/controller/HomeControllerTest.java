@@ -40,13 +40,6 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 	}
 
 	@Test
-	public void testHelp() {
-		ModelMap model = new ModelMap();
-		String viewName = homeController.openHelp(model);
-		assertThat(viewName, is("help"));
-	}
-
-	@Test
 	public void testGetTimeZone() {
 		ModelMap model = new ModelMap();
 		String viewName = homeController.getAllTimeZone(model);
