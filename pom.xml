@@ -39,7 +39,7 @@
 		<spring.security.version>3.1.0.RELEASE</spring.security.version>
 		<jdk-version>1.6</jdk-version>
 		<source-encoding>UTF-8</source-encoding>
-		<ngrinder.version>3.0-b1</ngrinder.version>
+		<ngrinder.version>${project.version}</ngrinder.version>
 	</properties>
 
 	<dependencies>
@@ -129,20 +129,6 @@
 		</dependency>
 
 	</dependencies>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.ngrinder</groupId>
-				<artifactId>ngrinder-core</artifactId>
-				<version>${ngrinder.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.ngrinder</groupId>
-				<artifactId>ngrinder-dns</artifactId>
-				<version>${ngrinder.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 	<profiles>
 		<profile>
 			<id>klocwork</id>

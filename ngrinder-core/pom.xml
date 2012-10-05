@@ -65,6 +65,7 @@
 		<dependency>
 			<groupId>org.ngrinder</groupId>
 			<artifactId>ngrinder-dns</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun</groupId>
