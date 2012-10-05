@@ -165,6 +165,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		SingleConsole singleConsole = null;
 		try {
 			singleConsole = startConsole(perfTest);
+			perfTestService.prepareDistribution(perfTest);
 			GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
 			startAgentsOn(perfTest, grinderProperties, checkCancellation(singleConsole));
 			distributeFileOn(perfTest, grinderProperties, checkCancellation(singleConsole));
@@ -224,7 +225,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	void distributeFileOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		// Distribute files
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES, "All necessary files are distributing.");
-		perfTestService.prepareDistribution(perfTest);
+		
 		// the files have prepared before
 		singleConsole.distributeFiles(perfTestService.getPerfTestDirectory(perfTest));
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES_FINISHED, "All necessary files are distributed.");
@@ -290,6 +291,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 				LOG.error("Abnormal test {} by {}", perfTest.getId(), stopReason.name());
 			}
 		});
+		
 		singleConsole.startSampling(grinderProperties.getInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, 0));
 		long startTime = singleConsole.startTest(grinderProperties);
 		perfTest.setStartTime(new Date(startTime));
@@ -335,6 +337,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
 	public void finishTest() {
+
+		
 		for (PerfTest each : perfTestService.getAbnoramlTestingPerfTest()) {
 			LOG.error("Terminate {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
@@ -349,6 +353,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 			notifyFinsish(each, StopReason.CANCEL_BY_USER);
 		}
 
+		
+		
 		for (PerfTest each : perfTestService.getTestingPerfTest()) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			if (isTestFinishCandidate(each, consoleUsingPort)) {
@@ -358,6 +364,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 		}
 	}
 
+	private boolean isRuntimeFailure(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+		if (singleConsoleInUse.getCurrentRunningTime() > 15000 && singleConsoleInUse.isAllTestFinished()) {
+			return true;
+		}
+		return false;
+	}
 	/**
 	 * Check this test is ready to finish.
 	 * 
@@ -378,6 +390,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 					singleConsoleInUse.getCurrentExecutionCount(), perfTest.getTotalRunCount() });
 			return true;
 		}
+		
 		return false;
 	}
 

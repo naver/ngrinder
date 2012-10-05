@@ -35,6 +35,8 @@ public enum StopReason {
 	TOO_MANY_ERRORS,
 	/** Error while test preparation */
 	ERROR_WHILE_PREPARE,
+	/** Error while first execution */
+	SCRIPT_ERROR,
 	/** Normal Stop */
 	NORMAL,
 	/** Cancel By User */

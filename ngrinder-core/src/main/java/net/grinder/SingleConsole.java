@@ -75,6 +75,7 @@ import net.grinder.util.thread.Condition;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableDouble;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -84,8 +85,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Single console for multiple test. This is the customized version of
- * {@link Console} which grinder has.
+ * Single console for multiple test. This is the customized version of {@link Console} which grinder
+ * has.
  * 
  * 
  * @author JunHo Yoon
@@ -199,8 +200,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Simple constructor only setting port. It automatically binds all ip
-	 * addresses.
+	 * Simple constructor only setting port. It automatically binds all ip addresses.
 	 * 
 	 * @param port
 	 *            PORT number
@@ -225,7 +225,8 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	public String getConsoleHost() {
 		try {
-			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress.getLocalHost().getHostAddress());
+			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress.getLocalHost()
+							.getHostAddress());
 		} catch (UnknownHostException e) {
 			return "";
 		}
@@ -287,7 +288,8 @@ public class SingleConsole implements Listener, SampleListener {
 	 * @return count of agents
 	 */
 	public int getAllAttachedAgentsCount() {
-		return ((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class)).getNumberOfLiveAgents();
+		return ((ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class))
+						.getNumberOfLiveAgents();
 	}
 
 	/**
@@ -298,8 +300,9 @@ public class SingleConsole implements Listener, SampleListener {
 	public List<AgentIdentity> getAllAttachedAgents() {
 		final List<AgentIdentity> agentIdentities = new ArrayList<AgentIdentity>();
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(ReflectionUtil.getFieldValue(
-				(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class), "m_agentNumberMap"),
-				"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
+						(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
+						"m_agentNumberMap"),
+						"m_agentNumberMap on ProcessControlImplemenation is not available in this grinder version");
 		agentIdentity.forEach(new AllocateLowestNumber.IteratorCallback() {
 			public void objectAndNumber(Object object, int number) {
 				agentIdentities.add((AgentIdentity) object);
@@ -322,8 +325,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Get {@link ConsoleProperties} which is used to configure
-	 * {@link SingleConsole}.
+	 * Get {@link ConsoleProperties} which is used to configure {@link SingleConsole}.
 	 * 
 	 * @return {@link ConsoleProperties}
 	 */
@@ -451,8 +453,8 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Check all test is finished. To be safe, this counts thread count and not
-	 * finished workprocess. If one of them is 0, It thinks test is finished.
+	 * Check all test is finished. To be safe, this counts thread count and not finished
+	 * workprocess. If one of them is 0, It thinks test is finished.
 	 * 
 	 * @return true if finished
 	 */
@@ -505,7 +507,8 @@ public class SingleConsole implements Listener, SampleListener {
 		checkTooLowTps(getTpsValues());
 		updateStatistics();
 		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) statisticData.get("lastSampleStatistics");
+		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) statisticData
+						.get("lastSampleStatistics");
 
 		if (lastSampleStatistics != null) {
 			double tpsSum = 0;
@@ -611,8 +614,8 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Check if the TPS is too low. the TPS is lower than 0.001 for 2 minutes,
-	 * It notifies it to the {@link ConsoleShutdownListener}
+	 * Check if the TPS is too low. the TPS is lower than 0.001 for 2 minutes, It notifies it to the
+	 * {@link ConsoleShutdownListener}
 	 * 
 	 * @param tps
 	 *            current TPS
@@ -623,7 +626,8 @@ public class SingleConsole implements Listener, SampleListener {
 			if (TPS_LESSTHAN_ZREO_TIME == null) {
 				TPS_LESSTHAN_ZREO_TIME = new Date();
 			} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= TOO_LOW_TPS_TIME) {
-				LOGGER.warn("Stop the test because its tps is less than 0.001 for more than {} minitue.", TOO_LOW_TPS_TIME / 60000);
+				LOGGER.warn("Stop the test because its tps is less than 0.001 for more than {} minitue.",
+								TOO_LOW_TPS_TIME / 60000);
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
 					public void inform(ConsoleShutdownListener listener) {
 						listener.readyToStop(StopReason.TOO_LOW_TPS);
@@ -639,8 +643,8 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Check if too many error occurs. If the half of total transaction is error
-	 * for 10 sec. It notifies the {@link ConsoleShutdownListener}
+	 * Check if too many error occurs. If the half of total transaction is error for 10 sec. It
+	 * notifies the {@link ConsoleShutdownListener}
 	 * 
 	 * @param tpsSum
 	 *            sum of tps
@@ -653,7 +657,7 @@ public class SingleConsole implements Listener, SampleListener {
 				ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME = new Date();
 			} else if (new Date().getTime() - ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME.getTime() >= TOO_MANY_ERROR_TIME) {
 				LOGGER.warn("Stop the test because test error is more than half of total tps for more than {} seconds.",
-						TOO_MANY_ERROR_TIME / 1000);
+								TOO_MANY_ERROR_TIME / 1000);
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
 					public void inform(ConsoleShutdownListener listener) {
 						listener.readyToStop(StopReason.TOO_MANY_ERRORS);
@@ -692,10 +696,10 @@ public class SingleConsole implements Listener, SampleListener {
 				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
 				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
 				for (ExpressionView expressionView : views) {
-					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"), getRealDoubleValue(expressionView
-							.getExpression().getDoubleValue(set)));
-					lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"), getRealDoubleValue(expressionView
-							.getExpression().getDoubleValue(lastSet)));
+					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
+									getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
+					lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
+									getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
 				}
 
 				cumulativeStatistics.add(statistics);
@@ -707,8 +711,8 @@ public class SingleConsole implements Listener, SampleListener {
 		Map<String, Object> totalStatistics = new HashMap<String, Object>();
 
 		for (ExpressionView expressionView : views) {
-			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"), getRealDoubleValue(expressionView.getExpression()
-					.getDoubleValue(totalSet)));
+			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
+							getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 		}
 
 		result.put("totalStatistics", totalStatistics);
@@ -780,8 +784,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Add {@link ConsoleShutdownListener} to get notified when console is
-	 * shutdowned.
+	 * Add {@link ConsoleShutdownListener} to get notified when console is shutdowned.
 	 * 
 	 * @param listener
 	 *            listener to be used.
@@ -791,8 +794,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Add {@link SamplingLifeCycleListener} to get notified when sampling is
-	 * started and ended.
+	 * Add {@link SamplingLifeCycleListener} to get notified when sampling is started and ended.
 	 * 
 	 * @param listener
 	 *            listener to be used.
@@ -808,12 +810,22 @@ public class SingleConsole implements Listener, SampleListener {
 	@Override
 	public void update(ProcessReports[] processReports) {
 		synchronized (eventSyncCondition) {
+			checkExeuctionErrors(processReports);
 			this.processReports = processReports;
 			// The reason I passed porcessReport as parameter here is to prevent
-			// the synchronization
-			// problem.
+			// the synchronization problem.
 			updateCurrentProcessAndThread(processReports);
 			eventSyncCondition.notifyAll();
+		}
+	}
+
+	private void checkExeuctionErrors(ProcessReports[] processReports) {
+		if (samplingCount == 0 && ArrayUtils.isNotEmpty(this.processReports) && ArrayUtils.isEmpty(processReports)) {
+			getListeners().apply(new Informer<ConsoleShutdownListener>() {
+				public void inform(ConsoleShutdownListener listener) {
+					listener.readyToStop(StopReason.SCRIPT_ERROR);
+				}
+			});
 		}
 	}
 
@@ -840,6 +852,7 @@ public class SingleConsole implements Listener, SampleListener {
 				threadCount += processReport.getNumberOfRunningThreads();
 			}
 		}
+		
 		synchronized (this) {
 			this.runningProcess = processCount;
 			this.runningThread = threadCount;
@@ -885,9 +898,8 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Get the statistics data. This method returns the map whose key is string
-	 * and it's mapped to specific value. Please refer
-	 * {@link #updateStatistics()}
+	 * Get the statistics data. This method returns the map whose key is string and it's mapped to
+	 * specific value. Please refer {@link #updateStatistics()}
 	 * 
 	 * @return map which contains statistics data
 	 */
@@ -940,6 +952,7 @@ public class SingleConsole implements Listener, SampleListener {
 		LOGGER.info("Sampling is started");
 		this.sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 		this.sampleModel.addTotalSampleListener(this);
+		this.sampleModel.start();
 
 	}
 
@@ -951,6 +964,7 @@ public class SingleConsole implements Listener, SampleListener {
 		this.sampling = false;
 		this.sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 		this.sampleModel.reset();
+		this.sampleModel.stop();
 		LOGGER.info("Sampling is stopped");
 		informTestSamplingEnd();
 	}
