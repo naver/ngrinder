@@ -27,7 +27,12 @@ package org.ngrinder.common.util;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class NoOp {
+public final class NoOp {
+	/**
+	 * Private Constructor not to make the instance.
+	 */
+	private NoOp() {
+	}
 	/**
 	 * No operation.
 	 */

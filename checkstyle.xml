@@ -86,7 +86,6 @@
     </module>
     <module name="IllegalInstantiation"/>
     <module name="InnerAssignment"/>
-    <module name="MagicNumber"/>
     <module name="MissingSwitchDefault"/>
     <module name="RedundantThrows">
       <property name="suppressLoadErrors" value="true"/>
