@@ -98,6 +98,8 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 			if (agentCount != 0 || checkLoop++ > 15) {
 				break;
 			}
+			System.out.println("WAIT UNTIL AGENT IS CONNECTED - TRY COUNT " + checkLoop);
+			sleep(1000);
 		}
 		String ip = InetAddress.getLocalHost().getHostAddress();
 		agentService.approve(ip, true);
