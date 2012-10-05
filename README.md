@@ -1,5 +1,4 @@
 
-
 nGrinder 
 ========
 
@@ -11,10 +10,6 @@ nGrinder consists of two major components.
 
 * nGrinder controller is a web application which let performance tester create test script and configure test run
 * nGrinder agent is a virtual user generator which makes loads. 
-
-Currently nGrinder depends on CUBRID(http://www.cubrid.org) for database layer. 
-
-* nGrinder is now being developed. It'll be released around October, 2012.
  
 Features
 --------
@@ -111,13 +106,4 @@ DAMAGE.
 nGrinder includes the softwares and libraries as follows. 
 See the folder LICENCE for license and copyright details for each.
 
-- Grinder
-- jQuery
-- jUnit
-- iBatis
-- jfreechart
-- Apache Commons
-- JSON simple
-- Apache log4j
-- EditArea
-- JOFC2
+* https://github.com/nhnopensource/ngrinder/tree/master/license
