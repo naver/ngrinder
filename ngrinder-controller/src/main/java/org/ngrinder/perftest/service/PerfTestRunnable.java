@@ -64,15 +64,16 @@ import org.springframework.scheduling.annotation.Scheduled;
 /**
  * {@link PerfTest} test running run scheduler.
  * 
- * This class is responsible to execute the performance test which is ready to
- * execute. Mostly this class is started from {@link #startTest()} method. This
- * method is scheduled by Spring Task.
+ * This class is responsible to execute the performance test which is ready to execute. Mostly this
+ * class is started from {@link #startTest()} method. This method is scheduled by Spring Task.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
 @RuntimeOnlyComponent
 public class PerfTestRunnable implements NGrinderConstants {
+
+	private static final int TEST_DURATION_CHECK_MARGIN = 5000;
 
 	private static final Logger LOG = LoggerFactory.getLogger(PerfTestRunnable.class);
 
@@ -95,9 +96,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 	private Config config;
 
 	/**
-	 * Scheduled method for test execution. This method dispatches the test
-	 * candidates and run one of them. This method is responsible until a test
-	 * is executed.
+	 * Scheduled method for test execution. This method dispatches the test candidates and run one
+	 * of them. This method is responsible until a test is executed.
 	 */
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
 	public void startTest() {
@@ -132,7 +132,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	private boolean isScheduledNow(PerfTest test) {
 		Date current = new Date();
-		Date scheduledDate = DateUtils.truncate((Date) defaultIfNull(test.getScheduledTime(), current), Calendar.MINUTE);
+		Date scheduledDate = DateUtils
+						.truncate((Date) defaultIfNull(test.getScheduledTime(), current), Calendar.MINUTE);
 		return current.after(scheduledDate);
 	}
 
@@ -147,7 +148,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 		int size = agentManager.getAllFreeApprovedAgents().size();
 		if (test.getAgentCount() > size) {
 			perfTestService.markProgress(test, "The test is tried to execute but there is not enough free agents."
-					+ "\n- Current free agent size : " + size + "  / Requested : " + test.getAgentCount() + "\n");
+							+ "\n- Current free agent size : " + size + "  / Requested : " + test.getAgentCount()
+							+ "\n");
 			return false;
 		}
 		return true;
@@ -180,15 +182,17 @@ public class PerfTestRunnable implements NGrinderConstants {
 			LOG.error("Error while excuting test {}", perfTest.getTestIdentifier(), e);
 			doTerminate(perfTest, singleConsole);
 			notifyFinsish(perfTest, StopReason.ERROR_WHILE_PREPARE);
-		} 
+		}
 	}
 
 	/**
 	 * Check cancellation status on console.
-	 * @param singleConsole console
+	 * 
+	 * @param singleConsole
+	 *            console
 	 * @return true if canceled.
 	 */
-	 SingleConsole checkCancellation(SingleConsole singleConsole) {
+	SingleConsole checkCancellation(SingleConsole singleConsole) {
 		if (singleConsole.isCanceled()) {
 			throw new SinlgeConsolCancellationException();
 		}
@@ -225,10 +229,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 	void distributeFileOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		// Distribute files
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES, "All necessary files are distributing.");
-		
+
 		// the files have prepared before
 		singleConsole.distributeFiles(perfTestService.getPerfTestDirectory(perfTest));
-		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES_FINISHED, "All necessary files are distributed.");
+		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES_FINISHED,
+						"All necessary files are distributed.");
 	}
 
 	/**
@@ -242,15 +247,16 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            console
 	 */
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
-		perfTestService.markStatusAndProgress(perfTest, START_AGENTS, perfTest.getAgentCount() + " agents are starting.");
+		perfTestService.markStatusAndProgress(perfTest, START_AGENTS, perfTest.getAgentCount()
+						+ " agents are starting.");
 		agentManager.runAgent(singleConsole, grinderProperties, perfTest.getAgentCount());
 		singleConsole.waitUntilAgentConnected(perfTest.getAgentCount());
-		perfTestService.markStatusAndProgress(perfTest, START_AGENTS_FINISHED, perfTest.getAgentCount() + " agents are started.");
+		perfTestService.markStatusAndProgress(perfTest, START_AGENTS_FINISHED, perfTest.getAgentCount()
+						+ " agents are started.");
 	}
 
 	/**
-	 * Run a test with given {@link GrinderProperties} and {@link SingleConsole}
-	 * .
+	 * Run a test with given {@link GrinderProperties} and {@link SingleConsole} .
 	 * 
 	 * @param perfTest
 	 *            perftest
@@ -291,7 +297,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 				LOG.error("Abnormal test {} by {}", perfTest.getId(), stopReason.name());
 			}
 		});
-		
+
 		singleConsole.startSampling(grinderProperties.getInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, 0));
 		long startTime = singleConsole.startTest(grinderProperties);
 		perfTest.setStartTime(new Date(startTime));
@@ -329,16 +335,13 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * Scheduled method for test finish. There are three types of finish. <br/>
 	 * <ul>
 	 * <li>Abnormal test finish : when TPS is too low or too many errors occurs</li>
-	 * <li>User requested test finish : when user requested to finish test from
-	 * the UI</li>
-	 * <li>Normal test finish : when test goes over the planned duration and run
-	 * count.</li>
+	 * <li>User requested test finish : when user requested to finish test from the UI</li>
+	 * <li>Normal test finish : when test goes over the planned duration and run count.</li>
 	 * </ul>
 	 */
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
 	public void finishTest() {
 
-		
 		for (PerfTest each : perfTestService.getAbnoramlTestingPerfTest()) {
 			LOG.error("Terminate {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
@@ -353,8 +356,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 			notifyFinsish(each, StopReason.CANCEL_BY_USER);
 		}
 
-		
-		
 		for (PerfTest each : perfTestService.getTestingPerfTest()) {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			if (isTestFinishCandidate(each, consoleUsingPort)) {
@@ -364,12 +365,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 		}
 	}
 
-	private boolean isRuntimeFailure(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		if (singleConsoleInUse.getCurrentRunningTime() > 15000 && singleConsoleInUse.isAllTestFinished()) {
-			return true;
-		}
-		return false;
-	}
 	/**
 	 * Check this test is ready to finish.
 	 * 
@@ -381,16 +376,20 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	private boolean isTestFinishCandidate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		// Give 5 seconds to be finished
-		if (perfTest.isThreshholdDuration() && singleConsoleInUse.getCurrentRunningTime() > (perfTest.getDuration() + 5000)) {
-			LOG.debug("Test {} is ready to Finish. Current : {}, Planned : {}", new Object[] { perfTest.getTestIdentifier(),
-					singleConsoleInUse.getCurrentRunningTime(), perfTest.getDuration() });
+		if (perfTest.isThreshholdDuration()
+						&& singleConsoleInUse.getCurrentRunningTime() > (perfTest.getDuration() + TEST_DURATION_CHECK_MARGIN)) {
+			LOG.debug("Test {} is ready to Finish. Current : {}, Planned : {}",
+							new Object[] { perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentRunningTime(),
+									perfTest.getDuration() });
 			return true;
-		} else if (perfTest.isThreshholdRunCount() && singleConsoleInUse.getCurrentExecutionCount() >= perfTest.getTotalRunCount()) {
-			LOG.debug("Test {} is ready to Finish. Current : {}, Planned : {}", new Object[] { perfTest.getTestIdentifier(),
-					singleConsoleInUse.getCurrentExecutionCount(), perfTest.getTotalRunCount() });
+		} else if (perfTest.isThreshholdRunCount()
+						&& singleConsoleInUse.getCurrentExecutionCount() >= perfTest.getTotalRunCount()) {
+			LOG.debug("Test {} is ready to Finish. Current : {}, Planned : {}",
+							new Object[] { perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentExecutionCount(),
+									perfTest.getTotalRunCount() });
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -400,8 +399,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * @param perfTest
 	 *            {@link PerfTest} to be finished
 	 * @param singleConsoleInUse
-	 *            {@link SingleConsole} which is being using for
-	 *            {@link PerfTest}
+	 *            {@link SingleConsole} which is being using for {@link PerfTest}
 	 */
 	public void doCancel(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		LOG.error("Cacel the perftest {} by user request.", perfTest.getTestIdentifier());
@@ -415,11 +413,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * @param perfTest
 	 *            {@link PerfTest} to be finished
 	 * @param singleConsoleInUse
-	 *            {@link SingleConsole} which is being using for
-	 *            {@link PerfTest}
+	 *            {@link SingleConsole} which is being using for {@link PerfTest}
 	 */
 	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR, "Stoped by error");
+		perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR,
+						"Stoped by error");
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
 
@@ -429,18 +427,19 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * @param perfTest
 	 *            {@link PerfTest} to be finished
 	 * @param singleConsoleInUse
-	 *            {@link SingleConsole} which is being using for
-	 *            {@link PerfTest}
+	 *            {@link SingleConsole} which is being using for {@link PerfTest}
 	 */
 	public void doFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		// FIXME... it should found abnormal test status..
-		LOG.debug("PerfTest {} status - currentRunningTime {} ", perfTest.getId(), singleConsoleInUse.getCurrentRunningTime());
+		LOG.debug("PerfTest {} status - currentRunningTime {} ", perfTest.getId(),
+						singleConsoleInUse.getCurrentRunningTime());
 		// stop target host monitor
 		if (singleConsoleInUse.hasTooManyError()) {
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR,
-					"The test is finished. but contains a lot of errors");
+							"The test is finished. but contains a lot of errors");
 		} else {
-			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.FINISHED, "The test is finished successfully");
+			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.FINISHED,
+							"The test is finished successfully");
 		}
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}

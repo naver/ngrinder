@@ -47,7 +47,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
  */
 @Configuration
 public class DatabaseConfig implements NGrinderConstants {
-	private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseConfig.class);
 
 	@Autowired
 	private Config config;
@@ -96,7 +96,7 @@ public class DatabaseConfig implements NGrinderConstants {
 			public void postProcessPersistenceUnitInfo(MutablePersistenceUnitInfo pui) {
 				Reflections reflections = new Reflections(NGRINDER_DEFAULT_PACKAGE);
 				for (Class<?> each : reflections.getTypesAnnotatedWith(Entity.class)) {
-					logger.trace("Entity class {} is detected as the SpringData entity.", each.getName());
+					LOGGER.trace("Entity class {} is detected as the SpringData entity.", each.getName());
 					pui.addManagedClassName(each.getName());
 				}
 			}

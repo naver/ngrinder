@@ -26,29 +26,59 @@ import net.grinder.console.common.ErrorHandler;
 
 import org.slf4j.Logger;
 
+/**
+ * Custom {@link ErrorHandler} implementation.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
 public final class ErrorHandlerImplementation implements ErrorHandler {
 	private final Logger m_logger;
 
+	/**
+	 * Constructor.
+	 * @param logger logger
+	 */
 	public ErrorHandlerImplementation(Logger logger) {
 		m_logger = logger;
 	}
 
+	/* (non-Javadoc)
+	 * @see net.grinder.console.common.ErrorHandler#handleErrorMessage(java.lang.String)
+	 */
+	@Override
 	public void handleErrorMessage(String errorMessage) {
 		m_logger.error(errorMessage);
 	}
 
+	/* (non-Javadoc)
+	 * @see net.grinder.console.common.ErrorHandler#handleErrorMessage(java.lang.String, java.lang.String)
+	 */
+	@Override
 	public void handleErrorMessage(String errorMessage, String title) {
 		m_logger.error("[" + title + "] " + errorMessage);
 	}
 
+	/* (non-Javadoc)
+	 * @see net.grinder.console.common.ErrorHandler#handleException(java.lang.Throwable)
+	 */
+	@Override
 	public void handleException(Throwable throwable) {
 		m_logger.error(throwable.getMessage(), throwable);
 	}
 
+	/* (non-Javadoc)
+	 * @see net.grinder.console.common.ErrorHandler#handleException(java.lang.Throwable, java.lang.String)
+	 */
+	@Override
 	public void handleException(Throwable throwable, String title) {
 		m_logger.error(title, throwable);
 	}
 
+	/* (non-Javadoc)
+	 * @see net.grinder.console.common.ErrorHandler#handleInformationMessage(java.lang.String)
+	 */
+	@Override
 	public void handleInformationMessage(String informationMessage) {
 		m_logger.info(informationMessage);
 	}

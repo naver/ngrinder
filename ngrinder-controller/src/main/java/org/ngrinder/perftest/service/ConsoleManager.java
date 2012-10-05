@@ -166,6 +166,7 @@ public class ConsoleManager {
 				try {
 					socket.close();
 				} catch (IOException e) {
+					// FALL THROUGH
 				}
 			}
 		}
@@ -178,6 +179,8 @@ public class ConsoleManager {
 	 * specific time is elapsed, the timeout error occurs and throw {@link NGrinderRuntimeException}
 	 * . timeout can be adjusted by overriding {@link #getMaxWaitingMiliSecond()}.
 	 * 
+	 * @param testIdentifier
+	 *            test identifier
 	 * @param baseConsoleProperties
 	 *            base {@link ConsoleProperties}
 	 * @return console
@@ -209,6 +212,8 @@ public class ConsoleManager {
 	 * 
 	 * Duplicated returns is allowed.
 	 * 
+	 * @param testIdentifier
+	 *            test identifier
 	 * @param console
 	 *            console which will be returned back.
 	 * 

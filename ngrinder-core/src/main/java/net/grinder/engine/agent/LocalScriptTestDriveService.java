@@ -45,19 +45,19 @@ import org.slf4j.LoggerFactory;
 /**
  * Script validation service.
  * 
- * It works on local instead of remote agent. The reason I located this class in
- * ngrinder-core is... some grinder core class doesn't have public access..
+ * It works on local instead of remote agent. The reason I located this class in ngrinder-core is...
+ * some grinder core class doesn't have public access..
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
 public class LocalScriptTestDriveService {
-	private Logger LOGGER = LoggerFactory.getLogger(LocalScriptTestDriveService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(LocalScriptTestDriveService.class);
 
 	/**
-	 * Build custom class path based on the jar files on given base path
+	 * Build custom class path based on the jar files on given base path.
 	 * 
-	 * @param base 
+	 * @param base
 	 *            base path in which jar file is located
 	 * @return classpath string
 	 */
@@ -66,12 +66,14 @@ public class LocalScriptTestDriveService {
 		final StringBuffer customClassPath = new StringBuffer();
 		customClassPath.append(FilenameUtils.normalize(base.getAbsolutePath()));
 		if (libFolder.exists()) {
-			customClassPath.append(File.pathSeparator).append(FilenameUtils.normalize(new File(base, "lib").getAbsolutePath()));
+			customClassPath.append(File.pathSeparator).append(
+							FilenameUtils.normalize(new File(base, "lib").getAbsolutePath()));
 			libFolder.list(new FilenameFilter() {
 				@Override
 				public boolean accept(File dir, String name) {
 					if (name.endsWith(".jar")) {
-						customClassPath.append(File.pathSeparator).append(FilenameUtils.normalize(new File(dir, name).getAbsolutePath()));
+						customClassPath.append(File.pathSeparator).append(
+										FilenameUtils.normalize(new File(dir, name).getAbsolutePath()));
 					}
 					return true;
 				}
@@ -87,13 +89,13 @@ public class LocalScriptTestDriveService {
 	 *            working directory
 	 * @param script
 	 *            script file
-	 * @param m_eventSynchronisation
+	 * @param eventSynchronisation
 	 *            condition for event synchronization
 	 * @param jvmArguments
 	 *            special JVM Argument..
 	 * @return File which stores validation result.
 	 */
-	public File doValidate(File base, File script, Condition m_eventSynchronisation, String jvmArguments) {
+	public File doValidate(File base, File script, Condition eventSynchronisation, String jvmArguments) {
 		FanOutStreamSender fanOutStreamSender = null;
 		ErrorStreamRedirectWorkerLauncher workerLauncher = null;
 		boolean stopByTooMuchExecution = false;
@@ -119,24 +121,24 @@ public class LocalScriptTestDriveService {
 
 			String newClassPath = GrinderClassPathUtils.buildClasspathBasedOnCurrentClassLoader(LOGGER);
 			LOGGER.debug("Validation Class Path " + newClassPath);
-			
+
 			Properties systemProperties = new Properties();
 			systemProperties.put("java.class.path", base.getAbsolutePath() + File.pathSeparator + newClassPath);
 			Directory workingDirectory = new Directory(base);
 			final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
-					systemProperties, jvmArguments, workingDirectory);
+							systemProperties, jvmArguments, workingDirectory);
 
 			ScriptLocation scriptLocation = new ScriptLocation(workingDirectory, script);
 			ProcessWorkerFactory workerFactory = new ProcessWorkerFactory(workerCommandLine, agentIndentity,
-					fanOutStreamSender, false, scriptLocation, properties);
+							fanOutStreamSender, false, scriptLocation, properties);
 
-			workerLauncher = new ErrorStreamRedirectWorkerLauncher(1, workerFactory, m_eventSynchronisation, LOGGER,
-					byteArrayErrorStream);
+			workerLauncher = new ErrorStreamRedirectWorkerLauncher(1, workerFactory, eventSynchronisation, LOGGER,
+							byteArrayErrorStream);
 
 			// Start
 			workerLauncher.startAllWorkers();
 			// Wait for a termination event.
-			synchronized (m_eventSynchronisation) {
+			synchronized (eventSynchronisation) {
 				final long sleeptime = 1000;
 				final int maximumWaitingCount = 10;
 				int waitingCount = 0;
@@ -146,12 +148,12 @@ public class LocalScriptTestDriveService {
 					}
 					if (waitingCount++ > maximumWaitingCount) {
 						LOGGER.error("Validation should be performed within {}. Stop it forcely", sleeptime
-								* waitingCount);
+										* waitingCount);
 						workerLauncher.destroyAllWorkers();
 						stopByTooMuchExecution = true;
 						break;
 					}
-					m_eventSynchronisation.waitNoInterrruptException(sleeptime);
+					eventSynchronisation.waitNoInterrruptException(sleeptime);
 				}
 			}
 		} catch (Exception e) {
@@ -170,8 +172,8 @@ public class LocalScriptTestDriveService {
 				if (workerLauncher.allFinished() || waitingCount++ > maximumWaitingCount) {
 					break;
 				}
-				synchronized (m_eventSynchronisation) {
-					m_eventSynchronisation.waitNoInterrruptException(1000);
+				synchronized (eventSynchronisation) {
+					eventSynchronisation.waitNoInterrruptException(1000);
 				}
 			}
 

@@ -22,12 +22,13 @@
  */
 package org.ngrinder.common.util;
 
+import static org.ngrinder.common.util.Preconditions.checkArgument;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-import static org.ngrinder.common.util.Preconditions.checkArgument;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +54,7 @@ public final class ReflectionUtil {
 	 */
 	public static Object getFieldValue(final Object object, final String fieldName) {
 		Field field = getDeclaredField(object, fieldName);
-		checkNotNull(field, "Could not find field [%s] on target [%s]" ,fieldName, object);
+		checkNotNull(field, "Could not find field [%s] on target [%s]", fieldName, object);
 		makeAccessible(field);
 
 		try {
@@ -69,7 +70,8 @@ public final class ReflectionUtil {
 		checkArgument(StringUtils.isNotBlank(fieldName));
 
 		// CHECKSTYLE:OFF
-		for (Class<?> superClass = object.getClass(); superClass != Object.class; superClass = superClass.getSuperclass()) {
+		for (Class<?> superClass = object.getClass(); superClass != Object.class; superClass = superClass
+						.getSuperclass()) {
 			try {
 				return superClass.getDeclaredField(fieldName);
 			} catch (NoSuchFieldException e) {
@@ -84,9 +86,9 @@ public final class ReflectionUtil {
 			field.setAccessible(true);
 		}
 	}
-	
+
 	/**
-	 * Invoke private method
+	 * Invoke private method.
 	 * 
 	 * @param object
 	 *            object
@@ -117,7 +119,7 @@ public final class ReflectionUtil {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Get Method object.
 	 * 
@@ -129,7 +131,8 @@ public final class ReflectionUtil {
 	 *            parameter list
 	 * @return {@link Method} instance. otherwise null.
 	 */
-	private static Method getDeclaredMethod(final Class<?> clazz, final String methodName, final Class<?>[] parameters) {
+	private static Method getDeclaredMethod(final Class<?> clazz, final String methodName, 
+											final Class<?>[] parameters) {
 		checkNotNull(clazz);
 		checkArgument(StringUtils.isNotBlank(methodName));
 
@@ -137,6 +140,7 @@ public final class ReflectionUtil {
 			try {
 				return superClass.getDeclaredMethod(methodName, parameters);
 			} catch (Exception e) {
+				// Fall through
 			}
 		}
 		return null;

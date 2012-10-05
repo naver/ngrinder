@@ -65,7 +65,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "name")
 	private String testName;
 
-
 	@Column(name = "tag_string")
 	private String tagString;
 
@@ -197,9 +196,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Transient
 	private GrinderProperties grinderProperties;
 
-	@ManyToMany(fetch=FetchType.LAZY, cascade={CascadeType.ALL})
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
 	@JoinTable(name = "PERF_TEST_TAG", joinColumns = @JoinColumn(name = "perf_test_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    @Sort(comparator=Tag.class, type=SortType.COMPARATOR)
+	@Sort(comparator = Tag.class, type = SortType.COMPARATOR)
 	private SortedSet<Tag> tags;
 
 	public String getTestIdentifier() {
@@ -207,8 +206,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	/**
-	 * Get total required run count. This is calculated by multiplying
-	 * agentcount, threads, processes, runcount.
+	 * Get total required run count. This is calculated by multiplying agentcount, threads,
+	 * processes, runcount.
 	 * 
 	 * @return runcount
 	 */
@@ -301,9 +300,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	/**
-	 * Get ip address of target hosts. if target hosts 'a.com:1.1.1.1' add ip:
-	 * '1.1.1.1' if target hosts ':1.1.1.1' add ip: '1.1.1.1' if target hosts
-	 * '1.1.1.1' add ip: '1.1.1.1'
+	 * Get ip address of target hosts. if target hosts 'a.com:1.1.1.1' add ip: '1.1.1.1' if target
+	 * hosts ':1.1.1.1' add ip: '1.1.1.1' if target hosts '1.1.1.1' add ip: '1.1.1.1'
 	 * 
 	 * @return
 	 */
@@ -498,7 +496,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public String getRuntimeStr() {
-		long ms = (this.finishTime == null || this.startTime == null) ? 0 : this.finishTime.getTime() - this.startTime.getTime();
+		long ms = (this.finishTime == null || this.startTime == null) ? 0 : this.finishTime.getTime()
+						- this.startTime.getTime();
 		return DateUtil.ms2Time(ms);
 	}
 

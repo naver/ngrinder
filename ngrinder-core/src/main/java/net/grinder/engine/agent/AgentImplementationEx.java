@@ -101,8 +101,6 @@ public class AgentImplementationEx implements Agent {
 	 * @param proceedWithoutConsole
 	 *            <code>true</code> => proceed if a console connection could not
 	 *            be made.
-	 * @throws GrinderException
-	 *             If an error occurs.
 	 */
 	public AgentImplementationEx(Logger logger, AgentConfig agentConfig, boolean proceedWithoutConsole) {
 
@@ -120,8 +118,7 @@ public class AgentImplementationEx implements Agent {
 	 * 
 	 * @param logger
 	 *            logger
-	 * @throws GrinderException
-	 *             occurs when initialization is failed.
+	 * @param agentConfig agent configuration
 	 */
 	public AgentImplementationEx(Logger logger, AgentConfig agentConfig) {
 		this(logger, agentConfig, false);

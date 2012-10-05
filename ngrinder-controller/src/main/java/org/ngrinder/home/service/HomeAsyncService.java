@@ -39,11 +39,17 @@ public class HomeAsyncService {
 	@Autowired
 	private HomeService homeService;
 
+	/**
+	 * Get the right panel entries with async way.
+	 */
 	@Async
 	public void getRightPanelEntries() {
 		homeService.getRightPanelEntries();
 	}
 
+	/**
+	 * Get the left panel entries with async way.
+	 */
 	@Async
 	public void getLeftPanelEntries() {
 		homeService.getLeftPanelEntries();

@@ -157,6 +157,11 @@ public class AgentManagerService {
 		agentRepository.delete(id);
 	}
 
+	/**
+	 * Approve/Unapprove the agent on given ip.
+	 * @param ip ip
+	 * @param approve true/false
+	 */
 	@CacheEvict(allEntries = true, value = "agents")
 	public void approve(String ip, boolean approve) {
 		List<AgentInfo> found = agentRepository.findAllByIp(ip);

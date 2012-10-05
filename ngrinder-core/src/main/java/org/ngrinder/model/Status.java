@@ -108,7 +108,7 @@ public enum Status {
 	/**
 	 * Get the icon name of this status.
 	 * 
-	 * @return
+	 * @return icon anme
 	 */
 	public String getIconName() {
 		return category.getIconName();

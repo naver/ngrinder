@@ -40,9 +40,8 @@ import org.apache.commons.lang.StringUtils;
  * @author JunHo Yoon
  * @since 3.0
  */
-public abstract class DateUtil { 
+public abstract class DateUtil {
 
-	
 	private static final int CONSTANT_10 = 10;
 	private static final int CONSTANT_24 = 24;
 	private static final int CONSTANT_60 = 60;
@@ -57,39 +56,39 @@ public abstract class DateUtil {
 
 	/**
 	 * get the time in long format : "yyyyMMddHHmmss".
+	 * 
 	 * @param date
-	 * 			  date to be format
-	 * @return time
-	 * 			  time in format of long type
+	 *            date to be format
+	 * @return time time in format of long type
 	 */
 	public static long getCollectTimeInLong(Date date) {
 		SimpleDateFormat collectTimeFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		return Long.valueOf(collectTimeFormat.format(date));
 	}
-	
+
 	/**
 	 * convert user date to new date with server side Locale.
+	 * 
 	 * @param userTimeZone
-	 * 			  user TimeZone id
+	 *            user TimeZone id
 	 * @param userDate
-	 * 			  date in user's Local
-	 * @return serverDate
-	 * 			  data in server's Local
+	 *            date in user's Local
+	 * @return serverDate data in server's Local
 	 */
 	public static Date convertToServerDate(String userTimeZone, Date userDate) {
 		TimeZone userLocal = TimeZone.getTimeZone(userTimeZone);
 		int rawOffset = TimeZone.getDefault().getRawOffset() - userLocal.getRawOffset();
 		return new Date(userDate.getTime() + rawOffset);
 	}
-	
+
 	/**
 	 * convert server date to new date with user Locale.
+	 * 
 	 * @param userTimeZone
-	 * 			  user TimeZone id
+	 *            user TimeZone id
 	 * @param serverDate
-	 * 			  date in server's Local
-	 * @return serverDate
-	 * 			  data in user's Local
+	 *            date in server's Local
+	 * @return serverDate data in user's Local
 	 */
 	public static Date convertToUserDate(String userTimeZone, Date serverDate) {
 		TimeZone userLocal = TimeZone.getTimeZone(userTimeZone);
@@ -105,8 +104,7 @@ public abstract class DateUtil {
 	 * @return formated string
 	 */
 	public static String dateToString(Date date) {
-		SimpleDateFormat FULL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-		return FULL_DATE_FORMAT.format(date);
+		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(date);
 	}
 
 	/**
@@ -125,7 +123,7 @@ public abstract class DateUtil {
 				int hour = offsetSecond / (CONSTANT_60 * CONSTANT_60);
 				int minutes = (offsetSecond % (CONSTANT_60 * CONSTANT_60)) / CONSTANT_60;
 				timezoneIDMap.put(TimeZone.getTimeZone(id).getDisplayName(),
-						String.format("(GMT%+d:%02d) %s", hour, minutes, id));
+								String.format("(GMT%+d:%02d) %s", hour, minutes, id));
 			}
 		}
 		return timezoneIDMap;
@@ -214,14 +212,20 @@ public abstract class DateUtil {
 		return ((long) CONSTANT_1000) * (((day * CONSTANT_24 + hour) * CONSTANT_60 + min) * CONSTANT_60 + sec);
 	}
 
+	/**
+	 * Compare two date in minute detail.
+	 * 
+	 * @param d1
+	 *            date
+	 * @param d2
+	 *            date
+	 * @return true if two {@link Date} are same in minute level
+	 */
 	public static boolean compareDateEndWithMinute(Date d1, Date d2) {
 		SimpleDateFormat dateFormatEndWithMinute = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		String s1 = dateFormatEndWithMinute.format(d1);
 		String s2 = dateFormatEndWithMinute.format(d2);
-		if (s1.equals(s2))
-			return true;
-		else
-			return false;
+		return (s1.equals(s2));
 	}
 
 }

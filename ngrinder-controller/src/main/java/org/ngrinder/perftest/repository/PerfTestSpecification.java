@@ -39,10 +39,9 @@ import org.springframework.data.jpa.domain.Specification;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class PerfTestSpecification {
+public abstract class PerfTestSpecification {
 	
-	private PerfTestSpecification() {}
-	
+
 	/**
 	 * Get the Specification which check the {@link PerfTest} has one of given statuses.
 	 * 
@@ -62,8 +61,8 @@ public class PerfTestSpecification {
 	/**
 	 * Get the Specification which check the {@link PerfTest} has one of given tag.
 	 * 
-	 * @param statuses
-	 *            status set
+	 * @param tag
+	 *            tag
 	 * @return {@link Specification}
 	 */
 	public static Specification<PerfTest> hasTag(final String tag) {
@@ -79,8 +78,8 @@ public class PerfTestSpecification {
 	/**
 	 * Get the Specification which check the {@link PerfTest} has one of given id.
 	 * 
-	 * @param statuses
-	 *            status set
+	 * @param ids
+	 *            id list
 	 * @return {@link Specification}
 	 */
 	public static Specification<PerfTest> idSetEqual(final Long[] ids) {
@@ -95,8 +94,8 @@ public class PerfTestSpecification {
 	/**
 	 * Get the Specification which check the {@link PerfTest} has given id.
 	 * 
-	 * @param statuses
-	 *            status set
+	 * @param id
+	 *            perftest id
 	 * @return {@link Specification}
 	 */
 	public static Specification<PerfTest> idEqual(final Long id) {

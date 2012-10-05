@@ -35,13 +35,13 @@ import net.grinder.util.UniqueIdentityGenerator;
 public abstract class AbstractAgentControllerIdentityImplementation implements
 		Serializable {
 
-	private static final UniqueIdentityGenerator s_identityGenerator = new UniqueIdentityGenerator();
+	private static final UniqueIdentityGenerator IDENTITY_GENERATOR = new UniqueIdentityGenerator();
 
 	private final String m_identity;
 	private String m_name;
 
 	protected AbstractAgentControllerIdentityImplementation(String name) {
-		m_identity = s_identityGenerator.createUniqueString(name);
+		m_identity = IDENTITY_GENERATOR.createUniqueString(name);
 		m_name = name;
 	}
 

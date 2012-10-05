@@ -41,7 +41,10 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 
 /**
- * Base Entity. This has long type ID field
+ * Base Entity. This has a long type ID field
+ * 
+ * @param <M>
+ *            wrapped entity type
  * 
  * @author Liu Zhifei
  * @author JunHo Yoon
@@ -60,7 +63,6 @@ public class BaseEntity<M> implements Serializable {
 	public Long getId() {
 		return id;
 	}
-	
 
 	public void setId(Long id) {
 		this.id = id;
@@ -72,11 +74,11 @@ public class BaseEntity<M> implements Serializable {
 	}
 
 	/**
-	 * This function is used to check whether the entity id exist. It is not
-	 * used to check the entity existence in DB. It can be used to check the
-	 * entity in controller, which is passed from page.
+	 * This function is used to check whether the entity id exist. It is not used to check the
+	 * entity existence in DB. It can be used to check the entity in controller, which is passed
+	 * from page.
 	 * 
-	 * @return
+	 * @return true if exists
 	 */
 	public boolean exist() {
 		return id != null && id.longValue() != 0;
@@ -89,6 +91,7 @@ public class BaseEntity<M> implements Serializable {
 	 * 
 	 * @param source
 	 *            merge source
+	 * @return merged entity
 	 */
 	@SuppressWarnings("unchecked")
 	public M merge(M source) {
@@ -108,19 +111,22 @@ public class BaseEntity<M> implements Serializable {
 				if (readMethod == null) {
 					continue;
 				}
-				
+
 				Object defaultValue = readMethod.invoke(source);
 				if (defaultValue == null) {
 					continue;
 				}
-					
-				if (writeMethod.getAnnotation(ForceMergable.class) != null || isNotBlankStringOrNotString(defaultValue)) {
+
+				if (writeMethod.getAnnotation(ForceMergable.class) != null 
+								|| isNotBlankStringOrNotString(defaultValue)) {
 					writeMethod.invoke(this, defaultValue);
-				} 
+				}
 			}
 			return (M) this;
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException(forError.getDisplayName() + " - Exception occurs while merging entities from " + source + " to " + this, e);
+			String displayName = (forError == null) ? "Empty" : forError.getDisplayName();
+			throw new NGrinderRuntimeException(displayName + " - Exception occurs while merging entities from "
+							+ source + " to " + this, e);
 		}
 	}
 

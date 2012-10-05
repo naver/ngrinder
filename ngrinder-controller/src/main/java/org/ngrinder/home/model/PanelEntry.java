@@ -33,6 +33,7 @@ import org.ngrinder.common.util.DateUtil;
  * @since 3.0
  */
 public class PanelEntry implements Comparable<PanelEntry> {
+	private static final int NEW_LIMIT = 5;
 	private String title;
 	private Date lastUpdatedDate;
 	private String link;
@@ -71,7 +72,7 @@ public class PanelEntry implements Comparable<PanelEntry> {
 	}
 
 	public boolean isNew() {
-		return DateUtil.addDay(lastUpdatedDate, 5).compareTo(new Date()) > 0;
+		return DateUtil.addDay(lastUpdatedDate, NEW_LIMIT).compareTo(new Date()) > 0;
 	}
 
 	@Override

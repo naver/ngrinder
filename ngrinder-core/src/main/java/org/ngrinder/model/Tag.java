@@ -40,37 +40,38 @@ import org.apache.commons.lang.StringUtils;
  */
 @Entity
 @Table(name = "TAG")
-public class Tag extends BaseModel<Tag> implements Comparator<Tag>, Comparable<Tag>  {
-	
-	/**
-	 * UUID
-	 */
-	private static final long serialVersionUID = -308167583225684284L;
+public class Tag extends BaseModel<Tag> implements Comparator<Tag>, Comparable<Tag> {
 
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy="tags")
+	/**
+	 * UUID.
+	 */
+	private static final long serialVersionUID = -1;
+
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "tags")
 	private Set<PerfTest> perfTests;
-	
+
 	/**
 	 * Tag value.
 	 */
 	private String tagValue;
-	
+
 	/**
 	 * Default constructor.
 	 */
 	public Tag() {
 	}
 
-
 	/**
 	 * Constructor.
-	 * @param tagValue tag value
+	 * 
+	 * @param tagValue
+	 *            tag value
 	 */
 	public Tag(String tagValue) {
 		this.tagValue = StringUtils.trimToEmpty(tagValue);
-		
+
 	}
-	
+
 	public String getTagValue() {
 		return tagValue;
 	}
@@ -79,34 +80,35 @@ public class Tag extends BaseModel<Tag> implements Comparator<Tag>, Comparable<T
 		this.tagValue = tagValue;
 	}
 
-
 	public Set<PerfTest> getPerfTests() {
 		return perfTests;
 	}
-
 
 	public void setPerfTests(Set<PerfTest> perfTests) {
 		this.perfTests = perfTests;
 	}
 
-
 	@Override
 	public int compare(Tag o1, Tag o2) {
 		return o1.tagValue.compareTo(o2.getTagValue());
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Tag)) {
 			return false;
 		}
-		return StringUtils.equalsIgnoreCase(this.getTagValue(), ((Tag)obj).getTagValue());
+		return StringUtils.equalsIgnoreCase(this.getTagValue(), ((Tag) obj).getTagValue());
 	}
-
+	
+	@Override
+	public int hashCode() {
+		return StringUtils.trimToEmpty(this.getTagValue()).hashCode();
+	}
 
 	@Override
 	public int compareTo(Tag o) {
 		return compare(this, o);
 	}
-	
+
 }

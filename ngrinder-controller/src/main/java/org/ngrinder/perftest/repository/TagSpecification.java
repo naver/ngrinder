@@ -29,23 +29,21 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Tag;
 import org.ngrinder.model.User;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
- * {@link PerfTest} Specification for more elaborated search.
+ * {@link Tag} Specification for more elaborated search.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
-public class TagSpecification {
-	
-	private TagSpecification() {}
-	
+public abstract class TagSpecification {
+
 	/**
-	 * Get the Specification which provide empty predicate. This is for the base element for "and" or "or" combination.
+	 * Get the Specification which provide empty predicate. This is for the base element for "and"
+	 * or "or" combination.
 	 * 
 	 * @return {@link Specification}
 	 */
@@ -57,11 +55,12 @@ public class TagSpecification {
 			}
 		};
 	}
+
 	/**
 	 * Get the Specification which check the {@link Tag} has one of given value.
 	 * 
-	 * @param statuses
-	 *            status set
+	 * @param values
+	 *            tag lists
 	 * @return {@link Specification}
 	 */
 	public static Specification<Tag> valueIn(final String[] values) {
@@ -74,7 +73,8 @@ public class TagSpecification {
 	}
 
 	/**
-	 * Get createBy specification to get the {@link Tag} whose creator or last modifier is the given user.
+	 * Get createBy specification to get the {@link Tag} whose creator or last modifier is the given
+	 * user.
 	 * 
 	 * @param user
 	 *            user
@@ -92,8 +92,6 @@ public class TagSpecification {
 	/**
 	 * Get the Specification which check the tag has corresponding perfTest.
 	 * 
-	 * @param statuses
-	 *            status set
 	 * @return {@link Specification}
 	 */
 	public static Specification<Tag> hasPerfTest() {
@@ -106,12 +104,12 @@ public class TagSpecification {
 			}
 		};
 	}
-	
+
 	/**
 	 * Get query specification to get the {@link Tag} whose value starts with given query.
 	 * 
-	 * @param query
-	 *            query
+	 * @param queryString
+	 *            matching tag value
 	 * @return {@link Specification}
 	 */
 	public static Specification<Tag> isStartWith(final String queryString) {
@@ -119,7 +117,8 @@ public class TagSpecification {
 			@Override
 			public Predicate toPredicate(Root<Tag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				String replacedQueryString = StringUtils.replace(queryString, "%", "\\%");
-				return cb.like(cb.lower(root.get("tagValue").as(String.class)), StringUtils.lowerCase(replacedQueryString) + "%");
+				return cb.like(cb.lower(root.get("tagValue").as(String.class)),
+								StringUtils.lowerCase(replacedQueryString) + "%");
 			}
 		};
 	}

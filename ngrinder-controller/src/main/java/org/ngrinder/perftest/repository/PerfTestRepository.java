@@ -67,7 +67,7 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	/**
 	 * Find all {@link PerfTest} based on {@link Status} ordered by CreatedDate.
 	 * 
-	 * @param Status
+	 * @param status
 	 *            status
 	 * 
 	 * @return {@link PerfTest} list
@@ -77,7 +77,7 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	/**
 	 * Find all {@link PerfTest} based on {@PerfTest#status} ordered by CreatedDate.
 	 * 
-	 * @param Status
+	 * @param status
 	 *            status
 	 * @param pageable
 	 *            page info
@@ -88,7 +88,7 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	/**
 	 * Find all {@link PerfTest} based on {@PerfTest#status} ordered by scheduledTime ascending.
 	 * 
-	 * @param Status
+	 * @param status
 	 *            status
 	 * @param pageable
 	 *            page info
@@ -99,7 +99,7 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	/**
 	 * Find all {@link PerfTest} based on {@PerfTest#status} ordered by scheduledTime ascending.
 	 * 
-	 * @param Status
+	 * @param status
 	 *            status
 	 * @return {@link PerfTest} list
 	 */

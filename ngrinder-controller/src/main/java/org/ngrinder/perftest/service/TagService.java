@@ -116,8 +116,8 @@ public class TagService {
 	 * 
 	 * @param user
 	 *            user.
-	 * @param startWith
-	 *            string
+	 * @param query
+	 *            query string
 	 * @return found tag string lists
 	 */
 	public List<String> getAllTagStrings(User user, String query) {
@@ -130,8 +130,8 @@ public class TagService {
 	}
 
 	/**
-	 * Save Tag. Because this method can be called in {@link TagService}
-	 * internally, so created user / data should be set directly.
+	 * Save Tag. Because this method can be called in {@link TagService} internally, so created user
+	 * / data should be set directly.
 	 * 
 	 * @param user
 	 *            user
@@ -176,7 +176,7 @@ public class TagService {
 		List<Tag> userTags = tagRepository.findAll(spec);
 		for (Tag each : userTags) {
 			Set<PerfTest> perfTests = each.getPerfTests();
-			if (perfTests != null){
+			if (perfTests != null) {
 				perfTestService.removeTag(perfTests, each);
 			}
 		}

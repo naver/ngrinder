@@ -54,6 +54,9 @@ public class AgentDaemon implements Agent {
 
 	/**
 	 * Constructor.
+	 * 
+	 * @param agentConfig
+	 *            agent configuration
 	 */
 
 	public AgentDaemon(AgentConfig agentConfig) {
@@ -65,6 +68,13 @@ public class AgentDaemon implements Agent {
 		}
 	}
 
+	/**
+	 * Set agent.
+	 * 
+	 * @param agent
+	 *            agent
+	 * @return set agent
+	 */
 	public synchronized AgentImplementationEx setAgent(AgentImplementationEx agent) {
 		this.agent = agent;
 		return this.agent;
@@ -100,9 +110,11 @@ public class AgentDaemon implements Agent {
 
 	/**
 	 * Run agent with given consoleHost and consolePort. <br/>
-	 * if consoleHost is null it will use localhost or use console host set in {@link GrinderProperties}
+	 * if consoleHost is null it will use localhost or use console host set in
+	 * {@link GrinderProperties}
 	 * 
-	 * if port number is 0, it will use default consolePort or use console port set in {@link GrinderProperties}
+	 * if port number is 0, it will use default consolePort or use console port set in
+	 * {@link GrinderProperties}
 	 * 
 	 * @param consoleHost
 	 *            host name
@@ -118,7 +130,7 @@ public class AgentDaemon implements Agent {
 			getGrinderProperties().setInt(GrinderProperties.CONSOLE_PORT, consolePort);
 		}
 		thread = new Thread(new AgentThreadRunnable(), "Agent conntected to port : "
-				+ getGrinderProperties().getInt(GrinderProperties.CONSOLE_PORT, 0));
+						+ getGrinderProperties().getInt(GrinderProperties.CONSOLE_PORT, 0));
 		thread.setDaemon(true);
 		thread.start();
 		LOGGER.info("Agent Daemon {} is started.", thread.getName());
@@ -161,6 +173,9 @@ public class AgentDaemon implements Agent {
 		return this.m_listeners;
 	}
 
+	/**
+	 * Reset all shutdown listener.
+	 */
 	public void resetListeners() {
 		final ListenerSupport<AgentShutDownListener> backup = new ListenerSupport<AgentDaemon.AgentShutDownListener>();
 		getListeners().apply(new Informer<AgentShutDownListener>() {
@@ -168,14 +183,14 @@ public class AgentDaemon implements Agent {
 				backup.add(listener);
 			}
 		});
-		
+
 		backup.apply(new Informer<AgentShutDownListener>() {
 			public void inform(AgentShutDownListener listener) {
 				getListeners().remove(listener);
 			}
 		});
 	}
-	
+
 	/**
 	 * Add AgentShutdownListener.
 	 * 

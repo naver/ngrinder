@@ -33,10 +33,8 @@ import org.slf4j.LoggerFactory;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class CoreLogger {
-	
-	private CoreLogger() {}
-	
+public abstract class CoreLogger {
+
 	/**
 	 * Core logger.
 	 */

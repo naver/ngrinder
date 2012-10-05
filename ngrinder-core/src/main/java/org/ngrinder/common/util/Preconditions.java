@@ -515,13 +515,11 @@ public final class Preconditions {
 	}
 
 	/**
-	 * Ensures that an object reference passed as a parameter to the calling method is not null.
+	 * Ensures that given url is valid URL.
 	 * 
-	 * @param <T>
-	 *            type
-	 * @param reference
-	 *            an object reference
-	 * @return the non-null reference that was validated
+	 * @param url
+	 *            url String
+	 * @return converted url
 	 */
 	public static URL checkValidURL(String url) {
 		try {

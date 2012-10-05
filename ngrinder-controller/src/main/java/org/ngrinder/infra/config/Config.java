@@ -51,8 +51,8 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 
 /**
- * Spring component which is responsible to get the nGrinder config which is
- * stored ${NGRINDER_HOME}.
+ * Spring component which is responsible to get the nGrinder config which is stored
+ * ${NGRINDER_HOME}.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -75,9 +75,9 @@ public class Config {
 	}
 
 	/**
-	 * Initialize Config. This method mainly perform NGRINDER_HOME resolution
-	 * and system properties load. In addition, Logger is initialized and
-	 * default configuration file is copied into NGRINDER_HOME if it's the first
+	 * Initialize Config. This method mainly perform NGRINDER_HOME resolution and system properties
+	 * load. In addition, Logger is initialized and default configuration file is copied into
+	 * NGRINDER_HOME if it's the first
 	 */
 	@PostConstruct
 	public void init() {
@@ -97,12 +97,19 @@ public class Config {
 
 	/**
 	 * Initialize Logger.
+	 * 
+	 * @param forceToVerbose
+	 *            force to verbose logging.
 	 */
 	public void initLogger(boolean forceToVerbose) {
 		setupLogger((forceToVerbose) ? true : getSystemProperties().getPropertyBoolean("verbose", false));
 	}
 
-	public void setupLogger(boolean verbose){
+	/**
+	 * Set up logger.
+	 * @param verbose verbose mode?
+	 */
+	public void setupLogger(boolean verbose) {
 		this.verbose = verbose;
 		final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 		context.reset();
@@ -118,6 +125,7 @@ public class Config {
 			CoreLogger.LOGGER.error(e.getMessage(), e);
 		}
 	}
+
 	/**
 	 * Copy default files.
 	 * 
@@ -135,7 +143,7 @@ public class Config {
 	/**
 	 * NGrinder home path.
 	 * 
-	 * @return
+	 * @return resolved home
 	 */
 	private Home resolveHome() {
 		String userHomeFromEnv = System.getenv("NGRINDER_HOME");
@@ -148,9 +156,8 @@ public class Config {
 		}
 		String userHome = null;
 		userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
-		File homeDirectory = (
-				StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(System.getProperty("user.home"),
-				NGRINDER_DEFAULT_FOLDER);
+		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
+						System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
 
 		return new Home(homeDirectory);
 	}
@@ -226,9 +233,8 @@ public class Config {
 	}
 
 	/**
-	 * if there is pluginsupport property in system.properties.. return true in
-	 * test mode, plugin is disabled, because it takes time to initialize plugin
-	 * system.
+	 * if there is pluginsupport property in system.properties.. return true in test mode, plugin is
+	 * disabled, because it takes time to initialize plugin system.
 	 * 
 	 * @return true if plugin is supported.
 	 */
@@ -304,6 +310,5 @@ public class Config {
 	public boolean isVerbose() {
 		return verbose;
 	}
-
 
 }

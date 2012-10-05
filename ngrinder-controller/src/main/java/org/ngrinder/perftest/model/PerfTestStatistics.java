@@ -36,10 +36,18 @@ public class PerfTestStatistics {
 	private int agentCount;
 	private int testCount;
 
+	/**
+	 * Constructor.
+	 * @param user user
+	 */
 	public PerfTestStatistics(User user) {
 		this.user = user;
 	}
 
+	/**
+	 * Add perftest.
+	 * @param perfTest perftest
+	 */
 	public void addPerfTest(PerfTest perfTest) {
 		testCount++;
 		agentCount += perfTest.getAgentCount();

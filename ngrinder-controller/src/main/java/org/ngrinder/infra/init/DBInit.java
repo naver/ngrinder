@@ -60,13 +60,13 @@ public class DBInit {
 	}
 
 	@Autowired
-	public SaltSource saltSource;
+	private SaltSource saltSource;
 
 	@Autowired
-	public PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 
 	@Autowired
-	public FileEntryService fileEntryService;
+	private FileEntryService fileEntryService;
 	
 	/**
 	 * Create users.

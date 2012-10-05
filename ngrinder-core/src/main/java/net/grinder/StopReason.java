@@ -29,16 +29,16 @@ package net.grinder;
  * @since 3.0
  */
 public enum StopReason {
-	/** If tps is too low */
+	/** If tps is too low. */
 	TOO_LOW_TPS,
-	/** If too many error happen */
+	/** If too many error happen. */
 	TOO_MANY_ERRORS,
-	/** Error while test preparation */
+	/** Error while test preparation. */
 	ERROR_WHILE_PREPARE,
-	/** Error while first execution */
+	/** Error while first execution. */
 	SCRIPT_ERROR,
-	/** Normal Stop */
+	/** Normal Stop. */
 	NORMAL,
-	/** Cancel By User */
+	/** Cancel By User. */
 	CANCEL_BY_USER
 }

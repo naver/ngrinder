@@ -23,14 +23,19 @@
 package org.ngrinder.common.exception;
 
 /**
- * Confiruation Exception.
+ * Configuration Exception.
  * 
  * @author JunHo Yoon
- * 
+ * @since 3.0
  */
 @SuppressWarnings("serial")
 public class ConfigurationException extends RuntimeException {
-
+	
+	/**
+	 * Constructor.
+	 * @param message message
+	 * @param t root cause
+	 */
 	public ConfigurationException(String message, Throwable t) {
 		super(message, t);
 	}

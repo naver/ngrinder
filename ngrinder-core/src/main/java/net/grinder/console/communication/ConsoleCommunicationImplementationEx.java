@@ -188,6 +188,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 					try {
 						exception = m_acceptor.getPendingException();
 					} catch(Exception e) {
+						// FALL THROUGH
 					}
 
 					if (exception == null) {

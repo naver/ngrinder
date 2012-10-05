@@ -47,7 +47,7 @@ public class DefaultLoginPlugin implements OnLoginRunnable {
 	@Autowired
 	private UserService userService;
 
-	protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
+	private MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
 	@Override
 	public User loadUser(String userId) {

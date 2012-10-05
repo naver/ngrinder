@@ -70,7 +70,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	/**
 	 * Get current user.
 	 * 
-	 * @return
+	 * @return current user
 	 */
 	public User getCurrentUser() {
 		return userContext.getCurrentUser();
@@ -87,6 +87,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 		try {
 			return getCurrentUser();
 		} catch (AuthenticationCredentialsNotFoundException e) {
+			// Fall through
 		}
 		return new User();
 	}
@@ -124,6 +125,11 @@ public class NGrinderBaseController implements NGrinderConstants {
 	private static String errorJson;
 	private static Gson gson = new Gson();
 
+	/**
+	 * Return success json message.
+	 * @param message message
+	 * @return json message
+	 */
 	public String returnSuccess(String message) {
 		JsonObject rtnJson = new JsonObject();
 		rtnJson.addProperty(JSON_SUCCESS, true);
@@ -131,6 +137,11 @@ public class NGrinderBaseController implements NGrinderConstants {
 		return rtnJson.toString();
 	}
 
+	/**
+	 * Return error json message.
+	 * @param message message
+	 * @return json message
+	 */
 	public String returnError(String message) {
 		JsonObject rtnJson = new JsonObject();
 		rtnJson.addProperty(JSON_SUCCESS, false);
@@ -138,18 +149,36 @@ public class NGrinderBaseController implements NGrinderConstants {
 		return rtnJson.toString();
 	}
 
+	/**
+	 * Return raw success json message.
+	 * @return json message
+	 */
 	public String returnSuccess() {
 		return successJson;
 	}
 
+	/**
+	 * Return raw error json message.
+	 * @return json message
+	 */
 	public String returnError() {
 		return errorJson;
 	}
 
+	/**
+	 * Convert the given list into json message.
+	 * @param list list
+	 * @return json message
+	 */
 	public String toJson(List<?> list) {
 		return gson.toJson(list);
 	}
 
+	/**
+	 * Convert the given map into json message.
+	 * @param map map
+	 * @return json message
+	 */
 	public String toJson(Map<String, Object> map) {
 		return gson.toJson(map);
 	}

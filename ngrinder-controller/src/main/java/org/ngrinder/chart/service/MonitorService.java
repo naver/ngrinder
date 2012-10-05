@@ -31,8 +31,6 @@ import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
-
 /**
  * Monitor Service Class.
  * 
@@ -45,11 +43,28 @@ public class MonitorService {
 	@Autowired
 	private SystemMonitorRepository sysMonitorRepository;
 
-	public SystemDataModel saveSystemMonitorInfo(SystemDataModel data) {
-		checkNotNull(data);
-		return sysMonitorRepository.save(data);
+	/**
+	 * Save {@link SystemDataModel} into db.
+	 * 
+	 * @param systemDataModel
+	 *            {@link SystemDataModel} instance
+	 * @return saved {@link SystemDataModel}
+	 */
+	public SystemDataModel saveSystemMonitorInfo(SystemDataModel systemDataModel) {
+		return sysMonitorRepository.save(checkNotNull(systemDataModel));
 	}
 
+	/**
+	 * Get all{@link SystemDataModel} from db b/w given timeframe and ip.
+	 * 
+	 * @param ip
+	 *            ip
+	 * @param startTime
+	 *            starttime
+	 * @param endTime
+	 *            endtime
+	 * @return {@link SystemDataModel} list
+	 */
 	public List<SystemDataModel> getSystemMonitorData(String ip, long startTime, long endTime) {
 		return sysMonitorRepository.findAllByIpAndCollectTimeBetween(ip, startTime, endTime);
 	}

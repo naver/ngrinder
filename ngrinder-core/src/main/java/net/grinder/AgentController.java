@@ -74,7 +74,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AgentController implements Agent {
 
-	private static final Logger m_logger = LoggerFactory.getLogger("agent controller");
+	private static final Logger LOGGER = LoggerFactory.getLogger("agent controller");
 
 	private Timer m_timer;
 	private final Condition m_eventSynchronisation = new Condition();
@@ -98,8 +98,6 @@ public class AgentController implements Agent {
 	/**
 	 * Constructor.
 	 * 
-	 * @param logger
-	 *            Logger.
 	 * @param eventSyncCondition
 	 *            event sync condition to wait until agent start to run.
 	 * 
@@ -109,7 +107,7 @@ public class AgentController implements Agent {
 	public AgentController(Condition eventSyncCondition) throws GrinderException {
 
 		m_eventSyncCondition = eventSyncCondition;
-		m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, m_logger);
+		m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, LOGGER);
 		m_agentIdentity = new AgentControllerIdentityImplementation(getHostName(), getHostAddress());
 		agentSystemDataCollector.refresh();
 	}
@@ -135,7 +133,8 @@ public class AgentController implements Agent {
 	 */
 	public void run() throws GrinderException {
 		GrinderProperties grinderProperties = new GrinderProperties();
-		grinderProperties.setInt(AgentConfig.AGENT_HOSTID, AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+		grinderProperties.setInt(AgentConfig.AGENT_HOSTID,
+						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		synchronized (m_eventSyncCondition) {
 			m_eventSyncCondition.notifyAll();
 		}
@@ -147,16 +146,16 @@ public class AgentController implements Agent {
 	 * 
 	 * @param grinderProperties
 	 *            {@link GrinderProperties} used.
-	 * @throws GrinderException
-	 *             If an error occurs.
+	 * @param logCount
+	 * 
 	 */
 	public void run(GrinderProperties grinderProperties, long logCount) throws GrinderException {
-
 		StartGrinderMessage startMessage = null;
 		ConsoleCommunication consoleCommunication = null;
 		m_fanOutStreamSender = new FanOutStreamSender(GrinderConstants.AGENT_CONTROLLER_FANOUT_STREAM_THREAD_COUNT);
 		m_timer = new Timer(false);
-		AgentDaemon agent = new AgentDaemon(checkNotNull(getAgentConfig(), "agentconfig should be provided before agent daemon start."));
+		AgentDaemon agent = new AgentDaemon(checkNotNull(getAgentConfig(),
+						"agentconfig should be provided before agent daemon start."));
 
 		m_grinderProperties = grinderProperties;
 		try {
@@ -172,23 +171,24 @@ public class AgentController implements Agent {
 						try {
 							consoleCommunication = new ConsoleCommunication(connector);
 							consoleCommunication.start();
-							m_logger.info("connected to agent controller server at {}", connector.getEndpointAsString());
+							LOGGER.info("connected to agent controller server at {}", connector.getEndpointAsString());
 						} catch (CommunicationException e) {
-							m_logger.error("Error while connecting to {} : {}" , connector.getEndpointAsString(), e.getMessage());
-							m_logger.debug(e.getMessage(), e);
+							LOGGER.error("Error while connecting to {} : {}", connector.getEndpointAsString(),
+											e.getMessage());
+							LOGGER.debug(e.getMessage(), e);
 							return;
 						}
 					}
 
 					if (consoleCommunication != null && startMessage == null) {
-						m_logger.info("waiting for agent controller server signal");
+						LOGGER.info("waiting for agent controller server signal");
 						m_state = AgentControllerState.READY;
 						m_agentControllerServerListener.waitForMessage();
 
 						if (m_agentControllerServerListener.received(AgentControllerServerListener.START)) {
 							startMessage = m_agentControllerServerListener.getLastStartGrinderMessage();
 
-							m_logger.info("agent start message is revcieved from console {}", startMessage);
+							LOGGER.info("agent start message is revcieved from console {}", startMessage);
 							continue;
 						} else {
 							break; // Another message, check at end of outer
@@ -205,7 +205,7 @@ public class AgentController implements Agent {
 				// Here the agent run code goes..
 				if (startMessage != null) {
 					final String testId = startMessage.getProperties().getProperty("grinder.test.id", "");
-					m_logger.info("starting agent... for {}", testId);
+					LOGGER.info("starting agent... for {}", testId);
 					m_state = AgentControllerState.BUSY;
 					m_connectionPort = startMessage.getProperties().getInt(GrinderProperties.CONSOLE_PORT, 0);
 					agent.run(startMessage.getProperties());
@@ -219,7 +219,7 @@ public class AgentController implements Agent {
 					agent.addListener(new AgentShutDownListener() {
 						@Override
 						public void shutdownAgent() {
-							m_logger.info("send log for {}", testId);
+							LOGGER.info("send log for {}", testId);
 							sendLog(conCom, testId);
 							m_state = AgentControllerState.READY;
 							m_connectionPort = 0;
@@ -231,7 +231,7 @@ public class AgentController implements Agent {
 
 				if (!m_agentControllerServerListener.received(AgentControllerServerListener.ANY)) {
 					// We've got here naturally, without a console signal.
-					m_logger.info("agent started. waiting for agent controller signal");
+					LOGGER.info("agent started. waiting for agent controller signal");
 					m_agentControllerServerListener.waitForMessage();
 
 				}
@@ -291,11 +291,11 @@ public class AgentController implements Agent {
 			}
 		});
 		if (ArrayUtils.isEmpty(list)) {
-			m_logger.error("No log exists under {}", logFolder.getAbsolutePath());
+			LOGGER.error("No log exists under {}", logFolder.getAbsolutePath());
 			return;
 		}
-		consoleCommunication.sendMessage(new LogReportGrinderMessage(testId, LogCompressUtil.compressFile(new File(logFolder, list[0])),
-				new AgentAddress(m_agentIdentity)));
+		consoleCommunication.sendMessage(new LogReportGrinderMessage(testId, LogCompressUtil.compressFile(new File(
+						logFolder, list[0])), new AgentAddress(m_agentIdentity)));
 		// Delete logs to clean up
 		FileUtils.deleteQuietly(logFolder);
 	}
@@ -316,8 +316,8 @@ public class AgentController implements Agent {
 			try {
 				consoleCommunication.sendCurrentState();
 			} catch (CommunicationException e) {
-				m_logger.error("Error while sending current state {}.", e.getMessage());
-				m_logger.debug("Error is ", e);
+				LOGGER.error("Error while sending current state {}.", e.getMessage());
+				LOGGER.debug("Error is ", e);
 			}
 		}
 	}
@@ -333,7 +333,7 @@ public class AgentController implements Agent {
 			m_fanOutStreamSender.shutdown();
 		}
 		m_agentControllerServerListener.shutdown();
-		m_logger.info("finished");
+		LOGGER.info("finished");
 	}
 
 	/**
@@ -359,8 +359,8 @@ public class AgentController implements Agent {
 			SystemInfo systemInfo = agentSystemDataCollector.execute();
 			return new SystemDataModel(systemInfo);
 		} catch (Exception e) {
-			m_logger.error("Error while get system perf data model : {} ", e.getMessage());
-			m_logger.debug("Error Trace is ", e);
+			LOGGER.error("Error while get system perf data model : {} ", e.getMessage());
+			LOGGER.debug("Error Trace is ", e);
 			return emptySystemDataModel;
 		}
 	}
@@ -383,7 +383,7 @@ public class AgentController implements Agent {
 			m_sender = ClientSender.connect(receiver);
 
 			m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.STARTED, getSystemDataModel(),
-					m_connectionPort));
+							m_connectionPort));
 			final MessageDispatchSender messageDispatcher = new MessageDispatchSender();
 			m_agentControllerServerListener.registerMessageHandlers(messageDispatcher);
 
@@ -395,8 +395,8 @@ public class AgentController implements Agent {
 						sendCurrentState();
 					} catch (CommunicationException e) {
 						cancel();
-						m_logger.error("Error while sending current state:" + e.getMessage());
-						m_logger.debug("The error is", e);
+						LOGGER.error("Error while sending current state:" + e.getMessage());
+						LOGGER.debug("The error is", e);
 					}
 				}
 			};
@@ -406,7 +406,7 @@ public class AgentController implements Agent {
 			try {
 				m_sender.send(message);
 			} catch (CommunicationException e) {
-				m_logger.error(e.getMessage(), e);
+				LOGGER.error(e.getMessage(), e);
 			}
 		}
 

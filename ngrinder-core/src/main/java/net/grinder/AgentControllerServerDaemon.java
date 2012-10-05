@@ -174,26 +174,49 @@ public class AgentControllerServerDaemon {
 		getComponent(AgentProcessControlImplementation.class).addLogArrivedListener(logArrivedListener);
 	}
 
+	/**
+	 * Get the console port which the given controller's agent is using. 
+	 * @param agentIdentity agent identity
+	 * @return port
+	 */
 	public int getAgentConnectingPort(AgentIdentity agentIdentity) {
 		return agentControllerServer.getComponent(AgentProcessControlImplementation.class)
 						.getAgentConnectingPort(agentIdentity);
 	}
 
+	/**
+	 * Get the agent status of the given agent controller.  
+	 * @param agentIdentity agent identity
+	 * @return agent controller status
+	 */
 	public AgentControllerState getAgentState(AgentIdentity agentIdentity) {
 		return agentControllerServer.getComponent(AgentProcessControlImplementation.class)
 						.getAgentControllerState(agentIdentity);
 	}
 
+	/**
+	 * Get all free agents which is not used yet.
+	 * @return free agent list
+	 */
 	public Set<AgentIdentity> getAllFreeAgents() {
 		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgents(
 						AgentControllerState.READY, 0);
 	}
 
+	/**
+	 * Get {@link SystemDataModel} of the given agent.
+	 * @param agentIdentity agent identity
+	 * @return {@link SystemDataModel} instance.
+	 */
 	public SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {
 		return agentControllerServer.getComponent(AgentProcessControlImplementation.class)
 						.getSystemDataModel(agentIdentity);
 	}
 
+	/**
+	 * Get all available agents.
+	 * @return agent set
+	 */
 	public Set<AgentIdentity> getAllAvailableAgents() {
 		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAllAgents();
 	}

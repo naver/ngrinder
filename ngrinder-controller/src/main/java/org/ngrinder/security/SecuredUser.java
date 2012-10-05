@@ -75,6 +75,7 @@ public class SecuredUser implements UserDetails {
 
 	/**
 	 * Return password.
+	 * @return password
 	 */
 	@Override
 	public String getPassword() {
@@ -83,6 +84,7 @@ public class SecuredUser implements UserDetails {
 
 	/**
 	 * Return Username (Actually user id).
+	 * @return user name
 	 */
 	@Override
 	public String getUsername() {

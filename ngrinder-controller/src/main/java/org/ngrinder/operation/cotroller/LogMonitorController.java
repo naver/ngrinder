@@ -58,13 +58,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 @PreAuthorize("hasAnyRole('A', 'S')")
 public class LogMonitorController extends NGrinderBaseController {
 	
+	private static final int LOGGER_BUFFER_SIZE = 10000;
+
 	@Autowired
 	private Config config;
 
 	/**
 	 * Latest log.
 	 */
-	private volatile StringBuffer stringBuffer = new StringBuffer(10000);
+	private volatile StringBuffer stringBuffer = new StringBuffer(LOGGER_BUFFER_SIZE);
 
 	private HttpHeaders commonResponseHeaders;
 	private Tailer tailer;
@@ -84,7 +86,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Initialize tailer
+	 * Initialize tailer.
 	 */
 	private void initTailer() {
 		File logFile = getLogFile();
@@ -151,7 +153,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	}
 	
 	/**
-	 * Turn on verbose log mode
+	 * Turn on verbose log mode.
 	 * @return success message if successful
 	 */
 	@RequestMapping("/verbose")

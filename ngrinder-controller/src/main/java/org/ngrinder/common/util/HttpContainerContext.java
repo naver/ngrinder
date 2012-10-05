@@ -37,6 +37,7 @@ import org.springframework.web.context.request.RequestContextHolder;
  */
 @Component
 public class HttpContainerContext {
+	private static final int DEFAULT_WEB_PORT = 80;
 	@Autowired
 	private Config config;
 
@@ -66,7 +67,7 @@ public class HttpContainerContext {
 		// If it's http default port it will ignore the port part.
 		// However, if ngrinder is provided in HTTPS.. it can be a problem.
 		// FIXME : Later fix above.
-		String portString = (serverPort == 80) ? StringUtils.EMPTY : ":" + serverPort;
+		String portString = (serverPort == DEFAULT_WEB_PORT) ? StringUtils.EMPTY : ":" + serverPort;
 		return new StringBuilder(httpUrl).append(request.getScheme()).append("://")
 						.append(request.getServerName()).append(portString).append(request.getContextPath())
 						.toString();

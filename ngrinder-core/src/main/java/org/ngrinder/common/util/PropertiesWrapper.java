@@ -84,6 +84,14 @@ public class PropertiesWrapper {
 		return getProperty(key, defaultValue, DEFAULT_ERROR_MESSGAE);
 	}
 
+	/**
+	 * Add property.
+	 * 
+	 * @param key
+	 *            property key
+	 * @param value
+	 *            property value
+	 */
 	public void addProperty(String key, String value) {
 		this.properties.put(key, value);
 	}
@@ -102,6 +110,15 @@ public class PropertiesWrapper {
 		return NumberUtils.toInt(property, defaultValue);
 	}
 
+	/**
+	 * Get property as boolean.
+	 * 
+	 * @param key
+	 *            property key
+	 * @param defaultValue
+	 *            default value when data is not available
+	 * @return property boolean value
+	 */
 	public boolean getPropertyBoolean(String key, boolean defaultValue) {
 		String property = getProperty(key, String.valueOf(defaultValue), DEFAULT_ERROR_MESSGAE);
 		return BooleanUtils.toBoolean(property);

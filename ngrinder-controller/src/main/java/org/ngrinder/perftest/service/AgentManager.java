@@ -63,8 +63,7 @@ import org.springframework.stereotype.Component;
 /**
  * Agent manager class.
  * 
- * This class runs {@link AgentControllerServerDaemon} internally and manage to
- * agent connection.
+ * This class runs {@link AgentControllerServerDaemon} internally and manage to agent connection.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -87,22 +86,25 @@ public class AgentManager implements NGrinderConstants {
 	 */
 	@PostConstruct
 	public void init() {
-		agentControllerServer = new AgentControllerServerDaemon(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+		agentControllerServer = new AgentControllerServerDaemon(
+						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		agentControllerServer.start();
 		agentControllerServer.addLogArrivedListener(new LogArrivedListener() {
 			@Override
 			public void logArrived(String testId, AgentAddress agentAddress, byte[] logs) {
-				AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) agentAddress.getIdentity();
+				AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) agentAddress
+								.getIdentity();
 				if (ArrayUtils.isEmpty(logs)) {
 					LOGGER.error("Log is arrived from {} but no log content", agentIdentity.getIp());
 				}
 				File logFile = null;
 				try {
-					logFile = new File(config.getHome().getPerfTestLogDirectory(testId.replace("test_", "")), agentIdentity.getName()
-							+ "-" + agentIdentity.getRegion() + "-log.zip");
+					logFile = new File(config.getHome().getPerfTestLogDirectory(testId.replace("test_", "")),
+									agentIdentity.getName() + "-" + agentIdentity.getRegion() + "-log.zip");
 					FileUtils.writeByteArrayToFile(logFile, logs);
 				} catch (IOException e) {
-					LOGGER.error("Error while write logs from {} to {}", agentAddress.getIdentity().getName(), logFile.getAbsolutePath());
+					LOGGER.error("Error while write logs from {} to {}", agentAddress.getIdentity().getName(),
+									logFile.getAbsolutePath());
 					LOGGER.error("Error is following", e);
 				}
 			}
@@ -155,7 +157,8 @@ public class AgentManager implements NGrinderConstants {
 	 * @return max agent size per console
 	 */
 	public int getMaxAgentSizePerConsole() {
-		return config.getSystemProperties().getPropertyInt("agent.maxsize", NGrinderConstants.MAX_AGENT_SIZE_PER_CONSOLE);
+		return config.getSystemProperties().getPropertyInt("agent.maxsize",
+						NGrinderConstants.MAX_AGENT_SIZE_PER_CONSOLE);
 	}
 
 	/**
@@ -269,7 +272,8 @@ public class AgentManager implements NGrinderConstants {
 	 * @param agentCount
 	 *            how much agent are necessary.
 	 */
-	public synchronized void runAgent(final SingleConsole singleConsole, final GrinderProperties grinderProperties, final Integer agentCount) {
+	public synchronized void runAgent(final SingleConsole singleConsole, final GrinderProperties grinderProperties,
+					final Integer agentCount) {
 		final Set<AgentIdentity> allFreeAgents = getAllFreeApprovedAgents();
 		final Set<AgentIdentity> neccessaryAgents = selectSome(allFreeAgents, agentCount);
 		ExecutorService execService = null;

@@ -44,10 +44,12 @@ import org.slf4j.LoggerFactory;
  */
 public class AgentControllerDaemon implements Agent {
 
+	private static final int LOG_FREQUENCY = 5;
 	private final AgentController agentController;
 	private Thread thread;
 	private final GrinderProperties properties;
-	private final ListenerSupport<AgentControllerShutDownListener> m_listeners = new ListenerSupport<AgentControllerShutDownListener>();
+	private final ListenerSupport<AgentControllerShutDownListener> m_listeners 
+				= new ListenerSupport<AgentControllerShutDownListener>();
 	private boolean forceToshutdown = false;
 	// event synchronization for
 	private Condition m_eventSyncCondition = new Condition();
@@ -123,7 +125,7 @@ public class AgentControllerDaemon implements Agent {
 			public void run() {
 				do {
 					try {
-						if (count % 5 == 0) {
+						if (count % LOG_FREQUENCY == 0) {
 							LOGGER.info("agent controller daemon : started.");
 						}
 						getAgentController().setAgentConfig(

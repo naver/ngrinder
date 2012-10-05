@@ -49,12 +49,12 @@ public interface OnTestStartRunnable {
 	public void start(PerfTest perfTest, IPerfTestService perfTestService, String version);
 
 	/**
-	 * method which will be invoked whenever {@link PerfTest} is finished
+	 * method which will be invoked whenever {@link PerfTest} is finished.
 	 * 
 	 * 
 	 * @param perfTest
 	 *            Performance Test
-	 * @param reason
+	 * @param stopReason
 	 *            stop reason
 	 * @param perfTestService
 	 *            perfTestService interface

@@ -74,7 +74,7 @@ public class AgentControllerIdentityImplementation extends AbstractAgentControll
 	}
 
 	/**
-	 * Get ip
+	 * Get ip.
 	 * 
 	 * @return ip
 	 */

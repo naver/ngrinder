@@ -35,18 +35,18 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 
 /**
- * Grinder classpath optimization class
+ * Grinder classpath optimization class.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
-public class GrinderClassPathUtils {
+public abstract class GrinderClassPathUtils {
 	/**
-	 * Construct classPath for grinder from given classpath string
+	 * Construct classPath for grinder from given classpath string.
 	 * 
 	 * @param classPath
 	 *            classpath string
-	 * @param m_logger
+	 * @param logger
 	 *            logger
 	 * @return classpath optimized for grinder.
 	 */
@@ -87,9 +87,9 @@ public class GrinderClassPathUtils {
 	}
 
 	/**
-	 * Construct classPath from current classLoader
+	 * Construct classPath from current classLoader.
 	 * 
-	 * @param m_logger
+	 * @param logger
 	 *            logger
 	 * @return classpath optimized for grinder.
 	 */

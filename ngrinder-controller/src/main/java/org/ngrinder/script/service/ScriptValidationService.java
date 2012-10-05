@@ -85,6 +85,8 @@ public class ScriptValidationService {
 	 *            scriptEntity.. at least path should be provided.
 	 * @param useScriptInSVN
 	 *            true if the script content in SVN is used. otherwise, false
+	 * @param hostString
+	 *            HOSTNAME:IP,... pairs for host manipulation
 	 * @return validation result.
 	 */
 	public String validateScript(User user, FileEntry scriptEntry, boolean useScriptInSVN, String hostString) {
@@ -147,7 +149,7 @@ public class ScriptValidationService {
 				jvmArguments += " -Dngrinder.exec.path=" + getLibPath();
 			}
 			jvmArguments += addCustomDns(hostString, jvmArguments);
-			
+
 			if (useScriptInSVN) {
 				fileEntryService.writeContentTo(user, scriptEntry.getPath(), scriptDirectory);
 			} else {
@@ -164,7 +166,6 @@ public class ScriptValidationService {
 		return StringUtils.EMPTY;
 	}
 
-
 	private String getHostName() {
 		try {
 			return InetAddress.getLocalHost().getHostName();
@@ -172,16 +173,16 @@ public class ScriptValidationService {
 			return "UNNAMED HOST";
 		}
 	}
-	
+
 	private String addCustomDns(String hostString, String jvmArguments) {
 		if (StringUtils.isNotEmpty(hostString)) {
-			jvmArguments = jvmArguments + " -Dngrinder.etc.hosts=" + hostString + "," + getHostName() + ":127.0.0.1,localhost:127.0.0.1"
-					+ " -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns";
+			jvmArguments = jvmArguments + " -Dngrinder.etc.hosts=" + hostString + "," + getHostName()
+							+ ":127.0.0.1,localhost:127.0.0.1";
+			jvmArguments = jvmArguments + " -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns";
 		}
 		return jvmArguments;
 	}
-	
-	
+
 	private String getLibPath() {
 		String path = this.getClass().getResource("/").getPath();
 		path = path.substring(1, path.length() - 1);
@@ -197,7 +198,7 @@ public class ScriptValidationService {
 	/**
 	 * Run jython parser to find out the syntax error..
 	 * 
-	 * @param script
+	 * @param script script
 	 * @return script syntax error message. null otherwise.
 	 */
 	public String checkSyntaxErrors(String script) {

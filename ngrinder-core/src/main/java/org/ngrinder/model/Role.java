@@ -23,22 +23,22 @@
 package org.ngrinder.model;
 
 /**
- * Role of the User
+ * Role of the User.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
 public enum Role {
 	/**
-	 * General user role who can create performance test entry
+	 * General user role who can create performance test entry.
 	 */
 	USER("U", "General"),
 	/**
-	 * Admin user role who monitors tests
+	 * Admin user role who can monitors tests.
 	 */
 	ADMIN("A", "Administrator"),
 	/**
-	 * Super user role who set system settings and manage user account.
+	 * Super user role who can set system settings and manage user account.
 	 */
 	SUPER_USER("S", "Super"),
 	/**
@@ -51,7 +51,7 @@ public enum Role {
 	private final String fullName;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param shortName
 	 *            short name of role... usually 1 sing char
@@ -64,16 +64,16 @@ public enum Role {
 	}
 
 	/**
-	 * Get the short name
+	 * Get the short name.
 	 * 
-	 * @return
+	 * @return short name
 	 */
 	public String getShortName() {
 		return shortName;
 	}
 
 	/**
-	 * Get full name
+	 * Get full name.
 	 * 
 	 * @return full name
 	 */

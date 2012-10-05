@@ -32,16 +32,16 @@ import javax.persistence.MappedSuperclass;
 import org.hibernate.annotations.Index;
 
 /**
- * Base Model which has following attribute
+ * Base Model which has following attribute.
  * <ul>
- * <li>created_user
- * <li>
+ * <li>created_user</li>
  * <li>created_date</li>
- * <li>lastmodified_user
- * <li>
+ * <li>lastmodified_user</li>
  * <li>lastmodified_date</li>
  * </ul>
  * 
+ * @param <M>
+ *            wrapped entity
  * @author Liu Zhifei
  * @author JunHo Yoon
  * @since 3.0

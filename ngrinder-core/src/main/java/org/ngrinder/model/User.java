@@ -75,9 +75,20 @@ public class User extends BaseModel<User> {
 	/** Who provide the authentication */
 	private String authProviderClass;
 
+	/**
+	 * Default constructor.
+	 */
 	public User() {
 	}
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param userId user id
+	 * @param name user name
+	 * @param password password
+	 * @param role role
+	 */
 	public User(String userId, String name, String password, Role role) {
 		this.userId = userId;
 		this.password = password;
@@ -85,6 +96,10 @@ public class User extends BaseModel<User> {
 		isEnabled();
 	}
 
+	/**
+	 * Check this user is valid.
+	 * @return true if valid
+	 */
 	public boolean validate() {
 		return !(userName == null || email == null);
 	}

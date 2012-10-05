@@ -29,9 +29,7 @@ package org.ngrinder.common.util;
  * @since 3.0
  * 
  */
-public class PathUtil {
-	
-	private PathUtil() {}
+public abstract class PathUtil {
 	
 	/**
 	 * Remove prepending / on path.

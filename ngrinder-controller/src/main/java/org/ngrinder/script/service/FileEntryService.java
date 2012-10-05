@@ -116,8 +116,8 @@ public class FileEntryService {
 	/**
 	 * invalidate the file_entry_seach_cache.
 	 * 
-	 * @param user
-	 *            user.
+	 * @param userId
+	 *            userId.
 	 */
 	public void invalidateCache(String userId) {
 		cacheManager.getCache("file_entry_search_cache").evict(userId);
@@ -144,19 +144,35 @@ public class FileEntryService {
 	}
 
 	private SVNURL createUserRepo(User user, File newUserDirectory) throws SVNException {
-		return svnClientManager.getAdminClient().doCreateRepository(newUserDirectory, user.getUserId(), true,
-						true);
+		return svnClientManager.getAdminClient().doCreateRepository(newUserDirectory, user.getUserId(), true, true);
 	}
 
 	private File getUserRepoDirectory(User user) {
 		return new File(config.getHome().getRepoDirectoryRoot(), checkNotNull(user.getUserId()));
 	}
 
+	/**
+	 * Get all {@link FileEntry} for the given user. This method is subject to be cached because it
+	 * takes time.
+	 * 
+	 * @param user
+	 *            user
+	 * @return cached {@link FileEntry} list
+	 */
 	@Cacheable(value = "file_entry_search_cache", key = "#user.userId")
 	public List<FileEntry> getAllFileEntries(User user) {
 		return fileEntityRepository.findAll(user);
 	}
 
+	/**
+	 * Get all {@link FileEntry} for the given user which has give {@link FileType}.
+	 * 
+	 * @param user
+	 *            user
+	 * @param fileType
+	 *            fileType
+	 * @return cached {@link FileEntry} list
+	 */
 	public List<FileEntry> getAllFileEntries(User user, FileType fileType) {
 		List<FileEntry> fileEntryList = getAllFileEntries(user);
 		// Only python script is allowed right now.
@@ -170,12 +186,14 @@ public class FileEntryService {
 	}
 
 	/**
-	 * Get file entries from undelying svn for given path.
+	 * Get file entries from underlying svn for given path.
 	 * 
 	 * @param user
 	 *            the user
 	 * @param path
 	 *            path in the repo
+	 * @param revision
+	 *            revision number. -1 if HEAD.
 	 * @return file entry list
 	 */
 	public List<FileEntry> getFileEntries(User user, String path, Long revision) {
@@ -258,8 +276,7 @@ public class FileEntryService {
 	 * @return file entity
 	 */
 	public FileEntry getFileEntry(User user, String path, Long revision) {
-		SVNRevision svnRev = (revision == null || revision == -1) ? SVNRevision.HEAD : SVNRevision
-						.create(revision);
+		SVNRevision svnRev = (revision == null || revision == -1) ? SVNRevision.HEAD : SVNRevision.create(revision);
 		return fileEntityRepository.findOne(user, path, svnRev);
 	}
 
@@ -308,10 +325,14 @@ public class FileEntryService {
 	 * Create new FileEntry.
 	 * 
 	 * @param user
+	 *            user
 	 * @param path
+	 *            path
 	 * @param fileName
+	 *            fileName
 	 * @param url
-	 * @return
+	 *            url
+	 * @return created file entry
 	 */
 	public FileEntry prepareNewEntry(User user, String path, String fileName, String url) {
 		FileEntry fileEntry = new FileEntry();
@@ -326,7 +347,7 @@ public class FileEntryService {
 		addHostProperties(fileEntry, url);
 		return fileEntry;
 	}
-	
+
 	private void addHostProperties(FileEntry fileEntry, String url) {
 		Map<String, String> map = new HashMap<String, String>();
 		String host;
@@ -335,6 +356,7 @@ public class FileEntryService {
 			map.put("targetHosts", StringUtils.trim(host));
 			fileEntry.setProperties(map);
 		} catch (MalformedURLException e) {
+			// FALL THROUGH
 		}
 	}
 
@@ -363,8 +385,10 @@ public class FileEntryService {
 	 * Load freemarker template for quick test.
 	 * 
 	 * @param user
+	 *            user
 	 * @param url
-	 * @return
+	 *            url
+	 * @return generated test script
 	 */
 	public String loadFreeMarkerTemplate(User user, String url) {
 
@@ -386,10 +410,18 @@ public class FileEntryService {
 		return "";
 	}
 
+	/**
+	 * Get SVN URL for the given user and the given subpath.
+	 * 
+	 * @param user
+	 *            user
+	 * @param path
+	 *            subpath
+	 * @return SVN URL
+	 */
 	public String getSvnUrl(User user, String path) {
 		String contextPath = httpContainerContext.getCurrentRequestUrlFromUserRequest();
-		StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url",
-						contextPath));
+		StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url", contextPath));
 		url.append("/svn/").append(user.getUserId());
 		if (StringUtils.isNotEmpty(path)) {
 			url.append("/").append(path.trim());
@@ -397,6 +429,16 @@ public class FileEntryService {
 		return url.toString();
 	}
 
+	/**
+	 * Get a SVN content into given dir.
+	 * 
+	 * @param user
+	 *            user
+	 * @param fromPath
+	 *            path in svn subpath
+	 * @param toDir
+	 *            to directory
+	 */
 	public void writeContentTo(User user, String fromPath, File toDir) {
 		fileEntityRepository.writeContentTo(user, fromPath, toDir);
 	}
@@ -409,6 +451,8 @@ public class FileEntryService {
 	 *            user
 	 * @param scriptPath
 	 *            path of script
+	 * @param revision
+	 *            revision number. If head, it should be -1.
 	 * @return {@link FileEntry} list
 	 */
 	public List<FileEntry> getLibAndResourcesEntries(User user, String scriptPath, Long revision) {

@@ -25,7 +25,9 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.servlet.HandlerMapping;
 
-/** 
+/**
+ * Custom argument resolver to catch the unresolved remainning path.
+ * 
  * <pre>
  *  @RequestMapping("hello/**")
  * 	public String handleURL(@RemainedPath String path) {
@@ -49,12 +51,13 @@ public class RemainedPathMethodArgumentResolver implements HandlerMethodArgument
 
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+					NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		RequestMapping requestMappingOnMethod = parameter.getMethodAnnotation(RequestMapping.class);
 		RequestMapping requestMappingOnClass = getDeclaringClassRequestMapping(parameter);
 		String combine = pathMatcher.combine(requestMappingOnClass.value()[0], requestMappingOnMethod.value()[0]);
 		return PathUtil.removePrependedSlash(pathMatcher.extractPathWithinPattern(combine, (String) webRequest
-				.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE, NativeWebRequest.SCOPE_REQUEST)));
+						.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE,
+										NativeWebRequest.SCOPE_REQUEST)));
 	}
 
 	@SuppressWarnings("unchecked")

@@ -1,3 +1,25 @@
+/*
+ * Copyright (C) 2012 - 2012 NHN Corporation
+ * All rights reserved.
+ *
+ * This file is part of The nGrinder software distribution. Refer to
+ * the file LICENSE which is part of The nGrinder distribution for
+ * licensing details. The nGrinder distribution is available on the
+ * Internet at http://nhnopensource.org/ngrinder
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package net.grinder.engine.agent;
 
 import java.io.OutputStream;
@@ -13,6 +35,12 @@ import net.grinder.util.thread.InterruptibleRunnableAdapter;
 
 import org.slf4j.Logger;
 
+/**
+ * WorkerLaucher which redirect stdout/stderr stream to user.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
 public class ErrorStreamRedirectWorkerLauncher {
 
 	private final ExecutorService m_executor;
@@ -21,10 +49,9 @@ public class ErrorStreamRedirectWorkerLauncher {
 	private final Logger m_logger;
 
 	/**
-	 * Fixed size array with a slot for all potential workers. Synchronise on
-	 * m_workers before accessing entries. If an entry is null and its index is
-	 * less than m_nextWorkerIndex, the worker has finished or the
-	 * WorkerLauncher has been shutdown.
+	 * Fixed size array with a slot for all potential workers. Synchronise on m_workers before
+	 * accessing entries. If an entry is null and its index is less than m_nextWorkerIndex, the
+	 * worker has finished or the WorkerLauncher has been shutdown.
 	 */
 	private final Worker[] m_workers;
 
@@ -34,19 +61,44 @@ public class ErrorStreamRedirectWorkerLauncher {
 	private int m_nextWorkerIndex = 0;
 	private OutputStream errStream;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param numberOfWorkers
+	 *            numbderOfWorks
+	 * @param workerFactory
+	 *            worker factory
+	 * @param notifyOnFinish
+	 *            synchronization condition
+	 * @param logger
+	 *            logger
+	 * @param errStream
+	 *            redirect stream
+	 */
 	public ErrorStreamRedirectWorkerLauncher(int numberOfWorkers, WorkerFactory workerFactory,
-			Condition notifyOnFinish, Logger logger, OutputStream errStream) {
+					Condition notifyOnFinish, Logger logger, OutputStream errStream) {
 
 		this(ExecutorFactory.createThreadPool("WorkerLauncher", 1), numberOfWorkers, workerFactory, notifyOnFinish,
-				logger);
+						logger);
 		this.errStream = errStream;
 	}
 
 	/**
 	 * Package scope for unit tests.
+	 * 
+	 * @param executor
+	 *            executors
+	 * @param numberOfWorkers
+	 *            numbderOfWorks
+	 * @param workerFactory
+	 *            worker factory
+	 * @param notifyOnFinish
+	 *            synchronization condition
+	 * @param logger
+	 *            logger
 	 */
 	ErrorStreamRedirectWorkerLauncher(ExecutorService executor, int numberOfWorkers, WorkerFactory workerFactory,
-			Condition notifyOnFinish, Logger logger) {
+					Condition notifyOnFinish, Logger logger) {
 		m_executor = executor;
 		m_workerFactory = workerFactory;
 		m_notifyOnFinish = notifyOnFinish;
@@ -55,10 +107,25 @@ public class ErrorStreamRedirectWorkerLauncher {
 		m_workers = new Worker[numberOfWorkers];
 	}
 
+	/**
+	 * Start all workers.
+	 * 
+	 * @throws EngineException
+	 *             engine exception
+	 */
 	public void startAllWorkers() throws EngineException {
 		startSomeWorkers(m_workers.length - m_nextWorkerIndex);
 	}
 
+	/**
+	 * Start some of all workers.
+	 * 
+	 * @param numberOfWorkers
+	 *            worker count
+	 * @return true if all workers is not available.
+	 * @throws EngineException
+	 *             engine exception
+	 */
 	public boolean startSomeWorkers(int numberOfWorkers) throws EngineException {
 
 		final int numberToStart = Math.min(numberOfWorkers, m_workers.length - m_nextWorkerIndex);
@@ -124,6 +191,11 @@ public class ErrorStreamRedirectWorkerLauncher {
 		}
 	}
 
+	/**
+	 * Check if all workers are finished.
+	 * 
+	 * @return true if all finished
+	 */
 	public boolean allFinished() {
 		if (m_nextWorkerIndex < m_workers.length) {
 			return false;
@@ -147,10 +219,16 @@ public class ErrorStreamRedirectWorkerLauncher {
 		m_executor.shutdown();
 	}
 
+	/**
+	 * Block to start workers anymore.
+	 */
 	public void dontStartAnyMore() {
 		m_nextWorkerIndex = m_workers.length;
 	}
 
+	/**
+	 * Destroy all workers.
+	 */
 	public void destroyAllWorkers() {
 		dontStartAnyMore();
 

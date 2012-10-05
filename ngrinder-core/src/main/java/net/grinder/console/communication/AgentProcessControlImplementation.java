@@ -62,7 +62,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	private final ListenerSupport<Listener> m_listeners = new ListenerSupport<Listener>();
 	private final ListenerSupport<LogArrivedListener> m_logListeners = new ListenerSupport<LogArrivedListener>();
 
-	private final static Logger logger = LoggerFactory.getLogger(AgentProcessControlImplementation.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AgentProcessControlImplementation.class);
 	/**
 	 * Period at which to update the listeners.
 	 */
@@ -292,7 +292,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		}
 
 		public void setAgentProcessStatus(AgentControllerProcessReportMessage message) {
-			logger.trace("agent perf status on {} is {}", message.getAgentIdentity(), message.getSystemDataModel());
+			LOGGER.trace("agent perf status on {} is {}", message.getAgentIdentity(), message.getSystemDataModel());
 
 			m_agentReference = new AgentReference(message);
 		}
@@ -319,7 +319,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	}
 
 	/**
-	 * Add Log control {@link LogArrivedListener}
+	 * Add Log control {@link LogArrivedListener}.
 	 * 
 	 * @param listener
 	 *            listener to be added
@@ -416,7 +416,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 			try {
 				setAddress(address);
 			} catch (CommunicationException e) {
-				logger.error("Error while setAdress" + address, e);
+				LOGGER.error("Error while setAdress" + address, e);
 			}
 		}
 

@@ -25,28 +25,35 @@ package net.grinder.engine.communication;
 import net.grinder.communication.Message;
 
 /**
- * Message for update agent
+ * Message for update agent.
  * 
  * @author JunHo Yoon
- * 
+ * @since 3.0
  */
 public class UpdateAgentGrinderMessage implements Message {
 
 	private static final long serialVersionUID = 3218379141994562444L;
 	private final String version;
-	private final byte[] binary;
+	private final String downloadUrl;
 
-	public UpdateAgentGrinderMessage(String version, byte[] binary) {
+	/**
+	 * Constructor.
+	 * @param version version of ngrinder
+	 * @param downloadUrl downloadUrl
+	 */
+	public UpdateAgentGrinderMessage(String version, String downloadUrl) {
 		this.version = version;
-		this.binary = binary;
+		this.downloadUrl = downloadUrl;
 	}
 
 	public String getVersion() {
 		return version;
 	}
 
-	public byte[] getBinary() {
-		return binary;
+	public String getDownloadUrl() {
+		return downloadUrl;
 	}
+
+	
 
 }

@@ -65,22 +65,25 @@ public class NGrinderStarter {
 	private boolean localAttachmentSupported;
 
 	private AgentConfig agentConfig;
-	
-	AgentControllerDaemon agentController;
 
+	private AgentControllerDaemon agentController;
+
+	/**
+	 * Constructor.
+	 */
 	public NGrinderStarter() {
 		try {
 			agentConfig = new AgentConfig();
 			agentConfig.init();
-			
+
 			// Configure log.
 			Boolean verboseMode = agentConfig.getAgentProperties().getPropertyBoolean("verbose", false);
 			File logDirectory = agentConfig.getHome().getLogDirectory();
 			configureLogging(verboseMode, logDirectory);
-			
+
 			addClassPath();
 			addLibarayPath();
-			
+
 			Class.forName("com.sun.tools.attach.VirtualMachine");
 			Class.forName("sun.management.ConnectorAddressLink");
 			localAttachmentSupported = true;
@@ -91,14 +94,15 @@ public class NGrinderStarter {
 	}
 
 	/*
-	 * get the start mode, "agent" or "monitor". If it is not set in configuration, it will return "agent".
+	 * get the start mode, "agent" or "monitor". If it is not set in configuration, it will return
+	 * "agent".
 	 */
 	public String getStartMode() {
 		return agentConfig.getAgentProperties().getProperty("start.mode", "agent");
 	}
 
 	/**
-	 * Start the performance monitor
+	 * Start the performance monitor.
 	 */
 	public void startMonitor() {
 		LOG.info("**************************");
@@ -108,7 +112,7 @@ public class NGrinderStarter {
 		LOG.info("* Colllect SYSTEM data. **");
 
 		MonitorConstants.init(agentConfig);
-		
+
 		try {
 			AgentMonitorServer.getInstance().init();
 			AgentMonitorServer.getInstance().start();
@@ -117,13 +121,16 @@ public class NGrinderStarter {
 			printHelpAndExit("Error while starting Monitor", e);
 		}
 	}
-	
+
+	/**
+	 * Stop monitors.
+	 */
 	public void stopMonitor() {
 		AgentMonitorServer.getInstance().stop();
 	}
 
 	/**
-	 * Start ngrinder agent
+	 * Start ngrinder agent.
 	 */
 	public void startAgent() {
 		LOG.info("*************************");
@@ -131,7 +138,7 @@ public class NGrinderStarter {
 
 		String consoleIP = agentConfig.getAgentProperties().getProperty("agent.console.ip", "127.0.0.1");
 		int consolePort = agentConfig.getAgentProperties().getPropertyInt("agent.console.port",
-				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
 		LOG.info("with console: {}:{}", consoleIP, consolePort);
 		try {
@@ -144,15 +151,14 @@ public class NGrinderStarter {
 			printHelpAndExit("Error while starting Agent", e);
 		}
 	}
-	
+
 	/**
-	 * stop the ngrinder agent
+	 * stop the ngrinder agent.
 	 */
 	public void stopAgent() {
 		LOG.info("Stop nGrinder agent!");
 		agentController.shutdown();
 	}
-	
 
 	/**
 	 * Do best to find tools.jar path.
@@ -208,9 +214,11 @@ public class NGrinderStarter {
 
 	private void addLibarayPath() {
 		String property = StringUtils.trimToEmpty(System.getProperty("java.library.path"));
-		System.setProperty("java.library.path", property + File.pathSeparator + new File("./native_lib").getAbsolutePath());
+		System.setProperty("java.library.path",
+						property + File.pathSeparator + new File("./native_lib").getAbsolutePath());
 		LOG.info("java.library.path : {} ", System.getProperty("java.library.path"));
 	}
+
 	/**
 	 * Add tools.jar classpath. This contains hack
 	 */
@@ -227,7 +235,7 @@ public class NGrinderStarter {
 			printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + ") does not exist");
 			return;
 		}
-		String[] exts = new String[]{"jar"};
+		String[] exts = new String[] { "jar" };
 		Collection<File> libList = FileUtils.listFiles(libFolder, exts, false);
 
 		for (File each : libList) {
@@ -258,13 +266,15 @@ public class NGrinderStarter {
 			configurator.doConfigure(NGrinderStarter.class.getResource("/logback-agent.xml"));
 		} catch (JoranException e) {
 			staticPrintHelpAndExit("Can not configure logger on " + logDirectory.getAbsolutePath()
-					+ ".\n Please check if it's writable.");
+							+ ".\n Please check if it's writable.");
 		}
 	}
 
 	/**
 	 * print help and exit. This is provided for mocking.
-	 * @param message message
+	 * 
+	 * @param message
+	 *            message
 	 */
 	protected void printHelpAndExit(String message) {
 		staticPrintHelpAndExit(message);
@@ -272,25 +282,27 @@ public class NGrinderStarter {
 
 	/**
 	 * print help and exit. This is provided for mocking.
-	 * @param message message
-	 * @param e exception
+	 * 
+	 * @param message
+	 *            message
+	 * @param e
+	 *            exception
 	 */
 	protected void printHelpAndExit(String message, Exception e) {
 		staticPrintHelpAndExit(message, e);
 	}
 
-
 	/**
-	 * Agent starter
+	 * Agent starter.
 	 * 
-	 * @param args
+	 * @param args arguments
 	 */
 	public static void main(String[] args) {
 
 		if (!idValidCurrentDirectory()) {
 			staticPrintHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
 		}
-		
+
 		NGrinderStarter starter = new NGrinderStarter();
 		String startMode = starter.getStartMode();
 		if (startMode.equalsIgnoreCase("agent")) {

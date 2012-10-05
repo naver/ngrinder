@@ -56,6 +56,7 @@ public class AgentConfig {
 
 	/**
 	 * Initialize.
+	 * @return initialized AgentCongig
 	 */
 	public AgentConfig init() {
 		home = resolveHome();
@@ -135,15 +136,35 @@ public class AgentConfig {
 		return this.home;
 	}
 
+	/**
+	 * Get agent properties.
+	 * @return agent properties
+	 */
 	public PropertiesWrapper getAgentProperties() {
 		checkNotNull(agentProperties);
 		return agentProperties;
 	}
 
+	/**
+	 * Get property string.
+	 * 
+	 * @param key property key
+	 * @param defaultValue default value
+	 * 
+	 * @return string value for given key. If not available, return default value.
+	 */
 	public String getProperty(String key, String defaultValue) {
 		return getAgentProperties().getProperty(key, defaultValue);
 	}
 
+	/**
+	 * Get property int.
+	 * 
+	 * @param key property key
+	 * @param defaultValue default value
+	 * 
+	 * @return int value for given key. If not available, return default value.
+	 */
 	public int getPropertyInt(String key, int defaultValue) {
 		return getAgentProperties().getPropertyInt(key, defaultValue);
 	}

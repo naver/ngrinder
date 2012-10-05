@@ -37,17 +37,34 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FileDownloadUtil {
+/**
+ * File download utilities.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
+public abstract class FileDownloadUtil {
 
-	private static final Logger LOG = LoggerFactory.getLogger(FileDownloadUtil.class);
-	
-	private FileDownloadUtil() {}
+	private static final int FILE_DOWNLOAD_BUFFER_SIZE = 4096;
+	private static final Logger LOGGER = LoggerFactory.getLogger(FileDownloadUtil.class);
 
+	/**
+	 * Provide file download from the given file path.
+	 * @param response {@link HttpServletResponse}
+	 * @param desFilePath file path
+	 * @return true if succeeded
+	 */
 	public static boolean downloadFile(HttpServletResponse response, String desFilePath) {
 		File desFile = new File(desFilePath);
 		return downloadFile(response, desFile);
 	}
 
+	/**
+	 * Provide file download from the given file path.
+	 * @param response {@link HttpServletResponse}
+	 * @param desFile file path
+	 * @return true if succeeded
+	 */
 	public static boolean downloadFile(HttpServletResponse response, File desFile) {
 		if (desFile == null || !desFile.exists()) {
 			return false;
@@ -58,7 +75,7 @@ public class FileDownloadUtil {
 		response.setContentType("application/octet-stream");
 		response.addHeader("Content-Length", "" + desFile.length());
 		InputStream fis = null;
-		byte[] buffer = new byte[4096];
+		byte[] buffer = new byte[FILE_DOWNLOAD_BUFFER_SIZE];
 		OutputStream toClient = null;
 		try {
 			fis = new BufferedInputStream(new FileInputStream(desFile));
@@ -69,10 +86,10 @@ public class FileDownloadUtil {
 			}
 			toClient.flush();
 		} catch (FileNotFoundException e) {
-			LOG.error("file not found:" + desFile.getAbsolutePath(), e);
+			LOGGER.error("file not found:" + desFile.getAbsolutePath(), e);
 			result = false;
 		} catch (IOException e) {
-			LOG.error("read file error:" + desFile.getAbsolutePath(), e);
+			LOGGER.error("read file error:" + desFile.getAbsolutePath(), e);
 			result = false;
 		} finally {
 			IOUtils.closeQuietly(fis);

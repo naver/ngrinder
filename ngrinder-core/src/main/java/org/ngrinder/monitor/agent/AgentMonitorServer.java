@@ -61,12 +61,12 @@ public final class AgentMonitorServer {
 	private boolean isRunning = false;
 	private int port = MonitorConstants.DEFAULT_MONITOR_PORT;
 
-	private static final AgentMonitorServer instance = new AgentMonitorServer();
+	private static final AgentMonitorServer INSTANCE = new AgentMonitorServer();
 
 	private AgentMonitorServer() {}
 
 	public static AgentMonitorServer getInstance() {
-		return instance;
+		return INSTANCE;
 	}
 
 	public void init() throws MalformedObjectNameException, InstanceAlreadyExistsException, MBeanRegistrationException,

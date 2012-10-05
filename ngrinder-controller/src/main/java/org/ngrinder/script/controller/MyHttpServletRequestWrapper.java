@@ -39,6 +39,12 @@ import org.tmatesoft.svn.core.internal.util.SVNEncodingUtil;
  * @author JunHo Yoon
  */
 public class MyHttpServletRequestWrapper extends HttpServletRequestWrapper {
+	/**
+	 * Constructor.
+	 * 
+	 * @param request
+	 *            request to be wrapped
+	 */
 	public MyHttpServletRequestWrapper(HttpServletRequest request) {
 		super(request);
 	}
@@ -46,9 +52,10 @@ public class MyHttpServletRequestWrapper extends HttpServletRequestWrapper {
 	@Override
 	public String getPathInfo() {
 		try {
-			return SVNEncodingUtil.uriEncode(URLDecoder.decode(
-					getRequestURI().substring(
-							PathUtil.removeDuplicatedPrependedSlash(getContextPath() + "/svn").length()), "UTF-8"));
+			return SVNEncodingUtil.uriEncode(URLDecoder
+							.decode(getRequestURI()
+											.substring(PathUtil.removeDuplicatedPrependedSlash(
+															getContextPath() + "/svn").length()), "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
 			return null;
 		}

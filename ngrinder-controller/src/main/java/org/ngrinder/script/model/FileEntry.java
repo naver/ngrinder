@@ -56,9 +56,10 @@ public class FileEntry extends BaseModel<FileEntry> {
 	 * File properties.
 	 */
 	private Map<String, String> properties = new HashMap<String, String>();
-	
+
 	/**
-	 * Revisions on this entity. This fields are sometimes empty depending on the {@link FileEntryRepository}.
+	 * Revisions on this entity. This fields are sometimes empty depending on the
+	 * {@link FileEntryRepository}.
 	 */
 	private List<Long> revisions;
 
@@ -143,6 +144,12 @@ public class FileEntry extends BaseModel<FileEntry> {
 		return fileType.getFileCategory().isEditable();
 	}
 
+	/**
+	 * Get file type. If fileType is set, it returns the set fileType. Otherwise, it tries to detect
+	 * the file type by the extension.
+	 * 
+	 * @return file type.
+	 */
 	public FileType getFileType() {
 		if (fileType == null) {
 			fileType = FileType.getFileTypeByExtension(FilenameUtils.getExtension(getPath()));

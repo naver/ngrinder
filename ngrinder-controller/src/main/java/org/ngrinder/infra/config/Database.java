@@ -37,8 +37,8 @@ import org.sqlite.JDBC;
 import cubrid.jdbc.driver.CUBRIDDriver;
 
 /**
- * Various Database handler for supported databases. You can easily add the more
- * databases in Enumerator.
+ * Various Database handler for supported databases. You can easily add the more databases in
+ * Enumerator.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -49,7 +49,7 @@ public enum Database {
 	sqlite(JDBC.class, SQLiteDialect.class, "jdbc:sqlite:%s/db/ngrinder.sqlite3") {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
-	
+
 			String property = databaseProperties.getProperty("NGRINDER_HOME", ".");
 			dataSource.setUrl(String.format(getUrlTemplate(), property, " is not defined"));
 			dataSource.setUsername(databaseProperties.getProperty("database_username", "ngrinder"));
@@ -61,8 +61,8 @@ public enum Database {
 	cubrid(CUBRIDDriver.class, CUBRIDDialect.class, "jdbc:CUBRID:%s:::?charset=utf-8") {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
-			dataSource.setUrl(String.format(getUrlTemplate(),
-					databaseProperties.getProperty("database_url", "localhost:33000:ngrinder", " is not defined")));
+			dataSource.setUrl(String.format(getUrlTemplate(), databaseProperties.getProperty("database_url",
+							"localhost:33000:ngrinder", " is not defined")));
 			dataSource.setUsername(databaseProperties.getProperty("database_username", "ngrinder"));
 			dataSource.setPassword(databaseProperties.getProperty("database_password", "ngrinder"));
 		}
@@ -72,15 +72,19 @@ public enum Database {
 	H2(org.h2.Driver.class, H2Dialect.class, "jdbc:h2:%s/db/h2") {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
-			String format = 
-					String.format(getUrlTemplate(), 
-							databaseProperties.getProperty("NGRINDER_HOME", "."), " is not defined");
+			String format = String.format(getUrlTemplate(), databaseProperties.getProperty("NGRINDER_HOME", "."),
+							" is not defined");
 			dataSource.setUrl(format);
 			dataSource.setUsername(databaseProperties.getProperty("database_username", "ngrinder"));
 			dataSource.setPassword(databaseProperties.getProperty("database_password", "ngrinder"));
 		}
 	};
 
+	private static final int DB_MAX_OPEN_PREPARED_STATEMENTS = 50;
+	private static final int DB_MAX_WAIT = 3000;
+	private static final int DB_MIN_IDLE = 5;
+	private static final int DB_MAX_ACTIVE = 20;
+	private static final int DB_INITIAL_SIZE = 5;
 	private static final Logger LOG = LoggerFactory.getLogger(Database.class);
 	private final String urlTemplate;
 	private final String jdbcDriverName;
@@ -94,8 +98,8 @@ public enum Database {
 	 * @param dialect
 	 *            the dialect to be used
 	 * @param urlTemplate
-	 *            database url template. This will be used to combine it with
-	 *            database_url property in database.conf
+	 *            database url template. This will be used to combine it with database_url property
+	 *            in database.conf
 	 */
 	Database(Class<? extends Driver> jdbcDriver, Class<? extends Dialect> dialect, String urlTemplate) {
 		this.dialect = dialect.getCanonicalName();
@@ -134,10 +138,8 @@ public enum Database {
 				return database;
 			}
 		}
-		LOG.error(
-				"[FATAL] Database type {} is not supported. " +
-				"Please check the ${NFORGE_HOME}/database.conf. " +
-				"This time, Use H2 istead.", type);
+		LOG.error("[FATAL] Database type {} is not supported. " + "Please check the ${NFORGE_HOME}/database.conf. "
+						+ "This time, Use H2 istead.", type);
 		return H2;
 	}
 
@@ -145,7 +147,9 @@ public enum Database {
 	 * Set up database.
 	 * 
 	 * @param dataSource
+	 *            datasource
 	 * @param propertiesWrapper
+	 *            {@link PropertiesWrapper} which contains db access info
 	 */
 	public void setup(BasicDataSource dataSource, PropertiesWrapper propertiesWrapper) {
 		setupVariants(dataSource, propertiesWrapper);
@@ -153,11 +157,12 @@ public enum Database {
 	}
 
 	/**
-	 * Each database needs custom setup. Specify these setup in inherited method
-	 * of this.
+	 * Each database needs custom setup. Specify these setup in inherited method of this.
 	 * 
-	 * @param dataSource dataSource
-	 * @param propertiesWrapper database.conf's properties. 
+	 * @param dataSource
+	 *            dataSource
+	 * @param propertiesWrapper
+	 *            database.conf's properties.
 	 */
 	protected abstract void setupVariants(BasicDataSource dataSource, PropertiesWrapper propertiesWrapper);
 
@@ -169,12 +174,12 @@ public enum Database {
 	 */
 	protected void setupCommon(BasicDataSource dataSource) {
 		dataSource.setDriverClassName(getJdbcDriverName());
-		dataSource.setInitialSize(5);
-		dataSource.setMaxActive(20);
-		dataSource.setMinIdle(5);
-		dataSource.setMaxWait(3000);
+		dataSource.setInitialSize(DB_INITIAL_SIZE);
+		dataSource.setMaxActive(DB_MAX_ACTIVE);
+		dataSource.setMinIdle(DB_MIN_IDLE);
+		dataSource.setMaxWait(DB_MAX_WAIT);
 		dataSource.setPoolPreparedStatements(true);
-		dataSource.setMaxOpenPreparedStatements(50);
+		dataSource.setMaxOpenPreparedStatements(DB_MAX_OPEN_PREPARED_STATEMENTS);
 		dataSource.setTestWhileIdle(true);
 		dataSource.setTestOnBorrow(true);
 		dataSource.setTestOnReturn(true);

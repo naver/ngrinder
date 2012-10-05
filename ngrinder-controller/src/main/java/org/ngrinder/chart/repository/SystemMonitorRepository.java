@@ -34,7 +34,18 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @since 3.0
  */
 public interface SystemMonitorRepository extends JpaRepository<SystemDataModel, Long> {
-	
+
+	/**
+	 * Find all {@link SystemDataModel} b/w given timeframe for given ip.
+	 * 
+	 * @param ip
+	 *            ip
+	 * @param startColTime
+	 *            star ttime
+	 * @param endColTime
+	 *            end time
+	 * @return {@link SystemDataModel} list
+	 */
 	List<SystemDataModel> findAllByIpAndCollectTimeBetween(String ip, long startColTime, long endColTime);
 
 }

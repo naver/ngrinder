@@ -57,11 +57,16 @@ import com.sun.syndication.io.XmlReader;
  */
 @Component
 public class HomeService {
+	private static final int PANEL_ENTRY_SIZE = 7;
+
 	private static final Logger LOG = LoggerFactory.getLogger(HomeService.class);
 
 	private Map<String, String> openIssueQuery = new HashMap<String, String>(1);
 	private Map<String, String> closeIssueQuery = new HashMap<String, String>(1);
 
+	/**
+	 * Initialize.
+	 */
 	@PostConstruct
 	public void init() {
 		openIssueQuery.put("state", "open");
@@ -73,6 +78,11 @@ public class HomeService {
 	@Autowired
 	private Config config;
 
+	/**
+	 * Get let panel entries. which has ngrinder github issue contents as defaults.
+	 * 
+	 * @return the list of {@link PanelEntry}
+	 */
 	@SuppressWarnings("unchecked")
 	@Cacheable(value = "left_panel_entries")
 	public List<PanelEntry> getLeftPanelEntries() {
@@ -84,8 +94,8 @@ public class HomeService {
 							NGrinderConstants.NGRINDER_NEWS_RSS_URL));
 			reader = new XmlReader(url);
 			SyndFeed feed = input.build(reader);
-			List<SyndEntryImpl> entries = (List<SyndEntryImpl>) (feed.getEntries().size() >= 8 ? feed.getEntries()
-							.subList(0, 7) : feed.getEntries());
+			List<SyndEntryImpl> entries = (List<SyndEntryImpl>) (feed.getEntries().subList(0,
+							Math.min(feed.getEntries().size(), PANEL_ENTRY_SIZE)));
 			for (SyndEntryImpl each : entries) {
 				PanelEntry entry = new PanelEntry();
 				entry.setAuthor(each.getAuthor());
@@ -106,6 +116,10 @@ public class HomeService {
 		return Collections.emptyList();
 	}
 
+	/**
+	 * Get right panel entries. which has ngrinder cubrid wiki contents as defaults.
+	 * @return {@link PanelEntry} list
+	 */
 	@Cacheable(value = "right_panel_entries")
 	public List<PanelEntry> getRightPanelEntries() {
 
@@ -115,7 +129,7 @@ public class HomeService {
 
 			List<PanelEntry> panelEntries = new ArrayList<PanelEntry>();
 			List<Issue> issues = service.getIssues(repo, openIssueQuery);
-			issues = issues.size() >= 8 ? issues.subList(0, 7) : issues;
+			issues = issues.subList(0, Math.min(issues.size(), PANEL_ENTRY_SIZE));
 			for (Issue each : issues) {
 				PanelEntry entry = new PanelEntry();
 				entry.setAuthor(each.getUser().getName());

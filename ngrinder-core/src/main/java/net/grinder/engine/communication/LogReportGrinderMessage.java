@@ -26,12 +26,24 @@ import net.grinder.communication.Address;
 import net.grinder.communication.AddressAwareMessage;
 import net.grinder.messages.console.AgentAddress;
 
+/**
+ * NGrinder message to send a log to console.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
 public class LogReportGrinderMessage implements AddressAwareMessage {
 	private static final long serialVersionUID = 1274708100107820158L;
 	private AgentAddress m_processAddress;
 	private final byte[] logs;
 	private final String testId;
 
+	/**
+	 * Constructor.
+	 * @param testId corresponding testid 
+	 * @param logs compressed log byte array
+	 * @param agentAddress agent address
+	 */
 	public LogReportGrinderMessage(String testId, byte[] logs, AgentAddress agentAddress) {
 		this.testId = testId;
 		this.logs = logs;

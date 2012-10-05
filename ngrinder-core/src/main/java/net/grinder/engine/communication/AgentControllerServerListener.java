@@ -85,7 +85,7 @@ public final class AgentControllerServerListener {
 	 * 
 	 * @see #received
 	 */
-	public static final int ANY = START | RESET | STOP | SHUTDOWN ;
+	public static final int ANY = START | RESET | STOP | SHUTDOWN;
 
 	private final Condition m_notifyOnMessage;
 	private final Logger m_logger;
@@ -141,9 +141,9 @@ public final class AgentControllerServerListener {
 	 * 
 	 * @param mask
 	 *            The messages to check for.
-	 * @return <code>true</code> if at least one message matches the <code>mask</code> parameter has been received since
-	 *         the last time the message was checked for, or if communications have been shutdown. <code>false</code>
-	 *         otherwise.
+	 * @return <code>true</code> if at least one message matches the <code>mask</code> parameter has
+	 *         been received since the last time the message was checked for, or if communications
+	 *         have been shutdown. <code>false</code> otherwise.
 	 */
 	public boolean checkForMessage(int mask) {
 		synchronized (this) {
@@ -173,7 +173,8 @@ public final class AgentControllerServerListener {
 	}
 
 	/**
-	 * Query the messages set up by the last {@link #checkForMessage} or {@link #waitForMessage} call.
+	 * Query the messages set up by the last {@link #checkForMessage} or {@link #waitForMessage}
+	 * call.
 	 * 
 	 * @param mask
 	 *            The messages to check for.

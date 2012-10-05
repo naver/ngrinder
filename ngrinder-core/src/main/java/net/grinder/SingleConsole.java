@@ -127,18 +127,18 @@ public class SingleConsole implements Listener, SampleListener {
 	private boolean headerAdded = false;
 
 	Map<String, BufferedWriter> fileWriterMap = new HashMap<String, BufferedWriter>();
-	/** Current count of sampling */
+	/** Current count of sampling. */
 	private long samplingCount = 0;
-	/** The count of ignoring sampling */
+	/** The count of ignoring sampling. */
 	private int ignoreSampleCount;
 	private boolean firstSampling = true;
 	/**
-	 * Currently running thread
+	 * Currently running thread.
 	 */
 	private int runningThread = 0;
 
 	/**
-	 * Currently running process
+	 * Currently running process.
 	 */
 	private int runningProcess = 0;
 
@@ -852,7 +852,7 @@ public class SingleConsole implements Listener, SampleListener {
 				threadCount += processReport.getNumberOfRunningThreads();
 			}
 		}
-		
+
 		synchronized (this) {
 			this.runningProcess = processCount;
 			this.runningThread = threadCount;

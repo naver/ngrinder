@@ -314,7 +314,7 @@ public class FileEntryRepository {
 				try {
 					editor.addDir(fullPath, null, -1);
 				} catch (Exception e) {
-					// ignore
+					// FALL THROUGH
 				}
 			}
 

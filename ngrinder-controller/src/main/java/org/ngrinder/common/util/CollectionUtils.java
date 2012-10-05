@@ -31,10 +31,18 @@ import java.util.Set;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class CollectionUtils {
-	
-	private CollectionUtils() {}
-	
+public abstract class CollectionUtils {
+	/**
+	 * Select the given number of elements from the given set.
+	 * 
+	 * @param <T>
+	 *            encapsulated type
+	 * @param set
+	 *            set
+	 * @param count
+	 *            number of elements to retrieve
+	 * @return set
+	 */
 	public static <T> Set<T> selectSome(Set<T> set, int count) {
 		Set<T> newSet = new HashSet<T>();
 		int i = 0;

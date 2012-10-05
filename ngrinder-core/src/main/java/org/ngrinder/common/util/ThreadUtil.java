@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ThreadUtil {
 
+	private static final int THREAD_WAITING_TIME = 5000;
 	private static final Logger LOGGER = LoggerFactory.getLogger(ThreadUtil.class);
 
 	/**
@@ -64,8 +65,9 @@ public abstract class ThreadUtil {
 		}
 		// Wait 5000 second for natural death.
 		try {
-			thread.join(5000);
+			thread.join(THREAD_WAITING_TIME);
 		} catch (Exception e) {
+			// Fall through
 		}
 		try {
 			thread.interrupt();
@@ -75,6 +77,7 @@ public abstract class ThreadUtil {
 			// Again Wait 5000 second.
 			thread.join(5000);
 		} catch (Exception e) {
+			// Fall through
 		}
 		try {
 			// Force to Stop
@@ -83,6 +86,7 @@ public abstract class ThreadUtil {
 				thread.stop();
 			}
 		} catch (Exception e) {
+			// Fall through
 		}
 	}
 

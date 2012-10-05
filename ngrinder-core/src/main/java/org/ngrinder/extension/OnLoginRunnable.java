@@ -32,9 +32,9 @@ import org.ngrinder.model.User;
  */
 public interface OnLoginRunnable {
 	/**
-	 * Load user by userId
+	 * Load user by userId.
 	 * 
-	 * @param userId
+	 * @param userId user id
 	 * @return User instance
 	 */
 	public User loadUser(String userId);

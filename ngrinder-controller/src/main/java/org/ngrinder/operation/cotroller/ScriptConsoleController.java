@@ -61,6 +61,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/operation/scriptConsole")
 @PreAuthorize("hasAnyRole('A', 'S')")
 public class ScriptConsoleController extends NGrinderBaseController implements ApplicationContextAware {
+	private static final int SCRIPT_CONSOLE_PYTHON_EXPIRE_TIMEOUT = 30000;
+
 	@Autowired
 	private Config config;
 
@@ -148,7 +150,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 					}
 				});
 				thread.start();
-				thread.join(30000);
+				thread.join(SCRIPT_CONSOLE_PYTHON_EXPIRE_TIMEOUT);
 				if (thread.isAlive()) {
 					thread.interrupt();
 				}

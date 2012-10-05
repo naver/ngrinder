@@ -33,5 +33,11 @@ import net.grinder.messages.console.AgentAddress;
  * @since 3.0
  */
 public interface LogArrivedListener extends EventListener {
+	/**
+	 * callback method which will be called when log is arrived from a agent.
+	 * @param testId test id
+	 * @param agentAddress agent address
+	 * @param logs compressed log byte array
+	 */
 	public void logArrived(String testId, AgentAddress agentAddress, byte[] logs);
 }

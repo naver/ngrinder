@@ -49,7 +49,7 @@ public class MonitorAgentService {
 
 	/**
 	 * add a set of agents to the monitor manager, and start the monitor job.
-	 * @param {@link AgentInfo} set
+	 * @param  agents {@link AgentInfo} agents
 	 */
 	public void addMonitorAgents(Set<AgentInfo> agents) {
 		for (AgentInfo agent : agents) {

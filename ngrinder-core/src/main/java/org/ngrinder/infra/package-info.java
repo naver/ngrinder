@@ -1,5 +1,5 @@
 /**
- * ngrinder core configuration package
+ * ngrinder core configuration package.
  */
 package org.ngrinder.infra;
 

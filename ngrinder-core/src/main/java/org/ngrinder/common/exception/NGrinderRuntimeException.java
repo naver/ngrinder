@@ -23,8 +23,7 @@
 package org.ngrinder.common.exception;
 
 /**
- * NGrinderRuntimeException. Which is aiming for translating
- * {@link RuntimeException}
+ * NGrinderRuntimeException. This is for translating a general exception to {@link RuntimeException}
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -33,11 +32,25 @@ public class NGrinderRuntimeException extends RuntimeException {
 
 	private static final long serialVersionUID = 8662535812004958944L;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param message
+	 *            message
+	 */
 	public NGrinderRuntimeException(String message) {
 		super(message);
 	}
 
-	public NGrinderRuntimeException(String message, Throwable e) {
-		super(message, e);
+	/**
+	 * Constructor.
+	 * 
+	 * @param message
+	 *            message
+	 * @param t
+	 *            root cause
+	 */
+	public NGrinderRuntimeException(String message, Throwable t) {
+		super(message, t);
 	}
 }
