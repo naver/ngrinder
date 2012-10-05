@@ -683,6 +683,7 @@ function bindEvent() {
 		if (!$("#testContentForm").valid()) {
 			return false;
 		}
+	    $("#tagString").val(buildTagString())
 	});
 	
 	$("#saveTestBtn").click(function() {
@@ -710,6 +711,7 @@ function bindEvent() {
 		$("#scheduleModal").modal("hide");
 		$("#scheduleModal small").html("");
 		$("#scheduleInput").attr('name', '');
+		$("#tagString").val(buildTagString())
 		$("#testStatus").val("READY");
 		document.testContentForm.submit();
 	});
