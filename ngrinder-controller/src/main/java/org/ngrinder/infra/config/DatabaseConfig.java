@@ -40,7 +40,7 @@ import org.springframework.orm.jpa.persistenceunit.PersistenceUnitPostProcessor;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 /**
- * Dynamic datasource bean generator.
+ * Dynamic datasource bean configuration.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -53,7 +53,7 @@ public class DatabaseConfig implements NGrinderConstants {
 	private Config config;
 
 	/**
-	 * Get the dataSource based on the configuration.
+	 * Create the dataSource based on the database configuration.
 	 * 
 	 * @return dataSource
 	 */
@@ -68,10 +68,11 @@ public class DatabaseConfig implements NGrinderConstants {
 	}
 
 	/**
-	 * Create EntityManagerFactory for Hibernate. General Hibernate doesn't
-	 * support the search for the {@link Entity} classes in the Jar files. So in
-	 * this method, by dropping Hibernate entity class search and directly
-	 * search the {@link Entity} classes with {@link Reflections}
+	 * Create {@link LocalContainerEntityManagerFactoryBean} bean for Hibernate.
+	 * Hibernate doesn't support the search for the {@link Entity} classes in
+	 * the other Jar files. This method directly searches the {@link Entity}
+	 * classes with {@link Reflections} not using Hibernate entity class search
+	 * feature to overcome the limitation
 	 * 
 	 * @return {@link LocalContainerEntityManagerFactoryBean}
 	 */

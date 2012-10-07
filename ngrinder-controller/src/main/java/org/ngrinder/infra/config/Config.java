@@ -51,7 +51,7 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 
 /**
- * Spring component which is responsible to get the nGrinder config which is stored
+ * Spring component which is responsible to get the nGrinder configurations which is stored
  * ${NGRINDER_HOME}.
  * 
  * @author JunHo Yoon
@@ -141,7 +141,7 @@ public class Config {
 	}
 
 	/**
-	 * NGrinder home path.
+	 * Resolve nGrinder home path.
 	 * 
 	 * @return resolved home
 	 */
@@ -163,7 +163,7 @@ public class Config {
 	}
 
 	/**
-	 * Load properties which is not modifiable.
+	 * Load internal properties which is not modifiable by user.
 	 */
 	protected void loadIntrenalProperties() {
 		InputStream inputStream = null;
@@ -181,9 +181,9 @@ public class Config {
 	}
 
 	/**
-	 * Load database related properties.
+	 * Load database related properties (database.conf). 
 	 * 
-	 * @throws IOException
+	 * @throws IOException occurs when there is no such a file.
 	 */
 	protected void loadDatabaseProperties() {
 		checkNotNull(home);
@@ -193,9 +193,9 @@ public class Config {
 	}
 
 	/**
-	 * Load system related properties.
+	 * Load system related properties.(system.conf)
 	 * 
-	 * @throws IOException
+	 * @throws IOException occurs when there is no such a file.
 	 */
 	public void loadSystemProperties() {
 		checkNotNull(home);
@@ -205,7 +205,7 @@ public class Config {
 	}
 
 	/**
-	 * Get database properties.
+	 * Get the database properties. 
 	 * 
 	 * @return database properties
 	 */
@@ -215,7 +215,7 @@ public class Config {
 	}
 
 	/**
-	 * If there is testmode property in system.properties.. return true.
+	 * Check if it's testmode.
 	 * 
 	 * @return true if test mode
 	 */
@@ -224,17 +224,17 @@ public class Config {
 	}
 
 	/**
-	 * if there is security property in system.properties.. return true
+	 * Check if it's the security enabled mode.
 	 * 
-	 * @return true if security mode.
+	 * @return true if security is enabled.
 	 */
 	public boolean isSecurityEnabled() {
 		return !isTestMode() && getSystemProperties().getPropertyBoolean("security", false);
 	}
 
 	/**
-	 * if there is pluginsupport property in system.properties.. return true in test mode, plugin is
-	 * disabled, because it takes time to initialize plugin system.
+	 * Check if plugin support is enabled.
+	 * The reason why we need this configuration is that it takes time to initialize plugin system in unit test context.
 	 * 
 	 * @return true if plugin is supported.
 	 */
@@ -243,7 +243,7 @@ public class Config {
 	}
 
 	/**
-	 * Get resolved home folder.
+	 * Get the resolved home folder.
 	 * 
 	 * @return home
 	 */
@@ -252,9 +252,9 @@ public class Config {
 	}
 
 	/**
-	 * Get system properties.
+	 * Get the system properties.
 	 * 
-	 * @return {@link PropertiesWrapper} which loaded system.conf.
+	 * @return {@link PropertiesWrapper} which is loaded from system.conf.
 	 */
 	public PropertiesWrapper getSystemProperties() {
 		checkNotNull(systemProperties);
@@ -264,7 +264,7 @@ public class Config {
 	/**
 	 * Get nGrinder version number.
 	 * 
-	 * @return nGrinder version number.
+	 * @return nGrinder version number. If not set, return "UNKNOWN"
 	 */
 	public String getVesion() {
 		return getInternalProperties().getProperty("ngrinder.version", "UNKNOWN");
@@ -276,7 +276,7 @@ public class Config {
 	private String policyScript = "";
 
 	/**
-	 * Get the content of process_and_thread_policy.js file".
+	 * Get the content of "process_and_thread_policy.js" file.
 	 * 
 	 * @return file content.
 	 */
@@ -294,6 +294,10 @@ public class Config {
 		}
 	}
 
+	/**
+	 * Get the internal properties.
+	 * @return internal properties
+	 */
 	public PropertiesWrapper getInternalProperties() {
 		return internalProperties;
 	}
@@ -307,8 +311,11 @@ public class Config {
 		return versionString;
 	}
 
+	/**
+	 * Check if it's verbose logging mode.
+	 * @return true if verbose
+	 */
 	public boolean isVerbose() {
 		return verbose;
 	}
-
 }

@@ -23,6 +23,8 @@
 
 package org.ngrinder.infra.plugin;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +37,7 @@ import javax.servlet.ServletContext;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.model.Home;
+import org.ngrinder.extension.OnControllerLifeCycleRunnable;
 import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
@@ -55,8 +58,8 @@ import com.atlassian.plugin.osgi.hostcomponents.ComponentRegistrar;
 import com.atlassian.plugin.osgi.hostcomponents.HostComponentProvider;
 
 /**
- * Plugin manager which is responsible to initialize the plugin infra. It mainly uses atlassian
- * plugin framework.
+ * Plugin manager which is responsible to initialize the plugin infra.<br/>
+ * It is built on atlassian plugin framework.
  * 
  * @see https://developer.atlassian.com/display/PLUGINFRAMEWORK/Plugin+Framework
  * @author JunHo Yoon
@@ -90,7 +93,6 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	 */
 	public void initPluginFramework() {
 		CoreLogger.LOGGER.info("Initializing Plugin System");
-		// waiting for sqlmap and grinder to start
 		// Determine which packages to expose to plugins
 		DefaultPackageScannerConfiguration scannerConfig = new DefaultPackageScannerConfiguration();
 		scannerConfig.setServletContext(servletContext);
@@ -100,8 +102,6 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 		scannerConfig.getPackageIncludes().add("org.apache.*");
 		scannerConfig.getPackageIncludes().add("net.grinder.*");
 		// Determine which module descriptors, or extension points, to expose.
-		// This 'on-start' module is used throughout this guide as an example
-		// only
 		DefaultModuleDescriptorFactory modules = new DefaultModuleDescriptorFactory(new DefaultHostContainer());
 		initPluginDescriptor(modules, NGRINDER_DEFAULT_PACKAGE);
 
@@ -114,23 +114,28 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 
 		// Construct the configuration
 		PluginsConfiguration config = new PluginsConfigurationBuilder().pluginDirectory(home.getPluginsDirectory())
-						.packageScannerConfiguration(scannerConfig)
-						.hotDeployPollingFrequency(PLUGIN_UPDATE_FREQUENCY, TimeUnit.SECONDS)
-						.hostComponentProvider(host).moduleDescriptorFactory(modules).build();
+				.packageScannerConfiguration(scannerConfig).hotDeployPollingFrequency(PLUGIN_UPDATE_FREQUENCY, TimeUnit.SECONDS)
+				.hostComponentProvider(host).moduleDescriptorFactory(modules).build();
 
 		// Start the plugin framework
 		plugins = new AtlassianPlugins(config);
 		plugins.start();
 
 		// Fistly start on start plugin
-		for (Runnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(Runnable.class)) {
-			runnable.run();
+		for (OnControllerLifeCycleRunnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(OnControllerLifeCycleRunnable.class)) {
+			String ip = "";
+			try {
+				InetAddress addr = InetAddress.getLocalHost();
+				ip = addr.getHostAddress();
+			} catch (UnknownHostException e) {
+			}
+			runnable.start(ip, this.config.getVesion());
 		}
 		CoreLogger.LOGGER.info("Plugin System is started.");
 	}
 
 	/**
-	 * Check plugin support.
+	 * Check if plugin support is enabled.
 	 * 
 	 * @return true if plugin is supported.
 	 * 
@@ -140,7 +145,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	}
 
 	/**
-	 * Collect plugin descriptors by scanning.
+	 * Collect all plugin descriptors by scanning.
 	 * 
 	 * @param modules
 	 *            module factory
@@ -150,21 +155,17 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	@SuppressWarnings("rawtypes")
 	protected void initPluginDescriptor(DefaultModuleDescriptorFactory modules, String packagename) {
 		final Reflections reflections = new Reflections(packagename);
-		Set<Class<? extends AbstractModuleDescriptor>> pluginDescriptors = reflections
-						.getSubTypesOf(AbstractModuleDescriptor.class);
+		Set<Class<? extends AbstractModuleDescriptor>> pluginDescriptors = reflections.getSubTypesOf(AbstractModuleDescriptor.class);
 
 		for (Class<? extends AbstractModuleDescriptor> pluginDescriptor : pluginDescriptors) {
 			PluginDescriptor pluginDescriptorAnnotation = pluginDescriptor.getAnnotation(PluginDescriptor.class);
 			if (pluginDescriptorAnnotation == null) {
-				LOGGER.error("plugin descriptor " + pluginDescriptor.getName()
-								+ " doesn't have PluginDescriptor annotation. Skip..");
+				LOGGER.error("plugin descriptor " + pluginDescriptor.getName() + " doesn't have PluginDescriptor annotation. Skip..");
 			} else if (StringUtils.isEmpty(pluginDescriptorAnnotation.value())) {
-				LOGGER.error("plugin descriptor " + pluginDescriptor.getName()
-								+ " doesn't have corresponding plugin key. Skip..");
+				LOGGER.error("plugin descriptor " + pluginDescriptor.getName() + " doesn't have corresponding plugin key. Skip..");
 			} else {
 				modules.addModuleDescriptor(pluginDescriptorAnnotation.value(), pluginDescriptor);
-				LOGGER.info("plugin descriptor {} with {} is initiated.", pluginDescriptor.getName(),
-								pluginDescriptorAnnotation.value());
+				LOGGER.info("plugin descriptor {} with {} is initiated.", pluginDescriptor.getName(), pluginDescriptorAnnotation.value());
 			}
 		}
 	}
@@ -183,13 +184,15 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	}
 
 	/**
-	 * Get plugins by module descriptor class. This method puts the given default plugin at a head
-	 * of plugin list.
+	 * Get plugins by module descriptor class.<br/>
+	 * This method puts the given default plugin at a head of returned plugin list.
 	 * 
 	 * @param <M>
 	 *            module type
-	 * @param moduleClass module class
-	 * @param defaultPlugin default plugin
+	 * @param moduleClass
+	 *            module class
+	 * @param defaultPlugin
+	 *            default plugin
 	 * @return plugin list
 	 */
 	public <M> List<M> getEnabledModulesByClass(Class<M> moduleClass, M defaultPlugin) {
@@ -212,6 +215,9 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 		plugins.stop();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.springframework.web.context.ServletContextAware#setServletContext(javax.servlet.ServletContext)
+	 */
 	@Override
 	public void setServletContext(ServletContext servletContext) {
 		this.servletContext = servletContext;

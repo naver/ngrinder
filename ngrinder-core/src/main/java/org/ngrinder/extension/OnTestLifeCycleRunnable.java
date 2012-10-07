@@ -34,10 +34,10 @@ import org.ngrinder.service.IPerfTestService;
  * @author JunHo Yoon
  * @since 3.0
  */
-public interface OnTestStartRunnable {
+public interface OnTestLifeCycleRunnable {
 
 	/**
-	 * method which will be invoked whenever {@link PerfTest} is started.
+	 * Callback method which will be invoked whenever {@link PerfTest} is started.
 	 * 
 	 * @param perfTest
 	 *            Performance Test
@@ -49,7 +49,7 @@ public interface OnTestStartRunnable {
 	public void start(PerfTest perfTest, IPerfTestService perfTestService, String version);
 
 	/**
-	 * method which will be invoked whenever {@link PerfTest} is finished.
+	 * Callback method which will be invoked whenever {@link PerfTest} is finished.
 	 * 
 	 * 
 	 * @param perfTest

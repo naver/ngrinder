@@ -49,7 +49,7 @@ import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.service.MonitorAgentService;
 import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.extension.OnTestStartRunnable;
+import org.ngrinder.extension.OnTestLifeCycleRunnable;
 import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.plugin.PluginManager;
@@ -267,7 +267,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	void runTestOn(final PerfTest perfTest, GrinderProperties grinderProperties, final SingleConsole singleConsole) {
 		// start target monitor
-		for (OnTestStartRunnable run : pluginManager.getEnabledModulesByClass(OnTestStartRunnable.class)) {
+		for (OnTestLifeCycleRunnable run : pluginManager.getEnabledModulesByClass(OnTestLifeCycleRunnable.class)) {
 			run.start(perfTest, perfTestService, config.getVesion());
 		}
 
@@ -323,10 +323,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            PerfTest
 	 * @param reason
 	 *            the reason of test finish..
-	 * @see OnTestStartRunnable
+	 * @see OnTestLifeCycleRunnable
 	 */
 	public void notifyFinsish(PerfTest perfTest, StopReason reason) {
-		for (OnTestStartRunnable run : pluginManager.getEnabledModulesByClass(OnTestStartRunnable.class)) {
+		for (OnTestLifeCycleRunnable run : pluginManager.getEnabledModulesByClass(OnTestLifeCycleRunnable.class)) {
 			run.finish(perfTest, reason.name(), perfTestService, config.getVesion());
 		}
 	}

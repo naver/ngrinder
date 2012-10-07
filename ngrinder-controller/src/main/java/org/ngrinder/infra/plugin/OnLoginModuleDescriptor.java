@@ -28,9 +28,7 @@ import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
 import com.atlassian.plugin.module.ContainerManagedPlugin;
 
 /**
- * Plugin Descriptor for OnTestStartModule.
- * 
- * The plugin should be constructed by implementing {@link OnTestStartRunnable}
+ * Plugin Descriptor for {@link OnLoginRunnable}.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -39,6 +37,9 @@ import com.atlassian.plugin.module.ContainerManagedPlugin;
 @PluginDescriptor("on-login")
 @SuppressWarnings("deprecation")
 public class OnLoginModuleDescriptor extends AbstractModuleDescriptor<OnLoginRunnable> {
+	/* (non-Javadoc)
+	 * @see com.atlassian.plugin.descriptors.AbstractModuleDescriptor#getModule()
+	 */
 	public OnLoginRunnable getModule() {
 		return ((ContainerManagedPlugin) getPlugin()).getContainerAccessor().createBean(getModuleClass());
 	}

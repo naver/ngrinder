@@ -31,8 +31,8 @@ import java.lang.annotation.Target;
 import org.springframework.stereotype.Component;
 
 /**
- * Spring component annotation to mark this component is only necessary to create in runtime. This
- * annotation is mainly used to block the component creation in Unit Text.
+ * Spring component annotation to mark this component is only necessary to be created in runtime. This
+ * annotation is mainly used to block the component creation in Unit Test context.
  * 
  * @author JunHo Yoon
  * @since 3.0

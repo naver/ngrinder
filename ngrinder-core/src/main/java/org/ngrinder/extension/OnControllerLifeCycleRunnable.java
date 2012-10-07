@@ -20,21 +20,39 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.infra.plugin;
+package org.ngrinder.extension;
 
-import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
-import com.atlassian.plugin.module.ContainerManagedPlugin;
 
 /**
- * Plugin Descriptor for OnStartModule.
+ * Plugin extension for Controller start and finish.
+ * 
+ * This plugin is necessary if you want to notify the controller start and end.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
-@PluginDescriptor("on-start")
-@SuppressWarnings("deprecation")
-public class OnStartModuleDescriptor extends AbstractModuleDescriptor<Runnable> {
-	public Runnable getModule() {
-		return ((ContainerManagedPlugin) getPlugin()).getContainerAccessor().createBean(getModuleClass());
-	}
+public interface OnControllerLifeCycleRunnable {
+
+	/**
+	 * Callback method which will be invoked whenever Controller is started.
+	 * 
+	 * 
+	 * @param ip
+	 *            ip
+	 * @param version
+	 *            version
+	 */
+	public void start(String ip, String version);
+
+
+	/**
+	 * Callback method which will be invoked whenever Controller is stopped.
+	 * 
+	 * 
+	 * @param ip
+	 *            ip
+	 * @param version
+	 *            version
+	 */
+	public void finish(String version, String ip);
 }
