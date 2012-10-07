@@ -62,10 +62,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
 /**
- * {@link PerfTest} test running run scheduler.
+ * {@link PerfTest} run scheduler.
  * 
- * This class is responsible to execute the performance test which is ready to execute. Mostly this
- * class is started from {@link #startTest()} method. This method is scheduled by Spring Task.
+ * This class is responsible to execute/finish the performance test. 
+ * The job is started from {@link #startTest()} and {@link #finishTest()} method. 
+ * These methods are scheduled by Spring Task.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -138,7 +139,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Check the agent availability for the given test.
+	 * Check the agent availability for the given {@link PerfTest}.
 	 * 
 	 * @param test
 	 *            {@link PerfTest}
@@ -156,7 +157,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Run given test.
+	 * Run the given test.
 	 * 
 	 * If fails, it marks STOP_ON_ERROR in the given {@link PerfTest} status
 	 * 
@@ -186,11 +187,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Check cancellation status on console.
+	 * Check the cancellation status on console.
 	 * 
 	 * @param singleConsole
 	 *            console
-	 * @return true if canceled.
+	 * @return true if cancellation is requested.
 	 */
 	SingleConsole checkCancellation(SingleConsole singleConsole) {
 		if (singleConsole.isCanceled()) {
@@ -200,11 +201,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Start console.
+	 * Start a console for given {@link PerfTest}.
 	 * 
 	 * @param perfTest
 	 *            perftest
-	 * @return started console console
+	 * @return started console
 	 */
 	SingleConsole startConsole(PerfTest perfTest) {
 		perfTestService.markStatusAndProgress(perfTest, START_CONSOLE, "Console is being prepared.");
@@ -217,14 +218,14 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Distribute files.
+	 * Distribute files to agents.
 	 * 
 	 * @param perfTest
 	 *            perftest
 	 * @param grinderProperties
 	 *            grinder properties
 	 * @param singleConsole
-	 *            console
+	 *            console to be used.
 	 */
 	void distributeFileOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		// Distribute files
@@ -237,14 +238,14 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Start agents.
+	 * Start agents for the given {@link PerfTest}.
 	 * 
 	 * @param perfTest
 	 *            perftest
 	 * @param grinderProperties
 	 *            grinder properties
 	 * @param singleConsole
-	 *            console
+	 *            console to be used.
 	 */
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		perfTestService.markStatusAndProgress(perfTest, START_AGENTS, perfTest.getAgentCount()
@@ -256,12 +257,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Run a test with given {@link GrinderProperties} and {@link SingleConsole} .
+	 * Run a given {@link PerfTest} with the given {@link GrinderProperties} and the {@link SingleConsole} .
 	 * 
 	 * @param perfTest
 	 *            perftest
 	 * @param grinderProperties
-	 *            the grinder information
+	 *             grinder properties
 	 * @param singleConsole
 	 *            console to be used.
 	 */
@@ -317,7 +318,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Run plugins' test finish methods.
+	 * Notify test finish to plugins.
 	 * 
 	 * @param perfTest
 	 *            PerfTest
@@ -332,7 +333,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Scheduled method for test finish. There are three types of finish. <br/>
+	 * Finish the tests.(Scheduled by SpringTask)<br/>
+	 * 
+	 * There are three types of finish. <br/>
+	 * 
 	 * <ul>
 	 * <li>Abnormal test finish : when TPS is too low or too many errors occurs</li>
 	 * <li>User requested test finish : when user requested to finish test from the UI</li>
@@ -366,13 +370,13 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Check this test is ready to finish.
+	 * Check if the given {@link PerfTest} is ready to finish.
 	 * 
 	 * @param perfTest
 	 *            perf test
 	 * @param singleConsoleInUse
 	 *            singleConsole
-	 * @return true if it's a candiate.
+	 * @return true if it's a finish candidate.
 	 */
 	private boolean isTestFinishCandidate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		// Give 5 seconds to be finished
@@ -395,12 +399,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Terminate test.
+	 * Cancel the given {@link PerfTest}.
 	 * 
 	 * @param perfTest
-	 *            {@link PerfTest} to be finished
+	 *            {@link PerfTest} to be canceled.
 	 * @param singleConsoleInUse
-	 *            {@link SingleConsole} which is being using for {@link PerfTest}
+	 *            {@link SingleConsole} which is being used for the given {@link PerfTest}
 	 */
 	public void doCancel(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		LOG.error("Cacel the perftest {} by user request.", perfTest.getTestIdentifier());
@@ -409,12 +413,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Terminate test.
+	 * Terminate the given {@link PerfTest}.
 	 * 
 	 * @param perfTest
 	 *            {@link PerfTest} to be finished
 	 * @param singleConsoleInUse
-	 *            {@link SingleConsole} which is being using for {@link PerfTest}
+	 *            {@link SingleConsole} which is being used for the given {@link PerfTest}
 	 */
 	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR,
@@ -423,12 +427,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Finish test.
+	 * Finish the given {@link PerfTest}.
 	 * 
 	 * @param perfTest
 	 *            {@link PerfTest} to be finished
 	 * @param singleConsoleInUse
-	 *            {@link SingleConsole} which is being using for {@link PerfTest}
+	 *            {@link SingleConsole} which is being used for the given {@link PerfTest}
 	 */
 	public void doFinish(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		// FIXME... it should found abnormal test status..

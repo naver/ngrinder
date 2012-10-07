@@ -26,7 +26,7 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 
 /**
- * Current perftest statistics model per user.
+ * Current running statistics model of {@link PerfTest} per user.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -38,15 +38,19 @@ public class PerfTestStatistics {
 
 	/**
 	 * Constructor.
-	 * @param user user
+	 * 
+	 * @param user
+	 *            user
 	 */
 	public PerfTestStatistics(User user) {
 		this.user = user;
 	}
 
 	/**
-	 * Add perftest.
-	 * @param perfTest perftest
+	 * Add a {@link PerfTest} instance.
+	 * 
+	 * @param perfTest
+	 *            perftest
 	 */
 	public void addPerfTest(PerfTest perfTest) {
 		testCount++;

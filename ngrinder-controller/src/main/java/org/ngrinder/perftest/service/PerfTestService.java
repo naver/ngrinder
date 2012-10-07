@@ -81,6 +81,7 @@ import org.hibernate.Hibernate;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.Status;
@@ -369,6 +370,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		checkNotNull(perfTest);
 		checkNotNull(perfTest.getId(), "perfTest should save Id");
 		perfTest.setLastProgressMessage(message);
+		CoreLogger.LOGGER.info("Progress : Test - {} : {} {}", new Object[] {perfTest.getId(), message, perfTest});
 		return perfTestRepository.save(perfTest);
 	}
 

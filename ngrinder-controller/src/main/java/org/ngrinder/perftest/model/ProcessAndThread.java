@@ -25,7 +25,7 @@ package org.ngrinder.perftest.model;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * Count Data holder of processes and threads.
+ * processes and threads count model.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -65,6 +65,9 @@ public class ProcessAndThread {
 		this.threadCount = threadCount;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);

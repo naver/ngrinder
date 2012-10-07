@@ -29,12 +29,13 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Tag;
 import org.ngrinder.model.User;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
- * {@link Tag} Specification for more elaborated search.
+ * {@link Tag} Specification for more elaborated {@link PerfTest} search.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -42,8 +43,8 @@ import org.springframework.data.jpa.domain.Specification;
 public abstract class TagSpecification {
 
 	/**
-	 * Get the Specification which provide empty predicate. This is for the base element for "and"
-	 * or "or" combination.
+	 * Get the Specification which provides empty predicate.<br/>
+	 * This is for the base element for "and" or "or" combination.
 	 * 
 	 * @return {@link Specification}
 	 */
@@ -57,7 +58,7 @@ public abstract class TagSpecification {
 	}
 
 	/**
-	 * Get the Specification which check the {@link Tag} has one of given value.
+	 * Get the Specification which checks the {@link Tag#getTagValue()} has one of given value.
 	 * 
 	 * @param values
 	 *            tag lists
@@ -73,8 +74,8 @@ public abstract class TagSpecification {
 	}
 
 	/**
-	 * Get createBy specification to get the {@link Tag} whose creator or last modifier is the given
-	 * user.
+	 * Get lastModifiedUser and createBy specification to get the {@link Tag} whose creator or last
+	 * modifier is the given user.
 	 * 
 	 * @param user
 	 *            user
@@ -90,7 +91,7 @@ public abstract class TagSpecification {
 	}
 
 	/**
-	 * Get the Specification which check the tag has corresponding perfTest.
+	 * Get the Specification which checks the tag has corresponding perfTest.
 	 * 
 	 * @return {@link Specification}
 	 */
@@ -106,7 +107,8 @@ public abstract class TagSpecification {
 	}
 
 	/**
-	 * Get query specification to get the {@link Tag} whose value starts with given query.
+	 * Get query specification to get the {@link Tag} whose value starts with
+	 * given query.
 	 * 
 	 * @param queryString
 	 *            matching tag value
@@ -117,8 +119,7 @@ public abstract class TagSpecification {
 			@Override
 			public Predicate toPredicate(Root<Tag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				String replacedQueryString = StringUtils.replace(queryString, "%", "\\%");
-				return cb.like(cb.lower(root.get("tagValue").as(String.class)),
-								StringUtils.lowerCase(replacedQueryString) + "%");
+				return cb.like(cb.lower(root.get("tagValue").as(String.class)), StringUtils.lowerCase(replacedQueryString) + "%");
 			}
 		};
 	}
