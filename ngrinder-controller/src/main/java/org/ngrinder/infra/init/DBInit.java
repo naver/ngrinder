@@ -38,12 +38,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Database Initialization. When the first bootup, some data should be inserted
- * into DB.
+ * Database Initialization. 
+ * When the first boot-up, some data(ex: user account) should be inserted into DB.
  * 
  * And... It's the perfect place to upgrade DB.
  * 
  * @author JunHo Yoon
+ * @since 3.0
  */
 @Service
 public class DBInit {
@@ -82,7 +83,7 @@ public class DBInit {
 	 * @param email
 	 *            email
 	 */
-	public void createUser(String userId, String password, Role role, String userName, String email) {
+	private void createUser(String userId, String password, Role role, String userName, String email) {
 		if (userRepository.findOneByUserId(userId) == null) {
 			User user = new User();
 			user.setUserId(userId);
@@ -100,7 +101,7 @@ public class DBInit {
 	}
 
 	/**
-	 * Create users..
+	 * Create initial users.
 	 */
 	private void createDefaultUserIfNecessary() {
 		// If there is no users.. make admin and user and U, S, A roles.

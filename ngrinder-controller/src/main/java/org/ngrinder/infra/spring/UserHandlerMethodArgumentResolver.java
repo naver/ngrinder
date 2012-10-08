@@ -42,11 +42,17 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 
 	private UserContext userContext;
 
+	/* (non-Javadoc)
+	 * @see org.springframework.web.method.support.HandlerMethodArgumentResolver#supportsParameter(org.springframework.core.MethodParameter)
+	 */
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
 		return parameter.getParameterType().equals(User.class);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.springframework.web.method.support.HandlerMethodArgumentResolver#resolveArgument(org.springframework.core.MethodParameter, org.springframework.web.method.support.ModelAndViewContainer, org.springframework.web.context.request.NativeWebRequest, org.springframework.web.bind.support.WebDataBinderFactory)
+	 */
 	@Override
 	public Object resolveArgument(
 			MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
@@ -55,8 +61,8 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	}
 
 	/**
-	 * Get current user context. This method is provided for XML based spring
-	 * bean injection.
+	 * Get current user context.<br/>
+	 * This method is provided for XML based spring bean injection.
 	 * 
 	 * @return user context
 	 */
@@ -65,8 +71,8 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	}
 
 	/**
-	 * Set current user context.This method is provided for XML based spring
-	 * bean injection.
+	 * Set the current user context.<br/>
+	 * This method is provided for XML based spring bean injection.
 	 * 
 	 * @param userContext
 	 *            user context.

@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Spring component annotation to mark this component is only necessary to
- * create in test context. This annotation is mainly used to block the component
+ * be created in unit test context. This annotation is mainly used to block the component
  * creation in runtime.
  * 
  * @author JunHo Yoon

@@ -61,9 +61,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Agent manager class.
+ * Agent manager.
  * 
- * This class runs {@link AgentControllerServerDaemon} internally and manage to agent connection.
+ * This class has {@link AgentControllerServerDaemon} internally and manage to the agent connection.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -112,7 +112,7 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * shutdown agent controller server.
+	 * Shutdown agent controller server.
 	 */
 	@PreDestroy
 	public void destroy() {
@@ -152,7 +152,7 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Get max agent size per console.
+	 * Get the max agent size per console.
 	 * 
 	 * @return max agent size per console
 	 */
@@ -162,7 +162,7 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Get max vuser per agent.
+	 * Get the max vuser per agent.
 	 * 
 	 * @return max vuser per agent
 	 */
@@ -171,7 +171,7 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Get max run count per thread.
+	 * Get the max run count per thread.
 	 * 
 	 * @return max run count per thread
 	 */
@@ -180,7 +180,7 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Get max run hour.
+	 * Get the max run hour.
 	 * 
 	 * @return max run hour
 	 */
@@ -189,7 +189,7 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Get {@link AgentIdentity} which as give ip.
+	 * Get the {@link AgentIdentity} which has the given ip.
 	 * 
 	 * @param agentIP
 	 *            agent ip
@@ -207,7 +207,7 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Get all agents which are not used.
+	 * Get all agents which are not used now.
 	 * 
 	 * @return AgentIndentity set
 	 */
@@ -216,7 +216,7 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Get all approved agents which are not used.
+	 * Get the all approved agents which are not used now.
 	 * 
 	 * @return AgentIndentity set
 	 */
@@ -226,7 +226,7 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Filter approved agents from given agents.
+	 * Filter the approved agents from given agents.
 	 * 
 	 * @param agents
 	 *            all agents
@@ -253,7 +253,7 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Get the current system performance status of the given agent.
+	 * Get the current system performance of the given agent.
 	 * 
 	 * @param agentIdentity
 	 *            {@link AgentIdentity}
@@ -264,14 +264,14 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Assign agent on given console.
+	 * Assign the agents on the given console.
 	 * 
 	 * @param singleConsole
-	 *            {@link SingleConsole} to which agents will be assigend
+	 *            {@link SingleConsole} to which agents will be assigned
 	 * @param grinderProperties
 	 *            {@link GrinderProperties} to be distributed.
 	 * @param agentCount
-	 *            how much agent are necessary.
+	 *            the count of agents.
 	 */
 	public synchronized void runAgent(final SingleConsole singleConsole, final GrinderProperties grinderProperties,
 					final Integer agentCount) {

@@ -22,15 +22,15 @@
  */
 package org.ngrinder.infra.plugin;
 
-import org.ngrinder.extension.OnTestStartRunnable;
+import org.ngrinder.extension.OnTestLifeCycleRunnable;
 
 import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
 import com.atlassian.plugin.module.ContainerManagedPlugin;
 
 /**
- * Plugin Descriptor for OnTestStartModule.
+ * Plugin Descriptor for {@link OnTestLifeCycleRunnable}.
  * 
- * The plugin should be constructed by implementing {@link OnTestStartRunnable}
+ * The plugin should be constructed by implementing {@link OnTestLifeCycleRunnable}
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -38,8 +38,8 @@ import com.atlassian.plugin.module.ContainerManagedPlugin;
 
 @PluginDescriptor("on-test-start")
 @SuppressWarnings("deprecation")
-public class OnTestStartModuleDescriptor extends AbstractModuleDescriptor<OnTestStartRunnable> {
-	public OnTestStartRunnable getModule() {
+public class OnTestLifeCycleModuleDescriptor extends AbstractModuleDescriptor<OnTestLifeCycleRunnable> {
+	public OnTestLifeCycleRunnable getModule() {
 		return ((ContainerManagedPlugin) getPlugin()).getContainerAccessor().createBean(getModuleClass());
 	}
 }

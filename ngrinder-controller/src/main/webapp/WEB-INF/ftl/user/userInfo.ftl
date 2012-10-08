@@ -1,112 +1,4 @@
 <#import "../common/spring.ftl" as spring/>
-<script src="${req.getContextPath()}/js/jquery.validate.js"></script>
-<script type="text/javascript">
-	
-	$(document).ready(function(){
-		<#if !(user?has_content)>
-		$(".collapse").collapse();
-		$("#user_pw_head").attr("href","");
-
-		var userIdValidMsg;
-		jQuery.validator.addMethod("userIdFmt", function(userId, element ) {
-			var patrn = "^[a-zA-Z]{1}([a-zA-Z0-9]|[_]|[-]|[.]){0,19}$";
-			var rule = new RegExp(patrn);
-			if (!rule.test($.trim(userId))) {
-				validateError(this);
-				userIdValidMsg = "<@spring.message "user.info.warning.userId.intro"/>";
-				return false;
-			}
-			return true;
-		}, "<@spring.message 'user.info.warning.userId.invalid'/>" );
-		
-
-		jQuery.validator.addMethod("userIdExist", function( userId, element ) {
-			if(userId != null && userId.length > 0){
-				var result ;
-				$.ajax({
-					  url: "${req.getContextPath()}/user/checkUserId?userId="+userId,
-					  async: false,
-					  cache: false,
-					  type: "GET",
-					  dataType:'json',
-					  success: function(res) {
-					  	result = res.success;
-  					  }
-				}); 
-				return result;
-			}
-			return false;
-		}, "<@spring.message 'user.info.warning.userId.exist'/>");
-		
-		</#if>
-		
-		jQuery.validator.addMethod("userPhoneNumber", function(mobilePhone, element ) {
-			
-			var patrn = /^\+?\d{2,3}-?\d{2,5}(-?\d+)?/;
-			var rule = new RegExp(patrn);
-			if (!rule.test($.trim($("#mobilePhone").val()))) {
-				userIdValidMsg = "<@spring.message "user.info.warning.phone.intro"/>";
-				return false;
-			}
-			return true;
-		}, "<@spring.message 'user.info.warning.phone.intro'/>" );
-		
-		
-		$('.collapse').on('hidden', function () {
-  			$("#password").removeClass("required");
-  			$("#cpwd").removeClass("required");
-  			$("#cpwd").attr("equalTo","");
-  			$("#password").val("");
-  			$("#cpwd").val("");
-		});
-		
-		$('.collapse').on('shown', function () {
-			
-  			$("#password").addClass("required");
-  			$("#cpwd").addClass("required");
-  			$("#cpwd").attr("equalTo","#password");
-
-		});
-		
-		
-		$('#registerUserForm input').hover(function() {
-	        $(this).popover('show')
-	    });
-	    
-	    $("#registerUserForm").validate({
-
-	        messages:{
-	            userName:"<@spring.message "user.info.warning.userName"/>",
-	            email:{
-	                required:"<@spring.message "user.info.warning.email.required"/>",
-	                email:"<@spring.message "user.info.warning.email.rule"/>"
-	            },
-	          
-	            password:{
-	                required:"<@spring.message "user.info.warning.pwd.required"/>",
-	                minlength:"<@spring.message "user.info.warning.pwd.minLength"/>"
-	            },
-	            cpwd:{
-	                required:"<@spring.message "user.info.warning.cpwd.required"/>",
-	                equalTo:"<@spring.message "user.info.warning.cpwd.equalTo"/>"
-	            }
-	        },
-	        errorClass: "help-inline",
-	        errorElement: "span",
-	        highlight:function(element, errorClass, validClass) {
-	            $(element).parents('.control-group').addClass('error');
-	        },
-	        unhighlight: function(element, errorClass, validClass) {
-	            $(element).parents('.control-group').removeClass('error');
-	            $(element).parents('.control-group').addClass('success');
-	        }
-	    });
-	});
-	
-	
-	
-</script>
-
 <form action="${req.getContextPath()}/user/save"
 	class="form-horizontal form-horizontal-left" id="registerUserForm" style="margin-left:30px" method="POST">
 	<fieldset>
@@ -217,13 +109,105 @@
 		</div>
 	</fieldset>
 </form>
+<script type="text/javascript">	
+	$(document).ready(function(){
+		<#if !(user?has_content)>
+		$(".collapse").collapse();
+		$("#user_pw_head").attr("href","");
 
+		var userIdValidMsg;
+		jQuery.validator.addMethod("userIdFmt", function(userId, element ) {
+			var patrn = "^[a-zA-Z]{1}([a-zA-Z0-9]|[_]|[-]|[.]){0,19}$";
+			var rule = new RegExp(patrn);
+			if (!rule.test($.trim(userId))) {
+				validateError(this);
+				userIdValidMsg = "<@spring.message "user.info.warning.userId.intro"/>";
+				return false;
+			}
+			return true;
+		}, "<@spring.message 'user.info.warning.userId.invalid'/>" );
+		
 
+		jQuery.validator.addMethod("userIdExist", function( userId, element ) {
+			if(userId != null && userId.length > 0){
+				var result ;
+				$.ajax({
+					  url: "${req.getContextPath()}/user/checkUserId?userId="+userId,
+					  async: false,
+					  cache: false,
+					  type: "GET",
+					  dataType:'json',
+					  success: function(res) {
+					  	result = res.success;
+  					  }
+				}); 
+				return result;
+			}
+			return false;
+		}, "<@spring.message 'user.info.warning.userId.exist'/>");
+		
+		</#if>
+		
+		jQuery.validator.addMethod("userPhoneNumber", function(mobilePhone, element ) {
+			
+			var patrn = /^\+?\d{2,3}-?\d{2,5}(-?\d+)?/;
+			var rule = new RegExp(patrn);
+			if (!rule.test($.trim($("#mobilePhone").val()))) {
+				userIdValidMsg = "<@spring.message "user.info.warning.phone.intro"/>";
+				return false;
+			}
+			return true;
+		}, "<@spring.message 'user.info.warning.phone.intro'/>" );
+		
+		
+		$('.collapse').on('hidden', function () {
+  			$("#password").removeClass("required");
+  			$("#cpwd").removeClass("required");
+  			$("#cpwd").attr("equalTo","");
+  			$("#password").val("");
+  			$("#cpwd").val("");
+		});
+		
+		$('.collapse').on('shown', function () {
+			
+  			$("#password").addClass("required");
+  			$("#cpwd").addClass("required");
+  			$("#cpwd").attr("equalTo","#password");
 
+		});
+		
+		
+		$('#registerUserForm input').hover(function() {
+	        $(this).popover('show')
+	    });
+	    
+	    $("#registerUserForm").validate({
 
-
-
-
-
-
-
+	        messages:{
+	            userName:"<@spring.message "user.info.warning.userName"/>",
+	            email:{
+	                required:"<@spring.message "user.info.warning.email.required"/>",
+	                email:"<@spring.message "user.info.warning.email.rule"/>"
+	            },
+	          
+	            password:{
+	                required:"<@spring.message "user.info.warning.pwd.required"/>",
+	                minlength:"<@spring.message "user.info.warning.pwd.minLength"/>"
+	            },
+	            cpwd:{
+	                required:"<@spring.message "user.info.warning.cpwd.required"/>",
+	                equalTo:"<@spring.message "user.info.warning.cpwd.equalTo"/>"
+	            }
+	        },
+	        errorClass: "help-inline",
+	        errorElement: "span",
+	        highlight:function(element, errorClass, validClass) {
+	            $(element).parents('.control-group').addClass('error');
+	        },
+	        unhighlight: function(element, errorClass, validClass) {
+	            $(element).parents('.control-group').removeClass('error');
+	            $(element).parents('.control-group').addClass('success');
+	        }
+	    });
+	});
+</script>

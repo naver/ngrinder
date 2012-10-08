@@ -7,16 +7,21 @@
     <format>zip</format>
   </formats>
   <fileSets>
+	<fileSet>
+      <directory>${project.basedir}/target/classes/shell</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>*.sh</include>
+        <include>*.bat</include>
+      </includes>
+      <fileMode>711</fileMode>
+    </fileSet>
     <fileSet>
       <directory>${project.basedir}/target</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
         <include>ngrinder*.jar</include>
-        <include>lib/*jar</include>
       </includes>
-      <excludes>
-      	<exclude>lib/tools.jar</exclude>
-      </excludes>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}</directory>
@@ -26,4 +31,15 @@
       </includes>
     </fileSet>
   </fileSets>
+  <dependencySets>
+  	<dependencySet>
+  		<outputDirectory>/lib</outputDirectory>
+  		<includes>
+  			<include>*:*</include>
+  		</includes>
+  		<useProjectArtifact>false</useProjectArtifact>
+  		<directoryMode>664</directoryMode>
+  		<fileMode>664</fileMode>
+  	</dependencySet>
+  </dependencySets>
 </assembly>

@@ -48,12 +48,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Console manager class which is responsible to console instance management. A number of
- * consoles(specified in ngrinder.maxConcurrentTest in system.conf are pooled. Actually console
- * itself is not pooled. Instead, the {@link ConsoleEntry} which contains console information are
- * pooled. Whenever user requests a new console, it get the one {@link ConsoleEntry} from pool and
- * creates new console with the {@link ConsoleEntry}. Currently using consoles are kept in
- * {@link #consoleInUse} member variable.
+ * Console manager is responsible for console instance management.<br/>
+ * A number of consoles(specified in ngrinder.maxConcurrentTest in system.conf) are pooled. 
+ * Actually console itself is not pooled but the {@link ConsoleEntry} which contains console information are
+ * pooled internally. Whenever a user requires a new console, it gets the one {@link ConsoleEntry} from the pool and
+ * creates new console with the {@link ConsoleEntry}. 
+ * Currently using consoles are kept in {@link #consoleInUse} member variable.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -81,8 +81,9 @@ public class ConsoleManager {
 	}
 
 	/**
-	 * Get the base port number of console. It can be specified at ngrinder.consolePortBase in
-	 * system.conf. Each console will be created from that port.
+	 * Get the base port number of console.<br/>
+	 * It can be specified at ngrinder.consolePortBase in system.conf. 
+	 * Each console will be created from that port.
 	 * 
 	 * @return base port number
 	 */
@@ -102,7 +103,7 @@ public class ConsoleManager {
 	}
 
 	/**
-	 * Timeout (in second).
+	 * Get Timeout (in second).
 	 * 
 	 * @return 5000 second
 	 */
@@ -112,7 +113,7 @@ public class ConsoleManager {
 	}
 
 	/**
-	 * Get available ports.
+	 * Get the available ports.
 	 * 
 	 * @param size
 	 *            port size
@@ -150,11 +151,11 @@ public class ConsoleManager {
 	}
 
 	/**
-	 * Check the given port is empty.
+	 * Check if the given port is available.
 	 * 
 	 * @param port
 	 *            port to be checked
-	 * @return port
+	 * @return true if available
 	 */
 	private boolean checkExactPortAvailability(int port) {
 		ServerSocket socket = null;
@@ -176,11 +177,11 @@ public class ConsoleManager {
 	}
 
 	/**
-	 * Get available console.
+	 * Get a available console.<br/>
 	 * 
 	 * If there is no available console, it waits until available console is returned back. If the
-	 * specific time is elapsed, the timeout error occurs and throw {@link NGrinderRuntimeException}
-	 * . timeout can be adjusted by overriding {@link #getMaxWaitingMiliSecond()}.
+	 * specific time is elapsed, the timeout error occurs and throws {@link NGrinderRuntimeException}
+	 * . The timeout can be adjusted by overriding {@link #getMaxWaitingMiliSecond()}.
 	 * 
 	 * @param testIdentifier
 	 *            test identifier
@@ -211,7 +212,7 @@ public class ConsoleManager {
 	}
 
 	/**
-	 * Return back console.
+	 * Return back the given console.<br/>
 	 * 
 	 * Duplicated returns is allowed.
 	 * 
@@ -267,7 +268,7 @@ public class ConsoleManager {
 	}
 
 	/**
-	 * Get list of {@link SingleConsole} which are used.
+	 * Get the list of {@link SingleConsole} which are used.
 	 * 
 	 * @return {@link SingleConsole} list in use
 	 */
@@ -276,7 +277,7 @@ public class ConsoleManager {
 	}
 
 	/**
-	 * Get the size of available consoles.
+	 * Get the size of currently available consoles.
 	 * 
 	 * @return size of available consoles.
 	 */
@@ -285,10 +286,10 @@ public class ConsoleManager {
 	}
 
 	/**
-	 * Get {@link SingleConsole} instance which uses the given port.
+	 * Get the {@link SingleConsole} instance which is using the given port.
 	 * 
 	 * @param port
-	 *            port which will be checked against
+	 *            port which the console is using
 	 * @return {@link SingleConsole} instance if found. Otherwise, {@link NullSingleConsole}
 	 *         instance.
 	 */

@@ -17,11 +17,12 @@
 		margin-bottom: 8px;
 		overflow-y: scroll;
 		border-radius: 3px 3px 3px 3px;
+		width:340px; 
 	}
 	
 	div.div-resources .resource {
 		color: #666666;
-		display: inline-block;
+		display: block;
 		margin-left: 7px;
 		margin-top: 2px;
 		margin-bottom: 2px;
@@ -127,41 +128,45 @@
 								
 								<#if test??> 
 									<span id="teststatus_pop_over"
-										rel="popover" data-content='${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}'  
-											data-original-title="<@spring.message "${test.status.springMessageKey}"/>" type="toggle" placement="bottom">
+										rel="popover" 
+										data-content='${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}'  
+										data-original-title="<@spring.message "${test.status.springMessageKey}"/>" type="toggle" placement="bottom">
 										<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
 									</span>
 								</#if>
 								<span class="pull-right">
-								<#if test??>
-									<#if test.status != "SAVED" || test.createdUser.userId != currentUser.userId>
-										<input type="hidden" id="isClone" name="isClone" value="true">
-										<#assign isClone = true/>
+									<#if test??>
+										<#if test.status != "SAVED" || test.createdUser.userId != currentUser.userId>
+											<input type="hidden" id="isClone" name="isClone" value="true">
+											<#assign isClone = true/>
+										<#else>
+											<input type="hidden" id="isClone" name="isClone" value="false">
+											<#assign isClone = false/> 
+										</#if>
 									<#else>
 										<input type="hidden" id="isClone" name="isClone" value="false">
 										<#assign isClone = false/> 
 									</#if>
-								<#else>
-									<input type="hidden" id="isClone" name="isClone" value="false">
-									<#assign isClone = false/> 
-								</#if>
-								<button type="submit" class="btn btn-success" id="saveTestBtn" style="">
-									<#if isClone>
-										<@spring.message "perfTest.detail.clone"/>
-									<#else>
-										<@spring.message "common.button.save"/>
+									<#--  Save/Clone is only available only when the test owner is current user.   -->
+									<#if !(test??) || test.lastModifiedUser.userId == currentUser.userId>
+										<button type="submit" class="btn btn-success" id="saveTestBtn" style="">
+											<#if isClone>
+												<@spring.message "perfTest.detail.clone"/>
+											<#else>
+												<@spring.message "common.button.save"/>
+											</#if> 
+										</button>
+										
+										<button type="submit" class="btn btn-primary" style="margin-left:10px;margin-right:20px"
+											data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn">
+											<#if isClone>
+												<@spring.message "perfTest.detail.clone"/>
+											<#else>
+												<@spring.message "common.button.save"/>
+											</#if>
+											&nbsp;<@spring.message "perfTest.detail.andStart"/>
+										</button>
 									</#if>
-								</button>
-								
-								<button type="submit" class="btn btn-primary" style="margin-left:10px;margin-right:20px"
-									data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn">
-									<#if isClone>
-										<@spring.message "perfTest.detail.clone"/>
-									<#else>
-										<@spring.message "common.button.save"/>
-									</#if>
-									&nbsp;<@spring.message "perfTest.detail.andStart"/>
-								</button>
 								</span>
 							</div>
 						</div>
@@ -268,20 +273,14 @@
 													<tr>
 													<td>
 														<select id="scriptName" class="required span3" name="scriptName"> 
-														<#if scriptList?? && scriptList?size &gt; 0> 
-															<#list scriptList as scriptItem> 
-																<#if  test?? && scriptItem.path == test.scriptName && test.createdUser.userId == currentUser.userId> 
-																	<#assign isSelected = "selected"/> 
-																<#else> 
-																	<#if quickScript?? && quickScript == scriptItem.path>
-																		<#assign isSelected = "selected"/> 
-																	<#else>
-																		<#assign isSelected = 	""/>
-																	</#if> 
-																</#if>
-																<option value="${scriptItem.path}" ${isSelected}>${scriptItem.path}</option> 
-															</#list> 
-														</#if>
+															<#if test?? && test.lastModifiedUser.userId != currentUser.userId>
+																<option value="${test.scriptName}" selected>${test.scriptName} - belong to ${test.lastModifiedUser.userId}</option>
+															</#if>
+															<#if scriptList?? && scriptList?size &gt; 0> 
+																<#list scriptList as scriptItem> 
+																	<option value="${scriptItem.path}" <#if  (test?? && scriptItem.path == test.scriptName) || (quickScript?? && quickScript == scriptItem.path)>selected</#if> >${scriptItem.path}</option> 
+																</#list> 
+															</#if>
 														</select>
 													</td>
 													<td>
@@ -853,6 +852,7 @@ function updateScriptResources(first) {
 			showInformation("<@spring.message "perfTest.detail.message.updateResource"/>");
 		}
 	});
+	
 	$.ajax({
 		url : "${req.getContextPath()}/perftest/getResourcesOnScriptFolder",
 		dataType : 'json',
@@ -870,7 +870,7 @@ function updateScriptResources(first) {
 			}
 			for ( var i = 0; i < len; i++) {
 				var value = res.resources[i];
-				html = html + "<div class='resource'>" + value + "</div><br/>";
+				html = html + "<div class='resource ellipsis' title='" + value + "'>" + value + "</div><br/>";
 			}
 			$("#scriptResources").html(html);
 		},

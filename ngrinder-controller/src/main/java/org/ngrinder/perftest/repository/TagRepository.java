@@ -27,7 +27,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 /**
- * Tag Repository.
+ * {@link Tag} Repository.
  * 
  * @author junHo Yoon
  * @since 3.0

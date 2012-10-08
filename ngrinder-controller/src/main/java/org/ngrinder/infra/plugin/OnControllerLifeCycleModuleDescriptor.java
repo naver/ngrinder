@@ -20,32 +20,23 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.infra.init;
+package org.ngrinder.infra.plugin;
 
-import javax.annotation.PostConstruct;
+import org.ngrinder.extension.OnControllerLifeCycleRunnable;
 
-import org.ngrinder.home.service.HomeAsyncService;
-import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
+import com.atlassian.plugin.module.ContainerManagedPlugin;
 
 /**
- * Initialize necessary data which are used in Runtime.
+ * Plugin Descriptor for OnStartModule.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
-@RuntimeOnlyComponent
-public class DataInit {
-
-	@Autowired
-	private HomeAsyncService homeAsyncService;
-
-	/**
-	 * Initialize necessary data during boot-up.
-	 */
-	@PostConstruct
-	public void init() {
-		homeAsyncService.getLeftPanelEntries();
-		homeAsyncService.getRightPanelEntries();
+@PluginDescriptor("on-start")
+@SuppressWarnings("deprecation")
+public class OnControllerLifeCycleModuleDescriptor extends AbstractModuleDescriptor<OnControllerLifeCycleRunnable> {
+	public OnControllerLifeCycleRunnable getModule() {
+		return ((ContainerManagedPlugin) getPlugin()).getContainerAccessor().createBean(getModuleClass());
 	}
 }

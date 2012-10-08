@@ -30,7 +30,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Argument marker which will store remained path of give path.
+ * Custom Spring MVC Argument annotation which marks the arguments will store remained path of give path.
  * 
  * @see RemainedPathMethodArgumentResolver
  * @author JunHo Yoon

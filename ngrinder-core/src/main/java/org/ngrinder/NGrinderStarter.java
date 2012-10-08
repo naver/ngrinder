@@ -94,8 +94,8 @@ public class NGrinderStarter {
 	}
 
 	/*
-	 * get the start mode, "agent" or "monitor". If it is not set in configuration, it will return
-	 * "agent".
+	 * get the start mode, "agent" or "monitor". If it is not set in
+	 * configuration, it will return "agent".
 	 */
 	public String getStartMode() {
 		return agentConfig.getAgentProperties().getProperty("start.mode", "agent");
@@ -138,7 +138,7 @@ public class NGrinderStarter {
 
 		String consoleIP = agentConfig.getAgentProperties().getProperty("agent.console.ip", "127.0.0.1");
 		int consolePort = agentConfig.getAgentProperties().getPropertyInt("agent.console.port",
-						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
 		LOG.info("with console: {}:{}", consoleIP, consolePort);
 		try {
@@ -214,8 +214,7 @@ public class NGrinderStarter {
 
 	private void addLibarayPath() {
 		String property = StringUtils.trimToEmpty(System.getProperty("java.library.path"));
-		System.setProperty("java.library.path",
-						property + File.pathSeparator + new File("./native_lib").getAbsolutePath());
+		System.setProperty("java.library.path", property + File.pathSeparator + new File("./native_lib").getAbsolutePath());
 		LOG.info("java.library.path : {} ", System.getProperty("java.library.path"));
 	}
 
@@ -265,8 +264,7 @@ public class NGrinderStarter {
 		try {
 			configurator.doConfigure(NGrinderStarter.class.getResource("/logback-agent.xml"));
 		} catch (JoranException e) {
-			staticPrintHelpAndExit("Can not configure logger on " + logDirectory.getAbsolutePath()
-							+ ".\n Please check if it's writable.");
+			staticPrintHelpAndExit("Can not configure logger on " + logDirectory.getAbsolutePath() + ".\n Please check if it's writable.");
 		}
 	}
 
@@ -295,7 +293,8 @@ public class NGrinderStarter {
 	/**
 	 * Agent starter.
 	 * 
-	 * @param args arguments
+	 * @param args
+	 *            arguments
 	 */
 	public static void main(String[] args) {
 
@@ -304,7 +303,10 @@ public class NGrinderStarter {
 		}
 
 		NGrinderStarter starter = new NGrinderStarter();
-		String startMode = starter.getStartMode();
+		String startMode = System.getProperty("start.mode");
+		System.out.println("Passing mode " + startMode);
+		startMode = (startMode == null) ? starter.getStartMode() : startMode;
+
 		if (startMode.equalsIgnoreCase("agent")) {
 			starter.startAgent();
 		} else if (startMode.equalsIgnoreCase("monitor")) {

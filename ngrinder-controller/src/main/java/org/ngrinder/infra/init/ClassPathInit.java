@@ -14,21 +14,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
- * Classpath jar file filtering class.
+ * Initialize Classpath initialization for class filtering .
  * 
- * Actually this class is used for grinder agent's javaagent. grinder agent is run with java agent
- * name grinder-dcr-agent-**.jar but grinder agent mistakenly takes the javadoc and sources file as
- * javaagent . So.. This class deletes out the sources and javadoc files of grinder-dcr-agent in
- * class path.
+ * This class is used to prevent javaagent abnormal behavior of grinder agent.
+ * grinder agent is run with java agent name grinder-dcr-agent-**.jar but
+ * grinder agent can mistakenly take the grinder-dcr-agent-javadoc and sources file
+ * as javaagent.
+ * So.. This class deletes out the sources and javadoc files of
+ * grinder-dcr-agent existing in class path.
  * 
  * @author JunHo Yoon
+ * @since 3.0
  */
 @Component
 public class ClassPathInit {
 	private static final Logger LOG = LoggerFactory.getLogger(ClassPathInit.class);
 
 	/**
-	 * Initialize.
+	 * Clean up grinder-dcr-agent javadoc and source.
 	 */
 	@PostConstruct
 	public void init() {
@@ -37,7 +40,7 @@ public class ClassPathInit {
 			final File f = new File(pathEntry).getParentFile();
 			final File parentFile = f != null ? f : new File(".");
 
-			String[] exts = new String[]{"jar"};
+			String[] exts = new String[] { "jar" };
 			final Collection<File> childrenFileList = FileUtils.listFiles(parentFile, exts, false);
 			for (File candidate : childrenFileList) {
 				final String name = candidate.getName();
@@ -47,7 +50,6 @@ public class ClassPathInit {
 			}
 		}
 		LOG.info("===========================================================================");
-		LOG.info("Total Class Path for validation is {}",
-				GrinderClassPathUtils.buildClasspathBasedOnCurrentClassLoader(LOG));
+		LOG.info("Total Class Path for validation is {}", GrinderClassPathUtils.buildClasspathBasedOnCurrentClassLoader(LOG));
 	}
 }

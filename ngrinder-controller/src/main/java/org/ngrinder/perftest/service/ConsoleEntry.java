@@ -23,8 +23,8 @@
 package org.ngrinder.perftest.service;
 
 /**
- * Console information which contains console's characteristics. Port is most
- * important one.
+ * Console information which contains console's characteristics.</br>
+ * {@link #port} is the most important attribute of this class.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -40,7 +40,8 @@ public class ConsoleEntry {
 	/**
 	 * Constructor.
 	 * 
-	 * @param port port
+	 * @param port
+	 *            port
 	 */
 	public ConsoleEntry(Integer port) {
 		this.port = port;
@@ -54,6 +55,9 @@ public class ConsoleEntry {
 		this.port = port;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -62,6 +66,9 @@ public class ConsoleEntry {
 		return result;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {

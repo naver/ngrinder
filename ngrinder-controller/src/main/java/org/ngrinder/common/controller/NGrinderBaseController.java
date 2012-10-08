@@ -31,7 +31,6 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,16 +92,6 @@ public class NGrinderBaseController implements NGrinderConstants {
 			noOp();
 		}
 		return new User();
-	}
-
-	/**
-	 * Provide nGrinder version as a model attributes.
-	 * 
-	 * @return nGrinder version
-	 */
-	@ModelAttribute("nGrinderVersion")
-	public String nGrinderVersion() {
-		return Config.getVerionString();
 	}
 
 	/**

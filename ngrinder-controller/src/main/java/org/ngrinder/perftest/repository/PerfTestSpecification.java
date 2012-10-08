@@ -43,7 +43,7 @@ public abstract class PerfTestSpecification {
 	
 
 	/**
-	 * Get the Specification which check the {@link PerfTest} has one of given statuses.
+	 * Get the Specification checking the {@link PerfTest} has one of given {@link Status}.
 	 * 
 	 * @param statuses
 	 *            status set
@@ -59,24 +59,24 @@ public abstract class PerfTestSpecification {
 	}
 
 	/**
-	 * Get the Specification which check the {@link PerfTest} has one of given tag.
+	 * Get the Specification checking if the {@link PerfTest#getTags()} has the given tagValue.
 	 * 
-	 * @param tag
-	 *            tag
+	 * @param tagValue
+	 *            tagValue
 	 * @return {@link Specification}
 	 */
-	public static Specification<PerfTest> hasTag(final String tag) {
+	public static Specification<PerfTest> hasTag(final String tagValue) {
 		return new Specification<PerfTest>() {
 			@Override
 			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				SetJoin<Object, Object> join = root.joinSet("tags");
-				return cb.equal(join.get("tagValue"), tag);
+				return cb.equal(join.get("tagValue"), tagValue);
 			}
 		};
 	}
 	
 	/**
-	 * Get the Specification which check the {@link PerfTest} has one of given id.
+	 * Get the Specification checking if the {@link PerfTest} has one of the given IDs.
 	 * 
 	 * @param ids
 	 *            id list
@@ -92,7 +92,7 @@ public abstract class PerfTestSpecification {
 	}
 
 	/**
-	 * Get the Specification which check the {@link PerfTest} has given id.
+	 * Get the Specification checking if the {@link PerfTest} has the given ID.
 	 * 
 	 * @param id
 	 *            perftest id

@@ -22,7 +22,7 @@
 							<tr>
 								<td>
 									<!--<legend>introduction</legend>-->
-									<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${keywords!}">
+									<input type="text" class="search-query search-query-without-radios" placeholder="Keywords" id="searchText" value="${keywords!}">
 									<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
 								</td>
 								<td>
@@ -151,109 +151,11 @@
 				<#include "../common/copyright.ftl">
 			</div>
 		</div>
-
-		<div class="modal fade" id="createScriptModal">
-			<div class="modal-header">
-				<a class="close" data-dismiss="modal" id="createCloseBtn">&times;</a>
-				<h3><@spring.message "script.list.button.createScript"/></h3>
-			</div>
-			<div class="modal-body">
-				<form class="form-horizontal form-horizontal-4" method="post" target="_self" id="createForm" action="${req.getContextPath()}/script/create/${currentPath}">
-					<fieldset>
-						<div class="control-group">
-							<label for="scriptNameInput" class="control-label"><@spring.message "script.option.name"/></label>
-							<div class="controls">
-							  <input type="text" id="scriptNameInput" name="fileName">
-							  <span class="help-inline"></span>
-							</div>
-						</div>
-						<div class="control-group">
-							<label for="languageSelect" class="control-label"><@spring.message "script.list.label.type"/></label>
-							<div class="controls">
-								<input type="hidden" name="type" value="script"/>
-								<select id="languageSelect" name="scriptType">
-									<option value="py">Python</option>
-								</select>
-							  <span class="help-inline"></span>
-							</div>
-						</div>
-						<div class="control-group">
-							<label for="urlInput" class="control-label"><@spring.message "script.list.label.url"/></label>
-							<div class="controls">
-							  <input type="text" id="urlInput" class="url" placeholder="<@spring.message "home.placeholder.url"/>" name="testUrl" data-original-title="<@spring.message "home.tip.url.title"/>" data-content="<@spring.message "home.tip.url.content"/>"/>
-							  <span class="help-inline"></span>
-							</div>
-						</div>					
-					</fieldset>
-				</form>
-			</div>
-			
-			<div class="modal-footer">
-				<a href="#" class="btn btn-primary" id="createBtn2"><@spring.message "common.button.create"/></a>
-				<a href="#createScriptModal" class="btn" data-toggle="modal"><@spring.message "common.button.cancel"/></a>
-			</div>
-		</div>
-		
-		<div class="modal fade" id="createFolderModal">
-			<div class="modal-header">
-				<a class="close" data-dismiss="modal" id="createCloseBtn">&times;</a>
-				<h3><@spring.message "script.list.button.createFolder"/></h3>
-			</div>
-			<div class="modal-body">
-				<form class="form-horizontal" method="post" target="_self" id="createFolderForm" action="${req.getContextPath()}/script/create/${currentPath}">
-					<fieldset>
-						<div class="control-group">
-							<label for="folderNameInput" class="control-label"><@spring.message "script.list.label.folderName"/></label>
-							<div class="controls">
-							  <input type="hidden" name="type" value="folder"/>
-							  <input type="text" id="folderNameInput" name="folderName"/>
-							  <span class="help-inline"></span>
-							</div>
-						</div>					
-					</fieldset>
-				</form>
-			</div>
-			
-			<div class="modal-footer">
-				<a href="#" class="btn btn-primary" id="createFolderBtn"><@spring.message "common.button.create"/></a>
-				<a href="#createFolderModal" class="btn" data-toggle="modal"><@spring.message "common.button.cancel"/></a>
-			</div>
-		</div>
-	
-		<div class="modal fade" id="uploadScriptModal">
-			<div class="modal-header">
-				<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
-				<h3><@spring.message "script.list.button.upload"/></h3>
-			</div>
-			<div class="modal-body">
-				<form class="form-horizontal" method="post" target="_self" action="${req.getContextPath()}/script/upload/${currentPath}"
-						id="uploadForm" enctype="multipart/form-data">
-					<fieldset>
-						<input type="hidden" id="path" name="path"/>
-						<div class="control-group">
-							<label for="discriptionInput" class="control-label"><@spring.message "script.option.commit"/></label>
-							<div class="controls">
-							  <input type="text" id="discriptionInput" name="description">
-							  <span class="help-inline"></span>
-							</div>
-						</div>
-						<div class="control-group">
-							<label for="fileInput" class="control-label"><@spring.message "script.list.label.file"/></label>
-							<div class="controls">
-							  <input type="file" class="input-file" id="fileInput" name="uploadFile" data-original-title="<@spring.message "script.list.popover.upload.title"/>" data-content="<@spring.message "script.list.popover.upload.content"/>">
-							  <span class="help-inline"></span>
-							</div>
-						</div>				
-					</fieldset>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<a href="#" class="btn btn-primary" id="uploadBtn2"><@spring.message "script.list.button.upload"/></a>
-				<a href="#uploadScriptModal" class="btn" data-toggle="modal"><@spring.message "common.button.cancel"/></a>
-			</div>
-		</div>
 	</div>
 
+	<#include "createScriptModal.ftl">
+	<#include "createFolderModal.ftl">
+	<#include "uploadFileModal.ftl">
 	<script>
 		$(document).ready(function() {
 			$("#n_script").addClass("active");
@@ -262,70 +164,9 @@
 	        	$(this).popover('show');
 	      	});
 			
-			$("#createBtn2").on('click', function() {
-				var $name = $("#scriptNameInput");
-				if (checkEmptyByObj($name)) {
-					markInput($name, false, "<@spring.message "common.form.validate.empty"/>");
-					return;
-				} else {
-					if (!checkSimpleNameByObj($name)) {
-						markInput($name, false, "<@spring.message "common.form.validate.format"/>");
-						return;
-					}
-					
-					markInput($name, true);
-				}
-				
-				var name = $name.val();
-				var extension = "." + $("#languageSelect").val().toLowerCase();
-				var idx = name.toLowerCase().indexOf(extension);
-				if (name.length < 3 || idx == -1 || idx < name.length - 3) {
-					$name.val(name + extension);
-				}
-				
-				var urlValue = $("#urlInput");
-				if (!checkEmptyByObj(urlValue)) {
-				
-					if (!urlValue.valid()) {
-						markInput(urlValue, false, "<@spring.message "common.form.validate.format"/>");
-						return;
-					}
-					
-					markInput(urlValue, true);
-				}
-				
-				document.forms.createForm.submit();
-			});
 			
-			$("#uploadBtn2").on('click', function() {
-				var $file = $("#fileInput");
-				if (checkEmptyByObj($file)) {
-					markInput($file, false, "<@spring.message "common.form.validate.empty"/>");
-					return;
-				}
-				
-				$("#path").val($("#upScriptNameInput").val());
-				document.forms.uploadForm.submit();
-			});
-			
-			$("#createFolderBtn").on('click', function() {
-				var $name = $("#folderNameInput");
-				if (checkEmptyByObj($name)) {
-					markInput($name, false, "<@spring.message "common.form.validate.empty"/>");
-					return;
-				} else {
-					if (!checkSimpleNameByObj($name)) {
-						markInput($name, false, "<@spring.message "common.form.validate.format"/>");
-						return;
-					}
-					
-					markInput($name, true);
-				}
-				
-				document.forms.createFolderForm.submit();
-			});
 						
-			$("#deleteBtn").on('click', function() {
+			$("#deleteBtn").click(function() {
 				var ids = "";
 				var list = $("td input:checked");
 				if(list.length == 0) {
@@ -354,10 +195,6 @@
 			});
 			
 			$("#searchBtn").on('click', function() {
-				searchScriptList();
-			});
-
-			$("#onlyMineCkb").on('click', function() {
 				searchScriptList();
 			});
 			

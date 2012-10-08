@@ -14,7 +14,7 @@
 		</div>
 		<#include "roleSelector.ftl">
 		<div class="well form-inline searchBar">
-			<input type="text" class="search-query" placeholder="Keywords" id="searchText"
+			<input type="text" class="search-query search-query-without-radios" placeholder="Keywords" id="searchText"
 				value="${keywords!}">
 			<button type="submit" class="btn" id="search_user">
 				<i class="icon-search"></i> <@spring.message "common.button.search"/>
