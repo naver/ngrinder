@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.persistenceunit.MutablePersistenceUnitInfo;
@@ -74,9 +75,12 @@ public class DatabaseConfig implements NGrinderConstants {
 	 * classes with {@link Reflections} not using Hibernate entity class search
 	 * feature to overcome the limitation
 	 * 
+	 * use annotation DependsOn to insure after databaseUpdater is 
+	 * 
 	 * @return {@link LocalContainerEntityManagerFactoryBean}
 	 */
 	@Bean(name = "emf")
+	@DependsOn("databaseUpdater")
 	public LocalContainerEntityManagerFactoryBean emf() {
 		LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
 		emf.setDataSource(dataSource());
