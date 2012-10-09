@@ -24,14 +24,14 @@ package liquibase.database.core;
 
 import java.math.BigInteger;
 
+import liquibase.database.AbstractDatabase;
 import liquibase.database.DatabaseConnection;
-import liquibase.database.core.MySQLDatabase;
 import liquibase.exception.DatabaseException;
 
 /**
  * Liquibase will not be modified,this is just made its support CUBRID DB
  */
-public class CUBRIDDatabase extends MySQLDatabase  {
+public class CUBRIDDatabase extends AbstractDatabase  {
 	public static final String PRODUCT_NAME = "cubrid";
 	 public String getShortName() {
 	        return "cubrid";
