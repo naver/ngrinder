@@ -27,40 +27,43 @@ import liquibase.database.structure.type.BooleanType;
 import liquibase.database.structure.type.DataType;
 import liquibase.database.structure.type.DateTimeType;
 import liquibase.database.structure.type.DoubleType;
+import liquibase.database.structure.type.TinyIntType;
 import liquibase.database.typeconversion.core.AbstractTypeConverter;
 
 /**
  * Liquibase will not be modified,this is just made its support CUBRID DB
  */
 public class CUBRIDTypeConverter extends AbstractTypeConverter {
- 
-        public DataType getDataType(String columnTypeString, Boolean autoIncrement) {
-                if (columnTypeString!=null)
-                        return super.getDataType(columnTypeString, autoIncrement);
-                else
-                        return super.getDataType("VARCHAR",autoIncrement);
-        }
- 
-        public int getPriority() {
-                return PRIORITY_DATABASE;
-        }
 
-        public boolean supports(Database database) {
-                return "cubrid".equals(database.getTypeName());
-        }
- 
-        
-        public BooleanType getBooleanType() {
-                return  new BooleanType.NumericBooleanType("char(1)");
-        }
- 
-        public DateTimeType getDateTimeType() {
-                return new DateTimeType("TIMESTAMP");
-        }
- 
-  
-        public DoubleType getDoubleType() {
-                return new DoubleType("DOUBLE PRECISION");
-        }
- 
+	public DataType getDataType(String columnTypeString, Boolean autoIncrement) {
+		if (columnTypeString != null)
+			return super.getDataType(columnTypeString, autoIncrement);
+		else
+			return super.getDataType("VARCHAR", autoIncrement);
+	}
+
+	public int getPriority() {
+		return PRIORITY_DATABASE;
+	}
+
+	public boolean supports(Database database) {
+		return "cubrid".equals(database.getTypeName());
+	}
+
+	public BooleanType getBooleanType() {
+		return new BooleanType.NumericBooleanType("char(1)");
+	}
+
+	public DateTimeType getDateTimeType() {
+		return new DateTimeType("TIMESTAMP");
+	}
+
+	public DoubleType getDoubleType() {
+		return new DoubleType("DOUBLE PRECISION");
+	}
+
+	public TinyIntType getTinyIntType() {
+		return new TinyIntType("SMALLINT");
+	}
+
 }
