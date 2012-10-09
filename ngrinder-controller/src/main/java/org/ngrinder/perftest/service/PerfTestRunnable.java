@@ -180,7 +180,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			notifyFinsish(perfTest, StopReason.CANCEL_BY_USER);
 		} catch (Exception e) {
 			// In case of error, mark the occurs error on perftest.
-			LOG.error("Error while excuting test {}", perfTest.getTestIdentifier(), e);
+			LOG.error("Error while excuting test:" + perfTest.getTestIdentifier(), e);
 			doTerminate(perfTest, singleConsole);
 			notifyFinsish(perfTest, StopReason.ERROR_WHILE_PREPARE);
 		}

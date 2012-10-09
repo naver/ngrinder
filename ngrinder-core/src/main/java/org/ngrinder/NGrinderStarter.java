@@ -40,6 +40,8 @@ import net.grinder.communication.AgentControllerCommunicationDefauts;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
+import org.hyperic.sigar.Sigar;
+import org.hyperic.sigar.SigarException;
 import org.ngrinder.common.util.ReflectionUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorConstants;
@@ -113,6 +115,13 @@ public class NGrinderStarter {
 
 		MonitorConstants.init(agentConfig);
 
+		//test sigar library existing and working.
+		try {
+			Sigar sigar = new Sigar();
+			sigar.getCpu();
+		} catch (SigarException e1) {
+			printHelpAndExit("Sigar library doesn't work. Please add sigar library into LD_LIBARY_PATH.", e1);
+		}
 		try {
 			AgentMonitorServer.getInstance().init();
 			AgentMonitorServer.getInstance().start();

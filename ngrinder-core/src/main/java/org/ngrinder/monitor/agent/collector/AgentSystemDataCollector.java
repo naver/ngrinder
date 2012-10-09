@@ -68,7 +68,7 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 				systemInfo.setSystem(SystemInfo.System.LINUX);
 			}
 		} catch (Throwable e) {
-			LOG.error("Error while getting system perf data", e.getMessage());
+			LOG.error("Error while getting system perf data:{}", e.getMessage());
 			LOG.debug("Error trace is ", e);
 		}
 		systemInfo.setCollectTime(System.currentTimeMillis());

@@ -63,25 +63,55 @@ public abstract class GrinderClassPathUtils {
 		}
 		return StringUtils.join(classPathList, File.pathSeparator);
 	}
+	
+	private static final List<String> usefulJarList = new ArrayList<String>();
+	private static final List<String> uselessJarList = new ArrayList<String>();
+	static {
+		// TODO: If we have need another jar files, we should append it hear
+		usefulJarList.add("dns");
+		usefulJarList.add("grinder");
+		usefulJarList.add("asm");
+		usefulJarList.add("picocontainer");
+		usefulJarList.add("jython");
+		usefulJarList.add("slf4j-api");
+		usefulJarList.add("logback");
+		usefulJarList.add("jsr173");
+		usefulJarList.add("xmlbeans");
+		usefulJarList.add("stax-api");
+
+		uselessJarList.add("ngrinder-core");
+		uselessJarList.add("ngrinder-controller");
+		uselessJarList.add("spring");
+		
+	}
 
 	private static boolean isNotJarOrUselessJar(String jarFilename) {
 		if (!"jar".equals(FilenameUtils.getExtension(jarFilename))) {
 			return true;
 		}
-
-		if (jarFilename.contains("ngrinder-core") || jarFilename.contains("ngrinder-controller")
-						|| jarFilename.contains("spring")) {
-			return true;
+		for (String jarName : uselessJarList) {
+			if (jarFilename.contains(jarName)) {
+				return true;
+			}
 		}
-
-		// TODO: If we have need another jar files, we should append it on the follow conditions.
-		if (jarFilename.contains("dns") || jarFilename.contains("grinder") || jarFilename.contains("asm")
-						|| jarFilename.contains("picocontainer") || jarFilename.contains("jython")
-						|| jarFilename.contains("slf4j-api") || jarFilename.contains("logback")
-						|| jarFilename.contains("jsr173") || jarFilename.contains("xmlbeans")
-						|| jarFilename.contains("stax-api")) {
-			return false;
+		for (String jarName : usefulJarList) {
+			if (jarFilename.contains(jarName)) {
+				return false;
+			}
 		}
+//		if (jarFilename.contains("ngrinder-core") || jarFilename.contains("ngrinder-controller")
+//						|| jarFilename.contains("spring")) {
+//			return true;
+//		}
+
+		// If we have need another jar files, we should append it on the follow conditions.
+//		if (jarFilename.contains("dns") || jarFilename.contains("grinder") || jarFilename.contains("asm")
+//						|| jarFilename.contains("picocontainer") || jarFilename.contains("jython")
+//						|| jarFilename.contains("slf4j-api") || jarFilename.contains("logback")
+//						|| jarFilename.contains("jsr173") || jarFilename.contains("xmlbeans")
+//						|| jarFilename.contains("stax-api")) {
+//			return false;
+//		}
 
 		return true;
 	}

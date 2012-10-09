@@ -22,7 +22,6 @@
  */
 package org.ngrinder.perftest.service;
 
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.perftest.repository.TagSpecification.hasPerfTest;
 import static org.ngrinder.perftest.repository.TagSpecification.isStartWith;
 import static org.ngrinder.perftest.repository.TagSpecification.lastModifiedOrCreatedBy;
@@ -74,7 +73,7 @@ public class TagService {
 	 */
 	@Transactional
 	public SortedSet<Tag> addTags(User user, String[] tags) {
-		if (ArrayUtils.isEmpty(checkNotNull(tags))) {
+		if (ArrayUtils.isEmpty(tags)) {
 			return new TreeSet<Tag>();
 		}
 
@@ -86,6 +85,8 @@ public class TagService {
 			if (allTags.contains(newTag)) {
 				continue;
 			}
+			//FIXME: why using foundTags.contains(), but not allTags.contains() ? if user adds 2 tags with same name,
+			//this will add both tags into DB
 			if (!foundTags.contains(newTag)) {
 				allTags.add(saveTag(user, newTag));
 			}
