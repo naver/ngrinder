@@ -123,9 +123,7 @@ public class SingleConsole implements Listener, SampleListener {
 
 	private Map<String, Object> statisticData;
 	private boolean sampling = false;
-	
-	//key list in statistic map, used to make sure the order
-	private List<String> csvKeyList = new ArrayList<String>();
+	private List<String> csvHeaderList = new ArrayList<String>();
 	private boolean headerAdded = false;
 
 	Map<String, BufferedWriter> fileWriterMap = new HashMap<String, BufferedWriter>();
@@ -494,7 +492,6 @@ public class SingleConsole implements Listener, SampleListener {
 
 	@Override
 	public void update(StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-		LOGGER.info("update stat...");
 		if (!sampling) {
 			return;
 		}
@@ -513,106 +510,96 @@ public class SingleConsole implements Listener, SampleListener {
 		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) statisticData
 						.get("lastSampleStatistics");
 
-		// record the latest sample into report files.
-		// in lastSampleStatistics, there could be several sub-tests. We
-		// will record the separate and total statistic value.  
-		if (lastSampleStatistics != null && lastSampleStatistics.size() > 0) {
+		if (lastSampleStatistics != null) {
 			double tpsSum = 0;
 			double errors = 0;
 
 			StringBuilder csvLine = new StringBuilder();
 			StringBuilder csvHeader = new StringBuilder();
 			csvHeader.append("DateTime");
-			
-			//get the key list from lastStatistic map, use list to keep the order
-			if (csvKeyList.size() == 0) {
-				LOGGER.info("add csv key in list ...");
-				for (String eachKey : lastSampleStatistics.get(0).keySet()) {
-					if (!eachKey.equals("Peak_TPS")) {
-						csvKeyList.add(eachKey);
-					}
-				}
-				LOGGER.info("csv key list size is :{}", csvKeyList.size());
-			}
 
-			//store the total statistic value in valueMap
-			Map<String, Object> totalValueMap = new HashMap<String, Object>();
-			
-			// add date time into csv as first column
-			// FIXME this date time interval should be 1 second.
-			// but the system can not make sure about that.
-			csvLine.append(DateUtil.dateToString(new Date()));
-			
+			Map<String, Object> valueMap = new HashMap<String, Object>();
 			int testIndex = 0;
 			for (Map<String, Object> lastStatistic : lastSampleStatistics) {
 				testIndex++;
 				tpsSum += (Double) lastStatistic.get("TPS");
 				errors += (Double) lastStatistic.get("Errors");
 
-				//step.1 add separate statistic data into csv line string. And
-				// calculate the total statistic data.
 				for (Entry<String, Object> each : lastStatistic.entrySet()) {
 					if (!headerAdded) {
 						// Peak TPS is not meaningful for CSV report for every
 						// second.
-						if (!each.getKey().equals("Peak_TPS")) {
+						if (!each.getKey().contains("Peak_TPS")) {
+							csvHeaderList.add(each.getKey());
 							csvHeader.append(",");
 							csvHeader.append(each.getKey() + "-" + testIndex);
 						}
 					}
 					Object val = each.getValue();
-					Object valueInTotalMap = totalValueMap.get(each.getKey());
+					// number value in lastStatistic is Double, we add every
+					// test's double value
+					// into valueMap, so we use
+					// MutableDouble in valueMap, to avoid creating too many
+					// objects.
 					if (val instanceof Double) {
-						// number value in lastStatistic is Double, we add every
-						// test's double value into totalValueMap, so we use
-						// MutableDouble in valueMap, to avoid creating too many
-						// objects.
-						MutableDouble mutableDouble = (MutableDouble) valueInTotalMap;
+						// for debug, maybe there are some fields should not be
+						// sum up.
+						MutableDouble mutableDouble = (MutableDouble) valueMap.get(each.getKey());
 						if (mutableDouble == null) {
 							mutableDouble = new MutableDouble(0);
-							totalValueMap.put(each.getKey(), mutableDouble);
+							valueMap.put(each.getKey(), mutableDouble);
 						}
 						mutableDouble.add((Double) val);
 					} else if (String.valueOf(val).equals("null")) {
-						LOGGER.info("There is a null value for:{}", each.getKey());
-						// if it is null, just assume it is 0.
-						// The value is a String "null"
-						// valueMap.put(each.getKey(), new MutableDouble(0));
-						if (valueInTotalMap == null) {
-							totalValueMap.put(each.getKey(), new MutableDouble(0));
-						}
-						//just skip it, if there is already one key for that
-					} else {
-						// there are some String type object like test description.
-						totalValueMap.put(each.getKey(), val);
-					}
-					if (!each.getKey().equals("Peak_TPS")) {
-						csvLine.append(",");
-						csvLine.append(formatValue(val));
+						// if it is null, just assume it is 0. The value is a
+						// String "null"
+						// that the Double value in
+						// one second is null. Now I treat this value as ZERO.
+						// But maybe it is not
+						// the most proper solution.
+						valueMap.put(each.getKey(), new MutableDouble(0));
+					} else { // there are some String type object like test
+								// description.
+						valueMap.put(each.getKey(), val);
 					}
 				}
+
+				// add date time into csv
+				// FIXME this date time interval should be 1 second.
+				// but the system can not make sure about that.
+				csvLine.append(DateUtil.dateToString(new Date()));
+
+				// FIXME we should also save vuser number, to describe the
+				// current vuser count in
+				// this secons.
+				for (String key : csvHeaderList) {
+					// if (!key.contains("Peak_TPS")) {Peak_TPS is not put into
+					// csvHeaderList
+					csvLine.append(",");
+					csvLine.append(formatValue(lastStatistic.get(key)));
+
+				}
 			}
-			LOGGER.info("totalValueMap size is :{}", totalValueMap.size());
 			try {
 				// add header into csv file.
 				if (!headerAdded) {
-					LOGGER.info("Add csv file header.");
-					//add header for total data
-					for (String key : csvKeyList) {
-						csvHeader.append(",");
-						csvHeader.append(key);
+					for (Entry<String, Object> each : valueMap.entrySet()) {
+						if (!each.getKey().contains("Peak_TPS")) {
+							csvHeader.append(",");
+							csvHeader.append(each.getKey());
+						}
 					}
 					writeCSVDataLine(csvHeader.toString());
 					headerAdded = true;
 				}
 
-				for (Entry<String, Object> each : totalValueMap.entrySet()) {
+				for (Entry<String, Object> each : valueMap.entrySet()) {
 					writeReportData(each.getKey() + REPORT_DATA, formatValue(each.getValue()));
 				}
 				// add total test report into csv file.
-				for (String key : csvKeyList) {
+				for (String key : csvHeaderList) {
 					csvLine.append(",");
-					csvLine.append(formatValue(totalValueMap.get(key)));
+					csvLine.append(formatValue(valueMap.get(key)));
 				}
 
 				writeCSVDataLine(csvLine.toString());
@@ -899,7 +886,7 @@ public class SingleConsole implements Listener, SampleListener {
 	private String formatValue(Object val) {
 		if (val instanceof Double) {
 			return formatter.format(val);
-		} else if (String.valueOf(val).equals("null")) {
+		} else if (val == null) {
 			// if target server is too slow, there is no response in this
 			// second, then the
 			// statistic data
