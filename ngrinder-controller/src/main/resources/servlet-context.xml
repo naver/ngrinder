@@ -71,6 +71,15 @@
 		<property name="defaultEncoding" value="utf-8" />
 
 	</bean>
+	
+	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+  		<property name="order" value="2"/>
+		<property name="exceptionMappings">
+			<props>
+				<prop key="java.lang.Exception">index</prop>
+			</props>
+		</property>
+	</bean>
 
 	<!-- resources exclusions from servlet mapping -->
 	<mvc:resources mapping="/css/**" location="/css/" />

@@ -526,13 +526,11 @@ public class SingleConsole implements Listener, SampleListener {
 			
 			//get the key list from lastStatistic map, use list to keep the order
 			if (csvKeyList.size() == 0) {
-				LOGGER.info("add csv key in list ...");
 				for (String eachKey : lastSampleStatistics.get(0).keySet()) {
 					if (!eachKey.equals("Peak_TPS")) {
 						csvKeyList.add(eachKey);
 					}
 				}
-				LOGGER.info("csv key list size is :{}", csvKeyList.size());
 			}
 
 			//store the total statistic value in valueMap
@@ -574,7 +572,6 @@ public class SingleConsole implements Listener, SampleListener {
 						}
 						mutableDouble.add((Double) val);
 					} else if (String.valueOf(val).equals("null")) {
-						LOGGER.info("There is a null value for:{}", each.getKey());
 						// if it is null, just assume it is 0.
 						// The value is a String "null"
 						// valueMap.put(each.getKey(), new MutableDouble(0));
@@ -592,7 +589,6 @@ public class SingleConsole implements Listener, SampleListener {
 					}
 				}
 			}
-			LOGGER.info("totalValueMap size is :{}", totalValueMap.size());
 			try {
 				// add header into csv file.
 				if (!headerAdded) {

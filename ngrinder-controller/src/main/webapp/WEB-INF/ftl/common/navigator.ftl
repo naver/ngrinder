@@ -44,7 +44,15 @@
 		
 	</div>	
 </div>
+<#if exception??>
+	<input type="hidden" id="errorMsg" name="errorMsg" value="${exception.message}">
+</#if>
 <script type="text/javascript">
+	function init() {
+		myProfile();
+		showExceptionMsg();
+	}
+	
 	var myProfile = function(){
 		var url = "${req.getContextPath()}/user/profile";
 		$("#user_profile_id").on('click', function() {
@@ -53,13 +61,19 @@
 			});
 		});
 	};
+	
+	function showExceptionMsg() {
+		<#if exception??>
+			showErrorMsg($("#errorMsg").val());
+		</#if> 
+	}
 	if(document.loaded) {
-	    myProfile();
+		init();
 	} else {
 	    if (window.addEventListener) {  
-	        window.addEventListener('load', myProfile, false);
+	        window.addEventListener('load', init, false);
 	    } else {
-	        window.attachEvent('onload', myProfile);
+	        window.attachEvent('onload', init);
 	    }
 	}
 </script>
