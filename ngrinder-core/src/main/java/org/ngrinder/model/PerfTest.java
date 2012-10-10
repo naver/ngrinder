@@ -42,8 +42,7 @@ import javax.persistence.Transient;
 import net.grinder.common.GrinderProperties;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
@@ -516,8 +515,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-	}
+		  return ReflectionToStringBuilder.toStringExclude(this, "tags");
+	 }
 
 	public String getProgressMessage() {
 		return StringUtils.defaultIfEmpty(progressMessage, "");
