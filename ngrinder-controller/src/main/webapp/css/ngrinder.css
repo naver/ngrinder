@@ -192,7 +192,7 @@ img.status {
  	float: left !important;
 }
 
-.ellipsis {
+div.ellipsis {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

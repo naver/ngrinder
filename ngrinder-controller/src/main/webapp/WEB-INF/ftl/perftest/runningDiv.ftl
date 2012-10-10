@@ -93,7 +93,7 @@
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane" id="lsTab">
-					<table class="table table-striped table-bordered ellipsis" id="lsTable">
+					<table class="table table-striped table-bordered" id="lsTable">
 						<colgroup>
 							<col width="30px">
 							<col width="85px">
@@ -107,7 +107,7 @@
 						<thead>
 							<tr>
 								<th class="noClick"><@spring.message "perfTest.testRunning.testID"/></th>
-								<th class="noClick ellipsis"><@spring.message "perfTest.table.testName"/></th>
+								<th class="noClick"><@spring.message "perfTest.table.testName"/></th>
 								<th class="noClick"><@spring.message "perfTest.testRunning.successfulTest"/></th>
 								<th class="noClick"><@spring.message "perfTest.table.errors"/></th>
 								<th class="noClick"><@spring.message "perfTest.table.meantime"/></th>
@@ -121,7 +121,7 @@
 					</table>
 				</div>
 				<div class="tab-pane" id="asTab">
-					<table class="table table-striped table-bordered ellipsis" id="asTable">
+					<table class="table table-striped table-bordered" id="asTable">
 						<colgroup>
 								<col width="30px">
 							<col width="85px">
@@ -135,7 +135,7 @@
 						<thead>
 							<tr>
 								<th class="noClick"><@spring.message "perfTest.testRunning.testID"/></th>
-								<th class="noClick ellipsis"><@spring.message "perfTest.table.testName"/></th>
+								<th class="noClick"><@spring.message "perfTest.table.testName"/></th>
 								<th class="noClick"><@spring.message "perfTest.testRunning.successfulTest"/></th>
 								<th class="noClick"><@spring.message "perfTest.table.errors"/></th>
 								<th class="noClick"><@spring.message "perfTest.table.meantime"/></th>

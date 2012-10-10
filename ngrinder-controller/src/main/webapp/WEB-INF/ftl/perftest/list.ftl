@@ -138,9 +138,8 @@
 									</td>
 									
 									<@security.authorize ifAnyGranted="A, S">
-				            			<td class="center">${test.createdUser.userName}</td>
+				            			<td class="center ellipsis" title="${test.createdUser.userName}">${test.createdUser.userName}</td>
 									</@security.authorize>
-									
 									
 									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if></td>
 									<td>
