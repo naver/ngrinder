@@ -494,6 +494,7 @@ public class SingleConsole implements Listener, SampleListener {
 
 	@Override
 	public void update(StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
+		LOGGER.info("update stat...");
 		if (!sampling) {
 			return;
 		}
@@ -525,9 +526,13 @@ public class SingleConsole implements Listener, SampleListener {
 			
 			//get the key list from lastStatistic map, use list to keep the order
 			if (csvKeyList.size() == 0) {
+				LOGGER.info("add csv key in list ...");
 				for (String eachKey : lastSampleStatistics.get(0).keySet()) {
-					csvKeyList.add(eachKey);
+					if (!eachKey.equals("Peak_TPS")) {
+						csvKeyList.add(eachKey);
+					}
 				}
+				LOGGER.info("csv key list size is :{}", csvKeyList.size());
 			}
 
 			//store the total statistic value in valueMap
@@ -550,7 +555,7 @@ public class SingleConsole implements Listener, SampleListener {
 					if (!headerAdded) {
 						// Peak TPS is not meaningful for CSV report for every
 						// second.
-						if (!each.getKey().contains("Peak_TPS")) {
+						if (!each.getKey().equals("Peak_TPS")) {
 							csvHeader.append(",");
 							csvHeader.append(each.getKey() + "-" + testIndex);
 						}
@@ -569,29 +574,33 @@ public class SingleConsole implements Listener, SampleListener {
 						}
 						mutableDouble.add((Double) val);
 					} else if (String.valueOf(val).equals("null")) {
+						LOGGER.info("There is a null value for:{}", each.getKey());
 						// if it is null, just assume it is 0.
 						// The value is a String "null"
-						//just skip it 
 						// valueMap.put(each.getKey(), new MutableDouble(0));
 						if (valueInTotalMap == null) {
 							totalValueMap.put(each.getKey(), new MutableDouble(0));
 						}
+						//just skip it, if there is already one key for that
 					} else {
 						// there are some String type object like test description.
 						totalValueMap.put(each.getKey(), val);
 					}
-					csvLine.append(",");
-					csvLine.append(formatValue(val));
+					if (!each.getKey().equals("Peak_TPS")) {
+						csvLine.append(",");
+						csvLine.append(formatValue(val));
+					}
 				}
 			}
+			LOGGER.info("totalValueMap size is :{}", totalValueMap.size());
 			try {
 				// add header into csv file.
 				if (!headerAdded) {
-					for (Entry<String, Object> each : totalValueMap.entrySet()) {
-						if (!each.getKey().contains("Peak_TPS")) {
-							csvHeader.append(",");
-							csvHeader.append(each.getKey());
-						}
+					LOGGER.info("Add csv file header.");
+					//add header for total data
+					for (String key : csvKeyList) {
+						csvHeader.append(",");
+						csvHeader.append(key);
 					}
 					writeCSVDataLine(csvHeader.toString());
 					headerAdded = true;
