@@ -22,12 +22,7 @@
  */
 package org.ngrinder.infra.init;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.Vector;
-
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import liquibase.Liquibase;
@@ -35,13 +30,12 @@ import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
-import liquibase.resource.ResourceAccessor;
+import liquibase.resource.ClassLoaderResourceAccessor;
 
-import org.springframework.beans.factory.InitializingBean;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
@@ -53,12 +47,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @DependsOn("dataSource")
-public class DatabaseUpdater implements ResourceLoaderAware, InitializingBean {
+public class DatabaseUpdater implements ResourceLoaderAware{
 	
 	@Autowired
 	private DataSource dataSource;
 
-    private String changeLog="classpath:ngrinder_datachange_logfile/db.changelog.xml";
+    private String changeLog="ngrinder_datachange_logfile/db.changelog.xml";
 
     private String contexts;
 
@@ -69,7 +63,7 @@ public class DatabaseUpdater implements ResourceLoaderAware, InitializingBean {
             Database databaseImplementation = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(dataSource.getConnection()));
             return databaseImplementation;
         } catch (Exception e) {
-            throw new RuntimeException("Error getting database", e);
+            throw new NGrinderRuntimeException("Error getting database", e);
         }
     }
 
@@ -84,12 +78,13 @@ public class DatabaseUpdater implements ResourceLoaderAware, InitializingBean {
 	/**
 	 * Automated updates DB after nGrinder has load with all bean properties
 	 */
+    @PostConstruct
 	public void afterPropertiesSet() throws Exception {
-		 Liquibase liquibase = new Liquibase(changeLog, new SpringFileOpener(changeLog, getResourceLoader()), getDatabase());
+		 Liquibase liquibase = new Liquibase(changeLog, new ClassLoaderResourceAccessor(getResourceLoader().getClassLoader()), getDatabase());
 	        try {
 	            liquibase.update(contexts);
 	        } catch (LiquibaseException e) {
-	        	e.printStackTrace();
+				throw new NGrinderRuntimeException("Exception occurs while Liquibase update DB", e);
 	        }
 	}
 
@@ -100,54 +95,5 @@ public class DatabaseUpdater implements ResourceLoaderAware, InitializingBean {
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 	}
-	
-	 class SpringFileOpener implements ResourceAccessor {
-	        private String parentFile;
-
-	        private ResourceLoader resourceLoader;
-
-	        public SpringFileOpener(String parentFile, ResourceLoader resourceLoader) {
-	            this.parentFile = parentFile;
-	            this.resourceLoader = resourceLoader;
-	        }
-
-	        public InputStream getResourceAsStream(String file) throws IOException {
-	            Resource resource = getResource(file);
-
-	            return resource.getInputStream();
-	        }
-
-	        public Enumeration<URL> getResources(String packageName) throws IOException {
-	            Vector<URL> tmp = new Vector<URL>();
-	            tmp.add(getResource(packageName).getURL());
-	            return tmp.elements();
-	        }
-
-	        public Resource getResource(String file) {
-	            return getResourceLoader().getResource(adjustClasspath(file));
-	        }
-
-	        private String adjustClasspath(String file) {
-	            return isClasspathPrefixPresent(parentFile) && !isClasspathPrefixPresent(file)
-	                    ? ResourceLoader.CLASSPATH_URL_PREFIX + file
-	                    : file;
-	        }
-
-	        public boolean isClasspathPrefixPresent(String file) {
-	            return file.startsWith(ResourceLoader.CLASSPATH_URL_PREFIX);
-	        }
-
-	        public ClassLoader toClassLoader() {
-	            return getResourceLoader().getClassLoader();
-	        }
-
-	        public ResourceLoader getResourceLoader() {
-	            return resourceLoader;
-	        }
-
-	        public void setResourceLoader(ResourceLoader resourceLoader) {
-	            this.resourceLoader = resourceLoader;
-	        }
-	    }
 	
 }

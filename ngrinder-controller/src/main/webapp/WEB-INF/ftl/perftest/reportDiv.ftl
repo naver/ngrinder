@@ -57,7 +57,7 @@
 		<div style="margin-left: 10px">
 			<#if logs?has_content> 
 				<#list logs as eachLog>
-					<div style="width:100%; text-overflow:ellipsis; overflow:hidden;white-space: nowrap;">
+					<div style="width:100%;" class="ellipsis">
 						<a href="${req.getContextPath()}/perftest/downloadLog/${eachLog}?testId=${test.id}">${eachLog}</a>
 					</div>
 				</#list> 
