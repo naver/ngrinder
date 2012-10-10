@@ -62,12 +62,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!--DB migration-->
-		<dependency>
-	    	<groupId>org.liquibase</groupId>
-	    	<artifactId>liquibase-core</artifactId>
-	    	<version>2.0.5</version>
-    	</dependency>
 		<dependency>
 			<groupId>org.ngrinder</groupId>
 			<artifactId>ngrinder-dns</artifactId>
