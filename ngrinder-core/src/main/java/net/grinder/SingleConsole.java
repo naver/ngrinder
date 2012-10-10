@@ -524,7 +524,7 @@ public class SingleConsole implements Listener, SampleListener {
 			csvHeader.append("DateTime");
 			
 			//get the key list from lastStatistic map, use list to keep the order
-			if (csvKeyList.size() > 0) {
+			if (csvKeyList.size() == 0) {
 				for (String eachKey : lastSampleStatistics.get(0).keySet()) {
 					csvKeyList.add(eachKey);
 				}
