@@ -25,7 +25,7 @@ package org.ngrinder.infra.config;
 import java.sql.Driver;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.hibernate.dialect.CUBRIDDialectex;
+import org.hibernate.dialect.CUBRIDExDialect;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.H2Dialect;
 import org.hibernate.dialect.SQLiteDialect;
@@ -58,7 +58,7 @@ public enum Database {
 	},
 
 	/** CUBRID. */
-	cubrid(CUBRIDDriver.class, CUBRIDDialectex.class, "jdbc:CUBRID:%s:::?charset=utf-8") {
+	cubrid(CUBRIDDriver.class, CUBRIDExDialect.class, "jdbc:CUBRID:%s:::?charset=utf-8") {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
 			dataSource.setUrl(String.format(getUrlTemplate(), databaseProperties.getProperty("database_url",

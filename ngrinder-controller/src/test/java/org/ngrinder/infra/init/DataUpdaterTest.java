@@ -24,24 +24,21 @@ public class DataUpdaterTest extends org.ngrinder.AbstractNGrinderTransactionalT
 	@Test
 	public void exportDatabaseSchema() throws IOException {
 		PersistenceUnitInfo persistenceUnitInfo = entityManagerFactory.getPersistenceUnitInfo();
-		Map<?, ?> jpaPropertyMap = entityManagerFactory.getJpaPropertyMap();
-		Configuration configuration = new Ejb3Configuration().configure(persistenceUnitInfo, jpaPropertyMap).getHibernateConfiguration();
 		for (Database each : Database.values()) {
-			String string = each.getDialect();
-			if(each == Database.cubrid){
-				configuration.setProperty(Environment.DIALECT,"org.hibernate.dialect.CUBRIDDialectex");
-			}else{
-				configuration.setProperty(Environment.DIALECT, string);
-			}
+			Map<?, ?> jpaPropertyMap = entityManagerFactory.getJpaPropertyMap();
+			Configuration configuration = new Ejb3Configuration().configure(persistenceUnitInfo, jpaPropertyMap)
+							.getHibernateConfiguration();
+			configuration.setProperty(Environment.DIALECT, each.getDialect());
 			SchemaExport schema = new SchemaExport(configuration);
-			File parentFile = new ClassPathResource("/ngrinder_datachange_logfile/db.changelog.xml").getFile().getParentFile();
-
+			File parentFile = new ClassPathResource("/ngrinder_datachange_logfile/db.changelog.xml").getFile()
+							.getParentFile();
 
 			parentFile.mkdirs();
 			File file = new File(parentFile, "schema-" + each.name().toLowerCase() + ".sql");
 			System.out.println(file.getAbsolutePath());
 			schema.setOutputFile(file.getAbsolutePath());
 			schema.create(true, false);
+
 		}
 	}
 }
