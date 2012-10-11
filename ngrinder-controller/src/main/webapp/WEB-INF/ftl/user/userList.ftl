@@ -51,8 +51,8 @@
 				<#list userList as user>
 				<tr>
 					<td class="center"><input type="checkbox" id="user_info_check"<#if user.userId == "admin">disabled</#if>
-						value="${user.userId}" /></td>
-					<td><a href="${req.getContextPath()}/user/detail?userId=${user.userId}">${user.userName!}</a></td>
+						value="${user.userId}" uname="${user.userName}"/></td>
+					<td><a href="${req.getContextPath()}/user/detail?userId=${user.userId}">${user.userName}</a></td>
 					<td>${user.role}</td>
 					<td class="ellipsis">${user.description!}</td>
 					<td><#if user.createdDate?has_content> ${user.createdDate?string("yyyy-MM-dd HH:mm")} </#if></td>
@@ -63,7 +63,7 @@
 					</td>
 					<td class="center">
 						<#if user.userId != "admin">
-						<a href="javascript:deleteUsers('${user.userId}');">
+						<a href="javascript:deleteUsers('${user.userName}');">
 							<i class="icon-remove"></i>
 						</a>
 						</#if>
@@ -115,7 +115,7 @@
 			var $elem;
 			list.each(function() {
 				$elem = $(this);
-				checkedUser.push($elem.val());
+				checkedUser.push($elem.attr("uname"));
 			});
 			
 			deleteUsers(checkedUser.join(","));	

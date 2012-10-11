@@ -82,7 +82,7 @@
             			<div class="control-group" >
 								<label class="control-label"><@spring.message "user.info.form.pwd"/></label>
 								<div class="controls">
-									<input type="password" class="span4" id="password"  minlength="4" 	maxlength="15"
+									<input type="password" class="span4" id="password"  minlength="6" 	maxlength="15"
 									
 										name="password" rel="popover" value="${(user.psw)!}"
 										data-content="<@spring.message "user.info.warning.pwd.minLength"/>"
@@ -93,7 +93,7 @@
 						<div class="control-group" >
 								<label class="control-label"><@spring.message "user.info.form.cpwd"/></label>
 								<div class="controls">
-									<input type="password" class="span4" id="cpwd" minlength="4" maxlength="15"
+									<input type="password" class="span4" id="cpwd" minlength="6" maxlength="15"
 										name="cpwd" rel="popover" value="${(user.psw)!}"
 										data-content="<@spring.message "user.info.warning.cpwd.equalTo"/>"
 										data-original-title="<@spring.message "user.info.form.cpwd"/>">
@@ -114,21 +114,19 @@
 		<#if !(user?has_content)>
 		$(".collapse").collapse();
 		$("#user_pw_head").attr("href","");
-
-		var userIdValidMsg;
+		</#if>
+		
 		jQuery.validator.addMethod("userIdFmt", function(userId, element ) {
-			var patrn = "^[a-zA-Z]{1}([a-zA-Z0-9]|[_]|[-]|[.]){0,19}$";
+			var patrn = /^[a-zA-Z]{1}[a-zA-Z0-9_]{4,19}$/;
 			var rule = new RegExp(patrn);
 			if (!rule.test($.trim(userId))) {
-				validateError(this);
-				userIdValidMsg = "<@spring.message "user.info.warning.userId.intro"/>";
+				removeSuccess(element);
 				return false;
 			}
 			return true;
 		}, "<@spring.message 'user.info.warning.userId.invalid'/>" );
-		
 
-		jQuery.validator.addMethod("userIdExist", function( userId, element ) {
+		jQuery.validator.addMethod("userIdExist", function(userId, element) {
 			if(userId != null && userId.length > 0){
 				var result ;
 				$.ajax({
@@ -140,25 +138,26 @@
 					  success: function(res) {
 					  	result = res.success;
   					  }
-				}); 
+				});
+				if (!result) {
+					removeSuccess(element);
+				}
+				
 				return result;
 			}
+			
 			return false;
 		}, "<@spring.message 'user.info.warning.userId.exist'/>");
 		
-		</#if>
-		
-		jQuery.validator.addMethod("userPhoneNumber", function(mobilePhone, element ) {
-			
-			var patrn = /^\+?\d{2,3}-?\d{2,5}(-?\d+)?/;
+		jQuery.validator.addMethod("userPhoneNumber", function(mobilePhone, element) {
+			var patrn = /^\+?\d{2,3}-?\d{2,5}(-?\d+)?$/;
 			var rule = new RegExp(patrn);
 			if (!rule.test($.trim($("#mobilePhone").val()))) {
-				userIdValidMsg = "<@spring.message "user.info.warning.phone.intro"/>";
+				removeSuccess(element);
 				return false;
 			}
 			return true;
 		}, "<@spring.message 'user.info.warning.phone.intro'/>" );
-		
 		
 		$('.collapse').on('hidden', function () {
   			$("#password").removeClass("required");
@@ -169,27 +168,22 @@
 		});
 		
 		$('.collapse').on('shown', function () {
-			
   			$("#password").addClass("required");
   			$("#cpwd").addClass("required");
   			$("#cpwd").attr("equalTo","#password");
-
 		});
-		
 		
 		$('#registerUserForm input').hover(function() {
 	        $(this).popover('show')
 	    });
 	    
 	    $("#registerUserForm").validate({
-
 	        messages:{
 	            userName:"<@spring.message "user.info.warning.userName"/>",
 	            email:{
 	                required:"<@spring.message "user.info.warning.email.required"/>",
 	                email:"<@spring.message "user.info.warning.email.rule"/>"
 	            },
-	          
 	            password:{
 	                required:"<@spring.message "user.info.warning.pwd.required"/>",
 	                minlength:"<@spring.message "user.info.warning.pwd.minLength"/>"
@@ -210,4 +204,9 @@
 	        }
 	    });
 	});
+	
+	function removeSuccess(elem) {
+		var $elem = $(elem).parents(".control-group");
+		$elem.removeClass("success");	
+	}
 </script>
