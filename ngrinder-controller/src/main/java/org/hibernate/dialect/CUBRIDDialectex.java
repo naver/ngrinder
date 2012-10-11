@@ -36,7 +36,7 @@ import org.hibernate.type.StandardBasicTypes;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class CUBRIDDialect extends Dialect {
+public class CUBRIDDialectex extends Dialect {
 	@Override
 	protected String getIdentityColumnString() {
 		return "auto_increment"; // starts with 1, implicitly
@@ -54,7 +54,7 @@ public class CUBRIDDialect extends Dialect {
 	/**
 	 * Constructor.
 	 */
-	public CUBRIDDialect() {
+	public CUBRIDDialectex() {
 		super();
 
 		registerColumnType(Types.BIT, "bit(8)");
