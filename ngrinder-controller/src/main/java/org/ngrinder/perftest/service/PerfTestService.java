@@ -369,7 +369,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		checkNotNull(perfTest);
 		checkNotNull(perfTest.getId(), "perfTest should save Id");
 		perfTest.setLastProgressMessage(message);
-		LOGGER.info("Progress : Test - {} : {} {}", new Object[] {perfTest.getId(), message, perfTest});
+		LOGGER.debug("Progress : Test - {} : {} {}", new Object[] {perfTest.getId(), message, perfTest});
 		return perfTestRepository.save(perfTest);
 	}
 
@@ -695,11 +695,11 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			String path = FilenameUtils.getPath(each.getPath());
 			path = path.substring(basePath.length());
 			File toDir = new File(perfTestDirectory, path);
-			LOGGER.info("{} is being written in {} for test {}", new Object[] { each.getPath(), toDir.toString(),
+			LOGGER.info("{} is being written in {} for test {}", new Object[] { each.getPath(), toDir,
 					perfTest.getTestIdentifier() });
 			fileEntryService.writeContentTo(user, each.getPath(), toDir);
 		}
-		LOGGER.info("File write is completed in " + perfTestDirectory);
+		LOGGER.info("File write is completed in {}", perfTestDirectory);
 		return perfTestDirectory;
 	}
 
