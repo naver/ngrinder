@@ -494,7 +494,6 @@ public class SingleConsole implements Listener, SampleListener {
 
 	@Override
 	public void update(StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-		LOGGER.info("update stat...");
 		if (!sampling) {
 			return;
 		}
@@ -592,7 +591,6 @@ public class SingleConsole implements Listener, SampleListener {
 			try {
 				// add header into csv file.
 				if (!headerAdded) {
-					LOGGER.info("Add csv file header.");
 					//add header for total data
 					for (String key : csvKeyList) {
 						csvHeader.append(",");

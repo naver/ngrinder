@@ -44,9 +44,6 @@
 		
 	</div>	
 </div>
-<#if exception??>
-	<input type="hidden" id="errorMsg" name="errorMsg" value="${exception.message}">
-</#if>
 <script type="text/javascript">
 	function init() {
 		myProfile();
@@ -64,7 +61,7 @@
 	
 	function showExceptionMsg() {
 		<#if exception??>
-			showErrorMsg($("#errorMsg").val());
+			showErrorMsg("${exception.message}");
 		</#if> 
 	}
 	if(document.loaded) {
