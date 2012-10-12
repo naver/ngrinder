@@ -7,6 +7,8 @@ NGRINDER-294	Fixed a bug about statistic calculation error if there are several 
 NGRINDER-290	Not to start monitor if loading Sigar libraries error
 NGRINDER-282	Create a error showing in index page
 NGRINDER-281	Provided batch/shell for easy execution
+NGRINDER-299	Fixed the problem of adding duplicated tag
+NGRINDER-298	Added gray ball when user stop the perftest
 No Issue		Fixed a bug in user creation.
 
 
