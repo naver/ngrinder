@@ -56,9 +56,8 @@ public class CUBRIDExDialect extends Dialect {
 	 */
 	public CUBRIDExDialect() {
 		super();
-
 		registerColumnType(Types.BIT, "bit(8)");
-		registerColumnType(Types.BIGINT, "numeric(19,0)");
+		registerColumnType(Types.BIGINT, "decimal");
 		registerColumnType(Types.BOOLEAN, "char(2)");
 		registerColumnType(Types.SMALLINT, "smallint");
 		registerColumnType(Types.TINYINT, "smallint");

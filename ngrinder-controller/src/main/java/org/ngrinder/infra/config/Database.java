@@ -27,7 +27,7 @@ import java.sql.Driver;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.hibernate.dialect.CUBRIDExDialect;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.dialect.H2Dialect;
+import org.hibernate.dialect.H2ExDialect;
 import org.hibernate.dialect.SQLiteDialect;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.slf4j.Logger;
@@ -69,7 +69,7 @@ public enum Database {
 	},
 
 	/** H2. */
-	H2(org.h2.Driver.class, H2Dialect.class, "jdbc:h2:%s/db/h2") {
+	H2(org.h2.Driver.class, H2ExDialect.class, "jdbc:h2:%s/db/h2") {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
 			String format = String.format(getUrlTemplate(), databaseProperties.getProperty("NGRINDER_HOME", "."),
