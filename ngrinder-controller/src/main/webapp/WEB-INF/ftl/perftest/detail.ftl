@@ -123,7 +123,7 @@
 							<label for="testName" class="header-control-label control-label"><@spring.message "perfTest.configuration.testName"/></label>
 							<div class="header-controls">
 								<input class="required span2 left-float" maxlength="80" size="30" type="text" id="testName" name="testName" value="${(test.testName)!}">
-								<label for="testName" class="header-control-label control-label"><@spring.message "perfTest.configuration.tags"/></label>
+								<label for="tagString" class="header-control-label control-label"><@spring.message "perfTest.configuration.tags"/></label>
 								<input class="span3" size="60" type="text" id="tagString" name="tagString" value="${(test.tagString)!}">
 								
 								<#if test??> 
@@ -543,7 +543,7 @@ function initTags() {
         		callback(data);
     		},
 			query: function(query) {
-				console.log(query.term);
+				//console.log(query.term);
 				var data = {results:[]};
 				$.ajax({
 					url : "${req.getContextPath()}/perftest/tagSearch",
