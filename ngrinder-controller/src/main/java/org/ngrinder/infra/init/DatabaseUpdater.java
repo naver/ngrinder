@@ -26,11 +26,20 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import liquibase.Liquibase;
+import liquibase.changelog.ChangeLogIterator;
+import liquibase.changelog.DatabaseChangeLog;
+import liquibase.changelog.filter.ContextChangeSetFilter;
+import liquibase.changelog.filter.DbmsChangeSetFilter;
+import liquibase.changelog.filter.ShouldRunChangeSetFilter;
+import liquibase.changelog.visitor.UpdateVisitor;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.DatabaseException;
 import liquibase.exception.LiquibaseException;
+import liquibase.parser.ChangeLogParserFactory;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import liquibase.util.StringUtils;
 
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,60 +49,89 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 /**
- * DB Data Updater This class is used to update DB automatically when System
- * restarted through log file db.changelog.xml
+ * DB Data Updater This class is used to update DB automatically when System restarted through log
+ * file db.changelog.xml
  * 
+ * @author Matt
+ * @author JunHo Yoon
  * @since 3.0
  */
 @Service
 @DependsOn("dataSource")
-public class DatabaseUpdater implements ResourceLoaderAware{
-	
+public class DatabaseUpdater implements ResourceLoaderAware {
+
 	@Autowired
 	private DataSource dataSource;
 
-    private String changeLog="ngrinder_datachange_logfile/db.changelog.xml";
+	private String changeLog = "ngrinder_datachange_logfile/db.changelog.xml";
 
-    private String contexts;
+	private String contexts;
 
-    private ResourceLoader resourceLoader;
-    
-    private Database getDatabase() {
-        try {
-            Database databaseImplementation = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(dataSource.getConnection()));
-            return databaseImplementation;
-        } catch (Exception e) {
-            throw new NGrinderRuntimeException("Error getting database", e);
-        }
-    }
+	private ResourceLoader resourceLoader;
 
-    public String getChangeLog() {
-        return changeLog;
-    }
+	private Database getDatabase() {
+		try {
+			Database databaseImplementation = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(
+							new JdbcConnection(dataSource.getConnection()));
+			return databaseImplementation;
+		} catch (Exception e) {
+			throw new NGrinderRuntimeException("Error getting database", e);
+		}
+	}
 
-    public void setChangeLog(String changeLog) {
-        this.changeLog = changeLog;
-    }
+	public String getChangeLog() {
+		return changeLog;
+	}
+
+	public void setChangeLog(String changeLog) {
+		this.changeLog = changeLog;
+	}
 
 	/**
 	 * Automated updates DB after nGrinder has load with all bean properties
 	 */
-    @PostConstruct
-	public void afterPropertiesSet() throws Exception {
-		 Liquibase liquibase = new Liquibase(changeLog, new ClassLoaderResourceAccessor(getResourceLoader().getClassLoader()), getDatabase());
-	        try {
-	            liquibase.update(contexts);
-	        } catch (LiquibaseException e) {
-				throw new NGrinderRuntimeException("Exception occurs while Liquibase update DB", e);
-	        }
+	@PostConstruct
+	public void init() throws Exception {
+		Liquibase liquibase = new Liquibase(changeLog, new ClassLoaderResourceAccessor(getResourceLoader()
+						.getClassLoader()), getDatabase()) {
+			public void update(String contexts) throws LiquibaseException {
+				contexts = StringUtils.trimToNull(contexts);
+				getChangeLogParameters().setContexts(StringUtils.splitAndTrim(contexts, ","));
+				try {
+					DatabaseChangeLog changeLog = ChangeLogParserFactory.getInstance()
+									.getParser(getChangeLog(), getFileOpener())
+									.parse(getChangeLog(), getChangeLogParameters(), getFileOpener());
+					checkDatabaseChangeLogTable(true, changeLog, contexts);
+
+					changeLog.validate(database, contexts);
+					ChangeLogIterator changeLogIterator = getStandardChangelogIterator(contexts, changeLog);
+
+					changeLogIterator.run(new UpdateVisitor(database), database);
+				} finally {
+				}
+
+			};
+
+			private ChangeLogIterator getStandardChangelogIterator(String contexts, DatabaseChangeLog changeLog)
+							throws DatabaseException {
+				return new ChangeLogIterator(changeLog, new ShouldRunChangeSetFilter(database),
+								new ContextChangeSetFilter(contexts), new DbmsChangeSetFilter(database));
+			}
+		};
+
+		try {
+			liquibase.update(contexts);
+		} catch (LiquibaseException e) {
+			throw new NGrinderRuntimeException("Exception occurs while Liquibase update DB", e);
+		}
 	}
 
 	public ResourceLoader getResourceLoader() {
-        return resourceLoader;
-    }
+		return resourceLoader;
+	}
 
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 	}
-	
+
 }

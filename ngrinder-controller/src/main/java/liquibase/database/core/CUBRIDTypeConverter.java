@@ -23,6 +23,7 @@
 package liquibase.database.core;
 
 import liquibase.database.Database;
+import liquibase.database.structure.type.BigIntType;
 import liquibase.database.structure.type.BooleanType;
 import liquibase.database.structure.type.DataType;
 import liquibase.database.structure.type.DateTimeType;
@@ -32,6 +33,11 @@ import liquibase.database.typeconversion.core.AbstractTypeConverter;
 
 /**
  * Liquibase will not be modified,this is just made its support CUBRID DB
+ * 
+ * @author Matt
+ * @author JunHo Yoon
+ * @since 3.0
+ * 
  */
 public class CUBRIDTypeConverter extends AbstractTypeConverter {
 
@@ -46,22 +52,32 @@ public class CUBRIDTypeConverter extends AbstractTypeConverter {
 		return PRIORITY_DATABASE;
 	}
 
+	@Override
 	public boolean supports(Database database) {
 		return "cubrid".equals(database.getTypeName());
 	}
 
-	public BooleanType getBooleanType() {
-		return new BooleanType.NumericBooleanType("char(1)");
+	@Override
+	public BigIntType getBigIntType() {
+		return new BigIntType("decimal");
 	}
 
+	@Override
+	public BooleanType getBooleanType() {
+		return new BooleanType.NumericBooleanType("char(2)");
+	}
+
+	@Override
 	public DateTimeType getDateTimeType() {
 		return new DateTimeType("TIMESTAMP");
 	}
 
+	@Override
 	public DoubleType getDoubleType() {
 		return new DoubleType("DOUBLE PRECISION");
 	}
-
+	
+	@Override				
 	public TinyIntType getTinyIntType() {
 		return new TinyIntType("SMALLINT");
 	}

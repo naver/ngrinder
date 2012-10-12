@@ -29,7 +29,11 @@ import liquibase.database.DatabaseConnection;
 import liquibase.exception.DatabaseException;
 
 /**
- * Liquibase will not be modified,this is just made its support CUBRID DB
+ * Liquibase will not be modified,this is just made its support CUBRID DB.
+ * 
+ * @author Matt
+ * @author JunHo Yoon
+ * @since 3.0
  */
 public class CUBRIDDatabase extends AbstractDatabase  {
 	public static final String PRODUCT_NAME = "cubrid";

@@ -33,7 +33,11 @@ import liquibase.snapshot.DatabaseSnapshot;
 import liquibase.snapshot.jvm.JdbcDatabaseSnapshotGenerator;
 
 /**
- * Liquibase will not be modified,this is just made its support CUBRID DB
+ * Liquibase will not be modified,this is just made its support CUBRID DB.
+ * 
+ * @author Matt
+ * @author JunHo Yoon
+ * @since 3.0
  */
 public class CUBRIDDatabaseSnapshotGenerator extends JdbcDatabaseSnapshotGenerator {
 
