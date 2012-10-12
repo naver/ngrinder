@@ -46,9 +46,13 @@ public enum StatusCategory {
 	 */
 	FINISHED("green.png", false, true),
 	/**
-	 * Stopped by error or user.
+	 * Stopped by error .
 	 */
-	STOP("red.png", false, true);
+	ERROR("red.png", false, true),
+	/**
+	 * Stopped by user.
+	 */
+	STOP("grey.png", false, true);
 
 	private final boolean stoppable;
 	private final boolean deletable;

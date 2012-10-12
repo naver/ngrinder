@@ -60,7 +60,7 @@ public enum Status {
 	/** Test finished. */
 	FINISHED(StatusCategory.FINISHED),
 	/** Test finished. but contains lots of error */
-	STOP_ON_ERROR(StatusCategory.STOP),
+	STOP_ON_ERROR(StatusCategory.ERROR),
 	/** Test cancel. */
 	CANCELED(StatusCategory.STOP),
 	/** Nothing. */

@@ -519,7 +519,7 @@ $(document).ready(function () {
 	<#if test??>
 		<#if test.status.category == "TESTING"> 
   			displayCfgAndTestRunning(); 
-		<#elseif test.status.category == "FINISHED" || test.status.category == "STOP"> 
+		<#elseif test.status.category == "FINISHED" || test.status.category == "STOP" || test.status.category == "ERROR"> 
 			displayCfgAndTestReport(); 
 		<#else>
 			displayCfgOnly(); 
