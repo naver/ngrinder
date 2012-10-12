@@ -6,8 +6,8 @@
 	<META HTTP-EQUIV="Expires" CONTENT="-1">
 	<#include "../common/common.ftl"> 
 	<#include "../common/jqplot.ftl">
-	<link href="${req.getContextPath()}/js/select2/select2.css" rel="stylesheet"/>
-	<script src="${req.getContextPath()}/js/select2/select2.js"></script>
+	<link href="${req.getContextPath()}/plugins/select2/select2.css" rel="stylesheet"/>
+	<script src="${req.getContextPath()}/plugins/select2/select2.min.js"></script>
 	<link href="${req.getContextPath()}/css/slider.css" rel="stylesheet">
 	<link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
 	<style>
@@ -542,6 +542,7 @@ function initTags() {
       			});
         		callback(data);
     		},
+    		maximumSelectionSize: 5,
 			query: function(query) {
 				//console.log(query.term);
 				var data = {results:[]};
