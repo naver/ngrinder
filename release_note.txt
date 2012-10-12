@@ -1,3 +1,15 @@
+3.0-b2 (2012.10.12)
+- Second beta version.
+
+change list:
+NGRINDER-295	Only English character and numbers are allowed in user id.
+NGRINDER-294	Fixed a bug about statistic calculation error if there are several sub-tests in script.
+NGRINDER-290	Not to start monitor if loading Sigar libraries error
+NGRINDER-282	Create a error showing in index page
+NGRINDER-281	Provided batch/shell for easy execution
+No Issue		Fixed a bug in user creation.
+
+
 3.0-b1 (2012.10.05)
 - First beta version.
 - 

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.ngrinder</groupId>
 	<artifactId>ngrinder</artifactId>
-	<version>3.0-b1</version>
+	<version>3.0-b2</version>
 	<packaging>pom</packaging>
 	<name>ngrinder</name>
 	<modules>
