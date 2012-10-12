@@ -239,4 +239,9 @@ public class CUBRIDExDialect extends Dialect {
 	public String toBooleanValueString(final boolean bool) {
 		return bool ? "1" : "0";
 	}
+	
+	@Override
+	public boolean supportsIfExistsBeforeTableName() {
+		return true;
+	}
 }

@@ -13,21 +13,21 @@
          	</not>
          </preConditions>
 	    <sql splitStatements="false">
-	    	drop table IF EXISTS AGENT
-		
-		    drop table IF EXISTS NUSER
-		
-		    drop table IF EXISTS PERF_TEST
-		
-		    drop table IF EXISTS PERF_TEST_TAG
-		
-		    drop table IF EXISTS TAG
-		
-		    drop table IF EXISTS system_monitor
-	    
-		    	
-			   create table AGENT (
-			        id numeric(19,0) auto_increment unique,
+				
+		        drop table if exists AGENT
+
+			    drop table if exists NUSER
+			
+			    drop table if exists PERF_TEST
+			
+			    drop table if exists PERF_TEST_TAG
+			
+			    drop table if exists TAG
+			
+			    drop table if exists system_monitor
+			
+			    create table AGENT (
+			        id decimal auto_increment unique,
 			        approved char(1) not null,
 			        hostName varchar(255),
 			        ip varchar(255),
@@ -36,7 +36,7 @@
 			    )
 			
 			    create table NUSER (
-			        id numeric(19,0) auto_increment unique,
+			        id decimal auto_increment unique,
 			        created_date timestamp,
 			        last_modified_date timestamp,
 			        authentication_provider_class varchar(255),
@@ -51,19 +51,19 @@
 			        user_id varchar(255) not null unique,
 			        user_language varchar(255),
 			        user_name varchar(255),
-			        created_user numeric(19,0),
-			        last_modified_user numeric(19,0),
+			        created_user decimal,
+			        last_modified_user decimal,
 			        primary key (id)
 			    )
 			
 			    create table PERF_TEST (
-			        id numeric(19,0) auto_increment unique,
+			        id decimal auto_increment unique,
 			        created_date timestamp,
 			        last_modified_date timestamp,
 			        agent_count integer,
 			        description varchar(2048),
 			        distribution_path varchar(255),
-			        duration numeric(19,0),
+			        duration decimal,
 			        errors integer,
 			        finish_time timestamp,
 			        ignore_sample_count integer,
@@ -80,7 +80,7 @@
 			        run_count integer,
 			        scheduled_time timestamp,
 			        script_name varchar(255),
-			        script_revistion numeric(19,0),
+			        script_revistion decimal,
 			        send_mail char(1),
 			        start_time timestamp,
 			        status varchar(255),
@@ -97,33 +97,33 @@
 			        tps double,
 			        use_rampup char(1),
 			        vuser_per_agent integer,
-			        created_user numeric(19,0),
-			        last_modified_user numeric(19,0),
+			        created_user decimal,
+			        last_modified_user decimal,
 			        primary key (id)
 			    )
 			
 			    create table PERF_TEST_TAG (
-			        perf_test_id numeric(19,0) not null,
-			        tag_id numeric(19,0) not null,
+			        perf_test_id decimal not null,
+			        tag_id decimal not null,
 			        primary key (perf_test_id, tag_id)
 			    )
 			
 			    create table TAG (
-			        id numeric(19,0) auto_increment unique,
+			        id decimal auto_increment unique,
 			        created_date timestamp,
 			        last_modified_date timestamp,
 			        tagValue varchar(255),
-			        created_user numeric(19,0),
-			        last_modified_user numeric(19,0),
+			        created_user decimal,
+			        last_modified_user decimal,
 			        primary key (id)
 			    )
 			
 			    create table system_monitor (
-			        id numeric(19,0) auto_increment unique,
-			        collect_time numeric(19,0),
+			        id decimal auto_increment unique,
+			        collect_time decimal,
 			        cpu_used_percentage float,
 			        crtime varchar(255),
-			        free_memory numeric(19,0),
+			        free_memory decimal,
 			        idle_cpu_value float,
 			        ip varchar(255),
 			        monitor_key varchar(255),
@@ -134,7 +134,7 @@
 			        port integer not null,
 			        system varchar(255),
 			        total_cpu_value float,
-			        total_memory numeric(19,0),
+			        total_memory decimal,
 			        primary key (id)
 			    )
 			
@@ -157,8 +157,7 @@
 			    create index collect_time_index on system_monitor (collect_time)
 			
 			    create index ip_index on system_monitor (ip)
-
-
+				
 	    </sql>
     </changeSet>
   

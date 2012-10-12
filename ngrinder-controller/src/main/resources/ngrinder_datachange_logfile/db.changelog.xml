@@ -7,4 +7,6 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
    		<include file="ngrinder_datachange_logfile/db.changelog_schema_CUBRID.xml"/>
 		<include file="ngrinder_datachange_logfile/db.changelog_schema_H2.xml"/>
+		<include file="ngrinder_datachange_logfile/db.changelog_schema_SQLITE.xml"/>
+	
 </databaseChangeLog>
