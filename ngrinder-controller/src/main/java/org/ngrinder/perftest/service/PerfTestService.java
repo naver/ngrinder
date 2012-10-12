@@ -45,6 +45,7 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -283,9 +284,19 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			long revision = scriptEntry != null ? scriptEntry.getRevision() : -1;
 			perfTest.setScriptRevision(revision);
 		}
-		perfTest.setTags(tagSerivce.addTags(user,
-						StringUtils.split(StringUtils.trimToEmpty(perfTest.getTagString()), ",")));
+		SortedSet<Tag> tags = tagSerivce.addTags(user,
+						StringUtils.split(StringUtils.trimToEmpty(perfTest.getTagString()), ","));
+		perfTest.setTags(tags);
+		perfTest.setTagString(buildTagString(tags));
 		return savePerfTest(perfTest);
+	}
+	
+	private String buildTagString(Set<Tag> tags) {
+		List<String> tagStringResult = new ArrayList<String>();
+		for (Tag each : tags) {
+			tagStringResult.add(each.getTagValue());
+		}
+		return StringUtils.join(tagStringResult, ",");
 	}
 
 	/*

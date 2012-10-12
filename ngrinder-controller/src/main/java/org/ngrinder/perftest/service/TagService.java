@@ -85,9 +85,7 @@ public class TagService {
 			if (allTags.contains(newTag)) {
 				continue;
 			}
-			//FIXME: why using foundTags.contains(), but not allTags.contains() ? if user adds 2 tags with same name,
-			//this will add both tags into DB
-			if (!foundTags.contains(newTag)) {
+			if (!foundTags.contains(newTag) && !allTags.contains(newTag)) {
 				allTags.add(saveTag(user, newTag));
 			}
 		}
