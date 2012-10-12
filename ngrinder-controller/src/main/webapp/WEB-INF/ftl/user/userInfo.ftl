@@ -114,10 +114,9 @@
 		<#if !(user?has_content)>
 		$(".collapse").collapse();
 		$("#user_pw_head").attr("href","");
-		</#if>
 		
 		jQuery.validator.addMethod("userIdFmt", function(userId, element ) {
-			var patrn = /^[a-zA-Z]{1}[a-zA-Z0-9_]{4,19}$/;
+			var patrn = /^[a-zA-Z]{1}[a-zA-Z0-9_]{3,19}$/;
 			var rule = new RegExp(patrn);
 			if (!rule.test($.trim(userId))) {
 				removeSuccess(element);
@@ -148,6 +147,7 @@
 			
 			return false;
 		}, "<@spring.message 'user.info.warning.userId.exist'/>");
+		</#if>
 		
 		jQuery.validator.addMethod("userPhoneNumber", function(mobilePhone, element) {
 			var patrn = /^\+?\d{2,3}-?\d{2,5}(-?\d+)?$/;

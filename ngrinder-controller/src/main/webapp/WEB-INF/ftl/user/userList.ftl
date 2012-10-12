@@ -63,7 +63,7 @@
 					</td>
 					<td class="center">
 						<#if user.userId != "admin">
-						<a href="javascript:deleteUsers('${user.userName}');">
+						<a href="javascript:deleteUsers('${user.userId}', '${user.userName}');">
 							<i class="icon-remove"></i>
 						</a>
 						</#if>
@@ -111,18 +111,20 @@
 				bootbox.alert("<@spring.message "user.list.alert.delete"/>", "<@spring.message "common.button.ok"/>");
 				return;
 			}
-			var checkedUser = [];
+			var checkedUserNm = [];
+			var checkedUserId = [];
 			var $elem;
 			list.each(function() {
 				$elem = $(this);
-				checkedUser.push($elem.attr("uname"));
+				checkedUserNm.push($elem.attr("uname"));
+				checkedUserId.push($elem.val());
 			});
 			
-			deleteUsers(checkedUser.join(","));	
+			deleteUsers(checkedUserId.join(","), checkedUserNm.join(","));	
 		}
 		
-		function deleteUsers(ids) {
-			bootbox.confirm("<@spring.message "user.list.confirm.delete"/> " + ids + "?", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
+		function deleteUsers(ids, names) {
+			bootbox.confirm("<@spring.message "user.list.confirm.delete"/> " + names + "?", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
 				if (result) {
 					document.location.href="${req.getContextPath()}/user/delete?userIds=" + ids;
 				}
