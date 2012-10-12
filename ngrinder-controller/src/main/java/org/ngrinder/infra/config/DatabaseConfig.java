@@ -92,7 +92,7 @@ public class DatabaseConfig implements NGrinderConstants {
 
 		hibernateJpaVendorAdapter.setDatabasePlatform(database.getDialect());
 		hibernateJpaVendorAdapter.setShowSql(false);
-		hibernateJpaVendorAdapter.setGenerateDdl(true);
+		hibernateJpaVendorAdapter.setGenerateDdl(false);
 		emf.setJpaVendorAdapter(hibernateJpaVendorAdapter);
 		// To search entity packages from other jar files..
 		emf.setPackagesToScan("empty");

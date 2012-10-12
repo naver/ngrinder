@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+   
+	<changeSet author="initalDB" id="1" dbms="cubrid">
+		 <preConditions onFail="MARK_RAN">
+		 	<not>
+            <tableExists tableName="TAG"/>
+         	</not>
+         </preConditions>
+	    <sql splitStatements="false">
+	    	drop table IF EXISTS AGENT
+		
+		    drop table IF EXISTS NUSER
+		
+		    drop table IF EXISTS PERF_TEST
+		
+		    drop table IF EXISTS PERF_TEST_TAG
+		
+		    drop table IF EXISTS TAG
+		
+		    drop table IF EXISTS system_monitor
+	    
+		    	
+			   create table AGENT (
+			        id numeric(19,0) auto_increment unique,
+			        approved char(1) not null,
+			        hostName varchar(255),
+			        ip varchar(255),
+			        region varchar(255),
+			        primary key (id)
+			    )
+			
+			    create table NUSER (
+			        id numeric(19,0) auto_increment unique,
+			        created_date timestamp,
+			        last_modified_date timestamp,
+			        authentication_provider_class varchar(255),
+			        description varchar(255),
+			        email varchar(255),
+			        enabled char(2) not null,
+			        is_external char(2),
+			        mobile_phone varchar(255),
+			        password varchar(255),
+			        role_name varchar(255) not null,
+			        timeZone varchar(255),
+			        user_id varchar(255) not null unique,
+			        user_language varchar(255),
+			        user_name varchar(255),
+			        created_user numeric(19,0),
+			        last_modified_user numeric(19,0),
+			        primary key (id)
+			    )
+			
+			    create table PERF_TEST (
+			        id numeric(19,0) auto_increment unique,
+			        created_date timestamp,
+			        last_modified_date timestamp,
+			        agent_count integer,
+			        description varchar(2048),
+			        distribution_path varchar(255),
+			        duration numeric(19,0),
+			        errors integer,
+			        finish_time timestamp,
+			        ignore_sample_count integer,
+			        init_processes integer,
+			        init_sleep_time integer,
+			        last_progress_message varchar(2048),
+			        mean_test_time double,
+			        peak_tps double,
+			        port integer,
+			        process_increment integer,
+			        process_increment_interval integer,
+			        processes integer,
+			        progress_message varchar(2048),
+			        run_count integer,
+			        scheduled_time timestamp,
+			        script_name varchar(255),
+			        script_revistion numeric(19,0),
+			        send_mail char(1),
+			        start_time timestamp,
+			        status varchar(255),
+			        stop_request char(1),
+			        tag_string varchar(255),
+			        target_hosts varchar(255),
+			        test_comment varchar(2048),
+			        test_error_cause varchar(255),
+			        name varchar(255),
+			        test_time_standard_deviation double,
+			        tests integer,
+			        threads integer,
+			        threshold varchar(255),
+			        tps double,
+			        use_rampup char(1),
+			        vuser_per_agent integer,
+			        created_user numeric(19,0),
+			        last_modified_user numeric(19,0),
+			        primary key (id)
+			    )
+			
+			    create table PERF_TEST_TAG (
+			        perf_test_id numeric(19,0) not null,
+			        tag_id numeric(19,0) not null,
+			        primary key (perf_test_id, tag_id)
+			    )
+			
+			    create table TAG (
+			        id numeric(19,0) auto_increment unique,
+			        created_date timestamp,
+			        last_modified_date timestamp,
+			        tagValue varchar(255),
+			        created_user numeric(19,0),
+			        last_modified_user numeric(19,0),
+			        primary key (id)
+			    )
+			
+			    create table system_monitor (
+			        id numeric(19,0) auto_increment unique,
+			        collect_time numeric(19,0),
+			        cpu_used_percentage float,
+			        crtime varchar(255),
+			        free_memory numeric(19,0),
+			        idle_cpu_value float,
+			        ip varchar(255),
+			        monitor_key varchar(255),
+			        load_avg_1 double,
+			        load_avg_15 double,
+			        load_avg_5 double,
+			        message varchar(255),
+			        port integer not null,
+			        system varchar(255),
+			        total_cpu_value float,
+			        total_memory numeric(19,0),
+			        primary key (id)
+			    )
+			
+			    create index last_modified_user_index on NUSER (last_modified_user)
+			
+			    create index created_user_index on NUSER (created_user)
+			
+			    create index last_modified_user_index on PERF_TEST (last_modified_user)
+			
+			    create index created_user_index on PERF_TEST (created_user)
+			
+			    create index scheduled_time_index on PERF_TEST (scheduled_time)
+			
+			    create index last_modified_user_index on TAG (last_modified_user)
+			
+			    create index created_user_index on TAG (created_user)
+			
+			    create index monitor_key_index on system_monitor (monitor_key)
+			
+			    create index collect_time_index on system_monitor (collect_time)
+			
+			    create index ip_index on system_monitor (ip)
+
+
+	    </sql>
+    </changeSet>
+  
+
+</databaseChangeLog>

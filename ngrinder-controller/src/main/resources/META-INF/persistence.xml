@@ -5,7 +5,7 @@
 		<properties>
 			<property name="hibernate.archive.autodetection" value="class, hbm" />
 			<property name="hibernate.format_sql" value="true" />
-			<property name="hibernate.hbm2ddl.auto" value="update" />
+			<property name="hibernate.hbm2ddl.auto" value="none" />
 		</properties>
 	</persistence-unit>
 </persistence>
