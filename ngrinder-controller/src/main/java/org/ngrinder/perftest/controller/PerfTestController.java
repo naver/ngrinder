@@ -217,7 +217,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	public void addDefaultAttributeOnModel(ModelMap model) {
 		model.addAttribute(PARAM_CURRENT_FREE_AGENTS_COUNT, agentManager.getAllFreeAgents().size());
-		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, agentManager.getMaxAgentSizePerConsole());
+		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, Math.min(agentManager.getMaxAgentSizePerConsole(), agentManager.getAllApprovedAgents().size()));
 		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
 		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
 		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour() - 1);

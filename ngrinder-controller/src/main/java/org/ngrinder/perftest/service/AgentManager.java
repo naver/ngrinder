@@ -226,6 +226,16 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
+	 * Get the all approved agents.
+	 * 
+	 * @return AgentIndentity set
+	 */
+	public Set<AgentIdentity> getAllApprovedAgents() {
+		Set<AgentIdentity> allAgents = agentControllerServer.getAllAvailableAgents();
+		return filterApprovedAgents(allAgents);
+	}
+	
+	/**
 	 * Filter the approved agents from given agents.
 	 * 
 	 * @param agents
