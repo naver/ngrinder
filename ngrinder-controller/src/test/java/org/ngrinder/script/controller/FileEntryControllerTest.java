@@ -66,7 +66,6 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 	public void before() throws IOException {
 		CompressionUtil compressUtil = new CompressionUtil();
 
-
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
 		fileEntityRepository.setUserRepository(new File(tempRepo, getTestUser().getUserId()));
 		tempRepo.deleteOnExit();
@@ -78,7 +77,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 
 		config.getSystemProperties().addProperty("http.url", "http://127.0.0.1:80");
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testSaveAndGet() {
@@ -86,11 +85,11 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		String path = "test1-path";
 		scriptController.addFolder(getTestUser(), "", path, model);
 		// create
-		scriptController.getCreateForm(getTestUser(), path, "test.com", "new_file.py", null, model);
+		scriptController.getCreateForm(getTestUser(), path, "test.com", "new_file.py", null, false, model);
 
 		FileEntry script = (FileEntry) model.get("file");
 		script.setContent(script.getContent() + "#test comment");
-		scriptController.saveFileEntry(getTestUser(), path, script, "", model);
+		scriptController.saveFileEntry(getTestUser(), path, script, "", false, model);
 		scriptController.validate(getTestUser(), script, "test.com");
 		// save and get
 		model.clear();
@@ -121,14 +120,14 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		// add folder
 		scriptController.addFolder(getTestUser(), "", path, model);
 		// create
-		scriptController.getCreateForm(getTestUser(), path, "test.com", "file-for-search.py", null, model);
+		scriptController.getCreateForm(getTestUser(), path, "test.com", "file-for-search.py", null, false, model);
 		FileEntry script = (FileEntry) model.get("file");
-		scriptController.saveFileEntry(getTestUser(), path, script, "", model);
+		scriptController.saveFileEntry(getTestUser(), path, script, "", false, model);
 
 		// save another script
 		model.clear();
 		script.setPath(script.getPath().replace("file-for-search", "new-file-for-search"));
-		scriptController.saveFileEntry(getTestUser(), path, script, "", model);
+		scriptController.saveFileEntry(getTestUser(), path, script, "", false, model);
 		// save and get
 		model.clear();
 		scriptController.getDetail(getTestUser(), script.getPath(), -1L, model);
@@ -154,8 +153,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		scriptController.addFolder(getTestUser(), "", path, model);
 
 		String upFileName = "Uploaded";
-		MultipartFile upFile = new MockMultipartFile("Uploaded.py", "Uploaded.py", null,
-						"#test content...".getBytes());
+		MultipartFile upFile = new MockMultipartFile("Uploaded.py", "Uploaded.py", null, "#test content...".getBytes());
 		path = path + "/" + upFileName;
 		scriptController.uploadFiles(getTestUser(), path, "Uploaded file desc.", upFile, model);
 		model.clear();
@@ -163,23 +161,23 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		Collection<FileEntry> searchResult = (Collection<FileEntry>) model.get("files");
 		assertThat(searchResult.size(), is(1));
 	}
-	
+
 	@Test
 	public void testDownload() {
 		ModelMap model = new ModelMap();
 		String path = "download-path";
 		String fileName = "download_file.py";
 		scriptController.addFolder(getTestUser(), "", path, model);
-		scriptController.getCreateForm(getTestUser(), path, "test.com", fileName, null, model);
+		scriptController.getCreateForm(getTestUser(), path, "test.com", fileName, null, false, model);
 
 		FileEntry script = (FileEntry) model.get("file");
 		script.setContent(script.getContent() + "#test comment");
-		scriptController.saveFileEntry(getTestUser(), path, script, "", model);
+		scriptController.saveFileEntry(getTestUser(), path, script, "", false, model);
 
-		scriptController.getCreateForm(getTestUser(), path, "", fileName, null, model);
+		scriptController.getCreateForm(getTestUser(), path, "", fileName, null, false, model);
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
-		path = path + "/"+ fileName;
+		path = path + "/" + fileName;
 		scriptController.download(getTestUser(), path, response);
 	}
 }

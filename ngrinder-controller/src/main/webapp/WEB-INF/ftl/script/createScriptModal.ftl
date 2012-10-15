@@ -33,6 +33,15 @@
 							  <span class="help-inline"></span>
 							</div>
 						</div>
+						<div class="control-group">
+							<label for="createLibAndResourceInput" class="control-label"><@spring.message "script.list.label.createResourceAndLib"/></label>
+							<div class="controls">
+							  <input type="checkbox" id="createLibAndResource" class="createLibAndResource" 
+							         name="createLibAndResource" data-original-title="<@spring.message "script.list.label.createResourceAndLib"/>" 
+							         data-content="<@spring.message "script.tip.libAndResource"/>"/>
+							  <span class="help-inline"></span>
+							</div>
+						</div>
 					</fieldset>
 				</form>
 			</div>

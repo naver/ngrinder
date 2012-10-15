@@ -258,10 +258,11 @@ public class FileEntryService {
 	 * @param folderName
 	 *            folder name
 	 */
-	public void addFolder(User user, String path, String folderName) {
+	public void addFolder(User user, String path, String folderName, String comment) {
 		FileEntry entry = new FileEntry();
 		entry.setPath(path + "/" + folderName);
 		entry.setFileType(FileType.DIR);
+		entry.setDescription(comment);
 		fileEntityRepository.save(user, entry, null);
 	}
 
