@@ -9,7 +9,9 @@
 						<div class="control-group">
 							<label for="scriptNameInput" class="control-label"><@spring.message "script.option.name"/></label>
 							<div class="controls">
-							  <input type="text" id="scriptNameInput" name="fileName">
+							  <input type="text" id="scriptNameInput" name="fileName" 
+							  		data-content="<@spring.message "common.form.rule.sampleName"/>"
+									data-original-title="<@spring.message "script.option.name"/>">
 							  <span class="help-inline"></span>
 							</div>
 						</div>

@@ -10,6 +10,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.ejb.Ejb3Configuration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.ngrinder.infra.config.Database;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 @SuppressWarnings("deprecation")
+@Ignore
 public class DataUpdaterTest extends org.ngrinder.AbstractNGrinderTransactionalTest {
 	@Autowired
 	private LocalContainerEntityManagerFactoryBean entityManagerFactory;

@@ -45,11 +45,9 @@ public abstract class AbstractChartTransactionalTest extends AbstractNGrinderTra
 		sysInfo.setIp(ip);
 		sysInfo.setCollectTime(colTime);
 		sysInfo.setCpuUsedPercentage(RandomUtils.nextFloat());
-		sysInfo.setIdleCpuValue(RandomUtils.nextFloat());
 		sysInfo.setPort(12345);
 		sysInfo.setTotalMemory(4096000);
 		sysInfo.setFreeMemory(4096000 - RandomUtils.nextInt(2048000));
-		sysInfo.setTotalCpuValue(4);
 		return sysInfo;
 	}
 	
