@@ -28,6 +28,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.ngrinder.monitor.agent.mxbean.core.MXBean;
 
+/**
+ * 
+ * Used to store monitor MXBean in a map, with the domain name as the key.
+ *
+ * @author Mavlarn
+ * @since 2.0
+ */
 public final class AgentMXBeanStorage {
 	private Map<String, MXBean> cachedMxBeans = new ConcurrentHashMap<String, MXBean>();
 	private static final AgentMXBeanStorage INSTANCE = new AgentMXBeanStorage();
@@ -43,10 +50,20 @@ public final class AgentMXBeanStorage {
 		return INSTANCE;
 	}
 
+	/**
+	 * get the monitor MXBean from the storage.
+	 * @param key is the domain name of JMX
+	 * @return
+	 */
 	public MXBean getMXBean(String key) {
 		return cachedMxBeans.get(key);
 	}
 
+	/**
+	 * Add the monitor MXBean into the storage, with the domain name as the key.
+	 * @param key is the domain name of JMX
+	 * @param mxBean is the monitor MXBean
+	 */
 	public void addMXBean(String key, MXBean mxBean) {
 		cachedMxBeans.put(key, mxBean);
 	}

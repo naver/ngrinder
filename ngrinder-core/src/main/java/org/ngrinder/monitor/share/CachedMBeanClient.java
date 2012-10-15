@@ -27,9 +27,24 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.ngrinder.monitor.share.domain.MBeanClient;
 
+/**
+ * 
+ * Used to save the {@link MBeanClient} of monitor target.
+ *
+ * @author Mavlarn
+ * @since 2.0
+ */
 public class CachedMBeanClient {
 	private static ConcurrentHashMap<String, MBeanClient> cache = new ConcurrentHashMap<String, MBeanClient>();
 
+	/**
+	 * Get {@link MBeanClient} of one target from the cache, if it doesn'r exist in cache, create a new
+	 * one and put into cache.
+	 * @param hostName is server name of monitor target
+	 * @param port is the monitor listener of JMX on target
+	 * @return MBeanClient of the target server
+	 * @throws IOException
+	 */
 	public static MBeanClient getMBeanClient(String hostName, int port) throws IOException {
 		final String key = getCacheKey(hostName, port);
 		MBeanClient mc = cache.get(key);

@@ -30,6 +30,13 @@ import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * System data collector class.
+ *
+ * @author Mavlarn
+ * @since 2.0
+ */
 public class AgentSystemDataCollector extends AgentDataCollector {
 	private static final Logger LOG = LoggerFactory.getLogger(AgentSystemDataCollector.class);
 
@@ -49,10 +56,14 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 		}
 		SystemMonitoringData systemMonitoringData = (SystemMonitoringData) getMXBean(MonitorConstants.SYSTEM);
 		SystemInfo systemInfo = execute();
-		systemMonitoringData.addNotification(systemInfo);
+		//systemMonitoringData.addNotification(systemInfo);
 		systemMonitoringData.setSystemInfo(systemInfo);
 	}
 
+	/**
+	 * Execute the collector to get the system info model.
+	 * @return SystemInfo in current time
+	 */
 	public synchronized SystemInfo execute() {
 		SystemInfo systemInfo = new SystemInfo();
 		try {

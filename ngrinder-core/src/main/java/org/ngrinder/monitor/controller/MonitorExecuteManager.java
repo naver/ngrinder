@@ -42,19 +42,22 @@ import org.slf4j.LoggerFactory;
  * @author Mavlarn
  * @since 3.0
  */
-public class MonitorExecuteManager {
+public final class MonitorExecuteManager {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(MonitorExecuteManager.class);
 	private long firstTime = 1;
 	private long interval = 1;
 
-	private Map<String, ScheduledExecutorService> schedulerMap = new ConcurrentHashMap<String, ScheduledExecutorService>();
-	private Map<String, MonitorExecuteWorker> monitorWorkerMap = new ConcurrentHashMap<String, MonitorExecuteWorker>();
-	
+	private Map<String, ScheduledExecutorService> schedulerMap =
+			new ConcurrentHashMap<String, ScheduledExecutorService>();
+	private Map<String, MonitorExecuteWorker> monitorWorkerMap =
+			new ConcurrentHashMap<String, MonitorExecuteWorker>();
+
 	private static MonitorExecuteManager instance = new MonitorExecuteManager();
 	
 	//instance class, avoid creating object
-	private MonitorExecuteManager() {}
+	private MonitorExecuteManager() {
+	}
 	
 	public static MonitorExecuteManager getInstance() {
 		return instance;
@@ -63,8 +66,8 @@ public class MonitorExecuteManager {
 	/**
 	 * add a new monitoring job.
 	 * If there is already a job monitoring on that server, just increase the counter.
-	 * @param key
-	 * @param agent
+	 * @param key is the key of the monitoring worker
+	 * @param agent is the monitoring target
 	 */
 	public void addAgentMonitor(String key, MonitorAgentInfo agent) {
 		MonitorExecuteWorker worker = monitorWorkerMap.get(agent.getIp());
@@ -83,7 +86,6 @@ public class MonitorExecuteManager {
 	
 	/**
 	 * remove a monitoring job if there is only one test monitoring on this server.
-	 * @param agent
 	 */
 	public void removeAllAgent() {
 		for (Entry<String, MonitorExecuteWorker> each: monitorWorkerMap.entrySet()) {
@@ -95,7 +97,7 @@ public class MonitorExecuteManager {
 	
 	/**
 	 * remove a monitoring job if there is only one test monitoring on this server.
-	 * @param agent
+	 * @param agentIP is the IP address of monitoring target server
 	 */
 	public void removeAgentMonitor(String agentIP) {
 		MonitorExecuteWorker worker = checkNotNull(monitorWorkerMap.get(agentIP));

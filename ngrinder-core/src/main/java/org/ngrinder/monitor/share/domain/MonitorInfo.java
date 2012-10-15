@@ -29,12 +29,21 @@ import javax.management.openmbean.CompositeData;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+/**
+ * 
+ * Abstract class for monitor info.
+ *
+ * @author Mavlarn
+ * @since 2.0
+ */
 public abstract class MonitorInfo {
+
+	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}
 
-	protected long collectTime;
+	private long collectTime;
 
 	public abstract void parse(CompositeData cd);
 

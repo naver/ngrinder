@@ -28,10 +28,20 @@ import javax.management.openmbean.CompositeData;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+/**
+ * 
+ * System info object to save date collected bu monitor.
+ *
+ * @author Mavlarn
+ * @since 2.0
+ */
 public class SystemInfo extends MonitorInfo implements Serializable {
 
 	private static final long serialVersionUID = -2995334644975166549L;
 
+	/**
+	 * Enum for the system type, linux or windows.
+	 */
 	public enum System {
 		LINUX, WINDOW
 	}
@@ -55,7 +65,7 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 			return;
 		}
 		if (cd.containsKey("collectTime")) {
-			this.collectTime = getLong(cd, "collectTime");
+			setCollectTime(getLong(cd, "collectTime"));
 		}
 		if (cd.containsKey("system")) {
 			this.system = System.valueOf(getString(cd, "system"));

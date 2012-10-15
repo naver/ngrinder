@@ -33,6 +33,13 @@ import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.model.BaseEntity;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
+/**
+ * 
+ * System data model class, to store the system monitor data.
+ *
+ * @author Mavlarn
+ * @since 2.0
+ */
 @Entity
 @Table(name = "system_monitor")
 public class SystemDataModel extends BaseEntity<SystemDataModel> {
@@ -68,7 +75,11 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	public SystemDataModel() {
 	}
 	
-	public SystemDataModel (SystemInfo systemInfo) {
+	/**
+	 * Constructor to create SystemDataModel with SystemInfo
+	 * @param systemInfo is the data collected by monitor
+	 */
+	public SystemDataModel(SystemInfo systemInfo) {
 		system = String.valueOf(systemInfo.getSystem());
 		collectTime = DateUtil.getCollectTimeInLong(new Date(systemInfo.getCollectTime()));
 		freeMemory = systemInfo.getFreeMemory();

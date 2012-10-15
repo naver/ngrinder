@@ -25,24 +25,34 @@ package org.ngrinder.monitor.controller.domain;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-public class MonitorAgentInfo {
+/**
+ * 
+ * This class is used to store the IP/port of target monitor JMX server, and the recorder.
+ *
+ * @author Mavlarn
+ * @since 2.0
+ */
+public final class MonitorAgentInfo {
 	private String ip;
 	private int port;
 	private MonitorCollection collection;
-	private MonitorRecoder recoder;
+	private MonitorRecorder recoder;
 
-	// public MonitorAgentInfo(String ip, int port, MonitorRecoder recoder) {
-	// this(ip, port, MonitorCollection.getAgentMonitorCollection(), recoder);
-	// }
-
-	private MonitorAgentInfo(String ip, int port, MonitorCollection collection, MonitorRecoder recoder) {
+	private MonitorAgentInfo(String ip, int port, MonitorCollection collection, MonitorRecorder recoder) {
 		this.ip = ip;
 		this.port = port;
 		this.collection = collection;
 		this.recoder = recoder;
 	}
 
-	public static MonitorAgentInfo getSystemMonitor(String ip, int port, MonitorRecoder recoder) {
+	/**
+	 * create and return the {@link MonitorAgentInfo}.
+	 * @param ip is the IP address of monitor target
+	 * @param port is the port number of JMX monitor listener on target
+	 * @param recoder is the recorder for the collected data
+	 * @return monitorAgentInfo is {@link MonitorAgentInfo}
+	 */
+	public static MonitorAgentInfo getSystemMonitor(String ip, int port, MonitorRecorder recoder) {
 		return new MonitorAgentInfo(ip, port, MonitorCollection.getSystemMonitorCollection(), recoder);
 	}
 
@@ -58,10 +68,11 @@ public class MonitorAgentInfo {
 		return collection;
 	}
 
-	public MonitorRecoder getRecoder() {
+	public MonitorRecorder getRecoder() {
 		return recoder;
 	}
 
+	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}

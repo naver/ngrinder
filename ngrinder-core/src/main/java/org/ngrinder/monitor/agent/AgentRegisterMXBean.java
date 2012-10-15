@@ -38,6 +38,13 @@ import org.ngrinder.monitor.agent.mxbean.core.MXBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * AgentRegisterMXBean, used to register MBeanServer.
+ *
+ * @author Mavlarn
+ * @since 2.0
+ */
 public final class AgentRegisterMXBean {
 	private static final Logger LOG = LoggerFactory.getLogger(AgentRegisterMXBean.class);
 	private static final AgentRegisterMXBean INSTANCE = new AgentRegisterMXBean();
@@ -45,9 +52,17 @@ public final class AgentRegisterMXBean {
 	private AgentRegisterMXBean() {
 	}
 
+	/**
+	 * Add MBeanServer to AgentRegisterMXBean, add collector based on current setting.
+	 * 
+	 * @param mbeanServer
+	 * @throws MalformedObjectNameException
+	 * @throws InstanceAlreadyExistsException
+	 * @throws MBeanRegistrationException
+	 * @throws NotCompliantMBeanException
+	 */
 	public void addDefaultMXBean(MBeanServer mbeanServer) throws MalformedObjectNameException,
-			InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException,
-			NullPointerException {
+			InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
 		Set<String> dataCollectors = MonitorContext.getInstance().getDataCollectors();
 
 		if (dataCollectors.contains(MonitorConstants.SYSTEM)) {
@@ -58,8 +73,7 @@ public final class AgentRegisterMXBean {
 	}
 
 	void addMXBean(MBeanServer mbeanServer, String subDomainName, MXBean bean) throws MalformedObjectNameException,
-			NullPointerException, InstanceAlreadyExistsException, MBeanRegistrationException,
-			NotCompliantMBeanException {
+			InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
 		ObjectName objectName = new ObjectName(MonitorConstants.DEFAULT_MONITOR_DOMAIN + ":" + subDomainName);
 		mbeanServer.registerMBean(bean, objectName);
 
