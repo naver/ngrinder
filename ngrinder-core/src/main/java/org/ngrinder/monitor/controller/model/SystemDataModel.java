@@ -54,21 +54,6 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	@Index(name = "collect_time_index")
 	private long collectTime;
 	
-	@Column(name = "total_cpu_value")
-	private float totalCpuValue;
-	
-	@Column(name = "idle_cpu_value")
-	private float idleCpuValue;
-	
-	@Column(name = "load_avg_1")
-	private double loadAvg1;
-	
-	@Column(name = "load_avg_5")
-	private double loadAvg5;
-	
-	@Column(name = "load_avg_15")
-	private double loadAvg15;
-	
 	@Column(name = "free_memory")
 	private long freeMemory;
 	
@@ -78,8 +63,6 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	@Column(name = "cpu_used_percentage")
 	private float cpuUsedPercentage;
 	
-	private String crtime;
-	
 	private String message;
 	
 	public SystemDataModel() {
@@ -88,11 +71,6 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	public SystemDataModel (SystemInfo systemInfo) {
 		system = String.valueOf(systemInfo.getSystem());
 		collectTime = DateUtil.getCollectTimeInLong(new Date(systemInfo.getCollectTime()));
-		totalCpuValue = systemInfo.getTotalCpuValue();
-		idleCpuValue = systemInfo.getIdlecpu();
-		loadAvg1 = systemInfo.getLoadAvgs()[0];
-		loadAvg5 = systemInfo.getLoadAvgs()[1];
-		loadAvg15 = systemInfo.getLoadAvgs()[2];
 		freeMemory = systemInfo.getFreeMemory();
 		totalMemory = systemInfo.getTotalMemory();
 		cpuUsedPercentage = systemInfo.getCPUUsedPercentage();
@@ -138,46 +116,6 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 		this.collectTime = collectTime;
 	}
 
-	public float getTotalCpuValue() {
-		return totalCpuValue;
-	}
-
-	public void setTotalCpuValue(float totalCpuValue) {
-		this.totalCpuValue = totalCpuValue;
-	}
-
-	public float getIdleCpuValue() {
-		return idleCpuValue;
-	}
-
-	public void setIdleCpuValue(float idleCpuValue) {
-		this.idleCpuValue = idleCpuValue;
-	}
-
-	public double getLoadAvg1() {
-		return loadAvg1;
-	}
-
-	public void setLoadAvg1(double loadAvg1) {
-		this.loadAvg1 = loadAvg1;
-	}
-
-	public double getLoadAvg5() {
-		return loadAvg5;
-	}
-
-	public void setLoadAvg5(double loadAvg5) {
-		this.loadAvg5 = loadAvg5;
-	}
-
-	public double getLoadAvg15() {
-		return loadAvg15;
-	}
-
-	public void setLoadAvg15(double loadAvg15) {
-		this.loadAvg15 = loadAvg15;
-	}
-
 	public long getFreeMemory() {
 		return freeMemory;
 	}
@@ -200,14 +138,6 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 
 	public void setCpuUsedPercentage(float cpuUsedPercentage) {
 		this.cpuUsedPercentage = cpuUsedPercentage;
-	}
-
-	public String getCrtime() {
-		return crtime;
-	}
-
-	public void setCrtime(String crtime) {
-		this.crtime = crtime;
 	}
 
 	public String getMessage() {

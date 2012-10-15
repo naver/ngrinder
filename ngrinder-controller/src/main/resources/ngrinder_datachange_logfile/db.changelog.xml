@@ -8,5 +8,15 @@
    		<include file="ngrinder_datachange_logfile/db.changelog_schema_CUBRID.xml"/>
 		<include file="ngrinder_datachange_logfile/db.changelog_schema_H2.xml"/>
 		<include file="ngrinder_datachange_logfile/db.changelog_schema_SQLITE.xml"/>
-	
+		
+		<changeSet author="ngrinder.3.0-b2" id="1">
+				<comment>Delete all unused SystemDataModel DB fields.</comment>
+				<dropColumn tableName="system_monitor" columnName="load_avg_1"/>
+				<dropColumn tableName="system_monitor" columnName="load_avg_5"/>
+				<dropColumn tableName="system_monitor" columnName="load_avg_15"/>
+				<dropColumn tableName="system_monitor" columnName="idle_cpu_value"/>
+				<dropColumn tableName="system_monitor" columnName="total_cpu_value"/>
+				<dropColumn tableName="system_monitor" columnName="crtime"/>
+		</changeSet>
+		
 </databaseChangeLog>
