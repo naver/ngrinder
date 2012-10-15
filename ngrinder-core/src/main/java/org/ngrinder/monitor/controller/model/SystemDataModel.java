@@ -70,8 +70,6 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	@Column(name = "cpu_used_percentage")
 	private float cpuUsedPercentage;
 	
-	private String message;
-	
 	public SystemDataModel() {
 	}
 	
@@ -149,13 +147,5 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 
 	public void setCpuUsedPercentage(float cpuUsedPercentage) {
 		this.cpuUsedPercentage = cpuUsedPercentage;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
 	}
 }

@@ -22,8 +22,6 @@
  */
 package org.ngrinder.monitor.share.domain;
 
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
 import javax.management.openmbean.CompositeData;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -44,11 +42,13 @@ public abstract class MonitorInfo {
 	}
 
 	private long collectTime;
-
+	/**
+	 * get monitor data from CompositeData
+	 */
 	public abstract void parse(CompositeData cd);
 
 	private static Object getObject(CompositeData cd, String itemName) {
-		return checkNotNull(cd, "CompositeData shoule be not null when it's used to get item").get(itemName);
+		return cd.get(itemName);
 	}
 
 	protected static String getString(CompositeData cd, String itemName) {

@@ -60,34 +60,20 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 
 	private float cpuUsedPercentage;
 
+	@Override
 	public void parse(CompositeData cd) {
 		if (cd == null) {
 			return;
 		}
-		if (cd.containsKey("collectTime")) {
-			setCollectTime(getLong(cd, "collectTime"));
-		}
-		if (cd.containsKey("system")) {
-			this.system = System.valueOf(getString(cd, "system"));
-		}
-		if (cd.containsKey("totalCpuValue")) {
-			this.totalCpuValue = getLong(cd, "totalCpuValue");
-		}
-		if (cd.containsKey("idlecpu")) {
-			this.idleCpuValue = getLong(cd, "idlecpu");
-		}
-		if (cd.containsKey("freeMemory")) {
-			this.freeMemory = getLong(cd, "freeMemory");
-		}
-		if (cd.containsKey("totalMemory")) {
-			this.totalMemory = getLong(cd, "totalMemory");
-		}
-		if (cd.containsKey("CPUUsedPercentage")) {
-			this.cpuUsedPercentage = getFloat(cd, "CPUUsedPercentage");
-		}
-		if (cd.containsKey("loadAvgs")) {
-			this.setLoadAvgs((double[]) cd.get("loadAvgs"));
-		}
+		setCollectTime(getLong(cd, "collectTime"));
+		this.system = System.valueOf(getString(cd, "system"));
+		this.totalCpuValue = getLong(cd, "totalCpuValue");
+		this.idleCpuValue = getLong(cd, "idlecpu");
+		this.freeMemory = getLong(cd, "freeMemory");
+		this.totalMemory = getLong(cd, "totalMemory");
+		this.cpuUsedPercentage = getFloat(cd, "CPUUsedPercentage");
+		this.setLoadAvgs((double[]) cd.get("loadAvgs"));
+
 	}
 
 	public System getSystem() {

@@ -380,7 +380,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		checkNotNull(perfTest);
 		checkNotNull(perfTest.getId(), "perfTest should save Id");
 		perfTest.setLastProgressMessage(message);
-		LOGGER.debug("Progress : Test - {} : {} {}", new Object[] {perfTest.getId(), message, perfTest});
+		LOGGER.debug("Progress : Test - {} : {}", perfTest.getId(), message);
 		return perfTestRepository.save(perfTest);
 	}
 

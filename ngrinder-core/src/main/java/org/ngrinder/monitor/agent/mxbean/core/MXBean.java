@@ -26,7 +26,6 @@ import java.io.Serializable;
 
 import org.ngrinder.monitor.agent.collector.AgentDataCollector;
 
-//public abstract class MXBean extends MonitorNotificationBroadcasterSupport implements Serializable {
 /**
  * 
  * Abstract MXBean class for data monitoring.
