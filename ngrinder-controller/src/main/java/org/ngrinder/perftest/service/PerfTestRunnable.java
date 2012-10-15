@@ -64,9 +64,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 /**
  * {@link PerfTest} run scheduler.
  * 
- * This class is responsible to execute/finish the performance test. 
- * The job is started from {@link #startTest()} and {@link #finishTest()} method. 
- * These methods are scheduled by Spring Task.
+ * This class is responsible to execute/finish the performance test. The job is started from
+ * {@link #startTest()} and {@link #finishTest()} method. These methods are scheduled by Spring
+ * Task.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -124,6 +124,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 			return;
 		}
 
+		if (exceedMoreAgent(runCandidate)) {
+			return;
+		}
+
 		if (!hasEnoughFreeAgents(runCandidate)) {
 			return;
 		}
@@ -139,7 +143,26 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Check the agent availability for the given {@link PerfTest}.
+	 * Check the approved agent availability for the given {@link PerfTest}.
+	 * 
+	 * @param test
+	 *            {@link PerfTest}
+	 * @return true if enough agents
+	 */
+	protected boolean exceedMoreAgent(PerfTest test) {
+		int size = agentManager.getAllApprovedAgents().size();
+		if (test.getAgentCount() > size) {
+			perfTestService.markAbromalTermination(test,
+							"The test is tried to execute but this test requires more agents "
+											+ "than count of approved agents." + "\n- Current all agent size : " + size
+											+ "  / Requested : " + test.getAgentCount() + "\n");
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Check the free agent availability for the given {@link PerfTest}.
 	 * 
 	 * @param test
 	 *            {@link PerfTest}
@@ -257,12 +280,13 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Run a given {@link PerfTest} with the given {@link GrinderProperties} and the {@link SingleConsole} .
+	 * Run a given {@link PerfTest} with the given {@link GrinderProperties} and the
+	 * {@link SingleConsole} .
 	 * 
 	 * @param perfTest
 	 *            perftest
 	 * @param grinderProperties
-	 *             grinder properties
+	 *            grinder properties
 	 * @param singleConsole
 	 *            console to be used.
 	 */
@@ -381,8 +405,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	private boolean isTestFinishCandidate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		// Give 5 seconds to be finished
 		if (perfTest.isThreshholdDuration()
-						&& singleConsoleInUse.getCurrentRunningTime() 
-							>  (perfTest.getDuration() + TEST_DURATION_CHECK_MARGIN)) {
+						&& singleConsoleInUse.getCurrentRunningTime() > (perfTest.getDuration() + TEST_DURATION_CHECK_MARGIN)) {
 			LOG.debug("Test {} is ready to Finish. Current : {}, Planned : {}",
 							new Object[] { perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentRunningTime(),
 									perfTest.getDuration() });
