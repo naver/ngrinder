@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
-import org.ngrinder.monitor.controller.domain.MonitorRecoder;
+import org.ngrinder.monitor.controller.domain.MonitorRecorder;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @since
  * @date 2012-7-20
  */
-public class MonitorRecoderDemo implements MonitorRecoder {
+public class MonitorRecoderDemo implements MonitorRecorder {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(MonitorRecoderDemo.class);
 

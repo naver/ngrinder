@@ -48,6 +48,9 @@ public class MonitorConstants {
 	static {
 		SYSTEM_DATA_COLLECTOR.add(SYSTEM);
 	}
+	
+	private MonitorConstants () {
+	}
 
 	//default collector will only collect system data.
 	public static final Set<String> DEFAULT_DATA_COLLECTOR = SYSTEM_DATA_COLLECTOR;
@@ -61,15 +64,14 @@ public class MonitorConstants {
 
 	/**
 	 * Initialize the Monitor configuration.
+	 * The configuration in agent.cnf file is not used now.
 	 * 
 	 * @param agentConfig
 	 *            {@link AgentConfig} from which the property is loaded.
 	 */
 	public static void init(AgentConfig agentConfig) {
+		//TODO: in version 3.1, we will make the monitor listener port configurable.
 //		PropertiesWrapper agentProperties = agentConfig.getAgentProperties();
 //		DEFAULT_MONITOR_PORT = agentProperties.getPropertyInt("monitor.listen.port", DEFAULT_MONITOR_PORT);
-//		DEFAULT_MONITOR_COLLECTOR_INTERVAL = agentProperties.getPropertyInt("monitor.collector.interval", DEFAULT_MONITOR_COLLECTOR_INTERVAL);
-//		DEFAULT_CONTROLLER_CACHE_SIZE = agentProperties.getPropertyInt("monitor.controller.cache.size", DEFAULT_CONTROLLER_CACHE_SIZE);
-//		DEFAULT_CONTROLLER_INTERVAL = agentProperties.getPropertyInt("monitor.collector.interval", DEFAULT_CONTROLLER_INTERVAL);
 	}
 }

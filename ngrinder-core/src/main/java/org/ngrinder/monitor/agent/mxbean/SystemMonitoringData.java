@@ -28,6 +28,13 @@ import org.ngrinder.monitor.agent.mxbean.core.MXBean;
 import org.ngrinder.monitor.agent.mxbean.core.SystemMXBean;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
+/**
+ * 
+ * MXBean implementation for monitoring system data.
+ *
+ * @author Mavlarn
+ * @since 2.0
+ */
 public class SystemMonitoringData extends MXBean implements SystemMXBean {
 
 	private static final long serialVersionUID = -3568524400212296536L;

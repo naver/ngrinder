@@ -25,10 +25,18 @@ package org.ngrinder.monitor.agent.collector;
 import org.ngrinder.monitor.agent.AgentMXBeanStorage;
 import org.ngrinder.monitor.agent.mxbean.core.MXBean;
 
+/**
+ * 
+ * Abstract class for data collector.
+ *
+ * @author Mavlarn
+ * @since 2.0
+ */
 public abstract class AgentDataCollector implements Runnable {
 
-	// public abstract void close();
-
+	/**
+	 * hook method to refresh before every collecting.
+	 */
 	public abstract void refresh();
 
 	protected MXBean getMXBean(String key) {

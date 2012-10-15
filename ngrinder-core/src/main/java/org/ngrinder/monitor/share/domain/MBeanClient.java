@@ -35,11 +35,21 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * Client for the JMX monitor server.
+ *
+ * @author Mavlarn
+ * @since 2.0
+ */
 public class MBeanClient {
 	private static final Logger LOG = LoggerFactory.getLogger(MBeanClient.class);
 
 	private static final String JMX_URI = "/jndi/rmi://%s:%s/jmxrmi";
 
+	/**
+	 * Enum class for connection state.
+	 */
 	public enum ConnectionState {
 		CONNECTED, DISCONNECTED, CONNECTING
 	}
@@ -56,10 +66,10 @@ public class MBeanClient {
 	private JMXConnector jmxConnector = null;
 
 	/**
-	 * Used to connect remote monitor JMX
+	 * Used to connect remote monitor JMX.
 	 * 
-	 * @param hostName
-	 * @param port
+	 * @param hostName is the server name of target server
+	 * @param port is the JMX server's listener port of target monitor server
 	 * @throws IOException
 	 */
 	public MBeanClient(String hostName, int port) throws IOException {
@@ -70,7 +80,7 @@ public class MBeanClient {
 	}
 
 	/**
-	 * connect jmx
+	 * connect with target JMX.
 	 */
 	public void connect() {
 		setConnectionState(ConnectionState.CONNECTING);
@@ -91,6 +101,11 @@ public class MBeanClient {
 		}
 	}
 
+	/**
+	 * disconnect the MBclient.
+	 * If it is remote JMX server, disconnect the connection. If it is local, disconnect the
+	 * binding.
+	 */
 	public void disconnect() {
 		IOUtils.closeQuietly(jmxConnector);
 
@@ -102,6 +117,14 @@ public class MBeanClient {
 		}
 	}
 
+	/**
+	 * get the monitor object of the object name and attribute name. See {@link MonitorCollectionInfoDomain}.
+	 * 
+	 * @param objName is the object name of the object in JMX MBean server.
+	 * @param attrName is the attribute name
+	 * @return the monitor object from MBean
+	 * @throws Exception
+	 */
 	public Object getAttribute(ObjectName objName, String attrName) throws Exception {
 		return server.getAttribute(objName, attrName);
 	}

@@ -20,28 +20,28 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.monitor.agent;
-
-import javax.management.AttributeChangeNotification;
-import javax.management.MBeanNotificationInfo;
-import javax.management.Notification;
-import javax.management.NotificationBroadcasterSupport;
-
-public class MonitorNotificationBroadcasterSupport extends NotificationBroadcasterSupport {
-	protected long sequenceNumber = 0;
-
-	@Override
-	public MBeanNotificationInfo[] getNotificationInfo() {
-		String[] types = new String[] { AttributeChangeNotification.ATTRIBUTE_CHANGE };
-		String name = AttributeChangeNotification.class.getName();
-		String description = "An attribute of this MXBean has changed";
-		MBeanNotificationInfo info = new MBeanNotificationInfo(types, name, description);
-		return new MBeanNotificationInfo[] { info };
-	}
-
-	protected void fireNotification(Object fired) {
-		Notification noti = new AttributeChangeNotification(this, sequenceNumber++, System.currentTimeMillis(), "", "",
-				"int", null, fired);
-		sendNotification(noti);
-	}
-}
+//package org.ngrinder.monitor.agent;
+//
+//import javax.management.AttributeChangeNotification;
+//import javax.management.MBeanNotificationInfo;
+//import javax.management.Notification;
+//import javax.management.NotificationBroadcasterSupport;
+//
+//public class MonitorNotificationBroadcasterSupport extends NotificationBroadcasterSupport {
+//	protected long sequenceNumber = 0;
+//
+//	@Override
+//	public MBeanNotificationInfo[] getNotificationInfo() {
+//		String[] types = new String[] { AttributeChangeNotification.ATTRIBUTE_CHANGE };
+//		String name = AttributeChangeNotification.class.getName();
+//		String description = "An attribute of this MXBean has changed";
+//		MBeanNotificationInfo info = new MBeanNotificationInfo(types, name, description);
+//		return new MBeanNotificationInfo[] { info };
+//	}
+//
+//	protected void fireNotification(Object fired) {
+//		Notification noti = new AttributeChangeNotification(this, sequenceNumber++, System.currentTimeMillis(), "", "",
+//				"int", null, fired);
+//		sendNotification(noti);
+//	}
+//}

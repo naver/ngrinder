@@ -32,9 +32,16 @@ import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MonitorCollection {
+/**
+ * 
+ * Collection of {@link MonitorCollectionInfoDomain}.
+ *
+ * @author Mavlarn
+ * @since 2.0
+ */
+public final class MonitorCollection {
 	private static final Logger LOG = LoggerFactory.getLogger(MonitorCollection.class);
-	protected List<MonitorCollectionInfoDomain> collectionList = new ArrayList<MonitorCollectionInfoDomain>();
+	private List<MonitorCollectionInfoDomain> collectionList = new ArrayList<MonitorCollectionInfoDomain>();
 
 	private static final MonitorCollection SYSTEM_MONITOR_COLLECTION_INSTANCE = new MonitorCollection();
 

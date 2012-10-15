@@ -63,22 +63,58 @@ public final class AgentMonitorServer {
 
 	private static final AgentMonitorServer INSTANCE = new AgentMonitorServer();
 
-	private AgentMonitorServer() {}
+	private AgentMonitorServer() {
+	}
 
 	public static AgentMonitorServer getInstance() {
 		return INSTANCE;
 	}
 
+	/**
+	 * Initialize the monitor server with default port and collector.
+	 * Default port is 12343, and default collector is system data collector.
+	 * 
+	 * @throws MalformedObjectNameException
+	 * @throws InstanceAlreadyExistsException
+	 * @throws MBeanRegistrationException
+	 * @throws NotCompliantMBeanException
+	 * @throws IOException
+	 */
 	public void init() throws MalformedObjectNameException, InstanceAlreadyExistsException, MBeanRegistrationException,
 			NotCompliantMBeanException, IOException {
 		this.init(MonitorConstants.DEFAULT_MONITOR_PORT);
 	}
 
+	/**
+	 * Initialize the monitor server with default collector. In 3.0 version,
+	 * default collector is system data collector.
+	 * 
+	 * @param port
+	 * 				monitor listener port
+	 * @throws MalformedObjectNameException
+	 * @throws InstanceAlreadyExistsException
+	 * @throws MBeanRegistrationException
+	 * @throws NotCompliantMBeanException
+	 * @throws IOException
+	 */
 	public void init(final int port) throws MalformedObjectNameException, InstanceAlreadyExistsException,
 			MBeanRegistrationException, NotCompliantMBeanException, IOException {
 		this.init(port, MonitorConstants.DEFAULT_DATA_COLLECTOR);
 	}
 
+	/**
+	 * Initialize the monitor server.
+	 * 
+	 * @param port
+	 * 				monitor listener port
+	 * @param dataCollector
+	 * 				a list of collector, for java or system data
+	 * @throws IOException
+	 * @throws MalformedObjectNameException
+	 * @throws InstanceAlreadyExistsException
+	 * @throws MBeanRegistrationException
+	 * @throws NotCompliantMBeanException
+	 */
 	public void init(final int port, final Set<String> dataCollector) throws IOException,
 			MalformedObjectNameException, InstanceAlreadyExistsException, MBeanRegistrationException,
 			NotCompliantMBeanException {
@@ -90,21 +126,35 @@ public final class AgentMonitorServer {
 		this.mBeanServer = ManagementFactory.getPlatformMBeanServer();
 
 		final String hostname = InetAddress.getLocalHost().getHostName();
-		final String jmxUrlString = "service:jmx:rmi://" + hostname + ":" + port + "/jndi/rmi://" + hostname + ":" + port + "/jmxrmi";
+		final String jmxUrlString = "service:jmx:rmi://" + hostname + ":" + port + "/jndi/rmi://"
+						+ hostname + ":" + port + "/jmxrmi";
 		JMXServiceURL jmxUrl = new JMXServiceURL(jmxUrlString);
 		this.jmxServer = JMXConnectorServerFactory.newJMXConnectorServer(jmxUrl, null, mBeanServer);
 		AgentRegisterMXBean.getInstance().addDefaultMXBean(mBeanServer);
 		LOG.info("Service URL:{} is initiated.", jmxUrl);
 	}
 
+	/**
+	 * check whether the monitor server is running.
+	 * @return true if the monitor server is running
+	 */
 	public boolean isRunning() {
 		return isRunning;
 	}
 
+	/**
+	 * get monitor listener port of monitor JMX server.
+	 * @return port
+	 * 			listener port
+	 */
 	public int getPort() {
 		return port;
 	}
 
+	/**
+	 * Start monitoring.
+	 * @throws IOException
+	 */
 	public void start() throws IOException {
 		if (!isRunning()) {
 			jmxServer.start();
@@ -113,6 +163,9 @@ public final class AgentMonitorServer {
 		}
 	}
 
+	/**
+	 * Stop monitoring.
+	 */
 	public void stop() {
 		LOG.info("Stop monitor.");
 		if (!isRunning) {

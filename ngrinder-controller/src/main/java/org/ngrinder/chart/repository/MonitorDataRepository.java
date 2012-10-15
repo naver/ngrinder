@@ -25,7 +25,7 @@ package org.ngrinder.chart.repository;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
-import org.ngrinder.monitor.controller.domain.MonitorRecoder;
+import org.ngrinder.monitor.controller.domain.MonitorRecorder;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
  * @author Tobi
  */
 @Component
-public class MonitorDataRepository implements MonitorRecoder {
+public class MonitorDataRepository implements MonitorRecorder {
 
 	@Autowired
 	private SystemMonitorRepository systemMonitorRepository;
