@@ -99,20 +99,6 @@ public abstract class GrinderClassPathUtils {
 				return false;
 			}
 		}
-//		if (jarFilename.contains("ngrinder-core") || jarFilename.contains("ngrinder-controller")
-//						|| jarFilename.contains("spring")) {
-//			return true;
-//		}
-
-		// If we have need another jar files, we should append it on the follow conditions.
-//		if (jarFilename.contains("dns") || jarFilename.contains("grinder") || jarFilename.contains("asm")
-//						|| jarFilename.contains("picocontainer") || jarFilename.contains("jython")
-//						|| jarFilename.contains("slf4j-api") || jarFilename.contains("logback")
-//						|| jarFilename.contains("jsr173") || jarFilename.contains("xmlbeans")
-//						|| jarFilename.contains("stax-api")) {
-//			return false;
-//		}
-
 		return true;
 	}
 
