@@ -460,18 +460,17 @@ public class FileEntryService {
 	public List<FileEntry> getLibAndResourcesEntries(User user, String scriptPath, Long revision) {
 		String path = FilenameUtils.getPath(scriptPath);
 		List<FileEntry> fileList = new ArrayList<FileEntry>();
-
 		List<FileEntry> fileEntries = getFileEntries(user, path + "lib/", revision);
 		for (FileEntry eachFileEntry : fileEntries) {
 			FileType fileType = eachFileEntry.getFileType();
-			if (fileType == FileType.JAR) {
+			if (fileType.isLibDistribtable()) {
 				fileList.add(eachFileEntry);
 			}
 		}
 		fileEntries = getFileEntries(user, path + "resources/", revision);
 		for (FileEntry eachFileEntry : fileEntries) {
 			FileType fileType = eachFileEntry.getFileType();
-			if (fileType != FileType.DIR) {
+			if (fileType.isResourceDistributable()) {
 				fileList.add(eachFileEntry);
 			}
 		}

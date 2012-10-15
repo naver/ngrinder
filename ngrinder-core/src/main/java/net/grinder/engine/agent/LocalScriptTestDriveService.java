@@ -22,11 +22,12 @@
  */
 package net.grinder.engine.agent;
 
+import static org.ngrinder.common.util.NoOp.noOp;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -39,6 +40,7 @@ import net.grinder.util.thread.Condition;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,32 +56,16 @@ import org.slf4j.LoggerFactory;
 public class LocalScriptTestDriveService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LocalScriptTestDriveService.class);
 
-	/**
-	 * Build custom class path based on the jar files on given base path.
-	 * 
-	 * @param base
-	 *            base path in which jar file is located
-	 * @return classpath string
-	 */
-	public String buildCustomClassPath(File base) {
-		File libFolder = new File(base, "lib");
-		final StringBuffer customClassPath = new StringBuffer();
-		customClassPath.append(FilenameUtils.normalize(base.getAbsolutePath()));
-		if (libFolder.exists()) {
-			customClassPath.append(File.pathSeparator).append(
-							FilenameUtils.normalize(new File(base, "lib").getAbsolutePath()));
-			libFolder.list(new FilenameFilter() {
-				@Override
-				public boolean accept(File dir, String name) {
-					if (name.endsWith(".jar")) {
-						customClassPath.append(File.pathSeparator).append(
-										FilenameUtils.normalize(new File(dir, name).getAbsolutePath()));
-					}
-					return true;
-				}
-			});
+	private File getLibPath() {
+		String path = this.getClass().getResource("/").getPath();
+		path = path.substring(1, path.length() - 1);
+		String str = "classes";
+		int i = path.indexOf(str);
+		if (i > 0) {
+			path = path.substring(0, i);
+			path += "lib/";
 		}
-		return customClassPath.toString();
+		return new File(path).getAbsoluteFile();
 	}
 
 	/**
@@ -91,15 +77,16 @@ public class LocalScriptTestDriveService {
 	 *            script file
 	 * @param eventSynchronisation
 	 *            condition for event synchronization
-	 * @param jvmArguments
-	 *            special JVM Argument..
+	 * @param securityEnabled
+	 *            if security is set ot not.
 	 * @return File which stores validation result.
 	 */
-	public File doValidate(File base, File script, Condition eventSynchronisation, String jvmArguments) {
+	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled) {
 		FanOutStreamSender fanOutStreamSender = null;
 		ErrorStreamRedirectWorkerLauncher workerLauncher = null;
 		boolean stopByTooMuchExecution = false;
 		ByteArrayOutputStream byteArrayErrorStream = new ByteArrayOutputStream();
+		File file = new File(base, "validation-0.log");
 		try {
 
 			fanOutStreamSender = new FanOutStreamSender(1);
@@ -115,7 +102,10 @@ public class LocalScriptTestDriveService {
 			});
 
 			GrinderProperties properties = new GrinderProperties();
-			properties.setProperty("grinder.jvm.classpath", buildCustomClassPath(base));
+			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), getLibPath(),
+							securityEnabled, "localhost");
+
+			properties.setProperty("grinder.jvm.classpath", builder.buildCustomClassPath(true));
 
 			AgentIdentityImplementation agentIndentity = new AgentIdentityImplementation("validation");
 
@@ -124,9 +114,9 @@ public class LocalScriptTestDriveService {
 
 			Properties systemProperties = new Properties();
 			systemProperties.put("java.class.path", base.getAbsolutePath() + File.pathSeparator + newClassPath);
-			Directory workingDirectory = new Directory(base);
+			Directory workingDirectory = new Directory(base);			
 			final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
-							systemProperties, jvmArguments, workingDirectory);
+							systemProperties, builder.buildJVMArgument(), workingDirectory);
 
 			ScriptLocation scriptLocation = new ScriptLocation(workingDirectory, script);
 			ProcessWorkerFactory workerFactory = new ProcessWorkerFactory(workerCommandLine, agentIndentity,
@@ -157,7 +147,9 @@ public class LocalScriptTestDriveService {
 				}
 			}
 		} catch (Exception e) {
-			LOGGER.error("error while executing {}, because:{}", script, e.getMessage());
+			LOGGER.error("Error while executing {}, because:{}", script, e.getMessage());
+			LOGGER.info("Error Trace", e); 
+			appendingMessageOn(file, ExceptionUtils.getFullStackTrace(e));
 		} finally {
 			if (workerLauncher != null) {
 				workerLauncher.shutdown();
@@ -179,9 +171,7 @@ public class LocalScriptTestDriveService {
 
 		}
 
-		File file = new File(base, "validation-0.log");
 		appendingMessageOn(file, byteArrayErrorStream.toString());
-
 		if (stopByTooMuchExecution) {
 			appendingMessageOn(file, "Validation should be performed within 10sec. Stop it forcely");
 		}
