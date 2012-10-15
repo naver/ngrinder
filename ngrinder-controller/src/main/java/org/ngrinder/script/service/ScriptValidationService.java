@@ -29,8 +29,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.List;
 
 import net.grinder.engine.agent.LocalScriptTestDriveService;
@@ -102,9 +100,7 @@ public class ScriptValidationService {
 				return result;
 			}
 			File scriptDirectory = config.getHome().getScriptDirectory(user);
-			File file = new File(scriptDirectory, "validation-0.log");
-			file.delete();
-
+			FileUtils.deleteDirectory(scriptDirectory);
 			scriptDirectory.mkdirs();
 
 			// Copy logback... first
@@ -141,15 +137,6 @@ public class ScriptValidationService {
 
 			File scriptFile = new File(scriptDirectory, FilenameUtils.getName(scriptEntry.getPath()));
 
-			// set security.manager argument
-			String jvmArguments = "";
-			boolean securityEnabled = config.isSecurityEnabled();
-			if (securityEnabled) {
-				jvmArguments = "-Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager ";
-				jvmArguments += " -Dngrinder.exec.path=" + getLibPath();
-			}
-			jvmArguments += addCustomDns(hostString, jvmArguments);
-
 			if (useScriptInSVN) {
 				fileEntryService.writeContentTo(user, scriptEntry.getPath(), scriptDirectory);
 			} else {
@@ -157,7 +144,7 @@ public class ScriptValidationService {
 								StringUtils.defaultIfBlank(scriptEntry.getEncoding(), "UTF-8"));
 			}
 			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, new Condition(),
-							jvmArguments);
+							config.isSecurityEnabled());
 			return FileUtils.readFileToString(doValidate);
 		} catch (IOException e) {
 			LOG.error("Error while distributing files on {} for {}", user, scriptEntry.getPath());
@@ -166,39 +153,11 @@ public class ScriptValidationService {
 		return StringUtils.EMPTY;
 	}
 
-	private String getHostName() {
-		try {
-			return InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			return "UNNAMED HOST";
-		}
-	}
-
-	private String addCustomDns(String hostString, String jvmArguments) {
-		if (StringUtils.isNotEmpty(hostString)) {
-			jvmArguments = jvmArguments + " -Dngrinder.etc.hosts=" + hostString + "," + getHostName()
-							+ ":127.0.0.1,localhost:127.0.0.1";
-			jvmArguments = jvmArguments + " -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns";
-		}
-		return jvmArguments;
-	}
-
-	private String getLibPath() {
-		String path = this.getClass().getResource("/").getPath();
-		path = path.substring(1, path.length() - 1);
-		String str = "classes";
-		int i = path.indexOf(str);
-		if (i > 0) {
-			path = path.substring(0, i);
-			path += "lib/";
-		}
-		return new File(path).getAbsolutePath();
-	}
-
 	/**
 	 * Run jython parser to find out the syntax error..
 	 * 
-	 * @param script script
+	 * @param script
+	 *            script
 	 * @return script syntax error message. null otherwise.
 	 */
 	public String checkSyntaxErrors(String script) {
