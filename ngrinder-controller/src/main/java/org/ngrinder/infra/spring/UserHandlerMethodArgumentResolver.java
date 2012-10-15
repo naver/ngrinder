@@ -22,8 +22,14 @@
  */
 package org.ngrinder.infra.spring;
 
+import java.util.EnumSet;
+
+import org.apache.commons.lang.StringUtils;
+import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserContext;
+import org.ngrinder.user.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -41,7 +47,10 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
 	private UserContext userContext;
-
+	private EnumSet<Role> adminRole = EnumSet.of(Role.ADMIN, Role.SUPER_USER);
+	
+	@Autowired
+	private UserService userService;
 	/* (non-Javadoc)
 	 * @see org.springframework.web.method.support.HandlerMethodArgumentResolver#supportsParameter(org.springframework.core.MethodParameter)
 	 */
@@ -57,7 +66,13 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	public Object resolveArgument(
 			MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
 			WebDataBinderFactory binderFactory) throws Exception {
-		return getUserContext().getCurrentUser();
+		User currentUser = getUserContext().getCurrentUser();
+		String userParam = webRequest.getParameter("userId");
+		
+		if (StringUtils.isNotBlank(userParam) && adminRole.contains(currentUser.getRole())) {
+			return getUserService().getUserById(userParam);
+		}
+		return currentUser;
 	}
 
 	/**
@@ -79,5 +94,13 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	 */
 	public void setUserContext(UserContext userContext) {
 		this.userContext = userContext;
+	}
+
+	public UserService getUserService() {
+		return userService;
+	}
+
+	public void setUserService(UserService userService) {
+		this.userService = userService;
 	}
 }

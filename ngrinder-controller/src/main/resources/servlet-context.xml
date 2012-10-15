@@ -18,6 +18,7 @@
 		<mvc:argument-resolvers>
 			<bean class="org.ngrinder.infra.spring.UserHandlerMethodArgumentResolver">
 				<property name="userContext" ref="userContext" />
+				<property name="userService" ref="userService" />
 			</bean>
 			<bean class="org.ngrinder.infra.spring.RemainedPathMethodArgumentResolver" />
 			<bean class="org.springframework.data.web.PageableArgumentResolver" />
