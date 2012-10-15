@@ -8,7 +8,7 @@
 				<input type="text" class="span4 required userIdFmt userIdExist" id="userId" name="userId"
 				    maxlength="15"
 				    rel="popover" value="${(user.userId)!}"
-					data-content="<@spring.message "user.info.warning.userId.intro"/>"
+					data-content="<@spring.message "user.info.warning.userId.intro"/> <@spring.message "common.form.rule.userId"/>"
 					data-original-title="<@spring.message "user.info.form.userId"/>"
 					<#if user?? && user.userId??>readonly="value"</#if> >
 				<span id="userIdError_span_id" class="help-inline"> </span>
@@ -65,7 +65,7 @@
 				<input type="text" class="span4 userPhoneNumber" id="mobilePhone"  
 					name="mobilePhone" rel="popover"
 					value="${(user.mobilePhone)!}"
-					data-content="<@spring.message "user.info.warning.phone.intro"/>"
+					data-content="<@spring.message "common.form.rule.phoneNumber"/>"
 					data-original-title="<@spring.message "user.info.form.phone"/>">
 			</div>
 		</div>

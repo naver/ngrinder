@@ -141,7 +141,7 @@ public class FileEntryController extends NGrinderBaseController {
 	public String addFolder(User user, @RemainedPath String path, @RequestParam("folderName") String folderName,
 					ModelMap model) { // "fileName"
 		try {
-			fileEntryService.addFolder(user, path, StringUtils.trimToEmpty(folderName));
+			fileEntryService.addFolder(user, path, StringUtils.trimToEmpty(folderName), "");
 		} catch (Exception e) {
 			return "error/errors";
 		}
@@ -169,11 +169,14 @@ public class FileEntryController extends NGrinderBaseController {
 	public String getCreateForm(User user, @RemainedPath String path,
 					@RequestParam(value = "testUrl", required = false) String testUrl,
 					@RequestParam("fileName") String fileName,
-					@RequestParam(value = "scriptType", required = false) String scriptType, ModelMap model) {
+					@RequestParam(value = "scriptType", required = false) String scriptType, 
+					@RequestParam(value = "createLibAndResource", defaultValue = "false") boolean createLibAndResoure,
+					ModelMap model) {
 		fileName = StringUtils.trimToEmpty(fileName);
 		if (StringUtils.isBlank(testUrl)) {
 			testUrl = "http://sample.com";
 		}
+		model.addAttribute("createLibAndResource", createLibAndResoure);
 		if (fileEntryService.hasFileEntry(user, path + "/" + fileName)) {
 			model.addAttribute("file", fileEntryService.getFileEntry(user, path + "/" + fileName));
 		} else {
@@ -300,15 +303,23 @@ public class FileEntryController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
 	public String saveFileEntry(User user, @RemainedPath String path, FileEntry fileEntry,
-					@RequestParam("targetHosts") String targetHosts, ModelMap model) {
+					@RequestParam("targetHosts") String targetHosts,
+					@RequestParam(value = "createLibAndResource", defaultValue = "false") boolean createLibAndResource,
+					ModelMap model) {
 		if (StringUtils.isNotBlank(targetHosts)) {
 			Map<String, String> map = new HashMap<String, String>();
 			map.put("targetHosts", StringUtils.trim(targetHosts));
 			fileEntry.setProperties(map);
 		}
+		
 		fileEntryService.save(user, fileEntry);
-
-		return "redirect:/script/list/" + FilenameUtils.getPath(fileEntry.getPath());
+		
+		String basePath = FilenameUtils.getPath(fileEntry.getPath());
+		if (createLibAndResource) {
+			fileEntryService.addFolder(user, basePath, "lib", getMessages("script.commit.libfolder"));
+			fileEntryService.addFolder(user, basePath, "resources", getMessages("script.commit.resourcefolder"));
+		}
+		return "redirect:/script/list/" + basePath;
 	}
 
 	/**

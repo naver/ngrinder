@@ -29,13 +29,27 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 import org.ngrinder.monitor.share.domain.MonitorInfo;
 
+/**
+ * 
+ * Monitor collection info domain.
+ *
+ * @author Mavlarn
+ * @since 2.0
+ */
 public class MonitorCollectionInfoDomain {
 	private ObjectName objectName;
 	private String attrName;
 	@SuppressWarnings("unused")
 	private Class<? extends MonitorInfo> resultClass;
 
-	public MonitorCollectionInfoDomain(ObjectName objectName, String attrName, Class<? extends MonitorInfo> resultClass) {
+	/**
+	 * Constructor for the collection info.
+	 * @param objectName is the object name related with JMX domain name
+	 * @param attrName	is the attribute name in this domain, used to get concrete monitor data
+	 * @param resultClass is the Class type of that monitor data with that attribute name
+	 */
+	public MonitorCollectionInfoDomain(ObjectName objectName, String attrName,
+			Class<? extends MonitorInfo> resultClass) {
 		this.objectName = objectName;
 		this.attrName = attrName;
 		this.resultClass = resultClass;
@@ -49,6 +63,7 @@ public class MonitorCollectionInfoDomain {
 		return attrName;
 	}
 
+	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}

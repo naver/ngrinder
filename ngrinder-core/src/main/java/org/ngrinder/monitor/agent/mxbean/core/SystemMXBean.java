@@ -24,6 +24,18 @@ package org.ngrinder.monitor.agent.mxbean.core;
 
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
+/**
+ * 
+ * MXBean interface for system data monitoring.
+ *
+ * @author Mavlarn
+ * @since 2.0
+ */
 public interface SystemMXBean {
+	
+	/**
+	 * get system data.
+	 * @return SystemInfo of current time
+	 */
 	public SystemInfo getSystemInfo();
 }

@@ -24,10 +24,31 @@ package org.ngrinder.monitor.controller.domain;
 
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
-public interface MonitorRecoder {
+/**
+ * 
+ * Monitor recorder interface.
+ *
+ * @author Mavlarn
+ * @since 2.0
+ */
+public interface MonitorRecorder {
+	
+	/**
+	 * executed before recording one data.
+	 */
 	void before();
 
+	/**
+	 * function to record the SystemInfo.
+	 * 
+	 * @param key is a key to mark the monitoring worker
+	 * @param systemInfo is current collected system data
+	 * @param agentInfo is the target of this monitoring
+	 */
 	void recoderSystemInfo(final String key, final SystemInfo systemInfo, final MonitorAgentInfo agentInfo);
 
+	/**
+	 * executed after recording one data.
+	 */
 	void after();
 }

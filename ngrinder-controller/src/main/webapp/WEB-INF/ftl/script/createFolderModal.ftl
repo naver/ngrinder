@@ -10,7 +10,9 @@
 							<label for="folderNameInput" class="control-label"><@spring.message "script.list.label.folderName"/></label>
 							<div class="controls">
 							  <input type="hidden" name="type" value="folder"/>
-							  <input type="text" id="folderNameInput" name="folderName"/>
+							  <input type="text" id="folderNameInput" name="folderName" 
+							  		data-content="<@spring.message "common.form.rule.sampleName"/>"
+									data-original-title="<@spring.message "script.list.label.folderName"/>"/>
 							  <span class="help-inline"></span>
 							</div>
 						</div>					

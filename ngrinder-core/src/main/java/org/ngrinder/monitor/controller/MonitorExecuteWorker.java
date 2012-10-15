@@ -32,7 +32,7 @@ import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
 import org.ngrinder.monitor.controller.domain.MonitorCollection;
 import org.ngrinder.monitor.controller.domain.MonitorCollectionInfoDomain;
-import org.ngrinder.monitor.controller.domain.MonitorRecoder;
+import org.ngrinder.monitor.controller.domain.MonitorRecorder;
 import org.ngrinder.monitor.share.CachedMBeanClient;
 import org.ngrinder.monitor.share.domain.MBeanClient;
 import org.ngrinder.monitor.share.domain.MonitorInfo;
@@ -47,20 +47,25 @@ import org.slf4j.LoggerFactory;
  * are monitoring this target. 
  *
  * @author Mavlarn
- * @since
+ * @since 2.0
  */
 public class MonitorExecuteWorker implements Runnable {
 	private static final Logger LOG = LoggerFactory.getLogger(MonitorExecuteWorker.class);
 
 	private MBeanClient mbeanClient;
 	private MonitorCollection collection;
-	private MonitorRecoder recoder;
+	private MonitorRecorder recoder;
 	private MonitorAgentInfo agentInfo;
 	private String key;
 	
 	//used to save the counter of how many reference to use this monitor worker.
 	private int referenceCounter = 1;
 
+	/**
+	 * Construct a MonitorExecuteWorker with the key and agent info.
+	 * @param key is a key to mark the monitoring worker
+	 * @param agentInfo	is the monitoring target
+	 */
 	public MonitorExecuteWorker(final String key, final MonitorAgentInfo agentInfo) {
 		this.key = key;
 		this.agentInfo = agentInfo;
@@ -76,10 +81,18 @@ public class MonitorExecuteWorker implements Runnable {
 		}
 	}
 	
+	/**
+	 * add a monitor reference on this monitor worker.
+	 */
 	public void increaseCounter() {
 		referenceCounter++;
 	}
 	
+	/**
+	 * decrease the reference counter. it is used when a monitoring job will not monitor a target.
+	 * When all the monitoring on that target is finished, the reference counter will be 0, and the
+	 * monitoring worker will be stopped. 
+	 */
 	public void decreaseCounter() {
 		referenceCounter--;
 	}
@@ -114,14 +127,13 @@ public class MonitorExecuteWorker implements Runnable {
 				MonitorInfo retData = returnClass.newInstance();
 				retData.parse(cd);
 
-				// new time?
 				retData.setCollectTime(System.currentTimeMillis());
 
 				StringBuffer methodName = new StringBuffer().append(MonitorConstants.RECODER_METHOD_PREFIX).append(
 						retData.getClass().getSimpleName());
 
-				Method method = recoder.getClass().getMethod(methodName.toString(), key.getClass(), retData.getClass(),
-						agentInfo.getClass());
+				Method method = recoder.getClass().getMethod(methodName.toString(), key.getClass(),
+						retData.getClass(),	agentInfo.getClass());
 
 				if (method != null) {
 					method.invoke(recoder, key, retData, agentInfo);
@@ -134,6 +146,9 @@ public class MonitorExecuteWorker implements Runnable {
 		}
 	}
 
+	/**
+	 * finish the monitoring worker, save unsaved monitor data and close the JMX or local JVM connection.
+	 */
 	public void close() {
 		recoder.after();
 		mbeanClient.disconnect();

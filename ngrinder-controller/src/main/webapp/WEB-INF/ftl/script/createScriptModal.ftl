@@ -9,7 +9,9 @@
 						<div class="control-group">
 							<label for="scriptNameInput" class="control-label"><@spring.message "script.option.name"/></label>
 							<div class="controls">
-							  <input type="text" id="scriptNameInput" name="fileName">
+							  <input type="text" id="scriptNameInput" name="fileName" 
+							  		data-content="<@spring.message "common.form.rule.sampleName"/>"
+									data-original-title="<@spring.message "script.option.name"/>">
 							  <span class="help-inline"></span>
 							</div>
 						</div>
@@ -30,6 +32,16 @@
 							         placeholder="<@spring.message "home.placeholder.url"/>" 
 							         name="testUrl" data-original-title="<@spring.message "home.tip.url.title"/>" 
 							         data-content="<@spring.message "home.tip.url.content"/>"/>
+							  <span class="help-inline"></span>
+							</div>
+						</div>
+						<div class="control-group">
+							<div class="controls">
+								<label  class="checkbox">
+							    <input type="checkbox" id="createLibAndResource" 
+							         name="createLibAndResource" data-original-title="<@spring.message "script.list.label.createResourceAndLib"/>" 
+							         data-content="<@spring.message "script.tip.libAndResource"/>"/> <@spring.message "script.list.label.createResourceAndLib"/>
+							  	</label>
 							  <span class="help-inline"></span>
 							</div>
 						</div>

@@ -86,6 +86,7 @@
 						</div>
 					</div>
 					<input type="hidden" id="contentHidden" name="content" value=""/>
+					<input type="hidden" id="createLibAndResource" name="createLibAndResource" value="<#if createLibAndResource?? && createLibAndResource==true>true<#else>false</#if>"/>
 				</form>
 				<textarea id="codemirrorContent" style="width:930px; margin-top:10px;z-index:100">${(file.content)!}</textarea>
 				<div class="pull-right" rel="popover" style="position:float;margin-top:-20px;margin-right:-30px" data-original-title="Tip" data-content="
