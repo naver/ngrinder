@@ -22,8 +22,6 @@
  */
 package net.grinder.engine.agent;
 
-import static org.ngrinder.common.util.NoOp.noOp;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
