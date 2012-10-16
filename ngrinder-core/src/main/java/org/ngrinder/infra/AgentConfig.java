@@ -97,6 +97,7 @@ public class AgentConfig {
 		checkNotNull(home);
 		Properties properties = new Properties();
 		properties.put("agent.pid",agentPid);
+		properties.put("agent.home",home.getDirectory().getAbsolutePath());
 		home.setProperties("agent_pid.conf", properties);
 	}
 
