@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.operation.cotroller.LogMonitorController;
 import org.slf4j.Logger;
@@ -21,6 +22,9 @@ public class LogMonitorControllerTest extends AbstractNGrinderTransactionalTest 
 	@Autowired
 	private LogMonitorController logMonitorController;
 
+	@Autowired
+	private Config config;
+	
 	@Test
 	public void testLogMonitorController() {
 		logMonitorController.enableVerbose(false);
@@ -32,7 +36,11 @@ public class LogMonitorControllerTest extends AbstractNGrinderTransactionalTest 
 		CoreLogger.LOGGER.info("Core Logger");
 		LOGGER.debug("TEST TEST");
 		sleep(3000);
-		assertThat(getLastMessage(), not(containsString("TEST TEST")));
+		//if logMonitorController.enableVerbose(false), it will check system setting.
+		boolean isDebug = config.getSystemProperties().getPropertyBoolean("verbose", false);
+		if (!isDebug) {
+			assertThat(getLastMessage(), not(containsString("TEST TEST")));
+		}
 		assertThat(getLastMessage(), containsString("Core Logger"));
 
 		logMonitorController.enableVerbose(true);

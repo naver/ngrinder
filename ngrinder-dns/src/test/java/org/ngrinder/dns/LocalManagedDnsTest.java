@@ -157,6 +157,7 @@ public class LocalManagedDnsTest {
 
 	public void performLookupLocal(String hostName) throws UnknownHostException {
 		InetAddress[] addrs = localNS.lookupAllHostAddr(hostName);
+		System.out.println(hostName + ":");
 		for (int j = 0; j < addrs.length; j++) {
 			System.out.println(addrs[j].toString());
 		}

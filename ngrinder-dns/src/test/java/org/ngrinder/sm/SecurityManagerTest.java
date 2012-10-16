@@ -30,10 +30,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 
 import junit.framework.Assert;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -43,37 +47,48 @@ import org.junit.Test;
  * @since 3.0
  */
 public class SecurityManagerTest {
-
-	public static void main(String[] args) {
-
-		SecurityManagerTest.init();
-		SecurityManagerTest smt = new SecurityManagerTest();
-		smt.testNGrinderSecurityManager1();
-		smt.testNGrinderSecurityManager2();
-	}
+	
+	public static boolean SM_TEST = false;
 
 	private static final String PATH = new File("/").getAbsolutePath();
 
 	@BeforeClass
 	// @Ignore
 	public static void init() {
+		SM_TEST = true;
 		System.setProperty("ngrinder.exec.path", PATH);
 		System.setProperty("ngrinder.etc.hosts", "10.34.64.36,CN14748-D-1:127.0.0.1,localhost:127.0.0.1");
 		System.setProperty("ngrinder.console.ip", "10.34.63.53");
 		// -Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager
 		System.setSecurityManager(new NGrinderSecurityManager());
 	}
-
-	@Test
-	// @Ignore
-	public void testNGrinderSecurityManager1() {
-		System.out.println(new File("hell").getAbsolutePath());
-		System.out.println(System.getProperty("user.home"));
+	
+	@AfterClass
+	public static void disbaleSecurity() {
+		SM_TEST = false;
 	}
 
 	@Test
 	// @Ignore
-	public void testNGrinderSecurityManager2() {
+	public void testNGrinderSecurityManager() {
+		System.out.println(new File("hell").getAbsolutePath());
+		System.out.println(System.getProperty("user.home"));
+	}
+
+	@Test (expected=SecurityException.class)
+	public void testNGrinderSecurityManagerNetAccessNotAllowed() throws UnknownHostException {
+		System.out.println(ArrayUtils.toString(Inet4Address.getAllByName("www.google.com")));
+	}
+
+	@Test
+	public void testNGrinderSecurityManagerNetAccessAllowed() throws UnknownHostException {
+		System.out.println(ArrayUtils.toString(Inet4Address.getAllByName("10.34.64.36")));
+		Assert.assertTrue(true);
+	}
+
+	@Test
+	// @Ignore
+	public void testNGrinderSecurityManagerFile() {
 		boolean readTag = false, writeTag = false;
 		BufferedReader fis = null;
 		BufferedWriter fos = null;
