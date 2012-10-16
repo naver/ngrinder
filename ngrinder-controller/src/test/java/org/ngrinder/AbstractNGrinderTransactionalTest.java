@@ -38,17 +38,6 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 	
 	@Autowired
 	private UserContext userContext;
-
-	@BeforeClass
-	public static void setupSigar() throws IOException {
-		ClassPathResource classPathResource = new ClassPathResource("native_lib/.sigar_shellrc");
-		String nativeLib = classPathResource.getFile().getParentFile().getAbsolutePath();
-		String javaLib = System.getProperty("java.library.path");
-		if (!javaLib.contains("native_lib")) {
-			System.setProperty("java.library.path", nativeLib + File.pathSeparator + javaLib);
-		}
-		System.out.println("Java Lib Path : " + System.getProperty("java.library.path"));
-	}
 	
 	@Autowired
 	@Override

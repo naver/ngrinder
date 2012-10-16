@@ -22,6 +22,7 @@
  */
 package org.ngrinder.monitor.agent.collector;
 
+
 import org.hyperic.sigar.OperatingSystem;
 import org.hyperic.sigar.Sigar;
 import org.ngrinder.monitor.MonitorConstants;
@@ -43,11 +44,13 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 	private Sigar sigar = null;
 
 	@Override
-	public synchronized void refresh() {
+	public synchronized long refresh() {
 		if (sigar == null) {
 			sigar = new Sigar();
 		}
+		return sigar.getPid();
 	}
+
 
 	@Override
 	public void run() {

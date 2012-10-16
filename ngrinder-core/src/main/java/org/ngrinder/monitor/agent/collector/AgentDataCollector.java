@@ -37,7 +37,7 @@ public abstract class AgentDataCollector implements Runnable {
 	/**
 	 * hook method to refresh before every collecting.
 	 */
-	public abstract void refresh();
+	public abstract long refresh();
 
 	protected MXBean getMXBean(String key) {
 		return AgentMXBeanStorage.getInstance().getMXBean(key);

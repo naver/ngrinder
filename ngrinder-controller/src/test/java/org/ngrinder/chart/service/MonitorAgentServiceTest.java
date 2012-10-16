@@ -25,6 +25,8 @@ package org.ngrinder.chart.service;
 import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -43,6 +45,7 @@ import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.AgentMonitorServer;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 
 /**
  * Test class for MonitorAgentService, to test adding and removing monitor job.
@@ -59,9 +62,23 @@ public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
 	@Autowired
 	private MonitorService monitorService;
 	
+	private static void setupSigar() {
+		try {
+			ClassPathResource classPathResource = new ClassPathResource("native_lib/.sigar_shellrc");
+			String nativeLib = classPathResource.getFile().getParentFile().getAbsolutePath();
+			String javaLib = System.getProperty("java.library.path");
+			if (!javaLib.contains("native_lib")) {
+				System.setProperty("java.library.path", nativeLib + File.pathSeparator + javaLib);
+			}
+			System.out.println("Java Lib Path : " + System.getProperty("java.library.path"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@BeforeClass
 	public static void startMonitorServer() {
+		setupSigar();
 		AgentConfig agentConfig = new AgentConfig();
 		agentConfig.init();
 
@@ -81,10 +98,12 @@ public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
 		}
 		ThreadUtil.sleep(2000);
 	}
+	
 	@Before
 	public void clearMonitor() {
 		monitorDataService.removeAllAgent();
 	}
+	
 	@AfterClass
 	public static void stopMonitorServer() {
 		AgentMonitorServer.getInstance().stop();
