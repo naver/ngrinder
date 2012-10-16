@@ -60,7 +60,7 @@ public class SecurityManagerTest {
 		System.setProperty("ngrinder.etc.hosts", "10.34.64.36,CN14748-D-1:127.0.0.1,localhost:127.0.0.1");
 		System.setProperty("ngrinder.console.ip", "10.34.63.53");
 		// -Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager
-		System.setSecurityManager(new NGrinderSecurityManager());
+		System.setSecurityManager(new MockNGrinderSecurityManager());
 	}
 	
 	@AfterClass
