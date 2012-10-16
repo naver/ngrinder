@@ -70,16 +70,16 @@
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<property name="maxUploadSize" value="50000000" />
 		<property name="defaultEncoding" value="utf-8" />
-
 	</bean>
-	
+
 	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
-  		<property name="order" value="2"/>
+		<property name="order" value="2" />
 		<property name="exceptionMappings">
 			<props>
 				<prop key="java.lang.Exception">index</prop>
 			</props>
 		</property>
+		<property name="warnLogCategory" value="WARN"></property>
 	</bean>
 
 	<!-- resources exclusions from servlet mapping -->
