@@ -133,18 +133,17 @@ public class AgentHome {
 
 	}
 	
-	public Properties setProperties(String path, Properties properties) {
+	public void saveProperties(String path,Properties properties) {
 		OutputStream out = null;
 		try {
-			File propertiesFile = new File(directory, path);
+			File propertiesFile = new File(path);
 			out = FileUtils.openOutputStream(propertiesFile);
 			properties.store(out, null);
 		} catch (IOException e) {
-			LOGGER.error("Could not save property  file on " + path, e);
+			LOGGER.error("Could not save property  file on "+path, e);
 		} finally {
 			IOUtils.closeQuietly(out);
 		}
-		return properties;
 	}
 
 	public File getLogDirectory() {

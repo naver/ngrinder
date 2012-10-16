@@ -96,9 +96,9 @@ public class AgentConfig {
 	public void saveAgentPidProperties(String agentPid) {
 		checkNotNull(home);
 		Properties properties = new Properties();
-		properties.put("agent.pid",agentPid);
-		properties.put("agent.home",home.getDirectory().getAbsolutePath());
-		home.setProperties("agent_pid.conf", properties);
+		properties.put("agent.pid", agentPid);
+		properties.put("agent.home", home.getDirectory().getAbsolutePath());
+		home.saveProperties("agent_pid.conf", properties);
 	}
 
 	/**
