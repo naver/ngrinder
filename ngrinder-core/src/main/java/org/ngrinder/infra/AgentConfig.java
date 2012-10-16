@@ -92,6 +92,14 @@ public class AgentConfig {
 		properties.put("NGRINDER_AGENT_HOME", home.getDirectory().getAbsolutePath());
 		agentProperties = new PropertiesWrapper(properties);
 	}
+	
+	public void saveAgentPidProperties(String agentPid) {
+		checkNotNull(home);
+		Properties properties = new Properties();
+		properties.put("agent.pid", agentPid);
+		properties.put("agent.home", home.getDirectory().getAbsolutePath());
+		home.saveProperties("agent_pid.conf", properties);
+	}
 
 	/**
 	 * resolve NGrinder agent home path.

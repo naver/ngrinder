@@ -27,6 +27,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
@@ -130,6 +131,19 @@ public class AgentHome {
 		}
 		return properties;
 
+	}
+	
+	public void saveProperties(String path,Properties properties) {
+		OutputStream out = null;
+		try {
+			File propertiesFile = new File(path);
+			out = FileUtils.openOutputStream(propertiesFile);
+			properties.store(out, null);
+		} catch (IOException e) {
+			LOGGER.error("Could not save property  file on "+path, e);
+		} finally {
+			IOUtils.closeQuietly(out);
+		}
 	}
 
 	public File getLogDirectory() {
