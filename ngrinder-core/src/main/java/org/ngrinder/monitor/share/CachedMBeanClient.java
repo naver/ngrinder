@@ -37,6 +37,9 @@ import org.ngrinder.monitor.share.domain.MBeanClient;
 public class CachedMBeanClient {
 	private static ConcurrentHashMap<String, MBeanClient> cache = new ConcurrentHashMap<String, MBeanClient>();
 
+	private CachedMBeanClient() {
+	}
+	
 	/**
 	 * Get {@link MBeanClient} of one target from the cache, if it doesn'r exist in cache, create a new
 	 * one and put into cache.
@@ -44,6 +47,7 @@ public class CachedMBeanClient {
 	 * @param port is the monitor listener of JMX on target
 	 * @return MBeanClient of the target server
 	 * @throws IOException
+	 * 				IO exception of JMX
 	 */
 	public static MBeanClient getMBeanClient(String hostName, int port) throws IOException {
 		final String key = getCacheKey(hostName, port);

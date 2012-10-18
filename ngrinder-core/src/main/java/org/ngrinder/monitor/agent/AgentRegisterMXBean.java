@@ -24,13 +24,10 @@ package org.ngrinder.monitor.agent;
 
 import java.util.Set;
 
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.MonitorContext;
 import org.ngrinder.monitor.agent.mxbean.SystemMonitoringData;
@@ -55,14 +52,9 @@ public final class AgentRegisterMXBean {
 	/**
 	 * Add MBeanServer to AgentRegisterMXBean, add collector based on current setting.
 	 * 
-	 * @param mbeanServer
-	 * @throws MalformedObjectNameException
-	 * @throws InstanceAlreadyExistsException
-	 * @throws MBeanRegistrationException
-	 * @throws NotCompliantMBeanException
+	 * @param mbeanServer is JMX MBean server for registration
 	 */
-	public void addDefaultMXBean(MBeanServer mbeanServer) throws MalformedObjectNameException,
-			InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
+	public void addDefaultMXBean(MBeanServer mbeanServer) {
 		Set<String> dataCollectors = MonitorContext.getInstance().getDataCollectors();
 
 		if (dataCollectors.contains(MonitorConstants.SYSTEM)) {
@@ -72,13 +64,17 @@ public final class AgentRegisterMXBean {
 		LOG.info("Default MXBean Initialized.");
 	}
 
-	void addMXBean(MBeanServer mbeanServer, String subDomainName, MXBean bean) throws MalformedObjectNameException,
-			InstanceAlreadyExistsException, MBeanRegistrationException, NotCompliantMBeanException {
-		ObjectName objectName = new ObjectName(MonitorConstants.DEFAULT_MONITOR_DOMAIN + ":" + subDomainName);
-		mbeanServer.registerMBean(bean, objectName);
+	void addMXBean(MBeanServer mbeanServer, String subDomainName, MXBean bean) {
+		ObjectName objectName;
+		try {
+			objectName = new ObjectName(MonitorConstants.DEFAULT_MONITOR_DOMAIN + ":" + subDomainName);
+			mbeanServer.registerMBean(bean, objectName);
+		} catch (Exception e) {
+			//Not to check these exception, if there is any JMX related exception, just make it error.
+			throw new NGrinderRuntimeException(e.getMessage(), e);
+		}
 
 		AgentMXBeanStorage.getInstance().addMXBean(subDomainName, bean);
-
 		LOG.info("Added MXBean:{}.", objectName);
 	}
 

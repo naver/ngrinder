@@ -70,11 +70,14 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	@Column(name = "cpu_used_percentage")
 	private float cpuUsedPercentage;
 	
+	/**
+	 * Default constructor to create empty SystemDataModel.
+	 */
 	public SystemDataModel() {
 	}
 	
 	/**
-	 * Constructor to create SystemDataModel with SystemInfo
+	 * Constructor to create SystemDataModel with SystemInfo.
 	 * @param systemInfo is the data collected by monitor
 	 */
 	public SystemDataModel(SystemInfo systemInfo) {

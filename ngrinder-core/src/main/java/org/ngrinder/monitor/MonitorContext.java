@@ -25,9 +25,12 @@ package org.ngrinder.monitor;
 import java.util.HashSet;
 import java.util.Set;
 
-/*
+/**
  * Monitor context class, used to store the collectors of monitor.
  * Currently, there is only system data collector.
+ * 
+ * @author Mavlarn
+ * @since 3.0
  */
 public final class MonitorContext {
 

@@ -42,8 +42,11 @@ public abstract class MonitorInfo {
 	}
 
 	private long collectTime;
+	
 	/**
-	 * get monitor data from CompositeData
+	 * get monitor data from CompositeData.
+	 * 
+	 * @param cd is CompositeData got from remote JMX server
 	 */
 	public abstract void parse(CompositeData cd);
 

@@ -74,14 +74,10 @@ public final class AgentMonitorServer {
 	 * Initialize the monitor server with default port and collector.
 	 * Default port is 12343, and default collector is system data collector.
 	 * 
-	 * @throws MalformedObjectNameException
-	 * @throws InstanceAlreadyExistsException
-	 * @throws MBeanRegistrationException
-	 * @throws NotCompliantMBeanException
 	 * @throws IOException
+	 * 				IO error
 	 */
-	public void init() throws MalformedObjectNameException, InstanceAlreadyExistsException, MBeanRegistrationException,
-			NotCompliantMBeanException, IOException {
+	public void init() throws IOException {
 		this.init(MonitorConstants.DEFAULT_MONITOR_PORT);
 	}
 
@@ -91,14 +87,10 @@ public final class AgentMonitorServer {
 	 * 
 	 * @param port
 	 * 				monitor listener port
-	 * @throws MalformedObjectNameException
-	 * @throws InstanceAlreadyExistsException
-	 * @throws MBeanRegistrationException
-	 * @throws NotCompliantMBeanException
 	 * @throws IOException
+	 * 				IO error
 	 */
-	public void init(final int port) throws MalformedObjectNameException, InstanceAlreadyExistsException,
-			MBeanRegistrationException, NotCompliantMBeanException, IOException {
+	public void init(final int port) throws IOException {
 		this.init(port, MonitorConstants.DEFAULT_DATA_COLLECTOR);
 	}
 
@@ -110,14 +102,9 @@ public final class AgentMonitorServer {
 	 * @param dataCollector
 	 * 				a list of collector, for java or system data
 	 * @throws IOException
-	 * @throws MalformedObjectNameException
-	 * @throws InstanceAlreadyExistsException
-	 * @throws MBeanRegistrationException
-	 * @throws NotCompliantMBeanException
+	 * 				IO error
 	 */
-	public void init(final int port, final Set<String> dataCollector) throws IOException,
-			MalformedObjectNameException, InstanceAlreadyExistsException, MBeanRegistrationException,
-			NotCompliantMBeanException {
+	public void init(final int port, final Set<String> dataCollector) throws IOException {
 
 		MonitorContext.getInstance().setDataCollectors(dataCollector);
 
@@ -153,6 +140,7 @@ public final class AgentMonitorServer {
 
 	/**
 	 * Start monitoring.
+	 * 
 	 * @throws IOException
 	 */
 	public void start() throws IOException {

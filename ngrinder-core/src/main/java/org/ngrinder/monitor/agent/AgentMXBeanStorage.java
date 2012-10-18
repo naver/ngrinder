@@ -53,7 +53,7 @@ public final class AgentMXBeanStorage {
 	/**
 	 * get the monitor MXBean from the storage.
 	 * @param key is the domain name of JMX
-	 * @return
+	 * @return MXBean registered with this key
 	 */
 	public MXBean getMXBean(String key) {
 		return cachedMxBeans.get(key);
