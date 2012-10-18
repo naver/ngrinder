@@ -41,13 +41,13 @@
 								<select id="tag" name="tag" style="width:150px"> 
 								<option value=""></option>
 								<#if availTags?has_content>
+									<option value="">*</option>
 								    <#list availTags as eachTag> 
 								  	   <option value="${eachTag}" <#if tag?? && eachTag == tag>selected </#if> >${eachTag}</option>
 							        </#list>
 							    </#if>
 								</select> 
 								<input type="text" class="search-query search-query-without-radios span2" placeholder="Keywords" name ="query" id="query" value="${query!}">
-								
 								
 								<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
 								<label class="checkbox" style="position:relative;">
