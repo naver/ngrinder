@@ -33,7 +33,7 @@ import org.ngrinder.infra.AgentConfig;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class MonitorConstants {
+public final class MonitorConstants {
 
 	public static final int DEFAULT_MONITOR_PORT = 13243;
 	public static final int DEFAULT_MONITOR_COLLECTOR_INTERVAL = 1;
@@ -49,7 +49,7 @@ public class MonitorConstants {
 		SYSTEM_DATA_COLLECTOR.add(SYSTEM);
 	}
 	
-	private MonitorConstants () {
+	private MonitorConstants() {
 	}
 
 	//default collector will only collect system data.

@@ -23,15 +23,10 @@
 package org.ngrinder.monitor.controller;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -52,8 +47,7 @@ import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
 public class MonitorExecuteManagerTest extends SigarTestBase{
 
 	@Before
-	public void startMonitorServer() throws MalformedObjectNameException, InstanceAlreadyExistsException,
-			MBeanRegistrationException, NotCompliantMBeanException, IOException {
+	public void startMonitorServer() throws IOException {
 		AgentMonitorServer.getInstance().init();
 		AgentMonitorServer.getInstance().start();
 	}

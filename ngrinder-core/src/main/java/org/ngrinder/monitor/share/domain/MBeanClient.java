@@ -70,7 +70,7 @@ public class MBeanClient {
 	 * 
 	 * @param hostName is the server name of target server
 	 * @param port is the JMX server's listener port of target monitor server
-	 * @throws IOException
+	 * @throws IOException wraps JMX MalformedURLException exception
 	 */
 	public MBeanClient(String hostName, int port) throws IOException {
 		JMXServiceURL url = new JMXServiceURL("rmi", "", 0, String.format(JMX_URI, hostName, port));
@@ -123,7 +123,7 @@ public class MBeanClient {
 	 * @param objName is the object name of the object in JMX MBean server.
 	 * @param attrName is the attribute name
 	 * @return the monitor object from MBean
-	 * @throws Exception
+	 * @throws Exception wraps all JMX related exception
 	 */
 	public Object getAttribute(ObjectName objName, String attrName) throws Exception {
 		return server.getAttribute(objName, attrName);
