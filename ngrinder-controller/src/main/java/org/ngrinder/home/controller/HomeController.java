@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.home.service.HomeService;
 import org.ngrinder.infra.logger.CoreLogger;
@@ -51,6 +52,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 /**
@@ -145,7 +147,7 @@ public class HomeController extends NGrinderBaseController {
 	@RequestMapping(value = "/login")
 	public String login(ModelMap model) {
 		setLoginPageDate(model);
-		try {
+		try {   
 			getCurrentUser();
 		} catch (Exception e) {
 			CoreLogger.LOGGER.info("Login Failure");
@@ -172,4 +174,16 @@ public class HomeController extends NGrinderBaseController {
 		model.addAttribute("timeZones", DateUtil.getFilteredTimeZoneMap());
 		return "allTimeZone";
 	}
+
+	@RequestMapping(value = "/error_404")
+	public String error404(RedirectAttributesModelMap model) {
+		model.addFlashAttribute("exception", new NGrinderRuntimeException("Requested URL does not exist !"));
+		return "redirect:/doError";
+	}
+
+	@RequestMapping(value = "/doError")
+	public String second(ModelMap model) {
+		return "index";
+	}
+
 }
