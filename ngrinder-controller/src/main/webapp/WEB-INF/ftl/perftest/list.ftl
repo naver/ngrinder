@@ -48,7 +48,6 @@
 								</select> 
 								<input type="text" class="search-query search-query-without-radios span2" placeholder="Keywords" name ="query" id="query" value="${query!}">
 								
-								
 								<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
 								<label class="checkbox" style="position:relative;">
 									<input type="checkbox" id="onlyFinished" name="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> <@spring.message "perfTest.formInline.onlyFinished"/>
@@ -192,7 +191,8 @@
 	<script>
 		$(document).ready(function() {
 			$("#tag").select2({
-				placeholder: '<@spring.message "perfTest.table.selectATag"/>'
+				placeholder: '<@spring.message "perfTest.table.selectATag"/>',
+				allowClear: true
 			});
 			$("#tag").change(function() {
 				$("#searchBtn").click();
