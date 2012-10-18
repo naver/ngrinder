@@ -96,7 +96,6 @@ public class AgentController implements Agent {
 
 	private static SystemDataModel emptySystemDataModel = new SystemDataModel();
 	
-	private long agentPid;
 
 	/**
 	 * Constructor.
@@ -112,7 +111,7 @@ public class AgentController implements Agent {
 		m_eventSyncCondition = eventSyncCondition;
 		m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, LOGGER);
 		m_agentIdentity = new AgentControllerIdentityImplementation(getHostName(), getHostAddress());
-		agentPid = agentSystemDataCollector.refresh();
+		agentSystemDataCollector.refresh();
 	}
 
 	/**
@@ -368,7 +367,6 @@ public class AgentController implements Agent {
 
 	public void setAgentConfig(AgentConfig agentConfig) {
 		this.agentConfig = agentConfig;
-		this.agentConfig.saveAgentPidProperties(String.valueOf(agentPid));
 	}
 
 	private final class ConsoleCommunication {

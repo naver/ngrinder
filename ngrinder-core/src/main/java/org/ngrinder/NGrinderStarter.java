@@ -115,13 +115,6 @@ public class NGrinderStarter {
 
 		MonitorConstants.init(agentConfig);
 
-		//test sigar library existing and working.
-		try {
-			Sigar sigar = new Sigar();
-			sigar.getCpu();
-		} catch (SigarException e1) {
-			printHelpAndExit("Sigar library doesn't work. Please add sigar library into LD_LIBARY_PATH.", e1);
-		}
 		try {
 			AgentMonitorServer.getInstance().init();
 			AgentMonitorServer.getInstance().start();
@@ -313,15 +306,34 @@ public class NGrinderStarter {
 
 		NGrinderStarter starter = new NGrinderStarter();
 		String startMode = System.getProperty("start.mode");
-		System.out.println("Passing mode " + startMode);
+		LOG.info("Passing mode " + startMode);
 		startMode = (startMode == null) ? starter.getStartMode() : startMode;
-
+		starter.verifiedSigar(startMode);
 		if (startMode.equalsIgnoreCase("agent")) {
 			starter.startAgent();
 		} else if (startMode.equalsIgnoreCase("monitor")) {
 			starter.startMonitor();
 		} else {
 			staticPrintHelpAndExit("Invalid agent.conf, 'start.mode' must be set as 'monitor' or 'agent'.");
+		}
+	}
+	
+	/**
+	 * test sigar library existing and working.
+	 * 
+	 * @param startMode
+	 */
+	public void verifiedSigar(String startMode) {
+		try {
+			Sigar sigar = new Sigar();
+			sigar.getCpu();
+			this.agentConfig.saveAgentPidProperties(String.valueOf(sigar.getPid()));
+		} catch (SigarException e) {
+			if (startMode.equalsIgnoreCase("agent")) {
+				LOG.error("Sigar library doesn't work and it will be no display Agent performance in running test page !");
+			} else if (startMode.equalsIgnoreCase("monitor")) {
+				printHelpAndExit("Sigar library doesn't work. Please add sigar library into LD_LIBARY_PATH.", e);
+			}
 		}
 	}
 

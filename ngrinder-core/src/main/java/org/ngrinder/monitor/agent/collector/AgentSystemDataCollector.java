@@ -44,11 +44,10 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 	private Sigar sigar = null;
 
 	@Override
-	public synchronized long refresh() {
+	public synchronized void refresh() {
 		if (sigar == null) {
 			sigar = new Sigar();
 		}
-		return sigar.getPid();
 	}
 
 
