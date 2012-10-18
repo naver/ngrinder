@@ -41,6 +41,7 @@
 								<select id="tag" name="tag" style="width:150px"> 
 								<option value=""></option>
 								<#if availTags?has_content>
+									<option value="">*</option>
 								    <#list availTags as eachTag> 
 								  	   <option value="${eachTag}" <#if tag?? && eachTag == tag>selected </#if> >${eachTag}</option>
 							        </#list>
