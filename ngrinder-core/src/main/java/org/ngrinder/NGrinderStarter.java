@@ -104,6 +104,14 @@ public class NGrinderStarter {
 	}
 
 	/**
+	 * Get agent version.
+	 * @return version string
+	 */
+	public String getVersion() {
+		return agentConfig.getInternalProperty("ngrinder.version", "UNKNOWN");
+	}
+	
+	/**
 	 * Start the performance monitor.
 	 */
 	public void startMonitor() {
@@ -309,9 +317,11 @@ public class NGrinderStarter {
 
 		NGrinderStarter starter = new NGrinderStarter();
 		String startMode = System.getProperty("start.mode");
-		LOG.info("Passing mode " + startMode);
+		LOG.info("- Passing mode " + startMode);
+		LOG.info("- nGrinder version " + starter.getVersion());
 		startMode = (startMode == null) ? starter.getStartMode() : startMode;
 		starter.verifiedSigar(startMode);
+		
 		if (startMode.equalsIgnoreCase("agent")) {
 			starter.startAgent();
 		} else if (startMode.equalsIgnoreCase("monitor")) {
