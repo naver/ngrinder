@@ -64,24 +64,24 @@ public abstract class GrinderClassPathUtils {
 		return StringUtils.join(classPathList, File.pathSeparator);
 	}
 	
-	private static final List<String> usefulJarList = new ArrayList<String>();
-	private static final List<String> uselessJarList = new ArrayList<String>();
+	private static final List<String> USEFUL_JAR_LIST = new ArrayList<String>();
+	private static final List<String> USELESS_JAR_LIST = new ArrayList<String>();
 	static {
 		// TODO: If we have need another jar files, we should append it hear
-		usefulJarList.add("dns");
-		usefulJarList.add("grinder");
-		usefulJarList.add("asm");
-		usefulJarList.add("picocontainer");
-		usefulJarList.add("jython");
-		usefulJarList.add("slf4j-api");
-		usefulJarList.add("logback");
-		usefulJarList.add("jsr173");
-		usefulJarList.add("xmlbeans");
-		usefulJarList.add("stax-api");
+		USEFUL_JAR_LIST.add("dns");
+		USEFUL_JAR_LIST.add("grinder");
+		USEFUL_JAR_LIST.add("asm");
+		USEFUL_JAR_LIST.add("picocontainer");
+		USEFUL_JAR_LIST.add("jython");
+		USEFUL_JAR_LIST.add("slf4j-api");
+		USEFUL_JAR_LIST.add("logback");
+		USEFUL_JAR_LIST.add("jsr173");
+		USEFUL_JAR_LIST.add("xmlbeans");
+		USEFUL_JAR_LIST.add("stax-api");
 
-		uselessJarList.add("ngrinder-core");
-		uselessJarList.add("ngrinder-controller");
-		uselessJarList.add("spring");
+		USELESS_JAR_LIST.add("ngrinder-core");
+		USELESS_JAR_LIST.add("ngrinder-controller");
+		USELESS_JAR_LIST.add("spring");
 		
 	}
 
@@ -89,12 +89,12 @@ public abstract class GrinderClassPathUtils {
 		if (!"jar".equals(FilenameUtils.getExtension(jarFilename))) {
 			return true;
 		}
-		for (String jarName : uselessJarList) {
+		for (String jarName : USELESS_JAR_LIST) {
 			if (jarFilename.contains(jarName)) {
 				return true;
 			}
 		}
-		for (String jarName : usefulJarList) {
+		for (String jarName : USEFUL_JAR_LIST) {
 			if (jarFilename.contains(jarName)) {
 				return false;
 			}

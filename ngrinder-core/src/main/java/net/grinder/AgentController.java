@@ -148,8 +148,8 @@ public class AgentController implements Agent {
 	 * 
 	 * @param grinderProperties
 	 *            {@link GrinderProperties} used.
-	 * @param logCount
-	 * 
+	 * @param logCount log count
+	 * @throws GrinderException occurs when the test execution is failed.
 	 */
 	public void run(GrinderProperties grinderProperties, long logCount) 
 					throws GrinderException {

@@ -93,6 +93,10 @@ public class AgentConfig {
 		agentProperties = new PropertiesWrapper(properties);
 	}
 	
+	/**
+	 * Save agent pid.
+	 * @param agentPid agent pid
+	 */
 	public void saveAgentPidProperties(String agentPid) {
 		checkNotNull(home);
 		Properties properties = new Properties();

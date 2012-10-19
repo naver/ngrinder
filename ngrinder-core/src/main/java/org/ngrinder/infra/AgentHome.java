@@ -102,13 +102,13 @@ public class AgentHome {
 	 * @param subPathName
 	 *            sub path name
 	 */
-	//not used
-//	public void makeSubPath(String subPathName) {
-//		File subFile = new File(directory, subPathName);
-//		if (!subFile.exists()) {
-//			subFile.mkdir();
-//		}
-//	}
+	// not used
+	// public void makeSubPath(String subPathName) {
+	// File subFile = new File(directory, subPathName);
+	// if (!subFile.exists()) {
+	// subFile.mkdir();
+	// }
+	// }
 
 	/**
 	 * Get properties from path.
@@ -132,15 +132,21 @@ public class AgentHome {
 		return properties;
 
 	}
-	
-	public void saveProperties(String path,Properties properties) {
+
+	/**
+	 * Save properties.
+	 * 
+	 * @param path path to save
+	 * @param properties properties.
+	 */
+	public void saveProperties(String path, Properties properties) {
 		OutputStream out = null;
 		try {
 			File propertiesFile = new File(path);
 			out = FileUtils.openOutputStream(propertiesFile);
 			properties.store(out, null);
 		} catch (IOException e) {
-			LOGGER.error("Could not save property  file on "+path, e);
+			LOGGER.error("Could not save property  file on " + path, e);
 		} finally {
 			IOUtils.closeQuietly(out);
 		}

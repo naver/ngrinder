@@ -216,7 +216,8 @@ public class NGrinderStarter {
 
 	private void addLibarayPath() {
 		String property = StringUtils.trimToEmpty(System.getProperty("java.library.path"));
-		System.setProperty("java.library.path", property + File.pathSeparator + new File("./native_lib").getAbsolutePath());
+		System.setProperty("java.library.path", 
+						property + File.pathSeparator + new File("./native_lib").getAbsolutePath());
 		LOG.info("java.library.path : {} ", System.getProperty("java.library.path"));
 	}
 
@@ -266,7 +267,9 @@ public class NGrinderStarter {
 		try {
 			configurator.doConfigure(NGrinderStarter.class.getResource("/logback-agent.xml"));
 		} catch (JoranException e) {
-			staticPrintHelpAndExit("Can not configure logger on " + logDirectory.getAbsolutePath() + ".\n Please check if it's writable.");
+			staticPrintHelpAndExit("Can not configure logger on "  
+							+ logDirectory.getAbsolutePath() + ".\n Please check if it's writable.");
+			
 		}
 	}
 
@@ -321,7 +324,7 @@ public class NGrinderStarter {
 	/**
 	 * test sigar library existing and working.
 	 * 
-	 * @param startMode
+	 * @param startMode monitor or agent
 	 */
 	public void verifiedSigar(String startMode) {
 		try {
@@ -330,7 +333,8 @@ public class NGrinderStarter {
 			this.agentConfig.saveAgentPidProperties(String.valueOf(sigar.getPid()));
 		} catch (SigarException e) {
 			if (startMode.equalsIgnoreCase("agent")) {
-				LOG.error("Sigar library doesn't work and it will be no display Agent performance in running test page !");
+				LOG.error("Sigar library doesn't work " 
+								+ "and it will be no display Agent performance in running test page !");
 			} else if (startMode.equalsIgnoreCase("monitor")) {
 				printHelpAndExit("Sigar library doesn't work. Please add sigar library into LD_LIBARY_PATH.", e);
 			}

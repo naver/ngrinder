@@ -34,7 +34,7 @@ import org.ngrinder.monitor.share.domain.MBeanClient;
  * @author Mavlarn
  * @since 2.0
  */
-public class CachedMBeanClient {
+public final class CachedMBeanClient {
 	private static ConcurrentHashMap<String, MBeanClient> cache = new ConcurrentHashMap<String, MBeanClient>();
 
 	private CachedMBeanClient() {

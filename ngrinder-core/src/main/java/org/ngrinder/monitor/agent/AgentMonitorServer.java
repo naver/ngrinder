@@ -30,11 +30,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Set;
 
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
 import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
@@ -141,7 +137,7 @@ public final class AgentMonitorServer {
 	/**
 	 * Start monitoring.
 	 * 
-	 * @throws IOException
+	 * @throws IOException exception
 	 */
 	public void start() throws IOException {
 		if (!isRunning()) {

@@ -115,7 +115,7 @@ public class SingleConsole implements Listener, SampleListener {
 	private SampleModelViews modelView;
 	private long startTime = 0;
 	private Date momentWhenTpsBeganToHaveVerySmall;
-	private Date momentWhenErrorsMoreThanHalfOfTotalTPSValue;
+	private Date lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue;
 	private static final int TEST_DURATION_CHECK_MARGIN = 5000;
 	private final ListenerSupport<ConsoleShutdownListener> m_shutdownListeners = 
 						new ListenerSupport<ConsoleShutdownListener>();
@@ -692,9 +692,9 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	private void checkTooManyError(double tpsSum, double errors) {
 		if (tpsSum / 2 < errors) {
-			if (momentWhenErrorsMoreThanHalfOfTotalTPSValue == null) {
-				momentWhenErrorsMoreThanHalfOfTotalTPSValue = new Date();
-			} else if (new Date().getTime() - momentWhenErrorsMoreThanHalfOfTotalTPSValue.getTime() >= TOO_MANY_ERROR_TIME) {
+			if (lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue == null) {
+				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = new Date();
+			} else if (new Date().getTime() - lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue.getTime() >= TOO_MANY_ERROR_TIME) {
 				LOGGER.warn("Stop the test because test error is more than half of total tps for more than {} seconds.",
 								TOO_MANY_ERROR_TIME / 1000);
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
@@ -702,7 +702,7 @@ public class SingleConsole implements Listener, SampleListener {
 						listener.readyToStop(StopReason.TOO_MANY_ERRORS);
 					}
 				});
-				momentWhenErrorsMoreThanHalfOfTotalTPSValue = null;
+				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = null;
 			}
 		}
 	}
