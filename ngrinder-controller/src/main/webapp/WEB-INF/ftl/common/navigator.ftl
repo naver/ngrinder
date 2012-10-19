@@ -61,7 +61,7 @@
 	
 	function showExceptionMsg() {
 		<#if exception??>
-			showErrorMsg("${exception.message}");
+			showErrorMsg("Error:${(exception.message)!}");
 		</#if> 
 	}
 	if(document.loaded) {
