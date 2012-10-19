@@ -127,8 +127,14 @@ public class PropertyBuilder {
 		jvmArguments.append(new File(baseDirectory.getFile(), "lib").getAbsolutePath());
 		String pythonPath = System.getenv().get("PYTHONPATH");
 		if (pythonPath != null) {
-
 			jvmArguments.append(File.pathSeparator).append(pythonPath);
+		}
+		String pythonHome = System.getenv().get("PYTHONHOME");
+		jvmArguments.append(" -Dpython.home=");
+		if (pythonHome != null) {
+			jvmArguments.append(pythonHome);
+		} else {
+			jvmArguments.append(baseDirectory.getFile().getAbsolutePath());
 		}
 		jvmArguments.append(" ");
 		return jvmArguments;

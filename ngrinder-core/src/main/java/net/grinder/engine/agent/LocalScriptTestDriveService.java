@@ -22,6 +22,8 @@
  */
 package net.grinder.engine.agent;
 
+import static org.ngrinder.common.util.NoOp.noOp;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileFilter;
@@ -36,6 +38,7 @@ import net.grinder.util.Directory;
 import net.grinder.util.GrinderClassPathUtils;
 import net.grinder.util.thread.Condition;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -112,7 +115,7 @@ public class LocalScriptTestDriveService {
 
 			Properties systemProperties = new Properties();
 			systemProperties.put("java.class.path", base.getAbsolutePath() + File.pathSeparator + newClassPath);
-			Directory workingDirectory = new Directory(base);			
+			Directory workingDirectory = new Directory(base);	
 			final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
 							systemProperties, builder.buildJVMArgument(), workingDirectory);
 
@@ -168,8 +171,17 @@ public class LocalScriptTestDriveService {
 			}
 
 		}
-
 		appendingMessageOn(file, byteArrayErrorStream.toString());
+		File errorValidation = new File(base, "error_validation-0.log");
+		if (errorValidation.exists()) {
+			String errorValidationResult = "";
+			try {
+				errorValidationResult = FileUtils.readFileToString(errorValidation);
+			} catch (IOException e) {
+				noOp();
+			}
+			appendingMessageOn(file, errorValidationResult);
+		}
 		if (stopByTooMuchExecution) {
 			appendingMessageOn(file, "Validation should be performed within 10sec. Stop it forcely");
 		}

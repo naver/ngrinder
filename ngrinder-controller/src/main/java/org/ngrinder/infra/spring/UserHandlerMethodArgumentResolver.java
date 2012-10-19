@@ -67,7 +67,7 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 			MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
 			WebDataBinderFactory binderFactory) throws Exception {
 		User currentUser = getUserContext().getCurrentUser();
-		String userParam = webRequest.getParameter("userId");
+		String userParam = webRequest.getParameter("ownerId");
 		
 		if (StringUtils.isNotBlank(userParam) && adminRole.contains(currentUser.getRole())) {
 			return getUserService().getUserById(userParam);

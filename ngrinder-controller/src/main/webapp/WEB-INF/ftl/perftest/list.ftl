@@ -134,7 +134,7 @@
 										data-content="${test.scriptName} &lt;br&gt;&lt;br&gt; - <@spring.message "script.list.table.revision"/> : ${(test.scriptRevision)!'HEAD'}" 
 										data-original-title="<@spring.message "perfTest.table.scriptName"/>">			
 										<@security.authorize ifAnyGranted="A, S">					
-											<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}&userId=${(test.lastModifiedUser.userId)!}">${test.scriptName}</a>
+											<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}&ownerId=${(test.lastModifiedUser.userId)!}">${test.scriptName}</a>
 										</@security.authorize>
 										<@security.authorize ifNotGranted="A, S">
 											<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}">${test.scriptName}</a>

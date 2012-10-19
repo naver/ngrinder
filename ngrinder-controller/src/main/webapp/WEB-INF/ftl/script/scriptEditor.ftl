@@ -88,8 +88,8 @@
 					<input type="hidden" id="contentHidden" name="content" value=""/>
 					<input type="hidden" id="createLibAndResource" name="createLibAndResource" value="<#if createLibAndResource?? && createLibAndResource==true>true<#else>false</#if>"/>
 					<@security.authorize ifAnyGranted="A, S">
-						<#if userId??>					
-							<input type="hidden" id="userId" name="userId" value="${userId}"/>
+						<#if ownerId??>					
+							<input type="hidden" id="ownerId" name="ownerId" value="${ownerId}"/>
 						</#if>
 					</@security.authorize>
 
@@ -187,7 +187,6 @@
 			    	success: function(res) {
 						$('#validateRsPre').text(res);
 						$('#validateRsPre').show();
-						resetFooter();
 			    	},
 			    	error: function() {
 			    		showErrorMsg("<@spring.message "script.editor.error.validate"/>");
