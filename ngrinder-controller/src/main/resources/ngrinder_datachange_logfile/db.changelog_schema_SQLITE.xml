@@ -9,7 +9,7 @@
 	<changeSet author="initalDB" id="3" dbms="sqlite">
 		<preConditions onFail="MARK_RAN">
 		 	<not>
-            <tableExists tableName="TAG"/>
+         	   <tableExists tableName="TAG"/>
          	</not>
          </preConditions>
 	    <sql>
@@ -23,7 +23,8 @@
 
    				drop table if exists TAG;
 
-   				drop table if exists system_monitor
+   				drop table if exists system_monitor;
+   				
 			    create table AGENT (
 			        id  integer unique,
 			        approved char not null,
@@ -32,6 +33,7 @@
 			        region varchar,
 			        primary key (id)
 			    );
+			    
 			    create table NUSER (
 			        id  integer unique,
 			        created_date timestamp,
@@ -48,8 +50,8 @@
 			        user_id varchar not null unique,
 			        user_language varchar,
 			        user_name varchar,
-			        created_user bigint,
-			        last_modified_user bigint,
+			        created_user integer,
+			        last_modified_user integer,
 			        primary key (id)
 			    );
 			
@@ -60,7 +62,7 @@
 			        agent_count integer,
 			        description varchar,
 			        distribution_path varchar,
-			        duration bigint,
+			        duration integer,
 			        errors integer,
 			        finish_time timestamp,
 			        ignore_sample_count integer,
@@ -77,7 +79,7 @@
 			        run_count integer,
 			        scheduled_time timestamp,
 			        script_name varchar,
-			        script_revistion bigint,
+			        script_revistion integer,
 			        send_mail char,
 			        start_time timestamp,
 			        status varchar,
@@ -94,14 +96,14 @@
 			        tps double,
 			        use_rampup char,
 			        vuser_per_agent integer,
-			        created_user bigint,
-			        last_modified_user bigint,
+			        created_user integer,
+			        last_modified_user integer,
 			        primary key (id)
 			    );
 			
 			    create table PERF_TEST_TAG (
-			        perf_test_id bigint not null,
-			        tag_id bigint not null,
+			        perf_test_id integer not null,
+			        tag_id integer not null,
 			        primary key (perf_test_id, tag_id)
 			    );
 			
@@ -110,17 +112,17 @@
 			        created_date timestamp,
 			        last_modified_date timestamp,
 			        tagValue varchar,
-			        created_user bigint,
-			        last_modified_user bigint,
+			        created_user integer,
+			        last_modified_user integer,
 			        primary key (id)
 			    );
 			
 			    create table system_monitor (
 			        id  integer unique,
-			        collect_time bigint,
+			        collect_time integer,
 			        cpu_used_percentage float,
 			        crtime varchar,
-			        free_memory bigint,
+			        free_memory integer,
 			        idle_cpu_value float,
 			        ip varchar,
 			        monitor_key varchar,
@@ -131,11 +133,9 @@
 			        port integer not null,
 			        system varchar,
 			        total_cpu_value float,
-			        total_memory bigint,
+			        total_memory integer,
 			        primary key (id)
 			    )
-
-    			
 	    </sql>
     </changeSet>
 </databaseChangeLog>

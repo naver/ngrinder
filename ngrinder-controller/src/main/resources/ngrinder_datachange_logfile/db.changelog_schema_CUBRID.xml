@@ -9,7 +9,7 @@
 	<changeSet author="initalDB" id="1" dbms="cubrid">
 		 <preConditions onFail="MARK_RAN">
 		 	<not>
-            <tableExists tableName="TAG"/>
+            	<tableExists tableName="TAG"/>
          	</not>
          </preConditions>
 	    <sql splitStatements="false">
