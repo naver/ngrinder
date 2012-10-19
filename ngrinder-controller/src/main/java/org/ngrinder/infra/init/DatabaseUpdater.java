@@ -49,7 +49,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 /**
- * DB Data Updater This class is used to update DB automatically when System restarted through log
+ * DB Data Updater. This class is used to update DB automatically when System restarted through log
  * file db.changelog.xml
  * 
  * @author Matt
@@ -88,7 +88,10 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 	}
 
 	/**
-	 * Automated updates DB after nGrinder has load with all bean properties
+	 * Automated updates DB after nGrinder has load with all bean properties.
+	 * 
+	 * @throws Exception
+	 *             occurs when db update is failed.
 	 */
 	@PostConstruct
 	public void init() throws Exception {
@@ -97,18 +100,16 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 			public void update(String contexts) throws LiquibaseException {
 				contexts = StringUtils.trimToNull(contexts);
 				getChangeLogParameters().setContexts(StringUtils.splitAndTrim(contexts, ","));
-				try {
-					DatabaseChangeLog changeLog = ChangeLogParserFactory.getInstance()
-									.getParser(getChangeLog(), getFileOpener())
-									.parse(getChangeLog(), getChangeLogParameters(), getFileOpener());
-					checkDatabaseChangeLogTable(true, changeLog, contexts);
 
-					changeLog.validate(database, contexts);
-					ChangeLogIterator changeLogIterator = getStandardChangelogIterator(contexts, changeLog);
+				DatabaseChangeLog changeLog = ChangeLogParserFactory.getInstance()
+								.getParser(getChangeLog(), getFileOpener())
+								.parse(getChangeLog(), getChangeLogParameters(), getFileOpener());
+				checkDatabaseChangeLogTable(true, changeLog, contexts);
 
-					changeLogIterator.run(new UpdateVisitor(database), database);
-				} finally {
-				}
+				changeLog.validate(database, contexts);
+				ChangeLogIterator changeLogIterator = getStandardChangelogIterator(contexts, changeLog);
+
+				changeLogIterator.run(new UpdateVisitor(database), database);
 
 			};
 

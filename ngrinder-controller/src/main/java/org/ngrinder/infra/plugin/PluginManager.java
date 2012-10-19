@@ -23,6 +23,8 @@
 
 package org.ngrinder.infra.plugin;
 
+import static org.ngrinder.common.util.NoOp.noOp;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -114,20 +116,23 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 
 		// Construct the configuration
 		PluginsConfiguration config = new PluginsConfigurationBuilder().pluginDirectory(home.getPluginsDirectory())
-				.packageScannerConfiguration(scannerConfig).hotDeployPollingFrequency(PLUGIN_UPDATE_FREQUENCY, TimeUnit.SECONDS)
-				.hostComponentProvider(host).moduleDescriptorFactory(modules).build();
+						.packageScannerConfiguration(scannerConfig)
+						.hotDeployPollingFrequency(PLUGIN_UPDATE_FREQUENCY, TimeUnit.SECONDS)
+						.hostComponentProvider(host).moduleDescriptorFactory(modules).build();
 
 		// Start the plugin framework
 		plugins = new AtlassianPlugins(config);
 		plugins.start();
 
 		// Fistly start on start plugin
-		for (OnControllerLifeCycleRunnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(OnControllerLifeCycleRunnable.class)) {
+		for (OnControllerLifeCycleRunnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(
+						OnControllerLifeCycleRunnable.class)) {
 			String ip = "";
 			try {
 				InetAddress addr = InetAddress.getLocalHost();
 				ip = addr.getHostAddress();
 			} catch (UnknownHostException e) {
+				noOp();
 			}
 			runnable.start(ip, this.config.getVesion());
 		}
@@ -155,17 +160,21 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	@SuppressWarnings("rawtypes")
 	protected void initPluginDescriptor(DefaultModuleDescriptorFactory modules, String packagename) {
 		final Reflections reflections = new Reflections(packagename);
-		Set<Class<? extends AbstractModuleDescriptor>> pluginDescriptors = reflections.getSubTypesOf(AbstractModuleDescriptor.class);
+		Set<Class<? extends AbstractModuleDescriptor>> pluginDescriptors = reflections
+						.getSubTypesOf(AbstractModuleDescriptor.class);
 
 		for (Class<? extends AbstractModuleDescriptor> pluginDescriptor : pluginDescriptors) {
 			PluginDescriptor pluginDescriptorAnnotation = pluginDescriptor.getAnnotation(PluginDescriptor.class);
 			if (pluginDescriptorAnnotation == null) {
-				LOGGER.error("plugin descriptor " + pluginDescriptor.getName() + " doesn't have PluginDescriptor annotation. Skip..");
+				LOGGER.error("plugin descriptor " + pluginDescriptor.getName()
+								+ " doesn't have PluginDescriptor annotation. Skip..");
 			} else if (StringUtils.isEmpty(pluginDescriptorAnnotation.value())) {
-				LOGGER.error("plugin descriptor " + pluginDescriptor.getName() + " doesn't have corresponding plugin key. Skip..");
+				LOGGER.error("plugin descriptor " + pluginDescriptor.getName()
+								+ " doesn't have corresponding plugin key. Skip..");
 			} else {
 				modules.addModuleDescriptor(pluginDescriptorAnnotation.value(), pluginDescriptor);
-				LOGGER.info("plugin descriptor {} with {} is initiated.", pluginDescriptor.getName(), pluginDescriptorAnnotation.value());
+				LOGGER.info("plugin descriptor {} with {} is initiated.", pluginDescriptor.getName(),
+								pluginDescriptorAnnotation.value());
 			}
 		}
 	}
@@ -215,8 +224,11 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 		plugins.stop();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.web.context.ServletContextAware#setServletContext(javax.servlet.ServletContext)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.web.context.ServletContextAware#setServletContext(javax.servlet.
+	 * ServletContext)
 	 */
 	@Override
 	public void setServletContext(ServletContext servletContext) {

@@ -33,6 +33,9 @@ import java.sql.Types;
  * @since 3.0
  */
 public class H2ExDialect extends H2Dialect {
+	/**
+	 * Constructor.
+	 */
 	public H2ExDialect() {
 		super();
 		registerColumnType(Types.FLOAT, "double");

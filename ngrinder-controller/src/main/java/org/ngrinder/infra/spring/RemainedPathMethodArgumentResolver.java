@@ -42,17 +42,28 @@ import org.springframework.web.servlet.HandlerMapping;
  */
 public class RemainedPathMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
-	/* (non-Javadoc)
-	 * @see org.springframework.web.method.support.HandlerMethodArgumentResolver#supportsParameter(org.springframework.core.MethodParameter)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.web.method.support.HandlerMethodArgumentResolver#supportsParameter(org
+	 * .springframework.core.MethodParameter)
 	 */
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
 		return parameter.getParameterAnnotation(RemainedPath.class) != null;
 	}
 
-
-	/* (non-Javadoc)
-	 * @see org.springframework.web.method.support.HandlerMethodArgumentResolver#resolveArgument(org.springframework.core.MethodParameter, org.springframework.web.method.support.ModelAndViewContainer, org.springframework.web.context.request.NativeWebRequest, org.springframework.web.bind.support.WebDataBinderFactory)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * 
+	 * @see
+	 * org.springframework.web.method.support.HandlerMethodArgumentResolver#resolveArgument(org.
+	 * springframework.core.MethodParameter,
+	 * org.springframework.web.method.support.ModelAndViewContainer,
+	 * org.springframework.web.context.request.NativeWebRequest,
+	 * org.springframework.web.bind.support.WebDataBinderFactory)
 	 */
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
@@ -67,8 +78,11 @@ public class RemainedPathMethodArgumentResolver implements HandlerMethodArgument
 	}
 
 	/**
+	 * Get the request mapping annotation on the given parameter.
+	 * 
 	 * @param parameter
-	 * @return
+	 *            parameter
+	 * @return {@link RequestMapping} annotation
 	 */
 	@SuppressWarnings("unchecked")
 	protected RequestMapping getDeclaringClassRequestMapping(MethodParameter parameter) {

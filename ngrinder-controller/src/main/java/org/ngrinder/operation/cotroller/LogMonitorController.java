@@ -122,6 +122,9 @@ public class LogMonitorController extends NGrinderBaseController {
 		return new File(config.getHome().getGloablLogFile(), "ngrinder.log");
 	}
 
+	/**
+	 * Finalize bean.
+	 */
 	@PreDestroy
 	public void destroy() {
 		tailer.stop();
@@ -130,6 +133,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	/**
 	 * Logger first page.
 	 * 
+	 * @param model model
 	 * @return "operation/logger"
 	 */
 	@RequestMapping("")

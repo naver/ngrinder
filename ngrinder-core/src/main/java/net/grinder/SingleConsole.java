@@ -114,6 +114,7 @@ public class SingleConsole implements Listener, SampleListener {
 	private long startTime = 0;
 	private Date TPS_LESSTHAN_ZREO_TIME;
 	private Date ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME;
+	private static final int TEST_DURATION_CHECK_MARGIN = 5000;
 	private final ListenerSupport<ConsoleShutdownListener> m_shutdownListeners = new ListenerSupport<ConsoleShutdownListener>();
 	private final ListenerSupport<SamplingLifeCycleListener> m_samplingLifeCycleListener = new ListenerSupport<SamplingLifeCycleListener>();
 
@@ -128,7 +129,9 @@ public class SingleConsole implements Listener, SampleListener {
 	private List<String> csvKeyList = new ArrayList<String>();
 	private boolean headerAdded = false;
 
-	Map<String, BufferedWriter> fileWriterMap = new HashMap<String, BufferedWriter>();
+
+	
+	private Map<String, BufferedWriter> fileWriterMap = new HashMap<String, BufferedWriter>();
 	/** Current count of sampling. */
 	private long samplingCount = 0;
 	/** The count of ignoring sampling. */
@@ -1012,6 +1015,10 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	public boolean isCanceled() {
 		return cancel;
+	}
+
+	public boolean isCurreentRunntingTimeOverDuration() {
+		return getCurrentRunningTime() > (getDuration() + TEST_DURATION_CHECK_MARGIN);
 	}
 
 }

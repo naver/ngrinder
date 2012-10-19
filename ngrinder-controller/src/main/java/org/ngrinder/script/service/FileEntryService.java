@@ -255,6 +255,8 @@ public class FileEntryService {
 	 *            user
 	 * @param path
 	 *            base path
+	 * @param comment
+	 *            comment
 	 * @param folderName
 	 *            folder name
 	 */

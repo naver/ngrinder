@@ -45,7 +45,7 @@ public enum FileType {
 	JSON("json", "json", FileCategory.DATA, false, true),
 	/** Properties. */
 	PROPERTIES("properties", "properties", FileCategory.DATA, false, true),
-	/** Classes */
+	/** Classes. */
 	CLASS("Java Class", "class", FileCategory.LIBRARY, true, false),
 	/** Jar. */
 	JAR("jar", "jar", FileCategory.LIBRARY, true, false),

@@ -107,7 +107,9 @@ public class Config {
 
 	/**
 	 * Set up logger.
-	 * @param verbose verbose mode?
+	 * 
+	 * @param verbose
+	 *            verbose mode?
 	 */
 	public void setupLogger(boolean verbose) {
 		this.verbose = verbose;
@@ -118,7 +120,7 @@ public class Config {
 		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
 		context.putProperty("LOG_DIRECTORY", getHome().getGloablLogFile().getAbsolutePath());
 		try {
-			configurator.doConfigure(new ClassPathResource("/logback/logback-ngrinder.xml").getFile());			
+			configurator.doConfigure(new ClassPathResource("/logback/logback-ngrinder.xml").getFile());
 		} catch (JoranException e) {
 			CoreLogger.LOGGER.error(e.getMessage(), e);
 		} catch (IOException e) {
@@ -181,9 +183,8 @@ public class Config {
 	}
 
 	/**
-	 * Load database related properties (database.conf). 
+	 * Load database related properties. (database.conf)
 	 * 
-	 * @throws IOException occurs when there is no such a file.
 	 */
 	protected void loadDatabaseProperties() {
 		checkNotNull(home);
@@ -193,9 +194,7 @@ public class Config {
 	}
 
 	/**
-	 * Load system related properties.(system.conf)
-	 * 
-	 * @throws IOException occurs when there is no such a file.
+	 * Load system related properties. (system.conf)
 	 */
 	public void loadSystemProperties() {
 		checkNotNull(home);
@@ -205,7 +204,7 @@ public class Config {
 	}
 
 	/**
-	 * Get the database properties. 
+	 * Get the database properties.
 	 * 
 	 * @return database properties
 	 */
@@ -233,8 +232,8 @@ public class Config {
 	}
 
 	/**
-	 * Check if plugin support is enabled.
-	 * The reason why we need this configuration is that it takes time to initialize plugin system in unit test context.
+	 * Check if plugin support is enabled. The reason why we need this configuration is that it
+	 * takes time to initialize plugin system in unit test context.
 	 * 
 	 * @return true if plugin is supported.
 	 */
@@ -296,6 +295,7 @@ public class Config {
 
 	/**
 	 * Get the internal properties.
+	 * 
 	 * @return internal properties
 	 */
 	public PropertiesWrapper getInternalProperties() {
@@ -313,6 +313,7 @@ public class Config {
 
 	/**
 	 * Check if it's verbose logging mode.
+	 * 
 	 * @return true if verbose
 	 */
 	public boolean isVerbose() {

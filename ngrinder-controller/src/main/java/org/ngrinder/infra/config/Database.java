@@ -192,7 +192,7 @@ public enum Database {
 	}
 
 	/**
-	 * Get the current used dialect 
+	 * Get the current used dialect.
 	 * @return dialect name
 	 */
 	public String getDialect() {

@@ -16,12 +16,10 @@ import org.springframework.stereotype.Component;
 /**
  * Initialize Classpath initialization for class filtering .
  * 
- * This class is used to prevent javaagent abnormal behavior of grinder agent.
- * grinder agent is run with java agent name grinder-dcr-agent-**.jar but
- * grinder agent can mistakenly take the grinder-dcr-agent-javadoc and sources file
- * as javaagent.
- * So.. This class deletes out the sources and javadoc files of
- * grinder-dcr-agent existing in class path.
+ * This class is used to prevent javaagent abnormal behavior of grinder agent. grinder agent is run
+ * with java agent name grinder-dcr-agent-**.jar but grinder agent can mistakenly take the
+ * grinder-dcr-agent-javadoc and sources file as javaagent. So.. This class deletes out the sources
+ * and javadoc files of grinder-dcr-agent existing in class path.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -50,6 +48,7 @@ public class ClassPathInit {
 			}
 		}
 		LOG.info("===========================================================================");
-		LOG.info("Total Class Path for validation is {}", GrinderClassPathUtils.buildClasspathBasedOnCurrentClassLoader(LOG));
+		LOG.info("Total Class Path for validation is {}",
+						GrinderClassPathUtils.buildClasspathBasedOnCurrentClassLoader(LOG));
 	}
 }
