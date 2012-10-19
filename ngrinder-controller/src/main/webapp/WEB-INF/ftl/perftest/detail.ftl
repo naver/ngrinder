@@ -20,6 +20,7 @@
 	}
 	
 	div.div-resources .resource {
+		width: 300px;
 		color: #666666;
 		display: block;
 		margin-left: 7px;
@@ -670,7 +671,7 @@ function updateScriptResources(first) {
 			}
 			for ( var i = 0; i < len; i++) {
 				var value = res.resources[i];
-				html = html + "<div class='resource ellipsis' title='" + value + "'>" + value + "</div><br/>";
+				html = html + "<div class='resource ellipsis' title='" + value + "'>" + value + "</div>";
 			}
 			$("#scriptResources").html(html);
 		},

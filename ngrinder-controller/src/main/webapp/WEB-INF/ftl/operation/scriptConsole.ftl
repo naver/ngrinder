@@ -2,11 +2,6 @@
 <html>
 <head><#include "../common/common.ftl"> <#include "../common/datatables.ftl">
 <title><@spring.message "user.list.title"/></title>
-<style>
-	.CodeMirror-scroll {
-		height: 500px;
-	}
-</style>
 </head>
 
 <body>
@@ -20,11 +15,11 @@
 				<form action="${req.getContextPath()}/operation/scriptConsole" name="scriptForm" method="POST"
 					style="margin-bottom: 0;">
 					<button type="submit" class="btn btn-success pull-right" id="runBtn" style="margin-top:-55px;">Run Script</button>			
-					<textarea class="input-xlarge span12"  id="scriptEditor" rows="20" name="scriptEditor" style="resize: none">${(script)!}</textarea>
+					<textarea class="span12"  id="scriptEditor" name="scriptEditor" style="resize: none">${(script)!}</textarea>
 					 
 					<input type="hidden" id="script" name="script" value=""/>
 				</form>
-				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable" id="validateRsPre"><#if result??>${(result)!}<#else>
+				<pre style="height:150px; margin-top:5px;" class="prettyprint pre-scrollable" id="validateRsPre"><#if result??>${(result)!}<#else>
 You can write python code to monitor ngrinder internal status.
 
 Following variables are available.
@@ -60,7 +55,7 @@ please refer nGrinder javadoc to find out more APIs on the given variables.
     <script src="${req.getContextPath()}/js/codemirror/util/foldcode.js"></script> 
     <style>
 		.CodeMirror-scroll {
-			height: 300px;
+			height: 400px;
 		}
 	</style>
     <script>
