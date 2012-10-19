@@ -609,11 +609,11 @@ function bindEvent() {
 			var userId = ""; 
 			<@security.authorize ifAnyGranted="A, S">					
 				<#if test??>
-					userId = "&userId=${(test.lastModifiedUser.userId)!}";
+					ownerId = "&ownerId=${(test.lastModifiedUser.userId)!}";
 				</#if>
 			</@security.authorize>
 			var scriptRevision = $("#scriptRevision").val();
-			window.open("${req.getContextPath()}/script/detail/" + currentScript + "?r=" + scriptRevision + userId, "scriptSource");
+			window.open("${req.getContextPath()}/script/detail/" + currentScript + "?r=" + scriptRevision + ownerId, "scriptSource");
 		}
 	});
 	
