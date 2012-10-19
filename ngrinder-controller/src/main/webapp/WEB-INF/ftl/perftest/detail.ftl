@@ -167,6 +167,7 @@
 										</button>
 									</#if>
 								</span>
+								<span class="error-msg"></span>
 							</div>
 						</div>
 						<div class="control-group" style="margin-bottom: 0">
@@ -394,12 +395,21 @@ function initDuration() {
 	setDuration();
 }
 
+
 function addValidation() {
 	$("#testContentForm").validate({
 		rules : {
 			testName : "required",
-			agentCount : "required",
-			vuserPerAgent : "required"
+			agentCount : {
+				required : true,
+				max:${(maxAgentSizePerConsole)},
+				min:1
+			},		
+			vuserPerAgent : {
+				required : true,
+				max:${(maxVuserPerAgent)},
+				min:1
+			}
 		},
 	    messages: {
 	        testName: "<@spring.message "perfTest.warning.testName"/>",
@@ -410,25 +420,41 @@ function addValidation() {
 		errorClass : "help-inline",
 		errorElement : "span",
 		errorPlacement : function(error, element) {
-			if (element.next().attr("class") == "add-on") {
-				error.insertAfter(element.next());
+			var errorPlace = $("#" + element.attr("id") + "Error");
+			if (errorPlace.length != 0) {
+				error.appendTo(errorPlace);
 			} else {
-				error.insertAfter(element);
+			    var errorMsg = element.parents(".control-group").find(".error-msg");
+			    if (errorMsg.length == 0) {
+			    	if (element.next().attr("class") == "add-on") {
+						error.insertAfter(element.next());
+					} else {
+						error.insertAfter(element);
+					}
+			    } else {
+					error.appendTo(errorMsg);
+				}
 			}
 		},
+		
+		
 		highlight : function(element, errorClass, validClass) {
-			$(element).parents('.control-group').addClass('error');
-			$(element).parents('.control-group').removeClass('success');
+			var controlGroup = $(element).parents('.control-group');
+			if (controlGroup.length >= 1) {
+				$(controlGroup[0]).addClass("error");
+				$(controlGroup[0]).removeClass('success');
+			}
 		},
 		unhighlight : function(element, errorClass, validClass) {
-			$(element).parents('.control-group').removeClass('error');
-			$(element).parents('.control-group').addClass('success');
+			var controlGroup = $(element).parents('.control-group');
+			if (controlGroup.length >= 1) {
+				$(controlGroup[0]).removeClass("error");
+				$(controlGroup[0]).addClass('success');
+			}
 		}
 	});
 
-	$("#vuserPerAgent").rules("add", {
-		max:${(maxVuserPerAgent)}
-	});
+	
 }
 
 function bindEvent() {
@@ -530,7 +556,6 @@ function bindEvent() {
 	
 	$("#agentCount").change(function() {
 		updateVuserTotal();
-		$("#vuserPerAgent").validate();
 	});
 	
 	$("#threads").change(function() {
