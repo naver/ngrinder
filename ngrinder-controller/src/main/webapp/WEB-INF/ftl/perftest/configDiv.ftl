@@ -148,7 +148,7 @@
 								data-original-title="<@spring.message "perfTest.configuration.runCount"/>"
 								data-content="<@spring.message "perfTest.configuration.runCount.help"/>"	
 								rel="popover"												
-								id="runCount" class="input span2" number_limit="${(maxRunCount)}" name="runCount"
+								id="runCount" class="input span1" number_limit="${(maxRunCount)}" name="runCount"
 								value="${(test.runCount)!0}"><span class="add-on"><@spring.message "perfTest.configuration.max"/> ${(maxRunCount)}</span>
 						</div>
 					</div>
@@ -156,7 +156,7 @@
 				<div class="control-group">
 					<label for="ignoreSampleCount" class="control-label"> <@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
 					<div class="controls">
-						<input type="text" class="input required countNumber" 
+						<input type="text" class="input span1 required countNumber" 
 							data-original-title="<@spring.message "perfTest.configuration.ignoreSampleCount"/>"
 							data-content='<@spring.message "perfTest.configuration.ignoreSampleCount.help"/>'
 							rel="popover"												

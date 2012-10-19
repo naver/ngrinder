@@ -9,7 +9,7 @@
 		<include file="ngrinder_datachange_logfile/db.changelog_schema_H2.xml"/>
 		<include file="ngrinder_datachange_logfile/db.changelog_schema_SQLITE.xml"/>
 		
-		<changeSet author="ngrinder.3.0-b2" id="1">
+		<changeSet author="ngrinder.3.0-b2" id="1"  dbms="h2, cubrid">
 				<comment>Delete all unused SystemDataModel DB fields.</comment>
 				<dropColumn tableName="system_monitor" columnName="load_avg_1"/>
 				<dropColumn tableName="system_monitor" columnName="load_avg_5"/>
@@ -17,6 +17,42 @@
 				<dropColumn tableName="system_monitor" columnName="idle_cpu_value"/>
 				<dropColumn tableName="system_monitor" columnName="total_cpu_value"/>
 				<dropColumn tableName="system_monitor" columnName="crtime"/>
+		</changeSet>
+		<changeSet author="ngrinder.3.0-b3" id="5"  dbms="sqlite">
+				<comment>Delete all unused SystemDataModel DB fields.</comment>
+				<sql>
+					create TEMPORARY table system_monitor_backup (
+				        id  integer unique,
+				        collect_time integer,
+				        cpu_used_percentage float,
+				        free_memory integer,
+				        ip varchar,
+				        monitor_key varchar,
+				        message varchar,
+				        port integer not null,
+				        system varchar,
+				        total_memory integer,
+				        primary key (id)
+			    	);
+			    
+					INSERT INTO system_monitor_backup SELECT id, collect_time, cpu_used_percentage, free_memory, ip, monitor_key, message, port, system, total_memory   FROM system_monitor;
+					DROP TABLE system_monitor;
+					create table system_monitor (
+				        id  integer unique,
+				        collect_time integer,
+				        cpu_used_percentage float,
+				        free_memory integer,
+				        ip varchar,
+				        monitor_key varchar,
+				        message varchar,
+				        port integer not null,
+				        system varchar,
+				        total_memory integer,
+				        primary key (id)
+			    	);
+					INSERT INTO system_monitor SELECT id, collect_time, cpu_used_percentage, free_memory, ip, monitor_key, message, port, system, total_memory  FROM system_monitor_backup;
+					DROP TABLE system_monitor_backup;
+				</sql>
 		</changeSet>
 		
 </databaseChangeLog>

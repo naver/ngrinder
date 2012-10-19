@@ -25,6 +25,7 @@ package org.ngrinder.infra;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -53,7 +54,7 @@ public class AgentConfig {
 
 	private AgentHome home = null;
 	private PropertiesWrapper agentProperties;
-
+	private PropertiesWrapper internalProperties;
 	/**
 	 * Initialize.
 	 * @return initialized AgentCongig
@@ -62,7 +63,23 @@ public class AgentConfig {
 		home = resolveHome();
 		copyDefaultConfigurationFiles();
 		loadAgentProperties();
+		loadInternalProperties();
 		return this;
+	}
+
+	private void loadInternalProperties() {
+		InputStream inputStream = null;
+		Properties properties = new Properties();
+		try {
+			inputStream = AgentConfig.class.getResourceAsStream("/internal.properties");
+			properties.load(inputStream);
+			internalProperties = new PropertiesWrapper(properties);
+		} catch (IOException e) {
+			LOGGER.error("Error while load internal.properties", e);
+			internalProperties = new PropertiesWrapper(properties);
+		} finally {
+			IOUtils.closeQuietly(inputStream);
+		}
 	}
 
 	private void copyDefaultConfigurationFiles() {
@@ -96,13 +113,18 @@ public class AgentConfig {
 	/**
 	 * Save agent pid.
 	 * @param agentPid agent pid
+	 * @param startMode
 	 */
-	public void saveAgentPidProperties(String agentPid) {
+	public void saveAgentPidProperties(String agentPid,String startMode) {
 		checkNotNull(home);
 		Properties properties = new Properties();
 		properties.put("agent.pid", agentPid);
 		properties.put("agent.home", home.getDirectory().getAbsolutePath());
-		home.saveProperties("agent_pid.conf", properties);
+		if ("agent".equals(startMode)) {
+			home.saveProperties("agent_pid.conf", properties);
+		} else {
+			home.saveProperties("monitor_pid.conf", properties);
+		}
 	}
 
 	/**
@@ -179,5 +201,15 @@ public class AgentConfig {
 	 */
 	public int getPropertyInt(String key, int defaultValue) {
 		return getAgentProperties().getPropertyInt(key, defaultValue);
+	}
+
+	/**
+	 * Get nGrinder internal properties.
+	 * @param key key
+	 * @param defaultValue default value
+	 * @return value
+	 */
+	public String getInternalProperty(String key, String defaultValue) {
+		return internalProperties.getProperty(key, defaultValue);
 	}
 }
