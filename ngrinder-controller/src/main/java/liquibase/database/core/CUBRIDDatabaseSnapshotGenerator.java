@@ -41,24 +41,50 @@ import liquibase.snapshot.jvm.JdbcDatabaseSnapshotGenerator;
  */
 public class CUBRIDDatabaseSnapshotGenerator extends JdbcDatabaseSnapshotGenerator {
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * liquibase.snapshot.jvm.JdbcDatabaseSnapshotGenerator#fillForeignKeyInfo(java.sql.ResultSet)
+	 */
+	@Override
 	protected ForeignKeyInfo fillForeignKeyInfo(ResultSet rs) throws DatabaseException, SQLException {
 		ForeignKeyInfo fkInfo = super.fillForeignKeyInfo(rs);
-		if (fkInfo.getKeySeq() == 0)
+		if (fkInfo.getKeySeq() == 0) {
 			fkInfo.setReferencesUniqueColumn(true);
+		}
 		return fkInfo;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see liquibase.snapshot.DatabaseSnapshotGenerator#supports(liquibase.database.Database)
+	 */
+	@Override
 	public boolean supports(Database database) {
 		return database instanceof CUBRIDDatabase;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see liquibase.snapshot.DatabaseSnapshotGenerator#getPriority(liquibase.database.Database)
+	 */
+	@Override
 	public int getPriority(Database database) {
 		return PRIORITY_DATABASE;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see liquibase.snapshot.jvm.JdbcDatabaseSnapshotGenerator#readSequences(liquibase.snapshot.
+	 * DatabaseSnapshot, java.lang.String, java.sql.DatabaseMetaData)
+	 */
 	@Override
 	protected void readSequences(DatabaseSnapshot snapshot, String schema, DatabaseMetaData databaseMetaData)
-			throws DatabaseException {
+					throws DatabaseException {
 	}
 
 }

@@ -32,7 +32,7 @@ import liquibase.database.structure.type.TinyIntType;
 import liquibase.database.typeconversion.core.AbstractTypeConverter;
 
 /**
- * Liquibase will not be modified,this is just made its support CUBRID DB
+ * Liquibase Cubrid type converter.
  * 
  * @author Matt
  * @author JunHo Yoon
@@ -41,43 +41,114 @@ import liquibase.database.typeconversion.core.AbstractTypeConverter;
  */
 public class CUBRIDTypeConverter extends AbstractTypeConverter {
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * liquibase.database.typeconversion.core.AbstractTypeConverter#getDataType(java.lang.String,
+	 * java.lang.Boolean)
+	 */
+	@Override
 	public DataType getDataType(String columnTypeString, Boolean autoIncrement) {
-		if (columnTypeString != null)
+		if (columnTypeString != null) {
 			return super.getDataType(columnTypeString, autoIncrement);
-		else
+		} else {
 			return super.getDataType("VARCHAR", autoIncrement);
+		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see liquibase.database.typeconversion.TypeConverter#getPriority()
+	 */
+	@Override
 	public int getPriority() {
 		return PRIORITY_DATABASE;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see liquibase.database.typeconversion.TypeConverter#supports(liquibase.database.Database)
+	 */
 	@Override
 	public boolean supports(Database database) {
 		return "cubrid".equals(database.getTypeName());
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see liquibase.database.typeconversion.core.AbstractTypeConverter#getBigIntType()
+	 */
 	@Override
 	public BigIntType getBigIntType() {
 		return new BigIntType("decimal");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see liquibase.database.typeconversion.core.AbstractTypeConverter#getBooleanType()
+	 */
 	@Override
 	public BooleanType getBooleanType() {
-		return new BooleanType.NumericBooleanType("char(2)");
+		return new CubridBooleanType("char(2)");
 	}
 
+	/**
+	 * Custom boolean type converter for cubrid T or F representation for booolean type.
+	 * 
+	 * @author JunHo Yoon
+	 * 
+	 */
+	public class CubridBooleanType extends BooleanType {
+		/**
+		 * Constructor
+		 * @param type native type for boolean
+		 */
+		public CubridBooleanType(String type) {
+			super(type);
+		}
+
+		@Override
+		public String getTrueBooleanValue() {
+			return "T";
+		}
+
+		@Override
+		public String getFalseBooleanValue() {
+			return "F";
+		};
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see liquibase.database.typeconversion.core.AbstractTypeConverter#getDateTimeType()
+	 */
 	@Override
 	public DateTimeType getDateTimeType() {
 		return new DateTimeType("TIMESTAMP");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see liquibase.database.typeconversion.core.AbstractTypeConverter#getDoubleType()
+	 */
 	@Override
 	public DoubleType getDoubleType() {
 		return new DoubleType("DOUBLE PRECISION");
 	}
-	
-	@Override				
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see liquibase.database.typeconversion.core.AbstractTypeConverter#getTinyIntType()
+	 */
+	@Override
 	public TinyIntType getTinyIntType() {
 		return new TinyIntType("SMALLINT");
 	}
