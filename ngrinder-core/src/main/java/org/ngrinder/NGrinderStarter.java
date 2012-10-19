@@ -330,7 +330,7 @@ public class NGrinderStarter {
 		try {
 			Sigar sigar = new Sigar();
 			sigar.getCpu();
-			this.agentConfig.saveAgentPidProperties(String.valueOf(sigar.getPid()));
+			this.agentConfig.saveAgentPidProperties(String.valueOf(sigar.getPid()), startMode);
 		} catch (SigarException e) {
 			if (startMode.equalsIgnoreCase("agent")) {
 				LOG.error("Sigar library doesn't work " 

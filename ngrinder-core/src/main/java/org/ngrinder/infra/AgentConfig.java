@@ -96,13 +96,18 @@ public class AgentConfig {
 	/**
 	 * Save agent pid.
 	 * @param agentPid agent pid
+	 * @param startMode
 	 */
-	public void saveAgentPidProperties(String agentPid) {
+	public void saveAgentPidProperties(String agentPid,String startMode) {
 		checkNotNull(home);
 		Properties properties = new Properties();
 		properties.put("agent.pid", agentPid);
 		properties.put("agent.home", home.getDirectory().getAbsolutePath());
-		home.saveProperties("agent_pid.conf", properties);
+		if ("agent".equals(startMode)) {
+			home.saveProperties("agent_pid.conf", properties);
+		} else {
+			home.saveProperties("monitor_pid.conf", properties);
+		}
 	}
 
 	/**
