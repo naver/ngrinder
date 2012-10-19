@@ -93,10 +93,10 @@
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane" id="lsTab">
-					<table class="table table-striped table-bordered" id="lsTable">
+					<table class="table table-striped table-bordered ellipsis" id="lsTable">
 						<colgroup>
 							<col width="30px">
-							<col width="85px">
+							<col class="ellipsis" width="85px">
 							<col width="85px">
 							<col width="55px">
 							<col width="80px">
@@ -121,9 +121,9 @@
 					</table>
 				</div>
 				<div class="tab-pane" id="asTab">
-					<table class="table table-striped table-bordered" id="asTable">
+					<table class="table table-striped table-bordered ellipsis" id="asTable"> 
 						<colgroup>
-								<col width="30px">
+							<col width="30px">
 							<col width="85px">
 							<col width="85px">
 							<col width="55px">
@@ -191,7 +191,7 @@ function refreshData() {
 						+ curAgentPerfStates[i].cpu + "%   MEM - "
 						+ curAgentPerfStates[i].mem + "%</li>";
 			}
-			agentStatusString += "</ul>";
+			agentStatusString += "</ul>"; 
 			$("#agent_status").html(agentStatusString);
 			peakTps = curPeakTps;
 			test_tps_data.enQueue(curTps);

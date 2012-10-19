@@ -10,15 +10,15 @@
 	  			${result_agent_perf}
 	  		];
 	</script>
-	<table>
-		<tbody>	
+	<table >
+		<tbody>	 
 		    <#list resultsub?keys as mKey>
 				<#if mKey=='lastSampleStatistics'>
 						<#assign item = resultsub[mKey]>   
 						<#list item as statistics>
 						<tr id="lsTableItem">
-							<td>${statistics.testNumber!'&nbsp;'}</td>
-							<td>${statistics.testDescription!'&nbsp;'}</td>
+							<td >${statistics.testNumber!'&nbsp;'}</td>
+							<td class="ellipsis">${statistics.testDescription!'&nbsp;'}</td>
 							<td>${statistics.Tests!'&nbsp;'}</td>
 							<td>${statistics.Errors!'&nbsp;'}</td>
 							<td>${(statistics['Mean_Test_Time_(ms)']!0)?string("0.##")}</td>
@@ -32,8 +32,8 @@
 						<#assign item = resultsub[mKey]>   
 						<#list item as statistics>
 						<tr id="asTableItem">
-							<td>${statistics.testNumber!'&nbsp;'}</td>
-							<td>${statistics.testDescription!'&nbsp;'}</td>
+							<td >${statistics.testNumber!'&nbsp;'}</td>
+							<td  class="ellipsis">${statistics.testDescription!'&nbsp;'}</td>
 							<td>${statistics.Tests!'&nbsp;'}</td>
 							<td>${statistics.Errors!'&nbsp;'}</td>
 							<td>${(statistics['Mean_Test_Time_(ms)']!0)?string("0.##")}</td>
