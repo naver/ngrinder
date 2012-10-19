@@ -114,12 +114,12 @@ public class CUBRIDTypeConverter extends AbstractTypeConverter {
 
 		@Override
 		public String getTrueBooleanValue() {
-			return "T";
+			return "'T'";
 		}
 
 		@Override
 		public String getFalseBooleanValue() {
-			return "F";
+			return "'F'";
 		};
 	}
 
