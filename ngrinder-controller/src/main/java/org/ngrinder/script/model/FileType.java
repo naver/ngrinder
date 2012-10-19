@@ -61,11 +61,18 @@ public enum FileType {
 
 	/**
 	 * Constructor.
-	 * @param description description of this file type
-	 * @param extension extendsion used.
-	 * @param fileCategory category of FileType.
+	 * 
+	 * @param description
+	 *            description of this file type
+	 * @param extension
+	 *            extendsion used.
+	 * @param fileCategory
+	 *            category of FileType.
+	 * @param libDistribtable is distributable as lib           
+	 * @param resourceDistributable is distributable as resource
 	 */
-	FileType(String description, String extension, FileCategory fileCategory, boolean libDistribtable, boolean resourceDistributable) {
+	FileType(String description, String extension, FileCategory fileCategory, boolean libDistribtable,
+					boolean resourceDistributable) {
 		this.description = description;
 		this.extension = extension;
 		this.fileCategory = fileCategory;
@@ -75,16 +82,20 @@ public enum FileType {
 
 	/**
 	 * Get file type by extension of given name.
-	 * @param name name of file.
+	 * 
+	 * @param name
+	 *            name of file.
 	 * @return FileType which matches to extension. UNKNOWN otherwise.
 	 */
 	public static FileType getFileTypeByName(String name) {
 		return getFileTypeByExtension(FilenameUtils.getExtension(name));
 	}
-	
+
 	/**
 	 * Get file type by extension.
-	 * @param extension extension
+	 * 
+	 * @param extension
+	 *            extension
 	 * @return FileType which matches to extension. UNKNOWN otherwise.
 	 */
 	public static FileType getFileTypeByExtension(String extension) {
@@ -98,7 +109,8 @@ public enum FileType {
 
 	/**
 	 * Get description of file type.
-	 * @return file type description. 
+	 * 
+	 * @return file type description.
 	 */
 	public String toString() {
 		return description;
@@ -114,6 +126,7 @@ public enum FileType {
 
 	/**
 	 * Check if this file can be distributed in lib folder.
+	 * 
 	 * @return true if distributable
 	 */
 	public boolean isLibDistribtable() {
@@ -122,6 +135,7 @@ public enum FileType {
 
 	/**
 	 * Check if this file can be distributed in resource folder.
+	 * 
 	 * @return true if distributable
 	 */
 	public boolean isResourceDistributable() {

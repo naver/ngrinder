@@ -37,6 +37,11 @@ public abstract class DnsUtil {
 		// na
 	}
 
+	/**
+	 * Check the string is empty. 
+	 * @param str string
+	 * @return true if empty
+	 */
 	public static boolean isEmpty(String str) {
 		if (str == null || str.length() == 0) {
 			return true;
@@ -44,14 +49,19 @@ public abstract class DnsUtil {
 		return false;
 	}
 
+	/**
+	 * Check the string is not empty.
+	 * @param str string
+	 * @return true if not empty
+	 */
 	public static boolean isNotEmpty(String str) {
 		return !isEmpty(str);
 	}
 
 	/**
-	 * Converts the internal integer representation of an IPv4 into a binary address
+	 * Converts the internal integer representation of an IPv4 into a binary address.
 	 * 
-	 * @param an
+	 * @param src
 	 *            integer representation of the IPv4 address
 	 * @return a byte array representing an IPv4 numeric address
 	 */
@@ -68,9 +78,9 @@ public abstract class DnsUtil {
 
 	/**
 	 * Converts IPv4 binary address a single integer representation as used internally by
-	 * Inet4Address
+	 * Inet4Address.
 	 * 
-	 * @param src
+	 * @param addr
 	 *            a byte array representing an IPv4 numeric address
 	 * @return an integer representation of the IPv4 address
 	 */
@@ -106,14 +116,14 @@ public abstract class DnsUtil {
 	 * @return a byte array representing the IPv4 numeric address
 	 */
 	public static byte[] textToNumericFormat(String src) {
-		if (src == null || src.length() == 0)
+		if (src == null || src.length() == 0) {
 			return null;
-
+		}
 		int octets;
 		char ch;
 		byte[] dst = new byte[INADDRSZ];
 		char[] srcb = src.toCharArray();
-		boolean saw_digit = false;
+		boolean sawDigit = false;
 
 		octets = 0;
 		int i = 0;
@@ -123,27 +133,31 @@ public abstract class DnsUtil {
 			if (Character.isDigit(ch)) {
 				int sum = dst[cur] * 10 + (Character.digit(ch, 10) & 0xff);
 
-				if (sum > 255)
+				if (sum > 255) {
 					return null;
-
-				dst[cur] = (byte) (sum & 0xff);
-				if (!saw_digit) {
-					if (++octets > INADDRSZ)
-						return null;
-					saw_digit = true;
 				}
-			} else if (ch == '.' && saw_digit) {
-				if (octets == INADDRSZ)
+				dst[cur] = (byte) (sum & 0xff);
+				if (!sawDigit) {
+					if (++octets > INADDRSZ) {
+						return null;
+					}
+					sawDigit = true;
+				}
+			} else if (ch == '.' && sawDigit) {
+				if (octets == INADDRSZ) {
 					return null;
+				}
 				cur++;
 				dst[cur] = 0;
-				saw_digit = false;
-			} else
+				sawDigit = false;
+			} else {
 				return null;
+			}
 		}
 
-		if (octets < INADDRSZ)
+		if (octets < INADDRSZ) {
 			return null;
+		}
 		return dst;
 	}
 

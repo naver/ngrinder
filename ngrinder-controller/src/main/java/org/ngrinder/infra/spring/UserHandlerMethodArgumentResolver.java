@@ -48,27 +48,38 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 
 	private UserContext userContext;
 	private EnumSet<Role> adminRole = EnumSet.of(Role.ADMIN, Role.SUPER_USER);
-	
+
 	@Autowired
 	private UserService userService;
-	/* (non-Javadoc)
-	 * @see org.springframework.web.method.support.HandlerMethodArgumentResolver#supportsParameter(org.springframework.core.MethodParameter)
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.web.method.support.HandlerMethodArgumentResolver#supportsParameter(org
+	 * .springframework.core.MethodParameter)
 	 */
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
 		return parameter.getParameterType().equals(User.class);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.web.method.support.HandlerMethodArgumentResolver#resolveArgument(org.springframework.core.MethodParameter, org.springframework.web.method.support.ModelAndViewContainer, org.springframework.web.context.request.NativeWebRequest, org.springframework.web.bind.support.WebDataBinderFactory)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.web.method.support.HandlerMethodArgumentResolver#resolveArgument(org.
+	 * springframework.core.MethodParameter,
+	 * org.springframework.web.method.support.ModelAndViewContainer,
+	 * org.springframework.web.context.request.NativeWebRequest,
+	 * org.springframework.web.bind.support.WebDataBinderFactory)
 	 */
 	@Override
-	public Object resolveArgument(
-			MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
-			WebDataBinderFactory binderFactory) throws Exception {
+	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+					NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		User currentUser = getUserContext().getCurrentUser();
 		String userParam = webRequest.getParameter("ownerId");
-		
+
 		if (StringUtils.isNotBlank(userParam) && adminRole.contains(currentUser.getRole())) {
 			return getUserService().getUserById(userParam);
 		}
