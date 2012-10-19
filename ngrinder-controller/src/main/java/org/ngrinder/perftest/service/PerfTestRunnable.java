@@ -404,7 +404,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	private boolean isTestFinishCandidate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		// Give 5 seconds to be finished
 		if (perfTest.isThreshholdDuration()
-						&& singleConsoleInUse.isCurreentRunntingTimeOverDuration()) {
+						&& singleConsoleInUse.isCurrentRunningTimeOverDuration(perfTest.getDuration())) { 
 			LOG.debug("Test {} is ready to Finish. Current : {}, Planned : {}",
 							new Object[] { perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentRunningTime(),
 									perfTest.getDuration() });

@@ -22,6 +22,7 @@
  */
 package net.grinder;
 
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.beans.PropertyChangeEvent;
@@ -95,7 +96,8 @@ import org.slf4j.LoggerFactory;
 public class SingleConsole implements Listener, SampleListener {
 	private Thread thread;
 	private ConsoleFoundationEx consoleFoundation;
-	public static final Resources RESOURCE = new ResourcesImplementation("net.grinder.console.common.resources.Console");
+	public static final Resources RESOURCE = 
+					new ResourcesImplementation("net.grinder.console.common.resources.Console");
 	public static final Logger LOGGER = LoggerFactory.getLogger(SingleConsole.class);
 
 	private static final String REPORT_CSV = "output.csv";
@@ -112,11 +114,13 @@ public class SingleConsole implements Listener, SampleListener {
 	private SampleModel sampleModel;
 	private SampleModelViews modelView;
 	private long startTime = 0;
-	private Date TPS_LESSTHAN_ZREO_TIME;
-	private Date ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME;
+	private Date momentWhenTpsBeganToHaveVerySmall;
+	private Date momentWhenErrorsMoreThanHalfOfTotalTPSValue;
 	private static final int TEST_DURATION_CHECK_MARGIN = 5000;
-	private final ListenerSupport<ConsoleShutdownListener> m_shutdownListeners = new ListenerSupport<ConsoleShutdownListener>();
-	private final ListenerSupport<SamplingLifeCycleListener> m_samplingLifeCycleListener = new ListenerSupport<SamplingLifeCycleListener>();
+	private final ListenerSupport<ConsoleShutdownListener> m_shutdownListeners = 
+						new ListenerSupport<ConsoleShutdownListener>();
+	private final ListenerSupport<SamplingLifeCycleListener> m_samplingLifeCycleListener = 
+						new ListenerSupport<SamplingLifeCycleListener>();
 
 	private File reportPath;
 	private NumberFormat formatter = new DecimalFormat("###.###");
@@ -124,13 +128,11 @@ public class SingleConsole implements Listener, SampleListener {
 
 	private Map<String, Object> statisticData;
 	private boolean sampling = false;
-	
-	//key list in statistic map, used to make sure the order
+
+	// key list in statistic map, used to make sure the order
 	private List<String> csvKeyList = new ArrayList<String>();
 	private boolean headerAdded = false;
 
-
-	
 	private Map<String, BufferedWriter> fileWriterMap = new HashMap<String, BufferedWriter>();
 	/** Current count of sampling. */
 	private long samplingCount = 0;
@@ -339,7 +341,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Start test with given {@link GrinderProperties}
+	 * Start test with given {@link GrinderProperties}.
 	 * 
 	 * @param properties
 	 *            {@link GrinderProperties}
@@ -352,6 +354,12 @@ public class SingleConsole implements Listener, SampleListener {
 		return this.startTime;
 	}
 
+	/**
+	 * Set the file distibution directory.
+	 * 
+	 * @param filePath
+	 *            file path.
+	 */
 	public void setDistributionDirectory(File filePath) {
 		final ConsoleProperties properties = getConsoleComponent(ConsoleProperties.class);
 		Directory directory;
@@ -364,6 +372,9 @@ public class SingleConsole implements Listener, SampleListener {
 		}
 	}
 
+	/**
+	 * Mark the cancel status.
+	 */
 	public void cancel() {
 		cancel = true;
 	}
@@ -420,6 +431,12 @@ public class SingleConsole implements Listener, SampleListener {
 		}
 	}
 
+	/**
+	 * Wait until the given size of agents are all connected. It wait until 10 sec.
+	 * 
+	 * @param size
+	 *            size of agent.
+	 */
 	public void waitUntilAgentConnected(int size) {
 		int trial = 1;
 		while (trial++ < 10) {
@@ -478,6 +495,12 @@ public class SingleConsole implements Listener, SampleListener {
 		}
 	}
 
+	/**
+	 * Set the current TPS value. and it update max peakTPS as well.
+	 * 
+	 * @param newValue
+	 *            TPS value
+	 */
 	public void setTpsValue(double newValue) {
 		peakTpsForGraph = Math.max(peakTpsForGraph, newValue);
 		tpsValue = newValue;
@@ -495,6 +518,12 @@ public class SingleConsole implements Listener, SampleListener {
 		return new Date().getTime() - startTime;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.grinder.console.model.SampleListener#update(net.grinder.statistics.StatisticsSet,
+	 * net.grinder.statistics.StatisticsSet)
+	 */
 	@Override
 	public void update(StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
 		if (!sampling) {
@@ -504,7 +533,7 @@ public class SingleConsole implements Listener, SampleListener {
 			return;
 		}
 
-		if (firstSampling == true) {
+		if (firstSampling) {
 			firstSampling = false;
 			informTestSamplingStart();
 		}
@@ -517,7 +546,7 @@ public class SingleConsole implements Listener, SampleListener {
 
 		// record the latest sample into report files.
 		// in lastSampleStatistics, there could be several sub-tests. We
-		// will record the separate and total statistic value.  
+		// will record the separate and total statistic value.
 		if (lastSampleStatistics != null && lastSampleStatistics.size() > 0) {
 			double tpsSum = 0;
 			double errors = 0;
@@ -525,8 +554,8 @@ public class SingleConsole implements Listener, SampleListener {
 			StringBuilder csvLine = new StringBuilder();
 			StringBuilder csvHeader = new StringBuilder();
 			csvHeader.append("DateTime");
-			
-			//get the key list from lastStatistic map, use list to keep the order
+
+			// get the key list from lastStatistic map, use list to keep the order
 			if (csvKeyList.size() == 0) {
 				for (String eachKey : lastSampleStatistics.get(0).keySet()) {
 					if (!eachKey.equals("Peak_TPS")) {
@@ -535,21 +564,21 @@ public class SingleConsole implements Listener, SampleListener {
 				}
 			}
 
-			//store the total statistic value in valueMap
+			// store the total statistic value in valueMap
 			Map<String, Object> totalValueMap = new HashMap<String, Object>();
-			
+
 			// add date time into csv as first column
 			// FIXME this date time interval should be 1 second.
 			// but the system can not make sure about that.
 			csvLine.append(DateUtil.dateToString(new Date()));
-			
+
 			int testIndex = 0;
 			for (Map<String, Object> lastStatistic : lastSampleStatistics) {
 				testIndex++;
 				tpsSum += (Double) lastStatistic.get("TPS");
 				errors += (Double) lastStatistic.get("Errors");
 
-				//step.1 add separate statistic data into csv line string. And
+				// step.1 add separate statistic data into csv line string. And
 				// calculate the total statistic data.
 				for (Entry<String, Object> each : lastStatistic.entrySet()) {
 					// Peak TPS is not meaningful for CSV report for every second.
@@ -580,7 +609,7 @@ public class SingleConsole implements Listener, SampleListener {
 						if (valueInTotalMap == null) {
 							totalValueMap.put(each.getKey(), new MutableDouble(0));
 						}
-						//just skip it, if there is already one key for that
+						// just skip it, if there is already one key for that
 					} else {
 						// there are some String type object like test description.
 						totalValueMap.put(each.getKey(), val);
@@ -594,7 +623,7 @@ public class SingleConsole implements Listener, SampleListener {
 			try {
 				// add header into csv file.
 				if (!headerAdded) {
-					//add header for total data
+					// add header for total data
 					for (String key : csvKeyList) {
 						csvHeader.append(",");
 						csvHeader.append(key);
@@ -633,9 +662,9 @@ public class SingleConsole implements Listener, SampleListener {
 	private void checkTooLowTps(double tps) {
 		// If the tps is low that it's can be the agents or scripts goes wrong.
 		if (tps < 0.001) {
-			if (TPS_LESSTHAN_ZREO_TIME == null) {
-				TPS_LESSTHAN_ZREO_TIME = new Date();
-			} else if (new Date().getTime() - TPS_LESSTHAN_ZREO_TIME.getTime() >= TOO_LOW_TPS_TIME) {
+			if (momentWhenTpsBeganToHaveVerySmall == null) {
+				momentWhenTpsBeganToHaveVerySmall = new Date();
+			} else if (new Date().getTime() - momentWhenTpsBeganToHaveVerySmall.getTime() >= TOO_LOW_TPS_TIME) {
 				LOGGER.warn("Stop the test because its tps is less than 0.001 for more than {} minitue.",
 								TOO_LOW_TPS_TIME / 60000);
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
@@ -643,11 +672,11 @@ public class SingleConsole implements Listener, SampleListener {
 						listener.readyToStop(StopReason.TOO_LOW_TPS);
 					}
 				});
-				TPS_LESSTHAN_ZREO_TIME = null;
+				momentWhenTpsBeganToHaveVerySmall = null;
 
 			}
 		} else {
-			TPS_LESSTHAN_ZREO_TIME = null;
+			momentWhenTpsBeganToHaveVerySmall = null;
 			// only if tps value is not too small ,It should be displayed
 		}
 	}
@@ -663,9 +692,9 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	private void checkTooManyError(double tpsSum, double errors) {
 		if (tpsSum / 2 < errors) {
-			if (ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME == null) {
-				ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME = new Date();
-			} else if (new Date().getTime() - ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME.getTime() >= TOO_MANY_ERROR_TIME) {
+			if (momentWhenErrorsMoreThanHalfOfTotalTPSValue == null) {
+				momentWhenErrorsMoreThanHalfOfTotalTPSValue = new Date();
+			} else if (new Date().getTime() - momentWhenErrorsMoreThanHalfOfTotalTPSValue.getTime() >= TOO_MANY_ERROR_TIME) {
 				LOGGER.warn("Stop the test because test error is more than half of total tps for more than {} seconds.",
 								TOO_MANY_ERROR_TIME / 1000);
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
@@ -673,13 +702,13 @@ public class SingleConsole implements Listener, SampleListener {
 						listener.readyToStop(StopReason.TOO_MANY_ERRORS);
 					}
 				});
-				ERRORS_MORE_THAN_HALF_OF_TOTAL_TPS_TIME = null;
+				momentWhenErrorsMoreThanHalfOfTotalTPSValue = null;
 			}
 		}
 	}
 
 	/**
-	 * To update statistics data while test is running
+	 * To update statistics data while test is running.
 	 */
 	private void updateStatistics() {
 		Map<String, Object> result = new ConcurrentHashMap<String, Object>();
@@ -739,6 +768,11 @@ public class SingleConsole implements Listener, SampleListener {
 		this.statisticData = result;
 	}
 
+	/**
+	 * Get the current total execution count(test count + error count).
+	 * 
+	 * @return current total execution count;
+	 */
 	public long getCurrentExecutionCount() {
 		Map<?, ?> totalStatistics = (Map<?, ?>) getStatictisData().get("totalStatistics");
 		Double testCount = MapUtils.getDoubleValue(totalStatistics, "Tests", 0D);
@@ -814,8 +848,11 @@ public class SingleConsole implements Listener, SampleListener {
 		m_samplingLifeCycleListener.add(listener);
 	}
 
-	/**
-	 * Update process status of agents. In this method
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.grinder.console.communication.ProcessControl.Listener#update(net.grinder.console.
+	 * communication.ProcessControl.ProcessReports[])
 	 */
 	@Override
 	public void update(ProcessReports[] processReports) {
@@ -840,7 +877,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Update current processes and threads
+	 * Update current processes and threads.
 	 * 
 	 * @param processReports
 	 *            ProcessReports array.
@@ -884,8 +921,7 @@ public class SingleConsole implements Listener, SampleListener {
 			LOGGER.error(e.getMessage(), e);
 			throw new NGrinderRuntimeException(e.getMessage(), e);
 		} finally {
-			// IOUtils.closeQuietly(write);
-			// IOUtils.closeQuietly(bw);
+			noOp();
 		}
 	}
 
@@ -924,7 +960,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Get report path
+	 * Get report path.
 	 * 
 	 * @return report path
 	 */
@@ -933,7 +969,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Set report path
+	 * Set report path.
 	 * 
 	 * @param reportPath
 	 *            path in which report will be stored.
@@ -967,7 +1003,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Stop sampling
+	 * Stop sampling.
 	 */
 	public void unregisterSampling() {
 		this.currentNotFinishedProcessCount = 0;
@@ -1017,8 +1053,15 @@ public class SingleConsole implements Listener, SampleListener {
 		return cancel;
 	}
 
-	public boolean isCurreentRunntingTimeOverDuration() {
-		return getCurrentRunningTime() > (getDuration() + TEST_DURATION_CHECK_MARGIN);
+	/**
+	 * Check if the current Running time is over given duration.
+	 * 
+	 * @param duration
+	 *            duration
+	 * @return true if it's over.
+	 */
+	public boolean isCurrentRunningTimeOverDuration(long duration) {
+		return getCurrentRunningTime() > (duration + TEST_DURATION_CHECK_MARGIN);
 	}
 
 }
