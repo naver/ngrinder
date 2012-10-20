@@ -6,12 +6,14 @@
     xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
    
-	<changeSet author="initalDB" id="1" dbms="cubrid" onValidationFail="MARK_RAN">
-		 <preConditions>
+	<changeSet author="initialDB" id="1" dbms="cubrid" onValidationFail="MARK_RAN">
+		 <validCheckSum/>
+		 <preConditions onFail="MARK_RAN">
 		 	<not>
             	<tableExists tableName="TAG"/>
          	</not>
          </preConditions>
+         
         <comment>DB initialization.</comment>
 	    <sql splitStatements="false">
 				
