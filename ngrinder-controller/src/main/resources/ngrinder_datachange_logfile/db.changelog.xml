@@ -8,7 +8,7 @@
    		<include file="ngrinder_datachange_logfile/db.changelog_schema_CUBRID.xml"/>
 		<include file="ngrinder_datachange_logfile/db.changelog_schema_H2.xml"/>
 		<include file="ngrinder_datachange_logfile/db.changelog_schema_SQLITE.xml"/>
-		<changeSet author="ngrinder.3.0-b3" id="4"  dbms="h2, cubrid">
+		<changeSet author="ngrinder.3.0-b3" id="4"  dbms="h2, cubrid" onValidationFail="MARK_RAN">
 				<preConditions onFail="MARK_RAN">
 					<columnExists tableName="system_monitor" columnName="load_avg_1"/>
 				</preConditions>
