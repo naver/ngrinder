@@ -1,5 +1,6 @@
-package liquibase;
+package org.ngrinder.infra.init;
 
+import liquibase.Liquibase;
 import liquibase.changelog.ChangeLogIterator;
 import liquibase.changelog.DatabaseChangeLog;
 import liquibase.changelog.filter.ContextChangeSetFilter;
@@ -7,7 +8,6 @@ import liquibase.changelog.filter.DbmsChangeSetFilter;
 import liquibase.changelog.filter.ShouldRunChangeSetFilter;
 import liquibase.changelog.visitor.UpdateVisitor;
 import liquibase.database.Database;
-import liquibase.database.typeconversion.TypeConverter;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.LiquibaseException;
 import liquibase.exception.LockException;
@@ -28,18 +28,24 @@ public class LiquibaseEx extends Liquibase {
 	/**
 	 * Constructor.
 	 * 
-	 * @param changeLogFile changeLogFile
-	 * @param resourceAccessor resource accessor
-	 * @param database database to be used
-	 * @throws LiquibaseException occurs when initialization is failed.
+	 * @param changeLogFile
+	 *            changeLogFile
+	 * @param resourceAccessor
+	 *            resource accessor
+	 * @param database
+	 *            database to be used
+	 * @throws LiquibaseException
+	 *             occurs when initialization is failed.
 	 */
 	public LiquibaseEx(String changeLogFile, ResourceAccessor resourceAccessor, Database database)
-			throws LiquibaseException {
+					throws LiquibaseException {
 		super(changeLogFile, resourceAccessor, database);
 		this.changeLogFile = changeLogFile;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.Liquibase#update(java.lang.String)
 	 */
 	@Override
@@ -51,8 +57,9 @@ public class LiquibaseEx extends Liquibase {
 		try {
 			getChangeLogParameters().setContexts(StringUtils.splitAndTrim(contexts, ","));
 
-			DatabaseChangeLog changeLog = ChangeLogParserFactory.getInstance().getParser(this.changeLogFile, getFileOpener())
-					.parse(this.changeLogFile, getChangeLogParameters(), getFileOpener());
+			DatabaseChangeLog changeLog = ChangeLogParserFactory.getInstance()
+							.getParser(this.changeLogFile, getFileOpener())
+							.parse(this.changeLogFile, getChangeLogParameters(), getFileOpener());
 			checkDatabaseChangeLogTable(true, changeLog, contexts);
 
 			changeLog.validate(database, contexts);
@@ -68,8 +75,9 @@ public class LiquibaseEx extends Liquibase {
 		}
 	};
 
-	private ChangeLogIterator getStandardChangelogIterator(String contexts, DatabaseChangeLog changeLog) throws DatabaseException {
-		return new ChangeLogIterator(changeLog, new ShouldRunChangeSetFilter(database), new ContextChangeSetFilter(contexts),
-				new DbmsChangeSetFilter(database));
+	private ChangeLogIterator getStandardChangelogIterator(String contexts, DatabaseChangeLog changeLog)
+					throws DatabaseException {
+		return new ChangeLogIterator(changeLog, new ShouldRunChangeSetFilter(database), new ContextChangeSetFilter(
+						contexts), new DbmsChangeSetFilter(database));
 	}
 }

@@ -1,5 +1,7 @@
 package liquibase.lockservice;
 
+import static org.ngrinder.common.util.NoOp.noOp;
+
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,7 +10,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import liquibase.database.Database;
-import liquibase.database.structure.type.BooleanType;
 import liquibase.database.typeconversion.TypeConverter;
 import liquibase.database.typeconversion.TypeConverterFactory;
 import liquibase.exception.DatabaseException;
@@ -23,12 +24,12 @@ import liquibase.statement.core.SelectFromDatabaseChangeLogLockStatement;
 import liquibase.statement.core.UnlockDatabaseChangeLogStatement;
 
 /**
- * Extended Lock Service.
+ * nGrinder customized implementation for {@link LockService}.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
-public class LockServiceEx {
+public final class LockServiceEx {
 
 	private Database database;
 
@@ -44,6 +45,13 @@ public class LockServiceEx {
 		this.database = database;
 	}
 
+	/**
+	 * Get {@link LockServiceEx} instance.
+	 * 
+	 * @param database
+	 *            corresponding database instance
+	 * @return {@link LockServiceEx} instance
+	 */
 	public static LockServiceEx getInstance(Database database) {
 		if (!instances.containsKey(database)) {
 			instances.put(database, new LockServiceEx(database));
@@ -59,10 +67,21 @@ public class LockServiceEx {
 		this.changeLogLocRecheckTime = changeLogLocRecheckTime;
 	}
 
+	/**
+	 * Check if it has change log lock.
+	 * 
+	 * @return true if it has the change lock
+	 */
 	public boolean hasChangeLogLock() {
 		return hasChangeLogLock;
 	}
 
+	/**
+	 * Wait for lock.
+	 * 
+	 * @throws LockException
+	 *             occurs when lock manipulation is failed.
+	 */
 	public void waitForLock() throws LockException {
 
 		boolean locked = false;
@@ -74,7 +93,7 @@ public class LockServiceEx {
 				try {
 					Thread.sleep(changeLogLocRecheckTime);
 				} catch (InterruptedException e) {
-					;
+					noOp();
 				}
 			}
 		}
@@ -84,8 +103,10 @@ public class LockServiceEx {
 			String lockedBy;
 			if (locks.length > 0) {
 				DatabaseChangeLogLock lock = locks[0];
-				lockedBy = lock.getLockedBy() + " since "
-						+ DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(lock.getLockGranted());
+				lockedBy = lock.getLockedBy()
+								+ " since "
+								+ DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(
+												lock.getLockGranted());
 			} else {
 				lockedBy = "UNKNOWN";
 			}
@@ -93,54 +114,69 @@ public class LockServiceEx {
 		}
 	}
 
+	/**
+	 * Acquire lock. Instead of liquibase implementation, nGrinder added the type resolution for
+	 * boolean value.
+	 * 
+	 * @return true if successful
+	 * @throws LockException
+	 *             occurs when the lock aquire is failed.
+	 */
 	public boolean acquireLock() throws LockException {
-        if (hasChangeLogLock) {
-            return true;
-        }
+		if (hasChangeLogLock) {
+			return true;
+		}
 
-        Executor executor = ExecutorService.getInstance().getExecutor(database);
+		Executor executor = ExecutorService.getInstance().getExecutor(database);
 
-        try {
-            database.rollback();
-            database.checkDatabaseChangeLogLockTable();
-            // nGrinder Customization begin.
+		try {
+			database.rollback();
+			database.checkDatabaseChangeLogLockTable();
+			// nGrinder Customization begin.
 			TypeConverter findTypeConverter = TypeConverterFactory.getInstance().findTypeConverter(database);
-			Object lockObject = (Object) ExecutorService.getInstance().getExecutor(database).queryForObject(new SelectFromDatabaseChangeLogLockStatement("LOCKED"), Object.class);
-			String convertObjectToString = new BooleanType().convertObjectToString(lockObject, database);
-			if (findTypeConverter.getBooleanType().getTrueBooleanValue().equals(convertObjectToString)) { 
-            // To here
+			Object lockObject = (Object) ExecutorService.getInstance().getExecutor(database)
+							.queryForObject(new SelectFromDatabaseChangeLogLockStatement("LOCKED"), Object.class);
+			String convertObjectToString = findTypeConverter.getBooleanType().convertObjectToString(lockObject,
+							database);
+			if (findTypeConverter.getBooleanType().getTrueBooleanValue().equals(convertObjectToString)) {
+				// To here
 				return false;
-            } else {
-                executor.comment("Lock Database");
-                int rowsUpdated = executor.update(new LockDatabaseChangeLogStatement());
-                if (rowsUpdated > 1) {
-                    throw new LockException("Did not update change log lock correctly");
-                }
-                if (rowsUpdated == 0)
-                {
-                    // another node was faster
-                    return false;
-                }
-                database.commit();
-                LogFactory.getLogger().info("Successfully acquired change log lock");
+			} else {
+				executor.comment("Lock Database");
+				int rowsUpdated = executor.update(new LockDatabaseChangeLogStatement());
+				if (rowsUpdated > 1) {
+					throw new LockException("Did not update change log lock correctly");
+				}
+				if (rowsUpdated == 0) {
+					// another node was faster
+					return false;
+				}
+				database.commit();
+				LogFactory.getLogger().info("Successfully acquired change log lock");
 
-                hasChangeLogLock = true;
+				hasChangeLogLock = true;
 
-                database.setCanCacheLiquibaseTableInfo(true);
-                return true;
-            }
-        } catch (Exception e) {
-            throw new LockException(e);
-        } finally {
-            try {
-                database.rollback();
-            } catch (DatabaseException e) {
-                ;
-            }
-        }
+				database.setCanCacheLiquibaseTableInfo(true);
+				return true;
+			}
+		} catch (Exception e) {
+			throw new LockException(e);
+		} finally {
+			try {
+				database.rollback();
+			} catch (DatabaseException e) {
+				noOp();
+			}
+		}
 
-    }
+	}
 
+	/**
+	 * Release Lock.
+	 * 
+	 * @throws LockException
+	 *             exception.
+	 */
 	public void releaseLock() throws LockException {
 		Executor executor = ExecutorService.getInstance().getExecutor(database);
 		try {
@@ -150,12 +186,13 @@ public class LockServiceEx {
 				int updatedRows = executor.update(new UnlockDatabaseChangeLogStatement());
 				if (updatedRows != 1) {
 					throw new LockException("Did not update change log lock correctly.\n\n"
-							+ updatedRows
-							+ " rows were updated instead of the expected 1 row using executor "
-							+ executor.getClass().getName()
-							+ " there are "
-							+ executor.queryForInt(new RawSqlStatement("select count(*) from "
-									+ database.getDatabaseChangeLogLockTableName())) + " rows in the table");
+									+ updatedRows
+									+ " rows were updated instead of the expected 1 row using executor "
+									+ executor.getClass().getName()
+									+ " there are "
+									+ executor.queryForInt(new RawSqlStatement("select count(*) from "
+													+ database.getDatabaseChangeLogLockTableName()))
+									+ " rows in the table");
 				}
 				database.commit();
 				hasChangeLogLock = false;
@@ -172,11 +209,19 @@ public class LockServiceEx {
 			try {
 				database.rollback();
 			} catch (DatabaseException e) {
-				;
+				noOp();
 			}
 		}
 	}
 
+	/**
+	 * List up locks.
+	 * 
+	 * @return {@link DatabaseChangeLogLock} array.
+	 * @throws LockException
+	 *             occurs when lock list up is failed.
+	 */
+	@SuppressWarnings("rawtypes")
 	public DatabaseChangeLogLock[] listLocks() throws LockException {
 		try {
 			if (!database.hasDatabaseChangeLogLockTable()) {
@@ -184,7 +229,8 @@ public class LockServiceEx {
 			}
 
 			List<DatabaseChangeLogLock> allLocks = new ArrayList<DatabaseChangeLogLock>();
-			SqlStatement sqlStatement = new SelectFromDatabaseChangeLogLockStatement("ID", "LOCKED", "LOCKGRANTED", "LOCKEDBY");
+			SqlStatement sqlStatement = new SelectFromDatabaseChangeLogLockStatement("ID", "LOCKED", "LOCKGRANTED",
+							"LOCKEDBY");
 			List<Map> rows = ExecutorService.getInstance().getExecutor(database).queryForList(sqlStatement);
 			for (Map columnMap : rows) {
 				Object lockedValue = columnMap.get("LOCKED");
@@ -192,13 +238,13 @@ public class LockServiceEx {
 				if (lockedValue instanceof Number) {
 					locked = ((Number) lockedValue).intValue() == 1;
 				} else if (lockedValue instanceof String) {
-					locked =  ("T".equals(lockedValue));
+					locked = ("T".equals(lockedValue));
 				} else {
 					locked = (Boolean) lockedValue;
 				}
 				if (locked != null && locked) {
-					allLocks.add(new DatabaseChangeLogLock(((Number) columnMap.get("ID")).intValue(), (Date) columnMap.get("LOCKGRANTED"),
-							(String) columnMap.get("LOCKEDBY")));
+					allLocks.add(new DatabaseChangeLogLock(((Number) columnMap.get("ID")).intValue(), (Date) columnMap
+									.get("LOCKGRANTED"), (String) columnMap.get("LOCKEDBY")));
 				}
 			}
 			return allLocks.toArray(new DatabaseChangeLogLock[allLocks.size()]);
@@ -208,26 +254,34 @@ public class LockServiceEx {
 	}
 
 	/**
-	 * Releases whatever locks are on the database change log table
+	 * Releases whatever locks are on the database change log table.
+	 * 
+	 * @throws LockException
+	 *             exception
+	 * @throws DatabaseException
+	 *             exception
 	 */
 	public void forceReleaseLock() throws LockException, DatabaseException {
 		database.checkDatabaseChangeLogLockTable();
 		releaseLock();
 		/*
 		 * try { releaseLock(); } catch (LockException e) { // ignore ?
-		 * LogFactory.getLogger().info("Ignored exception in forceReleaseLock: "
-		 * + e.getMessage()); }
+		 * LogFactory.getLogger().info("Ignored exception in forceReleaseLock: " + e.getMessage());
+		 * }
 		 */
 	}
 
 	/**
-	 * Clears information the lock handler knows about the tables. Should only
-	 * be called by Liquibase internal calls
+	 * Clears information the lock handler knows about the tables. Should only be called by
+	 * Liquibase internal calls
 	 */
 	public void reset() {
 		hasChangeLogLock = false;
 	}
 
+	/**
+	 * Reset all locks.
+	 */
 	public static void resetAll() {
 		for (Map.Entry<Database, LockServiceEx> entity : instances.entrySet()) {
 			entity.getValue().reset();

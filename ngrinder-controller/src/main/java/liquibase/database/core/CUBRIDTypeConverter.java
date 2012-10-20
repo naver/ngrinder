@@ -22,6 +22,8 @@
  */
 package liquibase.database.core;
 
+import org.apache.commons.lang.StringUtils;
+
 import liquibase.database.Database;
 import liquibase.database.structure.type.BigIntType;
 import liquibase.database.structure.type.BooleanType;
@@ -29,7 +31,10 @@ import liquibase.database.structure.type.DataType;
 import liquibase.database.structure.type.DateTimeType;
 import liquibase.database.structure.type.DoubleType;
 import liquibase.database.structure.type.TinyIntType;
+import liquibase.database.typeconversion.TypeConverter;
+import liquibase.database.typeconversion.TypeConverterFactory;
 import liquibase.database.typeconversion.core.AbstractTypeConverter;
+import liquibase.exception.UnexpectedLiquibaseException;
 
 /**
  * Liquibase Cubrid type converter.
@@ -105,8 +110,10 @@ public class CUBRIDTypeConverter extends AbstractTypeConverter {
 	 */
 	public class CubridBooleanType extends BooleanType {
 		/**
-		 * Constructor
-		 * @param type native type for boolean
+		 * Constructor.
+		 * 
+		 * @param type
+		 *            native type for boolean
 		 */
 		public CubridBooleanType(String type) {
 			super(type);
@@ -121,6 +128,40 @@ public class CUBRIDTypeConverter extends AbstractTypeConverter {
 		public String getFalseBooleanValue() {
 			return "'F'";
 		};
+
+		@Override
+	    public String convertObjectToString(Object value, Database database) {
+	        if (value == null) {
+	            return null;
+	        } else if (value.toString().equalsIgnoreCase("null")) {
+	            return "null";
+	        }
+
+	        String returnValue;
+	        TypeConverter converter = TypeConverterFactory.getInstance().findTypeConverter(database);
+	        BooleanType booleanType = converter.getBooleanType();
+	        if (value instanceof String) {
+	            if ("T".equals(StringUtils.trim((String)value))) {
+	            	return booleanType.getTrueBooleanValue();
+	            } else if ("F".equals(StringUtils.trim((String)value)) || StringUtils.isEmpty((String)value)) {
+	            	return booleanType.getFalseBooleanValue();
+	            } else {
+	                throw new UnexpectedLiquibaseException("Unknown boolean value: "+value);
+	            }
+	        } else if (value instanceof Long) {
+	            if (Long.valueOf(1).equals(value)) {
+	                returnValue = booleanType.getTrueBooleanValue();
+	            } else {
+	                returnValue = booleanType.getFalseBooleanValue();
+	            }
+	        } else if (((Boolean) value)) {
+	            returnValue = booleanType.getTrueBooleanValue();
+	        } else {
+	            returnValue = booleanType.getFalseBooleanValue();
+	        }
+
+	        return returnValue;
+	    }
 	}
 
 	/*

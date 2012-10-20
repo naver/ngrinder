@@ -1,141 +1,139 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog
-    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-   
+
 	<changeSet author="initalDB" id="3" dbms="sqlite">
 		<preConditions onFail="MARK_RAN">
-		 	<not>
-         	   <tableExists tableName="TAG"/>
-         	</not>
-         </preConditions>
-	    <sql>
-    		    drop table if exists AGENT;
+			<not>
+				<tableExists tableName="TAG" />
+			</not>
+		</preConditions>
+		<sql>
+			drop table if exists AGENT;
 
-   				drop table if exists NUSER;
+			drop table if exists NUSER;
 
-   				drop table if exists PERF_TEST;
+			drop table if exists PERF_TEST;
 
-   				drop table if exists PERF_TEST_TAG;
+			drop table if exists PERF_TEST_TAG;
 
-   				drop table if exists TAG;
+			drop table if exists TAG;
 
-   				drop table if exists system_monitor;
-   				
-			    create table AGENT (
-			        id  integer unique,
-			        approved char not null,
-			        hostName varchar,
-			        ip varchar,
-			        region varchar,
-			        primary key (id)
-			    );
-			    
-			    create table NUSER (
-			        id  integer unique,
-			        created_date timestamp,
-			        last_modified_date timestamp,
-			        authentication_provider_class varchar,
-			        description varchar,
-			        email varchar,
-			        enabled integer not null,
-			        is_external integer,
-			        mobile_phone varchar,
-			        password varchar,
-			        role_name varchar not null,
-			        timeZone varchar,
-			        user_id varchar not null unique,
-			        user_language varchar,
-			        user_name varchar,
-			        created_user integer,
-			        last_modified_user integer,
-			        primary key (id)
-			    );
-			
-			    create table PERF_TEST (
-			        id  integer unique,
-			        created_date timestamp,
-			        last_modified_date timestamp,
-			        agent_count integer,
-			        description varchar,
-			        distribution_path varchar,
-			        duration integer,
-			        errors integer,
-			        finish_time timestamp,
-			        ignore_sample_count integer,
-			        init_processes integer,
-			        init_sleep_time integer,
-			        last_progress_message varchar,
-			        mean_test_time double,
-			        peak_tps double,
-			        port integer,
-			        process_increment integer,
-			        process_increment_interval integer,
-			        processes integer,
-			        progress_message varchar,
-			        run_count integer,
-			        scheduled_time timestamp,
-			        script_name varchar,
-			        script_revistion integer,
-			        send_mail char,
-			        start_time timestamp,
-			        status varchar,
-			        stop_request char,
-			        tag_string varchar,
-			        target_hosts varchar,
-			        test_comment varchar,
-			        test_error_cause varchar,
-			        name varchar,
-			        test_time_standard_deviation double,
-			        tests integer,
-			        threads integer,
-			        threshold varchar,
-			        tps double,
-			        use_rampup char,
-			        vuser_per_agent integer,
-			        created_user integer,
-			        last_modified_user integer,
-			        primary key (id)
-			    );
-			
-			    create table PERF_TEST_TAG (
-			        perf_test_id integer not null,
-			        tag_id integer not null,
-			        primary key (perf_test_id, tag_id)
-			    );
-			
-			    create table TAG (
-			        id  integer unique,
-			        created_date timestamp,
-			        last_modified_date timestamp,
-			        tagValue varchar,
-			        created_user integer,
-			        last_modified_user integer,
-			        primary key (id)
-			    );
-			
-			    create table system_monitor (
-			        id  integer unique,
-			        collect_time integer,
-			        cpu_used_percentage float,
-			        crtime varchar,
-			        free_memory integer,
-			        idle_cpu_value float,
-			        ip varchar,
-			        monitor_key varchar,
-			        load_avg_1 double,
-			        load_avg_15 double,
-			        load_avg_5 double,
-			        message varchar,
-			        port integer not null,
-			        system varchar,
-			        total_cpu_value float,
-			        total_memory integer,
-			        primary key (id)
-			    )
-	    </sql>
-    </changeSet>
+			drop table if exists system_monitor;
+
+			create table AGENT (
+				id integer unique,
+				approved char not null,
+				hostName varchar,
+				ip varchar,
+				region varchar,
+				primary key (id)
+			);
+
+			create table NUSER (
+				id integer unique,
+				created_date timestamp,
+				last_modified_date timestamp,
+				authentication_provider_class varchar,
+				description varchar,
+				email varchar,
+				enabled integer not null,
+				is_external integer,
+				mobile_phone varchar,
+				password varchar,
+				role_name varchar not null,
+				timeZone varchar,
+				user_id varchar not null unique,
+				user_language varchar,
+				user_name varchar,
+				created_user integer,
+				last_modified_user integer,
+				primary key (id)
+			);
+
+			create table PERF_TEST (
+				id integer unique,
+				created_date timestamp,
+				last_modified_date timestamp,
+				agent_count integer,
+				description varchar,
+				distribution_path varchar,
+				duration integer,
+				errors integer,
+				finish_time timestamp,
+				ignore_sample_count integer,
+				init_processes integer,
+				init_sleep_time integer,
+				last_progress_message varchar,
+				mean_test_time double,
+				peak_tps double,
+				port integer,
+				process_increment integer,
+				process_increment_interval integer,
+				processes integer,
+				progress_message varchar,
+				run_count integer,
+				scheduled_time timestamp,
+				script_name varchar,
+				script_revistion integer,
+				send_mail char,
+				start_time timestamp,
+				status varchar,
+				stop_request char,
+				tag_string varchar,
+				target_hosts varchar,
+				test_comment varchar,
+				test_error_cause varchar,
+				name varchar,
+				test_time_standard_deviation double,
+				tests integer,
+				threads integer,
+				threshold varchar,
+				tps double,
+				use_rampup char,
+				vuser_per_agent integer,
+				created_user integer,
+				last_modified_user integer,
+				primary key (id)
+			);
+
+			create table PERF_TEST_TAG (
+				perf_test_id integer not null,
+				tag_id integer not null,
+				primary key (perf_test_id, tag_id)
+			);
+
+			create table TAG (
+				id integer unique,
+				created_date timestamp,
+				last_modified_date timestamp,
+				tagValue varchar,
+				created_user integer,
+				last_modified_user integer,
+				primary key (id)
+			);
+
+			create table system_monitor (
+				id integer unique,
+				collect_time integer,
+				cpu_used_percentage float,
+				crtime varchar,
+				free_memory integer,
+				idle_cpu_value float,
+				ip varchar,
+				monitor_key varchar,
+				load_avg_1 double,
+				load_avg_15 double,
+				load_avg_5 double,
+				message varchar,
+				port integer not null,
+				system varchar,
+				total_cpu_value float,
+				total_memory integer,
+				primary key (id)
+			)
+		</sql>
+	</changeSet>
 </databaseChangeLog>

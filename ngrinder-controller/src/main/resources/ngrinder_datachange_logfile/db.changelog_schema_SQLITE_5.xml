@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+	<changeSet author="ngrinder.3.0-b3" id="5" dbms="sqlite">
+		<comment>Delete all unused SystemDataModel DB fields.</comment>
+		<sql>
+			create TEMPORARY table system_monitor_backup (
+				id integer unique,
+				collect_time integer,
+				cpu_used_percentage float,
+				free_memory integer,
+				ip varchar,
+				monitor_key varchar,
+				message varchar,
+				port integer not null,
+				system varchar,
+				total_memory integer,
+				primary key (id)
+			);
+
+			INSERT INTO system_monitor_backup
+				SELECT
+					id,
+					collect_time,
+					cpu_used_percentage,
+					free_memory,
+					ip,
+					monitor_key,
+					message,
+					port,
+					system,
+					total_memory
+				FROM system_monitor;
+
+			DROP TABLE system_monitor;
+
+			create table system_monitor (
+				id integer unique,
+				collect_time integer,
+				cpu_used_percentage float,
+				free_memory integer,
+				ip varchar,
+				monitor_key varchar,
+				message varchar,
+				port integer not null,
+				system varchar,
+				total_memory integer,
+				primary key (id)
+			);
+			
+			INSERT INTO system_monitor
+				SELECT 
+					id, 
+					collect_time, 
+					cpu_used_percentage, 
+					free_memory, 
+					ip, 
+					monitor_key, 
+					message, 
+					port, 
+					system, 
+					total_memory
+				FROM system_monitor_backup;
+			
+			DROP TABLE system_monitor_backup;
+		</sql>
+	</changeSet>
+</databaseChangeLog>
