@@ -99,7 +99,7 @@ public class CUBRIDTypeConverter extends AbstractTypeConverter {
 	 */
 	@Override
 	public BooleanType getBooleanType() {
-		return new CubridBooleanType("char(2)");
+		return new CubridBooleanType("char(1)");
 	}
 
 	/**

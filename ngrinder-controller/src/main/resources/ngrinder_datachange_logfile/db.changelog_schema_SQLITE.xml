@@ -10,6 +10,7 @@
 				<tableExists tableName="TAG" />
 			</not>
 		</preConditions>
+		<comment>DB initialization.</comment>
 		<sql>
 			drop table if exists AGENT;
 

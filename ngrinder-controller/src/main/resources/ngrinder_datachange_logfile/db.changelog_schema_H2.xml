@@ -11,7 +11,8 @@
 		 	<not>
             <tableExists tableName="TAG"/>
          	</not>
-         </preConditions>
+        </preConditions>
+        <comment>DB initialization.</comment>
 	    <sql>
 	    	drop table AGENT if exists;
 		

@@ -28,6 +28,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+
 /**
  * User managed by nGrinder.
  * 
@@ -50,6 +52,7 @@ public class User extends BaseModel<User> {
 
 	private String password;
 
+	@Type(type = "true_false")
 	private boolean enabled = true;
 
 	private String email;
@@ -69,6 +72,7 @@ public class User extends BaseModel<User> {
 	private String mobilePhone;
 
 	@Column(name = "is_external")
+	@Type(type = "true_false")
 	private boolean external = false;
 
 	@Column(name = "authentication_provider_class")
