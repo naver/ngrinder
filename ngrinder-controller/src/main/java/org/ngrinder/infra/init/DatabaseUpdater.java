@@ -30,6 +30,7 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import liquibase.sqlgenerator.SqlGeneratorFactory;
 
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +86,7 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 	 */
 	@PostConstruct
 	public void init() throws Exception {
+		SqlGeneratorFactory.getInstance().register(new LockExDatabaseChangeLogGenerator());
 		LiquibaseEx liquibase = new LiquibaseEx(getChangeLog(), new ClassLoaderResourceAccessor(getResourceLoader()
 						.getClassLoader()), getDatabase());
 		try {

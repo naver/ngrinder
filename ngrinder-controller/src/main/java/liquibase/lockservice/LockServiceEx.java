@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.ngrinder.infra.init.LockExDatabaseChangeLogGenerator;
+
 import liquibase.database.Database;
 import liquibase.database.typeconversion.TypeConverter;
 import liquibase.database.typeconversion.TypeConverterFactory;
@@ -17,8 +19,9 @@ import liquibase.exception.LockException;
 import liquibase.executor.Executor;
 import liquibase.executor.ExecutorService;
 import liquibase.logging.LogFactory;
+import liquibase.sqlgenerator.SqlGeneratorFactory;
 import liquibase.statement.SqlStatement;
-import liquibase.statement.core.LockDatabaseChangeLogStatement;
+import liquibase.statement.core.LockExDatabaseChangeLogStatement;
 import liquibase.statement.core.RawSqlStatement;
 import liquibase.statement.core.SelectFromDatabaseChangeLogLockStatement;
 import liquibase.statement.core.UnlockDatabaseChangeLogStatement;
@@ -143,10 +146,11 @@ public final class LockServiceEx {
 				return false;
 			} else {
 				executor.comment("Lock Database");
-				int rowsUpdated = executor.update(new LockDatabaseChangeLogStatement());
+				int rowsUpdated = executor.update(new LockExDatabaseChangeLogStatement());
 				if (rowsUpdated > 1) {
 					throw new LockException("Did not update change log lock correctly");
 				}
+				
 				if (rowsUpdated == 0) {
 					// another node was faster
 					return false;

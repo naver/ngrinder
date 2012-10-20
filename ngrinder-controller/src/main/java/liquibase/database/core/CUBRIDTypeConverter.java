@@ -141,9 +141,10 @@ public class CUBRIDTypeConverter extends AbstractTypeConverter {
 			TypeConverter converter = TypeConverterFactory.getInstance().findTypeConverter(database);
 			BooleanType booleanType = converter.getBooleanType();
 			if (value instanceof String) {
-				if ("T".equals(StringUtils.trim((String) value))) {
+				String trim = StringUtils.trim((String) value);
+				if ("T".equals(trim)) {
 					return booleanType.getTrueBooleanValue();
-				} else if ("F".equals(StringUtils.trim((String) value)) || StringUtils.isEmpty((String) value)) {
+				} else if ("F".equals(trim) || StringUtils.isEmpty((String) value) || "0".equals(trim)) {
 					return booleanType.getFalseBooleanValue();
 				} else {
 					throw new UnexpectedLiquibaseException("Unknown boolean value: " + value);
