@@ -62,7 +62,7 @@ public class LiquibaseEx extends Liquibase {
 							.parse(this.changeLogFile, getChangeLogParameters(), getFileOpener());
 			checkDatabaseChangeLogTable(true, changeLog, contexts);
 
-			changeLog.validate(database, contexts);
+			//changeLog.validate(database, contexts);
 			ChangeLogIterator changeLogIterator = getStandardChangelogIterator(contexts, changeLog);
 
 			changeLogIterator.run(new UpdateVisitor(database), database);

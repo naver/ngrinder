@@ -404,7 +404,7 @@ function addValidation() {
 			agentCount : {
 				required : true,
 				max:${(maxAgentSizePerConsole)},
-				min:1
+				min:0
 			},		
 			vuserPerAgent : {
 				required : true,
