@@ -20,24 +20,46 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.hibernate.dialect;
+package liquibase.database.core;
 
-import java.sql.Types;
+import liquibase.database.structure.type.BooleanType;
+import liquibase.database.structure.type.FloatType;
+import liquibase.database.typeconversion.core.H2TypeConverter;
 
 /**
- * Customized H2 dialect. it's necessary to be added because H2 treat all float
- * into double. So.. the validation is failed with previous H2Dialect.
+ * Liquibase H2 type converter.
  * 
  * @author JunHo Yoon
  * @since 3.0
+ * 
  */
-public class H2ExDialect extends H2Dialect {
-	/**
-	 * Constructor.
+public class H2ExTypeConverter extends H2TypeConverter {
+	@Override
+	public int getPriority() {
+		return super.getPriority() + 1;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * liquibase.database.typeconversion.core.AbstractTypeConverter#getFloatType
+	 * ()
 	 */
-	public H2ExDialect() {
-		super();
-		registerColumnType(Types.FLOAT, "double");
-		registerColumnType(Types.BOOLEAN, "char(1)");
+	@Override
+	public FloatType getFloatType() {
+		return new FloatType("DOUBLE");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * liquibase.database.typeconversion.core.AbstractTypeConverter#getBooleanType
+	 * ()
+	 */
+	@Override
+	public BooleanType getBooleanType() {
+		return new TrueOrFalseBooleanType();
 	}
 }

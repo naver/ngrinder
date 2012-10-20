@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+   
+	<changeSet author="ngrinder.3.0-b3" id="5" dbms="h2">
+		<comment>Change missing h2 boolean type into char(1).</comment>
+		<sql splitStatements="false">
+			alter table nuser alter column enabled char(1) default 'T';
+			alter table nuser alter column is_external char(1) default 'F';
+			alter table agent alter column approved char(1);
+			alter table perf_test alter column stop_request char(1) default 'F';
+			alter table perf_test alter column send_mail char(1)  default 'F';
+			alter table perf_test alter column use_rampup char(1);
+	    </sql>
+    </changeSet>
+</databaseChangeLog>

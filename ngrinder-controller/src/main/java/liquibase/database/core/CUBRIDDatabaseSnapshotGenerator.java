@@ -86,5 +86,4 @@ public class CUBRIDDatabaseSnapshotGenerator extends JdbcDatabaseSnapshotGenerat
 	protected void readSequences(DatabaseSnapshot snapshot, String schema, DatabaseMetaData databaseMetaData)
 					throws DatabaseException {
 	}
-
 }

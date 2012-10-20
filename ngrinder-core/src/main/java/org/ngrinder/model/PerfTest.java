@@ -102,12 +102,12 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private String targetHosts;
 
 	/** The send mail code. */
-	@Column(name = "send_mail")
+	@Column(name = "send_mail", columnDefinition="char(1)")
 	@Type(type = "true_false")
 	private Boolean sendMail;
 
 	/** Use rampup or not. */
-	@Column(name = "use_rampup")
+	@Column(name = "use_rampup",  columnDefinition="char(1)")
 	@Type(type = "true_false")
 	private Boolean useRampUp = false;
 
@@ -191,7 +191,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "script_revistion")
 	private Long scriptRevision = -1L;
 
-	@Column(name = "stop_request")
+	@Column(name = "stop_request",  columnDefinition="char(1)")
 	@Type(type = "true_false")
 	private Boolean stopRequest;
 

@@ -22,8 +22,6 @@
  */
 package liquibase.database.core;
 
-import org.apache.commons.lang.StringUtils;
-
 import liquibase.database.Database;
 import liquibase.database.structure.type.BigIntType;
 import liquibase.database.structure.type.BooleanType;
@@ -31,10 +29,7 @@ import liquibase.database.structure.type.DataType;
 import liquibase.database.structure.type.DateTimeType;
 import liquibase.database.structure.type.DoubleType;
 import liquibase.database.structure.type.TinyIntType;
-import liquibase.database.typeconversion.TypeConverter;
-import liquibase.database.typeconversion.TypeConverterFactory;
 import liquibase.database.typeconversion.core.AbstractTypeConverter;
-import liquibase.exception.UnexpectedLiquibaseException;
 
 /**
  * Liquibase Cubrid type converter.
@@ -50,8 +45,8 @@ public class CUBRIDTypeConverter extends AbstractTypeConverter {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * liquibase.database.typeconversion.core.AbstractTypeConverter#getDataType(java.lang.String,
-	 * java.lang.Boolean)
+	 * liquibase.database.typeconversion.core.AbstractTypeConverter#getDataType
+	 * (java.lang.String, java.lang.Boolean)
 	 */
 	@Override
 	public DataType getDataType(String columnTypeString, Boolean autoIncrement) {
@@ -75,7 +70,9 @@ public class CUBRIDTypeConverter extends AbstractTypeConverter {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see liquibase.database.typeconversion.TypeConverter#supports(liquibase.database.Database)
+	 * @see
+	 * liquibase.database.typeconversion.TypeConverter#supports(liquibase.database
+	 * .Database)
 	 */
 	@Override
 	public boolean supports(Database database) {
@@ -85,7 +82,9 @@ public class CUBRIDTypeConverter extends AbstractTypeConverter {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see liquibase.database.typeconversion.core.AbstractTypeConverter#getBigIntType()
+	 * @see
+	 * liquibase.database.typeconversion.core.AbstractTypeConverter#getBigIntType
+	 * ()
 	 */
 	@Override
 	public BigIntType getBigIntType() {
@@ -95,80 +94,21 @@ public class CUBRIDTypeConverter extends AbstractTypeConverter {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see liquibase.database.typeconversion.core.AbstractTypeConverter#getBooleanType()
+	 * @see
+	 * liquibase.database.typeconversion.core.AbstractTypeConverter#getBooleanType
+	 * ()
 	 */
 	@Override
 	public BooleanType getBooleanType() {
-		return new CubridBooleanType("char(1)");
-	}
-
-	/**
-	 * Custom boolean type converter for cubrid T or F representation for booolean type.
-	 * 
-	 * @author JunHo Yoon
-	 * 
-	 */
-	public class CubridBooleanType extends BooleanType {
-		/**
-		 * Constructor.
-		 * 
-		 * @param type
-		 *            native type for boolean
-		 */
-		public CubridBooleanType(String type) {
-			super(type);
-		}
-
-		@Override
-		public String getTrueBooleanValue() {
-			return "'T'";
-		}
-
-		@Override
-		public String getFalseBooleanValue() {
-			return "'F'";
-		};
-
-		@Override
-		public String convertObjectToString(Object value, Database database) {
-			if (value == null) {
-				return null;
-			} else if (value.toString().equalsIgnoreCase("null")) {
-				return "null";
-			}
-
-			String returnValue;
-			TypeConverter converter = TypeConverterFactory.getInstance().findTypeConverter(database);
-			BooleanType booleanType = converter.getBooleanType();
-			if (value instanceof String) {
-				String trim = StringUtils.trim((String) value);
-				if ("T".equals(trim)) {
-					return booleanType.getTrueBooleanValue();
-				} else if ("F".equals(trim) || StringUtils.isEmpty((String) value) || "0".equals(trim)) {
-					return booleanType.getFalseBooleanValue();
-				} else {
-					throw new UnexpectedLiquibaseException("Unknown boolean value: " + value);
-				}
-			} else if (value instanceof Long) {
-				if (Long.valueOf(1).equals(value)) {
-					returnValue = booleanType.getTrueBooleanValue();
-				} else {
-					returnValue = booleanType.getFalseBooleanValue();
-				}
-			} else if (((Boolean) value)) {
-				returnValue = booleanType.getTrueBooleanValue();
-			} else {
-				returnValue = booleanType.getFalseBooleanValue();
-			}
-
-			return returnValue;
-		}
+		return new TrueOrFalseBooleanType();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see liquibase.database.typeconversion.core.AbstractTypeConverter#getDateTimeType()
+	 * @see
+	 * liquibase.database.typeconversion.core.AbstractTypeConverter#getDateTimeType
+	 * ()
 	 */
 	@Override
 	public DateTimeType getDateTimeType() {
@@ -178,7 +118,9 @@ public class CUBRIDTypeConverter extends AbstractTypeConverter {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see liquibase.database.typeconversion.core.AbstractTypeConverter#getDoubleType()
+	 * @see
+	 * liquibase.database.typeconversion.core.AbstractTypeConverter#getDoubleType
+	 * ()
 	 */
 	@Override
 	public DoubleType getDoubleType() {
@@ -188,7 +130,9 @@ public class CUBRIDTypeConverter extends AbstractTypeConverter {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see liquibase.database.typeconversion.core.AbstractTypeConverter#getTinyIntType()
+	 * @see
+	 * liquibase.database.typeconversion.core.AbstractTypeConverter#getTinyIntType
+	 * ()
 	 */
 	@Override
 	public TinyIntType getTinyIntType() {

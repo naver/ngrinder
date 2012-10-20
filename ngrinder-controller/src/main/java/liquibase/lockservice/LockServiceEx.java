@@ -1,3 +1,25 @@
+/*
+ * Copyright (C) 2012 - 2012 NHN Corporation
+ * All rights reserved.
+ *
+ * This file is part of The nGrinder software distribution. Refer to
+ * the file LICENSE which is part of The nGrinder distribution for
+ * licensing details. The nGrinder distribution is available on the
+ * Internet at http://nhnopensource.org/ngrinder
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 package liquibase.lockservice;
 
 import static org.ngrinder.common.util.NoOp.noOp;
@@ -9,22 +31,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.ngrinder.infra.init.LockExDatabaseChangeLogGenerator;
-
 import liquibase.database.Database;
-import liquibase.database.typeconversion.TypeConverter;
-import liquibase.database.typeconversion.TypeConverterFactory;
 import liquibase.exception.DatabaseException;
 import liquibase.exception.LockException;
+import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.executor.Executor;
 import liquibase.executor.ExecutorService;
 import liquibase.logging.LogFactory;
-import liquibase.sqlgenerator.SqlGeneratorFactory;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.LockExDatabaseChangeLogStatement;
 import liquibase.statement.core.RawSqlStatement;
 import liquibase.statement.core.SelectFromDatabaseChangeLogLockStatement;
 import liquibase.statement.core.UnlockDatabaseChangeLogStatement;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * nGrinder customized implementation for {@link LockService}.
@@ -106,10 +126,8 @@ public final class LockServiceEx {
 			String lockedBy;
 			if (locks.length > 0) {
 				DatabaseChangeLogLock lock = locks[0];
-				lockedBy = lock.getLockedBy()
-								+ " since "
-								+ DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(
-												lock.getLockGranted());
+				lockedBy = lock.getLockedBy() + " since "
+						+ DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(lock.getLockGranted());
 			} else {
 				lockedBy = "UNKNOWN";
 			}
@@ -118,8 +136,8 @@ public final class LockServiceEx {
 	}
 
 	/**
-	 * Acquire lock. Instead of liquibase implementation, nGrinder added the type resolution for
-	 * boolean value.
+	 * Acquire lock. Instead of liquibase implementation, nGrinder added the
+	 * type resolution for boolean value.
 	 * 
 	 * @return true if successful
 	 * @throws LockException
@@ -135,13 +153,9 @@ public final class LockServiceEx {
 		try {
 			database.rollback();
 			database.checkDatabaseChangeLogLockTable();
-			// nGrinder Customization begin.
-			TypeConverter findTypeConverter = TypeConverterFactory.getInstance().findTypeConverter(database);
 			Object lockObject = (Object) ExecutorService.getInstance().getExecutor(database)
-							.queryForObject(new SelectFromDatabaseChangeLogLockStatement("LOCKED"), Object.class);
-			String convertObjectToString = findTypeConverter.getBooleanType().convertObjectToString(lockObject,
-							database);
-			if (findTypeConverter.getBooleanType().getTrueBooleanValue().equals(convertObjectToString)) {
+					.queryForObject(new SelectFromDatabaseChangeLogLockStatement("LOCKED"), Object.class);
+			if (checkReturnValue(lockObject)) {
 				// To here
 				return false;
 			} else {
@@ -150,7 +164,7 @@ public final class LockServiceEx {
 				if (rowsUpdated > 1) {
 					throw new LockException("Did not update change log lock correctly");
 				}
-				
+
 				if (rowsUpdated == 0) {
 					// another node was faster
 					return false;
@@ -175,6 +189,30 @@ public final class LockServiceEx {
 
 	}
 
+	public boolean checkReturnValue(Object value) {
+
+		if (value instanceof String) {
+			String trim = StringUtils.trim((String) value);
+			if ("T".equals(trim)) {
+				return true;
+			} else if ("F".equals(trim) || StringUtils.isEmpty((String) value) || "0".equals(trim)) {
+				return false;
+			} else {
+				throw new UnexpectedLiquibaseException("Unknown boolean value: " + value);
+			}
+		} else if (value instanceof Long) {
+			if (Long.valueOf(1).equals(value)) {
+				return true;
+			} else {
+				return false;
+			}
+		} else if (((Boolean) value)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	/**
 	 * Release Lock.
 	 * 
@@ -190,13 +228,12 @@ public final class LockServiceEx {
 				int updatedRows = executor.update(new UnlockDatabaseChangeLogStatement());
 				if (updatedRows != 1) {
 					throw new LockException("Did not update change log lock correctly.\n\n"
-									+ updatedRows
-									+ " rows were updated instead of the expected 1 row using executor "
-									+ executor.getClass().getName()
-									+ " there are "
-									+ executor.queryForInt(new RawSqlStatement("select count(*) from "
-													+ database.getDatabaseChangeLogLockTableName()))
-									+ " rows in the table");
+							+ updatedRows
+							+ " rows were updated instead of the expected 1 row using executor "
+							+ executor.getClass().getName()
+							+ " there are "
+							+ executor.queryForInt(new RawSqlStatement("select count(*) from "
+									+ database.getDatabaseChangeLogLockTableName())) + " rows in the table");
 				}
 				database.commit();
 				hasChangeLogLock = false;
@@ -233,8 +270,7 @@ public final class LockServiceEx {
 			}
 
 			List<DatabaseChangeLogLock> allLocks = new ArrayList<DatabaseChangeLogLock>();
-			SqlStatement sqlStatement = new SelectFromDatabaseChangeLogLockStatement("ID", "LOCKED", "LOCKGRANTED",
-							"LOCKEDBY");
+			SqlStatement sqlStatement = new SelectFromDatabaseChangeLogLockStatement("ID", "LOCKED", "LOCKGRANTED", "LOCKEDBY");
 			List<Map> rows = ExecutorService.getInstance().getExecutor(database).queryForList(sqlStatement);
 			for (Map columnMap : rows) {
 				Object lockedValue = columnMap.get("LOCKED");
@@ -247,8 +283,8 @@ public final class LockServiceEx {
 					locked = (Boolean) lockedValue;
 				}
 				if (locked != null && locked) {
-					allLocks.add(new DatabaseChangeLogLock(((Number) columnMap.get("ID")).intValue(), (Date) columnMap
-									.get("LOCKGRANTED"), (String) columnMap.get("LOCKEDBY")));
+					allLocks.add(new DatabaseChangeLogLock(((Number) columnMap.get("ID")).intValue(), (Date) columnMap.get("LOCKGRANTED"),
+							(String) columnMap.get("LOCKEDBY")));
 				}
 			}
 			return allLocks.toArray(new DatabaseChangeLogLock[allLocks.size()]);
@@ -270,14 +306,14 @@ public final class LockServiceEx {
 		releaseLock();
 		/*
 		 * try { releaseLock(); } catch (LockException e) { // ignore ?
-		 * LogFactory.getLogger().info("Ignored exception in forceReleaseLock: " + e.getMessage());
-		 * }
+		 * LogFactory.getLogger().info("Ignored exception in forceReleaseLock: "
+		 * + e.getMessage()); }
 		 */
 	}
 
 	/**
-	 * Clears information the lock handler knows about the tables. Should only be called by
-	 * Liquibase internal calls
+	 * Clears information the lock handler knows about the tables. Should only
+	 * be called by Liquibase internal calls
 	 */
 	public void reset() {
 		hasChangeLogLock = false;

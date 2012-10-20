@@ -27,7 +27,9 @@ import javax.sql.DataSource;
 
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
+import liquibase.database.core.H2ExTypeConverter;
 import liquibase.database.jvm.JdbcConnection;
+import liquibase.database.typeconversion.TypeConverterFactory;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
@@ -40,8 +42,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 /**
- * DB Data Updater. This class is used to update DB automatically when System restarted through log
- * file db.changelog.xml
+ * DB Data Updater. This class is used to update DB automatically when System
+ * restarted through log file db.changelog.xml
  * 
  * @author Matt
  * @author JunHo Yoon
@@ -63,7 +65,7 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 	private Database getDatabase() {
 		try {
 			Database databaseImplementation = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(
-							new JdbcConnection(dataSource.getConnection()));
+					new JdbcConnection(dataSource.getConnection()));
 			return databaseImplementation;
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("Error getting database", e);
@@ -87,8 +89,9 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 	@PostConstruct
 	public void init() throws Exception {
 		SqlGeneratorFactory.getInstance().register(new LockExDatabaseChangeLogGenerator());
-		LiquibaseEx liquibase = new LiquibaseEx(getChangeLog(), new ClassLoaderResourceAccessor(getResourceLoader()
-						.getClassLoader()), getDatabase());
+		TypeConverterFactory.getInstance().register(H2ExTypeConverter.class);
+		LiquibaseEx liquibase = new LiquibaseEx(getChangeLog(), new ClassLoaderResourceAccessor(getResourceLoader().getClassLoader()),
+				getDatabase());
 		try {
 			liquibase.update(contexts);
 		} catch (LiquibaseException e) {

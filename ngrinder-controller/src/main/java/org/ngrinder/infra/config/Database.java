@@ -28,11 +28,9 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.hibernate.dialect.CUBRIDExDialect;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.H2ExDialect;
-import org.hibernate.dialect.SQLiteDialect;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sqlite.JDBC;
 
 import cubrid.jdbc.driver.CUBRIDDriver;
 
@@ -44,18 +42,6 @@ import cubrid.jdbc.driver.CUBRIDDriver;
  * @since 3.0
  */
 public enum Database {
-
-	/** SQLite. **/
-	sqlite(JDBC.class, SQLiteDialect.class, "jdbc:sqlite:%s/db/ngrinder.sqlite3") {
-		@Override
-		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
-
-			String property = databaseProperties.getProperty("NGRINDER_HOME", ".");
-			dataSource.setUrl(String.format(getUrlTemplate(), property, " is not defined"));
-			dataSource.setUsername(databaseProperties.getProperty("database_username", "ngrinder"));
-			dataSource.setPassword(databaseProperties.getProperty("database_password", "ngrinder"));
-		}
-	},
 
 	/** CUBRID. */
 	cubrid(CUBRIDDriver.class, CUBRIDExDialect.class, "jdbc:CUBRID:%s:::?charset=utf-8") {

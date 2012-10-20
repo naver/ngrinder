@@ -53,6 +53,7 @@ public class User extends BaseModel<User> {
 	private String password;
 
 	@Type(type = "true_false")
+	@Column(columnDefinition="char(1)")
 	private boolean enabled = true;
 
 	private String email;
@@ -71,7 +72,7 @@ public class User extends BaseModel<User> {
 	@Column(name = "mobile_phone")
 	private String mobilePhone;
 
-	@Column(name = "is_external")
+	@Column(name = "is_external", columnDefinition="char(1)")
 	@Type(type = "true_false")
 	private boolean external = false;
 
