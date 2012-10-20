@@ -26,20 +26,12 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import liquibase.Liquibase;
-import liquibase.changelog.ChangeLogIterator;
-import liquibase.changelog.DatabaseChangeLog;
-import liquibase.changelog.filter.ContextChangeSetFilter;
-import liquibase.changelog.filter.DbmsChangeSetFilter;
-import liquibase.changelog.filter.ShouldRunChangeSetFilter;
-import liquibase.changelog.visitor.UpdateVisitor;
+import liquibase.LiquibaseEx;
 import liquibase.database.Database;
 import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.DatabaseException;
 import liquibase.exception.LiquibaseException;
-import liquibase.parser.ChangeLogParserFactory;
 import liquibase.resource.ClassLoaderResourceAccessor;
-import liquibase.util.StringUtils;
 
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,8 +41,8 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 /**
- * DB Data Updater. This class is used to update DB automatically when System restarted through log
- * file db.changelog.xml
+ * DB Data Updater. This class is used to update DB automatically when System
+ * restarted through log file db.changelog.xml
  * 
  * @author Matt
  * @author JunHo Yoon
@@ -72,7 +64,7 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 	private Database getDatabase() {
 		try {
 			Database databaseImplementation = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(
-							new JdbcConnection(dataSource.getConnection()));
+					new JdbcConnection(dataSource.getConnection()));
 			return databaseImplementation;
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("Error getting database", e);
@@ -95,31 +87,8 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 	 */
 	@PostConstruct
 	public void init() throws Exception {
-		Liquibase liquibase = new Liquibase(changeLog, new ClassLoaderResourceAccessor(getResourceLoader()
-						.getClassLoader()), getDatabase()) {
-			public void update(String contexts) throws LiquibaseException {
-				contexts = StringUtils.trimToNull(contexts);
-				getChangeLogParameters().setContexts(StringUtils.splitAndTrim(contexts, ","));
-
-				DatabaseChangeLog changeLog = ChangeLogParserFactory.getInstance()
-								.getParser(getChangeLog(), getFileOpener())
-								.parse(getChangeLog(), getChangeLogParameters(), getFileOpener());
-				checkDatabaseChangeLogTable(true, changeLog, contexts);
-
-				changeLog.validate(database, contexts);
-				ChangeLogIterator changeLogIterator = getStandardChangelogIterator(contexts, changeLog);
-
-				changeLogIterator.run(new UpdateVisitor(database), database);
-
-			};
-
-			private ChangeLogIterator getStandardChangelogIterator(String contexts, DatabaseChangeLog changeLog)
-							throws DatabaseException {
-				return new ChangeLogIterator(changeLog, new ShouldRunChangeSetFilter(database),
-								new ContextChangeSetFilter(contexts), new DbmsChangeSetFilter(database));
-			}
-		};
-
+		Liquibase liquibase = new LiquibaseEx(changeLog, new ClassLoaderResourceAccessor(getResourceLoader().getClassLoader()),
+				getDatabase());
 		try {
 			liquibase.update(contexts);
 		} catch (LiquibaseException e) {

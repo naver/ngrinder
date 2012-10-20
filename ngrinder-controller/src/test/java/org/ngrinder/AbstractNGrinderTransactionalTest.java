@@ -1,11 +1,7 @@
 package org.ngrinder;
 
-import java.io.File;
-import java.io.IOException;
-
 import javax.sql.DataSource;
 
-import org.junit.BeforeClass;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
@@ -14,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
