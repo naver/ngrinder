@@ -6,7 +6,7 @@
 			<label class="control-label"><@spring.message "user.info.form.userId"/></label>
 			<div class="controls">
 				<input type="text" class="span4 required userIdFmt userIdExist" id="userId" name="userId"
-				    maxlength="15"
+				    maxlength="20"
 				    rel="popover" value="${(user.userId)!}"
 					data-content="<@spring.message "user.info.warning.userId.intro"/> <@spring.message "common.form.rule.userId"/>"
 					data-original-title="<@spring.message "user.info.form.userId"/>"
