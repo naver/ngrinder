@@ -11,6 +11,8 @@
 	<!-- Scans the classpath of this application for @Components to deploy as beans -->
 	<context:component-scan base-package="org.ngrinder">
 		<context:exclude-filter type="annotation" expression="org.ngrinder.infra.annotation.RuntimeOnlyComponent" />
+		<context:exclude-filter type="annotation"
+			expression="org.ngrinder.infra.annotation.RuntimeOnlyController" />
 	</context:component-scan>
 
 	<import resource="applicationContext-springdata.xml" />

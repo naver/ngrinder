@@ -14,6 +14,8 @@
 	<context:component-scan base-package="org.ngrinder">
 		<context:exclude-filter type="annotation"
 			expression="org.ngrinder.infra.annotation.TestOnlyComponent" />
+		<context:exclude-filter type="annotation"
+			expression="org.ngrinder.infra.annotation.TestOnlyController" />
 	</context:component-scan>
 
 	<import resource="applicationContext-springdata.xml" />

@@ -12,9 +12,17 @@
       <outputDirectory>/</outputDirectory>
       <includes>
         <include>*.sh</include>
-        <include>*.bat</include>
       </includes>
       <fileMode>711</fileMode>
+      <lineEnding>unix</lineEnding>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/target/classes/shell</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>*.bat</include>
+      </includes>
+      <lineEnding>dos</lineEnding>
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/target</directory>
