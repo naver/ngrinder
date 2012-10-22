@@ -29,6 +29,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.infra.annotation.RuntimeOnlyController;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.perftest.service.AgentManager;
@@ -42,7 +43,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -57,7 +57,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author JunHo Yoon
  * @since 3.0
  */
-@Controller
+@RuntimeOnlyController
 @RequestMapping("/operation/scriptConsole")
 @PreAuthorize("hasAnyRole('A', 'S')")
 public class ScriptConsoleController extends NGrinderBaseController implements ApplicationContextAware {
@@ -98,6 +98,10 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	@PostConstruct
 	public void init() {
 		interp = new PythonInterpreter();
+		intVars(interp);
+	}
+
+	protected void intVars(PythonInterpreter interp) {
 		interp.set("applicationContext", this.applicationContext);
 		interp.set("agentManager", this.agentManager);
 		interp.set("consoleManager", this.consoleManager);

@@ -20,35 +20,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.operation;
+package org.ngrinder.infra.annotation;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.junit.Test;
-import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.operation.cotroller.ScriptConsoleController;
-import org.python.util.PythonInterpreter;
-import org.springframework.ui.ExtendedModelMap;
-import org.springframework.ui.Model;
+import org.springframework.stereotype.Controller;
 
-public class ScriptConsoleControllerTest extends AbstractNGrinderTransactionalTest {
+/**
+ * Spring component annotation to mark this component is only necessary to
+ * be created in unit test context. This annotation is mainly used to block the controller
+ * creation in runtime.
+ * 
+ * @author JunHo Yoon
+ * @since 3.0
+ */
+@Target({ ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Controller
+public @interface TestOnlyController {
 
-	@Test
-	public void runScriptTest() {
-
-		ScriptConsoleController scriptController = new ScriptConsoleController() {
-
-			@Override
-			protected void intVars(PythonInterpreter interp) {
-			}
-
-		};
-		scriptController.init();
-		String command = "print \'hello\'";
-		Model model = new ExtendedModelMap();
-		scriptController.runScript(command, model);
-		assertThat(model.containsAttribute("result"), is(true));
-
-	}
+	/**
+	 * Get spring component id.
+	 */
+	String value() default "";
 }
