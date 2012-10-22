@@ -20,39 +20,23 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.extension;
+package org.ngrinder.infra.plugin;
 
+import javax.servlet.Filter;
+
+import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
+import com.atlassian.plugin.module.ContainerManagedPlugin;
 
 /**
- * Plugin extension for Controller start and finish.
- * 
- * This plugin is necessary if you want to notify the controller start and end.
+ * Plugin Descriptor for Servlet Filter.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
-public interface OnControllerLifeCycleRunnable {
-
-	/**
-	 * Callback method which will be invoked whenever Controller is started.
-	 * 
-	 * 
-	 * @param ip
-	 *            ip
-	 * @param version
-	 *            version
-	 */
-	public void start(String ip, String version);
-
-
-	/**
-	 * Callback method which will be invoked whenever Controller is stopped.
-	 * 
-	 * 
-	 * @param ip
-	 *            ip
-	 * @param version
-	 *            version
-	 */
-	public void finish(String ip, String version);
+@PluginDescriptor("on-servletfilter")
+@SuppressWarnings("deprecation")
+public class OnServletFilterModuleDescriptor extends AbstractModuleDescriptor<Filter> {
+	public Filter getModule() {
+		return ((ContainerManagedPlugin) getPlugin()).getContainerAccessor().createBean(getModuleClass());
+	}
 }
