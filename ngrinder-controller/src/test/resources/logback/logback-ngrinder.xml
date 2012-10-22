@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+	<appender name="log-file" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss} %-5level %F:%L %marker:  %message%n</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="net.grinder" level="DEBUG" additivity="false">
+	  <appender-ref ref="log-file" />
+	</logger> 
+	
+	<logger name="org.ngrinder" level="DEBUG" additivity="false">
+	  <appender-ref ref="log-file" />
+    </logger>
+
+	<logger name="org.ngrinder.infra.logger.CoreLogger" level="INFO" additivity="false">
+	  <appender-ref ref="log-file" />
+    </logger>
+    
+	<logger name="org.twdata.pkgscanner" level="ERROR" additivity="false">
+	  <appender-ref ref="log-file" />
+    </logger>
+    
+	<root>
+		<level value="WARN" />
+		<appender-ref ref="log-file" />
+	</root>
+</configuration>

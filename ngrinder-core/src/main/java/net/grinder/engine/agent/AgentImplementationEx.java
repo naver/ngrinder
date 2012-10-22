@@ -222,7 +222,7 @@ public class AgentImplementationEx implements Agent {
 										GrinderProperties.SCRIPT, GrinderProperties.DEFAULT_SCRIPT));
 						script = new ScriptLocation(scriptFile);
 					}
-
+					m_logger.debug("Script Location : {}", script.getFile().getAbsolutePath());
 					if (!script.getFile().canRead()) {
 						m_logger.error("The script file '" + script + "' does not exist or is not readable.");
 						script = null;
@@ -372,7 +372,6 @@ public class AgentImplementationEx implements Agent {
 	private static Properties filterSystemClassPath(Properties properties, Logger logger) {
 		String property = properties.getProperty("java.class.path", "");
 		logger.debug("Total System Class Path in total is " + property);
-
 		String newClassPath = GrinderClassPathUtils.filterClassPath(property, logger);
 
 		properties.setProperty("java.class.path", newClassPath);

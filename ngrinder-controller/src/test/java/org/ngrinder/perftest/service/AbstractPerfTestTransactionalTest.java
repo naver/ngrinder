@@ -31,8 +31,8 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 
 	@Before
 	public void firstInit() {
-		agentConfig1 = new MockAgentConfigInControllerSide().init();
-		agentConfig2 = new MockAgentConfigInControllerSide().init();
+		agentConfig1 = new MockAgentConfigInControllerSide(1).init();
+		agentConfig2 = new MockAgentConfigInControllerSide(2).init();
 	}
 
 	@Autowired

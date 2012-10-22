@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,11 +13,7 @@ import net.grinder.AgentControllerDaemon;
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.common.GrinderProperties;
-import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
-import net.grinder.console.communication.ProcessControl.Listener;
-import net.grinder.console.communication.ProcessControl.ProcessReports;
-import net.grinder.console.communication.ProcessControlImplementation;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -57,8 +52,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	public void before() throws IOException {
 		ClassPathResource classPathResource = new ClassPathResource("native_lib/.sigar_shellrc");
 		String nativeLib = classPathResource.getFile().getParentFile().getAbsolutePath();
-		System.setProperty("java.library.path",
-						nativeLib + File.pathSeparator + System.getProperty("java.library.path"));
+		System.setProperty("java.library.path", nativeLib + File.pathSeparator + System.getProperty("java.library.path"));
 		System.out.println("Java Lib Path : " + System.getProperty("java.library.path"));
 		CompressionUtil compressUtil = new CompressionUtil();
 
@@ -77,6 +71,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 		assertThat(allPerfTest.size(), is(1));
 		allPerfTest.get(0).setScriptName("/hello/world.py");
+		allPerfTest.get(0).setDuration(30000L);
 		perfTestService.savePerfTest(testUser, allPerfTest.get(0));
 		agentControllerDaemon = new AgentControllerDaemon();
 		agentControllerDaemon.setAgentConfig(agentConfig1);
@@ -110,8 +105,14 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	@Test
 	public void testDoTest() throws IOException {
+		for (int i = 0; i < 10; i++) {
+			if (agentManager.getAllFreeApprovedAgents().size() == 1) {
+				break;
+			}
+			sleep(1000);
+		}
 		perfTestRunnable.startTest();
-		sleep(10000);
+		sleep(20000);
 		perfTestRunnable.finishTest();
 	}
 
@@ -156,7 +157,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 		// Run test
 		perfTestRunnable.runTestOn(perfTest, grinderProperties, singleConsole);
-		sleep(20000);
+		sleep(10000);
 		// Waiting for termination
 		singleConsole.waitUntilAllAgentDisconnected();
 	}

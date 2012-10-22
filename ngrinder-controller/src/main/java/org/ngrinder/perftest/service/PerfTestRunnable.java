@@ -253,7 +253,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES, "All necessary files are distributing.");
 
 		// the files have prepared before
-		singleConsole.distributeFiles(perfTestService.getPerfTestDirectory(perfTest));
+		singleConsole.distributeFiles(perfTestService.getPerfTestDistributionPath(perfTest));
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES_FINISHED,
 						"All necessary files are distributed.");
 	}
