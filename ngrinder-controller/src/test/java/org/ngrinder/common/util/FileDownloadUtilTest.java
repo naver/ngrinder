@@ -46,11 +46,11 @@ public class FileDownloadUtilTest {
 	public void testDownloadFileHttpServletResponseString() throws IOException {
 		File downFile = new ClassPathResource("TEST_USER.zip").getFile();
 		String filePath = downFile.getAbsolutePath();
-		HttpServletResponse resp = new MockHttpServletResponse();
+		MockHttpServletResponse resp = new MockHttpServletResponse();
 		FileDownloadUtil.downloadFile(resp, filePath);
-		String lengthHeaader = resp.getHeader("Content-Length");
+		String lengthHeader = resp.getHeader("Content-Length");
 
-		assertThat(lengthHeaader, is(String.valueOf(downFile.length())));
+		assertThat(lengthHeader, is(String.valueOf(downFile.length())));
 	}
 	
 	@Test
