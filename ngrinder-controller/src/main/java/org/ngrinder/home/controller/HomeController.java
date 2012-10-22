@@ -69,7 +69,8 @@ public class HomeController extends NGrinderBaseController {
 	@Autowired
 	private HomeService homeService;
 
-	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
+	private static final String TIMEZONE_ID_PREFIXES = 
+					"^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
 
 	private List<TimeZone> timeZones = null;
 
@@ -162,6 +163,12 @@ public class HomeController extends NGrinderBaseController {
 		model.addAttribute("defaultTime", defaultTime.getID());
 	}
 
+	/**
+	 * Change time zone.
+	 * @param user user
+	 * @param timeZone time zone
+	 * @return success json message
+	 */
 	@ResponseBody
 	@RequestMapping(value = "/changeTimeZone")
 	public String changeTimeZone(User user, String timeZone) {
@@ -169,18 +176,33 @@ public class HomeController extends NGrinderBaseController {
 		return returnSuccess();
 	}
 
+	/**
+	 * Get all timezone.
+	 * @param model model
+	 * @return allTimeZone
+	 */
 	@RequestMapping(value = "/allTimeZone")
 	public String getAllTimeZone(ModelMap model) {
 		model.addAttribute("timeZones", DateUtil.getFilteredTimeZoneMap());
 		return "allTimeZone";
 	}
 
+	/**
+	 * Error redirection to 404.
+	 * @param model model
+	 * @return "redirect:/doError"
+	 */
 	@RequestMapping(value = "/error_404")
 	public String error404(RedirectAttributesModelMap model) {
 		model.addFlashAttribute("exception", new NGrinderRuntimeException("Requested URL does not exist !"));
 		return "redirect:/doError";
 	}
 
+	/**
+	 * Error redirection for second phase.
+	 * @param model model
+	 * @return "index"
+	 */
 	@RequestMapping(value = "/doError")
 	public String second(ModelMap model) {
 		return "index";

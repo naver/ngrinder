@@ -69,7 +69,8 @@ import org.tmatesoft.svn.util.SVNDebugLog;
 import org.tmatesoft.svn.util.SVNLogType;
 
 /**
- * WebDav servlet implementation on SVN Server. This servlet translates WEBDAV request into underlying SVN Repo.
+ * WebDav servlet implementation on SVN Server. This servlet translates WEBDAV request into
+ * underlying SVN Repo.
  * 
  * This implementation is borrowed from SVNKit-DAV project.
  * 
@@ -200,8 +201,9 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 	 *             occurs when file system has a problem.
 	 */
 	@Override
-	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-			IOException {
+	public void handleRequest(HttpServletRequest request, HttpServletResponse response)
+					throws ServletException,
+					IOException {
 		if (LOGGER.isTraceEnabled()) {
 			logRequest(request);
 		}
@@ -214,7 +216,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 			if (!StringUtils.equals(currentUser.getUserId(), head)) {
 				SecurityContextHolder.getContext().setAuthentication(null);
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-						head + " is not accessible by " + currentUser.getUserId());
+								head + " is not accessible by " + currentUser.getUserId());
 				return;
 			}
 			// To make it understand Asian Language..
@@ -238,7 +240,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 			}
 			SVNErrorCode errorCode = svne.getErrorMessage().getErrorCode();
 			if (errorCode == SVNErrorCode.FS_NOT_DIRECTORY || errorCode == SVNErrorCode.FS_NOT_FOUND
-					|| errorCode == SVNErrorCode.RA_DAV_PATH_NOT_FOUND) {
+							|| errorCode == SVNErrorCode.RA_DAV_PATH_NOT_FOUND) {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, msg);
 			} else if (errorCode == SVNErrorCode.NO_AUTH_FILE_PATH) {
 				response.sendError(HttpServletResponse.SC_FORBIDDEN, msg);
@@ -375,7 +377,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 			namespaces.add(namespace);
 		}
 		SVNXMLUtil.openNamespaceDeclarationTag(SVNXMLUtil.DAV_NAMESPACE_PREFIX, DAVXMLUtil.SVN_DAV_ERROR_TAG,
-				namespaces, SVNXMLUtil.PREFIX_MAP, xmlBuffer);
+						namespaces, SVNXMLUtil.PREFIX_MAP, xmlBuffer);
 		String prefix = (String) SVNXMLUtil.PREFIX_MAP.get(namespace);
 		if (prefix != null) {
 			prefix = SVNXMLUtil.DAV_NAMESPACE_PREFIX;
@@ -385,7 +387,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 		}
 
 		SVNXMLUtil.openXMLTag(SVNXMLUtil.SVN_APACHE_PROPERTY_PREFIX, "human-readable", SVNXMLUtil.XML_STYLE_NORMAL,
-				"errcode", String.valueOf(errorID), xmlBuffer);
+						"errcode", String.valueOf(errorID), xmlBuffer);
 		xmlBuffer.append(SVNEncodingUtil.xmlEncodeCDATA(description));
 		SVNXMLUtil.closeXMLTag(SVNXMLUtil.SVN_APACHE_PROPERTY_PREFIX, "human-readable", xmlBuffer);
 		SVNXMLUtil.closeXMLTag(SVNXMLUtil.DAV_NAMESPACE_PREFIX, DAVXMLUtil.SVN_DAV_ERROR_TAG, xmlBuffer);
@@ -418,6 +420,8 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 	/**
 	 * Check if statusCode is http server error of not.
 	 * 
+	 * @param statusCode
+	 *            status code.
 	 * @return true if it's server error.
 	 */
 	public static boolean isHTTPServerError(int statusCode) {

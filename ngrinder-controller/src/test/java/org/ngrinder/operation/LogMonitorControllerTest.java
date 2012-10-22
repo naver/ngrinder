@@ -34,8 +34,9 @@ public class LogMonitorControllerTest extends AbstractNGrinderTransactionalTest 
 		}
 		CoreLogger.LOGGER.info(buffer.toString());
 		CoreLogger.LOGGER.info("Core Logger");
-		LOGGER.debug("TEST TEST");
 		sleep(3000);
+		LOGGER.debug("TEST TEST");
+		sleep(1000);
 		//if logMonitorController.enableVerbose(false), it will check system setting.
 		boolean isDebug = config.getSystemProperties().getPropertyBoolean("verbose", false);
 		if (!isDebug) {

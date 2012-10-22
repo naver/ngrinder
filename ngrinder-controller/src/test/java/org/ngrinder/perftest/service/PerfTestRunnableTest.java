@@ -52,7 +52,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	@Autowired
 	public MockFileEntityRepsotory fileEntityRepository;
 
-	private int currentProcessCount = 10;
+	private int currentProcessCount = 0;
 	private Object processCountSync = new Object();
 
 	@Before
@@ -157,7 +157,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 		// Run test
 		perfTestRunnable.runTestOn(perfTest, grinderProperties, singleConsole);
-		sleep(20000);
+		sleep(1000);
 
 		// Waiting for termination
 		for (int i = 1; i < 100; i++) {
