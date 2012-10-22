@@ -40,8 +40,6 @@ public class TrueOrFalseBooleanType extends BooleanType {
 	/**
 	 * Constructor.
 	 * 
-	 * @param type
-	 *            native type for boolean
 	 */
 	public TrueOrFalseBooleanType() {
 		super("char(1)");

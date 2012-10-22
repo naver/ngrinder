@@ -24,12 +24,10 @@ package liquibase.statement.core;
 
 import liquibase.statement.AbstractSqlStatement;
 
-import org.ngrinder.infra.init.LockExDatabaseChangeLogGenerator;
-
 /**
  * Customized {@link LockDatabaseChangeLogStatement}.
  * 
- * @see LockExDatabaseChangeLogGenerator
+ * @see org.ngrinder.infra.init.LockExDatabaseChangeLogGenerator
  * @author JunHo Yoon
  * @since 3.0
  */

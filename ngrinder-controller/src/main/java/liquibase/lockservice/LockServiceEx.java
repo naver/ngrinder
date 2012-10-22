@@ -126,8 +126,10 @@ public final class LockServiceEx {
 			String lockedBy;
 			if (locks.length > 0) {
 				DatabaseChangeLogLock lock = locks[0];
-				lockedBy = lock.getLockedBy() + " since "
-						+ DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(lock.getLockGranted());
+				lockedBy = lock.getLockedBy()
+								+ " since "
+								+ DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(
+												lock.getLockGranted());
 			} else {
 				lockedBy = "UNKNOWN";
 			}
@@ -136,8 +138,8 @@ public final class LockServiceEx {
 	}
 
 	/**
-	 * Acquire lock. Instead of liquibase implementation, nGrinder added the
-	 * type resolution for boolean value.
+	 * Acquire lock. Instead of liquibase implementation, nGrinder added the type resolution for
+	 * boolean value.
 	 * 
 	 * @return true if successful
 	 * @throws LockException
@@ -154,7 +156,7 @@ public final class LockServiceEx {
 			database.rollback();
 			database.checkDatabaseChangeLogLockTable();
 			Object lockObject = (Object) ExecutorService.getInstance().getExecutor(database)
-					.queryForObject(new SelectFromDatabaseChangeLogLockStatement("LOCKED"), Object.class);
+							.queryForObject(new SelectFromDatabaseChangeLogLockStatement("LOCKED"), Object.class);
 			if (checkReturnValue(lockObject)) {
 				// To here
 				return false;
@@ -189,6 +191,13 @@ public final class LockServiceEx {
 
 	}
 
+	/**
+	 * Check return value is boolean or not.
+	 * 
+	 * @param value
+	 *            returnValue
+	 * @return true if true
+	 */
 	public boolean checkReturnValue(Object value) {
 
 		if (value instanceof String) {
@@ -200,14 +209,14 @@ public final class LockServiceEx {
 			} else {
 				throw new UnexpectedLiquibaseException("Unknown boolean value: " + value);
 			}
+		} else if (value == null) {
+			return false;
+		} else if (value instanceof Integer) {
+			return !(Integer.valueOf(0).equals(value));
 		} else if (value instanceof Long) {
-			if (Long.valueOf(1).equals(value)) {
-				return true;
-			} else {
-				return false;
-			}
-		} else if (((Boolean) value)) {
-			return true;
+			return !(Long.valueOf(0).equals(value));
+		} else if (value instanceof Boolean) {
+			return ((Boolean) value);
 		} else {
 			return false;
 		}
@@ -228,12 +237,13 @@ public final class LockServiceEx {
 				int updatedRows = executor.update(new UnlockDatabaseChangeLogStatement());
 				if (updatedRows != 1) {
 					throw new LockException("Did not update change log lock correctly.\n\n"
-							+ updatedRows
-							+ " rows were updated instead of the expected 1 row using executor "
-							+ executor.getClass().getName()
-							+ " there are "
-							+ executor.queryForInt(new RawSqlStatement("select count(*) from "
-									+ database.getDatabaseChangeLogLockTableName())) + " rows in the table");
+									+ updatedRows
+									+ " rows were updated instead of the expected 1 row using executor "
+									+ executor.getClass().getName()
+									+ " there are "
+									+ executor.queryForInt(new RawSqlStatement("select count(*) from "
+													+ database.getDatabaseChangeLogLockTableName()))
+									+ " rows in the table");
 				}
 				database.commit();
 				hasChangeLogLock = false;
@@ -270,7 +280,8 @@ public final class LockServiceEx {
 			}
 
 			List<DatabaseChangeLogLock> allLocks = new ArrayList<DatabaseChangeLogLock>();
-			SqlStatement sqlStatement = new SelectFromDatabaseChangeLogLockStatement("ID", "LOCKED", "LOCKGRANTED", "LOCKEDBY");
+			SqlStatement sqlStatement = new SelectFromDatabaseChangeLogLockStatement("ID", "LOCKED", "LOCKGRANTED",
+							"LOCKEDBY");
 			List<Map> rows = ExecutorService.getInstance().getExecutor(database).queryForList(sqlStatement);
 			for (Map columnMap : rows) {
 				Object lockedValue = columnMap.get("LOCKED");
@@ -283,8 +294,8 @@ public final class LockServiceEx {
 					locked = (Boolean) lockedValue;
 				}
 				if (locked != null && locked) {
-					allLocks.add(new DatabaseChangeLogLock(((Number) columnMap.get("ID")).intValue(), (Date) columnMap.get("LOCKGRANTED"),
-							(String) columnMap.get("LOCKEDBY")));
+					allLocks.add(new DatabaseChangeLogLock(((Number) columnMap.get("ID")).intValue(), (Date) columnMap
+									.get("LOCKGRANTED"), (String) columnMap.get("LOCKEDBY")));
 				}
 			}
 			return allLocks.toArray(new DatabaseChangeLogLock[allLocks.size()]);
@@ -306,14 +317,14 @@ public final class LockServiceEx {
 		releaseLock();
 		/*
 		 * try { releaseLock(); } catch (LockException e) { // ignore ?
-		 * LogFactory.getLogger().info("Ignored exception in forceReleaseLock: "
-		 * + e.getMessage()); }
+		 * LogFactory.getLogger().info("Ignored exception in forceReleaseLock: " + e.getMessage());
+		 * }
 		 */
 	}
 
 	/**
-	 * Clears information the lock handler knows about the tables. Should only
-	 * be called by Liquibase internal calls
+	 * Clears information the lock handler knows about the tables. Should only be called by
+	 * Liquibase internal calls
 	 */
 	public void reset() {
 		hasChangeLogLock = false;
