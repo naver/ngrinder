@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletResponse;
@@ -194,7 +195,7 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute(PARAM_SCRIPT_LIST, allFileEntries);
 
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
-		addDefaultAttributeOnModel(model);
+		addDefaultAttributeOnModel(user, model);
 		return "perftest/detail";
 	}
 
@@ -212,15 +213,26 @@ public class PerfTestController extends NGrinderBaseController {
 	/**
 	 * Add the various default configuration values on the model.
 	 * 
+	 * @param user user
 	 * @param model
 	 *            model which will contains that value.
 	 */
-	public void addDefaultAttributeOnModel(ModelMap model) {
+	public void addDefaultAttributeOnModel(User user, ModelMap model) {
 		model.addAttribute(PARAM_CURRENT_FREE_AGENTS_COUNT, agentManager.getAllFreeAgents().size());
-		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, Math.min(agentManager.getMaxAgentSizePerConsole(), agentManager.getAllApprovedAgents().size()));
+
+		int maxAgentSizePerConsole = getMaxAgentSizePerConsole(user);
+		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, maxAgentSizePerConsole) ;
 		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
 		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
 		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour() - 1);
+	}
+
+	private int getMaxAgentSizePerConsole(User user) {
+		Set<AgentIdentity> allApprovedAgents = agentManager.getAllApprovedAgents();
+		Set<AgentIdentity> allApprovedAgentsForUser = agentManager.getAllApprovedAgents(user);
+		int additional =  allApprovedAgents.size() - allApprovedAgentsForUser.size();
+		int maxAgentSizePerConsole = Math.min(agentManager.getMaxAgentSizePerConsole() + additional, allApprovedAgentsForUser.size());
+		return maxAgentSizePerConsole;
 	}
 
 	/**
@@ -245,7 +257,7 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute(PARAM_TARGET_HOST, url.getHost());
 		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
-		addDefaultAttributeOnModel(model);
+		addDefaultAttributeOnModel(user, model);
 		return "perftest/detail";
 	}
 
@@ -272,7 +284,7 @@ public class PerfTestController extends NGrinderBaseController {
 						"test duration should be within %s", agentManager.getMaxRunHour());
 		checkArgument(test.getRunCount() == null || test.getRunCount() <= agentManager.getMaxRunCount(),
 						"test run count should be within %s", agentManager.getMaxRunCount());
-		checkArgument(test.getAgentCount() == null || test.getAgentCount() <= agentManager.getMaxAgentSizePerConsole(),
+		checkArgument(test.getAgentCount() == null || test.getAgentCount() <= getMaxAgentSizePerConsole(user),
 						"test agent shoule be within %s", agentManager.getMaxAgentSizePerConsole());
 		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
 						"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());

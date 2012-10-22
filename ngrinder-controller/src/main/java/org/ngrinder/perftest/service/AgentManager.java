@@ -54,6 +54,7 @@ import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +64,8 @@ import org.springframework.stereotype.Component;
 /**
  * Agent manager.
  * 
- * This class has {@link AgentControllerServerDaemon} internally and manage to the agent connection.
+ * This class has {@link AgentControllerServerDaemon} internally and manage to
+ * the agent connection.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -86,25 +88,22 @@ public class AgentManager implements NGrinderConstants {
 	 */
 	@PostConstruct
 	public void init() {
-		agentControllerServer = new AgentControllerServerDaemon(
-						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+		agentControllerServer = new AgentControllerServerDaemon(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		agentControllerServer.start();
 		agentControllerServer.addLogArrivedListener(new LogArrivedListener() {
 			@Override
 			public void logArrived(String testId, AgentAddress agentAddress, byte[] logs) {
-				AgentControllerIdentityImplementation agentIdentity = 
-								(AgentControllerIdentityImplementation) agentAddress.getIdentity();
+				AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) agentAddress.getIdentity();
 				if (ArrayUtils.isEmpty(logs)) {
 					LOGGER.error("Log is arrived from {} but no log content", agentIdentity.getIp());
 				}
 				File logFile = null;
 				try {
-					logFile = new File(config.getHome().getPerfTestLogDirectory(testId.replace("test_", "")),
-									agentIdentity.getName() + "-" + agentIdentity.getRegion() + "-log.zip");
+					logFile = new File(config.getHome().getPerfTestLogDirectory(testId.replace("test_", "")), agentIdentity.getName() + "-"
+							+ agentIdentity.getRegion() + "-log.zip");
 					FileUtils.writeByteArrayToFile(logFile, logs);
 				} catch (IOException e) {
-					LOGGER.error("Error while write logs from {} to {}", agentAddress.getIdentity().getName(),
-									logFile.getAbsolutePath());
+					LOGGER.error("Error while write logs from {} to {}", agentAddress.getIdentity().getName(), logFile.getAbsolutePath());
 					LOGGER.error("Error is following", e);
 				}
 			}
@@ -157,8 +156,7 @@ public class AgentManager implements NGrinderConstants {
 	 * @return max agent size per console
 	 */
 	public int getMaxAgentSizePerConsole() {
-		return config.getSystemProperties().getPropertyInt("agent.maxsize",
-						NGrinderConstants.MAX_AGENT_SIZE_PER_CONSOLE);
+		return config.getSystemProperties().getPropertyInt("agent.maxsize", NGrinderConstants.MAX_AGENT_SIZE_PER_CONSOLE);
 	}
 
 	/**
@@ -197,8 +195,7 @@ public class AgentManager implements NGrinderConstants {
 	 */
 	public AgentControllerIdentityImplementation getAgentIdentityByIp(String agentIP) {
 		for (AgentIdentity agentIdentity : getAllAttachedAgents()) {
-			AgentControllerIdentityImplementation eachAgentIdentity = 
-							(AgentControllerIdentityImplementation) agentIdentity;
+			AgentControllerIdentityImplementation eachAgentIdentity = (AgentControllerIdentityImplementation) agentIdentity;
 			if (StringUtils.equals(eachAgentIdentity.getIp(), agentIP)) {
 				return eachAgentIdentity;
 			}
@@ -216,6 +213,17 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
+	 * Get the all approved agents for given user which are not used now.
+	 * 
+	 * @param user
+	 *            user
+	 * @return AgentIndentity set
+	 */
+	public Set<AgentIdentity> getAllFreeApprovedAgentsForUser(User user) {
+		return filterUserAgents(getAllFreeApprovedAgents(), user.getUserId());
+	}
+
+	/**
 	 * Get the all approved agents which are not used now.
 	 * 
 	 * @return AgentIndentity set
@@ -223,6 +231,16 @@ public class AgentManager implements NGrinderConstants {
 	public Set<AgentIdentity> getAllFreeApprovedAgents() {
 		Set<AgentIdentity> allFreeAgents = agentControllerServer.getAllFreeAgents();
 		return filterApprovedAgents(allFreeAgents);
+	}
+	
+	/**
+	 * Get the all approved agents for given user.
+	 * 
+	 * @param user user
+	 * @return AgentIndentity set
+	 */
+	public Set<AgentIdentity> getAllApprovedAgents(User user) {
+		return filterUserAgents(getAllApprovedAgents(), user.getUserId());
 	}
 
 	/**
@@ -234,7 +252,7 @@ public class AgentManager implements NGrinderConstants {
 		Set<AgentIdentity> allAgents = agentControllerServer.getAllAvailableAgents();
 		return filterApprovedAgents(allAgents);
 	}
-	
+
 	/**
 	 * Filter the approved agents from given agents.
 	 * 
@@ -263,6 +281,28 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
+	 * Filter the user owned agents from given agents.
+	 * 
+	 * 
+	 * @param agents
+	 *            all agents
+	 * @param userId userId
+	 * @return userOwned agents.
+	 */
+	public Set<AgentIdentity> filterUserAgents(Set<AgentIdentity> agents, String userId) {
+
+		Set<AgentIdentity> userAgent = new HashSet<AgentIdentity>();
+		for (AgentIdentity each : agents) {
+			String region = ((AgentControllerIdentityImplementation) each).getRegion();
+
+			if (StringUtils.containsNone(region, "owned_") || StringUtils.contains(region, "owned_" + userId)) {
+				userAgent.add(each);
+			}
+		}
+		return userAgent;
+	}
+
+	/**
 	 * Get the current system performance of the given agent.
 	 * 
 	 * @param agentIdentity
@@ -276,6 +316,7 @@ public class AgentManager implements NGrinderConstants {
 	/**
 	 * Assign the agents on the given console.
 	 * 
+	 * @param user user
 	 * @param singleConsole
 	 *            {@link SingleConsole} to which agents will be assigned
 	 * @param grinderProperties
@@ -283,9 +324,8 @@ public class AgentManager implements NGrinderConstants {
 	 * @param agentCount
 	 *            the count of agents.
 	 */
-	public synchronized void runAgent(final SingleConsole singleConsole, final GrinderProperties grinderProperties,
-					final Integer agentCount) {
-		final Set<AgentIdentity> allFreeAgents = getAllFreeApprovedAgents();
+	public synchronized void runAgent(User user, final SingleConsole singleConsole, final GrinderProperties grinderProperties, final Integer agentCount) {
+		final Set<AgentIdentity> allFreeAgents = getAllFreeApprovedAgentsForUser(user);
 		final Set<AgentIdentity> neccessaryAgents = selectSome(allFreeAgents, agentCount);
 		ExecutorService execService = null;
 		try {
