@@ -27,16 +27,6 @@ public class MockPerfTestRunnable extends PerfTestRunnable {
 		perfTestService.markStatusAndProgress(perfTest, START_AGENTS, perfTest.getAgentCount()
 						+ " agents are starting.");
 		agentManager.runAgent(singleConsole, grinderProperties, perfTest.getAgentCount());
-		for (int i = 0; i < 10; i++) {
-			try {
-				singleConsole.waitUntilAgentConnected(perfTest.getAgentCount());
-				break;
-			} catch (Exception e) {
-			}
-			if (i > 9) {
-				fail("Agent connection has some problem");
-			}
-		}
 		perfTestService.markStatusAndProgress(perfTest, START_AGENTS_FINISHED, perfTest.getAgentCount()
 						+ " agents are started.");
 	}

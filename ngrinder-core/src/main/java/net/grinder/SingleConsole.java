@@ -355,7 +355,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Set the file distibution directory.
+	 * Set the file distribution directory.
 	 * 
 	 * @param filePath
 	 *            file path.

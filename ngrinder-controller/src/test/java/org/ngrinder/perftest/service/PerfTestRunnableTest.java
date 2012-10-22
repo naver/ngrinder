@@ -12,6 +12,7 @@ import java.util.List;
 
 import net.grinder.AgentControllerDaemon;
 import net.grinder.SingleConsole;
+import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
@@ -52,9 +53,6 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	@Autowired
 	public MockFileEntityRepsotory fileEntityRepository;
 
-	private int currentProcessCount = 0;
-	private Object processCountSync = new Object();
-
 	@Before
 	public void before() throws IOException {
 		ClassPathResource classPathResource = new ClassPathResource("native_lib/.sigar_shellrc");
@@ -76,7 +74,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		clearAllPerfTest();
 		createPerfTest("test1", Status.READY, null);
 		List<PerfTest> allPerfTest = perfTestService.getAllPerfTest();
-		
+
 		assertThat(allPerfTest.size(), is(1));
 		allPerfTest.get(0).setScriptName("/hello/world.py");
 		perfTestService.savePerfTest(testUser, allPerfTest.get(0));
@@ -107,7 +105,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	@After
 	public void after() {
 		agentControllerDaemon.shutdown();
-		sleep(6000);
+		sleep(3000);
 	}
 
 	@Test
@@ -116,6 +114,8 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		sleep(10000);
 		perfTestRunnable.finishTest();
 	}
+
+	boolean ended = false;
 
 	@Test
 	public void testStartConsole() throws IOException {
@@ -132,46 +132,33 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 		// Start agents
 		perfTest.setAgentCount(1);
+		System.out.println(perfTest);
 		GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
 		singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest));
-		perfTestRunnable.startAgentsOn(perfTest, grinderProperties, singleConsole);
 
 		// Distribute files
 		perfTestService.prepareDistribution(perfTest);
+		perfTestRunnable.startAgentsOn(perfTest, grinderProperties, singleConsole);
+		sleep(3000);
 		perfTestRunnable.distributeFileOn(perfTest, grinderProperties, singleConsole);
-		singleConsole.getConsoleComponent(ProcessControlImplementation.class).addProcessStatusListener(new Listener() {
+
+		singleConsole.addSamplingLifeCyleListener(new SamplingLifeCycleListener() {
 			@Override
-			public void update(ProcessReports[] processReports) {
-				synchronized (processCountSync) {
-					currentProcessCount = 0;
-					for (ProcessReports each : processReports) {
-						for (WorkerProcessReport eachWorker : each.getWorkerProcessReports()) {
-							if (eachWorker.getState() == 2) {
-								currentProcessCount++;
-							}
-						}
-					}
-				}
+			public void onSamplingStarted() {
+				System.out.println("Sampling is started");
+			}
+
+			@Override
+			public void onSamplingEnded() {
+				ended = true;
 			}
 		});
 
 		// Run test
 		perfTestRunnable.runTestOn(perfTest, grinderProperties, singleConsole);
-		sleep(1000);
-
+		sleep(20000);
 		// Waiting for termination
-		for (int i = 1; i < 100; i++) {
-			sleep(1000);
-			synchronized (processCountSync) {
-				if (currentProcessCount == 0) {
-					return;
-				}
-			}
-			System.out.println("**** Current Process Count : " + currentProcessCount);
-
-		}
-
-		fail("Process is not finished within 100 sec");
+		singleConsole.waitUntilAllAgentDisconnected();
 	}
 
 	private void prepareUserRepo() throws IOException {

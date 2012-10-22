@@ -61,7 +61,7 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 		PerfTest test = new PerfTest();
 		test.setTestName(testName);
 		test.setThreshold("D");
-		test.setDuration(2000L);
+		test.setDuration(4000L);
 		test.setAgentCount(1);
 		test.setVuserPerAgent(4);
 		test.setScheduledTime(scheduledTime);
