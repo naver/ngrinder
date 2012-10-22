@@ -6,6 +6,7 @@ Bug:
 [NGRINDER-283] - Provide DB upgrade feature
 [NGRINDER-306] - Fixed a but to search with tag. If user selected tag to search items in perftest list page, then he can't search all items.
 [NGRINDER-309] - Change script console as runtime component to speed up the test
+[NGRINDER-312] - Fixed the bug about name format validation. Changed the minimal length of name to 3.
 
 Improvement:
 [NGRINDER-248] - Improved the editing in test configuration page.
