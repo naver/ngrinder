@@ -27,6 +27,7 @@ public class LogMonitorControllerTest extends AbstractNGrinderTransactionalTest 
 	
 	@Test
 	public void testLogMonitorController() {
+		sleep(3000);
 		logMonitorController.enableVerbose(false);
 		StringBuffer buffer = new StringBuffer();
 		for (int i = 0; i < 100; i++) {
@@ -34,7 +35,6 @@ public class LogMonitorControllerTest extends AbstractNGrinderTransactionalTest 
 		}
 		CoreLogger.LOGGER.info(buffer.toString());
 		CoreLogger.LOGGER.info("Core Logger");
-		sleep(3000);
 		LOGGER.debug("TEST TEST");
 		sleep(1000);
 		//if logMonitorController.enableVerbose(false), it will check system setting.
