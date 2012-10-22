@@ -13,7 +13,6 @@ import javax.servlet.ServletResponse;
 import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.CompositeFilter;
 
 import com.atlassian.plugin.event.PluginEventListener;

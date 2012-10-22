@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.io.StringReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -622,6 +623,19 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			File userGrinderPropertiesPath = new File(getPerfTestDistributionPath(perfTest), DEFAULT_GRINDER_PROPERTIES_PATH);
 			FileUtils.copyFile(config.getHome().getDefaultGrinderProperties(), userGrinderPropertiesPath);
 			GrinderProperties grinderProperties = new GrinderProperties(userGrinderPropertiesPath);
+			
+			User user = perfTest.getLastModifiedUser();
+
+			// Get all files in the script path
+			FileEntry userDefinedGrinderProperties = fileEntryService.getFileEntry(user,
+					FilenameUtils.concat(FilenameUtils.getPath(perfTest.getScriptName()), DEFAULT_GRINDER_PROPERTIES_PATH),
+					perfTest.getScriptRevision());
+			if (userDefinedGrinderProperties != null) {
+				GrinderProperties userProperties = new GrinderProperties();
+				grinderProperties.load(new StringReader(userDefinedGrinderProperties.getContent()));
+				userProperties.putAll(grinderProperties);
+				grinderProperties = userProperties;
+			}
 			grinderProperties.setAssociatedFile(new File(userGrinderPropertiesPath.getName()));
 			grinderProperties.setProperty(GrinderProperties.SCRIPT, FilenameUtils.getName(checkNotEmpty(perfTest.getScriptName())));
 
@@ -671,7 +685,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public File prepareDistribution(PerfTest perfTest) {
 		checkNotNull(perfTest.getId(), "perfTest should have id");
 		String scriptName = checkNotEmpty(perfTest.getScriptName(), "perfTest should have script name");
-		User user = perfTest.getCreatedUser();
+		User user = perfTest.getLastModifiedUser();
 
 		// Get all files in the script path
 		FileEntry scriptEntry = checkNotNull(fileEntryService.getFileEntry(user, perfTest.getScriptName(), perfTest.getScriptRevision()),
