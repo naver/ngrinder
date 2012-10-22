@@ -29,13 +29,13 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.model.PerfTest;
+
 import org.ngrinder.model.Tag;
 import org.ngrinder.model.User;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
- * {@link Tag} Specification for more elaborated {@link PerfTest} search.
+ * {@link Tag} Specification for more elaborated {@link org.ngrinder.model.PerfTest} search.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -119,7 +119,8 @@ public abstract class TagSpecification {
 			@Override
 			public Predicate toPredicate(Root<Tag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				String replacedQueryString = StringUtils.replace(queryString, "%", "\\%");
-				return cb.like(cb.lower(root.get("tagValue").as(String.class)), StringUtils.lowerCase(replacedQueryString) + "%");
+				return cb.like(cb.lower(root.get("tagValue").as(String.class)),
+								StringUtils.lowerCase(replacedQueryString) + "%");
 			}
 		};
 	}

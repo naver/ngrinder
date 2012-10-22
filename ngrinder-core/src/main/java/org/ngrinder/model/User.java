@@ -53,7 +53,7 @@ public class User extends BaseModel<User> {
 	private String password;
 
 	@Type(type = "true_false")
-	@Column(columnDefinition="char(1)")
+	@Column(columnDefinition = "char(1)")
 	private boolean enabled = true;
 
 	private String email;
@@ -72,7 +72,7 @@ public class User extends BaseModel<User> {
 	@Column(name = "mobile_phone")
 	private String mobilePhone;
 
-	@Column(name = "is_external", columnDefinition="char(1)")
+	@Column(name = "is_external", columnDefinition = "char(1)")
 	@Type(type = "true_false")
 	private boolean external = false;
 
@@ -89,10 +89,14 @@ public class User extends BaseModel<User> {
 	/**
 	 * Constructor.
 	 * 
-	 * @param userId user id
-	 * @param name user name
-	 * @param password password
-	 * @param role role
+	 * @param userId
+	 *            user id
+	 * @param name
+	 *            user name
+	 * @param password
+	 *            password
+	 * @param role
+	 *            role
 	 */
 	public User(String userId, String name, String password, Role role) {
 		this.userId = userId;
@@ -103,6 +107,7 @@ public class User extends BaseModel<User> {
 
 	/**
 	 * Check this user is valid.
+	 * 
 	 * @return true if valid
 	 */
 	public boolean validate() {

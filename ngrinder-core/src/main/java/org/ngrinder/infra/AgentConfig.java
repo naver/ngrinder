@@ -38,7 +38,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Spring component which is responsible to get the nGrinder config which is stored ${NGRINDER_HOME}.
+ * Spring component which is responsible to get the nGrinder config which is stored
+ * ${NGRINDER_HOME}.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -55,8 +56,10 @@ public class AgentConfig {
 	private AgentHome home = null;
 	private PropertiesWrapper agentProperties;
 	private PropertiesWrapper internalProperties;
+
 	/**
 	 * Initialize.
+	 * 
 	 * @return initialized AgentCongig
 	 */
 	public AgentConfig init() {
@@ -109,13 +112,16 @@ public class AgentConfig {
 		properties.put("NGRINDER_AGENT_HOME", home.getDirectory().getAbsolutePath());
 		agentProperties = new PropertiesWrapper(properties);
 	}
-	
+
 	/**
 	 * Save agent pid.
-	 * @param agentPid agent pid
+	 * 
+	 * @param agentPid
+	 *            agent pid
 	 * @param startMode
+	 *            startMode
 	 */
-	public void saveAgentPidProperties(String agentPid,String startMode) {
+	public void saveAgentPidProperties(String agentPid, String startMode) {
 		checkNotNull(home);
 		Properties properties = new Properties();
 		properties.put("agent.pid", agentPid);
@@ -172,6 +178,7 @@ public class AgentConfig {
 
 	/**
 	 * Get agent properties.
+	 * 
 	 * @return agent properties
 	 */
 	public PropertiesWrapper getAgentProperties() {
@@ -182,8 +189,10 @@ public class AgentConfig {
 	/**
 	 * Get property string.
 	 * 
-	 * @param key property key
-	 * @param defaultValue default value
+	 * @param key
+	 *            property key
+	 * @param defaultValue
+	 *            default value
 	 * 
 	 * @return string value for given key. If not available, return default value.
 	 */
@@ -194,8 +203,10 @@ public class AgentConfig {
 	/**
 	 * Get property int.
 	 * 
-	 * @param key property key
-	 * @param defaultValue default value
+	 * @param key
+	 *            property key
+	 * @param defaultValue
+	 *            default value
 	 * 
 	 * @return int value for given key. If not available, return default value.
 	 */
@@ -205,8 +216,11 @@ public class AgentConfig {
 
 	/**
 	 * Get nGrinder internal properties.
-	 * @param key key
-	 * @param defaultValue default value
+	 * 
+	 * @param key
+	 *            key
+	 * @param defaultValue
+	 *            default value
 	 * @return value
 	 */
 	public String getInternalProperty(String key, String defaultValue) {

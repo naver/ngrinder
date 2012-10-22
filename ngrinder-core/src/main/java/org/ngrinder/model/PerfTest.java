@@ -102,12 +102,12 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private String targetHosts;
 
 	/** The send mail code. */
-	@Column(name = "send_mail", columnDefinition="char(1)")
+	@Column(name = "send_mail", columnDefinition = "char(1)")
 	@Type(type = "true_false")
 	private Boolean sendMail;
 
 	/** Use rampup or not. */
-	@Column(name = "use_rampup",  columnDefinition="char(1)")
+	@Column(name = "use_rampup", columnDefinition = "char(1)")
 	@Type(type = "true_false")
 	private Boolean useRampUp = false;
 
@@ -191,7 +191,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "script_revistion")
 	private Long scriptRevision = -1L;
 
-	@Column(name = "stop_request",  columnDefinition="char(1)")
+	@Column(name = "stop_request", columnDefinition = "char(1)")
 	@Type(type = "true_false")
 	private Boolean stopRequest;
 
@@ -202,9 +202,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private GrinderProperties grinderProperties;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-	@JoinTable(name = "PERF_TEST_TAG", 
-			joinColumns = @JoinColumn(name = "perf_test_id"), 
-			inverseJoinColumns = @JoinColumn(name = "tag_id"))
+	@JoinTable(name = "PERF_TEST_TAG", joinColumns = @JoinColumn(name = "perf_test_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
 	@Sort(comparator = Tag.class, type = SortType.COMPARATOR)
 	private SortedSet<Tag> tags;
 
@@ -515,8 +513,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	@Override
 	public String toString() {
-		  return ReflectionToStringBuilder.toStringExclude(this, "tags");
-	 }
+		return ReflectionToStringBuilder.toStringExclude(this, "tags");
+	}
 
 	public String getProgressMessage() {
 		return StringUtils.defaultIfEmpty(progressMessage, "");

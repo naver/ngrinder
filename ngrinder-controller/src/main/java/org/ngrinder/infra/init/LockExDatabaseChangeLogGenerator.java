@@ -41,26 +41,36 @@ import liquibase.util.NetUtil;
 
 /**
  * Customized {@link LockDatabaseChangeLogGenerator}. previous
- * {@link LockDatabaseChangeLogGenerator} run update sql which only checking if
- * the lock status equals to BooleanType true value. It does not work if the
- * prevous field type is changed due to hibernate dialect changes.
+ * {@link LockDatabaseChangeLogGenerator} run update sql which only checking if the lock status
+ * equals to BooleanType true value. It does not work if the prevous field type is changed due to
+ * hibernate dialect changes.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
 public class LockExDatabaseChangeLogGenerator extends AbstractSqlGenerator<LockExDatabaseChangeLogStatement> {
 
-	/* (non-Javadoc)
-	 * @see liquibase.sqlgenerator.SqlGenerator#validate(liquibase.statement.SqlStatement, liquibase.database.Database, liquibase.sqlgenerator.SqlGeneratorChain)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see liquibase.sqlgenerator.SqlGenerator#validate(liquibase.statement.SqlStatement,
+	 * liquibase.database.Database, liquibase.sqlgenerator.SqlGeneratorChain)
 	 */
-	public ValidationErrors validate(LockExDatabaseChangeLogStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
+	@Override
+	public ValidationErrors validate(LockExDatabaseChangeLogStatement statement, Database database,
+					SqlGeneratorChain sqlGeneratorChain) {
 		return new ValidationErrors();
 	}
 
-	/* (non-Javadoc)
-	 * @see liquibase.sqlgenerator.SqlGenerator#generateSql(liquibase.statement.SqlStatement, liquibase.database.Database, liquibase.sqlgenerator.SqlGeneratorChain)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see liquibase.sqlgenerator.SqlGenerator#generateSql(liquibase.statement.SqlStatement,
+	 * liquibase.database.Database, liquibase.sqlgenerator.SqlGeneratorChain)
 	 */
-	public Sql[] generateSql(LockExDatabaseChangeLogStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
+	@Override
+	public Sql[] generateSql(LockExDatabaseChangeLogStatement statement, Database database,
+					SqlGeneratorChain sqlGeneratorChain) {
 		String liquibaseSchema = null;
 		liquibaseSchema = database.getLiquibaseSchemaName();
 
@@ -71,20 +81,33 @@ public class LockExDatabaseChangeLogGenerator extends AbstractSqlGenerator<LockE
 			throw new UnexpectedLiquibaseException(e);
 		}
 
-		UpdateStatement updateStatement = new UpdateStatement(liquibaseSchema, database.getDatabaseChangeLogLockTableName());
+		UpdateStatement updateStatement = new UpdateStatement(liquibaseSchema,
+						database.getDatabaseChangeLogLockTableName());
 		updateStatement.addNewColumnValue("LOCKED", true);
 		updateStatement.addNewColumnValue("LOCKGRANTED", new Timestamp(new java.util.Date().getTime()));
-		updateStatement.addNewColumnValue("LOCKEDBY", localHost.getHostName() + " (" + localHost.getHostAddress() + ")");
-		String whereClause = database.escapeColumnName(liquibaseSchema, database.getDatabaseChangeLogTableName(), "ID") + " = 1 AND ";
+		updateStatement.addNewColumnValue("LOCKEDBY", localHost.getHostName()
+						+ " (" + localHost.getHostAddress() + ")");
+		String whereClause = database.escapeColumnName(liquibaseSchema, database.getDatabaseChangeLogTableName(), "ID")
+						+ " = 1 AND ";
 
 		if (database instanceof CUBRIDDatabase) {
-			whereClause = whereClause + "( "
-					+ database.escapeColumnName(liquibaseSchema, database.getDatabaseChangeLogTableName(), "LOCKED") + " = "
-					+ TypeConverterFactory.getInstance().findTypeConverter(database).getBooleanType().getFalseBooleanValue() + " OR "
-					+ database.escapeColumnName(liquibaseSchema, database.getDatabaseChangeLogTableName(), "LOCKED") + " = '0')";
+			whereClause = whereClause
+							+ "( "
+							+ database.escapeColumnName(liquibaseSchema, database.getDatabaseChangeLogTableName(),
+											"LOCKED")
+							+ " = "
+							+ TypeConverterFactory.getInstance().findTypeConverter(database).getBooleanType()
+											.getFalseBooleanValue()
+							+ " OR "
+							+ database.escapeColumnName(liquibaseSchema, database.getDatabaseChangeLogTableName(),
+											"LOCKED") + " = '0')";
 		} else {
-			whereClause = whereClause + database.escapeColumnName(liquibaseSchema, database.getDatabaseChangeLogTableName(), "LOCKED")
-					+ " = " + TypeConverterFactory.getInstance().findTypeConverter(database).getBooleanType().getFalseBooleanValue();
+			whereClause = whereClause
+							+ database.escapeColumnName(liquibaseSchema, database.getDatabaseChangeLogTableName(),
+											"LOCKED")
+							+ " = "
+							+ TypeConverterFactory.getInstance().findTypeConverter(database).getBooleanType()
+											.getFalseBooleanValue();
 		}
 		updateStatement.setWhereClause(whereClause);
 
