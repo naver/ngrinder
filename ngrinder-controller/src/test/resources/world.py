@@ -15,9 +15,8 @@ request1 = test1.wrap(HTTPRequest())
 
 class TestRunner:
 	def __call__(self):
-		returnValue = request1.GET("http://www.naver.com")
-
+		returnValue = request1.GET("http://www.sample.com")
 		# result is a HTTPClient.HTTPResult. We get the message body
 		# using the getText() method.
-		print returnValue
+
         

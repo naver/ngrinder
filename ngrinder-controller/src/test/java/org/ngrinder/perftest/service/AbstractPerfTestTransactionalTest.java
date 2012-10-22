@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * In addition {@link AbstractNGrinderTransactionalTest}, this class provides basic function to
- * create {@link PerfTest}
+ * create {@link PerfTest}.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -60,10 +60,9 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 	public PerfTest newPerfTest(String testName, Status status, Date scheduledTime) {
 		PerfTest test = new PerfTest();
 		test.setTestName(testName);
-		test.setThreshold("R");
-		//test.setDuration(200L);
+		test.setThreshold("D");
+		test.setDuration(2000L);
 		test.setAgentCount(1);
-		test.setRunCount(10);
 		test.setVuserPerAgent(4);
 		test.setScheduledTime(scheduledTime);
 		test.setIgnoreSampleCount(0);

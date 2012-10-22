@@ -122,6 +122,7 @@ public class AgentControllerServer {
 			// Fall through
 			noOp();
 		}
+		
 		if (m_container.getLifecycleState().isStarted()) {
 			m_container.stop();
 		}

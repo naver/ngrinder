@@ -45,10 +45,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * Log monitor controller.
  * 
- * This class runs with {@link Tailer} implementation. Whenever the underlying
- * log file is changed. this class gets the changes. and keep them(max 10000
- * byte) in the memory. Whenever user requests the log, it returns latest
- * changes with the index of the log.
+ * This class runs with {@link Tailer} implementation. Whenever the underlying log file is changed.
+ * this class gets the changes. and keep them(max 10000 byte) in the memory. Whenever user requests
+ * the log, it returns latest changes with the index of the log.
  * 
  * @author JunHo Yoon
  * 
@@ -57,7 +56,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/operation/log")
 @PreAuthorize("hasAnyRole('A', 'S')")
 public class LogMonitorController extends NGrinderBaseController {
-	
+
 	private static final int LOGGER_BUFFER_SIZE = 10000;
 
 	@Autowired
@@ -115,7 +114,8 @@ public class LogMonitorController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get log file
+	 * Get log file.
+	 * 
 	 * @return log file
 	 */
 	File getLogFile() {
@@ -133,7 +133,8 @@ public class LogMonitorController extends NGrinderBaseController {
 	/**
 	 * Logger first page.
 	 * 
-	 * @param model model
+	 * @param model
+	 *            model
 	 * @return "operation/logger"
 	 */
 	@RequestMapping("")
@@ -155,22 +156,26 @@ public class LogMonitorController extends NGrinderBaseController {
 		map.put("log", stringBuffer);
 		return new HttpEntity<String>(toJson(map), commonResponseHeaders);
 	}
-	
+
 	/**
 	 * Turn on verbose log mode.
+	 * 
+	 * @param verbose
+	 *            true if verbose mode
 	 * @return success message if successful
 	 */
 	@RequestMapping("/verbose")
-	public HttpEntity<String> enableVerbose(@RequestParam(value="verbose", defaultValue="false") Boolean verbose) {
+	public HttpEntity<String> enableVerbose(@RequestParam(value = "verbose", defaultValue = "false") Boolean verbose) {
 		config.initLogger(verbose);
 		initTailer();
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("success", true);
 		return new HttpEntity<String>(toJson(map), commonResponseHeaders);
 	}
-	
+
 	/**
 	 * Reload System properties.
+	 * 
 	 * @return success message if successful
 	 */
 	@RequestMapping("/refresh")

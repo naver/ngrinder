@@ -328,6 +328,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            stop reason
 	 * @return perftest with updated data
 	 */
+	@Transactional
 	public PerfTest markAbromalTermination(PerfTest perfTest, StopReason reason) {
 		return markAbromalTermination(perfTest, reason.name());
 	}

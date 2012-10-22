@@ -74,17 +74,16 @@ import org.springframework.scheduling.annotation.Scheduled;
 @RuntimeOnlyComponent
 public class PerfTestRunnable implements NGrinderConstants {
 
-
 	private static final Logger LOG = LoggerFactory.getLogger(PerfTestRunnable.class);
 
 	@Autowired
-	private PerfTestService perfTestService;
+	PerfTestService perfTestService;
 
 	@Autowired
 	private ConsoleManager consoleManager;
 
 	@Autowired
-	private AgentManager agentManager;
+	AgentManager agentManager;
 
 	@Autowired
 	private MonitorAgentService monitorDataService;
@@ -404,7 +403,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	private boolean isTestFinishCandidate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		// Give 5 seconds to be finished
 		if (perfTest.isThreshholdDuration()
-						&& singleConsoleInUse.isCurrentRunningTimeOverDuration(perfTest.getDuration())) { 
+						&& singleConsoleInUse.isCurrentRunningTimeOverDuration(perfTest.getDuration())) {
 			LOG.debug("Test {} is ready to Finish. Current : {}, Planned : {}",
 							new Object[] { perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentRunningTime(),
 									perfTest.getDuration() });

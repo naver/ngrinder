@@ -41,6 +41,8 @@ public class LogMonitorControllerTest extends AbstractNGrinderTransactionalTest 
 		if (!isDebug) {
 			assertThat(getLastMessage(), not(containsString("TEST TEST")));
 		}
+		CoreLogger.LOGGER.info("Core Logger");
+		sleep(1000);
 		assertThat(getLastMessage(), containsString("Core Logger"));
 
 		logMonitorController.enableVerbose(true);

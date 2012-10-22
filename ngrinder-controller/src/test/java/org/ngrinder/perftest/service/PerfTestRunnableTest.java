@@ -8,7 +8,6 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.List;
 
 import net.grinder.AgentControllerDaemon;
@@ -25,6 +24,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.model.PerfTest;
@@ -72,25 +72,18 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
 		testUserRoot.deleteOnExit();
 
-		FileEntry fileEntry = new FileEntry();
-		fileEntry.setPath("test1.py");
-		String worldString = IOUtils.toString(new ClassPathResource("world.py").getInputStream());
-		if (fileEntry.getFileType().isEditable()) {
-			fileEntry.setContent(worldString);
-		} else {
-			fileEntry.setContentBytes(worldString.getBytes());
-		}
-		fileEntityRepository.save(getTestUser(), fileEntry, "UTF-8");
-
+		prepareUserRepo();
 		clearAllPerfTest();
 		createPerfTest("test1", Status.READY, null);
 		List<PerfTest> allPerfTest = perfTestService.getAllPerfTest();
+		
 		assertThat(allPerfTest.size(), is(1));
-
+		allPerfTest.get(0).setScriptName("/hello/world.py");
+		perfTestService.savePerfTest(testUser, allPerfTest.get(0));
 		agentControllerDaemon = new AgentControllerDaemon();
 		agentControllerDaemon.setAgentConfig(agentConfig1);
 		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
-		agentService.getAgentList();
+
 		int agentCount = 0;
 		int checkLoop = 0;
 		while (true) {
@@ -101,8 +94,13 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 			System.out.println("WAIT UNTIL AGENT IS CONNECTED - TRY COUNT " + checkLoop);
 			sleep(1000);
 		}
-		String ip = InetAddress.getLocalHost().getHostAddress();
-		agentService.approve(ip, true);
+
+		List<AgentInfo> agentList = agentService.getAgentList();
+		for (AgentInfo each : agentList) {
+			agentService.approve(each.getIp(), true);
+		}
+
+		agentList = agentService.getAgentList();
 		assertThat(agentCount, is(1));
 	}
 
@@ -121,6 +119,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	@Test
 	public void testStartConsole() throws IOException {
+		assertThat(agentManager.getAllApprovedAgents().size(), is(1));
 		// Get perf test
 		PerfTest perfTest = perfTestService.getPerfTestCandiate();
 		perfTest.setScriptName("/hello/world.py");
@@ -138,7 +137,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		perfTestRunnable.startAgentsOn(perfTest, grinderProperties, singleConsole);
 
 		// Distribute files
-		prepareUserRepo();
+		perfTestService.prepareDistribution(perfTest);
 		perfTestRunnable.distributeFileOn(perfTest, grinderProperties, singleConsole);
 		singleConsole.getConsoleComponent(ProcessControlImplementation.class).addProcessStatusListener(new Listener() {
 			@Override
