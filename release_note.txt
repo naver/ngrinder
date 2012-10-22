@@ -1,3 +1,22 @@
+3.0-b3 (2012.10.22)
+- Third beta version.
+
+Bug:
+[NGRINDER-282] - Create a error showing page. For bad request which doesn't exist, redirect to index page.
+[NGRINDER-283] - Provide DB upgrade feature
+[NGRINDER-306] - Fixed a but to search with tag. If user selected tag to search items in perftest list page, then he can't search all items.
+[NGRINDER-309] - Change script console as runtime component to speed up the test
+
+Improvement:
+[NGRINDER-248] - Improved the editing in test configuration page.
+[NGRINDER-288] - Improved to transfer Python module file to agents
+[NGRINDER-301] - Provided agent shutdown script
+[NGRINDER-302] - Delete all unused SystemDataModel DB fields.
+[NGRINDER-303] - Modified to add option to create lib and resource folder when creating script.
+[NGRINDER-304] - Set Max Agent Size as the min value b/w agentManager.getMaxAgentSizePerConsole(), agentManager.getAllApprovedAgents().size()
+[NGRINDER-305] - Make admin be able to see user script.
+
+
 3.0-b2 (2012.10.12)
 - Second beta version.
 
