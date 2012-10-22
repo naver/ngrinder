@@ -123,7 +123,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 				.hostComponentProvider(host).moduleDescriptorFactory(modules).build();
 
 		// Start the plugin framework
-		plugins = new AtlassianPlugins(config);
+		this.plugins = new AtlassianPlugins(config);
 		addPluginUpdateEvent(this);
 		plugins.start();
 		CoreLogger.LOGGER.info("Plugin System is started.");

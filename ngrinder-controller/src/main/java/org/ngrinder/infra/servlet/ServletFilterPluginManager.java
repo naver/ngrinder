@@ -10,6 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,7 @@ import com.atlassian.plugin.event.events.PluginEnabledEvent;
  * @author JunHo Yoon
  * @since 3.0
  */
-@Component("servletFilterPluginManager")
+@RuntimeOnlyComponent("servletFilterPluginManager")
 public class ServletFilterPluginManager implements Filter {
 	@Autowired
 	private PluginManager pluginManager;
