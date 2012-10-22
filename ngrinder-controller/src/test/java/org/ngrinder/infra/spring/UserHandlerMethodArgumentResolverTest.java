@@ -11,11 +11,9 @@ import org.mockito.stubbing.Answer;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.MockUserContext;
-import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.context.request.WebRequest;
 
 public class UserHandlerMethodArgumentResolverTest extends AbstractNGrinderTransactionalTest {
 
@@ -40,6 +38,6 @@ public class UserHandlerMethodArgumentResolverTest extends AbstractNGrinderTrans
 		when(webRequest.getParameter("ownerId")).thenReturn("admin");
 		resolver.setUserContext(mockUserContext);
 		Object resolveArgument = resolver.resolveArgument(parameter, null, webRequest, null);
-		assertThat(((User)resolveArgument).getUserId(), is("admin"));
+		assertThat(((User) resolveArgument).getUserId(), is(getTestUser().getUserId()));
 	}
 }
