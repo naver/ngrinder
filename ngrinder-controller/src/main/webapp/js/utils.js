@@ -28,7 +28,7 @@ function checkSimpleNameByObj(obj) {
 }
 
 function checkSimpleName(str) {
-	var patrn = "^[a-zA-Z]{1}([a-zA-Z0-9]|[_]|[-]|[.]){3,19}$";
+	var patrn = "^[a-zA-Z]{1}([a-zA-Z0-9]|[_]|[-]|[.]){2,19}$";
 	
 	return checkStringFormat(str, patrn);
 }
