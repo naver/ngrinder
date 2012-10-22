@@ -38,7 +38,7 @@ import net.grinder.util.ListenerSupport;
  * @author Mavlarn
  * @since 3.0
  */
-public final class SampleModelImplementationEx implements SampleModel {
+public class SampleModelImplementationEx implements SampleModel {
 
 	private final ConsoleProperties m_properties;
 	private final StatisticsServices m_statisticsServices;

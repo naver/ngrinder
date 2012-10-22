@@ -35,8 +35,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * nGrinder customized login authentication filter.
- * This checks not only auth but also timezone and locale.
+ * nGrinder customized login authentication filter. This checks not only auth but also timezone and
+ * locale.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -44,7 +44,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
 	@Autowired
-	private UserRepository userRepository;
+	UserRepository userRepository;
 
 	/**
 	 * Constructor.
@@ -55,7 +55,7 @@ public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswo
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-		Authentication auth = super.attemptAuthentication(request, response);
+		Authentication auth = getAuthentification(request, response);
 		String timezone = (String) request.getParameter("user_timezone");
 		String language = (String) request.getParameter("native_language");
 		SecuredUser user = (SecuredUser) auth.getPrincipal();
@@ -63,6 +63,10 @@ public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswo
 		user.getUser().setUserLanguage(language);
 		userRepository.save(user.getUser());
 		return auth;
+	}
+
+	protected Authentication getAuthentification(HttpServletRequest request, HttpServletResponse response) {
+		return super.attemptAuthentication(request, response);
 	}
 
 	@Override

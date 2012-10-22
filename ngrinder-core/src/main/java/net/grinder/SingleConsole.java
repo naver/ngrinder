@@ -96,8 +96,7 @@ import org.slf4j.LoggerFactory;
 public class SingleConsole implements Listener, SampleListener {
 	private Thread thread;
 	private ConsoleFoundationEx consoleFoundation;
-	public static final Resources RESOURCE = 
-					new ResourcesImplementation("net.grinder.console.common.resources.Console");
+	public static final Resources RESOURCE = new ResourcesImplementation("net.grinder.console.common.resources.Console");
 	public static final Logger LOGGER = LoggerFactory.getLogger(SingleConsole.class);
 
 	private static final String REPORT_CSV = "output.csv";
@@ -111,16 +110,14 @@ public class SingleConsole implements Listener, SampleListener {
 	private double tpsValue = 0;
 	// for displaying tps graph in running page
 	private double peakTpsForGraph = 0;
-	private SampleModel sampleModel;
+	SampleModel sampleModel;
 	private SampleModelViews modelView;
 	private long startTime = 0;
 	private Date momentWhenTpsBeganToHaveVerySmall;
 	private Date lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue;
 	private static final int TEST_DURATION_CHECK_MARGIN = 5000;
-	private final ListenerSupport<ConsoleShutdownListener> m_shutdownListeners = 
-						new ListenerSupport<ConsoleShutdownListener>();
-	private final ListenerSupport<SamplingLifeCycleListener> m_samplingLifeCycleListener = 
-						new ListenerSupport<SamplingLifeCycleListener>();
+	private final ListenerSupport<ConsoleShutdownListener> m_shutdownListeners = new ListenerSupport<ConsoleShutdownListener>();
+	private final ListenerSupport<SamplingLifeCycleListener> m_samplingLifeCycleListener = new ListenerSupport<SamplingLifeCycleListener>();
 
 	private File reportPath;
 	private NumberFormat formatter = new DecimalFormat("###.###");
@@ -142,12 +139,12 @@ public class SingleConsole implements Listener, SampleListener {
 	/**
 	 * Currently running thread.
 	 */
-	private int runningThread = 0;
+	int runningThread = 0;
 
 	/**
 	 * Currently running process.
 	 */
-	private int runningProcess = 0;
+	int runningProcess = 0;
 
 	/**
 	 * Currently not finished process count.
@@ -518,6 +515,9 @@ public class SingleConsole implements Listener, SampleListener {
 		return new Date().getTime() - startTime;
 	}
 
+	protected Map<String, Object> getStatisticData() {
+		return statisticData;
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -541,7 +541,7 @@ public class SingleConsole implements Listener, SampleListener {
 		checkTooLowTps(getTpsValues());
 		updateStatistics();
 		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) statisticData
+		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) getStatisticData()
 						.get("lastSampleStatistics");
 
 		// record the latest sample into report files.
@@ -710,7 +710,7 @@ public class SingleConsole implements Listener, SampleListener {
 	/**
 	 * To update statistics data while test is running.
 	 */
-	private void updateStatistics() {
+	protected void updateStatistics() {
 		Map<String, Object> result = new ConcurrentHashMap<String, Object>();
 		result.put("test_time", getCurrentRunningTime() / 1000);
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
@@ -1064,4 +1064,7 @@ public class SingleConsole implements Listener, SampleListener {
 		return getCurrentRunningTime() > (duration + TEST_DURATION_CHECK_MARGIN);
 	}
 
+	public double getPeakTpsForGraph() {
+		return peakTpsForGraph;
+	}
 }
