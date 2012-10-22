@@ -16,18 +16,16 @@ import org.ngrinder.model.PerfTest;
 public class MockPerfTestRunnableForCanclation extends PerfTestRunnable {
 	private Runnable runnable;
 	private int ignoreCount;
-	
+
 	@Override
 	public void startTest() {
 		// No Nothing.
 	};
-	
-	
+
 	public void testDrive() {
 		super.startTest();
 	};
-	
-	
+
 	@Override
 	protected boolean hasEnoughFreeAgents(PerfTest test) {
 		return true;
@@ -53,6 +51,11 @@ public class MockPerfTestRunnableForCanclation extends PerfTestRunnable {
 	public void setRunnable(Runnable runnable, int ignoreCount) {
 		this.runnable = runnable;
 		this.ignoreCount = ignoreCount;
+	}
+
+	@Override
+	protected boolean exceedMoreAgent(PerfTest test) {
+		return false;
 	}
 
 }

@@ -66,6 +66,8 @@ public class PerfTestCancellationTest extends AbstractPerfTestTransactionalTest 
 		List<PerfTest> allPerfTest = perfTestService.getAllPerfTest();
 		assertThat(allPerfTest.size(), is(1));
 		assertThat(consoleManager.getConsoleInUse().size(), is(0));
+		
+		
 	}
 
 
