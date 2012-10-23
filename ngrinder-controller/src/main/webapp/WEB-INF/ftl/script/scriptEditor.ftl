@@ -183,7 +183,13 @@
 			  		url: "${req.getContextPath()}/script/validate",
 			    	async: true,
 			    	type: "POST",
-					data: {'path':scriptPath, 'content': editor.getValue(), 'hostString' : hostString},
+					data: {'path':scriptPath, 'content': editor.getValue(), 'hostString' : hostString
+						<@security.authorize ifAnyGranted="A, S">
+							<#if ownerId??>	
+				  				, 'ownerId': "${ownerId}"
+							</#if>
+						</@security.authorize>
+					},
 			    	success: function(res) {
 						$('#validateRsPre').text(res);
 						$('#validateRsPre').show();
