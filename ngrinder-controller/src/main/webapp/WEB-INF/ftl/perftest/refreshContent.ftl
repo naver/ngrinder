@@ -3,8 +3,8 @@
 			curPeakTps = ${(resultsub.peakTpsForGraph!0)?c};
 	  		curTps = ${(resultsub.tpsChartData!0)?c};
 	  		curRunningTime = ${resultsub.test_time!0};
-	  		curRunningProcesses = ${resultsub.process!0};
-	  		curRunningThreads = ${resultsub.thread!0};
+	  		curRunningProcesses = ${(resultsub.process!0)?c};
+	  		curRunningThreads = ${(resultsub.thread!0)?c};
 	  		curStatus = <#if resultsub.success?? && resultsub.success>true<#else>false</#if>
 	  		curAgentPerfStates = [
 	  			${result_agent_perf}

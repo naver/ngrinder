@@ -308,7 +308,9 @@ function initTags() {
 			initSelection : function (element, callback) {
        			var data = [];
       			$(element.val().split(",")).each(function () {
-       			    data.push({id: "q_" + this, text: this});
+      			 	if (this.indexOf("q_") !== 0) {
+       			    	data.push({id: "q_" + this, text: this});
+       			    }
       			});
         		callback(data);
     		},
