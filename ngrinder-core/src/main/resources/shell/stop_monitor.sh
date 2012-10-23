@@ -1,6 +1,6 @@
 #!/bin/sh
                   
-AGENT_PID=`sed '/^\#/d' monitor_pid.conf | grep 'agent.pid'  | tail -n 1 | cut -d "=" -f2-`
+MONITOR_PID=`sed '/^\#/d' agent_pid.conf | grep 'monitor.pid'  | tail -n 1 | cut -d "=" -f2-`
 
-kill -9 $AGENT_PID
+kill -9 $MONITOR_PID
 
