@@ -96,7 +96,8 @@ import org.slf4j.LoggerFactory;
 public class SingleConsole implements Listener, SampleListener {
 	private Thread thread;
 	private ConsoleFoundationEx consoleFoundation;
-	public static final Resources RESOURCE = new ResourcesImplementation("net.grinder.console.common.resources.Console");
+	public static final Resources RESOURCE = 
+					new ResourcesImplementation("net.grinder.console.common.resources.Console");
 	public static final Logger LOGGER = LoggerFactory.getLogger(SingleConsole.class);
 
 	private static final String REPORT_CSV = "output.csv";
@@ -116,8 +117,10 @@ public class SingleConsole implements Listener, SampleListener {
 	private Date momentWhenTpsBeganToHaveVerySmall;
 	private Date lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue;
 	private static final int TEST_DURATION_CHECK_MARGIN = 5000;
-	private final ListenerSupport<ConsoleShutdownListener> m_shutdownListeners = new ListenerSupport<ConsoleShutdownListener>();
-	private final ListenerSupport<SamplingLifeCycleListener> m_samplingLifeCycleListener = new ListenerSupport<SamplingLifeCycleListener>();
+	private final ListenerSupport<ConsoleShutdownListener> m_shutdownListeners 
+															= new ListenerSupport<ConsoleShutdownListener>();
+	private final ListenerSupport<SamplingLifeCycleListener> m_samplingLifeCycleListener 
+															= new ListenerSupport<SamplingLifeCycleListener>();
 
 	private File reportPath;
 	private NumberFormat formatter = new DecimalFormat("###.###");
@@ -518,6 +521,7 @@ public class SingleConsole implements Listener, SampleListener {
 	protected Map<String, Object> getStatisticData() {
 		return statisticData;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -541,8 +545,8 @@ public class SingleConsole implements Listener, SampleListener {
 		checkTooLowTps(getTpsValues());
 		updateStatistics();
 		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) getStatisticData()
-						.get("lastSampleStatistics");
+		List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) getStatisticData().get(
+						"lastSampleStatistics");
 
 		// record the latest sample into report files.
 		// in lastSampleStatistics, there could be several sub-tests. We

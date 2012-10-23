@@ -226,9 +226,11 @@ public class AgentConfig {
 	public String getInternalProperty(String key, String defaultValue) {
 		return internalProperties.getProperty(key, defaultValue);
 	}
-	
+
 	/**
-	 * Get Agent or Monitor PID if agent_pid.conf not exists,it will be created
+	 * Get Agent or Monitor PID if agent_pid.conf not exists,it will be created.
+	 * 
+	 * @return {@link Properties} loaded properties
 	 */
 	public Properties getAgentPidFile() {
 		Properties properties = new Properties();
