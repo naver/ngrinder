@@ -28,7 +28,6 @@ import static org.junit.Assert.assertThat;
 import java.io.File;
 import java.io.IOException;
 
-
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +40,7 @@ import org.springframework.ui.ModelMap;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
 /**
- * Class description
+ * {@link PerfTestController} test with repository supports.
  * 
  * @author mavlarn
  * @Since 3.0
@@ -49,13 +48,13 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 public class PerfTestControllerWithRepoTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
-	private PerfTestController controller;
+	private MockPerfTestController controller;
 
 	@Autowired
 	public MockFileEntityRepsotory repo;
 
 	/**
-	 * Locate dumped user1 repo into tempdir
+	 * Locate dumped user1 repo into tempdir.
 	 * 
 	 * @throws IOException
 	 */
@@ -73,8 +72,7 @@ public class PerfTestControllerWithRepoTest extends AbstractPerfTestTransactiona
 	public void testGetQuickStart() {
 		ModelMap model = new ModelMap();
 		controller.getQuickStart(getTestUser(), "http://naver.com", model);
-		assertThat(repo.findOne(getTestUser(), "naver.com/script.py", SVNRevision.HEAD),
-						notNullValue());
+		assertThat(repo.findOne(getTestUser(), "naver.com/script.py", SVNRevision.HEAD), notNullValue());
 	}
 
 }
