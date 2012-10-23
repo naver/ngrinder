@@ -228,9 +228,9 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	private int getMaxAgentSizePerConsole(User user) {
-		Set<AgentIdentity> allApprovedAgents = agentManager.getAllApprovedAgents();
+		Set<AgentIdentity> allSharedAgent = agentManager.getAllSharedAgents();
 		Set<AgentIdentity> allApprovedAgentsForUser = agentManager.getAllApprovedAgents(user);
-		int additional =  allApprovedAgents.size() - allApprovedAgentsForUser.size();
+		int additional =  allSharedAgent.size() - allApprovedAgentsForUser.size();
 		int maxAgentSizePerConsole = Math.min(agentManager.getMaxAgentSizePerConsole() + additional, allApprovedAgentsForUser.size());
 		return maxAgentSizePerConsole;
 	}
@@ -284,7 +284,7 @@ public class PerfTestController extends NGrinderBaseController {
 						"test duration should be within %s", agentManager.getMaxRunHour());
 		checkArgument(test.getRunCount() == null || test.getRunCount() <= agentManager.getMaxRunCount(),
 						"test run count should be within %s", agentManager.getMaxRunCount());
-		checkArgument(test.getAgentCount() == null || test.getAgentCount() <= getMaxAgentSizePerConsole(user),
+		checkArgument(test.getAgentCount() == null || test.getAgentCount() <= getMaxAgentSizePerConsole(user), 
 						"test agent shoule be within %s", agentManager.getMaxAgentSizePerConsole());
 		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
 						"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());

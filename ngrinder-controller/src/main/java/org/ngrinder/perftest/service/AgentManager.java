@@ -244,6 +244,14 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
+	 * Get the all shared approved agents.
+	 * 
+	 * @return AgentIndentity set
+	 */
+	public Set<AgentIdentity> getAllSharedAgents() {
+		return filterSharedAgents(getAllApprovedAgents());
+	}
+	/**
 	 * Get the all approved agents.
 	 * 
 	 * @return AgentIndentity set
@@ -280,6 +288,27 @@ public class AgentManager implements NGrinderConstants {
 		return approvedAgent;
 	}
 
+	/**
+	 * Filter the shared agents from given agents.
+	 * 
+	 * 
+	 * @param agents
+	 *            all agents
+	 * @return userOwned agents.
+	 */
+	public Set<AgentIdentity> filterSharedAgents(Set<AgentIdentity> agents) {
+
+		Set<AgentIdentity> userAgent = new HashSet<AgentIdentity>();
+		for (AgentIdentity each : agents) {
+			String region = ((AgentControllerIdentityImplementation) each).getRegion();
+
+			if (StringUtils.containsNone(region, "owned_")) {
+				userAgent.add(each);
+			}
+		}
+		return userAgent;
+	}
+	
 	/**
 	 * Filter the user owned agents from given agents.
 	 * 
