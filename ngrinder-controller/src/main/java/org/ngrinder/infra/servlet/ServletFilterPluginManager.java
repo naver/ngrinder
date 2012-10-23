@@ -32,8 +32,12 @@ public class ServletFilterPluginManager implements Filter {
 
 	private CompositeFilter compositeFilter;
 
+	/**
+	 * Initialize the servlet filter plugins.
+	 * @throws ServletException
+	 */
 	@PostConstruct
-	public void init() throws ServletException {
+	public void init()  {
 		this.compositeFilter = new CompositeFilter();
 		pluginInit();
 		pluginManager.addPluginUpdateEvent(this);
@@ -49,7 +53,7 @@ public class ServletFilterPluginManager implements Filter {
 
 	/**
 	 * Event handler for plugin enable.
-	 * 
+	 * @param event event 
 	 */
 	@PluginEventListener
 	public void onPluginEnabled(PluginEnabledEvent event) {
@@ -58,7 +62,7 @@ public class ServletFilterPluginManager implements Filter {
 
 	/**
 	 * Event handler for plugin disable.
-	 * 
+	 * @param event event
 	 */
 	@PluginEventListener
 	public void onPluginDisabled(PluginDisabledEvent event) {
@@ -72,7 +76,9 @@ public class ServletFilterPluginManager implements Filter {
 	 * javax.servlet.ServletResponse, javax.servlet.FilterChain)
 	 */
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+					throws IOException,
+					ServletException {
 		this.compositeFilter.doFilter(request, response, chain);
 	}
 

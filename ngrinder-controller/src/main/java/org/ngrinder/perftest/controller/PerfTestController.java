@@ -227,7 +227,7 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour() - 1);
 	}
 
-	private int getMaxAgentSizePerConsole(User user) {
+	protected int getMaxAgentSizePerConsole(User user) {
 		Set<AgentIdentity> allSharedAgent = agentManager.getAllSharedAgents();
 		Set<AgentIdentity> allApprovedAgentsForUser = agentManager.getAllApprovedAgents(user);
 		int additional =  allSharedAgent.size() - allApprovedAgentsForUser.size();

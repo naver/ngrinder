@@ -54,7 +54,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.ui.ModelMap;
 
 /**
- * Class description
+ * PerfTest Controller Test.
  * 
  * @author mavlarn
  * @Since 3.0
@@ -62,7 +62,7 @@ import org.springframework.ui.ModelMap;
 public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
-	private PerfTestController controller;
+	private MockPerfTestController controller;
 
 	@Autowired
 	private IUserService userService;
