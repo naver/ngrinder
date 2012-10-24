@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.ngrinder</groupId>
 	<artifactId>ngrinder</artifactId>
-	<version>3.0-b3</version>
+	<version>3.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>ngrinder</name>
 	<modules>
@@ -40,6 +40,7 @@
 		<jdk-version>1.6</jdk-version>
 		<source-encoding>UTF-8</source-encoding>
 		<ngrinder.version>${project.version}</ngrinder.version>
+		<altDeploymentRepository>ngrinder::default::file:../nhnopensource.maven.repo/snapshots</altDeploymentRepository>
 	</properties>
 
 	<dependencies>
@@ -282,4 +283,5 @@
 			</plugin>
 		</plugins>
 	</reporting>
+	
 </project>
