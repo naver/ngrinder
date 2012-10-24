@@ -94,7 +94,7 @@ import org.slf4j.LoggerFactory;
  * @since 3.0
  */
 public class SingleConsole implements Listener, SampleListener {
-	private Thread thread;
+	private Thread consoleFoundationThread;
 	private ConsoleFoundationEx consoleFoundation;
 	public static final Resources RESOURCE = 
 					new ResourcesImplementation("net.grinder.console.common.resources.Console");
@@ -245,13 +245,13 @@ public class SingleConsole implements Listener, SampleListener {
 	public void start() {
 
 		synchronized (eventSyncCondition) {
-			thread = new Thread(new Runnable() {
+			consoleFoundationThread = new Thread(new Runnable() {
 				public void run() {
 					consoleFoundation.run();
 				}
 			}, "SingleConsole on port " + getConsolePort());
-			thread.setDaemon(true);
-			thread.start();
+			consoleFoundationThread.setDaemon(true);
+			consoleFoundationThread.start();
 			// 10 second is too big?
 			eventSyncCondition.waitNoInterrruptException(10000);
 		}
@@ -271,9 +271,9 @@ public class SingleConsole implements Listener, SampleListener {
 		try {
 			synchronized (this) {
 				consoleFoundation.shutdown();
-				if (thread != null && !thread.isInterrupted()) {
-					thread.interrupt();
-					thread.join(1000);
+				if (consoleFoundationThread != null && !consoleFoundationThread.isInterrupted()) {
+					consoleFoundationThread.interrupt();
+					consoleFoundationThread.join(1000);
 				}
 				samplingCount = 0;
 			}

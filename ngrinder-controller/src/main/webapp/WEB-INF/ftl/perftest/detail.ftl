@@ -609,7 +609,7 @@ function bindEvent() {
 	$("#showScript").click(function() {
 		var currentScript = $("#scriptName").val();
 		if (currentScript != "") {
-			var userId = ""; 
+			var ownerId = ""; 
 			<@security.authorize ifAnyGranted="A, S">					
 				<#if test??>
 					ownerId = "&ownerId=${(test.lastModifiedUser.userId)!}";
