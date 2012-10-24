@@ -302,7 +302,7 @@ $(document).ready(function () {
 function initTags() {
 	$("#tagString").select2(
 		{	
-			tokenSeparators:[',', ' '],
+            tokenSeparators: [",", " "],
 			tags:[""],
 			placeholder: '<@spring.message "perfTest.configuration.tagInput"/>',
 			initSelection : function (element, callback) {
@@ -687,8 +687,12 @@ function updateScriptResources(first) {
 function updateVuserPolicy(vuser) {
 	var processCount = getProcessCount(vuser);
 	var threadCount = getThreadCount(vuser);
-	$('#processes').val(processCount);
-	$('#threads').val(threadCount);
+	var processes = $('#processes');
+	processes.val(processCount);
+	processes.valid();
+	var threads = $('#threads');
+	threads.val(threadCount);
+	threads.valid();
 
 	return [ processCount, threadCount ];
 }
