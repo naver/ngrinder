@@ -10,7 +10,7 @@
 					<div class="controls">
 						<div class="input-append">
 							<input type="text" class="input required span1" rel="popover"
-								id="agentCount" name="agentCount" value="${(test.agentCount)!}" 
+								id="agentCount" name="agentCount" value="${(test.agentCount)!0}" 
 								data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
 								data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
 				 		</div>
@@ -29,7 +29,7 @@
 								<td>
 									<div class="input-append">
 										<input type="text" class="input required span1" rel="popover"
-											id="vuserPerAgent" name="vuserPerAgent"	value="${(test.vuserPerAgent)!}" rel="popover"	
+											id="vuserPerAgent" name="vuserPerAgent"	value="${(test.vuserPerAgent)!1}" rel="popover"	
 											data-content='<@spring.message "perfTest.configuration.vuserPerAgent.help"/>'
 											data-original-title="<@spring.message "perfTest.configuration.vuserPerAgent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxVuserPerAgent)}</span>
 												
