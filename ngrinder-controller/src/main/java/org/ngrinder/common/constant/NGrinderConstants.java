@@ -178,9 +178,9 @@ public interface NGrinderConstants {
 	
 	// ngrinder setting.
 	public static final String NGRINDER_PROP_ETC_HOSTS = "ngrinder.etc.hosts";
-	public static final String NGRINDER_PROP_CONSOLE_PORT_BASE = "ngrinder.consolePortBase";
+	public static final String NGRINDER_PROP_CONSOLE_PORT_BASE = "ngrinder.console.portbase";
 	public static final int NGRINDER_PROP_CONSOLE_PORT_BASE_VALUE = 12000;
-	public static final String NGRINDER_PROP_MAX_CONCURRENT_TEST = "ngrinder.maxConcurrentTest";
+	public static final String NGRINDER_PROP_MAX_CONCURRENT_TEST = "ngrinder.max.concurrenttest";
 	public static final int NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE = 10;
 	public static final int MAX_STACKTRACE_STRING_SIZE = 2048;
 	public static final String NGRINDER_PROP_FRONT_PAGE_RSS = "ngrinder.frontpage.rss";

@@ -156,7 +156,7 @@ public class AgentManager implements NGrinderConstants {
 	 * @return max agent size per console
 	 */
 	public int getMaxAgentSizePerConsole() {
-		return config.getSystemProperties().getPropertyInt("agent.maxsize", NGrinderConstants.MAX_AGENT_SIZE_PER_CONSOLE);
+		return config.getSystemProperties().getPropertyInt("agent.max.size", NGrinderConstants.MAX_AGENT_SIZE_PER_CONSOLE);
 	}
 
 	/**
@@ -165,7 +165,7 @@ public class AgentManager implements NGrinderConstants {
 	 * @return max vuser per agent
 	 */
 	public int getMaxVuserPerAgent() {
-		return config.getSystemProperties().getPropertyInt("agent.maxvuser", NGrinderConstants.MAX_VUSER_PER_AGENT);
+		return config.getSystemProperties().getPropertyInt("agent.max.vuser", NGrinderConstants.MAX_VUSER_PER_AGENT);
 	}
 
 	/**
@@ -174,7 +174,7 @@ public class AgentManager implements NGrinderConstants {
 	 * @return max run count per thread
 	 */
 	public int getMaxRunCount() {
-		return config.getSystemProperties().getPropertyInt("agent.maxruncount", NGrinderConstants.MAX_RUN_COUNT);
+		return config.getSystemProperties().getPropertyInt("agent.max.runcount", NGrinderConstants.MAX_RUN_COUNT);
 	}
 
 	/**
@@ -183,7 +183,7 @@ public class AgentManager implements NGrinderConstants {
 	 * @return max run hour
 	 */
 	public int getMaxRunHour() {
-		return config.getSystemProperties().getPropertyInt("agent.maxhour", NGrinderConstants.MAX_RUN_HOUR);
+		return config.getSystemProperties().getPropertyInt("agent.max.runhour", NGrinderConstants.MAX_RUN_HOUR);
 	}
 
 	/**
