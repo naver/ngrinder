@@ -40,7 +40,7 @@
 				<div class="control-group">
 					<label class="control-label"><@spring.message "perfTest.configuration.targetHost"/></label>
 					<div class="controls">
-						<#if test.targetHosts?has_content>
+						<#if test?exists && test.targetHosts?has_content>
 							<#list test.targetHosts?split(",") as host>
 								${host?trim}<br>
 							</#list>
