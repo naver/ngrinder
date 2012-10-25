@@ -133,8 +133,7 @@
 						<input type="hidden" id="duration" class="required positiveNumber" name="duration"
 							value="${(test.duration)!60000}">
 						<div id="durationSlider" class="slider" style="margin-left: 0; width: 250px"></div>
-						<input id="hiddenDurationInput" class="span1 hide" data-slider="#durationSlider" data-max="39" data-min="1"
-							data-step="1">
+						<input id="hiddenDurationInput" class="span1 hide" data-step="1">
 
 					</div>
 				</div>

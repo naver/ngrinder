@@ -373,8 +373,13 @@ function initDuration() {
 		} else {
 			durationMap[i] = durationMap[i - 1] + 60 * 24;
 		}
+		if ((durationMap[i]/60) >= ${maxRunHour}) {
+		     sliderMax = (i - 1);
+		     break;
+		}
 	}
-	
+	$("#hiddenDurationInput").attr("data-slider", "#durationSlider");
+	$("#hiddenDurationInput").slider({min:1, max:sliderMax});
 	for ( var i = 0; i <= sliderMax; i++) {
 		if (durationMap[i] * 60000 == $("#duration").val()) {
 			$("#hiddenDurationInput").val(i);
@@ -382,7 +387,7 @@ function initDuration() {
 		}
 	}
 	
-	$("#hSelect").append(getOption(7 + 1));
+	$("#hSelect").append(getOption(${maxRunHour}));
 	$("#hSelect").change(getDurationMS);
 	
 	$("#mSelect").append(getOption(60));
@@ -411,12 +416,25 @@ function addValidation() {
 				required : true,
 				max:${(maxVuserPerAgent)},
 				min:1
+			},
+			duration : {
+				max:${maxRunHour}*3600000,
+				min:0
+			},
+			runCount : {
+				max:${maxRunCount},
+				min:0
 			}
+			
 		},
 	    messages: {
 	        testName: "<@spring.message "perfTest.warning.testName"/>",
 	        agentCount: "<@spring.message "perfTest.warning.agentNumber"/>",
-	        vuserPerAgent: "<@spring.message "perfTest.warning.vuserPerAgent"/>"
+	        vuserPerAgent: "<@spring.message "perfTest.warning.vuserPerAgent"/>",
+	        duration: "<@spring.message "perfTest.warning.duration"/>",
+	        runCount: "<@spring.message "perfTest.warning.runCount"/>",
+	        processes: "<@spring.message "perfTest.warning.processes"/>",
+	        threads: "<@spring.message "perfTest.warning.threads"/>"
 	    },
 		ignore : "", // make the validation on hidden input work
 		errorClass : "help-inline",
