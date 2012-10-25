@@ -52,8 +52,12 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 	//startTime is a Date object.
 	//interval is second amount.
 	//startTime and interval are optional.
+	if (data == undefined) {
+		return undefined;
+	}
 	var values = [ eval(data) ];
-	if (values[0].length == 0) {
+	var dataCnt = values[0].length;
+	if (dataCnt == 0) {
 		return;
 	}
 	var ymax = getMaxValue(data);
@@ -68,11 +72,11 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 			return value.toFixed(0);
 		};
 	}
-	var numberOfXTicks = 10;
 
-	if (!interval) {
+	if (interval == undefined || interval == 0) {
 		interval = 1;
 	}
+	
 	var startTimeLong = 0;
 	if (startTime) {
 		startTimeLong = startTime.getTime();
@@ -92,11 +96,11 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 		axes : {
 			xaxis : {
 				min : 0,
+				max : dataCnt,
 				pad : 0,
-				numberTicks : numberOfXTicks,
+				numberTicks : 10,
 				tickOptions : {
 					show : true,
-					angle : -30,
 					formatter : function(format, value) {
 						if (startTime) {
 							var pointDate = new Date(startTimeLong + value * interval * 1000);
@@ -149,13 +153,17 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 
 //data is an array object.
 function replotChart(plotObj, data, ymax) {
+	if (data == undefined) {
+		return;
+	}
 	var cache = [];
-	var i;
-	for (i = 0; i < data.length; i++) {
+	var dataCnt = data.length;
+	for (var i = 0; i < dataCnt; i++) {
 		cache.push([i + 1, data[i]]);
 	}
 	plotObj.series[0].data = cache;
-	var prevFormatter = plotObj.axes.yaxis.tickOptions.formatter;
+	var prevXFormatter = plotObj.axes.xaxis.tickOptions.formatter;
+	var prevYFormatter = plotObj.axes.yaxis.tickOptions.formatter;
 	plotObj.resetAxesScale(); 
 	
 	if (ymax < 5) {
@@ -164,13 +172,21 @@ function replotChart(plotObj, data, ymax) {
 	
 	ymax = parseInt((ymax / 5) + 0.5) * 6;
 	
-	plotObj.axes.yaxis.numberTicks = 7;
-	plotObj.axes.yaxis.max = ymax;
-	
 	plotObj.axes.yaxis.min = 0; 
+	plotObj.axes.yaxis.max = ymax;
+	plotObj.axes.yaxis.numberTicks = 7;
 	plotObj.axes.yaxis.tickOptions = {
 		show : true,
-		formatter : prevFormatter
+		formatter : prevYFormatter
 	};
+	
+	plotObj.axes.xaxis.min = 0;
+	plotObj.axes.xaxis.max = dataCnt;
+	plotObj.axes.xaxis.numberTicks = 10;
+	plotObj.axes.xaxis.tickOptions = {
+		show : true,
+		formatter : prevXFormatter
+	};
+	
 	plotObj.replot();
 }
