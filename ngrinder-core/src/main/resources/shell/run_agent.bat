@@ -1,4 +1,8 @@
-@ECHO OFF
+@ECHO ON
 SET basedir=%~dp0
 CD %basedir%
-java  -Dstart.mode=agent -jar ngrinder-core-${ngrinder.version}.jar -server
+SET CONTROLLER_IP=
+IF "%1"=="" GOTO RUN
+   SET CONTROLLER_IP=-Dcontroller=%1
+:RUN
+java  -Dstart.mode=agent %CONTROLLER_IP% -jar ngrinder-core-${ngrinder.version}.jar -server

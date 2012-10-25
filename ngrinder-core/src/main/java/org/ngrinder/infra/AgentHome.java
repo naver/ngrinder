@@ -136,13 +136,15 @@ public class AgentHome {
 	/**
 	 * Save properties.
 	 * 
-	 * @param path path to save
-	 * @param properties properties.
+	 * @param path
+	 *            path to save
+	 * @param properties
+	 *            properties.
 	 */
 	public void saveProperties(String path, Properties properties) {
 		OutputStream out = null;
 		try {
-			File propertiesFile = new File(path);
+			File propertiesFile = new File(getDirectory(), path);
 			out = FileUtils.openOutputStream(propertiesFile);
 			properties.store(out, null);
 		} catch (IOException e) {

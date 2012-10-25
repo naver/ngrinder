@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -124,7 +123,7 @@ public class AgentConfig {
 	 */
 	public void saveAgentPidProperties(String agentPid, String startMode) {
 		checkNotNull(home);
-		Properties properties = getAgentPidFile();
+		Properties properties = home.getProperties("agent_pid.conf");
 		if ("agent".equals(startMode)) {
 			properties.put("agent.pid", agentPid);
 		} else {
@@ -227,25 +226,6 @@ public class AgentConfig {
 		return internalProperties.getProperty(key, defaultValue);
 	}
 
-	/**
-	 * Get Agent or Monitor PID if agent_pid.conf not exists,it will be created.
-	 * 
-	 * @return {@link Properties} loaded properties
-	 */
-	public Properties getAgentPidFile() {
-		Properties properties = new Properties();
-		File agentPidFile = new File("agent_pid.conf");
-		InputStream is = null;
-		try {
-			if (!agentPidFile.exists()) {
-				agentPidFile.createNewFile();
-			}
-			is = FileUtils.openInputStream(agentPidFile);
-			properties.load(is);
-		} catch (IOException e) {
-			IOUtils.closeQuietly(is);
-		}
-		return properties;
-	}
+	
 
 }

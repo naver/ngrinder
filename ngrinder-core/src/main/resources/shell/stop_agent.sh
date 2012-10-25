@@ -1,6 +1,4 @@
 #!/bin/sh
-                  
-AGENT_PID=`sed '/^\#/d' agent_pid.conf | grep 'agent.pid'  | tail -n 1 | cut -d "=" -f2-`
-
-kill -9 $AGENT_PID
-
+curpath=`dirname $0`
+cd ${curpath}
+java -Dstart.mode=stopagent -jar ngrinder-core-${ngrinder.version}.jar -server

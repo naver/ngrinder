@@ -105,12 +105,13 @@ public class NGrinderStarter {
 
 	/**
 	 * Get agent version.
+	 * 
 	 * @return version string
 	 */
 	public String getVersion() {
 		return agentConfig.getInternalProperty("ngrinder.version", "UNKNOWN");
 	}
-	
+
 	/**
 	 * Start the performance monitor.
 	 */
@@ -142,11 +143,11 @@ public class NGrinderStarter {
 	/**
 	 * Start ngrinder agent.
 	 */
-	public void startAgent() {
+	public void startAgent(String ip) {
 		LOG.info("*************************");
 		LOG.info("Start nGrinder Agent ...");
 
-		String consoleIP = agentConfig.getAgentProperties().getProperty("agent.console.ip", "127.0.0.1");
+		String consoleIP = agentConfig.getAgentProperties().getProperty("agent.console.ip", ip);
 		int consolePort = agentConfig.getAgentProperties().getPropertyInt("agent.console.port",
 				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
@@ -224,8 +225,7 @@ public class NGrinderStarter {
 
 	private void addLibarayPath() {
 		String property = StringUtils.trimToEmpty(System.getProperty("java.library.path"));
-		System.setProperty("java.library.path", 
-						property + File.pathSeparator + new File("./native_lib").getAbsolutePath());
+		System.setProperty("java.library.path", property + File.pathSeparator + new File("./native_lib").getAbsolutePath());
 		LOG.info("java.library.path : {} ", System.getProperty("java.library.path"));
 	}
 
@@ -275,9 +275,8 @@ public class NGrinderStarter {
 		try {
 			configurator.doConfigure(NGrinderStarter.class.getResource("/logback-agent.xml"));
 		} catch (JoranException e) {
-			staticPrintHelpAndExit("Can not configure logger on "  
-							+ logDirectory.getAbsolutePath() + ".\n Please check if it's writable.");
-			
+			staticPrintHelpAndExit("Can not configure logger on " + logDirectory.getAbsolutePath() + ".\n Please check if it's writable.");
+
 		}
 	}
 
@@ -319,22 +318,59 @@ public class NGrinderStarter {
 		String startMode = System.getProperty("start.mode");
 		LOG.info("- Passing mode " + startMode);
 		LOG.info("- nGrinder version " + starter.getVersion());
+		if ("stopagent".equals(startMode)) {
+			starter.stopAgentProcess();
+			return;
+		} else if ("stopmonitor".equals(startMode)) {
+			starter.stopMonitorProcess();
+			return;
+		}
 		startMode = (startMode == null) ? starter.getStartMode() : startMode;
 		starter.verifiedSigar(startMode);
-		
+
 		if (startMode.equalsIgnoreCase("agent")) {
-			starter.startAgent();
+			String controllerIp = System.getProperty("controller", "127.0.0.1");
+			starter.startAgent(controllerIp);
 		} else if (startMode.equalsIgnoreCase("monitor")) {
 			starter.startMonitor();
 		} else {
 			staticPrintHelpAndExit("Invalid agent.conf, 'start.mode' must be set as 'monitor' or 'agent'.");
 		}
 	}
-	
+
+	/**
+	 * Stop monitoring process.
+	 */
+	protected void stopMonitorProcess() {
+		String agentPid = agentConfig.getAgentProperties().getProperty("monitor.pid", "");
+		try {
+			if (StringUtils.isNotBlank(agentPid)) {
+				new Sigar().kill(agentPid, 7);
+			}
+		} catch (Exception e) {
+			printHelpAndExit("Sigar library doesn't work. Please add sigar library into LD_LIBARY_PATH.", e);
+		}
+	}
+
+	/**
+	 * Stop agent process.
+	 */
+	protected void stopAgentProcess() {
+		String agentPid = agentConfig.getAgentProperties().getProperty("agent.pid", "");
+		try {
+			if (StringUtils.isNotBlank(agentPid)) {
+				new Sigar().kill(agentPid, 7);
+			}
+		} catch (Exception e) {
+			printHelpAndExit("Sigar library doesn't work. Please add sigar library into LD_LIBARY_PATH.", e);
+		}
+	}
+
 	/**
 	 * test sigar library existing and working.
 	 * 
-	 * @param startMode monitor or agent
+	 * @param startMode
+	 *            monitor or agent
 	 */
 	public void verifiedSigar(String startMode) {
 		try {
@@ -343,8 +379,7 @@ public class NGrinderStarter {
 			this.agentConfig.saveAgentPidProperties(String.valueOf(sigar.getPid()), startMode);
 		} catch (SigarException e) {
 			if (startMode.equalsIgnoreCase("agent")) {
-				LOG.error("Sigar library doesn't work " 
-								+ "and it will be no display Agent performance in running test page !");
+				LOG.error("Sigar library doesn't work " + "and it will be no display Agent performance in running test page !");
 			} else if (startMode.equalsIgnoreCase("monitor")) {
 				printHelpAndExit("Sigar library doesn't work. Please add sigar library into LD_LIBARY_PATH.", e);
 			}
