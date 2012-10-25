@@ -53,15 +53,15 @@
 													<label class="control-label" for="testName"><@spring.message "script.option.name"/></label>
 												</td>
 												<td>
-													<input type="text" id="scriptNameInput" class="span7" name="path" value="${(file.path)!}" readonly/>
+													<input type="text" id="scriptNameInput" class="span6" name="path" value="${(file.path)!}" readonly/>
 												</td>
 												<td>
-													<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:18px; width:35px;"><@spring.message "common.button.save"/></a>
+													<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:83px; width:35px;"><@spring.message "common.button.save"/></a>
 													<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:85px;"><@spring.message "script.editor.button.validate"/></a>
 												</td>
 											</tr> 
 										</table>
-								</div> 
+								</div>
 								<div style="margin-bottom: 0" class="control-group">
 									<table style="width:100%"> 
 										<colgroup> 
@@ -74,7 +74,7 @@
 												<label class="control-label" for="description"><@spring.message "script.option.commit"/></label>
 											</td>
 											<td>
-												<textarea class="input-xlarge span6" id="descInput" rows="3" name="description" style="resize: none; height: 55px" >${(file.description)!}</textarea>
+												<textarea class="span6" id="descInput" name="description" style="resize:none; height:55px" >${(file.description)!}</textarea>
 											</td> 
 											<td>  
 												<#include "../perftest/host.ftl"/>

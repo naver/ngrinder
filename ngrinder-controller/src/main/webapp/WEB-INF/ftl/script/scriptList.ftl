@@ -198,27 +198,7 @@
 				searchScriptList();
 			});
 			
-			$("td input").on("click", function() {
-				if($("td input").size() == $("td input:checked").size()) {
-						$("th input").attr("checked", "checked");
-				} else {
-					$("th input").removeAttr("checked");
-				}
-			});
-			
-			$("th input").on('click', function(event) {
-				if($(this)[0].checked) {
-					$("td input").each(function(){
-						$(this).attr("checked", "checked");
-					});
-				} else {
-					$("td input").each(function() {
-						$(this).removeAttr("checked");
-					});
-				}
-				
-				event.stopImmediatePropagation();
-			});
+			enableChkboxSelectAll();
 			
 			$("i.script-download").on('click', function() {
 				var $elem = $(this);
