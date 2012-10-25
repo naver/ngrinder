@@ -141,7 +141,7 @@
 					</#list>
 				<#else>
 					<tr>
-						<td colspan="7" class="center">
+						<td colspan="8" class="center">
 							<@spring.message "common.message.noData"/>
 						</td>
 					</tr>
