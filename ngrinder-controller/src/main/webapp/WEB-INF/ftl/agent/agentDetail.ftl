@@ -87,7 +87,7 @@
         	<#include "../common/copyright.ftl">
     	<!--content-->
         </div>
-        <script src="${req.getContextPath()}/js/queue.js"></script>
+        <script src="${req.getContextPath()}/js/queue.js?${nGrinderVersion}"></script>
         <script>
             var interval;
             var timer;

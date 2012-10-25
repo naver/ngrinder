@@ -7,7 +7,7 @@
 <script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
 <script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
 <script src="${req.getContextPath()}/js/bootbox.min.js"></script>
-<script src="${req.getContextPath()}/js/utils.js"></script>
+<script src="${req.getContextPath()}/js/utils.js?${nGrinderVersion}"></script>
 <script src="${req.getContextPath()}/js/jquery.validate.js"></script>
 <#import "spring.ftl" as spring/>
 <script>

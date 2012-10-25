@@ -4,9 +4,8 @@
 		<title>nGrinder Login</title>
 		
 		<#include "common/common.ftl">
-		<link href="${req.getContextPath()}/plugins/select2/select2.css" rel="stylesheet"/>
-		<script src="${req.getContextPath()}/plugins/select2/select2.min.js"></script>
-		<script src="${req.getContextPath()}/js/detect_timezone.js"></script>
+		<#include "common/select2.ftl">
+		<script src="${req.getContextPath()}/js/detect_timezone.js?${nGrinderVersion}"></script>
 		<style>
 			body { overflow-y:hidden; background-color:white }
 			.content { height:635px; margin-top:30px; padding-top:30px; background-color:#f5f4f2 }

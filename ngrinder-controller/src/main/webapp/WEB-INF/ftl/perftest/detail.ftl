@@ -6,8 +6,7 @@
 	<META HTTP-EQUIV="Expires" CONTENT="-1">
 	<#include "../common/common.ftl"> 
 	<#include "../common/jqplot.ftl">
-	<link href="${req.getContextPath()}/plugins/select2/select2.css" rel="stylesheet"/>
-	<script src="${req.getContextPath()}/plugins/select2/select2.min.js"></script>
+	<#include "../common/select2.ftl">
 	<link href="${req.getContextPath()}/css/slider.css" rel="stylesheet">
 	<link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
 	<style>
@@ -255,9 +254,9 @@
 	</div>
 
 <script src="${req.getContextPath()}/plugins/datepicker/js/bootstrap-datepicker.js"></script>
-<script src="${req.getContextPath()}/js/rampup.js"></script>
 <script src="${req.getContextPath()}/js/bootstrap-slider.min.js"></script>
-<script src="${req.getContextPath()}/js/queue.js"></script>
+<script src="${req.getContextPath()}/js/rampup.js?${nGrinderVersion}"></script>
+<script src="${req.getContextPath()}/js/queue.js?${nGrinderVersion}"></script>
 <script>
 // vuser calc
 ${processthread_policy_script}

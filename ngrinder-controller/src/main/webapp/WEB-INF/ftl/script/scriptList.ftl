@@ -79,7 +79,7 @@
 		<table class="table table-striped table-bordered ellipsis" id="scriptTable" style="width:940px">
 			<colgroup>
 				<col width="30">
-				<col width="35">
+				<col width="32">
 				<col width="250"> 
 				<col>
 				<col width="150">
@@ -90,7 +90,7 @@
 			<thead>
 				<tr>
 					<th><input type="checkbox" class="checkbox" value=""></th>
-					<th><a href="${req.getContextPath()}/script/list/${currentPath}/../" target="_self"><img src="${req.getContextPath()}/img/up_folder.png"/></a> 
+					<th class="noClick"><a href="${req.getContextPath()}/script/list/${currentPath}/../" target="_self"><img src="${req.getContextPath()}/img/up_folder.png"/></a> 
 					</th>
 					<th><@spring.message "script.option.name"/></th>
 					<th class="noClick"><@spring.message "script.option.commit"/></th>

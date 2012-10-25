@@ -43,16 +43,16 @@ please refer nGrinder javadoc to find out more APIs on the given variables.
 		</div>
 		<#include "../common/copyright.ftl">
 	</div>
-	<script src="${req.getContextPath()}/js/codemirror/codemirror.js" type="text/javascript" charset="utf-8"></script>
-	<link rel="stylesheet" href="${req.getContextPath()}/js/codemirror/codemirror.css"/>
-	<link rel="stylesheet" href="${req.getContextPath()}/js/codemirror/eclipse.css">
-	<script src="${req.getContextPath()}/js/codemirror/lang/python.js"></script>
-	<script src="${req.getContextPath()}/js/codemirror/util/dialog.js"></script>
+	<script src="${req.getContextPath()}/plugins/codemirror/codemirror.js" type="text/javascript" charset="utf-8"></script>
+	<link rel="stylesheet" href="${req.getContextPath()}/plugins/codemirror/codemirror.css"/>
+	<link rel="stylesheet" href="${req.getContextPath()}/plugins/codemirror/eclipse.css">
+	<script src="${req.getContextPath()}/plugins/codemirror/lang/python.js"></script>
+	<script src="${req.getContextPath()}/plugins/codemirror/util/dialog.js"></script>
 	
-    <link rel="stylesheet" href="${req.getContextPath()}/js/codemirror/util/dialog.css">
-    <script src="${req.getContextPath()}/js/codemirror/util/searchcursor.js"></script>
-    <script src="${req.getContextPath()}/js/codemirror/util/search.js"></script>
-    <script src="${req.getContextPath()}/js/codemirror/util/foldcode.js"></script> 
+    <link rel="stylesheet" href="${req.getContextPath()}/plugins/codemirror/util/dialog.css">
+    <script src="${req.getContextPath()}/plugins/codemirror/util/searchcursor.js"></script>
+    <script src="${req.getContextPath()}/plugins/codemirror/util/search.js"></script>
+    <script src="${req.getContextPath()}/plugins/codemirror/util/foldcode.js"></script> 
     <style>
 		.CodeMirror-scroll {
 			height: 400px;

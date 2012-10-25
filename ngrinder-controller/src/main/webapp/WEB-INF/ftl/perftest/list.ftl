@@ -4,8 +4,7 @@
 		<title>nGrinder Performance Test List</title>
 		<#include "../common/common.ftl">
 		<#include "../common/datatables.ftl">	
-		<link href="${req.getContextPath()}/plugins/select2/select2.css" rel="stylesheet"/>
-		<script src="${req.getContextPath()}/plugins/select2/select2.min.js"></script>
+		<#include "../common/select2.ftl">
 		<style>
 			td.today {
 				background-image: url('${req.getContextPath()}/img/icon_today.png');
