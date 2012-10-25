@@ -141,7 +141,7 @@
 				</div>
 				<div id="monitorDiv" style="display:none">
 	    			<div class="page-header">
-						<h4>System Data</h4>
+						<h4>System Data <i id="ipMark"></i></h4>
 					</div>
 				    <h6>CPU</h6>
                     <div class="chart" id="cpuDiv"></div>
@@ -233,13 +233,22 @@
                     		replotChart(targetMonitorPlot.plotKeyCpu, res.SystemData.cpu, ymax);
                     	} else {
                     		targetMonitorPlot.plotKeyCpu = drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, undefined, undefined, res.SystemData.interval);
+                    		if (targetMonitorPlot.plotKeyCpu == undefined) {
+                    			showWarning("<@spring.message "common.message.noData"/>");
                     		}
+                    	}
+                    		
                     	if (targetMonitorPlot.plotKeyMem) {
                     		ymax = getMaxValue(res.SystemData.memory);
                     		replotChart(targetMonitorPlot.plotKeyMem, res.SystemData.memory, ymax);
                     	} else {
                     		targetMonitorPlot.plotKeyMem = drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, undefined, undefined, res.SystemData.interval);
+                    		if (targetMonitorPlot.plotKeyMem == undefined) {
+                    			showWarning("<@spring.message "common.message.noData"/>");
+                    		}
                     	}
+                    	
+                    	$("#ipMark").html("[" + ip + "]");
                         return true;
                     } else {
                         showErrorMsg("Get monitor data failed.");
