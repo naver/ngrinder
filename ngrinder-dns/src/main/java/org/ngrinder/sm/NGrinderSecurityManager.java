@@ -23,6 +23,7 @@
 package org.ngrinder.sm;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.net.InetAddress;
 import java.security.Permission;
 import java.util.ArrayList;
@@ -39,12 +40,14 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	private String workDirectory = System.getProperty("user.dir");
 	private String logDirectory = null;
-	private String agentExecDirectory = System.getProperty("ngrinder.exec.path", workDirectory);
+	private String agentExecDirectory = System.getProperty(
+			"ngrinder.exec.path", workDirectory);
 	private String javaHomeDirectory = System.getenv("JAVA_HOME");
 	private String jreHomeDirectory = null;
 	private String javaExtDirectory = System.getProperty("java.ext.dirs");
 	private String etcHosts = System.getProperty("ngrinder.etc.hosts", "");
-	private String consoleIP = System.getProperty("ngrinder.console.ip", "127.0.0.1");
+	private String consoleIP = System.getProperty("ngrinder.console.ip",
+			"127.0.0.1");
 
 	private List<String> allowedHost = new ArrayList<String>();
 	private List<String> readAllowedDirectory = new ArrayList<String>();
@@ -61,11 +64,15 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 */
 	private void initAccessOfDirectories() {
 		workDirectory = new File(workDirectory).getAbsolutePath();
-		logDirectory = workDirectory.substring(0, workDirectory.lastIndexOf(File.separator));
-		logDirectory = logDirectory.substring(0, workDirectory.lastIndexOf(File.separator)) + File.separator + "log";
+		logDirectory = workDirectory.substring(0,
+				workDirectory.lastIndexOf(File.separator));
+		logDirectory = logDirectory.substring(0,
+				workDirectory.lastIndexOf(File.separator))
+				+ File.separator + "log";
 		agentExecDirectory = new File(agentExecDirectory).getAbsolutePath();
 		javaHomeDirectory = new File(javaHomeDirectory).getAbsolutePath();
-		jreHomeDirectory = javaHomeDirectory.substring(0, javaHomeDirectory.lastIndexOf(File.separator))
+		jreHomeDirectory = javaHomeDirectory.substring(0,
+				javaHomeDirectory.lastIndexOf(File.separator))
 				+ File.separator + "jre";
 		readAllowedDirectory.add(workDirectory);
 		readAllowedDirectory.add(logDirectory);
@@ -115,22 +122,30 @@ public class NGrinderSecurityManager extends SecurityManager {
 			// except setSecurityManager
 			String permissionName = permission.getName();
 			if ("setSecurityManager".equals(permissionName)) {
-				throw new SecurityException("java.lang.RuntimePermission: setSecurityManager is not allowed.");
+				throw new SecurityException(
+						"java.lang.RuntimePermission: setSecurityManager is not allowed.");
 			}
 		} else if (permission instanceof java.security.UnresolvedPermission) {
-			throw new SecurityException("java.security.UnresolvedPermission is not allowed.");
+			throw new SecurityException(
+					"java.security.UnresolvedPermission is not allowed.");
 		} else if (permission instanceof java.awt.AWTPermission) {
-			throw new SecurityException("java.awt.AWTPermission is not allowed.");
+			throw new SecurityException(
+					"java.awt.AWTPermission is not allowed.");
 		} else if (permission instanceof javax.security.auth.AuthPermission) {
-			throw new SecurityException("javax.security.auth.AuthPermission is not allowed.");
+			throw new SecurityException(
+					"javax.security.auth.AuthPermission is not allowed.");
 		} else if (permission instanceof javax.security.auth.PrivateCredentialPermission) {
-			throw new SecurityException("javax.security.auth.PrivateCredentialPermission is not allowed.");
+			throw new SecurityException(
+					"javax.security.auth.PrivateCredentialPermission is not allowed.");
 		} else if (permission instanceof javax.security.auth.kerberos.DelegationPermission) {
-			throw new SecurityException("javax.security.auth.kerberos.DelegationPermission is not allowed.");
+			throw new SecurityException(
+					"javax.security.auth.kerberos.DelegationPermission is not allowed.");
 		} else if (permission instanceof javax.security.auth.kerberos.ServicePermission) {
-			throw new SecurityException("javax.security.auth.kerberos.ServicePermission is not allowed.");
+			throw new SecurityException(
+					"javax.security.auth.kerberos.ServicePermission is not allowed.");
 		} else if (permission instanceof javax.sound.sampled.AudioPermission) {
-			throw new SecurityException("javax.sound.sampled.AudioPermission is not allowed.");
+			throw new SecurityException(
+					"javax.sound.sampled.AudioPermission is not allowed.");
 		}
 	}
 
@@ -141,12 +156,17 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	@Override
 	public void checkRead(String file) {
-		this.fileAccessReadAllowed(file);
+		fileAccessReadAllowed(file);
 	}
 
 	@Override
 	public void checkRead(String file, Object context) {
-		this.fileAccessReadAllowed(file);
+		fileAccessReadAllowed(file);
+	}
+
+	@Override
+	public void checkRead(FileDescriptor fd) {
+		super.checkRead(fd);
 	}
 
 	@Override
@@ -161,30 +181,44 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	@Override
 	public void checkExec(String cmd) {
-		throw new SecurityException("Cmd execution of " + cmd + " is not allowed.");
+		throw new SecurityException("Cmd execution of " + cmd
+				+ " is not allowed.");
 	}
 
 	/**
 	 * File read access is allowed on <br>
 	 * "agent.exec.folder" and "agent.exec.folder".
 	 * 
-	 * @param file file path
+	 * @param file
+	 *            file path
 	 */
 	private void fileAccessReadAllowed(String file) {
+		String upperPath = File.separator + ".." + File.separator;
+		if (file.contains(upperPath)) {
+			throw new SecurityException(
+					"File read access with .. is not allowed.");
+		}
+		if (file.startsWith(File.separator)) {
+			throw new SecurityException(
+					"File read access starting with /  is not allowed.");
+		}
+
 		String filePath = new File(file).getAbsolutePath();
 		for (String dir : readAllowedDirectory) {
 			if (filePath.startsWith(dir)) {
 				return;
 			}
 		}
-		throw new SecurityException("File read access on " + file + " is not allowed.");
+		throw new SecurityException("File read access on " + file
+				+ " is not allowed.");
 	}
 
 	/**
 	 * File write access is allowed <br>
 	 * on "agent.exec.folder".
 	 * 
-	 * @param file file path
+	 * @param file
+	 *            file path
 	 */
 	private void fileAccessWriteAllowed(String file) {
 		String filePath = new File(file).getAbsolutePath();
@@ -193,14 +227,16 @@ public class NGrinderSecurityManager extends SecurityManager {
 				return;
 			}
 		}
-		throw new SecurityException("File write access on " + file + " is not allowed.");
+		throw new SecurityException("File write access on " + file
+				+ " is not allowed.");
 	}
 
 	/**
 	 * File delete access is allowed <br>
 	 * on "agent.exec.folder".
 	 * 
-	 * @param file file path
+	 * @param file
+	 *            file path
 	 */
 	private void fileAccessDeleteAllowed(String file) {
 		String filePath = new File(file).getAbsolutePath();
@@ -209,12 +245,14 @@ public class NGrinderSecurityManager extends SecurityManager {
 				return;
 			}
 		}
-		throw new SecurityException("File delete access on " + file + " is not allowed.");
+		throw new SecurityException("File delete access on " + file
+				+ " is not allowed.");
 	}
 
 	@Override
 	public void checkMulticast(InetAddress maddr) {
-		throw new SecurityException("Multicast on " + maddr.toString() + " is not always allowed.");
+		throw new SecurityException("Multicast on " + maddr.toString()
+				+ " is not always allowed.");
 	}
 
 	@Override
@@ -230,13 +268,15 @@ public class NGrinderSecurityManager extends SecurityManager {
 	/**
 	 * NetWork access is allowed on "ngrinder.etc.hosts".
 	 * 
-	 * @param host host name
+	 * @param host
+	 *            host name
 	 */
 	private void netWorkAccessAllowed(String host) {
 		if (allowedHost.contains(host)) {
 			return;
 		}
-		throw new SecurityException("NetWork access on " + host + " is not allowed.");
+		throw new SecurityException("NetWork access on " + host
+				+ " is not allowed.");
 	}
 
 }

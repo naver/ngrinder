@@ -60,12 +60,17 @@ public class PropertyBuilder {
 	public String buildJVMArgument() {
 		StringBuilder jvmArguments = new StringBuilder(properties.getProperty("grinder.jvm.arguments", ""));
 		if (securityEnabled) {
+			jvmArguments = addSecurityManager(jvmArguments);
 			jvmArguments = addCurrentAgentPath(jvmArguments);
 			jvmArguments = addConsoleIP(jvmArguments);
 			jvmArguments = addDNSIP(jvmArguments);
 		}
 		jvmArguments = addPythonPathJvmArgument(jvmArguments);
 		return addCustomDns(jvmArguments).toString();
+	}
+
+	protected StringBuilder addSecurityManager(StringBuilder jvmArguments) {
+		return jvmArguments.append(" -Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager ");
 	}
 
 	private String getPath(File file, boolean useAbsolutePath) {
