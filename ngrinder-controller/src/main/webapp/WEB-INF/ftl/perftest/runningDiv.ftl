@@ -39,7 +39,13 @@
 				<hr>
 				<div class="control-group">
 					<label class="control-label"><@spring.message "perfTest.configuration.targetHost"/></label>
-					<div class="controls">${(test.targetHosts)!}</div>
+					<div class="controls">
+						<#if test.targetHosts?has_content>
+							<#list test.targetHosts?split(",") as host>
+								${host?trim}<br>
+							</#list>
+						</#if>
+					</div>
 				</div>
 				<hr>
 				<div class="control-group">
