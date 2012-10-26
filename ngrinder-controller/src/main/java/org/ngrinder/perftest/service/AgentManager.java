@@ -396,7 +396,8 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Select agent.
+	 * Select agent. This method return agent set which is belong to the given user first and then
+	 * share agent set.
 	 * 
 	 * @param user
 	 *            user
@@ -412,7 +413,6 @@ public class AgentManager implements NGrinderConstants {
 			String region = ((AgentControllerIdentityImplementation) each).getRegion();
 			if (StringUtils.contains(region, "owned_" + user.getUserId())) {
 				userAgent.add(each);
-				allFreeAgents.remove(each);
 				if (userAgent.size() == agentCount) {
 					return userAgent;
 				}
