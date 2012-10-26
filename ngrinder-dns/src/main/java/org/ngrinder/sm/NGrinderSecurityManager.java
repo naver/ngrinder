@@ -169,6 +169,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 		throw new SecurityException("Cmd execution of " + cmd + " is not allowed.");
 	}
 
+	
 	/**
 	 * File read access is allowed on <br>
 	 * "agent.exec.folder" and "agent.exec.folder".
@@ -177,21 +178,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 *            file path
 	 */
 	private void fileAccessReadAllowed(String file) {
-		String upperPath = File.separator + ".." + File.separator;
-		if (file.contains(upperPath)) {
-			throw new SecurityException("File read access with .. is not allowed.");
-		}
-		if (file.startsWith(File.separator)) {
-			throw new SecurityException("File read access starting with /  is not allowed.");
-		}
-
-		String filePath = new File(file).getAbsolutePath();
-		for (String dir : readAllowedDirectory) {
-			if (filePath.startsWith(dir)) {
-				return;
-			}
-		}
-		throw new SecurityException("File read access on " + file + " is not allowed.");
+		// Alllow all
 	}
 
 	/**
