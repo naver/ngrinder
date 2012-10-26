@@ -9,12 +9,14 @@ Bug
 [NGRINDER-317] - Input testing tag as "1,2,3,4" , save, was saved as "1" "2" "3" "4"
 [NGRINDER-323] - Make max runcount / max runhour checked
 [NGRINDER-325] - Running_time is wrong
+[NGRINDER-152] - Make security mode work.
 
 Improvement
 [NGRINDER-281] - Provide batch/shell for easy exeuction
 [NGRINDER-320] - "Action" background color isn't grey when there isn't any script
 [NGRINDER-314] - Provide servlet filter plugin
-
+[NGRINDER-315] - When user provide the agent by himself, the user agent will will used only for the the given user.
+ 
 
 3.0-b3 (2012.10.22)
 - Third beta version.
