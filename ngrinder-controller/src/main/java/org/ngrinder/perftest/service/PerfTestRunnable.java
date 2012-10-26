@@ -271,7 +271,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		perfTestService.markStatusAndProgress(perfTest, START_AGENTS, perfTest.getAgentCount()
 						+ " agents are starting.");
-		agentManager.runAgent(perfTest.getLastModifiedUser(), singleConsole, grinderProperties, perfTest.getAgentCount());
+		agentManager.runAgent(perfTest.getLastModifiedUser(), singleConsole, grinderProperties,
+						perfTest.getAgentCount());
 		singleConsole.waitUntilAgentConnected(perfTest.getAgentCount());
 		perfTestService.markStatusAndProgress(perfTest, START_AGENTS_FINISHED, perfTest.getAgentCount()
 						+ " agents are started.");

@@ -81,7 +81,7 @@ public class LocalScriptTestDriveService {
 	 *            condition for event synchronization
 	 * @param securityEnabled
 	 *            if security is set ot not.
-	 * @param hostString
+	 * @param hostString hostString
 	 * @return File which stores validation result.
 	 */
 	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled,

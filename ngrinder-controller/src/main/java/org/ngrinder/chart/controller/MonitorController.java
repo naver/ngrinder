@@ -61,14 +61,24 @@ public class MonitorController extends NGrinderBaseController {
 
 	@Autowired
 	private MonitorService monitorService;
-	
+
 	@Autowired
 	private AgentManager agentManager;
-	
+
+	/**
+	 * Get the current system performance info for given ip.
+	 * 
+	 * @param model
+	 *            model
+	 * @param ip
+	 *            ip
+	 * @return json message
+	 */
 	@RequestMapping("/getCurrentMonitorData")
-	public @ResponseBody String getCurrentMonitorData(ModelMap model, @RequestParam String ip) {
+	@ResponseBody
+	public String getCurrentMonitorData(ModelMap model, @RequestParam String ip) {
 		Map<String, Object> returnMap = new HashMap<String, Object>(3);
-		
+
 		AgentIdentity agentId = agentManager.getAgentIdentityByIp(ip);
 		if (agentId == null) {
 			return returnError("Agent " + ip + " doesn't exist!");
@@ -79,32 +89,39 @@ public class MonitorController extends NGrinderBaseController {
 		returnMap.put("systemData", systemData);
 		return toJson(returnMap);
 	}
-	
+
 	/**
 	 * Get monitor data of agents.
 	 * 
 	 * @param model
+	 *            model
 	 * @param ip
+	 *            ip
 	 * @param startTime
+	 *            start time
 	 * @param finishTime
+	 *            finish time
 	 * @param imgWidth
-	 * @return
+	 *            image width
+	 * @return json message
 	 */
 	@RequestMapping("/getMonitorData")
-	public @ResponseBody
-	String getMonitorData(ModelMap model, @RequestParam String ip, @RequestParam(required = false) Date startTime,
-			@RequestParam(required = false) Date finishTime, @RequestParam int imgWidth) {
+	@ResponseBody
+	public String getMonitorData(ModelMap model, @RequestParam String ip,
+					@RequestParam(required = false) Date startTime, @RequestParam(required = false) Date finishTime,
+					@RequestParam int imgWidth) {
 		if (null == finishTime) {
 			finishTime = new Date();
 		} else {
 			finishTime = DateUtil.convertToServerDate(getCurrentUser().getTimeZone(), finishTime);
 		}
 		if (null == startTime) {
-			startTime = new Date(finishTime.getTime() - 60 * 1000); //default getting one minute's monitor data
+			startTime = new Date(finishTime.getTime() - 60 * 1000); // default getting one minute's
+																	// monitor data
 		} else {
 			startTime = DateUtil.convertToServerDate(getCurrentUser().getTimeZone(), startTime);
 		}
-		
+
 		long st = NumberUtils.toLong(DATE_FORMATER.format(startTime));
 		long et = NumberUtils.toLong(DATE_FORMATER.format(finishTime));
 		checkNotZero(st, "Invalid start time!");
@@ -114,15 +131,14 @@ public class MonitorController extends NGrinderBaseController {
 		rtnMap.put("SystemData", this.getMonitorDataSystem(ip, st, et, imgWidth));
 		rtnMap.put("startTime", startTime);
 		rtnMap.put(JSON_SUCCESS, true);
-		
+
 		return toJson(rtnMap);
 	}
 
-	private Map<String, Object> getMonitorDataSystem(String ip, long startTime, long finishTime,
-			int imgWidth) {
+	private Map<String, Object> getMonitorDataSystem(String ip, long startTime, long finishTime, int imgWidth) {
 		Map<String, Object> rtnMap = new HashMap<String, Object>();
 		List<SystemDataModel> systemMonitorData = monitorService.getSystemMonitorData(ip, startTime, finishTime);
-		
+
 		if (imgWidth < 100) {
 			imgWidth = 100;
 		}
@@ -136,14 +152,14 @@ public class MonitorController extends NGrinderBaseController {
 			}
 			List<Object> cpuData = new ArrayList<Object>(pointCount);
 			List<Object> memoryData = new ArrayList<Object>(pointCount);
-			
+
 			SystemDataModel sdm;
 			for (int i = 0; i < dataAmount; i += interval) {
 				sdm = systemMonitorData.get(i);
 				cpuData.add(sdm.getCpuUsedPercentage());
 				memoryData.add(sdm.getTotalMemory() - sdm.getFreeMemory());
 			}
-			
+
 			rtnMap.put("cpu", cpuData);
 			rtnMap.put("memory", memoryData);
 			rtnMap.put("interval", interval);

@@ -144,7 +144,7 @@ public class NGrinderStarter {
 	/**
 	 * Start ngrinder agent.
 	 * 
-	 * @param ip
+	 * @param controllerIp
 	 *            controllerIp;
 	 */
 	public void startAgent(String controllerIp) {
@@ -346,6 +346,9 @@ public class NGrinderStarter {
 
 	/**
 	 * Stop process.
+	 * 
+	 * @param mode
+	 *            agent or monitor.
 	 */
 	protected void stopProcess(String mode) {
 		String pid = agentConfig.getAgentPidProperties(mode);
@@ -354,16 +357,14 @@ public class NGrinderStarter {
 				new Sigar().kill(pid, 7);
 			}
 		} catch (SigarException e) {
-			printHelpAndExit(
-							"Error occurs while terminating "
-											+ mode
-											+ " process. It can be already stopped or you may not have the permission.\n If everything is OK. Please stop it manually.",
-							e);
+			printHelpAndExit(String.format("Error occurs while terminating %s process."
+							+ "It can be already stopped or you may not have the permission.\n"
+							+ "If everything is OK. Please stop it manually.", mode), e);
 		}
 	}
 
 	/**
-	 * Check the process is already running in this env
+	 * Check if the process is already running in this env.
 	 * 
 	 * @param startMode
 	 *            monitor or agent

@@ -112,6 +112,7 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@Autowired
 	private Config config;
+
 	/**
 	 * Get Performance test lists.
 	 * 
@@ -203,7 +204,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	@RequestMapping("/tagSearch")
-	public HttpEntity<String> searchTag(User user, @RequestParam(required=false) String query) {
+	public HttpEntity<String> searchTag(User user, @RequestParam(required = false) String query) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set("content-type", "application/json; charset=UTF-8");
 		List<String> allStrings = tagService.getAllTagStrings(user, query);
@@ -216,14 +217,15 @@ public class PerfTestController extends NGrinderBaseController {
 	/**
 	 * Add the various default configuration values on the model.
 	 * 
-	 * @param user user
+	 * @param user
+	 *            user
 	 * @param model
 	 *            model which will contains that value.
 	 */
 	public void addDefaultAttributeOnModel(User user, ModelMap model) {
 		model.addAttribute(PARAM_CURRENT_FREE_AGENTS_COUNT, agentManager.getAllFreeAgents().size());
 		int maxAgentSizePerConsole = getMaxAgentSizePerConsole(user);
-		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, maxAgentSizePerConsole) ;
+		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, maxAgentSizePerConsole);
 		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
 		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
 		model.addAttribute(PARAM_SECURITY_MODE, config.isSecurityEnabled());
@@ -233,8 +235,9 @@ public class PerfTestController extends NGrinderBaseController {
 	protected int getMaxAgentSizePerConsole(User user) {
 		Set<AgentIdentity> allSharedAgent = agentManager.getAllSharedAgents();
 		Set<AgentIdentity> allApprovedAgentsForUser = agentManager.getAllApprovedAgents(user);
-		int additional =  allSharedAgent.size() - allApprovedAgentsForUser.size();
-		int maxAgentSizePerConsole = Math.min(agentManager.getMaxAgentSizePerConsole() + additional, allApprovedAgentsForUser.size());
+		int additional = allSharedAgent.size() - allApprovedAgentsForUser.size();
+		int maxAgentSizePerConsole = Math.min(agentManager.getMaxAgentSizePerConsole() + additional,
+						allApprovedAgentsForUser.size());
 		return maxAgentSizePerConsole;
 	}
 
@@ -288,14 +291,17 @@ public class PerfTestController extends NGrinderBaseController {
 						"test duration should be within %s", agentManager.getMaxRunHour());
 		checkArgument(test.getRunCount() == null || test.getRunCount() <= agentManager.getMaxRunCount(),
 						"test run count should be within %s", agentManager.getMaxRunCount());
-		checkArgument(test.getDuration() == null || test.getDuration() <= (((long)agentManager.getMaxRunHour()) * 3600000L),
+		checkArgument(test.getDuration() == null
+						|| test.getDuration() <= (((long) agentManager.getMaxRunHour()) * 3600000L),
 						"test run duration should be within %s", agentManager.getMaxRunHour());
-		checkArgument(test.getAgentCount() == null || test.getAgentCount() <= getMaxAgentSizePerConsole(user), 
+		checkArgument(test.getAgentCount() == null || test.getAgentCount() <= getMaxAgentSizePerConsole(user),
 						"test agent shoule be within %s", agentManager.getMaxAgentSizePerConsole());
 		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
 						"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());
-		checkArgument(config.isSecurityEnabled() && StringUtils.isEmpty(test.getTargetHosts()),
-						"test taget hosts should be provided when security mode is enabled");
+		if (config.isSecurityEnabled()) {
+			checkArgument(StringUtils.isNotEmpty(test.getTargetHosts()),
+							"test taget hosts should be provided when security mode is enabled");
+		}
 		checkArgument(test.getProcesses() != null && 0 != test.getProcesses(), "test process should not be 0");
 		checkArgument(test.getThreads() != null && 0 != test.getThreads(), "test thread should not be 0");
 		// Point to the head revision
@@ -329,7 +335,9 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/leaveComment", method = RequestMethod.POST)
 	public @ResponseBody
-	String leaveComment(User user, @RequestParam("testComment") String testComment, @RequestParam(value="tagString", required=false) String tagString, @RequestParam("testId") Long testId) {
+	String leaveComment(User user, @RequestParam("testComment") String testComment,
+					@RequestParam(value = "tagString", required = false) String tagString,
+					@RequestParam("testId") Long testId) {
 		perfTestService.addCommentOn(user, testId, testComment, tagString);
 		return returnSuccess();
 	}

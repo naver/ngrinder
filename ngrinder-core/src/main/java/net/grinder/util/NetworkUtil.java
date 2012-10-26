@@ -32,9 +32,9 @@ import java.net.UnknownHostException;
  * @since 3.0
  * 
  */
-public class NetworkUtil {
+public abstract class NetworkUtil {
 	/**
-	 * Get local host name
+	 * Get local host name.
 	 * 
 	 * @return local host name
 	 */
@@ -46,6 +46,13 @@ public class NetworkUtil {
 		}
 	}
 
+	/**
+	 * Get the Ip addresses from host name.
+	 * 
+	 * @param host
+	 *            host
+	 * @return ips
+	 */
 	public static InetAddress[] getIpsFromHost(String host) {
 		try {
 			return InetAddress.getAllByName(host);
