@@ -142,12 +142,14 @@ public class NGrinderStarter {
 
 	/**
 	 * Start ngrinder agent.
+	 * 
+	 * @param ip
+	 *            controllerIp;
 	 */
-	public void startAgent(String ip) {
+	public void startAgent(String controllerIp) {
 		LOG.info("*************************");
 		LOG.info("Start nGrinder Agent ...");
-
-		String consoleIP = agentConfig.getAgentProperties().getProperty("agent.console.ip", ip);
+		String consoleIP = StringUtils.isNotEmpty(controllerIp) ? controllerIp : agentConfig.getAgentProperties().getProperty("agent.console.ip", "127.0.0.1");
 		int consolePort = agentConfig.getAgentProperties().getPropertyInt("agent.console.port",
 				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
@@ -318,18 +320,18 @@ public class NGrinderStarter {
 		String startMode = System.getProperty("start.mode");
 		LOG.info("- Passing mode " + startMode);
 		LOG.info("- nGrinder version " + starter.getVersion());
-		if ("stopagent".equals(startMode)) {
+		if ("stopagent".equalsIgnoreCase(startMode)) {
 			starter.stopAgentProcess();
 			return;
-		} else if ("stopmonitor".equals(startMode)) {
+		} else if ("stopmonitor".equalsIgnoreCase(startMode)) {
 			starter.stopMonitorProcess();
 			return;
 		}
 		startMode = (startMode == null) ? starter.getStartMode() : startMode;
-		starter.verifiedSigar(startMode);
+		starter.checkDuplicatedRun(startMode);
 
 		if (startMode.equalsIgnoreCase("agent")) {
-			String controllerIp = System.getProperty("controller", "127.0.0.1");
+			String controllerIp = System.getProperty("controller");
 			starter.startAgent(controllerIp);
 		} else if (startMode.equalsIgnoreCase("monitor")) {
 			starter.startMonitor();
@@ -347,8 +349,10 @@ public class NGrinderStarter {
 			if (StringUtils.isNotBlank(agentPid)) {
 				new Sigar().kill(agentPid, 7);
 			}
-		} catch (Exception e) {
-			printHelpAndExit("Sigar library doesn't work. Please add sigar library into LD_LIBARY_PATH.", e);
+		} catch (SigarException e) {
+			printHelpAndExit(
+					"Error occurs while terminating agent process. It can be already stopped or you may not have the permission.\n If everything is OK. Please stop it manually.",
+					e);
 		}
 	}
 
@@ -361,28 +365,30 @@ public class NGrinderStarter {
 			if (StringUtils.isNotBlank(agentPid)) {
 				new Sigar().kill(agentPid, 7);
 			}
-		} catch (Exception e) {
-			printHelpAndExit("Sigar library doesn't work. Please add sigar library into LD_LIBARY_PATH.", e);
+		} catch (SigarException e) {
+			printHelpAndExit(
+					"Error occurs while terminating agent process. It can be already stopped or you may not have the permission.\n If everything is OK. Please stop it manually.",
+					e);
 		}
 	}
 
 	/**
-	 * test sigar library existing and working.
+	 * Check the process is already running in this env
 	 * 
 	 * @param startMode
 	 *            monitor or agent
 	 */
-	public void verifiedSigar(String startMode) {
+	public void checkDuplicatedRun(String startMode) {
+		Sigar sigar = new Sigar();
+		String existingPid = ("agent".equals(startMode)) ? this.agentConfig.getAgentProperties().getProperty("agent.pid", "")
+				: this.agentConfig.getAgentProperties().getProperty("monitor.pid", "");
 		try {
-			Sigar sigar = new Sigar();
-			sigar.getCpu();
+			if (StringUtils.isNotEmpty(existingPid)) {
+				sigar.getProcState(existingPid);
+			}
 			this.agentConfig.saveAgentPidProperties(String.valueOf(sigar.getPid()), startMode);
 		} catch (SigarException e) {
-			if (startMode.equalsIgnoreCase("agent")) {
-				LOG.error("Sigar library doesn't work " + "and it will be no display Agent performance in running test page !");
-			} else if (startMode.equalsIgnoreCase("monitor")) {
-				printHelpAndExit("Sigar library doesn't work. Please add sigar library into LD_LIBARY_PATH.", e);
-			}
+			printHelpAndExit("Currently " + startMode + " is running on pid " + existingPid + ". Please stop it before run");
 		}
 	}
 

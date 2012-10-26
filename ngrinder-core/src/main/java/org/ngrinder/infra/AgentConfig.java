@@ -123,13 +123,13 @@ public class AgentConfig {
 	 */
 	public void saveAgentPidProperties(String agentPid, String startMode) {
 		checkNotNull(home);
-		Properties properties = home.getProperties("agent_pid.conf");
+		Properties properties = home.getProperties("pid");
 		if ("agent".equals(startMode)) {
 			properties.put("agent.pid", agentPid);
 		} else {
 			properties.put("monitor.pid", agentPid);
 		}
-		home.saveProperties("agent_pid.conf", properties);
+		home.saveProperties("pid", properties);
 	}
 
 	/**
