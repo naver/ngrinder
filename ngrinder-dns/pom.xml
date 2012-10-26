@@ -6,7 +6,6 @@
 		<groupId>org.ngrinder</groupId>
 		<artifactId>ngrinder</artifactId>
 		<version>3.0-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>ngrinder-dns</artifactId>
 	<name>ngrinder-dns</name>
