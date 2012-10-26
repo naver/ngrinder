@@ -1,3 +1,21 @@
+3.0 (2012.10.29)
+- First Official Version
+
+Bug
+[NGRINDER-232] - Running Time is wrong
+[NGRINDER-238] - If the 1st minute of Test Report and the 1st minutes of Report_in_Detail are much different
+[NGRINDER-287] - Table titles are overlapped on running page
+[NGRINDER-310] - Check a finished test, Running_Page was displayed for a few seconds
+[NGRINDER-317] - Input testing tag as "1,2,3,4" , save, was saved as "1" "2" "3" "4"
+[NGRINDER-323] - Make max runcount / max runhour checked
+[NGRINDER-325] - Running_time is wrong
+
+Improvement
+[NGRINDER-281] - Provide batch/shell for easy exeuction
+[NGRINDER-320] - "Action" background color isn't grey when there isn't any script
+[NGRINDER-314] - Provide servlet filter plugin
+
+
 3.0-b3 (2012.10.22)
 - Third beta version.
 

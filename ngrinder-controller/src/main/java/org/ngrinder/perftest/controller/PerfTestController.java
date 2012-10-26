@@ -294,7 +294,7 @@ public class PerfTestController extends NGrinderBaseController {
 						"test agent shoule be within %s", agentManager.getMaxAgentSizePerConsole());
 		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
 						"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());
-		checkArgument(config.isSecurityEnabled() && StringUtils.isEmpty(test.getTargetHosts()),
+		checkArgument(!config.isSecurityEnabled() || StringUtils.isEmpty(test.getTargetHosts()),
 						"test taget hosts should be provided when security mode is enabled");
 		checkArgument(test.getProcesses() != null && 0 != test.getProcesses(), "test process should not be 0");
 		checkArgument(test.getThreads() != null && 0 != test.getThreads(), "test thread should not be 0");
