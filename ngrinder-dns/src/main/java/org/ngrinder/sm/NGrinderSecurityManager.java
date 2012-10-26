@@ -30,8 +30,6 @@ import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FilenameUtils;
-
 /**
  * nGrinder security manager.
  * 
@@ -64,12 +62,12 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * Set default accessed of directories. <br>
 	 */
 	private void initAccessOfDirectories() {
-		workDirectory = new File(workDirectory).getAbsolutePath();
+		workDirectory = normalize(new File(workDirectory).getAbsolutePath(), null);
 		logDirectory = workDirectory.substring(0, workDirectory.lastIndexOf(File.separator));
 		logDirectory = logDirectory.substring(0, workDirectory.lastIndexOf(File.separator)) + File.separator + "log";
 
-		agentExecDirectory = new File(agentExecDirectory).getAbsolutePath();
-		javaHomeDirectory = new File(javaHomeDirectory).getAbsolutePath();
+		agentExecDirectory = normalize(new File(agentExecDirectory).getAbsolutePath(), null);
+		javaHomeDirectory = normalize(new File(javaHomeDirectory).getAbsolutePath(), null);
 		jreHomeDirectory = javaHomeDirectory.substring(0, javaHomeDirectory.lastIndexOf(File.separator))
 						+ File.separator + "jre";
 		readAllowedDirectory.add(workDirectory);
@@ -79,7 +77,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 		readAllowedDirectory.add(jreHomeDirectory);
 		String[] jed = javaExtDirectory.split(";");
 		for (String je : jed) {
-			je = new File(je).getAbsolutePath();
+			je = normalize(new File(je).getAbsolutePath(), null);
 			readAllowedDirectory.add(je);
 		}
 		writeAllowedDirectory.add(workDirectory);
@@ -248,7 +246,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	}
 
 	public String normalize(String filename, String workingDirectory) {
-		if (getPrefixLength(filename) == 0) {
+		if (getPrefixLength(filename) == 0 && workingDirectory != null) {
 			filename = workingDirectory + File.separator + filename;
 		}
 		return doNormalize(filename, SYSTEM_SEPARATOR, true);
