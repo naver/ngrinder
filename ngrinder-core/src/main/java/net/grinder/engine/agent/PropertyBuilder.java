@@ -5,10 +5,12 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.net.InetAddress;
 import java.util.List;
 
 import net.grinder.common.GrinderProperties;
 import net.grinder.util.Directory;
+import net.grinder.util.NetworkUtil;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -28,6 +30,7 @@ public class PropertyBuilder {
 	private final String hostName;
 	private final File classPathBase;
 	private final boolean securityEnabled;
+	private final String hostString;
 
 	/**
 	 * Constructor.
@@ -40,15 +43,18 @@ public class PropertyBuilder {
 	 *            class path base path.
 	 * @param securityEnabled
 	 *            true if security enable mode
+	 * @param hostString
+	 *            hostString
 	 * @param hostName
-	 *            host name
+	 *            current host name
 	 */
 	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, File nGrinderExecClassPathBase,
-					boolean securityEnabled, String hostName) {
+					boolean securityEnabled, String hostString, String hostName) {
 		this.properties = checkNotNull(properties);
 		this.baseDirectory = checkNotNull(baseDirectory);
 		this.classPathBase = checkNotNull(nGrinderExecClassPathBase);
 		this.securityEnabled = securityEnabled;
+		this.hostString = hostString;
 		this.hostName = checkNotEmpty(hostName);
 	}
 
@@ -60,12 +66,17 @@ public class PropertyBuilder {
 	public String buildJVMArgument() {
 		StringBuilder jvmArguments = new StringBuilder(properties.getProperty("grinder.jvm.arguments", ""));
 		if (securityEnabled) {
+			jvmArguments = addSecurityManager(jvmArguments);
 			jvmArguments = addCurrentAgentPath(jvmArguments);
 			jvmArguments = addConsoleIP(jvmArguments);
 			jvmArguments = addDNSIP(jvmArguments);
 		}
 		jvmArguments = addPythonPathJvmArgument(jvmArguments);
 		return addCustomDns(jvmArguments).toString();
+	}
+
+	protected StringBuilder addSecurityManager(StringBuilder jvmArguments) {
+		return jvmArguments.append(" -Djava.security.manager=org.ngrinder.sm.NGrinderSecurityManager ");
 	}
 
 	private String getPath(File file, boolean useAbsolutePath) {
@@ -156,13 +167,38 @@ public class PropertyBuilder {
 	}
 
 	private StringBuilder addCustomDns(StringBuilder jvmArguments) {
-		String etcHost = properties.getProperty("ngrinder.etc.hosts", "");
-		if (StringUtils.isNotEmpty(etcHost)) {
-			jvmArguments.append(" -Dngrinder.etc.hosts=").append(etcHost).append(",").append(hostName)
-							.append(":127.0.0.1,localhost:127.0.0.1")
-							.append(" -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns ");
+		jvmArguments.append(" -Dngrinder.etc.hosts=").append(hostName).append(":127.0.0.1,localhost:127.0.0.1");
+		if (StringUtils.isNotEmpty(hostString)) {
+			jvmArguments.append(",").append(rebaseHostString(hostString));
 		}
+		jvmArguments.append(" -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns ");
 		return jvmArguments;
 	}
 
+	public String rebaseHostString(String hostString) {
+		String[] split = StringUtils.split(hostString, ",");
+		StringBuilder newHostString = new StringBuilder();
+		boolean first = true;
+		for (String pair : split) {
+			if (!first) {
+				newHostString.append(",");
+			}
+			first = false;
+			if (pair.startsWith(":")) {
+				newHostString.append(pair);
+			} else if (pair.contains(":")) {
+				newHostString.append(pair);
+			} else {
+				boolean eachFirst = true;
+				for (InetAddress each : NetworkUtil.getIpsFromHost(pair)) {
+					if (!eachFirst) {
+						newHostString.append(",");
+					}
+					newHostString.append(pair).append(":").append(each.getHostAddress());
+					eachFirst = false;
+				}
+			}
+		}
+		return newHostString.toString();
+	}
 }

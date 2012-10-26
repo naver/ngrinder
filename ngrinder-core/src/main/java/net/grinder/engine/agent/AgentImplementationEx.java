@@ -23,8 +23,6 @@
 package net.grinder.engine.agent;
 
 import java.io.File;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -54,6 +52,7 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.messages.console.AgentProcessReportMessage;
 import net.grinder.util.Directory;
 import net.grinder.util.GrinderClassPathUtils;
+import net.grinder.util.NetworkUtil;
 import net.grinder.util.thread.Condition;
 
 import org.ngrinder.common.util.NoOp;
@@ -63,10 +62,8 @@ import org.slf4j.Logger;
 /**
  * This is the entry point of The Grinder agent process.
  * 
- * @author Paco Gomez
- * @author Philip Aston
- * @author Bertrand Ave
- * @author Pawel Lacinski
+ * @author JunHo Yoon
+ * @since 3.0
  */
 public class AgentImplementationEx implements Agent {
 
@@ -105,7 +102,7 @@ public class AgentImplementationEx implements Agent {
 		m_proceedWithoutConsole = proceedWithoutConsole;
 
 		m_consoleListener = new ConsoleListener(m_eventSynchronisation, m_logger);
-		m_agentIdentity = new AgentIdentityImplementation(getHostName());
+		m_agentIdentity = new AgentIdentityImplementation(NetworkUtil.getLocalHostName());
 
 	}
 
@@ -155,7 +152,7 @@ public class AgentImplementationEx implements Agent {
 					properties = createAndMergeProperties(grinderProperties,
 									startMessage != null ? startMessage.getProperties() : null);
 
-					m_agentIdentity.setName(properties.getProperty("grinder.hostID", getHostName()));
+					m_agentIdentity.setName(properties.getProperty("grinder.hostID", NetworkUtil.getLocalHostName()));
 
 					final Connector connector = properties.getBoolean("grinder.useConsole", true) ? m_connectorFactory
 									.create(properties) : null;
@@ -231,10 +228,10 @@ public class AgentImplementationEx implements Agent {
 				} while (script == null);
 
 				if (script != null) {
-					
+
 					PropertyBuilder builder = new PropertyBuilder(properties, script.getDirectory(),
 									new File("").getAbsoluteFile(), properties.getBoolean("grinder.security", false),
-									getHostName());
+									properties.getProperty("ngrinder.etc.hosts"), NetworkUtil.getLocalHostName());
 					String jvmArguments = builder.buildJVMArgument();
 					properties.setProperty("grinder.jvm.classpath",
 									builder.rebaseCustomClassPath(properties.getProperty("grinder.jvm.classpath", "")));
@@ -250,8 +247,8 @@ public class AgentImplementationEx implements Agent {
 					if (!properties.getBoolean("grinder.debug.singleprocess", false)) {
 						// Fix to provide empty system classpath to speed up
 						final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
-										filterSystemClassPath(System.getProperties(), m_logger), 
-										jvmArguments, script.getDirectory());
+										filterSystemClassPath(System.getProperties(), m_logger), jvmArguments,
+										script.getDirectory());
 
 						m_logger.info("Worker process command line: {}", workerCommandLine);
 
@@ -412,14 +409,6 @@ public class AgentImplementationEx implements Agent {
 		}
 		m_consoleListener.shutdown();
 		m_logger.info("agent is forcely terminated");
-	}
-
-	private static String getHostName() {
-		try {
-			return InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			return "UNNAMEDHOST";
-		}
 	}
 
 	private static class RampUpTimerTask extends TimerTask {

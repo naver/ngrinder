@@ -144,7 +144,7 @@ public class ScriptValidationService {
 								StringUtils.defaultIfBlank(scriptEntry.getEncoding(), "UTF-8"));
 			}
 			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, new Condition(),
-							config.isSecurityEnabled());
+							config.isSecurityEnabled(), hostString);
 			return FileUtils.readFileToString(doValidate);
 		} catch (IOException e) {
 			LOG.error("Error while distributing files on {} for {}", user, scriptEntry.getPath());

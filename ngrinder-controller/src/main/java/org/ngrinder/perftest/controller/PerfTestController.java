@@ -53,6 +53,7 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.FileDownloadUtil;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
@@ -109,6 +110,8 @@ public class PerfTestController extends NGrinderBaseController {
 	@Autowired
 	private TagService tagService;
 
+	@Autowired
+	private Config config;
 	/**
 	 * Get Performance test lists.
 	 * 
@@ -219,12 +222,12 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	public void addDefaultAttributeOnModel(User user, ModelMap model) {
 		model.addAttribute(PARAM_CURRENT_FREE_AGENTS_COUNT, agentManager.getAllFreeAgents().size());
-
 		int maxAgentSizePerConsole = getMaxAgentSizePerConsole(user);
 		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, maxAgentSizePerConsole) ;
 		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
 		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
-		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour() - 1);
+		model.addAttribute(PARAM_SECURITY_MODE, config.isSecurityEnabled());
+		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
 	}
 
 	protected int getMaxAgentSizePerConsole(User user) {
@@ -254,6 +257,7 @@ public class PerfTestController extends NGrinderBaseController {
 		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString);
 		scriptList.add(checkNotNull(newEntry, "Create quick test script ERROR!"));
 		model.addAttribute(PARAM_QUICK_SCRIPT, newEntry.getPath());
+		model.addAttribute("testName", "Test for " + url.getHost());
 		model.addAttribute(PARAM_TARGET_HOST, url.getHost());
 		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
@@ -284,10 +288,14 @@ public class PerfTestController extends NGrinderBaseController {
 						"test duration should be within %s", agentManager.getMaxRunHour());
 		checkArgument(test.getRunCount() == null || test.getRunCount() <= agentManager.getMaxRunCount(),
 						"test run count should be within %s", agentManager.getMaxRunCount());
+		checkArgument(test.getDuration() == null || test.getDuration() <= (((long)agentManager.getMaxRunHour()) * 3600000L),
+						"test run duration should be within %s", agentManager.getMaxRunHour());
 		checkArgument(test.getAgentCount() == null || test.getAgentCount() <= getMaxAgentSizePerConsole(user), 
 						"test agent shoule be within %s", agentManager.getMaxAgentSizePerConsole());
 		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
 						"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());
+		checkArgument(config.isSecurityEnabled() && StringUtils.isEmpty(test.getTargetHosts()),
+						"test taget hosts should be provided when security mode is enabled");
 		checkArgument(test.getProcesses() != null && 0 != test.getProcesses(), "test process should not be 0");
 		checkArgument(test.getThreads() != null && 0 != test.getThreads(), "test thread should not be 0");
 		// Point to the head revision

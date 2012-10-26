@@ -46,10 +46,10 @@
 								<td colspan="2">
 									<span id="processAndThreadPanelDiv">
 									<div class="input-prepend control-group">
-										<span class="add-on" title='<@spring.message "perfTest.report.process"/>'><@spring.message "perfTest.report.process"/></span><input class="input required positiveNumber span1" type="text" id="processes" name="processes" value="${(test.processes)!0}"/> 
+										<span class="add-on" title='<@spring.message "perfTest.report.process"/>'><@spring.message "perfTest.report.process"/></span><input class="input required positiveNumber span1" type="text" id="processes" name="processes" value="${(test.processes)!1}"/> 
 									</div>
 									<div class="input-prepend control-group">
-										<span class="add-on" title='<@spring.message "perfTest.report.thread"/>'><@spring.message "perfTest.report.thread"/></span><input class="input required positiveNumber span1" type="text" id="threads" name="threads" value="${(test.threads)!0}"/>
+										<span class="add-on" title='<@spring.message "perfTest.report.thread"/>'><@spring.message "perfTest.report.thread"/></span><input class="input required positiveNumber span1" type="text" id="threads" name="threads" value="${(test.threads)!1}"/>
 									</div>
 									</span>
 								</td>

@@ -1,6 +1,6 @@
 #!/bin/sh
-                  
-MONITOR_PID=`sed '/^\#/d' agent_pid.conf | grep 'monitor.pid'  | tail -n 1 | cut -d "=" -f2-`
-
-kill -9 $MONITOR_PID
-
+curpath=`dirname $0`
+cd ${curpath}
+LD_LIBRARY_PATH="${curpath}/native_lib/:${LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH
+java -Dstart.mode=stopmonitor -jar ngrinder-core-${ngrinder.version}.jar -server

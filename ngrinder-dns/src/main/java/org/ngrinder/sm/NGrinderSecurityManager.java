@@ -23,6 +23,7 @@
 package org.ngrinder.sm;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.net.InetAddress;
 import java.security.Permission;
 import java.util.ArrayList;
@@ -63,10 +64,11 @@ public class NGrinderSecurityManager extends SecurityManager {
 		workDirectory = new File(workDirectory).getAbsolutePath();
 		logDirectory = workDirectory.substring(0, workDirectory.lastIndexOf(File.separator));
 		logDirectory = logDirectory.substring(0, workDirectory.lastIndexOf(File.separator)) + File.separator + "log";
+
 		agentExecDirectory = new File(agentExecDirectory).getAbsolutePath();
 		javaHomeDirectory = new File(javaHomeDirectory).getAbsolutePath();
 		jreHomeDirectory = javaHomeDirectory.substring(0, javaHomeDirectory.lastIndexOf(File.separator))
-				+ File.separator + "jre";
+						+ File.separator + "jre";
 		readAllowedDirectory.add(workDirectory);
 		readAllowedDirectory.add(logDirectory);
 		readAllowedDirectory.add(agentExecDirectory);
@@ -93,11 +95,10 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * Add controller host<br>
 	 */
 	private void initAccessOfHosts() {
-
 		String[] hostsList = etcHosts.split(",");
 		for (String hosts : hostsList) {
 			String[] addresses = hosts.split(":");
-			if (addresses.length > 0) {
+			if (addresses.length > 1) {
 				allowedHost.add(addresses[0]);
 				allowedHost.add(addresses[addresses.length - 1]);
 			} else {
@@ -141,12 +142,16 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	@Override
 	public void checkRead(String file) {
-		this.fileAccessReadAllowed(file);
+		fileAccessReadAllowed(file);
 	}
 
 	@Override
 	public void checkRead(String file, Object context) {
-		this.fileAccessReadAllowed(file);
+		fileAccessReadAllowed(file);
+	}
+
+	@Override
+	public void checkRead(FileDescriptor fd) {
 	}
 
 	@Override
@@ -168,23 +173,19 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * File read access is allowed on <br>
 	 * "agent.exec.folder" and "agent.exec.folder".
 	 * 
-	 * @param file file path
+	 * @param file
+	 *            file path
 	 */
 	private void fileAccessReadAllowed(String file) {
-		String filePath = new File(file).getAbsolutePath();
-		for (String dir : readAllowedDirectory) {
-			if (filePath.startsWith(dir)) {
-				return;
-			}
-		}
-		throw new SecurityException("File read access on " + file + " is not allowed.");
+		// Alllow all
 	}
 
 	/**
 	 * File write access is allowed <br>
 	 * on "agent.exec.folder".
 	 * 
-	 * @param file file path
+	 * @param file
+	 *            file path
 	 */
 	private void fileAccessWriteAllowed(String file) {
 		String filePath = new File(file).getAbsolutePath();
@@ -200,7 +201,8 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * File delete access is allowed <br>
 	 * on "agent.exec.folder".
 	 * 
-	 * @param file file path
+	 * @param file
+	 *            file path
 	 */
 	private void fileAccessDeleteAllowed(String file) {
 		String filePath = new File(file).getAbsolutePath();
@@ -230,13 +232,14 @@ public class NGrinderSecurityManager extends SecurityManager {
 	/**
 	 * NetWork access is allowed on "ngrinder.etc.hosts".
 	 * 
-	 * @param host host name
+	 * @param host
+	 *            host name
 	 */
 	private void netWorkAccessAllowed(String host) {
 		if (allowedHost.contains(host)) {
 			return;
 		}
-		throw new SecurityException("NetWork access on " + host + " is not allowed.");
+		throw new SecurityException("NetWork access on " + host + " is not allowed. Please add " + host + " on the target host setting.");
 	}
 
 }

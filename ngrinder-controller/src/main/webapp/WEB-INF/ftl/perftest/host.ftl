@@ -19,14 +19,14 @@ rel="popover" placement="bottom"></div>
 		<div class="form-horizontal">
 			<fieldset>
 				<div class="control-group">
-					<label for="domainInput" class="control-label"><@spring.message "perfTest.configuration.domain"/></label>
-					<div class="controls">
+					<label for="domainInput" style="text-align: right;" class="control-label"><@spring.message "perfTest.configuration.domain"/></label>
+					<div class="controls" >
 						<input type="text" id="domainInput"> <span class="help-inline"></span>
 					</div>
 				</div>
 				<div class="control-group">
-					<label for="ipInput" class="control-label">IP</label>
-					<div class="controls">
+					<label for="ipInput" style="text-align: right;" class="control-label">IP</label>
+					<div class="controls" >
 						<input type="text" id="ipInput"> <span class="help-inline"></span>
 					</div>
 				</div>
@@ -66,7 +66,7 @@ rel="popover" placement="bottom"></div>
           }
           var domainValue = $("#domainInput");
           if (!checkEmptyByObj(domainValue)) {
-              var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$";
+              var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,3}$";
               var str = domainValue.val();
               if(!checkStringFormat(str, rule)){
                   markInput(domainValue, false, "<@spring.message "perfTest.configuration.addHost.inputTargetDomain"/>");

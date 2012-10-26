@@ -10,36 +10,37 @@ import org.junit.Test;
 import org.ngrinder.common.util.ThreadUtil;
 
 public class NGrinderStarterTest {
-	
+
 	private NGrinderStarter starter = new TmpNGrinderStarter();
-	
+
 	@Test
 	public void testNGrinderStarterJarResolution() {
 		String path = ClassLoader.getSystemClassLoader().getResource(".").getPath();
 		System.out.println(path);
 	}
-	
+
 	@Test
 	public void testToolsJarPath() {
 		URL findToolsJarPath = starter.findToolsJarPath();
 		assertThat(findToolsJarPath, notNullValue());
 	}
-	
+
 	@Test
 	public void testGetStartMode() {
 		String startMode = starter.getStartMode();
 		assertTrue(startMode.equals("monitor") || startMode.equals("agent"));
 	}
-	
+
 	@Test
-	public void testStartAgent() {		
-		starter.startAgent(); //there is no agent properties, it can be started with default setting
+	public void testStartAgent() {
+		starter.startAgent("127.0.0.1"); // there is no agent properties, it can
+											// be started with default setting
 		ThreadUtil.sleep(3000);
 		starter.stopAgent();
 	}
-	
+
 	@Test
-	public void testStartMonitor() {		
+	public void testStartMonitor() {
 		starter.startMonitor();
 		ThreadUtil.sleep(3000);
 		starter.stopMonitor();
@@ -47,7 +48,7 @@ public class NGrinderStarterTest {
 	}
 }
 
-class TmpNGrinderStarter extends NGrinderStarter{
+class TmpNGrinderStarter extends NGrinderStarter {
 	@Override
 	protected void printHelpAndExit(String message) {
 	}

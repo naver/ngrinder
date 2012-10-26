@@ -36,6 +36,7 @@ import net.grinder.communication.FanOutStreamSender;
 import net.grinder.engine.common.ScriptLocation;
 import net.grinder.util.Directory;
 import net.grinder.util.GrinderClassPathUtils;
+import net.grinder.util.NetworkUtil;
 import net.grinder.util.thread.Condition;
 
 import org.apache.commons.io.FileUtils;
@@ -80,9 +81,11 @@ public class LocalScriptTestDriveService {
 	 *            condition for event synchronization
 	 * @param securityEnabled
 	 *            if security is set ot not.
+	 * @param hostString
 	 * @return File which stores validation result.
 	 */
-	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled) {
+	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled,
+					String hostString) {
 		FanOutStreamSender fanOutStreamSender = null;
 		ErrorStreamRedirectWorkerLauncher workerLauncher = null;
 		boolean stopByTooMuchExecution = false;
@@ -104,7 +107,7 @@ public class LocalScriptTestDriveService {
 
 			GrinderProperties properties = new GrinderProperties();
 			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), getLibPath(),
-							securityEnabled, "localhost");
+							securityEnabled, hostString, NetworkUtil.getLocalHostName());
 
 			properties.setProperty("grinder.jvm.classpath", builder.buildCustomClassPath(true));
 
@@ -115,7 +118,7 @@ public class LocalScriptTestDriveService {
 
 			Properties systemProperties = new Properties();
 			systemProperties.put("java.class.path", base.getAbsolutePath() + File.pathSeparator + newClassPath);
-			Directory workingDirectory = new Directory(base);	
+			Directory workingDirectory = new Directory(base);
 			final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
 							systemProperties, builder.buildJVMArgument(), workingDirectory);
 
@@ -149,7 +152,7 @@ public class LocalScriptTestDriveService {
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error while executing {}, because:{}", script, e.getMessage());
-			LOGGER.info("Error Trace", e); 
+			LOGGER.info("Error Trace", e);
 			appendingMessageOn(file, ExceptionUtils.getFullStackTrace(e));
 		} finally {
 			if (workerLauncher != null) {
