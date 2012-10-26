@@ -161,6 +161,7 @@
 			Agent List
 		</div>
 	</div>
+	<#include "messages.ftl">
 	<script>
 	    var performanceInit = false;
 	    var targetMonitorPlot = {};
