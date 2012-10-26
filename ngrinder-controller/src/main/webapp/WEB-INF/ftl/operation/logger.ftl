@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head><#include "../common/common.ftl"> <#include "../common/datatables.ftl">
-<title><@spring.message "user.list.title"/></title>
+<head>
+<#include "../common/common.ftl">
+<#include "../common/datatables.ftl">
+<title><@spring.message "log.view.header"/></title>
 </head>
 
 <body>
