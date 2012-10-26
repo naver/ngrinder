@@ -28,7 +28,7 @@
       <directory>${project.basedir}/../</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>release_note.*</include>
+        <include>release_note.txt</include>
       </includes>
       <lineEnding>unix</lineEnding>
     </fileSet>
