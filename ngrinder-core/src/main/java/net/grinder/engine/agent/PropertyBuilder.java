@@ -175,6 +175,13 @@ public class PropertyBuilder {
 		return jvmArguments;
 	}
 
+	/**
+	 * Rebase Host String.. add the missing ip addresses if only host is provided..
+	 * 
+	 * @param hostString
+	 *            host string
+	 * @return completed host string.
+	 */
 	public String rebaseHostString(String hostString) {
 		String[] split = StringUtils.split(hostString, ",");
 		StringBuilder newHostString = new StringBuilder();

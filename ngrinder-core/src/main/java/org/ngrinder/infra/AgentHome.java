@@ -22,6 +22,7 @@
  */
 package org.ngrinder.infra;
 
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
@@ -125,6 +126,7 @@ public class AgentHome {
 			is = FileUtils.openInputStream(propertiesFile);
 			properties.load(is);
 		} catch (IOException e) {
+			noOp();
 		} finally {
 			IOUtils.closeQuietly(is);
 		}
