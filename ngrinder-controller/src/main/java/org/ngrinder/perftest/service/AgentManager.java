@@ -22,8 +22,6 @@
  */
 package org.ngrinder.perftest.service;
 
-import static org.ngrinder.common.util.CollectionUtils.selectSome;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -93,8 +91,7 @@ public class AgentManager implements NGrinderConstants {
 		agentControllerServer.addLogArrivedListener(new LogArrivedListener() {
 			@Override
 			public void logArrived(String testId, AgentAddress agentAddress, byte[] logs) {
-				AgentControllerIdentityImplementation agentIdentity = (AgentControllerIdentityImplementation) agentAddress
-								.getIdentity();
+				AgentControllerIdentityImplementation agentIdentity = convert(agentAddress.getIdentity());
 				if (ArrayUtils.isEmpty(logs)) {
 					LOGGER.error("Log is arrived from {} but no log content", agentIdentity.getIp());
 				}
@@ -198,12 +195,22 @@ public class AgentManager implements NGrinderConstants {
 	 */
 	public AgentControllerIdentityImplementation getAgentIdentityByIp(String agentIP) {
 		for (AgentIdentity agentIdentity : getAllAttachedAgents()) {
-			AgentControllerIdentityImplementation eachAgentIdentity = (AgentControllerIdentityImplementation) agentIdentity;
-			if (StringUtils.equals(eachAgentIdentity.getIp(), agentIP)) {
-				return eachAgentIdentity;
+			if (StringUtils.equals(convert(agentIdentity).getIp(), agentIP)) {
+				return convert(agentIdentity);
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Convert {@link AgentIdentity} to {@link AgentControllerIdentityImplementation} type.
+	 * 
+	 * @param identity
+	 *            identity
+	 * @return convertity identity.
+	 */
+	AgentControllerIdentityImplementation convert(AgentIdentity identity) {
+		return (AgentControllerIdentityImplementation) identity;
 	}
 
 	/**
@@ -363,7 +370,7 @@ public class AgentManager implements NGrinderConstants {
 	public synchronized void runAgent(User user, final SingleConsole singleConsole,
 					final GrinderProperties grinderProperties, final Integer agentCount) {
 		final Set<AgentIdentity> allFreeAgents = getAllFreeApprovedAgentsForUser(user);
-		final Set<AgentIdentity> neccessaryAgents = selectSome(allFreeAgents, agentCount);
+		final Set<AgentIdentity> neccessaryAgents = selectAgent(user, allFreeAgents, agentCount);
 		ExecutorService execService = null;
 		try {
 			// Make the agents connect to console.
@@ -388,4 +395,39 @@ public class AgentManager implements NGrinderConstants {
 		}
 	}
 
+	/**
+	 * Select agent.
+	 * 
+	 * @param user
+	 *            user
+	 * @param allFreeAgents
+	 *            agents
+	 * @param agentCount
+	 *            number of agent
+	 * @return selected agent.
+	 */
+	public Set<AgentIdentity> selectAgent(User user, Set<AgentIdentity> allFreeAgents, int agentCount) {
+		Set<AgentIdentity> userAgent = new HashSet<AgentIdentity>();
+		for (AgentIdentity each : allFreeAgents) {
+			String region = ((AgentControllerIdentityImplementation) each).getRegion();
+			if (StringUtils.contains(region, "owned_" + user.getUserId())) {
+				userAgent.add(each);
+				allFreeAgents.remove(each);
+				if (userAgent.size() == agentCount) {
+					return userAgent;
+				}
+			}
+		}
+
+		for (AgentIdentity each : allFreeAgents) {
+			String region = ((AgentControllerIdentityImplementation) each).getRegion();
+			if (StringUtils.containsNone(region, "owned_")) {
+				userAgent.add(each);
+				if (userAgent.size() == agentCount) {
+					return userAgent;
+				}
+			}
+		}
+		return userAgent;
+	}
 }
