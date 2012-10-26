@@ -11,7 +11,6 @@
 		<div class="page-header pageHeader">
 				<h3><@spring.message "user.detail.header"/></h3>
 		</div>
-		<#include "roleSelector.ftl">
 		<#include "userInfo.ftl"> 
 		<#include "../common/copyright.ftl">
 	</div>
