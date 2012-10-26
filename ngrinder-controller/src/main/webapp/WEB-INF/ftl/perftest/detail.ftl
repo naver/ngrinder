@@ -446,7 +446,7 @@ function addValidation() {
 				max:${maxRunHour}*3600000,
 				min:0
 			},
-			<#if securityMode == true>
+			<#if securityMode?? && securityMode == true>
 			targetHosts : {
 				required : true
 			},
