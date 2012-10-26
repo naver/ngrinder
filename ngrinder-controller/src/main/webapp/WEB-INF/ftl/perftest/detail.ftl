@@ -121,7 +121,15 @@
 						<div class="control-group">
 							<label for="testName" class="header-control-label control-label"><@spring.message "perfTest.configuration.testName"/></label>
 							<div class="header-controls">
-								<input class="required span2 left-float" maxlength="80" size="30" type="text" id="testName" name="testName" value="${(test.testName)!}">
+								<#if test?? && test.testName??>
+									<#assign initTestName = test.testName>
+								<#elseif testName??>
+									<#assign initTestName = testName>
+								<#else>
+                     		   		<#assign initTestName = "">
+                    			</#if>
+                    
+								<input class="required span2 left-float" maxlength="80" size="30" type="text" id="testName" name="testName" value="${(initTestName)!}">
 								<label for="tagString" class="header-control-label control-label"><@spring.message "perfTest.configuration.tags"/></label>
 								<input class="span3" size="60" type="text" id="tagString" name="tagString" value="${(test.tagString)!}">
 								
@@ -369,7 +377,7 @@ function initScheduleDate() {
 }
 
 function initDuration() {
-	var sliderMax = 40;
+	var sliderMax = 1000;
 	durationMap[0] = 0;
 	
 	for ( var i = 1; i <= sliderMax; i++) {
@@ -438,20 +446,26 @@ function addValidation() {
 				max:${maxRunHour}*3600000,
 				min:0
 			},
+			<#if securityMode == true>
+			targetHosts : {
+				required : true
+			},
+			</#if>
 			runCount : {
 				max:${maxRunCount},
 				min:0
 			}
-			
+						 
 		},
-	    messages: {
+	    messages: { 
 	        testName: "<@spring.message "perfTest.warning.testName"/>",
 	        agentCount: "<@spring.message "perfTest.warning.agentNumber"/>",
 	        vuserPerAgent: "<@spring.message "perfTest.warning.vuserPerAgent"/>",
 	        duration: "<@spring.message "perfTest.warning.duration"/>",
 	        runCount: "<@spring.message "perfTest.warning.runCount"/>",
 	        processes: "<@spring.message "perfTest.warning.processes"/>",
-	        threads: "<@spring.message "perfTest.warning.threads"/>"
+	        threads: "<@spring.message "perfTest.warning.threads"/>",
+	        targetHosts: "<@spring.message "perfTest.warning.hostString"/>"
 	    },
 		ignore : "", // make the validation on hidden input work
 		errorClass : "help-inline",
@@ -506,12 +520,13 @@ function bindEvent() {
 	
 	$("#hiddenDurationInput").bind("slide", function(e) {
 		$("#duration").val(durationMap[this.value] * 60000);
-		setDuration();
+		setDuration(); 
 		$("#duration").valid();
 	});
 	
 	$("#saveScheduleBtn").click(function() {
 		if (!$("#testContentForm").valid()) {
+			$("#testContent_tab a").tab('show');
 			return false;
 		}
 	    $("#tagString").val(buildTagString())
@@ -519,6 +534,7 @@ function bindEvent() {
 	
 	$("#saveTestBtn").click(function() {
 		if (!$("#testContentForm").valid()) {
+			$("#testContent_tab a").tab('show');
 			return false;
 		}
 		$("#testStatus").val("SAVED");

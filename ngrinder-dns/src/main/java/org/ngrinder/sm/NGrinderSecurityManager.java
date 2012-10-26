@@ -64,6 +64,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 		workDirectory = new File(workDirectory).getAbsolutePath();
 		logDirectory = workDirectory.substring(0, workDirectory.lastIndexOf(File.separator));
 		logDirectory = logDirectory.substring(0, workDirectory.lastIndexOf(File.separator)) + File.separator + "log";
+
 		agentExecDirectory = new File(agentExecDirectory).getAbsolutePath();
 		javaHomeDirectory = new File(javaHomeDirectory).getAbsolutePath();
 		jreHomeDirectory = javaHomeDirectory.substring(0, javaHomeDirectory.lastIndexOf(File.separator))
@@ -151,7 +152,6 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	@Override
 	public void checkRead(FileDescriptor fd) {
-		super.checkRead(fd);
 	}
 
 	@Override
@@ -169,7 +169,6 @@ public class NGrinderSecurityManager extends SecurityManager {
 		throw new SecurityException("Cmd execution of " + cmd + " is not allowed.");
 	}
 
-	
 	/**
 	 * File read access is allowed on <br>
 	 * "agent.exec.folder" and "agent.exec.folder".
@@ -240,7 +239,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 		if (allowedHost.contains(host)) {
 			return;
 		}
-		throw new SecurityException("NetWork access on " + host + " is not allowed.");
+		throw new SecurityException("NetWork access on " + host + " is not allowed. Please add " + host + " on the target host setting.");
 	}
 
 }

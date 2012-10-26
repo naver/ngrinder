@@ -145,7 +145,7 @@ public interface NGrinderConstants {
 	public static final String PARAM_MAX_VUSER_PER_AGENT = "maxVuserPerAgent";
 	public static final String PARAM_MAX_RUN_COUNT = "maxRunCount";
 	public static final String PARAM_MAX_RUN_HOUR = "maxRunHour";
-
+	public static final String PARAM_SECURITY_MODE = "securityMode";
 	public static final String PARAM_RESULT_SUB = "resultsub";
 	public static final String PARAM_RESULT_AGENT_PERF = "result_agent_perf";
 
