@@ -30,6 +30,8 @@ import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+
 /**
  * nGrinder security manager.
  * 
@@ -65,25 +67,41 @@ public class NGrinderSecurityManager extends SecurityManager {
 		workDirectory = normalize(new File(workDirectory).getAbsolutePath(), null);
 		logDirectory = workDirectory.substring(0, workDirectory.lastIndexOf(File.separator));
 		logDirectory = logDirectory.substring(0, workDirectory.lastIndexOf(File.separator)) + File.separator + "log";
-
 		agentExecDirectory = normalize(new File(agentExecDirectory).getAbsolutePath(), null);
 		javaHomeDirectory = normalize(new File(javaHomeDirectory).getAbsolutePath(), null);
 		jreHomeDirectory = javaHomeDirectory.substring(0, javaHomeDirectory.lastIndexOf(File.separator))
 						+ File.separator + "jre";
+		
 		readAllowedDirectory.add(workDirectory);
 		readAllowedDirectory.add(logDirectory);
 		readAllowedDirectory.add(agentExecDirectory);
 		readAllowedDirectory.add(javaHomeDirectory);
 		readAllowedDirectory.add(jreHomeDirectory);
+		readAllowedDirectory.add(getTempDirectoryPath());
+		
+		
 		String[] jed = javaExtDirectory.split(";");
 		for (String je : jed) {
 			je = normalize(new File(je).getAbsolutePath(), null);
 			readAllowedDirectory.add(je);
 		}
+
 		writeAllowedDirectory.add(workDirectory);
 		writeAllowedDirectory.add(logDirectory);
-
+		writeAllowedDirectory.add(getTempDirectoryPath());
 		deleteAllowedDirectory.add(workDirectory);
+	}
+
+	// -----------------------------------------------------------------------
+	/**
+	 * Returns the path to the system temporary directory.
+	 * 
+	 * @return the path to the system temporary directory.
+	 * 
+	 * @since Commons IO 2.0
+	 */
+	public static String getTempDirectoryPath() {
+		return System.getProperty("java.io.tmpdir");
 	}
 
 	/**
