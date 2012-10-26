@@ -22,6 +22,7 @@
  */
 package org.ngrinder;
 
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
@@ -96,8 +97,8 @@ public class NGrinderStarter {
 	}
 
 	/*
-	 * get the start mode, "agent" or "monitor". If it is not set in
-	 * configuration, it will return "agent".
+	 * get the start mode, "agent" or "monitor". If it is not set in configuration, it will return
+	 * "agent".
 	 */
 	public String getStartMode() {
 		return agentConfig.getAgentProperties().getProperty("start.mode", "agent");
@@ -149,9 +150,10 @@ public class NGrinderStarter {
 	public void startAgent(String controllerIp) {
 		LOG.info("*************************");
 		LOG.info("Start nGrinder Agent ...");
-		String consoleIP = StringUtils.isNotEmpty(controllerIp) ? controllerIp : agentConfig.getAgentProperties().getProperty("agent.console.ip", "127.0.0.1");
+		String consoleIP = StringUtils.isNotEmpty(controllerIp) ? controllerIp : agentConfig.getAgentProperties()
+						.getProperty("agent.console.ip", "127.0.0.1");
 		int consolePort = agentConfig.getAgentProperties().getPropertyInt("agent.console.port",
-				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
 		LOG.info("with console: {}:{}", consoleIP, consolePort);
 		try {
@@ -227,7 +229,8 @@ public class NGrinderStarter {
 
 	private void addLibarayPath() {
 		String property = StringUtils.trimToEmpty(System.getProperty("java.library.path"));
-		System.setProperty("java.library.path", property + File.pathSeparator + new File("./native_lib").getAbsolutePath());
+		System.setProperty("java.library.path",
+						property + File.pathSeparator + new File("./native_lib").getAbsolutePath());
 		LOG.info("java.library.path : {} ", System.getProperty("java.library.path"));
 	}
 
@@ -277,7 +280,8 @@ public class NGrinderStarter {
 		try {
 			configurator.doConfigure(NGrinderStarter.class.getResource("/logback-agent.xml"));
 		} catch (JoranException e) {
-			staticPrintHelpAndExit("Can not configure logger on " + logDirectory.getAbsolutePath() + ".\n Please check if it's writable.");
+			staticPrintHelpAndExit("Can not configure logger on " + logDirectory.getAbsolutePath()
+							+ ".\n Please check if it's writable.");
 
 		}
 	}
@@ -321,10 +325,10 @@ public class NGrinderStarter {
 		LOG.info("- Passing mode " + startMode);
 		LOG.info("- nGrinder version " + starter.getVersion());
 		if ("stopagent".equalsIgnoreCase(startMode)) {
-			starter.stopAgentProcess();
+			starter.stopProcess("agent");
 			return;
 		} else if ("stopmonitor".equalsIgnoreCase(startMode)) {
-			starter.stopMonitorProcess();
+			starter.stopProcess("monitor");
 			return;
 		}
 		startMode = (startMode == null) ? starter.getStartMode() : startMode;
@@ -341,34 +345,20 @@ public class NGrinderStarter {
 	}
 
 	/**
-	 * Stop monitoring process.
+	 * Stop process.
 	 */
-	protected void stopMonitorProcess() {
-		String agentPid = agentConfig.getAgentProperties().getProperty("monitor.pid", "");
+	protected void stopProcess(String mode) {
+		String pid = agentConfig.getAgentPidProperties(mode);
 		try {
-			if (StringUtils.isNotBlank(agentPid)) {
-				new Sigar().kill(agentPid, 7);
+			if (StringUtils.isNotBlank(pid)) {
+				new Sigar().kill(pid, 7);
 			}
 		} catch (SigarException e) {
 			printHelpAndExit(
-					"Error occurs while terminating agent process. It can be already stopped or you may not have the permission.\n If everything is OK. Please stop it manually.",
-					e);
-		}
-	}
-
-	/**
-	 * Stop agent process.
-	 */
-	protected void stopAgentProcess() {
-		String agentPid = agentConfig.getAgentProperties().getProperty("agent.pid", "");
-		try {
-			if (StringUtils.isNotBlank(agentPid)) {
-				new Sigar().kill(agentPid, 7);
-			}
-		} catch (SigarException e) {
-			printHelpAndExit(
-					"Error occurs while terminating agent process. It can be already stopped or you may not have the permission.\n If everything is OK. Please stop it manually.",
-					e);
+							"Error occurs while terminating "
+											+ mode
+											+ " process. It can be already stopped or you may not have the permission.\n If everything is OK. Please stop it manually.",
+							e);
 		}
 	}
 
@@ -380,16 +370,18 @@ public class NGrinderStarter {
 	 */
 	public void checkDuplicatedRun(String startMode) {
 		Sigar sigar = new Sigar();
-		String existingPid = ("agent".equals(startMode)) ? this.agentConfig.getAgentProperties().getProperty("agent.pid", "")
-				: this.agentConfig.getAgentProperties().getProperty("monitor.pid", "");
-		try {
-			if (StringUtils.isNotEmpty(existingPid)) {
+		String existingPid = this.agentConfig.getAgentPidProperties(startMode);
+		if (StringUtils.isNotEmpty(existingPid)) {
+			try {
 				sigar.getProcState(existingPid);
+				printHelpAndExit("Currently " + startMode + " is running on pid " + existingPid
+								+ ". Please stop it before run");
+			} catch (SigarException e) {
+				noOp();
 			}
-			this.agentConfig.saveAgentPidProperties(String.valueOf(sigar.getPid()), startMode);
-		} catch (SigarException e) {
-			printHelpAndExit("Currently " + startMode + " is running on pid " + existingPid + ". Please stop it before run");
 		}
+
+		this.agentConfig.saveAgentPidProperties(String.valueOf(sigar.getPid()), startMode);
 	}
 
 	/**

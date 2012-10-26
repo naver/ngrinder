@@ -1,4 +1,4 @@
-@ECHO ON
+@ECHO OFF
 SET basedir=%~dp0
 CD %basedir%
 SET CONTROLLER_IP=

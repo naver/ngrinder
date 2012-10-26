@@ -124,12 +124,29 @@ public class AgentConfig {
 	public void saveAgentPidProperties(String agentPid, String startMode) {
 		checkNotNull(home);
 		Properties properties = home.getProperties("pid");
-		if ("agent".equals(startMode)) {
+		if ("agent".equalsIgnoreCase(startMode)) {
 			properties.put("agent.pid", agentPid);
 		} else {
 			properties.put("monitor.pid", agentPid);
 		}
 		home.saveProperties("pid", properties);
+	}
+
+	/**
+	 * Get agent pid properties.
+	 * 
+	 * @param startMode
+	 *            agent or monitor
+	 * @return pid
+	 */
+	public String getAgentPidProperties(String startMode) {
+		checkNotNull(home);
+		Properties properties = home.getProperties("pid");
+		if ("agent".equalsIgnoreCase(startMode)) {
+			return (String) properties.get("agent.pid");
+		} else {
+			return (String) properties.get("monitor.pid");
+		}
 	}
 
 	/**
@@ -225,7 +242,5 @@ public class AgentConfig {
 	public String getInternalProperty(String key, String defaultValue) {
 		return internalProperties.getProperty(key, defaultValue);
 	}
-
-	
 
 }

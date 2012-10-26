@@ -125,7 +125,6 @@ public class AgentHome {
 			is = FileUtils.openInputStream(propertiesFile);
 			properties.load(is);
 		} catch (IOException e) {
-			LOGGER.error("Could not load a properties file on " + path, e);
 		} finally {
 			IOUtils.closeQuietly(is);
 		}
