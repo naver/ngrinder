@@ -46,7 +46,7 @@ public class SecuredUser implements UserDetails {
 	 * Plugin class name from which {@link User} instance is provided.
 	 */
 	private final String userInfoProviderClass;
-	private final User user;
+	private User user;
 
 	/**
 	 * User instance used for SpringSecurity.
@@ -57,7 +57,7 @@ public class SecuredUser implements UserDetails {
 	 *            class name who provides the user info
 	 */
 	public SecuredUser(User user, String userInfoProviderClass) {
-		this.user = user;
+		this.setUser(user);
 		this.userInfoProviderClass = userInfoProviderClass;
 	}
 
@@ -69,7 +69,7 @@ public class SecuredUser implements UserDetails {
 	@Override
 	public Collection<GrantedAuthority> getAuthorities() {
 		List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>(1);
-		roles.add(new SimpleGrantedAuthority(user.getRole().getShortName()));
+		roles.add(new SimpleGrantedAuthority(getUser().getRole().getShortName()));
 		return roles;
 	}
 
@@ -79,7 +79,7 @@ public class SecuredUser implements UserDetails {
 	 */
 	@Override
 	public String getPassword() {
-		return user.getPassword();
+		return getUser().getPassword();
 	}
 
 	/**
@@ -88,22 +88,22 @@ public class SecuredUser implements UserDetails {
 	 */
 	@Override
 	public String getUsername() {
-		return user.getUserId();
+		return getUser().getUserId();
 	}
 
 	@Override
 	public boolean isAccountNonExpired() {
-		return user.isEnabled();
+		return getUser().isEnabled();
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return user.isEnabled();
+		return getUser().isEnabled();
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		return user.isEnabled();
+		return getUser().isEnabled();
 	}
 
 	@Override
@@ -120,13 +120,17 @@ public class SecuredUser implements UserDetails {
 	 * @return auth provider class
 	 */
 	public String getAuthProviderClass() {
-		if (StringUtils.isNotEmpty(user.getAuthProviderClass())) {
-			return user.getAuthProviderClass();
+		if (StringUtils.isNotEmpty(getUser().getAuthProviderClass())) {
+			return getUser().getAuthProviderClass();
 		}
 		return userInfoProviderClass;
 	}
 
 	public User getUser() {
 		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 }

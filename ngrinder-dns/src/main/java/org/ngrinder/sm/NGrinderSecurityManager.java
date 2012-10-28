@@ -71,15 +71,14 @@ public class NGrinderSecurityManager extends SecurityManager {
 		javaHomeDirectory = normalize(new File(javaHomeDirectory).getAbsolutePath(), null);
 		jreHomeDirectory = javaHomeDirectory.substring(0, javaHomeDirectory.lastIndexOf(File.separator))
 						+ File.separator + "jre";
-		
+
 		readAllowedDirectory.add(workDirectory);
 		readAllowedDirectory.add(logDirectory);
 		readAllowedDirectory.add(agentExecDirectory);
 		readAllowedDirectory.add(javaHomeDirectory);
 		readAllowedDirectory.add(jreHomeDirectory);
 		readAllowedDirectory.add(getTempDirectoryPath());
-		
-		
+
 		String[] jed = javaExtDirectory.split(";");
 		for (String je : jed) {
 			je = normalize(new File(je).getAbsolutePath(), null);
@@ -206,7 +205,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	private void fileAccessReadAllowed(String file) {
 		String filePath = normalize(file, workDirectory);
 		for (String dir : readAllowedDirectory) {
-			if (filePath.startsWith(dir)) {
+			if (filePath != null && filePath.startsWith(dir)) {
 				return;
 			}
 		}
@@ -224,7 +223,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	private void fileAccessWriteAllowed(String file) {
 		String filePath = normalize(file, workDirectory);
 		for (String dir : writeAllowedDirectory) {
-			if (filePath.startsWith(dir)) {
+			if (filePath != null && filePath.startsWith(dir)) {
 				return;
 			}
 		}
@@ -241,7 +240,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	private void fileAccessDeleteAllowed(String file) {
 		String filePath = normalize(file, workDirectory);
 		for (String dir : deleteAllowedDirectory) {
-			if (filePath.startsWith(dir)) {
+			if (filePath != null && filePath.startsWith(dir)) {
 				return;
 			}
 		}

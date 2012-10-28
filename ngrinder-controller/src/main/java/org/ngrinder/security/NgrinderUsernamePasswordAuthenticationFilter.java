@@ -28,6 +28,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -58,10 +59,15 @@ public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswo
 		Authentication auth = getAuthentification(request, response);
 		String timezone = (String) request.getParameter("user_timezone");
 		String language = (String) request.getParameter("native_language");
-		SecuredUser user = (SecuredUser) auth.getPrincipal();
-		user.getUser().setTimeZone(timezone);
-		user.getUser().setUserLanguage(language);
-		userRepository.save(user.getUser());
+		SecuredUser securedUser = (SecuredUser) auth.getPrincipal();
+		User user = securedUser.getUser();
+		User existingUser = userRepository.findOneByUserId(user.getUserId());
+		if (existingUser != null) {
+			user = existingUser;
+		}
+		user.setTimeZone(timezone);
+		user.setUserLanguage(language);
+		securedUser.setUser(userRepository.saveAndFlush(user));
 		return auth;
 	}
 
