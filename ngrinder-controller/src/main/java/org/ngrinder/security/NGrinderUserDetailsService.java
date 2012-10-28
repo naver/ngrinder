@@ -40,7 +40,7 @@ import org.springframework.stereotype.Service;
  * 
  * This resolve user
  * 
- * @author nhn
+ * @author JunHo Yoon
  * 
  */
 @Service("ngrinderUserDetailsService")

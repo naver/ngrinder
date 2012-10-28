@@ -6,18 +6,18 @@
 
 	<global-method-security pre-post-annotations="enabled" />
 
-	<beans:bean id="shaPasswordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder"/>
-	
+	<beans:bean id="shaPasswordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder" />
+
 	<beans:bean id="reflectionSaltSource" class="org.springframework.security.authentication.dao.ReflectionSaltSource">
-		<beans:property name="userPropertyToUse" value="username"/>
+		<beans:property name="userPropertyToUse" value="username" />
 	</beans:bean>
-	
+
 	<beans:bean id="authenticatedVoter" class="org.springframework.security.access.vote.AuthenticatedVoter" />
 
 	<beans:bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter">
 		<beans:property name="rolePrefix" value="" />
 	</beans:bean>
-	
+
 	<beans:bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
 		<beans:constructor-arg name="decisionVoters">
 			<beans:list>
@@ -84,15 +84,26 @@
 
 		<session-management invalid-session-url="/login" session-fixation-protection="migrateSession" />
 
-		<remember-me key="ngrinder"/>
+		<remember-me key="ngrinder" />
 	</http>
 
-	<beans:bean id="rememberMeServices"
-		class="org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices">
+	<beans:bean id="rememberMeServices" class="org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices">
 		<beans:property name="userDetailsService" ref="ngrinderUserDetailsService" />
-		<beans:property name="key" value="ngrinder"/>
+		<beans:property name="key" value="ngrinder" />
 	</beans:bean>
+
+	<beans:bean id="preAuthProvider"
+		class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
+		<beans:property name="preAuthenticatedUserDetailsService">
+			<beans:bean id="userDetailsServiceWrapper" class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper">
+				<beans:property name="userDetailsService" ref="ngrinderUserDetailsService" />
+			</beans:bean>
+		</beans:property>
+		<beans:property name="order" value="1" />
+	</beans:bean>
+
 	<authentication-manager alias="authenticationManager">
+		<authentication-provider ref="preAuthProvider" />
 		<authentication-provider ref="ngrinderAuthenticationProvider" />
 	</authentication-manager>
 
