@@ -59,7 +59,7 @@ public interface NGrinderConstants {
 	public static final String JSON_MESSAGE = "message";
 
 	public static final String NGRINDER_DEFAULT_PACKAGE = "org.ngrinder";
-	public static final int PLUGIN_UPDATE_FREQUENCY = 60;
+	public static final int PLUGIN_UPDATE_FREQUENCY = 10;
 
 	/**
 	 * Initial Max assignable agent size per console.
