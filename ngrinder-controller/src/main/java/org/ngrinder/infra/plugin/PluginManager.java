@@ -107,6 +107,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 		scannerConfig.getPackageIncludes().add("org.apache.*");
 		scannerConfig.getPackageIncludes().add("org.slf4j.*");
 		scannerConfig.getPackageIncludes().add("net.grinder.*");
+		scannerConfig.getPackageIncludes().add("javax.servlet.*");
 		// Determine which module descriptors, or extension points, to expose.
 		DefaultModuleDescriptorFactory modules = new DefaultModuleDescriptorFactory(new DefaultHostContainer());
 		initPluginDescriptor(modules, NGRINDER_DEFAULT_PACKAGE);
