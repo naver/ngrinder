@@ -349,20 +349,12 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING, reason);
 	}
 
-	/**
-	 * Save performance test with given status.
-	 * 
-	 * This method is only used for changing {@link Status}
-	 * 
-	 * @param perfTest
-	 *            {@link PerfTest} instance which will be saved.
-	 * @param status
-	 *            Status to be assigned
-	 * @param message
-	 *            progress message
-	 * @return saved {@link PerfTest}
+	
+	/* (non-Javadoc)
+	 * @see org.ngrinder.service.IPerfTestService#markStatusAndProgress(org.ngrinder.model.PerfTest, org.ngrinder.model.Status, java.lang.String)
 	 */
 	@Transactional
+	@Override
 	public PerfTest markStatusAndProgress(PerfTest perfTest, Status status, String message) {
 		perfTest.setStatus(checkNotNull(status, "status should not be null"));
 		return markProgress(perfTest, message);

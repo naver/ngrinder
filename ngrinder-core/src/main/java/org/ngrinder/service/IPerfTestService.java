@@ -187,5 +187,19 @@ public interface IPerfTestService {
 	 */
 	public abstract void addCommentOn(User user, Long testId, String testComment, String tagString);
 
+	/**
+	 * Save performance test with given status.
+	 * 
+	 * This method is only used for changing {@link Status}
+	 * 
+	 * @param perfTest
+	 *            {@link PerfTest} instance which will be saved.
+	 * @param status
+	 *            Status to be assigned
+	 * @param message
+	 *            progress message
+	 * @return saved {@link PerfTest}
+	 */
+	public abstract PerfTest markStatusAndProgress(PerfTest perfTest, Status status, String message);
 
 }
