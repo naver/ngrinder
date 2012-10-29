@@ -22,6 +22,8 @@
  */
 package org.ngrinder.security;
 
+import static org.ngrinder.common.util.NoOp.noOp;
+
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
@@ -107,13 +109,24 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class,
 						defaultLoginPlugin)) {
 
-			if (StringUtils.isEmpty(user.getAuthProviderClass())
-							&& isClassEqual(each.getClass(), defaultLoginPlugin.getClass().getName())) {
-				each.validateUser(user.getUsername(), presentedPassword, user.getPassword(), passwordEncoder, salt);
-				authorized = true;
-				break;
+			if (isClassEqual(each.getClass(), defaultLoginPlugin.getClass().getName())) {
+				if (StringUtils.isEmpty(user.getAuthProviderClass())
+								|| isClassEqual(DefaultLoginPlugin.class, user.getUserInfoProviderClass())) {
+					each.validateUser(user.getUsername(), presentedPassword, user.getPassword(), passwordEncoder, salt);
+					authorized = true;
+					break;
+				} else {
+					try {
+						each.validateUser(user.getUsername(), presentedPassword, user.getPassword(), passwordEncoder,
+										salt);
+						authorized = true;
+						break;
+					} catch (Exception e) {
+						noOp();
+					}
+				}
 			} else if (isClassEqual(each.getClass(), user.getAuthProviderClass())) {
-				each.validateUser(user.getUsername(), presentedPassword, null, passwordEncoder, salt);
+				each.validateUser(user.getUsername(), presentedPassword, user.getPassword(), passwordEncoder, salt);
 				authorized = true;
 				break;
 			}

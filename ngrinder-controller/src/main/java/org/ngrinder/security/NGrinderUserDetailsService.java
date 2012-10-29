@@ -66,7 +66,7 @@ public class NGrinderUserDetailsService implements UserDetailsService {
 							+ " should not be empty");
 					checkNotEmpty(user.getEmail(), "User info's email provided by " + each.getClass().getName()
 							+ " should not be empty");
-					return new SecuredUser(user, each.getClass().getName());
+					return new SecuredUser(user, user.getAuthProviderClass());
 				}
 			} catch (NullPointerException e) {
 				LOG.error("User Info retrieval is failed", e);
