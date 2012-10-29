@@ -337,7 +337,7 @@ public class AgentManager implements NGrinderConstants {
 		for (AgentIdentity each : agents) {
 			String region = ((AgentControllerIdentityImplementation) each).getRegion();
 
-			if (StringUtils.containsNone(region, "owned_") || StringUtils.contains(region, "owned_" + userId)) {
+			if (StringUtils.containsNone(region, "owned_") || StringUtils.endsWith(region, "owned_" + userId)) {
 				userAgent.add(each);
 			}
 		}
@@ -411,7 +411,7 @@ public class AgentManager implements NGrinderConstants {
 		Set<AgentIdentity> userAgent = new HashSet<AgentIdentity>();
 		for (AgentIdentity each : allFreeAgents) {
 			String region = ((AgentControllerIdentityImplementation) each).getRegion();
-			if (StringUtils.contains(region, "owned_" + user.getUserId())) {
+			if (StringUtils.endsWith(region, "owned_" + user.getUserId())) {
 				userAgent.add(each);
 				if (userAgent.size() == agentCount) {
 					return userAgent;
