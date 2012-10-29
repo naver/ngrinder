@@ -41,6 +41,7 @@ import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.infra.logger.CoreLogger;
+import org.ngrinder.service.IConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -58,7 +59,7 @@ import ch.qos.logback.core.joran.spi.JoranException;
  * @since 3.0
  */
 @Component
-public class Config {
+public class Config implements IConfig {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
 	private static final Logger LOG = LoggerFactory.getLogger(Config.class);
 	private Home home = null;

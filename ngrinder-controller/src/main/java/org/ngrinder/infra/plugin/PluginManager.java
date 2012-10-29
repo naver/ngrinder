@@ -44,6 +44,7 @@ import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.perftest.service.PerfTestService;
+import org.ngrinder.service.IConfig;
 import org.ngrinder.service.IPerfTestService;
 import org.ngrinder.service.IUserService;
 import org.ngrinder.user.service.UserService;
@@ -133,7 +134,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 				reg.register(AuthenticationManager.class).forInstance(authenticationManager);
 				reg.register(IUserService.class).forInstance(userService);
 				reg.register(IPerfTestService.class).forInstance(perfTestService);
-				reg.register(Config.class).forInstance(config);
+				reg.register(IConfig.class).forInstance(config);
 			}
 		};
 		Home home = config.getHome();
