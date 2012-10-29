@@ -133,6 +133,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 				reg.register(AuthenticationManager.class).forInstance(authenticationManager);
 				reg.register(IUserService.class).forInstance(userService);
 				reg.register(IPerfTestService.class).forInstance(perfTestService);
+				reg.register(Config.class).forInstance(config);
 			}
 		};
 		Home home = config.getHome();
