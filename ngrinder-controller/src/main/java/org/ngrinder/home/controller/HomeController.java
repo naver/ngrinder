@@ -69,8 +69,7 @@ public class HomeController extends NGrinderBaseController {
 	@Autowired
 	private HomeService homeService;
 
-	private static final String TIMEZONE_ID_PREFIXES = 
-					"^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
+	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
 
 	private List<TimeZone> timeZones = null;
 
@@ -142,16 +141,18 @@ public class HomeController extends NGrinderBaseController {
 
 	/**
 	 * Provide login page.
-	 * @param model model
+	 * 
+	 * @param model
+	 *            model
 	 * @return "login" if not loggined. Otherwise, "/"
 	 */
 	@RequestMapping(value = "/login")
 	public String login(ModelMap model) {
 		setLoginPageDate(model);
-		try {   
+		try {
 			getCurrentUser();
 		} catch (Exception e) {
-			CoreLogger.LOGGER.info("Login Failure");
+			CoreLogger.LOGGER.info("Login Failure " + e.getMessage());
 			return "login";
 		}
 		return "redirect:/";
@@ -165,8 +166,11 @@ public class HomeController extends NGrinderBaseController {
 
 	/**
 	 * Change time zone.
-	 * @param user user
-	 * @param timeZone time zone
+	 * 
+	 * @param user
+	 *            user
+	 * @param timeZone
+	 *            time zone
 	 * @return success json message
 	 */
 	@ResponseBody
@@ -178,7 +182,9 @@ public class HomeController extends NGrinderBaseController {
 
 	/**
 	 * Get all timezone.
-	 * @param model model
+	 * 
+	 * @param model
+	 *            model
 	 * @return allTimeZone
 	 */
 	@RequestMapping(value = "/allTimeZone")
@@ -189,7 +195,9 @@ public class HomeController extends NGrinderBaseController {
 
 	/**
 	 * Error redirection to 404.
-	 * @param model model
+	 * 
+	 * @param model
+	 *            model
 	 * @return "redirect:/doError"
 	 */
 	@RequestMapping(value = "/error_404")
@@ -200,7 +208,9 @@ public class HomeController extends NGrinderBaseController {
 
 	/**
 	 * Error redirection for second phase.
-	 * @param model model
+	 * 
+	 * @param model
+	 *            model
 	 * @return "index"
 	 */
 	@RequestMapping(value = "/doError")
