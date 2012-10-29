@@ -140,7 +140,8 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 		// If It's the first time to login
 		// means.. If the user info provider is not defaultLoginPlugin..
-		if (!isClassEqual(defaultLoginPlugin.getClass(), user.getUserInfoProviderClass())) {
+		if (user.getUserInfoProviderClass() != null
+						&& !isClassEqual(defaultLoginPlugin.getClass(), user.getUserInfoProviderClass())) {
 			addNewUserIntoLocal(user);
 		}
 	}
@@ -168,11 +169,13 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	public void addNewUserIntoLocal(SecuredUser securedUser) {
 		User user = securedUser.getUser();
 		user.setAuthProviderClass(securedUser.getUserInfoProviderClass());
-		user.setRole(Role.USER);
 		user.setCreatedDate(new Date());
 		User findOneByUserId = userRepository.findOneByUserId(user.getUserId());
 		if (findOneByUserId != null) {
 			user = findOneByUserId.merge(user);
+		}
+		if (user.getRole() == null) {
+			user.setRole(Role.USER);
 		}
 		User savedUser = userRepository.save(user);
 		securedUser.setUser(savedUser);
