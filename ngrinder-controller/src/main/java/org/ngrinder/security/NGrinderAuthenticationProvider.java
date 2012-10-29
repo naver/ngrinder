@@ -97,8 +97,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 			LOG.debug("Authentication failed: no credentials provided");
 
 			throw new BadCredentialsException(messages.getMessage(
-							"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"), 
-							userDetails);
+							"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"), userDetails);
 		}
 
 		String presentedPassword = authentication.getCredentials().toString();
@@ -110,11 +109,11 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 			if (StringUtils.isEmpty(user.getAuthProviderClass())
 							&& isClassEqual(each.getClass(), defaultLoginPlugin.getClass().getName())) {
-				each.validateUser(user.getUsername(), user.getPassword(), presentedPassword, passwordEncoder, salt);
+				each.validateUser(user.getUsername(), presentedPassword, user.getPassword(), passwordEncoder, salt);
 				authorized = true;
 				break;
 			} else if (isClassEqual(each.getClass(), user.getAuthProviderClass())) {
-				each.validateUser(user.getUsername(), user.getPassword(), presentedPassword, passwordEncoder, salt);
+				each.validateUser(user.getUsername(), presentedPassword, null, passwordEncoder, salt);
 				authorized = true;
 				break;
 			}
@@ -158,9 +157,9 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		user.setAuthProviderClass(securedUser.getUserInfoProviderClass());
 		user.setRole(Role.USER);
 		user.setCreatedDate(new Date());
-		User existingUser = userRepository.findOneByUserId(user.getUserId());
-		if (existingUser != null) {
-			user = existingUser.merge(user);
+		User findOneByUserId = userRepository.findOneByUserId(user.getUserId());
+		if (findOneByUserId != null) {
+			user = findOneByUserId.merge(user);
 		}
 		User savedUser = userRepository.save(user);
 		securedUser.setUser(savedUser);
@@ -210,8 +209,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		}
 
 		if (passwordEncoder instanceof org.springframework.security.crypto.password.PasswordEncoder) {
-			final org.springframework.security.crypto.password.PasswordEncoder delegate 
-				= (org.springframework.security.crypto.password.PasswordEncoder) passwordEncoder;
+			final org.springframework.security.crypto.password.PasswordEncoder delegate = (org.springframework.security.crypto.password.PasswordEncoder) passwordEncoder;
 			this.passwordEncoder = new PasswordEncoder() {
 				public String encodePassword(String rawPass, Object salt) {
 					checkSalt(salt);

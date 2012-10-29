@@ -57,7 +57,7 @@ public class DefaultLoginPlugin implements OnLoginRunnable {
 	@SuppressWarnings("deprecation")
 	@Override
 	public boolean validateUser(String userId, String password, String encPass, Object encoder, Object salt) {
-		if (!((PasswordEncoder) encoder).isPasswordValid(password, encPass, salt)) {
+		if (!((PasswordEncoder) encoder).isPasswordValid(encPass, password, salt)) {
 			LOG.debug("Authentication failed: password does not match stored value");
 
 			throw new BadCredentialsException(messages.getMessage(
