@@ -58,18 +58,6 @@ import org.slf4j.LoggerFactory;
 public class LocalScriptTestDriveService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LocalScriptTestDriveService.class);
 
-	private File getLibPath() {
-		String path = this.getClass().getResource("/").getPath();
-		path = path.substring(1, path.length() - 1);
-		String str = "classes";
-		int i = path.indexOf(str);
-		if (i > 0) {
-			path = path.substring(0, i);
-			path += "lib/";
-		}
-		return new File(path).getAbsoluteFile();
-	}
-
 	/**
 	 * Validate script.
 	 * 
@@ -77,15 +65,18 @@ public class LocalScriptTestDriveService {
 	 *            working directory
 	 * @param script
 	 *            script file
+	 * @param libPath
+	 *            library base path
 	 * @param eventSynchronisation
 	 *            condition for event synchronization
 	 * @param securityEnabled
 	 *            if security is set ot not.
-	 * @param hostString hostString
+	 * @param hostString
+	 *            hostString
 	 * @return File which stores validation result.
 	 */
-	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled,
-					String hostString) {
+	public File doValidate(File base, File script, File libPath, Condition eventSynchronisation,
+					boolean securityEnabled, String hostString) {
 		FanOutStreamSender fanOutStreamSender = null;
 		ErrorStreamRedirectWorkerLauncher workerLauncher = null;
 		boolean stopByTooMuchExecution = false;
@@ -106,8 +97,8 @@ public class LocalScriptTestDriveService {
 			});
 
 			GrinderProperties properties = new GrinderProperties();
-			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), getLibPath(),
-							securityEnabled, hostString, NetworkUtil.getLocalHostName());
+			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), libPath, securityEnabled,
+							hostString, NetworkUtil.getLocalHostName());
 
 			properties.setProperty("grinder.jvm.classpath", builder.buildCustomClassPath(true));
 

@@ -52,6 +52,19 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 
 	@Autowired
 	public ClassPathInit classPathInit;
+
+	private File getLibPath() {
+		String path = this.getClass().getResource("/").getPath();
+		path = path.substring(1, path.length() - 1);
+		String str = "classes";
+		int i = path.indexOf(str);
+		if (i > 0) {
+			path = path.substring(0, i);
+			path += "lib/";
+		}
+		return new File(path).getAbsoluteFile();
+	}
+
 	/**
 	 * Locate dumped user1 repo into tempdir
 	 * 
@@ -65,14 +78,14 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 		FileUtils.deleteQuietly(file);
 		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), file);
 		repo.setUserRepository(new File(file, getTestUser().getUserId()));
-		
+
 	}
 
 	@Test
 	public void testValidation() throws EngineException, DirectoryException, IOException {
 		File file = new ClassPathResource("/validation/script.py").getFile();
 		Condition m_eventSync = new Condition();
-		File log = validationService.doValidate(file.getParentFile(), file, m_eventSync, true, "");
+		File log = validationService.doValidate(file.getParentFile(), file, getLibPath(), m_eventSync, true, "");
 		assertThat(log.length(), notNullValue());
 	}
 
@@ -83,7 +96,8 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 		fileEntry.setPath("/script.py");
 		fileEntry.setContent(script);
 		String validateScript = scriptValidationService.validateScript(getTestUser(), fileEntry, false, "");
-		//assertThat(validateScript, containsString("Validation should be performed within 10sec. Stop it forcely"));
+		// assertThat(validateScript,
+		// containsString("Validation should be performed within 10sec. Stop it forcely"));
 	}
 
 	@Test

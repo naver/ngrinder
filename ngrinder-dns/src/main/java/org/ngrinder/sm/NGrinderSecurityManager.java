@@ -24,7 +24,6 @@ package org.ngrinder.sm;
 
 import java.io.File;
 import java.io.FileDescriptor;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.security.Permission;
 import java.util.ArrayList;
@@ -175,14 +174,6 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	}
 
-	public String getCanonicalPath(String file) {
-		try {
-			return new File(file).getCanonicalPath();
-		} catch (IOException e) {
-			return null;
-		}
-	}
-
 	@Override
 	public void checkDelete(String file) {
 		this.fileAccessDeleteAllowed(file);
@@ -206,10 +197,6 @@ public class NGrinderSecurityManager extends SecurityManager {
 			if (filePath != null && filePath.startsWith(dir)) {
 				return;
 			}
-		}
-		// Dirty Hack
-		if (filePath == null || filePath.contains("/WEB-INF/lib/") || filePath.contains("\\WEB-INF\\lib\\")) {
-			return;
 		}
 		throw new SecurityException("File Read access on " + file + "(" + filePath + ") is not allowed.");
 	}
@@ -263,7 +250,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 		this.netWorkAccessAllowed(host);
 	}
 
-	public String normalize(String filename, String workingDirectory) {
+	private String normalize(String filename, String workingDirectory) {
 		if (getPrefixLength(filename) == 0 && workingDirectory != null) {
 			filename = workingDirectory + File.separator + filename;
 		}
