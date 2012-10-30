@@ -83,14 +83,18 @@ public class FileEntryController extends NGrinderBaseController {
 	 * Validate the script.
 	 * 
 	 * @param user
-	 * @param scriptEntry
-	 * @return
+	 *            user
+	 * @param fileEntry
+	 *            fileEntry
+	 * @param hostString
+	 *            hostString
+	 * @return validation Result string
 	 */
 	@RequestMapping(value = "/validate", method = RequestMethod.POST)
-	public @ResponseBody
-	String validate(User user, FileEntry scriptEntry,
+	@ResponseBody
+	public String validate(User user, FileEntry fileEntry,
 					@RequestParam(value = "hostString", required = false) String hostString) {
-		return scriptValidationService.validateScript(user, scriptEntry, false, hostString);
+		return scriptValidationService.validateScript(user, fileEntry, false, hostString);
 	}
 
 	/**
@@ -161,22 +165,26 @@ public class FileEntryController extends NGrinderBaseController {
 	 *            fileName
 	 * @param scriptType
 	 *            Type of script. optional
+	 * @param createLibAndResources
+	 *            true if lib and resoruces should be created as well.
 	 * @param model
 	 *            model.
 	 * @return redirect:/script/list/${path}
 	 */
 	@RequestMapping(value = "/create/**", params = "type=script", method = RequestMethod.POST)
-	public String getCreateForm(User user, @RemainedPath String path,
+	public String getCreateForm(
+					User user,
+					@RemainedPath String path,
 					@RequestParam(value = "testUrl", required = false) String testUrl,
 					@RequestParam("fileName") String fileName,
-					@RequestParam(value = "scriptType", required = false) String scriptType, 
-					@RequestParam(value = "createLibAndResource", defaultValue = "false") boolean createLibAndResoure,
+					@RequestParam(value = "scriptType", required = false) String scriptType,
+					@RequestParam(value = "createLibAndResource", defaultValue = "false") boolean createLibAndResources,
 					ModelMap model) {
 		fileName = StringUtils.trimToEmpty(fileName);
 		if (StringUtils.isBlank(testUrl)) {
 			testUrl = "http://sample.com";
 		}
-		model.addAttribute("createLibAndResource", createLibAndResoure);
+		model.addAttribute("createLibAndResource", createLibAndResources);
 		if (fileEntryService.hasFileEntry(user, path + "/" + fileName)) {
 			model.addAttribute("file", fileEntryService.getFileEntry(user, path + "/" + fileName));
 		} else {
@@ -298,6 +306,10 @@ public class FileEntryController extends NGrinderBaseController {
 	 *            path to which this will forward.
 	 * @param fileEntry
 	 *            file to be saved
+	 * @param targetHosts
+	 *            target host parameter
+	 * @param createLibAndResource
+	 *            true if lib and resources should be created as well.
 	 * @param model
 	 *            model
 	 * @return script/scriptList
@@ -312,9 +324,9 @@ public class FileEntryController extends NGrinderBaseController {
 			map.put("targetHosts", StringUtils.trim(targetHosts));
 			fileEntry.setProperties(map);
 		}
-		
+
 		fileEntryService.save(user, fileEntry);
-		
+
 		String basePath = FilenameUtils.getPath(fileEntry.getPath());
 		if (createLibAndResource) {
 			fileEntryService.addFolder(user, basePath, "lib", getMessages("script.commit.libfolder"));
@@ -327,11 +339,11 @@ public class FileEntryController extends NGrinderBaseController {
 	 * Upload files.
 	 * 
 	 * @param user
-	 *            path
+	 *            yser
 	 * @param path
 	 *            path
-	 * @param fileEntry
-	 *            fileEntry
+	 * @param description
+	 *            description
 	 * @param file
 	 *            multipart file
 	 * @param model
@@ -372,8 +384,9 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return redirect:/script/list/${path}
 	 */
 	@RequestMapping(value = "/delete/**", method = RequestMethod.POST)
-	public @ResponseBody
-	String delete(User user, @RemainedPath String path, @RequestParam("filesString") String filesString, ModelMap model) {
+	@ResponseBody
+	public String delete(User user, @RemainedPath String path, @RequestParam("filesString") String filesString,
+					ModelMap model) {
 		String[] files = filesString.split(",");
 		fileEntryService.delete(user, path, files);
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1);

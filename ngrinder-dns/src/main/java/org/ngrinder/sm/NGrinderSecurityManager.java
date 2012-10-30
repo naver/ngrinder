@@ -24,13 +24,10 @@ package org.ngrinder.sm;
 
 import java.io.File;
 import java.io.FileDescriptor;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.io.FileUtils;
 
 /**
  * nGrinder security manager.
@@ -43,13 +40,13 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	private String workDirectory = System.getProperty("user.dir");
 	private String logDirectory = null;
+
 	private String agentExecDirectory = System.getProperty("ngrinder.exec.path", workDirectory);
 	private String javaHomeDirectory = System.getenv("JAVA_HOME");
 	private String jreHomeDirectory = null;
 	private String javaExtDirectory = System.getProperty("java.ext.dirs");
 	private String etcHosts = System.getProperty("ngrinder.etc.hosts", "");
 	private String consoleIP = System.getProperty("ngrinder.console.ip", "127.0.0.1");
-
 	private List<String> allowedHost = new ArrayList<String>();
 	private List<String> readAllowedDirectory = new ArrayList<String>();
 	private List<String> writeAllowedDirectory = new ArrayList<String>();
@@ -177,14 +174,6 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	}
 
-	public String getCanonicalPath(String file) {
-		try {
-			return new File(file).getCanonicalPath();
-		} catch (IOException e) {
-			return null;
-		}
-	}
-
 	@Override
 	public void checkDelete(String file) {
 		this.fileAccessDeleteAllowed(file);
@@ -209,8 +198,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 				return;
 			}
 		}
-
-		throw new SecurityException("Read write access on " + file + "(" + filePath + ") is not allowed.");
+		throw new SecurityException("File Read access on " + file + "(" + filePath + ") is not allowed.");
 	}
 
 	/**
@@ -262,7 +250,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 		this.netWorkAccessAllowed(host);
 	}
 
-	public String normalize(String filename, String workingDirectory) {
+	private String normalize(String filename, String workingDirectory) {
 		if (getPrefixLength(filename) == 0 && workingDirectory != null) {
 			filename = workingDirectory + File.separator + filename;
 		}

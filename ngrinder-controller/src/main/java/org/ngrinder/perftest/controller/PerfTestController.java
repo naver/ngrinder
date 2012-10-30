@@ -120,7 +120,9 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            user
 	 * @param model
 	 *            modelMap
-	 * @param isFinished
+	 * @param tag
+	 *            tag
+	 * @param onlyFinished
 	 *            only list finished project
 	 * @param pageable
 	 *            page
@@ -277,6 +279,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            model
 	 * @param test
 	 *            {@link PerfTest}
+	 * @param isClone
+	 *            true if clone
 	 * @return redirect:/perftest/list
 	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
@@ -327,15 +331,19 @@ public class PerfTestController extends NGrinderBaseController {
 	/**
 	 * Leave comment on the perftest.
 	 * 
+	 * @param user
+	 *            user
 	 * @param testComment
 	 *            trest comment
 	 * @param testId
 	 *            testId
+	 * @param tagString
+	 *            tagString
 	 * @return JSON
 	 */
 	@RequestMapping(value = "/leaveComment", method = RequestMethod.POST)
-	public @ResponseBody
-	String leaveComment(User user, @RequestParam("testComment") String testComment,
+	@ResponseBody
+	public String leaveComment(User user, @RequestParam("testComment") String testComment,
 					@RequestParam(value = "tagString", required = false) String tagString,
 					@RequestParam("testId") Long testId) {
 		perfTestService.addCommentOn(user, testId, testComment, tagString);
@@ -385,8 +393,8 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = "/deleteTests", method = RequestMethod.POST)
-	public @ResponseBody
-	String deletePerfTests(User user, ModelMap model, @RequestParam(defaultValue = "") String ids) {
+	@ResponseBody
+	public String deletePerfTests(User user, ModelMap model, @RequestParam(defaultValue = "") String ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
 			perfTestService.deletePerfTest(user, NumberUtils.toLong(idStr, 0));
 		}
@@ -394,8 +402,8 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = "/stopTests", method = RequestMethod.POST)
-	public @ResponseBody
-	String stopPerfTests(User user, ModelMap model, @RequestParam(value = "ids", defaultValue = "") String ids) {
+	@ResponseBody
+	public String stopPerfTests(User user, ModelMap model, @RequestParam(value = "ids", defaultValue = "") String ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
 			perfTestService.stopPerfTest(user, NumberUtils.toLong(idStr, 0));
 		}
@@ -425,8 +433,8 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = "/getReportData")
-	public @ResponseBody
-	String getReportData(User user, ModelMap model, @RequestParam long testId,
+	@ResponseBody
+	public String getReportData(User user, ModelMap model, @RequestParam long testId,
 					@RequestParam(required = true, defaultValue = "") String dataType, @RequestParam int imgWidth) {
 		getPerfTestWithPermissionCheck(user, testId, false);
 		String[] dataTypes = StringUtils.split(dataType, ",");

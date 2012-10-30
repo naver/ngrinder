@@ -265,6 +265,9 @@ public class FileEntryRepository {
 	}
 
 	private void addPropertyValue(ISVNEditor editor, FileEntry fileEntry) throws SVNException {
+		if (fileEntry.getFileType() == FileType.PYTHON_SCRIPT) {
+			editor.changeFileProperty(fileEntry.getPath(), "targetHosts", SVNPropertyValue.create(""));
+		}
 		if (fileEntry.getFileType() != FileType.DIR) {
 			for (Entry<String, String> each : fileEntry.getProperties().entrySet()) {
 				editor.changeFileProperty(fileEntry.getPath(), each.getKey(),

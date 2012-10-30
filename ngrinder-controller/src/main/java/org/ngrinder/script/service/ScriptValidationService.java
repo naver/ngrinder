@@ -143,14 +143,26 @@ public class ScriptValidationService {
 				FileUtils.writeStringToFile(scriptFile, scriptEntry.getContent(),
 								StringUtils.defaultIfBlank(scriptEntry.getEncoding(), "UTF-8"));
 			}
-			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, new Condition(),
-							config.isSecurityEnabled(), hostString);
+			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, getLibPath(),
+							new Condition(), config.isSecurityEnabled(), hostString);
 			return FileUtils.readFileToString(doValidate);
 		} catch (IOException e) {
 			LOG.error("Error while distributing files on {} for {}", user, scriptEntry.getPath());
 			LOG.error("Error details ", e);
 		}
 		return StringUtils.EMPTY;
+	}
+
+	private File getLibPath() {
+		String path = this.getClass().getResource("/").getPath();
+		path = path.substring(1, path.length() - 1);
+		String str = "classes";
+		int i = path.indexOf(str);
+		if (i > 0) {
+			path = path.substring(0, i);
+			path += "lib/";
+		}
+		return new File(path).getAbsoluteFile();
 	}
 
 	/**
