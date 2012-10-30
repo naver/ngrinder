@@ -155,7 +155,6 @@ public class ScriptValidationService {
 
 	private File getLibPath() {
 		String path = this.getClass().getResource("/").getPath();
-		path = path.substring(1, path.length() - 1);
 		String str = "classes";
 		int i = path.indexOf(str);
 		if (i > 0) {
