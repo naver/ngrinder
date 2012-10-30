@@ -9,6 +9,9 @@ To get to know what's different from grinder?
 To get started,
  * Checkout http://www.cubrid.org/wiki_ngrinder/entry/user-guide!
 
+You can find out what nGrinder looks like with screenshot.
+ * http://www.cubrid.org/wiki_ngrinder/entry/screen-shot
+
 nGrinder consists of two major components. 
 
 nGrinder controller
