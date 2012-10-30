@@ -30,8 +30,6 @@ import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-
 /**
  * nGrinder security manager.
  * 
@@ -49,7 +47,6 @@ public class NGrinderSecurityManager extends SecurityManager {
 	private String javaExtDirectory = System.getProperty("java.ext.dirs");
 	private String etcHosts = System.getProperty("ngrinder.etc.hosts", "");
 	private String consoleIP = System.getProperty("ngrinder.console.ip", "127.0.0.1");
-
 	private List<String> allowedHost = new ArrayList<String>();
 	private List<String> readAllowedDirectory = new ArrayList<String>();
 	private List<String> writeAllowedDirectory = new ArrayList<String>();
@@ -209,8 +206,10 @@ public class NGrinderSecurityManager extends SecurityManager {
 				return;
 			}
 		}
-
-		throw new SecurityException("Read write access on " + file + "(" + filePath + ") is not allowed.");
+		if (filePath.contains("/WEB-INF/lib/")) {
+			return;
+		}
+		throw new SecurityException("File Read access on " + file + "(" + filePath + ") is not allowed.");
 	}
 
 	/**
