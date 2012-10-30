@@ -156,12 +156,15 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	@Override
 	public void checkRead(String file) {
-		//fileAccessReadAllowed(file);
+		if (file != null && file.contains("database.conf")) {
+			throw new SecurityException("File Read access on database.conf is not allowed.");
+		}
+		// fileAccessReadAllowed(file);
 	}
 
 	@Override
 	public void checkRead(String file, Object context) {
-		//fileAccessReadAllowed(file);
+		// fileAccessReadAllowed(file);
 	}
 
 	@Override
