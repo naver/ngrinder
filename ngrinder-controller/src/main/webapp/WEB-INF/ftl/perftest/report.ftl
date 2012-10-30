@@ -229,27 +229,27 @@
                     	var plotKeyCpu = ip + "-cpu";
                     	var plotKeyMem = ip + "-mem";
                     	var ymax = 0;
-                    	if (targetMonitorPlot.plotKeyCpu) {
-                    		ymax = getMaxValue(res.SystemData.cpu);
-                    		replotChart(targetMonitorPlot.plotKeyCpu, res.SystemData.cpu, ymax);
+                    	$("#ipMark").html("[" + ip + "]");
+                    	
+                    	if (res.SystemData.cpu == undefined) {
+                    		showWarning("<@spring.message "perfTest.report.message.noMonitorData"/>");
+                    		return false;
                     	} else {
-                    		targetMonitorPlot.plotKeyCpu = drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, undefined, undefined, res.SystemData.interval);
-                    		if (targetMonitorPlot.plotKeyCpu == undefined) {
-                    			showWarning("<@spring.message "common.message.noData"/>");
-                    		}
-                    	}
-                    		
-                    	if (targetMonitorPlot.plotKeyMem) {
-                    		ymax = getMaxValue(res.SystemData.memory);
-                    		replotChart(targetMonitorPlot.plotKeyMem, res.SystemData.memory, ymax);
-                    	} else {
-                    		targetMonitorPlot.plotKeyMem = drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, undefined, undefined, res.SystemData.interval);
-                    		if (targetMonitorPlot.plotKeyMem == undefined) {
-                    			showWarning("<@spring.message "common.message.noData"/>");
-                    		}
+	                    	if (targetMonitorPlot.plotKeyCpu) {
+	                    		ymax = getMaxValue(res.SystemData.cpu);
+	                    		replotChart(targetMonitorPlot.plotKeyCpu, res.SystemData.cpu, ymax);
+	                    	} else {
+	                    		targetMonitorPlot.plotKeyCpu = drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, undefined, undefined, res.SystemData.interval);
+	                    	}
+	                    	
+	                    	if (targetMonitorPlot.plotKeyMem) {
+	                    		ymax = getMaxValue(res.SystemData.memory);
+	                    		replotChart(targetMonitorPlot.plotKeyMem, res.SystemData.memory, ymax);
+	                    	} else {
+	                    		targetMonitorPlot.plotKeyMem = drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, undefined, undefined, res.SystemData.interval);
+	                    	}
                     	}
                     	
-                    	$("#ipMark").html("[" + ip + "]");
                         return true;
                     } else {
                         showErrorMsg("Get monitor data failed.");
