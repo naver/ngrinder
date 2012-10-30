@@ -41,6 +41,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	private String workDirectory = System.getProperty("user.dir");
 	private String logDirectory = null;
+	
 	private String agentExecDirectory = System.getProperty("ngrinder.exec.path", workDirectory);
 	private String javaHomeDirectory = System.getenv("JAVA_HOME");
 	private String jreHomeDirectory = null;
@@ -206,7 +207,8 @@ public class NGrinderSecurityManager extends SecurityManager {
 				return;
 			}
 		}
-		if (filePath.contains("/WEB-INF/lib/")) {
+		// Dirty Hack
+		if (filePath.contains("/WEB-INF/lib/") || filePath.contains("\\WEB-INF\\lib\\") ) {
 			return;
 		}
 		throw new SecurityException("File Read access on " + file + "(" + filePath + ") is not allowed.");
