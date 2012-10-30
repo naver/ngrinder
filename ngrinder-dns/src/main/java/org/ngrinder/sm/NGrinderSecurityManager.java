@@ -75,7 +75,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 		readAllowedDirectory.add(javaHomeDirectory);
 		readAllowedDirectory.add(jreHomeDirectory);
 		readAllowedDirectory.add(getTempDirectoryPath());
-
+		readAllowedDirectory.add("/dev/ramdom");
 		String[] jed = javaExtDirectory.split(";");
 		for (String je : jed) {
 			je = normalize(new File(je).getAbsolutePath(), null);
