@@ -156,12 +156,12 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	@Override
 	public void checkRead(String file) {
-		fileAccessReadAllowed(file);
+		//fileAccessReadAllowed(file);
 	}
 
 	@Override
 	public void checkRead(String file, Object context) {
-		fileAccessReadAllowed(file);
+		//fileAccessReadAllowed(file);
 	}
 
 	@Override
