@@ -1,36 +1,61 @@
-
 nGrinder 
 ========
 
 It is the platform of stress tests which enables you to execute script creation, test execution, monitoring, and result report generator simultaneously. The opensource nGrinder offers easy ways to conduct stress tests by eliminating inconveniences and providing integrated environments.
 
-To get started, checkout http://www.nhnopensource.org/ngrinder_document!
+To get to know what's different from grinder?
+ * Checkout http://www.cubrid.org/wiki_ngrinder/entry/architecture!
+
+To get started,
+ * Checkout http://www.cubrid.org/wiki_ngrinder/entry/user-guide!
 
 nGrinder consists of two major components. 
 
-* nGrinder controller is a web application which let performance tester create test script and configure test run
-* nGrinder agent is a virtual user generator which makes loads. 
- 
+nGrinder controller
+ * a web application which let performance tester create test script and configure test run
+nGrinder agent
+* virtual user generator which makes loads.
+
 Features
 --------
 
-* Use Jython script to create scenario and generating stress in JVM. 
-* Provide web-based interface for project management, monitoring, result management and report management. 
+* Use Jython script to create test scenario and generate stress in JVM using multiple agents.
+* Provide web-based interface for project management, monitoring, result management and report management.
+* Run multiple tests concurrently. Assign the preinstalled multiple agents to maximize the agent's utilization.
+* Embed Subversion to manage scripts.
 * Enable to monitor the state of agents generating stress and target machines receiving stress
-* Enable to inquire past test results by saving test history and provide absolute link to share with those who do not have private account. 
-* Enable to converse image and csv from original results. 
+* Support Enable to monitor the state of agents generating stress and target machines receiving stress
 
-Quick Start
------------
-* You can find out usage videos in the following location
- * http://www.youtube.com/user/ngrinderdev
 
-* You can also find the installation guide in the following.
- * http://www.cubrid.org/wiki_ngrinder
+Download
+--------
 
-* How to clone the repo 
- * 'git clone git://github.com/nhnopensource/ngrinder.git'
- 
+nGrinder 3.0 Official version is ready to download. It's stable enought to use.
+* https://github.com/nhnopensource/ngrinder/downloads
+
+Documentation
+-------------
+You can find the installation guide in the following.
+* http://www.cubrid.org/wiki_ngrinder/entry/installation-guide
+
+You can find the user guide in the following location.
+* http://www.cubrid.org/wiki_ngrinder/entry/user-guide
+
+Road Map
+--------
+nGrinder has the explicit roadmap to be a most effective and efficient performance test tool.
+Check out the our roadmap
+* http://www.cubrid.org/wiki_ngrinder/entry/road-map
+
+
+Contribution?
+-------------
+nGrinder is welcoming any contribution from users. Please make all pull requests against master branches.
+* Clone the REPO : 'git clone git://github.com/nhnopensource/ngrinder.git'
+
+You can find out general developer document following location.
+ * http://www.cubrid.org/wiki_ngrinder/entry/dev-document
+
 Versioning
 ----------
 
@@ -47,22 +72,17 @@ And constructed with the following guidelines:
 * Bug fixes and misc changes bumps the patch
 
 
-Bug tracker
------------
-
-Have a bug or enhancement idea? Please create an issue here on GitHub if you want just notify to us! 
-
-https://github.com/nhnopensource/ngrinder/issues
+Q/A and Bug tracker
+-------------------
+Have a bug or enhancement idea? Please create an issue here on GitHub if you want just notify to us!
+* https://github.com/nhnopensource/ngrinder/issues
 
 Our official bug tracker is following. You can monitor our development status.
+* http://jira.cubrid.org/browse/NGRINDER
 
-http://jira.cubrid.org/browse/NGRINDER
+You can check the our mailing list as well
+* http://ngrinder-dev.642.n7.nabble.com/
 
-
-Contributing
-------------
-
-Please make all pull requests against master branches.
 
 
 Copyright and license
