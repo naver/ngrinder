@@ -16,6 +16,7 @@ nGrinder consists of two major components.
 
 nGrinder controller
  * a web application which let performance tester create test script and configure test run
+
 nGrinder agent
 * virtual user generator which makes loads.
 
