@@ -230,24 +230,27 @@
                     	var plotKeyMem = ip + "-mem";
                     	var ymax = 0;
                     	$("#ipMark").html("[" + ip + "]");
+                    	var rs = true;
                     	
                     	if (res.SystemData.cpu == undefined) {
                     		showWarning("<@spring.message "perfTest.report.message.noMonitorData"/>");
-                    		return false;
+                    		res.SystemData.cpu = [0];
+                    		res.SystemData.memory = [0];
+                    		rs = false;
+                    	}
+                    	
+                    	if (targetMonitorPlot.plotKeyCpu) {
+                    		ymax = getMaxValue(res.SystemData.cpu);
+                    		replotChart(targetMonitorPlot.plotKeyCpu, res.SystemData.cpu, ymax);
                     	} else {
-	                    	if (targetMonitorPlot.plotKeyCpu) {
-	                    		ymax = getMaxValue(res.SystemData.cpu);
-	                    		replotChart(targetMonitorPlot.plotKeyCpu, res.SystemData.cpu, ymax);
-	                    	} else {
-	                    		targetMonitorPlot.plotKeyCpu = drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, undefined, undefined, res.SystemData.interval);
-	                    	}
-	                    	
-	                    	if (targetMonitorPlot.plotKeyMem) {
-	                    		ymax = getMaxValue(res.SystemData.memory);
-	                    		replotChart(targetMonitorPlot.plotKeyMem, res.SystemData.memory, ymax);
-	                    	} else {
-	                    		targetMonitorPlot.plotKeyMem = drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, undefined, undefined, res.SystemData.interval);
-	                    	}
+                    		targetMonitorPlot.plotKeyCpu = drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, undefined, undefined, res.SystemData.interval);
+                    	}
+                    	
+                    	if (targetMonitorPlot.plotKeyMem) {
+                    		ymax = getMaxValue(res.SystemData.memory);
+                    		replotChart(targetMonitorPlot.plotKeyMem, res.SystemData.memory, ymax);
+                    	} else {
+                    		targetMonitorPlot.plotKeyMem = drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, undefined, undefined, res.SystemData.interval);
                     	}
                     	
                         return true;

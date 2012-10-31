@@ -38,7 +38,7 @@
 		<div class="row">
 			<div class="span12">
 				<form id="contentForm" method="post" target="_self" style="margin-bottom: 0px;"> 	
-					<div class="well" style="margin-bottom: 0px;">
+					<div class="well" style="margin-bottom: 0px; display:none;">
 						<div class="form-horizontal">
 							<fieldset>
 								<div class="control-group">
@@ -78,6 +78,56 @@
 											</td> 
 											<td>  
 												<#include "../perftest/host.ftl"/>
+											</td> 
+										</tr>
+									</table>           
+								</div>
+							</fieldset>
+						</div>
+					</div>
+					<div class="well" style="margin-bottom: 0px;" id="copyWell">
+						<div class="form-horizontal">
+							<fieldset>
+								<div class="control-group">
+										<table style="width:100%">
+											<colgroup>
+												<col width="150px"/>
+												<col width="300px"/>
+												<col width="124px"/>
+												<col width="*"/>
+											</colgroup>
+											<tr>
+												<td>
+													<label class="control-label" for="testName">Sample Name</label>
+												</td>
+												<td>
+													<input type="text" class="span4" value="${(file.path)!}" readonly/>
+												</td>
+												<td>
+													<label class="control-label" for="testName" style="width:80px; margin-left:25px">Copied Name</label>
+												</td>
+												<td>
+													<input type="text" id="copyNameInput" class="span4" name="copyName"/>
+												</td>
+											</tr> 
+										</table>
+								</div>
+								<div style="margin-bottom: 0" class="control-group">
+									<table style="width:100%"> 
+										<colgroup> 
+											<col width="150px"/>
+											<col width="*"/> 
+											<col width="100px"/>
+										</colgroup>
+										<tr>
+											<td>
+												<label class="control-label" for="description"><@spring.message "script.option.commit"/></label>
+											</td>
+											<td>
+												<textarea class="span8" id="descInput" name="description" style="resize:none; height:40px" >${(file.description)!}</textarea>
+											</td> 
+											<td>  
+												<button class="btn btn-primary" href="javascript:void(0);" id="copyBtn" style="width:50px; height:50px; align: middle;">Copy</button>
 											</td> 
 										</tr>
 									</table>           

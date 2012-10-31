@@ -75,7 +75,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 		readAllowedDirectory.add(javaHomeDirectory);
 		readAllowedDirectory.add(jreHomeDirectory);
 		readAllowedDirectory.add(getTempDirectoryPath());
-
+		readAllowedDirectory.add("/dev/");
 		String[] jed = javaExtDirectory.split(";");
 		for (String je : jed) {
 			je = normalize(new File(je).getAbsolutePath(), null);
@@ -156,12 +156,17 @@ public class NGrinderSecurityManager extends SecurityManager {
 
 	@Override
 	public void checkRead(String file) {
-		fileAccessReadAllowed(file);
+		if (file != null && file.contains("database.conf")) {
+			throw new SecurityException("File Read access on database.conf is not allowed.");
+		}
+		// fileAccessReadAllowed(file);
 	}
 
 	@Override
 	public void checkRead(String file, Object context) {
-		fileAccessReadAllowed(file);
+		if (file != null && file.contains("database.conf")) {
+			throw new SecurityException("File Read access on database.conf is not allowed.");
+		}
 	}
 
 	@Override

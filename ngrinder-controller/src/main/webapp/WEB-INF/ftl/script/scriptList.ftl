@@ -92,7 +92,7 @@
 					<th><input type="checkbox" class="checkbox" value=""></th>
 					<th class="noClick"><a href="${req.getContextPath()}/script/list/${currentPath}/../" target="_self"><img src="${req.getContextPath()}/img/up_folder.png"/></a> 
 					</th>
-					<th><@spring.message "script.option.name"/></th>
+					<th><@spring.message "script.list.table.name"/></th>
 					<th class="noClick"><@spring.message "script.option.commit"/></th>
 					<th><@spring.message "script.list.table.lastDate"/></th>
 					<th><@spring.message "script.list.table.revision"/></th>
@@ -101,6 +101,20 @@
 				</tr>
 			</thead>
 			<tbody>
+				<tr>
+					<td><input type="checkbox" disabled></td>
+					<td><i class="icon-folder-open"></i></td>
+					<td>
+						<a href="#" target="_self"><@spring.message "script.list.table.sample"/></a>
+					</td>
+					<td class="ellipsis">
+						<@spring.message "script.list.message.sample"/>
+					</td>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+					<td>&nbsp;</td>
+				</tr>
 				<#if files?has_content>	
 					<#list files as script>
 						<tr>
@@ -125,7 +139,7 @@
 							</td>
 							<td class="ellipsis" title="${(script.description)!}">${(script.description)!}</td>
 							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if></td>
-							<td>${script.revision}</td>  
+							<td>${script.revision}</td>
 							<td>
 								<#if script.fileType != "dir">
 									<#assign floatSize = script.fileSize?number/1024>${floatSize?string("0.##")}

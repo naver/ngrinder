@@ -83,7 +83,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 * Validate the script.
 	 * 
 	 * @param user
-	 *            user
+	 *            current user
 	 * @param fileEntry
 	 *            fileEntry
 	 * @param hostString
@@ -227,7 +227,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 * Download file entry of given path.
 	 * 
 	 * @param user
-	 *            user
+	 *            current user
 	 * @param path
 	 *            user
 	 * @param response
@@ -274,7 +274,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 * Search files on the query.
 	 * 
 	 * @param user
-	 *            user
+	 *            current user
 	 * @param query
 	 *            query string
 	 * @param model
@@ -301,7 +301,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 * Save fileEntry and return the the path.
 	 * 
 	 * @param user
-	 *            user
+	 *            current user
 	 * @param path
 	 *            path to which this will forward.
 	 * @param fileEntry
@@ -339,7 +339,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 * Upload files.
 	 * 
 	 * @param user
-	 *            yser
+	 *            current user
 	 * @param path
 	 *            path
 	 * @param description
