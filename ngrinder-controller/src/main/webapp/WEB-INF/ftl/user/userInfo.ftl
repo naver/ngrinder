@@ -69,6 +69,49 @@
 					data-original-title="<@spring.message "user.info.form.phone"/>">
 			</div>
 		</div>
+		<#if user?exists && user.userId == currentUser.userId>
+		<style>
+			div.div-shared {
+				border: 1px solid #D6D6D6;
+				height: 70px;
+				width: 300px;
+				overflow-y: scroll;
+				border-radius: 3px 3px 3px 3px;
+				background-color: white;
+			}
+			
+			div.div-shared .user {
+				color: #666666;
+				display: inline-block;
+				margin-left: 7px;
+				margin-top: 2px;
+				margin-bottom: 2px;
+			}
+			
+			div.div-shared .user input{
+				vertical-align: top;
+			}
+		</style>
+		<div class="control-group" >
+			<label class="control-label">Share To</label>
+			<div class="controls">
+				<div id="sharedUser" class="div-shared">
+					<p class="user">
+						<input type="checkbox" value="A"> alex
+					</p>
+					<p class="user">
+						<input type="checkbox" value="b"> matt
+					</p>
+					<p class="user">
+						<input type="checkbox" value="Asdfs"> tom
+					</p>
+					<p class="user">
+						<input type="checkbox" value="Awdfra"> lucy
+					</p>
+				</div>
+			</div>
+		</div>
+		</#if>
   		<div class="control-group">
               <div class="accordion-heading"> 
                 <a class="accordion-toggle" data-toggle="collapse" href="#user_password_head" id="user_pw_head" style="padding: 8px 0"> 
