@@ -102,29 +102,16 @@ public class AgentController implements Agent {
 	 * 
 	 * @param eventSyncCondition
 	 *            event sync condition to wait until agent start to run.
-	 * 
+	 * @param current ip current ip
 	 * @throws GrinderException
 	 *             If an error occurs.
 	 */
-	public AgentController(Condition eventSyncCondition) throws GrinderException {
+	public AgentController(Condition eventSyncCondition, String currentIp) throws GrinderException {
 
 		m_eventSyncCondition = eventSyncCondition;
 		m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, LOGGER);
-		m_agentIdentity = new AgentControllerIdentityImplementation(getHostName(), getHostAddress());
+		m_agentIdentity = new AgentControllerIdentityImplementation(getHostName(), currentIp);
 		agentSystemDataCollector.refresh();
-	}
-
-	/**
-	 * Get host address.
-	 * 
-	 * @return ip form of host address
-	 */
-	private String getHostAddress() {
-		try {
-			return InetAddress.getLocalHost().getHostAddress();
-		} catch (UnknownHostException e) {
-			return "UNNAMED HOST ADDRESS";
-		}
 	}
 
 	/**

@@ -22,7 +22,11 @@
  */
 package net.grinder.util;
 
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
 
 /**
@@ -33,6 +37,45 @@ import java.net.UnknownHostException;
  * 
  */
 public abstract class NetworkUtil {
+	/**
+	 * Get the local host address by trying to connect given host..
+	 * 
+	 * @param byConnecting
+	 *            connecting host
+	 * @param port
+	 *            connecting port
+	 * @return ip form of host address
+	 */
+	public static String getLocalHostAddress(String byConnecting, int port) {
+		Socket s = null;
+		Socket s2 = null;
+
+		try {
+			s = new Socket();
+			SocketAddress addr = new InetSocketAddress(byConnecting, port);
+			s.connect(addr, 1000); // 1 seconds timeout
+			return s.getLocalAddress().getHostAddress();
+		} catch (IOException e) {
+			// For safety.
+			try {
+				s2 = new Socket();
+				SocketAddress addr = new InetSocketAddress("www.google.com", 80);
+				s2.connect(addr, 1000); // 1 seconds timeout
+				return s2.getLocalAddress().getHostAddress();
+			} catch (Exception e1) {
+				try {
+					return InetAddress.getLocalHost().getHostAddress();
+				} catch (UnknownHostException e2) {
+					return "127.0.0.1";
+				}
+			}
+		} finally {
+			NetworkUtil.closeQuitely(s);
+			NetworkUtil.closeQuitely(s2);
+
+		}
+	}
+
 	/**
 	 * Get local host name.
 	 * 
@@ -58,6 +101,21 @@ public abstract class NetworkUtil {
 			return InetAddress.getAllByName(host);
 		} catch (UnknownHostException e) {
 			return new InetAddress[] {};
+		}
+	}
+
+	/**
+	 * Close socket quietly.
+	 * 
+	 * @param s
+	 *            socket
+	 */
+	public static void closeQuitely(Socket s) {
+		if (s != null) {
+			try {
+				s.close();
+			} catch (IOException e) {
+			}
 		}
 	}
 }

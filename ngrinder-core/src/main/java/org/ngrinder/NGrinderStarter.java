@@ -37,6 +37,7 @@ import java.util.Map.Entry;
 
 import net.grinder.AgentControllerDaemon;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
+import net.grinder.util.NetworkUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -157,7 +158,7 @@ public class NGrinderStarter {
 		String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
 		LOG.info("with console: {}:{}", consoleIP, consolePort);
 		try {
-			agentController = new AgentControllerDaemon();
+			agentController = new AgentControllerDaemon(NetworkUtil.getLocalHostAddress(consoleIP, consolePort));
 			agentController.setRegion(region);
 			agentController.setAgentConfig(agentConfig);
 			agentController.run(consoleIP, consolePort);
