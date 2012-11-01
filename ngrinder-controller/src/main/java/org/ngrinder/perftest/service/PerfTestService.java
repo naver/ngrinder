@@ -349,9 +349,11 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING, reason);
 	}
 
-	
-	/* (non-Javadoc)
-	 * @see org.ngrinder.service.IPerfTestService#markStatusAndProgress(org.ngrinder.model.PerfTest, org.ngrinder.model.Status, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ngrinder.service.IPerfTestService#markStatusAndProgress(org.ngrinder.model.PerfTest,
+	 * org.ngrinder.model.Status, java.lang.String)
 	 */
 	@Transactional
 	@Override
@@ -576,18 +578,19 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return custom class path.
 	 */
 	public String getCustomClassPath(PerfTest perfTest) {
-		File perfTestDirectory = getPerfTestDirectory(perfTest);
+		File perfTestDirectory = getPerfTestDistributionPath(perfTest);
 		File libFolder = new File(perfTestDirectory, "lib");
 
 		final StringBuffer customClassPath = new StringBuffer();
 		customClassPath.append(".");
 		if (libFolder.exists()) {
-			customClassPath.append(File.pathSeparator).append("lib");
+			customClassPath.append(":").append("lib");
 			libFolder.list(new FilenameFilter() {
+				
 				@Override
 				public boolean accept(File dir, String name) {
 					if (name.endsWith(".jar")) {
-						customClassPath.append(File.pathSeparator).append("lib/").append(name);
+						customClassPath.append(":").append("lib/").append(name);
 					}
 					return true;
 				}

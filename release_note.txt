@@ -1,3 +1,9 @@
+3.0.1 (2012.10.31)
+- Hot fix for nGrinder 3.0
+Bug
+[NGRINDER-331] - Jar classpath is not passed to the agents
+
+
 3.0 (2012.10.29)
 - First Official Version
 
