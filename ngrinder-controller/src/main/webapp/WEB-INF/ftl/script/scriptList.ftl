@@ -14,7 +14,7 @@
 			<table style="width:100%">
 				<tr>
 					<td>
-						<table  style="width:100%">
+						<table style="width:100%">
 							<colgroup>
 								<col width="400px"/>
 								<col width="540px"/>
@@ -101,20 +101,6 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<td><input type="checkbox" disabled></td>
-					<td><i class="icon-folder-open"></i></td>
-					<td>
-						<a href="#" target="_self"><@spring.message "script.list.table.sample"/></a>
-					</td>
-					<td class="ellipsis">
-						<@spring.message "script.list.message.sample"/>
-					</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-				</tr>
 				<#if files?has_content>	
 					<#list files as script>
 						<tr>
