@@ -21,22 +21,11 @@
 				                <li><a href="${req.getContextPath()}/agent/list"><@spring.message "navigator.dropdown.agentManagement"/></a></li>
 				                <li><a href="${req.getContextPath()}/operation/log"><@spring.message "navigator.dropdown.logMonitoring"/></a></li>
 				                <li><a href="${req.getContextPath()}/operation/scriptConsole"><@spring.message "navigator.dropdown.scriptConsole"/></a></li>  
-			                	<li><a href="${req.getContextPath()}/operation/testOptionConfig"><@spring.message "navigator.dropdown.testOptionConfig"/></a></li>
 			            	</@security.authorize>
 		                	<li class="divider"/> 
 			          		<li><a href="${req.getContextPath()}/logout"><@spring.message "navigator.dropdown.signout"/></a></li>
 		            	</ul>
 		            </li>
-					<li class="divider-vertical"></li>
-					<li class="dropdown">
-						<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">${(currentUser.userId)!} (Identity UserName)<b class="caret"></b></a>
-						<ul class="dropdown-menu">
-							<li class="nav-header">change identity to</li>
-							<li><a href-"#">Me (${(currentUser.userId)!})</a></lil>
-							<li><a href="#">alex</a></li>
-							<li><a href="#">matt</a></li>
-						</ul>
-					</li>
 					<li class="divider-vertical"></li>
 					<li><a href="http://www.cubrid.org/wiki_ngrinder/entry/user-guide"><@spring.message "navigator.help"/></a></li>
          		</ul>      		    
