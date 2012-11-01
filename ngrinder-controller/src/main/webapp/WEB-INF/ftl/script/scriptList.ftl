@@ -14,7 +14,7 @@
 			<table style="width:100%">
 				<tr>
 					<td>
-						<table  style="width:100%">
+						<table style="width:100%">
 							<colgroup>
 								<col width="400px"/>
 								<col width="540px"/>
