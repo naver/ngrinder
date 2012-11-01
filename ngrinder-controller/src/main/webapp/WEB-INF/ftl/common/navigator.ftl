@@ -21,7 +21,6 @@
 				                <li><a href="${req.getContextPath()}/agent/list"><@spring.message "navigator.dropdown.agentManagement"/></a></li>
 				                <li><a href="${req.getContextPath()}/operation/log"><@spring.message "navigator.dropdown.logMonitoring"/></a></li>
 				                <li><a href="${req.getContextPath()}/operation/scriptConsole"><@spring.message "navigator.dropdown.scriptConsole"/></a></li>  
-				                <li><a href="${req.getContextPath()}/operation/testOptionConfig"><@spring.message "navigator.dropdown.testOptionConfig"/></a></li>
 			            	</@security.authorize>
 		                	<li class="divider"/>
 			          		<li><a href="${req.getContextPath()}/logout"><@spring.message "navigator.dropdown.signout"/></a></li>
