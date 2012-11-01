@@ -87,22 +87,26 @@
 				margin-top: 2px;
 				margin-bottom: 2px;
 			}
+			
+			div.div-shared .user input{
+				vertical-align: top;
+			}
 		</style>
 		<div class="control-group" >
-			<label class="control-label">Share User</label>
+			<label class="control-label">Share To</label>
 			<div class="controls">
 				<div id="sharedUser" class="div-shared">
 					<p class="user">
-						<input type="checkbox" class="share su_A" value="A"> A
+						<input type="checkbox" value="A"> alex
 					</p>
 					<p class="user">
-						<input type="checkbox" class="share su_b" value="b"> b
+						<input type="checkbox" value="b"> matt
 					</p>
 					<p class="user">
-						<input type="checkbox" class="share su_Asdfs" value="Asdfs"> Asdfs
+						<input type="checkbox" value="Asdfs"> tom
 					</p>
 					<p class="user">
-						<input type="checkbox" class="share su_Awdfra" value="Awdfra"> Awefra
+						<input type="checkbox" value="Awdfra"> lucy
 					</p>
 				</div>
 			</div>

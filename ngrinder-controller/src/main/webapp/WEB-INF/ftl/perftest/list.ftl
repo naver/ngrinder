@@ -67,12 +67,9 @@
 						</tr> 
 					</table>
 				</div>
-
 				<div class="pull-right"> 
 					<code id="currentRunning" style="width:300px"></code>
 				</div>
-				
-				
 				<table class="table table-striped table-bordered ellipsis" id="testTable" style="width:940px">  
 					<colgroup>
 						<col width="30">
@@ -268,11 +265,6 @@
 				getList(1);
 			});
 			</#if>
-			
-			$("#currentRunning").click(function() {
-				$("#currentRunningDiv").toggle();
-			});
- 
 		});
 		
 		function deleteTests(ids) {
