@@ -233,7 +233,7 @@
                     	var rs = true;
                     	
                     	if (res.SystemData.cpu == undefined) {
-                    		showWarning("<@spring.message "perfTest.report.message.noMonitorData"/>");
+                    		showErrorMsg("<@spring.message "perfTest.report.message.noMonitorData"/>");
                     		res.SystemData.cpu = [0];
                     		res.SystemData.memory = [0];
                     		rs = false;

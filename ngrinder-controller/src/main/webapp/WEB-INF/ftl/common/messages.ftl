@@ -1,13 +1,15 @@
 <div class="alert messageDiv hidden" id="messageDiv"></div>
-<div class="alert messageDiv alert-error hidden" id="errorDiv">
-	<button class="close" id="errorDivBtn">&times;</button>
+<div class="alert messageDiv alert-error hidden" id="errorMsgDiv">
+	<button class="close" id="errorMsgDivBtn">&times;</button>
 	<h4 class="alert-heading">Error!</h4>
 	<span></span>
 </div>
 <script type="text/javascript">
 	$(document).ready(function() {
-		$("#errorDivBtn").click(function() {
-			$("#errorDiv").fadeOut('fast');
+		$("#errorMsgDivBtn").click(function() {
+			var $div = $("#errorMsgDiv");
+			$div.fadeOut(100);
+			$div.children("span").html("");
 		});
 	});
 	
@@ -36,9 +38,9 @@
 	}
 	
 	function showErrorMsg(message) {
-		var $div = $("#errorDiv");
+		var $div = $("#errorMsgDiv");
 		$div.hide();
 		$div.children("span").html(message);
-		$div.fadeIn("fast");
+		$div.fadeIn(100);
 	}
 </script>
