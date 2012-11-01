@@ -73,7 +73,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		allPerfTest.get(0).setScriptName("/hello/world.py");
 		allPerfTest.get(0).setDuration(30000L);
 		perfTestService.savePerfTest(testUser, allPerfTest.get(0));
-		agentControllerDaemon = new AgentControllerDaemon();
+		agentControllerDaemon = new AgentControllerDaemon("127.0.0.1");
 		agentControllerDaemon.setAgentConfig(agentConfig1);
 		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 
