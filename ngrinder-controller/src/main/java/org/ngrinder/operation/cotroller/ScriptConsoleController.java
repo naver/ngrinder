@@ -23,6 +23,10 @@
 package org.ngrinder.operation.cotroller;
 
 import java.io.ByteArrayOutputStream;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryPoolMXBean;
+import java.lang.management.MemoryUsage;
+import java.util.Iterator;
 
 import javax.annotation.PostConstruct;
 
@@ -85,10 +89,10 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 
 	@Autowired
 	private PluginManager pluginManager;
-	
+
 	@Autowired
 	private TagService tagService;
-	
+
 	private PythonInterpreter interp;
 
 	/**
@@ -97,8 +101,18 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	 */
 	@PostConstruct
 	public void init() {
-		interp = new PythonInterpreter();
-		intVars(interp);
+		Iterator<MemoryPoolMXBean> iter = ManagementFactory.getMemoryPoolMXBeans().iterator();
+		MemoryUsage usage = null;
+		while (iter.hasNext()) {
+			MemoryPoolMXBean item = (MemoryPoolMXBean) iter.next();
+			if ("Perm Gen".equalsIgnoreCase(item.getName())) {
+				usage = item.getUsage();
+			}
+		}
+		if (usage != null) {
+			interp = new PythonInterpreter();
+			intVars(interp);
+		}
 	}
 
 	protected void intVars(PythonInterpreter interp) {
@@ -167,7 +181,6 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 		}
 	}
 
-	
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;

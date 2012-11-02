@@ -265,6 +265,10 @@
 				getList(1);
 			});
 			</#if>
+			
+			$("#currentRunning").click(function() {
+				$("#currentRunningDiv").toggle();
+			});
 		});
 		
 		function deleteTests(ids) {

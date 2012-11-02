@@ -56,12 +56,12 @@ public class NGrinderPluginUserDetailsServiceTest extends AbstractNGrinderTransa
 		when(auth.getCredentials()).thenReturn("world");
 
 		when(manager.getEnabledModulesByClass(any(OnLoginRunnable.class.getClass()), any(OnLoginRunnable.class)))
-				.thenReturn(new ArrayList<OnLoginRunnable>() {
-					{
-						add(defaultLoginPlugin);
-						add(mockLoginPlugin);
-					}
-				});
+						.thenReturn(new ArrayList<OnLoginRunnable>() {
+							{
+								add(defaultLoginPlugin);
+								add(mockLoginPlugin);
+							}
+						});
 
 		// When user is return by plugin module.
 		User user = new User();
@@ -69,6 +69,7 @@ public class NGrinderPluginUserDetailsServiceTest extends AbstractNGrinderTransa
 		user.setUserId("hello");
 		user.setEmail("helloworld@gmail.com");
 		user.setRole(Role.SUPER_USER);
+		user.setAuthProviderClass(mockLoginPlugin.getClass().getName());
 		when(mockLoginPlugin.loadUser("hello")).thenReturn(user);
 		when(mockLoginPlugin.validateUser(anyString(), anyString(), anyString(), any(), any())).thenReturn(true);
 
@@ -87,5 +88,4 @@ public class NGrinderPluginUserDetailsServiceTest extends AbstractNGrinderTransa
 		// verify(authProvider, times(0)).addNewUserIntoLocal(any(SecuredUser.class));
 
 	}
-
 }

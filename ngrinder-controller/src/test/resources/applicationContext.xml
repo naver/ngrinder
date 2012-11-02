@@ -16,7 +16,6 @@
 	</context:component-scan>
 
 	<import resource="applicationContext-springdata.xml" />
-	<import resource="applicationContext-security.xml" />
 	<import resource="applicationContext-ehcache.xml" />
 	<import resource="applicationContext-external.xml" />
 	<import resource="applicationContext-message.xml" />

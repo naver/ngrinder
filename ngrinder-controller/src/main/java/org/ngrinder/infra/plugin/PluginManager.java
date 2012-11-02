@@ -87,7 +87,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	@Autowired
 	private Config config;
 
-	@Autowired
+	@Autowired(required=false)
 	private AuthenticationManager authenticationManager;
 
 	@Autowired

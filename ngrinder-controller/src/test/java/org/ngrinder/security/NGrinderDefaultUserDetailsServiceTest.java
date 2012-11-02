@@ -2,6 +2,7 @@ package org.ngrinder.security;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -32,7 +33,7 @@ public class NGrinderDefaultUserDetailsServiceTest extends AbstractNGrinderTrans
 		// Default should be resolved by DefaultLoginPlugins
 		assertThat("admin should not be null", loadUserByUsername, notNullValue());
 		assertThat("default user(admin) should be retrieved from DefaultLoginPlugin",
-				loadUserByUsername.getUserInfoProviderClass(), is(DefaultLoginPlugin.class.getName()));
+						loadUserByUsername.getUserInfoProviderClass(), nullValue());
 	}
 
 	@Test
@@ -41,7 +42,7 @@ public class NGrinderDefaultUserDetailsServiceTest extends AbstractNGrinderTrans
 		UserDetails user = null;
 		try {
 			user = userDetailsService.loadUserByUsername("unknown22");
-		} catch(Exception e) {
+		} catch (Exception e) {
 			return;
 		}
 		fail("Exception should occus " + ToStringBuilder.reflectionToString(user));

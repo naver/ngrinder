@@ -3,6 +3,8 @@ package net.grinder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
+import java.lang.reflect.Field;
 import java.util.Set;
 
 import net.grinder.common.GrinderProperties;
@@ -22,13 +24,34 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 
 	@Before
 	public void before() {
+		File file = new File(new File("."), "native_lib");
+		System.setProperty("java.library.path", file.getAbsolutePath());
+		// set sys_paths to null
+		Field sysPathsField = null;
+		try {
+			sysPathsField = ClassLoader.class.getDeclaredField("sys_paths");
+			sysPathsField.setAccessible(true);
+			sysPathsField.set(null, null);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		agentControllerServerDeamon = new AgentControllerServerDaemon(getFreePort());
 		agentControllerServerDeamon.start();
 
-		agentControllerDaemon = new AgentControllerDaemon();
+		agentControllerDaemon = new AgentControllerDaemon("127.0.0.1");
 		agentControllerDaemon.setAgentConfig(agentConfig1);
 		agentControllerDaemon.run(agentControllerServerDeamon.getPort());
-		agentControllerDaemon2 = new AgentControllerDaemon();
+		agentControllerDaemon2 = new AgentControllerDaemon("127.0.0.1");
 		agentControllerDaemon2.setAgentConfig(agentConfig2);
 		agentControllerDaemon2.run(agentControllerServerDeamon.getPort());
 		sleep(2000);
@@ -62,7 +85,7 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 		agentControllerServerDeamon.start();
 		sleep(3000);
 
-		// all agent should be reattached
+		// all agent should be re-attached
 		allAvailableAgents = agentControllerServerDeamon.getAllAvailableAgents();
 		assertThat(allAvailableAgents.size(), is(2));
 	}

@@ -237,7 +237,7 @@ public class PerfTestController extends NGrinderBaseController {
 	protected int getMaxAgentSizePerConsole(User user) {
 		Set<AgentIdentity> allSharedAgent = agentManager.getAllSharedAgents();
 		Set<AgentIdentity> allApprovedAgentsForUser = agentManager.getAllApprovedAgents(user);
-		int additional = allSharedAgent.size() - allApprovedAgentsForUser.size();
+		int additional = Math.max(allApprovedAgentsForUser.size() - allSharedAgent.size(), 0);
 		int maxAgentSizePerConsole = Math.min(agentManager.getMaxAgentSizePerConsole() + additional,
 						allApprovedAgentsForUser.size());
 		return maxAgentSizePerConsole;

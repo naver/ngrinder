@@ -25,6 +25,10 @@
 				margin-top:-25px;
 				margin-right:67px 
 			}
+			
+			.CodeMirror-scroll {
+			    height: 500px !important;   
+			}
 		</style>
 	</head>
 
@@ -34,7 +38,7 @@
 		<div class="row">
 			<div class="span12">
 				<form id="contentForm" method="post" target="_self" style="margin-bottom: 0px;"> 	
-					<div class="well" style="margin-bottom: 10px;">
+					<div class="well" style="margin-bottom: 0px;">
 						<div class="form-horizontal">
 							<fieldset>
 								<div class="control-group">
@@ -52,9 +56,8 @@
 													<input type="text" id="scriptNameInput" class="span6" name="path" value="${(file.path)!}" readonly/>
 												</td>
 												<td>
-													<a class="btn btn-info" href="#scriptSampleModal" data-toggle="modal" id="sampleBtn" style="margin-left:0; width:48px;">Sample</a>
-													<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="width:39px;"><@spring.message "common.button.save"/></a>
-													<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:90px;"><@spring.message "script.editor.button.validate"/></a>
+													<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:83px; width:35px;"><@spring.message "common.button.save"/></a>
+													<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:85px;"><@spring.message "script.editor.button.validate"/></a>
 												</td>
 											</tr> 
 										</table>
@@ -82,15 +85,16 @@
 							</fieldset>
 						</div>
 					</div>
-					
+					<input type="hidden" id="contentHidden" name="content" value=""/>
 					<input type="hidden" id="createLibAndResource" name="createLibAndResource" value="<#if createLibAndResource?? && createLibAndResource==true>true<#else>false</#if>"/>
 					<@security.authorize ifAnyGranted="A, S">
 						<#if ownerId??>					
 							<input type="hidden" id="ownerId" name="ownerId" value="${ownerId}"/>
 						</#if>
 					</@security.authorize>
-					<textarea id="codemirrorContent" name="content">${(file.content)!}</textarea>
+
 				</form>
+				<textarea id="codemirrorContent" style="width:930px; margin-top:10px;z-index:100">${(file.content)!}</textarea>
 				<div class="pull-right" rel="popover" style="position:float;margin-top:-20px;margin-right:-30px" data-original-title="Tip" data-content="
 			      Ctrl-F / Cmd-F : <@spring.message "script.editor.tip.startSearching"/>&lt;br&gt; 
 			      Ctrl-G / Cmd-G : <@spring.message "script.editor.tip.findNext"/>&lt;br&gt;
@@ -106,62 +110,38 @@
 				</pre>
 			</div>
 		</div>
-		<div class="modal fade" id="scriptSampleModal">
-			<div class="modal-header">
-				<a class="close" data-dismiss="modal" id="createCloseBtn">&times;</a>
-				<h3>Script Sample List</h3>
-			</div>
-			<div class="modal-body">
-				<div class="alert" style="margin-bottom:5px">
-					<!--<button type="button" class="close" data-dismiss="alert">&times;</button>-->
-					<strong>Warning!</strong> Click sample will use its content to rewrite your script editor.
-				</div>
-				<table class="table table-striped table-bordered ellipsis" id="sampleTable" style="width: 100%">
-					<colgroup>
-						<col width="180"> 
-						<col>
-					</colgroup> 
-					<thead>
-						<tr>
-							<th><@spring.message "perfTest.table.scriptName"/></th>
-							<th class="noClick"><@spring.message "common.label.description"/></th>
-						</tr>
-					</thead>
-					<tbody>
-						<!-- demo -->
-						<tr>
-							<td  class="ellipsis">
-								<a href="javascript:void(0);" class="sample" title="Sample1.py" sname="Sample1.py">Sample1.py</a>
-							</td>
-							<td class="ellipsis" title="This is a demo.">This is a demo.</td>
-						</tr>
-						<#if sampleFiles?has_content>
-							<#list sampleFiles as script>
-								<tr>
-									<td class="ellipsis" title="${script.fileName}">
-										<a href="${req.getContextPath()}/script/detail/${script.path}" target="_self">${script.fileName}</a>
-									</td>
-									<td class="ellipsis" title="${(script.description)!}">${(script.description)!}</td>
-								</tr>
-							</#list>
-						<#else>
-							<tr>
-								<td colspan="2" class="center">
-									<@spring.message "common.message.noData"/>
-								</td>
-							</tr>
-						</#if>		
-					</tbody>
-				</table>
-			</div>
-		</div>
-		<#include "../common/copyright.ftl">
+		<#include "../common/copyright.ftl">	
 	</div>
-	
-	<#include "../common/codemirror.ftl">
+	<script src="${req.getContextPath()}/plugins/codemirror/codemirror.js" type="text/javascript" charset="utf-8"></script>
+	<link rel="stylesheet" href="${req.getContextPath()}/plugins/codemirror/codemirror.css"/>
+	<link rel="stylesheet" href="${req.getContextPath()}/plugins/codemirror/eclipse.css">
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/python.js"></script>
-    <#include "../common/datatables.ftl">
+	<script src="${req.getContextPath()}/plugins/codemirror/util/dialog.js"></script>	
+    <link rel="stylesheet" href="${req.getContextPath()}/plugins/codemirror/util/dialog.css">
+    <script src="${req.getContextPath()}/plugins/codemirror/util/searchcursor.js"></script>
+    <script src="${req.getContextPath()}/plugins/codemirror/util/search.js"></script>
+    <script src="${req.getContextPath()}/plugins/codemirror/util/foldcode.js"></script> 
+    
     <script>
+    	function isFullScreen(cm) {
+	      return /\bCodeMirror-fullscreen\b/.test(cm.getWrapperElement().className);
+	    }
+	    function winHeight() {
+	      return window.innerHeight || (document.documentElement || document.body).clientHeight;
+	    }
+	    function setFullScreen(cm, full) {
+	      var wrap = cm.getWrapperElement(), scroll = cm.getScrollerElement();
+	      if (full) {
+	        wrap.className += " CodeMirror-fullscreen";
+	        scroll.style.height = winHeight() + "px";
+	        document.documentElement.style.overflow = "hidden";
+	      } else {
+	        wrap.className = wrap.className.replace(" CodeMirror-fullscreen", "");
+	        scroll.style.height = "";
+	        document.documentElement.style.overflow = "";
+	      }
+	      cm.refresh(); 
+	    }
     	$(document).ready(function() {
 			var editor = CodeMirror.fromTextArea(document.getElementById("codemirrorContent"), {
 			   mode: "python",
@@ -187,9 +167,9 @@
 			   }
 			});
 			var hlLine = editor.setLineClass(0, "activeline");
-
+			
 			$("#saveBtn").click(function() {
-				$('#codemirrorContent').text(editor.getValue());
+				$('#contentHidden').val(editor.getValue());
 				document.forms.contentForm.action = "${req.getContextPath()}/script/save";
 				document.forms.contentForm.submit();
 			});
@@ -220,25 +200,6 @@
 			  	});
 			});
 			
-			$("a.sample").click(function() {
-				var sampleName = $(this).attr("sname");
-				editor.setValue(sampleName + " content.");
-				$("#scriptSampleModal").modal("hide");
-				return true;
-				$.ajax({
-			  		url: "${req.getContextPath()}/script/sample",
-			    	async: true,
-			    	type: "POST",
-					data: {'sampleName': sampleName},
-			    	success: function(res) {
-						editor.setValue(res);
-						$("#scriptSampleModal").modal("hide");
-			    	},
-			    	error: function() {
-			    		showErrorMsg("Copy script sample error.");
-			    	}
-			  	});
-			});
 			
 	      $("#contentForm").validate({
 	          rules: {
@@ -266,25 +227,6 @@
 	          }
 	      });
 	      
-	      <#if sampleFiles?has_content>
-			$("#sampleTable").dataTable({
-				"bAutoWidth": false,
-				"bFilter": false,
-				"bLengthChange": false,
-				"bInfo": false,
-				"iDisplayLength": 5, 
-				"aaSorting": [],
-				"aoColumns": [null, {"asSorting": []}],
-				"sPaginationType": "bootstrap",
-				"oLanguage": {
-					"oPaginate": {
-						"sPrevious": "<@spring.message "common.paging.previous"/>",
-						"sNext": "<@spring.message "common.paging.next"/>"
-					}
-				}
-			});
-			$(".noClick").off('click');
-	      </#if>
 		});
 		</script>
 	</body>
