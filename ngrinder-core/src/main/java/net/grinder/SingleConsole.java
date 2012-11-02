@@ -190,7 +190,9 @@ public class SingleConsole implements Listener, SampleListener {
 	 */
 	public SingleConsole(String ip, int port, ConsoleProperties consoleProperties) {
 		try {
-			consoleProperties.setConsoleHost(ip);
+			if (StringUtils.isNotEmpty(ip)) {
+				consoleProperties.setConsoleHost(ip);
+			}
 			consoleProperties.setConsolePort(port);
 			this.consoleFoundation = new ConsoleFoundationEx(RESOURCE, LOGGER, consoleProperties, eventSyncCondition);
 
@@ -232,7 +234,7 @@ public class SingleConsole implements Listener, SampleListener {
 			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress.getLocalHost()
 							.getHostAddress());
 		} catch (UnknownHostException e) {
-			return "";
+			return "127.0.0.1";
 		}
 	}
 
@@ -603,6 +605,7 @@ public class SingleConsole implements Listener, SampleListener {
 								mutableDouble = new MutableDouble(0);
 								totalValueMap.put(each.getKey(), mutableDouble);
 							}
+							// FIXME : It should be fixed. in case of Mean Test Time.. adding value does not make sense.
 							mutableDouble.add((Double) val);
 						} else if (String.valueOf(val).equals("null")) {
 							// if it is null, just assume it is 0.

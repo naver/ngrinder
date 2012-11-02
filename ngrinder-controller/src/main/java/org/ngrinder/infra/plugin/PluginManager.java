@@ -162,14 +162,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	public void onPluginFrameworkStart(PluginFrameworkStartedEvent event) {
 		for (OnControllerLifeCycleRunnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(
 						OnControllerLifeCycleRunnable.class)) {
-			String ip = "";
-			try {
-				InetAddress addr = InetAddress.getLocalHost();
-				ip = addr.getHostAddress();
-			} catch (UnknownHostException e) {
-				noOp();
-			}
-			runnable.start(ip, this.config.getVesion());
+			runnable.start(config.getCurrentIP(), this.config.getVesion());
 		}
 	}
 
@@ -183,14 +176,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	public void onPluginFrameworkShutdown(PluginFrameworkShutdownEvent event) {
 		for (OnControllerLifeCycleRunnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(
 						OnControllerLifeCycleRunnable.class)) {
-			String ip = "";
-			try {
-				InetAddress addr = InetAddress.getLocalHost();
-				ip = addr.getHostAddress();
-			} catch (UnknownHostException e) {
-				noOp();
-			}
-			runnable.finish(ip, this.config.getVesion());
+			runnable.finish(config.getCurrentIP(), this.config.getVesion());
 		}
 	}
 

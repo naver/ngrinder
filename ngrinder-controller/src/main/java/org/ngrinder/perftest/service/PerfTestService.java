@@ -1002,16 +1002,16 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		ConsoleProperties consoleProperties = ConsolePropertiesFactory.createEmptyConsoleProperties();
 		try {
 			consoleProperties.setAndSaveDistributionDirectory(new Directory(getPerfTestDistributionPath(perfTest)));
+			consoleProperties.setConsoleHost(config.getCurrentIP());
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("Error while setting console properties", e);
 		}
 		return consoleProperties;
 	}
 
-	double parseDoubleWithSafety(Map map, Object key, Double defaultValue) {
+	double parseDoubleWithSafety(Map<?,?> map, Object key, Double defaultValue) {
 		Double doubleValue = MapUtils.getDouble(map, key, defaultValue);
-		double round = Math.round(doubleValue * 100D) / 100D;
-		return round;
+		return Math.round(doubleValue * 100D) / 100D;
 	}
 
 	/**

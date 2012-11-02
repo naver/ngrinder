@@ -34,6 +34,8 @@ import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 
+import net.grinder.util.NetworkUtil;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -68,7 +70,7 @@ public class Config implements IConfig {
 	private PropertiesWrapper databaseProperties;
 	private static String versionString = "";
 	private boolean verbose;
-
+	private String currentIP;
 	/**
 	 * Make it singleton.
 	 */
@@ -88,6 +90,7 @@ public class Config implements IConfig {
 			loadIntrenalProperties();
 			loadSystemProperties();
 			initLogger(isTestMode());
+			currentIP = NetworkUtil.getLocalHostAddress("www.github.com", 80);
 			CoreLogger.LOGGER.info("NGrinder is starting...");
 			loadDatabaseProperties();
 			versionString = getVesion();
@@ -320,4 +323,9 @@ public class Config implements IConfig {
 	public boolean isVerbose() {
 		return verbose;
 	}
+
+	public String getCurrentIP() {
+		return currentIP;
+	}
+
 }
