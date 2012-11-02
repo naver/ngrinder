@@ -45,8 +45,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.StringReader;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -578,19 +576,18 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return custom class path.
 	 */
 	public String getCustomClassPath(PerfTest perfTest) {
-		File perfTestDirectory = getPerfTestDistributionPath(perfTest);
+		File perfTestDirectory = getPerfTestDirectory(perfTest);
 		File libFolder = new File(perfTestDirectory, "lib");
 
 		final StringBuffer customClassPath = new StringBuffer();
 		customClassPath.append(".");
 		if (libFolder.exists()) {
-			customClassPath.append(":").append("lib");
+			customClassPath.append(File.pathSeparator).append("lib");
 			libFolder.list(new FilenameFilter() {
-				
 				@Override
 				public boolean accept(File dir, String name) {
 					if (name.endsWith(".jar")) {
-						customClassPath.append(":").append("lib/").append(name);
+						customClassPath.append(File.pathSeparator).append("lib/").append(name);
 					}
 					return true;
 				}
@@ -1011,6 +1008,12 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return consoleProperties;
 	}
 
+	double parseDoubleWithSafety(Map map, Object key, Double defaultValue) {
+		Double doubleValue = MapUtils.getDouble(map, key, defaultValue);
+		double round = Math.round(doubleValue * 100D) / 100D;
+		return round;
+	}
+
 	/**
 	 * Update the given {@link PerfTest} properties after test finished.
 	 * 
@@ -1018,16 +1021,15 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            perfTest
 	 */
 	public void updatePerfTestAfterTestFinish(PerfTest perfTest) {
-		NumberFormat formatter = new DecimalFormat("###.###");
+
 		checkNotNull(perfTest);
 		Map<String, Object> result = getStatistics(perfTest.getPort());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
 		LOGGER.info("Total Statistics for test {}  is {}", perfTest.getId(), totalStatistics);
-		perfTest.setTps(Double.parseDouble(formatter.format(MapUtils.getDouble(totalStatistics, "TPS", 0D))));
-		perfTest.setMeanTestTime(Double.parseDouble(formatter.format(MapUtils.getDouble(totalStatistics,
-						"Mean_Test_Time_(ms)", 0D))));
-		perfTest.setPeakTps(Double.parseDouble(formatter.format(MapUtils.getDouble(totalStatistics, "Peak_TPS", 0D))));
+		perfTest.setTps(parseDoubleWithSafety(totalStatistics, "TPS", 0D));
+		perfTest.setMeanTestTime(parseDoubleWithSafety(totalStatistics, "Mean_Test_Time_(ms)", 0D));
+		perfTest.setPeakTps(parseDoubleWithSafety(totalStatistics, "Peak_TPS", 0D));
 		perfTest.setTests(MapUtils.getDouble(totalStatistics, "Tests", 0D).intValue());
 		perfTest.setErrors(MapUtils.getDouble(totalStatistics, "Errors", 0D).intValue());
 
