@@ -67,6 +67,7 @@ import com.atlassian.plugin.main.PluginsConfigurationBuilder;
 import com.atlassian.plugin.osgi.container.impl.DefaultPackageScannerConfiguration;
 import com.atlassian.plugin.osgi.hostcomponents.ComponentRegistrar;
 import com.atlassian.plugin.osgi.hostcomponents.HostComponentProvider;
+import com.google.common.net.InetAddresses;
 
 /**
  * Plugin manager which is responsible to initialize the plugin infra.<br/>
@@ -164,7 +165,8 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 						OnControllerLifeCycleRunnable.class)) {
 			runnable.start(config.getCurrentIP(), this.config.getVesion());
 		}
-	}
+	} 
+	
 
 	/**
 	 * Plugin Framework shutdown listener.
