@@ -1,3 +1,8 @@
+We are ACTIVE.
+==============
+* We're really active developers. So if you have any issues using nGrinder. Please let us know.
+* We promise to correct any bugs and problems within 1 week.
+
 nGrinder 
 ========
 
