@@ -9,10 +9,13 @@ nGrinder
 It is the platform of stress tests which enables you to execute script creation, test execution, monitoring, and result report generator simultaneously. The opensource nGrinder offers easy ways to conduct stress tests by eliminating inconveniences and providing integrated environments.
 
 To get to know what's different from grinder?
- * Checkout http://www.cubrid.org/wiki_ngrinder/entry/architecture!
+ * Checkout http://www.cubrid.org/wiki_ngrinder/entry/architecture !
+
+To get to know what's different from previous ngrinder 2.0?
+ * Checkout http://www.slideshare.net/junhoyoon3994/ngrinder-30-load-test-even-kids-can-do !
 
 To get started,
- * Checkout http://www.cubrid.org/wiki_ngrinder/entry/user-guide!
+ * Checkout http://www.cubrid.org/wiki_ngrinder/entry/user-guide !
 
 You can find out what nGrinder looks like with screenshot.
  * http://www.cubrid.org/wiki_ngrinder/entry/screen-shot
