@@ -576,7 +576,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return custom class path.
 	 */
 	public String getCustomClassPath(PerfTest perfTest) {
-		File perfTestDirectory = getPerfTestDirectory(perfTest);
+		File perfTestDirectory = getPerfTestDistributionPath(perfTest);
 		File libFolder = new File(perfTestDirectory, "lib");
 
 		final StringBuffer customClassPath = new StringBuffer();
@@ -1009,7 +1009,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return consoleProperties;
 	}
 
-	double parseDoubleWithSafety(Map<?,?> map, Object key, Double defaultValue) {
+	double parseDoubleWithSafety(Map<?, ?> map, Object key, Double defaultValue) {
 		Double doubleValue = MapUtils.getDouble(map, key, defaultValue);
 		return Math.round(doubleValue * 100D) / 100D;
 	}
