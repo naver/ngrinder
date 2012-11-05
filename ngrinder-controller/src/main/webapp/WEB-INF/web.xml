@@ -114,17 +114,12 @@
 	</filter-mapping>
 
 	<filter>
-		<filter-name>servletFilterPluginManager</filter-name>
+		<filter-name>pluggableServletFilter</filter-name>
 		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-		<init-param>
-			<param-name>key</param-name>
-			<param-value>value</param-value>
-		</init-param>
-		
 	</filter>
 	
 	<filter-mapping>
-		<filter-name>servletFilterPluginManager</filter-name>
+		<filter-name>pluggableServletFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 	

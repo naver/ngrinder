@@ -76,13 +76,13 @@
 
 		<intercept-url pattern="/agent/**" access="A" />
 		<intercept-url pattern="/user/**" access="A, U" />
-
+		<custom-filter ref="pluggablePreAuthFilter" position="PRE_AUTH_FILTER"/>
 		<custom-filter ref="customFilter" position="FORM_LOGIN_FILTER" />
 
 		<!-- logout to home, and then it will redirect to login. otherwise, there will be some ajax problem. -->
 		<logout logout-success-url="/" logout-url="/logout" delete-cookies="JSESSIONID" invalidate-session="true" />
 
-		<session-management invalid-session-url="/login" session-fixation-protection="migrateSession" />
+		<session-management invalid-session-url="/login" session-fixation-protection="newSession" />
 
 		<remember-me key="ngrinder" />
 	</http>
@@ -92,18 +92,18 @@
 		<beans:property name="key" value="ngrinder" />
 	</beans:bean>
 
-	<beans:bean id="preAuthProvider"
-		class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
-		<beans:property name="preAuthenticatedUserDetailsService">
-			<beans:bean id="userDetailsServiceWrapper" class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper">
-				<beans:property name="userDetailsService" ref="ngrinderUserDetailsService" />
-			</beans:bean>
-		</beans:property>
-		<beans:property name="order" value="1" />
-	</beans:bean>
+	<beans:bean id="ngrinderPreAuthProvider" class="org.ngrinder.security.NGrinderAuthenticationPreAuthProvider">
+	    <beans:property name="preAuthenticatedUserDetailsService">
+	        <beans:bean id="userDetailsServiceWrapper" class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper">
+	            <beans:property name="userDetailsService" ref="ngrinderUserDetailsService"/>
+	        </beans:bean>
+	    </beans:property>
+	    <beans:property name="userRepository" ref="userRepository"/>
+	</beans:bean> 
+
 
 	<authentication-manager alias="authenticationManager">
-		<authentication-provider ref="preAuthProvider" />
+		<authentication-provider ref="ngrinderPreAuthProvider"/>
 		<authentication-provider ref="ngrinderAuthenticationProvider" />
 	</authentication-manager>
 
