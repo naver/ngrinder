@@ -1,6 +1,7 @@
-package org.ngrinder.infra.servlet;
+package org.ngrinder.security;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.Filter;
@@ -11,6 +12,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
+import org.ngrinder.infra.plugin.OnPreAuthServletFilterModuleDescriptor;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.filter.CompositeFilter;
@@ -20,13 +22,13 @@ import com.atlassian.plugin.event.events.PluginDisabledEvent;
 import com.atlassian.plugin.event.events.PluginEnabledEvent;
 
 /**
- * Proxy filter which run combined servlet plugins.
+ * Proxy filter which run combined preauth plugins.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
-@RuntimeOnlyComponent("servletFilterPluginManager")
-public class ServletFilterPluginManager implements Filter {
+@RuntimeOnlyComponent("pluggablePreAuthFilter")
+public class PluggablePreAuthFilter implements Filter {
 	@Autowired
 	private PluginManager pluginManager;
 
@@ -34,10 +36,11 @@ public class ServletFilterPluginManager implements Filter {
 
 	/**
 	 * Initialize the servlet filter plugins.
+	 * 
 	 * @throws ServletException
 	 */
 	@PostConstruct
-	public void init()  {
+	public void init() {
 		this.compositeFilter = new CompositeFilter();
 		pluginInit();
 		pluginManager.addPluginUpdateEvent(this);
@@ -48,12 +51,15 @@ public class ServletFilterPluginManager implements Filter {
 	 * 
 	 */
 	protected void pluginInit() {
-		this.compositeFilter.setFilters(pluginManager.getEnabledModulesByClass(Filter.class));
+		List<Filter> enabledModulesByClass = pluginManager.getEnabledModulesByDescriptorAndClass(OnPreAuthServletFilterModuleDescriptor.class, Filter.class);
+		this.compositeFilter.setFilters(enabledModulesByClass);
 	}
 
 	/**
 	 * Event handler for plugin enable.
-	 * @param event event 
+	 * 
+	 * @param event
+	 *            event
 	 */
 	@PluginEventListener
 	public void onPluginEnabled(PluginEnabledEvent event) {
@@ -62,7 +68,9 @@ public class ServletFilterPluginManager implements Filter {
 
 	/**
 	 * Event handler for plugin disable.
-	 * @param event event
+	 * 
+	 * @param event
+	 *            event
 	 */
 	@PluginEventListener
 	public void onPluginDisabled(PluginDisabledEvent event) {
@@ -94,5 +102,6 @@ public class ServletFilterPluginManager implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
+		this.compositeFilter.init(filterConfig);
 	}
 }

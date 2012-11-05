@@ -214,6 +214,10 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 *            file path
 	 */
 	private void fileAccessWriteAllowed(String file) {
+		if (file != null && (file.contains("log/test_") || file.contains("log\\test_"))) {
+			return;
+		}
+		
 		String filePath = normalize(file, workDirectory);
 		for (String dir : writeAllowedDirectory) {
 			if (filePath != null && filePath.startsWith(dir)) {

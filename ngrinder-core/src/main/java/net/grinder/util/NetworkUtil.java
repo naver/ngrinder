@@ -23,11 +23,17 @@
 package net.grinder.util;
 
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.Enumeration;
 
 /**
  * Common utility for network env.
@@ -64,16 +70,44 @@ public abstract class NetworkUtil {
 				return s2.getLocalAddress().getHostAddress();
 			} catch (Exception e1) {
 				try {
-					return InetAddress.getLocalHost().getHostAddress();
-				} catch (UnknownHostException e2) {
+					return getFirstNonLoopbackAddress(true, false).getHostAddress();
+				} catch (SocketException e2) {
 					return "127.0.0.1";
 				}
+
 			}
 		} finally {
 			NetworkUtil.closeQuitely(s);
 			NetworkUtil.closeQuitely(s2);
 
 		}
+
+	}
+
+	private static InetAddress getFirstNonLoopbackAddress(boolean preferIpv4, boolean preferIPv6)
+					throws SocketException {
+		Enumeration<?> en = NetworkInterface.getNetworkInterfaces();
+		while (en.hasMoreElements()) {
+			NetworkInterface i = (NetworkInterface) en.nextElement();
+			for (Enumeration<?> en2 = i.getInetAddresses(); en2.hasMoreElements();) {
+				InetAddress addr = (InetAddress) en2.nextElement();
+				if (!addr.isLoopbackAddress()) {
+					if (addr instanceof Inet4Address) {
+						if (preferIPv6) {
+							continue;
+						}
+						return addr;
+					}
+					if (addr instanceof Inet6Address) {
+						if (preferIpv4) {
+							continue;
+						}
+						return addr;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	/**

@@ -42,6 +42,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.authentication.dao.SaltSource;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -89,6 +91,11 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	@SuppressWarnings("deprecation")
 	protected void additionalAuthenticationChecks(UserDetails userDetails,
 					UsernamePasswordAuthenticationToken authentication) {
+
+        Authentication authentication2 = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication2 != null) {
+        	return;
+        }
 		Object salt = null;
 
 		if (this.saltSource != null) {

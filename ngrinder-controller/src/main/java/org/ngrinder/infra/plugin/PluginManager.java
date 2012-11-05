@@ -23,10 +23,6 @@
 
 package org.ngrinder.infra.plugin;
 
-import static org.ngrinder.common.util.NoOp.noOp;
-
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -56,6 +52,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.context.ServletContextAware;
 
 import com.atlassian.plugin.DefaultModuleDescriptorFactory;
+import com.atlassian.plugin.ModuleDescriptor;
 import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
 import com.atlassian.plugin.event.PluginEventListener;
 import com.atlassian.plugin.event.events.PluginFrameworkShutdownEvent;
@@ -67,6 +64,7 @@ import com.atlassian.plugin.main.PluginsConfigurationBuilder;
 import com.atlassian.plugin.osgi.container.impl.DefaultPackageScannerConfiguration;
 import com.atlassian.plugin.osgi.hostcomponents.ComponentRegistrar;
 import com.atlassian.plugin.osgi.hostcomponents.HostComponentProvider;
+import com.atlassian.plugin.predicate.ModuleDescriptorPredicate;
 
 /**
  * Plugin manager which is responsible to initialize the plugin infra.<br/>
@@ -162,14 +160,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	public void onPluginFrameworkStart(PluginFrameworkStartedEvent event) {
 		for (OnControllerLifeCycleRunnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(
 						OnControllerLifeCycleRunnable.class)) {
-			String ip = "";
-			try {
-				InetAddress addr = InetAddress.getLocalHost();
-				ip = addr.getHostAddress();
-			} catch (UnknownHostException e) {
-				noOp();
-			}
-			runnable.start(ip, this.config.getVesion());
+			runnable.start(config.getCurrentIP(), this.config.getVesion());
 		}
 	}
 
@@ -183,14 +174,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	public void onPluginFrameworkShutdown(PluginFrameworkShutdownEvent event) {
 		for (OnControllerLifeCycleRunnable runnable : plugins.getPluginAccessor().getEnabledModulesByClass(
 						OnControllerLifeCycleRunnable.class)) {
-			String ip = "";
-			try {
-				InetAddress addr = InetAddress.getLocalHost();
-				ip = addr.getHostAddress();
-			} catch (UnknownHostException e) {
-				noOp();
-			}
-			runnable.finish(ip, this.config.getVesion());
+			runnable.finish(config.getCurrentIP(), this.config.getVesion());
 		}
 	}
 
@@ -235,7 +219,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	}
 
 	/**
-	 * Get plugins by module descriptor class.
+	 * Get plugins by module class.
 	 * 
 	 * @param <M>
 	 *            module type
@@ -248,7 +232,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	}
 
 	/**
-	 * Get plugins by module descriptor class.<br/>
+	 * Get plugins by module class.<br/>
 	 * This method puts the given default plugin at a head of returned plugin list.
 	 * 
 	 * @param <M>
@@ -269,6 +253,57 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 		}
 		pluginClasses.addAll(plugins.getPluginAccessor().getEnabledModulesByClass(moduleClass));
 		return pluginClasses;
+	}
+
+	/**
+	 * Get plugins by module descriptor and module class.<br/>
+	 * This method puts the given default plugin at a head of returned plugin list.
+	 * 
+	 * @param <M>
+	 *            module type
+	 * @param moduleDescriptor
+	 *            module descriptor
+	 * @param moduleClass
+	 *            module class
+	 * @param defaultPlugin
+	 *            default plugin
+	 * @return plugin list
+	 */
+	public <M> List<M> getEnabledModulesByDescriptorAndClass(
+					final Class<? extends ModuleDescriptor<M>> moduleDescriptor, final Class<M> moduleClass,
+					M defaultPlugin) {
+		ArrayList<M> pluginClasses = new ArrayList<M>();
+		if (defaultPlugin != null) {
+			pluginClasses.add(defaultPlugin);
+		}
+		if (plugins == null) {
+			return pluginClasses;
+		}
+		pluginClasses.addAll(plugins.getPluginAccessor().getModules(new ModuleDescriptorPredicate<M>() {
+			@Override
+			public boolean matches(ModuleDescriptor<? extends M> eachModuleDescriptor) {
+				return moduleClass.isAssignableFrom(eachModuleDescriptor.getModuleClass())
+								&& eachModuleDescriptor.getClass().equals(moduleDescriptor);
+			}
+		}));
+
+		return pluginClasses;
+	}
+
+	/**
+	 * Get plugins by module descriptor and module class.
+	 * 
+	 * @param <M>
+	 *            module type
+	 * @param moduleDescriptor
+	 *            module descriptor class
+	 * @param moduleClass
+	 *            model type class
+	 * @return plugin list
+	 */
+	public <M> List<M> getEnabledModulesByDescriptorAndClass(Class<? extends ModuleDescriptor<M>> moduleDescriptor,
+					Class<M> moduleClass) {
+		return getEnabledModulesByDescriptorAndClass(moduleDescriptor, moduleClass, null);
 	}
 
 	/**
