@@ -16,7 +16,7 @@
 		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">${(currentUser.userId)!} (<!--Switched UserName-->)<b class="caret"></b></a>
 		            	<ul class="dropdown-menu"> 
 		                	<li><a id="user_profile_id" href="#"><@spring.message "navigator.dropdown.profile"/></a></li>
-		                	<li><a href="#userSwitchModal" data-toggle="modal"><@spring.message "navigator.dropdown.switchUser"/></a></li>
+		                	<li><a id="switch_user_id" href="#"><@spring.message "navigator.dropdown.switchUser"/></a></li>
 			            	<@security.authorize ifAnyGranted="A, S">
 				            	<li class="divider"/>
 		               			<li><a href="${req.getContextPath()}/user/list"><@spring.message "navigator.dropdown.userManagement"/></a></li>
@@ -58,9 +58,7 @@
 					<label class="control-label"><@spring.message "user.switch.title"/></label>
 					<div class="controls">
 						<select id="switchUserSelect" class="span3">
-							<option value=""></option><!--keep the empty option-->
-							<!--example: <option value="alex">alex qin</option>-->
-						</select> 
+						</select>
 					</div>
 				</div>
 			</fieldset>
@@ -70,30 +68,43 @@
 <script type="text/javascript">
 	function init() {
 		myProfile();
+		switchUser();
 		showExceptionMsg();
-		$("#switchUserSelect").select2({
-			placeholder: "<@spring.message "user.switch.select.placeholder"/>"
-		});
-		$("#switchUserSelect").change(function() {
-			//alert($(this).val());
-			$("#userSwitchModal").modal("hide");
-		});
 	}
 	
-	var myProfile = function(){
+	function myProfile(){
 		var url = "${req.getContextPath()}/user/profile";
-		$("#user_profile_id").on('click', function() {
+		$("#user_profile_id").click(function() {
 			$("#user_profile_modal").load(url, function(){
-				$('#userProfileModal').modal('show')
+				$('#userProfileModal').modal('show');
 			});
 		});
 	};
+	
+	function switchUser() {
+		var url = "${req.getContextPath()}/user/switchUserList";
+		$("#switchUserSelect").live("change", function() {
+			//alert($(this).val());
+			//switch user and redirect to perftest list page.
+		});
+		$("#switch_user_id").click(function() {
+			$("#switchUserSelect").load(url, function(){
+				$(this).prepend($("<option value=''></option>"));
+				$(this).val("");
+				$(this).select2({
+					placeholder: "<@spring.message "user.switch.select.placeholder"/>"
+				});
+				$('#userSwitchModal').modal('show');
+			});
+		});
+	}
 	
 	function showExceptionMsg() {
 		<#if exception??>
 			showErrorMsg("Error:${(exception.message)!}");
 		</#if> 
 	}
+	
 	if(document.loaded) {
 		init();
 	} else {

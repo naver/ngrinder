@@ -130,8 +130,8 @@ public class UserController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/save")
 	@PreAuthorize("hasAnyRole('A', 'S') or #user.id == #updatedUser.id")
-	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser) {
-
+	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser,
+			@RequestParam(required = false) String followers) {
 		checkArgument(updatedUser.validate());
 		if (user.getRole() == Role.USER) {
 			// General user can not change their role.
@@ -207,5 +207,24 @@ public class UserController extends NGrinderBaseController {
 		model.addAttribute("action", "profile");
 		return "user/userInfo";
 	}
-
+	
+	/**
+	 * Get the follower list.
+	 * 
+	 * @param user
+	 *            current user
+	 * @param model
+	 *            model
+	 * @return "user/userOptionGroup"
+	 */
+	@RequestMapping("/switchUserList")
+	public String switchUserList(User user, ModelMap model) {
+		//model.addAttribute("userList", user.getFollowers());
+		return "user/userOptionGroup";
+	}
+	
+	@RequestMapping("/switchUser")
+	public String switchUserList(User user, ModelMap model, @RequestParam String followerId) {
+		return "";
+	}
 }

@@ -73,7 +73,7 @@
 		<div class="control-group" >
 			<label class="control-label"><@spring.message "user.switch.title"/></label>
 			<div class="controls">
-				<select id="userListSelect" style="width:300px" multiple>
+				<select id="userListSelect" name="followers" style="width:300px" multiple>
 					<#include "userOptionGroup.ftl">
 				</select>
 			</div>
@@ -113,7 +113,7 @@
 		</div>
 		<div class="control-group">
 			<label class="control-label pull-right">
-				<button type="submit" class="btn btn-success" rel="tooltip"><@spring.message "user.info.form.button.saveUser"/></button>
+				<button type="submit" class="btn btn-success"><@spring.message "user.info.form.button.saveUser"/></button>
 			</label>
 		</div>
 	</fieldset>
