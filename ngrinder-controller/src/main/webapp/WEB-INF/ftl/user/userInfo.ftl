@@ -70,45 +70,12 @@
 			</div>
 		</div>
 		<#if user?exists && user.userId == currentUser.userId>
-		<style>
-			div.div-shared {
-				border: 1px solid #D6D6D6;
-				height: 70px;
-				width: 300px;
-				overflow-y: scroll;
-				border-radius: 3px 3px 3px 3px;
-				background-color: white;
-			}
-			
-			div.div-shared .user {
-				color: #666666;
-				display: inline-block;
-				margin-left: 7px;
-				margin-top: 2px;
-				margin-bottom: 2px;
-			}
-			
-			div.div-shared .user input{
-				vertical-align: top;
-			}
-		</style>
 		<div class="control-group" >
-			<label class="control-label">Share To</label>
+			<label class="control-label"><@spring.message "user.switch.title"/></label>
 			<div class="controls">
-				<div id="sharedUser" class="div-shared">
-					<p class="user">
-						<input type="checkbox" value="A"> alex
-					</p>
-					<p class="user">
-						<input type="checkbox" value="b"> matt
-					</p>
-					<p class="user">
-						<input type="checkbox" value="Asdfs"> tom
-					</p>
-					<p class="user">
-						<input type="checkbox" value="Awdfra"> lucy
-					</p>
-				</div>
+				<select id="userListSelect" style="width:300px" multiple>
+					<!--example: <option value="alex">alex qin</option>-->
+				</select>
 			</div>
 		</div>
 		</#if>
@@ -245,6 +212,8 @@
 	            $(element).parents('.control-group').addClass('success');
 	        }
 	    });
+	    
+	    $("#userListSelect").val(eval("")).select2();
 	});
 	
 	function removeSuccess(elem) {

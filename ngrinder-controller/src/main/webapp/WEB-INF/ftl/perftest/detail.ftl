@@ -6,7 +6,6 @@
 	<META HTTP-EQUIV="Expires" CONTENT="-1">
 	<#include "../common/common.ftl"> 
 	<#include "../common/jqplot.ftl">
-	<#include "../common/select2.ftl">
 	<link href="${req.getContextPath()}/css/slider.css" rel="stylesheet">
 	<link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
 	<style>

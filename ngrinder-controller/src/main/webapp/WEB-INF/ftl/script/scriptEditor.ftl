@@ -25,10 +25,6 @@
 				margin-top:-25px;
 				margin-right:67px 
 			}
-			
-			.CodeMirror-scroll {
-			    height: 500px !important;   
-			}
 		</style>
 	</head>
 
@@ -38,7 +34,7 @@
 		<div class="row">
 			<div class="span12">
 				<form id="contentForm" method="post" target="_self" style="margin-bottom: 0px;"> 	
-					<div class="well" style="margin-bottom: 0px;">
+					<div class="well" style="margin-bottom: 10px;">
 						<div class="form-horizontal">
 							<fieldset>
 								<div class="control-group">
@@ -56,8 +52,8 @@
 													<input type="text" id="scriptNameInput" class="span6" name="path" value="${(file.path)!}" readonly/>
 												</td>
 												<td>
-													<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:83px; width:35px;"><@spring.message "common.button.save"/></a>
-													<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:85px;"><@spring.message "script.editor.button.validate"/></a>
+													<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:73px; width:40px;"><@spring.message "common.button.save"/></a>
+													<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:90px;"><@spring.message "script.editor.button.validate"/></a>
 												</td>
 											</tr> 
 										</table>
@@ -85,16 +81,15 @@
 							</fieldset>
 						</div>
 					</div>
-					<input type="hidden" id="contentHidden" name="content" value=""/>
+					
 					<input type="hidden" id="createLibAndResource" name="createLibAndResource" value="<#if createLibAndResource?? && createLibAndResource==true>true<#else>false</#if>"/>
 					<@security.authorize ifAnyGranted="A, S">
 						<#if ownerId??>					
 							<input type="hidden" id="ownerId" name="ownerId" value="${ownerId}"/>
 						</#if>
 					</@security.authorize>
-
+					<textarea id="codemirrorContent" name="content">${(file.content)!}</textarea>
 				</form>
-				<textarea id="codemirrorContent" style="width:930px; margin-top:10px;z-index:100">${(file.content)!}</textarea>
 				<div class="pull-right" rel="popover" style="position:float;margin-top:-20px;margin-right:-30px" data-original-title="Tip" data-content="
 			      Ctrl-F / Cmd-F : <@spring.message "script.editor.tip.startSearching"/>&lt;br&gt; 
 			      Ctrl-G / Cmd-G : <@spring.message "script.editor.tip.findNext"/>&lt;br&gt;
@@ -110,38 +105,13 @@
 				</pre>
 			</div>
 		</div>
-		<#include "../common/copyright.ftl">	
+		<#include "../common/copyright.ftl">
 	</div>
-	<script src="${req.getContextPath()}/plugins/codemirror/codemirror.js" type="text/javascript" charset="utf-8"></script>
-	<link rel="stylesheet" href="${req.getContextPath()}/plugins/codemirror/codemirror.css"/>
-	<link rel="stylesheet" href="${req.getContextPath()}/plugins/codemirror/eclipse.css">
+	
+	<#include "../common/codemirror.ftl">
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/python.js"></script>
-	<script src="${req.getContextPath()}/plugins/codemirror/util/dialog.js"></script>	
-    <link rel="stylesheet" href="${req.getContextPath()}/plugins/codemirror/util/dialog.css">
-    <script src="${req.getContextPath()}/plugins/codemirror/util/searchcursor.js"></script>
-    <script src="${req.getContextPath()}/plugins/codemirror/util/search.js"></script>
-    <script src="${req.getContextPath()}/plugins/codemirror/util/foldcode.js"></script> 
-    
+    <#include "../common/datatables.ftl">
     <script>
-    	function isFullScreen(cm) {
-	      return /\bCodeMirror-fullscreen\b/.test(cm.getWrapperElement().className);
-	    }
-	    function winHeight() {
-	      return window.innerHeight || (document.documentElement || document.body).clientHeight;
-	    }
-	    function setFullScreen(cm, full) {
-	      var wrap = cm.getWrapperElement(), scroll = cm.getScrollerElement();
-	      if (full) {
-	        wrap.className += " CodeMirror-fullscreen";
-	        scroll.style.height = winHeight() + "px";
-	        document.documentElement.style.overflow = "hidden";
-	      } else {
-	        wrap.className = wrap.className.replace(" CodeMirror-fullscreen", "");
-	        scroll.style.height = "";
-	        document.documentElement.style.overflow = "";
-	      }
-	      cm.refresh(); 
-	    }
     	$(document).ready(function() {
 			var editor = CodeMirror.fromTextArea(document.getElementById("codemirrorContent"), {
 			   mode: "python",
@@ -167,9 +137,9 @@
 			   }
 			});
 			var hlLine = editor.setLineClass(0, "activeline");
-			
+
 			$("#saveBtn").click(function() {
-				$('#contentHidden').val(editor.getValue());
+				$('#codemirrorContent').text(editor.getValue());
 				document.forms.contentForm.action = "${req.getContextPath()}/script/save";
 				document.forms.contentForm.submit();
 			});
@@ -199,7 +169,6 @@
 			    	}
 			  	});
 			});
-			
 			
 	      $("#contentForm").validate({
 	          rules: {
