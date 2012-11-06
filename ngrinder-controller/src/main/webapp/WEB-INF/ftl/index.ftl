@@ -5,8 +5,6 @@
 		<#include "common/common.ftl">
 		<style>
 			.hero-unit { margin-left:0px;background-image:url('${req.getContextPath()}/img/bg_main_banner_<@spring.message "common.language"/>.png');margin-top:-20px;margin-bottom:10px;height:200px;padding:0px}    
-			.control-label h2 { line-height:px }
-			.controls a { margin-left:50px; }
 			.quickStart  { padding-left:160px; padding-top:35px }  
 		</style> 
 
