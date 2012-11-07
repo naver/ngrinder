@@ -22,22 +22,6 @@
 		</changeSet>
 		<include file="ngrinder_datachange_logfile/db.changelog_schema_H2_5.xml"/>
 		<include file="ngrinder_datachange_logfile/db.changelog_schema_CUBRID_6.xml"/>
-		
-		<changeSet author="ngrinder.3.0-SNAPSHOT" id="7"  dbms="h2, cubrid" onValidationFail="MARK_RAN">
-				<preConditions onFail="MARK_RAN">
-					<not>
-					<tableExists tableName="SHARED_USER"/>
-					</not>
-				</preConditions>
-				<comment>Add table SHARED_USER for user share function .</comment>
-				
-				<createTable tableName="SHARED_USER">
-				     <column name="user_id" type="bigint">
-				       <constraints primaryKey="true" nullable="false"/>
-    				 </column>
-				     <column name="share_user_id" type="bigint" >
-				       <constraints primaryKey="true" nullable="false"/>
-    				 </column>
-				</createTable>
-		</changeSet>
+		<include file="ngrinder_datachange_logfile/db.changelog_schema_7.xml"/>
+
 </databaseChangeLog>
