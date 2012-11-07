@@ -226,7 +226,7 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping("/switchUserList")
 	public String switchUserList(User user, ModelMap model) {
 		User currUser = userService.getUserById(user.getUserId());
-		model.addAttribute("shareUserList", currUser.getFollowers());
+		model.addAttribute("shareUserList", currUser.getOwners());
 
 		return "user/userOptionGroup";
 	}
@@ -235,6 +235,7 @@ public class UserController extends NGrinderBaseController {
 	public String switchUser(User user, ModelMap model, @RequestParam String followerId) {
 		return "";
 	}
+	
 	/**
 	 * Get user list that current user will be shared
 	 * 
@@ -243,7 +244,6 @@ public class UserController extends NGrinderBaseController {
 	 * @param model
 	 *            model
 	 */
-	
 	private void getUserShareList(User user, ModelMap model) {
 		if(user == null)
 			return;
@@ -252,8 +252,7 @@ public class UserController extends NGrinderBaseController {
 		Collection<User> shareUserList = Collections2.filter(userService.getAllUserByRole(null), new Predicate<User>() {
 			@Override
 			public boolean apply(User shareUser) {
-				if (shareUser.getUserId().equals(userId) || shareUser.getUserId().equals("admin") || shareUser.getUserId().equals("superuser")
-						|| shareUser.getUserId().equals("system"))
+				if (shareUser.getUserId().equals(userId) || shareUser.getRole() != Role.USER)
 					return false;
 				
 				return true;
