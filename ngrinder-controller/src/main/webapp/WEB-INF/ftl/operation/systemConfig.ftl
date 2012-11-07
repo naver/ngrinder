@@ -14,12 +14,13 @@
 				</div>
 				<form id="sysConfigForm" method="post">
 				<button id="saveBtn" href="javascript:void(0);" class="btn btn-success pull-right" style="margin-top:-55px;"><@spring.message "common.button.save"/></button>
-				<textarea id="sysFileContent" name="content">${(file.content)!}</textarea>
+				<textarea id="sysFileContent" name="content">${content!}</textarea>
 				</form>
 			</div>
 		</div>
 		<#include "../common/copyright.ftl">
 	</div>
+	<#include "../common/messages.ftl"> 
 	<#include "../common/codemirror.ftl"> 
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/properties.js"></script>
 	<script>
@@ -51,9 +52,17 @@
 			
 			$("#saveBtn").click(function() {
 				$('#sysFileContent').text(editor.getValue());
-				document.forms.sysConfigForm.action = "${req.getContextPath()}/system/config/save";
+				document.forms.sysConfigForm.action = "${req.getContextPath()}/operation/systemConfig/save";
 				document.forms.sysConfigForm.submit();
 			});
+			
+			<#if success?exists>
+				<#if success>
+					showSuccessMsg("<@spring.message "systemConfig.message.success"/>");
+				<#else>
+					showErrorMsg("<@spring.message "systemConfig.message.error"/>");
+				</#if>
+			</#if>
 		});
 	</script>
 </body>
