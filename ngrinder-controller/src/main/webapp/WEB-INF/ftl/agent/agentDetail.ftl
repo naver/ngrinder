@@ -21,10 +21,9 @@
         <#include "../common/navigator.ftl">
         <div class="container">
             <div class="page-header pageHeader" style="margin-bottom: 10px">
-			<span>
 				<h3><@spring.message "agent.info.title"/></h3>
-			</span>
-		</div>
+			</div>
+			<button onClick="window.history.back();" class="btn pull-right" style="margin-top:-45px;"><@spring.message "common.button.return"/></button>
             <div class="row">
                 <div class="span3">
                     <table class="table table-bordered table-striped" style="border-top:#cccccc solid 1px">

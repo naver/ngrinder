@@ -13,7 +13,7 @@
 					<h3><@spring.message "navigator.dropdown.systemConfig"/></h3>
 				</div>
 				<form id="sysConfigForm" method="post">
-				<button id="saveBtn" href="javascript:void(0);" class="btn btn-success pull-right" style="margin-top:-55px;"><@spring.message "common.button.save"/></button>
+				<button id="saveBtn" class="btn btn-success pull-right" style="margin-top:-55px;"><@spring.message "common.button.save"/></button>
 				<textarea id="sysFileContent" name="content">${content!}</textarea>
 				</form>
 			</div>
