@@ -153,7 +153,7 @@ public class UserController extends NGrinderBaseController {
 		} else {
 			userService.saveUser(updatedUser);
 		}
-		if (user.getId() == updatedUser.getId()) {
+		if (user.getId().equals(updatedUser.getId())) {
 			return "redirect:/";
 		} else {
 			return "redirect:/user/list";
