@@ -1,4 +1,5 @@
 <#import "../common/spring.ftl" as spring/>
+<#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
 <form action="${req.getContextPath()}/user/save"
 	class="form-horizontal form-horizontal-left" id="registerUserForm" style="margin-left:30px" method="POST">
 	<fieldset>
@@ -70,6 +71,7 @@
 			</div>
 		</div>
 		<#if user?exists && user.userId == currentUser.userId>
+		<@security.authorize ifAnyGranted="U">
 		<div class="control-group" >
 			<label class="control-label"><@spring.message "user.switch.title"/></label>
 			<div class="controls">
@@ -78,6 +80,7 @@
 				</select>
 			</div>
 		</div>
+		</@security.authorize>
 		</#if>
   		<div class="control-group">
               <div class="accordion-heading"> 

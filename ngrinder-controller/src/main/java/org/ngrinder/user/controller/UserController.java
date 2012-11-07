@@ -34,6 +34,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
@@ -232,9 +233,22 @@ public class UserController extends NGrinderBaseController {
 		return "user/userOptionGroup";
 	}
 	
-	@RequestMapping("/switchUser")
-	public String switchUser(User user, ModelMap model, @RequestParam String followerId) {
-		return "";
+	/**
+	 * Switch user identity.
+	 * 
+	 * @param user
+	 * 			current user
+	 * @param model
+	 * 			model
+	 * @param ownerId
+	 * 			the user who will switch.
+	 * 
+	 * @return redirect:/perftest/list
+	 */
+	@RequestMapping("/switchUser/**")
+	public String switchUser(User user, ModelMap model, @RemainedPath String ownerId) {
+		//do the switching works and remember the ownerId.
+		return "redirect:/perftest/list";
 	}
 	
 	/**

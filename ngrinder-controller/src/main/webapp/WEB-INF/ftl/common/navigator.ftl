@@ -13,12 +13,13 @@
 				
 				<ul class="nav pull-right">
 					<li class="dropdown">
-		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">${(currentUser.userId)!} (<!--Switched UserName-->)<b class="caret"></b></a>
+		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">${(currentUser.userId)!} <#if owner?exists>(${owner})</#if><b class="caret"></b></a>
 		            	<ul class="dropdown-menu"> 
+		                	<@security.authorize ifAnyGranted="U">
 		                	<li><a id="user_profile_id" href="#"><@spring.message "navigator.dropdown.profile"/></a></li>
 		                	<li><a id="switch_user_id" href="#"><@spring.message "navigator.dropdown.switchUser"/></a></li>
+		                	</@security.authorize>
 			            	<@security.authorize ifAnyGranted="A, S">
-				            	<li class="divider"/>
 		               			<li><a href="${req.getContextPath()}/user/list"><@spring.message "navigator.dropdown.userManagement"/></a></li>
 				                <li><a href="${req.getContextPath()}/agent/list"><@spring.message "navigator.dropdown.agentManagement"/></a></li>
 				                <li><a href="${req.getContextPath()}/operation/log"><@spring.message "navigator.dropdown.logMonitoring"/></a></li>
@@ -82,11 +83,11 @@
 	};
 	
 	function switchUser() {
-		var url = "${req.getContextPath()}/user/switchUserList";
 		$("#switchUserSelect").live("change", function() {
-			//alert($(this).val());
-			//switch user and redirect to perftest list page.
+			document.location.href = "${req.getContextPath()}/user/switchUser/" + $(this).val();
 		});
+		
+		var url = "${req.getContextPath()}/user/switchUserList";
 		$("#switch_user_id").click(function() {
 			$("#switchUserSelect").load(url, function(){
 				$(this).prepend($("<option value=''></option>"));
