@@ -210,7 +210,7 @@ public class UserController extends NGrinderBaseController {
 		User newUser = userService.getUserById(user.getUserId());
 		model.addAttribute("user", newUser);
 		model.addAttribute("action", "profile");
-		getUserShareList(user,model);
+		getUserShareList(newUser,model);
 		return "user/userInfo";
 	}
 	
@@ -243,22 +243,19 @@ public class UserController extends NGrinderBaseController {
 	 * @param model
 	 *            model
 	 */
+	
 	private void getUserShareList(User user, ModelMap model) {
 		if(user == null)
 			return;
-		User currUser = userService.getUserById(user.getUserId());
-		final List<User> currFollowers = currUser.getFollowers();
-		final List<User> currOwners = currUser.getOwners();
+		final List<User> currFollowers = user.getFollowers();
 		final String userId = user.getUserId();
 		Collection<User> shareUserList = Collections2.filter(userService.getAllUserByRole(null), new Predicate<User>() {
 			@Override
 			public boolean apply(User shareUser) {
-				if (shareUser.getUserId().equals(userId))
+				if (shareUser.getUserId().equals(userId) || shareUser.getUserId().equals("admin") || shareUser.getUserId().equals("superuser")
+						|| shareUser.getUserId().equals("system"))
 					return false;
-				for (User user : currOwners) {
-					if (shareUser.getUserId().equals(user.getUserId()))
-						return false;
-				}
+				
 				return true;
 			}
 		});

@@ -23,7 +23,7 @@
 package org.ngrinder.model;
 
 import java.util.List;
-import javax.persistence.CascadeType;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -90,13 +90,13 @@ public class User extends BaseModel<User> {
 	@Transient
 	private User realUser;
 
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "SHARED_USER", 
 				joinColumns = @JoinColumn(name = "user_id"), 
 				inverseJoinColumns = @JoinColumn(name = "share_user_id"))
 	private List<User> followers;
 	
-	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name="SHARED_USER",
 	joinColumns = @JoinColumn(name = "share_user_id"), 
 	inverseJoinColumns = @JoinColumn(name = "user_id"))
@@ -270,11 +270,12 @@ public class User extends BaseModel<User> {
 	public void setFollowers(List<User> followers) {
 		this.followers = followers;
 	}
-
+	
 	public List<User> getOwners() {
 		return owners;
 	}
 
+	
 	public void setOwners(List<User> owners) {
 		this.owners = owners;
 	}
