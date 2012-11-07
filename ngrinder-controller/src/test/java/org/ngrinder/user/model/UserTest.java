@@ -3,6 +3,7 @@ package org.ngrinder.user.model;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -45,6 +46,57 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 		userRepository.deleteAll();
 		userRepository.flush();
 	}
+	
+	@Test
+	public void testShareUser() {
+		List sharedUsers = new ArrayList();
+		List shareUsers = new ArrayList();
+
+		User user = new User();
+		user.setUserName("MyName1");
+		user.setEmail("junoyoon@gmail.com");
+		user.setCreatedUser(getUser("user"));
+		user.setCreatedDate(new Date());
+		user.setUserId("hello");
+		user.setRole(Role.USER);
+		user = userRepository.save(user);
+		User user2 = new User();
+		user2.setUserId("hello2");
+		user2.setUserName("MyName2");
+		user2.setEmail("junoyoon2@paran.com");
+		user2.setCreatedUser(getUser("user"));
+		user2.setCreatedDate(new Date());
+		user2.setRole(Role.USER);
+		userRepository.save(user2);
+		
+		User user3 = new User();
+		user3.setUserId("hello3");
+		user3.setUserName("MyName3");
+		user3.setEmail("junoyoon3@paran.com");
+		user3.setCreatedUser(getUser("user"));
+		user3.setCreatedDate(new Date());
+		user3.setRole(Role.USER);
+		userRepository.save(user3);
+		
+		User user4 = new User();
+		user4.setUserId("hello4");
+		user4.setUserName("MyName4");
+		user4.setEmail("junoyoon4@paran.com");
+		user4.setCreatedUser(getUser("user"));
+		user4.setCreatedDate(new Date());
+		user4.setRole(Role.USER);
+		sharedUsers.add(user3);
+		sharedUsers.add(user2);
+
+		user4.setFollowers(sharedUsers);
+		shareUsers.add(user);
+		user4.setOwners(shareUsers);
+		userRepository.save(user4);
+
+	    User sharedUser = userRepository.findOneByUserId(user4.getUserId());
+		List sh = sharedUser.getFollowers();
+	}
+	
 
 	@Test
 	public void testUser() {

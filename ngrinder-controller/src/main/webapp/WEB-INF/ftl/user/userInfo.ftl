@@ -73,7 +73,7 @@
 		<div class="control-group" >
 			<label class="control-label"><@spring.message "user.switch.title"/></label>
 			<div class="controls">
-				<select id="userListSelect" name="followers" style="width:300px" multiple>
+				<select id="userListSelect" name="followersStr" style="width:300px" multiple>
 					<#include "userOptionGroup.ftl">
 				</select>
 			</div>
@@ -214,8 +214,8 @@
 	    });
 	    
 	    var switchedUsers = [];
-	    <#if switchedUserList?has_content>
-	    	<#list switchedUserList as user>
+	    <#if followers?has_content>
+	    	<#list followers as user>
 	    		switchedUsers.push("${user.userId}");
 	    	</#list>
 	    </#if>

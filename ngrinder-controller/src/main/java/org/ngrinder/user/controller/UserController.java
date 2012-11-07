@@ -28,6 +28,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -44,6 +45,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 
 /**
  * User management controller.
@@ -113,6 +117,7 @@ public class UserController extends NGrinderBaseController {
 
 		User retrievedUser = userService.getUserById(userId);
 
+		getUserShareList(retrievedUser, model);
 		model.addAttribute("user", retrievedUser);
 		return "user/userDetail";
 	}
@@ -131,7 +136,7 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping("/save")
 	@PreAuthorize("hasAnyRole('A', 'S') or #user.id == #updatedUser.id")
 	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser,
-			@RequestParam(required = false) String followers) {
+			@RequestParam(required = false) String followersStr) {
 		checkArgument(updatedUser.validate());
 		if (user.getRole() == Role.USER) {
 			// General user can not change their role.
@@ -144,7 +149,7 @@ public class UserController extends NGrinderBaseController {
 							updatedUser);
 		}
 		if (updatedUser.exist()) {
-			userService.modifyUser(updatedUser);
+			userService.modifyUser(updatedUser,followersStr);
 		} else {
 			userService.saveUser(updatedUser);
 		}
@@ -205,6 +210,7 @@ public class UserController extends NGrinderBaseController {
 		User newUser = userService.getUserById(user.getUserId());
 		model.addAttribute("user", newUser);
 		model.addAttribute("action", "profile");
+		getUserShareList(user,model);
 		return "user/userInfo";
 	}
 	
@@ -219,12 +225,44 @@ public class UserController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/switchUserList")
 	public String switchUserList(User user, ModelMap model) {
-		//model.addAttribute("userList", user.getFollowers());
+		User currUser = userService.getUserById(user.getUserId());
+		model.addAttribute("shareUserList", currUser.getFollowers());
+
 		return "user/userOptionGroup";
 	}
 	
 	@RequestMapping("/switchUser")
-	public String switchUserList(User user, ModelMap model, @RequestParam String followerId) {
+	public String switchUser(User user, ModelMap model, @RequestParam String followerId) {
 		return "";
+	}
+	/**
+	 * Get user list that current user will be shared
+	 * 
+	 * @param user
+	 *            current user
+	 * @param model
+	 *            model
+	 */
+	private void getUserShareList(User user, ModelMap model) {
+		if(user == null)
+			return;
+		User currUser = userService.getUserById(user.getUserId());
+		final List<User> currFollowers = currUser.getFollowers();
+		final List<User> currOwners = currUser.getOwners();
+		final String userId = user.getUserId();
+		Collection<User> shareUserList = Collections2.filter(userService.getAllUserByRole(null), new Predicate<User>() {
+			@Override
+			public boolean apply(User shareUser) {
+				if (shareUser.getUserId().equals(userId))
+					return false;
+				for (User user : currOwners) {
+					if (shareUser.getUserId().equals(user.getUserId()))
+						return false;
+				}
+				return true;
+			}
+		});
+		model.addAttribute("followers", currFollowers);
+		model.addAttribute("shareUserList", shareUserList);
 	}
 }

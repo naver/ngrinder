@@ -24,6 +24,7 @@ package org.ngrinder.user.service;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -159,9 +160,19 @@ public class UserService implements IUserService {
 	 * @return user id
 	 */
 	@Transactional
-	public String modifyUser(User user) {
+	public String modifyUser(User user,String shareUserIds) {
 		checkNotNull(user, "user should be not null, when modifying user");
 		checkNotNull(user.getId(), "user id should be provided when modifying user");
+
+		if(!StringUtils.isEmpty(shareUserIds)){
+			List<User> newShareUsers = new ArrayList<User>();
+			String[] userIds = shareUserIds.split(",");
+			for(String userId:userIds){
+				User shareUser = userRepository.findOneByUserId(userId);
+				newShareUsers.add(shareUser);
+			}
+			user.setFollowers(newShareUsers);
+		}
 		encodePassword(user);
 		User targetUser = userRepository.findOne(user.getId());
 		targetUser.merge(user);

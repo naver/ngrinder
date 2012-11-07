@@ -83,7 +83,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		ModelMap model = new ModelMap();
 		User currUser = getTestUser();
 		currUser.setUserName("new name");
-		userController.saveOrUpdateUserDetail(currUser, model, currUser);
+		userController.saveOrUpdateUserDetail(currUser, model, currUser,null);
 		
 		userController.getUserDetail(getTestUser(), model, currUser.getUserId());
 		User user = (User)model.get("user");
@@ -103,7 +103,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		updatedUser.setId(currUser.getId());
 		updatedUser.setEmail("test@test.com");
 		updatedUser.setRole(Role.ADMIN); //Attempt to modify himself as ADMIN
-		userController.saveOrUpdateUserDetail(currUser, model, updatedUser);
+		userController.saveOrUpdateUserDetail(currUser, model, updatedUser,null);
 		
 		userController.getUserDetail(getTestUser(), model, currUser.getUserId());
 		User user = (User)model.get("user");
@@ -121,7 +121,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		newUser.setCreatedDate(new Date());
 		newUser.setRole(Role.USER);
 		ModelMap model = new ModelMap();
-		userController.saveOrUpdateUserDetail(getAdminUser(), model, newUser);
+		userController.saveOrUpdateUserDetail(getAdminUser(), model, newUser,null);
 	}
 	/**
 	 * Test method for {@link org.ngrinder.user.controller.UserController#deleteUser(org.springframework.ui.ModelMap, java.lang.String)}.

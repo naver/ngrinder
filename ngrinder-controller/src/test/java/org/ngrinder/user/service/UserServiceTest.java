@@ -51,7 +51,7 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		user2.setPassword("www222");
 		user2.setEmail("www@test.com");
 		user2.setRole(Role.USER);
-		userService.modifyUser(user2);
+		userService.modifyUser(user2,null);
 		User userById = userService.getUserById("hello");
 
 		assertThat(userById.getId(), is(user.getId()));

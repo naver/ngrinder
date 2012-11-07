@@ -22,11 +22,18 @@
  */
 package org.ngrinder.model;
 
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
@@ -79,6 +86,21 @@ public class User extends BaseModel<User> {
 	@Column(name = "authentication_provider_class")
 	/** Who provide the authentication */
 	private String authProviderClass;
+	
+	@Transient
+	private User realUser;
+
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@JoinTable(name = "SHARED_USER", 
+				joinColumns = @JoinColumn(name = "user_id"), 
+				inverseJoinColumns = @JoinColumn(name = "share_user_id"))
+	private List<User> followers;
+	
+	@ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+	@JoinTable(name="SHARED_USER",
+	joinColumns = @JoinColumn(name = "share_user_id"), 
+	inverseJoinColumns = @JoinColumn(name = "user_id"))
+	private List<User> owners;
 
 	/**
 	 * Default constructor.
@@ -239,5 +261,31 @@ public class User extends BaseModel<User> {
 	public void setAuthProviderClass(String authProviderClass) {
 		this.authProviderClass = authProviderClass;
 	}
+	
+	
+	public List<User> getFollowers() {
+		return followers;
+	}
+
+	public void setFollowers(List<User> followers) {
+		this.followers = followers;
+	}
+
+	public List<User> getOwners() {
+		return owners;
+	}
+
+	public void setOwners(List<User> owners) {
+		this.owners = owners;
+	}
+	
+	public User getRealUser() {
+		return realUser;
+	}
+
+	public void setRealUser(User realUser) {
+		this.realUser = realUser;
+	}
+
 
 }
