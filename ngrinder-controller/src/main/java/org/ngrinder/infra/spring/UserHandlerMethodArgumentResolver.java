@@ -24,6 +24,7 @@ package org.ngrinder.infra.spring;
 
 import java.util.EnumSet;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -76,27 +77,30 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	 */
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-					NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		User currentUser = getUserContext().getCurrentUser();
 		String userParam = webRequest.getParameter("ownerId");
 
 		// User want to do something through other User status and this
 		// switchUserId is other user Id
-		String switchUserId = webRequest.getParameter("switchUserId");
+		String switchUserId = (String) ObjectUtils.defaultIfNull(webRequest.getParameter("switchUserId"), "");
 
 		if (StringUtils.isNotBlank(userParam) && adminRole.contains(currentUser.getRole())) {
 			return getUserService().getUserById(userParam);
 		}
-		if (StringUtils.isNotBlank(switchUserId)) {
+		if (currentUser.getUserId().equals(switchUserId)) {
+			currentUser.setOwnerUser(null);
+		} else if (switchUserId.length() != 0) {
 			User ownerUser = getUserService().getUserById(switchUserId);
+			// CurrentUser should remember whose status he used
 			currentUser.setOwnerUser(ownerUser);
+
+			// OwnerUser should remember who use his status
 			ownerUser.setFollower(currentUser);
 			return ownerUser;
 		}
-		if (currentUser.getOwnerUser() != null)
-			return currentUser.getOwnerUser();
-		
-		return currentUser;
+
+		return currentUser.getFactualUser();
 	}
 
 	/**

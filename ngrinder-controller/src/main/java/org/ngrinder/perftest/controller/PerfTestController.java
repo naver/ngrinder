@@ -386,6 +386,12 @@ public class PerfTestController extends NGrinderBaseController {
 		}
 		Map<String, Object> result = new HashMap<String, Object>(2);
 		result.put("perfTestInfo", perfTestService.getCurrentPerfTestStatistics());
+		
+		System.out.println("++++++++++++++++++++++++++++"+perfTestService.getCurrentPerfTestStatistics());
+
+		System.out.println("++++++++++++++++++++++++++++"+toJson(result));
+
+		
 		result.put("statusList", statusList);
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set("content-type", "application/json; charset=UTF-8");

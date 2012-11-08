@@ -1137,7 +1137,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public Collection<PerfTestStatistics> getCurrentPerfTestStatistics() {
 		Map<User, PerfTestStatistics> perfTestPerUser = new HashMap<User, PerfTestStatistics>();
 		for (PerfTest each : getPerfTest(null, getProcessingOrTestingTestStatus())) {
-			User lastModifiedUser = each.getLastModifiedUser();
+			User lastModifiedUser = each.getLastModifiedUser().getTestUserBaseInfo();
 			PerfTestStatistics perfTestStatistics = perfTestPerUser.get(lastModifiedUser);
 			if (perfTestStatistics == null) {
 				perfTestStatistics = new PerfTestStatistics(lastModifiedUser);

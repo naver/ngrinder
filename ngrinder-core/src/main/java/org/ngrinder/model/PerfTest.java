@@ -36,6 +36,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -194,6 +195,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "stop_request", columnDefinition = "char(1)")
 	@Type(type = "true_false")
 	private Boolean stopRequest;
+	
+	@ManyToOne
+	@JoinColumn(name = "real_created_user", insertable = true, updatable = false)
+	private User realCreatedUser;
 
 	@Transient
 	private String dateString;
@@ -624,6 +629,13 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setTags(SortedSet<Tag> tags) {
 		this.tags = tags;
+	}
+	public User getRealCreatedUser() {
+		return realCreatedUser;
+	}
+
+	public void setRealCreatedUser(User realCreatedUser) {
+		this.realCreatedUser = realCreatedUser;
 	}
 
 }

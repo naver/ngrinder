@@ -142,7 +142,7 @@
 								</#if>
 								<span class="pull-right">
 									<#if test??>
-										<#if test.status != "SAVED" || test.createdUser.userId != currentUser.userId>
+										<#if test.status != "SAVED" || test.createdUser.userId != currentUser.factualUser.userId>
 											<input type="hidden" id="isClone" name="isClone" value="true">
 											<#assign isClone = true/>
 										<#else>
@@ -154,7 +154,7 @@
 										<#assign isClone = false/> 
 									</#if>
 									<#--  Save/Clone is available only when the test owner is current user.   -->
-									<#if !(test??) || test.lastModifiedUser.userId == currentUser.userId>
+									<#if !(test??) || test.lastModifiedUser.userId == currentUser.factualUser.userId>
 										<button type="submit" class="btn btn-success" id="saveTestBtn" style="">
 											<#if isClone>
 												<@spring.message "perfTest.detail.clone"/>
