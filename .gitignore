@@ -12,3 +12,4 @@ target/
 /Servers
 /.metadata
 /ngrinder-core-3.*
+.DS_Store
