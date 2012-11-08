@@ -86,20 +86,19 @@ public class User extends BaseModel<User> {
 	@Column(name = "authentication_provider_class")
 	/** Who provide the authentication */
 	private String authProviderClass;
-	
-	@Transient
-	private User realUser;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "SHARED_USER", 
-				joinColumns = @JoinColumn(name = "user_id"), 
-				inverseJoinColumns = @JoinColumn(name = "share_user_id"))
+	@Transient
+	private User follower;
+
+	@Transient
+	private User ownerUser;
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "owner_id"), inverseJoinColumns = @JoinColumn(name = "follow_id"))
 	private List<User> followers;
-	
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name="SHARED_USER",
-	joinColumns = @JoinColumn(name = "share_user_id"), 
-	inverseJoinColumns = @JoinColumn(name = "user_id"))
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "follow_id"), inverseJoinColumns = @JoinColumn(name = "owner_id"))
 	private List<User> owners;
 
 	/**
@@ -261,8 +260,7 @@ public class User extends BaseModel<User> {
 	public void setAuthProviderClass(String authProviderClass) {
 		this.authProviderClass = authProviderClass;
 	}
-	
-	
+
 	public List<User> getFollowers() {
 		return followers;
 	}
@@ -270,23 +268,28 @@ public class User extends BaseModel<User> {
 	public void setFollowers(List<User> followers) {
 		this.followers = followers;
 	}
-	
+
 	public List<User> getOwners() {
 		return owners;
 	}
 
-	
 	public void setOwners(List<User> owners) {
 		this.owners = owners;
 	}
-	
-	public User getRealUser() {
-		return realUser;
+
+	public User getOwnerUser() {
+		return ownerUser;
 	}
 
-	public void setRealUser(User realUser) {
-		this.realUser = realUser;
+	public void setOwnerUser(User ownerUser) {
+		this.ownerUser = ownerUser;
 	}
 
+	public User getFollower() {
+		return follower;
+	}
 
+	public void setFollower(User follower) {
+		this.follower = follower;
+	}
 }

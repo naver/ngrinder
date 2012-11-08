@@ -240,4 +240,17 @@ public class UserService implements IUserService {
 	public List<User> getUserListByKeyWord(String name) {
 		return userRepository.findAll(UserSpecification.nameLike(name));
 	}
+	
+	@Transactional
+	public List<User> getUserFollowersList(String userId) {
+		User user = userRepository.findOneByUserId(userId);
+		return user.getFollowers();
+	}
+	
+	@Transactional
+	public List<User> getUserOwnersList(String userId) {
+		User user = userRepository.findOneByUserId(userId);
+		return user.getOwners();
+	}
+	
 }

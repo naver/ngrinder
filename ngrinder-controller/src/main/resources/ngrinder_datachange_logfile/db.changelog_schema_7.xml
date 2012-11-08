@@ -15,10 +15,10 @@
 				<comment>Add table SHARED_USER for user share function .</comment>
 				
 				<createTable tableName="SHARED_USER">
-				     <column name="user_id" type="bigint">
+				     <column name="owner_id" type="bigint">
 				       <constraints primaryKey="true" nullable="false"/>
     				 </column>
-				     <column name="share_user_id" type="bigint" >
+				     <column name="follow_id" type="bigint" >
 				       <constraints primaryKey="true" nullable="false"/>
     				 </column>
 				</createTable>

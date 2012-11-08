@@ -32,9 +32,9 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 
+
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
-import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
@@ -229,10 +229,9 @@ public class UserController extends NGrinderBaseController {
 	public String switchUserList(User user, ModelMap model) {
 		User currUser = userService.getUserById(user.getUserId());
 		model.addAttribute("shareUserList", currUser.getOwners());
-
 		return "user/userOptionGroup";
 	}
-	
+
 	/**
 	 * Switch user identity.
 	 * 
@@ -245,8 +244,8 @@ public class UserController extends NGrinderBaseController {
 	 * 
 	 * @return redirect:/perftest/list
 	 */
-	@RequestMapping("/switchUser/**")
-	public String switchUser(User user, ModelMap model, @RemainedPath String ownerId) {
+	@RequestMapping("/switchUser")
+	public String switchUser(User user, ModelMap model, @RequestParam String switchUserId) {
 		//do the switching works and remember the ownerId.
 		return "redirect:/perftest/list";
 	}

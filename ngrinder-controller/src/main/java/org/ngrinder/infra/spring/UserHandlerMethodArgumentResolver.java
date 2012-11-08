@@ -80,9 +80,22 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 		User currentUser = getUserContext().getCurrentUser();
 		String userParam = webRequest.getParameter("ownerId");
 
+		// User want to do something through other User status and this
+		// switchUserId is other user Id
+		String switchUserId = webRequest.getParameter("switchUserId");
+
 		if (StringUtils.isNotBlank(userParam) && adminRole.contains(currentUser.getRole())) {
 			return getUserService().getUserById(userParam);
 		}
+		if (StringUtils.isNotBlank(switchUserId)) {
+			User ownerUser = getUserService().getUserById(switchUserId);
+			currentUser.setOwnerUser(ownerUser);
+			ownerUser.setFollower(currentUser);
+			return ownerUser;
+		}
+		if (currentUser.getOwnerUser() != null)
+			return currentUser.getOwnerUser();
+		
 		return currentUser;
 	}
 
