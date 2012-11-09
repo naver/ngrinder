@@ -72,7 +72,7 @@ public abstract class NetworkUtil {
 			} catch (Exception e1) {
 				try {
 					return getFirstNonLoopbackAddress(true, false).getHostAddress();
-				} catch (SocketException e2) {
+				} catch (Exception e2) {
 					return "127.0.0.1";
 				}
 
