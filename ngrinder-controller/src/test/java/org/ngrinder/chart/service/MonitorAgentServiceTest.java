@@ -117,7 +117,7 @@ public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
 	@SuppressWarnings("serial")
 	@Test
 	public void testAddRemoveMonitorTargets() {
-		
+
 		long startTime = NumberUtils.toLong(df.format(new Date()));
 		Set<AgentInfo> agents = new HashSet<AgentInfo>();
 		final AgentInfo targetServer = new AgentInfo();
@@ -130,7 +130,7 @@ public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
 		List<SystemDataModel> infoList = monitorService.getSystemMonitorData("127.0.0.1", startTime, endTime);
 		int size = infoList.size();
 		//assertThat(size, greaterThan(0)); //there is no record is inserted in DB
-		ThreadUtil.sleep(2000);
+		ThreadUtil.sleep(1002000);
 		monitorDataService.removeMonitorAgents(new HashSet<AgentInfo>(){{
 			add(targetServer);
 		}});

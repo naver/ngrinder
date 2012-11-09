@@ -63,6 +63,7 @@ import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
+import org.ngrinder.region.service.RegionService;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
@@ -109,6 +110,9 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@Autowired
 	private TagService tagService;
+	
+	@Autowired
+	private RegionService regionService;
 
 	@Autowired
 	private Config config;
@@ -201,6 +205,7 @@ public class PerfTestController extends NGrinderBaseController {
 		});
 
 		model.addAttribute(PARAM_SCRIPT_LIST, allFileEntries);
+		model.addAttribute(PARAM_REGION_LIST, regionService.getRegionList());
 
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		addDefaultAttributeOnModel(user, model);

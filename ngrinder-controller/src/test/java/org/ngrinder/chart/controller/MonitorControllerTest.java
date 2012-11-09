@@ -77,7 +77,7 @@ public class MonitorControllerTest extends AbstractChartTransactionalTest {
 		monitorService.saveSystemMonitorInfo(systemInfo);
 		
 		Date startTime = df.parse(String.valueOf(startTimeLong));
-		String rtnStr = monitorController.getMonitorData(model, "127.0.0.1", startTime, endTime, 500);
+		String rtnStr = monitorController.getMonitorData(model, "10.34.64.212", startTime, endTime, 500);
 		LOG.debug("Current monitor data for ip:{} is\n{}", "127.0.0.1", rtnStr);
 	}
 

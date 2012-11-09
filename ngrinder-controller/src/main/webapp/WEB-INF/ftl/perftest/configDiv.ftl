@@ -8,12 +8,34 @@
 				<div class="control-group">
 					<label for="agentCount" class="control-label"><@spring.message "perfTest.configuration.agent"/></label>
 					<div class="controls">
-						<div class="input-append">
-							<input type="text" class="input span1" rel="popover"
-								id="agentCount" name="agentCount" value="${(test.agentCount)!0}" 
-								data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
-								data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
-				 		</div>
+						<table style="width:100%">
+							<colgroup>
+								<col width="*"/>
+								<col width="30%"/>
+							</colgroup>
+							<tr>
+							<td>
+								<div class="input-append">
+									<input type="text" class="input required span1" rel="popover"
+										id="agentCount" name="agentCount" value="${(test.agentCount)!0}" 
+										data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
+										data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
+						 		</div>
+				 			</td>
+				 			<td>
+								<div>
+									<select id="region" class="required span3" name="region" placeholder="Region">
+										<option value='' disabled selected style='display:none;'>Select Region</option>
+										<#if regionList?? && regionList?size &gt; 0> 
+											<#list regionList as regionName> 
+												<option value="${regionName}" <#if test?? && test.region??>selected</#if> >${regionName}</option> 
+											</#list> 
+										</#if>
+									</select>
+								</div>
+							</td>
+							</tr>
+						</table>
 					</div>
 				</div>
 				<div class="control-group">

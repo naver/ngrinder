@@ -49,8 +49,8 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 	
 	@Test
 	public void testShareUser() {
-		List sharedUsers = new ArrayList();
-		List shareUsers = new ArrayList();
+		List<User> sharedUsers = new ArrayList<User>();
+		List<User> shareUsers = new ArrayList<User>();
 
 		User user = new User();
 		user.setUserName("MyName1");
@@ -94,7 +94,7 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 		userRepository.save(user4);
 
 	    User sharedUser = userRepository.findOneByUserId(user4.getUserId());
-		List sh = sharedUser.getFollowers();
+		List<User> sh = sharedUser.getFollowers();
 	}
 	
 
