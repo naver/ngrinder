@@ -58,9 +58,9 @@
 			
 			<#if success?exists>
 				<#if success>
-					showSuccessMsg("<@spring.message "systemConfig.message.success"/>");
+					showSuccessMsg("<@spring.message "common.message.alert.save.success"/>");
 				<#else>
-					showErrorMsg("<@spring.message "systemConfig.message.error"/>");
+					showErrorMsg("<@spring.message "common.message.alert.save.error"/>");
 				</#if>
 			</#if>
 		});

@@ -22,10 +22,10 @@
 		    }, '<@spring.message "common.form.validate.countNumber"/>');
 	$.extend(jQuery.validator.messages, {
 	    required: "<@spring.message "common.form.validate.empty"/>",
-	    digits: "<@spring.message "common.validate.message.digits"/>",
-		range: $.validator.format("<@spring.message "common.validate.message.range"/>"),
-		max: $.validator.format("<@spring.message "common.validate.message.max"/>"),
-		min: $.validator.format("<@spring.message "common.validate.message.min"/>")
+	    digits: "<@spring.message "common.message.validate.digits"/>",
+		range: $.validator.format("<@spring.message "common.message.validate.range"/>"),
+		max: $.validator.format("<@spring.message "common.message.validate.max"/>"),
+		min: $.validator.format("<@spring.message "common.message.validate.min"/>")
 	});
 </script> 
 <input type="hidden" id="contextPath" value="${req.getContextPath()}">
