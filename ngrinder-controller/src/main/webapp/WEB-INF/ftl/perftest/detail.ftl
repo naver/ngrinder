@@ -102,6 +102,14 @@
 	    line-height: 16px;
 	    vertical-align: text-top;
 	}
+	
+	#testName + span {
+		float: left;
+	}
+	
+	#queryDiv label {
+		width: 100px;
+	}
 	</style>
 
 </head>
@@ -115,73 +123,103 @@
 				<input type="hidden" id="testId" name="id" value="${(test.id)!}"> 
 				<input type="hidden" id="threshold"	name="threshold" value="${(test.threshold)!"D"}"> 
 
-				<div class="form-horizontal">
+				<div class="form-horizontal" id="queryDiv">
 					<fieldset>
 						<div class="control-group">
-							<label for="testName" class="header-control-label control-label"><@spring.message "perfTest.configuration.testName"/></label>
-							<div class="header-controls">
-								<#if test?? && test.testName??>
-									<#assign initTestName = test.testName>
-								<#elseif testName??>
-									<#assign initTestName = testName>
-								<#else>
-                     		   		<#assign initTestName = "">
-                    			</#if>
-                    
-								<input class="required span2 left-float" maxlength="80" size="30" type="text" id="testName" name="testName" value="${(initTestName)!}">
-								<label for="tagString" class="header-control-label control-label"><@spring.message "perfTest.configuration.tags"/></label>
-								<input class="span3" size="60" type="text" id="tagString" name="tagString" value="${(test.tagString)!}">
-								
-								<#if test??> 
-									<span id="teststatus_pop_over"
-										rel="popover" 
-										data-content='${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}'  
-										data-original-title="<@spring.message "${test.status.springMessageKey}"/>" type="toggle" placement="bottom">
-										<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
-									</span>
-								</#if>
-								<span class="pull-right">
-									<#if test??>
-										<#if test.status != "SAVED" || test.createdUser.userId != currentUser.userId>
-											<input type="hidden" id="isClone" name="isClone" value="true">
-											<#assign isClone = true/>
-										<#else>
-											<input type="hidden" id="isClone" name="isClone" value="false">
-											<#assign isClone = false/> 
-										</#if>
-									<#else>
-										<input type="hidden" id="isClone" name="isClone" value="false">
-										<#assign isClone = false/> 
-									</#if>
-									<#--  Save/Clone is available only when the test owner is current user.   -->
-									<#if !(test??) || test.lastModifiedUser.userId == currentUser.userId>
-										<button type="submit" class="btn btn-success" id="saveTestBtn" style="">
-											<#if isClone>
-												<@spring.message "perfTest.detail.clone"/>
+							<table>
+								<colgroup>
+									<col width="120">
+									<col width="210">
+									<col width="90">
+									<col width="210">
+									<col width="30px">
+									<col width="220px">
+								</colgroup>
+								<tbody>
+									<tr>
+										<td>
+											<label for="testName" class="control-label"><@spring.message "perfTest.configuration.testName"/></label>
+										</td>
+										<td>
+											<#if test?? && test.testName??>
+												<#assign initTestName = test.testName>
+											<#elseif testName??>
+												<#assign initTestName = testName>
 											<#else>
-												<@spring.message "common.button.save"/>
-											</#if> 
-										</button>
-										
-										<button type="submit" class="btn btn-primary" style="margin-left:10px;margin-right:20px"
-											data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn">
-											<#if isClone>
-												<@spring.message "perfTest.detail.clone"/>
-											<#else>
-												<@spring.message "common.button.save"/>
+			                     		   		<#assign initTestName = "">
+			                    			</#if>
+			                    
+											<input class="required span3 left-float" maxlength="80" size="30" type="text" id="testName" name="testName" value="${(initTestName)!}">
+										</td>
+										<td>
+											<label for="tagString" class="control-label" style="width:80px; margin-right:18px"><@spring.message "perfTest.configuration.tags"/></label>
+										</td>
+										<td>
+											<input class="span3" size="60" type="text" id="tagString" name="tagString" value="${(test.tagString)!}">
+										</td>
+										<td>
+											<#if test??> 
+												<span id="teststatus_pop_over"
+													rel="popover" 
+													data-content='${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}'  
+													data-original-title="<@spring.message "${test.status.springMessageKey}"/>" type="toggle" placement="bottom">
+													<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
+												</span>
 											</#if>
-											&nbsp;<@spring.message "perfTest.detail.andStart"/>
-										</button>
-									</#if>
-								</span>
-								<span class="error-msg"></span>
-							</div>
+										</td>
+										<td>
+											<#if test??>
+												<#if test.status != "SAVED" || test.createdUser.userId != currentUser.userId>
+													<#assign isClone = true/>
+												<#else>
+													<#assign isClone = false/> 
+												</#if>
+											<#else>
+												<#assign isClone = false/> 
+											</#if>
+											<input type="hidden" name="isClone" value="${isClone?string}">
+											<#--  Save/Clone is available only when the test owner is current user.   -->
+											<#if test?? && test.lastModifiedUser.userId != currentUser.userId>
+												<#assign disabled = "disabled">
+											</#if>
+												<button type="submit" class="btn btn-success" id="saveTestBtn" style="margin-left:26px; width:55px" ${disabled!}>
+													<#if isClone>
+														<@spring.message "perfTest.detail.clone"/>
+													<#else>
+														<@spring.message "common.button.save"/>
+													</#if> 
+												</button>
+												
+												<button type="submit" class="btn btn-primary" style="width:116px" data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn" ${disabled!}>
+													<#if isClone>
+														<@spring.message "perfTest.detail.clone"/>
+													<#else>
+														<@spring.message "common.button.save"/>
+													</#if>
+													&nbsp;<@spring.message "perfTest.detail.andStart"/>
+												</button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
 						</div>
 						<div class="control-group" style="margin-bottom: 0">
-							<label for="description" class="header-control-label control-label"><@spring.message "common.label.description"/></label>
-							<div class="header-controls controls">
-								<textarea class="span10" id="description" rows="3" name="description" style="resize: none">${(test.description)!}</textarea>
-							</div>
+							<table>
+								<colgroup>
+									<col width="120">
+									<col width="210">
+								</colgroup>
+								<tbody>
+									<tr>
+										<td>
+											<label for="description" class="control-label"><@spring.message "common.label.description"/></label>
+										</td>
+										<td>
+											<textarea id="description" name="description" style="resize: none; width:751px; height:36px">${(test.description)!}</textarea>
+										</td>
+									</tr>
+								</tbody>
+							</table>
 						</div>
 					</fieldset>
 				</div>
@@ -526,6 +564,14 @@ function bindEvent() {
 	$("#saveScheduleBtn").click(function() {
 		if (!$("#testContentForm").valid()) {
 			$("#testContent_tab a").tab('show');
+			return false;
+		}
+		var $agentCount = $("#agentCount");
+		if ($agentCount.val() == 0) {
+			var $controlGrp = $agentCount.parents('.control-group');
+			$controlGrp.removeClass('success');
+			$controlGrp.addClass("error");
+			showErrorMsg("<@spring.message "perfTest.warning.agent0"/>");
 			return false;
 		}
 	    $("#tagString").val(buildTagString())
