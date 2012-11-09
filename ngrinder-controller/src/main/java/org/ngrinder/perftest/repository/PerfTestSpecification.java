@@ -140,17 +140,17 @@ public abstract class PerfTestSpecification {
 	}
 
 	/**
-	 * Get createBy specification to get the {@link PerfTest} whose creator or last modifier is the given user.
+	 * Get createBy specification to get the {@link PerfTest} whose creator is the given user.
 	 * 
 	 * @param user
 	 *            user
 	 * @return {@link Specification}
 	 */
-	public static Specification<PerfTest> lastModifiedOrCreatedBy(final User user) {
+	public static Specification<PerfTest> createdBy(final User user) {
 		return new Specification<PerfTest>() {
 			@Override
 			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				return cb.or(cb.equal(root.get("lastModifiedUser"), user), cb.equal(root.get("createdUser"), user));
+				return cb.or(cb.equal(root.get("createdUser"), user));
 			}
 		};
 	}

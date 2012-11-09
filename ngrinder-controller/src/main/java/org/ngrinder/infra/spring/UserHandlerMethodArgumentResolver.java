@@ -95,8 +95,6 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 			// CurrentUser should remember whose status he used
 			currentUser.setOwnerUser(ownerUser);
 
-			// OwnerUser should remember who use his status
-			ownerUser.setFollower(currentUser);
 			return ownerUser;
 		}
 

@@ -29,7 +29,7 @@ import static org.ngrinder.perftest.repository.PerfTestSpecification.emptyPredic
 import static org.ngrinder.perftest.repository.PerfTestSpecification.hasTag;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.idEqual;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.idSetEqual;
-import static org.ngrinder.perftest.repository.PerfTestSpecification.lastModifiedOrCreatedBy;
+import static org.ngrinder.perftest.repository.PerfTestSpecification.createdBy;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.likeTestNameOrDescription;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.statusSetEqual;
 
@@ -162,7 +162,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		Specifications<PerfTest> spec = Specifications.where(emptyPredicate());
 		// User can see only his own test
 		if (user.getRole().equals(Role.USER)) {
-			spec = spec.and(lastModifiedOrCreatedBy(user));
+			spec = spec.and(createdBy(user));
 		}
 
 		if (StringUtils.isNotBlank(tag)) {
@@ -185,7 +185,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return found {@link PerfTest} list
 	 */
 	List<PerfTest> getPerfTestList(User user) {
-		Specifications<PerfTest> spec = Specifications.where(lastModifiedOrCreatedBy(user));
+		Specifications<PerfTest> spec = Specifications.where(createdBy(user));
 		return perfTestRepository.findAll(spec);
 	}
 
@@ -201,7 +201,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 		// User can see only his own test
 		if (user.getRole().equals(Role.USER)) {
-			spec = spec.and(lastModifiedOrCreatedBy(user));
+			spec = spec.and(createdBy(user));
 		}
 		spec = spec.and(idEqual(id));
 		return perfTestRepository.findOne(spec);
@@ -220,7 +220,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 		// User can see only his own test
 		if (user.getRole().equals(Role.USER)) {
-			spec = spec.and(lastModifiedOrCreatedBy(user));
+			spec = spec.and(createdBy(user));
 		}
 
 		spec = spec.and(idSetEqual(ids));
@@ -239,7 +239,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 		// User can see only his own test
 		if (user != null) {
-			spec = spec.and(lastModifiedOrCreatedBy(user));
+			spec = spec.and(createdBy(user));
 		}
 
 		if (statuses.length != 0) {
@@ -261,7 +261,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 		// User can see only his own test
 		if (user != null) {
-			spec = spec.and(lastModifiedOrCreatedBy(user));
+			spec = spec.and(createdBy(user));
 		}
 		if (statuses.length != 0) {
 			spec = spec.and(statusSetEqual(statuses));

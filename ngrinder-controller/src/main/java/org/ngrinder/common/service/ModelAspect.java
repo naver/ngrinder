@@ -29,7 +29,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.ngrinder.infra.spring.SpringContext;
 import org.ngrinder.model.BaseModel;
-import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,16 +71,11 @@ public class ModelAspect {
 				Date lastModifiedDate = new Date();
 				model.setLastModifiedDate(lastModifiedDate);
 				User currentUser = userContext.getCurrentUser();
-				model.setLastModifiedUser(currentUser.getFactualUser());
+				model.setLastModifiedUser(currentUser);
 
 				if (!model.exist() || model.getCreatedUser() == null) {
 					model.setCreatedDate(lastModifiedDate);
-					if (object instanceof PerfTest) {
-						((PerfTest) object).setRealCreatedUser(currentUser);
-						model.setCreatedUser(currentUser.getFactualUser());
-					}else{
-						model.setCreatedUser(currentUser);
-					}
+					model.setCreatedUser(currentUser.getFactualUser());
 				}
 			}
 		}
