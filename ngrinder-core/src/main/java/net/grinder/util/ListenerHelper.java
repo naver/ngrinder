@@ -20,30 +20,23 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.infra.plugin;
-
-import javax.servlet.Filter;
-
-import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
-import com.atlassian.plugin.module.ContainerManagedPlugin;
+package net.grinder.util;
 
 /**
- * Plugin Descriptor for PreAuth Filter.
- * 
- * In the
- * {@link Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)}
- * method, <br/>
- * the plugin should set
- * {@link org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken}
- * in the {@link org.springframework.security.core.context.SecurityContext}
+ * Listener Helper to shorten the creation code.
  * 
  * @author JunHo Yoon
  * @since 3.0.2
  */
-@PluginDescriptor("on-preauth-servletfilter")
-@SuppressWarnings("deprecation")
-public class OnPreAuthServletFilterModuleDescriptor extends AbstractModuleDescriptor<Filter> {
-	public Filter getModule() {
-		return ((ContainerManagedPlugin) getPlugin()).getContainerAccessor().createBean(getModuleClass());
+public abstract class ListenerHelper {
+	/**
+	 * Create a listener instance.
+	 * 
+	 * @param <T>
+	 *            listener type.
+	 * @return created listener
+	 */
+	public static <T> ListenerSupport<T> create() {
+		return new ListenerSupport<T>();
 	}
 }

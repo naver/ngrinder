@@ -27,6 +27,7 @@ import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.engine.agent.Agent;
+import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.thread.Condition;
@@ -48,8 +49,7 @@ public class AgentControllerDaemon implements Agent {
 	private final AgentController agentController;
 	private Thread thread;
 	private final GrinderProperties properties;
-	private final ListenerSupport<AgentControllerShutDownListener> m_listeners 
-				= new ListenerSupport<AgentControllerShutDownListener>();
+	private final ListenerSupport<AgentControllerShutDownListener> m_listeners = ListenerHelper.create();
 	private boolean forceToshutdown = false;
 	// event synchronization for
 	private Condition m_eventSyncCondition = new Condition();
@@ -63,6 +63,9 @@ public class AgentControllerDaemon implements Agent {
 
 	/**
 	 * Constructor.
+	 * 
+	 * @param currentIp
+	 *            current ip
 	 */
 	public AgentControllerDaemon(String currentIp) {
 		try {
@@ -92,8 +95,8 @@ public class AgentControllerDaemon implements Agent {
 	}
 
 	/**
-	 * Run agent controller with the given agent controller host and the agent
-	 * controller server port.
+	 * Run agent controller with the given agent controller host and the agent controller server
+	 * port.
 	 * 
 	 * @param agentControllerServerHost
 	 *            agent controller server host
@@ -113,8 +116,8 @@ public class AgentControllerDaemon implements Agent {
 	private long count = 0;
 
 	/**
-	 * Run agent controller with given {@link GrinderProperties}. server host
-	 * and port will be gained from {@link GrinderProperties}
+	 * Run agent controller with given {@link GrinderProperties}. server host and port will be
+	 * gained from {@link GrinderProperties}
 	 * 
 	 * @param grinderProperties
 	 *            {@link GrinderProperties}
@@ -129,8 +132,8 @@ public class AgentControllerDaemon implements Agent {
 							LOGGER.info("agent controller daemon : started.");
 						}
 						getAgentController().setAgentConfig(
-								checkNotNull(agentConfig,
-										"agent config should be provided before agent controller start"));
+										checkNotNull(agentConfig,
+														"agent config should be provided before controller start"));
 						getAgentController().run(grinderProperties, count);
 
 						getListeners().apply(new Informer<AgentControllerShutDownListener>() {

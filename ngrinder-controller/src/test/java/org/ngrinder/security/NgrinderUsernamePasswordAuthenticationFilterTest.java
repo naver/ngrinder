@@ -16,20 +16,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 
 public class NgrinderUsernamePasswordAuthenticationFilterTest extends AbstractNGrinderTransactionalTest {
-	private NgrinderUsernamePasswordAuthenticationFilter filter = new NgrinderUsernamePasswordAuthenticationFilter() {
+	private MockNgrinderUsernamePasswordAuthenticationFilter filter = new MockNgrinderUsernamePasswordAuthenticationFilter();
+
+	private class MockNgrinderUsernamePasswordAuthenticationFilter extends NgrinderUsernamePasswordAuthenticationFilter {
 		protected org.springframework.security.core.Authentication getAuthentification(
 						javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) {
 			Authentication auth = mock(Authentication.class);
 			when(auth.getPrincipal()).thenReturn(new SecuredUser(getTestUser(), null));
 			return auth;
 		};
+
+
 	};
+
 	@Autowired
 	private UserRepository userRepository;
 
 	@Test
 	public void testFilter() {
-		filter.userRepository = userRepository;
+		filter.setUserRepository(userRepository);
 		HttpServletRequest req = mock(HttpServletRequest.class);
 		when(req.getParameter("user_timezone")).thenReturn("Korean");
 		when(req.getParameter("native_language")).thenReturn("KoreanLang");

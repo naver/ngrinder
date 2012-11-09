@@ -41,6 +41,11 @@
 		</div>
 	</div>
 </div>
+<#if announcement?has_content>
+<div class="alert alert-info" style="margin-top:-40px; margin-bottom:21px;">
+${announcement}
+</div>
+</#if>
 <#include "messages.ftl">
 
 <div class="modal fade" id="userProfileModal">

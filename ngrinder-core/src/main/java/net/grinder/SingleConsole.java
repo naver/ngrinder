@@ -30,17 +30,14 @@ import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.grinder.common.GrinderException;
@@ -65,11 +62,14 @@ import net.grinder.console.model.SampleModel;
 import net.grinder.console.model.SampleModelImplementationEx;
 import net.grinder.console.model.SampleModelViews;
 import net.grinder.statistics.ExpressionView;
+import net.grinder.statistics.StatisticsIndexMap;
+import net.grinder.statistics.StatisticsServicesImplementation;
 import net.grinder.statistics.StatisticsSet;
 import net.grinder.util.AllocateLowestNumber;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.Directory;
 import net.grinder.util.FileContents;
+import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.thread.Condition;
@@ -78,7 +78,6 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.mutable.MutableDouble;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.ReflectionUtil;
@@ -94,9 +93,10 @@ import org.slf4j.LoggerFactory;
  * @since 3.0
  */
 public class SingleConsole implements Listener, SampleListener {
+	private static final String REOSURCE_CONSOLE = "net.grinder.console.common.resources.Console";
 	private Thread consoleFoundationThread;
 	private ConsoleFoundationEx consoleFoundation;
-	public static final Resources RESOURCE = new ResourcesImplementation("net.grinder.console.common.resources.Console");
+	public static final Resources RESOURCE = new ResourcesImplementation(REOSURCE_CONSOLE);
 	public static final Logger LOGGER = LoggerFactory.getLogger(SingleConsole.class);
 
 	private static final String REPORT_CSV = "output.csv";
@@ -110,24 +110,21 @@ public class SingleConsole implements Listener, SampleListener {
 	private double tpsValue = 0;
 	// for displaying tps graph in running page
 	private double peakTpsForGraph = 0;
-	SampleModel sampleModel;
+	private SampleModel sampleModel;
 	private SampleModelViews modelView;
 	private long startTime = 0;
 	private Date momentWhenTpsBeganToHaveVerySmall;
 	private Date lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue;
 	private static final int TEST_DURATION_CHECK_MARGIN = 5000;
-	private final ListenerSupport<ConsoleShutdownListener> m_shutdownListeners = new ListenerSupport<ConsoleShutdownListener>();
-	private final ListenerSupport<SamplingLifeCycleListener> m_samplingLifeCycleListener = new ListenerSupport<SamplingLifeCycleListener>();
+	private final ListenerSupport<ConsoleShutdownListener> showdownListner = ListenerHelper.create();
+	private final ListenerSupport<SamplingLifeCycleListener> samplingLifeCycleListener = ListenerHelper.create();
 
 	private File reportPath;
-	private NumberFormat formatter = new DecimalFormat("###.###");
 	// private NumberFormat simpleFormatter = new DecimalFormat("###");
 
 	private Map<String, Object> statisticData;
 	private boolean sampling = false;
 
-	// key list in statistic map, used to make sure the order
-	private List<String> csvKeyList = new ArrayList<String>();
 	private boolean headerAdded = false;
 
 	private Map<String, BufferedWriter> fileWriterMap = new HashMap<String, BufferedWriter>();
@@ -139,12 +136,12 @@ public class SingleConsole implements Listener, SampleListener {
 	/**
 	 * Currently running thread.
 	 */
-	int runningThread = 0;
+	private int runningThread = 0;
 
 	/**
 	 * Currently running process.
 	 */
-	int runningProcess = 0;
+	private int runningProcess = 0;
 
 	/**
 	 * Currently not finished process count.
@@ -521,6 +518,14 @@ public class SingleConsole implements Listener, SampleListener {
 		return statisticData;
 	}
 
+	protected StatisticsIndexMap getStatisticsIndexMap() {
+		return StatisticsServicesImplementation.getInstance().getStatisticsIndexMap();
+	}
+
+	protected ExpressionView[] getExpressionView() {
+		return StatisticsServicesImplementation.getInstance().getSummaryStatisticsView().getExpressionViews();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -535,125 +540,19 @@ public class SingleConsole implements Listener, SampleListener {
 		if (samplingCount++ < ignoreSampleCount) {
 			return;
 		}
-
 		if (firstSampling) {
 			firstSampling = false;
 			informTestSamplingStart();
 		}
 		try {
-			setTpsValue(sampleModel.getTPSExpression().getDoubleValue(intervalStatistics));
+			StatisticsSet intervalStatisticsSnapshot = intervalStatistics.snapshot();
+			setTpsValue(sampleModel.getTPSExpression().getDoubleValue(intervalStatisticsSnapshot));
 			checkTooLowTps(getTpsValues());
 			updateStatistics();
-			@SuppressWarnings("unchecked")
-			List<Map<String, Object>> lastSampleStatistics = (List<Map<String, Object>>) getStatisticData().get(
-							"lastSampleStatistics");
-
-			// record the latest sample into report files.
-			// in lastSampleStatistics, there could be several sub-tests. We
-			// will record the separate and total statistic value.
-			if (lastSampleStatistics != null && lastSampleStatistics.size() > 0) {
-				double tpsSum = 0;
-				double errors = 0;
-
-				StringBuilder csvLine = new StringBuilder();
-				StringBuilder csvHeader = new StringBuilder();
-				csvHeader.append("DateTime");
-
-				// get the key list from lastStatistic map, use list to keep the order
-				if (csvKeyList.size() == 0) {
-					for (String eachKey : lastSampleStatistics.get(0).keySet()) {
-						if (!eachKey.equals("Peak_TPS")) {
-							csvKeyList.add(eachKey);
-						}
-					}
-				}
-
-				// store the total statistic value in valueMap
-				Map<String, Object> totalValueMap = new HashMap<String, Object>();
-
-				// add date time into csv as first column
-				// FIXME this date time interval should be 1 second.
-				// but the system can not make sure about that.
-				csvLine.append(DateUtil.dateToString(new Date()));
-
-				int testIndex = 0;
-				for (Map<String, Object> lastStatistic : lastSampleStatistics) {
-					testIndex++;
-					tpsSum += (Double) lastStatistic.get("TPS");
-					errors += (Double) lastStatistic.get("Errors");
-
-					// step.1 add separate statistic data into csv line string. And
-					// calculate the total statistic data.
-					for (Entry<String, Object> each : lastStatistic.entrySet()) {
-						// Peak TPS is not meaningful for CSV report for every second.
-						if (each.getKey().equals("Peak_TPS")) {
-							continue;
-						}
-						if (!headerAdded) {
-							csvHeader.append(",");
-							csvHeader.append(each.getKey() + "-" + testIndex);
-						}
-						Object val = each.getValue();
-						Object valueInTotalMap = totalValueMap.get(each.getKey());
-						if (val instanceof Double) {
-							// number value in lastStatistic is Double, we add every
-							// test's double value into totalValueMap, so we use
-							// MutableDouble in valueMap, to avoid creating too many
-							// objects.
-							MutableDouble mutableDouble = (MutableDouble) valueInTotalMap;
-							if (mutableDouble == null) {
-								mutableDouble = new MutableDouble(0);
-								totalValueMap.put(each.getKey(), mutableDouble);
-							}
-							// FIXME : It should be fixed. in case of Mean Test Time.. adding value does not make sense.
-							mutableDouble.add((Double) val);
-						} else if (String.valueOf(val).equals("null")) {
-							// if it is null, just assume it is 0.
-							// The value is a String "null"
-							// valueMap.put(each.getKey(), new MutableDouble(0));
-							if (valueInTotalMap == null) {
-								totalValueMap.put(each.getKey(), new MutableDouble(0));
-							}
-							// just skip it, if there is already one key for that
-						} else {
-							// there are some String type object like test description.
-							totalValueMap.put(each.getKey(), val);
-						}
-						if (!each.getKey().equals("Peak_TPS")) {
-							csvLine.append(",");
-							csvLine.append(formatValue(val));
-						}
-					}
-				}
-				try {
-					// add header into csv file.
-					if (!headerAdded) {
-						// add header for total data
-						for (String key : csvKeyList) {
-							csvHeader.append(",");
-							csvHeader.append(key);
-						}
-						writeCSVDataLine(csvHeader.toString());
-						headerAdded = true;
-					}
-
-					for (Entry<String, Object> each : totalValueMap.entrySet()) {
-						writeReportData(each.getKey() + REPORT_DATA, formatValue(each.getValue()));
-					}
-					// add total test report into csv file.
-					for (String key : csvKeyList) {
-						csvLine.append(",");
-						csvLine.append(formatValue(totalValueMap.get(key)));
-					}
-
-					writeCSVDataLine(csvLine.toString());
-
-				} catch (IOException e) {
-					LOGGER.error("Write report data failed :" + e.getMessage(), e);
-				}
-				// In case of error..
-				checkTooManyError(tpsSum, errors);
-			}
+			writeIntervalSummaryData(intervalStatisticsSnapshot);
+			ModelTestIndex modelIndex = ((SampleModelImplementationEx) sampleModel).getModelTestIndex();
+			writeIntervalCsvData(intervalStatisticsSnapshot, modelIndex);
+			checkTooManyError(cumulativeStatistics);
 		} catch (RuntimeException e) {
 			LOGGER.error("Error occurs while update statistics " + e.getMessage(), e);
 			throw e;
@@ -661,6 +560,87 @@ public class SingleConsole implements Listener, SampleListener {
 
 	}
 
+	private String createKeyFromExpression(ExpressionView expressionView) {
+		return expressionView.getDisplayName().replaceAll("\\s+", "_");
+	}
+
+	/**
+	 * Write total test interval data into file.
+	 * 
+	 * @param intervalStatistics
+	 *            interval statistics
+	 */
+	public void writeIntervalSummaryData(StatisticsSet intervalStatistics) {
+		for (ExpressionView eachView : getExpressionView()) {
+			double doubleValue = eachView.getExpression().getDoubleValue(intervalStatistics);
+			writeReportData(createKeyFromExpression(eachView) + REPORT_DATA,
+							formatValue(getRealDoubleValue(doubleValue)));
+		}
+	}
+
+	/**
+	 * Write each test interval data into CSV.
+	 * 
+	 * @param intervalStatistics
+	 *            interval statistics
+	 * @param modelTestIndex
+	 *            model containning all tests
+	 */
+	public void writeIntervalCsvData(StatisticsSet intervalStatistics, ModelTestIndex modelTestIndex) {
+		StringBuilder csvLine = new StringBuilder();
+		csvLine.append(DateUtil.dateToString(new Date()));
+		ExpressionView[] expressionView = getExpressionView();
+		for (ExpressionView eachView : getExpressionView()) {
+			if (!eachView.getDisplayName().equals("Peak TPS")) {
+				double doubleValue = eachView.getExpression().getDoubleValue(intervalStatistics);
+				csvLine.append(",").append(formatValue(getRealDoubleValue(doubleValue)));
+			}
+		}
+
+		for (int i = 0; i < modelTestIndex.getNumberOfTests(); i++) {
+			StatisticsSet lastSampleStatistics = modelTestIndex.getLastSampleStatistics(i);
+
+			// get the key list from lastStatistic map, use list to keep the order
+			Test test = modelTestIndex.getTest(i);
+			String description = test.getDescription();
+			csvLine.append(",").append(description);
+			for (ExpressionView eachView : getExpressionView()) {
+				if (!eachView.getDisplayName().equals("Peak TPS")) {
+					csvLine.append(",").append(
+									formatValue(getRealDoubleValue(eachView.getExpression().getDoubleValue(
+													lastSampleStatistics))));
+				}
+			}
+		}
+
+		// add header into csv file.
+		if (!headerAdded) {
+			StringBuilder csvHeader = new StringBuilder();
+			csvHeader.append("DateTime");
+
+			// get the key list from lastStatistic map, use list to keep the order
+			for (ExpressionView each : expressionView) {
+				if (!each.getDisplayName().equals("Peak TPS")) {
+					csvHeader.append(",").append(createKeyFromExpression(each));
+				}
+			}
+			for (int i = 0; i < modelTestIndex.getNumberOfTests(); i++) {
+
+				csvHeader.append(",").append("Description");
+				// get the key list from lastStatistic map, use list to keep the order
+				for (ExpressionView each : expressionView) {
+					if (!each.getDisplayName().equals("Peak TPS")) {
+						csvHeader.append(",").append(createKeyFromExpression(each)).append("-").append(i);
+					}
+				}
+			}
+			writeCSVDataLine(csvHeader.toString());
+			headerAdded = true;
+		}
+		writeCSVDataLine(csvLine.toString());
+	}
+
+	// In case of error..
 	/**
 	 * Check if the TPS is too low. the TPS is lower than 0.001 for 2 minutes, It notifies it to the
 	 * {@link ConsoleShutdownListener}
@@ -694,16 +674,18 @@ public class SingleConsole implements Listener, SampleListener {
 	 * Check if too many error occurs. If the half of total transaction is error for 10 sec. It
 	 * notifies the {@link ConsoleShutdownListener}
 	 * 
-	 * @param tpsSum
-	 *            sum of tps
-	 * @param errors
-	 *            count of errors.
+	 * @param cumulativeStatistics
+	 *            accumulated Statistics
 	 */
-	private void checkTooManyError(double tpsSum, double errors) {
-		if (tpsSum / 2 < errors) {
+	private void checkTooManyError(StatisticsSet cumulativeStatistics) {
+		StatisticsIndexMap statisticsIndexMap = getStatisticsIndexMap();
+		long tpsSum = cumulativeStatistics.getCount(statisticsIndexMap.getLongSampleIndex("timedTests"));
+		long errors = cumulativeStatistics.getValue(statisticsIndexMap.getLongIndex("errors"));
+		System.out.println(" " + tpsSum + " " + errors);
+		if (((double) tpsSum / 2) < errors) {
 			if (lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue == null) {
 				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = new Date();
-			} else if (new Date().getTime() - lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue.getTime() >= TOO_MANY_ERROR_TIME) {
+			} else if (isOverLowTpsThreshhold()) {
 				LOGGER.warn("Stop the test because test error is more than half of total tps for more than {} seconds.",
 								TOO_MANY_ERROR_TIME / 1000);
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
@@ -716,6 +698,10 @@ public class SingleConsole implements Listener, SampleListener {
 		}
 	}
 
+	private boolean isOverLowTpsThreshhold() {
+		return new Date().getTime() - lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue.getTime() >= TOO_MANY_ERROR_TIME;
+	}
+
 	/**
 	 * To update statistics data while test is running.
 	 */
@@ -726,11 +712,11 @@ public class SingleConsole implements Listener, SampleListener {
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
 		ExpressionView[] views = modelView.getCumulativeStatisticsView().getExpressionViews();
 		ModelTestIndex modelIndex = ((SampleModelImplementationEx) sampleModel).getModelTestIndex();
+
 		if (modelIndex != null) {
 			for (int i = 0; i < modelIndex.getNumberOfTests(); i++) {
 				Map<String, Object> statistics = new HashMap<String, Object>();
 				Map<String, Object> lastStatistics = new HashMap<String, Object>();
-
 				Test test = modelIndex.getTest(i);
 
 				statistics.put("testNumber", test.getNumber());
@@ -739,8 +725,8 @@ public class SingleConsole implements Listener, SampleListener {
 				// saved in report data.
 				// and the character like ',' in this field will affect the csv
 				// file too.
-				lastStatistics.put("testDescription", test.getDescription());
 				lastStatistics.put("testNumber", test.getNumber());
+				lastStatistics.put("testDescription", test.getDescription());
 
 				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
 				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
@@ -760,6 +746,7 @@ public class SingleConsole implements Listener, SampleListener {
 		Map<String, Object> totalStatistics = new HashMap<String, Object>();
 
 		for (ExpressionView expressionView : views) {
+
 			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
 							getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 		}
@@ -791,7 +778,10 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	private static Object getRealDoubleValue(Double doubleValue) {
-		return (doubleValue.isInfinite() || doubleValue.isNaN()) ? null : doubleValue;
+		if (doubleValue == null) {
+			return 0;
+		}
+		return (doubleValue.isInfinite() || doubleValue.isNaN()) ? 0 : doubleValue;
 	}
 
 	/**
@@ -828,13 +818,13 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * get the list of added {@link ConsoleShutdownListener}. +
+	 * get the list of added {@link ConsoleShutdownListener}.
 	 * 
 	 * @return the list of added {@link ConsoleShutdownListener}.
 	 * @see ConsoleShutdownListener
 	 */
 	public ListenerSupport<ConsoleShutdownListener> getListeners() {
-		return this.m_shutdownListeners;
+		return this.showdownListner;
 	}
 
 	/**
@@ -844,7 +834,7 @@ public class SingleConsole implements Listener, SampleListener {
 	 *            listener to be used.
 	 */
 	public void addListener(ConsoleShutdownListener listener) {
-		m_shutdownListeners.add(listener);
+		showdownListner.add(listener);
 	}
 
 	/**
@@ -855,7 +845,7 @@ public class SingleConsole implements Listener, SampleListener {
 	 * 
 	 */
 	public void addSamplingLifeCyleListener(SamplingLifeCycleListener listener) {
-		m_samplingLifeCycleListener.add(listener);
+		samplingLifeCycleListener.add(listener);
 	}
 
 	/*
@@ -917,7 +907,7 @@ public class SingleConsole implements Listener, SampleListener {
 		}
 	}
 
-	private void writeReportData(String name, String value) throws IOException {
+	private void writeReportData(String name, String value) {
 		try {
 			BufferedWriter bw = fileWriterMap.get(name);
 			if (bw == null) {
@@ -935,12 +925,14 @@ public class SingleConsole implements Listener, SampleListener {
 		}
 	}
 
-	private void writeCSVDataLine(String line) throws IOException {
+	private void writeCSVDataLine(String line) {
 		writeReportData(REPORT_CSV, line);
 	}
 
 	private String formatValue(Object val) {
 		if (val instanceof Double) {
+			DecimalFormat formatter = new DecimalFormat("###.###");
+			formatter.setGroupingUsed(false);
 			return formatter.format(val);
 		} else if (String.valueOf(val).equals("null")) {
 			// if target server is too slow, there is no response in this
@@ -1026,7 +1018,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	private void informTestSamplingStart() {
-		m_samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
+		samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
 			@Override
 			public void inform(SamplingLifeCycleListener listener) {
 				listener.onSamplingStarted();
@@ -1035,7 +1027,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	private void informTestSamplingEnd() {
-		m_samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
+		samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
 			@Override
 			public void inform(SamplingLifeCycleListener listener) {
 				listener.onSamplingEnded();
@@ -1077,4 +1069,27 @@ public class SingleConsole implements Listener, SampleListener {
 	public double getPeakTpsForGraph() {
 		return peakTpsForGraph;
 	}
+
+	public SampleModel getSampleModel() {
+		return sampleModel;
+	}
+
+	/**
+	 * Only for unit test.
+	 * 
+	 * @param sampleModel
+	 *            sample model
+	 */
+	void setSampleModel(SampleModel sampleModel) {
+		this.sampleModel = sampleModel;
+	}
+
+	public int getRunningThread() {
+		return runningThread;
+	}
+
+	public int getRunningProcess() {
+		return runningProcess;
+	}
+
 }

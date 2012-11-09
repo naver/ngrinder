@@ -72,24 +72,24 @@
                    </tr>
                    <tr>
                        <th>TPS</th>
-                       <td><strong>${test.tps}</strong></td>
+                       <td><strong>${test.tps!0}</strong></td>
                    </tr>
                    <tr>
                        <th><@spring.message "perfTest.report.meantime"/></th>
-                       <td><span>${(test.meanTestTime)?string("0.##")}</span>&nbsp;&nbsp; <code>ms</code></td>
+                       <td><span>${(test.meanTestTime!0)?string("0.##")}</span>&nbsp;&nbsp; <code>ms</code></td>
                        
                    </tr>
                    <tr>
-                       <th>Peak TPS</th>
-                       <td><strong>${test.peakTps}</strong></td>
+                       <th>Peak TPS</th> 
+                       <td><strong>${test.peakTps!""}</strong></td>
                    </tr>
                    <tr>
                        <th><@spring.message "perfTest.report.finishedTest"/></th>
-                       <td>${test.tests}</td>
+                       <td>${test.tests!""}</td>
                    </tr>
                    <tr>
                        <th><@spring.message "perfTest.report.errors"/></th>
-                       <td>${test.errors}</td> 
+                       <td>${test.errors!""}</td> 
                    </tr>
 			   </table>
 			   <ul class="unstyled">
