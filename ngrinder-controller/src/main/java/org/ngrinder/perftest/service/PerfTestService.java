@@ -1026,12 +1026,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		Map<String, Object> result = getStatistics(perfTest.getPort());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
-		List<?> list = (List<?>)result.get("cumulativeStatistics");
-		if (list == null) {
-			return;
-		}
 		LOGGER.info("Total Statistics for test {}  is {}", perfTest.getId(), totalStatistics);
-		
 		perfTest.setTps(parseDoubleWithSafety(totalStatistics, "TPS", 0D));
 		perfTest.setMeanTestTime(parseDoubleWithSafety(totalStatistics, "Mean_Test_Time_(ms)", 0D));
 		perfTest.setPeakTps(parseDoubleWithSafety(totalStatistics, "Peak_TPS", 0D));

@@ -45,7 +45,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
 	@Autowired
-	UserRepository userRepository;
+	protected UserRepository userRepository;
 
 	/**
 	 * Constructor.
@@ -86,4 +86,9 @@ public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswo
 					AuthenticationException failed) throws IOException, ServletException {
 		super.unsuccessfulAuthentication(request, response, failed);
 	}
+
+	public UserRepository getUserRepository() {
+		return userRepository;
+	}
+
 }

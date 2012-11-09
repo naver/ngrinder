@@ -92,21 +92,22 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	protected void additionalAuthenticationChecks(UserDetails userDetails,
 					UsernamePasswordAuthenticationToken authentication) {
 
-        Authentication authentication2 = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication2 != null) {
-        	return;
-        }
+		Authentication authentication2 = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication2 != null) {
+			return;
+		}
 		Object salt = null;
 
 		if (this.saltSource != null) {
 			salt = this.saltSource.getSalt(userDetails);
 		}
 
+		String message = messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials",
+						"Bad credentials");
 		if (authentication.getCredentials() == null) {
 			LOG.debug("Authentication failed: no credentials provided");
 
-			throw new BadCredentialsException(messages.getMessage(
-							"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"), userDetails);
+			throw new BadCredentialsException(message, userDetails);
 		}
 
 		String presentedPassword = authentication.getCredentials().toString();
@@ -141,8 +142,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		}
 
 		if (!authorized) {
-			throw new BadCredentialsException(messages.getMessage(
-							"AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"), user);
+			throw new BadCredentialsException(message, user);
 		}
 
 		// If It's the first time to login
@@ -232,7 +232,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		}
 
 		if (passwordEncoder instanceof org.springframework.security.crypto.password.PasswordEncoder) {
-			final org.springframework.security.crypto.password.PasswordEncoder delegate = (org.springframework.security.crypto.password.PasswordEncoder) passwordEncoder;
+			final org.springframework.security.crypto.password.PasswordEncoder delegate = cast(passwordEncoder);
 			this.passwordEncoder = new PasswordEncoder() {
 				public String encodePassword(String rawPass, Object salt) {
 					checkSalt(salt);
@@ -253,6 +253,11 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		}
 
 		throw new IllegalArgumentException("passwordEncoder must be a PasswordEncoder instance");
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T cast(Object passwordEncoder) {
+		return (T) passwordEncoder;
 	}
 
 	protected PasswordEncoder getPasswordEncoder() {

@@ -1,6 +1,5 @@
 package org.ngrinder.perftest.service;
 
-import static org.junit.Assert.fail;
 import static org.ngrinder.model.Status.START_AGENTS;
 import static org.ngrinder.model.Status.START_AGENTS_FINISHED;
 import net.grinder.SingleConsole;
@@ -24,10 +23,10 @@ public class MockPerfTestRunnable extends PerfTestRunnable {
 
 	@Override
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
-		perfTestService.markStatusAndProgress(perfTest, START_AGENTS, perfTest.getAgentCount()
+		getPerfTestService().markStatusAndProgress(perfTest, START_AGENTS, perfTest.getAgentCount()
 						+ " agents are starting.");
-		agentManager.runAgent(perfTest.getLastModifiedUser(), singleConsole, grinderProperties, perfTest.getAgentCount());
-		perfTestService.markStatusAndProgress(perfTest, START_AGENTS_FINISHED, perfTest.getAgentCount()
+		getAgentManager().runAgent(perfTest.getLastModifiedUser(), singleConsole, grinderProperties, perfTest.getAgentCount());
+		getPerfTestService().markStatusAndProgress(perfTest, START_AGENTS_FINISHED, perfTest.getAgentCount()
 						+ " agents are started.");
 	}
 }

@@ -28,7 +28,14 @@ package net.grinder.util;
  * @author JunHo Yoon
  * @since 3.0.2
  */
-public class ListenerHelper {
+public abstract class ListenerHelper {
+	/**
+	 * Create a listener instance.
+	 * 
+	 * @param <T>
+	 *            listener type.
+	 * @return created listener
+	 */
 	public static <T> ListenerSupport<T> create() {
 		return new ListenerSupport<T>();
 	}

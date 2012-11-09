@@ -22,6 +22,8 @@
  */
 package net.grinder.util;
 
+import static org.ngrinder.common.util.NoOp.noOp;
+
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -148,6 +150,7 @@ public abstract class NetworkUtil {
 			try {
 				s.close();
 			} catch (IOException e) {
+				noOp();
 			}
 		}
 	}

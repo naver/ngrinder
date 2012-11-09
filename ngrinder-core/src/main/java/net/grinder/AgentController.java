@@ -95,14 +95,14 @@ public class AgentController implements Agent {
 	private int m_connectionPort = 0;
 
 	private static SystemDataModel emptySystemDataModel = new SystemDataModel();
-	
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param eventSyncCondition
 	 *            event sync condition to wait until agent start to run.
-	 * @param current ip current ip
+	 * @param currentIp
+	 *            current ip
 	 * @throws GrinderException
 	 *             If an error occurs.
 	 */
@@ -135,11 +135,12 @@ public class AgentController implements Agent {
 	 * 
 	 * @param grinderProperties
 	 *            {@link GrinderProperties} used.
-	 * @param logCount log count
-	 * @throws GrinderException occurs when the test execution is failed.
+	 * @param logCount
+	 *            log count
+	 * @throws GrinderException
+	 *             occurs when the test execution is failed.
 	 */
-	public void run(GrinderProperties grinderProperties, long logCount) 
-					throws GrinderException {
+	public void run(GrinderProperties grinderProperties, long logCount) throws GrinderException {
 		StartGrinderMessage startMessage = null;
 		ConsoleCommunication consoleCommunication = null;
 		m_fanOutStreamSender = new FanOutStreamSender(GrinderConstants.AGENT_CONTROLLER_FANOUT_STREAM_THREAD_COUNT);
@@ -187,8 +188,7 @@ public class AgentController implements Agent {
 					if (startMessage != null) {
 						m_agentIdentity.setNumber(startMessage.getAgentNumber());
 					}
-				} while (checkNotNull(startMessage, "start method should be exist in messaging loop")
-								.getProperties() == null);
+				} while (checkNotNull(startMessage).getProperties() == null);
 
 				// Here the agent run code goes..
 				if (startMessage != null) {

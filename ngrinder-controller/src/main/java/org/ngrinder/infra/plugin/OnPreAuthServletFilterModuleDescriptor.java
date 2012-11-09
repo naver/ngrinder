@@ -24,9 +24,6 @@ package org.ngrinder.infra.plugin;
 
 import javax.servlet.Filter;
 
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-
 import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
 import com.atlassian.plugin.module.ContainerManagedPlugin;
 
@@ -35,8 +32,10 @@ import com.atlassian.plugin.module.ContainerManagedPlugin;
  * 
  * In the
  * {@link Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)}
- * method, the plugin should set {@link PreAuthenticatedAuthenticationToken} in the
- * {@link SecurityContext}
+ * method, <br/>
+ * the plugin should set
+ * {@link org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken}
+ * in the {@link org.springframework.security.core.context.SecurityContext}
  * 
  * @author JunHo Yoon
  * @since 3.0.2

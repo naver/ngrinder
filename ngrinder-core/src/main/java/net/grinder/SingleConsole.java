@@ -93,9 +93,10 @@ import org.slf4j.LoggerFactory;
  * @since 3.0
  */
 public class SingleConsole implements Listener, SampleListener {
+	private static final String REOSURCE_CONSOLE = "net.grinder.console.common.resources.Console";
 	private Thread consoleFoundationThread;
 	private ConsoleFoundationEx consoleFoundation;
-	public static final Resources RESOURCE = new ResourcesImplementation("net.grinder.console.common.resources.Console");
+	public static final Resources RESOURCE = new ResourcesImplementation(REOSURCE_CONSOLE);
 	public static final Logger LOGGER = LoggerFactory.getLogger(SingleConsole.class);
 
 	private static final String REPORT_CSV = "output.csv";
@@ -777,7 +778,10 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	private static Object getRealDoubleValue(Double doubleValue) {
-		return (doubleValue.isInfinite() || doubleValue.isNaN()) ? null : doubleValue;
+		if (doubleValue == null) {
+			return 0;
+		}
+		return (doubleValue.isInfinite() || doubleValue.isNaN()) ? 0 : doubleValue;
 	}
 
 	/**
@@ -814,7 +818,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * get the list of added {@link ConsoleShutdownListener}. +
+	 * get the list of added {@link ConsoleShutdownListener}.
 	 * 
 	 * @return the list of added {@link ConsoleShutdownListener}.
 	 * @see ConsoleShutdownListener
