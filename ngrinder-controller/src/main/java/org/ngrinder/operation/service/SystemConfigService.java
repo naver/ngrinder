@@ -55,6 +55,7 @@ public class SystemConfigService {
 			LOG.error("Error while writing system configuration file.");
 			return false;
 		}
+		config.loadSystemProperties(); //refresh the content of systemProperties.
 		
 		return true;
 	}
