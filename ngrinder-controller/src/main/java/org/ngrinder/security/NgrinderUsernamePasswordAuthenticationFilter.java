@@ -45,7 +45,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
 	@Autowired
-	protected UserRepository userRepository;
+	private UserRepository userRepository;
 
 	/**
 	 * Constructor.
@@ -89,6 +89,10 @@ public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswo
 
 	public UserRepository getUserRepository() {
 		return userRepository;
+	}
+
+	public void setUserRepository(UserRepository userRepository) {
+		this.userRepository = userRepository;
 	}
 
 }

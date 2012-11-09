@@ -118,6 +118,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 * 
 	 * @param user
 	 *            user
+	 * @param query
+	 *            query string to search the perf test
 	 * @param model
 	 *            modelMap
 	 * @param tag
@@ -205,6 +207,15 @@ public class PerfTestController extends NGrinderBaseController {
 		return "perftest/detail";
 	}
 
+	/**
+	 * Search tag based on the given query.
+	 * 
+	 * @param user
+	 *            user to search
+	 * @param query
+	 *            query string
+	 * @return found tag list in json
+	 */
 	@RequestMapping("/tagSearch")
 	public HttpEntity<String> searchTag(User user, @RequestParam(required = false) String query) {
 		HttpHeaders responseHeaders = new HttpHeaders();
@@ -392,6 +403,17 @@ public class PerfTestController extends NGrinderBaseController {
 		return new HttpEntity<String>(toJson(result), responseHeaders);
 	}
 
+	/**
+	 * Delete the perftest having given ids.
+	 * 
+	 * @param user
+	 *            user
+	 * @param model
+	 *            model
+	 * @param ids
+	 *            id string separating ","
+	 * @return success json if succeeded.
+	 */
 	@RequestMapping(value = "/deleteTests", method = RequestMethod.POST)
 	@ResponseBody
 	public String deletePerfTests(User user, ModelMap model, @RequestParam(defaultValue = "") String ids) {
@@ -401,6 +423,17 @@ public class PerfTestController extends NGrinderBaseController {
 		return returnSuccess();
 	}
 
+	/**
+	 * Request to stop tests having given ids.
+	 * 
+	 * @param user
+	 *            user
+	 * @param model
+	 *            model
+	 * @param ids
+	 *            id string separating ","
+	 * @return success json if succeeded.
+	 */
 	@RequestMapping(value = "/stopTests", method = RequestMethod.POST)
 	@ResponseBody
 	public String stopPerfTests(User user, ModelMap model, @RequestParam(value = "ids", defaultValue = "") String ids) {
@@ -410,6 +443,17 @@ public class PerfTestController extends NGrinderBaseController {
 		return returnSuccess();
 	}
 
+	/**
+	 * Get resources and lib files on the same folder with the given script path.
+	 * 
+	 * @param user
+	 *            user
+	 * @param scriptPath
+	 *            script path
+	 * @param revision
+	 *            revision
+	 * @return json string representing resources and libs.
+	 */
 	@RequestMapping(value = "/getResourcesOnScriptFolder")
 	public HttpEntity<String> getResourcesOnScriptFolder(User user, @RequestParam String scriptPath,
 					@RequestParam(value = "r", required = false) Long revision) {
@@ -432,6 +476,22 @@ public class PerfTestController extends NGrinderBaseController {
 		return new HttpEntity<String>(toJson(message), responseHeaders);
 	}
 
+	/**
+	 * Get the detailed report graph data for the given perftest id.<br/>
+	 * This method returns the appropriate points based on the given imgWidth.
+	 * 
+	 * @param user
+	 *            user
+	 * @param model
+	 *            model
+	 * @param testId
+	 *            test id
+	 * @param dataType
+	 *            which data
+	 * @param imgWidth
+	 *            imageWidth
+	 * @return json string.
+	 */
 	@RequestMapping(value = "/getReportData")
 	@ResponseBody
 	public String getReportData(User user, ModelMap model, @RequestParam long testId,
@@ -454,6 +514,20 @@ public class PerfTestController extends NGrinderBaseController {
 		return toJson(rtnMap);
 	}
 
+	/**
+	 * Get the basic report content in perftest configuration page.<br/>
+	 * This method returns the appropriate points based on the given imgWidth.
+	 * 
+	 * @param user
+	 *            user
+	 * @param model
+	 *            model
+	 * @param testId
+	 *            test id
+	 * @param imgWidth
+	 *            image width
+	 * @return "perftest/reportDiv"
+	 */
 	@RequestMapping(value = "/loadReportDiv")
 	public String getReportDiv(User user, ModelMap model, @RequestParam long testId, @RequestParam int imgWidth) {
 		PerfTest test = getPerfTestWithPermissionCheck(user, testId, false);
@@ -466,6 +540,16 @@ public class PerfTestController extends NGrinderBaseController {
 		return "perftest/reportDiv";
 	}
 
+	/**
+	 * Download csv report for the given perf test id.
+	 * 
+	 * @param user
+	 *            user
+	 * @param response
+	 *            response
+	 * @param testId
+	 *            test id
+	 */
 	@RequestMapping(value = "/downloadReportData")
 	public void downloadReportData(User user, HttpServletResponse response, @RequestParam long testId) {
 		PerfTest test = getPerfTestWithPermissionCheck(user, testId, false);
@@ -474,6 +558,18 @@ public class PerfTestController extends NGrinderBaseController {
 		FileDownloadUtil.downloadFile(response, targetFile);
 	}
 
+	/**
+	 * Download logs for the given id.
+	 * 
+	 * @param user
+	 *            user
+	 * @param path
+	 *            path in the log folder
+	 * @param testId
+	 *            test id
+	 * @param response
+	 *            repsonse
+	 */
 	@RequestMapping(value = "/downloadLog/**")
 	public void downloadLogData(User user, @RemainedPath String path, @RequestParam long testId,
 					HttpServletResponse response) {
@@ -482,6 +578,17 @@ public class PerfTestController extends NGrinderBaseController {
 		FileDownloadUtil.downloadFile(response, targetFile);
 	}
 
+	/**
+	 * Get the real time test running info for the given test id.
+	 * 
+	 * @param user
+	 *            user
+	 * @param model
+	 *            model
+	 * @param testId
+	 *            test id
+	 * @return "perftest/refreshContent"
+	 */
 	@RequestMapping(value = "/running/refresh")
 	public String refreshTestRunning(User user, ModelMap model, @RequestParam long testId) {
 		PerfTest test = checkNotNull(getPerfTestWithPermissionCheck(user, testId, false),
@@ -509,6 +616,17 @@ public class PerfTestController extends NGrinderBaseController {
 		return StringUtils.join(perfStringList, ",");
 	}
 
+	/**
+	 * Get perftest report.
+	 * 
+	 * @param user
+	 *            user
+	 * @param model
+	 *            model
+	 * @param testId
+	 *            test id
+	 * @return "perftest/report"
+	 */
 	@RequestMapping(value = "/report")
 	public String getReport(User user, ModelMap model, @RequestParam long testId) {
 		model.addAttribute("test", getPerfTestWithPermissionCheck(user, testId, false));

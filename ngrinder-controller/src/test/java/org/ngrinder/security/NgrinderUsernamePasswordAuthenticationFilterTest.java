@@ -26,9 +26,12 @@ public class NgrinderUsernamePasswordAuthenticationFilterTest extends AbstractNG
 			return auth;
 		};
 
+<<<<<<< OURS
 		public void setUserRepository(UserRepository userRepository) {
 			this.userRepository = userRepository;
 		}
+=======
+>>>>>>> THEIRS
 	};
 
 	@Autowired
