@@ -17,25 +17,25 @@
 				<div class="control-group">
 					<label for="agentInput" class="control-label"><@spring.message "perfTest.report.meantime"/></label>
 					<div class="controls">
-						${(test.meanTestTime)?string("0.##")}
+						${(test.meanTestTime!0)?string("0.##")}
 						<code>MS</code>
 					</div>
 				</div>
 				<div class="control-group">
 					<label for="agentInput" class="control-label"><@spring.message "perfTest.report.peakTPS"/></label>
-					<div class="controls">${test.peakTps}</div>
+					<div class="controls">${test.peakTps!0}</div>
 				</div>
 				<div class="control-group">
 					<label for="agentInput" class="control-label"><@spring.message "perfTest.report.finishedTest"/></label>
-					<div class="controls">${test.tests}</div>
+					<div class="controls">${test.tests!0}</div>
 				</div>
 				<div class="control-group">
 					<label for="agentInput" class="control-label"><@spring.message "perfTest.report.errors"/></label>
-					<div class="controls">${test.errors}</div>
+					<div class="controls">${test.errors!0}</div>
 				</div>
 				<div class="control-group">
                     <label for="agentInput" class="control-label"><@spring.message "perfTest.report.runtime"/></label>
-                    <div class="controls">${test.runtimeStr}</div>
+                    <div class="controls">${test.runtimeStr!""}</div>
                 </div>
 			</fieldset>
 		</div>

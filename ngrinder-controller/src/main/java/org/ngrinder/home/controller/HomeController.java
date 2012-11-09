@@ -69,7 +69,8 @@ public class HomeController extends NGrinderBaseController {
 	@Autowired
 	private HomeService homeService;
 
-	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
+	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|"
+					+ "Australia|Europe|Indian|Pacific)/.*";
 
 	private List<TimeZone> timeZones = null;
 
@@ -144,7 +145,7 @@ public class HomeController extends NGrinderBaseController {
 	 * 
 	 * @param model
 	 *            model
-	 * @return "login" if not loggined. Otherwise, "/"
+	 * @return "login" if not logged in. Otherwise, "/"
 	 */
 	@RequestMapping(value = "/login")
 	public String login(ModelMap model) {
@@ -181,7 +182,7 @@ public class HomeController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get all timezone.
+	 * Get all timezones.
 	 * 
 	 * @param model
 	 *            model

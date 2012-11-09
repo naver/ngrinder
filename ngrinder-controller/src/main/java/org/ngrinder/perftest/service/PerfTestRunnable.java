@@ -77,13 +77,13 @@ public class PerfTestRunnable implements NGrinderConstants {
 	private static final Logger LOG = LoggerFactory.getLogger(PerfTestRunnable.class);
 
 	@Autowired
-	PerfTestService perfTestService;
+	private PerfTestService perfTestService;
 
 	@Autowired
 	private ConsoleManager consoleManager;
 
 	@Autowired
-	AgentManager agentManager;
+	private AgentManager agentManager;
 
 	@Autowired
 	private MonitorAgentService monitorDataService;
@@ -469,6 +469,14 @@ public class PerfTestRunnable implements NGrinderConstants {
 							"The test is finished successfully");
 		}
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
+	}
+
+	public PerfTestService getPerfTestService() {
+		return perfTestService;
+	}
+
+	public AgentManager getAgentManager() {
+		return agentManager;
 	}
 
 }

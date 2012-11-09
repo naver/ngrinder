@@ -31,7 +31,6 @@ import org.ngrinder.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,9 +55,14 @@ public class NGrinderAuthenticationPreAuthProvider extends PreAuthenticatedAuthe
 	 * <p>
 	 * If the principal contained in the authentication object is null, the request will be ignored
 	 * to allow other providers to authenticate it.
+	 * 
+	 * @param authentication
+	 *            authentication
+	 * @return authorized {@link Authentication}
 	 */
 	@SuppressWarnings("unchecked")
-	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+	@Override
+	public Authentication authenticate(Authentication authentication) {
 		Object details = authentication.getDetails();
 
 		Authentication authenticate = super.authenticate(authentication);

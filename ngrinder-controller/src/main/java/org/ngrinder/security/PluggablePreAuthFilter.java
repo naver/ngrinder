@@ -51,7 +51,8 @@ public class PluggablePreAuthFilter implements Filter {
 	 * 
 	 */
 	protected void pluginInit() {
-		List<Filter> enabledModulesByClass = pluginManager.getEnabledModulesByDescriptorAndClass(OnPreAuthServletFilterModuleDescriptor.class, Filter.class);
+		List<Filter> enabledModulesByClass = pluginManager.getEnabledModulesByDescriptorAndClass(
+						OnPreAuthServletFilterModuleDescriptor.class, Filter.class);
 		this.compositeFilter.setFilters(enabledModulesByClass);
 	}
 
