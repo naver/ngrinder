@@ -44,6 +44,15 @@ import java.util.Enumeration;
  * 
  */
 public abstract class NetworkUtil {
+	
+	/**
+	 * Get the local host address by trying to connect "www.google.com".
+	 * @return
+	 */
+	public static String getLocalHostAddress() {
+		return getLocalHostAddress("www.google.com", 80);
+	}
+	
 	/**
 	 * Get the local host address by trying to connect given host..
 	 * 

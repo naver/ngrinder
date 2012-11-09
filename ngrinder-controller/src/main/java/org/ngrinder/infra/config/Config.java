@@ -39,6 +39,7 @@ import net.grinder.util.NetworkUtil;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.PropertiesWrapper;
@@ -71,6 +72,14 @@ public class Config implements IConfig {
 	private static String versionString = "";
 	private boolean verbose;
 	private String currentIP;
+
+	static final int NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT = 40003;
+	private boolean isCluster;
+	private String clusterURIs;
+	
+	private String region;
+	public static final String NON_REGION = "NONE";
+	
 	/**
 	 * Make it singleton.
 	 */
@@ -94,11 +103,127 @@ public class Config implements IConfig {
 			CoreLogger.LOGGER.info("NGrinder is starting...");
 			loadDatabaseProperties();
 			versionString = getVesion();
+			
+			//check cluster
+			//set cluster configuration foe ehcache
+			loadClusterConfig();
+			loadExtendProperties();
+
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while loading NGRINDER_HOME", e);
 		}
 	}
+	
+	/**
+	 * Initialize cache cluster configuration.
+	 * 
+	 */
+	protected void loadClusterConfig() {
+		String clusterUri = getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_CLUSTER_URIS, null);
+		int clusterListenerPort = getSystemProperties().getPropertyInt(
+				NGrinderConstants.NGRINDER_PROP_CLUSTER_LISTENER_PORT, NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT);
 
+		if (StringUtils.isBlank(clusterUri)) {
+			return;
+		}
+		isCluster = true;
+		String currentIP = NetworkUtil.getLocalHostAddress();
+		String[] clusterUriList = StringUtils.split(clusterUri, ";");
+		StringBuilder urisSB = new StringBuilder();
+		for (String peerIP : clusterUriList) {
+			// should exclude itself from the peer list
+			if (urisSB.length() > 0) {
+				urisSB.append("|");
+			}
+			if (!currentIP.equals(peerIP)) {
+				urisSB.append("//").append(peerIP).append(":").append(clusterListenerPort);
+				urisSB.append("/").append(NGrinderConstants.CACHE_NAME_DISTRIBUTED_MAP);
+			}
+		}
+
+		if (StringUtils.isBlank(urisSB.toString())) {
+			LOG.error("Invalid configuration for ehcache cluster:{}", clusterUri);
+			isCluster = false;
+			return;
+		}
+		clusterURIs = urisSB.toString();
+		LOG.info("Cache cluster URIs:{}", clusterURIs);
+		return;
+		
+		/*
+		FactoryConfiguration peerProviderConfig = new FactoryConfiguration();
+		peerProviderConfig.setClass(RMICacheManagerPeerProviderFactory.class.getName());
+		StringBuilder peerPropSB = new StringBuilder("peerDiscovery=manual,rmiUrls=");
+		peerPropSB.append(urisSB.toString());
+		peerProviderConfig.setProperties(peerPropSB.toString());
+		Configuration ehCacheConfig = ehcache.getConfiguration();
+		ehCacheConfig.addCacheManagerPeerProviderFactory(peerProviderConfig);
+
+		FactoryConfiguration peerListenerConfig = new FactoryConfiguration();
+		peerListenerConfig.setClass(RMICacheManagerPeerListenerFactory.class.getName());
+		String listenerPropStr = "port=" + NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT;
+		peerListenerConfig.setProperties(listenerPropStr);
+		ehCacheConfig.addCacheManagerPeerListenerFactory(peerListenerConfig);
+		
+		Cache distCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_DISTRIBUTED_MAP);
+		EhCacheCache distEhCache = (EhCacheCache) distCache;
+		CacheConfiguration distCacheConfig = distEhCache.getNativeCache().getCacheConfiguration();
+
+		// <bootstrapCacheLoaderFactory
+		// class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
+		// when the cache is initialized, it will synchronize the ache with
+		// peer.
+		BootstrapCacheLoaderFactoryConfiguration bootConfig = new BootstrapCacheLoaderFactoryConfiguration();
+		bootConfig.setClass(RMIBootstrapCacheLoaderFactory.class.getName());
+		distCacheConfig.addBootstrapCacheLoaderFactory(bootConfig);
+
+		// <cacheEventListenerFactory
+		// class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
+		// this configuration makes sure the update on this cache will be
+		// replecated to other peer
+		CacheEventListenerFactoryConfiguration updateConfig = new CacheEventListenerFactoryConfiguration();
+		updateConfig.setClass(RMICacheReplicatorFactory.class.getName());
+		distCacheConfig.addCacheEventListenerFactory(updateConfig);
+		*/
+		 
+	}
+	
+	/**
+	 * Check whether the cache cluster is set.
+	 * @return true is cache cluster set
+	 */
+	public boolean isCluster() {
+		return this.isCluster;
+	}
+	
+	/*
+	 * return the cluster URIs in configuration.
+	 */
+	public String getClusterURIs() {
+		return this.clusterURIs;
+	}	
+	
+	protected void loadExtendProperties() {
+		InputStream inputStream = null;
+		Properties extProp = new Properties();
+		try {
+			inputStream = new ClassPathResource("/system-ex.conf").getInputStream();
+			extProp.load(inputStream);
+			String regionStr = extProp.getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION);
+			region = regionStr.trim();
+		} catch (IOException e) {
+			LOG.error("Error while load system-ex.conf", e);
+			region = NON_REGION;
+		} finally {
+			IOUtils.closeQuietly(inputStream);
+		}
+		
+	}
+	
+	public String getRegion() {
+		return region;
+	}
+	
 	/**
 	 * Initialize Logger.
 	 * 

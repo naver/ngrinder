@@ -25,8 +25,6 @@ package org.ngrinder.operation;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import javax.servlet.Filter;
-
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.operation.cotroller.ScriptConsoleController;

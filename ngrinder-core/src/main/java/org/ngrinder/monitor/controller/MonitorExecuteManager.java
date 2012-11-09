@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
 public final class MonitorExecuteManager {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(MonitorExecuteManager.class);
+	
 	private long firstTime = 1;
 	private long interval = 1;
 
@@ -52,6 +54,9 @@ public final class MonitorExecuteManager {
 			new ConcurrentHashMap<String, ScheduledExecutorService>();
 	private Map<String, MonitorExecuteWorker> monitorWorkerMap =
 			new ConcurrentHashMap<String, MonitorExecuteWorker>();
+
+	//used to save the counter of how many reference to use one monitor worker.
+	private Map<String, MutableInt> monitorWorkerRefMap = new ConcurrentHashMap<String, MutableInt>();
 
 	private static MonitorExecuteManager instance = new MonitorExecuteManager();
 	
@@ -63,6 +68,14 @@ public final class MonitorExecuteManager {
 		return instance;
 	}
 	
+	public void setMonitorWorkerRefMap(ConcurrentHashMap<String, MutableInt> monitorWorkerRefMap) {
+		this.monitorWorkerRefMap = monitorWorkerRefMap;
+	}
+	
+	public Map<String, MutableInt> getMonitorWorkerRefMap() {
+		return this.monitorWorkerRefMap;
+	}
+	
 	/**
 	 * add a new monitoring job.
 	 * If there is already a job monitoring on that server, just increase the counter.
@@ -70,29 +83,32 @@ public final class MonitorExecuteManager {
 	 * @param agent is the monitoring target
 	 */
 	public void addAgentMonitor(String key, MonitorAgentInfo agent) {
-		MonitorExecuteWorker worker = monitorWorkerMap.get(agent.getIp());
-		if (worker == null) {
-			worker = new MonitorExecuteWorker(key, agent);
+		MutableInt refCount = monitorWorkerRefMap.get(agent.getIp());
+		if (refCount == null || refCount.intValue() == 0) {
+			MonitorExecuteWorker worker = new MonitorExecuteWorker(key, agent);
 			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 			scheduler.scheduleAtFixedRate(worker, firstTime, interval, TimeUnit.SECONDS);
+			monitorWorkerRefMap.put(agent.getIp(), new MutableInt(1));
 			monitorWorkerMap.put(agent.getIp(), worker);
 			schedulerMap.put(agent.getIp(), scheduler);
 			LOG.debug("Add monitoring worker for {} successfully.", agent.getIp());
 		} else {
-			worker.increaseCounter();
+			refCount.increment();
 			LOG.debug("Monitoring worker for {} already exist.", agent.getIp());
 		}
 	}
 	
 	/**
-	 * remove a monitoring job if there is only one test monitoring on this server.
+	 * stop and remove all monitoring job.
 	 */
 	public void removeAllAgent() {
 		for (Entry<String, MonitorExecuteWorker> each: monitorWorkerMap.entrySet()) {
 			schedulerMap.get(each.getKey()).shutdown();
 			each.getValue().close();
 		}
+		monitorWorkerRefMap.clear();
 		monitorWorkerMap.clear();
+		schedulerMap.clear();
 	}
 	
 	/**
@@ -100,12 +116,15 @@ public final class MonitorExecuteManager {
 	 * @param agentIP is the IP address of monitoring target server
 	 */
 	public void removeAgentMonitor(String agentIP) {
-		MonitorExecuteWorker worker = checkNotNull(monitorWorkerMap.get(agentIP));
-		worker.decreaseCounter();
-		if (worker.getCounter() <= 0) {
+		MutableInt refCount = checkNotNull(monitorWorkerRefMap.get(agentIP));
+		refCount.decrement();
+		//stop and remove worker if only there is no any monitor reference on this agent
+		if (refCount.intValue() <= 0) {
 			schedulerMap.get(agentIP).shutdown();
-			worker.close();
+			schedulerMap.remove(agentIP);
+			monitorWorkerMap.get(agentIP).close();
 			monitorWorkerMap.remove(agentIP);
+			monitorWorkerRefMap.remove(agentIP);
 		}
 	}
 

@@ -135,6 +135,7 @@ public interface NGrinderConstants {
 
 	public static final String PARAM_TEST_CHART_INTERVAL = "chartInterval";
 
+	public static final String PARAM_REGION_LIST = "regionList";
 	public static final String PARAM_SCRIPT_LIST = "scriptList";
 	public static final String PARAM_QUICK_SCRIPT = "quickScript";
 	public static final String PARAM_TARGET_HOST = "targetHostString";
@@ -185,5 +186,14 @@ public interface NGrinderConstants {
 	public static final int MAX_STACKTRACE_STRING_SIZE = 2048;
 	public static final String NGRINDER_PROP_FRONT_PAGE_RSS = "ngrinder.frontpage.rss";
 	public static final String NGRINDER_NEWS_RSS_URL = "http://www.cubrid.org/wiki_ngrinder/rss";
+	public static final String NGRINDER_PROP_REGION = "ngrinder.region";
 	public static final int MAX_RUN_HOUR = 8;
+
+	public static final String NGRINDER_PROP_CLUSTER_URIS = "ngrinder.cluster.uris";
+	public static final String NGRINDER_PROP_CLUSTER_LISTENER_PORT = "ngrinder.cluster.lintener.port";
+	
+	// key names for distributed map of EhCache
+	public static final String CACHE_NAME_DISTRIBUTED_MAP = "distributed_map";
+	public static final String CACHE_NAME_MONITOR_REFERENCE_MAP = "monitor_reference_map";
+	public static final String CACHE_NAME_REGION_LIST = "region_list";
 }

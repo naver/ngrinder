@@ -14,10 +14,6 @@
 
 	<repositories>
 		<repository>
-			<id>cubrid.release.repository</id>
-			<url>http://maven.cubrid.org</url>
-		</repository>
-		<repository>
 			<id>springsource-repo</id>
 			<name>SpringSource Repository</name>
 			<url>http://repo.springsource.org/release</url>

@@ -57,9 +57,6 @@ public class MonitorExecuteWorker implements Runnable {
 	private MonitorRecorder recoder;
 	private MonitorAgentInfo agentInfo;
 	private String key;
-	
-	//used to save the counter of how many reference to use this monitor worker.
-	private int referenceCounter = 1;
 
 	/**
 	 * Construct a MonitorExecuteWorker with the key and agent info.
@@ -79,26 +76,6 @@ public class MonitorExecuteWorker implements Runnable {
 		} catch (IOException e) {
 			LOG.error(e.getMessage(), e);
 		}
-	}
-	
-	/**
-	 * add a monitor reference on this monitor worker.
-	 */
-	public void increaseCounter() {
-		referenceCounter++;
-	}
-	
-	/**
-	 * decrease the reference counter. it is used when a monitoring job will not monitor a target.
-	 * When all the monitoring on that target is finished, the reference counter will be 0, and the
-	 * monitoring worker will be stopped. 
-	 */
-	public void decreaseCounter() {
-		referenceCounter--;
-	}
-	
-	public int getCounter() {
-		return referenceCounter;
 	}
 
 	@SuppressWarnings("unchecked")

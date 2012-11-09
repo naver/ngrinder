@@ -30,19 +30,33 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.util.List;
 
 import org.junit.Test;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.PropertiesWrapper;
+import org.ngrinder.infra.init.CacheClusterInit;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.Cache;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ContextConfiguration("classpath:applicationContext.xml")
-public class ConfigTest extends AbstractJUnit4SpringContextTests {
+public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGrinderConstants {
 
 	@Autowired
-	public MockConfig config;
+	private MockConfig config;
+	
+	@Autowired
+	private CacheClusterInit clusterInit;
+
+	@Autowired
+	@Qualifier("dynamicCacheManager")
+	private EhCacheCacheManager dynamicCacheManager;
 
 	@Test
 	public void testDefaultHome() {
@@ -100,5 +114,38 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests {
 	public void testVersionString() {
 		String version = config.getVesion();
 		assertThat(version, not("UNKNOWN"));
+	}
+	
+	@Test
+	public void testLoadClusterConfig() {
+		PropertiesWrapper wrapper = mock(PropertiesWrapper.class);
+		config.setSystemProperties(wrapper);
+		when(wrapper.getPropertyInt(NGRINDER_PROP_CLUSTER_LISTENER_PORT, 40003)).thenReturn(40003);
+		when(wrapper.getProperty(NGRINDER_PROP_CLUSTER_URIS, null)).thenReturn("");
+		
+		config.loadClusterConfig();
+		assertThat(config.isCluster(), is(false));
+		
+		when(wrapper.getPropertyInt(NGRINDER_PROP_CLUSTER_LISTENER_PORT, 40003)).thenReturn(40003);
+		when(wrapper.getProperty(NGRINDER_PROP_CLUSTER_URIS, null)).thenReturn("192.168.1.1;192.168.2.2;192.168.3.3");
+		config.loadClusterConfig();
+		assertThat(config.isCluster(), is(true));
+	}
+	
+	@Test
+	public void testIniTExtendConfig() {
+		config.loadExtendProperties();
+		clusterInit.initRegion();
+		Cache distCache = dynamicCacheManager.getCache(NGrinderConstants.CACHE_NAME_DISTRIBUTED_MAP);
+		@SuppressWarnings("unchecked")
+		List<String> regionList = (List<String>)distCache.get(NGrinderConstants.CACHE_NAME_REGION_LIST).get();
+		assertThat(regionList.size(), is(1));
+		assertThat(regionList.get(0), is(Config.NON_REGION));
+		
+		ReflectionTestUtils.setField(config, "region", "Beijing");
+		ReflectionTestUtils.setField(clusterInit, "config", config);
+		clusterInit.initRegion();
+		assertThat(regionList.size(), is(2));
+		assertThat(regionList.get(1), is("Beijing"));
 	}
 }

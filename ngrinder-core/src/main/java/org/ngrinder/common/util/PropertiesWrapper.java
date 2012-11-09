@@ -67,6 +67,8 @@ public class PropertiesWrapper {
 		if (StringUtils.isBlank(value)) {
 			LOGGER.trace(errorMsgTemplate, key, defaultValue);
 			value = defaultValue;
+		} else {
+			value = value.trim();
 		}
 		return value;
 	}

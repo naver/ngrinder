@@ -50,6 +50,7 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 		Assert.assertNotNull(agent2);
 
 		List<AgentInfo> agentListDB = agentService.getAgentListOnDB();
+		agentListDB = agentService.getAgentListOnDB();
 		Assert.assertNotNull(agentListDB);
 
 		agentService.approve("1.1.1.1", true);

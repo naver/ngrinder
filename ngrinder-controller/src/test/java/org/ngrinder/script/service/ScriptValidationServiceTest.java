@@ -31,7 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
 public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTest {
-	Logger m_logger = LoggerFactory.getLogger(ScriptValidationServiceTest.class);
+	private static final Logger m_logger = LoggerFactory.getLogger(ScriptValidationServiceTest.class);
 	@Autowired
 	private LocalScriptTestDriveService validationService;
 
@@ -96,6 +96,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 		fileEntry.setPath("/script.py");
 		fileEntry.setContent(script);
 		String validateScript = scriptValidationService.validateScript(getTestUser(), fileEntry, false, "");
+		m_logger.debug("validate string is:{}", validateScript);
 		// assertThat(validateScript,
 		// containsString("Validation should be performed within 10sec. Stop it forcely"));
 	}
