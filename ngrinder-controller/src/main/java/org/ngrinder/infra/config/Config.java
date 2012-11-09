@@ -207,6 +207,8 @@ public class Config implements IConfig {
 		InputStream inputStream = null;
 		Properties extProp = new Properties();
 		try {
+			//TODO: this configuration should be copied to other place on server, then user need
+			// only modify it one time.
 			inputStream = new ClassPathResource("/system-ex.conf").getInputStream();
 			extProp.load(inputStream);
 			String regionStr = extProp.getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION);
