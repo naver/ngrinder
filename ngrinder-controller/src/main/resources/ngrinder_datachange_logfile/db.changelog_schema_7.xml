@@ -22,10 +22,5 @@
 				       <constraints primaryKey="true" nullable="false"/>
     				 </column>
 				</createTable>
-				
-				<addColumn tableName="perf_test">
-				    <column name="real_created_user" type="bigint"/>
-				</addColumn>
-
 	</changeSet>
 </databaseChangeLog>

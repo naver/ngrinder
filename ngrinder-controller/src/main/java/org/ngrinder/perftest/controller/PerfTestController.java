@@ -520,7 +520,7 @@ public class PerfTestController extends NGrinderBaseController {
 		if (user.getRole().equals(Role.ADMIN) || user.getRole().equals(Role.SUPER_USER)) {
 			return perfTest;
 		}
-		if (perfTest != null && !user.equals(perfTest.getLastModifiedUser())) {
+		if (perfTest != null && !user.equals(perfTest.getCreatedUser())) {
 			throw new NGrinderRuntimeException("User " + user.getUserId() + " has no right on PerfTest ");
 		}
 		return perfTest;
