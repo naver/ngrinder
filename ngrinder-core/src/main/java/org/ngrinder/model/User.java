@@ -292,4 +292,18 @@ public class User extends BaseModel<User> {
 	public void setFollower(User follower) {
 		this.follower = follower;
 	}
+	
+	public User getFactualUser() {
+		return ownerUser == null ? this : ownerUser;
+	}
+	
+	//It will throw StackOverflowException if return User that contains owners and followers value
+	//in getCurrentPerfTestStatistics() method.so just return base User info 
+	public User getTestUserBaseInfo() {
+		User userInfo = new User();
+		userInfo.setId(this.getId());
+		userInfo.setUserId(this.getUserId());
+		userInfo.setUserName(this.getUserName());
+		return userInfo;
+	}
 }

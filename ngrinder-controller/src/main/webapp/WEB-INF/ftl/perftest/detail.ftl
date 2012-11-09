@@ -148,7 +148,6 @@
 											<#else>
 			                     		   		<#assign initTestName = "">
 			                    			</#if>
-			                    
 											<input class="required span3 left-float" maxlength="80" size="30" type="text" id="testName" name="testName" value="${(initTestName)!}">
 										</td>
 										<td>
