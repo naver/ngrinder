@@ -168,7 +168,7 @@
 										</td>
 										<td>
 											<#if test??>
-												<#if test.status != "SAVED" || test.createdUser.userId != currentUser.userId>
+												<#if test.status != "SAVED" || test.createdUser.userId != currentUser.factualUser.userId>
 													<#assign isClone = true/>
 												<#else>
 													<#assign isClone = false/> 
@@ -178,7 +178,7 @@
 											</#if>
 											<input type="hidden" name="isClone" value="${isClone?string}">
 											<#--  Save/Clone is available only when the test owner is current user.   -->
-											<#if test?? && test.lastModifiedUser.userId != currentUser.userId>
+											<#if test?? && test.createdUser.userId != currentUser.factualUser.userId>
 												<#assign disabled = "disabled">
 											</#if>
 												<button type="submit" class="btn btn-success" id="saveTestBtn" style="margin-left:26px; width:55px" ${disabled!}>

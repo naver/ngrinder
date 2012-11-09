@@ -1091,7 +1091,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		if (perfTest == null) {
 			return false;
 		}
-		return user.getRole() == Role.ADMIN || perfTest.getLastModifiedUser().equals(user);
+		return user.getRole() == Role.ADMIN || perfTest.getCreatedUser().equals(user);
 	}
 
 	/*
