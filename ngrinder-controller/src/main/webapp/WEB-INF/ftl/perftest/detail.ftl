@@ -121,7 +121,6 @@
 			style="margin-bottom: 0;">
 			<div class="well">
 				<input type="hidden" id="testId" name="id" value="${(test.id)!}"> 
-				<input type="hidden" id="threshold"	name="threshold" value="${(test.threshold)!"D"}"> 
 
 				<div class="form-horizontal" id="queryDiv">
 					<fieldset>
@@ -318,7 +317,6 @@ $(document).ready(function () {
 	initDuration();
 	initChartData();
 	initScheduleDate();
-	initThresholdChkBox();
 	$("#tableTab a:first").tab('show');
 	$("#testContent_tab a").tab('show');
 	$("#processAndThreadPanel").hide();
@@ -466,49 +464,73 @@ function initDuration() {
 
 function addValidation() {
 	$("#testContentForm").validate({
-		rules : {
-			testName : "required",
-			agentCount : {
-				required : true,
-				max:${(maxAgentSizePerConsole)},
-				min:0
+		rules: {
+			testName: "required",
+			agentCount: {
+				required: true,
+				digits: true,
+				range: [0, ${(maxAgentSizePerConsole)}]
 			},		
-			vuserPerAgent : {
-				required : true,
-				max:${(maxVuserPerAgent)},
-				min:1
-			},
-			duration : {
-				max:${maxRunHour}*3600000,
-				min:0
+			vuserPerAgent: {
+				required: true,
+				digits: true,
+				range: [1, ${(maxVuserPerAgent)}]
 			},
 			<#if securityMode?? && securityMode == true>
-			targetHosts : {
-				required : true
-			},
+			targetHosts: "required",
 			</#if>
-			runCount : {
-				max:${maxRunCount},
-				min:0
+			ignoreSampleCount: {
+				digits: true
+			},
+			initProcesses: {
+				required: true,
+				digits: true
+			},
+			initSleepTime: {
+				required: true,
+				digits: true
+			},
+			processIncrement: {
+				required: true,
+				digits: true,
+				min: 1
+			},
+			processIncrementInterval: {
+				required: true,
+				digits: true,
+				min: 1
 			}
-						 
 		},
 	    messages: { 
 	        testName: "<@spring.message "perfTest.warning.testName"/>",
-	        agentCount: "<@spring.message "perfTest.warning.agentNumber"/>",
-	        vuserPerAgent: "<@spring.message "perfTest.warning.vuserPerAgent"/>",
-	        duration: "<@spring.message "perfTest.warning.duration"/>",
-	        runCount: "<@spring.message "perfTest.warning.runCount"/>",
-	        processes: "<@spring.message "perfTest.warning.processes"/>",
-	        threads: "<@spring.message "perfTest.warning.threads"/>",
-	        targetHosts: "<@spring.message "perfTest.warning.hostString"/>"
+	        agentCount: {
+	        	required: "<@spring.message "perfTest.warning.agentNumber"/>"
+	        },
+	        vuserPerAgent: {
+	        	required: "<@spring.message "perfTest.warning.vuserPerAgent"/>"
+	        },
+	        duration: {
+	        	required: "<@spring.message "perfTest.warning.duration"/>"
+	        },
+	        runCount: {
+	        	required: "<@spring.message "perfTest.warning.runCount"/>"
+	        },
+	        processes: {
+	        	required: "<@spring.message "perfTest.warning.processes"/>"
+	        },
+	        threads: {
+	        	required: "<@spring.message "perfTest.warning.threads"/>"
+	        },
+	        targetHosts: {
+	        	required: "<@spring.message "perfTest.warning.hostString"/>"
+	        }
 	    },
 		ignore : "", // make the validation on hidden input work
 		errorClass : "help-inline",
 		errorElement : "span",
 		errorPlacement : function(error, element) {
 			var errorPlace = $("td." + element.attr("id"));
-			if (errorPlace.length != 0) {
+			if (errorPlace[0]) {
 				errorPlace.html(error);
 			} else {
 		    	if (element.next().attr("class") == "add-on") {
@@ -616,13 +638,11 @@ function bindEvent() {
 		$("#testStatus").val("READY");
 		document.testContentForm.submit();
 	});
-
-	$("#runcountChkbox").change(function() {
-		if ($("#runcountChkbox").attr("checked") == "checked") {
-			$("#threshold").val("R");
+	
+	$("#runCountRadio").click(function() {
+		if ($(this).attr("checked") == "checked") {
 			$("#runCount").addClass("required");
 			$("#runCount").addClass("positiveNumber");
-			$("#durationChkbox").removeAttr("checked");
 			$("#duration").removeClass("required");
 			$("#duration").removeClass("positiveNumber");
 			$("#duration").valid();
@@ -630,15 +650,20 @@ function bindEvent() {
 		}
 	});
 	
-	$("#durationChkbox").change(function() {
-		if ($("#durationChkbox").attr("checked") == "checked") {
-			$("#threshold").val("D");
-			$("#duration").addClass("required positiveNumber");
-			$("#runcountChkbox").removeAttr("checked");
+	$("#durationRadio").click(function() {
+		if ($(this).attr("checked") == "checked") {
+			$("#duration").addClass("required");
+			$("#duration").addClass("positiveNumber");
 			$("#runCount").removeClass("required");
 			$("#runCount").removeClass("positiveNumber");
 			$("#duration").valid();
 			$("#runCount").valid();
+		}
+	});
+	
+	$("#ignoreSampleCount").blur(function() {
+		if ($.trim($(this).val()) == "") {
+			$(this).val(0);
 		}
 	});
 	
@@ -712,13 +737,12 @@ function bindEvent() {
 	});
 	
 	$("#durationSlider").mousedown(function() {
-		$("#durationChkbox").click();
+		$("#durationRadio").click();
 	});
 	
 	$("#runCount").focus(function() {
-		$("#runcountChkbox").click();
+		$("#runcountRadio").click();
 	});
-	
 }
 
 function updateVuserTotal() {
@@ -789,16 +813,6 @@ function updateVuserGraph() {
 	}
 }
 
-function initThresholdChkBox() {
-	if ($("#threshold").val() == "R") { //runcount
-		$("#runcountChkbox").attr("checked", "checked");
-		$("#durationChkbox").removeAttr("checked");
-	} else { //duration
-		$("#durationChkbox").attr("checked", "checked");
-		$("#runcountChkbox").removeAttr("checked");
-	}
-}
-
 function setDuration() {
 	var duration = $("#duration").val();
 	var durationInSec = parseInt(duration / 1000);
@@ -820,11 +834,6 @@ function getDurationMS() {
 	durationObj.val(durationMs);
 	durationObj.valid(); //trigger validation
 	return durationMs;
-}
-
-function toggleThreshold() {
-	$("#runcountChkbox").toggle();
-	$("#durationChkbox").toggle();
 }
 
 function getOption(cnt) {

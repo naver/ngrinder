@@ -9,7 +9,7 @@
 					<label for="agentCount" class="control-label"><@spring.message "perfTest.configuration.agent"/></label>
 					<div class="controls">
 						<div class="input-append">
-							<input type="text" class="input required span1" rel="popover"
+							<input type="text" class="input span1" rel="popover"
 								id="agentCount" name="agentCount" value="${(test.agentCount)!0}" 
 								data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
 								data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
@@ -27,7 +27,7 @@
 							<tr>
 								<td>
 									<div class="input-append">
-										<input type="text" class="input required span1" rel="popover"
+										<input type="text" class="input span1" rel="popover"
 											id="vuserPerAgent" name="vuserPerAgent"	value="${(test.vuserPerAgent)!1}" rel="popover"	
 											data-content='<@spring.message "perfTest.configuration.vuserPerAgent.help"/>'
 											data-original-title="<@spring.message "perfTest.configuration.vuserPerAgent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxVuserPerAgent)}</span>
@@ -45,10 +45,10 @@
 								<td colspan="2">
 									<span id="processAndThreadPanelDiv">
 									<div class="input-prepend control-group" style="margin-bottom:0">
-										<span class="add-on" title='<@spring.message "perfTest.report.process"/>'><@spring.message "perfTest.report.process"/></span><input class="input required positiveNumber span1" type="text" id="processes" name="processes" value="${(test.processes)!1}"/> 
+										<span class="add-on" title='<@spring.message "perfTest.report.process"/>'><@spring.message "perfTest.report.process"/></span><input class="input span1" type="text" id="processes" name="processes" value="${(test.processes)!1}"/> 
 									</div>
 									<div class="input-prepend control-group" style="margin-bottom:0">
-										<span class="add-on" title='<@spring.message "perfTest.report.thread"/>'><@spring.message "perfTest.report.thread"/></span><input class="input required positiveNumber span1" type="text" id="threads" name="threads" value="${(test.threads)!1}"/>
+										<span class="add-on" title='<@spring.message "perfTest.report.thread"/>'><@spring.message "perfTest.report.thread"/></span><input class="input span1" type="text" id="threads" name="threads" value="${(test.threads)!1}"/>
 									</div>
 									</span>
 								</td>
@@ -71,7 +71,7 @@
 							</colgroup>
 							<tr>
 							<td>
-								<select id="scriptName" class="required span3" name="scriptName"> 
+								<select id="scriptName" class="span3" name="scriptName"> 
 									<#if test?? && test.lastModifiedUser.userId != currentUser.userId>
 										<option value="${test.scriptName}" selected>${test.scriptName} - belong to ${test.lastModifiedUser.userId}</option>
 									</#if>
@@ -119,7 +119,7 @@
 				</div>
 				<hr>
 				<div class="control-group"> 
-					<label class="control-label"> <input type="radio" id="durationChkbox" checked="true"> <@spring.message "perfTest.configuration.duration"/>
+					<label class="control-label"> <input type="radio" id="durationRadio" name="threshold" value="D" <#if !(threshold??) || threshold == "D">checked</#if>> <@spring.message "perfTest.configuration.duration"/>
 					</label>
 					<div class="controls docs-input-sizes">
 						<select class="select-item" id="hSelect"></select> : 
@@ -134,7 +134,7 @@
 					</div>
 				</div>
 				<div class="control-group">
-					<label for="runCount" class="control-label"> <input type="radio" id="runcountChkbox"> 
+					<label for="runCount" class="control-label"> <input type="radio" id="runCountRadio" name="threshold" value="R" <#if threshold?? && threshold == "R">checked</#if>> 
 						<@spring.message "perfTest.configuration.runCount"/>
 					</label>
 					<div class="controls">
@@ -151,7 +151,7 @@
 				<div class="control-group">
 					<label for="ignoreSampleCount" class="control-label"> <@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
 					<div class="controls">
-						<input type="text" class="input span1 required countNumber" 
+						<input type="text" class="input span1" 
 							data-original-title="<@spring.message "perfTest.configuration.ignoreSampleCount"/>"
 							data-content='<@spring.message "perfTest.configuration.ignoreSampleCount.help"/>'
 							rel="popover"												
@@ -183,14 +183,14 @@
 							<div class="control-group">
 								<label for="initProcesses" class="control-label"> <@spring.message "perfTest.configuration.initalProcesses"/> </label>
 								<div class="controls">
-									<input type="text" class="input input-mini required countNumber" id="initProcesses" name="initProcesses"
+									<input type="text" class="input input-mini" id="initProcesses" name="initProcesses"
 										value="${(test.initProcesses)!0}"/>
 								</div>
 							</div>
 							<div class="control-group">
 								<label for="processIncrement" class="control-label"> <@spring.message "perfTest.configuration.rampup"/> </label>
 								<div class="controls">
-									<input type="text" class="input input-mini required positiveNumber" id="processIncrement"
+									<input type="text" class="input input-mini" id="processIncrement"
 										name="processIncrement" value="${(test.processIncrement)!1}">
 								</div>
 							</div>
@@ -203,7 +203,7 @@
 							<div class="control-group">
 								<label for="initSleepTime" class="control-label"> <@spring.message "perfTest.configuration.initalSleepTime"/> </label>
 								<div class="controls">
-									<input type="text" class="input input-mini required countNumber" id="initSleepTime" name="initSleepTime"
+									<input type="text" class="input input-mini" id="initSleepTime" name="initSleepTime"
 										value="${(test.initSleepTime)!0}">
 									<code>MS</code>
 								</div>
@@ -213,7 +213,7 @@
 									<@spring.message "perfTest.configuration.processesEvery"/> 
 								</label>
 								<div class="controls">
-									<input type="text" class="input input-mini required positiveNumber" id="processIncrementInterval"
+									<input type="text" class="input input-mini" id="processIncrementInterval"
 										name="processIncrementInterval" value="${(test.processIncrementInterval)!1000}">
 									<code>MS</code>
 								</div>
