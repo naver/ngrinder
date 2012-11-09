@@ -507,24 +507,17 @@ function addValidation() {
 		errorClass : "help-inline",
 		errorElement : "span",
 		errorPlacement : function(error, element) {
-			var errorPlace = $("#" + element.attr("id") + "Error");
+			var errorPlace = $("td." + element.attr("id"));
 			if (errorPlace.length != 0) {
-				error.appendTo(errorPlace);
+				errorPlace.html(error);
 			} else {
-			    var errorMsg = element.parents(".control-group").find(".error-msg");
-			    if (errorMsg.length == 0) {
-			    	if (element.next().attr("class") == "add-on") {
-						error.insertAfter(element.next());
-					} else {
-						error.insertAfter(element);
-					}
-			    } else {
-					error.appendTo(errorMsg);
+		    	if (element.next().attr("class") == "add-on") {
+					error.insertAfter(element.next());
+				} else {
+					error.insertAfter(element);
 				}
 			}
 		},
-		
-		
 		highlight : function(element, errorClass, validClass) {
 			var controlGroup = $(element).parents('.control-group');
 			if (controlGroup.length >= 1) {
@@ -540,8 +533,6 @@ function addValidation() {
 			}
 		}
 	});
-
-	
 }
 
 function bindEvent() {

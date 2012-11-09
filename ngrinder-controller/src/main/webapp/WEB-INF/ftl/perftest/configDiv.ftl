@@ -14,7 +14,6 @@
 								data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
 								data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
 				 		</div>
-				 		<span class="error-msg"></span> 
 					</div>
 				</div>
 				<div class="control-group">
@@ -45,20 +44,17 @@
 							<tr id="processAndThreadPanel">
 								<td colspan="2">
 									<span id="processAndThreadPanelDiv">
-									<div class="input-prepend control-group">
+									<div class="input-prepend control-group" style="margin-bottom:0">
 										<span class="add-on" title='<@spring.message "perfTest.report.process"/>'><@spring.message "perfTest.report.process"/></span><input class="input required positiveNumber span1" type="text" id="processes" name="processes" value="${(test.processes)!1}"/> 
 									</div>
-									<div class="input-prepend control-group">
+									<div class="input-prepend control-group" style="margin-bottom:0">
 										<span class="add-on" title='<@spring.message "perfTest.report.thread"/>'><@spring.message "perfTest.report.thread"/></span><input class="input required positiveNumber span1" type="text" id="threads" name="threads" value="${(test.threads)!1}"/>
 									</div>
 									</span>
 								</td>
 							</tr>
 							<tr>
-						   		<td>
-									<span class="error-msg" id="vuserPerAgentError"></span>
-									<span class="error-msg" id="processesError"></span>
-									<span class="error-msg" id="threadsError"></span>
+						   		<td class="vuserPerAgent processes threads">
 								</td>
 							</tr>
 						</table>
