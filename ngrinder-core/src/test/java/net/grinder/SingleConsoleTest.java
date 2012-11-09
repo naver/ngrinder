@@ -87,8 +87,8 @@ public class SingleConsoleTest {
 
 		ProcessReports[] processReports = new ProcessReports[] { report };
 		singleConsole.update(processReports);
-		assertThat(singleConsole.runningProcess, is(2));
-		assertThat(singleConsole.runningThread, is(5));
+		assertThat(singleConsole.getRunningProcess(), is(2));
+		assertThat(singleConsole.getRunningThread(), is(5));
 
 		processReports = new ProcessReports[] {};
 		singleConsole.waitUntilAgentConnected(1);
@@ -179,7 +179,7 @@ public class SingleConsoleTest {
 		singleConsole.startSampling(0);
 
 		SampleModel sampleModelMock = mock(SampleModelImplementationEx.class);
-		singleConsole.sampleModel = sampleModelMock;
+		singleConsole.setSampleModel(sampleModelMock);
 		StatisticExpression exp = mock(StatisticExpression.class);
 		StatisticsSet statisticMock = mock(StatisticsSet.class);
 		when(exp.getDoubleValue(any(StatisticsSet.class))).thenReturn(3D);

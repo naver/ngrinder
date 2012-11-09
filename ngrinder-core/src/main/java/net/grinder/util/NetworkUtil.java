@@ -32,7 +32,6 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.Enumeration;
 
 /**
