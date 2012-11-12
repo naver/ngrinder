@@ -152,7 +152,8 @@ public class Config implements IConfig {
 		clusterURIs = urisSB.toString();
 		LOG.info("Cache cluster URIs:{}", clusterURIs);
 		
-		//
+		// set rmi server host for remote serving. Otherwise, maybe it will use 127.0.0.1 to serve.
+		// then the remote client can not connect.
 		LOG.info("Set current IP:{} for RMI server.", currentIP);
 		System.setProperty("java.rmi.server.hostname", currentIP);
 		return;

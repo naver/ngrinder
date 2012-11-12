@@ -465,7 +465,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public PerfTest getPerfTestCandiate() {
 		List<PerfTest> readyPerfTests;
 		if (config.isCluster()) {
-			readyPerfTests = perfTestRepository.findAllByStatusAndRegionOrderByScheduledTimeAsc(Status.READY);
+			readyPerfTests = perfTestRepository.findAllByStatusAndRegionOrderByScheduledTimeAsc(Status.READY,
+					config.getRegion());
 		} else {
 			readyPerfTests = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY);
 		}

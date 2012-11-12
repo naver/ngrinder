@@ -112,5 +112,5 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	 * @param status
 	 * @return
 	 */
-	List<PerfTest> findAllByStatusAndRegionOrderByScheduledTimeAsc(Status status);
+	List<PerfTest> findAllByStatusAndRegionOrderByScheduledTimeAsc(Status status, String region);
 }
