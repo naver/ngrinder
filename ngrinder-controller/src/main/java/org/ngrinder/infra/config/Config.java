@@ -64,8 +64,10 @@ import ch.qos.logback.core.joran.spi.JoranException;
 @Component
 public class Config implements IConfig {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
+	private static final String NGRINDER_EX_FOLDER = ".ngrinder_ex";
 	private static final Logger LOG = LoggerFactory.getLogger(Config.class);
 	private Home home = null;
+	private Home exHome = null;
 	private PropertiesWrapper internalProperties;
 	private PropertiesWrapper systemProperties;
 	private PropertiesWrapper databaseProperties;
@@ -95,6 +97,7 @@ public class Config implements IConfig {
 	public void init() {
 		try {
 			home = resolveHome();
+			exHome = resolveExHome();
 			copyDefaultConfigurationFiles();
 			loadIntrenalProperties();
 			loadSystemProperties();
@@ -104,9 +107,9 @@ public class Config implements IConfig {
 			loadDatabaseProperties();
 			versionString = getVesion();
 			
-			//check cluster
-			//set cluster configuration foe ehcache
+			//check cluster, get cluster configuration for ehcache
 			loadClusterConfig();
+			copyExtConfigurationFiles();
 			loadExtendProperties();
 
 		} catch (IOException e) {
@@ -132,10 +135,10 @@ public class Config implements IConfig {
 		StringBuilder urisSB = new StringBuilder();
 		for (String peerIP : clusterUriList) {
 			// should exclude itself from the peer list
-			if (urisSB.length() > 0) {
-				urisSB.append("|");
-			}
 			if (!currentIP.equals(peerIP)) {
+				if (urisSB.length() > 0) {
+					urisSB.append("|");
+				}
 				urisSB.append("//").append(peerIP).append(":").append(clusterListenerPort);
 				urisSB.append("/").append(NGrinderConstants.CACHE_NAME_DISTRIBUTED_MAP);
 			}
@@ -148,6 +151,10 @@ public class Config implements IConfig {
 		}
 		clusterURIs = urisSB.toString();
 		LOG.info("Cache cluster URIs:{}", clusterURIs);
+		
+		//
+		LOG.info("Set current IP:{} for RMI server.", currentIP);
+		System.setProperty("java.rmi.server.hostname", currentIP);
 		return;
 		
 		/*
@@ -204,22 +211,9 @@ public class Config implements IConfig {
 	}	
 	
 	protected void loadExtendProperties() {
-		InputStream inputStream = null;
-		Properties extProp = new Properties();
-		try {
-			//TODO: this configuration should be copied to other place on server, then user need
-			// only modify it one time.
-			inputStream = new ClassPathResource("/system-ex.conf").getInputStream();
-			extProp.load(inputStream);
-			String regionStr = extProp.getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION);
-			region = regionStr.trim();
-		} catch (IOException e) {
-			LOG.error("Error while load system-ex.conf", e);
-			region = NON_REGION;
-		} finally {
-			IOUtils.closeQuietly(inputStream);
-		}
-		
+		Properties properties = exHome.getProperties("system-ex.conf");
+		String regionStr = properties.getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION);
+		region = regionStr.trim();		
 	}
 	
 	public String getRegion() {
@@ -274,6 +268,17 @@ public class Config implements IConfig {
 	}
 
 	/**
+	 * Copy extended configuration files.
+	 * 
+	 * @throws IOException
+	 *             occurs when there is no such a files.
+	 */
+	private void copyExtConfigurationFiles() throws IOException {
+		checkNotNull(exHome);
+		exHome.copyFrom(new ClassPathResource("ngrinder_ex_home_template").getFile(), false);
+	}
+
+	/**
 	 * Resolve nGrinder home path.
 	 * 
 	 * @return resolved home
@@ -293,6 +298,28 @@ public class Config implements IConfig {
 						System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
 
 		return new Home(homeDirectory);
+	}
+
+	/**
+	 * Resolve nGrinder extended home path.
+	 * 
+	 * @return resolved home
+	 */
+	private Home resolveExHome() {
+		String exHomeFromEnv = System.getenv("NGRINDER_EX_HOME");
+		String exHomeFromProperty = System.getProperty("ngrinder.exhome");
+		if (StringUtils.isNotEmpty(exHomeFromEnv) && !StringUtils.equals(exHomeFromEnv, exHomeFromProperty)) {
+			LOG.warn("The path to ngrinder-exhome is ambiguous:");
+			LOG.warn("    System Environment:  NGRINDER_EX_HOME=" + exHomeFromEnv);
+			LOG.warn("    Java Sytem Property:  ngrinder.exhome=" + exHomeFromProperty);
+			LOG.warn("    '" + exHomeFromProperty + "' is accepted.");
+		}
+		String userHome = null;
+		userHome = StringUtils.defaultIfEmpty(exHomeFromProperty, exHomeFromEnv);
+		File exHomeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
+						System.getProperty("user.exhome"), NGRINDER_EX_FOLDER);
+
+		return new Home(exHomeDirectory);
 	}
 
 	/**
@@ -379,6 +406,15 @@ public class Config implements IConfig {
 	 */
 	public Home getHome() {
 		return this.home;
+	}
+
+	/**
+	 * Get the resolved extended home folder.
+	 * 
+	 * @return home
+	 */
+	public Home getExHome() {
+		return this.exHome;
 	}
 
 	/**

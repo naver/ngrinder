@@ -95,6 +95,7 @@ public class UserTest extends AbstractNGrinderTransactionalTest {
 
 	    User sharedUser = userRepository.findOneByUserId(user4.getUserId());
 		List<User> sh = sharedUser.getFollowers();
+		LOG.debug("sharedUser.getFollowers:{}", sh);
 	}
 	
 

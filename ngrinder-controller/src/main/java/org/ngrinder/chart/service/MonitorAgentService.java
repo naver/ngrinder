@@ -101,12 +101,8 @@ public class MonitorAgentService implements NGrinderConstants {
 	 */
 	public void removeMonitorAgents(Set<AgentInfo> agents) {
 		for (AgentInfo agent : agents) {
-			try {
-				MonitorExecuteManager.getInstance().removeAgentMonitor(agent.getIp());
-				LOG.debug("Remove nGrinder Monitor for:{} successfully.", agent.getIp());
-			} catch (Exception e) {
-				LOG.error("Error occurs while remove monitor for {}", agent.getIp());
-			}
+			MonitorExecuteManager.getInstance().removeAgentMonitor(agent.getIp());
+			LOG.debug("Remove nGrinder Monitor for:{} successfully.", agent.getIp());
 		}
 		refreshCache();
 	}

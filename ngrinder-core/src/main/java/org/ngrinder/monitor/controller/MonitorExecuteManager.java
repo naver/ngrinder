@@ -22,8 +22,6 @@
  */
 package org.ngrinder.monitor.controller;
 
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -116,7 +114,11 @@ public final class MonitorExecuteManager {
 	 * @param agentIP is the IP address of monitoring target server
 	 */
 	public void removeAgentMonitor(String agentIP) {
-		MutableInt refCount = checkNotNull(monitorWorkerRefMap.get(agentIP));
+		MutableInt refCount = monitorWorkerRefMap.get(agentIP);
+		if (refCount == null) {
+			LOG.info("Monitoring worker for {} doesn't exist.", agentIP);
+			return;
+		}
 		refCount.decrement();
 		//stop and remove worker if only there is no any monitor reference on this agent
 		if (refCount.intValue() <= 0) {

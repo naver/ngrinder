@@ -281,6 +281,7 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute("testName", "Test for " + url.getHost());
 		model.addAttribute(PARAM_TARGET_HOST, url.getHost());
 		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
+		model.addAttribute(PARAM_REGION_LIST, regionService.getRegionList());
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		addDefaultAttributeOnModel(user, model);
 		return "perftest/detail";

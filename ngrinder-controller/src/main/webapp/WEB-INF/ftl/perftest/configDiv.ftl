@@ -25,10 +25,10 @@
 				 			<td>
 								<div>
 									<select id="region" class="required span3" name="region" placeholder="Region">
-										<option value='' disabled selected style='display:none;'>Select Region</option>
+										<option value=''>Select Region</option>
 										<#if regionList?? && regionList?size &gt; 0> 
 											<#list regionList as regionName> 
-												<option value="${regionName}" <#if test?? && test.region??>selected</#if> >${regionName}</option> 
+												<option value="${regionName}" <#if test?? && test.region?? && test.region == regionName>selected</#if> >${regionName}</option> 
 											</#list> 
 										</#if>
 									</select>
