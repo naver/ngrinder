@@ -526,6 +526,10 @@ public class SingleConsole implements Listener, SampleListener {
 		return StatisticsServicesImplementation.getInstance().getSummaryStatisticsView().getExpressionViews();
 	}
 
+	protected ExpressionView[] getDetailedExpressionView() {
+		return StatisticsServicesImplementation.getInstance().getDetailStatisticsView().getExpressionViews();
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -598,11 +602,18 @@ public class SingleConsole implements Listener, SampleListener {
 		StringBuilder csvLine = new StringBuilder();
 		csvLine.append(DateUtil.dateToString(new Date()));
 		ExpressionView[] expressionView = getExpressionView();
-		for (ExpressionView eachView : getExpressionView()) {
+		ExpressionView[] detailedExpressionView = getDetailedExpressionView();
+		for (ExpressionView eachView : expressionView) {
 			if (!eachView.getDisplayName().equals("Peak TPS")) {
 				double doubleValue = eachView.getExpression().getDoubleValue(intervalStatistics);
 				csvLine.append(",").append(formatValue(getRealDoubleValue(doubleValue)));
 			}
+		}
+
+		for (ExpressionView eachView : detailedExpressionView) {
+			csvLine.append(",")
+							.append(formatValue(getRealDoubleValue(eachView.getExpression().getDoubleValue(
+											intervalStatistics))));
 		}
 
 		for (int i = 0; i < modelTestIndex.getNumberOfTests(); i++) {
@@ -612,12 +623,17 @@ public class SingleConsole implements Listener, SampleListener {
 			Test test = modelTestIndex.getTest(i);
 			String description = test.getDescription();
 			csvLine.append(",").append(description);
-			for (ExpressionView eachView : getExpressionView()) {
+			for (ExpressionView eachView : expressionView) {
 				if (!eachView.getDisplayName().equals("Peak TPS")) {
 					csvLine.append(",").append(
 									formatValue(getRealDoubleValue(eachView.getExpression().getDoubleValue(
 													lastSampleStatistics))));
 				}
+			}
+			for (ExpressionView eachView : detailedExpressionView) {
+				csvLine.append(",").append(
+								formatValue(getRealDoubleValue(eachView.getExpression().getDoubleValue(
+												lastSampleStatistics))));
 			}
 		}
 
@@ -632,14 +648,22 @@ public class SingleConsole implements Listener, SampleListener {
 					csvHeader.append(",").append(createKeyFromExpression(each));
 				}
 			}
-			for (int i = 0; i < modelTestIndex.getNumberOfTests(); i++) {
 
+			for (ExpressionView each : detailedExpressionView) {
+				csvHeader.append(",").append(createKeyFromExpression(each));
+			}
+
+			for (int i = 0; i < modelTestIndex.getNumberOfTests(); i++) {
 				csvHeader.append(",").append("Description");
 				// get the key list from lastStatistic map, use list to keep the order
 				for (ExpressionView each : expressionView) {
 					if (!each.getDisplayName().equals("Peak TPS")) {
 						csvHeader.append(",").append(createKeyFromExpression(each)).append("-").append(i);
 					}
+				}
+
+				for (ExpressionView each : detailedExpressionView) {
+					csvHeader.append(",").append(createKeyFromExpression(each)).append("-").append(i);
 				}
 			}
 			writeCSVDataLine(csvHeader.toString());
