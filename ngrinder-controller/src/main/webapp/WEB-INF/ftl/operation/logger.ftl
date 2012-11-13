@@ -35,7 +35,6 @@
 			    		if (eachLog.attr("id") != data.modification) {
 			    			eachLog.html(data.log);
 			    			eachLog.attr("id", data.modification);
-			    			resetFooter();
 			    		}
 			    	} else {
 			    		var logentries = $("#log_container tr")

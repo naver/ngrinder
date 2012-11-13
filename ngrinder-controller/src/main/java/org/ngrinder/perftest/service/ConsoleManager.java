@@ -199,7 +199,7 @@ public class ConsoleManager {
 			}
 			synchronized (this) {
 				// FIXME : It might fail here
-				singleConsole = new SingleConsole(consoleEntry.getPort(), baseConsoleProperties);
+				singleConsole = new SingleConsole(config.getCurrentIP(), consoleEntry.getPort(), baseConsoleProperties);
 				getConsoleInUse().add(singleConsole);
 				return singleConsole;
 			}
