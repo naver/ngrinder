@@ -718,7 +718,7 @@ public class SingleConsole implements Listener, SampleListener {
 			if (lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue == null) {
 				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = new Date();
 			} else if (isOverLowTpsThreshhold()) {
-				LOGGER.warn("Stop the test because test error is more than half of total tps for more than {} seconds.",
+				LOGGER.warn("Stop the test because test error is more than half of total tps for last {} seconds.",
 								TOO_MANY_ERROR_TIME / 1000);
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
 					public void inform(ConsoleShutdownListener listener) {

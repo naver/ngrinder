@@ -63,9 +63,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import HTTPClient.CookieModule;
-import HTTPClient.CookiePolicyHandler;
-
 /**
  * {@link PerfTest} run scheduler.
  * 
@@ -314,11 +311,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 				LOG.info("remove monitors on {} for perftest {}", agents, perfTest.getId());
 				monitorDataService.removeMonitorAgents(agents);
 			}
-			
+
 			@Override
 			public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
 				// Do calling on monitor here.
-				
+
 			}
 		});
 

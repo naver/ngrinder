@@ -49,11 +49,11 @@ import org.springframework.stereotype.Component;
 
 /**
  * Console manager is responsible for console instance management.<br/>
- * A number of consoles(specified in ngrinder.maxConcurrentTest in system.conf) are pooled. 
- * Actually console itself is not pooled but the {@link ConsoleEntry} which contains console information are
- * pooled internally. Whenever a user requires a new console, it gets the one {@link ConsoleEntry} from the pool and
- * creates new console with the {@link ConsoleEntry}. 
- * Currently using consoles are kept in {@link #consoleInUse} member variable.
+ * A number of consoles(specified in ngrinder.maxConcurrentTest in system.conf) are pooled. Actually
+ * console itself is not pooled but the {@link ConsoleEntry} which contains console information are
+ * pooled internally. Whenever a user requires a new console, it gets the one {@link ConsoleEntry}
+ * from the pool and creates new console with the {@link ConsoleEntry}. Currently using consoles are
+ * kept in {@link #consoleInUse} member variable.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -82,8 +82,8 @@ public class ConsoleManager {
 
 	/**
 	 * Get the base port number of console.<br/>
-	 * It can be specified at ngrinder.consolePortBase in system.conf. 
-	 * Each console will be created from that port.
+	 * It can be specified at ngrinder.consolePortBase in system.conf. Each console will be created
+	 * from that port.
 	 * 
 	 * @return base port number
 	 */
@@ -180,8 +180,9 @@ public class ConsoleManager {
 	 * Get a available console.<br/>
 	 * 
 	 * If there is no available console, it waits until available console is returned back. If the
-	 * specific time is elapsed, the timeout error occurs and throws {@link NGrinderRuntimeException}
-	 * . The timeout can be adjusted by overriding {@link #getMaxWaitingMiliSecond()}.
+	 * specific time is elapsed, the timeout error occurs and throws
+	 * {@link NGrinderRuntimeException} . The timeout can be adjusted by overriding
+	 * {@link #getMaxWaitingMiliSecond()}.
 	 * 
 	 * @param testIdentifier
 	 *            test identifier
@@ -229,6 +230,7 @@ public class ConsoleManager {
 		}
 		synchronized (this) {
 			try {
+				console.unregisterSampling();
 				console.sendStopMessageToAgents();
 			} catch (Exception e) {
 				LOG.error("Exception is occured while shuttdowning console in returnback process for test {}.",
@@ -244,7 +246,6 @@ public class ConsoleManager {
 									testIdentifier, e);
 				}
 				try {
-					console.unregisterSampling();
 					console.shutdown();
 				} catch (Exception e) {
 					LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.",
