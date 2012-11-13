@@ -452,11 +452,11 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Wait until runningThread is 0. If it's over 10 seconds, Exception occurs
+	 * Wait until runningThread is 0. If it's over 20 seconds, Exception occurs
 	 */
 	public void waitUntilAllAgentDisconnected() {
 		int trial = 1;
-		while (trial++ < 20) {
+		while (trial++ < 40) {
 			// when agent finished one test, processReports will be updated as
 			// null
 			if (this.runningThread != 0) {
@@ -545,14 +545,22 @@ public class SingleConsole implements Listener, SampleListener {
 			informTestSamplingStart();
 		}
 		try {
-			StatisticsSet intervalStatisticsSnapshot = intervalStatistics.snapshot();
+			final StatisticsSet intervalStatisticsSnapshot = intervalStatistics.snapshot();
+			final StatisticsSet cumulatedStatisticsSnapshot = cumulativeStatistics.snapshot();
 			setTpsValue(sampleModel.getTPSExpression().getDoubleValue(intervalStatisticsSnapshot));
 			checkTooLowTps(getTpsValues());
 			updateStatistics();
 			writeIntervalSummaryData(intervalStatisticsSnapshot);
 			ModelTestIndex modelIndex = ((SampleModelImplementationEx) sampleModel).getModelTestIndex();
 			writeIntervalCsvData(intervalStatisticsSnapshot, modelIndex);
+			samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
+				@Override
+				public void inform(SamplingLifeCycleListener listener) {
+					listener.onSampling(getReportPath(), intervalStatisticsSnapshot, cumulatedStatisticsSnapshot);
+				}
+			});
 			checkTooManyError(cumulativeStatistics);
+
 		} catch (RuntimeException e) {
 			LOGGER.error("Error occurs while update statistics " + e.getMessage(), e);
 			throw e;
@@ -788,12 +796,26 @@ public class SingleConsole implements Listener, SampleListener {
 	 * Listener interface to detect sampling start and end point.
 	 * 
 	 * @author JunHo Yoon
+	 * @since 3.0
 	 */
 	public interface SamplingLifeCycleListener {
 		/**
 		 * Called when the sampling is started.
 		 */
 		void onSamplingStarted();
+
+		/**
+		 * Called whenever the sampling is performed.
+		 * 
+		 * @param file
+		 *            report path
+		 * @param intervalStatistics
+		 *            interval statistics snapshot
+		 * @param cumulativeStatistics
+		 *            cumulative statistics snapshot
+		 * @since 3.0.2
+		 */
+		void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics);
 
 		/**
 		 * Called when the sampling is started.

@@ -62,12 +62,21 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 */
 	private void initAccessOfDirectories() {
 		workDirectory = normalize(new File(workDirectory).getAbsolutePath(), null);
-		logDirectory = workDirectory.substring(0, workDirectory.lastIndexOf(File.separator));
-		logDirectory = logDirectory.substring(0, workDirectory.lastIndexOf(File.separator)) + File.separator + "log";
+		if (workDirectory != null && !workDirectory.isEmpty()) {
+			logDirectory = workDirectory.substring(0, workDirectory.lastIndexOf(File.separator));
+			logDirectory = logDirectory.substring(0, workDirectory.lastIndexOf(File.separator)) + File.separator
+							+ "log";
+		} else {
+			logDirectory = "log";
+		}
 		agentExecDirectory = normalize(new File(agentExecDirectory).getAbsolutePath(), null);
 		javaHomeDirectory = normalize(new File(javaHomeDirectory).getAbsolutePath(), null);
-		jreHomeDirectory = javaHomeDirectory.substring(0, javaHomeDirectory.lastIndexOf(File.separator))
-						+ File.separator + "jre";
+		if (javaHomeDirectory != null && !javaHomeDirectory.isEmpty()) {
+			jreHomeDirectory = javaHomeDirectory.substring(0, javaHomeDirectory.lastIndexOf(File.separator))
+							+ File.separator + "jre";
+		} else {
+			jreHomeDirectory = "JAVA";
+		}
 
 		readAllowedDirectory.add(workDirectory);
 		readAllowedDirectory.add(logDirectory);
@@ -196,7 +205,9 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * @param file
 	 *            file path
 	 */
+	@SuppressWarnings("unused")
 	private void fileAccessReadAllowed(String file) {
+		// We don't use this for a while.
 		String filePath = normalize(file, workDirectory);
 		for (String dir : readAllowedDirectory) {
 			if (filePath != null && filePath.startsWith(dir)) {
@@ -217,7 +228,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 		if (file != null && (file.contains("log/test_") || file.contains("log\\test_"))) {
 			return;
 		}
-		
+
 		String filePath = normalize(file, workDirectory);
 		for (String dir : writeAllowedDirectory) {
 			if (filePath != null && filePath.startsWith(dir)) {

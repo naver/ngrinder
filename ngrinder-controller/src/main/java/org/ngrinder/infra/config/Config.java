@@ -105,7 +105,7 @@ public class Config implements IConfig {
 			loadSystemProperties();
 			loadAnnouncement();
 			initLogger(isTestMode());
-			currentIP = NetworkUtil.getLocalHostAddress("www.github.com", 80);
+			currentIP = NetworkUtil.getLocalHostAddress();
 			CoreLogger.LOGGER.info("NGrinder is starting...");
 			loadDatabaseProperties();
 			versionString = getVesion();

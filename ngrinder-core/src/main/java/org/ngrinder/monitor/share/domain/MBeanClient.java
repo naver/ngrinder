@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 
  * Client for the JMX monitor server.
- *
+ * 
  * @author Mavlarn
  * @since 2.0
  */
@@ -68,12 +68,15 @@ public class MBeanClient {
 	/**
 	 * Used to connect remote monitor JMX.
 	 * 
-	 * @param hostName is the server name of target server
-	 * @param port is the JMX server's listener port of target monitor server
-	 * @throws IOException wraps JMX MalformedURLException exception
+	 * @param hostName
+	 *            is the server name of target server
+	 * @param port
+	 *            is the JMX server's listener port of target monitor server
+	 * @throws IOException
+	 *             wraps JMX MalformedURLException exception
 	 */
 	public MBeanClient(String hostName, int port) throws IOException {
-		JMXServiceURL url = new JMXServiceURL("rmi", "", 0, String.format(JMX_URI, hostName, port));
+		JMXServiceURL url = new JMXServiceURL("rmi", hostName, port, String.format(JMX_URI, hostName, port));
 		this.jmxUrl = url;
 		this.hostName = url.getHost();
 		this.port = url.getPort();
@@ -102,9 +105,8 @@ public class MBeanClient {
 	}
 
 	/**
-	 * disconnect the MBclient.
-	 * If it is remote JMX server, disconnect the connection. If it is local, disconnect the
-	 * binding.
+	 * disconnect the MBclient. If it is remote JMX server, disconnect the connection. If it is
+	 * local, disconnect the binding.
 	 */
 	public void disconnect() {
 		IOUtils.closeQuietly(jmxConnector);
@@ -118,12 +120,16 @@ public class MBeanClient {
 	}
 
 	/**
-	 * get the monitor object of the object name and attribute name. See {@link MonitorCollectionInfoDomain}.
+	 * get the monitor object of the object name and attribute name. See
+	 * {@link MonitorCollectionInfoDomain}.
 	 * 
-	 * @param objName is the object name of the object in JMX MBean server.
-	 * @param attrName is the attribute name
+	 * @param objName
+	 *            is the object name of the object in JMX MBean server.
+	 * @param attrName
+	 *            is the attribute name
 	 * @return the monitor object from MBean
-	 * @throws Exception wraps all JMX related exception
+	 * @throws Exception
+	 *             wraps all JMX related exception
 	 */
 	public Object getAttribute(ObjectName objName, String attrName) throws Exception {
 		return server.getAttribute(objName, attrName);

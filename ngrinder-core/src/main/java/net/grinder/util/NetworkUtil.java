@@ -28,13 +28,14 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Common utility for network env.
@@ -44,15 +45,8 @@ import java.util.Enumeration;
  * 
  */
 public abstract class NetworkUtil {
-	
-	/**
-	 * Get the local host address by trying to connect "www.google.com".
-	 * @return
-	 */
-	public static String getLocalHostAddress() {
-		return getLocalHostAddress("www.google.com", 80);
-	}
-	
+	private static final Logger LOGGER = LoggerFactory.getLogger(NetworkUtil.class);
+
 	/**
 	 * Get the local host address by trying to connect given host..
 	 * 
@@ -62,36 +56,16 @@ public abstract class NetworkUtil {
 	 *            connecting port
 	 * @return ip form of host address
 	 */
-	public static String getLocalHostAddress(String byConnecting, int port) {
-		Socket s = null;
-		Socket s2 = null;
-
+	public static String getLocalHostAddress() {
 		try {
-			s = new Socket();
-			SocketAddress addr = new InetSocketAddress(byConnecting, port);
-			s.connect(addr, 1000); // 1 seconds timeout
-			return s.getLocalAddress().getHostAddress();
-		} catch (IOException e) {
-			// For safety.
-			try {
-				s2 = new Socket();
-				SocketAddress addr = new InetSocketAddress("www.google.com", 80);
-				s2.connect(addr, 1000); // 1 seconds timeout
-				return s2.getLocalAddress().getHostAddress();
-			} catch (Exception e1) {
-				try {
-					return getFirstNonLoopbackAddress(true, false).getHostAddress();
-				} catch (SocketException e2) {
-					return "127.0.0.1";
-				}
-
+			InetAddress firstNonLoopbackAddress = getFirstNonLoopbackAddress(true, false);
+			if (firstNonLoopbackAddress != null) {
+				return firstNonLoopbackAddress.getHostAddress();
 			}
-		} finally {
-			NetworkUtil.closeQuitely(s);
-			NetworkUtil.closeQuitely(s2);
-
+		} catch (Exception e2) {
+			LOGGER.error("Error while get localhost address", e2);
 		}
-
+		return "127.0.0.1";
 	}
 
 	private static InetAddress getFirstNonLoopbackAddress(boolean preferIpv4, boolean preferIPv6)
@@ -127,18 +101,22 @@ public abstract class NetworkUtil {
 	 */
 	public static String getLocalHostName() {
 		try {
-			return InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			return "localhost";
+			InetAddress firstNonLoopbackAddress = getFirstNonLoopbackAddress(true, false);
+			if (firstNonLoopbackAddress != null) {
+				return firstNonLoopbackAddress.getHostName();
+			}
+		} catch (SocketException e) {
+			LOGGER.error("Error while get localhost name", e);
 		}
+		return "localhost";
 	}
 
 	/**
-	 * Get the Ip addresses from host name.
+	 * Get the IP addresses from host name.
 	 * 
 	 * @param host
 	 *            host
-	 * @return ips
+	 * @return {@link InetAddress} array
 	 */
 	public static InetAddress[] getIpsFromHost(String host) {
 		try {
