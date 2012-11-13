@@ -48,7 +48,7 @@ public abstract class NetworkUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(NetworkUtil.class);
 
 	/**
-	 * Get the local host address by trying to connect given host..
+	 * Get the local host address, try to get actual IP.
 	 * 
 	 * @param byConnecting
 	 *            connecting host
@@ -57,6 +57,15 @@ public abstract class NetworkUtil {
 	 * @return ip form of host address
 	 */
 	public static String getLocalHostAddress() {
+		String addr = null;
+		try {
+			addr = InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+			LOGGER.error("Error while get localhost address", e);
+		}
+		if (!"127.0.0.1".equals(addr)) {
+			return addr;
+		}
 		try {
 			InetAddress firstNonLoopbackAddress = getFirstNonLoopbackAddress(true, false);
 			if (firstNonLoopbackAddress != null) {
@@ -73,6 +82,10 @@ public abstract class NetworkUtil {
 		Enumeration<?> en = NetworkInterface.getNetworkInterfaces();
 		while (en.hasMoreElements()) {
 			NetworkInterface i = (NetworkInterface) en.nextElement();
+			if (!i.isUp()) {
+				continue;
+			}
+
 			for (Enumeration<?> en2 = i.getInetAddresses(); en2.hasMoreElements();) {
 				InetAddress addr = (InetAddress) en2.nextElement();
 				if (!addr.isLoopbackAddress()) {
