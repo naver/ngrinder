@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * System configuration file operation service.
+ * System configuration file operating service.
  * 
  * @author Alex Qin
  * @since 3.1

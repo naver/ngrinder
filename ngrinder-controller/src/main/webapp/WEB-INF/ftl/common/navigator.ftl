@@ -29,6 +29,7 @@
 				                <li><a href="${req.getContextPath()}/operation/log"><@spring.message "navigator.dropdown.logMonitoring"/></a></li>
 				                <li><a href="${req.getContextPath()}/operation/scriptConsole"><@spring.message "navigator.dropdown.scriptConsole"/></a></li>  
 			                	<li><a href="${req.getContextPath()}/operation/systemConfig"><@spring.message "navigator.dropdown.systemConfig"/></a></li>
+			                	<li><a href="${req.getContextPath()}/operation/announcement"><@spring.message "navigator.dropdown.announcement"/></a></li>
 			            	</@security.authorize>
 		                	<li class="divider"/> 
 			          		<li><a href="${req.getContextPath()}/logout"><@spring.message "navigator.dropdown.signout"/></a></li>
@@ -41,12 +42,21 @@
 		</div>
 	</div>
 </div>
+
+<@security.authorize ifAnyGranted="U">
 <#if announcement?has_content>
-<div class="alert alert-info" style="margin-top:-40px; margin-bottom:21px;">
-${announcement}
+<div class="alert alert-block" style="margin:-40px 0 21px; padding:14px 20px">
+	<h4><@spring.message "announcement.alert.title"/></h4>
+	<div style="margin:5px 35px 0;">
+		<#if announcement?index_of('</') gt 0>
+		${announcement}
+		<#else>
+		${announcement?replace('\r\n', '<br>')?replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp;')}
+		</#if>
+	</div>
 </div>
 </#if>
-<#include "messages.ftl">
+</@security.authorize>
 
 <div class="modal fade" id="userProfileModal">
 	<div class="modal-header">
@@ -75,6 +85,9 @@ ${announcement}
 		</div>
 	</div>	
 </div>
+
+<#include "messages.ftl">
+
 <script type="text/javascript">
 	function init() {
 		myProfile();
