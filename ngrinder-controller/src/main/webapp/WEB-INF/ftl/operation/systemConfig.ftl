@@ -20,7 +20,6 @@
 		</div>
 		<#include "../common/copyright.ftl">
 	</div>
-	<#include "../common/messages.ftl"> 
 	<#include "../common/codemirror.ftl"> 
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/properties.js"></script>
 	<script>

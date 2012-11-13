@@ -73,7 +73,7 @@
 		<#if user?exists && user.userId == currentUser.userId>
 		<@security.authorize ifAnyGranted="U">
 		<div class="control-group" >
-			<label class="control-label"><@spring.message "user.switch.title"/></label>
+			<label class="control-label"><@spring.message "user.share.title"/></label>
 			<div class="controls">
 				<select id="userListSelect" name="followersStr" style="width:300px" multiple>
 					<#include "userOptionGroup.ftl">
