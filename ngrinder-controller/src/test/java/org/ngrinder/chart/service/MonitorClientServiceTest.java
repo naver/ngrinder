@@ -20,36 +20,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.monitor.controller.domain;
+package org.ngrinder.chart.service;
 
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
+
+import org.junit.Test;
+import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
 /**
- * 
- * Monitor recorder interface.
+ * Class description.
  *
  * @author Mavlarn
- * @since 2.0
+ * @since
  */
-public interface MonitorRecorder {
+public class MonitorClientServiceTest extends MonitorAgentServiceTest {
+
+	@Test
+	public void testGetMonitorData () {
+		MonitorClientSerivce clientServ = applicationContext.getBean(MonitorClientSerivce.class);
+		clientServ.init("127.0.0.1", MonitorConstants.DEFAULT_MONITOR_PORT);
+		LOG.debug("sysInfo header:{}", SystemInfo.header);
+		
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		clientServ.recordMonitorData(bw);
+
+	}
 	
-	/**
-	 * It is used to initialize before storing monitor data, and executed during
-	 * MonitorExecuteWorker is initializing.
-	 */
-	void before();
-
-	/**
-	 * function to record the SystemInfo.
-	 * 
-	 * @param key is a key to mark the monitoring worker
-	 * @param systemInfo is current collected system data
-	 * @param agentInfo is the target of this monitoring
-	 */
-	void recoderSystemInfo(final String key, final SystemInfo systemInfo, final MonitorAgentInfo agentInfo);
-
-	/**
-	 * Used to finalize after recording all data. It is called when MonitorExecuteWorker is closed.
-	 */
-	void after();
 }

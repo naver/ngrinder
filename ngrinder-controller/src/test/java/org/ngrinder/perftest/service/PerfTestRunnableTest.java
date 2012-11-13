@@ -14,7 +14,6 @@ import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.common.GrinderProperties;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
-import net.grinder.statistics.StatisticsSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -157,7 +156,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 			}
 
 			@Override
-			public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
+			public void onSampling() {
 				// TODO Auto-generated method stub
 
 			}

@@ -23,10 +23,12 @@
 package org.ngrinder.monitor.share.domain;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.management.openmbean.CompositeData;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.ngrinder.common.util.DateUtil;
 
 /**
  * 
@@ -39,6 +41,7 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 
 	private static final long serialVersionUID = -2995334644975166549L;
 
+	public static final String header = "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage"; 
 	/**
 	 * Enum for the system type, linux or windows.
 	 */
@@ -59,6 +62,8 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 	private long totalMemory;
 
 	private float cpuUsedPercentage;
+	
+	private String ip;
 
 	@Override
 	public void parse(CompositeData cd) {
@@ -74,6 +79,14 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		this.cpuUsedPercentage = getFloat(cd, "CPUUsedPercentage");
 		this.setLoadAvgs((double[]) cd.get("loadAvgs"));
 
+	}
+	
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 
 	public System getSystem() {
@@ -141,5 +154,12 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		return ToStringBuilder.reflectionToString(this);
 	}
 
+	public String getRecordString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(ip).append(",").append(system).append(",");
+		sb.append(DateUtil.getCollectTimeInLong(new Date(getCollectTime()))).append(",").append(freeMemory).append(",");
+		sb.append(totalMemory).append(",").append(cpuUsedPercentage);
+		return sb.toString();
 
+	}
 }

@@ -546,7 +546,7 @@ public class SingleConsole implements Listener, SampleListener {
 		}
 		try {
 			final StatisticsSet intervalStatisticsSnapshot = intervalStatistics.snapshot();
-			final StatisticsSet cumulatedStatisticsSnapshot = cumulativeStatistics.snapshot();
+			//final StatisticsSet cumulatedStatisticsSnapshot = cumulativeStatistics.snapshot();
 			setTpsValue(sampleModel.getTPSExpression().getDoubleValue(intervalStatisticsSnapshot));
 			checkTooLowTps(getTpsValues());
 			updateStatistics();
@@ -556,7 +556,7 @@ public class SingleConsole implements Listener, SampleListener {
 			samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
 				@Override
 				public void inform(SamplingLifeCycleListener listener) {
-					listener.onSampling(getReportPath(), intervalStatisticsSnapshot, cumulatedStatisticsSnapshot);
+					listener.onSampling();
 				}
 			});
 			checkTooManyError(cumulativeStatistics);
@@ -815,7 +815,7 @@ public class SingleConsole implements Listener, SampleListener {
 		 *            cumulative statistics snapshot
 		 * @since 3.0.2
 		 */
-		void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics);
+		void onSampling();
 
 		/**
 		 * Called when the sampling is started.

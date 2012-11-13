@@ -32,11 +32,17 @@ import static org.ngrinder.model.Status.START_CONSOLE;
 import static org.ngrinder.model.Status.START_TESTING;
 import static org.ngrinder.model.Status.TESTING;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.grinder.SingleConsole;
@@ -45,11 +51,11 @@ import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
-import net.grinder.statistics.StatisticsSet;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.agent.model.AgentInfo;
-import org.ngrinder.chart.service.MonitorAgentService;
+import org.ngrinder.chart.service.MonitorClientSerivce;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.extension.OnTestLifeCycleRunnable;
 import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
@@ -58,9 +64,11 @@ import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.monitor.MonitorConstants;
+import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
 
 /**
@@ -88,13 +96,13 @@ public class PerfTestRunnable implements NGrinderConstants {
 	private AgentManager agentManager;
 
 	@Autowired
-	private MonitorAgentService monitorDataService;
-
-	@Autowired
 	private PluginManager pluginManager;
 
 	@Autowired
 	private Config config;
+	
+	@Autowired
+	private ApplicationContext appContext;
 
 	/**
 	 * Scheduled method for test execution. This method dispatches the test candidates and run one
@@ -300,21 +308,61 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// Add monitors when sampling is started.
 		final Set<AgentInfo> agents = createMonitorTargets(perfTest);
 		singleConsole.addSamplingLifeCyleListener(new SamplingLifeCycleListener() {
+			
+			private Map<String, MonitorClientSerivce> monitorClientsMap;
+			private Map<String, BufferedWriter> monitorRecordWriterMap;
+			
 			@Override
 			public void onSamplingStarted() {
 				LOG.info("add monitors on {} for perftest {}", agents, perfTest.getId());
-				monitorDataService.addMonitorAgents(agents);
+				monitorRecordWriterMap = new Hashtable<String, BufferedWriter>(agents.size());
+				monitorClientsMap = new HashMap<String, MonitorClientSerivce>(agents.size());
+				for (AgentInfo target : agents) {
+					String targetIP = target.getIp();
+					//create from context, because we use spring Asycn function to get monitor data
+					// from MBClient asynchronized.
+					MonitorClientSerivce clientServ = appContext.getBean(MonitorClientSerivce.class);
+					clientServ.init(targetIP, target.getPort());
+					monitorClientsMap.put(targetIP, clientServ);
+					
+					//prepare monitor data file
+					try {
+						BufferedWriter bw = new BufferedWriter(new FileWriter(new File(
+								singleConsole.getReportPath(), Config.MONITOR_FILE_PREFIX + targetIP + ".data"), false));
+						monitorRecordWriterMap.put(targetIP, bw);
+						//write header info
+						bw.write(SystemInfo.header);
+						bw.newLine();
+						bw.flush();
+					} catch (IOException e) {
+						LOG.error("Creating monitor data file error:{}", e.getMessage());
+						LOG.debug(e.getMessage(), e);
+					}
+				}
 			}
 
 			@Override
 			public void onSamplingEnded() {
 				LOG.info("remove monitors on {} for perftest {}", agents, perfTest.getId());
-				monitorDataService.removeMonitorAgents(agents);
+				//monitorDataService.removeMonitorAgents(agents);
+				for (String ip : monitorRecordWriterMap.keySet()) {
+					BufferedWriter bw = monitorRecordWriterMap.get(ip);
+					IOUtils.closeQuietly(bw);
+					
+					monitorClientsMap.get(ip).close();
+				}
+				monitorRecordWriterMap.clear();
+				monitorClientsMap.clear();
 			}
 
 			@Override
-			public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-				// Do calling on monitor here.
+			public void onSampling() {
+				for (String targetIP : monitorRecordWriterMap.keySet()) {
+					BufferedWriter bw = monitorRecordWriterMap.get(targetIP);
+					System.out.println("t0:" + System.currentTimeMillis());
+					monitorClientsMap.get(targetIP).recordMonitorData(bw);
+					System.out.println("t1:" + System.currentTimeMillis());
+				}
 				
 			}
 		});
@@ -338,12 +386,17 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	private Set<AgentInfo> createMonitorTargets(final PerfTest perfTest) {
 		final Set<AgentInfo> agents = new HashSet<AgentInfo>();
+		Set<String> ipSet = new HashSet<String>();
 		List<String> targetIPList = perfTest.getTargetHostIP();
 		for (String targetIP : targetIPList) {
+			if (ipSet.contains(targetIP)) {
+				continue;
+			}
 			AgentInfo targetServer = new AgentInfo();
 			targetServer.setIp(targetIP);
 			targetServer.setPort(MonitorConstants.DEFAULT_MONITOR_PORT);
 			agents.add(targetServer);
+			ipSet.add(targetIP);
 		}
 		return agents;
 	}

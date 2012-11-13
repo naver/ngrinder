@@ -22,22 +22,15 @@
  */
 package org.ngrinder.chart.controller;
 
-import static org.ngrinder.common.util.Preconditions.checkNotZero;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import net.grinder.common.processidentity.AgentIdentity;
 
-import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.chart.service.MonitorService;
 import org.ngrinder.common.controller.NGrinderBaseController;
-import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,8 +49,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/monitor")
 public class MonitorController extends NGrinderBaseController {
-
-	private static final DateFormat DATE_FORMATER = new SimpleDateFormat("yyyyMMddHHmmss");
 
 	@Autowired
 	private MonitorService monitorService;
@@ -107,37 +98,19 @@ public class MonitorController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/getMonitorData")
 	@ResponseBody
-	public String getMonitorData(ModelMap model, @RequestParam String ip,
-					@RequestParam(required = false) Date startTime, @RequestParam(required = false) Date finishTime,
-					@RequestParam int imgWidth) {
-		if (null == finishTime) {
-			finishTime = new Date();
-		} else {
-			finishTime = DateUtil.convertToServerDate(getCurrentUser().getTimeZone(), finishTime);
-		}
-		if (null == startTime) {
-			startTime = new Date(finishTime.getTime() - 60 * 1000); // default getting one minute's
-																	// monitor data
-		} else {
-			startTime = DateUtil.convertToServerDate(getCurrentUser().getTimeZone(), startTime);
-		}
-
-		long st = NumberUtils.toLong(DATE_FORMATER.format(startTime));
-		long et = NumberUtils.toLong(DATE_FORMATER.format(finishTime));
-		checkNotZero(st, "Invalid start time!");
-		checkNotZero(et, "Invalid end time!");
+	public String getMonitorData(ModelMap model, @RequestParam(required = true) long testId,
+			@RequestParam(required = true) String monitorIP, @RequestParam int imgWidth) {
 
 		Map<String, Object> rtnMap = new HashMap<String, Object>(7);
-		rtnMap.put("SystemData", this.getMonitorDataSystem(ip, st, et, imgWidth));
-		rtnMap.put("startTime", startTime);
+		rtnMap.put("SystemData", this.getMonitorDataSystem(testId, monitorIP, imgWidth));
 		rtnMap.put(JSON_SUCCESS, true);
 
 		return toJson(rtnMap);
 	}
 
-	private Map<String, Object> getMonitorDataSystem(String ip, long startTime, long finishTime, int imgWidth) {
+	private Map<String, Object> getMonitorDataSystem(long testId, String monitorIP, int imgWidth) {
 		Map<String, Object> rtnMap = new HashMap<String, Object>();
-		List<SystemDataModel> systemMonitorData = monitorService.getSystemMonitorData(ip, startTime, finishTime);
+		List<SystemDataModel> systemMonitorData = monitorService.getSystemMonitorData(testId, monitorIP);
 
 		if (imgWidth < 100) {
 			imgWidth = 100;
