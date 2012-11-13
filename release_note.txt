@@ -1,8 +1,25 @@
 3.0.2 (2012.11.01)
 - Hot fix for nGrinder 3.0
+- Mostly make this version work on Ubuntu
+ 
 Bug
 [NGRINDER-332] - User specific agents show max agents value 0
+[NGRINDER-333] - agent ip is always 127.0.0.1 in Ubuntu
+[NGRINDER-334] - Error - Abnormally Testing (TOO_LOW_TPS)
+[NGRINDER-335] - Cannot stop Test when status is "Abnormally testing"
+[NGRINDER-336] - When security is on, the logs are not passed from agents
+[NGRINDER-337] - Real IP should be bound to SingleConsole
+[NGRINDER-338] - Not able to login when restart server while logined
+[NGRINDER-344] - Mean Test time graph is wrongly calculated
+[NGRINDER-346] - Each test name is not visible in accumulated statistics
+[NGRINDER-351] - Log monitor does not work after first log retrieval
+[NGRINDER-357] - Create the user repo even when quick test is performed.
 
+Improvement
+[NGRINDER-352] - Add sampling listener scheme on update method in SingleConsole
+[NGRINDER-354] - Make validation timeout longer (to 20 sec)
+[NGRINDER-355] - Make the script console is only available where 50M perm gen memory is reserved.
+[NGRINDER-356] - Make basic_template more stable
 
 3.0.1 (2012.10.31)
 - Hot fix for nGrinder 3.0
