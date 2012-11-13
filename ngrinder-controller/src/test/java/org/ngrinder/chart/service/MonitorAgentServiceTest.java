@@ -130,13 +130,27 @@ public class MonitorAgentServiceTest extends AbstractChartTransactionalTest {
 		List<SystemDataModel> infoList = monitorService.getSystemMonitorData("127.0.0.1", startTime, endTime);
 		int size = infoList.size();
 		//assertThat(size, greaterThan(0)); //there is no record is inserted in DB
-		ThreadUtil.sleep(1002000);
+		ThreadUtil.sleep(6000);
+		
+		//test add again
+		final AgentInfo agent2 = new AgentInfo();
+		agent2.setIp("10.10.1.1");
+		agent2.setPort(MonitorConstants.DEFAULT_MONITOR_PORT);
+		agents.add(agent2);
+		monitorDataService.addMonitorAgents(agents);
+		
+		ThreadUtil.sleep(6000);
+		monitorDataService.removeMonitorAgents(new HashSet<AgentInfo>(){{
+			add(agent2);
+		}});
+		
+		ThreadUtil.sleep(6000);
 		monitorDataService.removeMonitorAgents(new HashSet<AgentInfo>(){{
 			add(targetServer);
 		}});
 		
 		//sleep a while to check whether the monitoring is stopped.
-		ThreadUtil.sleep(2000);
+		ThreadUtil.sleep(6000);
 		endTime = NumberUtils.toLong(df.format(new Date()));
 		infoList = monitorService.getSystemMonitorData("127.0.0.1", startTime, endTime);
 		assertThat(infoList.size(), lessThan(size + 6));		

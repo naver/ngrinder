@@ -32,6 +32,7 @@ import javax.annotation.PostConstruct;
 
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.model.User;
+import org.ngrinder.operation.service.AnnouncementService;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -58,6 +59,9 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	@Autowired
 	private UserContext userContext;
+	
+	@Autowired
+	private AnnouncementService announcementService;
 
 	@PostConstruct
 	void initJSON() {
@@ -92,6 +96,16 @@ public class NGrinderBaseController implements NGrinderConstants {
 			noOp();
 		}
 		return new User();
+	}
+	
+	/**
+	 * Provide announcement content as a model attributes.
+	 * 
+	 * @return announcement content
+	 */
+	@ModelAttribute("announcement")
+	public String announcement() {
+		return announcementService.getAnnouncement();
 	}
 
 	/**

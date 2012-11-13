@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head><#include "../common/common.ftl">
-<title><@spring.message "navigator.dropdown.systemConfig"/></title>
+<title><@spring.message "navigator.dropdown.announcement"/></title>
 </head>
 
 <body>
@@ -10,23 +10,27 @@
 		<div class="row">
 			<div class="span12">
 				<div class="page-header pageHeader">
-					<h3><@spring.message "navigator.dropdown.systemConfig"/></h3>
+					<h3><@spring.message "navigator.dropdown.announcement"/>&nbsp;&nbsp;<small><@spring.message "announcement.view.message"/></small></h3>
 				</div>
-				<form id="sysConfigForm" method="post">
+				<form id="annountcementForm" method="post">
 				<button id="saveBtn" class="btn btn-success pull-right" style="margin-top:-55px;"><@spring.message "common.button.save"/></button>
-				<textarea id="sysFileContent" name="content">${content!}</textarea>
+				<textarea id="announcementTT" name="content">${content!}</textarea>
 				</form>
 			</div>
 		</div>
 		<#include "../common/copyright.ftl">
 	</div>
 	<#include "../common/codemirror.ftl"> 
-	<script src="${req.getContextPath()}/plugins/codemirror/lang/properties.js"></script>
+	<script src="${req.getContextPath()}/plugins/codemirror/lang/xml.js"></script>
+	<script src="${req.getContextPath()}/plugins/codemirror/lang/javascript.js"></script>
+	<script src="${req.getContextPath()}/plugins/codemirror/lang/css.js"></script>
+	<script src="${req.getContextPath()}/plugins/codemirror/lang/htmlmixed.js"></script>
 	<script>
 		$(document).ready(function() {
-			var editor = CodeMirror.fromTextArea(document.getElementById("sysFileContent"), {
-			   mode: "properties",
+			var editor = CodeMirror.fromTextArea(document.getElementById("announcementTT"), {
+			   mode: "text/html",
 			   theme: "eclipse",
+			   alignCDATA: true,
 			   lineNumbers: true,
 			   lineWrapping: true,
 			   indentUnit:4,
@@ -50,9 +54,9 @@
 			var hlLine = editor.setLineClass(0, "activeline");
 			
 			$("#saveBtn").click(function() {
-				$('#sysFileContent').text(editor.getValue());
-				document.forms.sysConfigForm.action = "${req.getContextPath()}/operation/systemConfig/save";
-				document.forms.sysConfigForm.submit();
+				$('#annountcementTT').text(editor.getValue());
+				document.forms.annountcementForm.action = "${req.getContextPath()}/operation/announcement/save";
+				document.forms.annountcementForm.submit();
 			});
 			
 			<#if success?exists>

@@ -30,6 +30,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
@@ -64,11 +65,14 @@ import ch.qos.logback.core.joran.spi.JoranException;
 @Component
 public class Config implements IConfig {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
+	private static final String NGRINDER_EX_FOLDER = ".ngrinder_ex";
 	private static final Logger LOG = LoggerFactory.getLogger(Config.class);
 	private Home home = null;
+	private Home exHome = null;
 	private PropertiesWrapper internalProperties;
 	private PropertiesWrapper systemProperties;
 	private PropertiesWrapper databaseProperties;
+	private String announcement;
 	private static String versionString = "";
 	private boolean verbose;
 	private String currentIP;
@@ -95,18 +99,20 @@ public class Config implements IConfig {
 	public void init() {
 		try {
 			home = resolveHome();
+			exHome = resolveExHome();
 			copyDefaultConfigurationFiles();
 			loadIntrenalProperties();
 			loadSystemProperties();
+			loadAnnouncement();
 			initLogger(isTestMode());
 			currentIP = NetworkUtil.getLocalHostAddress();
 			CoreLogger.LOGGER.info("NGrinder is starting...");
 			loadDatabaseProperties();
 			versionString = getVesion();
 			
-			//check cluster
-			//set cluster configuration foe ehcache
+			//check cluster, get cluster configuration for ehcache
 			loadClusterConfig();
+			copyExtConfigurationFiles();
 			loadExtendProperties();
 
 		} catch (IOException e) {
@@ -132,10 +138,10 @@ public class Config implements IConfig {
 		StringBuilder urisSB = new StringBuilder();
 		for (String peerIP : clusterUriList) {
 			// should exclude itself from the peer list
-			if (urisSB.length() > 0) {
-				urisSB.append("|");
-			}
 			if (!currentIP.equals(peerIP)) {
+				if (urisSB.length() > 0) {
+					urisSB.append("|");
+				}
 				urisSB.append("//").append(peerIP).append(":").append(clusterListenerPort);
 				urisSB.append("/").append(NGrinderConstants.CACHE_NAME_DISTRIBUTED_MAP);
 			}
@@ -148,6 +154,11 @@ public class Config implements IConfig {
 		}
 		clusterURIs = urisSB.toString();
 		LOG.info("Cache cluster URIs:{}", clusterURIs);
+		
+		// set rmi server host for remote serving. Otherwise, maybe it will use 127.0.0.1 to serve.
+		// then the remote client can not connect.
+		LOG.info("Set current IP:{} for RMI server.", currentIP);
+		System.setProperty("java.rmi.server.hostname", currentIP);
 		return;
 		
 		/*
@@ -204,22 +215,9 @@ public class Config implements IConfig {
 	}	
 	
 	protected void loadExtendProperties() {
-		InputStream inputStream = null;
-		Properties extProp = new Properties();
-		try {
-			//TODO: this configuration should be copied to other place on server, then user need
-			// only modify it one time.
-			inputStream = new ClassPathResource("/system-ex.conf").getInputStream();
-			extProp.load(inputStream);
-			String regionStr = extProp.getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION);
-			region = regionStr.trim();
-		} catch (IOException e) {
-			LOG.error("Error while load system-ex.conf", e);
-			region = NON_REGION;
-		} finally {
-			IOUtils.closeQuietly(inputStream);
-		}
-		
+		Properties properties = exHome.getProperties("system-ex.conf");
+		String regionStr = properties.getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION);
+		region = regionStr.trim();		
 	}
 	
 	public String getRegion() {
@@ -274,6 +272,17 @@ public class Config implements IConfig {
 	}
 
 	/**
+	 * Copy extended configuration files.
+	 * 
+	 * @throws IOException
+	 *             occurs when there is no such a files.
+	 */
+	private void copyExtConfigurationFiles() throws IOException {
+		checkNotNull(exHome);
+		exHome.copyFrom(new ClassPathResource("ngrinder_ex_home_template").getFile(), false);
+	}
+
+	/**
 	 * Resolve nGrinder home path.
 	 * 
 	 * @return resolved home
@@ -293,6 +302,28 @@ public class Config implements IConfig {
 						System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
 
 		return new Home(homeDirectory);
+	}
+
+	/**
+	 * Resolve nGrinder extended home path.
+	 * 
+	 * @return resolved home
+	 */
+	private Home resolveExHome() {
+		String exHomeFromEnv = System.getenv("NGRINDER_EX_HOME");
+		String exHomeFromProperty = System.getProperty("ngrinder.exhome");
+		if (StringUtils.isNotEmpty(exHomeFromEnv) && !StringUtils.equals(exHomeFromEnv, exHomeFromProperty)) {
+			LOG.warn("The path to ngrinder-exhome is ambiguous:");
+			LOG.warn("    System Environment:  NGRINDER_EX_HOME=" + exHomeFromEnv);
+			LOG.warn("    Java Sytem Property:  ngrinder.exhome=" + exHomeFromProperty);
+			LOG.warn("    '" + exHomeFromProperty + "' is accepted.");
+		}
+		String userHome = null;
+		userHome = StringUtils.defaultIfEmpty(exHomeFromProperty, exHomeFromEnv);
+		File exHomeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
+						System.getProperty("user.exhome"), NGRINDER_EX_FOLDER);
+
+		return new Home(exHomeDirectory);
 	}
 
 	/**
@@ -332,6 +363,25 @@ public class Config implements IConfig {
 		Properties properties = home.getProperties("system.conf");
 		properties.put("NGRINDER_HOME", home.getDirectory().getAbsolutePath());
 		systemProperties = new PropertiesWrapper(properties);
+	}
+	
+	/**
+	 * Load announcement content.
+	 */
+	public void loadAnnouncement() {
+		checkNotNull(home);
+		File sysFile = home.getSubFile("announcement.conf");
+		try {
+			if (sysFile.exists()) {
+				announcement = FileUtils.readFileToString(sysFile, "UTF-8");
+				return;
+			}
+			OutputStream out = FileUtils.openOutputStream(sysFile);
+			IOUtils.closeQuietly(out);
+			announcement = "";
+		} catch (Exception e) {
+			LOG.error("Error while reading announcement file.");
+		}
 	}
 
 	/**
@@ -382,6 +432,15 @@ public class Config implements IConfig {
 	}
 
 	/**
+	 * Get the resolved extended home folder.
+	 * 
+	 * @return home
+	 */
+	public Home getExHome() {
+		return this.exHome;
+	}
+
+	/**
 	 * Get the system properties.
 	 * 
 	 * @return {@link PropertiesWrapper} which is loaded from system.conf.
@@ -389,6 +448,16 @@ public class Config implements IConfig {
 	public PropertiesWrapper getSystemProperties() {
 		checkNotNull(systemProperties);
 		return systemProperties;
+	}
+	
+	/**
+	 * Get announcement content.
+	 * 
+	 * @return loaded from announcement.conf.
+	 */
+	public String getAnnouncement() {
+		checkNotNull(announcement);
+		return announcement;
 	}
 
 	/**

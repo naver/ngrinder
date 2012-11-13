@@ -194,6 +194,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "stop_request", columnDefinition = "char(1)")
 	@Type(type = "true_false")
 	private Boolean stopRequest;
+	
+	@Column(name = "region")
+	private String region;
 
 	@Transient
 	private String dateString;
@@ -624,5 +627,13 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setTags(SortedSet<Tag> tags) {
 		this.tags = tags;
+	}
+
+	public String getRegion() {
+		return region;
+	}
+
+	public void setRegion(String region) {
+		this.region = region;
 	}
 }
