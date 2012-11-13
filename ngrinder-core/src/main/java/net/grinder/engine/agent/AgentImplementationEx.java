@@ -117,7 +117,6 @@ public class AgentImplementationEx implements Agent {
 	 */
 	public AgentImplementationEx(Logger logger, AgentConfig agentConfig) {
 		this(logger, agentConfig, false);
-		Grinder.grinder.isD.getStatistics().getForCurrentTest()
 	}
 
 	/**
