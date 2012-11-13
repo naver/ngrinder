@@ -50,6 +50,7 @@ import net.grinder.engine.communication.ConsoleListener;
 import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.messages.console.AgentProcessReportMessage;
+import net.grinder.script.Grinder;
 import net.grinder.util.Directory;
 import net.grinder.util.GrinderClassPathUtils;
 import net.grinder.util.NetworkUtil;
@@ -116,6 +117,7 @@ public class AgentImplementationEx implements Agent {
 	 */
 	public AgentImplementationEx(Logger logger, AgentConfig agentConfig) {
 		this(logger, agentConfig, false);
+		Grinder.grinder.isD.getStatistics().getForCurrentTest()
 	}
 
 	/**
