@@ -6,8 +6,7 @@
 		<div class="control-group">
 			<label class="control-label"><@spring.message "user.info.form.userId"/></label>
 			<div class="controls">
-				<input type="text" class="span4 required userIdFmt userIdExist" id="userId" name="userId"
-				    maxlength="20"
+				<input type="text" class="span4" id="userId" name="userId"
 				    rel="popover" value="${(user.userId)!}"
 					data-content="<@spring.message "user.info.warning.userId.intro"/> <@spring.message "common.form.rule.userId"/>"
 					data-original-title="<@spring.message "user.info.form.userId"/>"
@@ -20,8 +19,7 @@
 		<div class="control-group">
 			<label class="control-label"><@spring.message "user.option.name"/></label>
 			<div class="controls">
-				<input type="text" class="span4 required" id="userName"
-	                maxlength="15"
+				<input type="text" class="span4" id="userName"
 					name="userName" rel="popover" value="${(user.userName)!}"
 					data-content="<@spring.message "user.info.warning.userName"/>"
 					data-original-title="<@spring.message "user.option.name"/>">
@@ -44,7 +42,7 @@
 		<div class="control-group">
 			<label class="control-label"><@spring.message "user.info.form.email"/></label>
 			<div class="controls">
-				<input type="text" class="span4 required email" id="email" maxlength="30"
+				<input type="text" class="span4" id="email" maxlength="30"
 					name="email" rel="popover" value="${(user.email)!}"
 					data-content="<@spring.message "user.info.warning.email.required"/>"
 					data-original-title="<@spring.message "user.info.form.email"/>">
@@ -63,7 +61,7 @@
 		<div class="control-group" >
 			<label class="control-label"><@spring.message "user.info.form.phone"/></label>
 			<div class="controls">
-				<input type="text" class="span4 userPhoneNumber" id="mobilePhone"  
+				<input type="text" class="span4" id="mobilePhone"  
 					name="mobilePhone" rel="popover"
 					value="${(user.mobilePhone)!}"
 					data-content="<@spring.message "common.form.rule.phoneNumber"/>"
@@ -94,10 +92,9 @@
             			<div class="control-group" >
 								<label class="control-label"><@spring.message "user.info.form.pwd"/></label>
 								<div class="controls">
-									<input type="password" class="span4" id="password"  minlength="6" 	maxlength="15"
-									
+									<input type="password" class="span4" id="password"
 										name="password" rel="popover" value="${(user.psw)!}"
-										data-content="<@spring.message "user.info.warning.pwd.minLength"/>"
+										data-content="<@spring.message "user.info.warning.pwd.rangeLength"/>"
 										data-original-title="<@spring.message "user.info.form.pwd"/>">
 								</div>
 						</div>
@@ -105,7 +102,7 @@
 						<div class="control-group" >
 								<label class="control-label"><@spring.message "user.info.form.cpwd"/></label>
 								<div class="controls">
-									<input type="password" class="span4" id="cpwd" minlength="6" maxlength="15"
+									<input type="password" class="span4" id="cpwd"
 										name="cpwd" rel="popover" value="${(user.psw)!}"
 										data-content="<@spring.message "user.info.warning.cpwd.equalTo"/>"
 										data-original-title="<@spring.message "user.info.form.cpwd"/>">
@@ -160,16 +157,73 @@
 			return false;
 		}, "<@spring.message 'user.info.warning.userId.exist'/>");
 		</#if>
-		
-		jQuery.validator.addMethod("userPhoneNumber", function(mobilePhone, element) {
+	    	    
+	    jQuery.validator.addMethod("userPhoneNumber", function(mobilePhone, element) {
 			var patrn = /^\+?\d{2,3}-?\d{2,5}(-?\d+)?$/;
 			var rule = new RegExp(patrn);
-			if (!rule.test($.trim($("#mobilePhone").val()))) {
+			if (!rule.test($.trim(mobilePhone))) {
 				removeSuccess(element);
 				return false;
 			}
 			return true;
 		}, "<@spring.message 'user.info.warning.phone.intro'/>" );
+		
+	    $("#registerUserForm").validate({
+	    	rules: {
+	    		userId: {
+	    			required: true,
+	    			maxlength: 20,
+	    			userIdFmt: true,
+	    			userIdExist: true
+	    		},
+	    		userName: {
+	    			required: true,
+	    			maxlength: 20
+	    		},
+	    		mobilePhone: {
+	    			userPhoneNumber: true
+	    		},
+	    		email: {
+	    			required: true,
+	    			email: true
+	    		},
+	    		password: {
+	    			rangelength: [6,15]
+	    		},
+	    		cpwd: {
+	    			rangelength: [6,15]
+	    		}
+	    	}, 
+	        messages:{
+	        	userId: {
+	        		required: "<@spring.message "user.info.warning.userId.required"/>"
+	        	},
+	            userName: {
+	            	required: "<@spring.message "user.info.warning.userName"/>"
+	            },
+	            email: {
+	                required:"<@spring.message "user.info.warning.email.required"/>",
+	                email:"<@spring.message "user.info.warning.email.rule"/>"
+	            },
+	            password: {
+	                required:"<@spring.message "user.info.warning.pwd.required"/>"
+	            },
+	            cpwd: {
+	                required:"<@spring.message "user.info.warning.cpwd.required"/>",
+	                equalTo:"<@spring.message "user.info.warning.cpwd.equalTo"/>"
+	            }
+	        },
+	        errorClass: "help-inline",
+	        errorElement: "span",
+	        highlight:function(element, errorClass, validClass) {
+	            $(element).parents('.control-group').addClass('error');
+	            $(element).parents('.control-group').removeClass('success');
+	        },
+	        unhighlight: function(element, errorClass, validClass) {
+	            $(element).parents('.control-group').removeClass('error');
+	            $(element).parents('.control-group').addClass('success');
+	        }
+	    });
 		
 		$('.collapse').on('hidden', function () {
   			$("#password").removeClass("required");
@@ -187,33 +241,6 @@
 		
 		$('#registerUserForm input').hover(function() {
 	        $(this).popover('show')
-	    });
-	    
-	    $("#registerUserForm").validate({
-	        messages:{
-	            userName:"<@spring.message "user.info.warning.userName"/>",
-	            email:{
-	                required:"<@spring.message "user.info.warning.email.required"/>",
-	                email:"<@spring.message "user.info.warning.email.rule"/>"
-	            },
-	            password:{
-	                required:"<@spring.message "user.info.warning.pwd.required"/>",
-	                minlength:"<@spring.message "user.info.warning.pwd.minLength"/>"
-	            },
-	            cpwd:{
-	                required:"<@spring.message "user.info.warning.cpwd.required"/>",
-	                equalTo:"<@spring.message "user.info.warning.cpwd.equalTo"/>"
-	            }
-	        },
-	        errorClass: "help-inline",
-	        errorElement: "span",
-	        highlight:function(element, errorClass, validClass) {
-	            $(element).parents('.control-group').addClass('error');
-	        },
-	        unhighlight: function(element, errorClass, validClass) {
-	            $(element).parents('.control-group').removeClass('error');
-	            $(element).parents('.control-group').addClass('success');
-	        }
 	    });
 	    
 	    var switchedUsers = [];

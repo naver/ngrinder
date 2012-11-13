@@ -25,7 +25,9 @@
 	    digits: "<@spring.message "common.message.validate.digits"/>",
 		range: $.validator.format("<@spring.message "common.message.validate.range"/>"),
 		max: $.validator.format("<@spring.message "common.message.validate.max"/>"),
-		min: $.validator.format("<@spring.message "common.message.validate.min"/>")
+		min: $.validator.format("<@spring.message "common.message.validate.min"/>"),
+		maxlength: $.validator.format("<@spring.message "common.message.validate.maxlength"/>"),
+		rangelength: $.validator.format("<@spring.message "common.message.validate.rangelength"/>")
 	});
 </script> 
 <input type="hidden" id="contextPath" value="${req.getContextPath()}">
