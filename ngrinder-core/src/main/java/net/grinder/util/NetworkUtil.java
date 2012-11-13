@@ -57,6 +57,15 @@ public abstract class NetworkUtil {
 	 * @return ip form of host address
 	 */
 	public static String getLocalHostAddress() {
+		String addr = null;
+		try {
+			addr = InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+			LOGGER.error("Error while get localhost address", e);
+		}
+		if (!"127.0.0.1".equals(addr)) {
+			return addr;
+		}
 		try {
 			InetAddress firstNonLoopbackAddress = getFirstNonLoopbackAddress(true, false);
 			if (firstNonLoopbackAddress != null) {
@@ -68,11 +77,13 @@ public abstract class NetworkUtil {
 		return "127.0.0.1";
 	}
 
-	private static InetAddress getFirstNonLoopbackAddress(boolean preferIpv4, boolean preferIPv6)
-					throws SocketException {
+	private static InetAddress getFirstNonLoopbackAddress(boolean preferIpv4, boolean preferIPv6) throws SocketException {
 		Enumeration<?> en = NetworkInterface.getNetworkInterfaces();
 		while (en.hasMoreElements()) {
 			NetworkInterface i = (NetworkInterface) en.nextElement();
+			if (!i.isUp()) {
+				continue;
+			}
 			for (Enumeration<?> en2 = i.getInetAddresses(); en2.hasMoreElements();) {
 				InetAddress addr = (InetAddress) en2.nextElement();
 				if (!addr.isLoopbackAddress()) {

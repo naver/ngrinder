@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 import net.grinder.SingleConsole;
+import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.model.ConsoleProperties;
 
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -68,6 +69,8 @@ public class ConsoleManager {
 	@Autowired
 	private Config config;
 
+	@Autowired
+	private AgentManager agentManager;
 	/**
 	 * Prepare console queue.
 	 */
@@ -244,6 +247,8 @@ public class ConsoleManager {
 				} catch (Exception e) {
 					LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.",
 									testIdentifier, e);
+					// If it's not disconnected still, stop them forcely.
+					agentManager.stopAgent(console.getConsolePort());
 				}
 				try {
 					console.shutdown();

@@ -463,6 +463,10 @@ public class SingleConsole implements Listener, SampleListener {
 				synchronized (eventSyncCondition) {
 					eventSyncCondition.waitNoInterrruptException(500);
 				}
+				// Every 10 times send the signal again.
+				if (trial % 10 == 0) {
+					sendStopMessageToAgents();
+				}
 			} else {
 				return;
 			}
