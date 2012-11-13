@@ -24,7 +24,6 @@ package org.ngrinder.monitor.agent;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.net.InetAddress;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -35,6 +34,8 @@ import javax.management.remote.JMXConnectorServer;
 import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 
+import net.grinder.util.NetworkUtil;
+
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.MonitorContext;
 import org.ngrinder.monitor.agent.collector.AgentDataCollectManager;
@@ -44,7 +45,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 
  * This class is the agent of monitor server, it will be used to start a JMX server.
- *
+ * 
  * @author Mavlarn
  * @since 3.0
  */
@@ -67,24 +68,24 @@ public final class AgentMonitorServer {
 	}
 
 	/**
-	 * Initialize the monitor server with default port and collector.
-	 * Default port is 12343, and default collector is system data collector.
+	 * Initialize the monitor server with default port and collector. Default port is 12343, and
+	 * default collector is system data collector.
 	 * 
 	 * @throws IOException
-	 * 				IO error
+	 *             IO error
 	 */
 	public void init() throws IOException {
 		this.init(MonitorConstants.DEFAULT_MONITOR_PORT);
 	}
 
 	/**
-	 * Initialize the monitor server with default collector. In 3.0 version,
-	 * default collector is system data collector.
+	 * Initialize the monitor server with default collector. In 3.0 version, default collector is
+	 * system data collector.
 	 * 
 	 * @param port
-	 * 				monitor listener port
+	 *            monitor listener port
 	 * @throws IOException
-	 * 				IO error
+	 *             IO error
 	 */
 	public void init(final int port) throws IOException {
 		this.init(port, MonitorConstants.DEFAULT_DATA_COLLECTOR);
@@ -94,11 +95,11 @@ public final class AgentMonitorServer {
 	 * Initialize the monitor server.
 	 * 
 	 * @param port
-	 * 				monitor listener port
+	 *            monitor listener port
 	 * @param dataCollector
-	 * 				a list of collector, for java or system data
+	 *            a list of collector, for java or system data
 	 * @throws IOException
-	 * 				IO error
+	 *             IO error
 	 */
 	public void init(final int port, final Set<String> dataCollector) throws IOException {
 
@@ -108,9 +109,9 @@ public final class AgentMonitorServer {
 		this.rmiRegistry = LocateRegistry.createRegistry(port);
 		this.mBeanServer = ManagementFactory.getPlatformMBeanServer();
 
-		final String hostname = InetAddress.getLocalHost().getHostName();
-		final String jmxUrlString = "service:jmx:rmi://" + hostname + ":" + port + "/jndi/rmi://"
-						+ hostname + ":" + port + "/jmxrmi";
+		final String hostname = NetworkUtil.getLocalHostAddress();
+		final String jmxUrlString = "service:jmx:rmi://" + hostname + ":" + port + "/jndi/rmi://" + hostname + ":"
+						+ port + "/jmxrmi";
 		JMXServiceURL jmxUrl = new JMXServiceURL(jmxUrlString);
 		this.jmxServer = JMXConnectorServerFactory.newJMXConnectorServer(jmxUrl, null, mBeanServer);
 		AgentRegisterMXBean.getInstance().addDefaultMXBean(mBeanServer);
@@ -119,6 +120,7 @@ public final class AgentMonitorServer {
 
 	/**
 	 * check whether the monitor server is running.
+	 * 
 	 * @return true if the monitor server is running
 	 */
 	public boolean isRunning() {
@@ -127,8 +129,8 @@ public final class AgentMonitorServer {
 
 	/**
 	 * get monitor listener port of monitor JMX server.
-	 * @return port
-	 * 			listener port
+	 * 
+	 * @return port listener port
 	 */
 	public int getPort() {
 		return port;
@@ -137,7 +139,8 @@ public final class AgentMonitorServer {
 	/**
 	 * Start monitoring.
 	 * 
-	 * @throws IOException exception
+	 * @throws IOException
+	 *             exception
 	 */
 	public void start() throws IOException {
 		if (!isRunning()) {

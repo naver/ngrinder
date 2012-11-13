@@ -158,7 +158,8 @@ public class NGrinderStarter {
 		String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
 		LOG.info("with console: {}:{}", consoleIP, consolePort);
 		try {
-			agentController = new AgentControllerDaemon(NetworkUtil.getLocalHostAddress(consoleIP, consolePort));
+			System.setProperty("java.rmi.server.hostname", NetworkUtil.getLocalHostAddress());
+			agentController = new AgentControllerDaemon(NetworkUtil.getLocalHostAddress());
 			agentController.setRegion(region);
 			agentController.setAgentConfig(agentConfig);
 			agentController.run(consoleIP, consolePort);

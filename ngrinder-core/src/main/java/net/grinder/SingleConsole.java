@@ -452,11 +452,11 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	/**
-	 * Wait until runningThread is 0. If it's over 10 seconds, Exception occurs
+	 * Wait until runningThread is 0. If it's over 20 seconds, Exception occurs
 	 */
 	public void waitUntilAllAgentDisconnected() {
 		int trial = 1;
-		while (trial++ < 20) {
+		while (trial++ < 40) {
 			// when agent finished one test, processReports will be updated as
 			// null
 			if (this.runningThread != 0) {
