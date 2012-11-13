@@ -29,6 +29,7 @@
 				                <li><a href="${req.getContextPath()}/operation/log"><@spring.message "navigator.dropdown.logMonitoring"/></a></li>
 				                <li><a href="${req.getContextPath()}/operation/scriptConsole"><@spring.message "navigator.dropdown.scriptConsole"/></a></li>  
 			                	<li><a href="${req.getContextPath()}/operation/systemConfig"><@spring.message "navigator.dropdown.systemConfig"/></a></li>
+			                	<li><a href="${req.getContextPath()}/operation/announcement"><@spring.message "navigator.dropdown.announcement"/></a></li>
 			            	</@security.authorize>
 		                	<li class="divider"/> 
 			          		<li><a href="${req.getContextPath()}/logout"><@spring.message "navigator.dropdown.signout"/></a></li>
@@ -41,11 +42,17 @@
 		</div>
 	</div>
 </div>
+<@security.authorize ifAnyGranted="U">
 <#if announcement?has_content>
-<div class="alert alert-info" style="margin-top:-40px; margin-bottom:21px;">
+<div class="alert alert-info" style="margin-top:-40px!important; margin-bottom:21px!important;">
+<#if announcement?index_of('</') gt 0>
 ${announcement}
+<#else>
+${announcement?replace('\r\n', '<br>')?replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp;')}
+</#if>
 </div>
 </#if>
+</@security.authorize>
 <#include "messages.ftl">
 
 <div class="modal fade" id="userProfileModal">

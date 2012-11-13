@@ -30,6 +30,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
@@ -69,6 +70,7 @@ public class Config implements IConfig {
 	private PropertiesWrapper internalProperties;
 	private PropertiesWrapper systemProperties;
 	private PropertiesWrapper databaseProperties;
+	private String announcement;
 	private static String versionString = "";
 	private boolean verbose;
 	private String currentIP;
@@ -98,6 +100,7 @@ public class Config implements IConfig {
 			copyDefaultConfigurationFiles();
 			loadIntrenalProperties();
 			loadSystemProperties();
+			loadAnnouncement();
 			initLogger(isTestMode());
 			currentIP = NetworkUtil.getLocalHostAddress("www.github.com", 80);
 			CoreLogger.LOGGER.info("NGrinder is starting...");
@@ -333,6 +336,25 @@ public class Config implements IConfig {
 		properties.put("NGRINDER_HOME", home.getDirectory().getAbsolutePath());
 		systemProperties = new PropertiesWrapper(properties);
 	}
+	
+	/**
+	 * Load announcement content.
+	 */
+	public void loadAnnouncement() {
+		checkNotNull(home);
+		File sysFile = home.getSubFile("announcement.conf");
+		try {
+			if (sysFile.exists()) {
+				announcement = FileUtils.readFileToString(sysFile, "UTF-8");
+				return;
+			}
+			OutputStream out = FileUtils.openOutputStream(sysFile);
+			IOUtils.closeQuietly(out);
+			announcement = "";
+		} catch (Exception e) {
+			LOG.error("Error while reading announcement file.");
+		}
+	}
 
 	/**
 	 * Get the database properties.
@@ -389,6 +411,16 @@ public class Config implements IConfig {
 	public PropertiesWrapper getSystemProperties() {
 		checkNotNull(systemProperties);
 		return systemProperties;
+	}
+	
+	/**
+	 * Get announcement content.
+	 * 
+	 * @return loaded from announcement.conf.
+	 */
+	public String getAnnouncement() {
+		checkNotNull(announcement);
+		return announcement;
 	}
 
 	/**
