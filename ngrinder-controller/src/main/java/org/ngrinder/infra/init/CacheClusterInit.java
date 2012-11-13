@@ -67,7 +67,6 @@ public class CacheClusterInit {
 		if (regionCacheObj == null) {
 			regionList = new ArrayList<String>();
 			distCache.put(NGrinderConstants.CACHE_NAME_REGION_LIST, regionList);
-			regionList.add(config.getRegion());
 		} else {
 			regionList = (List<String>)regionCacheObj.get();
 		}
