@@ -26,5 +26,7 @@ class TestRunner:
 		# instead use following.
 		# grinder.logger.info("Hello World")
 		
-		assert result.getStatusCode() == 200
-        
+		if result.getStatusCode() == 200 :
+			grinder.statistics.forLastTest.success = 1
+        else :
+        	grinder.statistics.forLastTest.success = 0
