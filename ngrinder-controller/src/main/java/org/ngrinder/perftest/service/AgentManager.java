@@ -430,4 +430,14 @@ public class AgentManager implements NGrinderConstants {
 		}
 		return userAgent;
 	}
+
+	/**
+	 * Stop agent forcely.
+	 * 
+	 * @param agentIdentity
+	 *            agent identity
+	 */
+	public void stopAgent(AgentIdentity agentIdentity) {
+		agentControllerServer.stopAgent(agentIdentity);
+	}
 }
