@@ -32,6 +32,7 @@ import static org.ngrinder.model.Status.START_CONSOLE;
 import static org.ngrinder.model.Status.START_TESTING;
 import static org.ngrinder.model.Status.TESTING;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -44,6 +45,7 @@ import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
+import net.grinder.statistics.StatisticsSet;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.agent.model.AgentInfo;
@@ -308,6 +310,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 			public void onSamplingEnded() {
 				LOG.info("remove monitors on {} for perftest {}", agents, perfTest.getId());
 				monitorDataService.removeMonitorAgents(agents);
+			}
+
+			@Override
+			public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
+				// Do calling on monitor here.
+				
 			}
 		});
 
