@@ -27,8 +27,6 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -56,6 +54,7 @@ import net.grinder.message.console.AgentControllerState;
 import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.LogCompressUtil;
+import net.grinder.util.NetworkUtil;
 import net.grinder.util.thread.Condition;
 
 import org.apache.commons.io.FileUtils;
@@ -110,7 +109,7 @@ public class AgentController implements Agent {
 
 		m_eventSyncCondition = eventSyncCondition;
 		m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, LOGGER);
-		m_agentIdentity = new AgentControllerIdentityImplementation(getHostName(), currentIp);
+		m_agentIdentity = new AgentControllerIdentityImplementation(NetworkUtil.getLocalHostName(), currentIp);
 		agentSystemDataCollector.refresh();
 	}
 
@@ -152,7 +151,7 @@ public class AgentController implements Agent {
 		try {
 			while (true) {
 				do {
-					m_agentIdentity.setName(agentConfig.getProperty(AgentConfig.AGENT_HOSTID, getHostName()));
+					m_agentIdentity.setName(agentConfig.getProperty(AgentConfig.AGENT_HOSTID, NetworkUtil.getLocalHostName()));
 					m_agentIdentity.setRegion(agentConfig.getProperty(AgentConfig.AGENT_REGION, ""));
 					final Connector connector = m_connectorFactory.create(m_grinderProperties);
 
@@ -319,18 +318,7 @@ public class AgentController implements Agent {
 		LOGGER.info("finished");
 	}
 
-	/**
-	 * Get host name.
-	 * 
-	 * @return host name
-	 */
-	private static String getHostName() {
-		try {
-			return InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			return "UNNAMEDHOST";
-		}
-	}
+	
 
 	/**
 	 * Get current System performance.
