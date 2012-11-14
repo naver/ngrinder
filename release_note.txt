@@ -23,6 +23,7 @@ Improvement
 [NGRINDER-356] - Make basic_template more stable
 [NGRINDER-359] - Add the agent stop by admin
 [NGRINDER-361] - Make stop agent more stable
+[NGRINDER-363] - Hide user path on validation result
 
 3.0.1 (2012.10.31)
 - Hot fix for nGrinder 3.0
