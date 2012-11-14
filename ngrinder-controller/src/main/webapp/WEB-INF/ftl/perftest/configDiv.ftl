@@ -8,34 +8,12 @@
 				<div class="control-group">
 					<label for="agentCount" class="control-label"><@spring.message "perfTest.configuration.agent"/></label>
 					<div class="controls">
-						<table style="width:100%">
-							<colgroup>
-								<col width="*"/>
-								<col width="30%"/>
-							</colgroup>
-							<tr>
-							<td>
-								<div class="input-append">
-									<input type="text" class="input required span1" rel="popover"
-										id="agentCount" name="agentCount" value="${(test.agentCount)!0}" 
-										data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
-										data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
-						 		</div>
-				 			</td>
-				 			<td>
-								<div>
-									<select id="region" class="required span3" name="region" placeholder="Region">
-										<option value=''>Select Region</option>
-										<#if regionList?? && regionList?size &gt; 0> 
-											<#list regionList as regionName> 
-												<option value="${regionName}" <#if test?? && test.region?? && test.region == regionName>selected</#if> >${regionName}</option> 
-											</#list> 
-										</#if>
-									</select>
-								</div>
-							</td>
-							</tr>
-						</table>
+						<div class="input-append">
+							<input type="text" class="input span1" rel="popover"
+								id="agentCount" name="agentCount" value="${(test.agentCount)!0}" 
+								data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
+								data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
+				 		</div>
 					</div>
 				</div>
 				<div class="control-group">
@@ -82,7 +60,6 @@
 						</table>
 					</div>
 				</div>
-				
 				<div class="control-group">
 					<label for="scriptName" class="control-label"><@spring.message "perfTest.configuration.script"/></label>
 					<div class="controls">
@@ -125,7 +102,23 @@
 						<div class="div-resources" id="scriptResources"></div>
 					</div>
 				</div>
-
+				<#if regionList?? && regionList?size &gt; 0>
+				<div class="control-group">
+					<label for="ScriptResources" class="control-label"><@spring.message "perfTest.configuration.region"/></label>
+					<div class="controls">
+						<div class="input-append">
+							<select id="regionSelect" class="span3 required" name="region">
+								<option value=''></option>
+								<#if regionList?? && regionList?size &gt; 0> 
+									<#list regionList as regionName> 
+										<option value="${regionName}" <#if test?? && test.region?? && test.region == regionName>selected</#if> >${regionName}</option> 
+									</#list> 
+								</#if>
+							</select>
+				 		</div>
+				 	</div>
+				</div>
+				</#if>
 				<div class="control-group">
 					<label class="control-label"><@spring.message "perfTest.configuration.targetHost"/></label>
 					<#if test?? && test.targetHosts??>
@@ -252,4 +245,3 @@
 	</div>
 	<!-- end test content right -->
 </div>
-

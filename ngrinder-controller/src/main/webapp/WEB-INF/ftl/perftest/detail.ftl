@@ -110,6 +110,18 @@
 	#queryDiv label {
 		width: 100px;
 	}
+	
+	.controls .span3 {
+		margin-left: 0;
+	}
+	
+	.control-group.success td > label[for="testName"] {
+		color: #468847;
+	}
+	
+	.control-group.error td > label[for="testName"] {
+		color: #B94A48;
+	}
 	</style>
 
 </head>
@@ -461,7 +473,6 @@ function initDuration() {
 	setDuration();
 }
 
-
 function addValidation() {
 	$("#testContentForm").validate({
 		rules: {
@@ -600,17 +611,6 @@ function bindEvent() {
 		return true;
 	});
 	
-	function buildTagString() {
-		var k = $("#tagString").select2("data");
-		var tagString = [];
-		for (var i = 0; i < k.length; i++) {
-		    if (jQuery.inArray(k[i].text, tagString) == -1) {
-		    	tagString.push(k[i].text);
-		    }
-		}
-		return tagString.join(",");
-	}
-	
 	$("#runNowBtn").click(function() {
 		$("#scheduleModal").modal("hide");
 		$("#scheduleModal small").html("");
@@ -743,8 +743,23 @@ function bindEvent() {
 	$("#runCount").focus(function() {
 		$("#runcountRadio").click();
 	});
+	
+	$("#regionSelect").select2({
+		placeholder: "<@spring.message "perfTest.configuration.region.placeholder"/>"
+	});
 }
 
+function buildTagString() {
+	var k = $("#tagString").select2("data");
+	var tagString = [];
+	for (var i = 0; i < k.length; i++) {
+	    if (jQuery.inArray(k[i].text, tagString) == -1) {
+	    	tagString.push(k[i].text);
+	    }
+	}
+	return tagString.join(",");
+}
+	
 function updateVuserTotal() {
 	var agtCount = $("#agentCount").val();
 	var vcount = $("#vuserPerAgent").val();
@@ -854,7 +869,6 @@ function openReportDiv(onFinishHook) {
 		}
 	);
 }
-
 
 function updateStatus(id, status_type, status_name, icon, deletable, stoppable, message) {
 	if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR" || status_type == "CANCELED") {
