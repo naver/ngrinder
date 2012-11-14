@@ -282,7 +282,11 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 		pluginClasses.addAll(plugins.getPluginAccessor().getModules(new ModuleDescriptorPredicate<M>() {
 			@Override
 			public boolean matches(ModuleDescriptor<? extends M> eachModuleDescriptor) {
-				return moduleClass.isAssignableFrom(eachModuleDescriptor.getModuleClass())
+				Class<? extends M> eachModuleClass = eachModuleDescriptor.getModuleClass();
+				if (eachModuleClass == null) {
+					return false;
+				}
+				return moduleClass.isAssignableFrom(eachModuleClass)
 								&& eachModuleDescriptor.getClass().equals(moduleDescriptor);
 			}
 		}));
