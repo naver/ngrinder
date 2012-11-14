@@ -115,7 +115,7 @@
 								<#assign vuserTotal = (test.vuserPerAgent) * (test.agentCount) />
 								<tr id="tr${test.id}">
 									<td class="center">
-										<input type="checkbox" class="checkbox perf_test" value="${test.id}" 
+										<input id="check_${test.id}" type="checkbox" class="checkbox perf_test" value="${test.id}" status="${test.status}" 
 											<#if !(test.status.isDeletable())>disabled</#if> >
 									</td>
 									<td class="center"  id="row_${test.id}">
@@ -367,7 +367,9 @@
 		(function refreshContent() {
 		
 			var ids = $('.perf_test').map(function() {
-		    	return this.value;
+		    	var perTestStatus = $(this).attr("status")
+				if(perTestStatus!="FINISHED")
+					return this.value;
 		  	}).get();
 			if (ids.length == 0) {
 				var springMessage =  "0 <@spring.message "perfTest.currentRunning.summary"/>";
@@ -386,6 +388,11 @@
 			    	
 			    	$("#currentRunning").text(springMessage);
 			    	for (var i = 0; i < data.length; i++) { 
+			
+			    	    $("#check_" + data[i].id).attr("status", data[i].status_id);
+			    		if(data[i].status_id=="FINISHED"){
+			    			location.reload();
+			    		}
 			    		updateStatus(data[i].id, data[i].name, data[i].icon, data[i].stoppable, data[i].deletable, data[i].message);
 			    	}
 			    	setTimeout(refreshContent, 5000);
