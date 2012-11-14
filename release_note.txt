@@ -24,6 +24,7 @@ Improvement
 [NGRINDER-359] - Add the agent stop by admin
 [NGRINDER-361] - Make stop agent more stable
 [NGRINDER-363] - Hide user path on validation result
+[NGRINDER-365] - Block to run test with 0 test 
 
 3.0.1 (2012.10.31)
 - Hot fix for nGrinder 3.0
