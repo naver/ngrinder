@@ -11,11 +11,10 @@ import org.junit.Test;
 
 public class NetworkUtilTest {
 	@Test
-	public void testLocalHostName() {
+	public void testLocalHostAddress() {
 		try {
-			System.out.println("Local add:" + InetAddress.getLocalHost().getHostAddress());
+			System.out.println("Local addr:" + InetAddress.getLocalHost().getHostAddress());
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String localHostAddress = NetworkUtil.getLocalHostAddress();
@@ -24,5 +23,16 @@ public class NetworkUtilTest {
 		localHostAddress = NetworkUtil.getLocalHostAddress();
 		assertThat(localHostAddress, notNullValue());
 		assertThat(localHostAddress, not("127.0.0.1"));
+	}
+	@Test
+	public void testLocalHostName() {
+		try {
+			System.out.println("Local host:" + InetAddress.getLocalHost().getHostName());
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		String localHostAddress = NetworkUtil.getLocalHostName();
+		System.out.println("NetworkUtil.getLocalHostName:" + localHostAddress);
+		assertThat(localHostAddress, notNullValue());
 	}
 }

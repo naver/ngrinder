@@ -51,6 +51,7 @@ import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
+import net.grinder.statistics.StatisticsSet;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -356,7 +357,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			}
 
 			@Override
-			public void onSampling() {
+			public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
 				for (String targetIP : monitorRecordWriterMap.keySet()) {
 					BufferedWriter bw = monitorRecordWriterMap.get(targetIP);
 					System.out.println("t0:" + System.currentTimeMillis());
