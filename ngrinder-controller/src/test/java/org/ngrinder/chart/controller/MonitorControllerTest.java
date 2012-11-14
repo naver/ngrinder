@@ -22,16 +22,20 @@
  */
 package org.ngrinder.chart.controller;
 
-import java.text.DateFormat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.junit.Test;
 import org.ngrinder.chart.AbstractChartTransactionalTest;
-import org.ngrinder.chart.service.MonitorService;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.ngrinder.common.model.Home;
+import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.ui.ModelMap;
 
 /**
@@ -41,15 +45,12 @@ import org.springframework.ui.ModelMap;
  * @since
  */
 public class MonitorControllerTest extends AbstractChartTransactionalTest {
-
-	private static final String DATE_FORMAT = "yyyyMMddHHmmss";
-	private static final DateFormat df = new SimpleDateFormat(DATE_FORMAT);
 	
 	@Autowired
 	private MonitorController monitorController;
 
 	@Autowired
-	private MonitorService monitorService;
+	private Config config;
 	
 	@Test
 	public void testGetCurrentMonitorData() {
@@ -59,26 +60,24 @@ public class MonitorControllerTest extends AbstractChartTransactionalTest {
 	}
 
 	@Test
-	public void testMonitorDataNoTimeParam() {
+	public void testMonitorData() throws ParseException, IOException {
 		ModelMap model = new ModelMap();
-		String rtnStr = monitorController.getMonitorData(model, "127.0.0.1", null, null, 0);
-		LOG.debug("Current monitor data for ip:{} is\n{}", "127.0.0.1", rtnStr);
-	}
+		String monitorIP = "127.0.0.1";
+		long mockTestId = 1234567890;
+		String mockPath = String.valueOf(mockTestId) + File.separator + "report";
+		File mockTestReportFile = new ClassPathResource(mockPath).getFile();
 
-	@Test
-	public void testMonitorData() throws ParseException {
-		ModelMap model = new ModelMap();
-		Date endTime = new Date();
-		long endTimelong = Long.valueOf(df.format(new Date()));
-		long startTimeLong = endTimelong - 10 *60 * 1000; //10 minutes before
-
-		//add record, make sure getMonitorData() can get data
-		SystemDataModel systemInfo = newSysData(endTimelong, "10.0.0.1");
-		monitorService.saveSystemMonitorInfo(systemInfo);
+		//set a mock home object to let it find the sample monitor file.
+		Home realHome = config.getHome();
+		Home mockHome = mock(Home.class);
+		when(mockHome.getPerfTestReportDirectory(String.valueOf(mockTestId))).thenReturn(mockTestReportFile);
+		ReflectionTestUtils.setField(config, "home", mockHome);
 		
-		Date startTime = df.parse(String.valueOf(startTimeLong));
-		String rtnStr = monitorController.getMonitorData(model, "10.34.64.212", startTime, endTime, 500);
-		LOG.debug("Current monitor data for ip:{} is\n{}", "127.0.0.1", rtnStr);
+		String rtnStr = monitorController.getMonitorData(model, mockTestId, monitorIP, 700);
+		LOG.debug("Monitor data for ip:{} is\n{}", "127.0.0.1", rtnStr);
+		
+		//reset the home object
+		ReflectionTestUtils.setField(config, "home", realHome);
 	}
 
 }

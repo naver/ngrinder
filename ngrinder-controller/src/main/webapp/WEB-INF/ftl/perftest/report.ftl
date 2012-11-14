@@ -220,9 +220,8 @@
             $.ajax({
                 url: "${req.getContextPath()}/monitor/getMonitorData",
                 dataType:'json',
-                data: {'ip': ip,
-                       'startTime': $("#startTime").val(),
-                       'finishTime': $("#finishTime").val(),
+                data: {'monitorIP': ip,
+                	   'testId': $("#testId").val(),
                        'imgWidth' : 700},
                 success: function(res) {
                     if (res.success) {

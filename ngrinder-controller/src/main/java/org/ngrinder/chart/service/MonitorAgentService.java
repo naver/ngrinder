@@ -23,11 +23,7 @@
 package org.ngrinder.chart.service;
 
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.PostConstruct;
-
-import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.repository.MonitorDataRepository;
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -36,10 +32,6 @@ import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.Cache;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**
@@ -56,30 +48,30 @@ public class MonitorAgentService implements NGrinderConstants {
 	@Autowired
 	private MonitorDataRepository monitorDataRepository;
 
-	@Autowired
-	@Qualifier("dynamicCacheManager")
-	private EhCacheCacheManager dynamicCacheManager;
-	
-	@PostConstruct
-	public void setMonitorReferenceMap() {
-		Cache cache = dynamicCacheManager.getCache(CACHE_NAME_DISTRIBUTED_MAP);
-		if (cache.get(CACHE_NAME_MONITOR_REFERENCE_MAP) == null) {
-			cache.put(CACHE_NAME_MONITOR_REFERENCE_MAP, new ConcurrentHashMap<String, MutableInt>());
-		}
-		@SuppressWarnings("unchecked")
-		ConcurrentHashMap<String, MutableInt> monitorWorkerRefMap = (ConcurrentHashMap<String, MutableInt>)cache.get(CACHE_NAME_MONITOR_REFERENCE_MAP).get();
-		MonitorExecuteManager.getInstance().setMonitorWorkerRefMap(monitorWorkerRefMap);
-		LOG.debug("cache:{}", monitorWorkerRefMap);
-	}
-
-	//just for debug and test
-	@Scheduled(fixedDelay = 5000)
-	public void test() {
-		Cache cache = dynamicCacheManager.getCache(CACHE_NAME_DISTRIBUTED_MAP);
-		@SuppressWarnings("unchecked")
-		ConcurrentHashMap<String, MutableInt> monitorWorkerRefMap = (ConcurrentHashMap<String, MutableInt>)cache.get(CACHE_NAME_MONITOR_REFERENCE_MAP).get();
-		LOG.debug("cache:{}", monitorWorkerRefMap);
-	}
+//	@Autowired
+//	@Qualifier("dynamicCacheManager")
+//	private EhCacheCacheManager dynamicCacheManager;
+//	
+//	@PostConstruct
+//	public void setMonitorReferenceMap() {
+//		Cache cache = dynamicCacheManager.getCache(CACHE_NAME_DISTRIBUTED_MAP);
+//		if (cache.get(CACHE_NAME_MONITOR_REFERENCE_MAP) == null) {
+//			cache.put(CACHE_NAME_MONITOR_REFERENCE_MAP, new ConcurrentHashMap<String, MutableInt>());
+//		}
+//		@SuppressWarnings("unchecked")
+//		ConcurrentHashMap<String, MutableInt> monitorWorkerRefMap = (ConcurrentHashMap<String, MutableInt>)cache.get(CACHE_NAME_MONITOR_REFERENCE_MAP).get();
+//		MonitorExecuteManager.getInstance().setMonitorWorkerRefMap(monitorWorkerRefMap);
+//		LOG.debug("cache:{}", monitorWorkerRefMap);
+//	}
+//
+//	//just for debug and test
+//	@Scheduled(fixedDelay = 5000)
+//	public void test() {
+//		Cache cache = dynamicCacheManager.getCache(CACHE_NAME_DISTRIBUTED_MAP);
+//		@SuppressWarnings("unchecked")
+//		ConcurrentHashMap<String, MutableInt> monitorWorkerRefMap = (ConcurrentHashMap<String, MutableInt>)cache.get(CACHE_NAME_MONITOR_REFERENCE_MAP).get();
+//		LOG.debug("cache:{}", monitorWorkerRefMap);
+//	}
 	
 	/**
 	 * add a set of agents to the monitor manager, and start the monitor job.
@@ -91,7 +83,6 @@ public class MonitorAgentService implements NGrinderConstants {
 					MonitorAgentInfo.getSystemMonitor(agent.getIp(), agent.getPort(), monitorDataRepository);
 			MonitorExecuteManager.getInstance().addAgentMonitor(agent.getIp(), monitorAgentInfo);
 		}
-		refreshCache();
 	}
 	
 	/**
@@ -104,7 +95,6 @@ public class MonitorAgentService implements NGrinderConstants {
 			MonitorExecuteManager.getInstance().removeAgentMonitor(agent.getIp());
 			LOG.debug("Remove nGrinder Monitor for:{} successfully.", agent.getIp());
 		}
-		refreshCache();
 	}
 
 	/**
@@ -112,12 +102,11 @@ public class MonitorAgentService implements NGrinderConstants {
 	 */
 	void removeAllAgent() {
 		MonitorExecuteManager.getInstance().removeAllAgent();
-		refreshCache();
 	}
 	
-	private void refreshCache() {
-		Cache cache = dynamicCacheManager.getCache(CACHE_NAME_DISTRIBUTED_MAP);
-		cache.put(CACHE_NAME_MONITOR_REFERENCE_MAP, MonitorExecuteManager.getInstance().getMonitorWorkerRefMap());
-	}
+//	private void refreshCache() {
+//		Cache cache = dynamicCacheManager.getCache(CACHE_NAME_DISTRIBUTED_MAP);
+//		cache.put(CACHE_NAME_MONITOR_REFERENCE_MAP, MonitorExecuteManager.getInstance().getMonitorWorkerRefMap());
+//	}
 
 }

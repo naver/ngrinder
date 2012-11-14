@@ -66,6 +66,8 @@ import ch.qos.logback.core.joran.spi.JoranException;
 public class Config implements IConfig {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
 	private static final String NGRINDER_EX_FOLDER = ".ngrinder_ex";
+	public static final String MONITOR_FILE_PREFIX = "monitor_system_";
+	
 	private static final Logger LOG = LoggerFactory.getLogger(Config.class);
 	private Home home = null;
 	private Home exHome = null;
@@ -217,7 +219,7 @@ public class Config implements IConfig {
 	protected void loadExtendProperties() {
 		Properties properties = exHome.getProperties("system-ex.conf");
 		String regionStr = properties.getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION);
-		region = regionStr.trim();		
+		region = regionStr.trim();
 	}
 	
 	public String getRegion() {
@@ -321,7 +323,7 @@ public class Config implements IConfig {
 		String userHome = null;
 		userHome = StringUtils.defaultIfEmpty(exHomeFromProperty, exHomeFromEnv);
 		File exHomeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
-						System.getProperty("user.exhome"), NGRINDER_EX_FOLDER);
+						System.getProperty("user.home"), NGRINDER_EX_FOLDER);
 
 		return new Home(exHomeDirectory);
 	}
