@@ -1,6 +1,6 @@
 3.0.2 (2012.11.01)
 - Hot fix for nGrinder 3.0
-- Mostly make this version work on Ubuntu
+- Mostly we made this version work on Ubuntu
  
 Bug
 [NGRINDER-332] - User specific agents show max agents value 0
@@ -14,12 +14,15 @@ Bug
 [NGRINDER-346] - Each test name is not visible in accumulated statistics
 [NGRINDER-351] - Log monitor does not work after first log retrieval
 [NGRINDER-357] - Create the user repo even when quick test is performed.
+[NGRINDER-362] - Show runcount when user use runcount in report
 
 Improvement
 [NGRINDER-352] - Add sampling listener scheme on update method in SingleConsole
 [NGRINDER-354] - Make validation timeout longer (to 20 sec)
 [NGRINDER-355] - Make the script console is only available where 50M perm gen memory is reserved.
 [NGRINDER-356] - Make basic_template more stable
+[NGRINDER-359] - Add the agent stop by admin
+[NGRINDER-361] - Make stop agent more stable
 
 3.0.1 (2012.10.31)
 - Hot fix for nGrinder 3.0
