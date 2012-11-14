@@ -136,7 +136,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping({ "/list", "/" })
 	public String getPerfTestList(User user, @RequestParam(required = false) String query,
-					@RequestParam(required = false) String tag, @RequestParam(required = false) boolean onlyFinished,
+					@RequestParam(required = false) String tag, @RequestParam(required = false) String queryFilter,
 					@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
 		PageRequest pageReq = ((PageRequest) pageable);
 		Sort sort = pageReq == null ? null : pageReq.getSort();
@@ -144,7 +144,7 @@ public class PerfTestController extends NGrinderBaseController {
 			sort = new Sort(Direction.DESC, "lastModifiedDate");
 			pageable = new PageRequest(pageReq.getPageNumber(), pageReq.getPageSize(), sort);
 		}
-		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, tag, onlyFinished, pageable);
+		Page<PerfTest> testList = perfTestService.getPerfTestList(user, query, tag, queryFilter, pageable);
 
 		TimeZone userTZ = TimeZone.getTimeZone(getCurrentUser().getTimeZone());
 		Calendar userToday = Calendar.getInstance(userTZ);
@@ -166,7 +166,7 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute("tag", tag);
 		model.addAttribute("availTags", tagService.getAllTagStrings(user, StringUtils.EMPTY));
 		model.addAttribute("testListPage", testList);
-		model.addAttribute("onlyFinished", onlyFinished);
+		model.addAttribute("queryFilter", queryFilter);
 		model.addAttribute("query", query);
 		model.addAttribute("page", pageable);
 		if (sort != null) {

@@ -47,8 +47,11 @@
 								<input type="text" class="search-query search-query-without-radios span2" placeholder="Keywords" name ="query" id="query" value="${query!}">
 								
 								<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
-								<label class="checkbox" style="position:relative;">
-									<input type="checkbox" id="onlyFinished" name="onlyFinished" <#if isFinished??&&isFinished>checked</#if>> <@spring.message "perfTest.formInline.onlyFinished"/>
+								<label class="checkbox" style="position:relative; margin-left:5px">
+									<input type="checkbox" id="finishedChk" name="queryFilter" <#if queryFilter?? && queryFilter == 'F'>checked</#if> value="F"> <@spring.message "perfTest.formInline.finished"/>
+								</label>
+								<label class="checkbox" style="position:relative; margin-left:5px">
+									<input type="checkbox" id="scheduledChk" name="queryFilter" <#if queryFilter?? && queryFilter == 'S'>checked</#if> value="S"> <@spring.message "perfTest.formInline.scheduled"/>
 								</label>
 							</td>
 							<td>
@@ -190,7 +193,7 @@
 				allowClear: true
 			});
 			$("#tag").change(function() {
-				$("#searchBtn").click();
+				document.forms.listForm.submit();
 			});
 			$('td.ellipsis').hover(function () {
 	          $(this).popover('show');
@@ -268,7 +271,25 @@
 			$("#currentRunning").click(function() {
 				$("#currentRunningDiv").toggle();
 			});
+			
+			$("#finishedChk, #scheduledChk").click(function() {
+				var $this = $(this);
+				var $temp;
+				if ($this.attr("id") == "finishedChk") {
+					checkboxReject($this, $("#scheduledChk"));
+				} else {
+					checkboxReject($this, $("#finishedChk"));
+				}
+				
+				document.forms.listForm.submit();
+			});
 		});
+		
+		function checkboxReject(obj1, obj2) {
+			if (obj1.attr("checked") == "checked" && obj2.attr("checked") == "checked") {
+				obj2.attr("checked", false);
+			}
+		}
 		
 		function deleteTests(ids) {
 			$.ajax({
@@ -367,7 +388,7 @@
 			    	for (var i = 0; i < data.length; i++) { 
 			    		updateStatus(data[i].id, data[i].name, data[i].icon, data[i].stoppable, data[i].deletable, data[i].message);
 			    	}
-			    	//setTimeout(refreshContent, 5000);
+			    	setTimeout(refreshContent, 5000);
 			    }
 		    });
 	  })();

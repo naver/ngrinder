@@ -25,7 +25,8 @@ package org.ngrinder.perftest.service;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.model.Status.getProcessingOrTestingTestStatus;
-import static org.ngrinder.perftest.repository.PerfTestSpecification.emptyPredicate;
+import static org.ngrinder.perftest.repository.PerfTestSpecification.idEmptyPredicate;
+import static org.ngrinder.perftest.repository.PerfTestSpecification.scheduledTimeEmptyPredicate;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.hasTag;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.idEqual;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.idSetEqual;
@@ -158,8 +159,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            paging info
 	 * @return found {@link PerfTest} list
 	 */
-	public Page<PerfTest> getPerfTestList(User user, String query, String tag, boolean isFinished, Pageable pageable) {
-		Specifications<PerfTest> spec = Specifications.where(emptyPredicate());
+	public Page<PerfTest> getPerfTestList(User user, String query, String tag, String queryFilter, Pageable pageable) {
+		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
 		// User can see only his own test
 		if (user.getRole().equals(Role.USER)) {
 			spec = spec.and(createdBy(user));
@@ -168,8 +169,11 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		if (StringUtils.isNotBlank(tag)) {
 			spec = spec.and(hasTag(tag));
 		}
-		if (isFinished) {
+		if ("F".equals(queryFilter)) {
 			spec = spec.and(statusSetEqual(Status.FINISHED));
+		} else if ("S".equals(queryFilter)) {
+			spec = spec.and(statusSetEqual(Status.READY));
+			spec = spec.and(scheduledTimeEmptyPredicate());
 		}
 		if (StringUtils.isNotBlank(query)) {
 			spec = spec.and(likeTestNameOrDescription(query));
@@ -197,7 +201,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	@Override
 	public PerfTest getPerfTest(User user, Long id) {
-		Specifications<PerfTest> spec = Specifications.where(emptyPredicate());
+		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
 
 		// User can see only his own test
 		if (user.getRole().equals(Role.USER)) {
@@ -216,7 +220,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	@Override
 	public List<PerfTest> getPerfTest(User user, Long[] ids) {
 
-		Specifications<PerfTest> spec = Specifications.where(emptyPredicate());
+		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
 
 		// User can see only his own test
 		if (user.getRole().equals(Role.USER)) {
@@ -235,7 +239,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	@Override
 	public long getPerfTestCount(User user, Status... statuses) {
-		Specifications<PerfTest> spec = Specifications.where(emptyPredicate());
+		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
 
 		// User can see only his own test
 		if (user != null) {
@@ -257,7 +261,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	@Override
 	public List<PerfTest> getPerfTest(User user, Status... statuses) {
-		Specifications<PerfTest> spec = Specifications.where(emptyPredicate());
+		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
 
 		// User can see only his own test
 		if (user != null) {
