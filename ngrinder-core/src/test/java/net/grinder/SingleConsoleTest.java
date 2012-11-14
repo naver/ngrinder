@@ -13,6 +13,7 @@ import java.util.Map;
 
 import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.communication.ProcessControl.ProcessReports;
+import net.grinder.console.model.ModelTestIndex;
 import net.grinder.console.model.SampleModel;
 import net.grinder.console.model.SampleModelImplementationEx;
 import net.grinder.statistics.StatisticExpression;
@@ -178,14 +179,19 @@ public class SingleConsoleTest {
 		singleConsole.update(null, null);
 		singleConsole.startSampling(0);
 
-		SampleModel sampleModelMock = mock(SampleModelImplementationEx.class);
+		SampleModelImplementationEx sampleModelMock = mock(SampleModelImplementationEx.class);
+		
 		singleConsole.setSampleModel(sampleModelMock);
 		StatisticExpression exp = mock(StatisticExpression.class);
 		StatisticsSet statisticMock = mock(StatisticsSet.class);
+		StatisticsSet statisticCumulatedMock = mock(StatisticsSet.class);
+		when(statisticMock.snapshot()).thenReturn(statisticMock);
+		when(statisticCumulatedMock.snapshot()).thenReturn(statisticCumulatedMock);
 		when(exp.getDoubleValue(any(StatisticsSet.class))).thenReturn(3D);
 		when(sampleModelMock.getTPSExpression()).thenReturn(exp);
-		singleConsole.update(statisticMock, null);
-		singleConsole.update(statisticMock, null);
+		
+		singleConsole.update(statisticMock, statisticCumulatedMock);
+		singleConsole.update(statisticMock, statisticCumulatedMock);
 
 	}
 }

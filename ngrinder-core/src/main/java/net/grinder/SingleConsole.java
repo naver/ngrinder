@@ -603,6 +603,9 @@ public class SingleConsole implements Listener, SampleListener {
 	 *            model containning all tests
 	 */
 	public void writeIntervalCsvData(StatisticsSet intervalStatistics, ModelTestIndex modelTestIndex) {
+		if (modelTestIndex == null) {
+			return;
+		}
 		StringBuilder csvLine = new StringBuilder();
 		csvLine.append(DateUtil.dateToString(new Date()));
 		ExpressionView[] expressionView = getExpressionView();
@@ -717,7 +720,6 @@ public class SingleConsole implements Listener, SampleListener {
 		StatisticsIndexMap statisticsIndexMap = getStatisticsIndexMap();
 		long tpsSum = cumulativeStatistics.getCount(statisticsIndexMap.getLongSampleIndex("timedTests"));
 		long errors = cumulativeStatistics.getValue(statisticsIndexMap.getLongIndex("errors"));
-		System.out.println(" " + tpsSum + " " + errors);
 		if (((double) tpsSum / 2) < errors) {
 			if (lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue == null) {
 				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = new Date();
