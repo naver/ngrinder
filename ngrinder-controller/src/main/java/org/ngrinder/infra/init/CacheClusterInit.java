@@ -70,7 +70,8 @@ public class CacheClusterInit {
 		} else {
 			regionList = (List<String>)regionCacheObj.get();
 		}
-		if (!regionList.contains(config.getRegion())) {
+		//if controller doesn't set region, not to set into region cache.
+		if (!config.getRegion().equals(Config.NON_REGION) && !regionList.contains(config.getRegion())) {
 			regionList.add(config.getRegion());
 		}
 	}

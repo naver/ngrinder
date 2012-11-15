@@ -33,6 +33,7 @@ import static org.ngrinder.perftest.repository.PerfTestSpecification.idSetEqual;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.createdBy;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.likeTestNameOrDescription;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.statusSetEqual;
+import static org.ngrinder.perftest.repository.PerfTestSpecification.idRegionEqual;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -274,6 +275,20 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return perfTestRepository.findAll(spec);
 	}
 
+	private List<PerfTest> getPerfTest(User user, String region, Status... statuses) {
+		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
+
+		// User can see only his own test
+		if (user != null) {
+			spec = spec.and(createdBy(user));
+		}
+		spec = spec.and(idRegionEqual(region));
+		if (statuses.length != 0) {
+			spec = spec.and(statusSetEqual(statuses));
+		}
+
+		return perfTestRepository.findAll(spec);
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -519,7 +534,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	@Override
 	public List<PerfTest> getTestingPerfTest() {
-		return getPerfTest(null, Status.getTestingTestStates());
+		return getPerfTest(null, config.getRegion(), Status.getTestingTestStates());
 	}
 
 	/**
@@ -528,7 +543,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return found {@link PerfTest} list
 	 */
 	public List<PerfTest> getAbnoramlTestingPerfTest() {
-		return getPerfTest(null, Status.ABNORMAL_TESTING);
+		return getPerfTest(null, config.getRegion(), Status.ABNORMAL_TESTING);
 	}
 
 	/**
@@ -661,6 +676,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			} else {
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, 0);
 			}
+			grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, "-Xms256m -Xmx512m");
 			grinderProperties.setProperty(GRINDER_PROP_JVM_CLASSPATH, getCustomClassPath(perfTest));
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, perfTest.getIgnoreSampleCount());
 			grinderProperties.setBoolean(GRINDER_PROP_SECURITY, config.isSecurityEnabled());
@@ -1111,7 +1127,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	@Override
 	public List<PerfTest> getStopRequestedPerfTest() {
-		final List<PerfTest> perfTests = getPerfTest(null, getProcessingOrTestingTestStatus());
+		final List<PerfTest> perfTests = getPerfTest(null, config.getRegion(), getProcessingOrTestingTestStatus());
 		CollectionUtils.filter(perfTests, new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {

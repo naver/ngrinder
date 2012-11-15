@@ -108,6 +108,22 @@ public abstract class PerfTestSpecification {
 	}
 
 	/**
+	 * Get the Specification checking if the {@link PerfTest} has the given region.
+	 * 
+	 * @param id
+	 *            perftest id
+	 * @return {@link Specification}
+	 */
+	public static Specification<PerfTest> idRegionEqual(final String region) {
+		return new Specification<PerfTest>() {
+			@Override
+			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				return cb.equal(root.get("region"), region);
+			}
+		};
+	}
+
+	/**
 	 * Get the Specification which provide empty predicate for id. This is for the base element for "and" or "or" combination.
 	 * 
 	 * @return {@link Specification}

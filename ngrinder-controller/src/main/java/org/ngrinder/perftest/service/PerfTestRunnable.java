@@ -360,9 +360,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
 				for (String targetIP : monitorRecordWriterMap.keySet()) {
 					BufferedWriter bw = monitorRecordWriterMap.get(targetIP);
-					System.out.println("t0:" + System.currentTimeMillis());
 					monitorClientsMap.get(targetIP).recordMonitorData(bw);
-					System.out.println("t1:" + System.currentTimeMillis());
 				}
 				
 			}
