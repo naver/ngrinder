@@ -22,12 +22,20 @@
  */
 package org.ngrinder.chart;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Set;
 
-import org.apache.commons.lang.math.RandomUtils;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.infra.AgentConfig;
+import org.ngrinder.monitor.MonitorConstants;
+import org.ngrinder.monitor.agent.AgentMonitorServer;
+import org.springframework.core.io.ClassPathResource;
 
 /**
  * Class description.
@@ -40,15 +48,47 @@ public abstract class AbstractChartTransactionalTest extends AbstractNGrinderTra
 	protected static final String DATE_FORMAT = "yyyyMMddHHmmss";
 	protected static final DateFormat df = new SimpleDateFormat(DATE_FORMAT);
 
-	protected SystemDataModel newSysData(long colTime, String ip) {
-		SystemDataModel sysInfo = new SystemDataModel();
-		sysInfo.setIp(ip);
-		sysInfo.setCollectTime(colTime);
-		sysInfo.setCpuUsedPercentage(RandomUtils.nextFloat());
-		sysInfo.setPort(12345);
-		sysInfo.setTotalMemory(4096000);
-		sysInfo.setFreeMemory(4096000 - RandomUtils.nextInt(2048000));
-		return sysInfo;
+	private static void setupSigar() {
+		try {
+			ClassPathResource classPathResource = new ClassPathResource("native_lib/.sigar_shellrc");
+			String nativeLib = classPathResource.getFile().getParentFile().getAbsolutePath();
+			String javaLib = System.getProperty("java.library.path");
+			if (!javaLib.contains("native_lib")) {
+				System.setProperty("java.library.path", nativeLib + File.pathSeparator + javaLib);
+			}
+			System.out.println("Java Lib Path : " + System.getProperty("java.library.path"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
+
+	@BeforeClass
+	public static void startMonitorServer() {
+		setupSigar();
+		AgentConfig agentConfig = new AgentConfig();
+		agentConfig.init();
+
+		MonitorConstants.init(agentConfig);
+		LOG.info("**************************");
+		LOG.info("* Start nGrinder Monitor *");
+		LOG.info("**************************");
+		LOG.info("* Colllect SYSTEM data. **");
+		try {
+			//start with moth java and system collector
+			Set<String> collector = MonitorConstants.SYSTEM_DATA_COLLECTOR;
+			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_MONITOR_PORT, collector);
+			AgentMonitorServer.getInstance().start();
+		} catch (Exception e) {
+			LOG.error("ERROR: {}", e.getMessage());
+			LOG.debug("Error while starting Monitor", e);
+		}
+		ThreadUtil.sleep(2000);
+	}
+	
+	@AfterClass
+	public static void stopMonitorServer() {
+		AgentMonitorServer.getInstance().stop();
+		ThreadUtil.sleep(1000);
+	}	
 	
 }

@@ -22,8 +22,6 @@
  */
 package org.ngrinder.chart.service;
 
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.chart.repository.SystemMonitorRepository;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.slf4j.Logger;
@@ -53,37 +50,16 @@ public class MonitorService {
 	private static final Logger LOG = LoggerFactory.getLogger(MonitorService.class);
 	
 	@Autowired
-	private SystemMonitorRepository sysMonitorRepository;
-	
-	@Autowired
 	private Config config;
-
-	/**
-	 * Save {@link SystemDataModel} into db.
-	 * 
-	 * @param systemDataModel
-	 *            {@link SystemDataModel} instance
-	 * @return saved {@link SystemDataModel}
-	 */
-	public SystemDataModel saveSystemMonitorInfo(SystemDataModel systemDataModel) {
-		return sysMonitorRepository.save(checkNotNull(systemDataModel));
-	}
-
-	/**
-	 * Get all{@link SystemDataModel} from db b/w given timeframe and ip.
-	 * 
-	 * @param ip
-	 *            ip
-	 * @param startTime
-	 *            starttime
-	 * @param endTime
-	 *            endtime
-	 * @return {@link SystemDataModel} list
-	 */
-	public List<SystemDataModel> getSystemMonitorData(String ip, long startTime, long endTime) {
-		return sysMonitorRepository.findAllByIpAndCollectTimeBetween(ip, startTime, endTime);
-	}
 	
+	/**
+	 * Get all{@link SystemDataModel} from monitor data file of one test and target.
+	 * @param testId
+	 * 				test id
+	 * @param monitorIP
+	 * 				IP address of the monitor target
+	 * @return SystemDataModel list
+	 */
 	public List<SystemDataModel> getSystemMonitorData(long testId, String monitorIP) {
 		LOG.debug("Get SystemMonitorData of test:{} ip:{}", testId, monitorIP);
 		List<SystemDataModel> rtnList = new ArrayList<SystemDataModel>();

@@ -26,6 +26,7 @@ import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 
 import org.junit.Test;
+import org.ngrinder.chart.AbstractChartTransactionalTest;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
@@ -35,7 +36,7 @@ import org.ngrinder.monitor.share.domain.SystemInfo;
  * @author Mavlarn
  * @since
  */
-public class MonitorClientServiceTest extends MonitorAgentServiceTest {
+public class MonitorClientServiceTest extends AbstractChartTransactionalTest {
 
 	@Test
 	public void testGetMonitorData () {
