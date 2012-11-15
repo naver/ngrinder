@@ -108,15 +108,29 @@ public abstract class PerfTestSpecification {
 	}
 
 	/**
-	 * Get the Specification which provide empty predicate. This is for the base element for "and" or "or" combination.
+	 * Get the Specification which provide empty predicate for id. This is for the base element for "and" or "or" combination.
 	 * 
 	 * @return {@link Specification}
 	 */
-	public static Specification<PerfTest> emptyPredicate() {
+	public static Specification<PerfTest> idEmptyPredicate() {
 		return new Specification<PerfTest>() {
 			@Override
 			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				return root.get("id").isNotNull();
+			}
+		};
+	}
+	
+	/**
+	 * Get the Specification which provide empty predicate for schedule time. This is for the base element for "and" or "or" combination.
+	 * 
+	 * @return {@link Specification}
+	 */
+	public static Specification<PerfTest> scheduledTimeEmptyPredicate() {
+		return new Specification<PerfTest>() {
+			@Override
+			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				return root.get("scheduledTime").isNotNull();
 			}
 		};
 	}
