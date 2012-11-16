@@ -101,8 +101,8 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@Autowired
 	private PerfTestService perfTestService;
-
 	@Autowired
+	
 	private FileEntryService fileEntryService;
 
 	@Autowired
@@ -341,6 +341,8 @@ public class PerfTestController extends NGrinderBaseController {
 			test.setLastModifiedDate(null);
 			test.setLastModifiedUser(null);
 		}
+		if (StringUtils.isBlank(test.getRegion()))
+			test.setRegion(Config.NON_REGION);
 		perfTestService.savePerfTest(user, test);
 		return "redirect:/perftest/list";
 	}
