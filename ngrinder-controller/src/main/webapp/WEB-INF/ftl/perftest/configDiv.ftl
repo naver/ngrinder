@@ -9,7 +9,7 @@
 					<label for="agentCount" class="control-label"><@spring.message "perfTest.configuration.agent"/></label>
 					<div class="controls">
 						<div class="input-append">
-							<input type="text" class="input span1" rel="popover"
+							<input type="text" class="input input-mini" rel="popover"
 								id="agentCount" name="agentCount" value="${(test.agentCount)!0}" 
 								data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
 								data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
@@ -27,7 +27,7 @@
 							<tr>
 								<td>
 									<div class="input-append">
-										<input type="text" class="input span1" rel="popover"
+										<input type="text" class="input input-mini" rel="popover"
 											id="vuserPerAgent" name="vuserPerAgent"	value="${(test.vuserPerAgent)!1}" rel="popover"	
 											data-content='<@spring.message "perfTest.configuration.vuserPerAgent.help"/>'
 											data-original-title="<@spring.message "perfTest.configuration.vuserPerAgent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxVuserPerAgent)}</span>
@@ -102,13 +102,12 @@
 						<div class="div-resources" id="scriptResources"></div>
 					</div>
 				</div>
-				<#if regionList?? && regionList?size &gt; 0>
 				<div class="control-group">
 					<label for="ScriptResources" class="control-label"><@spring.message "perfTest.configuration.region"/></label>
 					<div class="controls">
 						<div class="input-append">
-							<select id="regionSelect" class="span3 required" name="region">
-								<option value=''></option>
+							<select id="regionSelect" name="region" style="width:204px">
+								<option value="NONE"><@spring.message "perfTest.configuration.region.placeholder"/></option>
 								<#if regionList?? && regionList?size &gt; 0> 
 									<#list regionList as regionName> 
 										<option value="${regionName}" <#if test?? && test.region?? && test.region == regionName>selected</#if> >${regionName}</option> 
@@ -118,7 +117,6 @@
 				 		</div>
 				 	</div>
 				</div>
-				</#if>
 				<div class="control-group">
 					<label class="control-label"><@spring.message "perfTest.configuration.targetHost"/></label>
 					<#if test?? && test.targetHosts??>
@@ -144,7 +142,7 @@
 						<input type="hidden" id="duration" class="required positiveNumber" name="duration"
 							value="${(test.duration)!60000}">
 						<div id="durationSlider" class="slider" style="margin-left: 0; width: 250px"></div>
-						<input id="hiddenDurationInput" class="span1 hide" data-step="1">
+						<input id="hiddenDurationInput" class="hide" data-step="1">
 
 					</div>
 				</div>
@@ -158,7 +156,7 @@
 								data-original-title="<@spring.message "perfTest.configuration.runCount"/>"
 								data-content="<@spring.message "perfTest.configuration.runCount.help"/>"	
 								rel="popover"												
-								id="runCount" class="input span1" number_limit="${(maxRunCount)}" name="runCount"
+								id="runCount" class="input input-mini" number_limit="${(maxRunCount)}" name="runCount"
 								value="${(test.runCount)!0}"><span class="add-on"><@spring.message "perfTest.configuration.max"/> ${(maxRunCount)}</span>
 						</div>
 					</div>
@@ -166,7 +164,7 @@
 				<div class="control-group">
 					<label for="ignoreSampleCount" class="control-label"> <@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
 					<div class="controls">
-						<input type="text" class="input span1" 
+						<input type="text" class="input input-mini" 
 							data-original-title="<@spring.message "perfTest.configuration.ignoreSampleCount"/>"
 							data-content='<@spring.message "perfTest.configuration.ignoreSampleCount.help"/>'
 							rel="popover"												

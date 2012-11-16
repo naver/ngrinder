@@ -200,7 +200,7 @@
 													</#if> 
 												</button>
 												
-												<button type="submit" class="btn btn-primary" style="width:116px" data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn" ${disabled!}>
+												<button class="btn btn-primary" style="width:116px" data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn" ${disabled!}>
 													<#if isClone>
 														<@spring.message "perfTest.detail.clone"/>
 													<#else>
@@ -597,7 +597,7 @@ function bindEvent() {
 			showErrorMsg("<@spring.message "perfTest.warning.agent0"/>");
 			return false;
 		}
-	    $("#tagString").val(buildTagString())
+		$("#tagString").val(buildTagString());
 	});
 	
 	$("#saveTestBtn").click(function() {
@@ -744,9 +744,7 @@ function bindEvent() {
 		$("#runcountRadio").click();
 	});
 	
-	$("#regionSelect").select2({
-		placeholder: "<@spring.message "perfTest.configuration.region.placeholder"/>"
-	});
+	$("#regionSelect").select2();
 }
 
 function buildTagString() {
