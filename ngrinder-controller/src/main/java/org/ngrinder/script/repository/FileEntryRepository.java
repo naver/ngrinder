@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
@@ -170,7 +171,7 @@ public class FileEntryRepository {
 	 *            user
 	 * @return found {@link FileEntry}s
 	 */
-	public List<FileEntry> findAll(User user) {
+	public List<FileEntry> findAll(final User user) {
 		final List<FileEntry> scripts = new ArrayList<FileEntry>();
 		SVNClientManager svnClientManager = SVNClientManager.newInstance();
 		try {
@@ -182,16 +183,38 @@ public class FileEntryRepository {
 									if (dirEntry.getKind() == SVNNodeKind.DIR) {
 										return;
 									}
-									if (StringUtils.isBlank(dirEntry.getRelativePath())) {
+									String relativePath = dirEntry.getRelativePath();
+									if (StringUtils.isBlank(relativePath)) {
 										return;
 									}
-									script.setPath(dirEntry.getRelativePath());
+									script.setPath(relativePath);
 									script.setDescription(dirEntry.getCommitMessage());
-									script.setRevision(dirEntry.getRevision());
+									long reversion = dirEntry.getRevision();
+									script.setRevision(reversion);
 									script.setFileType(dirEntry.getKind() == SVNNodeKind.DIR ? FileType.DIR
 													: null);
 									script.setFileSize(dirEntry.getSize());
+									if (dirEntry.hasProperties()) {
+										setScriptProperties(user, relativePath, reversion, script.getProperties());
+									}
 									scripts.add(script);
+								}
+								
+								private void setScriptProperties(
+										User user, String path, long revision, Map<String, String> propertiesMap) {
+									SVNClientManager svnClientManager = null;
+									try {
+										svnClientManager = SVNClientManager.newInstance();
+										SVNURL userRepoUrl = SVNURL.fromFile(getUserRepoDirectory(user));
+										SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
+										SVNProperties fileProperty = new SVNProperties();
+										repo.getFile(path, revision, fileProperty, new ByteArrayOutputStream());
+										propertiesMap.put("validated", fileProperty.getStringValue("validated"));
+									} catch (SVNException e) {
+										LOG.error("Error while fetching a file from SVN {} {}", user.getUserId(), path);
+									} finally {
+										closeSVNClientManagerQuietly(svnClientManager);
+									}
 								}
 							});
 		} catch (Exception e) {

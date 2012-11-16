@@ -597,6 +597,13 @@ function bindEvent() {
 			showErrorMsg("<@spring.message "perfTest.warning.agent0"/>");
 			return false;
 		}
+
+		if ($("#scriptName option:selected").attr("validated") == "0") {
+			$("small.errorColor").text("The using script is not validated.");
+		} else {
+			$("small.errorColor").text("");
+		}
+		
 		$("#tagString").val(buildTagString());
 	});
 	

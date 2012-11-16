@@ -4,6 +4,9 @@
 	<h4 class="alert-heading">Error!</h4>
 	<span></span>
 </div>
+<div class="progress progress-striped active hidden messageDiv" id="progressBarDiv">
+  <div class="bar" style="width: 100%;"></div>
+</div>
 <script type="text/javascript">
 	$(document).ready(function() {
 		$("#errorMsgDivBtn").click(function() {
@@ -42,5 +45,13 @@
 		$div.hide();
 		$div.children("span").html(message);
 		$div.fadeIn(100);
+	}
+	
+	function showProgressBar() {
+		$("#progressBarDiv").fadeIn(500);
+	}
+	
+	function hideProgressBar() {
+		$("#progressBarDiv").fadeOut(500);
 	}
 </script>

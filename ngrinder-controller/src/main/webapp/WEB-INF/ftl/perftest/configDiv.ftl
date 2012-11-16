@@ -72,11 +72,11 @@
 							<td>
 								<select id="scriptName" class="span3" name="scriptName"> 
 									<#if test?? && test.lastModifiedUser.userId != currentUser.userId>
-										<option value="${test.scriptName}" selected>${test.scriptName} - belong to ${test.lastModifiedUser.userId}</option>
+										<option value="${test.scriptName}" selected validated="${(scriptItem.properties.validated)!"0"}>${test.scriptName} - belong to ${test.lastModifiedUser.userId}</option>
 									</#if>
 									<#if scriptList?? && scriptList?size &gt; 0> 
 										<#list scriptList as scriptItem> 
-											<option value="${scriptItem.path}" <#if  (test?? && scriptItem.path == test.scriptName) || (quickScript?? && quickScript == scriptItem.path)>selected</#if> >${scriptItem.path}</option> 
+											<option value="${scriptItem.path}" <#if  (test?? && scriptItem.path == test.scriptName) || (quickScript?? && quickScript == scriptItem.path)>selected</#if> validated="${(scriptItem.properties.validated)!"0"}">${scriptItem.path}</option> 
 										</#list> 
 									</#if>
 								</select>
