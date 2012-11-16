@@ -25,7 +25,6 @@ package org.ngrinder.region.service;
 import java.util.List;
 
 import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,16 +46,13 @@ public class RegionService {
 	private static final Logger LOG = LoggerFactory.getLogger(RegionService.class);
 
 	@Autowired
-	private Config config;
-
-	@Autowired
 	@Qualifier("dynamicCacheManager")
 	private EhCacheCacheManager dynamicCacheManager;
 	
-	public String getCurrentRegion() {
-		return config.getRegion();
-	}
-	
+	/**
+	 * get region list of all clustered controller.
+	 * @return region list
+	 */
 	public List<String> getRegionList() {
 		Cache distCache = dynamicCacheManager.getCache(NGrinderConstants.CACHE_NAME_DISTRIBUTED_MAP);
 		ValueWrapper regionCacheObj = distCache.get(NGrinderConstants.CACHE_NAME_REGION_LIST);

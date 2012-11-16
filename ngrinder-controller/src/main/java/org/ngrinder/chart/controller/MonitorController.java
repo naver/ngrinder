@@ -86,12 +86,10 @@ public class MonitorController extends NGrinderBaseController {
 	 * 
 	 * @param model
 	 *            model
-	 * @param ip
-	 *            ip
-	 * @param startTime
-	 *            start time
-	 * @param finishTime
-	 *            finish time
+	 * @param testId
+	 *            test Id
+	 * @param monitorIP
+	 *            monitorIP
 	 * @param imgWidth
 	 *            image width
 	 * @return json message

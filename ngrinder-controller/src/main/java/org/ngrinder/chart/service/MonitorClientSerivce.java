@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Used to get monitor data directly from MBeanClient and save.
+ * For every MBClient, one instance will be created. So it is not singleton.
  *
  * @author Mavlarn
  * @since 3.1
@@ -58,11 +59,19 @@ public class MonitorClientSerivce {
 	private String ip;
 	
 	/**
+	 * default constructor, used to debug the non-singleton of this class.
+	 */
+	public MonitorClientSerivce() {
+		LOG.debug("Created MonitorClientSerivce.");
+	}
+	
+	/**
 	 * Initialize the mbeanClient connection.
 	 * @param ip
 	 * @param port
 	 */
 	public void init(String ip, int port) {
+		LOG.debug("Init MonitorClientSerivce for {}:{}", ip, port);
 		this.ip = ip;
 		try {
 			mbeanClient = CachedMBeanClient.getMBeanClient(ip, port);

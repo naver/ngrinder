@@ -41,7 +41,7 @@ import org.springframework.stereotype.Service;
  * Initialize cache cluster related environment.
  *
  * @author Mavlarn
- * @since
+ * @since 3.1
  */
 @Service
 @DependsOn("config")
@@ -54,12 +54,11 @@ public class CacheClusterInit {
 	@Qualifier("dynamicCacheManager")
 	private EhCacheCacheManager dynamicCacheManager;
 	
-	@PostConstruct
-	public void init() {
-		initRegion();
-	}
-	
+	/**
+	 * initialize the region info of the cluster environment.
+	 */
 	@SuppressWarnings("unchecked")
+	@PostConstruct
 	public void initRegion() {
 		Cache distCache = dynamicCacheManager.getCache(NGrinderConstants.CACHE_NAME_DISTRIBUTED_MAP);
 		ValueWrapper regionCacheObj = distCache.get(NGrinderConstants.CACHE_NAME_REGION_LIST);

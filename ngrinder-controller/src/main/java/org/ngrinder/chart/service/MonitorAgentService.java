@@ -47,31 +47,6 @@ public class MonitorAgentService implements NGrinderConstants {
 
 	@Autowired
 	private MonitorDataRepository monitorDataRepository;
-
-//	@Autowired
-//	@Qualifier("dynamicCacheManager")
-//	private EhCacheCacheManager dynamicCacheManager;
-//	
-//	@PostConstruct
-//	public void setMonitorReferenceMap() {
-//		Cache cache = dynamicCacheManager.getCache(CACHE_NAME_DISTRIBUTED_MAP);
-//		if (cache.get(CACHE_NAME_MONITOR_REFERENCE_MAP) == null) {
-//			cache.put(CACHE_NAME_MONITOR_REFERENCE_MAP, new ConcurrentHashMap<String, MutableInt>());
-//		}
-//		@SuppressWarnings("unchecked")
-//		ConcurrentHashMap<String, MutableInt> monitorWorkerRefMap = (ConcurrentHashMap<String, MutableInt>)cache.get(CACHE_NAME_MONITOR_REFERENCE_MAP).get();
-//		MonitorExecuteManager.getInstance().setMonitorWorkerRefMap(monitorWorkerRefMap);
-//		LOG.debug("cache:{}", monitorWorkerRefMap);
-//	}
-//
-//	//just for debug and test
-//	@Scheduled(fixedDelay = 5000)
-//	public void test() {
-//		Cache cache = dynamicCacheManager.getCache(CACHE_NAME_DISTRIBUTED_MAP);
-//		@SuppressWarnings("unchecked")
-//		ConcurrentHashMap<String, MutableInt> monitorWorkerRefMap = (ConcurrentHashMap<String, MutableInt>)cache.get(CACHE_NAME_MONITOR_REFERENCE_MAP).get();
-//		LOG.debug("cache:{}", monitorWorkerRefMap);
-//	}
 	
 	/**
 	 * add a set of agents to the monitor manager, and start the monitor job.
@@ -103,10 +78,5 @@ public class MonitorAgentService implements NGrinderConstants {
 	void removeAllAgent() {
 		MonitorExecuteManager.getInstance().removeAllAgent();
 	}
-	
-//	private void refreshCache() {
-//		Cache cache = dynamicCacheManager.getCache(CACHE_NAME_DISTRIBUTED_MAP);
-//		cache.put(CACHE_NAME_MONITOR_REFERENCE_MAP, MonitorExecuteManager.getInstance().getMonitorWorkerRefMap());
-//	}
 
 }

@@ -110,6 +110,7 @@ public abstract class PerfTestSpecification {
 	/**
 	 * Get the Specification checking if the {@link PerfTest} has the given region.
 	 * 
+	 * @since 3.1
 	 * @param id
 	 *            perftest id
 	 * @return {@link Specification}

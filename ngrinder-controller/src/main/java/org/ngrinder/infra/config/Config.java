@@ -125,6 +125,7 @@ public class Config implements IConfig {
 	/**
 	 * Initialize cache cluster configuration.
 	 * 
+	 * @since 3.1
 	 */
 	protected void loadClusterConfig() {
 		String clusterUri = getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_CLUSTER_URIS, null);
@@ -161,44 +162,7 @@ public class Config implements IConfig {
 		// then the remote client can not connect.
 		LOG.info("Set current IP:{} for RMI server.", currentIP);
 		System.setProperty("java.rmi.server.hostname", currentIP);
-		return;
-		
-		/*
-		FactoryConfiguration peerProviderConfig = new FactoryConfiguration();
-		peerProviderConfig.setClass(RMICacheManagerPeerProviderFactory.class.getName());
-		StringBuilder peerPropSB = new StringBuilder("peerDiscovery=manual,rmiUrls=");
-		peerPropSB.append(urisSB.toString());
-		peerProviderConfig.setProperties(peerPropSB.toString());
-		Configuration ehCacheConfig = ehcache.getConfiguration();
-		ehCacheConfig.addCacheManagerPeerProviderFactory(peerProviderConfig);
-
-		FactoryConfiguration peerListenerConfig = new FactoryConfiguration();
-		peerListenerConfig.setClass(RMICacheManagerPeerListenerFactory.class.getName());
-		String listenerPropStr = "port=" + NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT;
-		peerListenerConfig.setProperties(listenerPropStr);
-		ehCacheConfig.addCacheManagerPeerListenerFactory(peerListenerConfig);
-		
-		Cache distCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_DISTRIBUTED_MAP);
-		EhCacheCache distEhCache = (EhCacheCache) distCache;
-		CacheConfiguration distCacheConfig = distEhCache.getNativeCache().getCacheConfiguration();
-
-		// <bootstrapCacheLoaderFactory
-		// class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
-		// when the cache is initialized, it will synchronize the ache with
-		// peer.
-		BootstrapCacheLoaderFactoryConfiguration bootConfig = new BootstrapCacheLoaderFactoryConfiguration();
-		bootConfig.setClass(RMIBootstrapCacheLoaderFactory.class.getName());
-		distCacheConfig.addBootstrapCacheLoaderFactory(bootConfig);
-
-		// <cacheEventListenerFactory
-		// class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
-		// this configuration makes sure the update on this cache will be
-		// replecated to other peer
-		CacheEventListenerFactoryConfiguration updateConfig = new CacheEventListenerFactoryConfiguration();
-		updateConfig.setClass(RMICacheReplicatorFactory.class.getName());
-		distCacheConfig.addCacheEventListenerFactory(updateConfig);
-		*/
-		 
+		return;		 
 	}
 	
 	/**
@@ -216,6 +180,10 @@ public class Config implements IConfig {
 		return this.clusterURIs;
 	}	
 	
+	/**
+	 * Load and initialize extended properties from .ngrinder_ex configuration directory.
+	 * @since 3.1
+	 */
 	protected void loadExtendProperties() {
 		Properties properties = exHome.getProperties("system-ex.conf");
 		String regionStr = properties.getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION);
@@ -279,6 +247,7 @@ public class Config implements IConfig {
 	/**
 	 * Copy extended configuration files.
 	 * 
+	 * @since 3.1
 	 * @throws IOException
 	 *             occurs when there is no such a files.
 	 */
@@ -400,7 +369,7 @@ public class Config implements IConfig {
 	}
 
 	/**
-	 * Check if it's testmode.
+	 * Check if it's test mode.
 	 * 
 	 * @return true if test mode
 	 */
@@ -439,6 +408,7 @@ public class Config implements IConfig {
 	/**
 	 * Get the resolved extended home folder.
 	 * 
+	 * @since 3.1
 	 * @return home
 	 */
 	public Home getExHome() {

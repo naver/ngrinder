@@ -45,7 +45,7 @@ import org.springframework.context.annotation.Configuration;
  * Class description.
  *
  * @author Mavlarn
- * @since
+ * @since 3.1
  */
 @Configuration
 public class DynamicCacheConfig {
