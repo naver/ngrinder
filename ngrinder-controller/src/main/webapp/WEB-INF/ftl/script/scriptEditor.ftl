@@ -72,7 +72,10 @@
 											<td>
 												<textarea class="span6" id="descInput" name="description" style="resize:none; height:55px" >${(file.description)!}</textarea>
 											</td> 
-											<td>  
+											<td>
+												<#if file.properties.targetHosts??>
+													<#assign targetHosts = file.properties.targetHosts/>
+												</#if>
 												<#include "../perftest/host.ftl"/>
 											</td> 
 										</tr>
@@ -81,14 +84,17 @@
 							</fieldset>
 						</div>
 					</div>
-					
+					<pre style="height:100px; margin:5px 0 10px;" class="prettyprint pre-scrollable hidden" id="validateRsPre">
+					</pre>
 					<input type="hidden" id="createLibAndResource" name="createLibAndResource" value="<#if createLibAndResource?? && createLibAndResource==true>true<#else>false</#if>"/>
+					<input type="hidden" id="validatedHd" name="validated" value="${(file.properties.validated)!"0"}">
 					<@security.authorize ifAnyGranted="A, S">
 						<#if ownerId??>					
 							<input type="hidden" id="ownerId" name="ownerId" value="${ownerId}"/>
 						</#if>
 					</@security.authorize>
 					<textarea id="codemirrorContent" name="content">${(file.content)!}</textarea>
+					<textarea id="oldContent" class="hidden">${(file.content)!}</textarea>
 				</form>
 				<div class="pull-right" rel="popover" style="position:float;margin-top:-20px;margin-right:-30px" data-original-title="Tip" data-content="
 			      Ctrl-F / Cmd-F : <@spring.message "script.editor.tip.startSearching"/>&lt;br&gt; 
@@ -100,9 +106,6 @@
 			      ESC : <@spring.message "script.editor.tip.back"/>&lt;br&gt;
 			      " placement="left"
 			    ><code>Tip</code></div> 
-			    
-				<pre style="height:100px; margin-top:5px;" class="prettyprint pre-scrollable hidden" id="validateRsPre">
-				</pre>
 			</div>
 		</div>
 		<#include "../common/copyright.ftl">
@@ -139,21 +142,26 @@
 			var hlLine = editor.setLineClass(0, "activeline");
 
 			$("#saveBtn").click(function() {
-				$('#codemirrorContent').text(editor.getValue());
+				var newContent = editor.getValue();
+				if ($("#oldContent").val() != newContent) {
+					$("#validatedHd").val("0");
+				}
+				$('#codemirrorContent').text(newContent);
 				document.forms.contentForm.action = "${req.getContextPath()}/script/save";
 				document.forms.contentForm.submit();
 			});
 
 			$("#validateBtn").click(function() {
-				showInformation("<@spring.message "script.editor.message.validate"/>");
 				var scriptPath = $("#scriptNameInput").val();
 				var hostString = $("#hostsHidden").val();
 				$('#validateRsPre').hide();
+				var newContent = editor.getValue();
+				showProgressBar();
 				$.ajax({
 			  		url: "${req.getContextPath()}/script/validate",
 			    	async: true,
 			    	type: "POST",
-					data: {'path':scriptPath, 'content': editor.getValue(), 'hostString' : hostString
+					data: {'path':scriptPath, 'content': newContent, 'hostString' : hostString
 						<@security.authorize ifAnyGranted="A, S">
 							<#if ownerId??>	
 				  				, 'ownerId': "${ownerId}"
@@ -163,6 +171,9 @@
 			    	success: function(res) {
 						$('#validateRsPre').text(res);
 						$('#validateRsPre').show();
+						$('#validatedHd').val("1");//should control the validation success or not later.
+						$("#oldContent").val(newContent);
+						hideProgressBar();
 			    	},
 			    	error: function() {
 			    		showErrorMsg("<@spring.message "script.editor.error.validate"/>");

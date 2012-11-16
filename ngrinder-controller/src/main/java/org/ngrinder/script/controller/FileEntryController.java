@@ -216,10 +216,7 @@ public class FileEntryController extends NGrinderBaseController {
 		}
 		model.addAttribute("file", script);
 		model.addAttribute("ownerId", user.getUserId());
-		String targetHosts = script.getProperties().get("targetHosts");
-		if (StringUtils.isNotBlank(targetHosts)) {
-			model.addAttribute("targetHosts", targetHosts);
-		}
+		
 		return "script/scriptEditor";
 	}
 
@@ -310,20 +307,24 @@ public class FileEntryController extends NGrinderBaseController {
 	 *            target host parameter
 	 * @param createLibAndResource
 	 *            true if lib and resources should be created as well.
+	 * @param validated
+	 * 			  validated the script or not, 1 is validated, 0 is not.
 	 * @param model
 	 *            model
 	 * @return script/scriptList
 	 */
 	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
 	public String saveFileEntry(User user, @RemainedPath String path, FileEntry fileEntry,
-					@RequestParam("targetHosts") String targetHosts,
-					@RequestParam(value = "createLibAndResource", defaultValue = "false") boolean createLibAndResource,
+					@RequestParam String targetHosts,
+					@RequestParam(defaultValue = "0") String validated,
+					@RequestParam(defaultValue = "false") boolean createLibAndResource,
 					ModelMap model) {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("validated", validated);
 		if (StringUtils.isNotBlank(targetHosts)) {
-			Map<String, String> map = new HashMap<String, String>();
 			map.put("targetHosts", StringUtils.trim(targetHosts));
-			fileEntry.setProperties(map);
 		}
+		fileEntry.setProperties(map);
 
 		fileEntryService.save(user, fileEntry);
 

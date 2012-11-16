@@ -77,7 +77,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.hibernate.Hibernate;
@@ -513,15 +512,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		List<PerfTest> currentlyRunningTests = getCurrentlyRunningTest();
 		final Set<User> currentlyRunningTestOwners = new HashSet<User>();
 		for (PerfTest each : currentlyRunningTests) {
-			currentlyRunningTestOwners.add((User) ObjectUtils.defaultIfNull(each.getLastModifiedUser(),
-							each.getCreatedUser()));
+			currentlyRunningTestOwners.add(each.getCreatedUser());
 		}
 		CollectionUtils.filter(perfTestLists, new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
 				PerfTest perfTest = (PerfTest) object;
-				return !currentlyRunningTestOwners.contains(ObjectUtils.defaultIfNull(perfTest.getLastModifiedUser(),
-								perfTest.getCreatedUser()));
+				return !currentlyRunningTestOwners.contains(perfTest.getCreatedUser());
 			}
 		});
 		return perfTestLists;
@@ -637,7 +634,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			FileUtils.copyFile(config.getHome().getDefaultGrinderProperties(), userGrinderPropertiesPath);
 			GrinderProperties grinderProperties = new GrinderProperties(userGrinderPropertiesPath);
 
-			User user = perfTest.getLastModifiedUser();
+			User user = perfTest.getCreatedUser();
 
 			// Get all files in the script path
 			FileEntry userDefinedGrinderProperties = fileEntryService.getFileEntry(user, FilenameUtils.concat(
@@ -702,7 +699,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public File prepareDistribution(PerfTest perfTest) {
 		checkNotNull(perfTest.getId(), "perfTest should have id");
 		String scriptName = checkNotEmpty(perfTest.getScriptName(), "perfTest should have script name");
-		User user = perfTest.getLastModifiedUser();
+		User user = perfTest.getCreatedUser();
 
 		// Get all files in the script path
 		FileEntry scriptEntry = checkNotNull(
