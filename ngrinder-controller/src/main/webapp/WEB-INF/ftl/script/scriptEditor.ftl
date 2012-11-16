@@ -72,7 +72,10 @@
 											<td>
 												<textarea class="span6" id="descInput" name="description" style="resize:none; height:55px" >${(file.description)!}</textarea>
 											</td> 
-											<td>  
+											<td>
+												<#if file.properties.targetHosts??>
+													<#assign targetHosts = file.properties.targetHosts/>
+												</#if>
 												<#include "../perftest/host.ftl"/>
 											</td> 
 										</tr>

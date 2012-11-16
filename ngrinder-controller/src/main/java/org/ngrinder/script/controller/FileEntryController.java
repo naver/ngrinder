@@ -216,10 +216,7 @@ public class FileEntryController extends NGrinderBaseController {
 		}
 		model.addAttribute("file", script);
 		model.addAttribute("ownerId", user.getUserId());
-		String targetHosts = script.getProperties().get("targetHosts");
-		if (StringUtils.isNotBlank(targetHosts)) {
-			model.addAttribute("targetHosts", targetHosts);
-		}
+		
 		return "script/scriptEditor";
 	}
 
