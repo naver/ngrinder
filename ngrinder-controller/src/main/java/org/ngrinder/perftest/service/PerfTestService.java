@@ -702,7 +702,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public File prepareDistribution(PerfTest perfTest) {
 		checkNotNull(perfTest.getId(), "perfTest should have id");
 		String scriptName = checkNotEmpty(perfTest.getScriptName(), "perfTest should have script name");
-		User user = perfTest.getLastModifiedUser();
+		User user = perfTest.getCreatedUser();
 
 		// Get all files in the script path
 		FileEntry scriptEntry = checkNotNull(
