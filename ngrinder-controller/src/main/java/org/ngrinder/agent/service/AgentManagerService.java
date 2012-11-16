@@ -32,6 +32,7 @@ import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentManagerRepository;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.perftest.service.AgentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +58,9 @@ public class AgentManagerService {
 
 	@Autowired
 	private AgentManagerRepository agentRepository;
+	
+	@Autowired
+	private Config config;
 
 	/**
 	 * Get agents. agent list is obtained from DB and {@link AgentManager}
@@ -101,7 +105,11 @@ public class AgentManagerService {
 		if (!StringUtils.equals(agentInfo.getHostName(), agentIdentity.getName())
 						|| !StringUtils.equals(agentInfo.getRegion(), agentIdentity.getRegion())) {
 			agentInfo.setHostName(agentIdentity.getName());
-			agentInfo.setRegion(agentIdentity.getRegion());
+			String agtRegion = agentIdentity.getRegion();
+			if (agtRegion != null && !agtRegion.contains("_owned_")) {
+				agtRegion = config.getRegion();
+			}
+			agentInfo.setRegion(agtRegion);
 			agentInfo.setIp(agentIdentity.getIp());
 			agentInfo = agentRepository.save(agentInfo);
 		}
