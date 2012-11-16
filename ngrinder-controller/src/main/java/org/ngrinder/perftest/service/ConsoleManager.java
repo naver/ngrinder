@@ -36,7 +36,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 import net.grinder.SingleConsole;
-import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.console.model.ConsoleProperties;
 
 import org.ngrinder.common.constant.NGrinderConstants;

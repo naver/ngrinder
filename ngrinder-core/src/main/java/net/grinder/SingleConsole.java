@@ -917,7 +917,7 @@ public class SingleConsole implements Listener, SampleListener {
 			eventSyncCondition.notifyAll();
 		}
 	}
-
+	
 	private void checkExeuctionErrors(ProcessReports[] processReports) {
 		if (samplingCount == 0 && ArrayUtils.isNotEmpty(this.processReports) && ArrayUtils.isEmpty(processReports)) {
 			getListeners().apply(new Informer<ConsoleShutdownListener>() {
