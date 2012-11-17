@@ -2,7 +2,7 @@ We are ACTIVE.
 ==============
 * We're really active developers. So if you have any issues using nGrinder. Please let us know.
 * We promise to correct any bugs and problems within 1 week.
-* See our release note https://github.com/nhnopensource/ngrinder/blob/nGrinder3.0.2_20121116/release_note.txt
+* See our release note http://www.cubrid.org/wiki_ngrinder/entry/ngrinder-release-notes
 
 nGrinder 
 ========
