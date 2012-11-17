@@ -2,11 +2,12 @@ We are ACTIVE.
 ==============
 * We're really active developers. So if you have any issues using nGrinder. Please let us know.
 * We promise to correct any bugs and problems within 1 week.
-
+* See our release note https://github.com/nhnopensource/ngrinder/blob/nGrinder3.0.2_20121116/release_note.txt
 nGrinder 
 ========
 
 It is the platform of stress tests which enables you to execute script creation, test execution, monitoring, and result report generator simultaneously. The opensource nGrinder offers easy ways to conduct stress tests by eliminating inconveniences and providing integrated environments.
+
 
 To get to know what's different from grinder?
  * Checkout http://www.cubrid.org/wiki_ngrinder/entry/architecture !
