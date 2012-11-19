@@ -4,10 +4,12 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import net.grinder.AgentControllerDaemon;
 import net.grinder.SingleConsole;
@@ -23,9 +25,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.chart.service.MonitorService;
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
+import org.ngrinder.monitor.MonitorConstants;
+import org.ngrinder.monitor.agent.AgentMonitorServer;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.repository.MockFileEntityRepsotory;
@@ -45,9 +52,14 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	@Autowired
 	private AgentManagerService agentService;
+	
+	@Autowired
+	private MonitorService monitorService;
 
 	@Autowired
 	public MockFileEntityRepsotory fileEntityRepository;
+	
+	public PerfTest currentTest;
 
 	@Before
 	public void before() throws IOException {
@@ -68,7 +80,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 		prepareUserRepo();
 		clearAllPerfTest();
-		createPerfTest("test1", Status.READY, null);
+		currentTest = createPerfTest("test1", Status.READY, null);
 		List<PerfTest> allPerfTest = perfTestService.getAllPerfTest();
 
 		assertThat(allPerfTest.size(), is(1));
@@ -78,7 +90,20 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		agentControllerDaemon = new AgentControllerDaemon("127.0.0.1");
 		agentControllerDaemon.setAgentConfig(agentConfig1);
 		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
-
+		
+		LOG.info("* Start nGrinder Monitor *");
+		MonitorConstants.init(agentConfig2);
+		
+		try {
+			Set<String> collector = MonitorConstants.SYSTEM_DATA_COLLECTOR;
+			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_MONITOR_PORT, collector);
+			AgentMonitorServer.getInstance().start();
+		} catch (Exception e) {
+			LOG.error("ERROR: {}", e.getMessage());
+			LOG.debug("Error while starting Monitor", e);
+		}
+		ThreadUtil.sleep(2000);
+		
 		int agentCount = 0;
 		int checkLoop = 0;
 		while (true) {
@@ -116,6 +141,10 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		perfTestRunnable.startTest();
 		sleep(20000);
 		perfTestRunnable.finishTest();
+		sleep(5000);
+		List<SystemDataModel> systemData = monitorService.getSystemMonitorData(currentTest.getId(), "127.0.0.1");
+		assertTrue(systemData.size()>0);
+
 	}
 
 	boolean ended = false;

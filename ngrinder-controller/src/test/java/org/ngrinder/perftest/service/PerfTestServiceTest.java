@@ -73,15 +73,15 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		assertThat(candiate, nullValue());
 
 		Pageable pageable = new PageRequest(0, 10);
-		Page<PerfTest> testList = testService.getPerfTestList(getTestUser(), null, null, false, pageable);
+		Page<PerfTest> testList = testService.getPerfTestList(getTestUser(), null, null, null, pageable);
 		assertThat(testList.getContent().size(), is(2));
-		testList = testService.getPerfTestList(getTestUser(), null,  null, true, pageable);
+		testList = testService.getPerfTestList(getTestUser(), null,  null, "F", pageable);
 		assertThat(testList.getContent().size(), is(1));
-
+ 
 		// test with no paging
-		testList = testService.getPerfTestList(getTestUser(), null, null,  false, null);
+		testList = testService.getPerfTestList(getTestUser(), null, null,  null, null);
 		assertThat(testList.getContent().size(), is(2));
-		testList = testService.getPerfTestList(getTestUser(), null,  null, true, null);
+		testList = testService.getPerfTestList(getTestUser(), null, null, "F", null);
 		assertThat(testList.getContent().size(), is(1));
 
 		List<PerfTest> list = testService.getTestingPerfTest();

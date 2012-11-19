@@ -209,7 +209,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	public void testGetTestList() {
 		createPerfTest("new test1", Status.READY, new Date());
 		ModelMap model = new ModelMap();
-		controller.getPerfTestList(getTestUser(), null, null, false, null, model);
+		controller.getPerfTestList(getTestUser(), null, null, null, null, model);
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
@@ -227,7 +227,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		testAdmin.setTimeZone("Asia/Seoul");
 		testAdmin = userService.saveUser(testAdmin);
 
-		controller.getPerfTestList(testAdmin, null,  null, false, null, model);
+		controller.getPerfTestList(testAdmin, null, null, null, null, model);
 		@SuppressWarnings("unchecked")
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
@@ -253,7 +253,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		otherTestUser.setRole(Role.USER);
 		otherTestUser = userService.saveUser(otherTestUser);
 		otherTestUser.setTimeZone("Asia/Seoul");
-		controller.getPerfTestList(otherTestUser, null, null,  false, null, model);
+		controller.getPerfTestList(otherTestUser, null, null, null, null, model);
 		@SuppressWarnings("unchecked")
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
@@ -280,12 +280,12 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 		Sort sort = new Sort("testName");
 		Pageable pageable = new PageRequest(0, 10, sort);
-		controller.getPerfTestList(getTestUser(), strangeName, null,  false, pageable, model);
+		controller.getPerfTestList(getTestUser(), strangeName, null,  null, pageable, model);
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
 
-		controller.getPerfTestList(getTestUser(), strangeName.substring(2, 10), null,  false,
+		controller.getPerfTestList(getTestUser(), strangeName.substring(2, 10), null,  null,
 						new PageRequest(0, 10), model);
 		testPage = (Page<PerfTest>) model.get("testListPage");
 		testList = testPage.getContent();

@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.math.RandomUtils;
 import org.junit.Test;
 import org.ngrinder.chart.AbstractChartTransactionalTest;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -55,7 +56,7 @@ public class ChartRepositoryTest extends AbstractChartTransactionalTest {
 		long colTime = 20120719010101L;
 
 		while (i > 0) {
-			SystemDataModel sysInfo = newSysData(colTime, "127.0.0.1");
+			SystemDataModel sysInfo = newSysData(colTime);
 			systemRepository.save(sysInfo);
 			colTime++;
 			i--;
@@ -64,7 +65,7 @@ public class ChartRepositoryTest extends AbstractChartTransactionalTest {
 
 	@Test
 	public void testSaveSystemMonitorInfo() {
-		SystemDataModel sysInfo = newSysData(20120719010101L, "10.0.0.1");
+		SystemDataModel sysInfo = newSysData(20120719010101L);
 		systemRepository.save(sysInfo);
 
 		SystemDataModel infoInDb = systemRepository.findOne(sysInfo.getId());
@@ -76,7 +77,7 @@ public class ChartRepositoryTest extends AbstractChartTransactionalTest {
 	public void testGetSystemMonitorData() {
 		long startTime = NumberUtils.toLong(df.format(new Date()));
 		long endTime = startTime + 100;
-		SystemDataModel sysInfo = newSysData(startTime, "10.0.0.1");
+		SystemDataModel sysInfo = newSysData(startTime);
 		systemRepository.save(sysInfo);
 		SystemDataModel infoInDb = systemRepository.findOne(sysInfo.getId());
 		assertTrue(infoInDb.getId().equals(sysInfo.getId())
@@ -86,10 +87,21 @@ public class ChartRepositoryTest extends AbstractChartTransactionalTest {
 				endTime);
 		assertThat(infoList.size(), is(1));
 		
-		sysInfo = newSysData(startTime + 1, "10.0.0.1");
+		sysInfo = newSysData(startTime + 1);
 		systemRepository.save(sysInfo);
 		infoList = systemRepository.findAllByIpAndCollectTimeBetween("10.0.0.1", startTime, endTime);
 		assertThat(infoList.size(), is(2));
+	}
+	
+	private SystemDataModel newSysData(long colTime) {
+		SystemDataModel sysInfo = new SystemDataModel();
+		sysInfo.setIp("10.0.0.1");
+		sysInfo.setCollectTime(colTime);
+		sysInfo.setCpuUsedPercentage(RandomUtils.nextFloat());
+		sysInfo.setPort(12345);
+		sysInfo.setTotalMemory(4096000);
+		sysInfo.setFreeMemory(4096000 - RandomUtils.nextInt(2048000));
+		return sysInfo;
 	}
 
 }
