@@ -20,46 +20,46 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.region.service;
+package org.ngrinder.chart.repository;
 
-import java.util.List;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
-import org.ngrinder.common.constant.NGrinderConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
+import org.ngrinder.monitor.controller.domain.MonitorRecorder;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.Cache;
-import org.springframework.cache.Cache.ValueWrapper;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.stereotype.Service;
-
+import org.springframework.stereotype.Component;
 /**
- * Class description.
- *
- * @author Mavlarn
- * @since 3.1
+ * Monitor data repository.
+ * 
+ * @author Tobi
  */
-@Service
-public class RegionService {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(RegionService.class);
+@Component
+public class MonitorDataRepository implements MonitorRecorder {
 
 	@Autowired
-	@Qualifier("dynamicCacheManager")
-	private EhCacheCacheManager dynamicCacheManager;
+	private SystemMonitorRepository systemMonitorRepository;
 	
-	/**
-	 * get region list of all clustered controller.
-	 * @return region list
-	 */
-	public List<String> getRegionList() {
-		Cache distCache = dynamicCacheManager.getCache(NGrinderConstants.CACHE_NAME_DISTRIBUTED_MAP);
-		ValueWrapper regionCacheObj = distCache.get(NGrinderConstants.CACHE_NAME_REGION_LIST);
-		@SuppressWarnings("unchecked")
-		List<String> regionList = (List<String>)regionCacheObj.get();
-		LOG.debug("Region list from cache:{}", regionList);
-		return regionList;
+	@Override
+	public void before() {
+		// do nothing
+	}
+
+	@Override
+	public void recoderSystemInfo(String key, SystemInfo systemInfo, MonitorAgentInfo agentInfo) {
+		checkNotNull(systemInfo);
+		SystemDataModel systemDataModel = new SystemDataModel(systemInfo);
+		systemDataModel.setKey(key);
+		systemDataModel.setIp(agentInfo.getIp());
+		systemDataModel.setPort(agentInfo.getPort());
+		systemMonitorRepository.save(systemDataModel);
+
+	}
+
+	@Override
+	public void after() {
+		// do nothing
 	}
 
 }

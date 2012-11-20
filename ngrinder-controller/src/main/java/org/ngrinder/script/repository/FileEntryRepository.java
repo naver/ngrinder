@@ -173,7 +173,7 @@ public class FileEntryRepository {
 	 */
 	public List<FileEntry> findAll(final User user) {
 		final List<FileEntry> scripts = new ArrayList<FileEntry>();
-		final SVNClientManager svnClientManager = SVNClientManager.newInstance();
+		SVNClientManager svnClientManager = SVNClientManager.newInstance();
 		try {
 			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepoDirectory(user)),
 							SVNRevision.HEAD, SVNRevision.HEAD, true, true, new ISVNDirEntryHandler() {
@@ -202,9 +202,9 @@ public class FileEntryRepository {
 								
 								private void setScriptProperties(
 										User user, String path, long revision, Map<String, String> propertiesMap) {
-									//SVNClientManager svnClientManager = null;
+									SVNClientManager svnClientManager = null;
 									try {
-										//svnClientManager = SVNClientManager.newInstance();
+										svnClientManager = SVNClientManager.newInstance();
 										SVNURL userRepoUrl = SVNURL.fromFile(getUserRepoDirectory(user));
 										SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
 										SVNProperties fileProperty = new SVNProperties();

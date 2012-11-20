@@ -194,5 +194,6 @@ public interface NGrinderConstants {
 	
 	// key names for distributed map of EhCache
 	public static final String CACHE_NAME_DISTRIBUTED_MAP = "distributed_map";
+	public static final String CACHE_NAME_MONITOR_REFERENCE_MAP = "monitor_reference_map";
 	public static final String CACHE_NAME_REGION_LIST = "region_list";
 }

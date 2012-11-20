@@ -978,7 +978,7 @@ public class SingleConsole implements Listener, SampleListener {
 	}
 
 	private Map<String, Object> getNullStatictisData() {
-		Map<String, Object> result = new ConcurrentHashMap<String, Object>(1);
+		Map<String, Object> result = new ConcurrentHashMap<String, Object>();
 		result.put("test_time", getCurrentRunningTime() / 1000);
 		return result;
 	}

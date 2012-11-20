@@ -27,14 +27,12 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import net.sf.ehcache.Ehcache;
-
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
@@ -53,16 +51,27 @@ public class CacheClusterInit {
 	private Config config;
 
 	@Autowired
-	private EhCacheCacheManager cacheManager;
+	@Qualifier("dynamicCacheManager")
+	private EhCacheCacheManager dynamicCacheManager;
 	
 	/**
-	 * Initialize the region info of the cluster environment.
-	 * It will put the current region into cluster cache.
+	 * initialize the region info of the cluster environment.
 	 */
-//	@PostConstruct
-//	public void initRegion() {
-//		//return config.getRegion();
-//		Cache distCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
-//		distCache.put(config.getRegion(), config.getRegion());
-//	}
+	@SuppressWarnings("unchecked")
+	@PostConstruct
+	public void initRegion() {
+		Cache distCache = dynamicCacheManager.getCache(NGrinderConstants.CACHE_NAME_DISTRIBUTED_MAP);
+		ValueWrapper regionCacheObj = distCache.get(NGrinderConstants.CACHE_NAME_REGION_LIST);
+		List<String> regionList = null;
+		if (regionCacheObj == null) {
+			regionList = new ArrayList<String>();
+			distCache.put(NGrinderConstants.CACHE_NAME_REGION_LIST, regionList);
+		} else {
+			regionList = (List<String>)regionCacheObj.get();
+		}
+		//if controller doesn't set region, not to set into region cache.
+		if (!config.getRegion().equals(Config.NON_REGION) && !regionList.contains(config.getRegion())) {
+			regionList.add(config.getRegion());
+		}
+	}
 }

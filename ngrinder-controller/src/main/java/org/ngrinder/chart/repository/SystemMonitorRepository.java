@@ -20,64 +20,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.model;
+package org.ngrinder.chart.repository;
+
+import java.util.List;
+
+import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * Role of the User.
+ * Performance Test Repository.
  * 
- * @author JunHo Yoon
+ * @author Mavlarn
  * @since 3.0
  */
-public enum Role {
-	/**
-	 * General user role who can create performance test entry.
-	 */
-	USER("U", "General"),
-	/**
-	 * Admin user role who can monitors tests.
-	 */
-	ADMIN("A", "Administrator"),
-	/**
-	 * Super user role who can set system settings and manage user account.
-	 */
-	SUPER_USER("S", "Super"),
-	/**
-	 * System user role. This is for the automatic batch
-	 */
-	SYSTEM_USER("SYSTEM", "System User");
-
-	private final String shortName;
-
-	private final String fullName;
+public interface SystemMonitorRepository extends JpaRepository<SystemDataModel, Long> {
 
 	/**
-	 * Constructor.
+	 * Find all {@link SystemDataModel} b/w given timeframe for given ip.
 	 * 
-	 * @param shortName
-	 *            short name of role... usually 1 sing char
-	 * @param fullName
-	 *            full name of role
+	 * @param ip
+	 *            ip
+	 * @param startColTime
+	 *            star ttime
+	 * @param endColTime
+	 *            end time
+	 * @return {@link SystemDataModel} list
 	 */
-	Role(String shortName, String fullName) {
-		this.shortName = shortName;
-		this.fullName = fullName;
-	}
+	List<SystemDataModel> findAllByIpAndCollectTimeBetween(String ip, long startColTime, long endColTime);
 
-	/**
-	 * Get the short name.
-	 * 
-	 * @return short name
-	 */
-	public String getShortName() {
-		return shortName;
-	}
-
-	/**
-	 * Get full name.
-	 * 
-	 * @return full name
-	 */
-	public String getFullName() {
-		return fullName;
-	}
 }

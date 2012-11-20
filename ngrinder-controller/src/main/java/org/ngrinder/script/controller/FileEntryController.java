@@ -109,7 +109,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return script/scriptList
 	 */
 	@RequestMapping({ "/list/**", "" })
-	public String get(User user, @RemainedPath String path, ModelMap model) {
+	public String get(User user, @RemainedPath String path, ModelMap model) { // "fileName"
 
 		List<FileEntry> files = fileEntryService.getFileEntries(user, path, null);
 		Collections.sort(files, new Comparator<FileEntry>() {
