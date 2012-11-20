@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd">
 	
-	<!-- these setting will be created in program in dynamic cache manager.
-	
-	<cacheManagerPeerProviderFactory  
-        class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"  
-        properties="peerDiscovery=manual,
-        			rmiUrls=//10.34.223.148:40003/distributed_map|//10.34.63.28:40003/distributed_map"/>  
-     
-	<cacheManagerPeerListenerFactory  
-        class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"  
-        properties="port=40003,socketTimeoutMillis=12000"/>
-        
-	<cache name="distributed_map" maxElementsInMemory="1000" eternal="true" overflowToDisk="false" />
-    -->
-	
 	<defaultCache eternal="false" maxElementsInMemory="100" overflowToDisk="false" timeToIdleSeconds="900"
 		timeToLiveSeconds="1800" />
 	<cache name="users" maxElementsInMemory="100" eternal="false" overflowToDisk="false" timeToIdleSeconds="900"
@@ -30,4 +16,6 @@
 	<cache name="current_perftest_statistics" maxElementsInMemory="1" eternal="false" overflowToDisk="false" timeToIdleSeconds="5"
 		timeToLiveSeconds="5"/>
 
+	<cache name="regions" maxElementsInMemory="1000" eternal="true" overflowToDisk="false" />
+	
 </ehcache>

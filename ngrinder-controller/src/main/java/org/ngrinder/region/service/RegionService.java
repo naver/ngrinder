@@ -22,16 +22,24 @@
  */
 package org.ngrinder.region.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+import net.sf.ehcache.Ehcache;
 
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
-import org.springframework.cache.Cache.ValueWrapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**
@@ -46,20 +54,36 @@ public class RegionService {
 	private static final Logger LOG = LoggerFactory.getLogger(RegionService.class);
 
 	@Autowired
-	@Qualifier("dynamicCacheManager")
-	private EhCacheCacheManager dynamicCacheManager;
+	private Config config;
+	
+	@Autowired
+	private EhCacheCacheManager cacheManager;
+	
 	
 	/**
 	 * get region list of all clustered controller.
 	 * @return region list
 	 */
+	@Cacheable("region_list")
 	public List<String> getRegionList() {
-		Cache distCache = dynamicCacheManager.getCache(NGrinderConstants.CACHE_NAME_DISTRIBUTED_MAP);
-		ValueWrapper regionCacheObj = distCache.get(NGrinderConstants.CACHE_NAME_REGION_LIST);
-		@SuppressWarnings("unchecked")
-		List<String> regionList = (List<String>)regionCacheObj.get();
-		LOG.debug("Region list from cache:{}", regionList);
+		List<String> regionList = new ArrayList<String>();
+		regionList.add(config.getRegion());
+		LOG.debug("Can not get Region list from cache, get from config:{}", regionList);
 		return regionList;
+	}
+	
+	@Scheduled(fixedDelay = 5000)
+	public void test() {
+		Cache distCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
+		List list = ((Ehcache)distCache.getNativeCache()).getKeys();
+		StringBuilder sb = new StringBuilder();
+		for (Object object : list) {
+			sb.append(distCache.get(object).get());
+		}
+		LOG.debug("Region list from cache:{}", sb.toString());
+		;
+		LOG.debug("get region:{}", config.getRegion());
+
 	}
 
 }

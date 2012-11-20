@@ -99,6 +99,7 @@ import org.ngrinder.service.IPerfTestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
@@ -978,6 +979,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            port number of console
 	 * @return statistic map statistic data map of the test in that console
 	 */
+	@CachePut(value = "running_statistics", key = "#config.region + #port")
 	public Map<String, Object> getStatistics(Integer port) {
 		return consoleManager.getConsoleUsingPort(port).getStatictisData();
 	}
@@ -990,6 +992,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            port number of console
 	 * @return agent system data map map containing all agents which connected to that console.
 	 */
+	@CachePut(value = "running_agent_infos", key = "#config.region + #port")
 	public Map<AgentIdentity, SystemDataModel> getAgentsInfo(int port) {
 		List<AgentIdentity> allAttachedAgents = consoleManager.getConsoleUsingPort(port).getAllAttachedAgents();
 		Set<AgentIdentity> allControllerAgents = agentManager.getAllAttachedAgents();

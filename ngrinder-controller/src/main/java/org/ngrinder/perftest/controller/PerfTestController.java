@@ -40,6 +40,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 
 import net.grinder.common.processidentity.AgentIdentity;
@@ -116,6 +117,11 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@Autowired
 	private Config config;
+	
+	@PostConstruct
+	public void init() {
+		regionService.getRegionList();
+	}
 
 	/**
 	 * Get Performance test lists.

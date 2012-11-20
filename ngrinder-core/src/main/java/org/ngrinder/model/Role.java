@@ -22,6 +22,7 @@
  */
 package org.ngrinder.model;
 
+
 /**
  * Role of the User.
  * 
@@ -32,19 +33,31 @@ public enum Role {
 	/**
 	 * General user role who can create performance test entry.
 	 */
-	USER("U", "General"),
+	USER("U", "General") {
+
+	},
 	/**
 	 * Admin user role who can monitors tests.
 	 */
-	ADMIN("A", "Administrator"),
+	ADMIN("A", "Administrator") {
+		public boolean canGetAllTests() {
+			return true;
+		}
+	},
 	/**
 	 * Super user role who can set system settings and manage user account.
 	 */
-	SUPER_USER("S", "Super"),
+	SUPER_USER("S", "Super") {
+		public boolean canGetAllTests() {
+			return true;
+		}
+	},
 	/**
 	 * System user role. This is for the automatic batch
 	 */
-	SYSTEM_USER("SYSTEM", "System User");
+	SYSTEM_USER("SYSTEM", "System User") {
+
+	};
 
 	private final String shortName;
 
@@ -63,6 +76,35 @@ public enum Role {
 		this.fullName = fullName;
 	}
 
+	/**
+	 * check whether a user can get tests of others.
+	 * @return true if can
+	 */
+	public boolean canGetAllTests() {
+		return false;
+	}
+
+	public boolean canModifyTestOfOther() {
+		return false;
+	}
+
+	public boolean canDeleteTestOfOther() {
+		return false;
+	}
+
+	public boolean canStopTestOfOther() {
+		return false;
+	}
+
+	public boolean canCheckScriptOfOther() {
+		return false;
+	}
+
+	public boolean canValidateScriptOfOther() {
+		return false;
+	}
+	
+	
 	/**
 	 * Get the short name.
 	 * 

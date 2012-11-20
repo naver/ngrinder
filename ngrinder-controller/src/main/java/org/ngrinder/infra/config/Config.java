@@ -81,7 +81,7 @@ public class Config implements IConfig {
 
 	static final int NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT = 40003;
 	private boolean isCluster;
-	private String clusterURIs;
+	private String[] clusterURIs;
 	
 	private String region;
 	public static final String NON_REGION = "NONE";
@@ -129,33 +129,36 @@ public class Config implements IConfig {
 	 */
 	protected void loadClusterConfig() {
 		String clusterUri = getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_CLUSTER_URIS, null);
-		int clusterListenerPort = getSystemProperties().getPropertyInt(
-				NGrinderConstants.NGRINDER_PROP_CLUSTER_LISTENER_PORT, NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT);
 
 		if (StringUtils.isBlank(clusterUri)) {
 			return;
 		}
 		isCluster = true;
 		String currentIP = NetworkUtil.getLocalHostAddress();
-		String[] clusterUriList = StringUtils.split(clusterUri, ";");
-		StringBuilder urisSB = new StringBuilder();
-		for (String peerIP : clusterUriList) {
-			// should exclude itself from the peer list
-			if (!currentIP.equals(peerIP)) {
-				if (urisSB.length() > 0) {
-					urisSB.append("|");
-				}
-				urisSB.append("//").append(peerIP).append(":").append(clusterListenerPort);
-				urisSB.append("/").append(NGrinderConstants.CACHE_NAME_DISTRIBUTED_MAP);
-			}
-		}
+		this.clusterURIs = StringUtils.split(clusterUri, ";");
 
-		if (StringUtils.isBlank(urisSB.toString())) {
-			LOG.error("Invalid configuration for ehcache cluster:{}", clusterUri);
-			isCluster = false;
-			return;
-		}
-		clusterURIs = urisSB.toString();
+//		int clusterListenerPort = getSystemProperties().getPropertyInt(
+//				NGrinderConstants.NGRINDER_PROP_CLUSTER_LISTENER_PORT, NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT);
+
+//		String[] clusterUriList = StringUtils.split(clusterUri, ";");
+//		StringBuilder urisSB = new StringBuilder();
+//		for (String peerIP : clusterUriList) {
+//			// should exclude itself from the peer list
+//			if (!currentIP.equals(peerIP)) {
+//				if (urisSB.length() > 0) {
+//					urisSB.append("|");
+//				}
+//				urisSB.append("//").append(peerIP).append(":").append(clusterListenerPort);
+//				urisSB.append("/").append(NGrinderConstants.CACHE_NAME_DISTRIBUTED_MAP);
+//			}
+//		}
+//
+//		if (StringUtils.isBlank(urisSB.toString())) {
+//			LOG.error("Invalid configuration for ehcache cluster:{}", clusterUri);
+//			isCluster = false;
+//			return;
+//		}
+//		clusterURIs = urisSB.toString();
 		LOG.info("Cache cluster URIs:{}", clusterURIs);
 		
 		// set rmi server host for remote serving. Otherwise, maybe it will use 127.0.0.1 to serve.
@@ -176,7 +179,7 @@ public class Config implements IConfig {
 	/*
 	 * return the cluster URIs in configuration.
 	 */
-	public String getClusterURIs() {
+	public String[] getClusterURIs() {
 		return this.clusterURIs;
 	}	
 	
@@ -187,10 +190,10 @@ public class Config implements IConfig {
 	protected void loadExtendProperties() {
 		Properties properties = exHome.getProperties("system-ex.conf");
 		String regionStr = properties.getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION);
+		region = regionStr.trim();
 		if (isCluster && region.equals(NON_REGION)) {
 			LOG.warn("Region is not set in cluster mode. Please set region properly.");
 		}
-		region = regionStr.trim();
 	}
 	
 	public String getRegion() {
