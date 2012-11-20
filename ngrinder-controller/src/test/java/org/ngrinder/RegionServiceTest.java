@@ -20,49 +20,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.infra.init;
+package org.ngrinder;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
-import net.sf.ehcache.Ehcache;
-
-import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.infra.config.Config;
+import org.junit.Test;
+import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
+import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
-import org.springframework.cache.Cache.ValueWrapper;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.stereotype.Service;
 
 /**
- * Initialize cache cluster related environment.
+ * Region Service Test class.
  *
- * @author Mavlarn
- * @since 3.1
+ * @author mavlarn
+ * @Since 3.1
  */
-@Service
-@DependsOn("config")
-public class CacheClusterInit {
+public class RegionServiceTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
-	private Config config;
-
-	@Autowired
-	private EhCacheCacheManager cacheManager;
+	private RegionService regionService;
 	
-	/**
-	 * Initialize the region info of the cluster environment.
-	 * It will put the current region into cluster cache.
-	 */
-//	@PostConstruct
-//	public void initRegion() {
-//		//return config.getRegion();
-//		Cache distCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
-//		distCache.put(config.getRegion(), config.getRegion());
-//	}
+	@Test
+	public void testGetRegionList() {
+		List<String> regionlist = regionService.getRegionList();
+		LOG.debug("list:{}", regionlist);
+		regionService.initRegion();
+		regionlist = regionService.getRegionList();
+		LOG.debug("list   2:{}", regionlist);
+	}
 }

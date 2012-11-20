@@ -99,6 +99,7 @@ import org.ngrinder.service.IPerfTestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
@@ -978,7 +979,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            port number of console
 	 * @return statistic map statistic data map of the test in that console
 	 */
-	public Map<String, Object> getStatistics(Integer port) {
+	@CachePut(value = "running_statistics", key = "#region + #port")
+	public Map<String, Object> getAndPutStatistics(String region, Integer port) {
+		return consoleManager.getConsoleUsingPort(port).getStatictisData();
+	}
+
+	@Cacheable(value = "running_statistics", key = "#region + #port")
+	public Map<String, Object> getCacheStatistics(String region, Integer port) {
 		return consoleManager.getConsoleUsingPort(port).getStatictisData();
 	}
 
@@ -990,6 +997,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            port number of console
 	 * @return agent system data map map containing all agents which connected to that console.
 	 */
+	@CachePut(value = "running_agent_infos", key = "#port")
 	public Map<AgentIdentity, SystemDataModel> getAgentsInfo(int port) {
 		List<AgentIdentity> allAttachedAgents = consoleManager.getConsoleUsingPort(port).getAllAttachedAgents();
 		Set<AgentIdentity> allControllerAgents = agentManager.getAllAttachedAgents();
@@ -1046,7 +1054,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public void updatePerfTestAfterTestFinish(PerfTest perfTest) {
 
 		checkNotNull(perfTest);
-		Map<String, Object> result = getStatistics(perfTest.getPort());
+		Map<String, Object> result = getAndPutStatistics(config.getRegion(), perfTest.getPort());
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
 		LOGGER.info("Total Statistics for test {}  is {}", perfTest.getId(), totalStatistics);

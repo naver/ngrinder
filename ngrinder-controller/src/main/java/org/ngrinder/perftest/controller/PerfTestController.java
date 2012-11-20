@@ -40,6 +40,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 
 import net.grinder.common.processidentity.AgentIdentity;
@@ -116,6 +117,11 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@Autowired
 	private Config config;
+	
+	@PostConstruct
+	public void init() {
+		regionService.getCurrentRegion(config.getRegion());
+	}
 
 	/**
 	 * Get Performance test lists.
@@ -607,7 +613,13 @@ public class PerfTestController extends NGrinderBaseController {
 		if (test.getStatus().equals(Status.TESTING)) {
 			model.addAttribute(PARAM_RESULT_AGENT_PERF,
 							getAgentPerfString(perfTestService.getAgentsInfo(test.getPort())));
-			model.addAttribute(PARAM_RESULT_SUB, perfTestService.getStatistics(test.getPort()));
+			if (test.getRegion().equals(config.getRegion())) {
+				model.addAttribute(PARAM_RESULT_SUB, perfTestService.getAndPutStatistics(
+						config.getRegion(), test.getPort()));
+			} else {
+				model.addAttribute(PARAM_RESULT_SUB, perfTestService.getCacheStatistics(
+						config.getRegion(), test.getPort()));
+			}
 		}
 		return "perftest/refreshContent";
 	}

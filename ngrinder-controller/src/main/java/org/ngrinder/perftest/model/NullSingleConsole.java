@@ -13,6 +13,8 @@ import net.grinder.SingleConsole;
  * @since 3.0
  */
 public class NullSingleConsole extends SingleConsole {
+	
+	public static final NullSingleConsole NUll_CONSOLE = new NullSingleConsole();
 
 	/**
 	 * Constructor.
