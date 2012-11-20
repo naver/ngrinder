@@ -55,8 +55,7 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGri
 	private CacheClusterInit clusterInit;
 
 	@Autowired
-	@Qualifier("dynamicCacheManager")
-	private EhCacheCacheManager dynamicCacheManager;
+	private EhCacheCacheManager cacheManager;
 
 	@Test
 	public void testDefaultHome() {
