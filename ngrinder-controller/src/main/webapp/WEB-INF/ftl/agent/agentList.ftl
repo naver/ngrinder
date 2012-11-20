@@ -100,7 +100,7 @@
 					
 					removeClick();
 					
-					$(".approved").click(function() {
+					$(".approved").live("click", function() {
 						var sid = $(this).attr("sid");
 						$.post(
 					  		"${req.getContextPath()}/agent/approve",
@@ -115,7 +115,7 @@
 					     );
 					});
 					
-					$(".unapproved").click(function() {
+					$(".unapproved").live("click", function() {
 						var sid = $(this).attr("sid");
 						$.post(
 					  		"${req.getContextPath()}/agent/approve",
