@@ -89,6 +89,7 @@ import org.ngrinder.model.Status;
 import org.ngrinder.model.Tag;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.ngrinder.perftest.model.NullSingleConsole;
 import org.ngrinder.perftest.model.PerfTestStatistics;
 import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.repository.PerfTestRepository;
@@ -972,9 +973,11 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * To get statistics data when test is running. If the console is not available, it returns
+	 * To get statistics data when test is running and put into cache after that. If the console is not available, it returns
 	 * empty map.
 	 * 
+	 * @param region
+	 * 			region of the test, add this parameter just for the key of cache.
 	 * @param port
 	 *            port number of console
 	 * @return statistic map statistic data map of the test in that console
@@ -984,21 +987,31 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return consoleManager.getConsoleUsingPort(port).getStatictisData();
 	}
 
+	/**
+	 * get test running statistic data from cache. If there is no cache data, will return
+	 * empty statistic data.
+	 * @param region of the test
+	 * 			add this parameter just for the key of cache.
+	 * @param port of the single console
+	 * @return test running statistic data
+	 */
 	@Cacheable(value = "running_statistics", key = "#region + #port")
 	public Map<String, Object> getCacheStatistics(String region, Integer port) {
-		return consoleManager.getConsoleUsingPort(port).getStatictisData();
+		return NullSingleConsole.NUll_CONSOLE.getStatictisData();
 	}
 
 	/**
 	 * To get system monitor data of all agents connected to one console. If the console is not
-	 * available, it returns empty map.
+	 * available, it returns empty map. After getting, it will be put into cache.
 	 * 
+	 * @param region of the test
+	 * 			add this parameter just for the key of cache.
 	 * @param port
 	 *            port number of console
 	 * @return agent system data map map containing all agents which connected to that console.
 	 */
-	@CachePut(value = "running_agent_infos", key = "#port")
-	public Map<AgentIdentity, SystemDataModel> getAgentsInfo(int port) {
+	@CachePut(value = "running_agent_infos", key = "#region + #port")
+	public Map<AgentIdentity, SystemDataModel> getAndPutAgentsInfo(String region, Integer port) {
 		List<AgentIdentity> allAttachedAgents = consoleManager.getConsoleUsingPort(port).getAllAttachedAgents();
 		Set<AgentIdentity> allControllerAgents = agentManager.getAllAttachedAgents();
 		Map<AgentIdentity, SystemDataModel> result = new HashMap<AgentIdentity, SystemDataModel>();
@@ -1009,6 +1022,21 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				}
 			}
 		}
+		return result;
+	}
+	
+	/**
+	 * To get system monitor data from cache.
+	 * 
+	 * @param region of the test
+	 * 			add this parameter just for the key of cache.
+	 * @param port
+	 *            port number of console
+	 * @return agent system data map.
+	 */
+	@Cacheable(value = "running_agent_infos", key = "#region + #port")
+	public Map<AgentIdentity, SystemDataModel> getCacheAgentsInfo(String region, Integer port) {
+		Map<AgentIdentity, SystemDataModel> result = new HashMap<AgentIdentity, SystemDataModel>();
 		return result;
 	}
 

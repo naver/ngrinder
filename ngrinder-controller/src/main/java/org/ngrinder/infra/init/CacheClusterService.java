@@ -37,6 +37,7 @@ import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**
@@ -46,8 +47,7 @@ import org.springframework.stereotype.Service;
  * @since 3.1
  */
 @Service
-@DependsOn("config")
-public class CacheClusterInit {
+public class CacheClusterService {
 
 	@Autowired
 	private Config config;
@@ -56,13 +56,10 @@ public class CacheClusterInit {
 	private EhCacheCacheManager cacheManager;
 	
 	/**
-	 * Initialize the region info of the cluster environment.
-	 * It will put the current region into cluster cache.
+	 * synchronize the necessary cache data.
 	 */
-//	@PostConstruct
-//	public void initRegion() {
-//		//return config.getRegion();
-//		Cache distCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
-//		distCache.put(config.getRegion(), config.getRegion());
+//	@Scheduled(fixedDelay = 5000)
+//	public void synchCache() {
+//
 //	}
 }

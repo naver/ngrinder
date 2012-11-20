@@ -1,6 +1,8 @@
 package org.ngrinder.perftest.model;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.grinder.SingleConsole;
 
@@ -15,12 +17,17 @@ import net.grinder.SingleConsole;
 public class NullSingleConsole extends SingleConsole {
 	
 	public static final NullSingleConsole NUll_CONSOLE = new NullSingleConsole();
+	private static final Map<String, Object> EMPTY_RESULT = new HashMap<String, Object>(1);
+	
+	static {
+		EMPTY_RESULT.put("test_time", 0);
+	}
 
 	/**
 	 * Constructor.
 	 */
 	public NullSingleConsole() {
-		super(1);
+		super(0);
 	}
 
 	@Override
@@ -66,5 +73,18 @@ public class NullSingleConsole extends SingleConsole {
 	@Override
 	public void distributeFiles(File filePath) {
 		// Do nothing
+	}
+
+	@Override
+	public Map<String, Object> getStatictisData() {
+		if (getCurrentRunningTime() > 0 ) {
+			return super.getStatictisData();
+		} else {
+			return getNullStatictisData();
+		}
+	}
+	
+	private Map<String, Object> getNullStatictisData() {
+		return EMPTY_RESULT;
 	}
 }

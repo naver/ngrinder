@@ -186,6 +186,10 @@ public class SingleConsole implements Listener, SampleListener {
 	 *            {@link ConsoleProperties} used.
 	 */
 	public SingleConsole(String ip, int port, ConsoleProperties consoleProperties) {
+		//if port is 0, it is Null singleConsole.
+		if (port  == 0) {
+			return;
+		}
 		try {
 			if (StringUtils.isNotEmpty(ip)) {
 				consoleProperties.setConsoleHost(ip);

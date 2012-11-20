@@ -363,6 +363,9 @@ public class PerfTestRunnable implements NGrinderConstants {
 					monitorClientsMap.get(targetIP).recordMonitorData(bw);
 				}
 				
+				//update statistic cache
+				perfTestService.getAndPutAgentsInfo(perfTest.getRegion(), perfTest.getPort());
+				perfTestService.getAndPutStatistics(perfTest.getRegion(), perfTest.getPort());
 			}
 		});
 

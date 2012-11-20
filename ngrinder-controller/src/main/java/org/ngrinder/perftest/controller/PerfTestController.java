@@ -118,8 +118,12 @@ public class PerfTestController extends NGrinderBaseController {
 	@Autowired
 	private Config config;
 	
+	/**
+	 * Initializing function.
+	 */
 	@PostConstruct
 	public void init() {
+		//call this function to trigger to save the region into cache.
 		regionService.getCurrentRegion(config.getRegion());
 	}
 
@@ -611,14 +615,15 @@ public class PerfTestController extends NGrinderBaseController {
 		PerfTest test = checkNotNull(getPerfTestWithPermissionCheck(user, testId, false),
 						"given test should be exist : " + testId);
 		if (test.getStatus().equals(Status.TESTING)) {
-			model.addAttribute(PARAM_RESULT_AGENT_PERF,
-							getAgentPerfString(perfTestService.getAgentsInfo(test.getPort())));
-			if (test.getRegion().equals(config.getRegion())) {
-				model.addAttribute(PARAM_RESULT_SUB, perfTestService.getAndPutStatistics(
-						config.getRegion(), test.getPort()));
+			String testRegion = test.getRegion();
+			if (testRegion.equals(config.getRegion())) {
+				model.addAttribute(PARAM_RESULT_AGENT_PERF,
+						getAgentPerfString(perfTestService.getAndPutAgentsInfo(testRegion, test.getPort())));
+				model.addAttribute(PARAM_RESULT_SUB, perfTestService.getAndPutStatistics(testRegion, test.getPort()));
 			} else {
-				model.addAttribute(PARAM_RESULT_SUB, perfTestService.getCacheStatistics(
-						config.getRegion(), test.getPort()));
+				model.addAttribute(PARAM_RESULT_AGENT_PERF,
+						getAgentPerfString(perfTestService.getCacheAgentsInfo(testRegion, test.getPort())));
+				model.addAttribute(PARAM_RESULT_SUB, perfTestService.getCacheStatistics(testRegion, test.getPort()));
 			}
 		}
 		return "perftest/refreshContent";

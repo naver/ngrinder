@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.PropertiesWrapper;
-import org.ngrinder.infra.init.CacheClusterInit;
+import org.ngrinder.infra.init.CacheClusterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.Cache;
@@ -52,7 +52,7 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGri
 	private MockConfig config;
 	
 	@Autowired
-	private CacheClusterInit clusterInit;
+	private CacheClusterService clusterInit;
 
 	@Autowired
 	private EhCacheCacheManager cacheManager;
