@@ -75,7 +75,7 @@
 							</colgroup>
 							<tr>
 							<td>
-								<select id="scriptName" class="required span3" name="scriptName"> 
+								<select id="scriptName" class="required span4" name="scriptName"> 
 									<#if test?? && test.lastModifiedUser.userId != currentUser.userId>
 										<option value="${test.scriptName}" selected>${test.scriptName} - belong to ${test.lastModifiedUser.userId}</option>
 									</#if>
@@ -89,7 +89,7 @@
 							<td>
 								<input type="hidden" id="scriptRevision" name="scriptRevision" value="${(test.scriptRevision)!-1}">
 								<button class="btn btn-mini btn-info pull-right" type="button" id="showScript" style="margin-top:3px">
-								REV:
+								R
 								<#if test?? && test.scriptRevision != -1>
 									${test.scriptRevision}
 								<#else>
