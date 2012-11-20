@@ -1,5 +1,8 @@
 package org.ngrinder.infra.init;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import liquibase.Liquibase;
 import liquibase.changelog.ChangeLogIterator;
 import liquibase.changelog.DatabaseChangeLog;
@@ -23,6 +26,7 @@ import liquibase.util.StringUtils;
  * @since 3.0
  */
 public class LiquibaseEx extends Liquibase {
+	private static final Logger LOGGER = LoggerFactory.getLogger(LiquibaseEx.class);
 	private final String changeLogFile;
 
 	/**
@@ -70,7 +74,7 @@ public class LiquibaseEx extends Liquibase {
 			try {
 				lockService.releaseLock();
 			} catch (LockException e) {
-				System.out.println("hello");
+				LOGGER.error("Error while releasing db lock", e);
 			}
 		}
 	};

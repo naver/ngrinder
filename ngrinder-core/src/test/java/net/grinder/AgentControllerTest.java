@@ -32,17 +32,7 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 			sysPathsField = ClassLoader.class.getDeclaredField("sys_paths");
 			sysPathsField.setAccessible(true);
 			sysPathsField.set(null, null);
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		agentControllerServerDeamon = new AgentControllerServerDaemon(getFreePort());

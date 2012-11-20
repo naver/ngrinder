@@ -81,6 +81,7 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.ReflectionUtil;
+import org.ngrinder.service.ISingleConsole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +93,7 @@ import org.slf4j.LoggerFactory;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class SingleConsole implements Listener, SampleListener {
+public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	private static final String REOSURCE_CONSOLE = "net.grinder.console.common.resources.Console";
 	private Thread consoleFoundationThread;
 	private ConsoleFoundationEx consoleFoundation;
@@ -368,9 +369,12 @@ public class SingleConsole implements Listener, SampleListener {
 		}
 	}
 
-	/**
-	 * Mark the cancel status.
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.grinder.ISingleConsole2#cancel()
 	 */
+	@Override
 	public void cancel() {
 		cancel = true;
 	}
@@ -463,6 +467,10 @@ public class SingleConsole implements Listener, SampleListener {
 				synchronized (eventSyncCondition) {
 					eventSyncCondition.waitNoInterrruptException(500);
 				}
+				// Every 10 times send the signal again.
+				if (trial % 10 == 0) {
+					sendStopMessageToAgents();
+				}
 			} else {
 				return;
 			}
@@ -510,6 +518,12 @@ public class SingleConsole implements Listener, SampleListener {
 		return startTime;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.grinder.ISingleConsole2#getCurrentRunningTime()
+	 */
+	@Override
 	public long getCurrentRunningTime() {
 		return new Date().getTime() - startTime;
 	}
@@ -518,12 +532,34 @@ public class SingleConsole implements Listener, SampleListener {
 		return statisticData;
 	}
 
-	protected StatisticsIndexMap getStatisticsIndexMap() {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.grinder.ISingleConsole2#getStatisticsIndexMap()
+	 */
+
+	public StatisticsIndexMap getStatisticsIndexMap() {
 		return StatisticsServicesImplementation.getInstance().getStatisticsIndexMap();
 	}
 
-	protected ExpressionView[] getExpressionView() {
-		return StatisticsServicesImplementation.getInstance().getSummaryStatisticsView().getExpressionViews();
+	/**
+	 * Get all expression views.
+	 * 
+	 * @return {@link ExpressionView} array
+	 * @since 3.0.2
+	 */
+	public ExpressionView[] getExpressionView() {
+		return modelView.getCumulativeStatisticsView().getExpressionViews();
+	}
+
+	/**
+	 * Get detailed expression view.
+	 * 
+	 * @return {@link ExpressionView} array
+	 * @since 3.0.2
+	 */
+	public ExpressionView[] getDetailedExpressionView() {
+		return StatisticsServicesImplementation.getInstance().getDetailStatisticsView().getExpressionViews();
 	}
 
 	/*
@@ -595,10 +631,13 @@ public class SingleConsole implements Listener, SampleListener {
 	 *            model containning all tests
 	 */
 	public void writeIntervalCsvData(StatisticsSet intervalStatistics, ModelTestIndex modelTestIndex) {
+		if (modelTestIndex == null) {
+			return;
+		}
 		StringBuilder csvLine = new StringBuilder();
 		csvLine.append(DateUtil.dateToString(new Date()));
 		ExpressionView[] expressionView = getExpressionView();
-		for (ExpressionView eachView : getExpressionView()) {
+		for (ExpressionView eachView : expressionView) {
 			if (!eachView.getDisplayName().equals("Peak TPS")) {
 				double doubleValue = eachView.getExpression().getDoubleValue(intervalStatistics);
 				csvLine.append(",").append(formatValue(getRealDoubleValue(doubleValue)));
@@ -612,13 +651,14 @@ public class SingleConsole implements Listener, SampleListener {
 			Test test = modelTestIndex.getTest(i);
 			String description = test.getDescription();
 			csvLine.append(",").append(description);
-			for (ExpressionView eachView : getExpressionView()) {
+			for (ExpressionView eachView : expressionView) {
 				if (!eachView.getDisplayName().equals("Peak TPS")) {
 					csvLine.append(",").append(
 									formatValue(getRealDoubleValue(eachView.getExpression().getDoubleValue(
 													lastSampleStatistics))));
 				}
 			}
+
 		}
 
 		// add header into csv file.
@@ -632,8 +672,8 @@ public class SingleConsole implements Listener, SampleListener {
 					csvHeader.append(",").append(createKeyFromExpression(each));
 				}
 			}
-			for (int i = 0; i < modelTestIndex.getNumberOfTests(); i++) {
 
+			for (int i = 0; i < modelTestIndex.getNumberOfTests(); i++) {
 				csvHeader.append(",").append("Description");
 				// get the key list from lastStatistic map, use list to keep the order
 				for (ExpressionView each : expressionView) {
@@ -641,6 +681,7 @@ public class SingleConsole implements Listener, SampleListener {
 						csvHeader.append(",").append(createKeyFromExpression(each)).append("-").append(i);
 					}
 				}
+
 			}
 			writeCSVDataLine(csvHeader.toString());
 			headerAdded = true;
@@ -689,12 +730,11 @@ public class SingleConsole implements Listener, SampleListener {
 		StatisticsIndexMap statisticsIndexMap = getStatisticsIndexMap();
 		long tpsSum = cumulativeStatistics.getCount(statisticsIndexMap.getLongSampleIndex("timedTests"));
 		long errors = cumulativeStatistics.getValue(statisticsIndexMap.getLongIndex("errors"));
-		System.out.println(" " + tpsSum + " " + errors);
 		if (((double) tpsSum / 2) < errors) {
 			if (lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue == null) {
 				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = new Date();
 			} else if (isOverLowTpsThreshhold()) {
-				LOGGER.warn("Stop the test because test error is more than half of total tps for more than {} seconds.",
+				LOGGER.warn("Stop the test because test error is more than half of total tps for last {} seconds.",
 								TOO_MANY_ERROR_TIME / 1000);
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
 					public void inform(ConsoleShutdownListener listener) {
@@ -773,11 +813,12 @@ public class SingleConsole implements Listener, SampleListener {
 		this.statisticData = result;
 	}
 
-	/**
-	 * Get the current total execution count(test count + error count).
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return current total execution count;
+	 * @see net.grinder.ISingleConsole2#getCurrentExecutionCount()
 	 */
+	@Override
 	public long getCurrentExecutionCount() {
 		Map<?, ?> totalStatistics = (Map<?, ?>) getStatictisData().get("totalStatistics");
 		Double testCount = MapUtils.getDoubleValue(totalStatistics, "Tests", 0D);
@@ -983,11 +1024,12 @@ public class SingleConsole implements Listener, SampleListener {
 		return result;
 	}
 
-	/**
-	 * Get report path.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return report path
+	 * @see net.grinder.ISingleConsole2#getReportPath()
 	 */
+	@Override
 	public File getReportPath() {
 		return reportPath;
 	}
@@ -1088,6 +1130,12 @@ public class SingleConsole implements Listener, SampleListener {
 		return getCurrentRunningTime() > (duration + TEST_DURATION_CHECK_MARGIN);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.grinder.ISingleConsole2#getPeakTpsForGraph()
+	 */
+	@Override
 	public double getPeakTpsForGraph() {
 		return peakTpsForGraph;
 	}
@@ -1106,10 +1154,22 @@ public class SingleConsole implements Listener, SampleListener {
 		this.sampleModel = sampleModel;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.grinder.ISingleConsole2#getRunningThread()
+	 */
+	@Override
 	public int getRunningThread() {
 		return runningThread;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.grinder.ISingleConsole2#getRunningProcess()
+	 */
+	@Override
 	public int getRunningProcess() {
 		return runningProcess;
 	}

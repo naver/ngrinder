@@ -39,7 +39,8 @@
 	<!-- SuccessHandler -->
 	<beans:bean id="loginLogAuthenticationSuccessHandler"
 		class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
-		<beans:property name="defaultTargetUrl" value="/home"></beans:property>
+		<beans:property name="defaultTargetUrl" value="/home"/>
+		<beans:property name="alwaysUseDefaultTargetUrl" value="true"/>
 	</beans:bean>
 
 	<!-- FailureHandler -->

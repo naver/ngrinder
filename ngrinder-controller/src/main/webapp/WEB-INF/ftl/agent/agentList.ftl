@@ -12,6 +12,7 @@
 				<h3><@spring.message "agent.management.title"/></h3>
 			</div>
 			<div class="well searchBar">
+				<button type="submit" class="btn" id="stopAgenButton"><i class="icon-stop"></i> <@spring.message "common.button.stop"/></button>
 				<input type="text" style="visibility:hidden; margin:0">
 				<div class="input-prepend pull-right">
 					<span class="add-on" style="cursor:default">Agent Download
@@ -99,7 +100,7 @@
 					
 					removeClick();
 					
-					$(".approved").click(function() {
+					$(".approved").live("click", function() {
 						var sid = $(this).attr("sid");
 						$.post(
 					  		"${req.getContextPath()}/agent/approve",
@@ -114,7 +115,7 @@
 					     );
 					});
 					
-					$(".unapproved").click(function() {
+					$(".unapproved").live("click", function() {
 						var sid = $(this).attr("sid");
 						$.post(
 					  		"${req.getContextPath()}/agent/approve",
@@ -130,6 +131,50 @@
 					});
 	            });
 			</#if>
+			
+			$("#stopAgenButton").on('click', function() {
+				var ids = "";
+				var list = $("td input:checked");
+				if(list.length == 0) {
+					bootbox.alert("<@spring.message "agent.table.message.alert.stop"/>", "<@spring.message "common.button.ok"/>");
+					return;
+				}
+				
+				bootbox.confirm("<@spring.message "agent.table.message.confirm.stop"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
+				    if (result) {
+				    	var idArray = [];
+						list.each(function() {
+							idArray.push($(this).val());
+						});
+						
+						stopAgents(idArray.join(","));
+				    }
+				});
+			});
+			
+			function stopAgents(ids) {
+				$.ajax({
+			  		url: "${req.getContextPath()}/agent/stop",
+			  		type: "POST",
+			  		data: {"ids" : ids},
+					dataType:'json',
+			    	success: function(res) {
+			    		if (res.success) {
+				    		showSuccessMsg("<@spring.message "agent.table.message.success.stop"/>");
+								setTimeout(function() {
+									window.location.reload();
+								}, 1000);
+			    		} else {
+				    		showErrorMsg("<@spring.message "agent.table.message.error.stop"/>:" + res.message);
+			    		}
+			    	},
+			    	error: function() {
+			    		showErrorMsg("<@spring.message "agent.table.message.error.stop"/>!");
+			    	}
+			  	});
+			}
+			
+		
 	     </script>
 	</body>
 </html>
