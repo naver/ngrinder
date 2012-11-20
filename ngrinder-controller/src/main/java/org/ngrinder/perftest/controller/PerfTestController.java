@@ -208,7 +208,10 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute(PARAM_REGION_LIST, regionService.getRegionList());
 
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
-		addDefaultAttributeOnModel(user, model);
+		
+		//when admin watch other user's  test,max Agent size should be observed user's agent size.
+		User userMaxAgent = test == null ? user : test.getCreatedUser();
+		addDefaultAttributeOnModel(userMaxAgent, model);
 		return "perftest/detail";
 	}
 
