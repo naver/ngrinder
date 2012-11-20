@@ -409,7 +409,6 @@ function initTags() {
 	});
 }
 
-
 function initScheduleDate() {
 	var date = new Date();
 	var year = date.getFullYear();
@@ -519,6 +518,9 @@ function addValidation() {
 	        },
 	        vuserPerAgent: {
 	        	required: "<@spring.message "perfTest.warning.vuserPerAgent"/>"
+	        },
+	        scriptName: {
+	        	required: "<@spring.message "perfTest.warning.script"/>"
 	        },
 	        duration: {
 	        	required: "<@spring.message "perfTest.warning.duration"/>"

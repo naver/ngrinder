@@ -70,9 +70,11 @@
 							</colgroup>
 							<tr>
 							<td>
-								<select id="scriptName" class="span3" name="scriptName"> 
+								<select id="scriptName" class="required span3" name="scriptName">
 									<#if test?? && test.lastModifiedUser.userId != currentUser.userId>
 										<option value="${test.scriptName}" selected validated="${(scriptItem.properties.validated)!"0"}>${test.scriptName} - belong to ${test.lastModifiedUser.userId}</option>
+									<#else>
+										<option value=""></option>
 									</#if>
 									<#if scriptList?? && scriptList?size &gt; 0> 
 										<#list scriptList as scriptItem> 
