@@ -50,6 +50,7 @@ import net.grinder.engine.communication.ConsoleListener;
 import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.messages.console.AgentProcessReportMessage;
+import net.grinder.script.Grinder;
 import net.grinder.util.Directory;
 import net.grinder.util.GrinderClassPathUtils;
 import net.grinder.util.NetworkUtil;
@@ -76,6 +77,7 @@ public class AgentImplementationEx implements Agent {
 	private final ConsoleListener m_consoleListener;
 	private FanOutStreamSender m_fanOutStreamSender;
 	private final ConnectorFactory m_connectorFactory = new ConnectorFactory(ConnectionType.AGENT);
+	private WorkerLauncher m_workerLaucherForShutdown = null;
 	/**
 	 * We use an most one file store throughout an agent's life, but can't Initialize it until we've
 	 * read the properties and connected to the console.
@@ -264,6 +266,7 @@ public class AgentImplementationEx implements Agent {
 					m_logger.debug("worker launcher is prepared.");
 					final WorkerLauncher workerLauncher = new WorkerLauncher(properties.getInt("grinder.processes", 1),
 									workerFactory, m_eventSynchronisation, m_logger);
+					m_workerLaucherForShutdown = workerLauncher;
 					final int increment = properties.getInt("grinder.processIncrement", 0);
 					m_logger.debug("rampup mode by {}.", increment);
 					if (increment > 0) {
@@ -408,6 +411,10 @@ public class AgentImplementationEx implements Agent {
 			m_fanOutStreamSender.shutdown();
 		}
 		m_consoleListener.shutdown();
+		
+		if (m_workerLaucherForShutdown != null && !m_workerLaucherForShutdown.allFinished()) {
+			m_workerLaucherForShutdown.destroyAllWorkers();
+		}
 		m_logger.info("agent is forcely terminated");
 	}
 

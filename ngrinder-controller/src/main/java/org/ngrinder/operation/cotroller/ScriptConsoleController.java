@@ -30,6 +30,7 @@ import java.util.Iterator;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
@@ -54,9 +55,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * Script Runner for maintenance.
  * 
- * This class has the jython instance and put the most important class instances
- * as variable in the jython. Admin and super user can run any jython code to
- * print out or modify the internal ngrinder status.
+ * This class has the jython instance and put the most important class instances as variable in the
+ * jython. Admin and super user can run any jython code to print out or modify the internal ngrinder
+ * status.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -96,8 +97,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	private PythonInterpreter interp;
 
 	/**
-	 * Initialize Jython and puts several managers and services into jython
-	 * context.
+	 * Initialize Jython and puts several managers and services into jython context.
 	 */
 	@PostConstruct
 	public void init() {
@@ -105,14 +105,20 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 		MemoryUsage usage = null;
 		while (iter.hasNext()) {
 			MemoryPoolMXBean item = (MemoryPoolMXBean) iter.next();
-			if ("Perm Gen".equalsIgnoreCase(item.getName())) {
+			if (item.getName().contains("Perm Gen")) {
 				usage = item.getUsage();
+
 			}
 		}
-		if (usage != null) {
+		System.setProperty("python.cachedir", FileUtils.getTempDirectory().getAbsolutePath());
+		if (usage != null && isPermGenMemoryEnough(usage)) {
 			interp = new PythonInterpreter();
 			intVars(interp);
 		}
+	}
+
+	private boolean isPermGenMemoryEnough(MemoryUsage usage) {
+		return (usage.getMax() - usage.getUsed()) > 50000000;
 	}
 
 	protected void intVars(PythonInterpreter interp) {
@@ -138,7 +144,11 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	 */
 	@RequestMapping("")
 	public String runScript(@RequestParam(value = "script", required = false) String script, Model model) {
-		if (StringUtils.isNotBlank(script)) {
+		if (interp == null) {
+			model.addAttribute("script", script);
+			model.addAttribute("result", "Scrpt Console is disabled due to memory config."
+							+ " Please set up Perm Gen memory more than 200M");
+		} else if (StringUtils.isNotBlank(script)) {
 			String result = processPython(script);
 			model.addAttribute("script", script);
 			model.addAttribute("result", result);

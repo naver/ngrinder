@@ -587,10 +587,14 @@ function bindEvent() {
 	});
 	
 	$("#saveScheduleBtn").click(function() {
+		$("#agentCount").rules("add", {
+			min:1
+		});
 		if (!$("#testContentForm").valid()) {
 			$("#testContent_tab a").tab('show');
 			return false;
 		}
+
 		var $agentCount = $("#agentCount");
 		if ($agentCount.val() == 0) {
 			var $controlGrp = $agentCount.parents('.control-group');
@@ -606,7 +610,10 @@ function bindEvent() {
 			$("small.errorColor").text("");
 		}
 		
-		$("#tagString").val(buildTagString());
+		$("#agentCount").rules("remove", {
+			min:0
+		});
+	    $("#tagString").val(buildTagString())
 	});
 	
 	$("#saveTestBtn").click(function() {

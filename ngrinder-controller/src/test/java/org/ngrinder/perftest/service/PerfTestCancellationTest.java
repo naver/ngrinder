@@ -20,6 +20,7 @@ import org.ngrinder.perftest.controller.PerfTestController;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.repository.MockFileEntityRepsotory;
 import org.ngrinder.script.util.CompressionUtil;
+import org.ngrinder.service.ISingleConsole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.ui.ModelMap;
@@ -37,9 +38,9 @@ public class PerfTestCancellationTest extends AbstractPerfTestTransactionalTest 
 
 	@Autowired
 	public PerfTestController perfTestController;
-	
+
 	private PerfTest perfTest = null;
-	
+
 	@Before
 	public void before() throws IOException {
 		CompressionUtil compressUtil = new CompressionUtil();
@@ -66,10 +67,8 @@ public class PerfTestCancellationTest extends AbstractPerfTestTransactionalTest 
 		List<PerfTest> allPerfTest = perfTestService.getAllPerfTest();
 		assertThat(allPerfTest.size(), is(1));
 		assertThat(consoleManager.getConsoleInUse().size(), is(0));
-		
-		
-	}
 
+	}
 
 	@Test
 	public void testTestCancelationDuringPreparation() throws IOException {
@@ -97,7 +96,7 @@ public class PerfTestCancellationTest extends AbstractPerfTestTransactionalTest 
 		assertThat(allPerfTest.get(0).getStatus(), is(Status.CANCELED));
 		assertThat(consoleManager.getConsoleInUse().size(), is(0));
 	}
-	
+
 	@Test
 	public void testTestCancelationDuringExecutionPhase() throws IOException {
 		// Given the testing perftest
@@ -108,7 +107,7 @@ public class PerfTestCancellationTest extends AbstractPerfTestTransactionalTest 
 		// Then it should be canceled.
 		assertThat(perfTestService.getPerfTest(perfTest.getId()).getStatus(), is(Status.CANCELED));
 		assertThat(consoleManager.getConsoleInUse().size(), is(0));
-		
+
 	}
 
 }

@@ -20,59 +20,23 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.dns;
+package org.ngrinder.operation;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.operation.cotroller.ScriptConsoleController;
+import org.python.util.PythonInterpreter;
+import org.springframework.ui.ExtendedModelMap;
+import org.springframework.ui.Model;
 
-/**
- * NameStore test class
- * 
- * @author mavlarn
- * @Since 3.0
- */
-public class NameStoreTest {
-
-	@Before
-	public void before() {
-		NameStore.reset();
-	}
+public class ScriptConsoleControllerExTest {
 
 	@Test
-	public void testNameStoreInit() {
-		System.out.println(System.getProperty("ngrinder.etc.hosts", ""));
-		System.setProperty("ngrinder.etc.hosts", "aaa.com:1.1.1.1,bbb.com:2.2.2.2");
-		System.out.println(System.getProperty("ngrinder.etc.hosts", ""));
+	public void runScriptTest() {
 
-		String ip = NameStore.getInstance().get("aaa.com");
-		assertThat(ip, is("1.1.1.1"));
-
-		NameStore.getInstance().remove("bbb.com");
-		ip = NameStore.getInstance().get("bbb.com");
-		assertThat(ip, nullValue());
-
+		ScriptConsoleController scriptController = new ScriptConsoleController();
+		scriptController.init();
 	}
-
-	@Test
-	public void testNameStoreInitInvald() {
-		System.setProperty("ngrinder.etc.hosts", "bbb.com:,1.1.1.1,");
-
-		String ip = NameStore.getInstance().get("bbb.com");
-		assertThat(ip, nullValue());
-
-	}
-
-	@Test
-	public void testNameStoreInitEmpty() {
-		System.setProperty("ngrinder.etc.hosts", "");
-
-		String ip = NameStore.getInstance().get("bbb.com");
-		assertThat(ip, nullValue());
-
-	}
-
 }

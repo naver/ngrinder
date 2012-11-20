@@ -295,6 +295,7 @@ public class FileEntryService {
 	 *            fileEntity to be saved
 	 */
 	public void save(User user, FileEntry fileEntity) {
+		prepare(user);
 		checkNotEmpty(fileEntity.getPath());
 		fileEntityRepository.save(user, fileEntity, fileEntity.getEncoding());
 	}

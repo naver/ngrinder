@@ -40,9 +40,7 @@ public interface NGrinderConstants {
 	public static final String PATH_REPORT = "report";
 	public static final String PATH_DIST = "dist";
 
-
 	public static final String CACHE_NAME = "cache";
-
 
 	public static final String COMMA = ",";
 
@@ -79,8 +77,8 @@ public interface NGrinderConstants {
 	/**
 	 * Maximum waiting seconds until all agents are connected.
 	 */
-	public static final String NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS = 
-			"ngrinder.consoleMaxWaitingMilliseconds";
+	public static final String NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS 
+			= "ngrinder.consoleMaxWaitingMilliseconds";
 
 	/**
 	 * Maximum waiting seconds until all agents are connected.
@@ -140,7 +138,7 @@ public interface NGrinderConstants {
 	public static final String PARAM_QUICK_SCRIPT = "quickScript";
 	public static final String PARAM_TARGET_HOST = "targetHostString";
 	public static final String PARAM_PROCESSTHREAD_POLICY_SCRIPT = "processthread_policy_script";
-	
+
 	public static final String PARAM_CURRENT_FREE_AGENTS_COUNT = "currentFreeAgentsCount";
 	public static final String PARAM_MAX_AGENT_SIZE_PER_CONSOLE = "maxAgentSizePerConsole";
 	public static final String PARAM_MAX_VUSER_PER_AGENT = "maxVuserPerAgent";
@@ -175,8 +173,7 @@ public interface NGrinderConstants {
 	public static final String GRINDER_PROP_TEST_ID = "grinder.test.id";
 	public static final String GRINDER_PROP_IGNORE_SAMPLE_COUNT = "grinder.ignoreSampleCount";
 	public static final String GRINDER_PROP_SECURITY = "grinder.security";
-	
-	
+
 	// ngrinder setting.
 	public static final String NGRINDER_PROP_ETC_HOSTS = "ngrinder.etc.hosts";
 	public static final String NGRINDER_PROP_CONSOLE_PORT_BASE = "ngrinder.console.portbase";

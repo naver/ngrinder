@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.ConsoleShutdownListener;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
@@ -59,6 +61,7 @@ import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.service.MonitorClientSerivce;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.extension.OnTestLifeCycleRunnable;
+import org.ngrinder.extension.OnTestSamplingRunnable;
 import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.plugin.PluginManager;
@@ -71,6 +74,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Scheduled;
+
+import com.atlassian.plugin.event.PluginEventListener;
+import com.atlassian.plugin.event.events.PluginDisabledEvent;
+import com.atlassian.plugin.event.events.PluginEnabledEvent;
 
 /**
  * {@link PerfTest} run scheduler.
@@ -101,9 +108,43 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	@Autowired
 	private Config config;
-	
+
 	@Autowired
 	private ApplicationContext appContext;
+
+	private List<OnTestSamplingRunnable> testSamplingRnnables;
+
+	@PostConstruct
+	public void init() {
+		pluginManager.addPluginUpdateEvent(this);
+		pluginInit();
+	}
+
+	private void pluginInit() {
+		this.testSamplingRnnables = pluginManager.getEnabledModulesByClass(OnTestSamplingRunnable.class);
+	}
+
+	/**
+	 * Event handler for plugin enable.
+	 * 
+	 * @param event
+	 *            event
+	 */
+	@PluginEventListener
+	public void onPluginEnabled(PluginEnabledEvent event) {
+		pluginInit();
+	}
+
+	/**
+	 * Event handler for plugin disable.
+	 * 
+	 * @param event
+	 *            event
+	 */
+	@PluginEventListener
+	public void onPluginDisabled(PluginDisabledEvent event) {
+		pluginInit();
+	}
 
 	/**
 	 * Scheduled method for test execution. This method dispatches the test candidates and run one
@@ -282,8 +323,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	void startAgentsOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		perfTestService.markStatusAndProgress(perfTest, START_AGENTS, perfTest.getAgentCount()
 						+ " agents are starting.");
-		agentManager.runAgent(perfTest.getCreatedUser(), singleConsole, grinderProperties,
-						perfTest.getAgentCount());
+		agentManager.runAgent(perfTest.getCreatedUser(), singleConsole, grinderProperties, perfTest.getAgentCount());
 		singleConsole.waitUntilAgentConnected(perfTest.getAgentCount());
 		perfTestService.markStatusAndProgress(perfTest, START_AGENTS_FINISHED, perfTest.getAgentCount()
 						+ " agents are started.");
@@ -309,10 +349,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// Add monitors when sampling is started.
 		final Set<AgentInfo> agents = createMonitorTargets(perfTest);
 		singleConsole.addSamplingLifeCyleListener(new SamplingLifeCycleListener() {
-			
+
 			private Map<String, MonitorClientSerivce> monitorClientsMap;
 			private Map<String, BufferedWriter> monitorRecordWriterMap;
-			
+
 			@Override
 			public void onSamplingStarted() {
 				LOG.info("add monitors on {} for perftest {}", agents, perfTest.getId());
@@ -320,18 +360,18 @@ public class PerfTestRunnable implements NGrinderConstants {
 				monitorClientsMap = new HashMap<String, MonitorClientSerivce>(agents.size());
 				for (AgentInfo target : agents) {
 					String targetIP = target.getIp();
-					//create from context, because we use spring Asycn function to get monitor data
+					// create from context, because we use spring Asycn function to get monitor data
 					// from MBClient asynchronized.
 					MonitorClientSerivce clientServ = appContext.getBean(MonitorClientSerivce.class);
 					clientServ.init(targetIP, target.getPort());
 					monitorClientsMap.put(targetIP, clientServ);
-					
-					//prepare monitor data file
+
+					// prepare monitor data file
 					try {
-						BufferedWriter bw = new BufferedWriter(new FileWriter(new File(
-								singleConsole.getReportPath(), Config.MONITOR_FILE_PREFIX + targetIP + ".data"), false));
+						BufferedWriter bw = new BufferedWriter(new FileWriter(new File(singleConsole.getReportPath(),
+										Config.MONITOR_FILE_PREFIX + targetIP + ".data"), false));
 						monitorRecordWriterMap.put(targetIP, bw);
-						//write header info
+						// write header info
 						bw.write(SystemInfo.header);
 						bw.newLine();
 						bw.flush();
@@ -340,20 +380,38 @@ public class PerfTestRunnable implements NGrinderConstants {
 						LOG.debug(e.getMessage(), e);
 					}
 				}
+				for (OnTestSamplingRunnable each : testSamplingRnnables) {
+					try {
+						each.startSampling(singleConsole, perfTest, perfTestService);
+					} catch (Exception e) {
+						LOG.error("While running plugins, the error occurs.");
+						LOG.error("Details : ", e);
+					}
+				}
 			}
 
 			@Override
 			public void onSamplingEnded() {
 				LOG.info("remove monitors on {} for perftest {}", agents, perfTest.getId());
-				//monitorDataService.removeMonitorAgents(agents);
+
+				// monitorDataService.removeMonitorAgents(agents);
 				for (String ip : monitorRecordWriterMap.keySet()) {
 					BufferedWriter bw = monitorRecordWriterMap.get(ip);
 					IOUtils.closeQuietly(bw);
-					
+
 					monitorClientsMap.get(ip).close();
 				}
 				monitorRecordWriterMap.clear();
 				monitorClientsMap.clear();
+
+				for (OnTestSamplingRunnable each : testSamplingRnnables) {
+					try {
+						each.endSampling(singleConsole, perfTest, perfTestService);
+					} catch (Exception e) {
+						LOG.error("While running plugin the following error occurs.");
+						LOG.error("Details : ", e);
+					}
+				}
 			}
 
 			@Override
@@ -366,6 +424,16 @@ public class PerfTestRunnable implements NGrinderConstants {
 				//update statistic cache
 				perfTestService.getAndPutAgentsInfo(perfTest.getRegion(), perfTest.getPort());
 				perfTestService.getAndPutStatistics(perfTest.getRegion(), perfTest.getPort());
+
+				for (OnTestSamplingRunnable each : testSamplingRnnables) {
+					try {
+						each.sampling(singleConsole, perfTest, perfTestService, intervalStatistics,
+										cumulativeStatistics);
+					} catch (Exception e) {
+						LOG.error("While running plugin the following error occurs");
+						LOG.error("Details : ", e);
+					}
+				}
 			}
 		});
 

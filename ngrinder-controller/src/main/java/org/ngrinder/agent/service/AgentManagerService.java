@@ -185,4 +185,12 @@ public class AgentManagerService {
 		}
 
 	}
+
+	public void stopAgent(Long id) {
+		AgentInfo agent = getAgent(id);
+		if (agent == null) {
+			return;
+		}
+		agentManager.stopAgent(agent.getAgentIdentity());
+	}
 }

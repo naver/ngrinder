@@ -638,8 +638,8 @@ public class PerfTestController extends NGrinderBaseController {
 			if (totalMemory != 0) {
 				usage = (((float) (totalMemory - value.getFreeMemory())) / totalMemory) * 100;
 			}
-			perfStringList.add(String.format(" {'agent' : '%s', 'cpu' : %3.2f, 'mem' : %3.2f }", each.getKey()
-							.getName(), value.getCpuUsedPercentage(), usage));
+			perfStringList.add(String.format(" {'agent' : '%s', 'cpu' : %3.02f, 'mem' : %3.02f }",
+							StringUtils.abbreviate(each.getKey().getName(), 25), value.getCpuUsedPercentage(), usage));
 		}
 		return StringUtils.join(perfStringList, ",");
 	}

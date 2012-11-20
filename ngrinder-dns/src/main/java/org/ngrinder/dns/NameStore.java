@@ -72,6 +72,15 @@ public class NameStore {
 	}
 
 	/**
+	 * Reset the instance.
+	 * 
+	 */
+	static void reset() {
+		singleton = null;
+	}
+
+	
+	/**
 	 * Put hostname with ipAddress.
 	 * 
 	 * @param hostName

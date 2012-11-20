@@ -145,7 +145,16 @@ public class ScriptValidationService {
 			}
 			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, getLibPath(),
 							new Condition(), config.isSecurityEnabled(), hostString);
-			return FileUtils.readFileToString(doValidate);
+			List<String> readLines = FileUtils.readLines(doValidate);
+			StringBuffer output = new StringBuffer();
+			String path = config.getHome().getDirectory().getAbsolutePath();
+			for (String each : readLines) {
+				if (!each.startsWith("*sys-package-mgr")) {
+					each = each.replace(path, "${NGRINDER_HOME}");
+					output.append(each).append("\n");
+				}
+			}
+			return output.toString();
 		} catch (IOException e) {
 			LOG.error("Error while distributing files on {} for {}", user, scriptEntry.getPath());
 			LOG.error("Error details ", e);
