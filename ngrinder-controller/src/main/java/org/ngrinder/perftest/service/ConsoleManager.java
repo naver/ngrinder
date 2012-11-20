@@ -45,6 +45,7 @@ import org.ngrinder.perftest.model.NullSingleConsole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
@@ -70,6 +71,7 @@ public class ConsoleManager {
 
 	@Autowired
 	private AgentManager agentManager;
+
 	/**
 	 * Prepare console queue.
 	 */
@@ -225,49 +227,49 @@ public class ConsoleManager {
 	 *            console which will be returned back.
 	 * 
 	 */
+	@Async
 	public void returnBackConsole(String testIdentifier, SingleConsole console) {
 		if (console == null) {
 			LOG.error("Attemp to return back null console for {}.", testIdentifier);
 			return;
 		}
-		synchronized (this) {
+		try {
+			console.unregisterSampling();
+			console.sendStopMessageToAgents();
+		} catch (Exception e) {
+			LOG.error("Exception is occured while shuttdowning console in returnback process for test {}.",
+							testIdentifier, e);
+			// But the port is getting back.
+		} finally {
+			// This is very careful implementation..
 			try {
-				console.unregisterSampling();
-				console.sendStopMessageToAgents();
+				// Wait console is completely shutdown...
+				console.waitUntilAllAgentDisconnected();
 			} catch (Exception e) {
-				LOG.error("Exception is occured while shuttdowning console in returnback process for test {}.",
+				LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.",
 								testIdentifier, e);
-				// But the port is getting back.
-			} finally {
-				// This is very careful implementation..
-				try {
-					// Wait console is completely shutdown...
-					console.waitUntilAllAgentDisconnected();
-				} catch (Exception e) {
-					LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.",
-									testIdentifier, e);
-					// If it's not disconnected still, stop them forcely.
-					agentManager.stopAgent(console.getConsolePort());
-				}
-				try {
-					console.shutdown();
-				} catch (Exception e) {
-					LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.",
-									testIdentifier, e);
-				}
+				// If it's not disconnected still, stop them forcely.
+				agentManager.stopAgent(console.getConsolePort());
+			}
+			try {
+				console.shutdown();
+			} catch (Exception e) {
+				LOG.error("Exception occurs while shuttdowning console in returnback process for test {}.",
+								testIdentifier, e);
 			}
 			int consolePort = console.getConsolePort();
 			if (consolePort == 1) {
 				return;
 			}
 			ConsoleEntry consoleEntry = new ConsoleEntry(consolePort);
-
-			if (!consoleQueue.contains(consoleEntry)) {
-				consoleQueue.add(consoleEntry);
-				if (!getConsoleInUse().contains(console)) {
-					LOG.error("Try to return back the not used console on {} port", consolePort);
+			synchronized (this) {
+				if (!consoleQueue.contains(consoleEntry)) {
+					consoleQueue.add(consoleEntry);
+					if (!getConsoleInUse().contains(console)) {
+						LOG.error("Try to return back the not used console on {} port", consolePort);
+					}
+					getConsoleInUse().remove(console);
 				}
-				getConsoleInUse().remove(console);
 			}
 		}
 	}
