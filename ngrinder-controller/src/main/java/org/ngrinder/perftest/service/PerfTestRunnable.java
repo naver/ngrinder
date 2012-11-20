@@ -39,6 +39,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.ConsoleShutdownListener;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
@@ -52,6 +54,7 @@ import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.chart.service.MonitorAgentService;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.extension.OnTestLifeCycleRunnable;
+import org.ngrinder.extension.OnTestSamplingRunnable;
 import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.plugin.PluginManager;
@@ -62,6 +65,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+
+import com.atlassian.plugin.event.PluginEventListener;
+import com.atlassian.plugin.event.events.PluginDisabledEvent;
+import com.atlassian.plugin.event.events.PluginEnabledEvent;
 
 /**
  * {@link PerfTest} run scheduler.
@@ -96,6 +103,40 @@ public class PerfTestRunnable implements NGrinderConstants {
 	@Autowired
 	private Config config;
 
+	private List<OnTestSamplingRunnable> testSamplingRnnables;
+
+	@PostConstruct
+	public void init() {
+		pluginManager.addPluginUpdateEvent(this);
+		pluginInit();
+	}
+
+	private void pluginInit() {
+		this.testSamplingRnnables = pluginManager.getEnabledModulesByClass(OnTestSamplingRunnable.class);
+	}
+
+	/**
+	 * Event handler for plugin enable.
+	 * 
+	 * @param event
+	 *            event
+	 */
+	@PluginEventListener
+	public void onPluginEnabled(PluginEnabledEvent event) {
+		pluginInit();
+	}
+
+	/**
+	 * Event handler for plugin disable.
+	 * 
+	 * @param event
+	 *            event
+	 */
+	@PluginEventListener
+	public void onPluginDisabled(PluginDisabledEvent event) {
+		pluginInit();
+	}
+	
 	/**
 	 * Scheduled method for test execution. This method dispatches the test candidates and run one
 	 * of them. This method is responsible until a test is executed.
@@ -304,18 +345,25 @@ public class PerfTestRunnable implements NGrinderConstants {
 			public void onSamplingStarted() {
 				LOG.info("add monitors on {} for perftest {}", agents, perfTest.getId());
 				monitorDataService.addMonitorAgents(agents);
+				for (OnTestSamplingRunnable each : testSamplingRnnables) {
+					each.onSamplingStarted(singleConsole, perfTest, perfTestService);
+				}
 			}
 
 			@Override
 			public void onSamplingEnded() {
 				LOG.info("remove monitors on {} for perftest {}", agents, perfTest.getId());
 				monitorDataService.removeMonitorAgents(agents);
+				for (OnTestSamplingRunnable each : testSamplingRnnables) {
+					each.onSamplingEnded(singleConsole, perfTest, perfTestService);
+				}
 			}
 
 			@Override
 			public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-				// Do calling on monitor here.
-
+				for (OnTestSamplingRunnable each : testSamplingRnnables) {
+					each.onSampling(singleConsole, perfTest, perfTestService, intervalStatistics, cumulativeStatistics);
+				}
 			}
 		});
 
@@ -478,7 +526,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		}
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
-
+	
 	public PerfTestService getPerfTestService() {
 		return perfTestService;
 	}

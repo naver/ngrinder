@@ -522,15 +522,33 @@ public class SingleConsole implements Listener, SampleListener {
 		return statisticData;
 	}
 
-	protected StatisticsIndexMap getStatisticsIndexMap() {
+	/**
+	 * Get statistics index map.
+	 * 
+	 * @return {@link StatisticsIndexMap} instance.
+	 * @since 3.0.2
+	 */
+	public StatisticsIndexMap getStatisticsIndexMap() {
 		return StatisticsServicesImplementation.getInstance().getStatisticsIndexMap();
 	}
 
-	protected ExpressionView[] getExpressionView() {
-		return StatisticsServicesImplementation.getInstance().getSummaryStatisticsView().getExpressionViews();
+	/**
+	 * Get all expression views.
+	 * 
+	 * @return {@link ExpressionView} array
+	 * @since 3.0.2
+	 */
+	public ExpressionView[] getExpressionView() {
+		return modelView.getCumulativeStatisticsView().getExpressionViews();
 	}
 
-	protected ExpressionView[] getDetailedExpressionView() {
+	/**
+	 * Get detailed expression view.
+	 * 
+	 * @return {@link ExpressionView} array
+	 * @since 3.0.2
+	 */
+	public ExpressionView[] getDetailedExpressionView() {
 		return StatisticsServicesImplementation.getInstance().getDetailStatisticsView().getExpressionViews();
 	}
 
@@ -609,18 +627,11 @@ public class SingleConsole implements Listener, SampleListener {
 		StringBuilder csvLine = new StringBuilder();
 		csvLine.append(DateUtil.dateToString(new Date()));
 		ExpressionView[] expressionView = getExpressionView();
-		ExpressionView[] detailedExpressionView = getDetailedExpressionView();
 		for (ExpressionView eachView : expressionView) {
 			if (!eachView.getDisplayName().equals("Peak TPS")) {
 				double doubleValue = eachView.getExpression().getDoubleValue(intervalStatistics);
 				csvLine.append(",").append(formatValue(getRealDoubleValue(doubleValue)));
 			}
-		}
-
-		for (ExpressionView eachView : detailedExpressionView) {
-			csvLine.append(",")
-							.append(formatValue(getRealDoubleValue(eachView.getExpression().getDoubleValue(
-											intervalStatistics))));
 		}
 
 		for (int i = 0; i < modelTestIndex.getNumberOfTests(); i++) {
@@ -637,11 +648,7 @@ public class SingleConsole implements Listener, SampleListener {
 													lastSampleStatistics))));
 				}
 			}
-			for (ExpressionView eachView : detailedExpressionView) {
-				csvLine.append(",").append(
-								formatValue(getRealDoubleValue(eachView.getExpression().getDoubleValue(
-												lastSampleStatistics))));
-			}
+
 		}
 
 		// add header into csv file.
@@ -656,10 +663,6 @@ public class SingleConsole implements Listener, SampleListener {
 				}
 			}
 
-			for (ExpressionView each : detailedExpressionView) {
-				csvHeader.append(",").append(createKeyFromExpression(each));
-			}
-
 			for (int i = 0; i < modelTestIndex.getNumberOfTests(); i++) {
 				csvHeader.append(",").append("Description");
 				// get the key list from lastStatistic map, use list to keep the order
@@ -669,9 +672,6 @@ public class SingleConsole implements Listener, SampleListener {
 					}
 				}
 
-				for (ExpressionView each : detailedExpressionView) {
-					csvHeader.append(",").append(createKeyFromExpression(each)).append("-").append(i);
-				}
 			}
 			writeCSVDataLine(csvHeader.toString());
 			headerAdded = true;
@@ -917,7 +917,7 @@ public class SingleConsole implements Listener, SampleListener {
 			eventSyncCondition.notifyAll();
 		}
 	}
-	
+
 	private void checkExeuctionErrors(ProcessReports[] processReports) {
 		if (samplingCount == 0 && ArrayUtils.isNotEmpty(this.processReports) && ArrayUtils.isEmpty(processReports)) {
 			getListeners().apply(new Informer<ConsoleShutdownListener>() {
