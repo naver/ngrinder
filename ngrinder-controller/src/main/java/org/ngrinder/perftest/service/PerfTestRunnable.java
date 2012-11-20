@@ -136,7 +136,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	public void onPluginDisabled(PluginDisabledEvent event) {
 		pluginInit();
 	}
-	
+
 	/**
 	 * Scheduled method for test execution. This method dispatches the test candidates and run one
 	 * of them. This method is responsible until a test is executed.
@@ -346,7 +346,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 				LOG.info("add monitors on {} for perftest {}", agents, perfTest.getId());
 				monitorDataService.addMonitorAgents(agents);
 				for (OnTestSamplingRunnable each : testSamplingRnnables) {
-					each.onSamplingStarted(singleConsole, perfTest, perfTestService);
+					try {
+						each.startSampling(singleConsole, perfTest, perfTestService);
+					} catch (Exception e) {
+						LOG.error("While running plugins, the error occurs.");
+						LOG.error("Details : ", e);
+					}
 				}
 			}
 
@@ -355,14 +360,25 @@ public class PerfTestRunnable implements NGrinderConstants {
 				LOG.info("remove monitors on {} for perftest {}", agents, perfTest.getId());
 				monitorDataService.removeMonitorAgents(agents);
 				for (OnTestSamplingRunnable each : testSamplingRnnables) {
-					each.onSamplingEnded(singleConsole, perfTest, perfTestService);
+					try {
+						each.endSampling(singleConsole, perfTest, perfTestService);
+					} catch (Exception e) {
+						LOG.error("While running plugin the following error occurs.");
+						LOG.error("Details : ", e);
+					}
 				}
 			}
 
 			@Override
 			public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
 				for (OnTestSamplingRunnable each : testSamplingRnnables) {
-					each.onSampling(singleConsole, perfTest, perfTestService, intervalStatistics, cumulativeStatistics);
+					try {
+						each.sampling(singleConsole, perfTest, perfTestService, intervalStatistics,
+										cumulativeStatistics);
+					} catch (Exception e) {
+						LOG.error("While running plugin the following error occurs");
+						LOG.error("Details : ", e);
+					}
 				}
 			}
 		});
@@ -526,7 +542,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		}
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
-	
+
 	public PerfTestService getPerfTestService() {
 		return perfTestService;
 	}

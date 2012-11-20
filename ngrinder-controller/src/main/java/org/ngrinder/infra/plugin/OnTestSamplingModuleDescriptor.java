@@ -22,15 +22,16 @@
  */
 package org.ngrinder.infra.plugin;
 
-import org.ngrinder.extension.OnTestLifeCycleRunnable;
+import org.ngrinder.extension.OnTestSamplingRunnable;
 
 import com.atlassian.plugin.descriptors.AbstractModuleDescriptor;
+import com.atlassian.plugin.module.ContainerAccessor;
 import com.atlassian.plugin.module.ContainerManagedPlugin;
 
 /**
- * Plugin Descriptor for {@link OnTestLifeCycleRunnable}.
+ * Plugin Descriptor for {@link OnTestSamplingRunnable}.
  * 
- * The plugin should be constructed by implementing {@link OnTestLifeCycleRunnable}
+ * The plugin should be constructed by implementing {@link OnTestSamplingRunnable}
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -38,8 +39,9 @@ import com.atlassian.plugin.module.ContainerManagedPlugin;
 
 @PluginDescriptor("on-test-sampling")
 @SuppressWarnings("deprecation")
-public class OnTestSamplingModuleDescriptor extends AbstractModuleDescriptor<OnTestLifeCycleRunnable> {
-	public OnTestLifeCycleRunnable getModule() {
-		return ((ContainerManagedPlugin) getPlugin()).getContainerAccessor().createBean(getModuleClass());
+public class OnTestSamplingModuleDescriptor extends AbstractModuleDescriptor<OnTestSamplingRunnable> {
+	public OnTestSamplingRunnable getModule() {
+		ContainerAccessor containerAccessor = ((ContainerManagedPlugin) getPlugin()).getContainerAccessor();
+		return containerAccessor.createBean(getModuleClass());
 	}
 }

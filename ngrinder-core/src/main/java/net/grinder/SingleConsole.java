@@ -81,6 +81,7 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.ReflectionUtil;
+import org.ngrinder.service.ISingleConsole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,7 +93,7 @@ import org.slf4j.LoggerFactory;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class SingleConsole implements Listener, SampleListener {
+public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	private static final String REOSURCE_CONSOLE = "net.grinder.console.common.resources.Console";
 	private Thread consoleFoundationThread;
 	private ConsoleFoundationEx consoleFoundation;
@@ -368,9 +369,12 @@ public class SingleConsole implements Listener, SampleListener {
 		}
 	}
 
-	/**
-	 * Mark the cancel status.
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.grinder.ISingleConsole2#cancel()
 	 */
+	@Override
 	public void cancel() {
 		cancel = true;
 	}
@@ -514,6 +518,12 @@ public class SingleConsole implements Listener, SampleListener {
 		return startTime;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.grinder.ISingleConsole2#getCurrentRunningTime()
+	 */
+	@Override
 	public long getCurrentRunningTime() {
 		return new Date().getTime() - startTime;
 	}
@@ -522,12 +532,12 @@ public class SingleConsole implements Listener, SampleListener {
 		return statisticData;
 	}
 
-	/**
-	 * Get statistics index map.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return {@link StatisticsIndexMap} instance.
-	 * @since 3.0.2
+	 * @see net.grinder.ISingleConsole2#getStatisticsIndexMap()
 	 */
+
 	public StatisticsIndexMap getStatisticsIndexMap() {
 		return StatisticsServicesImplementation.getInstance().getStatisticsIndexMap();
 	}
@@ -803,11 +813,12 @@ public class SingleConsole implements Listener, SampleListener {
 		this.statisticData = result;
 	}
 
-	/**
-	 * Get the current total execution count(test count + error count).
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return current total execution count;
+	 * @see net.grinder.ISingleConsole2#getCurrentExecutionCount()
 	 */
+	@Override
 	public long getCurrentExecutionCount() {
 		Map<?, ?> totalStatistics = (Map<?, ?>) getStatictisData().get("totalStatistics");
 		Double testCount = MapUtils.getDoubleValue(totalStatistics, "Tests", 0D);
@@ -1013,11 +1024,12 @@ public class SingleConsole implements Listener, SampleListener {
 		return result;
 	}
 
-	/**
-	 * Get report path.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return report path
+	 * @see net.grinder.ISingleConsole2#getReportPath()
 	 */
+	@Override
 	public File getReportPath() {
 		return reportPath;
 	}
@@ -1118,6 +1130,12 @@ public class SingleConsole implements Listener, SampleListener {
 		return getCurrentRunningTime() > (duration + TEST_DURATION_CHECK_MARGIN);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.grinder.ISingleConsole2#getPeakTpsForGraph()
+	 */
+	@Override
 	public double getPeakTpsForGraph() {
 		return peakTpsForGraph;
 	}
@@ -1136,10 +1154,22 @@ public class SingleConsole implements Listener, SampleListener {
 		this.sampleModel = sampleModel;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.grinder.ISingleConsole2#getRunningThread()
+	 */
+	@Override
 	public int getRunningThread() {
 		return runningThread;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.grinder.ISingleConsole2#getRunningProcess()
+	 */
+	@Override
 	public int getRunningProcess() {
 		return runningProcess;
 	}

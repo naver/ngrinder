@@ -22,11 +22,11 @@
  */
 package org.ngrinder.extension;
 
-import net.grinder.SingleConsole;
-import net.grinder.statistics.StatisticsSet;
+import net.grinder.statistics.ImmutableStatisticsSet;
 
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.service.IPerfTestService;
+import org.ngrinder.service.ISingleConsole;
 
 /**
  * Plugin extension for {@link PerfTest} control by examining sampling statistics.
@@ -43,19 +43,19 @@ public interface OnTestSamplingRunnable {
 	 * started.
 	 * 
 	 * @param console
-	 *            {@link SingleConsole}
+	 *            {@link ISingleConsole}
 	 * @param perfTest
 	 *            {@link PerfTest}
 	 * @param perfTestService
 	 *            {@link IPerfTestService}
 	 */
-	public void onSamplingStarted(SingleConsole console, PerfTest perfTest, IPerfTestService perfTestService);
+	public void startSampling(ISingleConsole singleConsole, PerfTest perfTest, IPerfTestService perfTestService);
 
 	/**
 	 * Callback method which will be invoked whenever test sampling is performed.
 	 * 
 	 * @param console
-	 *            {@link SingleConsole}
+	 *            {@link ISingleConsole}
 	 * @param perfTest
 	 *            {@link PerfTest}
 	 * @param perfTestService
@@ -65,20 +65,20 @@ public interface OnTestSamplingRunnable {
 	 * @param cumulativeStatistics
 	 *            cumulative sampling statistics.
 	 */
-	public void onSampling(SingleConsole console, PerfTest perfTest, IPerfTestService perfTestService,
-					StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics);
+	public void sampling(ISingleConsole singleConsole, PerfTest perfTest, IPerfTestService perfTestService,
+					ImmutableStatisticsSet intervalStatistics, ImmutableStatisticsSet cumulativeStatistics);
 
 	/**
 	 * Callback method which will be invoked when the given {@link PerfTest} test sampling is
 	 * finished.
 	 * 
 	 * @param console
-	 *            {@link SingleConsole}
+	 *            {@link ISingleConsole}
 	 * @param perfTest
 	 *            {@link PerfTest}
 	 * @param perfTestService
 	 *            {@link IPerfTestService}
 	 */
-	public void onSamplingEnded(SingleConsole console, PerfTest perfTest, IPerfTestService perfTestService);
+	public void endSampling(ISingleConsole singleConsole, PerfTest perfTest, IPerfTestService perfTestService);
 
 }
