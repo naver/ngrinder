@@ -119,10 +119,12 @@ public class User extends BaseModel<User> {
 	 * @param role
 	 *            role
 	 */
-	public User(String userId, String name, String password, Role role) {
+	public User(String userId, String name, String password, String email, Role role) {
 		this.userId = userId;
 		this.password = password;
 		this.userName = name;
+		this.email = email;
+		this.role = role;
 		isEnabled();
 	}
 

@@ -169,7 +169,7 @@ public class UserService implements IUserService {
 		List<User> newShareUsers = new ArrayList<User>();
 		String[] userIds = shareUserIds.split(",");
 		for (String userId : userIds) {
-			User shareUser = userRepository.findOneByUserId(userId);
+			User shareUser = userRepository.findOneByUserId(userId.trim());
 			newShareUsers.add(shareUser);
 		}
 		user.setFollowers(newShareUsers);

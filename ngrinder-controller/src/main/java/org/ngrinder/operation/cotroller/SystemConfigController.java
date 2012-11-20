@@ -1,10 +1,10 @@
 package org.ngrinder.operation.cotroller;
 
 import org.ngrinder.common.controller.NGrinderBaseController;
-import org.ngrinder.infra.annotation.RuntimeOnlyController;
 import org.ngrinder.operation.service.SystemConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author Alex Qin
  * @since 3.1
  */
-@RuntimeOnlyController
+@Controller
 @RequestMapping("/operation/systemConfig")
 @PreAuthorize("hasAnyRole('A', 'S')")
 public class SystemConfigController extends NGrinderBaseController {
