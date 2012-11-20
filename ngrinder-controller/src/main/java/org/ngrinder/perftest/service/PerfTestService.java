@@ -97,6 +97,7 @@ import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.service.IPerfTestService;
+import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,9 +148,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 	@Autowired
 	private TagService tagSerivce;
-	
+
 	@Autowired
-	private UserService userService;
+	private UserRepository userRepository;
 	
 	/**
 	 * Scheduled service of performance test.
@@ -171,14 +172,14 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		int maxAgentSizePerConsole = agentManager.getMaxAgentSizePerConsole();
 		
 		
-		List<User> allUser = userService.getAllUserByRole(null);
+		List<User> allUser = userRepository.findAll();
 		for (User user : allUser) {
 			Set<AgentIdentity> userApprovedAgent = agentManager.filterUserAgents(allApprovedAgent, user.getUserId());
 			int additional = Math.max(userApprovedAgent.size() - allSharedAgent.size(), 0);
 			int userMaxAgentSizePerConsole = Math.min(maxAgentSizePerConsole + additional,
 					userApprovedAgent.size());
 			user.setAvailableAgentCount(userMaxAgentSizePerConsole);
-			userService.saveUser(user);
+			userRepository.save(user);
 		}
 
 
