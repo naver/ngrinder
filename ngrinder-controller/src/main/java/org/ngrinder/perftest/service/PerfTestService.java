@@ -97,6 +97,7 @@ import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.service.IPerfTestService;
+import org.ngrinder.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +107,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specifications;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -145,6 +147,42 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 	@Autowired
 	private TagService tagSerivce;
+	
+	@Autowired
+	private UserService userService;
+	
+	/**
+	 * Scheduled service of performance test.
+	 */
+	@Scheduled(fixedDelay = 5000)
+	public void service() {
+		
+//		Set<AgentIdentity> allSharedAgent = agentManager.getAllSharedAgents();
+//		Set<AgentIdentity> allApprovedAgentsForUser = agentManager.getAllApprovedAgents(user);
+//		int additional = Math.max(allApprovedAgentsForUser.size() - allSharedAgent.size(), 0);
+//		int maxAgentSizePerConsole = Math.min(agentManager.getMaxAgentSizePerConsole() + additional,
+//						allApprovedAgentsForUser.size());
+		//return maxAgentSizePerConsole;
+		
+		
+		
+		Set<AgentIdentity> allApprovedAgent = agentManager.getAllApprovedAgents();
+		Set<AgentIdentity> allSharedAgent = agentManager.filterSharedAgents(allApprovedAgent);
+		int maxAgentSizePerConsole = agentManager.getMaxAgentSizePerConsole();
+		
+		
+		List<User> allUser = userService.getAllUserByRole(null);
+		for (User user : allUser) {
+			Set<AgentIdentity> userApprovedAgent = agentManager.filterUserAgents(allApprovedAgent, user.getUserId());
+			int additional = Math.max(userApprovedAgent.size() - allSharedAgent.size(), 0);
+			int userMaxAgentSizePerConsole = Math.min(maxAgentSizePerConsole + additional,
+					userApprovedAgent.size());
+			user.setAvailableAgentCount(userMaxAgentSizePerConsole);
+			userService.saveUser(user);
+		}
+
+
+	}
 
 	/**
 	 * Get {@link PerfTest} list on the user.

@@ -39,23 +39,23 @@ public class UserTest {
 
 	@Test
 	public void testValidate() {
-		User user1 = new User("Uid1", "name1", "pwd1", Role.USER);
+		User user1 = new User("Uid1", "name1", "pwd1", "user1@nhn.com", Role.USER);
 		user1.setEmail("aa@bb.com");
 		assertTrue(user1.validate());
 
 		User user2 = new User();
-		user2 = new User("Uid1", null, "pwd1", Role.USER);
+		user2 = new User("Uid1", null, "pwd1", "user2@nhn.com", Role.USER);
 		assertTrue(!user2.validate());
 
-		user2 = new User("Uid1", "name", "pwd1", null);
+		user2 = new User("Uid1", "name", "pwd1", "user2@nhn.com", null);
 		assertTrue(!user2.validate());
 		
 	}
 	
 	@Test
 	public void testEqualsObject() {
-		User user1 = new User("Uid1", "name1", "pwd1", Role.USER);		
-		User user2 = new User("Uid1", "name2", "pwd2", Role.USER);
+		User user1 = new User("Uid1", "name1", "pwd1", "user1@nhn.com", Role.USER);		
+		User user2 = new User("Uid1", "name2", "pwd2", "user2@nhn.com", Role.USER);
 		assertThat(user1, is(user2));
 		assertThat(user1.hashCode(), is(user2.hashCode()));
 
