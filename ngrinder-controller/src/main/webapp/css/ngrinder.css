@@ -1,6 +1,10 @@
 @charset "utf-8";
 body {
-	padding-top: 80px
+	padding-top: 40px
+}
+
+body > .container {
+	margin-top: 20px
 }
 
 .navbar .brand {
@@ -127,7 +131,7 @@ table.ellipsis td.ellipsis {
 }
 
 .pageHeader {
-	margin: -10px 0 20px; 
+	margin: 10px 0 20px; 
 	padding-bottom: 5px
 }
 

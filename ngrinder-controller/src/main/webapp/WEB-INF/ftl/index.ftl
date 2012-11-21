@@ -5,9 +5,7 @@
 		<#include "common/common.ftl">
 		<style>
 			.hero-unit { 
-				margin-left: 0;
 				background-image: url('${req.getContextPath()}/img/bg_main_banner_<@spring.message "common.language"/>.png');
-				margin-top: -20px;
 				margin-bottom: 10px;
 				height: 200px;
 				padding: 0

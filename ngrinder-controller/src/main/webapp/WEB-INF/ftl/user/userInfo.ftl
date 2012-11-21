@@ -1,7 +1,7 @@
 <#import "../common/spring.ftl" as spring/>
 <#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
 <form action="${req.getContextPath()}/user/save"
-	class="form-horizontal form-horizontal-left" id="registerUserForm" style="margin-left:30px" method="POST">
+	class="form-horizontal form-horizontal-left" id="registerUserForm" method="POST">
 	<fieldset>
 		<div class="control-group">
 			<label class="control-label"><@spring.message "user.info.form.userId"/></label>

@@ -45,11 +45,11 @@
 
 <@security.authorize ifAnyGranted="U">
 <#if announcement?has_content>
-<div class="alert alert-block" style="margin:-40px 0 21px; padding:10px 20px">
+<div class="alert alert-block" style="padding:10px 20px">
 	<div class="page-header" style="margin:0; padding-bottom:2px">
 		<h3><@spring.message "announcement.alert.title"/></h3>
 	</div>
-	<div style="margin:10px 2px 0;">
+	<div style="margin:10px 5px 0;">
 		<#if announcement?index_of('</') gt 0>
 		${announcement}
 		<#else>
@@ -65,7 +65,7 @@
 		<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
 		<h3><@spring.message "navigator.dropdown.profile.title"/></h3>
 	</div>
-	<div class="modal-body" id="user_profile_modal" style="max-height: 470px"> 
+	<div class="modal-body" id="user_profile_modal" style="max-height:540px; padding-left:45px"> 
 	</div>	
 </div>
 

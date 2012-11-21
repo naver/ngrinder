@@ -8,7 +8,7 @@
 	<body>
 		<#include "../common/navigator.ftl">
 		<div class="container">
-			<div class="page-header pageHeader" style="margin-bottom: 10px">
+			<div class="page-header pageHeader">
 				<h3><@spring.message "agent.management.title"/></h3>
 			</div>
 			<div class="well searchBar">
