@@ -26,7 +26,7 @@ import com.atlassian.plugin.event.events.PluginEnabledEvent;
  * 
  * @author JunHo Yoon
  * @since 3.0
- */
+ */ 
 @RuntimeOnlyComponent("pluggablePreAuthFilter")
 public class PluggablePreAuthFilter implements Filter {
 	@Autowired

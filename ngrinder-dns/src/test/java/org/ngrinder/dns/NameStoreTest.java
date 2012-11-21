@@ -26,6 +26,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -35,6 +36,11 @@ import org.junit.Test;
  * @Since 3.0
  */
 public class NameStoreTest {
+
+	@Before
+	public void before() {
+		NameStore.reset();
+	}
 
 	@Test
 	public void testNameStoreInit() {

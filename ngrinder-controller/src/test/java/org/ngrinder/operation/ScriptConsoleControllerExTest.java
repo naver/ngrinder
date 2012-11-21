@@ -20,54 +20,23 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.model;
+package org.ngrinder.operation;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
+import org.ngrinder.operation.cotroller.ScriptConsoleController;
+import org.python.util.PythonInterpreter;
+import org.springframework.ui.ExtendedModelMap;
+import org.springframework.ui.Model;
 
-/**
- * Class description.
- *
- * @author Mavlarn
- * @since
- */
-public class UserTest {
-
+public class ScriptConsoleControllerExTest {
 
 	@Test
-	public void testValidate() {
-		User user1 = new User("Uid1", "name1", "pwd1", "user1@nhn.com", Role.USER);
-		user1.setEmail("aa@bb.com");
-		assertTrue(user1.validate());
+	public void runScriptTest() {
 
-		User user2 = new User();
-		user2 = new User("Uid1", null, "pwd1", "user2@nhn.com", Role.USER);
-		assertTrue(!user2.validate());
-
-		user2 = new User("Uid1", "name", "pwd1", "user2@nhn.com", null);
-		assertTrue(!user2.validate());
-		
+		ScriptConsoleController scriptController = new ScriptConsoleController();
+		scriptController.init();
 	}
-	
-	@Test
-	public void testEqualsObject() {
-		User user1 = new User("Uid1", "name1", "pwd1", "user1@nhn.com", Role.USER);		
-		User user2 = new User("Uid1", "name2", "pwd2", "user2@nhn.com", Role.USER);
-		assertThat(user1, is(user2));
-		assertThat(user1.hashCode(), is(user2.hashCode()));
-
-		user2.setUserId("Uid2");
-		assertThat(user1, not(user2));
-		assertThat(user1.hashCode(), not(user2.hashCode()));
-
-		user2.setUserId(null);
-		assertThat(user1, not(user2));
-		assertThat(user1.hashCode(), not(user2.hashCode()));
-		
-		assertTrue(!user1.equals(null));
-	}
-
 }

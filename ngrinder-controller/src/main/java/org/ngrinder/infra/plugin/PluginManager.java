@@ -116,10 +116,13 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 		scannerConfig.setServletContext(servletContext);
 
 		// Expose current packages to the plugins
+		scannerConfig.getPackageIncludes().add("net.grinder.*");
+		scannerConfig.getPackageIncludes().add("net.grinder.statistics.*");
 		scannerConfig.getPackageIncludes().add("org.ngrinder.*");
+		scannerConfig.getPackageIncludes().add("org.ngrinder.service.*");
 		scannerConfig.getPackageIncludes().add("org.apache.*");
 		scannerConfig.getPackageIncludes().add("org.slf4j.*");
-		scannerConfig.getPackageIncludes().add("net.grinder.*");
+
 		scannerConfig.getPackageIncludes().add("javax.servlet.*");
 		scannerConfig.getPackageIncludes().add("org.springframework.security.*");
 		// Determine which module descriptors, or extension points, to expose.
@@ -282,7 +285,11 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 		pluginClasses.addAll(plugins.getPluginAccessor().getModules(new ModuleDescriptorPredicate<M>() {
 			@Override
 			public boolean matches(ModuleDescriptor<? extends M> eachModuleDescriptor) {
-				return moduleClass.isAssignableFrom(eachModuleDescriptor.getModuleClass())
+				Class<? extends M> eachModuleClass = eachModuleDescriptor.getModuleClass();
+				if (eachModuleClass == null) {
+					return false;
+				}
+				return moduleClass.isAssignableFrom(eachModuleClass)
 								&& eachModuleDescriptor.getClass().equals(moduleDescriptor);
 			}
 		}));

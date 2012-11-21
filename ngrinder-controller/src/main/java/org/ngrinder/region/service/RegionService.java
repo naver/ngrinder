@@ -25,10 +25,7 @@ package org.ngrinder.region.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import net.sf.ehcache.Ehcache;
-import net.sf.ehcache.Element;
 
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.infra.config.Config;
@@ -36,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -59,22 +55,12 @@ public class RegionService {
 	@Autowired
 	private EhCacheCacheManager cacheManager;
 	
-	//@PostConstruct
-	public void initRegion() {
-		//return config.getRegion();
-		Cache distCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
-		Element obj = ((Ehcache)distCache.getNativeCache()).get("");
-		List keys = ((Ehcache)distCache.getNativeCache()).getKeys();
-		for (Object objkey : keys) {
-			obj = ((Ehcache)distCache.getNativeCache()).get(objkey);
-			LOG.debug("key:{} value:{}", objkey, obj);
-		}
-//		List<String> regionList = (List<String>)(obj.getValue());
-//		if (!regionList.contains(config.getRegion())) {
-//			regionList.add(config.getRegion());
-//		}
-	}
-
+	/**
+	 * get current region, and set into cache.
+	 * 
+	 * @param region of current controller.
+	 * @return region
+	 */
 	@Cacheable(value = "region_list", key = "#region")
 	public String getCurrentRegion(String region) {
 		LOG.debug("Should put region:{} into cache.", config.getRegion());
@@ -87,6 +73,7 @@ public class RegionService {
 	 */
 	public List<String> getRegionList() {
 		Cache distCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
+		@SuppressWarnings("rawtypes")
 		List list = ((Ehcache)distCache.getNativeCache()).getKeys();
 		List<String> regionList = new ArrayList<String>();
 		for (Object object : list) {
@@ -96,16 +83,29 @@ public class RegionService {
 		return regionList;
 	}
 	
+	/**
+	 * just for test and debug.
+	 */
 	@Scheduled(fixedDelay = 5000)
 	public void test() {
-		Cache distCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
+		testDistCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
+		testDistCache(NGrinderConstants.CACHE_NAME_RUNNING_STATISTICS);
+		testDistCache(NGrinderConstants.CACHE_NAME_CURRENT_PERFTEST_STATISTICS);
+	}
+	
+	private void testDistCache (String cacheName) {
+		Cache distCache = cacheManager.getCache(cacheName);
+		@SuppressWarnings("rawtypes")
 		List list = ((Ehcache)distCache.getNativeCache()).getKeys();
-		StringBuilder sb = new StringBuilder();
+		StringBuilder valueSB = new StringBuilder();
+		StringBuilder keySB = new StringBuilder();
 		for (Object object : list) {
-			sb.append(distCache.get(object).get()).append(", ");
+			keySB.append(object).append(", ");
+			valueSB.append(distCache.get(object).get()).append(", ");
 		}
-		LOG.debug("Region list from cache:{}", sb.toString());
-
+		LOG.debug("Cache name:{}.", cacheName);
+		LOG.debug("           key:{}", keySB.toString());
+		LOG.debug("           value:{}", valueSB.toString());
 	}
 
 }

@@ -58,7 +58,7 @@
 			<#if logs?has_content> 
 				<#list logs as eachLog>
 					<div style="width:100%;" class="ellipsis">
-						<a href="${req.getContextPath()}/perftest/downloadLog/${eachLog}?testId=${test.id}">${eachLog}</a>
+						<a href="${req.getContextPath()}/perftest/downloadLog/${eachLog}?testId=${test.id?c}">${eachLog}</a>
 					</div>
 				</#list> 
 			<#else> 
@@ -96,7 +96,7 @@
 		var tagString = buildTagString();
 		$.post(
 				"${req.getContextPath()}/perftest/leaveComment",
-				{"testId": ${test.id}, "testComment": comment, "tagString":tagString},
+				{"testId": ${test.id?c}, "testComment": comment, "tagString":tagString},
 				function() {
 					showSuccessMsg("<@spring.message "perfTest.report.message.leaveComment"/>");
 				}

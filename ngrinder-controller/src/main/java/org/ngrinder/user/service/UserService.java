@@ -118,7 +118,7 @@ public class UserService implements IUserService {
 		if (StringUtils.isBlank(roleName)) {
 			return userRepository.findAll();
 		} else {
-			return userRepository.findAllByRole(getRole(roleName));
+			return getUserListByRole(getRole(roleName));
 		}
 	}
 

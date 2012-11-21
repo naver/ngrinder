@@ -59,10 +59,17 @@
                    <tr>
                         <td colspan=2></td>
                    </tr>
-                   <tr> 
-                       <th><@spring.message "perfTest.table.duration"/></th>
-                       <td><span>${test.durationStr}</span> <code>HH:MM:SS</code></td>
-                   </tr>
+                   <#if test.threshold?? && test.threshold == "D"> 
+	                   <tr> 
+	                       <th><@spring.message "perfTest.table.duration"/></th>
+	                       <td><span>${test.durationStr}</span> <code>HH:MM:SS</code></td>
+	                   </tr>
+                   <#else>
+                   		<tr> 
+	                       <th><@spring.message "perfTest.table.runcount"/></th>
+	                       <td><span>${test.runCount}</td>
+	                   </tr>
+                   </#if>
                    <tr>
                        <th><@spring.message "perfTest.configuration.ignoreSampleCount"/></th>
                        <td><span>${test.ignoreSampleCount}</span></td> 
