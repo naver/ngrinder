@@ -19,7 +19,10 @@
 			    margin-right: 5px;
        			margin-top: 5px; 
 			}
-			.compactpadding th {padding-left:5px;padding-right:5px} 
+			.compactpadding th { padding:8px 5px; vertical-align:middle; }
+			li a { color:#005580 }
+			li a:hover { color:#0088CC; text-decoration:underline; }
+			li a.active { color:#0088CC }
 		</style>
 	</head>
 
@@ -40,6 +43,10 @@
 		<div class="row">
 			<div class="span3">
 			   <table class="table table-bordered compactpadding">
+				   <colgroup>
+						<col width="120px">
+						<col> 
+				   </colgroup>
 			       <tr>
 			       	   <th><@spring.message "perfTest.report.vusersPerAgent"/></th>
 			           <td><strong>${test.vuserPerAgent}</strong></td>
@@ -57,7 +64,7 @@
                        <td>${test.threads}</td>
                    </tr>
                    <tr>
-                        <td colspan=2></td>
+                        <td colspan="2" class="divider"></td>
                    </tr>
                    <#if test.threshold?? && test.threshold == "D"> 
 	                   <tr> 
@@ -100,7 +107,7 @@
                    </tr>
 			   </table>
 			   <ul class="unstyled">
-                 <li><i class="icon-tag"></i> <a id="testPerformance" href="javascript:void(0);"><@spring.message "perfTest.report.performanceReport"/></a></li>
+                 <li><i class="icon-tag"></i> <a id="testPerformance" href="javascript:void(0);" class="active"><@spring.message "perfTest.report.performanceReport"/></a></li>
                </ul>
                <#if test.targetHostIP?exists>	
 				   <ul class="unstyled"><i class="icon-tags"></i> <@spring.message "perfTest.report.targetHost"/>
@@ -113,9 +120,9 @@
 			<div class="span9">
 			    <table class="table table-bordered" style="margin-bottom:10px">
 			    	<colgroup>
-						<col width="100">
+						<col width="120">
 						<col width="220">
-						<col width="100">
+						<col width="120">
 						<col>
 					</colgroup>
                    <tr>
@@ -178,12 +185,14 @@
 		        $("#performanceDiv").show();
 		        $("#monitorDiv").hide();
 		        getPerformanceData();
+		        changActiveLink($(this));
 		    });
 		    $("a.targetMontor").click(function() {
                 $("#performanceDiv").hide();
                 $("#monitorDiv").show();
                 var $elem = $(this);
                 getMonitorData($elem.attr("ip"), false);
+                changActiveLink($(this));
             });
 
             $("#downloadReportData").click(function() {
@@ -191,8 +200,15 @@
                 document.forms.downloadForm.action = url;
                 document.forms.downloadForm.submit();
             });
+			
 			$("#testPerformance").click();
 		});
+		
+		function changActiveLink(obj) {
+			$("li > a.active").removeClass("active");
+			obj.addClass("active");
+		}
+		
 		function getPerformanceData(){
 		    if(performanceInit){
 		        return;

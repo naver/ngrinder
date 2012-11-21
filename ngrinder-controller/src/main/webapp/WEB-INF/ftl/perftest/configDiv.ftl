@@ -31,7 +31,6 @@
 											id="vuserPerAgent" name="vuserPerAgent"	value="${(test.vuserPerAgent)!1}" rel="popover"	
 											data-content='<@spring.message "perfTest.configuration.vuserPerAgent.help"/>'
 											data-original-title="<@spring.message "perfTest.configuration.vuserPerAgent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxVuserPerAgent)}</span>
-												
 									</div>
 									<a href="javascript:void(0)"><i class="expand" id="expandAndCollapse"></i></a>	
 								</td> 
@@ -61,6 +60,19 @@
 					</div>
 				</div>
 				<div class="control-group">
+					<label for="ScriptResources" class="control-label"><@spring.message "perfTest.configuration.region"/></label>
+					<div class="controls">
+						<select id="regionSelect" name="region" style="width:255px">
+							<option value="NONE"><@spring.message "perfTest.configuration.region.placeholder"/></option>
+							<#if regionList?? && regionList?size &gt; 0> 
+								<#list regionList as regionName> 
+									<option value="${regionName}" <#if test?? && test.region?? && test.region == regionName>selected</#if> >${regionName}</option> 
+								</#list> 
+							</#if>
+						</select>
+				 	</div>
+				</div>
+				<div class="control-group">
 					<label for="scriptName" class="control-label"><@spring.message "perfTest.configuration.script"/></label>
 					<div class="controls">
 						<table style="width:100%">
@@ -70,9 +82,9 @@
 							</colgroup>
 							<tr>
 							<td>
-								<select id="scriptName" class="required span4" name="scriptName"> 
+								<select id="scriptName" class="required" name="scriptName" style="width:255px"> 
 									<#if test?? && test.lastModifiedUser.userId != currentUser.userId>
-										<option value="${test.scriptName}" selected validated="${(scriptItem.properties.validated)!"0"}>${test.scriptName} - belong to ${test.lastModifiedUser.userId}</option>
+										<option value="${test.scriptName}" selected validated="${(scriptItem.properties.validated)!"0"}">${test.scriptName} - belong to ${test.lastModifiedUser.userId}</option>
 									<#else>
 										<option value=""></option>
 									</#if>
@@ -105,21 +117,6 @@
 					</div>
 				</div>
 				<div class="control-group">
-					<label for="ScriptResources" class="control-label"><@spring.message "perfTest.configuration.region"/></label>
-					<div class="controls">
-						<div class="input-append">
-							<select id="regionSelect" name="region" style="width:204px">
-								<option value="NONE"><@spring.message "perfTest.configuration.region.placeholder"/></option>
-								<#if regionList?? && regionList?size &gt; 0> 
-									<#list regionList as regionName> 
-										<option value="${regionName}" <#if test?? && test.region?? && test.region == regionName>selected</#if> >${regionName}</option> 
-									</#list> 
-								</#if>
-							</select>
-				 		</div>
-				 	</div>
-				</div>
-				<div class="control-group">
 					<label class="control-label"><@spring.message "perfTest.configuration.targetHost"/></label>
 					<#if test?? && test.targetHosts??>
 						<#assign targetHosts = test.targetHosts>
@@ -143,7 +140,7 @@
 						<code>HH:MM:SS</code>
 						<input type="hidden" id="duration" class="required positiveNumber" name="duration"
 							value="${(test.duration)!60000}">
-						<div id="durationSlider" class="slider" style="margin-left: 0; width: 250px"></div>
+						<div id="durationSlider" class="slider" style="margin-left: 0; width: 255px"></div>
 						<input id="hiddenDurationInput" class="hide" data-step="1">
 
 					</div>
