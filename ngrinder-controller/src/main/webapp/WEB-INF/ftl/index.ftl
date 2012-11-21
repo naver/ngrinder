@@ -4,8 +4,21 @@
 		<title>nGrinder Home</title>
 		<#include "common/common.ftl">
 		<style>
-			.hero-unit { margin-left:0px;background-image:url('${req.getContextPath()}/img/bg_main_banner_<@spring.message "common.language"/>.png');margin-top:-20px;margin-bottom:10px;height:200px;padding:0px}    
-			.quickStart  { padding-left:160px; padding-top:35px }  
+			.hero-unit { 
+				margin-left: 0;
+				background-image: url('${req.getContextPath()}/img/bg_main_banner_<@spring.message "common.language"/>.png');
+				margin-top: -20px;
+				margin-bottom: 10px;
+				height: 200px;
+				padding: 0
+			}    
+			.quickStart {
+				padding-left: 160px;
+				padding-top: 35px
+			}
+			.table {
+				margin-bottom: 5px
+			} 
 		</style> 
 
 	</head>

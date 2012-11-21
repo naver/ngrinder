@@ -72,15 +72,18 @@
 				<div class="pull-right"> 
 					<code id="currentRunning" style="width:300px"></code>
 				</div>
+				<@security.authorize ifAnyGranted="A, S">
+					<#assign isAdmin = true />
+				</@security.authorize>
 				<table class="table table-striped table-bordered ellipsis" id="testTable" style="width:940px">  
 					<colgroup>
 						<col width="30">
 						<col width="50">   
 						<col width="90"> 
 						<col> 
-						<@security.authorize ifAnyGranted="A, S">
+						<#if isAdmin??>
 				            <col width="78"> 	
-						</@security.authorize>
+						</#if>
 						<col width="120"> 
 						<col width="80">
 						<col width="65">
@@ -96,9 +99,9 @@
 							<th id="testName"><@spring.message "perfTest.table.testName"/></th>
 							<th id="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
 							
-							<@security.authorize ifAnyGranted="A, S">
+							<#if isAdmin??>
 				            	<th class="nothing"><@spring.message "perfTest.table.creator"/></th>
-							</@security.authorize>
+							</#if>
 							<th id="startTime"><@spring.message "perfTest.table.startTime"/></th>
 							<th id="duration"><@spring.message "perfTest.table.duration"/></th>
 							<th id="tps"><@spring.message "perfTest.table.tps"/></th> 
@@ -113,10 +116,11 @@
 						<#if testList?has_content>
 							<#list testList as test>
 								<#assign vuserTotal = (test.vuserPerAgent) * (test.agentCount) />
+								<#assign deletable = !(test.status.deletable) />
+								<#assign stoppable = !(test.status.stoppable) />
 								<tr id="tr${test.id}">
 									<td class="center">
-										<input id="check_${test.id}" type="checkbox" class="checkbox perf_test" value="${test.id}" status="${test.status}" 
-											<#if !(test.status.isDeletable())>disabled</#if> >
+										<input id="check_${test.id}" type="checkbox" class="checkbox perf_test" value="${test.id}" status="${test.status}" <#if deletable>disabled</#if>>
 									</td>
 									<td class="center"  id="row_${test.id}">
 										<div class="ball" id="ball_${test.id}" rel="popover" data-content='${"${test.progressMessage}/n${test.lastProgressMessage}"?replace('/n', '<br>')?html}'>
@@ -131,18 +135,15 @@
 									<td class="ellipsis"
 										data-content="${test.scriptName} &lt;br&gt;&lt;br&gt; - <@spring.message "script.list.table.revision"/> : ${(test.scriptRevision)!'HEAD'}" 
 										data-original-title="<@spring.message "perfTest.table.scriptName"/>">			
-										<@security.authorize ifAnyGranted="A, S">					
+										<#if isAdmin??>
 											<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}&ownerId=${(test.lastModifiedUser.userId)!}">${test.scriptName}</a>
-										</@security.authorize>
-										<@security.authorize ifNotGranted="A, S">
+										<#else>
 											<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}">${test.scriptName}</a>
-										</@security.authorize>
+										</#if>
 									</td>
-									
-									<@security.authorize ifAnyGranted="A, S">
+									<#if isAdmin??>
 				            			<td class="center ellipsis" title="${test.createdUser.userName}">${test.createdUser.userName}</td>
-									</@security.authorize>
-									
+									</#if>
 									<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if></td>
 									<td>
 										<#if test.threshold == "D">
@@ -157,14 +158,14 @@
 									<td><#if test.errors??>${test.errors}</#if></td>
 									<td>${vuserTotal}</td>
 									<td class="center">
-										<a href="javascript:void(0)"  style="display: none;" ><i title="<@spring.message "common.button.delete"/>"id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>
-										<a href="javascript:void(0)"  style="display: none;" ><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" class="icon-stop test-stop" sid="${test.id}"></i></a>
+										<a href="javascript:void(0)" style="<#if deletable>display: none;</#if>"><i title="<@spring.message "common.button.delete"/>"id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>
+										<a href="javascript:void(0)" style="<#if stoppable>display: none;</#if>"><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" class="icon-stop test-stop" sid="${test.id}"></i></a>
 									</td>  
 								</tr>  
 							</#list> 
 						<#else>
 							<tr>
-								<td colspan="12" class="center">
+								<td colspan="<#if isAdmin??>12<#else>11</#if>" class="center">
 									<@spring.message "common.message.noData"/>
 								</td>
 							</tr>
@@ -302,7 +303,7 @@
 			    		showSuccessMsg("<@spring.message "perfTest.table.message.success.delete"/>");
 							setTimeout(function() {
 								getList(1);
-							}, 1000);
+							}, 500);
 		    		} else {
 			    		showErrorMsg("<@spring.message "perfTest.table.message.error.delete"/>:" + res.message);
 		    		}
@@ -324,7 +325,7 @@
 			    		showSuccessMsg("<@spring.message "perfTest.table.message.success.stop"/>");
 							setTimeout(function() {
 								getList(1);
-							}, 1000);
+							}, 500);
 		    		} else {
 			    		showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>:" + res.message);
 		    		}
