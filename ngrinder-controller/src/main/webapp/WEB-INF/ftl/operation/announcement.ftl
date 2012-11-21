@@ -13,6 +13,7 @@
 					<h3><@spring.message "navigator.dropdown.announcement"/>&nbsp;&nbsp;<small><@spring.message "announcement.view.message"/></small></h3>
 				</div>
 				<form id="annountcementForm" method="post">
+				<a id="testBtn" class="btn btn-primary pull-right" href="javascript:void(0);" style="margin-top:-55px; margin-right:55px">Test</a>
 				<button id="saveBtn" class="btn btn-success pull-right" style="margin-top:-55px;"><@spring.message "common.button.save"/></button>
 				<textarea id="announcementTT" name="content">${content!}</textarea>
 				</form>
@@ -59,6 +60,18 @@
 				document.forms.annountcementForm.submit();
 			});
 			
+			$("#testBtn").click(function() {
+				var content = editor.getValue();
+				if (content.indexOf("</") < 0 && content.indexOf("<br>") < 0) {
+					content = content.replaceAll("\n", "<br>");
+					content = content.replaceAll('\t', '&nbsp;&nbsp;&nbsp;&nbsp;')
+				}
+				$("#ancemtContentDiv").html(content);
+				$("#announcementDiv").fadeIn();
+			});
+			String.prototype.replaceAll = function(s1,s2) { 
+			    return this.replace(new RegExp(s1,"gm"),s2); 
+			}
 			<#if success?exists>
 				<#if success>
 					showSuccessMsg("<@spring.message "common.message.alert.save.success"/>");
