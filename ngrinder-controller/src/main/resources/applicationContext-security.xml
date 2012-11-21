@@ -68,15 +68,15 @@
 	</http>
 
 	<http entry-point-ref="authenticationProcessingFilterEntryPoint" access-decision-manager-ref="accessDecisionManager">
-		<intercept-url pattern="/" access="A, U" />
-		<intercept-url pattern="/home" access="A, U" />
-		<intercept-url pattern="/perftest/**" access="A, U" />
-		<intercept-url pattern="/help**" access="A, U" />
-		<intercept-url pattern="/script**" access="A, U" />
-		<intercept-url pattern="/monitor**" access="A, U" />
+		<intercept-url pattern="/" access="A,S,U" />
+		<intercept-url pattern="/home" access="A,S,U" />
+		<intercept-url pattern="/perftest/**" access="A,S,U" />
+		<intercept-url pattern="/help**" access="A,S,U" />
+		<intercept-url pattern="/script**" access="A,S,U" />
+		<intercept-url pattern="/monitor**" access="A,S,U" />
 
-		<intercept-url pattern="/agent/**" access="A" />
-		<intercept-url pattern="/user/**" access="A, U" />
+		<intercept-url pattern="/agent/**" access="A,S" />
+		<intercept-url pattern="/user/**" access="A,S,U" />
 		<custom-filter ref="pluggablePreAuthFilter" position="PRE_AUTH_FILTER"/>
 		<custom-filter ref="customFilter" position="FORM_LOGIN_FILTER" />
 

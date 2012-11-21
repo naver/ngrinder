@@ -40,17 +40,23 @@ public enum Role {
 	 * Admin user role who can monitors tests.
 	 */
 	ADMIN("A", "Administrator") {
-		public boolean canGetAllTests() {
-			return true;
-		}
+		public boolean canGetAllTests() { return true; }
+		public boolean canModifyTestOfOther() { return false; }
+		public boolean canDeleteTestOfOther() { return true; }
+		public boolean canStopTestOfOther() { return false; }
+		public boolean canCheckScriptOfOther() { return true; }
+		public boolean canValidateScriptOfOther() { return false; }
 	},
 	/**
 	 * Super user role who can set system settings and manage user account.
 	 */
 	SUPER_USER("S", "Super") {
-		public boolean canGetAllTests() {
-			return true;
-		}
+		public boolean canGetAllTests() { return true; }
+		public boolean canModifyTestOfOther() { return false; }
+		public boolean canDeleteTestOfOther() { return false; }
+		public boolean canStopTestOfOther() { return false; }
+		public boolean canCheckScriptOfOther() { return true; }
+		public boolean canValidateScriptOfOther() { return true; }
 	},
 	/**
 	 * System user role. This is for the automatic batch

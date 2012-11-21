@@ -596,8 +596,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	@Transactional
 	public void deletePerfTest(User user, long id) {
 		PerfTest perfTest = getPerfTest(id);
-		// If it's not requested by user who started job. It's wrong request.
-		if (!hasPermission(perfTest, user)) {
+		checkNotNull(perfTest);
+		// check whether this user has permission to delete test
+		if (!perfTest.getCreatedUser().equals(user) && !user.getRole().canDeleteTestOfOther()) {
 			return;
 		}
 		SortedSet<Tag> tags = perfTest.getTags();
@@ -1161,8 +1162,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	@Transactional
 	public void stopPerfTest(User user, Long id) {
 		PerfTest perfTest = getPerfTest(id);
-		// If it's not requested by user who started job. It's wrong request.
-		if (!hasPermission(perfTest, user)) {
+		checkNotNull(perfTest);
+		// check whether this user has permission to stop test
+		if (!perfTest.getCreatedUser().equals(user) && !user.getRole().canStopTestOfOther()) {
 			return;
 		}
 		// If it's not stoppable status.. It's wrong request.
@@ -1173,22 +1175,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		consoleManager.getConsoleUsingPort(perfTest.getPort()).cancel();
 		perfTest.setStopRequest(true);
 		perfTestRepository.save(perfTest);
-	}
-
-	/**
-	 * Check if given user has a permission on perftest.
-	 * 
-	 * @param perfTest
-	 *            perftest
-	 * @param user
-	 *            user
-	 * @return true if it has
-	 */
-	public boolean hasPermission(PerfTest perfTest, User user) {
-		if (perfTest == null) {
-			return false;
-		}
-		return user.getRole() == Role.ADMIN || perfTest.getCreatedUser().equals(user);
 	}
 
 	/*
