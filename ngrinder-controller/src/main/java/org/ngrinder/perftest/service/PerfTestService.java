@@ -97,7 +97,6 @@ import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.service.IPerfTestService;
-import org.ngrinder.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,7 +106,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specifications;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -147,42 +145,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 	@Autowired
 	private TagService tagSerivce;
-
-	@Autowired
-	private UserRepository userRepository;
-	
-	/**
-	 * Scheduled service of performance test.
-	 */
-	@Scheduled(fixedDelay = 5000)
-	public void service() {
-		
-//		Set<AgentIdentity> allSharedAgent = agentManager.getAllSharedAgents();
-//		Set<AgentIdentity> allApprovedAgentsForUser = agentManager.getAllApprovedAgents(user);
-//		int additional = Math.max(allApprovedAgentsForUser.size() - allSharedAgent.size(), 0);
-//		int maxAgentSizePerConsole = Math.min(agentManager.getMaxAgentSizePerConsole() + additional,
-//						allApprovedAgentsForUser.size());
-		//return maxAgentSizePerConsole;
-		
-		
-		
-		Set<AgentIdentity> allApprovedAgent = agentManager.getAllApprovedAgents();
-		Set<AgentIdentity> allSharedAgent = agentManager.filterSharedAgents(allApprovedAgent);
-		int maxAgentSizePerConsole = agentManager.getMaxAgentSizePerConsole();
-		
-		
-		List<User> allUser = userRepository.findAll();
-		for (User user : allUser) {
-			Set<AgentIdentity> userApprovedAgent = agentManager.filterUserAgents(allApprovedAgent, user.getUserId());
-			int additional = Math.max(userApprovedAgent.size() - allSharedAgent.size(), 0);
-			int userMaxAgentSizePerConsole = Math.min(maxAgentSizePerConsole + additional,
-					userApprovedAgent.size());
-			user.setAvailableAgentCount(userMaxAgentSizePerConsole);
-			userRepository.save(user);
-		}
-
-
-	}
 
 	/**
 	 * Get {@link PerfTest} list on the user.
@@ -596,9 +558,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	@Transactional
 	public void deletePerfTest(User user, long id) {
 		PerfTest perfTest = getPerfTest(id);
-		checkNotNull(perfTest);
-		// check whether this user has permission to delete test
-		if (!perfTest.getCreatedUser().equals(user) && !user.getRole().canDeleteTestOfOther()) {
+		// If it's not requested by user who started job. It's wrong request.
+		if (!hasPermission(perfTest, user)) {
 			return;
 		}
 		SortedSet<Tag> tags = perfTest.getTags();
@@ -1162,9 +1123,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	@Transactional
 	public void stopPerfTest(User user, Long id) {
 		PerfTest perfTest = getPerfTest(id);
-		checkNotNull(perfTest);
-		// check whether this user has permission to stop test
-		if (!perfTest.getCreatedUser().equals(user) && !user.getRole().canStopTestOfOther()) {
+		// If it's not requested by user who started job. It's wrong request.
+		if (!hasPermission(perfTest, user)) {
 			return;
 		}
 		// If it's not stoppable status.. It's wrong request.
@@ -1175,6 +1135,22 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		consoleManager.getConsoleUsingPort(perfTest.getPort()).cancel();
 		perfTest.setStopRequest(true);
 		perfTestRepository.save(perfTest);
+	}
+
+	/**
+	 * Check if given user has a permission on perftest.
+	 * 
+	 * @param perfTest
+	 *            perftest
+	 * @param user
+	 *            user
+	 * @return true if it has
+	 */
+	public boolean hasPermission(PerfTest perfTest, User user) {
+		if (perfTest == null) {
+			return false;
+		}
+		return user.getRole() == Role.ADMIN || perfTest.getCreatedUser().equals(user);
 	}
 
 	/*
