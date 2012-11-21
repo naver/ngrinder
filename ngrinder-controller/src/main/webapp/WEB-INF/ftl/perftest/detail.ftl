@@ -128,11 +128,11 @@
 								<#else>
                      		   		<#assign initTestName = "">
                     			</#if>
-                    
-								<input class="required span2 left-float" maxlength="80" size="30" type="text" id="testName" name="testName" value="${(initTestName)!}">
-								<label for="tagString" class="header-control-label control-label"><@spring.message "perfTest.configuration.tags"/></label>
-								<input class="span3" size="60" type="text" id="tagString" name="tagString" value="${(test.tagString)!}">
-								
+                    			<input class="required span2 left-float" maxlength="80" size="30" type="text" id="testName" name="testName" value="${(initTestName)!}">
+								<span class="left-float span2" style="height:20px;margin-left:0px;"><span id="testNameError" class="error-msg left-float span2" style="margin-left:0px;margin-top:0px"></span></span>
+								<label for="tagString" class="header-control-label control-label" style="width:30px !important"><@spring.message "perfTest.configuration.tags"/></label>
+								<input class="span3" size="60" type="text" id="tagString" name="tagString" value="${(test.tagString)!}"> 
+								  
 								<#if test??> 
 									<span id="teststatus_pop_over"
 										rel="popover" 
@@ -175,7 +175,6 @@
 										</button>
 									</#if>
 								</span>
-								<span class="error-msg"></span>
 							</div>
 						</div>
 						<div class="control-group" style="margin-bottom: 0">
@@ -429,21 +428,32 @@ function initDuration() {
 
 
 function addValidation() {
+	$.validator.addMethod('Decimal', function(value, element) {
+    	return this.optional(element) || /^\d+(\.\d{0,3})?$/.test(value); 
+	}, "Please enter a correct number, format xxxx.xxx");
 	$("#testContentForm").validate({
 		rules : {
 			testName : "required",
 			agentCount : {
 				required : true,
+				digits: true,
 				max:${(maxAgentSizePerConsole)},
 				min:0
 			},		
 			vuserPerAgent : {
 				required : true,
+				digits: true,
 				max:${(maxVuserPerAgent)},
 				min:1
 			},
 			duration : {
 				max:${maxRunHour}*3600000,
+				min:0
+			},
+			
+			ignoreSampleCount : {
+				required : false,
+				digits: true,
 				min:0
 			},
 			<#if securityMode?? && securityMode == true>
@@ -452,6 +462,7 @@ function addValidation() {
 			},
 			</#if>
 			runCount : {
+				digits: true,
 				max:${maxRunCount},
 				min:0
 			}
@@ -465,6 +476,7 @@ function addValidation() {
 	        runCount: "<@spring.message "perfTest.warning.runCount"/>",
 	        processes: "<@spring.message "perfTest.warning.processes"/>",
 	        threads: "<@spring.message "perfTest.warning.threads"/>",
+	        ignoreSampleCount: "<@spring.message "perfTest.warning.ignoreSampleCount"/>",
 	        targetHosts: "<@spring.message "perfTest.warning.hostString"/>"
 	    },
 		ignore : "", // make the validation on hidden input work
@@ -672,7 +684,8 @@ function bindEvent() {
 				</#if>
 			</@security.authorize>
 			var scriptRevision = $("#scriptRevision").val();
-			window.open("${req.getContextPath()}/script/detail/" + currentScript + "?r=" + scriptRevision + ownerId, "scriptSource");
+			var openedWindow = window.open("${req.getContextPath()}/script/detail/" + currentScript + "?r=" + scriptRevision + ownerId, "scriptSource");
+			openedWindow.focus(); 
 		}
 	});
 	

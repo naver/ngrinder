@@ -75,7 +75,7 @@
 							</colgroup>
 							<tr>
 							<td>
-								<select id="scriptName" class="required span4" name="scriptName"> 
+								<select id="scriptName" class="required" name="scriptName" style="width:270px"> 
 									<#if test?? && test.lastModifiedUser.userId != currentUser.userId>
 										<option value="${test.scriptName}" selected>${test.scriptName} - belong to ${test.lastModifiedUser.userId}</option>
 									</#if>
