@@ -7,9 +7,9 @@
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
    
 	<changeSet author="ngrinder.3.1-SNAPSHOT" id="9"  dbms="h2, cubrid">
-		<comment>Add available agent count column in user table.</comment>
-		<addColumn tableName="NUSER">
-			<column name="user_agent_count" type="integer" defaultValue="0"/>
+		<comment>Add agent status column.</comment>
+		<addColumn tableName="AGENT">
+			<column name="status" type="varchar(20)"/>
 		</addColumn>
 	</changeSet>
 </databaseChangeLog>

@@ -37,6 +37,8 @@ public enum AgentControllerState {
 	BUSY,
 	/** When agent controller is closed. */
 	FINISHED,
+	/** When agent controller is down. */
+	INACTIVE,
 	/** Unknown. */
 	UNKNOWN
 }

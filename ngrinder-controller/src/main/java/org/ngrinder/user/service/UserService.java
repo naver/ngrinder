@@ -153,7 +153,7 @@ public class UserService implements IUserService {
 		user.setRole(role);
 		userRepository.save(user);
 	}
-
+	
 	/**
 	 * modify user information.
 	 * 

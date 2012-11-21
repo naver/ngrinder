@@ -44,7 +44,7 @@ public class RegionServiceTest extends AbstractPerfTestTransactionalTest {
 	public void testGetRegionList() {
 		List<String> regionlist = regionService.getRegionList();
 		LOG.debug("list:{}", regionlist);
-		regionService.initRegion();
+		//regionService.initRegion();
 		regionlist = regionService.getRegionList();
 		LOG.debug("list   2:{}", regionlist);
 	}

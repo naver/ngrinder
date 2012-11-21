@@ -30,32 +30,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.util.List;
 
 import org.junit.Test;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.PropertiesWrapper;
-import org.ngrinder.infra.init.CacheClusterService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.Cache;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @ContextConfiguration("classpath:applicationContext.xml")
 public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGrinderConstants {
 
 	@Autowired
 	private MockConfig config;
-	
-	@Autowired
-	private CacheClusterService clusterInit;
-
-	@Autowired
-	private EhCacheCacheManager cacheManager;
 
 	@Test
 	public void testDefaultHome() {

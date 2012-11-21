@@ -49,6 +49,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
@@ -107,6 +108,9 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@Autowired
 	private AgentManager agentManager;
+
+	@Autowired
+	private AgentManagerService agentManagerService;
 
 	@Autowired
 	private TagService tagService;
@@ -254,7 +258,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	public void addDefaultAttributeOnModel(User user, ModelMap model) {
 		model.addAttribute(PARAM_CURRENT_FREE_AGENTS_COUNT, agentManager.getAllFreeAgents().size());
-		int maxAgentSizePerConsole = user.getAvailableAgentCount();
+		long maxAgentSizePerConsole = agentManagerService.getUserAvailableAgentCount(user);
 		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, maxAgentSizePerConsole);
 		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
 		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
@@ -319,15 +323,12 @@ public class PerfTestController extends NGrinderBaseController {
 		checkNotEmpty(test.getTestName(), "test name should be provided");
 		checkArgument(test.getStatus().equals(Status.READY) || test.getStatus().equals(Status.SAVED),
 						"save test only support for SAVE or READY status");
-		checkArgument(test.getDuration() == null
-						|| test.getDuration() <= (1000 * 60 * 60 * agentManager.getMaxRunHour()),
-						"test duration should be within %s", agentManager.getMaxRunHour());
 		checkArgument(test.getRunCount() == null || test.getRunCount() <= agentManager.getMaxRunCount(),
 						"test run count should be within %s", agentManager.getMaxRunCount());
 		checkArgument(test.getDuration() == null
 						|| test.getDuration() <= (((long) agentManager.getMaxRunHour()) * 3600000L),
 						"test run duration should be within %s", agentManager.getMaxRunHour());
-		checkArgument(test.getAgentCount() == null || test.getAgentCount() <= user.getAvailableAgentCount(),
+		checkArgument(test.getAgentCount() <= agentManagerService.getUserAvailableAgentCount(user),
 						"test agent shoule be within %s", agentManager.getMaxAgentSizePerConsole());
 		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
 						"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());

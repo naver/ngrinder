@@ -100,10 +100,6 @@ public class User extends BaseModel<User> {
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "follow_id"), inverseJoinColumns = @JoinColumn(name = "owner_id"))
 	private List<User> owners;
-	
-	@Column(name = "user_agent_count")
-	/** Who provide the authentication */
-	private int availableAgentCount;
 
 	/**
 	 * Default constructor.
@@ -311,13 +307,5 @@ public class User extends BaseModel<User> {
 		userInfo.setUserId(this.getUserId());
 		userInfo.setUserName(this.getUserName());
 		return userInfo;
-	}
-
-	public int getAvailableAgentCount() {
-		return availableAgentCount;
-	}
-
-	public void setAvailableAgentCount(int availableAgentCount) {
-		this.availableAgentCount = availableAgentCount;
 	}
 }

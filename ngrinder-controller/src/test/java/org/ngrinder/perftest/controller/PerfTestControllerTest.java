@@ -62,7 +62,7 @@ import org.springframework.ui.ModelMap;
 public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
-	private MockPerfTestController controller;
+	private PerfTestController controller;
 
 	@Autowired
 	private IUserService userService;

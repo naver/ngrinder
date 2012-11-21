@@ -23,22 +23,28 @@
 package org.ngrinder.agent.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
+import net.grinder.message.console.AgentControllerState;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentManagerRepository;
+import org.ngrinder.agent.repository.AgentManagerSpecification;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.AgentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,6 +68,63 @@ public class AgentManagerService {
 	@Autowired
 	private Config config;
 
+	/**
+	 * Run a scheduled task to check the agent status.
+	 * 
+	 * @since 3.1
+	 */
+	@Scheduled(fixedDelay = 5000)
+	public void checkAgentStatus() {
+		List<AgentInfo> changeAgentList = new ArrayList<AgentInfo>();
+
+		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
+		Map<String, AgentControllerIdentityImplementation> attachedAgentMap =
+				new HashMap<String, AgentControllerIdentityImplementation>(allAttachedAgents.size());
+		for (AgentIdentity agentIdentity : allAttachedAgents) {
+			AgentControllerIdentityImplementation agentControllerIdentity = 
+					(AgentControllerIdentityImplementation) agentIdentity;
+			attachedAgentMap.put(agentControllerIdentity.getIp(), agentControllerIdentity);
+		}
+
+		List<AgentInfo> agentsInDB = agentRepository.findAll(AgentManagerSpecification.startWithRegion(
+				config.getRegion()));
+		Map<String, AgentInfo> agentsInDBMap = new HashMap<String, AgentInfo>(agentsInDB.size());
+		//step1. check all agents in DB, whether they are attached to controller.
+		for (AgentInfo agentInfoInDB : agentsInDB) {
+			agentsInDBMap.put(agentInfoInDB.getIp(), agentInfoInDB);
+			AgentControllerIdentityImplementation agentIdt = attachedAgentMap.get(agentInfoInDB.getIp());
+			if (agentIdt == null) {
+				// this agent is not attached to controller
+				agentInfoInDB.setStatus(AgentControllerState.INACTIVE);
+			} else {
+				agentInfoInDB.setStatus(agentManager.getAgentState(agentIdt));
+			}
+			changeAgentList.add(agentInfoInDB);
+		}
+		
+		//step2. check all attached agents, whether they are new, and not saved in DB.
+		for (AgentControllerIdentityImplementation agentIdentity : attachedAgentMap.values()) {
+			if (!agentsInDBMap.containsKey(agentIdentity.getIp())) {
+				changeAgentList.add(creatAgentInfo(agentIdentity, new AgentInfo()));
+			}
+		}
+		
+		//step3. update into DB
+		agentRepository.save(changeAgentList);
+	}
+	
+	/**
+	 * Get user's available agent count, including the agents of Ready status, and user specified agents.
+	 * @param user
+	 * 				used to check user specified agents.
+	 * @return agent count
+	 * @since 3.1
+	 */
+	public long getUserAvailableAgentCount(User user) {
+		return agentRepository.count(AgentManagerSpecification.startWithRegionEqualStatusOfUser(
+				config.getRegion(), AgentControllerState.READY, user));
+	}
+	
 	/**
 	 * Get agents. agent list is obtained from DB and {@link AgentManager}
 	 * 
@@ -92,7 +155,7 @@ public class AgentManagerService {
 		return agentRepository.findAll();
 	}
 
-	@CacheEvict(allEntries = true, value = "agents")
+	//@CacheEvict(allEntries = true, value = "agents")
 	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation agentIdentity,
 					List<AgentInfo> agents) {
 		AgentInfo agentInfo = new AgentInfo();
@@ -102,17 +165,21 @@ public class AgentManagerService {
 				break;
 			}
 		}
-		if (!StringUtils.equals(agentInfo.getHostName(), agentIdentity.getName())
-						|| !StringUtils.equals(agentInfo.getRegion(), agentIdentity.getRegion())) {
+		return creatAgentInfo(agentIdentity, agentInfo);
+	}
+	
+	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation agentIdentity, AgentInfo agentInfo) {
+		// if agent's host name or region is changed, need to update DB
+		// or the agent is not in DB.
+		//if (!StringUtils.equals(agentInfo.getHostName(), agentIdentity.getName())
+		//		|| !StringUtils.startsWith(agentInfo.getRegion(), config.getRegion())) {
 			agentInfo.setHostName(agentIdentity.getName());
-			String agtRegion = agentIdentity.getRegion();
-			if (agtRegion != null && !agtRegion.contains("_owned_")) {
-				agtRegion = config.getRegion();
-			}
+			// if it is user owned agent, region name is {controllerRegion} + "_owned_userId"
+			String agtRegion = config.getRegion() + agentIdentity.getRegion();
 			agentInfo.setRegion(agtRegion);
 			agentInfo.setIp(agentIdentity.getIp());
-			agentInfo = agentRepository.save(agentInfo);
-		}
+			//agentInfo = agentRepository.save(agentInfo); will be saved in scheduled service.
+		//}
 		agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
 		agentInfo.setStatus(agentManager.getAgentState(agentIdentity));
 		// need to save agent info into DB, like ip and port maybe changed.

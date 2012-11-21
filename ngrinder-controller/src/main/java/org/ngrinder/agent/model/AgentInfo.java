@@ -24,6 +24,8 @@ package org.ngrinder.agent.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -68,9 +70,9 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	 */
 	private String hostName = "";
 
-	@Transient
+	@Enumerated(EnumType.STRING)
 	private AgentControllerState status;
-
+	
 	private String region;
 
 	@Type(type = "true_false")

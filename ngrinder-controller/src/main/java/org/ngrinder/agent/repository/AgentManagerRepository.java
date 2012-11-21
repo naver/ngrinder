@@ -25,7 +25,9 @@ package org.ngrinder.agent.repository;
 import java.util.List;
 
 import org.ngrinder.agent.model.AgentInfo;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -36,7 +38,7 @@ import org.springframework.stereotype.Repository;
  * @since 3.0
  */
 @Repository
-public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long> {
+public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, JpaSpecificationExecutor<AgentInfo> {
 
 	/**
 	 * Find {@link AgentInfo} by ip.
@@ -55,4 +57,8 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long> {
 	 * @return found {@link AgentInfo} list
 	 */
 	List<AgentInfo> findAllByIp(String ip);
+
+	List<AgentInfo> findAll(Specification<AgentInfo> spec);
+
+	long count(Specification<AgentInfo> spec);
 }
