@@ -72,4 +72,10 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 		agentService.saveAgent(agent);
 		return agent;
 	}
+	
+	@Test
+	public void testGetUserAvailableAgentCount () {
+		agentService.getUserAvailableAgentCount(testUser);
+	}
+	
 }

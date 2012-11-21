@@ -61,7 +61,7 @@ public abstract class AgentManagerSpecification {
 				
 				return cb.and(cb.and(cb.like(root.get("region").as(String.class), regionQueryStr),
 									cb.like(root.get("region").as(String.class), userQueryStr)),
-						cb.equal(root.get("status").as(String.class), status));
+						cb.equal(root.get("status"), status));
 			}
 		};
 	}
