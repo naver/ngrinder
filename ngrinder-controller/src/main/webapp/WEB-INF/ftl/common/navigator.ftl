@@ -45,9 +45,11 @@
 
 <@security.authorize ifAnyGranted="U">
 <#if announcement?has_content>
-<div class="alert alert-block" style="margin:-40px 0 21px; padding:14px 20px">
-	<h4><@spring.message "announcement.alert.title"/></h4>
-	<div style="margin:5px 35px 0;">
+<div class="alert alert-block" style="margin:-40px 0 21px; padding:10px 20px">
+	<div class="page-header" style="margin:0; padding-bottom:2px">
+		<h3><@spring.message "announcement.alert.title"/></h3>
+	</div>
+	<div style="margin:10px 2px 0;">
 		<#if announcement?index_of('</') gt 0>
 		${announcement}
 		<#else>
