@@ -51,15 +51,28 @@ public abstract class AgentManagerSpecification {
 		};
 	}
 
+	/**
+	 * query specification to get available agents for user.
+	 * condition is:
+			1. the ready agents in this region
+			2. user specified agent, which name is: ${region} + * + "owned_${userId}"
+	 * @param region
+	 * 				agent region.
+	 * @param status
+	 * 				agent status
+	 * @param user
+	 * 				specified user.
+	 * @return
+	 */
 	public static Specification<AgentInfo> startWithRegionEqualStatusOfUser(final String region,
 			final AgentControllerState status, final User user) {
 		return new Specification<AgentInfo>() {
 			@Override
 			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				String regionQueryStr = region + "%";
-				String userQueryStr = "%owned_" + user.getUserId() + "%";
+				String userQueryStr = region + "%owned_" + user.getUserId() + "%";
 				
-				return cb.and(cb.and(cb.like(root.get("region").as(String.class), regionQueryStr),
+				return cb.and(cb.or(cb.like(root.get("region").as(String.class), regionQueryStr),
 									cb.like(root.get("region").as(String.class), userQueryStr)),
 						cb.equal(root.get("status"), status));
 			}
