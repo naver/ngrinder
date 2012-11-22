@@ -156,7 +156,7 @@
 								data-content="<@spring.message "perfTest.configuration.runCount.help"/>"	
 								rel="popover"												
 								id="runCount" class="input input-mini" number_limit="${(maxRunCount)}" name="runCount"
-								value="${(test.runCount)!0}"><span class="add-on"><@spring.message "perfTest.configuration.max"/> ${(maxRunCount)}</span>
+								value="${(test.runCount)!0}"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxRunCount)}</span>
 						</div>
 					</div>
 				</div>
@@ -238,7 +238,7 @@
 		<div class="page-header center" style="padding-bottom:10px;">
 			<strong><@spring.message "perfTest.configuration.rampUpDes"/></strong>
 		</div>
-		<div id="rampChart" class="rampChart"></div>
+		<div id="rampChart" class="rampChart" style="margin-left:20px"></div>
 	</div>
 	<!-- end test content right -->
 </div>

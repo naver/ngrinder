@@ -10,7 +10,7 @@
 				padding-top: 0;
 			}	
 			.left { border-right: 1px solid #878988 }
-			div.chart { border: 1px solid #878988; height:250px; min-width:615px; margin-bottom:12px }
+			div.chart { border: 1px solid #878988; height:250px; min-width:615px; margin-bottom:30px }
 			td strong { color: #6DAFCF }
 			.jqplot-yaxis {
 			    margin-right: 10px;
@@ -116,7 +116,7 @@
                </#if>
 			</div>
 			<div class="span9">
-			    <table class="table table-bordered" style="margin-bottom:10px">
+			    <table class="table table-bordered" style="margin-bottom:35px">
 			    	<colgroup>
 						<col width="120">
 						<col width="220">
@@ -134,25 +134,20 @@
                     	<td colspan="3">${(test.testComment)!?html?replace('\n', '<br>')}</td>
                    </tr>  
                </table>
-               <div class="row" style="margin-bottom:10px">
-	                <button class="btn btn-middle btn-primary pull-right" id="downloadReportData"><i class="icon-download-alt"></i><strong><@spring.message "perfTest.report.downloadCSV"/></strong></button>
-	           </div>
 			    <div id="performanceDiv">
-			    	<div class="page-header">
-						<h4>TPS</h4>
+			    	<div class="page-header pageHeader">
+			    		<h4>Performance</h4>
 					</div>
+	                <button class="btn btn-middle btn-primary pull-right" id="downloadReportData" style="margin-top:-55px"><i class="icon-download-alt"></i><strong><@spring.message "perfTest.report.downloadCSV"/></strong></button>
+					<h6>TPS</h6>
 			    	<div class="chart" id="tpsDiv"></div>
-    				<div class="page-header">
-						<h4><@spring.message "perfTest.report.header.meantime"/>&nbsp;&nbsp;<code>ms</code></h4>
-					</div>
+					<h6><@spring.message "perfTest.report.header.meantime"/>&nbsp;(ms)</h6>
     				<div class="chart" id="meanTimeDiv"></div>
-    				<div class="page-header">
-						<h4><@spring.message "perfTest.report.header.errors"/></h4>
-					</div>
+					<h6><@spring.message "perfTest.report.header.errors"/></h6>
     				<div class="chart" id="errorDiv"></div>
 				</div>
 				<div id="monitorDiv" style="display:none">
-	    			<div class="page-header">
+	    			<div class="page-header pageHeader">
 						<h4>System Data <i id="ipMark"></i></h4>
 					</div>
 				    <h6>CPU</h6>
