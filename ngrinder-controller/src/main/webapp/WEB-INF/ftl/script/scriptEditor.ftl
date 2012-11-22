@@ -33,69 +33,68 @@
 	<div class="container">
 		<div class="row">
 			<div class="span12">
-				<form id="contentForm" method="post" target="_self" style="margin-bottom: 0px;"> 	
-					<div class="well" style="margin-bottom: 10px;">
-						<div class="form-horizontal">
-							<fieldset>
-								<div class="control-group">
-										<table style="width:100%">
-											<colgroup>
-												<col width="150px"/>
-												<col width="*"/>
-												<col width="300px"/>
-											</colgroup>
-											<tr>
-												<td>
-													<label class="control-label" for="testName"><@spring.message "script.option.name"/></label>
-												</td>
-												<td>
-													<input type="text" id="scriptNameInput" class="span6" name="path" value="${(file.path)!}" readonly/>
-												</td>
-												<td>
-													<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:73px; width:40px;"><@spring.message "common.button.save"/></a>
-													<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:90px;"><@spring.message "script.editor.button.validate"/></a>
-												</td>
-											</tr> 
-										</table>
-								</div>
-								<div style="margin-bottom: 0" class="control-group">
-									<table style="width:100%"> 
-										<colgroup> 
+				<form id="contentForm" class="well" method="post" target="_self" style="margin-bottom:10px;"> 	
+					<div class="form-horizontal">
+						<fieldset>
+							<div class="control-group">
+									<table style="width:100%">
+										<colgroup>
 											<col width="150px"/>
-											<col width="*"/> 
+											<col width="*"/>
 											<col width="300px"/>
 										</colgroup>
 										<tr>
 											<td>
-												<label class="control-label" for="description"><@spring.message "script.option.commit"/></label>
+												<label class="control-label" for="testName"><@spring.message "script.option.name"/></label>
 											</td>
 											<td>
-												<textarea class="span6" id="descInput" name="description" style="resize:none; height:55px" >${(file.description)!}</textarea>
-											</td> 
+												<input type="text" id="scriptNameInput" class="span6" name="path" value="${(file.path)!}" readonly/>
+											</td>
 											<td>
-												<#if file.properties.targetHosts??>
-													<#assign targetHosts = file.properties.targetHosts/>
-												</#if>
-												<#include "../perftest/host.ftl"/>
-											</td> 
-										</tr>
-									</table>           
-								</div>
-							</fieldset>
-						</div>
+												<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:73px; width:40px;"><@spring.message "common.button.save"/></a>
+												<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:90px;"><@spring.message "script.editor.button.validate"/></a>
+											</td>
+										</tr> 
+									</table>
+							</div>
+							<div style="margin-bottom: 0" class="control-group">
+								<table style="width:100%"> 
+									<colgroup> 
+										<col width="150px"/>
+										<col width="*"/> 
+										<col width="300px"/>
+									</colgroup>
+									<tr>
+										<td>
+											<label class="control-label" for="description"><@spring.message "script.option.commit"/></label>
+										</td>
+										<td>
+											<textarea class="span6" id="descInput" name="description" style="resize:none; height:55px" >${(file.description)!}</textarea>
+										</td> 
+										<td>
+											<#if file.properties.targetHosts??>
+												<#assign targetHosts = file.properties.targetHosts/>
+											</#if>
+											<#include "../perftest/host.ftl"/>
+										</td> 
+									</tr>
+								</table>           
+							</div>
+						</fieldset>
 					</div>
-					<pre style="height:100px; margin:5px 0 10px;" class="prettyprint pre-scrollable hidden" id="validateRsPre">
-					</pre>
 					<input type="hidden" id="createLibAndResource" name="createLibAndResource" value="<#if createLibAndResource?? && createLibAndResource==true>true<#else>false</#if>"/>
 					<input type="hidden" id="validatedHd" name="validated" value="${(file.properties.validated)!"0"}">
+					<input type="hidden" id="contentHd" name="content">
 					<@security.authorize ifAnyGranted="A, S">
 						<#if ownerId??>					
 							<input type="hidden" id="ownerId" name="ownerId" value="${ownerId}"/>
 						</#if>
 					</@security.authorize>
-					<textarea id="codemirrorContent" name="content">${(file.content)!}</textarea>
-					<textarea id="oldContent" class="hidden">${(file.content)!}</textarea>
 				</form>
+				<pre style="height:100px; margin:5px 0 10px;" class="prettyprint pre-scrollable hidden" id="validateRsPre">
+				</pre>
+				<textarea id="codemirrorContent">${(file.content)!}</textarea>
+				<textarea id="oldContent" class="hidden">${(file.content)!}</textarea>
 				<div class="pull-right" rel="popover" style="position:float;margin-top:-20px;margin-right:-30px" data-original-title="Tip" data-content="
 			      Ctrl-F / Cmd-F : <@spring.message "script.editor.tip.startSearching"/>&lt;br&gt; 
 			      Ctrl-G / Cmd-G : <@spring.message "script.editor.tip.findNext"/>&lt;br&gt;
@@ -146,7 +145,7 @@
 				if ($("#oldContent").val() != newContent) {
 					$("#validatedHd").val("0");
 				}
-				$('#codemirrorContent').text(newContent);
+				$('#contentHd').val(newContent);
 				document.forms.contentForm.action = "${req.getContextPath()}/script/save";
 				document.forms.contentForm.submit();
 			});

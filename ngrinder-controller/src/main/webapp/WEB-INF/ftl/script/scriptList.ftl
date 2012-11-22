@@ -80,12 +80,12 @@
 			<colgroup>
 				<col width="30">
 				<col width="32">
-				<col width="250"> 
+				<col width="230"> 
 				<col>
 				<col width="150">
-				<col width="70">
 				<col width="80">
-				<col width="63">
+				<col width="80">
+				<col width="80">
 			</colgroup> 
 			<thead>
 				<tr>
@@ -97,7 +97,7 @@
 					<th><@spring.message "script.list.table.lastDate"/></th>
 					<th><@spring.message "script.list.table.revision"/></th>
 					<th><@spring.message "script.list.table.size"/></th>
-					<th class="noClick"><@spring.message "common.label.actions"/></th>
+					<th class="noClick"><@spring.message "script.list.table.download"/></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -198,7 +198,7 @@
 				searchScriptList();
 			});
 			
-			enableChkboxSelectAll();
+			enableChkboxSelectAll("scriptTable");
 			
 			$("i.script-download").on('click', function() {
 				var $elem = $(this);
