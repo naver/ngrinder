@@ -61,13 +61,17 @@
 			});
 			
 			$("#testBtn").click(function() {
-				var content = editor.getValue();
+				var content = $.trim(editor.getValue());
+				if (content == "") {
+					$("#announcementDiv").slideUp();
+					return false;
+				}
 				if (content.indexOf("</") < 0 && content.indexOf("<br>") < 0) {
 					content = content.replaceAll("\n", "<br>");
 					content = content.replaceAll('\t', '&nbsp;&nbsp;&nbsp;&nbsp;')
 				}
 				$("#ancemtContentDiv").html(content);
-				$("#announcementDiv").fadeIn();
+				$("#announcementDiv").slideDown();
 			});
 			String.prototype.replaceAll = function(s1,s2) { 
 			    return this.replace(new RegExp(s1,"gm"),s2); 

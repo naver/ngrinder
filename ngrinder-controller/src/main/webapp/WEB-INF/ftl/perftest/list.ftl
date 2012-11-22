@@ -202,7 +202,7 @@
 	      	
 			$("#n_test").addClass("active");
 			
-			enableChkboxSelectAll();
+			enableChkboxSelectAll("testTable");
 			
 			$("#deleteBtn").on('click', function() {
 				var ids = "";

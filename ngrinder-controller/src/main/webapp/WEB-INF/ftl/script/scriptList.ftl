@@ -198,7 +198,7 @@
 				searchScriptList();
 			});
 			
-			enableChkboxSelectAll();
+			enableChkboxSelectAll("scriptTable");
 			
 			$("i.script-download").on('click', function() {
 				var $elem = $(this);

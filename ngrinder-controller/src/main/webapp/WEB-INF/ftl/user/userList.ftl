@@ -81,7 +81,7 @@
 				document.location.href = "${req.getContextPath()}/user/list?keywords=" + $("#searchText").val() ;
 			});
 			
-			enableChkboxSelectAll();
+			enableChkboxSelectAll("userTable");
 			
 		    <#if userList?has_content>
 			oTable = $("#userTable").dataTable({
