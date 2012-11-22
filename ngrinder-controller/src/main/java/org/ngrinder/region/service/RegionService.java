@@ -91,7 +91,6 @@ public class RegionService {
 	 * get region list of all clustered controller.
 	 * @return region list
 	 */
-	@Cacheable("region_list")
 	public List<String> getRegionList() {
 		Cache distCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
 		@SuppressWarnings("rawtypes")
