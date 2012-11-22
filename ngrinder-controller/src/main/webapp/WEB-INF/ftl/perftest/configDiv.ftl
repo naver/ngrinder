@@ -12,7 +12,7 @@
 							<input type="text" class="input input-mini" rel="popover"
 								id="agentCount" name="agentCount" value="${(test.agentCount)!0}" 
 								data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
-								data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
+								data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span id="maxAgentCount" class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
 				 		</div>
 					</div>
 				</div>
@@ -64,9 +64,11 @@
 					<div class="controls">
 						<select id="regionSelect" name="region" style="width:255px">
 							<option value="NONE"><@spring.message "perfTest.configuration.region.placeholder"/></option>
-							<#if regionList?? && regionList?size &gt; 0> 
-								<#list regionList as regionName> 
-									<option value="${regionName}" <#if test?? && test.region?? && test.region == regionName>selected</#if> >${regionName}</option> 
+							<#if regionList?size &gt; 0> 
+								<#list regionList as regionName>
+									<#if regionName != "NONE"> 
+									<option value="${regionName}" <#if test?? && test.region?? && test.region == regionName>selected</#if> >${regionName}</option>
+									</#if> 
 								</#list> 
 							</#if>
 						</select>

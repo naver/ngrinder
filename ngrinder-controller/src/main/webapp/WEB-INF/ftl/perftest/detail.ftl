@@ -319,7 +319,12 @@ var jqplotObj;
 var objTimer;
 var test_tps_data = new Queue();
 var durationMap = [];
-	  
+
+var agentCountMap = {};
+<#list regionAgentCountMap?keys as key>
+	agentCountMap.${key} = ${regionAgentCountMap[key]};
+</#list>
+
 $(document).ready(function () {
 	$.ajaxSetup({
 		cache : false //close AJAX cache
@@ -760,6 +765,18 @@ function bindEvent() {
 	});
 	
 	$("#regionSelect").select2();
+	$("#regionSelect").change(function(){
+		var region = $(this).val();
+		var count = agentCountMap[region];
+		if (count === undefined) {
+			count = 0;
+		}
+		var $countObj = $("#maxAgentCount");
+		var oriValue = $countObj.html();
+		var prefix = oriValue.substr(0, oriValue.indexOf(":") + 1);
+	
+		$countObj.html(prefix + count);
+	});	
 }
 
 function buildTagString() {

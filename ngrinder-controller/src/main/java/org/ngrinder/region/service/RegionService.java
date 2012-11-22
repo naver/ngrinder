@@ -25,6 +25,8 @@ package org.ngrinder.region.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import net.sf.ehcache.Ehcache;
 
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -39,7 +41,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**
- * Class description.
+ * Region service class.
  *
  * @author Mavlarn
  * @since 3.1
@@ -56,30 +58,45 @@ public class RegionService {
 	private EhCacheCacheManager cacheManager;
 	
 	/**
-	 * get current region, and set into cache.
+	 * Set current region into cache, using the IP as key and region name as value.
 	 * 
-	 * @param region of current controller.
-	 * @return region
 	 */
-	@Cacheable(value = "region_list", key = "#region")
-	public String getCurrentRegion(String region) {
-		LOG.debug("Should put region:{} into cache.", config.getRegion());
-		return config.getRegion();
+	@PostConstruct
+	public void initRegion() {
+		String currentRegion = config.getRegion();
+		String currentIP = config.getCurrentIP();
+		Cache distCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
+		distCache.put(currentIP, currentRegion);
+		LOG.info("Add Region: {}:{} into cache.", currentRegion, currentIP);
+		@SuppressWarnings("rawtypes")
+		List list = ((Ehcache)distCache.getNativeCache()).getKeys();
+		for (Object object : list) {
+			String ip = (String)object;
+			String region = (String)distCache.get(object).get();
+			if (ip.equals(currentIP) && !region.equals(currentRegion)) {
+				//ip is same, region is different, means the region name is changed
+				LOG.info("Evict Region: {}:{} from cache.", region, currentIP);
+				distCache.evict(region); //remove previous region name.
+			}
+		}
 	}
 	
 	/**
 	 * get region list of all clustered controller.
 	 * @return region list
 	 */
+	@Cacheable("region_list")
 	public List<String> getRegionList() {
 		Cache distCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
 		@SuppressWarnings("rawtypes")
 		List list = ((Ehcache)distCache.getNativeCache()).getKeys();
 		List<String> regionList = new ArrayList<String>();
+		List<String> ipList = new ArrayList<String>();
 		for (Object object : list) {
+			ipList.add((String)object);
 			regionList.add((String)distCache.get(object).get());
 		}
-		LOG.debug("Region list from cache:{}", regionList);
+		LOG.debug("Region list manually from cache:{}, ip:{}", regionList, ipList);
 		return regionList;
 	}
 	

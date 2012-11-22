@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 
 import net.grinder.common.processidentity.AgentIdentity;
@@ -48,6 +47,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.mutable.MutableInt;
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.controller.NGrinderBaseController;
@@ -97,7 +97,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/perftest")
 public class PerfTestController extends NGrinderBaseController {
 
-	@SuppressWarnings("unused")
 	private static final Logger LOGGER = LoggerFactory.getLogger(PerfTestController.class);
 
 	@Autowired
@@ -120,15 +119,6 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@Autowired
 	private Config config;
-	
-	/**
-	 * Initializing function.
-	 */
-	@PostConstruct
-	public void init() {
-		//call this function to trigger to save the region into cache.
-		regionService.getCurrentRegion(config.getRegion());
-	}
 
 	/**
 	 * Get Performance test lists.
@@ -141,8 +131,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            modelMap
 	 * @param tag
 	 *            tag
-	 * @param onlyFinished
-	 *            only list finished project
+	 * @param queryFilter
+	 *            "F" means get only finished, "S" means get only scheduled tests.
 	 * @param pageable
 	 *            page
 	 * @return perftest/list
@@ -218,13 +208,17 @@ public class PerfTestController extends NGrinderBaseController {
 		});
 
 		model.addAttribute(PARAM_SCRIPT_LIST, allFileEntries);
-		model.addAttribute(PARAM_REGION_LIST, regionService.getRegionList());
-
+		List<String> regionList = regionService.getRegionList();
+		LOGGER.debug("Region list:{}", regionList);
+		model.addAttribute(PARAM_REGION_LIST, regionList);
+		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(regionList, user);
+		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
+		
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		
 		//when admin watch other user's  test,max Agent size should be observed user's agent size.
-		User userMaxAgent = test == null ? user : test.getCreatedUser();
-		addDefaultAttributeOnModel(userMaxAgent, model);
+		//User userMaxAgent = test == null ? user : test.getCreatedUser();
+		addDefaultAttributeOnModel(model, agentCountMap.get(config.getRegion()).intValue());
 		return "perftest/detail";
 	}
 
@@ -256,9 +250,9 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @param model
 	 *            model which will contains that value.
 	 */
-	public void addDefaultAttributeOnModel(User user, ModelMap model) {
+	public void addDefaultAttributeOnModel(ModelMap model, int agentCount) {
 		model.addAttribute(PARAM_CURRENT_FREE_AGENTS_COUNT, agentManager.getAllFreeAgents().size());
-		long maxAgentSizePerConsole = agentManagerService.getUserAvailableAgentCount(user);
+		long maxAgentSizePerConsole = agentCount;
 		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, maxAgentSizePerConsole);
 		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
 		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
@@ -297,9 +291,13 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute("testName", "Test for " + url.getHost());
 		model.addAttribute(PARAM_TARGET_HOST, url.getHost());
 		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
-		model.addAttribute(PARAM_REGION_LIST, regionService.getRegionList());
+		List<String> regionList = regionService.getRegionList();
+		LOGGER.debug("Region list:{}", regionList);
+		model.addAttribute(PARAM_REGION_LIST, regionList);
+		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(regionList, user);
+		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
-		addDefaultAttributeOnModel(user, model);
+		addDefaultAttributeOnModel(model, agentCountMap.get(config.getRegion()).intValue());
 		return "perftest/detail";
 	}
 
