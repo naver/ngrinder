@@ -24,6 +24,8 @@ package org.ngrinder.agent.repository;
 
 import java.util.List;
 
+import net.grinder.message.console.AgentControllerState;
+
 import org.ngrinder.agent.model.AgentInfo;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -58,7 +60,7 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, 
 	 */
 	List<AgentInfo> findAllByIp(String ip);
 
-	List<AgentInfo> findAll(Specification<AgentInfo> spec);
+	List<AgentInfo> findAllByStatus(AgentControllerState status);
 
 	long count(Specification<AgentInfo> spec);
 }

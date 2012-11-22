@@ -55,7 +55,7 @@ public abstract class AgentManagerSpecification {
 	 * query specification to get available agents for user.
 	 * condition is:
 			1. the ready agents in this region
-			2. user specified agent, which name is: ${region} + * + "owned_${userId}"
+			2. user specified agent, which name is: ${region} | "_" + {anykeywork} + "owned_${userId}"
 	 * @param region
 	 * 				agent region.
 	 * @param status

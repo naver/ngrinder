@@ -33,6 +33,7 @@ import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.agent.repository.AgentManagerSpecification;
@@ -126,6 +127,36 @@ public class AgentManagerService {
 	}
 	
 	/**
+	 * get the available agent count map in all regions of the user, including the free agents and
+	 * user specified agents.
+	 * @param user
+	 * 				current user
+	 * @return	user available agent count map
+	 */
+	public Map<String, MutableInt> getUserAvailableAgentCountMap(List<String> regionList, User user) {
+		Map<String, MutableInt> rtnMap = new HashMap<String, MutableInt>(regionList.size());
+		for (String region : regionList) {
+			rtnMap.put(region, new MutableInt(0));
+		}
+		List<AgentInfo> agentList = agentRepository.findAllByStatus(AgentControllerState.READY);
+		for (AgentInfo agentInfo : agentList) {
+			String oriRegion = agentInfo.getRegion();
+			String region;
+			if (oriRegion.contains("owned_" + user.getUserId())) {
+				region = oriRegion.substring(0, oriRegion.indexOf("_"));
+			} else {
+				region = oriRegion;
+			}
+			if (!rtnMap.containsKey(region)) {
+				rtnMap.put(region, new MutableInt(1));
+			} else {
+				rtnMap.get(region).increment();
+			}
+		}
+		return rtnMap;
+	}
+	
+	/**
 	 * Get agents. agent list is obtained from DB and {@link AgentManager}
 	 * 
 	 * This includes not persisted agent as well.
@@ -174,8 +205,8 @@ public class AgentManagerService {
 		//if (!StringUtils.equals(agentInfo.getHostName(), agentIdentity.getName())
 		//		|| !StringUtils.startsWith(agentInfo.getRegion(), config.getRegion())) {
 			agentInfo.setHostName(agentIdentity.getName());
-			// if it is user owned agent, region name is {controllerRegion} + "_owned_userId"
-			String agtRegion = config.getRegion() + agentIdentity.getRegion();
+			// if it is user owned agent, region name is {controllerRegion} + "_ankeyword_owned_userId"
+			String agtRegion = config.getRegion() + "_" + agentIdentity.getRegion();
 			agentInfo.setRegion(agtRegion);
 			agentInfo.setIp(agentIdentity.getIp());
 			//agentInfo = agentRepository.save(agentInfo); will be saved in scheduled service.
