@@ -66,19 +66,25 @@ public class RegionService {
 		String currentRegion = config.getRegion();
 		String currentIP = config.getCurrentIP();
 		Cache distCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
-		distCache.put(currentIP, currentRegion);
-		LOG.info("Add Region: {}:{} into cache.", currentRegion, currentIP);
+
 		@SuppressWarnings("rawtypes")
 		List list = ((Ehcache)distCache.getNativeCache()).getKeys();
 		for (Object object : list) {
-			String ip = (String)object;
-			String region = (String)distCache.get(object).get();
-			if (ip.equals(currentIP) && !region.equals(currentRegion)) {
-				//ip is same, region is different, means the region name is changed
-				LOG.info("Evict Region: {}:{} from cache.", region, currentIP);
-				distCache.evict(region); //remove previous region name.
+			if (!(object instanceof String)) {
+				LOG.info("Evict invalid cache: {}:{} from cache.", object, distCache.get(object));
+				distCache.evict(object);
+			} else {
+				String ip = (String)object;
+				String region = (String)distCache.get(object).get();
+				if (ip.equals(currentIP) && !region.equals(currentRegion)) {
+					//ip is same, region is different, means the region name is changed
+					LOG.info("Evict invalid Region: {}:{} from cache.", region, currentIP);
+					distCache.evict(region); //remove previous region name.
+				}
 			}
 		}
+		distCache.put(currentIP, currentRegion);
+		LOG.info("Add Region: {}:{} into cache.", currentRegion, currentIP);
 	}
 	
 	/**

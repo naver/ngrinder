@@ -218,7 +218,19 @@ public class PerfTestController extends NGrinderBaseController {
 		
 		//when admin watch other user's  test,max Agent size should be observed user's agent size.
 		//User userMaxAgent = test == null ? user : test.getCreatedUser();
-		addDefaultAttributeOnModel(model, agentCountMap.get(config.getRegion()).intValue());
+		String region;
+		if (test == null || test.getRegion() == null) {
+			region = config.getRegion();
+		} else {
+			region = test.getRegion();
+		}
+		int agentCountInRegion;
+		if (region == null || agentCountMap.get(region) == null) {
+			agentCountInRegion = 0;
+		} else {
+			agentCountInRegion = agentCountMap.get(region).intValue();
+		}
+		addDefaultAttributeOnModel(model, agentCountInRegion);
 		return "perftest/detail";
 	}
 
