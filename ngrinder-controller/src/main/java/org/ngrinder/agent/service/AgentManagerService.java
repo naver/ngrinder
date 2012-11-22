@@ -121,10 +121,10 @@ public class AgentManagerService {
 	 * @return agent count
 	 * @since 3.1
 	 */
-	public long getUserAvailableAgentCount(User user) {
-		return agentRepository.count(AgentManagerSpecification.startWithRegionEqualStatusOfUser(
-				config.getRegion(), AgentControllerState.READY, user));
-	}
+//	public long getUserAvailableAgentCount(User user) {
+//		return agentRepository.count(AgentManagerSpecification.startWithRegionEqualStatusOfUser(
+//				config.getRegion(), AgentControllerState.READY, user));
+//	}
 	
 	/**
 	 * get the available agent count map in all regions of the user, including the free agents and
@@ -138,7 +138,7 @@ public class AgentManagerService {
 		for (String region : regionList) {
 			rtnMap.put(region, new MutableInt(0));
 		}
-		List<AgentInfo> agentList = agentRepository.findAllByStatus(AgentControllerState.READY);
+		List<AgentInfo> agentList = agentRepository.findAllByStatusAndApproved(AgentControllerState.READY, true);
 		for (AgentInfo agentInfo : agentList) {
 			String oriRegion = agentInfo.getRegion();
 			String region;
@@ -206,7 +206,10 @@ public class AgentManagerService {
 		//		|| !StringUtils.startsWith(agentInfo.getRegion(), config.getRegion())) {
 			agentInfo.setHostName(agentIdentity.getName());
 			// if it is user owned agent, region name is {controllerRegion} + "_ankeyword_owned_userId"
-			String agtRegion = config.getRegion() + "_" + agentIdentity.getRegion();
+			String agtRegion = config.getRegion();
+			if (StringUtils.isNotBlank(agentIdentity.getRegion())) {
+				agtRegion = agtRegion + "_" + agentIdentity.getRegion();
+			}
 			agentInfo.setRegion(agtRegion);
 			agentInfo.setIp(agentIdentity.getIp());
 			//agentInfo = agentRepository.save(agentInfo); will be saved in scheduled service.

@@ -483,7 +483,8 @@ function addValidation() {
 			agentCount: {
 				required: true,
 				digits: true,
-				range: [0, ${(maxAgentSizePerConsole)}]
+				min: 0,
+				max: ${(maxAgentSizePerConsole)}
 			},		
 			vuserPerAgent: {
 				required: true,
@@ -774,7 +775,10 @@ function bindEvent() {
 		var $countObj = $("#maxAgentCount");
 		var oriValue = $countObj.html();
 		var prefix = oriValue.substr(0, oriValue.indexOf(":") + 1);
-	
+		$("#agentCount").rules("add", {
+			max:count
+		});
+		
 		$countObj.html(prefix + count);
 	});	
 }

@@ -60,7 +60,7 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, 
 	 */
 	List<AgentInfo> findAllByIp(String ip);
 
-	List<AgentInfo> findAllByStatus(AgentControllerState status);
+	List<AgentInfo> findAllByStatusAndApproved(AgentControllerState status, boolean isApproved);
 
 	long count(Specification<AgentInfo> spec);
 }

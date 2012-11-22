@@ -27,10 +27,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import net.grinder.message.console.AgentControllerState;
-
 import org.ngrinder.agent.model.AgentInfo;
-import org.ngrinder.model.User;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
@@ -64,18 +61,18 @@ public abstract class AgentManagerSpecification {
 	 * 				specified user.
 	 * @return
 	 */
-	public static Specification<AgentInfo> startWithRegionEqualStatusOfUser(final String region,
-			final AgentControllerState status, final User user) {
-		return new Specification<AgentInfo>() {
-			@Override
-			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				String regionQueryStr = region + "%";
-				String userQueryStr = region + "%owned_" + user.getUserId() + "%";
-				
-				return cb.and(cb.or(cb.like(root.get("region").as(String.class), regionQueryStr),
-									cb.like(root.get("region").as(String.class), userQueryStr)),
-						cb.equal(root.get("status"), status));
-			}
-		};
-	}
+//	public static Specification<AgentInfo> startWithRegionEqualStatusOfUser(final String region,
+//			final AgentControllerState status, final User user) {
+//		return new Specification<AgentInfo>() {
+//			@Override
+//			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+//				String regionQueryStr = region + "%";
+//				String userQueryStr = region + "%owned_" + user.getUserId() + "%";
+//				
+//				return cb.and(cb.or(cb.like(root.get("region").as(String.class), regionQueryStr),
+//									cb.like(root.get("region").as(String.class), userQueryStr)),
+//						cb.equal(root.get("status"), status));
+//			}
+//		};
+//	}
 }

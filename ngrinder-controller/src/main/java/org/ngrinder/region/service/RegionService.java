@@ -35,7 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -101,7 +100,7 @@ public class RegionService {
 			ipList.add((String)object);
 			regionList.add((String)distCache.get(object).get());
 		}
-		LOG.debug("Region list manually from cache:{}, ip:{}", regionList, ipList);
+		LOG.debug("Region list from cache:{}, ip:{}", regionList, ipList);
 		return regionList;
 	}
 	
@@ -112,7 +111,6 @@ public class RegionService {
 	public void test() {
 		testDistCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
 		testDistCache(NGrinderConstants.CACHE_NAME_RUNNING_STATISTICS);
-		testDistCache(NGrinderConstants.CACHE_NAME_CURRENT_PERFTEST_STATISTICS);
 	}
 	
 	private void testDistCache (String cacheName) {

@@ -68,8 +68,6 @@ import org.ngrinder.region.service.RegionService;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -96,8 +94,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/perftest")
 public class PerfTestController extends NGrinderBaseController {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(PerfTestController.class);
 
 	@Autowired
 	private PerfTestService perfTestService;
@@ -209,7 +205,6 @@ public class PerfTestController extends NGrinderBaseController {
 
 		model.addAttribute(PARAM_SCRIPT_LIST, allFileEntries);
 		List<String> regionList = regionService.getRegionList();
-		LOGGER.debug("Region list:{}", regionList);
 		model.addAttribute(PARAM_REGION_LIST, regionList);
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(regionList, user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
@@ -304,7 +299,6 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute(PARAM_TARGET_HOST, url.getHost());
 		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
 		List<String> regionList = regionService.getRegionList();
-		LOGGER.debug("Region list:{}", regionList);
 		model.addAttribute(PARAM_REGION_LIST, regionList);
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(regionList, user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
@@ -338,7 +332,11 @@ public class PerfTestController extends NGrinderBaseController {
 		checkArgument(test.getDuration() == null
 						|| test.getDuration() <= (((long) agentManager.getMaxRunHour()) * 3600000L),
 						"test run duration should be within %s", agentManager.getMaxRunHour());
-		checkArgument(test.getAgentCount() <= agentManagerService.getUserAvailableAgentCount(user),
+		
+		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(
+				regionService.getRegionList(), user);
+		int agentMaxCount = agentCountMap.get(test.getRegion()).intValue();
+		checkArgument(test.getAgentCount() <= agentMaxCount,
 						"test agent shoule be within %s", agentManager.getMaxAgentSizePerConsole());
 		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
 						"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());

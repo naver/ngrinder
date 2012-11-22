@@ -14,6 +14,7 @@
 								data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
 								data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span id="maxAgentCount" class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
 				 		</div>
+				 		<input type="hidden" id="maxAgtCountInput" value="${(maxAgentSizePerConsole)}">
 					</div>
 				</div>
 				<div class="control-group">

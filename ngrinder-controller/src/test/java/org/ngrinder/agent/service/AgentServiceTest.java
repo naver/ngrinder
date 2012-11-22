@@ -30,6 +30,7 @@ import net.grinder.message.console.AgentControllerState;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.model.AgentInfo;
+import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -42,6 +43,9 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private AgentManagerService agentService;
+
+	@Autowired
+	private RegionService regionService;
 	
 	@Test
 	public void testSaveGetDeleteAgent() {
@@ -75,7 +79,7 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 	
 	@Test
 	public void testGetUserAvailableAgentCount () {
-		agentService.getUserAvailableAgentCount(testUser);
+		agentService.getUserAvailableAgentCountMap(regionService.getRegionList(), testUser);
 	}
 	
 }
