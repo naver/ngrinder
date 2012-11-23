@@ -43,20 +43,20 @@
 	</div>
 </div>
 
-<#if announcement?has_content>
 <div class="alert alert-block <@security.authorize ifAnyGranted="A, S">hidden</@security.authorize>" style="padding:10px 20px" id="announcementDiv">
 	<div class="page-header" style="margin:0; padding-bottom:2px">
 		<h3><@spring.message "announcement.alert.title"/></h3>
 	</div>
 	<div style="margin:10px 5px 0;" id="ancemtContentDiv">
+		<#if announcement?has_content>
 		<#if announcement?index_of('</') gt 0 || announcement?index_of('<br>') gt 0>
 		${announcement}
 		<#else>
 		${announcement?replace('\n', '<br>')?replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp;')}
 		</#if>
+		</#if>
 	</div>
 </div>
-</#if>
 
 <div class="modal fade" id="userProfileModal">
 	<div class="modal-header">

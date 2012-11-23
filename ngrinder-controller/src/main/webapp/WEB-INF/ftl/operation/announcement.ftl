@@ -61,7 +61,7 @@
 			});
 			
 			$("#testBtn").click(function() {
-				var content = $.trim(editor.getValue());
+				var content = editor.getValue();
 				if (content == "") {
 					$("#announcementDiv").slideUp();
 					return false;
