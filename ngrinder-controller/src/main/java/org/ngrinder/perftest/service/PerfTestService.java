@@ -84,6 +84,7 @@ import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
+import org.ngrinder.model.Permission;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.Tag;
@@ -559,7 +560,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public void deletePerfTest(User user, long id) {
 		PerfTest perfTest = getPerfTest(id);
 		// If it's not requested by user who started job. It's wrong request.
-		if (!hasPermission(perfTest, user)) {
+		if (!hasPermission(perfTest, user, Permission.DELETE_TEST_OFOTHER)) {
 			return;
 		}
 		SortedSet<Tag> tags = perfTest.getTags();
@@ -1124,7 +1125,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public void stopPerfTest(User user, Long id) {
 		PerfTest perfTest = getPerfTest(id);
 		// If it's not requested by user who started job. It's wrong request.
-		if (!hasPermission(perfTest, user)) {
+		if (!hasPermission(perfTest, user, Permission.STOP_TEST_OFOTHER)) {
 			return;
 		}
 		// If it's not stoppable status.. It's wrong request.
@@ -1146,11 +1147,14 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            user
 	 * @return true if it has
 	 */
-	public boolean hasPermission(PerfTest perfTest, User user) {
+	public boolean hasPermission(PerfTest perfTest, User user, Permission type) {
 		if (perfTest == null) {
 			return false;
 		}
-		return user.getRole() == Role.ADMIN || perfTest.getCreatedUser().equals(user);
+		if (perfTest.getCreatedUser().equals(user)) {
+			return true;
+		}
+		return user.getRole().hasPermission(type);
 	}
 
 	/*
