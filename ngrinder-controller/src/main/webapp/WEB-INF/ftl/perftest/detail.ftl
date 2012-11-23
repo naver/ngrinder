@@ -138,10 +138,10 @@
 						<div class="control-group">
 							<table>
 								<colgroup>
-									<col width="120">
-									<col width="210">
-									<col width="90">
-									<col width="210">
+									<col width="120px">
+									<col width="210px">
+									<col width="90px">
+									<col width="210px">
 									<col width="30px">
 									<col width="220px">
 								</colgroup>
@@ -159,6 +159,7 @@
 			                     		   		<#assign initTestName = "">
 			                    			</#if>
 											<input class="required span3 left-float" maxlength="80" size="30" type="text" id="testName" name="testName" value="${(initTestName)!}">
+											<span class="left-float span2" style="height:20px;margin-left:0px;"><span id="testNameError" class="error-msg left-float span2" style="margin-left:0px;margin-top:0px"></span></span>
 										</td>
 										<td>
 											<label for="tagString" class="control-label" style="width:80px; margin-right:18px"><@spring.message "perfTest.configuration.tags"/></label>
@@ -477,6 +478,9 @@ function initDuration() {
 }
 
 function addValidation() {
+	$.validator.addMethod('Decimal', function(value, element) {
+    	return this.optional(element) || /^\d+(\.\d{0,3})?$/.test(value); 
+	}, "Please enter a correct number, format xxxx.xxx");
 	$("#testContentForm").validate({
 		rules: {
 			testName: "required",
@@ -491,12 +495,19 @@ function addValidation() {
 				digits: true,
 				range: [1, ${(maxVuserPerAgent)}]
 			},
+			duration : {
+				max:${maxRunHour}*3600000,
+				min:0
+			},
+			
+			ignoreSampleCount : {
+				required : false,
+				digits: true,
+				min:0
+			},
 			<#if securityMode?? && securityMode == true>
 			targetHosts: "required",
 			</#if>
-			ignoreSampleCount: {
-				digits: true
-			},
 			initProcesses: {
 				required: true,
 				digits: true
@@ -514,6 +525,11 @@ function addValidation() {
 				required: true,
 				digits: true,
 				min: 1
+			},				
+			runCount : {
+				digits: true,
+				max:${maxRunCount},
+				min:0
 			}
 		},
 	    messages: { 
@@ -541,7 +557,8 @@ function addValidation() {
 	        },
 	        targetHosts: {
 	        	required: "<@spring.message "perfTest.warning.hostString"/>"
-	        }
+	        },
+	        ignoreSampleCount: "<@spring.message "perfTest.warning.ignoreSampleCount"/>"
 	    },
 		ignore : "", // make the validation on hidden input work
 		errorClass : "help-inline",
@@ -747,7 +764,8 @@ function bindEvent() {
 				</#if>
 			</@security.authorize>
 			var scriptRevision = $("#scriptRevision").val();
-			window.open("${req.getContextPath()}/script/detail/" + currentScript + "?r=" + scriptRevision + ownerId, "scriptSource");
+			var openedWindow = window.open("${req.getContextPath()}/script/detail/" + currentScript + "?r=" + scriptRevision + ownerId, "scriptSource");
+			openedWindow.focus(); 
 		}
 	});
 	
