@@ -561,7 +561,13 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	public void doCancel(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		LOG.error("Cacel the perftest {} by user request.", perfTest.getTestIdentifier());
-		perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED, "Stop requested by user");
+		try {
+			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED,
+							"Stop requested by user");
+		} catch (Exception e) {
+			LOG.error("Error while canceling {}", perfTest.getTestIdentifier());
+			LOG.error("Details : ", e);
+		}
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
 
@@ -574,8 +580,13 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            {@link SingleConsole} which is being used for the given {@link PerfTest}
 	 */
 	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR,
-						"Stoped by error");
+		try {
+			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR,
+							"Stoped by error");
+		} catch (Exception e) {
+			LOG.error("Error while terminating {}", perfTest.getTestIdentifier());
+			LOG.error("Details : ", e);
+		}
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}
 
@@ -591,13 +602,18 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// FIXME... it should found abnormal test status..
 		LOG.debug("PerfTest {} status - currentRunningTime {} ", perfTest.getId(),
 						singleConsoleInUse.getCurrentRunningTime());
-		// stop target host monitor
-		if (singleConsoleInUse.hasTooManyError()) {
-			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR,
-							"The test is finished. but contains a lot of errors");
-		} else {
-			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.FINISHED,
-							"The test is finished successfully");
+		try {
+			// stop target host monitor
+			if (singleConsoleInUse.hasTooManyError()) {
+				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR,
+								"The test is finished. but contains a lot of errors");
+			} else {
+				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.FINISHED,
+								"The test is finished successfully");
+			}
+		} catch (Exception e) {
+			LOG.error("Error while finishing {}", perfTest.getTestIdentifier());
+			LOG.error("Details : ", e);
 		}
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
 	}

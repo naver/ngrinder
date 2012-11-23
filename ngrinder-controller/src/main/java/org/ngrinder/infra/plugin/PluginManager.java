@@ -339,7 +339,9 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	 *            any listener.
 	 */
 	public void addPluginUpdateEvent(Object listener) {
-		this.plugins.getPluginEventManager().register(listener);
+		if (this.plugins != null) {
+			this.plugins.getPluginEventManager().register(listener);
+		}
 	}
 
 }

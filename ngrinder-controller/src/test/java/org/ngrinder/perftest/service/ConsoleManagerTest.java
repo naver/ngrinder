@@ -31,6 +31,7 @@ public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 				.createEmptyConsoleProperties());
 		assertThat(manager.getAvailableConsoleSize(), is(initialSize - 1));
 		manager.returnBackConsole("test", availableConsole);
+		sleep(1000);
 		assertThat(manager.getAvailableConsoleSize(), is(initialSize));
 	}
 
