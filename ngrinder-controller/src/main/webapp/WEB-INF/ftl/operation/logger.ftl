@@ -15,9 +15,6 @@
 					<h3><@spring.message "log.view.header"/></h3>
 				</div> 
 				<table id="log_container">
-					<tr id="log_message">
-						<td></td>
-					</tr>
 				</table>
 			</div>
 		</div>
@@ -37,7 +34,7 @@
 			    			eachLog.attr("id", data.modification);
 			    		}
 			    	} else {
-			    		var logentries = $("#log_container tr")
+			    		var logentries = $("#log_container tr");
 			    		if (logentries.size() > 5) {
 			    			logentries.first().remove();
 			    		}

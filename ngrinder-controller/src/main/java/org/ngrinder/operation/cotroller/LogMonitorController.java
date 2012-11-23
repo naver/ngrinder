@@ -107,7 +107,10 @@ public class LogMonitorController extends NGrinderBaseController {
 						stringBuffer = new StringBuffer();
 					}
 					modification++;
-					stringBuffer.append("<br/>").append(line.replace("\n", "<br/>"));
+					if (stringBuffer.length() > 0) {
+						stringBuffer.append("<br>");
+					}
+					stringBuffer.append(line.replace("\n", "<br>"));
 				}
 			}
 		}, 1000, true);
