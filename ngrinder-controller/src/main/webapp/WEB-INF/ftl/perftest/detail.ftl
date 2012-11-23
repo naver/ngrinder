@@ -482,7 +482,6 @@ function addValidation() {
     	return this.optional(element) || /^\d+(\.\d{0,3})?$/.test(value); 
 	}, "Please enter a correct number, format xxxx.xxx");
 	$("#testContentForm").validate({
-<<<<<<< HEAD
 		rules: {
 			testName: "required",
 			agentCount: {
@@ -490,27 +489,11 @@ function addValidation() {
 				digits: true,
 				min: 0,
 				max: ${(maxAgentSizePerConsole)}
-=======
-		rules : {
-			testName : "required",
-			agentCount : {
-				required : true,
-				digits: true,
-				max:${(maxAgentSizePerConsole)},
-				min:0
->>>>>>> refs/heads/ngrinder_3.0
 			},		
-<<<<<<< HEAD
 			vuserPerAgent: {
 				required: true,
 				digits: true,
 				range: [1, ${(maxVuserPerAgent)}]
-=======
-			vuserPerAgent : {
-				required : true,
-				digits: true,
-				max:${(maxVuserPerAgent)},
-				min:1
 			},
 			duration : {
 				max:${maxRunHour}*3600000,
@@ -521,15 +504,10 @@ function addValidation() {
 				required : false,
 				digits: true,
 				min:0
->>>>>>> refs/heads/ngrinder_3.0
 			},
 			<#if securityMode?? && securityMode == true>
 			targetHosts: "required",
 			</#if>
-<<<<<<< HEAD
-			ignoreSampleCount: {
-				digits: true
-			},
 			initProcesses: {
 				required: true,
 				digits: true
@@ -547,17 +525,15 @@ function addValidation() {
 				required: true,
 				digits: true,
 				min: 1
-=======
+			},				
 			runCount : {
 				digits: true,
 				max:${maxRunCount},
 				min:0
->>>>>>> refs/heads/ngrinder_3.0
 			}
 		},
 	    messages: { 
 	        testName: "<@spring.message "perfTest.warning.testName"/>",
-<<<<<<< HEAD
 	        agentCount: {
 	        	required: "<@spring.message "perfTest.warning.agentNumber"/>"
 	        },
@@ -581,17 +557,8 @@ function addValidation() {
 	        },
 	        targetHosts: {
 	        	required: "<@spring.message "perfTest.warning.hostString"/>"
-	        }
-=======
-	        agentCount: "<@spring.message "perfTest.warning.agentNumber"/>",
-	        vuserPerAgent: "<@spring.message "perfTest.warning.vuserPerAgent"/>",
-	        duration: "<@spring.message "perfTest.warning.duration"/>",
-	        runCount: "<@spring.message "perfTest.warning.runCount"/>",
-	        processes: "<@spring.message "perfTest.warning.processes"/>",
-	        threads: "<@spring.message "perfTest.warning.threads"/>",
-	        ignoreSampleCount: "<@spring.message "perfTest.warning.ignoreSampleCount"/>",
-	        targetHosts: "<@spring.message "perfTest.warning.hostString"/>"
->>>>>>> refs/heads/ngrinder_3.0
+	        },
+	        ignoreSampleCount: "<@spring.message "perfTest.warning.ignoreSampleCount"/>"
 	    },
 		ignore : "", // make the validation on hidden input work
 		errorClass : "help-inline",
