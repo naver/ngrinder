@@ -34,40 +34,55 @@ public enum Role {
 	 * General user role who can create performance test entry.
 	 */
 	USER("U", "General") {
-
 	},
 	/**
 	 * Admin user role who can monitors tests.
 	 */
 	ADMIN("A", "Administrator") {
-		public boolean canGetAllTests() { return true; }
-		public boolean canModifyTestOfOther() { return false; }
-		public boolean canDeleteTestOfOther() { return true; }
-		public boolean canStopTestOfOther() { return false; }
-		public boolean canCheckScriptOfOther() { return true; }
-		public boolean canValidateScriptOfOther() { return false; }
+
+		public boolean hasPermission(Permission type) {
+			switch (type) {
+			case GET_ALL_TESTS:
+				return true;
+			case DELETE_TEST_OFOTHER:
+				return true;
+			case CHECK_SCRIPT_OFOTHER:
+				return true;
+			case VALIDATE_SCRIPT_OFOTHER:
+				return true;
+			default:
+				return false;
+			}
+		}
 	},
 	/**
 	 * Super user role who can set system settings and manage user account.
 	 */
 	SUPER_USER("S", "Super") {
-		public boolean canGetAllTests() { return true; }
-		public boolean canModifyTestOfOther() { return false; }
-		public boolean canDeleteTestOfOther() { return false; }
-		public boolean canStopTestOfOther() { return false; }
-		public boolean canCheckScriptOfOther() { return true; }
-		public boolean canValidateScriptOfOther() { return true; }
+		public boolean hasPermission(Permission type) {
+			switch (type) {
+			case GET_ALL_TESTS:
+				return true;
+			case CHECK_SCRIPT_OFOTHER:
+				return true;
+			case VALIDATE_SCRIPT_OFOTHER:
+				return true;
+			default:
+				return false;
+			}
+		}
 	},
 	/**
 	 * System user role. This is for the automatic batch
 	 */
 	SYSTEM_USER("SYSTEM", "System User") {
-
+		
 	};
-
+	
 	private final String shortName;
 
 	private final String fullName;
+	
 
 	/**
 	 * Constructor.
@@ -82,35 +97,6 @@ public enum Role {
 		this.fullName = fullName;
 	}
 
-	/**
-	 * check whether a user can get tests of others.
-	 * @return true if can
-	 */
-	public boolean canGetAllTests() {
-		return false;
-	}
-
-	public boolean canModifyTestOfOther() {
-		return false;
-	}
-
-	public boolean canDeleteTestOfOther() {
-		return false;
-	}
-
-	public boolean canStopTestOfOther() {
-		return false;
-	}
-
-	public boolean canCheckScriptOfOther() {
-		return false;
-	}
-
-	public boolean canValidateScriptOfOther() {
-		return false;
-	}
-	
-	
 	/**
 	 * Get the short name.
 	 * 
@@ -127,5 +113,14 @@ public enum Role {
 	 */
 	public String getFullName() {
 		return fullName;
+	}
+	
+	/**
+	 * check this role whether has permission
+	  * @param Permission
+	 * @return true if can
+	 */
+	public boolean hasPermission(Permission type) {
+		return false;
 	}
 }
