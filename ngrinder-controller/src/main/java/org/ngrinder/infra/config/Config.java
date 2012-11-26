@@ -105,6 +105,7 @@ public class Config implements IConfig {
 			copyDefaultConfigurationFiles();
 			loadIntrenalProperties();
 			loadSystemProperties();
+			loadExtendProperties();
 			loadAnnouncement();
 			initLogger(isTestMode());
 			currentIP = NetworkUtil.getLocalHostAddress();
@@ -115,7 +116,6 @@ public class Config implements IConfig {
 			//check cluster, get cluster configuration for ehcache
 			loadClusterConfig();
 			copyExtConfigurationFiles();
-			loadExtendProperties();
 
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while loading NGRINDER_HOME", e);
@@ -224,6 +224,8 @@ public class Config implements IConfig {
 		context.reset();
 		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
 		context.putProperty("LOG_DIRECTORY", getHome().getGloablLogFile().getAbsolutePath());
+		context.putProperty("SUFFIX", region.equals(NON_REGION) ? "" : region);
+		
 		try {
 			configurator.doConfigure(new ClassPathResource("/logback/logback-ngrinder.xml").getFile());
 		} catch (JoranException e) {
