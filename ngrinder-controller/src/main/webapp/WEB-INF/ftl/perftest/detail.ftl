@@ -159,7 +159,6 @@
 			                     		   		<#assign initTestName = "">
 			                    			</#if>
 											<input class="required span3 left-float" maxlength="80" size="30" type="text" id="testName" name="testName" value="${(initTestName)!}">
-											<span class="left-float span2" style="height:20px;margin-left:0px;"><span id="testNameError" class="error-msg left-float span2" style="margin-left:0px;margin-top:0px"></span></span>
 										</td>
 										<td>
 											<label for="tagString" class="control-label" style="width:80px; margin-right:18px"><@spring.message "perfTest.configuration.tags"/></label>
@@ -568,11 +567,7 @@ function addValidation() {
 			if (errorPlace[0]) {
 				errorPlace.html(error);
 			} else {
-		    	if (element.next().attr("class") == "add-on") {
-					error.insertAfter(element.next());
-				} else {
-					error.insertAfter(element);
-				}
+				element.parent().append(error);
 			}
 		},
 		highlight : function(element, errorClass, validClass) {

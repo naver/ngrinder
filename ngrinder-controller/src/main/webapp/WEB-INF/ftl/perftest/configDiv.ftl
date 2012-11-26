@@ -13,6 +13,16 @@
 								id="agentCount" name="agentCount" value="${(test.agentCount)!0}" 
 								data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
 								data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span id="maxAgentCount" class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
+					 		<select id="regionSelect" name="region" style="width:215px">
+								<option value="NONE"><@spring.message "perfTest.configuration.region.placeholder"/></option>
+								<#if regionList?size &gt; 0>
+									<#list regionList as regionName>
+										<#if regionName != "NONE"> 
+										<option value="${regionName}" <#if test?? && test.region?? && test.region == regionName>selected</#if> >${regionName}</option>
+										</#if> 
+									</#list>
+								</#if>
+							</select>
 				 		</div>
 				 		<input type="hidden" id="maxAgtCountInput" value="${(maxAgentSizePerConsole)}">
 					</div>
@@ -61,21 +71,6 @@
 					</div>
 				</div>
 				<div class="control-group">
-					<label for="ScriptResources" class="control-label"><@spring.message "perfTest.configuration.region"/></label>
-					<div class="controls">
-						<select id="regionSelect" name="region" style="width:255px">
-							<option value="NONE"><@spring.message "perfTest.configuration.region.placeholder"/></option>
-							<#if regionList?size &gt; 0> 
-								<#list regionList as regionName>
-									<#if regionName != "NONE"> 
-									<option value="${regionName}" <#if test?? && test.region?? && test.region == regionName>selected</#if> >${regionName}</option>
-									</#if> 
-								</#list> 
-							</#if>
-						</select>
-				 	</div>
-				</div>
-				<div class="control-group">
 					<label for="scriptName" class="control-label"><@spring.message "perfTest.configuration.script"/></label>
 					<div class="controls">
 						<table style="width:100%">
@@ -85,7 +80,7 @@
 							</colgroup>
 							<tr>
 							<td>
-								<select id="scriptName" class="required" name="scriptName" style="width:270px"> 
+								<select id="scriptName" class="required" name="scriptName" style="width:275px"> 
 									<#if test?? && test.lastModifiedUser.userId != currentUser.userId>
 										<option value="${test.scriptName}" selected validated="${(scriptItem.properties.validated)!"0"}">${test.scriptName} - belong to ${test.lastModifiedUser.userId}</option>
 									<#else>
