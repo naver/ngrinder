@@ -86,7 +86,8 @@ public class AgentManager implements NGrinderConstants {
 	 */
 	@PostConstruct
 	public void init() {
-		agentControllerServer = new AgentControllerServerDaemon(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+		agentControllerServer = new AgentControllerServerDaemon(
+				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		agentControllerServer.start();
 		agentControllerServer.addLogArrivedListener(new LogArrivedListener() {
 			@Override
@@ -97,11 +98,12 @@ public class AgentManager implements NGrinderConstants {
 				}
 				File logFile = null;
 				try {
-					logFile = new File(config.getHome().getPerfTestLogDirectory(testId.replace("test_", "")), agentIdentity.getName() + "-"
-							+ agentIdentity.getRegion() + "-log.zip");
+					logFile = new File(config.getHome().getPerfTestLogDirectory(testId.replace("test_", "")),
+							agentIdentity.getName() + "-" + agentIdentity.getRegion() + "-log.zip");
 					FileUtils.writeByteArrayToFile(logFile, logs);
 				} catch (IOException e) {
-					LOGGER.error("Error while write logs from {} to {}", agentAddress.getIdentity().getName(), logFile.getAbsolutePath());
+					LOGGER.error("Error while write logs from {} to {}", agentAddress.getIdentity().getName(),
+							logFile.getAbsolutePath());
 					LOGGER.error("Error is following", e);
 				}
 			}
@@ -154,7 +156,8 @@ public class AgentManager implements NGrinderConstants {
 	 * @return max agent size per console
 	 */
 	public int getMaxAgentSizePerConsole() {
-		return config.getSystemProperties().getPropertyInt("agent.max.size", NGrinderConstants.MAX_AGENT_SIZE_PER_CONSOLE);
+		return config.getSystemProperties().getPropertyInt("agent.max.size",
+				NGrinderConstants.MAX_AGENT_SIZE_PER_CONSOLE);
 	}
 
 	/**
@@ -366,8 +369,8 @@ public class AgentManager implements NGrinderConstants {
 	 * @param agentCount
 	 *            the count of agents.
 	 */
-	public synchronized void runAgent(User user, final SingleConsole singleConsole, final GrinderProperties grinderProperties,
-			final Integer agentCount) {
+	public synchronized void runAgent(User user, final SingleConsole singleConsole,
+			final GrinderProperties grinderProperties, final Integer agentCount) {
 		final Set<AgentIdentity> allFreeAgents = getAllFreeApprovedAgentsForUser(user);
 		final Set<AgentIdentity> neccessaryAgents = selectAgent(user, allFreeAgents, agentCount);
 		ExecutorService execService = null;
@@ -448,7 +451,8 @@ public class AgentManager implements NGrinderConstants {
 	public void stopAgent(int consolePort) {
 		for (AgentIdentity each : agentControllerServer.getAllAvailableAgents()) {
 			int agentConnectingPort = agentControllerServer.getAgentConnectingPort(each);
-			if (agentConnectingPort == consolePort && agentControllerServer.getAgentState(each) == AgentControllerState.BUSY) {
+			if (agentConnectingPort == consolePort && 
+					agentControllerServer.getAgentState(each) == AgentControllerState.BUSY) {
 				agentControllerServer.stopAgent(each);
 			}
 		}

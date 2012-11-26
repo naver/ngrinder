@@ -62,7 +62,7 @@ import org.springframework.ui.ModelMap;
 public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
-	private PerfTestController controller;
+	private MockPerfTestController controller;
 
 	@Autowired
 	private IUserService userService;
@@ -178,6 +178,8 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		newTest.setScriptName(test.getScriptName());
 		newTest.setProcesses(1);
 		newTest.setThreads(1);
+		newTest.setRegion(config.getRegion());
+		newTest.setAgentCount(1);
 		
 		ModelMap model = new ModelMap();
 		controller.savePerfTest(getTestUser(), model, newTest, false);

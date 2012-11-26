@@ -111,8 +111,8 @@ public abstract class PerfTestSpecification {
 	 * Get the Specification checking if the {@link PerfTest} has the given region.
 	 * 
 	 * @since 3.1
-	 * @param id
-	 *            perftest id
+	 * @param region
+	 *            region of perftest
 	 * @return {@link Specification}
 	 */
 	public static Specification<PerfTest> idRegionEqual(final String region) {
@@ -125,7 +125,8 @@ public abstract class PerfTestSpecification {
 	}
 
 	/**
-	 * Get the Specification which provide empty predicate for id. This is for the base element for "and" or "or" combination.
+	 * Get the Specification which provide empty predicate for id. This is for the base element for
+	 * "and" or "or" combination.
 	 * 
 	 * @return {@link Specification}
 	 */
@@ -139,11 +140,12 @@ public abstract class PerfTestSpecification {
 	}
 	
 	/**
-	 * Get the Specification which provide empty predicate for schedule time. This is for the base element for "and" or "or" combination.
+	 * Get the Specification which provide empty predicate for schedule time. This is for the base element for
+	 * "and" or "or" combination.
 	 * 
 	 * @return {@link Specification}
 	 */
-	public static Specification<PerfTest> scheduledTimeEmptyPredicate() {
+	public static Specification<PerfTest> scheduledTimeNotEmptyPredicate() {
 		return new Specification<PerfTest>() {
 			@Override
 			public Predicate toPredicate(Root<PerfTest> root, CriteriaQuery<?> query, CriteriaBuilder cb) {

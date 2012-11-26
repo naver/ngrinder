@@ -122,7 +122,13 @@ public class LogMonitorController extends NGrinderBaseController {
 	 * @return log file
 	 */
 	File getLogFile() {
-		return new File(config.getHome().getGloablLogFile(), "ngrinder.log");
+		String logFileName;
+		if (Config.NON_REGION.equals(config.getRegion())) {
+			logFileName = "ngrinder.log";
+		} else {
+			logFileName = "ngrinder_" + config.getRegion() + ".log";
+		}
+		return new File(config.getHome().getGloablLogFile(), logFileName);
 	}
 
 	/**

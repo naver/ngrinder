@@ -105,6 +105,7 @@ public class Config implements IConfig {
 			copyDefaultConfigurationFiles();
 			loadIntrenalProperties();
 			loadSystemProperties();
+			loadExtendProperties();
 			loadAnnouncement();
 			initLogger(isTestMode());
 			currentIP = NetworkUtil.getLocalHostAddress();
@@ -115,7 +116,6 @@ public class Config implements IConfig {
 			//check cluster, get cluster configuration for ehcache
 			loadClusterConfig();
 			copyExtConfigurationFiles();
-			loadExtendProperties();
 
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while loading NGRINDER_HOME", e);
@@ -224,6 +224,8 @@ public class Config implements IConfig {
 		context.reset();
 		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
 		context.putProperty("LOG_DIRECTORY", getHome().getGloablLogFile().getAbsolutePath());
+		context.putProperty("SUFFIX", region.equals(NON_REGION) ? "" : "_" + region);
+		
 		try {
 			configurator.doConfigure(new ClassPathResource("/logback/logback-ngrinder.xml").getFile());
 		} catch (JoranException e) {
@@ -267,7 +269,7 @@ public class Config implements IConfig {
 	private Home resolveHome() {
 		String userHomeFromEnv = System.getenv("NGRINDER_HOME");
 		String userHomeFromProperty = System.getProperty("ngrinder.home");
-		if (StringUtils.isNotEmpty(userHomeFromEnv) && !StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
+		if (!StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
 			LOG.warn("The path to ngrinder-home is ambiguous:");
 			LOG.warn("    System Environment:  NGRINDER_HOME=" + userHomeFromEnv);
 			LOG.warn("    Java Sytem Property:  ngrinder.home=" + userHomeFromProperty);
@@ -277,6 +279,7 @@ public class Config implements IConfig {
 		userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
 		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
 						System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
+		LOG.info("nGrinder home directory:{}.", userHome);
 
 		return new Home(homeDirectory);
 	}
@@ -289,7 +292,7 @@ public class Config implements IConfig {
 	private Home resolveExHome() {
 		String exHomeFromEnv = System.getenv("NGRINDER_EX_HOME");
 		String exHomeFromProperty = System.getProperty("ngrinder.exhome");
-		if (StringUtils.isNotEmpty(exHomeFromEnv) && !StringUtils.equals(exHomeFromEnv, exHomeFromProperty)) {
+		if ( !StringUtils.equals(exHomeFromEnv, exHomeFromProperty)) {
 			LOG.warn("The path to ngrinder-exhome is ambiguous:");
 			LOG.warn("    System Environment:  NGRINDER_EX_HOME=" + exHomeFromEnv);
 			LOG.warn("    Java Sytem Property:  ngrinder.exhome=" + exHomeFromProperty);
@@ -299,6 +302,7 @@ public class Config implements IConfig {
 		userHome = StringUtils.defaultIfEmpty(exHomeFromProperty, exHomeFromEnv);
 		File exHomeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
 						System.getProperty("user.home"), NGRINDER_EX_FOLDER);
+		LOG.info("nGrinder ex home directory:{}.", userHome);
 
 		return new Home(exHomeDirectory);
 	}

@@ -129,6 +129,8 @@ public class AgentManagerService {
 	/**
 	 * get the available agent count map in all regions of the user, including the free agents and
 	 * user specified agents.
+	 * @param regionList
+	 * 				current region list
 	 * @param user
 	 * 				current user
 	 * @return	user available agent count map
@@ -287,6 +289,11 @@ public class AgentManagerService {
 
 	}
 
+	/**
+	 * Stop agent.
+	 * @param id
+	 * 			identity of agent to stop.
+	 */
 	public void stopAgent(Long id) {
 		AgentInfo agent = getAgent(id);
 		if (agent == null) {

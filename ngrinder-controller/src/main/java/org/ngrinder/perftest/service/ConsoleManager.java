@@ -229,7 +229,7 @@ public class ConsoleManager {
 	 */
 	@Async
 	public void returnBackConsole(String testIdentifier, SingleConsole console) {
-		if (console == null) {
+		if (console == null || !console.isValid()) {
 			LOG.error("Attemp to return back null console for {}.", testIdentifier);
 			return;
 		}

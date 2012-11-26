@@ -67,18 +67,18 @@ public class RegionService {
 		Cache distCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
 
 		@SuppressWarnings("rawtypes")
-		List list = ((Ehcache)distCache.getNativeCache()).getKeys();
+		List list = ((Ehcache) distCache.getNativeCache()).getKeys();
 		for (Object object : list) {
 			if (!(object instanceof String)) {
 				LOG.info("Evict invalid cache: {}:{} from cache.", object, distCache.get(object));
 				distCache.evict(object);
 			} else {
-				String ip = (String)object;
-				String region = (String)distCache.get(object).get();
+				String ip = (String) object;
+				String region = (String) distCache.get(object).get();
 				if (ip.equals(currentIP) && !region.equals(currentRegion)) {
-					//ip is same, region is different, means the region name is changed
+					// ip is same, region is different, means the region name is changed
 					LOG.info("Evict invalid Region: {}:{} from cache.", region, currentIP);
-					distCache.evict(region); //remove previous region name.
+					distCache.evict(region); // remove previous region name.
 				}
 			}
 		}
@@ -93,12 +93,12 @@ public class RegionService {
 	public List<String> getRegionList() {
 		Cache distCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
 		@SuppressWarnings("rawtypes")
-		List list = ((Ehcache)distCache.getNativeCache()).getKeys();
+		List list = ((Ehcache) distCache.getNativeCache()).getKeys();
 		List<String> regionList = new ArrayList<String>();
 		List<String> ipList = new ArrayList<String>();
 		for (Object object : list) {
-			ipList.add((String)object);
-			regionList.add((String)distCache.get(object).get());
+			ipList.add((String) object);
+			regionList.add((String) distCache.get(object).get());
 		}
 		LOG.debug("Region list from cache:{}, ip:{}", regionList, ipList);
 		return regionList;
@@ -113,10 +113,10 @@ public class RegionService {
 		testDistCache(NGrinderConstants.CACHE_NAME_RUNNING_STATISTICS);
 	}
 	
-	private void testDistCache (String cacheName) {
+	private void testDistCache(String cacheName) {
 		Cache distCache = cacheManager.getCache(cacheName);
 		@SuppressWarnings("rawtypes")
-		List list = ((Ehcache)distCache.getNativeCache()).getKeys();
+		List list = ((Ehcache) distCache.getNativeCache()).getKeys();
 		StringBuilder valueSB = new StringBuilder();
 		StringBuilder keySB = new StringBuilder();
 		for (Object object : list) {

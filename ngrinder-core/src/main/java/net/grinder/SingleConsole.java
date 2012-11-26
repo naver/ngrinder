@@ -239,12 +239,22 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			return "127.0.0.1";
 		}
 	}
+	
+	/**
+	 * Check whether the single console is proper initialized.
+	 * @return true if it is initialized.
+	 */
+	public boolean isValid() {
+		return consoleFoundation != null;
+	}
 
 	/**
 	 * Start console and wait until it's ready to get agent message.
 	 */
 	public void start() {
-
+		if(consoleFoundation == null) {
+			return; //the console is not a valid console.(NullSingleConsole)
+		}
 		synchronized (eventSyncCondition) {
 			consoleFoundationThread = new Thread(new Runnable() {
 				public void run() {

@@ -48,7 +48,8 @@ public class UserTest {
 		assertTrue(!user2.validate());
 
 		user2 = new User("Uid1", "name", "pwd1", "user2@nhn.com", null);
-		assertTrue(!user2.validate());
+		assertTrue(user2.validate());
+		assertTrue(user2.getRole() == null);
 		
 	}
 	

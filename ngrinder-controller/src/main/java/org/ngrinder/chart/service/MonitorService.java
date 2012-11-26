@@ -71,7 +71,7 @@ public class MonitorService {
 			br.readLine(); //skip the header.
 			//header: "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage"
 			String line = br.readLine();
-			while(StringUtils.isNotBlank(line)) {
+			while (StringUtils.isNotBlank(line)) {
 				SystemDataModel model = new SystemDataModel();
 				String[] datalist = StringUtils.split(line, ",");
 				model.setIp(datalist[0]);

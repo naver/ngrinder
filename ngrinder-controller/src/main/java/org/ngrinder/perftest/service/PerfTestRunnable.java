@@ -114,6 +114,9 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	private List<OnTestSamplingRunnable> testSamplingRnnables;
 
+	/**
+	 * Initialize plugin manager to register plugin update event.
+	 */
 	@PostConstruct
 	public void init() {
 		pluginManager.addPluginUpdateEvent(this);

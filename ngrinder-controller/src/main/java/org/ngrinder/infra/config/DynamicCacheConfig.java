@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.ehcache.CacheException;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.ConfigurationFactory;
 import net.sf.ehcache.config.FactoryConfiguration;
@@ -55,14 +54,14 @@ public class DynamicCacheConfig {
 	@Autowired
 	private Config config;
 	
-	private static final List<String> cacheNameList;
+	private static final List<String> CACHE_NAME_LIST;
 	static {
-		cacheNameList = new ArrayList<String>();
-		cacheNameList.add("region_list");
-		cacheNameList.add("running_agent_infos");
-		cacheNameList.add("running_statistics");
-		cacheNameList.add("users");
-		cacheNameList.add("file_entry_search_cache");
+		CACHE_NAME_LIST = new ArrayList<String>();
+		CACHE_NAME_LIST.add("region_list");
+		CACHE_NAME_LIST.add("running_agent_infos");
+		CACHE_NAME_LIST.add("running_statistics");
+		CACHE_NAME_LIST.add("users");
+		CACHE_NAME_LIST.add("file_entry_search_cache");
 	}
 	
 	/**
@@ -89,13 +88,12 @@ public class DynamicCacheConfig {
 				<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 			</cache>
 		
-	 * @return
+	 * @return EhCacheCacheManager bean
 	 * @throws IOException 
-	 * @throws CacheException 
 	 */
 	@SuppressWarnings("rawtypes")
 	@Bean(name = "cacheManager")
-	public EhCacheCacheManager dynamicCacheManager() throws CacheException, IOException {
+	public EhCacheCacheManager dynamicCacheManager() throws IOException {
 		EhCacheCacheManager cacheManager = new EhCacheCacheManager();
 		net.sf.ehcache.config.Configuration cacheManagerConfig;
 		if (!config.isCluster()) {
@@ -123,7 +121,7 @@ public class DynamicCacheConfig {
 					continue;
 				}
 				String prefix = prefixSB.append(url).append(":").append(clusterListenerPort).append("/").toString();
-				for (String cacheName : cacheNameList) {
+				for (String cacheName : CACHE_NAME_LIST) {
 					sb.append(prefix).append(cacheName);
 					sb.append("|");
 				}
