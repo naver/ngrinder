@@ -302,7 +302,7 @@ public class Config implements IConfig {
 		userHome = StringUtils.defaultIfEmpty(exHomeFromProperty, exHomeFromEnv);
 		File exHomeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
 						System.getProperty("user.home"), NGRINDER_EX_FOLDER);
-		LOG.info("nGrinder ex home directory:{}.", userHome);
+		LOG.info("nGrinder ex home directory:{}.", exHomeDirectory);
 
 		return new Home(exHomeDirectory);
 	}
