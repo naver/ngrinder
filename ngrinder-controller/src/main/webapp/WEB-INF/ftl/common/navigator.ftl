@@ -43,7 +43,7 @@
 	</div>
 </div>
 
-<div class="alert alert-block <@security.authorize ifAnyGranted="A, S">hidden</@security.authorize>" style="padding:10px 20px" id="announcementDiv">
+<div class="alert alert-block <#if announcement?has_content><@security.authorize ifAnyGranted="A, S">hidden</@security.authorize><#else>hidden</#if>" style="padding:10px 20px" id="announcementDiv">
 	<div class="page-header" style="margin:0; padding-bottom:2px">
 		<h3><@spring.message "announcement.alert.title"/></h3>
 	</div>
