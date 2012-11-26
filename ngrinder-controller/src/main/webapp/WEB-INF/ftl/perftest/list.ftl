@@ -81,9 +81,7 @@
 					<col width="50">   
 					<col> 
 					<col> 
-					<#if isAdmin??>
-			            <col width="80"> 	
-					</#if>
+			        <col width="80"> 	
 					<col width="120"> 
 					<col width="85">
 					<col width="65">
@@ -98,10 +96,13 @@
 						<th class="nothing"><@spring.message "common.label.status"/></th>
 						<th id="testName"><@spring.message "perfTest.table.testName"/></th>
 						<th id="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
-						
+						<th class="nothing" <#if !(isAdmin??)>title="<@spring.message "perfTest.table.modifier"/>"</#if>>
 						<#if isAdmin??>
-			            	<th class="nothing"><@spring.message "perfTest.table.creator"/></th>
+			            	<@spring.message "perfTest.table.creator"/>
+			            <#else>
+			            	LM
 						</#if>
+						</th>
 						<th id="startTime"><@spring.message "perfTest.table.startTime"/></th>
 						<th id="duration"><@spring.message "perfTest.table.duration"/></th>
 						<th id="tps"><@spring.message "perfTest.table.tps"/></th> 
@@ -142,7 +143,9 @@
 									</#if>
 								</td>
 								<#if isAdmin??>
-			            			<td class="ellipsis" title="${test.createdUser.userName}">${test.createdUser.userName}</td>
+			            			<td class="ellipsis" title="<#if isAdmin??><@spring.message "perfTest.table.creator"/><#else><@spring.message "perfTest.table.modifier"/></#if>" data-content="${test.createdUser.userName}">${test.createdUser.userName}</td>
+			            		<#else>
+			            			<td class="ellipsis" title="<#if isAdmin??><@spring.message "perfTest.table.creator"/><#else><@spring.message "perfTest.table.modifier"/></#if>" data-content="${test.lastModifiedUser.userName}">${test.lastModifiedUser.userName}</td>
 								</#if>
 								<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if></td>
 								<td>
