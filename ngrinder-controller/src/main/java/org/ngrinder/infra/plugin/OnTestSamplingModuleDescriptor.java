@@ -40,6 +40,10 @@ import com.atlassian.plugin.module.ContainerManagedPlugin;
 @PluginDescriptor("on-test-sampling")
 @SuppressWarnings("deprecation")
 public class OnTestSamplingModuleDescriptor extends AbstractModuleDescriptor<OnTestSamplingRunnable> {
+	
+	/**
+	 * get Module.
+	 */
 	public OnTestSamplingRunnable getModule() {
 		ContainerAccessor containerAccessor = ((ContainerManagedPlugin) getPlugin()).getContainerAccessor();
 		return containerAccessor.createBean(getModuleClass());

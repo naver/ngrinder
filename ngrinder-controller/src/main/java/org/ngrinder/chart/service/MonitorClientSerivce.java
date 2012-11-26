@@ -68,7 +68,9 @@ public class MonitorClientSerivce {
 	/**
 	 * Initialize the mbeanClient connection.
 	 * @param ip
+	 * 			IP address of the monitor target
 	 * @param port
+	 * 			port of the monitor target
 	 */
 	public void init(String ip, int port) {
 		LOG.debug("Init MonitorClientSerivce for {}:{}", ip, port);
@@ -115,7 +117,7 @@ public class MonitorClientSerivce {
 	}
 	
 	/**
-	 * close the MBClient
+	 * close the MBClient.
 	 */
 	public void close() {
 		mbeanClient.disconnect();

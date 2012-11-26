@@ -6,6 +6,7 @@ import java.util.List;
 import org.junit.Before;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.AgentConfig;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.config.MockAgentConfigInControllerSide;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
@@ -43,6 +44,9 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 
 	@Autowired
 	protected TagRepository tagRepository;
+
+	@Autowired
+	protected Config config;
 	
 	public void clearAllPerfTest() {
 		List<PerfTest> findAll = perfTestRepository.findAll();
@@ -75,7 +79,7 @@ abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinder
 		test.setProcessIncrementInterval(1000);
 		test.setStatus(status);
 		test.setCreatedUser(getTestUser());
-		test.setRegion("NONE");
+		test.setRegion(config.getRegion());
 		return test;
 	}
 

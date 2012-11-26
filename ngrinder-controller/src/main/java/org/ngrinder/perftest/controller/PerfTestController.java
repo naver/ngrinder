@@ -252,10 +252,10 @@ public class PerfTestController extends NGrinderBaseController {
 	/**
 	 * Add the various default configuration values on the model.
 	 * 
-	 * @param user
-	 *            user
 	 * @param model
 	 *            model which will contains that value.
+	 * @param agentCount
+	 *            available agent count of the user. 
 	 */
 	public void addDefaultAttributeOnModel(ModelMap model, int agentCount) {
 		model.addAttribute(PARAM_CURRENT_FREE_AGENTS_COUNT, agentManager.getAllFreeAgents().size());
@@ -335,9 +335,10 @@ public class PerfTestController extends NGrinderBaseController {
 		
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(
 				regionService.getRegionList(), user);
-		int agentMaxCount = agentCountMap.get(test.getRegion()).intValue();
-		checkArgument(test.getAgentCount() <= agentMaxCount,
-						"test agent shoule be within %s", agentManager.getMaxAgentSizePerConsole());
+		MutableInt agentCountObj = agentCountMap.get(test.getRegion());
+		checkNotNull(agentCountObj, "test region should be within current region list");
+		int agentMaxCount = agentCountObj.intValue();
+		checkArgument(test.getAgentCount() <= agentMaxCount, "test agent shoule be within %s", agentMaxCount);
 		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
 						"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());
 		if (config.isSecurityEnabled()) {
@@ -362,8 +363,9 @@ public class PerfTestController extends NGrinderBaseController {
 			test.setLastModifiedDate(null);
 			test.setLastModifiedUser(null);
 		}
-		if (StringUtils.isBlank(test.getRegion()))
+		if (StringUtils.isBlank(test.getRegion())) {
 			test.setRegion(Config.NON_REGION);
+		}
 		perfTestService.savePerfTest(user, test);
 		return "redirect:/perftest/list";
 	}

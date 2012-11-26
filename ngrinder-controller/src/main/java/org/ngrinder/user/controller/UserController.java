@@ -132,6 +132,8 @@ public class UserController extends NGrinderBaseController {
 	 *            model
 	 * @param updatedUser
 	 *            user to be updated.
+	 * @param followersStr
+	 *            user Id list that current will share his permission to.
 	 * @return "redirect:/user/list" if current user change his info, otheriwise return "redirect:/"
 	 */
 	@RequestMapping("/save")
@@ -150,7 +152,7 @@ public class UserController extends NGrinderBaseController {
 							updatedUser);
 		}
 		if (updatedUser.exist()) {
-			userService.modifyUser(updatedUser,followersStr);
+			userService.modifyUser(updatedUser, followersStr);
 		} else {
 			userService.saveUser(updatedUser);
 		}
@@ -239,7 +241,7 @@ public class UserController extends NGrinderBaseController {
 	 * 			current user
 	 * @param model
 	 * 			model
-	 * @param ownerId
+	 * @param switchUserId
 	 * 			the user who will switch.
 	 * 
 	 * @return redirect:/perftest/list
@@ -251,7 +253,7 @@ public class UserController extends NGrinderBaseController {
 	}
 	
 	/**
-	 * Get user list that current user will be shared
+	 * Get user list that current user will be shared, excluding current user.
 	 * 
 	 * @param user
 	 *            current user
@@ -259,7 +261,7 @@ public class UserController extends NGrinderBaseController {
 	 *            model
 	 */
 	private void getUserShareList(User user, ModelMap model) {
-		if(user == null) {
+		if (user == null) {
 			return;
 		}
 		final List<User> currFollowers = user.getFollowers();

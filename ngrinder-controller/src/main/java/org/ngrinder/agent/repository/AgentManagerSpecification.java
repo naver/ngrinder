@@ -38,6 +38,13 @@ import org.springframework.data.jpa.domain.Specification;
  */
 public abstract class AgentManagerSpecification {
 
+	/**
+	 * Query specification which the region column start the specified region.
+	 * @param region
+	 * 				specified region to query
+	 * @return
+	 * 			Specification of this query
+	 */
 	public static Specification<AgentInfo> startWithRegion(final String region) {
 		return new Specification<AgentInfo>() {
 			@Override

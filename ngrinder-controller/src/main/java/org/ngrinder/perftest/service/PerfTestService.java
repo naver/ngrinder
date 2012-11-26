@@ -32,7 +32,7 @@ import static org.ngrinder.perftest.repository.PerfTestSpecification.idEqual;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.idRegionEqual;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.idSetEqual;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.likeTestNameOrDescription;
-import static org.ngrinder.perftest.repository.PerfTestSpecification.scheduledTimeEmptyPredicate;
+import static org.ngrinder.perftest.repository.PerfTestSpecification.scheduledTimeNotEmptyPredicate;
 import static org.ngrinder.perftest.repository.PerfTestSpecification.statusSetEqual;
 
 import java.io.BufferedReader;
@@ -156,8 +156,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            query string on test name or description
 	 * @param tag
 	 *            seach tag.
-	 * @param isFinished
-	 *            only find finished test
+	 * @param queryFilter
+	 *            "S" for querying scheduled test, "F" for querying finished test
 	 * @param pageable
 	 *            paging info
 	 * @return found {@link PerfTest} list
@@ -176,7 +176,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			spec = spec.and(statusSetEqual(Status.FINISHED));
 		} else if ("S".equals(queryFilter)) {
 			spec = spec.and(statusSetEqual(Status.READY));
-			spec = spec.and(scheduledTimeEmptyPredicate());
+			spec = spec.and(scheduledTimeNotEmptyPredicate());
 		}
 		if (StringUtils.isNotBlank(query)) {
 			spec = spec.and(likeTestNameOrDescription(query));
@@ -974,8 +974,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * To get statistics data when test is running and put into cache after that. If the console is not available, it returns
-	 * empty map.
+	 * To get statistics data when test is running and put into cache after that. If the console
+	 * is not available, it returns empty map.
 	 * 
 	 * @param region
 	 * 			region of the test, add this parameter just for the key of cache.
@@ -1142,9 +1142,11 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * Check if given user has a permission on perftest.
 	 * 
 	 * @param perfTest
-	 *            perftest
+	 *            perf test
 	 * @param user
 	 *            user
+	 * @param Permission
+	 * 			  permission type to check
 	 * @return true if it has
 	 */
 	public boolean hasPermission(PerfTest perfTest, User user, Permission type) {

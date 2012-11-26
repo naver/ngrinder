@@ -77,7 +77,7 @@ public class NullSingleConsole extends SingleConsole {
 
 	@Override
 	public Map<String, Object> getStatictisData() {
-		if (getCurrentRunningTime() > 0 ) {
+		if (getCurrentRunningTime() > 0) {
 			return super.getStatictisData();
 		} else {
 			return getNullStatictisData();
