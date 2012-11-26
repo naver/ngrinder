@@ -34,6 +34,7 @@ import java.util.List;
 
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Hibernate;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -230,6 +231,8 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping("/switchUserList")
 	public String switchUserList(User user, ModelMap model) {
 		User currUser = userService.getUserById(user.getUserId());
+		checkNotNull(currUser);
+		Hibernate.initialize(currUser.getOwners());
 		model.addAttribute("shareUserList", currUser.getOwners());
 		return "user/userOptionGroup";
 	}
