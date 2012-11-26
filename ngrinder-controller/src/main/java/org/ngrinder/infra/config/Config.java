@@ -224,7 +224,7 @@ public class Config implements IConfig {
 		context.reset();
 		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
 		context.putProperty("LOG_DIRECTORY", getHome().getGloablLogFile().getAbsolutePath());
-		context.putProperty("SUFFIX", region.equals(NON_REGION) ? "" : region);
+		context.putProperty("SUFFIX", region.equals(NON_REGION) ? "" : "_" + region);
 		
 		try {
 			configurator.doConfigure(new ClassPathResource("/logback/logback-ngrinder.xml").getFile());

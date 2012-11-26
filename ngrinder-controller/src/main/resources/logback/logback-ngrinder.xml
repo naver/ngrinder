@@ -2,7 +2,7 @@
 
 <configuration>
 	<appender name="log-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${LOG_DIRECTORY}/ngrinder{SUFFIX}.log</file>
+		<file>${LOG_DIRECTORY}/ngrinder${SUFFIX}.log</file>
  
 		<encoder>
 			<pattern>%d{HH:mm:ss} %-5level %F:%L %marker:  %message%n</pattern>
