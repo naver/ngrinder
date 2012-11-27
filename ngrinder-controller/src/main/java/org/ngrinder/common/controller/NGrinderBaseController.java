@@ -31,6 +31,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.operation.service.AnnouncementService;
 import org.ngrinder.user.service.UserContext;
@@ -59,6 +60,9 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	@Autowired
 	private UserContext userContext;
+
+	@Autowired
+	private Config config;
 	
 	@Autowired
 	private AnnouncementService announcementService;
@@ -106,6 +110,15 @@ public class NGrinderBaseController implements NGrinderConstants {
 	@ModelAttribute("announcement")
 	public String announcement() {
 		return announcementService.getAnnouncement();
+	}
+	
+	/**
+	 * Check whether the cache cluster is open.
+	 * @return true is cache cluster set
+	 */
+	@ModelAttribute("isClusterEnable")
+	public boolean isClusterEnable() {
+		return config.isCluster();
 	}
 
 	/**
@@ -188,5 +201,12 @@ public class NGrinderBaseController implements NGrinderConstants {
 	public String toJson(Map<String, Object> map) {
 		return gson.toJson(map);
 	}
-
+	
+	/**
+	 * Get nGrinder Config Object
+	 * @return Config 
+	 */
+	public Config getConfig() {
+		return config;
+	}
 }

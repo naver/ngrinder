@@ -33,7 +33,6 @@ import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.infra.config.Config;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -58,9 +57,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class LogMonitorController extends NGrinderBaseController {
 
 	private static final int LOGGER_BUFFER_SIZE = 10000;
-
-	@Autowired
-	private Config config;
 
 	/**
 	 * Latest log.
@@ -123,12 +119,12 @@ public class LogMonitorController extends NGrinderBaseController {
 	 */
 	File getLogFile() {
 		String logFileName;
-		if (Config.NON_REGION.equals(config.getRegion())) {
+		if (Config.NON_REGION.equals(getConfig().getRegion())) {
 			logFileName = "ngrinder.log";
 		} else {
-			logFileName = "ngrinder_" + config.getRegion() + ".log";
+			logFileName = "ngrinder_" + getConfig().getRegion() + ".log";
 		}
-		return new File(config.getHome().getGloablLogFile(), logFileName);
+		return new File(getConfig().getHome().getGloablLogFile(), logFileName);
 	}
 
 	/**
@@ -148,7 +144,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	 */
 	@RequestMapping("")
 	public String getLog(Model model) {
-		model.addAttribute("verbose", config.isVerbose());
+		model.addAttribute("verbose", getConfig().isVerbose());
 		return "operation/logger";
 	}
 
@@ -175,7 +171,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/verbose")
 	public HttpEntity<String> enableVerbose(@RequestParam(value = "verbose", defaultValue = "false") Boolean verbose) {
-		config.initLogger(verbose);
+		getConfig().initLogger(verbose);
 		initTailer();
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("success", true);
@@ -189,7 +185,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/refresh")
 	public HttpEntity<String> refreshSystemProperties() {
-		config.loadSystemProperties();
+		getConfig().loadSystemProperties();
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("success", true);
 		return new HttpEntity<String>(toJson(map), commonResponseHeaders);

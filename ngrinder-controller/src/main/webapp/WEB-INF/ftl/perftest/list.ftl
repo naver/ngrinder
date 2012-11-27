@@ -81,14 +81,17 @@
 					<col width="50">   
 					<col> 
 					<col> 
-			        <col width="80"> 	
-					<col width="120"> 
-					<col width="85">
+			        <col width="70"> 
+			        <#if isClusterEnable??&&isClusterEnable>
+						<col width="70"> 
+					</#if>	
+					<col width="120">
 					<col width="65">
 					<col width="65"> 
 					<col width="65">
-					<col width="75">
 					<col width="65">
+					<col width="65">
+					<col width="30">
 				</colgroup>
 				<thead>
 					<tr>
@@ -97,19 +100,18 @@
 						<th id="testName"><@spring.message "perfTest.table.testName"/></th>
 						<th id="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
 						<th class="nothing" <#if !(isAdmin??)>title="<@spring.message "perfTest.table.modifier"/>"</#if>>
-						<#if isAdmin??>
-			            	<@spring.message "perfTest.table.creator"/>
-			            <#else>
-			            	LM
-						</#if>
+			            <@spring.message "perfTest.table.creator"/>
 						</th>
+						<#if isClusterEnable??&&isClusterEnable>
+						<th id="region"><@spring.message "agent.table.region"/></th>
+						</#if>
 						<th id="startTime"><@spring.message "perfTest.table.startTime"/></th>
 						<th id="duration"><@spring.message "perfTest.table.duration"/></th>
 						<th id="tps"><@spring.message "perfTest.table.tps"/></th> 
 						<th id="meanTestTime" title='<@spring.message "perfTest.table.meantime"/>' >MTT</th>
 						<th id="errors"><@spring.message "perfTest.table.errors"/></th>
 						<th class="nothing"><@spring.message "perfTest.table.vusers"/></th>
-						<th class="nothing"><@spring.message "common.label.actions"/></th>
+						<th class="nothing"></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -146,6 +148,9 @@
 			            			<td class="ellipsis" title="<#if isAdmin??><@spring.message "perfTest.table.creator"/><#else><@spring.message "perfTest.table.modifier"/></#if>" data-content="${test.createdUser.userName}">${test.createdUser.userName}</td>
 			            		<#else>
 			            			<td class="ellipsis" title="<#if isAdmin??><@spring.message "perfTest.table.creator"/><#else><@spring.message "perfTest.table.modifier"/></#if>" data-content="${test.lastModifiedUser.userName}">${test.lastModifiedUser.userName}</td>
+								</#if>
+								<#if isClusterEnable??&&isClusterEnable>
+								<td>${test.region}</td>
 								</#if>
 								<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if></td>
 								<td>

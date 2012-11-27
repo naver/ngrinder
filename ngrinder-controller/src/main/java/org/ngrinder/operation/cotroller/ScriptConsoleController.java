@@ -35,7 +35,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.infra.annotation.RuntimeOnlyController;
-import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.ConsoleManager;
@@ -67,9 +66,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @PreAuthorize("hasAnyRole('A', 'S')")
 public class ScriptConsoleController extends NGrinderBaseController implements ApplicationContextAware {
 	private static final int SCRIPT_CONSOLE_PYTHON_EXPIRE_TIMEOUT = 30000;
-
-	@Autowired
-	private Config config;
 
 	private ApplicationContext applicationContext;
 
@@ -129,7 +125,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 		interp.set("perfTestService", this.perfTestService);
 		interp.set("tagService", this.tagService);
 		interp.set("fileEntryService", this.fileEntryService);
-		interp.set("config", this.config);
+		interp.set("config", getConfig());
 		interp.set("pluginManager", this.pluginManager);
 	}
 
