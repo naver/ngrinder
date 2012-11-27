@@ -168,7 +168,7 @@
 						</#list> 
 					<#else>
 						<tr>
-							<td colspan="<#if isAdmin??>12<#else>11</#if>" class="center">
+							<td colspan="12" class="center">
 								<@spring.message "common.message.noData"/>
 							</td>
 						</tr>
