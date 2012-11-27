@@ -110,7 +110,7 @@ public class RegionService {
 	@Scheduled(fixedDelay = 5000)
 	public void test() {
 		testDistCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
-		testDistCache(NGrinderConstants.CACHE_NAME_RUNNING_STATISTICS);
+		//testDistCache(NGrinderConstants.CACHE_NAME_RUNNING_STATISTICS);
 	}
 	
 	private void testDistCache(String cacheName) {

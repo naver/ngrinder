@@ -14,13 +14,13 @@
 								data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
 								data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span id="maxAgentCount" class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
 					 		<select id="regionSelect" name="region" style="width:215px">
-								<option value="NONE"><@spring.message "perfTest.configuration.region.placeholder"/></option>
+								<option value=""></option>
 								<#if regionList?size &gt; 0>
 									<#list regionList as regionName>
-										<#if regionName != "NONE"> 
 										<option value="${regionName}" <#if test?? && test.region?? && test.region == regionName>selected</#if> >${regionName}</option>
-										</#if> 
 									</#list>
+								<#else>
+									<option value="NONE">NONE</option>
 								</#if>
 							</select>
 				 		</div>
