@@ -168,7 +168,7 @@ function getCookie(objName){//get cookie value
 
 function enableChkboxSelectAll(containerId) {
 	var IdStr = "#" + containerId + " ";
-	$(IdStr + "td > input[disabled!='disabled']").on("click", function() {
+	$(IdStr + "td > input[disabled!='disabled']").on("click", function(event) {
 		if($(IdStr + "td > input[disabled!='disabled']").size() == $(IdStr + "td > input:checked").size()) {
 			$(IdStr + "th > input").attr("checked", "checked");
 		} else {

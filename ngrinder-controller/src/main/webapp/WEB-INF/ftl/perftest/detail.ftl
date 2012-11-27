@@ -778,7 +778,10 @@ function bindEvent() {
 		$("#runcountRadio").click();
 	});
 	
-	$("#regionSelect").select2();
+	$("#regionSelect").select2({
+		placehoder: '<@spring.message "perfTest.configuration.region.placeholder"/>'
+	});
+	
 	$("#regionSelect").change(function(){
 		var region = $(this).val();
 		var count = agentCountMap[region];
