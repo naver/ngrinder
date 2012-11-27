@@ -102,12 +102,12 @@
 					<table class="table table-striped table-bordered ellipsis" id="lsTable">
 						<colgroup>
 							<col width="30px">
-							<col class="ellipsis" width="85px">
+							<col width="85px">
 							<col width="85px">
 							<col width="55px">
-							<col width="80px">
-							<col width="55px">
-							<col width="55px">
+							<col width="60px">
+							<col width="65px">
+							<col width="65px">
 							<col width="55px">
 						</colgroup>
 						<thead>
@@ -116,7 +116,7 @@
 								<th class="noClick"><@spring.message "perfTest.table.testName"/></th>
 								<th class="noClick"><@spring.message "perfTest.testRunning.successfulTest"/></th>
 								<th class="noClick"><@spring.message "perfTest.table.errors"/></th>
-								<th class="noClick"><@spring.message "perfTest.table.meantime"/></th>
+								<th class="noClick" title="<@spring.message "perfTest.table.meantime"/>">MTT</th>
 								<th class="noClick"><@spring.message "perfTest.table.tps"/></th>
 								<th class="noClick"><@spring.message "perfTest.detail.peakTPS"/></th>
 								<th class="noClick"><@spring.message "perfTest.testRunning.mtsd"/></th>
@@ -133,9 +133,9 @@
 							<col width="85px">
 							<col width="85px">
 							<col width="55px">
-							<col width="80px">
-							<col width="55px">
-							<col width="55px">
+							<col width="60px">
+							<col width="65px">
+							<col width="65px">
 							<col width="55px">
 						</colgroup>
 						<thead>
@@ -144,7 +144,7 @@
 								<th class="noClick"><@spring.message "perfTest.table.testName"/></th>
 								<th class="noClick"><@spring.message "perfTest.testRunning.successfulTest"/></th>
 								<th class="noClick"><@spring.message "perfTest.table.errors"/></th>
-								<th class="noClick"><@spring.message "perfTest.table.meantime"/></th>
+								<th class="noClick" title="<@spring.message "perfTest.table.meantime"/>">MTT</th>
 								<th class="noClick"><@spring.message "perfTest.table.tps"/></th>
 								<th class="noClick"><@spring.message "perfTest.detail.peakTPS"/></th>
 								<th class="noClick"><@spring.message "perfTest.testRunning.mtsd"/></th>

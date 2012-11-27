@@ -779,7 +779,7 @@ function bindEvent() {
 	});
 	
 	$("#regionSelect").select2({
-		placehoder: '<@spring.message "perfTest.configuration.region.placeholder"/>'
+		placeholder: '<@spring.message "perfTest.configuration.region.placeholder"/>'
 	});
 	
 	$("#regionSelect").change(function(){
