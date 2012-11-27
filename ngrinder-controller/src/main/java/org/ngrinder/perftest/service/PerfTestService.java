@@ -676,7 +676,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			} else {
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, 0);
 			}
-			grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, "-Xms256m -Xmx512m");
+			//grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, "-Xms256m -Xmx512m");
 			grinderProperties.setProperty(GRINDER_PROP_JVM_CLASSPATH, getCustomClassPath(perfTest));
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, perfTest.getIgnoreSampleCount());
 			grinderProperties.setBoolean(GRINDER_PROP_SECURITY, config.isSecurityEnabled());

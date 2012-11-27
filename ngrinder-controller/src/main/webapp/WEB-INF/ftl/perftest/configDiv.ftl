@@ -17,9 +17,7 @@
 								<option value=""></option>
 								<#if regionList?size &gt; 0>
 									<#list regionList as regionName>
-										<#if regionName != "NONE"> 
 										<option value="${regionName}" <#if test?? && test.region?? && test.region == regionName>selected</#if> >${regionName}</option>
-										</#if> 
 									</#list>
 								<#else>
 									<option value="NONE">NONE</option>
