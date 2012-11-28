@@ -67,6 +67,8 @@
 						</td>
 					</tr> 
 				</table>
+				<INPUT type="hidden" id="pageNumber" name="page.page" value="${page.pageNumber + 1}">
+				<INPUT type="hidden" id="pageSize" name="page.size" value="${page.pageSize}">
 			</form>
 			
 			<div class="pull-right"> 
@@ -86,11 +88,11 @@
 						<col width="70"> 
 					</#if>	
 					<col width="120">
-					<col width="65">
+					<col width="78">
 					<col width="65"> 
 					<col width="65">
 					<col width="65">
-					<col width="65">
+					<col width="75">
 					<col width="30">
 				</colgroup>
 				<thead>
@@ -100,7 +102,7 @@
 						<th id="testName"><@spring.message "perfTest.table.testName"/></th>
 						<th id="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
 						<th class="nothing" <#if !(isAdmin??)>title="<@spring.message "perfTest.table.modifier"/>"</#if>>
-			            <@spring.message "perfTest.table.creator"/>
+						<@spring.message "perfTest.table.creator"/>
 						</th>
 						<#if isClusterEnable??&&isClusterEnable>
 						<th id="region"><@spring.message "agent.table.region"/></th>
@@ -111,7 +113,7 @@
 						<th id="meanTestTime" title='<@spring.message "perfTest.table.meantime"/>' >MTT</th>
 						<th id="errors"><@spring.message "perfTest.table.errors"/></th>
 						<th class="nothing"><@spring.message "perfTest.table.vusers"/></th>
-						<th class="nothing"></th>
+						<th class="nothing" title="<@spring.message "common.label.actions"/>"></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -150,9 +152,11 @@
 			            			<td class="ellipsis" title="<#if isAdmin??><@spring.message "perfTest.table.creator"/><#else><@spring.message "perfTest.table.modifier"/></#if>" data-content="${test.lastModifiedUser.userName}">${test.lastModifiedUser.userName}</td>
 								</#if>
 								<#if isClusterEnable??&&isClusterEnable>
-								<td>${test.region}</td>
+									<td class="ellipsis" title="<@spring.message "agent.table.region"/>" data-content="${test.region}">${test.region}</td>
 								</#if>
-								<td><#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if></td>
+								<td>
+									<#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if>
+								</td>
 								<td>
 									<#if test.threshold == "D">
 										${(test.durationStr)!}</td>
@@ -173,7 +177,7 @@
 						</#list> 
 					<#else>
 						<tr>
-							<td colspan="12" class="center">
+							<td colspan="13" class="center">
 								<@spring.message "common.message.noData"/>
 							</td>
 						</tr>
@@ -183,8 +187,6 @@
 			<#if testList?has_content>
 				<#include "../common/paging.ftl">
 				<@paging  testListPage.totalElements testListPage.number+1 testListPage.size 10 ""/>
-				<INPUT type="hidden" id="pageNumber" name="page.page" value="${page.pageNumber + 1}">
-				<INPUT type="hidden" id="pageSize" name="page.size" value="${page.pageSize!10}">
 				<script type="text/javascript">
 					function doSubmit(page) {
 						getList(page);

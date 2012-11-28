@@ -917,8 +917,9 @@ function getDurationMS() {
 
 function getOption(cnt) {
 	var contents = [];
+	var index;
 	for (i = 0; i < cnt; i++) {
-		contents.push("<option value='" + i + "'>" + i + "</option>");
+		contents.push("<option value='" + i + "'>" + (i < 10 ? "0" + i : i) + "</option>");
 	}
 	return contents.join("\n");
 }
