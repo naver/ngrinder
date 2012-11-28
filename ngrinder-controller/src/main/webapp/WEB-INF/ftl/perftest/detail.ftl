@@ -662,7 +662,6 @@ function bindEvent() {
 		$("#scheduleModal").modal("hide");
 		$("#scheduleModal small").html("");
 		$("#scheduleInput").attr('name', '');
-		$("#tagString").val(buildTagString())
 		$("#testStatus").val("READY");
 		document.testContentForm.submit();
 	});
@@ -814,14 +813,9 @@ function bindEvent() {
 }
 
 function buildTagString() {
-	var k = $("#tagString").select2("data");
-	var tagString = [];
-	for (var i = 0; i < k.length; i++) {
-	    if (jQuery.inArray(k[i].text, tagString) == -1) {
-	    	tagString.push(k[i].text);
-	    }
-	}
-	return tagString.join(",");
+	return $.map($("#tagString").select2("data"), function(k, i) {
+		return k.text;
+	}).join(",");
 }
 	
 function updateVuserTotal() {

@@ -99,6 +99,7 @@
 					});
 					
 					removeClick();
+					enableChkboxSelectAll("agentTable");
 					
 					$(".approved").live("click", function() {
 						var sid = $(this).attr("sid");
@@ -142,12 +143,9 @@
 				
 				bootbox.confirm("<@spring.message "agent.table.message.confirm.stop"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
 				    if (result) {
-				    	var idArray = [];
-						list.each(function() {
-							idArray.push($(this).val());
-						});
-						
-						stopAgents(idArray.join(","));
+						stopAgents(list.map(function() {
+							return $(this).val();
+						}).get().join(","));
 				    }
 				});
 			});

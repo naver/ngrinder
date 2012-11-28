@@ -167,7 +167,6 @@
 			
 						
 			$("#deleteBtn").click(function() {
-				var ids = "";
 				var list = $("td input:checked");
 				if(list.length == 0) {
 					bootbox.alert("<@spring.message "script.list.alert.delete"/>", "<@spring.message "common.button.ok"/>");
@@ -175,16 +174,15 @@
 				}
 	      		bootbox.confirm("<@spring.message "script.list.confirm.delete"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
 					if (result) {
-						var agentArray = [];
-						list.each(function() {
-							agentArray.push($(this).val());
-						});
-						ids = agentArray.join(",");
+						var scriptsStr = list.map(function() {
+							return $(this).val();
+						}).get().join(",");
+
 						$.ajax({
 					          url: "${req.getContextPath()}/script/delete/${currentPath}",
 					          type: 'POST',
 					          data: {
-					              'filesString': ids
+					              'filesString': scriptsStr
 					          },
 					          success: function (res) {
 					          	  document.location.reload();

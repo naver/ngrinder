@@ -216,7 +216,6 @@
 			enableChkboxSelectAll("testTable");
 			
 			$("#deleteBtn").on('click', function() {
-				var ids = "";
 				var list = $("td input:checked");
 				if(list.length == 0) {
 					bootbox.alert("<@spring.message "perfTest.table.message.alert.delete"/>", "<@spring.message "common.button.ok"/>");
@@ -225,12 +224,11 @@
 				
 				bootbox.confirm("<@spring.message "perfTest.table.message.confirm.delete"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
 				    if (result) {
-				    	var idArray = [];
-						list.each(function() {
-							idArray.push($(this).val());
-						});
+				    	var ids = list.map(function() {
+							return $(this).val();
+						}).get().join(",");
 						
-						deleteTests(idArray.join(","));
+						deleteTests(ids);
 				    }
 				});
 			});
