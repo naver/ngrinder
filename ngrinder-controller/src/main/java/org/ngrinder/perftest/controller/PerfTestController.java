@@ -113,9 +113,6 @@ public class PerfTestController extends NGrinderBaseController {
 	@Autowired
 	private RegionService regionService;
 
-	@Autowired
-	private Config config;
-
 	/**
 	 * Get Performance test lists.
 	 * 
@@ -215,7 +212,7 @@ public class PerfTestController extends NGrinderBaseController {
 		//User userMaxAgent = test == null ? user : test.getCreatedUser();
 		String region;
 		if (test == null || test.getRegion() == null) {
-			region = config.getRegion();
+			region = getConfig().getRegion();
 		} else {
 			region = test.getRegion();
 		}
@@ -263,7 +260,7 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute(PARAM_MAX_AGENT_SIZE_PER_CONSOLE, maxAgentSizePerConsole);
 		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
 		model.addAttribute(PARAM_MAX_RUN_COUNT, agentManager.getMaxRunCount());
-		model.addAttribute(PARAM_SECURITY_MODE, config.isSecurityEnabled());
+		model.addAttribute(PARAM_SECURITY_MODE, getConfig().isSecurityEnabled());
 		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
 	}
 
@@ -303,7 +300,7 @@ public class PerfTestController extends NGrinderBaseController {
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(regionList, user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
-		addDefaultAttributeOnModel(model, agentCountMap.get(config.getRegion()).intValue());
+		addDefaultAttributeOnModel(model, agentCountMap.get(getConfig().getRegion()).intValue());
 		return "perftest/detail";
 	}
 
@@ -341,7 +338,7 @@ public class PerfTestController extends NGrinderBaseController {
 		checkArgument(test.getAgentCount() <= agentMaxCount, "test agent shoule be within %s", agentMaxCount);
 		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
 						"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());
-		if (config.isSecurityEnabled()) {
+		if (getConfig().isSecurityEnabled()) {
 			checkArgument(StringUtils.isNotEmpty(test.getTargetHosts()),
 							"test taget hosts should be provided when security mode is enabled");
 		}
@@ -626,7 +623,7 @@ public class PerfTestController extends NGrinderBaseController {
 						"given test should be exist : " + testId);
 		if (test.getStatus().equals(Status.TESTING)) {
 			String testRegion = test.getRegion();
-			if (testRegion.equals(config.getRegion())) {
+			if (testRegion.equals(getConfig().getRegion())) {
 				model.addAttribute(PARAM_RESULT_AGENT_PERF,
 						getAgentPerfString(perfTestService.getAndPutAgentsInfo(testRegion, test.getPort())));
 				model.addAttribute(PARAM_RESULT_SUB, perfTestService.getAndPutStatistics(testRegion, test.getPort()));

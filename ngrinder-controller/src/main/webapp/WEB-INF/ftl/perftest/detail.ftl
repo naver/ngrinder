@@ -488,7 +488,7 @@ function addValidation() {
 				digits: true,
 				min: 0,
 				max: ${(maxAgentSizePerConsole)}
-			},		
+			},
 			vuserPerAgent: {
 				required: true,
 				digits: true,
@@ -532,9 +532,14 @@ function addValidation() {
 			}
 		},
 	    messages: { 
-	        testName: "<@spring.message "perfTest.warning.testName"/>",
+	        testName: {
+	        	required: "<@spring.message "perfTest.warning.testName"/>"
+	        },
 	        agentCount: {
 	        	required: "<@spring.message "perfTest.warning.agentNumber"/>"
+	        },
+	        "regionSelect": {
+	        	required: "<@spring.message "perfTest.warning.region"/>"
 	        },
 	        vuserPerAgent: {
 	        	required: "<@spring.message "perfTest.warning.vuserPerAgent"/>"
@@ -556,8 +561,7 @@ function addValidation() {
 	        },
 	        targetHosts: {
 	        	required: "<@spring.message "perfTest.warning.hostString"/>"
-	        },
-	        ignoreSampleCount: "<@spring.message "perfTest.warning.ignoreSampleCount"/>"
+	        }
 	    },
 		ignore : "", // make the validation on hidden input work
 		errorClass : "help-inline",
@@ -573,15 +577,25 @@ function addValidation() {
 		highlight : function(element, errorClass, validClass) {
 			var controlGroup = $(element).parents('.control-group');
 			if (controlGroup.length >= 1) {
+				$(controlGroup[0]).removeClass("success");
 				$(controlGroup[0]).addClass("error");
-				$(controlGroup[0]).removeClass('success');
 			}
 		},
 		unhighlight : function(element, errorClass, validClass) {
-			var controlGroup = $(element).parents('.control-group');
+			var $elem = $(element);
+			var controlGroup = $elem.parents('.control-group');
 			if (controlGroup.length >= 1) {
-				$(controlGroup[0]).removeClass("error");
-				$(controlGroup[0]).addClass('success');
+				var isSuccess = true;
+				$elem.siblings("span.help-inline:visible").each(function() {
+					if ($(this).attr("for") != $elem.attr("id")) {
+						isSuccess = false;
+						return;
+					}
+				});
+				if (isSuccess) {
+					$(controlGroup[0]).removeClass("error");
+					$(controlGroup[0]).addClass("success");
+				}
 			}
 		}
 	});
@@ -778,7 +792,10 @@ function bindEvent() {
 		$("#runcountRadio").click();
 	});
 	
-	$("#regionSelect").select2({placeholder:"<@spring.message "perfTest.configuration.region.placeholder"/>"});
+	$("#regionSelect").select2({
+		placeholder: '<@spring.message "perfTest.configuration.region.placeholder"/>'
+	});
+	
 	$("#regionSelect").change(function(){
 		var region = $(this).val();
 		var count = agentCountMap[region];
@@ -900,8 +917,9 @@ function getDurationMS() {
 
 function getOption(cnt) {
 	var contents = [];
+	var index;
 	for (i = 0; i < cnt; i++) {
-		contents.push("<option value='" + i + "'>" + i + "</option>");
+		contents.push("<option value='" + i + "'>" + (i < 10 ? "0" + i : i) + "</option>");
 	}
 	return contents.join("\n");
 }

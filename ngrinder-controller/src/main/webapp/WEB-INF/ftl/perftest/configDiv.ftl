@@ -13,7 +13,7 @@
 								id="agentCount" name="agentCount" value="${(test.agentCount)!0}" 
 								data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
 								data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span id="maxAgentCount" class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
-					 		<select id="regionSelect" name="region" style="width:215px">
+					 		<select id="regionSelect" name="region" class="required" style="width:215px">
 								<option value=""></option>
 								<#if regionList?size &gt; 0>
 									<#list regionList as regionName>
