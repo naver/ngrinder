@@ -56,6 +56,14 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	protected static final int DEFAULT_PAGE_LIMIT = 20;
 
+	private static Map<String, Object> regionInfo;
+
+	private static String successJson;
+
+	private static String errorJson;
+
+	private static Gson gson = new Gson();
+
 	@Autowired
 	private MessageSource messageSource;
 
@@ -75,6 +83,9 @@ public class NGrinderBaseController implements NGrinderConstants {
 		successJson = rtnJson.toString();
 		rtnJson.addProperty(JSON_SUCCESS, false);
 		errorJson = rtnJson.toString();
+		regionInfo = new HashMap<String, Object>();
+		regionInfo.put("isClusterEnabled", config.isCluster());
+		regionInfo.put("region", config.getRegion());
 	}
 
 	/**
@@ -118,10 +129,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	 * @return true is cache cluster set
 	 */
 	@ModelAttribute("controllerRegion")
-	public Map<String,Object> getControllerRegionInfo() {
-		Map<String,Object> regionInfo = new HashMap<String,Object>();
-		regionInfo.put("clusterEnable", config.isCluster());
-		regionInfo.put("region", config.getRegion());
+	public Map<String, Object> getControllerRegionInfo() {
 		return regionInfo;
 	}
 
@@ -143,10 +151,6 @@ public class NGrinderBaseController implements NGrinderConstants {
 		}
 		return message;
 	}
-
-	private static String successJson;
-	private static String errorJson;
-	private static Gson gson = new Gson();
 
 	/**
 	 * Return success json message.

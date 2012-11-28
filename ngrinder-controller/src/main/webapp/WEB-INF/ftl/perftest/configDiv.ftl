@@ -17,7 +17,7 @@
 								<option value=""></option>
 								<#if regionList?size &gt; 0>
 									<#list regionList as regionName>
-										<option value="${regionName}" <#if (test?? && test.region?? && test.region == regionName) ||(!(test??)&&controllerRegion.clusterEnable&&controllerRegion.region == regionName)>selected </#if> >${regionName}</option>
+										<option value="${regionName}" <#if (test?? && test.region?? && test.region == regionName) ||(!(test??)&&controllerRegion.isClusterEnabled&&controllerRegion.region == regionName)>selected </#if> >${regionName}</option>
 									</#list>
 								<#else>
 									<option value="NONE">NONE</option>
