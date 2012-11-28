@@ -43,8 +43,6 @@ import org.ngrinder.perftest.service.AgentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,6 +98,13 @@ public class AgentManagerService {
 			} else {
 				agentInfoInDB.setStatus(agentManager.getAgentState(agentIdt));
 				agentInfoInDB.setNumber(agentIdt.getNumber());
+				
+				//if a user owned agent is changed to normal agent, need to update region value.
+				String agtRegion = config.getRegion();
+				if (StringUtils.isNotBlank(agentIdt.getRegion())) {
+					agtRegion = agtRegion + "_" + agentIdt.getRegion();
+				}
+				agentInfoInDB.setRegion(agtRegion);
 			}
 			changeAgentList.add(agentInfoInDB);
 		}
@@ -139,7 +144,7 @@ public class AgentManagerService {
 				region = oriRegion;
 			}
 			if (!rtnMap.containsKey(region)) {
-				LOGGER.warn("Region :{} dnoes NOT exist in cluster.", region);
+				LOGGER.warn("Region :{} not exist in cluster nor owned by user:{}.", region, user.getUserId());
 			} else {
 				rtnMap.get(region).increment();
 			}
@@ -157,7 +162,8 @@ public class AgentManagerService {
 	@Transactional
 	public List<AgentInfo> getAgentList() {
 		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
-		List<AgentInfo> agents = agentRepository.findAll();
+		List<AgentInfo> agents = agentRepository.findAll(AgentManagerSpecification.startWithRegion(
+				config.getRegion()));
 		List<AgentInfo> agentList = new ArrayList<AgentInfo>(allAttachedAgents.size());
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
 			AgentControllerIdentityImplementation agentControllerIdentity = 
@@ -168,13 +174,12 @@ public class AgentManagerService {
 	}
 
 	/**
-	 * Get agents. agent list is obtained only from DB
+	 * Get all agents attached of this region from DB.
 	 * 
 	 * @return agent list
 	 */
-	@Cacheable("agents")
 	public List<AgentInfo> getAgentListOnDB() {
-		return agentRepository.findAll();
+		return agentRepository.findAll(AgentManagerSpecification.startWithRegion(config.getRegion()));
 	}
 
 	//@CacheEvict(allEntries = true, value = "agents")
@@ -182,6 +187,7 @@ public class AgentManagerService {
 					List<AgentInfo> agents) {
 		AgentInfo agentInfo = new AgentInfo();
 		for (AgentInfo each : agents) {
+			// should use IP and number to identify an agent, but now number is not used, it is always -1.
 			if (StringUtils.equals(each.getIp(), agentIdentity.getIp()) && 
 					each.getNumber() == agentIdentity.getNumber()) {
 				agentInfo = each;
@@ -236,7 +242,6 @@ public class AgentManagerService {
 	 * @param agent
 	 *            saved agent
 	 */
-	@CacheEvict(allEntries = true, value = "agents")
 	public void saveAgent(AgentInfo agent) {
 		agentRepository.save(agent);
 	}
@@ -247,7 +252,6 @@ public class AgentManagerService {
 	 * @param id
 	 *            agent id to be deleted
 	 */
-	@CacheEvict(allEntries = true, value = "agents")
 	public void deleteAgent(long id) {
 		agentRepository.delete(id);
 	}
@@ -257,7 +261,6 @@ public class AgentManagerService {
 	 * @param ip ip
 	 * @param approve true/false
 	 */
-	@CacheEvict(allEntries = true, value = "agents")
 	public void approve(String ip, boolean approve) {
 		List<AgentInfo> found = agentRepository.findAllByIp(ip);
 		for (AgentInfo each : found) {
