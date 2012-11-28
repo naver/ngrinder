@@ -74,7 +74,8 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	private AgentControllerState status;
 	
 	private String region;
-	
+
+	@Column(name = "agent_number")
 	private int number;
 
 	@Type(type = "true_false")

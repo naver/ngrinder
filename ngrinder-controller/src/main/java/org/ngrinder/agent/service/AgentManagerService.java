@@ -183,7 +183,7 @@ public class AgentManagerService {
 		AgentInfo agentInfo = new AgentInfo();
 		for (AgentInfo each : agents) {
 			if (StringUtils.equals(each.getIp(), agentIdentity.getIp()) && 
-					each.getRegion().startsWith(config.getRegion())) {
+					each.getNumber() == agentIdentity.getNumber()) {
 				agentInfo = each;
 				break;
 			}
