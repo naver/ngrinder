@@ -84,7 +84,7 @@
 					<col> 
 					<col> 
 			        <col width="70"> 
-			        <#if isClusterEnable??&&isClusterEnable>
+			        <#if controllerRegion.clusterEnable>
 						<col width="70"> 
 					</#if>	
 					<col width="120">
@@ -104,7 +104,7 @@
 						<th class="nothing" <#if !(isAdmin??)>title="<@spring.message "perfTest.table.modifier"/>"</#if>>
 						<@spring.message "perfTest.table.creator"/>
 						</th>
-						<#if isClusterEnable??&&isClusterEnable>
+						<#if controllerRegion.clusterEnable>
 						<th id="region"><@spring.message "agent.table.region"/></th>
 						</#if>
 						<th id="startTime"><@spring.message "perfTest.table.startTime"/></th>
@@ -151,7 +151,7 @@
 			            		<#else>
 			            			<td class="ellipsis" title="<#if isAdmin??><@spring.message "perfTest.table.creator"/><#else><@spring.message "perfTest.table.modifier"/></#if>" data-content="${test.lastModifiedUser.userName}">${test.lastModifiedUser.userName}</td>
 								</#if>
-								<#if isClusterEnable??&&isClusterEnable>
+								<#if controllerRegion.clusterEnable>
 									<td class="ellipsis" title="<@spring.message "agent.table.region"/>" data-content="${test.region}">${test.region}</td>
 								</#if>
 								<td>
