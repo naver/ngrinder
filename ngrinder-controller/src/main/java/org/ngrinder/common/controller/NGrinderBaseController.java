@@ -24,6 +24,7 @@ package org.ngrinder.common.controller;
 
 import static org.ngrinder.common.util.NoOp.noOp;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -116,9 +117,12 @@ public class NGrinderBaseController implements NGrinderConstants {
 	 * Check whether the cache cluster is open.
 	 * @return true is cache cluster set
 	 */
-	@ModelAttribute("isClusterEnable")
-	public boolean isClusterEnable() {
-		return config.isCluster();
+	@ModelAttribute("controllerRegion")
+	public Map<String,Object> getControllerRegionInfo() {
+		Map<String,Object> regionInfo = new HashMap<String,Object>();
+		regionInfo.put("clusterEnable", config.isCluster());
+		regionInfo.put("region", config.getRegion());
+		return regionInfo;
 	}
 
 	/**
