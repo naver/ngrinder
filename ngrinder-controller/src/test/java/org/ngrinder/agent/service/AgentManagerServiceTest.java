@@ -39,10 +39,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Tobi
  * @since 3.0
  */
-public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
+public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
-	private AgentManagerService agentService;
+	private AgentManagerService agentManagerService;
 
 	@Autowired
 	private RegionService regionService;
@@ -50,17 +50,17 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testSaveGetDeleteAgent() {
 		AgentInfo agent = this.saveAgent("save");
-		AgentInfo agent2 = agentService.getAgent(agent.getId());
+		AgentInfo agent2 = agentManagerService.getAgent(agent.getId());
 		Assert.assertNotNull(agent2);
 
-		List<AgentInfo> agentListDB = agentService.getAgentListOnDB();
-		agentListDB = agentService.getAgentListOnDB();
+		List<AgentInfo> agentListDB = agentManagerService.getAgentListOnDB();
+		agentListDB = agentManagerService.getAgentListOnDB();
 		Assert.assertNotNull(agentListDB);
 
-		agentService.approve("1.1.1.1", true);
+		agentManagerService.approve("1.1.1.1", true);
 		
-		agentService.deleteAgent(agent.getId());
-		agent2 = agentService.getAgent(agent.getId());
+		agentManagerService.deleteAgent(agent.getId());
+		agent2 = agentManagerService.getAgent(agent.getId());
 		Assert.assertNull(agent2);
 	}
 
@@ -73,13 +73,13 @@ public class AgentServiceTest extends AbstractNGrinderTransactionalTest {
 		agent.setPort(8080);
 		agent.setRegion("testRegion" + key);
 		agent.setStatus(AgentControllerState.BUSY);
-		agentService.saveAgent(agent);
+		agentManagerService.saveAgent(agent);
 		return agent;
 	}
 	
 	@Test
 	public void testGetUserAvailableAgentCount () {
-		agentService.getUserAvailableAgentCountMap(regionService.getRegionList(), testUser);
+		agentManagerService.getUserAvailableAgentCountMap(regionService.getRegionList(), testUser);
 	}
 	
 }

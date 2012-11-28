@@ -80,17 +80,6 @@
 	</div>
 </div>
 <script>
-	function buildTagString() {
-		var k = $("#tagString").select2("data");
-		var tagString = [];
-		for (var i = 0; i < k.length; i++) {
-		    if (jQuery.inArray(k[i].text, tagString) == -1) {
-		    	tagString.push(k[i].text);
-		    }
-		}
-		return tagString.join(",");
-	}
-
 	$("#leaveCommentButton").click(function(){
 		var comment = $("#testComment").val();
 		var tagString = buildTagString();

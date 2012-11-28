@@ -115,18 +115,6 @@ public class AgentManagerService {
 	}
 	
 	/**
-	 * Get user's available agent count, including the agents of Ready status, and user specified agents.
-	 * @param user
-	 * 				used to check user specified agents.
-	 * @return agent count
-	 * @since 3.1
-	 */
-//	public long getUserAvailableAgentCount(User user) {
-//		return agentRepository.count(AgentManagerSpecification.startWithRegionEqualStatusOfUser(
-//				config.getRegion(), AgentControllerState.READY, user));
-//	}
-	
-	/**
 	 * get the available agent count map in all regions of the user, including the free agents and
 	 * user specified agents.
 	 * @param regionList
@@ -150,7 +138,7 @@ public class AgentManagerService {
 				region = oriRegion;
 			}
 			if (!rtnMap.containsKey(region)) {
-				rtnMap.put(region, new MutableInt(1));
+				LOGGER.warn("Region :{} dnoes NOT exist in cluster.", region);
 			} else {
 				rtnMap.get(region).increment();
 			}
@@ -202,23 +190,16 @@ public class AgentManagerService {
 	}
 	
 	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation agentIdentity, AgentInfo agentInfo) {
-		// if agent's host name or region is changed, need to update DB
-		// or the agent is not in DB.
-		//if (!StringUtils.equals(agentInfo.getHostName(), agentIdentity.getName())
-		//		|| !StringUtils.startsWith(agentInfo.getRegion(), config.getRegion())) {
-			agentInfo.setHostName(agentIdentity.getName());
-			// if it is user owned agent, region name is {controllerRegion} + "_ankeyword_owned_userId"
-			String agtRegion = config.getRegion();
-			if (StringUtils.isNotBlank(agentIdentity.getRegion())) {
-				agtRegion = agtRegion + "_" + agentIdentity.getRegion();
-			}
-			agentInfo.setRegion(agtRegion);
-			agentInfo.setIp(agentIdentity.getIp());
-			//agentInfo = agentRepository.save(agentInfo); will be saved in scheduled service.
-		//}
+		agentInfo.setHostName(agentIdentity.getName());
+		// if it is user owned agent, region name is {controllerRegion} + "_anykeyword_owned_userId"
+		String agtRegion = config.getRegion();
+		if (StringUtils.isNotBlank(agentIdentity.getRegion())) {
+			agtRegion = agtRegion + "_" + agentIdentity.getRegion();
+		}
+		agentInfo.setRegion(agtRegion);
+		agentInfo.setIp(agentIdentity.getIp());
 		agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
 		agentInfo.setStatus(agentManager.getAgentState(agentIdentity));
-		// need to save agent info into DB, like ip and port maybe changed.
 		return agentInfo;
 	}
 

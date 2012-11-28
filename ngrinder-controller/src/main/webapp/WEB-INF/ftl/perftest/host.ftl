@@ -118,12 +118,10 @@ rel="popover" placement="bottom"></div>
 	  });
 
       function updateHostHiddenValue() {
-      	  var content = [];
-          $(".host").each(function(index, value) {
-          		content.push($.trim($(this).text()));    
-          });
+          var contentStr = $(".host").map(function() {
+          		return $.trim($(this).text());    
+          }).get().join(",");
           
-          contentStr = content.join(",");
           $("#hostsHidden").val(contentStr);
       }
 
