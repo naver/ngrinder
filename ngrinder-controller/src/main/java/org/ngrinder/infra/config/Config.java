@@ -190,7 +190,7 @@ public class Config implements IConfig {
 	protected void loadExtendProperties() {
 		Properties properties = exHome.getProperties("system-ex.conf");
 		String regionStr = properties.getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION);
-		region = regionStr.trim();
+		region = StringUtils.isBlank(regionStr) ? NON_REGION : regionStr.trim();
 		if (isCluster && region.equals(NON_REGION)) {
 			LOG.warn("Region is not set in cluster mode. Please set region properly.");
 		}
