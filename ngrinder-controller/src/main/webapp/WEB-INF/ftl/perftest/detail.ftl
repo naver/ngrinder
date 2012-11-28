@@ -122,6 +122,14 @@
 	.control-group.error td > label[for="testName"] {
 		color: #B94A48;
 	}
+	label.region {
+		margin: 0 20px 0 30px; 
+		display: inline; 
+		color: #666666; 
+		font-family: Tahoma,applegothic,sans-serif; 
+		font-size: 12px; 
+		font-weight: bold;
+	}
 	</style>
 
 </head>
@@ -242,7 +250,7 @@
 							<@spring.message "perfTest.configuration.testConfiguration"/>
 						</a>
 					</li> 
-					<li id="runningContent_tab" style="display: none; ">
+					<li id="runningContent_tab" style="display: none;">
 						<a href="#runningContent" data-toggle="tab" id="runningContentLink">
 							<@spring.message "perfTest.testRunning.title"/>
 						</a>
@@ -791,9 +799,7 @@ function bindEvent() {
 		$("#runcountRadio").click();
 	});
 	
-	$("#regionSelect").select2({
-		placeholder: '<@spring.message "perfTest.configuration.region.placeholder"/>'
-	});
+	$("#regionSelect").select2();
 	
 	$("#regionSelect").change(function(){
 		var region = $(this).val();

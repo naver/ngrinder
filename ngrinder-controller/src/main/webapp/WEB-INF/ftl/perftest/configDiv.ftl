@@ -13,11 +13,11 @@
 								id="agentCount" name="agentCount" value="${(test.agentCount)!0}" 
 								data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
 								data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span id="maxAgentCount" class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
-					 		<select id="regionSelect" name="region" class="required" style="width:215px">
-								<option value=""></option>
+							<label for="regionSelect" class="region"><@spring.message "perfTest.configuration.region"/></label>
+					 		<select id="regionSelect" name="region" class="required" style="width:115px">
 								<#if regionList?size &gt; 0>
 									<#list regionList as regionName>
-										<option value="${regionName}" <#if (test?? && test.region?? && test.region == regionName) ||(!(test??)&&controllerRegion.clusterEnable&&controllerRegion.region == regionName)>selected </#if> >${regionName}</option>
+										<option value="${regionName}" <#if (test?? && test.region?? && test.region == regionName) ||(!(test??)&&controllerRegion.isClusterEnabled&&controllerRegion.region == regionName)>selected </#if> >${regionName}</option>
 									</#list>
 								<#else>
 									<option value="NONE">NONE</option>
