@@ -41,6 +41,8 @@ import org.ngrinder.service.IUserService;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.authentication.dao.SaltSource;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -81,18 +83,9 @@ public class UserService implements IUserService {
 	 *            user id
 	 * @return user
 	 */
+	@Cacheable("users")
 	public User getUserById(String userId) {
 		return userRepository.findOneByUserId(userId);
-	}
-
-	/**
-	 * get user by userName.
-	 * 
-	 * @param userName userName
-	 * @return user
-	 */
-	public User getUserByUserName(String userName) {
-		return userRepository.findOneByUserName(userName);
 	}
 
 	/**
@@ -131,6 +124,7 @@ public class UserService implements IUserService {
 	 * @return result
 	 */
 	@Transactional
+	@CacheEvict(value = "users", key = "#user.userId")
 	public User saveUser(User user) {
 		encodePassword(user);
 		User createdUser = userRepository.save(user);
@@ -148,6 +142,7 @@ public class UserService implements IUserService {
 	 * @param user user
 	 * @param role role
 	 */
+	@CacheEvict(value = "users", key = "#user.userId")
 	public void saveUser(User user, Role role) {
 		encodePassword(user);
 		user.setRole(role);
@@ -163,6 +158,7 @@ public class UserService implements IUserService {
 	 * @return user id
 	 */
 	@Transactional
+	@CacheEvict(value = "users", key = "#user.userId")
 	public String modifyUser(User user, String shareUserIds) {
 		checkNotNull(user, "user should be not null, when modifying user");
 		checkNotNull(user.getId(), "user id should be provided when modifying user");
@@ -190,6 +186,7 @@ public class UserService implements IUserService {
 	 *            the user id string list
 	 */
 	@Transactional
+	@CacheEvict(value = "users", allEntries = true)
 	public void deleteUsers(List<String> userIds) {
 		for (String userId : userIds) {
 			User user = getUserById(userId);

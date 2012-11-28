@@ -99,6 +99,7 @@ public class AgentManagerService {
 				agentInfoInDB.setStatus(AgentControllerState.INACTIVE);
 			} else {
 				agentInfoInDB.setStatus(agentManager.getAgentState(agentIdt));
+				agentInfoInDB.setNumber(agentIdt.getNumber());
 			}
 			changeAgentList.add(agentInfoInDB);
 		}
@@ -181,7 +182,8 @@ public class AgentManagerService {
 					List<AgentInfo> agents) {
 		AgentInfo agentInfo = new AgentInfo();
 		for (AgentInfo each : agents) {
-			if (each != null && StringUtils.equals(each.getIp(), agentIdentity.getIp())) {
+			if (StringUtils.equals(each.getIp(), agentIdentity.getIp()) && 
+					each.getRegion().startsWith(config.getRegion())) {
 				agentInfo = each;
 				break;
 			}
@@ -196,6 +198,7 @@ public class AgentManagerService {
 		if (StringUtils.isNotBlank(agentIdentity.getRegion())) {
 			agtRegion = agtRegion + "_" + agentIdentity.getRegion();
 		}
+		agentInfo.setNumber(agentIdentity.getNumber());
 		agentInfo.setRegion(agtRegion);
 		agentInfo.setIp(agentIdentity.getIp());
 		agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));

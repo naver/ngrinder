@@ -74,6 +74,8 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	private AgentControllerState status;
 	
 	private String region;
+	
+	private int number;
 
 	@Type(type = "true_false")
 	@Column(columnDefinition = "char(1)")
@@ -167,6 +169,20 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 
 	public void setApproved(boolean approved) {
 		this.approved = approved;
+	}
+
+	/**
+	 * @return the number
+	 */
+	public int getNumber() {
+		return number;
+	}
+
+	/**
+	 * @param number the number to set
+	 */
+	public void setNumber(int number) {
+		this.number = number;
 	}
 
 	@Override
