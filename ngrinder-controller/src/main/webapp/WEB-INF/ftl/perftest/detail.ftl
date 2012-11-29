@@ -355,7 +355,6 @@ $(document).ready(function () {
 	initScheduleDate();
 	$("#tableTab a:first").tab('show');
 	$("#testContent_tab a").tab('show');
-	$("#processAndThreadPanel").hide();
 	
 	addValidation();
 	bindEvent();
@@ -588,7 +587,12 @@ function addValidation() {
 			if (errorPlace[0]) {
 				errorPlace.html(error);
 			} else {
-				element.closest(".controls").append(error);
+				var $elem = element.closest(".controls");
+				if ($elem[0]) {
+					$elem.append(error);
+				} else {
+					element.parent().append(error);
+				}
 			}
 		},
 		highlight : function(element, errorClass, validClass) {
@@ -653,12 +657,13 @@ function bindEvent() {
 		}
 
 		if ($("#scriptName option:selected").attr("validated") == "0") {
-			$("small.errorColor").text("The using script is not validated.");
+			$("small.errorColor").text("<@spring.message "perfTest.detail.message.validatedScript"/>");
 		} else {
 			$("small.errorColor").text("");
 		}
 		
 	    $("#tagString").val(buildTagString());
+	    initScheduleTime();
 	});
 	
 	$("#saveTestBtn").click(function() {
@@ -766,17 +771,13 @@ function bindEvent() {
 	$("#reportLnk").click(function() {
 		$("#footer").hide();
 		openReportDiv(function() {
-			$("#footer").show();			
+			$("#footer").show();
 		});
 	});
 	
 	$('#tableTab a').click(function(e) {
-		var $this = $(this);
-		if (!$this.hasClass("pull-right")) {
-			e.preventDefault();
-			$this.attr("tid");
-			$this.tab('show');
-		}
+		e.preventDefault();
+		$(this).tab('show');
 	});
 
 	$("#showScript").click(function() {
@@ -796,7 +797,6 @@ function bindEvent() {
 	
 	$("#expandAndCollapse").click(function() {
 		$(this).toggleClass("collapse");
-		$("#processAndThreadPanelDiv").toggle();
 		$("#processAndThreadPanel").toggle();
 	});
 	
@@ -1027,6 +1027,11 @@ function displayCfgAndTestReport() {
 	if (objTimer) {
 		window.clearInterval(objTimer);
 	}
+}
+
+function initScheduleTime() {
+	$("#shSelect").val(new Date().getHours());
+	$("#smSelect").val(new Date().getMinutes());
 }
 </script>
 	</body>
