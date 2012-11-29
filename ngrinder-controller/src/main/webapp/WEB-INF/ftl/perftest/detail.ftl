@@ -123,7 +123,8 @@
 		color: #B94A48;
 	}
 	label.region {
-		margin: 0 20px 0 30px; 
+		position: absolute;
+		margin-top: 4px;
 		display: inline; 
 		color: #666666; 
 		font-family: Tahoma,applegothic,sans-serif; 
@@ -545,9 +546,6 @@ function addValidation() {
 	        },
 	        agentCount: {
 	        	required: "<@spring.message "perfTest.warning.agentNumber"/>"
-	        },
-	        "regionSelect": {
-	        	required: "<@spring.message "perfTest.warning.region"/>"
 	        },
 	        vuserPerAgent: {
 	        	required: "<@spring.message "perfTest.warning.vuserPerAgent"/>"
