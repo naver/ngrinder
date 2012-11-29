@@ -658,20 +658,20 @@ function bindEvent() {
 			$("small.errorColor").text("");
 		}
 		
-		$("#agentCount").rules("remove", {
-			min:0
-		});
-	    $("#tagString").val(buildTagString())
+	    $("#tagString").val(buildTagString());
 	});
 	
 	$("#saveTestBtn").click(function() {
+		$("#agentCount").rules("add", {
+			min:0
+		});
 		if (!$("#testContentForm").valid()) {
 			$("#testContent_tab a").tab('show');
 			return false;
 		}
 		$("#testStatus").val("SAVED");
 		$("#scheduleInput").attr('name', '');
-		$("#tagString").val(buildTagString())
+		$("#tagString").val(buildTagString());
 		return true;
 	});
 	
@@ -822,14 +822,17 @@ function bindEvent() {
 		$("#agentCount").rules("add", {
 			max:count
 		});
-		
+		$("#agentCount").rules("add", {
+			min:0
+		});
 		$countObj.html(prefix + count);
+		$("#agentCount").valid();
 	});	
 }
 
 function buildTagString() {
-	return $.map($("#tagString").select2("data"), function(k, i) {
-		return k.text;
+	return $.map($("#tagString").select2("data"), function(obj) {
+		return obj.text;
 	}).join(",");
 }
 	
@@ -846,9 +849,14 @@ function initChartData() {
 }
 
 function updateScriptResources(first) {
+	var scriptName = $("#scriptName").val();
+	if (scriptName == "") {
+		return;
+	}
+	
 	$('#messageDiv').ajaxSend(function(e, xhr, settings) {
 		var url = settings.url;
-		if (url.indexOf("refresh") == 0) {
+		if (url.indexOf("getResourcesOnScriptFolder") > 0 && first == false) {
 			showInformation("<@spring.message "perfTest.detail.message.updateResource"/>");
 		}
 	});
@@ -857,16 +865,14 @@ function updateScriptResources(first) {
 		url : "${req.getContextPath()}/perftest/getResourcesOnScriptFolder",
 		dataType : 'json',
 		data : {
-			'scriptPath' : $("#scriptName").val(),
+			'scriptPath' : scriptName,
 			'r' : $("#scriptRevision").val()
 		},
 		success : function(res) {
 			var html = "";
 			var len = res.resources.length;
-			if (first != true) {
-				$(".div-host").html("");
-				$("#hostsHidden").val(res.targetHosts);
-				initHosts();
+			if (first == false) {
+				initHosts(res.targetHosts);
 			}
 			for ( var i = 0; i < len; i++) {
 				var value = res.resources[i];
@@ -928,7 +934,7 @@ function getOption(cnt) {
 	var contents = [];
 	var index;
 	for (i = 0; i < cnt; i++) {
-		contents.push("<option value='" + i + "'>" + (i < 10 ? "0" + i : i) + "</option>");
+		contents.push("<option value='" + i + "'>" + (i < 10 && cnt > 9 ? "0" + i : i) + "</option>");
 	}
 	return contents.join("\n");
 }
@@ -945,18 +951,15 @@ function openReportDiv(onFinishHook) {
 }
 
 function updateStatus(id, status_type, status_name, icon, deletable, stoppable, message) {
-	if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR" || status_type == "CANCELED") {
-		isFinished = true;
-	}
 	if ($("#testStatusType").val() == status_type) {
 		return;
 	}
-	var ballImg = $("#testStatus_img_id");
 
 	$("#teststatus_pop_over").attr("data-original-title", status_name);
 	$("#teststatus_pop_over").attr("data-content", message);
-
 	$("#testStatusType").val(status_type);
+
+	var ballImg = $("#testStatus_img_id");
 	if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
 		ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
 	}
@@ -964,6 +967,7 @@ function updateStatus(id, status_type, status_name, icon, deletable, stoppable, 
 	if (status_type == "TESTING") {
 		displayCfgAndTestRunning();
 	} else if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR" || status_type == "CANCELED") {
+		isFinished = true;
 		displayCfgAndTestReport();
 	} else {
 		displayCfgOnly();
