@@ -201,13 +201,3 @@ div.ellipsis {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
-.control-group.error .select2-choice {
-    border-color: #B94A48;
-    color: #B94A48;
-}
-
-.control-group.success .select2-choice {
-    border-color: #468847;
-    color: #468847;
-}

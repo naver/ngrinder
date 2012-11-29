@@ -122,6 +122,17 @@
 	.control-group.error td > label[for="testName"] {
 		color: #B94A48;
 	}
+	
+	#scriptControl.error .select2-choice {
+	    border-color: #B94A48;
+	    color: #B94A48;
+	}
+	
+	#scriptControl.success .select2-choice {
+	    border-color: #468847;
+	    color: #468847;
+	}
+
 	label.region {
 		position: absolute;
 		margin-top: 4px;
@@ -577,7 +588,7 @@ function addValidation() {
 			if (errorPlace[0]) {
 				errorPlace.html(error);
 			} else {
-				element.parent().append(error);
+				element.closest(".controls").append(error);
 			}
 		},
 		highlight : function(element, errorClass, validClass) {

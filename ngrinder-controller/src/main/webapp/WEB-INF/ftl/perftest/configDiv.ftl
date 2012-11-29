@@ -84,7 +84,7 @@
 						</table>
 					</div>
 				</div>
-				<div class="control-group">
+				<div class="control-group" id="scriptControl">
 					<label for="scriptName" class="control-label"><@spring.message "perfTest.configuration.script"/></label>
 					<div class="controls">
 						<table style="width:100%">
