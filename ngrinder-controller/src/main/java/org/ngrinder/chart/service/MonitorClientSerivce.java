@@ -101,6 +101,10 @@ public class MonitorClientSerivce {
 			if (!mbeanClient.isConnected()) {
 				mbeanClient.connect();
 			}
+			if (!mbeanClient.isConnected()) {
+				// if the monitor client can not be connected, just return, to avoid error.
+				return;
+			}
 			CompositeData cd = (CompositeData) mbeanClient.getAttribute(sysInfoMBeanObj.getObjectName(),
 					sysInfoMBeanObj.getAttrName());
 			SystemInfo retData = new SystemInfo();
@@ -110,7 +114,7 @@ public class MonitorClientSerivce {
 			bw.newLine();
 			bw.flush();
 		} catch (Exception e) {
-			LOG.error("Error while MonitorExecutorWorker is runnng. Disconnect this MBean client.", e);
+			LOG.error("Error while MonitorExecutorWorker is running. Disconnect this MBean client.", e);
 			mbeanClient.disconnect();
 			return;
 		}
