@@ -89,6 +89,17 @@ public class UserService implements IUserService {
 	}
 
 	/**
+	 * get user by user id without using Cache.
+	 * @param userId
+	 *            user id
+	 * @return user
+	 */
+	public User getUserByIdWithoutCache(String userId) {
+		User user = userRepository.findOneByUserId(userId);
+		return user;
+	}
+
+	/**
 	 * Encoding given user's password.
 	 * @param user user
 	 */
