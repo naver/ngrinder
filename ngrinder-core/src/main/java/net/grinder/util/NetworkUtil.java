@@ -22,14 +22,10 @@
  */
 package net.grinder.util;
 
-import static org.ngrinder.common.util.NoOp.noOp;
-
-import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
@@ -68,9 +64,7 @@ public abstract class NetworkUtil {
 		}
 		try {
 			InetAddress firstNonLoopbackAddress = getFirstNonLoopbackAddress(true, false);
-			if (firstNonLoopbackAddress != null) {
-				return firstNonLoopbackAddress.getHostAddress();
-			}
+			return firstNonLoopbackAddress.getHostAddress();
 		} catch (Exception e2) {
 			LOGGER.error("Error while get localhost address", e2);
 		}
@@ -139,19 +133,4 @@ public abstract class NetworkUtil {
 		}
 	}
 
-	/**
-	 * Close socket quietly.
-	 * 
-	 * @param s
-	 *            socket
-	 */
-	public static void closeQuitely(Socket s) {
-		if (s != null) {
-			try {
-				s.close();
-			} catch (IOException e) {
-				noOp();
-			}
-		}
-	}
 }
