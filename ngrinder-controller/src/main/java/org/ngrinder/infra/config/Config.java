@@ -136,29 +136,6 @@ public class Config implements IConfig {
 		isCluster = true;
 		String currentIP = NetworkUtil.getLocalHostAddress();
 		this.clusterURIs = StringUtils.split(clusterUri, ";");
-
-//		int clusterListenerPort = getSystemProperties().getPropertyInt(
-//				NGrinderConstants.NGRINDER_PROP_CLUSTER_LISTENER_PORT, NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT);
-
-//		String[] clusterUriList = StringUtils.split(clusterUri, ";");
-//		StringBuilder urisSB = new StringBuilder();
-//		for (String peerIP : clusterUriList) {
-//			// should exclude itself from the peer list
-//			if (!currentIP.equals(peerIP)) {
-//				if (urisSB.length() > 0) {
-//					urisSB.append("|");
-//				}
-//				urisSB.append("//").append(peerIP).append(":").append(clusterListenerPort);
-//				urisSB.append("/").append(NGrinderConstants.CACHE_NAME_DISTRIBUTED_MAP);
-//			}
-//		}
-//
-//		if (StringUtils.isBlank(urisSB.toString())) {
-//			LOG.error("Invalid configuration for ehcache cluster:{}", clusterUri);
-//			isCluster = false;
-//			return;
-//		}
-//		clusterURIs = urisSB.toString();
 		LOG.info("Cache cluster URIs:{}", clusterURIs);
 		
 		// set rmi server host for remote serving. Otherwise, maybe it will use 127.0.0.1 to serve.
