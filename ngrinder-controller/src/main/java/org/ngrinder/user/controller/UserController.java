@@ -211,7 +211,8 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping("/profile")
 	public String userProfile(User user, ModelMap model) {
 		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
-		User newUser = userService.getUserById(user.getUserId());
+		
+		User newUser = userService.getUserByIdWithoutCache(user.getUserId());
 		model.addAttribute("user", newUser);
 		model.addAttribute("action", "profile");
 		getUserShareList(newUser, model);

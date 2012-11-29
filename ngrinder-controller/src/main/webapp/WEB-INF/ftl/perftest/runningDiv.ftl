@@ -95,7 +95,6 @@
 			<ul class="nav nav-pills" style="" id="tableTab">
 				<li><a href="#lsTab" tid="ls"><@spring.message "perfTest.testRunning.latestsample"/></a></li>
 				<li><a href="#asTab" tid="as"><@spring.message "perfTest.testRunning.accumulatedstatistic"/></a></li>
-				<!--<li class="pull-right"><a href="#" target="_blank">Expand View</a></li>-->
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane" id="lsTab">

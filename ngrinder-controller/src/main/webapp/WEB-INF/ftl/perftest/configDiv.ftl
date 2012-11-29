@@ -65,9 +65,9 @@
 									</div> 
 								</td>
 							</tr>
-							<tr id="processAndThreadPanel">
+							<tr id="processAndThreadPanel" style="display:none;">
 								<td colspan="2">
-									<span id="processAndThreadPanelDiv">
+									<span>
 									<div class="input-prepend control-group" style="margin-bottom:0">
 										<span class="add-on" title='<@spring.message "perfTest.report.process"/>'><@spring.message "perfTest.report.process"/></span><input class="input span1" type="text" id="processes" name="processes" value="${(test.processes)!1}"/> 
 									</div>
