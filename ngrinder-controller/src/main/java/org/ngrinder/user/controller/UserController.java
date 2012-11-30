@@ -33,7 +33,6 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.Hibernate;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -210,7 +209,6 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping("/profile")
 	public String userProfile(User user, ModelMap model) {
 		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
-		
 		User newUser = userService.getUserByIdWithoutCache(user.getUserId());
 		model.addAttribute("user", newUser);
 		model.addAttribute("action", "profile");
@@ -230,9 +228,8 @@ public class UserController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/switchUserList")
 	public String switchUserList(User user, ModelMap model) {
-		User currUser = userService.getUserById(user.getUserId());
+		User currUser = userService.getUserByIdWithoutCache(user.getUserId());
 		checkNotNull(currUser);
-		Hibernate.initialize(currUser.getOwners());
 		model.addAttribute("shareUserList", currUser.getOwners());
 		return "user/userOptionGroup";
 	}
