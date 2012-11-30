@@ -130,14 +130,23 @@ rel="popover" placement="bottom"></div>
       }
 
       function initHosts(newHosts) {
-      	  if (newHosts) {
+      	  if (newHosts != undefined) {
+      	  	  newHosts = $.trim(newHosts);
       	  	  $("#hostsHidden").val(newHosts);
+      	  	  if (newHosts == "") {
+      	  	  	  $(".div-host").html("");
+      	  	  	  return;
+      	  	  }
       	  } else if (checkEmptyByID("hostsHidden")) {
               return;
           }
+          
 		  var hosts = $("#hostsHidden").val().split(",");
 		  $(".div-host").html($.map(hosts, function(val) {
-			  return hostItem(val);
+		      val = $.trim(val);
+		  	  if (val != "") {
+			  	  return hostItem(val);
+			  }
 		  }).join("\n"));
       }
 	      
