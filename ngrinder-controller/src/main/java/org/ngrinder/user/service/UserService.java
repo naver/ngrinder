@@ -30,6 +30,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Hibernate;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
@@ -83,19 +84,23 @@ public class UserService implements IUserService {
 	 *            user id
 	 * @return user
 	 */
+	@Transactional
 	@Cacheable("users")
 	public User getUserById(String userId) {
 		return userRepository.findOneByUserId(userId);
 	}
 
 	/**
-	 * get user by user id without using Cache.
+	 * get user by user id without using Cache. The user in cache has no followers and owners initialized.
 	 * @param userId
 	 *            user id
 	 * @return user
 	 */
+	@Transactional
 	public User getUserByIdWithoutCache(String userId) {
 		User user = userRepository.findOneByUserId(userId);
+		Hibernate.initialize(user.getOwners());
+		Hibernate.initialize(user.getFollowers());
 		return user;
 	}
 
