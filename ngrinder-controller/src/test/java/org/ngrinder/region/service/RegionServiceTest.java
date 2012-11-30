@@ -20,13 +20,16 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder;
+package org.ngrinder.region.service;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.util.List;
 
 import org.junit.Test;
-import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
-import org.ngrinder.region.service.RegionService;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -35,8 +38,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author mavlarn
  * @Since 3.1
  */
-public class RegionServiceTest extends AbstractPerfTestTransactionalTest {
+public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 
+	@Autowired
+	private Config config;
+	
 	@Autowired
 	private RegionService regionService;
 	
@@ -44,8 +50,7 @@ public class RegionServiceTest extends AbstractPerfTestTransactionalTest {
 	public void testGetRegionList() {
 		List<String> regionlist = regionService.getRegionList();
 		LOG.debug("list:{}", regionlist);
-		//regionService.initRegion();
-		regionlist = regionService.getRegionList();
-		LOG.debug("list   2:{}", regionlist);
+		assertThat(regionlist.contains(config.getRegion()), is(true));
+		regionService.test();
 	}
 }

@@ -30,6 +30,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.util.Properties;
 
 import org.junit.Test;
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -38,6 +39,7 @@ import org.ngrinder.common.util.PropertiesWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ContextConfiguration("classpath:applicationContext.xml")
 public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGrinderConstants {
@@ -119,20 +121,22 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGri
 		assertThat(config.isCluster(), is(true));
 	}
 	
-//	@Test
-//	public void testIniTExtendConfig() {
-//		config.loadExtendProperties();
-//		clusterInit.initRegion();
-//		Cache distCache = dynamicCacheManager.getCache(NGrinderConstants.CACHE_NAME_DISTRIBUTED_MAP);
-//		@SuppressWarnings("unchecked")
-//		List<String> regionList = (List<String>)distCache.get(NGrinderConstants.CACHE_NAME_REGION_LIST).get();
-//		assertThat(regionList.size(), is(1));
-//		assertThat(regionList.get(0), is(Config.NON_REGION));
-//		
-//		ReflectionTestUtils.setField(config, "region", "Beijing");
-//		ReflectionTestUtils.setField(clusterInit, "config", config);
-//		clusterInit.initRegion();
-//		assertThat(regionList.size(), is(2));
-//		assertThat(regionList.get(1), is("Beijing"));
-//	}
+	@Test
+	public void testLoadExtendProperties() {
+		Properties wrapper = mock(Properties.class);
+		when(wrapper.getProperty(NGRINDER_PROP_REGION)).thenReturn(Config.NON_REGION);
+		
+		//set mock exHome and test
+		Home mockExHome = mock(Home.class);
+		when(mockExHome.getProperties("system-ex.conf")).thenReturn(wrapper);
+		ReflectionTestUtils.setField(config, "exHome", mockExHome);
+		config.setSystemProperties(new PropertiesWrapper(wrapper));
+		config.loadExtendProperties();
+		assertThat(config.getRegion(), is(Config.NON_REGION));
+		
+		when(wrapper.getProperty(NGRINDER_PROP_REGION, Config.NON_REGION)).thenReturn("TestNewRegion");
+		config.loadExtendProperties();
+		assertThat(config.getRegion(), is("TestNewRegion"));
+	}
+	
 }

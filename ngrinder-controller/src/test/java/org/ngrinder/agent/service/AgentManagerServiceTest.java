@@ -92,8 +92,9 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	
 	@Test
 	public void testGetUserAvailableAgentCount() {
+		List<String> regionList = regionService.getRegionList();
 		Map<String, MutableInt> countMap = agentManagerService.getUserAvailableAgentCountMap(
-				regionService.getRegionList(), testUser);
+				regionList, getTestUser());
 		int oriCount = countMap.get(config.getRegion()).intValue();
 		
 		AgentInfo agentInfo = new AgentInfo();
@@ -103,8 +104,9 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		agentInfo.setIp("127.127.127.127");
 		agentInfo.setPort(1);
 		agentInfo.setStatus(AgentControllerState.READY);
+		agentInfo.setApproved(true);
 		agentManagerService.saveAgent(agentInfo);
-		countMap = agentManagerService.getUserAvailableAgentCountMap(regionService.getRegionList(), testUser);
+		countMap = agentManagerService.getUserAvailableAgentCountMap(regionList, getTestUser());
 
 		int newCount = countMap.get(config.getRegion()).intValue();
 		assertThat(newCount, is(oriCount + 1));
