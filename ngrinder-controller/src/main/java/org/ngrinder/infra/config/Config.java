@@ -103,6 +103,8 @@ public class Config implements IConfig {
 			home = resolveHome();
 			exHome = resolveExHome();
 			copyDefaultConfigurationFiles();
+			copyExtConfigurationFiles();
+
 			loadIntrenalProperties();
 			loadSystemProperties();
 			loadExtendProperties();
@@ -115,7 +117,6 @@ public class Config implements IConfig {
 			
 			//check cluster, get cluster configuration for ehcache
 			loadClusterConfig();
-			copyExtConfigurationFiles();
 
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while loading NGRINDER_HOME", e);
