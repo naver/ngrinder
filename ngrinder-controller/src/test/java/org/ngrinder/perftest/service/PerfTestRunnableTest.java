@@ -21,7 +21,9 @@ import net.grinder.statistics.StatisticsSet;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.service.AgentManagerService;
@@ -61,6 +63,24 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	
 	public PerfTest currentTest;
 
+	@BeforeClass
+	public static void initMonitor() {
+		try {
+			Set<String> collector = MonitorConstants.SYSTEM_DATA_COLLECTOR;
+			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_MONITOR_PORT, collector);
+			AgentMonitorServer.getInstance().start();
+		} catch (Exception e) {
+			LOG.error("ERROR: {}", e.getMessage());
+			LOG.debug("Error while starting Monitor", e);
+		}
+		ThreadUtil.sleep(2000);
+	}
+	
+	@AfterClass
+	public static void stopMonitor() {
+		AgentMonitorServer.getInstance().stop();
+	}
+	
 	@Before
 	public void before() throws IOException {
 		ClassPathResource classPathResource = new ClassPathResource("native_lib/.sigar_shellrc");
@@ -94,15 +114,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		LOG.info("* Start nGrinder Monitor *");
 		MonitorConstants.init(agentConfig2);
 		
-		try {
-			Set<String> collector = MonitorConstants.SYSTEM_DATA_COLLECTOR;
-			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_MONITOR_PORT, collector);
-			AgentMonitorServer.getInstance().start();
-		} catch (Exception e) {
-			LOG.error("ERROR: {}", e.getMessage());
-			LOG.debug("Error while starting Monitor", e);
-		}
-		ThreadUtil.sleep(2000);
+
 		
 		int agentCount = 0;
 		int checkLoop = 0;
