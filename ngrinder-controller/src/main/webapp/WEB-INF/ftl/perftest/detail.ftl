@@ -800,12 +800,12 @@ function bindEvent() {
 		$("#processAndThreadPanel").toggle();
 	});
 	
-	$("#durationSlider").mousedown(function() {
+	$("#durationSlider, #hSelect, #mSelect, sSelect").mousedown(function() {
 		$("#durationRadio").click();
 	});
 	
 	$("#runCount").focus(function() {
-		$("#runcountRadio").click();
+		$("#runCountRadio").click();
 	});
 	
 	$("#regionSelect").select2();
@@ -857,7 +857,7 @@ function updateScriptResources(first) {
 	$('#messageDiv').ajaxSend(function(e, xhr, settings) {
 		var url = settings.url;
 		if (url.indexOf("getResourcesOnScriptFolder") > 0 && first == false) {
-			showInformation("<@spring.message "perfTest.detail.message.updateResource"/>");
+			showProgressBar("<@spring.message "perfTest.detail.message.updateResource"/>");
 		}
 	});
 	
@@ -879,6 +879,9 @@ function updateScriptResources(first) {
 				html = html + "<div class='resource ellipsis' title='" + value + "'>" + value + "</div>";
 			}
 			$("#scriptResources").html(html);
+		},
+		complete : function() {
+			hideProgressBar();
 		},
 		error : function() {
 			showErrorMsg("<@spring.message "common.error.error"/>");

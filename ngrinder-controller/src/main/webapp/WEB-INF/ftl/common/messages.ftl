@@ -1,13 +1,14 @@
-<div class="alert messageDiv hidden" id="messageDiv"></div>
-<div class="alert messageDiv alert-error hidden" id="errorMsgDiv">
+<div class="alert messageDiv" id="messageDiv" style="display:none"></div>
+<div class="alert messageDiv alert-error" id="errorMsgDiv" style="display:none">
 	<button class="close" id="errorMsgDivBtn">&times;</button>
 	<h4 class="alert-heading">Error!</h4>
 	<span></span>
 </div>
-<div class="progress progress-striped active hidden messageDiv" id="progressBarDiv">
+<div class="progress progress-striped active messageDiv" id="progressBarDiv" style="display:none">
   <div class="bar" style="width: 100%;"></div>
 </div>
 <script type="text/javascript">
+	var msgTimeout;
 	$(document).ready(function() {
 		$("#errorMsgDivBtn").click(function() {
 			var $div = $("#errorMsgDiv");
@@ -22,10 +23,20 @@
 		$msgDiv.addClass(color);
 		$msgDiv.html(message);
 		$msgDiv.fadeIn(100);
-		setTimeout(function() {
+		clearTimeout(msgTimeout);
+		msgTimeout = setTimeout(function() {
 			$msgDiv.fadeOut(100);
 			$msgDiv.removeClass(color);
 		}, 3000);
+	}
+	
+	function hideMsg() {
+		if ($('#messageDiv:visible')[0]) {
+			clearTimeout(msgTimeout);
+			var $msgDiv = $('#messageDiv');
+			$msgDiv.fadeOut(100);
+			$msgDiv.removeClass("alert-success alert-info alert-block");
+		}
 	}
 	
 	function showSuccessMsg(message) {

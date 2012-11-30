@@ -32,7 +32,6 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 
-
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
 import org.ngrinder.common.controller.NGrinderBaseController;

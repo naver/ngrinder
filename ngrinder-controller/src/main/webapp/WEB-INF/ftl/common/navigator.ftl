@@ -105,7 +105,7 @@
 	};
 	
 	function switchUser() {
-		$("#switchUserSelect").live("change", function() {
+		$("#switchUserSelect").change(function() {
 			document.location.href = "${req.getContextPath()}/user/switchUser?switchUserId=" + $(this).val();
 		});
 		
