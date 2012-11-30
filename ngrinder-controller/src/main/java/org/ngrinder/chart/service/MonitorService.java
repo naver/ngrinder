@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -66,8 +67,9 @@ public class MonitorService {
 		
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
 				Config.MONITOR_FILE_PREFIX + monitorIP + ".data");
+		BufferedReader br = null;
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(monitorDataFile));
+			br = new BufferedReader(new FileReader(monitorDataFile));
 			br.readLine(); //skip the header.
 			//header: "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage"
 			String line = br.readLine();
@@ -89,6 +91,8 @@ public class MonitorService {
 		} catch (IOException e) {
 			LOG.error("Error while getting monitor:{} data file:{}", monitorIP, monitorDataFile);
 			LOG.error(e.getMessage(), e);
+		} finally {
+			IOUtils.closeQuietly(br);
 		}
 		LOG.debug("Finish getSystemMonitorData of test:{} ip:{}", testId, monitorIP);
 		return rtnList;

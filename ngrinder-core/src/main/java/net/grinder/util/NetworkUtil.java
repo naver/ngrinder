@@ -64,7 +64,9 @@ public abstract class NetworkUtil {
 		}
 		try {
 			InetAddress firstNonLoopbackAddress = getFirstNonLoopbackAddress(true, false);
-			return firstNonLoopbackAddress.getHostAddress();
+			if (firstNonLoopbackAddress != null) {
+				return firstNonLoopbackAddress.getHostAddress();
+			}
 		} catch (Exception e2) {
 			LOGGER.error("Error while get localhost address", e2);
 		}
