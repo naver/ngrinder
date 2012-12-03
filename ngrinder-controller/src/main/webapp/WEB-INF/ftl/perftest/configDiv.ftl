@@ -143,7 +143,7 @@
 				</div>
 				<hr>
 				<div class="control-group"> 
-					<label class="control-label"> <input type="radio" id="durationRadio" name="threshold" value="D" <#if !(threshold??) || threshold == "D">checked</#if>> <@spring.message "perfTest.configuration.duration"/>
+					<label class="control-label"> <input type="radio" id="durationRadio" name="threshold" value="D" <#if (test?? && test.threshold == "D")||!(test??) >checked</#if>> <@spring.message "perfTest.configuration.duration"/>
 					</label>
 					<div class="controls docs-input-sizes">
 						<select class="select-item" id="hSelect"></select> : 
@@ -158,7 +158,7 @@
 					</div>
 				</div>
 				<div class="control-group">
-					<label for="runCount" class="control-label"> <input type="radio" id="runCountRadio" name="threshold" value="R" <#if threshold?? && threshold == "R">checked</#if>> 
+					<label for="runCount" class="control-label"> <input type="radio" id="runCountRadio" name="threshold" value="R" <#if test?? && test.threshold == "R" >checked</#if>> 
 						<@spring.message "perfTest.configuration.runCount"/>
 					</label>
 					<div class="controls">
