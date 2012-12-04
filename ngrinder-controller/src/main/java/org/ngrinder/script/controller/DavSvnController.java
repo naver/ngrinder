@@ -42,6 +42,7 @@ import org.apache.commons.collections.iterators.IteratorEnumeration;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
+import org.ngrinder.script.svnkitdav.DAVHandlerExFactory;
 import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,11 +60,9 @@ import org.tmatesoft.svn.core.internal.server.dav.DAVException;
 import org.tmatesoft.svn.core.internal.server.dav.DAVPathUtil;
 import org.tmatesoft.svn.core.internal.server.dav.DAVRepositoryManager;
 import org.tmatesoft.svn.core.internal.server.dav.DAVXMLUtil;
-import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVHandlerFactory;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVResponse;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.ServletDAVHandler;
 import org.tmatesoft.svn.core.internal.util.SVNEncodingUtil;
-import org.tmatesoft.svn.core.internal.util.SVNHashMap;
 import org.tmatesoft.svn.core.internal.util.SVNXMLUtil;
 import org.tmatesoft.svn.util.SVNDebugLog;
 import org.tmatesoft.svn.util.SVNLogType;
@@ -103,70 +102,6 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 	}
 
 	private Map<String, String> initParam = new HashMap<String, String>();
-
-	private static final Map OUR_STATUS_LINES = new SVNHashMap();
-	private static final Map OUR_SHARED_CACHE = new SVNHashMap();
-	// CHECKSTYLE:OFF
-	static {
-		OUR_STATUS_LINES.put(new Integer(100), "100 Continue");
-		OUR_STATUS_LINES.put(new Integer(101), "101 Switching Protocols");
-		OUR_STATUS_LINES.put(new Integer(102), "102 Processing");
-		OUR_STATUS_LINES.put(new Integer(200), "200 OK");
-		OUR_STATUS_LINES.put(new Integer(201), "201 Created");
-		OUR_STATUS_LINES.put(new Integer(202), "202 Accepted");
-		OUR_STATUS_LINES.put(new Integer(203), "203 Non-Authoritative Information");
-		OUR_STATUS_LINES.put(new Integer(204), "204 No Content");
-		OUR_STATUS_LINES.put(new Integer(205), "205 Reset Content");
-		OUR_STATUS_LINES.put(new Integer(206), "206 Partial Content");
-		OUR_STATUS_LINES.put(new Integer(207), "207 Multi-Status");
-		OUR_STATUS_LINES.put(new Integer(300), "300 Multiple Choices");
-		OUR_STATUS_LINES.put(new Integer(301), "301 Moved Permanently");
-		OUR_STATUS_LINES.put(new Integer(302), "302 Found");
-		OUR_STATUS_LINES.put(new Integer(303), "303 See Other");
-		OUR_STATUS_LINES.put(new Integer(304), "304 Not Modified");
-		OUR_STATUS_LINES.put(new Integer(305), "305 Use Proxy");
-		OUR_STATUS_LINES.put(new Integer(306), "306 unused");
-		OUR_STATUS_LINES.put(new Integer(307), "307 Temporary Redirect");
-		OUR_STATUS_LINES.put(new Integer(400), "400 Bad Request");
-		OUR_STATUS_LINES.put(new Integer(401), "401 Authorization Required");
-		OUR_STATUS_LINES.put(new Integer(402), "402 Payment Required");
-		OUR_STATUS_LINES.put(new Integer(403), "403 Forbidden");
-		OUR_STATUS_LINES.put(new Integer(404), "404 Not Found");
-		OUR_STATUS_LINES.put(new Integer(405), "405 Method Not Allowed");
-		OUR_STATUS_LINES.put(new Integer(406), "406 Not Acceptable");
-		OUR_STATUS_LINES.put(new Integer(407), "407 Proxy Authentication Required");
-		OUR_STATUS_LINES.put(new Integer(408), "408 Request Time-out");
-		OUR_STATUS_LINES.put(new Integer(409), "409 Conflict");
-		OUR_STATUS_LINES.put(new Integer(410), "410 Gone");
-		OUR_STATUS_LINES.put(new Integer(411), "411 Length Required");
-		OUR_STATUS_LINES.put(new Integer(412), "412 Precondition Failed");
-		OUR_STATUS_LINES.put(new Integer(413), "413 Request Entity Too Large");
-		OUR_STATUS_LINES.put(new Integer(414), "414 Request-URI Too Large");
-		OUR_STATUS_LINES.put(new Integer(415), "415 Unsupported Media Type");
-		OUR_STATUS_LINES.put(new Integer(416), "416 Requested Range Not Satisfiable");
-		OUR_STATUS_LINES.put(new Integer(417), "417 Expectation Failed");
-		OUR_STATUS_LINES.put(new Integer(418), "418 unused");
-		OUR_STATUS_LINES.put(new Integer(419), "419 unused");
-		OUR_STATUS_LINES.put(new Integer(420), "420 unused");
-		OUR_STATUS_LINES.put(new Integer(421), "421 unused");
-		OUR_STATUS_LINES.put(new Integer(422), "422 Unprocessable Entity");
-		OUR_STATUS_LINES.put(new Integer(423), "423 Locked");
-		OUR_STATUS_LINES.put(new Integer(424), "424 Failed Dependency");
-		OUR_STATUS_LINES.put(new Integer(425), "425 No code");
-		OUR_STATUS_LINES.put(new Integer(426), "426 Upgrade Required");
-		OUR_STATUS_LINES.put(new Integer(500), "500 Internal Server Error");
-		OUR_STATUS_LINES.put(new Integer(501), "501 Method Not Implemented");
-		OUR_STATUS_LINES.put(new Integer(502), "502 Bad Gateway");
-		OUR_STATUS_LINES.put(new Integer(503), "503 Service Temporarily Unavailable");
-		OUR_STATUS_LINES.put(new Integer(504), "504 Gateway Time-out");
-		OUR_STATUS_LINES.put(new Integer(505), "505 HTTP Version Not Supported");
-		OUR_STATUS_LINES.put(new Integer(506), "506 Variant Also Negotiates");
-		OUR_STATUS_LINES.put(new Integer(507), "507 Insufficient Storage");
-		OUR_STATUS_LINES.put(new Integer(508), "508 unused");
-		OUR_STATUS_LINES.put(new Integer(509), "509 unused");
-		OUR_STATUS_LINES.put(new Integer(510), "510 Not Extended");
-	}
-
 	private DAVConfig myDAVConfig;
 	private ServletContext servletContext;
 
@@ -204,6 +139,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 	public void handleRequest(HttpServletRequest request, HttpServletResponse response)
 					throws ServletException,
 					IOException {
+
 		if (LOGGER.isTraceEnabled()) {
 			logRequest(request);
 		}
@@ -222,7 +158,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 			// To make it understand Asian Language..
 			request = new MyHttpServletRequestWrapper(request);
 			DAVRepositoryManager repositoryManager = new DAVRepositoryManager(getDAVConfig(), request);
-			handler = DAVHandlerFactory.createHandler(repositoryManager, request, response);
+			handler = DAVHandlerExFactory.createHandler(repositoryManager, request, response);
 			handler.execute();
 		} catch (DAVException de) {
 			response.setContentType(XML_CONTENT_TYPE);
@@ -299,7 +235,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 		logBuffer.append("request.getServletPath(): " + request.getServletPath());
 		logBuffer.append('\n');
 		logBuffer.append("request.getRequestURL(): " + request.getRequestURL());
-		LOGGER.trace(logBuffer.toString());
+		LOGGER.info(logBuffer.toString());
 	}
 
 	/**
@@ -356,6 +292,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 				}
 				errorMessageBuffer.append("</D:error>\n");
 				servletResponse.getWriter().print(errorMessageBuffer.toString());
+				System.out.println(errorMessageBuffer.toString());
 				SVNDebugLog.getDefaultLog().logFine(SVNLogType.NETWORK, errorMessageBuffer.toString());
 				return;
 			}
@@ -392,40 +329,6 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 		SVNXMLUtil.closeXMLTag(SVNXMLUtil.SVN_APACHE_PROPERTY_PREFIX, "human-readable", xmlBuffer);
 		SVNXMLUtil.closeXMLTag(SVNXMLUtil.DAV_NAMESPACE_PREFIX, DAVXMLUtil.SVN_DAV_ERROR_TAG, xmlBuffer);
 		return xmlBuffer.toString();
-	}
-
-	/**
-	 * Get shared activities.
-	 * 
-	 * @return activity string
-	 */
-	public static String getSharedActivity() {
-		synchronized (OUR_SHARED_CACHE) {
-			return (String) OUR_SHARED_CACHE.get(DAV_SVN_AUTOVERSIONING_ACTIVITY);
-		}
-	}
-
-	/**
-	 * Set shared activities.
-	 * 
-	 * @param sharedActivity
-	 *            shared activity.
-	 */
-	public static void setSharedActivity(String sharedActivity) {
-		synchronized (OUR_SHARED_CACHE) {
-			OUR_SHARED_CACHE.put(DAV_SVN_AUTOVERSIONING_ACTIVITY, sharedActivity);
-		}
-	}
-
-	/**
-	 * Check if statusCode is http server error of not.
-	 * 
-	 * @param statusCode
-	 *            status code.
-	 * @return true if it's server error.
-	 */
-	public static boolean isHTTPServerError(int statusCode) {
-		return statusCode >= 500 && statusCode < 600;
 	}
 
 	@Override

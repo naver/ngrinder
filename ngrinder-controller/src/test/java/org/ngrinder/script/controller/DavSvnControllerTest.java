@@ -22,9 +22,6 @@
  */
 package org.ngrinder.script.controller;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
 import java.io.IOException;
 
 import javax.servlet.ServletException;
@@ -61,31 +58,6 @@ public class DavSvnControllerTest extends AbstractNGrinderTransactionalTest {
 		DAVException davE = new DAVException("Test Error", 404, 0);
 		HttpServletResponse resp = new MockHttpServletResponse();
 		DavSvnController.handleError(davE, resp);
-	}
-
-	/**
-	 * Test method for {@link org.ngrinder.script.controller.DavSvnController#getSharedActivity()}.
-	 */
-	@Test
-	public void testGetSharedActivity() {
-		DavSvnController.getSharedActivity();
-	}
-
-	/**
-	 * Test method for {@link org.ngrinder.script.controller.DavSvnController#setSharedActivity(java.lang.String)}.
-	 */
-	@Test
-	public void testSetSharedActivity() {
-		DavSvnController.setSharedActivity("TEST SA");
-	}
-
-	/**
-	 * Test method for {@link org.ngrinder.script.controller.DavSvnController#isHTTPServerError(int)}.
-	 */
-	@Test
-	public void testIsHTTPServerError() {
-		assertThat(DavSvnController.isHTTPServerError(404), is(false));
-		assertThat(DavSvnController.isHTTPServerError(550), is(true));
 	}
 
 	@Test
