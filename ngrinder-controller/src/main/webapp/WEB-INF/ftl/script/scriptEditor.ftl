@@ -155,7 +155,7 @@
 				var hostString = $("#hostsHidden").val();
 				$('#validateRsPre').hide();
 				var newContent = editor.getValue();
-				showProgressBar();
+				showProgressBar("<@spring.message "script.editor.message.validate"/>");
 				$.ajax({
 			  		url: "${req.getContextPath()}/script/validate",
 			    	async: true,

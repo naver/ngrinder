@@ -66,7 +66,7 @@
                    </tr>
                    <#if test.threshold?? && test.threshold == "D"> 
 	                   <tr> 
-	                       <th><@spring.message "perfTest.table.duration"/></th>
+	                       <th><@spring.message "perfTest.configuration.duration"/></th>
 	                       <td><span>${test.durationStr}</span> <code>HH:MM:SS</code></td>
 	                   </tr>
                    <#else>

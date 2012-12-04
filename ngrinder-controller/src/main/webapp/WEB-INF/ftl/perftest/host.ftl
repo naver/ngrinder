@@ -129,14 +129,25 @@ rel="popover" placement="bottom"></div>
           return "<p class='host'>" + content + "  <a href='javascript:void(0);'><i class='icon-remove-circle'></i></a></p><br style='line-height:0px'/>"
       }
 
-      function initHosts() {
-          if (checkEmptyByID("hostsHidden")) {
+      function initHosts(newHosts) {
+      	  if (newHosts != undefined) {
+      	  	  newHosts = $.trim(newHosts);
+      	  	  $("#hostsHidden").val(newHosts);
+      	  	  if (newHosts == "") {
+      	  	  	  $(".div-host").html("");
+      	  	  	  return;
+      	  	  }
+      	  } else if (checkEmptyByID("hostsHidden")) {
               return;
           }
+          
 		  var hosts = $("#hostsHidden").val().split(",");
-		  $.each(hosts, function(index, each) {
-		  	$(".div-host").html( $(".div-host").html() + hostItem(each) );
-		  });
+		  $(".div-host").html($.map(hosts, function(val) {
+		      val = $.trim(val);
+		  	  if (val != "") {
+			  	  return hostItem(val);
+			  }
+		  }).join("\n"));
       }
 	      
 	  function deleteHost(element) {

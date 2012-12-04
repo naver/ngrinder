@@ -30,7 +30,8 @@ public class AnnouncementControllerTest extends AbstractNGrinderTransactionalTes
 		
 		assertThat(model.containsAttribute("content"), is(true));
 	}
-	
+
+	@Test
 	public void testSaveAnnouncement() {
 		Model model = new ExtendedModelMap();
 		String content = "My test.";

@@ -48,7 +48,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 public class PerfTestControllerWithRepoTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
-	private PerfTestController controller;
+	private MockPerfTestController controller;
 
 	@Autowired
 	public MockFileEntityRepsotory repo;

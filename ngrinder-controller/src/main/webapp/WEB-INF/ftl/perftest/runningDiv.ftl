@@ -51,7 +51,7 @@
 				<div class="control-group">
 					<#if test??>
 						<#if test.threshold == "D">
-							<label class="control-label"> <@spring.message "perfTest.table.duration"/> </label>
+							<label class="control-label"> <@spring.message "perfTest.configuration.duration"/> </label>
 							<div class="controls">
 								<span>${(test.durationStr)!}</span>
 								<code>HH:MM:SS</code>
@@ -59,12 +59,11 @@
 						<#else>
 							<label class="control-label"> <@spring.message "perfTest.configuration.runCount"/> </label>
 							<div class="controls">
-								<span>${(test.runCount)!}</span>
+								${(test.runCount)!}
+								<span class="badge badge-success pull-right"> <span id="running_count"></span>  <@spring.message "perfTest.table.runcount"/></span>
 							</div>
 						</#if>
 					</#if>
-					
-					
 				</div>
 				<div class="control-group">
 					<label for="ignoreSampleCount" class="control-label"><@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
@@ -95,7 +94,6 @@
 			<ul class="nav nav-pills" style="" id="tableTab">
 				<li><a href="#lsTab" tid="ls"><@spring.message "perfTest.testRunning.latestsample"/></a></li>
 				<li><a href="#asTab" tid="as"><@spring.message "perfTest.testRunning.accumulatedstatistic"/></a></li>
-				<!--<li class="pull-right"><a href="#" target="_blank">Expand View</a></li>-->
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane" id="lsTab">
@@ -166,6 +164,7 @@ var curTps = 0;
 var curRunningTime = 0;
 var curRunningProcesses = 0;
 var curRunningThreads = 0;
+var curRunningCount = 0;
 var curStatus = false;
 var curAgentPerfStates = [];
 var agentPerfStates = [];
@@ -183,6 +182,7 @@ function refreshData() {
 
 			$("#process_data").text(curRunningProcesses);
 			$("#thread_data").text(curRunningThreads);
+			$("#running_count").text(curRunningCount);
 			var agentStatusString = "<ul>";
 			for ( var i = 0; i < curAgentPerfStates.length; i++) {
 				var eachAgent = curAgentPerfStates[i];

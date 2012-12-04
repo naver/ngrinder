@@ -188,7 +188,7 @@ public interface NGrinderConstants {
 	public static final int MAX_RUN_HOUR = 8;
 
 	public static final String NGRINDER_PROP_CLUSTER_URIS = "ngrinder.cluster.uris";
-	public static final String NGRINDER_PROP_CLUSTER_LISTENER_PORT = "ngrinder.cluster.lintener.port";
+	public static final String NGRINDER_PROP_CLUSTER_LISTENER_PORT = "ngrinder.cluster.listener.port";
 	
 	// key names for distributed map of EhCache
 	public static final String CACHE_NAME_DISTRIBUTED_MAP = "distributed_map";

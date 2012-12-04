@@ -30,7 +30,6 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
@@ -39,6 +38,10 @@ import net.grinder.util.NetworkUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.monitor.FileAlterationListener;
+import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.ConfigurationException;
@@ -86,6 +89,8 @@ public class Config implements IConfig {
 	private String region;
 	public static final String NON_REGION = "NONE";
 	
+	private FileAlterationMonitor homeMonitor;
+	
 	/**
 	 * Make it singleton.
 	 */
@@ -103,6 +108,8 @@ public class Config implements IConfig {
 			home = resolveHome();
 			exHome = resolveExHome();
 			copyDefaultConfigurationFiles();
+			copyExtConfigurationFiles();
+
 			loadIntrenalProperties();
 			loadSystemProperties();
 			loadExtendProperties();
@@ -115,8 +122,7 @@ public class Config implements IConfig {
 			
 			//check cluster, get cluster configuration for ehcache
 			loadClusterConfig();
-			copyExtConfigurationFiles();
-
+			initHomeMonitor();
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while loading NGRINDER_HOME", e);
 		}
@@ -136,29 +142,6 @@ public class Config implements IConfig {
 		isCluster = true;
 		String currentIP = NetworkUtil.getLocalHostAddress();
 		this.clusterURIs = StringUtils.split(clusterUri, ";");
-
-//		int clusterListenerPort = getSystemProperties().getPropertyInt(
-//				NGrinderConstants.NGRINDER_PROP_CLUSTER_LISTENER_PORT, NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT);
-
-//		String[] clusterUriList = StringUtils.split(clusterUri, ";");
-//		StringBuilder urisSB = new StringBuilder();
-//		for (String peerIP : clusterUriList) {
-//			// should exclude itself from the peer list
-//			if (!currentIP.equals(peerIP)) {
-//				if (urisSB.length() > 0) {
-//					urisSB.append("|");
-//				}
-//				urisSB.append("//").append(peerIP).append(":").append(clusterListenerPort);
-//				urisSB.append("/").append(NGrinderConstants.CACHE_NAME_DISTRIBUTED_MAP);
-//			}
-//		}
-//
-//		if (StringUtils.isBlank(urisSB.toString())) {
-//			LOG.error("Invalid configuration for ehcache cluster:{}", clusterUri);
-//			isCluster = false;
-//			return;
-//		}
-//		clusterURIs = urisSB.toString();
 		LOG.info("Cache cluster URIs:{}", clusterURIs);
 		
 		// set rmi server host for remote serving. Otherwise, maybe it will use 127.0.0.1 to serve.
@@ -353,15 +336,38 @@ public class Config implements IConfig {
 		checkNotNull(home);
 		File sysFile = home.getSubFile("announcement.conf");
 		try {
-			if (sysFile.exists()) {
-				announcement = FileUtils.readFileToString(sysFile, "UTF-8");
-				return;
-			}
-			OutputStream out = FileUtils.openOutputStream(sysFile);
-			IOUtils.closeQuietly(out);
+			announcement = FileUtils.readFileToString(sysFile, "UTF-8");
+			return;
+		} catch (IOException e) {
+			LOG.error("Error while reading announcement file.", e);
 			announcement = "";
+		}
+	}
+	
+	private void initHomeMonitor() {
+		checkNotNull(home);
+		FileAlterationObserver observer = new FileAlterationObserver(home.getDirectory());
+		homeMonitor = new FileAlterationMonitor(5000);
+        FileAlterationListener listener = new FileAlterationListenerAdaptor() {
+        	
+        	@Override
+        	public void onFileChange(File file) {
+        		if (file.getPath().contains("announcement.conf")) {
+        			LOG.info("Announcement file changed.");
+        			loadAnnouncement();
+        		}
+        		if (file.getPath().contains("system.conf")) {
+        			LOG.info("System confi file changed.");
+        			loadSystemProperties();
+        		}
+        	}
+        };
+        observer.addListener(listener);
+        homeMonitor.addObserver(observer);
+        try {
+        	homeMonitor.start();
 		} catch (Exception e) {
-			LOG.error("Error while reading announcement file.");
+			LOG.error("Start home directory monitor failed:" + e.getMessage(), e);
 		}
 	}
 

@@ -8,23 +8,37 @@
 				<div class="control-group">
 					<label for="agentCount" class="control-label"><@spring.message "perfTest.configuration.agent"/></label>
 					<div class="controls">
-						<div class="input-append">
-							<input type="text" class="input input-mini" rel="popover"
-								id="agentCount" name="agentCount" value="${(test.agentCount)!0}" 
-								data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
-								data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span id="maxAgentCount" class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
-					 		<select id="regionSelect" name="region" class="required" style="width:215px">
-								<option value=""></option>
-								<#if regionList?size &gt; 0>
-									<#list regionList as regionName>
-										<option value="${regionName}" <#if (test?? && test.region?? && test.region == regionName) ||(!(test??)&&controllerRegion.isClusterEnabled&&controllerRegion.region == regionName)>selected </#if> >${regionName}</option>
-									</#list>
-								<#else>
-									<option value="NONE">NONE</option>
-								</#if>
-							</select>
-				 		</div>
-				 		<input type="hidden" id="maxAgtCountInput" value="${(maxAgentSizePerConsole)}">
+						<table width="100%">
+							<colgroup>
+								<col width="160px">
+								<col>
+							</colgroup>
+							<tbody>
+								<tr>
+									<td>
+										<div class="input-append">
+											<input type="text" class="input input-mini" rel="popover"
+												id="agentCount" name="agentCount" value="${(test.agentCount)!0}" 
+												data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
+												data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span id="maxAgentCount" class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
+										</div>
+								 		<input type="hidden" id="maxAgtCountInput" value="${(maxAgentSizePerConsole)}">
+									</td>
+									<td>
+										<label for="regionSelect" class="region"><@spring.message "perfTest.configuration.region"/></label>
+								 		<select id="regionSelect" name="region" class="pull-right" style="width:120px">
+											<#if regionList?size &gt; 0>
+												<#list regionList as regionName>
+													<option value="${regionName}" <#if (test?? && test.region?? && test.region == regionName) ||(!(test??)&&controllerRegion.isClusterEnabled&&controllerRegion.region == regionName)>selected </#if> >${regionName}</option>
+												</#list>
+											<#else>
+												<option value="NONE">NONE</option>
+											</#if>
+										</select>
+									</td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
 				</div>
 				<div class="control-group">
@@ -51,9 +65,9 @@
 									</div> 
 								</td>
 							</tr>
-							<tr id="processAndThreadPanel">
+							<tr id="processAndThreadPanel" style="display:none;">
 								<td colspan="2">
-									<span id="processAndThreadPanelDiv">
+									<span>
 									<div class="input-prepend control-group" style="margin-bottom:0">
 										<span class="add-on" title='<@spring.message "perfTest.report.process"/>'><@spring.message "perfTest.report.process"/></span><input class="input span1" type="text" id="processes" name="processes" value="${(test.processes)!1}"/> 
 									</div>
@@ -70,7 +84,7 @@
 						</table>
 					</div>
 				</div>
-				<div class="control-group">
+				<div class="control-group" id="scriptControl">
 					<label for="scriptName" class="control-label"><@spring.message "perfTest.configuration.script"/></label>
 					<div class="controls">
 						<table style="width:100%">
@@ -129,7 +143,7 @@
 				</div>
 				<hr>
 				<div class="control-group"> 
-					<label class="control-label"> <input type="radio" id="durationRadio" name="threshold" value="D" <#if !(threshold??) || threshold == "D">checked</#if>> <@spring.message "perfTest.configuration.duration"/>
+					<label class="control-label"> <input type="radio" id="durationRadio" name="threshold" value="D" <#if (test?? && test.threshold == "D")||!(test??) >checked</#if>> <@spring.message "perfTest.configuration.duration"/>
 					</label>
 					<div class="controls docs-input-sizes">
 						<select class="select-item" id="hSelect"></select> : 
@@ -144,7 +158,7 @@
 					</div>
 				</div>
 				<div class="control-group">
-					<label for="runCount" class="control-label"> <input type="radio" id="runCountRadio" name="threshold" value="R" <#if threshold?? && threshold == "R">checked</#if>> 
+					<label for="runCount" class="control-label"> <input type="radio" id="runCountRadio" name="threshold" value="R" <#if test?? && test.threshold == "R" >checked</#if>> 
 						<@spring.message "perfTest.configuration.runCount"/>
 					</label>
 					<div class="controls">

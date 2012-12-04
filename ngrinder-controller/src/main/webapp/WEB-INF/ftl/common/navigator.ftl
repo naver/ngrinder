@@ -16,14 +16,17 @@
 		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">${(currentUser.userName)!}<#if (currentUser.ownerUser)?exists> (${currentUser.ownerUser.userName})<#else></#if><b class="caret"></b></a>
 		            	<ul class="dropdown-menu">
 		                	<@security.authorize ifAnyGranted="U">
-		            		<#if (currentUser.ownerUser)?exists>
-		            		<li><a href="${req.getContextPath()}/user/switchUser?switchUserId=${(currentUser.userId)!}"><@spring.message "common.button.return"/></a></li>
-		            		<#else>
-		                	<li><a id="user_profile_id" href="#"><@spring.message "navigator.dropdown.profile"/></a></li>
-		                	<li><a id="switch_user_id" href="#"><@spring.message "navigator.dropdown.switchUser"/></a></li>
-		                	</#if>
+			            		<#if (currentUser.ownerUser)?exists>
+			            		<li><a href="${req.getContextPath()}/user/switchUser?switchUserId=${(currentUser.userId)!}"><@spring.message "common.button.return"/></a></li>
+			            		<#else>
+			                	<li><a id="user_profile_id" href="#"><@spring.message "navigator.dropdown.profile"/></a></li>
+			                	<li><a id="switch_user_id" href="#"><@spring.message "navigator.dropdown.switchUser"/></a></li>
+			                	</#if>
 		                	</@security.authorize>
-			            	<@security.authorize ifAnyGranted="A, S">
+		                	<@security.authorize ifAnyGranted="S">
+			                	<li><a id="user_profile_id" href="#"><@spring.message "navigator.dropdown.profile"/></a></li>
+		                	</@security.authorize>
+			            	<@security.authorize ifAnyGranted="A">
 		               			<li><a href="${req.getContextPath()}/user/list"><@spring.message "navigator.dropdown.userManagement"/></a></li>
 				                <li><a href="${req.getContextPath()}/agent/list"><@spring.message "navigator.dropdown.agentManagement"/></a></li>
 				                <li><a href="${req.getContextPath()}/operation/log"><@spring.message "navigator.dropdown.logMonitoring"/></a></li>
@@ -105,7 +108,7 @@
 	};
 	
 	function switchUser() {
-		$("#switchUserSelect").live("change", function() {
+		$("#switchUserSelect").change(function() {
 			document.location.href = "${req.getContextPath()}/user/switchUser?switchUserId=" + $(this).val();
 		});
 		

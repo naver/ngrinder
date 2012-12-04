@@ -22,14 +22,21 @@
  */
 package org.ngrinder.agent.service;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.Assert;
 import net.grinder.message.console.AgentControllerState;
 
+import org.apache.commons.lang.mutable.MutableInt;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.model.AgentInfo;
+import org.ngrinder.agent.repository.AgentManagerRepository;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -46,6 +53,12 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private RegionService regionService;
+
+	@Autowired
+	private AgentManagerRepository agentRepository;
+
+	@Autowired
+	private Config config;
 	
 	@Test
 	public void testSaveGetDeleteAgent() {
@@ -78,8 +91,43 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	}
 	
 	@Test
-	public void testGetUserAvailableAgentCount () {
-		agentManagerService.getUserAvailableAgentCountMap(regionService.getRegionList(), testUser);
+	public void testGetUserAvailableAgentCount() {
+		List<String> regionList = regionService.getRegionList();
+		Map<String, MutableInt> countMap = agentManagerService.getUserAvailableAgentCountMap(
+				regionList, getTestUser());
+		int oriCount = countMap.get(config.getRegion()).intValue();
+		
+		AgentInfo agentInfo = new AgentInfo();
+		agentInfo.setHostName("localhost");
+		agentInfo.setNumber(-1);
+		agentInfo.setRegion(config.getRegion());
+		agentInfo.setIp("127.127.127.127");
+		agentInfo.setPort(1);
+		agentInfo.setStatus(AgentControllerState.READY);
+		agentInfo.setApproved(true);
+		agentManagerService.saveAgent(agentInfo);
+		countMap = agentManagerService.getUserAvailableAgentCountMap(regionList, getTestUser());
+
+		int newCount = countMap.get(config.getRegion()).intValue();
+		assertThat(newCount, is(oriCount + 1));
+	}
+	
+	@Test
+	public void testCheckAgentStatus() {
+		AgentInfo agentInfo = new AgentInfo();
+		agentInfo.setHostName("localhost");
+		agentInfo.setNumber(-1);
+		agentInfo.setRegion(config.getRegion());
+		agentInfo.setIp("127.127.127.127");
+		agentInfo.setPort(1);
+		agentInfo.setStatus(AgentControllerState.READY);
+		agentManagerService.saveAgent(agentInfo);
+		agentManagerService.checkAgentStatus();
+
+		AgentInfo agentInDB = agentRepository.findOne(agentInfo.getId());
+		assertThat(agentInDB.getIp(), is(agentInfo.getIp()));
+		assertThat(agentInDB.getHostName(), is(agentInfo.getHostName()));
+		assertThat(agentInDB.getStatus(), is(AgentControllerState.INACTIVE));
 	}
 	
 }

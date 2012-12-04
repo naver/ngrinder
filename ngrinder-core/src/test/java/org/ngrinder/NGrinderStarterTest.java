@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.ngrinder.common.util.ThreadUtil;
 
@@ -26,9 +27,12 @@ public class NGrinderStarterTest {
 	}
 
 	@Test
-	public void testGetStartMode() {
+	public void testGetStartModeAndVersion() {
 		String startMode = starter.getStartMode();
 		assertTrue(startMode.equals("monitor") || startMode.equals("agent"));
+		
+		String version = starter.getVersion();
+		assertTrue(StringUtils.isNotBlank(version));
 	}
 
 	@Test

@@ -107,7 +107,7 @@ public class RegionService {
 	/**
 	 * just for test and debug.
 	 */
-	@Scheduled(fixedDelay = 5000)
+	@Scheduled(fixedDelay = 10000)
 	public void test() {
 		testDistCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
 		//testDistCache(NGrinderConstants.CACHE_NAME_RUNNING_STATISTICS);
@@ -120,12 +120,10 @@ public class RegionService {
 		StringBuilder valueSB = new StringBuilder();
 		StringBuilder keySB = new StringBuilder();
 		for (Object object : list) {
-			keySB.append(object).append(", ");
-			valueSB.append(distCache.get(object).get()).append(", ");
+			keySB.append(object).append(",");
+			valueSB.append(distCache.get(object).get()).append(",");
 		}
-		LOG.debug("Cache name:{}.", cacheName);
-		LOG.debug("           key:{}", keySB.toString());
-		LOG.debug("           value:{}", valueSB.toString());
+		LOG.debug("Cache :{} key:{} value:{}", new String[]{cacheName, keySB.toString(), valueSB.toString()});
 	}
 
 }

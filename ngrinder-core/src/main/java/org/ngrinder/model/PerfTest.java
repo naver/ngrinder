@@ -329,6 +329,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return targetIPList;
 	}
 
+	@ForceMergable
 	public void setTargetHosts(String theTarget) {
 		this.targetHosts = theTarget;
 	}

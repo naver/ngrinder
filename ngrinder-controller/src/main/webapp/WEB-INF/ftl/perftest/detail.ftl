@@ -122,6 +122,26 @@
 	.control-group.error td > label[for="testName"] {
 		color: #B94A48;
 	}
+	
+	#scriptControl.error .select2-choice {
+	    border-color: #B94A48;
+	    color: #B94A48;
+	}
+	
+	#scriptControl.success .select2-choice {
+	    border-color: #468847;
+	    color: #468847;
+	}
+
+	label.region {
+		position: absolute;
+		margin-top: 4px;
+		display: inline; 
+		color: #666666; 
+		font-family: Tahoma,applegothic,sans-serif; 
+		font-size: 12px; 
+		font-weight: bold;
+	}
 	</style>
 
 </head>
@@ -242,7 +262,7 @@
 							<@spring.message "perfTest.configuration.testConfiguration"/>
 						</a>
 					</li> 
-					<li id="runningContent_tab" style="display: none; ">
+					<li id="runningContent_tab" style="display: none;">
 						<a href="#runningContent" data-toggle="tab" id="runningContentLink">
 							<@spring.message "perfTest.testRunning.title"/>
 						</a>
@@ -335,7 +355,6 @@ $(document).ready(function () {
 	initScheduleDate();
 	$("#tableTab a:first").tab('show');
 	$("#testContent_tab a").tab('show');
-	$("#processAndThreadPanel").hide();
 	
 	addValidation();
 	bindEvent();
@@ -538,9 +557,6 @@ function addValidation() {
 	        agentCount: {
 	        	required: "<@spring.message "perfTest.warning.agentNumber"/>"
 	        },
-	        "regionSelect": {
-	        	required: "<@spring.message "perfTest.warning.region"/>"
-	        },
 	        vuserPerAgent: {
 	        	required: "<@spring.message "perfTest.warning.vuserPerAgent"/>"
 	        },
@@ -571,7 +587,12 @@ function addValidation() {
 			if (errorPlace[0]) {
 				errorPlace.html(error);
 			} else {
-				element.parent().append(error);
+				var $elem = element.closest(".controls");
+				if ($elem[0]) {
+					$elem.append(error);
+				} else {
+					element.parent().append(error);
+				}
 			}
 		},
 		highlight : function(element, errorClass, validClass) {
@@ -636,25 +657,26 @@ function bindEvent() {
 		}
 
 		if ($("#scriptName option:selected").attr("validated") == "0") {
-			$("small.errorColor").text("The using script is not validated.");
+			$("small.errorColor").text("<@spring.message "perfTest.detail.message.validatedScript"/>");
 		} else {
 			$("small.errorColor").text("");
 		}
 		
-		$("#agentCount").rules("remove", {
-			min:0
-		});
-	    $("#tagString").val(buildTagString())
+	    $("#tagString").val(buildTagString());
+	    initScheduleTime();
 	});
 	
 	$("#saveTestBtn").click(function() {
+		$("#agentCount").rules("add", {
+			min:0
+		});
 		if (!$("#testContentForm").valid()) {
 			$("#testContent_tab a").tab('show');
 			return false;
 		}
 		$("#testStatus").val("SAVED");
 		$("#scheduleInput").attr('name', '');
-		$("#tagString").val(buildTagString())
+		$("#tagString").val(buildTagString());
 		return true;
 	});
 	
@@ -749,17 +771,13 @@ function bindEvent() {
 	$("#reportLnk").click(function() {
 		$("#footer").hide();
 		openReportDiv(function() {
-			$("#footer").show();			
+			$("#footer").show();
 		});
 	});
 	
 	$('#tableTab a').click(function(e) {
-		var $this = $(this);
-		if (!$this.hasClass("pull-right")) {
-			e.preventDefault();
-			$this.attr("tid");
-			$this.tab('show');
-		}
+		e.preventDefault();
+		$(this).tab('show');
 	});
 
 	$("#showScript").click(function() {
@@ -779,21 +797,18 @@ function bindEvent() {
 	
 	$("#expandAndCollapse").click(function() {
 		$(this).toggleClass("collapse");
-		$("#processAndThreadPanelDiv").toggle();
 		$("#processAndThreadPanel").toggle();
 	});
 	
-	$("#durationSlider").mousedown(function() {
+	$("#durationSlider, #hSelect, #mSelect, sSelect").mousedown(function() {
 		$("#durationRadio").click();
 	});
 	
 	$("#runCount").focus(function() {
-		$("#runcountRadio").click();
+		$("#runCountRadio").click();
 	});
 	
-	$("#regionSelect").select2({
-		placeholder: '<@spring.message "perfTest.configuration.region.placeholder"/>'
-	});
+	$("#regionSelect").select2();
 	
 	$("#regionSelect").change(function(){
 		var region = $(this).val();
@@ -807,14 +822,17 @@ function bindEvent() {
 		$("#agentCount").rules("add", {
 			max:count
 		});
-		
+		$("#agentCount").rules("add", {
+			min:0
+		});
 		$countObj.html(prefix + count);
+		$("#agentCount").valid();
 	});	
 }
 
 function buildTagString() {
-	return $.map($("#tagString").select2("data"), function(k, i) {
-		return k.text;
+	return $.map($("#tagString").select2("data"), function(obj) {
+		return obj.text;
 	}).join(",");
 }
 	
@@ -831,10 +849,15 @@ function initChartData() {
 }
 
 function updateScriptResources(first) {
+	var scriptName = $("#scriptName").val();
+	if (scriptName == "") {
+		return;
+	}
+	
 	$('#messageDiv').ajaxSend(function(e, xhr, settings) {
 		var url = settings.url;
-		if (url.indexOf("refresh") == 0) {
-			showInformation("<@spring.message "perfTest.detail.message.updateResource"/>");
+		if (url.indexOf("getResourcesOnScriptFolder") > 0 && first == false) {
+			showProgressBar("<@spring.message "perfTest.detail.message.updateResource"/>");
 		}
 	});
 	
@@ -842,22 +865,23 @@ function updateScriptResources(first) {
 		url : "${req.getContextPath()}/perftest/getResourcesOnScriptFolder",
 		dataType : 'json',
 		data : {
-			'scriptPath' : $("#scriptName").val(),
+			'scriptPath' : scriptName,
 			'r' : $("#scriptRevision").val()
 		},
 		success : function(res) {
 			var html = "";
 			var len = res.resources.length;
-			if (first != true) {
-				$(".div-host").html("");
-				$("#hostsHidden").val(res.targetHosts);
-				initHosts();
+			if (first == false) {
+				initHosts(res.targetHosts);
 			}
 			for ( var i = 0; i < len; i++) {
 				var value = res.resources[i];
 				html = html + "<div class='resource ellipsis' title='" + value + "'>" + value + "</div>";
 			}
 			$("#scriptResources").html(html);
+		},
+		complete : function() {
+			hideProgressBar();
 		},
 		error : function() {
 			showErrorMsg("<@spring.message "common.error.error"/>");
@@ -913,7 +937,7 @@ function getOption(cnt) {
 	var contents = [];
 	var index;
 	for (i = 0; i < cnt; i++) {
-		contents.push("<option value='" + i + "'>" + (i < 10 ? "0" + i : i) + "</option>");
+		contents.push("<option value='" + i + "'>" + (i < 10 && cnt > 9 ? "0" + i : i) + "</option>");
 	}
 	return contents.join("\n");
 }
@@ -930,18 +954,15 @@ function openReportDiv(onFinishHook) {
 }
 
 function updateStatus(id, status_type, status_name, icon, deletable, stoppable, message) {
-	if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR" || status_type == "CANCELED") {
-		isFinished = true;
-	}
 	if ($("#testStatusType").val() == status_type) {
 		return;
 	}
-	var ballImg = $("#testStatus_img_id");
 
 	$("#teststatus_pop_over").attr("data-original-title", status_name);
 	$("#teststatus_pop_over").attr("data-content", message);
-
 	$("#testStatusType").val(status_type);
+
+	var ballImg = $("#testStatus_img_id");
 	if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
 		ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
 	}
@@ -949,6 +970,7 @@ function updateStatus(id, status_type, status_name, icon, deletable, stoppable, 
 	if (status_type == "TESTING") {
 		displayCfgAndTestRunning();
 	} else if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR" || status_type == "CANCELED") {
+		isFinished = true;
 		displayCfgAndTestReport();
 	} else {
 		displayCfgOnly();
@@ -1008,6 +1030,11 @@ function displayCfgAndTestReport() {
 	if (objTimer) {
 		window.clearInterval(objTimer);
 	}
+}
+
+function initScheduleTime() {
+	$("#shSelect").val(new Date().getHours());
+	$("#smSelect").val(new Date().getMinutes());
 }
 </script>
 	</body>

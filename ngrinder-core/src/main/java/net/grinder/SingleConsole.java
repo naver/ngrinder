@@ -317,6 +317,9 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 */
 	public List<AgentIdentity> getAllAttachedAgents() {
 		final List<AgentIdentity> agentIdentities = new ArrayList<AgentIdentity>();
+		if (!isValid()) {
+			return agentIdentities;
+		}
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(ReflectionUtil.getFieldValue(
 						(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
 						"m_agentNumberMap"),

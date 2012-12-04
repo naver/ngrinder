@@ -20,32 +20,48 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder;
+package org.ngrinder.perftest.service;
 
-import java.util.List;
+import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 
 import org.junit.Test;
-import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
-import org.ngrinder.region.service.RegionService;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Region Service Test class.
+ * Class description.
  *
- * @author mavlarn
- * @Since 3.1
+ * @author Mavlarn
+ * @since
  */
-public class RegionServiceTest extends AbstractPerfTestTransactionalTest {
-
-	@Autowired
-	private RegionService regionService;
+public class AgentManagerTest extends AbstractNGrinderTransactionalTest {
 	
+	@Autowired
+	private AgentManager agentManager;
+
 	@Test
-	public void testGetRegionList() {
-		List<String> regionlist = regionService.getRegionList();
-		LOG.debug("list:{}", regionlist);
-		//regionService.initRegion();
-		regionlist = regionService.getRegionList();
-		LOG.debug("list   2:{}", regionlist);
+	public void testGetMaxAgentSizePerConsole() {
+		agentManager.getMaxAgentSizePerConsole();
 	}
+
+	@Test
+	public void testConvert() {
+		agentManager.convert(new AgentControllerIdentityImplementation("test", "127.0.0.1"));
+	}
+
+	@Test
+	public void testGetAllFreeApprovedAgentsForUser() {
+		agentManager.getAllFreeApprovedAgentsForUser(getTestUser());
+	}
+
+	@Test
+	public void testGetAllSharedAgents() {
+		agentManager.getAllSharedAgents();
+	}
+
+	@Test
+	public void testFilterSharedAgents() {
+		agentManager.filterSharedAgents(agentManager.getAllAttachedAgents());
+	}
+
 }

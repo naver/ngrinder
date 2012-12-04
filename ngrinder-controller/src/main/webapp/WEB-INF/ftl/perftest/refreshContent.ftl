@@ -6,6 +6,9 @@
 	  		curRunningProcesses = ${(resultsub.process!0)?c};
 	  		curRunningThreads = ${(resultsub.thread!0)?c};
 	  		curStatus = <#if resultsub.success?? && resultsub.success>true<#else>false</#if>
+	  		<#if resultsub.totalStatistics?exists>
+	  		curRunningCount = ${((resultsub.totalStatistics.Tests!0)+(resultsub.totalStatistics.Errors!0))?c};
+	  		</#if>
 	  		curAgentPerfStates = [
 	  			${result_agent_perf}
 	  		];
