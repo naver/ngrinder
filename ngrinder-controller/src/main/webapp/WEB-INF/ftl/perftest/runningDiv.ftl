@@ -51,7 +51,7 @@
 				<div class="control-group">
 					<#if test??>
 						<#if test.threshold == "D">
-							<label class="control-label"> <@spring.message "perfTest.table.duration"/> </label>
+							<label class="control-label"> <@spring.message "perfTest.configuration.duration"/> </label>
 							<div class="controls">
 								<span>${(test.durationStr)!}</span>
 								<code>HH:MM:SS</code>
