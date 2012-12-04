@@ -1145,7 +1145,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            perf test
 	 * @param user
 	 *            user
-	 * @param Permission
+	 * @param type
 	 * 			  permission type to check
 	 * @return true if it has
 	 */

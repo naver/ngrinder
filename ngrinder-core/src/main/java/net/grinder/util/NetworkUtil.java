@@ -46,10 +46,6 @@ public abstract class NetworkUtil {
 	/**
 	 * Get the local host address, try to get actual IP.
 	 * 
-	 * @param byConnecting
-	 *            connecting host
-	 * @param port
-	 *            connecting port
 	 * @return ip form of host address
 	 */
 	public static String getLocalHostAddress() {

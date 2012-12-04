@@ -188,8 +188,8 @@ public class AgentManagerService {
 		AgentInfo agentInfo = new AgentInfo();
 		for (AgentInfo each : agents) {
 			// should use IP and number to identify an agent, but now number is not used, it is always -1.
-			if (StringUtils.equals(each.getIp(), agentIdentity.getIp()) && 
-					each.getNumber() == agentIdentity.getNumber()) {
+			if (StringUtils.equals(each.getIp(), agentIdentity.getIp()) 
+					&& each.getNumber() == agentIdentity.getNumber()) {
 				agentInfo = each;
 				break;
 			}

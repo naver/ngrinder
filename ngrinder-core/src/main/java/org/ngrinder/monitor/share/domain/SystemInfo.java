@@ -41,7 +41,7 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 
 	private static final long serialVersionUID = -2995334644975166549L;
 
-	public static final String header = "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage"; 
+	public static final String HEADER = "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage"; 
 	/**
 	 * Enum for the system type, linux or windows.
 	 */
@@ -154,6 +154,11 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		return ToStringBuilder.reflectionToString(this);
 	}
 
+	/**
+	 * Get record string.
+	 * 
+	 * @return record string
+	 */
 	public String getRecordString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(ip).append(",").append(system).append(",");

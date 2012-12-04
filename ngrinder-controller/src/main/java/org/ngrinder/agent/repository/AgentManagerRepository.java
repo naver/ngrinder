@@ -74,8 +74,10 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, 
 	/**
 	 * get the count of the specification.
 	 * 
-	 * @param Specification
+	 * @param spec
 	 *            Query specification
+	 * @return
+	 * 		agent count
 	 */
 	long count(Specification<AgentInfo> spec);
 }

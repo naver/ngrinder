@@ -451,8 +451,8 @@ public class AgentManager implements NGrinderConstants {
 	public void stopAgent(int consolePort) {
 		for (AgentIdentity each : agentControllerServer.getAllAvailableAgents()) {
 			int agentConnectingPort = agentControllerServer.getAgentConnectingPort(each);
-			if (agentConnectingPort == consolePort && 
-					agentControllerServer.getAgentState(each) == AgentControllerState.BUSY) {
+			if (agentConnectingPort == consolePort
+					&& agentControllerServer.getAgentState(each) == AgentControllerState.BUSY) {
 				agentControllerServer.stopAgent(each);
 			}
 		}

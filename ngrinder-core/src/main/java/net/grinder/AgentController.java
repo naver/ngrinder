@@ -151,7 +151,8 @@ public class AgentController implements Agent {
 		try {
 			while (true) {
 				do {
-					m_agentIdentity.setName(agentConfig.getProperty(AgentConfig.AGENT_HOSTID, NetworkUtil.getLocalHostName()));
+					m_agentIdentity.setName(
+							agentConfig.getProperty(AgentConfig.AGENT_HOSTID, NetworkUtil.getLocalHostName()));
 					m_agentIdentity.setRegion(agentConfig.getProperty(AgentConfig.AGENT_REGION, ""));
 					final Connector connector = m_connectorFactory.create(m_grinderProperties);
 

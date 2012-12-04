@@ -252,7 +252,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * Start console and wait until it's ready to get agent message.
 	 */
 	public void start() {
-		if(consoleFoundation == null) {
+		if (consoleFoundation == null) {
 			return; //the console is not a valid console.(NullSingleConsole)
 		}
 		synchronized (eventSyncCondition) {

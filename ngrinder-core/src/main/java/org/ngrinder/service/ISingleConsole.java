@@ -41,14 +41,14 @@ public interface ISingleConsole {
 	/**
 	 * Get current running time in ms.
 	 * 
-	 * @return
+	 * @return running time
 	 */
 	public abstract long getCurrentRunningTime();
 
 	/**
 	 * Get the current total execution count(test count + error count).
 	 * 
-	 * @return current total execution count;
+	 * @return current total execution count
 	 */
 	public abstract long getCurrentExecutionCount();
 
@@ -69,7 +69,7 @@ public interface ISingleConsole {
 	/**
 	 * Get peak TPS.
 	 * 
-	 * @return
+	 * @return peak tps
 	 */
 	public abstract double getPeakTpsForGraph();
 

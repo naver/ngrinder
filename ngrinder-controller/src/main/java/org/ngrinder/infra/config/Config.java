@@ -275,7 +275,7 @@ public class Config implements IConfig {
 	private Home resolveExHome() {
 		String exHomeFromEnv = System.getenv("NGRINDER_EX_HOME");
 		String exHomeFromProperty = System.getProperty("ngrinder.exhome");
-		if ( !StringUtils.equals(exHomeFromEnv, exHomeFromProperty)) {
+		if (!StringUtils.equals(exHomeFromEnv, exHomeFromProperty)) {
 			LOG.warn("The path to ngrinder-exhome is ambiguous:");
 			LOG.warn("    System Environment:  NGRINDER_EX_HOME=" + exHomeFromEnv);
 			LOG.warn("    Java Sytem Property:  ngrinder.exhome=" + exHomeFromProperty);

@@ -27,22 +27,22 @@ package org.ngrinder.model;
  */
 public enum Permission {
 
-	/** can check all perTest */
+	/** Can check all perTest. */
 	GET_ALL_TESTS,
 
-	/** can modify perTest that other created */
+	/** An modify perTest that other created. */
 	MODIFY_TEST_OFOTHER,
 
-	/** can delete perTest that other created */
+	/** Can delete perTest that other created. */
 	DELETE_TEST_OFOTHER,
 
-	/** can stop perTest that other created */
+	/** Can stop perTest that other created. */
 	STOP_TEST_OFOTHER,
 
-	/** check script that other created */
+	/** Aheck script that other created. */
 	CHECK_SCRIPT_OFOTHER,
 
-	/** validate script that other created */
+	/** Validate script that other created. */
 	VALIDATE_SCRIPT_OFOTHER;
 
 }

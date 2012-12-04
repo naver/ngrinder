@@ -94,11 +94,13 @@ public class User extends BaseModel<User> {
 	private User ownerUser;
 
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "owner_id"), inverseJoinColumns = @JoinColumn(name = "follow_id"))
+	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "owner_id"), 
+			inverseJoinColumns = @JoinColumn(name = "follow_id"))
 	private List<User> followers;
 
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "follow_id"), inverseJoinColumns = @JoinColumn(name = "owner_id"))
+	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "follow_id"), 
+			inverseJoinColumns = @JoinColumn(name = "owner_id"))
 	private List<User> owners;
 
 	/**
@@ -116,6 +118,8 @@ public class User extends BaseModel<User> {
 	 *            user name
 	 * @param password
 	 *            password
+	 * @param email
+	 * 			  email
 	 * @param role
 	 *            role
 	 */
@@ -299,6 +303,9 @@ public class User extends BaseModel<User> {
 		return ownerUser == null ? this : ownerUser;
 	}
 	
+	/**
+	 * Get test user information.
+	 */
 	//It will throw StackOverflowException if return User that contains owners and followers value
 	//in getCurrentPerfTestStatistics() method.so just return base User info 
 	public User getTestUserBaseInfo() {

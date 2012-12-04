@@ -43,6 +43,9 @@ public class OnTestSamplingModuleDescriptor extends AbstractModuleDescriptor<OnT
 	
 	/**
 	 * get Module.
+	 * 
+	 * @return
+	 * 		module
 	 */
 	public OnTestSamplingRunnable getModule() {
 		ContainerAccessor containerAccessor = ((ContainerManagedPlugin) getPlugin()).getContainerAccessor();
