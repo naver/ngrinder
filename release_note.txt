@@ -1,3 +1,11 @@
+3.0.4 (2012.12.04)
+- Hot fix for nGrinder 3.0
+- Managing files using SVN Clients is now working.
+
+Bug
+[NGRINDER-385] - Managing files using SVN client is not working
+  
+
 3.0.3 (2012.11.XX)
 - Hot fix for nGrinder 3.0
 - Mostly fix the bug which happens if there are more than 1000 tests.
