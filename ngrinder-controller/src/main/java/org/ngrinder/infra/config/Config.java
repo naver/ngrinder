@@ -356,6 +356,10 @@ public class Config implements IConfig {
         			LOG.info("Announcement file changed.");
         			loadAnnouncement();
         		}
+        		if (file.getPath().contains("system.conf")) {
+        			LOG.info("System confi file changed.");
+        			loadSystemProperties();
+        		}
         	}
         };
         observer.addListener(listener);
