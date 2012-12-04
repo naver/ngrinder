@@ -42,7 +42,7 @@ public class MonitorClientServiceTest extends AbstractChartTransactionalTest {
 	public void testGetMonitorData () {
 		MonitorClientSerivce clientServ = applicationContext.getBean(MonitorClientSerivce.class);
 		clientServ.init("127.0.0.1", MonitorConstants.DEFAULT_MONITOR_PORT);
-		LOG.debug("sysInfo header:{}", SystemInfo.header);
+		LOG.debug("sysInfo header:{}", SystemInfo.HEADER);
 		
 		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 		clientServ.recordMonitorData(bw);

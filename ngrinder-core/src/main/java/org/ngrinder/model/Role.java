@@ -40,6 +40,14 @@ public enum Role {
 	 */
 	ADMIN("A", "Administrator") {
 
+		/**
+		 * Has admin permission or not.
+		 * 
+		 * @param type
+		 * 			permission type
+		 * 
+		 * @return has the permission or not
+		 */
 		public boolean hasPermission(Permission type) {
 			switch (type) {
 			case GET_ALL_TESTS:
@@ -59,6 +67,15 @@ public enum Role {
 	 * Super user role who can set system settings and manage user account.
 	 */
 	SUPER_USER("S", "Super") {
+		
+		/**
+		 * Has super permission or not.
+		 * 
+		 * @param type
+		 * 			permission type
+		 * 
+		 * @return has the permission or not
+		 */
 		public boolean hasPermission(Permission type) {
 			switch (type) {
 			case GET_ALL_TESTS:
@@ -73,7 +90,7 @@ public enum Role {
 		}
 	},
 	/**
-	 * System user role. This is for the automatic batch
+	 * System user role. This is for the automatic batch.
 	 */
 	SYSTEM_USER("SYSTEM", "System User") {
 		
@@ -116,8 +133,9 @@ public enum Role {
 	}
 	
 	/**
-	 * check this role whether has permission
-	  * @param Permission
+	 * check this role whether has permission.
+	 * @param type
+	 * 			permission type
 	 * @return true if can
 	 */
 	public boolean hasPermission(Permission type) {

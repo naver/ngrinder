@@ -495,7 +495,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 			if (ch1 == ':') {
 				ch0 = Character.toUpperCase(ch0);
 				if (ch0 >= 'A' && ch0 <= 'Z') {
-					if (len == 2 || isSeparator(filename.charAt(2)) == false) {
+					if (len == 2 || !isSeparator(filename.charAt(2))) {
 						return 2;
 					}
 					return 3;

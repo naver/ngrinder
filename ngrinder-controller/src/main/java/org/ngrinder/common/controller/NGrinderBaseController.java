@@ -211,7 +211,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 	
 	/**
-	 * Get nGrinder Config Object
+	 * Get nGrinder Config Object.
 	 * @return Config 
 	 */
 	public Config getConfig() {

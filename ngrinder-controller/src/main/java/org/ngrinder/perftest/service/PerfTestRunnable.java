@@ -375,7 +375,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 										Config.MONITOR_FILE_PREFIX + targetIP + ".data"), false));
 						monitorRecordWriterMap.put(targetIP, bw);
 						// write header info
-						bw.write(SystemInfo.header);
+						bw.write(SystemInfo.HEADER);
 						bw.newLine();
 						bw.flush();
 					} catch (IOException e) {

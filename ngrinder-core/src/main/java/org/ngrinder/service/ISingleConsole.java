@@ -24,7 +24,6 @@ package org.ngrinder.service;
 
 import java.io.File;
 
-import net.grinder.SingleConsole;
 import net.grinder.statistics.StatisticsIndexMap;
 
 /**
@@ -41,14 +40,14 @@ public interface ISingleConsole {
 	/**
 	 * Get current running time in ms.
 	 * 
-	 * @return
+	 * @return running time
 	 */
 	public abstract long getCurrentRunningTime();
 
 	/**
 	 * Get the current total execution count(test count + error count).
 	 * 
-	 * @return current total execution count;
+	 * @return current total execution count
 	 */
 	public abstract long getCurrentExecutionCount();
 
@@ -69,7 +68,7 @@ public interface ISingleConsole {
 	/**
 	 * Get peak TPS.
 	 * 
-	 * @return
+	 * @return peak tps
 	 */
 	public abstract double getPeakTpsForGraph();
 

@@ -169,7 +169,7 @@ public class UserService implements IUserService {
 	 * modify user information.
 	 * 
 	 * @param user user
-	 * @param String shareUserIds
+	 * @param shareUserIds
 	 * 				It is a list of user IDs to share the permission of user
 	 * @return user id
 	 */

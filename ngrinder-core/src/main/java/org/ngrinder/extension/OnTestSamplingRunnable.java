@@ -42,7 +42,7 @@ public interface OnTestSamplingRunnable {
 	 * Callback method which will be invoked when the given {@link PerfTest} test sampling is
 	 * started.
 	 * 
-	 * @param console
+	 * @param singleConsole
 	 *            {@link ISingleConsole}
 	 * @param perfTest
 	 *            {@link PerfTest}
@@ -54,7 +54,7 @@ public interface OnTestSamplingRunnable {
 	/**
 	 * Callback method which will be invoked whenever test sampling is performed.
 	 * 
-	 * @param console
+	 * @param singleConsole
 	 *            {@link ISingleConsole}
 	 * @param perfTest
 	 *            {@link PerfTest}
@@ -72,7 +72,7 @@ public interface OnTestSamplingRunnable {
 	 * Callback method which will be invoked when the given {@link PerfTest} test sampling is
 	 * finished.
 	 * 
-	 * @param console
+	 * @param singleConsole
 	 *            {@link ISingleConsole}
 	 * @param perfTest
 	 *            {@link PerfTest}

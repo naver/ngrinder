@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.internal.server.dav.DAVRepositoryManager;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVHandlerFactory;
-import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVPropfindHandler;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.ServletDAVHandler;
 
 /**
@@ -38,10 +37,27 @@ import org.tmatesoft.svn.core.internal.server.dav.handlers.ServletDAVHandler;
  * @author JunHo Yoon
  * @since 3.0.4
  */
-public class DAVHandlerExFactory {
+public final class DAVHandlerExFactory {
 
 	public static final String METHOD_PROPFIND = "PROPFIND";
+	
+	private DAVHandlerExFactory() {
+	}
 
+	/**
+	 * Create a servlet DAV handler.
+	 * 
+	 * @param manager
+	 * 			manager
+	 * @param request
+	 * 			servlet request
+	 * @param response
+	 * 			servlet response
+	 * @return
+	 * 			handler
+	 * @throws SVNException
+	 * 			method is not PROPFIND
+	 */
 	public static ServletDAVHandler createHandler(DAVRepositoryManager manager, HttpServletRequest request,
 					HttpServletResponse response) throws SVNException {
 		String methodName = request.getMethod();
