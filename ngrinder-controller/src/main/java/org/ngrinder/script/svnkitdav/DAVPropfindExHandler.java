@@ -234,6 +234,7 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 
 	/**
 	 * Handle resource.
+<<<<<<< HEAD
 	 * 
 	 * @param lockInfoProvider
 	 * 			lock info provider
@@ -254,6 +255,8 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 	 * 
 	 * @throws DAVException
 	 * 			DAV exception
+=======
+>>>>>>> branch 'master' of https://github.com/nhnopensource/ngrinder.git
 	 */
 	public DAVResponse handleResource(DAVResponse response, DAVResource resource, DAVLockInfoProvider lockInfoProvider,
 					LinkedList ifHeaders, int flags, DAVLockScope lockScope, CallType callType) throws DAVException {

@@ -53,8 +53,9 @@ public final class DAVHandlerExFactory {
 	 * 			servlet request
 	 * @param response
 	 * 			servlet response
-	 * @return
-	 * 			handler
+	 * 
+	 * @return handler
+	 * 
 	 * @throws SVNException
 	 * 			method is not PROPFIND
 	 */

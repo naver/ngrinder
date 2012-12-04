@@ -134,8 +134,10 @@ public enum Role {
 	
 	/**
 	 * check this role whether has permission.
+	 * 
 	 * @param type
 	 * 			permission type
+	 * 
 	 * @return true if can
 	 */
 	public boolean hasPermission(Permission type) {
