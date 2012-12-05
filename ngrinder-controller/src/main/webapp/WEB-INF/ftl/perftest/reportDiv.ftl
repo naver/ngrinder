@@ -62,7 +62,7 @@
 					</div>
 				</#list> 
 			<#else> 
-				<@spring.message "common.message.noData"/>
+				<@spring.message "perfTest.report.message.noLog"/>
 			</#if>
 		</div>
 	</div>
