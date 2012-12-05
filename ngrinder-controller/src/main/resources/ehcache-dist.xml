@@ -3,15 +3,13 @@
 
 	<cacheManagerPeerListenerFactory class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
 		properties="port=40003" />
-		
+
 	<defaultCache eternal="false" maxElementsInMemory="100" overflowToDisk="false" timeToIdleSeconds="900"
 		timeToLiveSeconds="1800" />
 
 	<!-- these setting will be created in program in dynamic cache manager. Because we need to get cluster URL from configuration 
 		and set. <cacheManagerPeerProviderFactory class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory" properties="peerDiscovery=manual, 
 		rmiUrls=//10.34.223.148:40003/distributed_map|//10.34.63.28:40003/distributed_map" /> -->
-
-
 
 	<!-- following caches are distributed caches -->
 	<!-- add RMIBootstrapCacheLoaderFactory to make the cache replicated from cluster. -->

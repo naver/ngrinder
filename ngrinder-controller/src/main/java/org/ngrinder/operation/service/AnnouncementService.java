@@ -22,7 +22,6 @@
  */
 package org.ngrinder.operation.service;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
@@ -41,11 +40,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class AnnouncementService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AnnouncementService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AnnouncementService.class);
 
 	@Autowired
 	private Config config;
-	
+
 	/**
 	 * Get announcement.conf file content.
 	 * 
@@ -54,25 +53,21 @@ public class AnnouncementService {
 	public String getAnnouncement() {
 		return config.getAnnouncement();
 	}
-	
+
 	/**
 	 * Save content to announcement.conf file.
 	 * 
 	 * @param content
-	 * 			file content.
+	 *            file content.
 	 * @return save successfully or not.
 	 */
 	public boolean saveAnnouncement(String content) {
-		File sysFile = config.getHome().getSubFile("announcement.conf");
-
 		try {
-			FileUtils.writeStringToFile(sysFile, content);
+			FileUtils.writeStringToFile(config.getHome().getSubFile("announcement.conf"), content);
 		} catch (IOException e) {
-			LOG.error("Error while writing announcement.conf file.");
+			LOGGER.error("Error while writing announcement file.");
 			return false;
 		}
-		config.loadAnnouncement(); //refresh the content of announcement.
-		
 		return true;
 	}
 }

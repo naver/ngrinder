@@ -112,12 +112,12 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGri
 		when(wrapper.getPropertyInt(NGRINDER_PROP_CLUSTER_LISTENER_PORT, 40003)).thenReturn(40003);
 		when(wrapper.getProperty(NGRINDER_PROP_CLUSTER_URIS, null)).thenReturn("");
 		
-		config.loadClusterConfig();
+		config.verifyClusterConfig();
 		assertThat(config.isCluster(), is(false));
 		
 		when(wrapper.getPropertyInt(NGRINDER_PROP_CLUSTER_LISTENER_PORT, 40003)).thenReturn(40003);
 		when(wrapper.getProperty(NGRINDER_PROP_CLUSTER_URIS, null)).thenReturn("192.168.1.1;192.168.2.2;192.168.3.3");
-		config.loadClusterConfig();
+		config.verifyClusterConfig();
 		assertThat(config.isCluster(), is(true));
 	}
 	

@@ -9,7 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-/** 
+/**
  * Announcement controller.
  * 
  * @author Alex Qin
@@ -19,36 +19,35 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/operation/announcement")
 @PreAuthorize("hasAnyRole('A', 'S')")
 public class AnnouncementController extends NGrinderBaseController {
-	
+
 	@Autowired
 	private AnnouncementService announcementService;
-	
+
 	/**
 	 * open announcement editor.
 	 * 
 	 * @param model
-	 * 			model.
+	 *            model.
 	 * @return operation/announcement
 	 */
 	@RequestMapping("")
 	public String openAnnouncement(Model model) {
 		model.addAttribute("content", announcementService.getAnnouncement());
-		
 		return "operation/announcement";
 	}
-	
+
 	/**
 	 * Save announcement.
+	 * 
 	 * @param model
-	 * 			model.
+	 *            model.
 	 * @param content
-	 * 			file content.
+	 *            file content.
 	 * @return operation/announcement
 	 */
 	@RequestMapping("/save")
 	public String saveAnnouncement(Model model, @RequestParam final String content) {
 		model.addAttribute("success", announcementService.saveAnnouncement(content));
-		
 		return openAnnouncement(model);
 	}
 }

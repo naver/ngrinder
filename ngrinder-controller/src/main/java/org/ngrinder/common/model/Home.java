@@ -54,8 +54,23 @@ public class Home implements NGrinderConstants {
 	 *            home directory
 	 */
 	public Home(File directory) {
-		checkNotNull(directory, "directory should not be null").mkdir();
-		if (!directory.canWrite()) {
+		this(directory, true);
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param directory
+	 *            home directory
+	 * @param create
+	 *            create the directory if not exists
+	 */
+	public Home(File directory, boolean create) {
+		checkNotNull(directory, "directory should not be null");
+		if (create) {
+			directory.mkdir();
+		}
+		if (directory.exists() && !directory.canWrite()) {
 			throw new ConfigurationException(String.format(" ngrinder home directory %s is not writable.", directory),
 							null);
 		}
@@ -114,8 +129,15 @@ public class Home implements NGrinderConstants {
 	 */
 	public Properties getProperties(String confFileName) {
 		try {
-			FileSystemResource propertyResource = new FileSystemResource(getSubFile(confFileName));
-			return PropertiesLoaderUtils.loadProperties(propertyResource);
+			File configFile = getSubFile(confFileName);
+			if (configFile.exists()) {
+				FileSystemResource propertyResource = new FileSystemResource(configFile);
+				return PropertiesLoaderUtils.loadProperties(propertyResource);
+			} else {
+				// default empty properties.
+				return new Properties();
+			}
+
 		} catch (IOException e) {
 			throw new NGrinderRuntimeException("Fail to load property file " + confFileName, e);
 		}
@@ -134,6 +156,7 @@ public class Home implements NGrinderConstants {
 
 	/**
 	 * Get the script base directory.
+	 * 
 	 * @return script base directory.
 	 */
 	public File getScriptDirectory() {
@@ -142,7 +165,9 @@ public class Home implements NGrinderConstants {
 
 	/**
 	 * Get the script directory for the given user.
-	 * @param user user
+	 * 
+	 * @param user
+	 *            user
 	 * @return script directory for the given user.
 	 */
 	public File getScriptDirectory(User user) {
@@ -158,7 +183,6 @@ public class Home implements NGrinderConstants {
 		return getSubFile(PLUGIN_PATH);
 	}
 
-
 	/**
 	 * Get the repo base directory.
 	 * 
@@ -171,7 +195,8 @@ public class Home implements NGrinderConstants {
 	/**
 	 * Get the user repo directory for the given user.
 	 * 
-	 * @param user user
+	 * @param user
+	 *            user
 	 * @return user repo directory.
 	 */
 	public File getUserRepoDirectory(User user) {
@@ -181,7 +206,8 @@ public class Home implements NGrinderConstants {
 	/**
 	 * Get the sub directory of the base user repo directory.
 	 * 
-	 * @param subPath subPath
+	 * @param subPath
+	 *            subPath
 	 * @return base repo sub directory.
 	 */
 	public File getUserRepoDirectory(String subPath) {
@@ -200,8 +226,10 @@ public class Home implements NGrinderConstants {
 	/**
 	 * Get the sub directory for given perftest.
 	 * 
-	 * @param perfTest perfTest
-	 * @param subPath subPath
+	 * @param perfTest
+	 *            perfTest
+	 * @param subPath
+	 *            subPath
 	 * @return {@link PerfTest} sub directory.
 	 */
 	private File getPerfTestSubDirectory(PerfTest perfTest, String subPath) {
@@ -211,8 +239,10 @@ public class Home implements NGrinderConstants {
 	/**
 	 * Get the sub directory for given perftest id.
 	 * 
-	 * @param id perfTest id
-	 * @param subPath subPath
+	 * @param id
+	 *            perfTest id
+	 * @param subPath
+	 *            subPath
 	 * @return {@link PerfTest} sub directory.
 	 */
 	public File getPerfTestSubDirectory(String id, String subPath) {
@@ -224,7 +254,8 @@ public class Home implements NGrinderConstants {
 	/**
 	 * Get the sub directory directory for base perftest directory.
 	 * 
-	 * @param subPath subPath
+	 * @param subPath
+	 *            subPath
 	 * @return {@link PerfTest} sub directory.
 	 */
 	public File getPerfTestDirectory(String subPath) {
@@ -235,7 +266,7 @@ public class Home implements NGrinderConstants {
 	 * Get the root directory for given {@link PerfTest} id.
 	 * 
 	 * @param perfTest
-	 *            perftest 
+	 *            perftest
 	 * @return {@link PerfTest} log directory
 	 */
 	public File getPerfTestDirectory(PerfTest perfTest) {
@@ -324,6 +355,10 @@ public class Home implements NGrinderConstants {
 		File subFile = getSubFile(GLOBAL_LOG_PATH);
 		subFile.mkdirs();
 		return subFile;
+	}
+
+	public boolean exists() {
+		return directory.exists();
 	}
 
 }

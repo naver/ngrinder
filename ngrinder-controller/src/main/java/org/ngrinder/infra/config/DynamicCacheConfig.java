@@ -23,120 +23,140 @@
 package org.ngrinder.infra.config;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.config.CacheConfiguration;
+import net.sf.ehcache.config.CacheConfiguration.CacheEventListenerFactoryConfiguration;
 import net.sf.ehcache.config.ConfigurationFactory;
 import net.sf.ehcache.config.FactoryConfiguration;
 import net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.ngrinder.infra.logger.CoreLogger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
+import com.google.common.net.InetAddresses;
+
 /**
  * Class description.
- *
+ * 
  * @author Mavlarn
  * @since 3.1
  */
 @Component
 public class DynamicCacheConfig {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DynamicCacheConfig.class);
-	
 	@Autowired
 	private Config config;
-	
-	private static final List<String> CACHE_NAME_LIST;
-	static {
-		CACHE_NAME_LIST = new ArrayList<String>();
-		CACHE_NAME_LIST.add("region_list");
-		CACHE_NAME_LIST.add("running_agent_infos");
-		CACHE_NAME_LIST.add("running_statistics");
-		CACHE_NAME_LIST.add("users");
-		CACHE_NAME_LIST.add("file_entry_search_cache");
-	}
-	
+
 	/**
-	 * Create cache manager dynamically according to the configuration.
-	 * Because we cann't add a cluster peer provider dynamically.
+	 * Create cache manager dynamically according to the configuration. Because we cann't add a
+	 * cluster peer provider dynamically.
 	 * 
-	 * distributed caches
-			<cache name="region_list" maxElementsInMemory="1000" eternal="true" overflowToDisk="false">
-				<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
-				<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />
-			</cache>
-			<cache name="running_agent_infos" maxElementsInMemory="1000" eternal="true" overflowToDisk="false">
-				<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
-			</cache>
-			<cache name="running_statistics" maxElementsInMemory="1000" eternal="true" overflowToDisk="false">
-				<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
-			</cache>
-			<cache name="users" maxElementsInMemory="100" eternal="false"
-				overflowToDisk="false" timeToIdleSeconds="900" timeToLiveSeconds="1800">
-				<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
-			</cache>
-			<cache name="file_entry_search_cache" maxElementsInMemory="100" eternal="false"
-				   overflowToDisk="false" timeToIdleSeconds="60" timeToLiveSeconds="60">
-				<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
-			</cache>
-		
+	 * <pre>
+	 * &lt;cache name=&quot;region_list&quot; maxElementsInMemory=&quot;1000&quot; eternal=&quot;true&quot; overflowToDisk=&quot;false&quot;&gt;
+	 * 	&lt;cacheEventListenerFactory class=&quot;net.sf.ehcache.distribution.RMICacheReplicatorFactory&quot; /&gt;
+	 * 	&lt;bootstrapCacheLoaderFactory class=&quot;net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory&quot; /&gt;
+	 * &lt;/cache&gt;
+	 * &lt;cache name=&quot;running_agent_infos&quot; maxElementsInMemory=&quot;1000&quot; eternal=&quot;true&quot; overflowToDisk=&quot;false&quot;&gt;
+	 * 	&lt;cacheEventListenerFactory class=&quot;net.sf.ehcache.distribution.RMICacheReplicatorFactory&quot; /&gt;
+	 * &lt;/cache&gt;
+	 * &lt;cache name=&quot;running_statistics&quot; maxElementsInMemory=&quot;1000&quot; eternal=&quot;true&quot; overflowToDisk=&quot;false&quot;&gt;
+	 * 	&lt;cacheEventListenerFactory class=&quot;net.sf.ehcache.distribution.RMICacheReplicatorFactory&quot; /&gt;
+	 * &lt;/cache&gt;
+	 * &lt;cache name=&quot;users&quot; maxElementsInMemory=&quot;100&quot; eternal=&quot;false&quot;
+	 * 	overflowToDisk=&quot;false&quot; timeToIdleSeconds=&quot;900&quot; timeToLiveSeconds=&quot;1800&quot;&gt;
+	 * 	&lt;cacheEventListenerFactory class=&quot;net.sf.ehcache.distribution.RMICacheReplicatorFactory&quot; /&gt;
+	 * &lt;/cache&gt;
+	 * &lt;cache name=&quot;file_entry_search_cache&quot; maxElementsInMemory=&quot;100&quot; eternal=&quot;false&quot;
+	 * 	   overflowToDisk=&quot;false&quot; timeToIdleSeconds=&quot;60&quot; timeToLiveSeconds=&quot;60&quot;&gt;
+	 * 	&lt;cacheEventListenerFactory class=&quot;net.sf.ehcache.distribution.RMICacheReplicatorFactory&quot; /&gt;
+	 * &lt;/cache&gt;
+	 * </pre>
+	 * 
 	 * @return EhCacheCacheManager bean
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	@SuppressWarnings("rawtypes")
 	@Bean(name = "cacheManager")
-	public EhCacheCacheManager dynamicCacheManager() throws IOException {
+	public EhCacheCacheManager dynamicCacheManager() {
 		EhCacheCacheManager cacheManager = new EhCacheCacheManager();
 		net.sf.ehcache.config.Configuration cacheManagerConfig;
-		if (!config.isCluster()) {
-			LOGGER.info("In no cluster mode.");
-			cacheManagerConfig = ConfigurationFactory
-					.parseConfiguration(new ClassPathResource("ehcache.xml").getFile());
-		} else {
-			LOGGER.info("In cluster mode.");
-			cacheManagerConfig = ConfigurationFactory.parseConfiguration(new ClassPathResource("ehcache-dist.xml")
-					.getFile());
-
-			FactoryConfiguration peerProviderConfig = new FactoryConfiguration();
-			peerProviderConfig.setClass(RMICacheManagerPeerProviderFactory.class.getName());
-			StringBuilder peerPropSB = new StringBuilder("peerDiscovery=manual,rmiUrls=");
-			String[] clusterURLVec = config.getClusterURIs();
-			int clusterListenerPort = config.getSystemProperties().getPropertyInt(
-							NGrinderConstants.NGRINDER_PROP_CLUSTER_LISTENER_PORT,
-							Config.NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT);
-
-			// rmiUrls=//10.34.223.148:40003/distributed_map|//10.34.63.28:40003/distributed_map
-			StringBuilder sb = new StringBuilder();
-			StringBuilder prefixSB = new StringBuilder("//");
-			for (String url : clusterURLVec) {
-				if (url.equals(config.getCurrentIP())) {
-					continue;
+		InputStream inputStream = null;
+		try {
+			if (!config.isCluster()) {
+				CoreLogger.LOGGER.info("In no cluster mode.");
+				inputStream = new ClassPathResource("ehcache.xml").getInputStream();
+				cacheManagerConfig = ConfigurationFactory.parseConfiguration(inputStream);
+			} else {
+				CoreLogger.LOGGER.info("In cluster mode.");
+				inputStream = new ClassPathResource("ehcache-dist.xml").getInputStream();
+				cacheManagerConfig = ConfigurationFactory.parseConfiguration(inputStream);
+				FactoryConfiguration peerProviderConfig = new FactoryConfiguration();
+				peerProviderConfig.setClass(RMICacheManagerPeerProviderFactory.class.getName());
+				int clusterListenerPort = config.getSystemProperties().getPropertyInt(
+								NGrinderConstants.NGRINDER_PROP_CLUSTER_LISTENER_PORT,
+								Config.NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT);
+				List<String> replicatedCacheNames = getReplicatedCacheNames(cacheManagerConfig);
+				// rmiUrls=//10.34.223.148:40003/distributed_map|//10.34.63.28:40003/distributed_map
+				List<String> uris = new ArrayList<String>();
+				for (String ip : config.getClusterURIs()) {
+					// Verify it's ip.
+					if (!InetAddresses.isInetAddress(ip)) {
+						try {
+							ip = InetAddress.getByName(ip).getHostAddress();
+						} catch (UnknownHostException e) {
+							CoreLogger.LOGGER.error("{} is not valid ip or host name", ip);
+							continue;
+						}
+					}
+					if (ip.equals(config.getCurrentIP())) {
+						continue;
+					}
+					for (String cacheName : replicatedCacheNames) {
+						uris.add(String.format("%s:%d/%s", ip, clusterListenerPort, cacheName));
+					}
 				}
-				String prefix = prefixSB.append(url).append(":").append(clusterListenerPort).append("/").toString();
-				for (String cacheName : CACHE_NAME_LIST) {
-					sb.append(prefix).append(cacheName);
-					sb.append("|");
-				}
+				String properties = "peerDiscovery=manual,rmiUrls=//" + StringUtils.join(uris, "|");
+				peerProviderConfig.setProperties(properties);
+				cacheManagerConfig.addCacheManagerPeerProviderFactory(peerProviderConfig);
+				CoreLogger.LOGGER.info("clusterURLs:{}", properties);
 			}
-			String clusterURLs = sb.substring(0, sb.length() - 2); //remove last |
-			
-			peerPropSB.append(clusterURLs);
-			peerProviderConfig.setProperties(peerPropSB.toString());
-			cacheManagerConfig.addCacheManagerPeerProviderFactory(peerProviderConfig);
-			LOGGER.info("clusterURLs:{}", clusterURLs);
+			cacheManagerConfig.setName("cacheManager");
+			CacheManager mgr = new CacheManager(cacheManagerConfig);
+			cacheManager.setCacheManager(mgr);
+		} catch (IOException e) {
+			CoreLogger.LOGGER.error("Error while setting up cache", e);
+		} finally {
+			IOUtils.closeQuietly(inputStream);
 		}
-		cacheManagerConfig.setName("cacheManager");
-		CacheManager mgr = new CacheManager(cacheManagerConfig);
-		cacheManager.setCacheManager(mgr);
 		return cacheManager;
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	private List<String> getReplicatedCacheNames(net.sf.ehcache.config.Configuration cacheManagerConfig) {
+		Map<String, CacheConfiguration> cacheConfigurations = cacheManagerConfig.getCacheConfigurations();
+		List<String> replicatedCacheNames = new ArrayList<String>();
+		for (Map.Entry<String, CacheConfiguration> eachConfig : cacheConfigurations.entrySet()) {
+			for (CacheEventListenerFactoryConfiguration each : ((List<CacheEventListenerFactoryConfiguration>) eachConfig
+							.getValue().getCacheEventListenerConfigurations())) {
+				if (each.getFullyQualifiedClassPath().equals("net.sf.ehcache.distribution.RMICacheReplicatorFactory")) {
+					replicatedCacheNames.add(eachConfig.getKey());
+				}
+			}
+		}
+		return replicatedCacheNames;
+	}
 }
