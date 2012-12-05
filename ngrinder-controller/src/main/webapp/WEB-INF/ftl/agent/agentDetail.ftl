@@ -176,7 +176,7 @@
             function showChart(title, id, data, index, formatYaxis, maxY) {
 				var pt = jqplots[index];
             	if (pt) {
-            		replotChart(pt, data, maxY);
+            		replotChart(pt, data, maxY, $("#rinterval").val());
             	} else {
 	                jqplots[index] = drawChart(title, id, data, formatYaxis);
             	}

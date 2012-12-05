@@ -216,10 +216,9 @@
                 success: function(res) {
                     if (res.success) {
                     	var st = new Date($('#startTime').val());
-                        drawChart('Transactions Per Second', 'tpsDiv', res.TPS, undefined, undefined, undefined, res.chartInterval);
-                        drawChart('Mean Time', 'meanTimeDiv', res.Mean_Test_Time_ms, undefined, undefined, undefined, res.chartInterval);
-                        //drawChart('Running Vusers', 'vuserDiv', res.vuser);
-                        drawChart('Errors Per Second', 'errorDiv', res.Errors, undefined, undefined, undefined, res.chartInterval);
+                        drawChart('Transactions Per Second', 'tpsDiv', res.TPS, undefined, res.chartInterval);
+                        drawChart('Mean Time', 'meanTimeDiv', res.Mean_Test_Time_ms, undefined, res.chartInterval);
+                        drawChart('Errors Per Second', 'errorDiv', res.Errors, undefined, res.chartInterval);
                         return true;
                     } else {
                         showErrorMsg("Get report data failed.");
@@ -258,14 +257,14 @@
                     		ymax = getMaxValue(res.SystemData.cpu);
                     		replotChart(targetMonitorPlot.plotKeyCpu, res.SystemData.cpu, ymax);
                     	} else {
-                    		targetMonitorPlot.plotKeyCpu = drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, undefined, undefined, res.SystemData.interval);
+                    		targetMonitorPlot.plotKeyCpu = drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, res.SystemData.interval);
                     	}
                     	
                     	if (targetMonitorPlot.plotKeyMem) {
                     		ymax = getMaxValue(res.SystemData.memory);
                     		replotChart(targetMonitorPlot.plotKeyMem, res.SystemData.memory, ymax);
                     	} else {
-                    		targetMonitorPlot.plotKeyMem = drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, undefined, undefined, res.SystemData.interval);
+                    		targetMonitorPlot.plotKeyMem = drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, res.SystemData.interval);
                     	}
                     	
                         return true;
