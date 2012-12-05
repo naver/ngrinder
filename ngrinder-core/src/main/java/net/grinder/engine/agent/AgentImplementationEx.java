@@ -229,7 +229,6 @@ public class AgentImplementationEx implements Agent {
 				} while (script == null);
 
 				if (script != null) {
-
 					PropertyBuilder builder = new PropertyBuilder(properties, script.getDirectory(),
 									new File("").getAbsoluteFile(), properties.getBoolean("grinder.security", false),
 									properties.getProperty("ngrinder.etc.hosts"), NetworkUtil.getLocalHostName());

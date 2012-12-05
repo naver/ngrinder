@@ -998,7 +998,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	@Cacheable(value = "running_statistics", key = "#region + #port")
 	public Map<String, Object> getCacheStatistics(String region, Integer port) {
-		return NullSingleConsole.NUll_CONSOLE.getStatictisData();
+		return NullSingleConsole.NULL_CONSOLE.getStatictisData();
 	}
 
 	/**
