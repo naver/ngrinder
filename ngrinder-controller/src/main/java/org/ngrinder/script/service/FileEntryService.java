@@ -321,8 +321,11 @@ public class FileEntryService {
 	String getTestNameFromUrl(String urlString) {
 		URL url;
 		try {
+			
 			url = new URL(urlString);
-			return (url.getHost() + url.getPath()).replaceAll("[\\&\\?\\%\\-]", "_");
+			String urlPath = "/".equals(url.getPath()) ? "" : url.getPath();
+			return (url.getHost() + urlPath).replaceAll("[\\&\\?\\%\\-]", "_");
+
 		} catch (MalformedURLException e) {
 			throw new NGrinderRuntimeException("Error while translating " + urlString, e);
 		}
