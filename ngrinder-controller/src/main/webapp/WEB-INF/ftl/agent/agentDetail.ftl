@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>nGrinder Agent Info</title>
        	<#include "../common/common.ftl">
        	<#include "../common/jqplot.ftl">
+        <title><@spring.message "agent.info.title"/></title>
        	<style>
             .left { border-right: 1px solid #878988 }
             div.chart { border: 1px solid #878988; height:250px; min-width:615px; margin-bottom:12px; padding: 5px }
@@ -21,7 +21,7 @@
         <#include "../common/navigator.ftl">
         <div class="container">
             <div class="page-header pageHeader" style="margin-bottom: 10px">
-				<h3><@spring.message "agent.info.title"/></h3>
+				<h3><@spring.message "agent.info.head"/></h3>
 			</div>
 			<button onClick="window.history.back();" class="btn pull-right" style="margin-top:-45px;"><@spring.message "common.button.return"/></button>
             <div class="row">

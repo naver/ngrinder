@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>nGrinder Test Report</title>
 		<#include "../common/common.ftl">
 		<#include "../common/jqplot.ftl">
+		<title><@spring.message "perfTest.report.title"/></title>
 		
 		<style>
 			body {

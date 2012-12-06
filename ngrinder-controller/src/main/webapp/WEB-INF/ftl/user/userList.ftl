@@ -10,7 +10,7 @@
 	<#include "../common/navigator.ftl">
 	<div class="container">
 		<div class="page-header pageHeader">
-			<h3><@spring.message "user.list.header"/></h3>
+			<h3><@spring.message "navigator.dropdown.userManagement"/></h3>
 		</div>
 		<#include "roleSelector.ftl">
 		<div class="well form-inline searchBar">

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head><#include "../common/common.ftl">
-<title><@spring.message "navigator.dropdown.announcement"/></title>
+<title><@spring.message "announcement.view.title"/></title>
 </head>
 
 <body>

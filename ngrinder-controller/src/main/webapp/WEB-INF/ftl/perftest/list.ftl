@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>nGrinder Performance Test List</title>
 		<#include "../common/common.ftl">
 		<#include "../common/datatables.ftl">	
+		<title><@spring.message "perfTest.table.title"/></title>
 		<style>
 			td.today {
 				background-image: url('${req.getContextPath()}/img/icon_today.png');

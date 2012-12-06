@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>nGrinder Performance Test Detail</title>
 	<META HTTP-EQUIV="Pragma" CONTENT="no-cache">
 	<META HTTP-EQUIV="Expires" CONTENT="-1">
 	<#include "../common/common.ftl"> 
 	<#include "../common/jqplot.ftl">
+	<title><@spring.message "perfTest.detail.title"/></title>
 	<link href="${req.getContextPath()}/css/slider.css" rel="stylesheet">
 	<link href="${req.getContextPath()}/plugins/datepicker/css/datepicker.css" rel="stylesheet">
 	<style>
@@ -270,7 +270,7 @@
 				
 					<li id="reportContent_tab" style="display: none; ">
 						<a href="#reportContent" data-toggle="tab" id="reportLnk">
-							<@spring.message "perfTest.report.title"/>
+							<@spring.message "perfTest.report.tab"/>
 						</a>
 					</li>
 				</ul>

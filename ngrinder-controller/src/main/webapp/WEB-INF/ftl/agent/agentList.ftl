@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-	<title>nGrinder Agent List</title>
 	<#include "../common/common.ftl"> 
 	<#include "../common/datatables.ftl">
+	<title><@spring.message "agent.table.title"/></title>
 	</head>
 	<body>
 		<#include "../common/navigator.ftl">
