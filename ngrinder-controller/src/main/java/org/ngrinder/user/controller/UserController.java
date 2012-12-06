@@ -107,7 +107,7 @@ public class UserController extends NGrinderBaseController {
 	 * @return "user/userDetail"
 	 */
 	@RequestMapping("/detail")
-	@PreAuthorize("hasAnyRole('A', 'S') or #user.userId == #userId")
+	@PreAuthorize("hasAnyRole('A')")
 	public String getUserDetail(User user, final ModelMap model, @RequestParam(required = false) final String userId) {
 
 		List<User> userList = userService.getAllUserByRole(null);
@@ -116,8 +116,6 @@ public class UserController extends NGrinderBaseController {
 		model.addAttribute("roleSet", roleSet);
 
 		User retrievedUser = userService.getUserById(userId);
-
-		getUserShareList(retrievedUser, model);
 		model.addAttribute("user", retrievedUser);
 		return "user/userDetail";
 	}
@@ -212,7 +210,7 @@ public class UserController extends NGrinderBaseController {
 		User newUser = userService.getUserByIdWithoutCache(user.getUserId());
 		model.addAttribute("user", newUser);
 		model.addAttribute("action", "profile");
-		getUserShareList(newUser, model);
+		model.addAttribute("followers", user.getFollowers());
 		
 		return "user/userInfo";
 	}
@@ -260,22 +258,9 @@ public class UserController extends NGrinderBaseController {
 	 * @param model
 	 *            model
 	 */
-	private void getUserShareList(User user, ModelMap model) {
-		if (user == null) {
-			return;
-		}
-		final List<User> currFollowers = user.getFollowers();
-		final String userId = user.getUserId();
-		Collection<User> shareUserList = Collections2.filter(userService.getAllUserByRole(null), new Predicate<User>() {
-			@Override
-			public boolean apply(User shareUser) {
-				if (shareUser.getUserId().equals(userId) || shareUser.getRole() != Role.USER) {
-					return false;
-				}
-				return true;
-			}
-		});
-		model.addAttribute("followers", currFollowers);
-		model.addAttribute("shareUserList", shareUserList);
+	@RequestMapping("/getUserShareList")
+	@ResponseBody
+	public String getUserShareList(ModelMap model) {
+		return toJson(userService.getAllUserByRole(Role.USER.getFullName()));
 	}
 }
