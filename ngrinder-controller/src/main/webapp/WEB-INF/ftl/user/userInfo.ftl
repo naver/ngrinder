@@ -243,6 +243,7 @@
 	        $(this).popover('show')
 	    });
 	    
+		<@security.authorize ifAnyGranted="U">
 	    var switchedUsers = [];
 	    <#if followers?has_content>
 	    	<#list followers as user>
@@ -250,6 +251,7 @@
 	    	</#list>
 	    </#if>
 	    $("#userListSelect").val(switchedUsers).select2();
+	    </@security.authorize>
 	});
 	
 	function removeSuccess(elem) {
