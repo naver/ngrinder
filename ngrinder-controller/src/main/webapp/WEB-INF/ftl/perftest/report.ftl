@@ -84,7 +84,7 @@
                    </tr>
                    <tr>
                        <th>TPS</th>
-                       <td><strong>${test.tps!0}</strong></td>
+                       <td><strong><#if test.tps??>Total ${(test.tps)?string("0.#")}</#if></strong></td>
                    </tr>
                    <tr>
                        <th><@spring.message "perfTest.report.meantime"/></th>
