@@ -317,4 +317,14 @@ public class User extends BaseModel<User> {
 		userInfo.setUserName(this.getUserName());
 		return userInfo;
 	}
+	/**
+	 * a string representation of User object
+	 * 
+	 * @return   User object information String.
+	 */
+	//avoid lazy initialization issues ,method toString not contain followers and owners
+	@Override
+	public String toString() {
+		return "User[ID="+this.getId()+",name="+this.getUserId()+",Role="+this.getRole()+"]";
+	}
 }
