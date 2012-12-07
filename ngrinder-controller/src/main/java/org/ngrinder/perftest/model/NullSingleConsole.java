@@ -16,7 +16,7 @@ import net.grinder.SingleConsole;
  */
 public class NullSingleConsole extends SingleConsole {
 	
-	public static final NullSingleConsole NUll_CONSOLE = new NullSingleConsole();
+	public static final NullSingleConsole NULL_CONSOLE = new NullSingleConsole();
 	private static final Map<String, Object> EMPTY_RESULT = new HashMap<String, Object>(1);
 	
 	static {

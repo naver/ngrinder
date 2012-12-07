@@ -11,7 +11,7 @@
 				<div class="control-group">
 					<label for="agentInput" class="control-label control-label-1"><@spring.message "perfTest.report.tps"/></label>
 					<div class="controls">
-						<strong>Total <#if test.tps??>${(test.tps)?string("0.#")}</#if></strong>
+						<strong><#if test.tps??>Total ${(test.tps)?string("0.#")}</#if></strong>
 					</div>
 				</div>
 				<div class="control-group">
@@ -62,7 +62,7 @@
 					</div>
 				</#list> 
 			<#else> 
-				<@spring.message "common.message.noData"/>
+				<@spring.message "perfTest.report.message.noLog"/>
 			</#if>
 		</div>
 	</div>

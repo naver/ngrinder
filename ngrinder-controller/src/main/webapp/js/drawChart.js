@@ -46,12 +46,10 @@ function getMaxValue(data) {
 	return ymax;
 }
 
-function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, interval) {
+function drawChart(title, containerId, data, formatYaxis, interval) {
 	//title, containerId and data is necessary.
 	//formatYaxis is the formatter function for y-axis, can be set undefined means don't format.
-	//startTime is a Date object.
-	//interval is second amount.
-	//startTime and interval are optional.
+	//interval is second amount, interval is optional.
 	if (data == undefined) {
 		return undefined;
 	}
@@ -73,14 +71,10 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 		};
 	}
 
-	if (interval == undefined || interval == 0) {
+	if (interval == undefined || interval == 0 || !$.isNumeric(interval)) {
 		interval = 1;
 	}
 	
-	var startTimeLong = 0;
-	if (startTime) {
-		startTimeLong = startTime.getTime();
-	}
 	var plotObj = $.jqplot(containerId, values, {
 
         gridPadding : {top:20, right:20, bottom:35, left:60}, 
@@ -102,24 +96,11 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 				tickOptions : {
 					show : true,
 					formatter : function(format, value) {
-						if (startTime) {
-							var pointDate = new Date(startTimeLong + value * interval * 1000);
-							var hour = pointDate.getHours();
-							var min = pointDate.getMinutes();
-							if (min < 10) { 
-								min = '0' + min;
-							}
-							var sec = pointDate.getSeconds();
-							return hour+":"+min+":"+sec;
-						} else {
-							return formatTimeForXaxis(parseInt(value * interval));
-						}
-
+						return formatTimeForXaxis(parseInt(value * interval));
 					}
 				}
 			},
 			yaxis : {
-				label : yLabel,
 				labelOptions : {
 					fontFamily : 'Helvetica',
 					fontSize : '10pt'
@@ -152,7 +133,7 @@ function drawChart(title, containerId, data, formatYaxis, yLabel, startTime, int
 }
 
 //data is an array object.
-function replotChart(plotObj, data, ymax) {
+function replotChart(plotObj, data, ymax, interval) {
 	if (data == undefined) {
 		return;
 	}
@@ -162,7 +143,15 @@ function replotChart(plotObj, data, ymax) {
 		cache.push([i + 1, data[i]]);
 	}
 	plotObj.series[0].data = cache;
-	var prevXFormatter = plotObj.axes.xaxis.tickOptions.formatter;
+	
+	var xFormatter;
+	if (interval) {
+		xFormatter = function(format, value) {
+			return formatTimeForXaxis(parseInt(value * interval));
+		};
+	} else {
+		xFormatter = plotObj.axes.xaxis.tickOptions.formatter;
+	}
 	var prevYFormatter = plotObj.axes.yaxis.tickOptions.formatter;
 	plotObj.resetAxesScale(); 
 	
@@ -185,7 +174,7 @@ function replotChart(plotObj, data, ymax) {
 	plotObj.axes.xaxis.numberTicks = 10;
 	plotObj.axes.xaxis.tickOptions = {
 		show : true,
-		formatter : prevXFormatter
+		formatter : xFormatter
 	};
 	
 	plotObj.replot();

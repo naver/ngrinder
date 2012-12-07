@@ -998,7 +998,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	@Cacheable(value = "running_statistics", key = "#region + #port")
 	public Map<String, Object> getCacheStatistics(String region, Integer port) {
-		return NullSingleConsole.NUll_CONSOLE.getStatictisData();
+		return NullSingleConsole.NULL_CONSOLE.getStatictisData();
 	}
 
 	/**
@@ -1202,7 +1202,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public Collection<PerfTestStatistics> getCurrentPerfTestStatistics() {
 		Map<User, PerfTestStatistics> perfTestPerUser = new HashMap<User, PerfTestStatistics>();
 		for (PerfTest each : getPerfTest(null, getProcessingOrTestingTestStatus())) {
-			User lastModifiedUser = each.getLastModifiedUser().getTestUserBaseInfo();
+			User lastModifiedUser = each.getLastModifiedUser().getUserBaseInfo();
 			PerfTestStatistics perfTestStatistics = perfTestPerUser.get(lastModifiedUser);
 			if (perfTestStatistics == null) {
 				perfTestStatistics = new PerfTestStatistics(lastModifiedUser);

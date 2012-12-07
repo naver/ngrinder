@@ -3,7 +3,7 @@
 <head>
 <#include "../common/common.ftl">
 <#include "../common/datatables.ftl">
-<title><@spring.message "script.view.header"/></title>
+<title><@spring.message "script.view.title"/></title>
 </head>
 
 <body>
@@ -12,7 +12,7 @@
 		<div class="row">
 			<div class="span12">
 				<div class="page-header pageHeader">
-					<h3><@spring.message "script.view.header"/></h3>
+					<h3><@spring.message "navigator.dropdown.scriptConsole"/></h3>
 				</div> 
 				<form action="${req.getContextPath()}/operation/scriptConsole" name="scriptForm" method="POST"
 					style="margin-bottom: 0;">

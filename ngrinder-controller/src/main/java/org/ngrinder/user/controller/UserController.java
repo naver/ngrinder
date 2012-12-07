@@ -28,7 +28,6 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -45,9 +44,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 
 /**
  * User management controller.
@@ -264,18 +260,20 @@ public class UserController extends NGrinderBaseController {
 		if (user == null) {
 			return;
 		}
-		final List<User> currFollowers = user.getFollowers();
-		final String userId = user.getUserId();
-		Collection<User> shareUserList = Collections2.filter(userService.getAllUserByRole(null), new Predicate<User>() {
-			@Override
-			public boolean apply(User shareUser) {
-				if (shareUser.getUserId().equals(userId) || shareUser.getRole() != Role.USER) {
-					return false;
-				}
-				return true;
+		
+		List<User> currFollowers = user.getFollowers();
+		List<User> userList = new ArrayList<User>();
+		String userId = user.getUserId();
+		
+		for (User u : userService.getAllUserByRole(Role.USER.getFullName())) {
+			if (u.getUserId().equals(userId)) {
+				continue;
 			}
-		});
+			
+			userList.add(u.getUserBaseInfo());
+		}
+		
 		model.addAttribute("followers", currFollowers);
-		model.addAttribute("shareUserList", shareUserList);
+		model.addAttribute("shareUserList", userList);
 	}
 }
