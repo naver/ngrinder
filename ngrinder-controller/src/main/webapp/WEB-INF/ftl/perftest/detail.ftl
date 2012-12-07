@@ -414,6 +414,7 @@ function initTags() {
 					url : "${req.getContextPath()}/perftest/tagSearch",
 					dataType : 'json',
 					type : 'POST',
+					cache : true,
 					data : {
 						'query' : query.term
 					},

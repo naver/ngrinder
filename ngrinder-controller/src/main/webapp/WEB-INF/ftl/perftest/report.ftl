@@ -210,6 +210,7 @@
             $.ajax({
                 url: "${req.getContextPath()}/perftest/getReportData",
                 dataType:'json',
+                cache: true,
                 data: {'testId': $("#testId").val(),
                        'dataType':'TPS,Errors,Mean_Test_Time_(ms)',
                        'imgWidth':700},
@@ -236,6 +237,7 @@
             $.ajax({
                 url: "${req.getContextPath()}/monitor/getMonitorData",
                 dataType:'json',
+                cache: true,
                 data: {'monitorIP': ip,
                 	   'testId': $("#testId").val(),
                        'imgWidth' : 700},

@@ -26,6 +26,7 @@
 		    $.ajax({
 			    url: '${req.getContextPath()}/operation/log/last', 
 			    type: 'GET',
+			    cache: false,
 			    success: function(data) {
 			    	var eachLog = $("tr#" +data.index + " td");
 			    	if (eachLog.size() != 0) {

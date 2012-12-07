@@ -93,6 +93,7 @@
 
 <script type="text/javascript">
 	function init() {
+		$.ajaxSetup({ cache: false });
 		myProfile();
 		switchUser();
 		showExceptionMsg();
