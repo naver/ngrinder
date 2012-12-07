@@ -58,6 +58,8 @@ public enum Role {
 				return true;
 			case VALIDATE_SCRIPT_OFOTHER:
 				return true;
+			case STOP_TEST_OFOTHER:
+				return true;
 			default:
 				return false;
 			}
