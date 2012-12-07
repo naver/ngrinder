@@ -178,16 +178,4 @@ public class LogMonitorController extends NGrinderBaseController {
 		return new HttpEntity<String>(toJson(map), commonResponseHeaders);
 	}
 
-	/**
-	 * Reload System properties.
-	 * 
-	 * @return success message if successful
-	 */
-	@RequestMapping("/refresh")
-	public HttpEntity<String> refreshSystemProperties() {
-		getConfig().loadSystemProperties();
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("success", true);
-		return new HttpEntity<String>(toJson(map), commonResponseHeaders);
-	}
 }
