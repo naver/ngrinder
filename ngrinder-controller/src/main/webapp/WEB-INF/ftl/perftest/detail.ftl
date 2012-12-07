@@ -408,7 +408,6 @@ function initTags() {
     		},
     		maximumSelectionSize: 5,
 			query: function(query) {
-				//console.log(query.term);
 				var data = {results:[]};
 				$.ajax({
 					url : "${req.getContextPath()}/perftest/tagSearch",
