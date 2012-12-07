@@ -28,7 +28,6 @@ import static org.ngrinder.common.constant.NGrinderConstants.PLUGIN_PATH;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -39,11 +38,9 @@ import net.grinder.util.NetworkUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.monitor.FileAlterationListener;
-import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
-import org.apache.commons.io.monitor.FileAlterationMonitor;
-import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.helpers.FileWatchdog;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.model.Home;
@@ -86,8 +83,6 @@ public class Config implements IConfig {
 	public static final int NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT = 40003;
 
 	public static final String NON_REGION = "NONE";
-
-	private FileAlterationMonitor homeMonitor;
 
 	/**
 	 * Make it singleton.
@@ -134,7 +129,7 @@ public class Config implements IConfig {
 	protected void verifyClusterConfig() {
 		if (isCluster()) {
 			if (getRegion().equals(NON_REGION)) {
-				LOG.warn("Region is not set in cluster mode. Please set region properly.");
+				LOG.error("Region is not set in cluster mode. Please set region properly.");
 			} else {
 				CoreLogger.LOGGER.info("Cache cluster URIs:{}", getClusterURIs());
 				// set rmi server host for remote serving. Otherwise, maybe it will use 127.0.0.1 to
@@ -153,8 +148,7 @@ public class Config implements IConfig {
 	 * @since 3.1
 	 */
 	public boolean isCluster() {
-		return StringUtils.isNotEmpty(getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_CLUSTER_URIS,
-						""));
+		return ArrayUtils.isNotEmpty(getClusterURIs()) && !StringUtils.equals(getRegion(), NON_REGION);
 	}
 
 	/**
@@ -327,45 +321,40 @@ public class Config implements IConfig {
 		}
 	}
 
-	private boolean isInterestingFile(String fileName) {
-		return fileName.equals("announcement.conf") || fileName.equals("system.conf")
-						|| fileName.equals("system-ex.conf") || fileName.equals("process_and_thread_policy.js");
-	}
+	/** Configuration watch docs */
+	private FileWatchdog announcementWatchDog;
+	private FileWatchdog systemConfWatchDog;
+	private FileWatchdog policyJsWatchDog;
 
 	private void initHomeMonitor() {
 		checkNotNull(home);
-		FileAlterationObserver observer = new FileAlterationObserver(home.getDirectory(), new FileFilter() {
+		this.announcementWatchDog = new FileWatchdog(getHome().getSubFile("announcement.conf").getAbsolutePath()) {
 			@Override
-			public boolean accept(File pathname) {
-				String name = pathname.getName();
-				return isInterestingFile(name);
-			}
-
-		});
-		homeMonitor = new FileAlterationMonitor(2000);
-		FileAlterationListener listener = new FileAlterationListenerAdaptor() {
-			@Override
-			public void onFileChange(File file) {
-				String name = file.getName();
-				if (name.equals("announcement.conf")) {
-					CoreLogger.LOGGER.info("Announcement file changed.");
-					loadAnnouncement();
-				} else if (name.equals("system.conf") || name.equals("system-ex.conf")) {
-					CoreLogger.LOGGER.info("System config file changed.");
-					loadSystemProperties();
-				} else if (name.equals("process_and_thread_policy.js")) {
-					CoreLogger.LOGGER.info("process_and_thread_policy file changed.");
-					policyScript = "";
-				}
+			protected void doOnChange() {
+				CoreLogger.LOGGER.info("Announcement file changed.");
+				loadAnnouncement();
 			}
 		};
-		observer.addListener(listener);
-		homeMonitor.addObserver(observer);
-		try {
-			homeMonitor.start();
-		} catch (Exception e) {
-			LOG.error("Start home directory monitor failed:" + e.getMessage(), e);
-		}
+		announcementWatchDog.setDelay(2000);
+		announcementWatchDog.start();
+		this.systemConfWatchDog = new FileWatchdog(getHome().getSubFile("system.conf").getAbsolutePath()) {
+			@Override
+			protected void doOnChange() {
+				CoreLogger.LOGGER.info("Announcement file changed.");
+				loadSystemProperties();
+			}
+		};
+		systemConfWatchDog.setDelay(2000);
+		systemConfWatchDog.start();
+		this.policyJsWatchDog = new FileWatchdog(getHome().getSubFile("process_and_thread_policy.js").getAbsolutePath()) {
+			@Override
+			protected void doOnChange() {
+				CoreLogger.LOGGER.info("process_and_thread_policy file changed.");
+				policyScript = "";
+			}
+		};
+		policyJsWatchDog.setDelay(2000);
+		policyJsWatchDog.start();
 	}
 
 	/**
@@ -431,8 +420,7 @@ public class Config implements IConfig {
 	 * @return {@link PropertiesWrapper} which is loaded from system.conf.
 	 */
 	public PropertiesWrapper getSystemProperties() {
-		checkNotNull(systemProperties);
-		return systemProperties;
+		return checkNotNull(systemProperties);
 	}
 
 	/**
@@ -441,8 +429,7 @@ public class Config implements IConfig {
 	 * @return loaded from announcement.conf.
 	 */
 	public String getAnnouncement() {
-		checkNotNull(announcement);
-		return announcement;
+		return checkNotNull(announcement);
 	}
 
 	/**
