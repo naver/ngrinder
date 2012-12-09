@@ -77,7 +77,6 @@ public abstract class NetworkUtil {
 			if (!i.isUp()) {
 				continue;
 			}
-
 			for (Enumeration<?> en2 = i.getInetAddresses(); en2.hasMoreElements();) {
 				InetAddress addr = (InetAddress) en2.nextElement();
 				if (!addr.isLoopbackAddress()) {

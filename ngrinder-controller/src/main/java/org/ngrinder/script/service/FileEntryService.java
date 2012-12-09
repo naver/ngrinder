@@ -37,9 +37,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -55,7 +52,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -168,7 +164,6 @@ public class FileEntryService {
 	public List<FileEntry> getAllFileEntries(User user) {
 		return fileEntityRepository.findAll(user);
 	}
-
 
 	/**
 	 * Get file entries from underlying svn for given path.

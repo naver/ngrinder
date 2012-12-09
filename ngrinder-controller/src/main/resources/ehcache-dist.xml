@@ -13,14 +13,23 @@
 
 	<!-- following caches are distributed caches -->
 	<!-- add RMIBootstrapCacheLoaderFactory to make the cache replicated from cluster. -->
-	<cache name="region_list" maxElementsInMemory="1000" eternal="true" overflowToDisk="false">
+	<cache name="region_list" maxElementsInMemory="1000" eternal="true" overflowToDisk="false" timeToIdleSeconds="5"
+		timeToLiveSeconds="5">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />
 	</cache>
-	<cache name="running_agent_infos" maxElementsInMemory="1000" eternal="true" overflowToDisk="false">
+	<cache name="running_agent_infos" maxElementsInMemory="1000" eternal="true" overflowToDisk="false"
+		timeToLiveSeconds="3">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 	</cache>
-	<cache name="running_statistics" maxElementsInMemory="1000" eternal="true" overflowToDisk="false">
+
+	<cache name="agent_stop_request" maxElementsInMemory="100" eternal="true" overflowToDisk="false"
+		timeToLiveSeconds="10">
+		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
+	</cache>
+
+	<cache name="running_statistics" maxElementsInMemory="1000" eternal="true" overflowToDisk="false"
+		timeToLiveSeconds="3">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 	</cache>
 	<cache name="users" maxElementsInMemory="100" eternal="false" overflowToDisk="false" timeToIdleSeconds="900"
@@ -33,12 +42,10 @@
 	</cache>
 	<!-- distributed caches -->
 
-	<cache name="agents" maxElementsInMemory="100" eternal="false" overflowToDisk="false" timeToIdleSeconds="9000"
-		timeToLiveSeconds="1800" />
 	<cache name="right_panel_entries" maxElementsInMemory="2" eternal="false" overflowToDisk="false"
-		timeToIdleSeconds="100000" timeToLiveSeconds="100000" />
+		timeToLiveSeconds="100000" />
 	<cache name="left_panel_entries" maxElementsInMemory="2" eternal="false" overflowToDisk="false"
-		timeToIdleSeconds="100000" timeToLiveSeconds="100000" />
+		timeToLiveSeconds="100000" />
 	<cache name="current_perftest_statistics" maxElementsInMemory="1" eternal="false" overflowToDisk="false"
 		timeToIdleSeconds="5" timeToLiveSeconds="5" />
 

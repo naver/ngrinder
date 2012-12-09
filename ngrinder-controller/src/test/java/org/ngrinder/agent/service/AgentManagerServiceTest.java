@@ -92,7 +92,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	
 	@Test
 	public void testGetUserAvailableAgentCount() {
-		List<String> regionList = regionService.getRegionList();
+		List<String> regionList = regionService.getRegions();
 		Map<String, MutableInt> countMap = agentManagerService.getUserAvailableAgentCountMap(
 				regionList, getTestUser());
 		int oriCount = countMap.get(config.getRegion()).intValue();

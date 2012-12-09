@@ -33,6 +33,7 @@ import java.util.Map;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.CacheConfiguration.CacheEventListenerFactoryConfiguration;
+import net.sf.ehcache.config.Configuration;
 import net.sf.ehcache.config.ConfigurationFactory;
 import net.sf.ehcache.config.FactoryConfiguration;
 import net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory;
@@ -50,9 +51,11 @@ import org.springframework.stereotype.Component;
 import com.google.common.net.InetAddresses;
 
 /**
- * Class description.
+ * Dynamic cache configuration. This get the control of EhCache configuration from Spring. Depending
+ * on the system.conf, it creates local cache or dist cache.
  * 
  * @author Mavlarn
+ * @author JunHo Yoon
  * @since 3.1
  */
 @Component
@@ -93,7 +96,7 @@ public class DynamicCacheConfig {
 	@Bean(name = "cacheManager")
 	public EhCacheCacheManager dynamicCacheManager() {
 		EhCacheCacheManager cacheManager = new EhCacheCacheManager();
-		net.sf.ehcache.config.Configuration cacheManagerConfig;
+		Configuration cacheManagerConfig;
 		InputStream inputStream = null;
 		try {
 			if (!config.isCluster()) {
@@ -104,6 +107,7 @@ public class DynamicCacheConfig {
 				CoreLogger.LOGGER.info("In cluster mode.");
 				inputStream = new ClassPathResource("ehcache-dist.xml").getInputStream();
 				cacheManagerConfig = ConfigurationFactory.parseConfiguration(inputStream);
+
 				FactoryConfiguration peerProviderConfig = new FactoryConfiguration();
 				peerProviderConfig.setClass(RMICacheManagerPeerProviderFactory.class.getName());
 				int clusterListenerPort = config.getSystemProperties().getPropertyInt(
@@ -146,7 +150,7 @@ public class DynamicCacheConfig {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<String> getReplicatedCacheNames(net.sf.ehcache.config.Configuration cacheManagerConfig) {
+	private List<String> getReplicatedCacheNames(Configuration cacheManagerConfig) {
 		Map<String, CacheConfiguration> cacheConfigurations = cacheManagerConfig.getCacheConfigurations();
 		List<String> replicatedCacheNames = new ArrayList<String>();
 		for (Map.Entry<String, CacheConfiguration> eachConfig : cacheConfigurations.entrySet()) {

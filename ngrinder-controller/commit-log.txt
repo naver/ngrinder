@@ -1,0 +1,1637 @@
+3793a7b [NGRINDER-385] Make svn log down to trace.
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+a07207b [NOBTS] simplify the configuration
+ 13 files changed, 307 insertions(+), 269 deletions(-)
+e85d198 Update README.md
+ 1 file changed, 28 insertions(+), 28 deletions(-)
+b5f77fe [NOBTS] prepare for 3.0.4 release - modify pom versions.
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+6021cd2 [NOBTS] prepare for ngrinder 3.0.4 release
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+2ee4f8f [NGRINDER-385] Add new files.
+ 3 files changed, 934 insertions(+)
+a633858 [NGRINDER-385] Add customized DAVPropfindHanlder.
+ 3 files changed, 6 insertions(+), 131 deletions(-)
+4033b35 [NGRINDER-385] Add new files.
+ 3 files changed, 934 insertions(+)
+1cd9c6b Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+a95b631 [NGRINDER-385] Add customized DAVPropfindHanlder.
+ 3 files changed, 6 insertions(+), 131 deletions(-)
+8533708 merge
+ 1 file changed, 3 insertions(+), 36 deletions(-)
+f0ba1ab Merge branch 'ngrinder_3.0'
+8a27ea7 [NOBTS] Fix test failure
+ 3 files changed, 30 insertions(+), 11 deletions(-)
+7b3f4d9 [NOBTS] Make it beautiful - Fix the font to Arial. - Add the validation rule for 0.0 - Fix the test name validtion error location. - Add the Sampling Ignore Count error message.
+ 6 files changed, 28 insertions(+), 12 deletions(-)
+64f35fd add release note
+ 1 file changed, 15 insertions(+), 2 deletions(-)
+5730297 Merge branch 'ngrinder_3.0'
+94e5d70 Merge
+ 2 files changed, 87 insertions(+), 87 deletions(-)
+80fcaaa Ready to release 3.0.3
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+7a8d394 [NGRINDER-371] Make it span4
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+ecd42e1 [NGRINDER-370] Add plugin structure for test control based on sampling result.
+ 8 files changed, 185 insertions(+), 48 deletions(-)
+7490945 Change to 3.0.3 snapshot
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+6a6a3c5 [NGRINDER-370] Add sampling listening plugin structure.
+ 4 files changed, 204 insertions(+), 27 deletions(-)
+816b0bd [NGRINDER-369] Add async on returnbackconsole method.
+ 1 file changed, 30 insertions(+), 28 deletions(-)
+b33562e [NGRINDER-368] Fix
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+264de73 [NGRINDER-367]
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+0cb2d4f Update README.md
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+ae13422 Update README.md
+ 1 file changed, 1 insertion(+)
+c71b9d8 Update README.md
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+baad49d Fix checkstyle errors
+ 2 files changed, 1 insertion(+), 2 deletions(-)
+32beb5b add gogole analyitics
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+f895660 [NGRINDER-358] Rlease 3.0.2
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+b9a65eb [NGRINDER-358] Release 3.0.2
+ 1 file changed, 1 insertion(+)
+3535c5f [NGRINDER-365] Block to run test with 0 test
+ 1 file changed, 6 insertions(+)
+0d88567 [NGRINDER-358] Rlease 3.0.2 - add abbrevination on agent name
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+a895770 [NGRINDER-358] Release 3.0.2 - Add missing improvement items.
+ 1 file changed, 1 insertion(+)
+d8d133c [NGRINDER-363] filter out ngrinder working path in validation result
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+7186d51 [NGRINDER-209] Fix unit test errors and improve test coverage
+ 1 file changed, 1 insertion(+)
+736eb79 [NGRINDER-209] Fix unit test errors and improve test coverage
+ 1 file changed, 36 insertions(+)
+1cb1662 [NGRINDER-209] Fix unit test errors and improve test coverage
+ 9 files changed, 60 insertions(+), 25 deletions(-)
+a5c9c89 [NGRINDER-362] Show runcount when user use runcount in report
+ 2 files changed, 15 insertions(+), 5 deletions(-)
+2f20eab [NGRINDER-361] Make shutdown to guarantee the process destroy
+ 1 file changed, 6 insertions(+)
+30a4652 [NGRINDER-361] Add agents stop message more.
+ 4 files changed, 50 insertions(+), 17 deletions(-)
+8769835 [NGRINDER-359] Add stop agent feature.
+ 5 files changed, 93 insertions(+), 5 deletions(-)
+6a43795 [NGRINDER-337] Make local host name resolution more stable
+ 1 file changed, 4 insertions(+), 16 deletions(-)
+42dbf1f [NGRINDER-358] Write down release note
+ 1 file changed, 17 insertions(+)
+d4f5235 [NGRINDER-152] Make spring security more stable - Make spring security always goes to /home.. - not to be interrupted by ajax.
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+d089466 [NGRINDER-357] Fixed.
+ 1 file changed, 1 insertion(+)
+11ce82d [NGRINDER-356] Make basic_template more stable
+ 1 file changed, 1 deletion(-)
+cb04d43 [NGRINDER-356] Fix tab error
+ 2 files changed, 11 insertions(+), 4 deletions(-)
+370e816 [NGRINDER-348] Clean up checkstyle error
+ 3 files changed, 14 insertions(+), 16 deletions(-)
+878c262 [NGRINDER-344] Add detailed statistics as well
+ 1 file changed, 27 insertions(+), 3 deletions(-)
+9d54b36 [NGRINDER-356] add test failure code
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+e7dd6c1 [NGRINDER-355] Make the scriptconsole is only available when there are more than 50M perm gem memory.
+ 2 files changed, 60 insertions(+), 8 deletions(-)
+8f7b9b0 [NGRINDER-354] Make validation longer to 20min
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+1287534 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+c5f6d10 Merge branch 'ngrinder_3.0'
+c4a93c3 [NGRINDER-352] Add onSampling method to samplinglifecyclelistener.
+ 3 files changed, 40 insertions(+), 2 deletions(-)
+a57fc56 [NGRINDER-351] Delete resetFooter()
+ 1 file changed, 1 deletion(-)
+d54f4e4 [NGRINDER-337] - Fix console to have real ip - Fix same issue on monitor
+ 8 files changed, 68 insertions(+), 72 deletions(-)
+df4cfb5 Line end change
+ 2 files changed, 128 insertions(+), 128 deletions(-)
+16587d7 [NGRINDER-54] Improvement of code quality with static analysis methods - Fix the Klocwork issue.
+ 2 files changed, 17 insertions(+), 6 deletions(-)
+ef41e3c Fix file end.
+ 4 files changed, 187 insertions(+), 187 deletions(-)
+22b5e14 Merge branch 'ngrinder_3.0'
+d818de2 [NGRINDER-348] clean up checkstyle errors.
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+4149d6b [NGRINDER-348] clean up checkstyle errors.
+ 4 files changed, 130 insertions(+), 4 deletions(-)
+591e157 [NGRINDER-348] clean up checkstyle errors.
+ 14 files changed, 91 insertions(+), 51 deletions(-)
+ff64368 [NGRINDER-344] Fix the wrong calculation. - It uses last statistics for the calculation without any calc. - Previously, we calc the sum from the each test model but not it comes form intervalStatistics directly. - We lost the HTTP plugin statistics eventually. CSV will only show basic statistics.
+ 7 files changed, 199 insertions(+), 149 deletions(-)
+153f160 Merge branch 'ngrinder_3.0'
+72d0d9e [NGRINDER-331] Fix the issue again. It's missing in 3.0 branch.
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+d1d4612 Merge branch 'ngrinder_3.0'
+6b58ff5 [NGRINDER-339] Add supports for PreAuth authentication.
+ 10 files changed, 533 insertions(+), 126 deletions(-)
+e36e841 Add ppt docs
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+1b4710f Update README.md
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+8d1f3c7 [NGRINDER-333] Make network access more stable.
+ 2 files changed, 39 insertions(+), 3 deletions(-)
+0be44c8 [NGRINDER-333] Make the console ip dynamically achieved.
+ 5 files changed, 20 insertions(+), 23 deletions(-)
+51582e3 Update README.md
+ 1 file changed, 5 insertions(+)
+1b4aa22 [NGRINDER-336] make the log folder is accessasble.
+ 1 file changed, 4 insertions(+)
+fb99525 [NGRINDER-335] Make the statistic parsing more reliable.
+ 3 files changed, 140 insertions(+), 115 deletions(-)
+ba40db2 Make it clean again
+ 1 file changed, 11 deletions(-)
+37f9fb5 Merge branch 'ngrinder_3.0'
+c3e466e Move on 3.1-SNAPSHOT
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+1e5a4fa [NGRINDER-315] Add agent which is used for specific user.
+ 1 file changed, 20 insertions(+)
+5b7c3d7 [NGRINDER-333] Make local ip resolution more stable
+ 7 files changed, 110 insertions(+), 28 deletions(-)
+a8dfe54 [NGRINDER-332] Delete out trial code
+ 1 file changed, 1 insertion(+), 51 deletions(-)
+bc6e272 [NGRINDER-332] Delete out trial code
+ 1 file changed, 1 insertion(+), 51 deletions(-)
+6001b6a merge
+ 2 files changed, 29 insertions(+), 29 deletions(-)
+4bef41f Merge remote-tracking branch 'origin/master'
+4270d2f Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+d409ff3 [NGRINDER-332] Delete out trial code
+ 3 files changed, 54 deletions(-)
+5943648 [NGRINDER-332] Add release note
+ 1 file changed, 6 insertions(+)
+19d505f [NGRINDER-332] Fix max agent value when using user specific agents.
+ 6 files changed, 6 insertions(+), 6 deletions(-)
+005b639 [NGRINDER-331] Update release note
+ 1 file changed, 6 insertions(+)
+3c0f765 [NGRINDER-331] - Make search jar on on dist folder. - Prepare 3.0.1
+ 5 files changed, 13 insertions(+), 10 deletions(-)
+069be8f Update README.md
+ 1 file changed, 1 insertion(+)
+2306d9d Update README.md
+ 1 file changed, 3 insertions(+)
+c08fb28 Update index.html
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+5503b86 Update README.md
+ 1 file changed, 50 insertions(+), 30 deletions(-)
+f2b0c17 [NGRINDER-184] translate and clean up i18n message. - Fix wrong i18n
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+65d98dc Fix missing i18n messages.
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+b146acf add missing one
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+2324487 just block database.conf
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+f9043b5 Drop read permission check
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+d6fea06 Fix typo
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+4bd853f Add /dev/random to read access
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+fdb7060 [NGRINDER-328] Fix issue on real machine
+ 1 file changed, 1 deletion(-)
+3e0288b add korean translation
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+562ee1f Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+529aa23 Fix javadoc
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+c0f7e45 [NGRINDER-328] Make the lib path comes from controller. Fix several checkstyle issue
+ 7 files changed, 102 insertions(+), 74 deletions(-)
+799703b [NOBTS] Fix klocwork error.
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+050f2c9 [NGRINDER-329] Fix the host name deletion - make it work at windows as well
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+c344d31 [NGRINDER-329] Fix the host name deletion [NGRINDER-328] Fix lib access
+ 2 files changed, 7 insertions(+), 5 deletions(-)
+8d2f855 [NGRINDER-187] Adjust log level - add log message when user tries to invalid login
+ 2 files changed, 21 insertions(+), 11 deletions(-)
+9284d5d [NGRINDER-29] add user login plugin module - Fix the error which occurs due to concrete class. - AFP only allows interface
+ 3 files changed, 68 insertions(+), 2 deletions(-)
+8a6d0ed [NGRINDER-29] add user login plugin module - add config to plugin host component
+ 1 file changed, 1 insertion(+)
+747a0ae [NGRINDER-327] Fix unexpected user agent issue.
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+55db43a [NGRINDER-29] add user login plugin module - Fix admin permission lost error.
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+ee68974 [NGRINDER-29] add user login plugin module - Make the extenal user can be logged by local password as well
+ 2 files changed, 20 insertions(+), 7 deletions(-)
+e26f130 [NGRINDER-29] add user login plugin module - fix default password and encorded password
+ 2 files changed, 8 insertions(+), 10 deletions(-)
+5c6ea937 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+0de9aa1 [NOBTS] Fix message.ftl bug
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+8110241 [NGRINDER-29] add user login plugin module - Make plugin scan faster
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+a709ce7 [NGRINDER-29] add user login plugin module - Add authentication in the hosts object.
+ 3 files changed, 48 insertions(+), 28 deletions(-)
+7a3e8a4 [NGRINDER-29] add user login plugin module - Make spring security visible to plugins.
+ 3 files changed, 22 insertions(+), 10 deletions(-)
+56463d2 [NGRINDER-29] add user login plugin module - add servlet packages to plugins
+ 1 file changed, 1 insertion(+)
+0217e87 [NGRINDER-29] add user login plugin module - Fix plugin support error.
+ 6 files changed, 48 insertions(+), 27 deletions(-)
+22fef7a Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+0ea2292 [NGRINDER-326] Prepare nGrinder 3.0 Release - delete relatvie path to parent...
+ 3 files changed, 3 deletions(-)
+c16ee0d [NGRINDER-152] Add temp dir for read / write. for safety.
+ 1 file changed, 20 insertions(+), 2 deletions(-)
+cccc248 [NGRINDER-326] Write release note
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+8babf7e [NGRINDER-315] Make user agent is assigned first.
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+5c587b3 [NGRINDER-49] Fix checkstyle error [NGRINDER-315] Make user agent is assigned first.
+ 2 files changed, 83 insertions(+), 25 deletions(-)
+dd4721b [NGRINDER-49] Fix checkstyle errors.
+ 8 files changed, 111 insertions(+), 89 deletions(-)
+50236c0 [NGRINDER-152] Make spring security more stable
+ 1 file changed, 5 insertions(+), 7 deletions(-)
+fd28a29 [NGRINDER-152] Make spring security more stable - Block read access
+ 1 file changed, 271 insertions(+), 7 deletions(-)
+e51deb4 [NGRINDER-152] Make spring security more stable
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+10bc67f [NGRINDER-152] Make spring security more stable
+ 1 file changed, 18 insertions(+), 10 deletions(-)
+b277f35 [NGRINDER-152] Make spring security more stable
+ 4 files changed, 49 insertions(+), 23 deletions(-)
+57ecd8c [NGRINDER-152] Make spring security more stable - Fix error.
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+d8e39b2 [NGRINDER-323] Make max runcount / max runhour checked
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+eed32b9 [NGRINDER-152] Make target host mandatory when security is provided.
+ 10 files changed, 46 insertions(+), 20 deletions(-)
+a60c6ab [NGRINDER-152]  remove all read access restriction
+ 1 file changed, 2 insertions(+), 15 deletions(-)
+4b54993 [NGRINDER-152] Fix security Bugs.
+ 7 files changed, 165 insertions(+), 78 deletions(-)
+315b9b1 [NGRINDER-301] Fix bugs.
+ 6 files changed, 51 insertions(+), 45 deletions(-)
+87bbd56 [NGRINDER-301] Add duplicated running blocking and LD_LIBARY_PATH addition for centos 6.0 issue
+ 6 files changed, 36 insertions(+), 22 deletions(-)
+f8f3530 [NOBTS] make the agent pid is saved in .ngrinder_home to avoid the wrong termination.
+ 10 files changed, 93 insertions(+), 72 deletions(-)
+9aa6841 [NOBTS] Add missing security manager.
+ 2 files changed, 70 insertions(+), 25 deletions(-)
+c326a53 [NGRINDER-317] Tags can be separated by , and " " now.
+ 2 files changed, 20 insertions(+), 3 deletions(-)
+16ed9ca [NGRINDER-323] Make max runcount / max runhour checked
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+5de0006 [NGRINDER-323] Make max runcount / max runhour checked
+ 8 files changed, 47 insertions(+), 18 deletions(-)
+f28c689 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+f884679 [NGRINDER-318] he notifcation "Please enter positive number" didn't disappear when Processes/Threads changed with VUser - add valid() calls when vuser is changed.
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+3da4c17 [NOBTS] Fix ownerId error
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+cde784f [NGRINDER-305] Make also admin validate user script
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+fa34ba3 [NOBTS] Fix following UI error - if the thread is over 1,000, the result ommits the rest of 1000. - When going back to prev page, it shows duplicated tags.
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+8030dd2 [NGRINDER-49] Clean up checkstyle errors fix missing lib
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+e26921e [NGRINDER-49] Clean up checkstyle errors - update licenses. and optimize library
+ 22 files changed, 802 insertions(+), 1051 deletions(-)
+6da0136 [NGRINDER-49] Clean up checkstyle errors
+ 2 files changed, 1 insertion(+), 9 deletions(-)
+2473ab5 [NGRINDER-49] Clean up checkstyle errors
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+26de1dc [NGRINDER-49] Clean up checkstyle errors
+ 2 files changed, 13 insertions(+), 7 deletions(-)
+e6ea347 [NGRINDER-45] Fix test failure
+ 8 files changed, 59 insertions(+), 32 deletions(-)
+b45c386 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+3dd9679 [NGRINDER-315] Add agent which is used for specific user. - change max agent count
+ 2 files changed, 32 insertions(+), 3 deletions(-)
+9798b85 [NGRINDER-315] Add agents to be used only for specific user. - the agent region should contain "owned_" + userId
+ 4 files changed, 78 insertions(+), 26 deletions(-)
+6d96c3b [NGRINDER-45] Fix test failure
+ 2 files changed, 15 insertions(+), 2 deletions(-)
+c56fba1 [NGRINDER-45] Fix test failure
+ 8 files changed, 157 insertions(+), 77 deletions(-)
+c0a78f1 [NGRINDER-314] Provide servlet filter plugin - fix test failure problem
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+975abd9 [NGRINDER-42] UI element cleanup
+ 2 files changed, 24 insertions(+), 24 deletions(-)
+f5137b1 [NGRINDER-314] provide servlet filter plugin mechanism
+ 5 files changed, 205 insertions(+), 18 deletions(-)
+7dd3bb6 [NGRINDER-45] Fix test failure
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+76991ef [NGRINDER-45] Fix test failure
+ 1 file changed, 45 insertions(+)
+d17a37d [NGRINDER-45] Fix test failure
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+abd6a00 [NGRINDER-45] Fix test failure
+ 5 files changed, 257 insertions(+), 16 deletions(-)
+bf4baad [NGRINDER-45] Fix test failure - exclude unnecesary files.
+ 1 file changed, 2 insertions(+)
+6540935 * Fix test error
+ 4 files changed, 21 insertions(+), 44 deletions(-)
+c9e6794 [NGRINDER-45] Fix test failure
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+1e62706 [NGRINDER-45] Fix test failure
+ 6 files changed, 108 insertions(+), 21 deletions(-)
+39f2c40 [NGRINDER-45] Fix test failure
+ 9 files changed, 69 insertions(+), 37 deletions(-)
+32f748e [NGRINDER-49] Clean up checkstyle errors
+ 1 file changed, 1 deletion(-)
+b86aaeb [NGRINDER-49] Clean up checkstyle errors
+ 1 file changed, 15 insertions(+), 9 deletions(-)
+b5bf6b8 [NGRINDER-209] Fix unit test errors and improve test coverage
+ 2 files changed, 10 insertions(+), 5 deletions(-)
+98e73e7 [NGRINDER-49] Clean up checkstyle errors
+ 6 files changed, 91 insertions(+), 50 deletions(-)
+3641cf9 [NGRINDER-49] Clean up checkstyle errors
+ 3 files changed, 37 insertions(+), 30 deletions(-)
+f01bc7c [NOBTS] Delete unused Jetty.
+ 5 files changed, 5 insertions(+), 115 deletions(-)
+03556e7 [NGRINDER-309] add runtime only controller annotation and change scuprtconsole as runtimeonly controller.
+ 4 files changed, 117 insertions(+), 5 deletions(-)
+36842c5 [NGRINDER-308] Change *.sh into unix style line feed.
+ 3 files changed, 13 insertions(+), 1 deletion(-)
+e950267 [NGRINDER-283] * Drop SQLite support. It's because SQLite does not support alter column. * Some boolean was missing to typed as char(1). add them. * So far some column noted as true_false has char(255) in H2. Alter those column to char(1).
+ 20 files changed, 384 insertions(+), 584 deletions(-)
+e8265fa [NGRINDER-283] Provide DB upgrade feature - Make the validation run again.
+ 4 files changed, 10 insertions(+), 6 deletions(-)
+db0eaed [NGRINDER-283] Provide DB upgrade featrue - disable validation
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+fc09062 [NGRINDER-283] Provide DB upgrade featrue - Enhance the compatibility with ngrinder 3.0-b2
+ 6 files changed, 90 insertions(+), 6 deletions(-)
+569ec97 [NGRINDER-283] Provide DB upgrade feature. - Enhance stablability.
+ 2 files changed, 33 insertions(+), 33 deletions(-)
+42b645f [NGRINDER-283] Provide DB upgrade feature - Change cubrid boolean type char(1) : there was missing on in user table.
+ 7 files changed, 35 insertions(+), 4 deletions(-)
+7030a16 [NGRINDER-283] Provide DB upgrade feature - Now locking is working well.
+ 13 files changed, 459 insertions(+), 320 deletions(-)
+43fb341 [NOBTS] add db upgrade locking
+ 4 files changed, 318 insertions(+), 42 deletions(-)
+2d9df5e Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+a1290ff [NOBTS] chaange cubrid type
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+96285d1 [NOBTS] Print agent version when startup
+ 2 files changed, 39 insertions(+), 2 deletions(-)
+1fd7a2c Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+13b0cb3 [NGRINDER-283] Provide DB upgrade featrue - rollback.
+ 5 files changed, 89 insertions(+), 21 deletions(-)
+87e4a58 [NGRINDER-42] UI element cleanup.
+ 2 files changed, 5 insertions(+), 9 deletions(-)
+1b821e6 [NGRINDER-49] Clean up checkstyle errors
+ 3 files changed, 73 insertions(+), 34 deletions(-)
+32ff1fb [NGRINDER-283] Provide DB upgrade featrue - add custom boolean type
+ 5 files changed, 317 insertions(+), 166 deletions(-)
+69fbc76 [NGRINDER-42] UI element cleanup - add ellipses in script resources.
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+bd127e5 [NOBTS] Add more validation message
+ 2 files changed, 21 insertions(+), 3 deletions(-)
+10e3a35 [NGRINDER-305] change userId to ownerId to avoid the name duplication error
+ 5 files changed, 7 insertions(+), 8 deletions(-)
+a80c432 [NGRINDER-42] UI element cleanup
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+9109f71 [NGRINDER-42] UI element cleanup - Make the test name in refresh content ellipsis.
+ 2 files changed, 11 insertions(+), 11 deletions(-)
+993b7f5 [NGRINDER-248] Fix the agent and vuserSizePerAgent validation logic. Now. Free edit..
+ 5 files changed, 280 insertions(+), 264 deletions(-)
+ddf3d1e [NGRINDER-209] Fix unit test errors and improve test coverage - add -Xms600m -Xmx1024m -XX:MaxPermSize=200m on surefire
+ 1 file changed, 13 insertions(+), 7 deletions(-)
+4b0744c [NGRINDER-49] Clean up checkstyle errors
+ 10 files changed, 57 insertions(+), 46 deletions(-)
+d75b7f1 [NGRINDER-49] Clean up checkstyle errors
+ 2 files changed, 84 insertions(+), 41 deletions(-)
+4deca15 [NGRINDER-49] Clean up checkstyle errors
+ 13 files changed, 94 insertions(+), 52 deletions(-)
+514889a Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+9266646 [NGRINDER-305] Make a admin can see the user's script.
+ 6 files changed, 47 insertions(+), 5 deletions(-)
+9739a05 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+d4f743a [NGRINDER-304] Add the count of all approved agent condition on PerfTestRunnable
+ 1 file changed, 31 insertions(+), 8 deletions(-)
+61e8f85 [NGRINDER-304] Modify the agent.maxsize depending on the current attached agent size.
+ 2 files changed, 11 insertions(+), 1 deletion(-)
+bef3e13 [NGRINDER-303] Clean up UI
+ 2 files changed, 5 insertions(+), 4 deletions(-)
+0c8b6d5 [NGRINDER-303] Fix error.
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+ae46db5 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+c1f2482 [NGRINDER-303] Provide Lib and Resource folder generation option when creating a script.
+ 8 files changed, 52 insertions(+), 20 deletions(-)
+acf0e9f [NGRINDER-288] add python module support
+ 9 files changed, 299 insertions(+), 233 deletions(-)
+8dc7f3e [NGRINDER-299] Fix tag duplication problem.
+ 2 files changed, 14 insertions(+), 5 deletions(-)
+6b7f476 [NGRINDER-283] Fix type compatibility problem
+ 7 files changed, 452 insertions(+), 390 deletions(-)
+72ce3fb [NGRINDER-298] Add grey ball for canceled test
+ 3 files changed, 8 insertions(+), 4 deletions(-)
+e73c82a [NGRINDER-49] Clean up checkstyle errors - add javadoc
+ 1 file changed, 30 insertions(+)
+d53d35e [NGRINDER-297] Fix the error when UNKNOWN HOST is returned by getHostName. Simply make it a single word.
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+770c500 [NOBTS] Fix Dialect to make the hibernate validation works
+ 6 files changed, 180 insertions(+), 172 deletions(-)
+196d2c9 [NGRINDER-283] Fix the DB overload problem
+ 9 files changed, 683 insertions(+), 686 deletions(-)
+5b0a0a9 fix link
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+3dfa26f Add some links
+ 1 file changed, 13 insertions(+), 34 deletions(-)
+c599694 add beta release news.
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+ec4cffa add mailing list info
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+8814988 [NOBTS] add ngrinder_system_architecutr powerpnt file
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+2826d56 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+accf4e7 [NGRINDER-49] Clean up checkstyle errors - Elaborate JavaDoc
+ 12 files changed, 115 insertions(+), 92 deletions(-)
+293034b [NGRINDER-49] Clean up checkstyle errors - Elaborate JavaDocs
+ 27 files changed, 361 insertions(+), 257 deletions(-)
+5449647 [NGRINDER-281] Provide batch/shell for easy execution - Provide more stable.. maven pom. - Now it is compilable with maven 3.0 - With following command   * mvn -Dmaven.test.skip=true package
+ 4 files changed, 3 insertions(+), 17 deletions(-)
+0651583 [NGRINDER-281] Provide batch/shell for easy exeuction - Completed..
+ 10 files changed, 50 insertions(+), 118 deletions(-)
+7a9e99b [NGRINDER-42] UI element cleanup - divide script page into several files(modal) - block non-test owner to clone or save test.. - script resource css change(not to wrap if it's long) - apply less-rounded search box to all. -
+ 13 files changed, 459 insertions(+), 467 deletions(-)
+2fe07bd [NOBTS] * Simplify i18n messages - delete error messages * Move logback settings in logback folder. * Provide better way to set the nGrinder version.   => Filter by maven resource plugin. * Delete "All right reserved"
+ 18 files changed, 84 insertions(+), 81 deletions(-)
+bad725f [NGRINDER-45] Fix test failure
+ 2 files changed, 36 insertions(+), 35 deletions(-)
+be373ec [NGRINDER-45] Fix test failure - make verbose mode off
+ 3 files changed, 7 insertions(+), 5 deletions(-)
+6216b2f [NGRINDER-45] Fix test failure
+ 1 file changed, 6 insertions(+)
+2cec9ae [NGRINDER-49] Clean up checkstyle errors - Delete magic number checker.. It's too harsh..
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+9ac6683 Update README.md
+ 1 file changed, 1 insertion(+), 15 deletions(-)
+384bdd8 add license link
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+beb41a3 add license link
+ 1 file changed, 1 insertion(+), 30 deletions(-)
+bcb1dc7 add download links
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+bfa4b0e [NGRINDER-49] Clean up checkstyle errors
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+b545ed7 [NGRINDER-49] Clean up checkstyle errors
+ 30 files changed, 354 insertions(+), 133 deletions(-)
+5f5ba55 [NGRINDER-45] Fix test failure
+ 2 files changed, 3 insertions(+)
+d6772c8 [NGRINDER-49] Clean up checkstyle errors
+ 104 files changed, 1398 insertions(+), 745 deletions(-)
+8003b21 [NGRINDER-280] Prepare beta1 version - 3.0-b1 release version
+ 4 files changed, 19 insertions(+), 3 deletions(-)
+ca0869e [NGRINDER-280] Prepare beta1 version
+ 4 files changed, 5 insertions(+), 5 deletions(-)
+226b9e2 [NOBTS] Fix tag duplication problem when scheduled..
+ 1 file changed, 2 insertions(+)
+7c4c57a [NOBTS] - Rollback script upload i18n. - It does not work in IE - Make console stoppable even when script is failed to execute.
+ 6 files changed, 67 insertions(+), 44 deletions(-)
+beef64c [NOBTS] Fix i18n problem
+ 1 file changed, 1 insertion(+)
+3c42475 [NOBTS] Fix i18n problem
+ 2 files changed, 9 insertions(+), 2 deletions(-)
+ea796be [NGRINDER-244] Upload popup have some Chinese when language=English - Fix
+ 5 files changed, 15 insertions(+), 12 deletions(-)
+2102c34 [NGRINDER-278] Provide Tagging for PerfTest - Fix data integrity problem while deleting perftest - Fix unittest failure.
+ 19 files changed, 442 insertions(+), 298 deletions(-)
+f214993 [NGRINDER-279] Make user deletion work - Fixed
+ 20 files changed, 204 insertions(+), 46 deletions(-)
+70d43e3 [NGRINDER-278] Provide Tagging for PerfTest
+ 17 files changed, 261 insertions(+), 63 deletions(-)
+a8cb9d6 [NGRINDER-278] Add UIs
+ 8 files changed, 105 insertions(+), 18 deletions(-)
+de22f82 [NGRINDER-278] Provide tagging way easily to search perftest.
+ 17 files changed, 580 insertions(+), 52 deletions(-)
+f5ead35 [NOBTS] Add stop button on running page. - add missing test..
+ 6 files changed, 515 insertions(+), 3 deletions(-)
+ee142c9 [NOBTS] Clean up code. - Remove Unused JSONUtil / OnlyOnePage / JSONBean classes - Clean up various unnecessary conditions.. - Make stopTest more stable.. - Delete all perftest status change logic (merge style..) - Make all method name more explicit - Change log style to print out line number - delete footer dynamic location logic (it's not necessary much.) - make drawChart not emit exception when there is no data. - divide runningDiv to shorten detail.ftl.
+ 40 files changed, 701 insertions(+), 1046 deletions(-)
+08d720b [NGRINDER-45] Fix test failure
+ 3 files changed, 6 insertions(+), 1 deletion(-)
+3bc7af3 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+dd5ba50 [NGRINDER-277] Port change. In NHN korea, there are some task for the network isolation. They will block all ports under 10000 and only allows some 80, 8080 port to communicate b/w dev network and real service network. Currently we use following port. Agent Controller Server : 7001 Console Port : 12000 Monitoring Port : 3243 AgentControllerServer and Monitoring port will be blocked by that limitation. So I changed port like following. Agent Controller Server : 16001 Console Port : 12000 Monitoring Port : 13243 To get effective, we should update monitor and controller and agents.. Please be aware it.
+ 9 files changed, 21 insertions(+), 22 deletions(-)
+a8022c3 [NOBTS] Sychronize Monitor add/remove timing with SingleConsoleSampling..
+ 6 files changed, 152 insertions(+), 83 deletions(-)
+0e400f1 Enhance script template - Make it UTF-8 compatible. - Provide logger and getText() example
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+225138a delete warnings.
+ 3 files changed, 3 deletions(-)
+d2ab0cf small feature addition. - dynamic log level change   * http://localhost:8080/ngrinder-controller/operation/log/verbose?verbose=true - reload system properties http://localhost:8080/ngrinder-controller/operation/log/refresh
+ 2 files changed, 38 insertions(+), 12 deletions(-)
+20091ac [NOBTS] add pluginManager into ScriptConsole.
+ 2 files changed, 6 insertions(+)
+827ac4e [NOBTS] Several fixes. 1. LogMonitor now see the ngrinder.log from tail 2. quickTest now points the script file correctly. 3. when removeMonitor is failed, it show the error and keep going. 4. add cache on currently running test. 5. quickTest configures host in generated script.
+ 8 files changed, 30 insertions(+), 6 deletions(-)
+dbe9f03 Fix several bugs... 1. delete dependency plugin setting in pom.xml (who added this one) 2. Make agentManager closable.. Now.. tomcat can be shutdowned.. 3. When updateStatistics is called.. Fix some exception occurs when it's stop by error. 4. add errors field on the report paghe. 5. make agentcontrollerserver is daemon thread
+ 9 files changed, 43 insertions(+), 64 deletions(-)
+755659f [NOBTS] make the session timeout logger (10 min)
+ 2 files changed, 8 insertions(+), 3 deletions(-)
+6a474ae [NOBTS] fix the local managed dns problem
+ 2 files changed, 24 insertions(+), 3 deletions(-)
+613b661 [NOBTS] Fix the custom unrecognized jar error in Linux. it's because "." refer user.dir..
+ 3 files changed, 28 insertions(+), 28 deletions(-)
+3d2fcf7 [NGRINDER-271] Add listener reset method.
+ 2 files changed, 17 insertions(+)
+cd50f32 delete CNAME
+ 1 file changed, 1 deletion(-)
+59a34ff add new cname
+ 3 files changed, 1 insertion(+)
+7b8124f Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+b53ee18 add images
+ 1 file changed, 43 insertions(+), 23 deletions(-)
+afdcb7b fix for 3.0
+ 1 file changed, 48 insertions(+), 33 deletions(-)
+33748b7 [NGRINDER-45] Fix test failure
+ 4 files changed, 9 insertions(+), 8 deletions(-)
+8fc5201 [NGRINDER-45] Fix test failure - add native sigar lib more to check the test failure.
+ 3 files changed, 1 insertion(+), 1 deletion(-)
+7ae083b Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+04b8233 [NGRINDER-45] Fix test failure
+ 5 files changed, 59 insertions(+), 65 deletions(-)
+4e16fa5 [NGRINDER-45] Fix test failure
+ 7 files changed, 119 insertions(+), 108 deletions(-)
+50646c0 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+575b3bb [NOBTS] Fix log message to be more concrete.
+ 1 file changed, 32 insertions(+), 29 deletions(-)
+632888f [NGRINDER-249] add the validation query for database connection pool
+ 1 file changed, 4 insertions(+)
+0d4db7d [NGRINDER-49] Clean up checkstyle errors - add some javadocs
+ 3 files changed, 70 insertions(+), 4 deletions(-)
+2d1e601 [NGRINDER-83] Add the UI Element to beauty - Fix the bug.
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+214878a [NGRINDER-83] Add the UI Element to beauty - modify user detail and list to follow overall theme - clean up unnecessary code. - block the role change in server side. - create the internal properties to load version.
+ 24 files changed, 405 insertions(+), 384 deletions(-)
+e1ee801 [NGRINDER-209] Fix unit test error
+ 1 file changed, 1 insertion(+)
+a92054b [NGRINDER-209] Fix unit test error
+ 18 files changed, 188 insertions(+), 93 deletions(-)
+b12024e [NGRINDER-142] Make a experimental implementation on sigar - change free to actual free
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+0607a72 [NGRINDER-142] Make a experimental implementation on sigar - delete unnecessary part
+ 1 file changed, 4 insertions(+), 9 deletions(-)
+d8c4f67 [NGRINDER-142] Make a experimental implementation on sigar - clean up unnecessary part.
+ 1 file changed, 1 deletion(-)
+e8bba66 [NGRINDER-142] Make a experimental implementation on sigar - Add sigar... Big change
+ 32 files changed, 80 insertions(+), 365 deletions(-)
+8b166f0 [NGRINDER-187] Adjust log level
+ 5 files changed, 22 insertions(+), 27 deletions(-)
+104db16 [NGRINDER-230] Provide configuration description
+ 6 files changed, 47 insertions(+), 7 deletions(-)
+64f7223 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+be653d1 Fix for maiyobin
+ 1 file changed, 5 insertions(+)
+977277a [NGRINDER-225] Fix the bugs. - It's because when it's run with duration.. we should privide the runCount 0(permamant) but I ommited. - I provided this when preparing GrinderProperties - In addition.. I fixed several stuff. - Adjust some loggers. - Make the test result  viewable even in stop requested test. - When creating default user, I creates repos for default user.
+ 11 files changed, 64 insertions(+), 35 deletions(-)
+f20f12e [NGRINDER-226] Fix logger setting only available on Runtime.
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+b4214a9 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+d55a1cf [NGRINDER-223] Make agent status visible in test running page.
+ 10 files changed, 142 insertions(+), 88 deletions(-)
+08383f5 [NGRINDER-49] Clean up checkstyle errors - Map nullsingconsole to 1 port - This is for reduce the complexity of logics.
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+b49ea62 [NGRINDER-49] Clean up checkstyle errors - add javadocs.
+ 17 files changed, 300 insertions(+), 45 deletions(-)
+8e9a848 [NGRINDER-49] Clean up checkstyle errors - provide javadocs. - modify several method name for better understanding.
+ 10 files changed, 231 insertions(+), 80 deletions(-)
+3643052 [NOBTS] Several fixes. 1. adjust i18n 2. Introduce NullConsole.. to reduce if statements. 3. remove testTrial concept. 4. adjust agentController logger to show less log.
+ 15 files changed, 189 insertions(+), 105 deletions(-)
+20dc596 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+a435ba2 [NGRINDER-220] Fix custom classpath and validation service
+ 5 files changed, 103 insertions(+), 53 deletions(-)
+c981ef5 [NGRINDER-199] Unregister sampling when the test duration is finished. - Make the test result is shown even when the test status is stop on error.
+ 3 files changed, 5 insertions(+), 7 deletions(-)
+2fb289b [NGRINDER-214] Abnormal test finish
+ 15 files changed, 171 insertions(+), 109 deletions(-)
+4c57344 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+018ea3d [NGRINDER-199] Unregister sampling when the test duration is finished. - Sampling is enhanced.   * From now on, Sampling is finished when the test is finished.   * Enhanced refreshContent to use javascript variable to store sampling data
+ 10 files changed, 195 insertions(+), 114 deletions(-)
+5e0fbc0 Roll back perftest list button
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+3989e65 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+cefb09a [NOBTS] Fix for mao
+ 5 files changed, 214 insertions(+), 196 deletions(-)
+b0bd56e [NGRINDER-187] adjust log
+ 4 files changed, 28 insertions(+), 33 deletions(-)
+f8cc064 [NGRINDER-199] Unregister sampling when the test duration is finished. - Fix it..
+ 5 files changed, 45 insertions(+), 27 deletions(-)
+7aea287 [NGRINDER-195] Default timezone should follow browser setting - Fix errors.
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+399af1e [NGRINDER-195] Default timezone should follow browser setting - Fixed
+ 2 files changed, 7 insertions(+), 8 deletions(-)
+5ebe243 [NGRINDER-187] Introduce CoreLogger which will be used to record majoy steps of ngrinder life cycle.
+ 9 files changed, 85 insertions(+), 15 deletions(-)
+c9c2f7d [NGRINDER-185] Enhance script console - Speed up and make it terminatable within 30 sec.
+ 1 file changed, 21 insertions(+), 9 deletions(-)
+0c30613 [NGRINDER-185] Enhance script console - add more valiable on script console
+ 3 files changed, 56 insertions(+), 60 deletions(-)
+5a408bd [NOBTS] Finshied up all remained defects. - Add missing i18n - Delete peek tps on CSV not.. refreshContent.. -
+ 10 files changed, 99 insertions(+), 56 deletions(-)
+3f9673f [NOBTS] add security settings on agentimplementation.
+ 1 file changed, 55 insertions(+), 74 deletions(-)
+5a00ec3 [NOBTS] clean up Ui errors. - resetFooter() - fix the tip location in scriptEditor. - common validator.
+ 10 files changed, 105 insertions(+), 68 deletions(-)
+b78a73c [NOBTS] Several error fix. - Change ScriptRunnderController to ScriptConsoleController. - Provide variable list in script consolde - Add some 18n - Make the graph more stable..
+ 11 files changed, 193 insertions(+), 204 deletions(-)
+5c8df50 [NOBTS] clean up several stuff - delete unncessary code. - make login more table.
+ 5 files changed, 16 insertions(+), 13 deletions(-)
+4cfa5fb Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+53ea866 [NOBTS] adjust formatter.
+ 4 files changed, 24 insertions(+), 21 deletions(-)
+5fd1bb4 [NGRINDER-179] provide security options.. It's done by security=true in system conf
+ 4 files changed, 24 insertions(+), 9 deletions(-)
+b383b44 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+67e9c9b [NGRINDER-81] system i18n with English, Chinese and Korean
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+8e9edc2 [NGRINDER-81] system i18n with English, Chinese and Korean
+ 6 files changed, 25 insertions(+), 18 deletions(-)
+f0f1f44 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+a8fe092 [NGRINDER-81] system i18n with English, Chinese and Korean - Fix some i18n
+ 4 files changed, 21 insertions(+), 7 deletions(-)
+00414e8 [NGRINDER-181] Add logger setting to ngrinder agent - Decrease log level when verbose
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+016b8f3 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+7db50a1 [NGRINDER-83] Add the UI Element to beauty - Fix several i18n - Fix PerfTest script name not to be long in test progress - Fix level to DEBUG at verbose mode
+ 7 files changed, 33 insertions(+), 37 deletions(-)
+70894df [NGRINDER-83] Add the UI Element to beauty - fix for invalid total vuser count..
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+229b8db [NGRINDER-10] Support concurrent multiple test
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+9bf2c43 [NGRINDER-10] Support concurrent multiple test - add ignore sampling . - return empty if no perf data exists ,
+ 4 files changed, 25 insertions(+), 11 deletions(-)
+47076cc [NGRINDER-45] Fix test failure
+ 1 file changed, 8 insertions(+), 12 deletions(-)
+c5934f2 [NGRINDER-45] Fix test failure
+ 5 files changed, 7 insertions(+), 33 deletions(-)
+fb68815 [NGRINDER-81] Fix i18n - Fix english spelling errors.
+ 1 file changed, 21 insertions(+), 21 deletions(-)
+127ccf4 [NGRINDER-81] Fix i18n and upload banner design
+ 3 files changed, 3 insertions(+), 9 deletions(-)
+70dab71 [NGRINDER-49] Clean up checkstyle errors - clean up todo  fixme
+ 17 files changed, 118 insertions(+), 218 deletions(-)
+b0270d3 [NGRINDER-83] Add the UI Element to beauty - add script banner - fix i18n
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+81ff5bb [NGRINDER-76] Delete unnecessary files
+ 27 files changed, 19 insertions(+), 1537 deletions(-)
+01ba5c4 [NOBTS] add script console and log monitoring feature for better admin
+ 17 files changed, 430 insertions(+), 23 deletions(-)
+bb72ddf [NGRINDER-83] Add the UI Element to beauty
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+a4bbf74 [NGRINDER-83] Add the UI Element to beauty - add snap on graph..
+ 3 files changed, 70 insertions(+), 11 deletions(-)
+bc5e9ca Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+c939802 [NGRINDER-83] Add the UI Element to beauty - add zero based y axies on TPS graph.
+ 14 files changed, 265 insertions(+), 256 deletions(-)
+bb016b9 [NGRINDER-83] Add the UI Element to beauty - clean up
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+646b06e [NOBTS] Fix error about sampling.. Now sampling after start agents.
+ 5 files changed, 78 insertions(+), 104 deletions(-)
+c85d5a4 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+05a021a [NGRINDER-83] Add the UI Element to beauty - Completed.
+ 7 files changed, 47 insertions(+), 22 deletions(-)
+4ee8148 [NOBTS] exclude clover for local dns
+ 1 file changed, 12 insertions(+)
+c139370 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+8c5e3dd [NGRINDER-83] Add the UI Element to beauty - add agent approval output appropriate log.
+ 2 files changed, 10 insertions(+), 3 deletions(-)
+0cbafca [NGRINDER-83] Add the UI Element to beauty - adjust editor size.
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+431d4ae [NGRINDER-83] Add the UI Element to beauty - Fix IE7 issue
+ 1 file changed, 44 insertions(+), 24 deletions(-)
+1350e19 [NGRINDER-83] Add the UI Element to beauty - Make script Editor work on IE7 as well
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+fa0a0f9 [NGRINDER-83] Add the UI Element to beauty - Provide IE7 compatibility. It's my hobby
+ 3 files changed, 127 insertions(+), 62 deletions(-)
+b3537fe [NGRINDER-162] Add the way to configure process and thread count - add the detailed i18n
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+06d48c9 [NGRINDER-162] Add the way to configure process and thread count - Remove server side calc when executing perftest
+ 2 files changed, 101 insertions(+), 176 deletions(-)
+2cc09cf [NGRINDER-162] Add the way to configure process and thread count - Completed
+ 14 files changed, 678 insertions(+), 388 deletions(-)
+eee3c5d [NGRINDER-49] Clean up checkstyle errors -
+ 1 file changed, 2 insertions(+), 52 deletions(-)
+3b38242 [NGRINDER-180] Replace editarea with codmirror - add tips i18n
+ 6 files changed, 76 insertions(+), 34 deletions(-)
+bad0e54 [NGRINDER-181] Add logger setting to ngrinder agent - Completed.
+ 4 files changed, 334 insertions(+), 287 deletions(-)
+45bc177 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+95e60d3 [NGRINDER-83] Add the UI Element to beauty fix indent line bugs.
+ 7 files changed, 45 insertions(+), 10 deletions(-)
+7e2c280 [NGRINDER-83] Add the UI Element to beauty - Fix rampup chart abnormal representation
+ 4 files changed, 75 insertions(+), 44 deletions(-)
+b8521e3 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+e4efc49 [NGRINDER-87] Enhance script validation.. Now It include all valiation mesages.
+ 2 files changed, 178 insertions(+), 9 deletions(-)
+980b8f5 [NGRINDER-180] change editarea with codemirror. - Still I need to work on the indentation problem.
+ 30 files changed, 5945 insertions(+), 324 deletions(-)
+f6d9f19 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+66242a6 [NGRINDER-83] Add the UI Element to beauty - Fix script list sort. - Fix script creation result show the folder in which script is created.
+ 3 files changed, 25 insertions(+), 7 deletions(-)
+c20d94b Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+849874b [NGRINDER-83] Add the UI Element to beauty - Make report in detail works.. - And change script tempalte not to make test errors.
+ 3 files changed, 76 insertions(+), 73 deletions(-)
+88ce75c [NGRINDER-83] Add the UI Element to beauty - Fix the previous display:none causes Report is not shown.
+ 2 files changed, 1095 insertions(+), 1094 deletions(-)
+be792e5 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+3b70873 [NGRINDER-174] Prevent the ngrinder run from non-ngrinder existing place - Fix the starter bugs.
+ 5 files changed, 97 insertions(+), 3 deletions(-)
+fe2d93a [NGRINDER-174] Prevent the ngrinder run from non-ngrinder existing place
+ 7 files changed, 1410 insertions(+), 1403 deletions(-)
+239e544 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+d7d4dfc [NGRINDER-169] Provide integration point for ngrinder-sm
+ 6 files changed, 23 insertions(+), 18 deletions(-)
+44d40e6 [NGRINDER-83] Add the UI Element to beauty
+ 2 files changed, 6 insertions(+), 3 deletions(-)
+6dd0e63 [NGRINDER-83] Add the UI Element to beauty - add today icon.
+ 2 files changed, 11 insertions(+), 6 deletions(-)
+e8f89db Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+630c1e1 [NGRINDER-172] Shorten logs on agent and server - Make agent only start from agent jar folder. - Shorten agent logs when it fails to connect to console. - Make the agent wait period longer before finished.
+ 8 files changed, 170 insertions(+), 90 deletions(-)
+739c83a [NGRINDER-83] Add the UI Element to beauty - Fix IE7 issue - Add Help Link
+ 3 files changed, 11 insertions(+), 6 deletions(-)
+884e13a [NGRINDER-169] Provide integration point for ngrinder-sm - add some template to help Mao
+ 1 file changed, 13 insertions(+), 8 deletions(-)
+99ed4aa Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+66f2e3d [NGRINDER-169] Provide integration point for ngrinder-sm
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+f3251d0 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+1eaf489 Big changes - Sorry.
+ 4 files changed, 81 insertions(+), 113 deletions(-)
+1d01003 [NGRINDER-161] Enhance plugin architecture
+ 1 file changed, 54 insertions(+)
+615ac1a [NOBTS] sorry!! big changes..
+ 10 files changed, 168 insertions(+), 165 deletions(-)
+1f2a9cf [NGRINDER-87] Develop ScriptValidation..
+ 1 file changed, 20 insertions(+)
+0c79adb [NGRINDER-87] Develop ScriptValidation.. - add syntax validation
+ 1 file changed, 71 insertions(+), 19 deletions(-)
+e32a784 [NGRINDER-162] Add the way to configure process and thread count - first version
+ 1 file changed, 1 insertion(+)
+3028b16 [NGRINDER-162] Add the way to configure process and thread count - first version
+ 6 files changed, 109 insertions(+), 52 deletions(-)
+514ff42 [NGRINDER-158] Fix the invalid key
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+54d8fcd Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+3497d07 [NGRINDER-161] Enhance plugin architecture
+ 1 file changed, 39 insertions(+)
+6e6b379 [NGRINDER-161] Enhance plugin architecture - Fix the bugs on test report plugin
+ 6 files changed, 46 insertions(+), 43 deletions(-)
+d456fa9 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+550ea42 [NGRINDER-87] Develop ScriptValidation.. - Fix test bugs.
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+13dcdde Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+7a69f73 [NGRINDER-83] Add the UI Element to beauty - Fix css layout.
+ 5 files changed, 22 insertions(+), 19 deletions(-)
+434461a [NGRINDER-87] Develop ScriptValidation.. - Fix bug again
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+635df83 [NGRINDER-87] Develop ScriptValidation.. - fix bug on new test creation
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+25b04a5 [NGRINDER-87] Develop ScriptValidation.. - add hostString copy feature.. from script to perftest.. - fix some remainning i18n
+ 14 files changed, 104 insertions(+), 124 deletions(-)
+c39ff9f [NGRINDER-87] Develop ScriptValidation.. - add hoststring in scripteditor
+ 5 files changed, 76 insertions(+), 71 deletions(-)
+3437505 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+ffbbe72 [NGRINDER-87] Develop ScriptValidation.. make host setting seperate
+ 2 files changed, 123 insertions(+), 108 deletions(-)
+a00c944 [NGRINDER-83] Add the UI Element to beauty - test page is now working IE7, IE8 - Hosts now allow multiple items.
+ 8 files changed, 274 insertions(+), 214 deletions(-)
+aa93552 [NGRINDER-61] Add runtime hook on svnkit - add runtime hook just for cache invalidation
+ 1 file changed, 45 insertions(+), 48 deletions(-)
+d7efd3f [NGRINDER-157] provide i18n in project status
+ 10 files changed, 194 insertions(+), 161 deletions(-)
+d0e81f6 [NGRINDER-81] system i18n with English, Chinese and Korean - provide PerfTest status i18n
+ 7 files changed, 98 insertions(+), 32 deletions(-)
+7c867df [NGRINDER-140] Block unapproved agent
+ 1 file changed, 244 insertions(+)
+5a57c31 [NGRINDER-140] Block unapproved agent - Fix cubrid bug on boolean type.
+ 8 files changed, 8 insertions(+), 398 deletions(-)
+e48b708 [NGRINDER-140] Block unapproved agent Roll back the approval.
+ 5 files changed, 20 insertions(+), 12 deletions(-)
+63388b9 [NGRINDER-140] Block unapproved agent
+ 2 files changed, 393 insertions(+)
+31b7ce9 [NGRINDER-140] Block unapproved agent - change hibernate version and fix cubrid dialect bugs.
+ 7 files changed, 19 insertions(+), 315 deletions(-)
+97a852b [NGRINDER-140] Block unapproved agent - update cubrid dialect
+ 1 file changed, 259 insertions(+), 197 deletions(-)
+eef04df [NGRINDER-140] Block unapproved agent - Fix the ftl
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+49fb54e [NGRINDER-140] Block unapproved agent makde approved into boolean as well.. I fixed CubridDialect.. and let's see it's work.
+ 3 files changed, 5 insertions(+), 7 deletions(-)
+4d410e0 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+f77041d [NGRINDER-140] Block unapproved agent - make it works in cubrid.
+ 6 files changed, 13 insertions(+), 15 deletions(-)
+a614f2c [NGRINDER-140] Block unapproved agent - add i18n - add script refresh to point HEAD revision -
+ 5 files changed, 27 insertions(+), 17 deletions(-)
+3ca7ace [NGRINDER-140] Block unapproved agent - Complete
+ 5 files changed, 113 insertions(+), 41 deletions(-)
+70cd6f0 [NGRINDER-140] Block unapproved agent - adjust page style
+ 2 files changed, 6 insertions(+), 13 deletions(-)
+ddf59a2 [NGRINDER-140] Block unapproved agent - save unapproved status
+ 4 files changed, 62 insertions(+), 17 deletions(-)
+54ec676 [NGRINDER-140] Block unapproved agent - Fix ui error
+ 1 file changed, 13 insertions(+), 4 deletions(-)
+6c834af [NGRINDER-140] Block unapproved agent - add approval logic
+ 9 files changed, 71 insertions(+), 39 deletions(-)
+37ce2d8 [NGRINDER-34] add plugin support in login module - clean up import
+ 1 file changed, 2 deletions(-)
+e50f151 [NGRINDER-34] add plugin support in login module - add test notify logic
+ 4 files changed, 50 insertions(+), 23 deletions(-)
+b0d70c0 [NGRINDER-34] add plugin support in login module
+ 12 files changed, 117 insertions(+), 111 deletions(-)
+9ac2d35 [NGRINDER-34] add plugin support in login module
+ 2 files changed, 166 insertions(+)
+bf785c9 [NGRINDER-34] add plugin support in login module - Make plugin modules more feasible. - I moved services and model into core which is necessary to plugin impl
+ 29 files changed, 902 insertions(+), 928 deletions(-)
+737ce67 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+bff339b [NGRINDER-8] Develop the script management module - Fix subvserion asian language support problem. - Now we can commit and checkout asian file name using svn
+ 3 files changed, 81 insertions(+), 3 deletions(-)
+66e14ba [NGRINDER-63] Improve the script management web UX - Fix korean.. and File not found exception..
+ 2 files changed, 13 insertions(+), 12 deletions(-)
+d0bfc46 [NGRINDER-63] Improve the script management web UX - Fix the upload bug... previously.. file is saved in root only.
+ 3 files changed, 5 insertions(+), 4 deletions(-)
+e9edf39 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+bb8a2e0 [NGRINDER-10] Support concurrent multiple test - Add test not stop bugs.
+ 2 files changed, 13 insertions(+), 9 deletions(-)
+94c3112 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+017e4ce [NGRINDER-152] Make spring security more stable - add sha1encoding into spring security password.
+ 8 files changed, 89 insertions(+), 32 deletions(-)
+4569a44 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+dba0bb4 [NGRINDER-45] Fix test failure
+ 7 files changed, 72 insertions(+), 67 deletions(-)
+0823fe1 [NGRINDER-152] Make spring security more stable
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+ee2dc87 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+b88eee7 [NGRINDER-28] Develop performance test module: test listing and editing function - add script revision feature which is marked when test is turn into READY status. - Now all script view feature contains revision.
+ 12 files changed, 227 insertions(+), 153 deletions(-)
+ea0c352 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+6de9c0d [NGRINDER-83] Add the UI Element to beauty - add chrome frame support.
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+ec585e9 [NGRINDER-8] Develop the script management module - provide the direct link to script from perftest detail
+ 10 files changed, 106 insertions(+), 45 deletions(-)
+29f1710 [NGRINDER-134] Make explicit messege on exit
+ 5 files changed, 38 insertions(+), 33 deletions(-)
+ab91553 [NGRINDER-86] Quick test support - Now quick test test script generation feature is completed. - depending on the URL.. It can generate the folder structure.
+ 6 files changed, 59 insertions(+), 18 deletions(-)
+599393c [NGRINDER-150] Add test comment feature - Fix test error
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+6409827 [NGRINDER-150] Add test comment feature
+ 10 files changed, 157 insertions(+), 82 deletions(-)
+e7ccf44 [NGRINDER-60] Finished script management module - Make script creation more reliable.. - Now.. any url is accepted.. and even empty url is allowed.
+ 3 files changed, 34 insertions(+), 40 deletions(-)
+5d06b02 [NGRINDER-81] Provide i18n on report.ftl
+ 5 files changed, 69 insertions(+), 52 deletions(-)
+66a5206 [NGRINDER-83] Add the UI Element to beauty - make it more pretty
+ 2 files changed, 4 insertions(+), 13 deletions(-)
+7653e5c [NGRINDER-83] Add the UI Element to beauty - make grinder report more beautiful
+ 2 files changed, 32 insertions(+), 16 deletions(-)
+83ccfd1 [NGRINDER-118] If session is outtime.The re-login page of profile sames uncomfortable. I added following code.. <script language="javascript"> if (top.location.href.indexOf("login") == -1) { top.location = "${req.getContextPath()}/login"; } </script> Now in case of session invalidation, the ngrinder login page is shown in top.
+ 1 file changed, 7 insertions(+)
+04d0da5 [NGRINDER-42] UI element cleanup
+ 1 file changed, 1 insertion(+)
+0391b11 [NGRINDER-42] UI element cleanup - make duration as a default option
+ 3 files changed, 8 insertions(+), 5 deletions(-)
+e2dd1fb Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+9b56527 [NGRINDER-141] Implement log tranfer - add log downloader.
+ 7 files changed, 115 insertions(+), 27 deletions(-)
+906b58a [NGRINDER-142] Make a experimental implementation on sigar - add sigar
+ 4 files changed, 121 insertions(+), 105 deletions(-)
+c9935a2 [NGRINDER-141] Implement log tranfer - Completed now log is saved in perftest/id/logs
+ 16 files changed, 347 insertions(+), 113 deletions(-)
+4a91aeb Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+fe8f7d2 [NGRINDER-140] Block unapproved agent - privide basic service logic
+ 4 files changed, 21 insertions(+), 1 deletion(-)
+1e88b2e [NGRINDER-10] Support concurrent multiple test - Kill unnecessary thread.
+ 5 files changed, 50 insertions(+), 41 deletions(-)
+5abc7f2 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+a38bacc Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+83be13d [NGRINDER-10] Support concurrent multiple test - fix bug
+ 5 files changed, 44 insertions(+), 26 deletions(-)
+56635d0 [NGRINDER-10] Support concurrent multiple test - Add more transaction guard. - Fix single console to show tps correctly while tps is very low.
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+065cfb0 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+6c8a485 [NGRINDER-10] Support concurrent multiple test -  Make the stop and perf runnable is more stable.
+ 8 files changed, 197 insertions(+), 112 deletions(-)
+1f5ed75 [NGRINDER-10] Support concurrent multiple test - Make the all test is more responsive.. - Instead of 20 second wait to terminate, change it 5 second
+ 2 files changed, 10 insertions(+), 13 deletions(-)
+d664a9a [NGRINDER-10] Support concurrent multiple test - add a stop test.. when there is too many errors.
+ 2 files changed, 51 insertions(+), 27 deletions(-)
+27a8fd5 [NGRINDER-83] Add the UI Element to beauty - Make stop button work
+ 6 files changed, 28 insertions(+), 34 deletions(-)
+d628c51 [NGRINDER-83] Add the UI Element to beauty - fix duration to be selected when slider is selected. - fix run count to be selected when run count is selected.
+ 1 file changed, 14 insertions(+), 3 deletions(-)
+30ce097 [NGRINDER-130] [3.0]Create a floder with Korean name, access to this floder, error happened - add this on create as well. fileName = StringUtils.trimToEmpty(fileName);
+ 1 file changed, 1 insertion(+)
+9d17ddc Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+e93c1d8 [NGRINDER-130] [3.0]Create a floder with Korean name, access to this floder, error happened - Fix bugs - add trim on folder name
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+e86b48f [NGRINDER-54] Improvement of code quality with static analysis methods - Fix compile error.
+ 1 file changed, 12 insertions(+), 8 deletions(-)
+aef0292 [NGRINDER-54] Improvement of code quality with static analysis methods - Fix klocwork errors
+ 2 files changed, 36 insertions(+), 19 deletions(-)
+53f7607 [NGRINDER-68] Add unit test for controller - Fix several unit test failure.
+ 4 files changed, 107 insertions(+), 23 deletions(-)
+7b0d484 [NGRINDER-94] The function of download script can't work. - Fix test running error
+ 1 file changed, 10 insertions(+)
+d181cb7 [NGRINDER-94] The function of download script can't work. - Fix compile error
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+53edbbe [NGRINDER-94] [NGRINDER-110]
+ 6 files changed, 183 insertions(+), 70 deletions(-)
+7172754 [NGRINDER-81] Korean i18n is modified.
+ 4 files changed, 24 insertions(+), 22 deletions(-)
+7a781d7 [NGRINDER-12] Make custom dns resolution without touching /etc/hosts
+ 3 files changed, 17 insertions(+), 21 deletions(-)
+176512a Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+837b75d [NGRINDER-12] Make custom dns resolution without touching /etc/hosts - add localhost resolution
+ 2 files changed, 14 insertions(+), 7 deletions(-)
+eadfe0b [NGRINDER-10] Support concurrent multiple test - fix that clone is not working..
+ 3 files changed, 8 insertions(+), 2 deletions(-)
+51525c3 [NGRINDER-12] Make custom dns resolution without touching /etc/hosts
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+1dd06c1 [NGRINDER-12] Make custom dns resolution without touching /etc/hosts
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+b274d99 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+40b6f13 [NGRINDER-12] Make custom dns resolution without touching /etc/hosts
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+4e165e5 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+dbec8aa [NGRINDER-12] Make custom dns resolution without touching /etc/hosts - remove dependency to extenal lib in dns
+ 4 files changed, 26 insertions(+), 21 deletions(-)
+694618a [NGRINDER-12] Make custom dns resolution without touching /etc/hosts - bind custom dns to ngrinder-controller
+ 6 files changed, 23 insertions(+), 8 deletions(-)
+b80714c [NGRINDER-12] Make custom dns resolution without touching /etc/hosts - split dns resolution module into separated maven module to minimize the jar dependency in WorkerProcessEntryPoint
+ 18 files changed, 803 insertions(+), 759 deletions(-)
+d4a9a0a Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+440ae14 [NGRINDER-83] Add the UI Element to beauty - add beauties on detail page
+ 2 files changed, 481 insertions(+), 489 deletions(-)
+cf57678 [NGRINDER-87] Develop ScriptValidation.. - modify the script validation error date format.. we don't need date for it.
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+0497043 [NGRINDER-104] Modify user information, if click Save User,error will happen. - Fixed.. it's because in the user validation logic, it checks userid as well.. However it's not passed from form because it's disable. - Change the validation logic.
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+75d2c32 [NGRINDER-87] Develop ScriptValidation.. - make script validation work. - make message fade in and fade out faster
+ 2 files changed, 7 insertions(+), 8 deletions(-)
+642c74c Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+738ef8e [NGRINDER-106] EditArea is not working in IE9 - fix this issue. - Fix agent controller doesn't provide download links. - Fix several logs into trace.. - Fix invalid message properties.. \n is not allowed. it should be \\n - Beautify login page. - Fix favicon to work.
+ 17 files changed, 148 insertions(+), 241 deletions(-)
+ae476c2 [NGRINDER-10] Support concurrent multiple test - Fix the bug in which the script is not copied.
+ 1 file changed, 2 insertions(+)
+1f977e8 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+1930cfd [NGRINDER-10] Support concurrent multiple test - Fix the bug.
+ 3 files changed, 31 insertions(+), 22 deletions(-)
+b56f1a8 [NGRINDER-10] Support concurrent multiple test - fix the layout perftest listing..
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+d6f0438 [NGRINDER-10] Support concurrent multiple test STOP_BY_USER_REQUEST ==> CANCELED.
+ 3 files changed, 27 insertions(+), 17 deletions(-)
+ae419a7 [NGRINDER-96] Add timezone support in default - beautify timezone selection
+ 10 files changed, 3329 insertions(+), 10 deletions(-)
+fd476af [NGRINDER-96] Add timezone support in default - Completed.. now all date is converted according to user timezone - Except of the case of JSON data. - To get this to be affeted, you should include "common.ftl"
+ 7 files changed, 54 insertions(+), 18 deletions(-)
+2ff3494 [NGRINDER-87] Develop ScriptValidation.. = fix classpath problem on script validation = add stop test
+ 13 files changed, 153 insertions(+), 113 deletions(-)
+49258d4 [NGRINDER-87] Develop ScriptValidation.. - fix method name
+ 6 files changed, 8 insertions(+), 8 deletions(-)
+1628fec [NGRINDER-87] Develop ScriptValidation.. - Change name of test
+ 2 files changed, 109 insertions(+), 109 deletions(-)
+7169d96 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+efe5604 [NGRINDER-10] Support concurrent multiple test - add lib and resources distribution logic
+ 9 files changed, 169 insertions(+), 123 deletions(-)
+ec5bc51 [NGRINDER-83] Add the UI Element to beauty - reformatting perftest detail to be recognized well.
+ 1 file changed, 91 insertions(+), 41 deletions(-)
+00788fb [NGRINDER-72] Add ngrinder download links - add multiple download for multiple ngrinder download
+ 2 files changed, 21 insertions(+), 18 deletions(-)
+61cc441 [NGRINDER-83] Add the UI Element to beauty - Add perfTest progress message
+ 4 files changed, 72 insertions(+), 19 deletions(-)
+49e4ddf [NGRINDER-87] Develop ScriptValidation.. - Remove duplication
+ 3 files changed, 24 insertions(+), 35 deletions(-)
+b4e3101 [NGRINDER-87] Develop ScriptValidation..
+ 1 file changed, 72 insertions(+)
+73f2ce8 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+4a33d30 [NGRINDER-87] Develop ScriptValidation.. - Fix classpath problem in script validation
+ 3 files changed, 111 insertions(+), 74 deletions(-)
+f0dcdb5 [NGRINDER-86] Quick test support - fix url to file name logic   * add path part in file name
+ 5 files changed, 67 insertions(+), 29 deletions(-)
+96d0a75 [NGRINDER-86] Quick test support - quick test is completed.. - It's now working..
+ 2 files changed, 48 insertions(+), 32 deletions(-)
+6a986c5 [NGRINDER-89] add h2db - add h2 as default db.
+ 3 files changed, 31 insertions(+), 18 deletions(-)
+e83f64f [NGRINDER-83] Add the UI Element to beauty - fix some korean translation - add url validation on quicktest..
+ 6 files changed, 166 insertions(+), 185 deletions(-)
+6b71ccf [NGRINDER-83] Add the UI Element to beauty - adjust slider to work correctly - adjust naming of sample count
+ 7 files changed, 33 insertions(+), 16 deletions(-)
+928ecb0 [NGRINDER-83] Add the UI Element to beauty - adjust popup logic to be more stable.. - make popup bigger.
+ 2 files changed, 26 insertions(+), 23 deletions(-)
+27107e5 [NGRINDER-81] system i18n with English, Chinese and Korean - Add some korean translation
+ 1 file changed, 41 insertions(+), 9 deletions(-)
+e6578d0 [NGRINDER-87] Develop ScriptValidation..
+ 18 files changed, 558 insertions(+), 13 deletions(-)
+7935634 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+2786aa1 [NGRINDER-10] Support concurrent multiple test - fix the bug which always ended test STOP_ERROR...
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+70cd2c4 [NGRINDER-49] Clean up checkstyle errors - Add comments.
+ 1 file changed, 14 insertions(+), 7 deletions(-)
+be9a247 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+d1054d1 [NGRINDER-10] Support concurrent multiple test - Fix isDeletable... previously it was isStoppable..
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+14295c5 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+67ceb72 [NGRINDER-10] Support concurrent multiple test - fix the error which ended up all test abnormal.
+ 1 file changed, 25 insertions(+), 18 deletions(-)
+4989e9e Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+68c8fe4 [NGRINDER-49] Clean up checkstyle errors
+ 6 files changed, 3 insertions(+), 236 deletions(-)
+0d86093 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+204948e [NGRINDER-83] Add the UI Element to beauty - add some korean translation - adjust column size.
+ 2 files changed, 17 insertions(+), 6 deletions(-)
+45b513d Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+e47bb80 [NGRINDER-83] Add the UI Element to beauty - add ball update in detail page as well.
+ 2 files changed, 44 insertions(+), 11 deletions(-)
+977263b [NGRINDER-83] Add the UI Element to beauty - now ball is updating.. in runtime
+ 5 files changed, 131 insertions(+), 70 deletions(-)
+459c88d Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+3a6f77d [NGRINDER-69] Integration test - Quick Fix for starter.
+ 2 files changed, 16 insertions(+), 14 deletions(-)
+669f857 [NGRINDER-69] Integration test - quick fix.
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+585d47c [NGRINDER-69] Integration test - Fix agentstarter which occurs bugs when runned in Eclipse
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+d471756 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+e8b8c97 [NGRINDER-42] UI element cleanup - Fix alert
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+6ab7c23 [NGRINDER-42] UI element cleanup - temporally disable updateBall..
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+4a51d82 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+7ff5676 [NGRINDER-83] Add the UI Element to beauty - add avail agent count on detail.ftl
+ 5 files changed, 197 insertions(+), 254 deletions(-)
+18bc153 [NGRINDER-42] UI element cleanup - Add dynamic ball update.
+ 5 files changed, 89 insertions(+), 33 deletions(-)
+17e80c4 [NGRINDER-10] Support concurrent multiple test - Add createdUser is set when there is no createdUser is assigned. - Fix the classpath filtering logic. now it's faster - Make unavailable statistic work..
+ 4 files changed, 12 insertions(+), 11 deletions(-)
+2d79b90 [NGRINDER-49] Clean up checkstyle errors - Clean up the compiler warning.. NEVER NEVER make it.
+ 5 files changed, 11 insertions(+), 14 deletions(-)
+0c2efb8 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+6ea6497 [NGRINDER-10] Support concurrent multiple test - Fix several bugs. 1. Add test with too low tps stop logic 2. Fix AgentDaemon termination listenr 3. AgentController now send READY message when test is finished.. not FINISHED... so that next test can be executed. 4. Add timer cancel try catch to ignore timeer cancel status exception 5. Fix the bug which the duration and runcount is not selected.. 6. Add quicktest url validator... (Not yet work) 7. Fix Peak_TPS value retrieval bug. when there is no test is succeeded the Peak_TPS returns null.. So I added protetion logic. 8. Add the abnormal test execution termination logic.. now the test is more stable. 9. Delete testDefaultOption.... It wil be implemented next version 10.
+ 10 files changed, 147 insertions(+), 77 deletions(-)
+cb8ff11 [NGRINDER-10] Support concurrent multiple test - Fix for classpath problem
+ 8 files changed, 121 insertions(+), 86 deletions(-)
+087e93c Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+7e5ba1d [NGRINDER-10] Support concurrent multiple test - add multitest constraints.. If test needs more agents than free agents, the test is not executed.
+ 2 files changed, 26 insertions(+), 2 deletions(-)
+757647b [NGRINDER-49] Clean up checkstyle errors - Add javadocs
+ 2 files changed, 58 insertions(+), 2 deletions(-)
+cabc9e2 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+e3a5839 [NGRINDER-28] Develop performance test module: test listing and editing function - add quicktest.. - add logging for classpath
+ 5 files changed, 121 insertions(+), 50 deletions(-)
+36d9780 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+2ab9119 [NGRINDER-28] Develop performance test module: test listing and editing function - Remove null check on save perf.
+ 2 files changed, 29 insertions(+), 25 deletions(-)
+e0c4216 [NGRINDER-28] Develop performance test module: test listing and editing function - modify lastModifiedDate to be insertable. - list form shows last modified date in tooltip.
+ 3 files changed, 9 insertions(+), 7 deletions(-)
+3493b0c [NGRINDER-42] UI element cleanup - Fix main banner not to contain URL box.
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+ec4403b [NGRINDER-10] Support concurrent multiple test - Fix for several bugs for page sort in perftest list
+ 7 files changed, 40 insertions(+), 21 deletions(-)
+01cb946 [NGRINDER-49] Clean up checkstyle errors
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+5bd3010 [NGRINDER-49] Clean up checkstyle errors - fix test failure.
+ 3 files changed, 36 insertions(+), 33 deletions(-)
+f76b064 [NGRINDER-42] UI element cleanup - Fix several UI problem. - add primary button style on main actions.. - Fix the invalid perftest validation
+ 4 files changed, 39 insertions(+), 24 deletions(-)
+45daa6a [NGRINDER-10] Support concurrent multiple test - Add the test contraints..    * User can not run two test concurrently.    * Test can not be executed concurrently over n. - Fix some checkstyle errors.
+ 3 files changed, 52 insertions(+), 6 deletions(-)
+8d5bec1 [NGRINDER-49] Clean up checkstyle errors
+ 6 files changed, 62 insertions(+), 9 deletions(-)
+eb7b0d8 [NGRINDER-10] Support concurrent multiple test - add system class path filtering to minimize dcr-instrumentation overhead.
+ 2 files changed, 41 insertions(+), 3 deletions(-)
+3bceeae [NGRINDER-10] Support concurrent multiple test - add green ball - change default log directory from "grinder_log" to "default" - Fix test finish determine logic to be more safe.   * Not only thread count but also process status count - Modify sample test creation logic run based on runcount not duration..   * Because it's better to run the test on slow machine. - Change current  testing pertftest retrival logic to get more status..
+ 8 files changed, 148 insertions(+), 72 deletions(-)
+83fa5f8 [NGRINDER-10] Support concurrent multiple test - add several configuratble settings. - Fix compile error on PerfTestService - Fix test error on PerfTest runCount..
+ 5 files changed, 74 insertions(+), 69 deletions(-)
+9a1eadb [NGRINDER-10] Support concurrent multiple test - add test execution limit
+ 8 files changed, 84 insertions(+), 23 deletions(-)
+c3d1c21 [NGRINDER-49] Clean up checkstyle errors - Fix some checkstyle errors. - Fix unit test failure related to mock fileentry repo
+ 8 files changed, 185 insertions(+), 170 deletions(-)
+2ce76a2 [NGRINDER-49] Clean up checkstyle errors - Final Test Fix for MockAgentConfigInAgentSide - Fix MBeanClient to shorten the log.
+ 3 files changed, 13 insertions(+), 13 deletions(-)
+a54a76e [NGRINDER-49] Clean up checkstyle errors - fix test failure. - Add another mockagentconfig for controller to resolve compilation problem. - Rename ScriptController to FileEntryController
+ 21 files changed, 485 insertions(+), 394 deletions(-)
+e96fccb Merge remote-tracking branch 'origin/master'
+18c3582 [NGRINDER-49] Clean up checkstyle errors
+ 3 files changed, 60 insertions(+), 60 deletions(-)
+948f4ec [NGRINDER-49] Clean up checkstyle errors - clean up checkstyle error on script package. - FileEntity ==> FileEntry.
+ 17 files changed, 927 insertions(+), 636 deletions(-)
+6b3a7ca [NGRINDER-10] Support concurrent multiple test - Fix unit test - Prepare log sending..
+ 12 files changed, 96 insertions(+), 60 deletions(-)
+a52ef24 [NGRINDER-77] Add agent home logic in ngrinder-core - Completed.. now.. all agent log and file-store in store in ${NGRINDER_AGENT_HOME}
+ 14 files changed, 108 insertions(+), 78 deletions(-)
+d52a2bf [NGRINDER-77] Add agent home logic in ngrinder-core - just before implement...
+ 11 files changed, 117 insertions(+), 87 deletions(-)
+95db550 [NGRINDER-54] Improvement of code quality with static analysis methods - Fix klocwork defects.
+ 5 files changed, 30 insertions(+), 13 deletions(-)
+5873576 [NGRINDER-10] Support concurrent multiple test - Fix for recent changes for multitest.. - Fix the port and host name condition.. it was wrong.. - Fix several test failure.. - Fix the zombie thread problem.. Still there is zombie thread group problem...
+ 11 files changed, 409 insertions(+), 64 deletions(-)
+127d55e [NGRINDER-10] Support concurrent multiple test - Fix for the problem that report is removed by the distributed file removed.
+ 5 files changed, 67 insertions(+), 45 deletions(-)
+2709050 [NGRINDER-10] Support concurrent multiple test - fix the shutdown null pointer exception
+ 4 files changed, 59 insertions(+), 25 deletions(-)
+f5b27e8 [NGRINDER-77] Add agent home logic in ngrinder-core - recover dcr agent..
+ 1 file changed, 4 deletions(-)
+3a02cb5 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+ed6f298 [NGRINDER-54] Improvement of code quality with static analysis methods - Fix klocwork defect.
+ 4 files changed, 24 insertions(+), 14 deletions(-)
+f8e3a6a [NGRINDER-49] Clean up checkstyle errors
+ 8 files changed, 190 insertions(+), 67 deletions(-)
+33e72bb [NGRINDER-28] Develop performance test module: test listing and editing function - fix error location
+ 1 file changed, 7 insertions(+)
+04495b2 [NGRINDER-10] Support concurrent multiple test Fix error again
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+b6a7b73 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+9ce835c [NGRINDER-10] Support concurrent multiple test - fix key event error
+ 1 file changed, 5 insertions(+)
+b6446ba [NGRINDER-10] Support concurrent multiple test - add safe thread termination
+ 3 files changed, 53 insertions(+), 12 deletions(-)
+3817783 [NGRINDER-28] Develop performance test module: test listing and editing function - add green ball
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+9740809 [NGRINDER-28] Develop performance test module: test listing and editing function - Fix host/ip part input part. - Please one of you mark the host/ip input box validation.
+ 1 file changed, 35 insertions(+), 31 deletions(-)
+1f8ce51 [NGRINDER-72] Add ngrinder agent download - 2/3 completed. - remained job is to fix ngrinder agent zip file in runtime.
+ 14 files changed, 241 insertions(+), 49 deletions(-)
+95f58de [NGRINDER-72] Add ngrinder agent download - return back dependency plugin to minimize instrumentation time.
+ 2 files changed, 53 insertions(+), 9 deletions(-)
+ea1d02c [NGRINDER-72] Add ngrinder agent download - it's just merge.
+ 1 file changed, 60 insertions(+), 60 deletions(-)
+de26a1d Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+ec4600c [NGRINDER-72] Add ngrinder agent download - For download... single jar packaging should be copied to ngrinder-controller from ngrinder-core. - Add this pom script.
+ 2 files changed, 48 insertions(+), 1 deletion(-)
+9858b75 [NGRINDER-80] Fix the defect in which the user profile is not changed - Fix the permission denial.. to modify the user profile in the user permission
+ 7 files changed, 64 insertions(+), 24 deletions(-)
+08c9ae0 [NGRINDER-79] Add status icon on each perf test - Fix error to create new perftest
+ 1 file changed, 2 insertions(+)
+afd30a5 [NGRINDER-79] Add status icon on each perf test
+ 11 files changed, 161 insertions(+), 40 deletions(-)
+107db5a [NGRINDER-49] Clean up checkstyle errors
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+ed57a38 [NGRINDER-49] Clean up checkstyle errors
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+c3c46db [NGRINDER-49] Clean up checkstyle errors
+ 5 files changed, 61 insertions(+), 14 deletions(-)
+10c0416 [NGRINDER-49] Clean up checkstyle errors - clean up checkstyle errors.   * add javadocs
+ 6 files changed, 198 insertions(+), 136 deletions(-)
+de7942c [NGRINDER-77] Add agent home logic in ngrinder-core - change monitor.properties to agent.conf - add ngrinder_agent path in user.home folder.
+ 5 files changed, 287 insertions(+), 11 deletions(-)
+658dd5a [NGRINDER-54] Improvement of code quality with static analysis methods - Fix klocwork defect.
+ 4 files changed, 18 insertions(+), 9 deletions(-)
+795e06e [NGRINDER-28] Develop performance test module: test listing and editing function
+ 3 files changed, 10 insertions(+), 4 deletions(-)
+4157fcb [NGRINDER-76] Delete unnecessary files - AgentProcessPerformanceReportMessage is not anymore necessary
+ 7 files changed, 17 insertions(+), 240 deletions(-)
+dcc2769 [NGRINDER-52] develop test report page, including server side and UI - add popover on the test list page.
+ 2 files changed, 33 insertions(+), 7 deletions(-)
+837f601 [NGRINDER-28] Develop performance test module: test listing and editing function
+ 3 files changed, 9 insertions(+), 37 deletions(-)
+43bc506 [NGRINDER-28] Develop performance test module: test listing and editing function - several fixes... - add the script resource viewing.. - add the various test limitation.. - provide the single point of test termination..
+ 10 files changed, 191 insertions(+), 93 deletions(-)
+e906095 [NGRINDER-60] Finished script management module - error fix for file downloading.
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+837e541 [NGRINDER-53] Script validation - new script validation utility added. - if you mark the input field like "number_limit='10'". it checks the the limit.
+ 2 files changed, 118 insertions(+), 30 deletions(-)
+5ba049a Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+10ad1a1 [NGRINDER-207] Test doesn't stop even when test stop request is performed - Fix unit test..
+ 7 files changed, 65 insertions(+), 22 deletions(-)
+81f4faf [NGRINDER-207] Test doesn't stop even when test stop request is performed - add agent shutdown listener.
+ 4 files changed, 28 insertions(+), 7 deletions(-)
+8040d9b [NGRINDER-28] Develop performance test module: test listing and editing function
+ 1 file changed, 16 insertions(+), 16 deletions(-)
+70c3d63 [NGRINDER-28] Develop performance test module: test listing and editing function
+ 2 files changed, 15 insertions(+), 2 deletions(-)
+e48d8cf [NGRINDER-28] Develop performance test module: test listing and editing function
+ 11 files changed, 117 insertions(+), 29 deletions(-)
+0b834d1 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+5271d44 [NGRINDER-72] Add ngrinder agent download - add arg4j to optimize the NGrinderStarting..
+ 1 file changed, 28 insertions(+), 7 deletions(-)
+39d847a [NGRINDER-73] Implement Agent list page - elaborate agent list page   * Port is not available when agent starts later than controller.
+ 9 files changed, 203 insertions(+), 126 deletions(-)
+528ed04 [NGRINDER-72] Add ngrinder agent download - minimize download size by eliminated unnecessary dependency
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+d153b65 [NGRINDER-49] Clean up checkstyle errors - Recover carelessly removed file
+ 1 file changed, 94 insertions(+)
+721b41f [NGRINDER-49] Clean up checkstyle errors
+ 2 files changed, 5 insertions(+), 10 deletions(-)
+3fad8f9 [NGRINDER-49] Clean up checkstyle errors
+ 8 files changed, 224 insertions(+), 294 deletions(-)
+223848c [NGRINDER-10] Support concurrent multiple test - Fix several checkstyle errors - Add agent status retrieval logic
+ 10 files changed, 131 insertions(+), 36 deletions(-)
+ffba20c [NGRINDER-10] Support concurrent multiple test - elaborate agent starter. - Now tools.jar is dynamically found
+ 4 files changed, 148 insertions(+), 52 deletions(-)
+10e73a4 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+e34c47a [NGRINDER-10] Support concurrent multiple test - add agent management page
+ 13 files changed, 260 insertions(+), 263 deletions(-)
+1aee342 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+8791570 [NGRINDER-10] Support concurrent multiple test - add class path init logic
+ 2 files changed, 67 insertions(+), 22 deletions(-)
+e4266ec [NGRINDER-10] Support concurrent multiple test - add close event
+ 1 file changed, 31 insertions(+)
+e26845d Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+f606f8c [NGRINDER-10] Support concurrent multiple test - First version which it works.
+ 12 files changed, 100 insertions(+), 23 deletions(-)
+2d3d5b2 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+974825f [NGRINDER-10] Support concurrent multiple test - Fix compile error
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+f5e3671 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+89dcec1 [NGRINDER-10] Support concurrent multiple test - almost completed version - distribution is completed. remained job is executing..
+ 18 files changed, 266 insertions(+), 67 deletions(-)
+791ad0b Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+70013f6 [NGRINDER-10] Support concurrent multiple test - fix file distribution service
+ 7 files changed, 80 insertions(+), 33 deletions(-)
+2192da0 [NGRINDER-48]Create pages, update UI style or js. upload js file for jqplot.
+ 26 files changed, 385 insertions(+), 288 deletions(-)
+d600a14 [NGRINDER-10] Support concurrent multiple test - Fix test base class name - Move PerfTest create method in AbstractPerfTestTransactionalTest
+ 24 files changed, 327 insertions(+), 287 deletions(-)
+290deb9 [NGRINDER-10] Support concurrent multiple test
+ 1 file changed, 5 insertions(+), 66 deletions(-)
+c6d5ff0 [NGRINDER-10] Support concurrent multiple test - merge
+ 5 files changed, 56 insertions(+), 15 deletions(-)
+2773cd9 [NGRINDER-49] Clean up checkstyle errors
+ 3 files changed, 45 insertions(+), 5 deletions(-)
+09d7d84 [NGRINDER-45] Fix test failure - Fix test failure
+ 5 files changed, 30 insertions(+), 56 deletions(-)
+556756e [NGRINDER-10] Support concurrent multiple test - Fix for test candidate selection. from created date to scheduled date. - Fix for create / modify date for scheduled task.   * Now ModelAspect detects current context
+ 8 files changed, 138 insertions(+), 9 deletions(-)
+aba2383 [NGRINDER-10] Support concurrent multiple test - add file distribution logic - divide each test execution step into methods. - add direct file save into grinder distribution folder feature.
+ 9 files changed, 226 insertions(+), 63 deletions(-)
+f25c788 [NGRINDER-62] Clean up SpringDATA model - Add @Index - Modify @Column and @Table name in unix_style.
+ 5 files changed, 22 insertions(+), 9 deletions(-)
+c02155a Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+3fedc17 [NGRINDER-10] Support concurrent multiple test - Make all test runnable - fix ConsoleManager to report log when redundant console back.
+ 10 files changed, 89 insertions(+), 42 deletions(-)
+45b2e9a [NGRINDER-10] Support concurrent multiple test - Make all test runnable - fix ConsoleManager to report log when redundant console back.
+ 9 files changed, 73 insertions(+), 42 deletions(-)
+612cbfc [NGRINDER-10] Support concurrent multiple test - add file distribution supports.
+ 2 files changed, 104 insertions(+), 45 deletions(-)
+b3fef5e [NGRINDER-49] Clean up checkstyle errors
+ 3 files changed, 1 insertion(+), 3 deletions(-)
+cbebf16 [NGRINDER-44] Make experimental implementation on SVN based script management
+ 4 files changed, 4 insertions(+), 20 deletions(-)
+73fd9ec Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+a30540d [NGRINDER-44] Make experimental implementation on SVN based script management
+ 5 files changed, 62 insertions(+), 55 deletions(-)
+54bdf6b [NGRINDER-57] Add rss reader on first page
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+bc8ea7c [NGRINDER-28] Develop performance test module: test listing and editing function
+ 2 files changed, 6 insertions(+), 3 deletions(-)
+df567c5 Merge remote-tracking branch 'origin/master'
+b4ff6c2 [NGRINDER-10] Support concurrent multiple test - In progress
+ 10 files changed, 344 insertions(+), 205 deletions(-)
+721538e [NGRINDER-57] Add rss reader on first page - change HomeTest to HomeServiceTest - add filter for github issues. (announcement lable) - change test application context to make it to use spring configuration fully.
+ 4 files changed, 41 insertions(+), 40 deletions(-)
+3df2c93 [NGRINDER-49] Clean up checkstyle errors
+ 11 files changed, 120 insertions(+), 120 deletions(-)
+14e7b7d [NGRINDER-61] Add runtime hook on svnkit
+ 1 file changed, 70 insertions(+), 4 deletions(-)
+19c2715 [NGRINDER-61] Add runtime hook on svnkit
+ 2 files changed, 35 insertions(+), 7 deletions(-)
+1ca5f2b [NGRINDER-10] Support concurrent multiple test
+ 2 files changed, 73 insertions(+), 8 deletions(-)
+664071b Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+8b5e698 [NGRINDER-57] Add rss reader on first page
+ 5 files changed, 161 insertions(+), 10 deletions(-)
+91c794d [NGRINDER-38] Add cache layer to reduce db call
+ 16 files changed, 176 insertions(+), 10 deletions(-)
+d0ab883 [NGRINDER-42] UI element cleanup - relocate buttons
+ 5 files changed, 37 insertions(+), 33 deletions(-)
+8d2eccd [NGRINDER-42] UI element cleanup - Clean up user list page.
+ 2 files changed, 11 insertions(+), 13 deletions(-)
+60b0c3a [NGRINDER-59] add enhanced index page linking dev resources - delete alert tab - put new label on lastest news.
+ 2 files changed, 43 insertions(+), 45 deletions(-)
+d276551 [NGRINDER-28] Develop performance test module: test listing and editing function - enhance perf test search - change test edit page L&F
+ 9 files changed, 194 insertions(+), 132 deletions(-)
+b477c12 [NGRINDER-59] add enhanced index page linking dev resources - first draft It's my hobby!!
+ 11 files changed, 219 insertions(+), 34 deletions(-)
+f720de4 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+c6c1507 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+eac2677 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+be61147 [NGRINDER-10] Support concurrent multiple test - not yet completed
+ 8 files changed, 125 insertions(+), 25 deletions(-)
+afcc6c6 [NGRINDER-44] Make experimental implementation on SVN based script management - clean up again.. - delete share..
+ 3 files changed, 3 insertions(+), 22 deletions(-)
+b4dcc8f Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+3ca6b69 [NGRINDER-44] Make experimental implementation on SVN based script management - Clean up FileEntry implementation.   * Delete FileName property (not induced by path)   * Delete Tag (not anymore used)
+ 5 files changed, 10 insertions(+), 114 deletions(-)
+ca5d95b Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+5260a2f Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+ab56cac [NGRINDER-42] UI element cleanup
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+7b8b3c9 [NGRINDER-42] UI element cleanup - add style on developer resources in first page. - adjust script list layout
+ 7 files changed, 76 insertions(+), 58 deletions(-)
+1a4ca47 merge
+ 1 file changed, 22 deletions(-)
+7b83990 merge
+ 6 files changed, 756 insertions(+), 733 deletions(-)
+93fd27f [NGRINDER-57] Add rss reader on first page
+ 6 files changed, 78 insertions(+), 8 deletions(-)
+9d790e7 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+e891e3c [NGRINDER-56] Delete ngrinder agent module
+ 57 files changed, 3401 deletions(-)
+5aee821 [NGRINDER-49] Clean up checkstyle errors
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+05eb624 [NGRINDER-49] Clean up checkstyle errors
+ 10 files changed, 214 insertions(+), 76 deletions(-)
+ab5221f [NGRINDER-44] Make experimental implementation on SVN based script management - fix script template. - make it compilable - modify favico.icon location
+ 3 files changed, 24 insertions(+), 24 deletions(-)
+edb998e [NGRINDER-42] UI element cleanup - add banner
+ 4 files changed, 2 insertions(+), 16 deletions(-)
+ad9a35e [NGRINDER-44] Make experimental implementation on SVN based script management - change file name from FileEntity to FileEntry - add template and template test - enable binary file checkin
+ 6 files changed, 162 insertions(+), 101 deletions(-)
+e3ed54e Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+ccac08f Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+01c884d Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+81ea024 [NGRINDER-10] Support concurrent multiple test
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+26219ba Merge branch 'master' of https://github.com/nhnopensource/ngrinder
+69af46c merge
+ 4 files changed, 453 insertions(+), 446 deletions(-)
+be6e87f [NGRINDER-48] Create pages, update UI style or js. - Fix svn url - Add my profile left margin
+ 2 files changed, 13 insertions(+), 11 deletions(-)
+5ed78da [NGRINDER-47] Use spring task support to run perfTest - fix cache to resolve type problem
+ 2 files changed, 9 insertions(+), 6 deletions(-)
+18dd741 [NGRINDER-44] Make experimental implementation on SVN based script management - Fix for binary check it
+ 1 file changed, 30 insertions(+), 5 deletions(-)
+9a2e03c [NGRINDER-10] Support concurrent multiple test - merge
+ 6 files changed, 157 insertions(+), 14 deletions(-)
+05019b6 [NGRINDER-10] Support concurrent multiple test
+ 17 files changed, 635 insertions(+), 317 deletions(-)
+639d61e [NGRINDER-44] Make experimental implementation on SVN based script management - add svn url label
+ 4 files changed, 25 insertions(+), 2 deletions(-)
+ecfac46 [NGRINDER-44] Make experimental implementation on SVN based script management * 90% Finished
+ 7 files changed, 219 insertions(+), 144 deletions(-)
+fb696cc Merge
+ 4 files changed, 46 insertions(+), 65 deletions(-)
+cebf6e6 Merge branch 'master' of https://github.com/nhnopensource/ngrinder
+fdeb9f9 merge
+ 13 files changed, 174 insertions(+), 122 deletions(-)
+b59ba6a Merge branch 'master' of https://github.com/junoyoon/ngrinder
+ace0d0a [NGRINDER-44] Make experimental implementation on SVN based script management
+ 44 files changed, 1811 insertions(+), 2045 deletions(-)
+4749a29 [NGRINDER-44] Make experimental implementation on SVN based script management
+ 30 files changed, 1668 insertions(+), 1811 deletions(-)
+83ea105 [NGRINDER-26] Migrate and develop user management module - because recently GSON is deleted, agent is not compilable. - Just make it compilable.
+ 2 files changed, 2 insertions(+), 18 deletions(-)
+795b7ee Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+6083411 [NGRINDER-49] Clean up checkstyle errors
+ 7 files changed, 135 insertions(+), 21 deletions(-)
+9539b76 [NGRINDER-49] Clean up checkstyle errors
+ 8 files changed, 123 insertions(+), 23 deletions(-)
+c399257 [NGRINDER-49] Clean up checkstyle errors - fix checkstyle.xml for compatibility with checkstyle maven plugin.
+ 1 file changed, 143 insertions(+), 153 deletions(-)
+1a44d6f [NGRINDER-49] Clean up checkstyle errors - fix checkstyle.xml to exclude javadoc on property. - fix agent packages to follow checkstyle format
+ 10 files changed, 94 insertions(+), 26 deletions(-)
+aa1a0a7 [NGRINDER-49] Clean up checkstyle errors - delete agent code from checkstyle checking. - clean up agent checkstyle errors
+ 3 files changed, 3 insertions(+), 5 deletions(-)
+a308c35 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+ea3ecdb [NGRINDER-49] Clean up checkstyle errors - delete target on nsiqcollector configuration
+ 1 file changed, 1 insertion(+)
+fd86e8f [NGRINDER-49] Clean up checkstyle errors - Fix checkstyle checker
+ 1 file changed, 17 insertions(+), 2 deletions(-)
+5f60058 [NGRINDER-49] Clean up checkstyle errors
+ 16 files changed, 263 insertions(+), 159 deletions(-)
+e14c3a4 [NGRINDER-11] Setup hudson for new ngrinder structure - delete ngrinder-agent from checkstyle running
+ 2 files changed, 10 insertions(+)
+bb0584f [NGRINDER-26] Migrate and develop user management module - Fix unit test failure.
+ 1 file changed, 1 insertion(+)
+4f0fea2 [NGRINDER-26] Migrate and develop user management module - Fix the user input form. Now it works even when user creating and modifying.
+ 2 files changed, 3 insertions(+), 6 deletions(-)
+d2278ec [NGRINDER-11] Setup hudson for new ngrinder structure - add exclusion
+ 2 files changed, 13 insertions(+), 4 deletions(-)
+2e99399 [NGRINDER-11] Setup hudson for new ngrinder structure - exclude ngrinder-agent
+ 2 files changed, 30 insertions(+), 3 deletions(-)
+5ba4953 [NGRINDER-11] Setup hudson for new ngrinder structure - add exclusion
+ 2 files changed, 4 insertions(+)
+9d1d91a [NGRINDER-11] Setup hudson for new ngrinder structure - add checkstyle configuration
+ 2 files changed, 135 insertions(+)
+0cf726f [NGRINDER-11] Setup hudson for new ngrinder structure - fix a test error - add checkstyle configuration - add filefilter for nsiqcollector
+ 3 files changed, 26 insertions(+), 4 deletions(-)
+aef85fe [NGRINDER-11] Setup hudson for new ngrinder structure - add klocwork and clover configuration
+ 2 files changed, 50 insertions(+), 2 deletions(-)
+b149e5e [NGRINDER-38] Add cache layer to reduce db call - User hibernate 2nd cache
+ 3 files changed, 25 insertions(+), 1 deletion(-)
+de975df [NGRINDER-42] UI element cleanup
+ 5 files changed, 241 insertions(+), 240 deletions(-)
+3193627 [NGRINDER-47] Use spring task support to run perfTest
+ 7 files changed, 35 insertions(+), 99 deletions(-)
+e0a6bec [NGRINDER-45] Fix test failure - add code coverage and klocwork
+ 1 file changed, 45 insertions(+), 1 deletion(-)
+8ed66a3 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+c9b7c8a [NGRINDER-45] Fix test failure - Skip test in ngrinder-agent - Fix DBInitTest
+ 2 files changed, 5 insertions(+), 4 deletions(-)
+30e6d7e Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+c8612fc [NGRINDER-42] UI element cleanup - Add currentUser in all pages by modelattribute. - Delete sessionattribute.. it's not working when accessing sub page directory becaz every sub page should insert currentUser into model for sesstionattribute to recognize it.
+ 6 files changed, 16 insertions(+), 13 deletions(-)
+404bf3f Merge
+d206849 [NGRINDER-42] UI element cleanup - Add common user element. now every page can refer ${currentUser}
+ 5 files changed, 14 insertions(+), 7 deletions(-)
+17ac1d4 [NGRINDER-44]
+ 7 files changed, 52 insertions(+), 10 deletions(-)
+ec6dac8 [NGRINDER-10] Support concurrent multiple test - Make a more stable unit test by adding monitor - Fix the problem in which the Acceptor Exception blocking queue thread is never finished. I fixed it by interrupting thread group when shutting down console
+ 7 files changed, 172 insertions(+), 127 deletions(-)
+c29bb9b [NGRINDER-42] UI element cleanup
+ 10 files changed, 95 insertions(+), 79 deletions(-)
+4926917 [NGRINDER-42] UI element cleanup - Add file comment
+ 1 file changed, 22 insertions(+)
+67cf1bf Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+067dcae [NGRINDER-42] UI element cleanup
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+399aacc [NGRINDER-42] UI element cleanup - and clean up in XML
+ 5 files changed, 38 insertions(+), 67 deletions(-)
+e66066f [NGRINDER-42] UI element cleanup - UI Controller now accept User paramter. (Custom Arguament Resolver is added) - Change MVC use to 3.1 way.
+ 8 files changed, 86 insertions(+), 75 deletions(-)
+15c12fb [NGRINDER-28] Develop performance test module: test listing and editing function - Change TestService to PerfTestService - Make PerfTestService accessible by admin
+ 5 files changed, 68 insertions(+), 68 deletions(-)
+ca40201 [NGRINDER-42] UI element cleanup - Freemarker Request variable is conflict with JSPTabLib.   I changed it to req instread - Modify image and layout to look good
+ 17 files changed, 151 insertions(+), 138 deletions(-)
+8a45f1e [NGRINDER-42] UI element cleanup - Fix some ugly one
+ 7 files changed, 223 insertions(+), 30 deletions(-)
+62e41a2 [NGRINDER-10] Support concurrent multiple test - Very little clean up
+ 4 files changed, 60 insertions(+), 35 deletions(-)
+58c780c Merge remote-tracking branch 'origin/master'
+bd406b8 [NGRINDER-34] add plugin support in login module - Fix unit test failure.
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+bfddfc0 [NGRINDER-34] add plugin support in login module - Fix unit test failure.
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+4756b11 [NGRINDER-34] add plugin support in login module - Fix unit test failure
+ 4 files changed, 34 insertions(+), 32 deletions(-)
+4a42273 Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+cebfbb9 [NGRINDER-29] add user login plugin module
+ 3 files changed, 43 insertions(+), 26 deletions(-)
+96d77da Merge remote-tracking branch 'origin/master'
+c08f4b4 [NGRINDER-34] add plugin support in login module
+ 10 files changed, 161 insertions(+), 50 deletions(-)
+a8ebf5b [NGRINDER-38] Add cache layer to reduce db call - add spring settings first
+ 3 files changed, 30 insertions(+), 1 deletion(-)
+3ff2287 [NGRINDER-39] Chagne pom.xml group name. from com.nhncorp to org.ngrinder
+ 4 files changed, 14 insertions(+), 7 deletions(-)
+657ca3e [NOBTS] Fix jms resolution problem. I've added jboss maven repo.
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+12fa9e5 [NGRINDER-37] fix all coding style errors.
+ 40 files changed, 893 insertions(+), 347 deletions(-)
+cfd9fad [NGRINDER-37] Make all code follow coding style
+ 42 files changed, 698 insertions(+), 238 deletions(-)
+c025578 [NGRINDER-35] Make basemodel refer User as the created/modified user
+ 2 files changed, 13 insertions(+), 5 deletions(-)
+0139162 [NGRINDER-29] add user login plugin module
+ 2 files changed, 13 insertions(+)
+f451854 [NGRINDER-36] Delete all static method use
+ 10 files changed, 167 insertions(+), 183 deletions(-)
+d7ab28c [NGRINDER-35] Make basemodel refer User as the created/modified user
+ 52 files changed, 897 insertions(+), 921 deletions(-)
+ccb261e Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+0a118e2 Merge remote-tracking branch 'origin/master'
+e4c6f3d [NGRINDER-29] add user login plugin module
+ 6 files changed, 279 insertions(+)
+ec3dab4 [NGRINDER-29] add user login plugin module - Not yet finished. - I've added unit test and default plugins.
+ 14 files changed, 226 insertions(+), 35 deletions(-)
+bad7a83 [NGRINDER-33] Add plugin support SpringSecurity
+ 3 files changed, 157 insertions(+), 18 deletions(-)
+2f354fd [NGRINDER-32] Add default user if there is no user in db.
+ 3 files changed, 91 insertions(+), 5 deletions(-)
+9f01586 [NGRINDER-31] Change Admin default page from agent to project/list
+ 1 file changed, 4 insertions(+), 10 deletions(-)
+a16bf6e Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+4f351e5 [NGRINDER-30] Add testmode configuration
+ 2 files changed, 20 insertions(+), 2 deletions(-)
+7d0270d Merge branch 'master' of https://github.com/nhnopensource/ngrinder.git
+5435e1f [NGRINDER-29] Add basic login plugin descriptor
+ 2 files changed, 77 insertions(+)
+a6c76ee Merge remote-tracking branch 'origin/master'
+59490cb [NGRINDER-10] Add synchronized monitor to make the daemon start stable. Make all test runnable
+ 34 files changed, 1468 insertions(+), 1482 deletions(-)
+946ba5b [NGRINDER-21] Fix User table problem. User is the keyword of cubrid. Change it into NUSER
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+2f64be7 [NGRINDER-21] add missing applicationContext-springdata.xml dependency in test applicationContext.xml
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+9bfeef2 [NGRINDER-25] * Add merge generic arguments in Model classes
+ 8 files changed, 44 insertions(+), 39 deletions(-)
+d75e135 [NGRINDER-23] make the ngrinder home "/" work without redirection
+ 5 files changed, 30 insertions(+), 18 deletions(-)
+5803fa0 [NGRINDER-24] Use preconditions to verify arguments
+ 6 files changed, 68 insertions(+), 54 deletions(-)
+82c3eca [NGRINDER-23] add spring security files
+ 20 files changed, 2521 insertions(+)
+83e0d6d [NGRINDER-23] add basic spring security configuration
+ 7 files changed, 194 insertions(+), 62 deletions(-)
+1e49ff2 [NGRINDER-23] add first login page.
+09aed56 [NGRINDER-23] add spring security infra.. Not yet completed.
+ 12 files changed, 674 insertions(+), 591 deletions(-)
+09853a0 [NGRINDER-23] add spring security infra.. Not yet completed.
+ 3 files changed, 83 insertions(+)
+e1bfd87 [NGRINDER-23] add spring security infra.. Not yet completed.
+ 6 files changed, 135 insertions(+), 28 deletions(-)
+f72b5ce [NGRINDER-21] delete unnecessary class files which copied from previous copy-dependency plugins
+ 31 files changed, 418 deletions(-)
+4a3f172 [NGRINDER-22] add user test
+ 3 files changed, 29 insertions(+), 7 deletions(-)
+0f1583a [NGRINDER-22] Create User and Role service and repository.
+ 8 files changed, 412 insertions(+), 37 deletions(-)
+7104d83 [NGRINDER-17] Add missing header comment
+ 11 files changed, 191 insertions(+), 15 deletions(-)
+cd0fd09 [NGRINDER-21] * Add missing merged part.
+ 1 file changed, 5 insertions(+)
+13dde6d Merge remote-tracking branch 'origin/master'
+251f9ee [NGRINDER-21] Renaming package com.nhncorp.ngrinder ==> org.ngrinder Renaming package BO ==> service / DAO ==> repository Move several core packages into ngrinder-core project.
+ 249 files changed, 11356 insertions(+), 7806 deletions(-)
+4783d58 [NGRINDER-21] Renaming package com.nhncorp.ngrinder ==> org.ngrinder Renaming package BO ==> service / DAO ==> repository Move several core packages into ngrinder-core project.
+ 244 files changed, 10939 insertions(+), 7806 deletions(-)
+fb83cc8 [NGRINDER-17] Create github project Remove the copy-dependencies. If you use eclipse:clean eclipse:eclipse when creating WTP eclipse project in the Eclipse(not STS).
+ 1 file changed, 1 insertion(+), 27 deletions(-)
+87923fe [nobts] add spring data sample
+ 12 files changed, 327 insertions(+), 99 deletions(-)
+456fb8c [NGRINDER-18] add toString
+ 1 file changed, 2 insertions(+)
+b32fccb [NGRINDER-20] delete dtd reference
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+56a9a10 [NGRINDER-17] delete local profile
+ 2 files changed, 7 insertions(+), 28 deletions(-)
+6a56fe0 [NGRINDER-19] enhance readability
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+c950802 [NGRINDER-18] * Fix bug for ngrinder home confliction. * Enhance readablity * Change nforge.sqlite3 to ngrinder.sqlite3
+ 3 files changed, 7 insertions(+), 6 deletions(-)
+17d9b80 [NGRINDER-20] delete logback.xml dtd reference
+ 3 files changed, 23 insertions(+), 25 deletions(-)
+35d7d7d Update gh-pages
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+b31f958 Update gh-pages
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+84e4de1 [NGRINDER-19] * Fix atlassian plugin dependency to 2.12.2 version * Move atlassian maven repo to http://repository.atlassian.com/maven2/
+ 2 files changed, 30 insertions(+), 14 deletions(-)
+a54224b [NGRINDER-19] * Add necessary pom dependency (guava) * Add annotation approach to search available plugin descriptors.
+ 6 files changed, 90 insertions(+), 5 deletions(-)
+b6e0a8e fix homepage content
+ 1 file changed, 28 insertions(+), 31 deletions(-)
+1e5bab5 [NGRINDER-19] resolve slj4j problem with plugin framework.
+ 1 file changed, 6 insertions(+)
+4f621e9 [NGRINDER-17] add gitignore to exclude temporary files from ngrinder-agents.
+ 2 files changed, 5 insertions(+)
+4ae6946 [NGRINDER-19] Atlassian plugin framework is added. To run only in runtime env, OnRuntimeComponent annotation is added as well.
+ 9 files changed, 869 insertions(+)
+e686a4e [NGRINDER-18] Move database configuration fron ngrinder web app folder to ${NGRINDER_HOME}/database.conf.
+ 8 files changed, 495 insertions(+), 152 deletions(-)
+4869f75 [NGRINDER-18] * Add ngrinder home folder structure.
+ 8 files changed, 897 insertions(+), 4 deletions(-)
+6e9e523 [NGRINDER-11] * rollback the version number property settings. It's not working in eclipse
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+ecb16d0 [NGRINDER-11] * make it snapshot project. * add atlassian repository to get the plugins
+ 4 files changed, 49 insertions(+), 17 deletions(-)
+47809d6 Update gh-pages
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+c8b5c31 Update gh-pages
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+f05617e Update gh-pages
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+c3629ed Update gh-pages
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+fa154cc Update gh-pages
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+f6ee126 Created gh-pages branch via GitHub
+ 9 files changed, 678 insertions(+)
+96d2f55 Merge remote-tracking branch 'origin/master'
+97d3f7d [NGRINDER-17] modify project document site.
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+6ad77e2 [NGRINDER-17] modify project document site.
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+0a788a3 [NGRINDER-17] modify project document site.
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+951140e NGRINDER-17 modify project document site.
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+8a5a2bc Fix wrong logback dtd definitions
+ 4 files changed, 4 insertions(+), 5 deletions(-)
+9490de7 experimental commit - to check the email system. * Here I modified following code
+ 1 file changed, 17 insertions(+), 26 deletions(-)
+156ee4e fix parent prom relative path.
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+e47ae4d add missing dependency (commons.fileupload)
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+1afbe91 add auto generated MANIFESTs
+ 2 files changed, 24 insertions(+), 21 deletions(-)
+80027d2 add dtd to pass the xml validation errors
+ 5 files changed, 10 insertions(+)
+a9f16b2 Modify maven repository and m2eclipse settings.
+ 4 files changed, 45 insertions(+), 11 deletions(-)
+6a1d5d5 Fix for wrong pointing to ngrinder_controller project
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+a9ddfee Fix the maven repository setting. Becaz it pointed the NHN Internal maven repo.
+ 1 file changed, 7 deletions(-)
+c6d3f49 Add jetty web server to run agent without tomcat
+ 2 files changed, 109 insertions(+)
+0234ce0 [nobts] add to ignore externaltoolbuilders
+ 1 file changed, 1 insertion(+)
+1f780ea [NOBTS] add existing ngrinder-agent
+ 55 files changed, 3228 insertions(+)
+1a2b6d7 [NOBTS] add resources for each profile
+ 1 file changed, 25 insertions(+), 1 deletion(-)
+9c3c4b1 [NOBTS] Fix pom.xml becauese ngrinder-agent doesn't need jpa facet.
+ 1 file changed, 1 deletion(-)
+5923380 [NOBTS] specifying pom dependencies and maven-eclipse-plugin so that wtp and maven builder are added during eclipse project creation.
+ 3 files changed, 141 insertions(+), 13 deletions(-)
+2845d0e initial version
+ 126 files changed, 6495 insertions(+), 2 deletions(-)
+42bee55 Initial commit
+ 2 files changed, 5 insertions(+)

@@ -201,7 +201,7 @@ public class PerfTestController extends NGrinderBaseController {
 		});
 
 		model.addAttribute(PARAM_SCRIPT_LIST, allFileEntries);
-		List<String> regionList = regionService.getRegionList();
+		List<String> regionList = regionService.getRegions();
 		model.addAttribute(PARAM_REGION_LIST, regionList);
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(regionList, user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
@@ -264,15 +264,6 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
 	}
 
-//	protected int getMaxAgentSizePerConsole(User user) {
-//		Set<AgentIdentity> allSharedAgent = agentManager.getAllSharedAgents();
-//		Set<AgentIdentity> allApprovedAgentsForUser = agentManager.getAllApprovedAgents(user);
-//		int additional = Math.max(allApprovedAgentsForUser.size() - allSharedAgent.size(), 0);
-//		int maxAgentSizePerConsole = Math.min(agentManager.getMaxAgentSizePerConsole() + additional,
-//						allApprovedAgentsForUser.size());
-//		return maxAgentSizePerConsole;
-//	}
-
 	/**
 	 * get details view for quickStart.
 	 * 
@@ -295,7 +286,7 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute("testName", "Test for " + url.getHost());
 		model.addAttribute(PARAM_TARGET_HOST, url.getHost());
 		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
-		List<String> regionList = regionService.getRegionList();
+		List<String> regionList = regionService.getRegions();
 		model.addAttribute(PARAM_REGION_LIST, regionList);
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(regionList, user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
@@ -331,7 +322,7 @@ public class PerfTestController extends NGrinderBaseController {
 						"test run duration should be within %s", agentManager.getMaxRunHour());
 		
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(
-				regionService.getRegionList(), user);
+				regionService.getRegions(), user);
 		MutableInt agentCountObj = agentCountMap.get(test.getRegion());
 		checkNotNull(agentCountObj, "test region should be within current region list");
 		int agentMaxCount = agentCountObj.intValue();

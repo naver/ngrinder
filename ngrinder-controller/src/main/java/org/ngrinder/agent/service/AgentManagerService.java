@@ -28,20 +28,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
+import net.grinder.util.thread.InterruptibleRunnable;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithRegion;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.schedule.ScheduledTask;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.AgentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,6 +71,25 @@ public class AgentManagerService {
 
 	@Autowired
 	Config config;
+
+	@Autowired
+	CacheManager cacheManager;
+
+	Cache agentStopRequestCache;
+
+	@Autowired
+	ScheduledTask scheduledTask;
+	@PostConstruct
+	public void init() {
+		agentStopRequestCache = cacheManager.getCache("agent_stop_request");
+		scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
+			@Override
+			public void interruptibleRun() {
+				// TODO Auto-generated method stub
+				//agentStopRequestCache.getNativeCache()
+			}
+		});
+	}
 
 	/**
 	 * Run a scheduled task to check the agent status.
@@ -98,6 +123,7 @@ public class AgentManagerService {
 				agentInfoInDB.setStatus(agentManager.getAgentState(agentIdentity));
 				agentInfoInDB.setNumber(agentIdentity.getNumber());
 				agentInfoInDB.setRegion(agentIdentity.getRegion());
+				agentInfoInDB.setPort(agentManager.getAgentConnectingPort(agentIdentity));
 			}
 			changeAgentList.add(agentInfoInDB);
 		}
@@ -201,7 +227,7 @@ public class AgentManagerService {
 	@Transactional
 	public List<AgentInfo> getAgentList() {
 		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
-		List<AgentInfo> agents = agentRepository.findAll(startWithRegion(config.getRegion()));
+		List<AgentInfo> agents = agentRepository.findAll();
 		List<AgentInfo> agentList = new ArrayList<AgentInfo>(allAttachedAgents.size());
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
 			AgentControllerIdentityImplementation agentControllerIdentity = (AgentControllerIdentityImplementation) eachAgentIdentity;
@@ -219,7 +245,6 @@ public class AgentManagerService {
 		return agentRepository.findAll(startWithRegion(config.getRegion()));
 	}
 
-	// @CacheEvict(allEntries = true, value = "agents")
 	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation agentIdentity, List<AgentInfo> agents) {
 		AgentInfo agentInfo = new AgentInfo();
 		for (AgentInfo each : agents) {
@@ -236,13 +261,8 @@ public class AgentManagerService {
 
 	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation agentIdentity, AgentInfo agentInfo) {
 		agentInfo.setHostName(agentIdentity.getName());
-		// if it is user owned agent, region name is {controllerRegion} + "_anykeyword_owned_userId"
-		String agtRegion = config.getRegion();
-		if (StringUtils.isNotBlank(agentIdentity.getRegion())) {
-			agtRegion = agtRegion + "_" + agentIdentity.getRegion();
-		}
 		agentInfo.setNumber(agentIdentity.getNumber());
-		agentInfo.setRegion(agtRegion);
+		agentInfo.setRegion(agentIdentity.getRegion());
 		agentInfo.setIp(agentIdentity.getIp());
 		agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
 		agentInfo.setStatus(agentManager.getAgentState(agentIdentity));
@@ -326,6 +346,6 @@ public class AgentManagerService {
 		if (agent == null) {
 			return;
 		}
-		agentManager.stopAgent(agent.getAgentIdentity());
+		agentStopRequestCache.put(agent.getAgentIdentity(), System.currentTimeMillis());
 	}
 }

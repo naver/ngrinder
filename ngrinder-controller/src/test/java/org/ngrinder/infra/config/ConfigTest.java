@@ -79,64 +79,62 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGri
 		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(true);
 		when(wrapper.getPropertyBoolean("pluginsupport", true)).thenReturn(true);
 		assertThat(config.isPluginSupported(), is(false));
-		
+
 		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(true);
 		when(wrapper.getPropertyBoolean("security", false)).thenReturn(true);
 		assertThat(config.isSecurityEnabled(), is(false));
-		
+
 		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(false);
 		when(wrapper.getPropertyBoolean("security", false)).thenReturn(true);
 		assertThat(config.isSecurityEnabled(), is(true));
-		
+
 		when(wrapper.getPropertyBoolean("testmode", false)).thenReturn(false);
 		when(wrapper.getPropertyBoolean("security", false)).thenReturn(false);
 		assertThat(config.isSecurityEnabled(), is(false));
 	}
-	
+
 	@Test
 	public void testPolicyFileLoad() {
 		String processAndThreadPolicyScript = config.getProcessAndThreadPolicyScript();
 		assertThat(processAndThreadPolicyScript, containsString("function"));
 	}
-	
+
 	@Test
 	public void testVersionString() {
 		String version = config.getVesion();
 		assertThat(version, not("UNKNOWN"));
 	}
-	
+
 	@Test
 	public void testLoadClusterConfig() {
 		PropertiesWrapper wrapper = mock(PropertiesWrapper.class);
 		config.setSystemProperties(wrapper);
 		when(wrapper.getPropertyInt(NGRINDER_PROP_CLUSTER_LISTENER_PORT, 40003)).thenReturn(40003);
 		when(wrapper.getProperty(NGRINDER_PROP_CLUSTER_URIS, null)).thenReturn("");
-		
+
 		config.verifyClusterConfig();
 		assertThat(config.isCluster(), is(false));
-		
+
 		when(wrapper.getPropertyInt(NGRINDER_PROP_CLUSTER_LISTENER_PORT, 40003)).thenReturn(40003);
 		when(wrapper.getProperty(NGRINDER_PROP_CLUSTER_URIS, null)).thenReturn("192.168.1.1;192.168.2.2;192.168.3.3");
 		config.verifyClusterConfig();
 		assertThat(config.isCluster(), is(true));
 	}
-	
+
 	@Test
 	public void testLoadExtendProperties() {
 		Properties wrapper = mock(Properties.class);
 		when(wrapper.getProperty(NGRINDER_PROP_REGION)).thenReturn(Config.NON_REGION);
-		
-		//set mock exHome and test
+
+		// set mock exHome and test
 		Home mockExHome = mock(Home.class);
 		when(mockExHome.getProperties("system-ex.conf")).thenReturn(wrapper);
 		ReflectionTestUtils.setField(config, "exHome", mockExHome);
 		config.setSystemProperties(new PropertiesWrapper(wrapper));
-		config.loadExtendProperties();
 		assertThat(config.getRegion(), is(Config.NON_REGION));
-		
+
 		when(wrapper.getProperty(NGRINDER_PROP_REGION, Config.NON_REGION)).thenReturn("TestNewRegion");
-		config.loadExtendProperties();
 		assertThat(config.getRegion(), is("TestNewRegion"));
 	}
-	
+
 }

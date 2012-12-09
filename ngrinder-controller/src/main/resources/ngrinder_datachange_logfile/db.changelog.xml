@@ -1,30 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog
-    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-   		<include file="ngrinder_datachange_logfile/db.changelog_schema_CUBRID.xml"/>
-		<include file="ngrinder_datachange_logfile/db.changelog_schema_H2.xml"/>
-		<changeSet author="ngrinder.3.0-b3" id="4"  dbms="h2, cubrid" onValidationFail="MARK_RAN">
-				<preConditions onFail="MARK_RAN">
-					<columnExists tableName="system_monitor" columnName="load_avg_1"/>
-				</preConditions>
-				<comment>Delete all unused SystemDataModel DB fields.</comment>
-				
-				<dropColumn tableName="system_monitor" columnName="load_avg_1"/>
-				<dropColumn tableName="system_monitor" columnName="load_avg_5"/>
-				<dropColumn tableName="system_monitor" columnName="load_avg_15"/>
-				<dropColumn tableName="system_monitor" columnName="idle_cpu_value"/>
-				<dropColumn tableName="system_monitor" columnName="total_cpu_value"/>
-				<dropColumn tableName="system_monitor" columnName="crtime"/>
-		</changeSet>
-		<include file="ngrinder_datachange_logfile/db.changelog_schema_H2_5.xml"/>
-		<include file="ngrinder_datachange_logfile/db.changelog_schema_CUBRID_6.xml"/>
-		<include file="ngrinder_datachange_logfile/db.changelog_schema_7.xml"/>
-		<include file="ngrinder_datachange_logfile/db.changelog_schema_8.xml"/>
-		<include file="ngrinder_datachange_logfile/db.changelog_schema_9.xml"/>
-		<include file="ngrinder_datachange_logfile/db.changelog_schema_10.xml"/>
-
+	<include file="ngrinder_datachange_logfile/db.changelog_schema_CUBRID.xml" />
+	<include file="ngrinder_datachange_logfile/db.changelog_schema_H2.xml" />
+	<changeSet author="ngrinder.3.0-b3" id="4" dbms="h2, cubrid" onValidationFail="MARK_RAN">
+		<preConditions onFail="MARK_RAN">
+			<columnExists tableName="system_monitor" columnName="load_avg_1" />
+		</preConditions>
+		<comment>Delete all unused SystemDataModel DB fields.</comment>
+		<dropColumn tableName="system_monitor" columnName="load_avg_1" />
+		<dropColumn tableName="system_monitor" columnName="load_avg_5" />
+		<dropColumn tableName="system_monitor" columnName="load_avg_15" />
+		<dropColumn tableName="system_monitor" columnName="idle_cpu_value" />
+		<dropColumn tableName="system_monitor" columnName="total_cpu_value" />
+		<dropColumn tableName="system_monitor" columnName="crtime" />
+	</changeSet>
+	<include file="ngrinder_datachange_logfile/db.changelog_schema_H2_5.xml" />
+	<include file="ngrinder_datachange_logfile/db.changelog_schema_CUBRID_6.xml" />
+	<include file="ngrinder_datachange_logfile/db.changelog_schema_7.xml" />
+	<include file="ngrinder_datachange_logfile/db.changelog_schema_8.xml" />
+	<include file="ngrinder_datachange_logfile/db.changelog_schema_9.xml" />
+	<include file="ngrinder_datachange_logfile/db.changelog_schema_10.xml" />
+	<include file="ngrinder_datachange_logfile/db.changelog_schema_11.xml" />
 </databaseChangeLog>
