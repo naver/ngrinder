@@ -3,7 +3,7 @@
 <head>
 <#include "../common/common.ftl">
 <#include "../common/datatables.ftl">
-<title><@spring.message "log.view.header"/></title>
+<title><@spring.message "log.view.title"/></title>
 </head>
 
 <body>
@@ -12,7 +12,7 @@
 		<div class="row">
 			<div class="span12">
 				<div class="page-header pageHeader">
-					<h3><@spring.message "log.view.header"/></h3>
+					<h3><@spring.message "navigator.dropdown.logMonitoring"/></h3>
 				</div> 
 				<table id="log_container">
 				</table>
@@ -26,6 +26,7 @@
 		    $.ajax({
 			    url: '${req.getContextPath()}/operation/log/last', 
 			    type: 'GET',
+			    cache: false,
 			    success: function(data) {
 			    	var eachLog = $("tr#" +data.index + " td");
 			    	if (eachLog.size() != 0) {

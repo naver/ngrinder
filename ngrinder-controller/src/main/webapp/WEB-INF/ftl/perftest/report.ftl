@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>nGrinder Test Report</title>
 		<#include "../common/common.ftl">
 		<#include "../common/jqplot.ftl">
+		<title><@spring.message "perfTest.report.title"/></title>
 		
 		<style>
 			body {
@@ -84,7 +84,7 @@
                    </tr>
                    <tr>
                        <th>TPS</th>
-                       <td><strong>${test.tps!0}</strong></td>
+                       <td><strong><#if test.tps??>Total ${(test.tps)?string("0.#")}</#if></strong></td>
                    </tr>
                    <tr>
                        <th><@spring.message "perfTest.report.meantime"/></th>
@@ -210,16 +210,16 @@
             $.ajax({
                 url: "${req.getContextPath()}/perftest/getReportData",
                 dataType:'json',
+                cache: true,
                 data: {'testId': $("#testId").val(),
                        'dataType':'TPS,Errors,Mean_Test_Time_(ms)',
                        'imgWidth':700},
                 success: function(res) {
                     if (res.success) {
                     	var st = new Date($('#startTime').val());
-                        drawChart('Transactions Per Second', 'tpsDiv', res.TPS, undefined, undefined, undefined, res.chartInterval);
-                        drawChart('Mean Time', 'meanTimeDiv', res.Mean_Test_Time_ms, undefined, undefined, undefined, res.chartInterval);
-                        //drawChart('Running Vusers', 'vuserDiv', res.vuser);
-                        drawChart('Errors Per Second', 'errorDiv', res.Errors, undefined, undefined, undefined, res.chartInterval);
+                        drawChart('Transactions Per Second', 'tpsDiv', res.TPS, undefined, res.chartInterval);
+                        drawChart('Mean Time', 'meanTimeDiv', res.Mean_Test_Time_ms, undefined, res.chartInterval);
+                        drawChart('Errors Per Second', 'errorDiv', res.Errors, undefined, res.chartInterval);
                         return true;
                     } else {
                         showErrorMsg("Get report data failed.");
@@ -236,6 +236,7 @@
             $.ajax({
                 url: "${req.getContextPath()}/monitor/getMonitorData",
                 dataType:'json',
+                cache: true,
                 data: {'monitorIP': ip,
                 	   'testId': $("#testId").val(),
                        'imgWidth' : 700},
@@ -258,14 +259,14 @@
                     		ymax = getMaxValue(res.SystemData.cpu);
                     		replotChart(targetMonitorPlot.plotKeyCpu, res.SystemData.cpu, ymax);
                     	} else {
-                    		targetMonitorPlot.plotKeyCpu = drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, undefined, undefined, res.SystemData.interval);
+                    		targetMonitorPlot.plotKeyCpu = drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, res.SystemData.interval);
                     	}
                     	
                     	if (targetMonitorPlot.plotKeyMem) {
                     		ymax = getMaxValue(res.SystemData.memory);
                     		replotChart(targetMonitorPlot.plotKeyMem, res.SystemData.memory, ymax);
                     	} else {
-                    		targetMonitorPlot.plotKeyMem = drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, undefined, undefined, res.SystemData.interval);
+                    		targetMonitorPlot.plotKeyMem = drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, res.SystemData.interval);
                     	}
                     	
                         return true;

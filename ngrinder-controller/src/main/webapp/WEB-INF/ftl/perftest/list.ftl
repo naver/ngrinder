@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>nGrinder Performance Test List</title>
 		<#include "../common/common.ftl">
 		<#include "../common/datatables.ftl">	
+		<title><@spring.message "perfTest.table.title"/></title>
 		<style>
 			td.today {
 				background-image: url('${req.getContextPath()}/img/icon_today.png');
@@ -389,6 +389,7 @@
 		    $.ajax({
 			    url: '${req.getContextPath()}/perftest/updateStatus', 
 			    type: 'POST',
+			    cache: false,
 			    data: {"ids": ids.join(",")},
 			    success: function(perfTestData) {
 			    	perfTestData = eval(perfTestData); 

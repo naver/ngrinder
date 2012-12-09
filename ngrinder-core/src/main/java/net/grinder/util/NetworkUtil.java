@@ -22,14 +22,19 @@
  */
 package net.grinder.util;
 
+import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
+import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +48,10 @@ import org.slf4j.LoggerFactory;
 public abstract class NetworkUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(NetworkUtil.class);
 
+	public static void main(String[] args) {
+		System.out.println("host addr:" + NetworkUtil.getLocalHostAddress());
+		System.out.println("host name:" + NetworkUtil.getLocalHostName());
+	}
 	/**
 	 * Get the local host address, try to get actual IP.
 	 * 
@@ -55,20 +64,79 @@ public abstract class NetworkUtil {
 		} catch (UnknownHostException e) {
 			LOGGER.error("Error while get localhost address", e);
 		}
-		if (!"127.0.0.1".equals(addr)) {
+		if (addr == null && !"127.0.0.1".equals(addr)) {
 			return addr;
 		}
-		try {
-			InetAddress firstNonLoopbackAddress = getFirstNonLoopbackAddress(true, false);
-			if (firstNonLoopbackAddress != null) {
-				return firstNonLoopbackAddress.getHostAddress();
-			}
-		} catch (Exception e2) {
-			LOGGER.error("Error while get localhost address", e2);
-		}
-		return "127.0.0.1";
+		return getLocalHostAddress("www.baidu.com", 80);
 	}
 
+	/**
+	 * Get local address by connecting to a server.
+	 * @param byConnecting
+	 * 				the server address to conenct.
+	 * @param port
+	 * 				the port to connect
+	 * @return IP address
+	 * 				local IP address
+	 */
+	public static String getLocalHostAddress(String byConnecting, int port) {
+		InetAddress addr = getLocalInetAddress(byConnecting, port);
+		if (addr != null) {
+			return addr.getHostAddress();
+		} else {
+			return "127.0.0.1";
+		}
+	}
+
+	/**
+	 * Get local host name by connecting to a server.
+	 * @param byConnecting
+	 * 				the server address to conenct.
+	 * @param port
+	 * 				the port to connect
+	 * @return host name
+	 * 				local host name
+	 */
+	public static String getLocalHostName(String byConnecting, int port) {
+		InetAddress addr = getLocalInetAddress(byConnecting, port);
+		if (addr != null) {
+			return addr.getHostName();
+		} else {
+			return "localhost";
+		}
+	}
+	
+	private static InetAddress getLocalInetAddress(String byConnecting, int port) {
+		Socket s = null;
+		Socket s2 = null;
+
+		try {
+			s = new Socket();
+			SocketAddress addr = new InetSocketAddress(byConnecting, port);
+			s.connect(addr, 1000); // 1 seconds timeout
+			return s.getLocalAddress();
+		} catch (IOException e) {
+			// For safety.
+			try {
+				s2 = new Socket();
+				SocketAddress addr = new InetSocketAddress("www.google.com", 80);
+				s2.connect(addr, 1000); // 1 seconds timeout
+				return s2.getLocalAddress();
+			} catch (Exception e1) {
+				try {
+					return getFirstNonLoopbackAddress(true, false);
+				} catch (SocketException e2) {
+					return null;
+				}
+			}
+		} finally {
+			IOUtils.closeQuietly(s);
+			IOUtils.closeQuietly(s2);
+
+		}
+
+	}
+	
 	private static InetAddress getFirstNonLoopbackAddress(boolean preferIpv4, boolean preferIPv6)
 					throws SocketException {
 		Enumeration<?> en = NetworkInterface.getNetworkInterfaces();
@@ -105,14 +173,13 @@ public abstract class NetworkUtil {
 	 */
 	public static String getLocalHostName() {
 		try {
-			InetAddress firstNonLoopbackAddress = getFirstNonLoopbackAddress(true, false);
-			if (firstNonLoopbackAddress != null) {
-				return firstNonLoopbackAddress.getHostName();
-			}
-		} catch (SocketException e) {
+			String hostName = InetAddress.getLocalHost().getHostName();
+			return hostName;
+		} catch (UnknownHostException e) {
 			LOGGER.error("Error while get localhost name", e);
+			//get by connecting to server
+			return getLocalHostName("www.nhnopensource.org", 80);
 		}
-		return "localhost";
 	}
 
 	/**

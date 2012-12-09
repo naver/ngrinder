@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-	<title>nGrinder Agent List</title>
 	<#include "../common/common.ftl"> 
 	<#include "../common/datatables.ftl">
+	<title><@spring.message "agent.table.title"/></title>
 	</head>
 	<body>
 		<#include "../common/navigator.ftl">
@@ -155,6 +155,7 @@
 			  		url: "${req.getContextPath()}/agent/stop",
 			  		type: "POST",
 			  		data: {"ids" : ids},
+			  		cache: false,
 					dataType:'json',
 			    	success: function(res) {
 			    		if (res.success) {

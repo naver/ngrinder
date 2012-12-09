@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>nGrinder Home</title>
 		<#include "common/common.ftl">
+		<title><@spring.message "home.title"/></title>
 		<style>
 			.hero-unit { 
 				background-image: url('${req.getContextPath()}/img/bg_main_banner_<@spring.message "common.language"/>.png');

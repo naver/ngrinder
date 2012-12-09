@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head><#include "../common/common.ftl">
-<title><@spring.message "navigator.dropdown.systemConfig"/></title>
+<title><@spring.message "config.view.title"/></title>
 </head>
 
 <body>

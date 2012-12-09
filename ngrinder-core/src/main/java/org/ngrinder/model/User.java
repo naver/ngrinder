@@ -304,17 +304,27 @@ public class User extends BaseModel<User> {
 	}
 	
 	/**
-	 * Get test user information.
+	 * Get user simple information.
 	 * 
-	 * @return test user
+	 * @return user
 	 */
 	//It will throw StackOverflowException if return User that contains owners and followers value
 	//in getCurrentPerfTestStatistics() method.so just return base User info 
-	public User getTestUserBaseInfo() {
+	public User getUserBaseInfo() {
 		User userInfo = new User();
 		userInfo.setId(this.getId());
 		userInfo.setUserId(this.getUserId());
 		userInfo.setUserName(this.getUserName());
 		return userInfo;
+	}
+	/**
+	 * a string representation of User object
+	 * 
+	 * @return   User object information String.
+	 */
+	//avoid lazy initialization issues ,method toString not contain followers and owners
+	@Override
+	public String toString() {
+		return "User[ID="+this.getId()+",name="+this.getUserId()+",Role="+this.getRole()+"]";
 	}
 }
