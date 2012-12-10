@@ -467,7 +467,8 @@ function initDuration() {
 			durationMap[i] = durationMap[i - 1] + 60 * 24;
 		}
 		if ((durationMap[i]/60) >= ${maxRunHour}) {
-		     sliderMax = (i - 1);
+			 sliderMax = i;
+		     durationMap[i] = (${maxRunHour} - 1) * 60;
 		     break;
 		}
 	}
@@ -633,7 +634,12 @@ function bindEvent() {
 	});
 	
 	$("#hiddenDurationInput").bind("slide", function(e) {
-		$("#duration").val(durationMap[this.value] * 60000);
+		var maxIndex = durationMap.length - 1;
+		if (maxIndex == this.value) {
+			$("#duration").val((durationMap[maxIndex] + 59) * 60000 + 59000);
+		} else {
+			$("#duration").val(durationMap[this.value] * 60000);
+		}
 		setDuration(); 
 		$("#duration").valid();
 	});
@@ -913,7 +919,7 @@ function updateVuserGraph() {
 function setDuration() {
 	var duration = $("#duration").val();
 	var durationInSec = parseInt(duration / 1000);
-	var durationH = parseInt((durationInSec % (60 * 60 * 24)) / 3600);
+	var durationH = parseInt(durationInSec / 3600);
 	var durationM = parseInt((durationInSec % 3600) / 60);
 	var durationS = durationInSec % 60;
 
