@@ -128,10 +128,9 @@ public class AgentManagerService {
 		List<AgentInfo> changeAgentList = new ArrayList<AgentInfo>();
 
 		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
-		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = new HashMap<String, AgentControllerIdentityImplementation>(
-						allAttachedAgents.size());
+		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = createMap(allAttachedAgents);
 		for (AgentIdentity agentIdentity : allAttachedAgents) {
-			AgentControllerIdentityImplementation agentControllerIdentity = (AgentControllerIdentityImplementation) agentIdentity;
+			AgentControllerIdentityImplementation agentControllerIdentity = convert(agentIdentity);
 			attachedAgentMap.put(agentControllerIdentity.getIp(), agentControllerIdentity);
 		}
 
@@ -162,6 +161,10 @@ public class AgentManagerService {
 
 		// step3. update into DB
 		agentRepository.save(changeAgentList);
+	}
+
+	private HashMap<String, AgentControllerIdentityImplementation> createMap(Set<AgentIdentity> allAttachedAgents) {
+		return new HashMap<String, AgentControllerIdentityImplementation>(allAttachedAgents.size());
 	}
 
 	/**
@@ -255,10 +258,14 @@ public class AgentManagerService {
 		List<AgentInfo> agents = agentRepository.findAll();
 		List<AgentInfo> agentList = new ArrayList<AgentInfo>(allAttachedAgents.size());
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
-			AgentControllerIdentityImplementation agentControllerIdentity = (AgentControllerIdentityImplementation) eachAgentIdentity;
+			AgentControllerIdentityImplementation agentControllerIdentity = convert(eachAgentIdentity);
 			agentList.add(creatAgentInfo(agentControllerIdentity, agents));
 		}
 		return agentList;
+	}
+
+	private AgentControllerIdentityImplementation convert(AgentIdentity eachAgentIdentity) {
+		return (AgentControllerIdentityImplementation) eachAgentIdentity;
 	}
 
 	/**
@@ -347,10 +354,10 @@ public class AgentManagerService {
 	}
 
 	/**
-	 * Approve/Unapprove the agent on given ip.
+	 * Approve/Unapprove the agent on given id.
 	 * 
-	 * @param ip
-	 *            ip
+	 * @param id
+	 *            id
 	 * @param approve
 	 *            true/false
 	 */
