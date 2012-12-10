@@ -342,7 +342,7 @@ var durationMap = [];
 
 var agentCountMap = {};
 <#list regionAgentCountMap?keys as key>
-	agentCountMap.${key} = ${regionAgentCountMap[key]};
+	agentCountMap["${key}"] = ${regionAgentCountMap[key]};
 </#list>
 
 $(document).ready(function () {
