@@ -45,21 +45,18 @@
 		</div>
 	</div>
 </div>
-
-<div class="alert alert-block <#if announcement?has_content><@security.authorize ifAnyGranted="A, S">hidden</@security.authorize><#else>hidden</#if>" style="padding:10px 20px" id="announcementDiv">
-	<div class="page-header" style="margin:0; padding-bottom:2px">
-		<h3><@spring.message "announcement.alert.title"/></h3>
+<#if announcement?has_content>
+	<div class="container" style="margin-top:0px;margin-bottom:0px">
+		<div class="alert alert-block" style="padding:10px 20px; margin-bottom:-20px" id="announcementDiv">
+			<div class="page-header" style="margin:0; padding-bottom:2px">
+				<h3><@spring.message "announcement.alert.title"/></h3> 
+			</div>
+			<div style="margin:10px 5px 0;" id="ancemtContentDiv">
+				${announcement?replace('\n', '<br>')?replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp;')}
+			</div>
+		</div>
 	</div>
-	<div style="margin:10px 5px 0;" id="ancemtContentDiv">
-		<#if announcement?has_content>
-		<#if announcement?index_of('</') gt 0 || announcement?index_of('<br>') gt 0>
-		${announcement}
-		<#else>
-		${announcement?replace('\n', '<br>')?replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp;')}
-		</#if>
-		</#if>
-	</div>
-</div>
+</#if>
 
 <div class="modal fade" id="userProfileModal">
 	<div class="modal-header">
