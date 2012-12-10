@@ -2,7 +2,6 @@ package org.ngrinder.infra.config;
 
 import java.util.Properties;
 
-import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.infra.annotation.TestOnlyComponent;
 
