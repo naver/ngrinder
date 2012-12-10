@@ -320,7 +320,7 @@ public class Config implements IConfig {
 		}
 	}
 
-	/** Configuration watch docs */
+	/** Configuration watch docs. */
 	private FileWatchdog announcementWatchDog;
 	private FileWatchdog systemConfWatchDog;
 	private FileWatchdog policyJsWatchDog;
@@ -345,7 +345,8 @@ public class Config implements IConfig {
 		};
 		systemConfWatchDog.setDelay(2000);
 		systemConfWatchDog.start();
-		this.policyJsWatchDog = new FileWatchdog(getHome().getSubFile("process_and_thread_policy.js").getAbsolutePath()) {
+		String absolutePath = getHome().getSubFile("process_and_thread_policy.js").getAbsolutePath();
+		this.policyJsWatchDog = new FileWatchdog(absolutePath) {
 			@Override
 			protected void doOnChange() {
 				CoreLogger.LOGGER.info("process_and_thread_policy file changed.");

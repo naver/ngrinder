@@ -34,7 +34,7 @@ import org.ngrinder.agent.model.AgentInfo;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
- * Agent Manager JPA Specification/
+ * Agent Manager JPA Specification.
  * 
  * @author Mavlarn
  * @author JunHo Yoon
@@ -61,10 +61,8 @@ public abstract class AgentManagerSpecification {
 	}
 
 	/**
-	 * Query specification which the region column start the specified region.
+	 * Query specification which the status is active.
 	 * 
-	 * @param region
-	 *            specified region to query
 	 * @return Specification of this query
 	 */
 	public static Specification<AgentInfo> active() {

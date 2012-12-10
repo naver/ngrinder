@@ -1,5 +1,6 @@
 package org.ngrinder.infra.schedule;
 
+import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.thread.InterruptibleRunnable;
@@ -16,8 +17,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ScheduledTask {
 
-	ListenerSupport<InterruptibleRunnable> runListenersEvery3Sec = new ListenerSupport<InterruptibleRunnable>();
-	ListenerSupport<InterruptibleRunnable> runListenersEvery10Sec = new ListenerSupport<InterruptibleRunnable>();
+	private ListenerSupport<InterruptibleRunnable> runListenersEvery3Sec = ListenerHelper.create();
+	private ListenerSupport<InterruptibleRunnable> runListenersEvery10Sec = ListenerHelper.create();
 
 	/**
 	 * Run scheduled task with every 3 secs.

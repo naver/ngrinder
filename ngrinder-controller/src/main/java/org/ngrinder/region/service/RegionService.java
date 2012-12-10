@@ -81,6 +81,9 @@ public class RegionService {
 		});
 	}
 
+	/**
+	 * Detroy method. this method is responsible to delete our current region from dist cache.
+	 */
 	@PreDestroy
 	public void destroy() {
 		regionCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);

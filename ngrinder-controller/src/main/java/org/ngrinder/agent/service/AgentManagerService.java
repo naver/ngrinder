@@ -103,11 +103,12 @@ public class AgentManagerService {
 								AgentRequest agentRequest = (AgentRequest) (valueWrapper.get());
 								AgentInfo agent = getAgent(agentRequest.getAgentId());
 								if (agent != null && agent.getAgentIdentity() != null) {
-									agentRequest.getRequestType().request(agentManager, AgentManagerService.this,
+									agentRequest.getRequestType().process(agentManager, AgentManagerService.this,
 													(AgentControllerIdentityImplementation) agent.getAgentIdentity());
 									CoreLogger.LOGGER.info("Stop is performed for {}" + agent.getAgentIdentity());
 								}
 							}
+							agentRequestCache.equals(each);
 						}
 					}
 				}

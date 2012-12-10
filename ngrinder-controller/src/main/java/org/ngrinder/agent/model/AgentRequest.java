@@ -7,9 +7,15 @@ import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.perftest.service.AgentManager;
 
+/**
+ * Agent related Request.
+ * 
+ * @author JunHo Yoon
+ * @since 3.1
+ */
 public class AgentRequest implements Serializable {
 	/**
-	 * UUID
+	 * UUID.
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -17,10 +23,15 @@ public class AgentRequest implements Serializable {
 
 	private final Long agentId;
 
+	/**
+	 * Request Type.
+	 * 
+	 * @author JunHo Yoon
+	 */
 	public enum RequestType {
 		STOP_AGENT {
 			@Override
-			public void request(AgentManager agentManager, AgentManagerService agentManagerService,
+			public void process(AgentManager agentManager, AgentManagerService agentManagerService,
 							AgentControllerIdentityImplementation agentIdentity) {
 				agentManager.stopAgent(agentIdentity);
 			}
@@ -29,10 +40,28 @@ public class AgentRequest implements Serializable {
 		RequestType() {
 		}
 
-		public abstract void request(AgentManager agentManager, AgentManagerService agentManagerService,
+		/**
+		 * Process the request.
+		 * 
+		 * @param agentManager
+		 *            agentManager
+		 * @param agentManagerService
+		 *            agentManagerService
+		 * @param agentIdentity
+		 *            agentIdentity
+		 */
+		public abstract void process(AgentManager agentManager, AgentManagerService agentManagerService,
 						AgentControllerIdentityImplementation agentIdentity);
 	}
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param agentId
+	 *            agent id
+	 * @param requestType
+	 *            request type
+	 */
 	public AgentRequest(Long agentId, RequestType requestType) {
 		this.agentId = agentId;
 		this.requestType = requestType;

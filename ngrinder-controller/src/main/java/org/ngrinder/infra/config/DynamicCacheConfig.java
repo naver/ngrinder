@@ -70,26 +70,6 @@ public class DynamicCacheConfig {
 	 * Create cache manager dynamically according to the configuration. Because we cann't add a
 	 * cluster peer provider dynamically.
 	 * 
-	 * <pre>
-	 * &lt;cache name=&quot;region_list&quot; maxElementsInMemory=&quot;1000&quot; eternal=&quot;true&quot; overflowToDisk=&quot;false&quot;&gt;
-	 * 	&lt;cacheEventListenerFactory class=&quot;net.sf.ehcache.distribution.RMICacheReplicatorFactory&quot; /&gt;
-	 * 	&lt;bootstrapCacheLoaderFactory class=&quot;net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory&quot; /&gt;
-	 * &lt;/cache&gt;
-	 * &lt;cache name=&quot;running_agent_infos&quot; maxElementsInMemory=&quot;1000&quot; eternal=&quot;true&quot; overflowToDisk=&quot;false&quot;&gt;
-	 * 	&lt;cacheEventListenerFactory class=&quot;net.sf.ehcache.distribution.RMICacheReplicatorFactory&quot; /&gt;
-	 * &lt;/cache&gt;
-	 * &lt;cache name=&quot;running_statistics&quot; maxElementsInMemory=&quot;1000&quot; eternal=&quot;true&quot; overflowToDisk=&quot;false&quot;&gt;
-	 * 	&lt;cacheEventListenerFactory class=&quot;net.sf.ehcache.distribution.RMICacheReplicatorFactory&quot; /&gt;
-	 * &lt;/cache&gt;
-	 * &lt;cache name=&quot;users&quot; maxElementsInMemory=&quot;100&quot; eternal=&quot;false&quot;
-	 * 	overflowToDisk=&quot;false&quot; timeToIdleSeconds=&quot;900&quot; timeToLiveSeconds=&quot;1800&quot;&gt;
-	 * 	&lt;cacheEventListenerFactory class=&quot;net.sf.ehcache.distribution.RMICacheReplicatorFactory&quot; /&gt;
-	 * &lt;/cache&gt;
-	 * &lt;cache name=&quot;file_entry_search_cache&quot; maxElementsInMemory=&quot;100&quot; eternal=&quot;false&quot;
-	 * 	   overflowToDisk=&quot;false&quot; timeToIdleSeconds=&quot;60&quot; timeToLiveSeconds=&quot;60&quot;&gt;
-	 * 	&lt;cacheEventListenerFactory class=&quot;net.sf.ehcache.distribution.RMICacheReplicatorFactory&quot; /&gt;
-	 * &lt;/cache&gt;
-	 * </pre>
 	 * 
 	 * @return EhCacheCacheManager bean
 	 */

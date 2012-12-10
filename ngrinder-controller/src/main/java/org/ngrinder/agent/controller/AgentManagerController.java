@@ -100,8 +100,8 @@ public class AgentManagerController extends NGrinderBaseController {
 	/**
 	 * approve agent, so that it can accept test to run on.
 	 * 
-	 * @param ip
-	 *            IP address of the agent to be approved
+	 * @param id
+	 *            id of agent to be approved
 	 * @param approve
 	 *            approve or not
 	 * @return agent/agentList

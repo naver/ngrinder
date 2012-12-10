@@ -358,6 +358,11 @@ public class Home implements NGrinderConstants {
 		return subFile;
 	}
 
+	/**
+	 * Check the this home exists.
+	 * 
+	 * @return true if exists.
+	 */
 	public boolean exists() {
 		return directory.exists();
 	}
