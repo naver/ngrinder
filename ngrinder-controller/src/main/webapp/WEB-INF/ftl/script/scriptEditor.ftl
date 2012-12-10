@@ -91,8 +91,8 @@
 						</#if>
 					</@security.authorize>
 				</form>
-				<pre style="height:100px; margin:5px 0 10px;" class="prettyprint pre-scrollable hidden" id="validateRsPre">
-				</pre>
+				
+				
 				<textarea id="codemirrorContent">${(file.content)!}</textarea>
 				<textarea id="oldContent" class="hidden">${(file.content)!}</textarea>
 				<div class="pull-right" rel="popover" style="position:float;margin-top:-20px;margin-right:-30px" data-original-title="Tip" data-content="
@@ -107,6 +107,8 @@
 			    ><code>Tip</code></div> 
 			</div>
 		</div>
+		<pre style="height:100px; margin:5px 0 10px;" class="prettyprint pre-scrollable hidden" id="validateRsPre">
+		</pre>
 		<#include "../common/copyright.ftl">
 	</div>
 	
