@@ -26,6 +26,7 @@ import java.util.Set;
 
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.console.communication.AgentProcessControlImplementation.Listener;
 import net.grinder.message.console.AgentControllerState;
 
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -112,4 +113,12 @@ public interface AgentProcessControl {
 	 * @return {@link AgentControllerState} member
 	 */
 	int getAgentConnectingPort(AgentIdentity agentIdentity);
+
+	/**
+	 * Add agent status update listener.
+	 * 
+	 * @param listener
+	 *            listener.
+	 */
+	public void addListener(Listener listener);
 }
