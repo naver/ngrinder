@@ -10,6 +10,8 @@ import net.sf.ehcache.CacheManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.common.util.ThreadUtil;
+import org.springframework.cache.Cache;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 
 public class DynamicCacheManagerTest {
@@ -46,25 +48,28 @@ public class DynamicCacheManagerTest {
 
 	@Before
 	public void before() {
-		dynamicCacheManagerConfig1 = new ReloadableDynamicCacheManager(4001, "cache1");
+		dynamicCacheManagerConfig1 = new ReloadableDynamicCacheManager(40001, "cache1");
 		Config config = mock(Config.class);
 		dynamicCacheManagerConfig1.config = config;
 		String currentIp = NetworkUtil.getLocalHostAddress();
-		when(config.getClusterURIs()).thenReturn(new String[] { currentIp + ":4002" });
+		when(config.getClusterURIs()).thenReturn(new String[] { currentIp + ":40001", currentIp + ":40002" });
 		when(config.getCurrentIP()).thenReturn(currentIp);
 		when(config.isCluster()).thenReturn(true);
 		dynamicCacheManager1 = dynamicCacheManagerConfig1.dynamicCacheManager();
-
-		dynamicCacheManagerConfig2 = new ReloadableDynamicCacheManager(4002, "cache2");
-		when(config.getClusterURIs()).thenReturn(new String[] { currentIp + ":4001" });
+		dynamicCacheManager1.afterPropertiesSet();
+		dynamicCacheManagerConfig2 = new ReloadableDynamicCacheManager(40002, "cache2");
+		when(config.getClusterURIs()).thenReturn(new String[] { currentIp + ":40001", currentIp + ":40002" });
 		dynamicCacheManagerConfig2.config = config;
 		dynamicCacheManager2 = dynamicCacheManagerConfig2.dynamicCacheManager();
+		dynamicCacheManager2.afterPropertiesSet();
 	}
 
 	@Test
-	public void testDynamicCache() {
-		dynamicCacheManager1.getCache("region_list").put("hello", "127.0.0.1");
-		assertThat((String) dynamicCacheManager2.getCache("region_list").get("hello").get(), is("127.0.0.1"));
+	public void testDynamicCache() throws InterruptedException {
+		dynamicCacheManager2.getCache("region_list").put("hello", "127.0.0.1");
+		ThreadUtil.sleep(1000);
+		Cache cache = dynamicCacheManager1.getCache("region_list");
+		assertThat((String) cache.get("hello").get(), is("127.0.0.1"));
 	}
 
 	@After

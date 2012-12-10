@@ -36,6 +36,7 @@ import net.sf.ehcache.config.CacheConfiguration.CacheEventListenerFactoryConfigu
 import net.sf.ehcache.config.Configuration;
 import net.sf.ehcache.config.ConfigurationFactory;
 import net.sf.ehcache.config.FactoryConfiguration;
+import net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory;
 import net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory;
 
 import org.apache.commons.io.IOUtils;
@@ -113,10 +114,16 @@ public class DynamicCacheConfig {
 				String properties = createCacheProperties(getReplicatedCacheNames(cacheManagerConfig));
 				peerProviderConfig.setProperties(properties);
 				cacheManagerConfig.addCacheManagerPeerProviderFactory(peerProviderConfig);
-				CoreLogger.LOGGER.info("clusterURLs:{}", properties);
+
+				FactoryConfiguration peerListenerConfig = new FactoryConfiguration();
+				peerListenerConfig.setClass(RMICacheManagerPeerListenerFactory.class.getName());
+				String peerListenerProperties = createPearListenerProperties(getReplicatedCacheNames(cacheManagerConfig));
+				peerListenerConfig.setProperties(peerListenerProperties);
+				cacheManagerConfig.addCacheManagerPeerListenerFactory(peerListenerConfig);
+				CoreLogger.LOGGER.info("clusterURLs:{}", peerListenerProperties);
 			}
 			cacheManagerConfig.setName(getCacheName());
-			CacheManager mgr = new CacheManager(cacheManagerConfig);
+			CacheManager mgr = CacheManager.create(cacheManagerConfig);
 			setCacheManager(mgr);
 			cacheManager.setCacheManager(mgr);
 		} catch (IOException e) {
@@ -125,6 +132,12 @@ public class DynamicCacheConfig {
 			IOUtils.closeQuietly(inputStream);
 		}
 		return cacheManager;
+	}
+
+	String createPearListenerProperties(List<String> replicatedCacheNames) {
+		int clusterListenerPort = getCacheListenerPort();
+		String currentIP = config.getCurrentIP();
+		return String.format("hostName=%s, port=%d, ", currentIP, clusterListenerPort);
 	}
 
 	void setCacheManager(CacheManager mgr) {
@@ -139,7 +152,8 @@ public class DynamicCacheConfig {
 		int clusterListenerPort = getCacheListenerPort();
 		// rmiUrls=//10.34.223.148:40003/distributed_map|//10.34.63.28:40003/distributed_map
 		List<String> uris = new ArrayList<String>();
-		String current = config.getCurrentIP() + ":" + getCacheListenerPort();
+		String currentIP = config.getCurrentIP();
+		String current = currentIP + ":" + getCacheListenerPort();
 		for (String ip : config.getClusterURIs()) {
 			if (ip.equals(current)) {
 				continue;
