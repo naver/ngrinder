@@ -30,14 +30,11 @@ import java.io.StringReader;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 /**
  * Home class which enable you to easily access resources in Home directory.
