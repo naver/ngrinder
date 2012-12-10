@@ -117,7 +117,7 @@ public class DynamicCacheConfig {
 	String createPearListenerProperties(List<String> replicatedCacheNames) {
 		int clusterListenerPort = getCacheListenerPort();
 		String currentIP = config.getCurrentIP();
-		return String.format("hostName=%s, port=%d, ", currentIP, clusterListenerPort);
+		return String.format("hostName=%s, port=%d, socketTimeoutMillis=200", currentIP, clusterListenerPort);
 	}
 
 	void setCacheManager(CacheManager mgr) {

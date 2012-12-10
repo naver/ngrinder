@@ -28,17 +28,11 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Set;
-
-import net.grinder.AgentController;
-import net.grinder.common.processidentity.AgentIdentity;
 
 import org.junit.Test;
-import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.chart.AbstractChartTransactionalTest;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.perftest.service.AgentManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -57,20 +51,6 @@ public class MonitorControllerTest extends AbstractChartTransactionalTest {
 
 	@Autowired
 	private Config config;
-
-	@Autowired
-	private AgentManager agentManager;
-
-	@Autowired
-	private AgentManagerService agentManagerService;
-
-	@Test
-	public void testGetCurrentMonitorData() {
-		ModelMap model = new ModelMap();
-		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
-		String rtnStr = monitorController.getCurrentMonitorData(model, 1L);
-		LOG.debug("Current monitor data for ip:{} is\n{}", "127.0.0.1", rtnStr);
-	}
 
 	@Test
 	public void testMonitorData() throws ParseException, IOException {
