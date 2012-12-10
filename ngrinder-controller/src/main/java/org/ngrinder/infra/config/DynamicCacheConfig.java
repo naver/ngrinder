@@ -52,9 +52,8 @@ import org.springframework.stereotype.Component;
 import com.google.common.net.InetAddresses;
 
 /**
- * Dynamic cache configuration. This get the control of EhCache configuration
- * from Spring. Depending on the system.conf, it creates local cache or dist
- * cache.
+ * Dynamic cache configuration. This get the control of EhCache configuration from Spring. Depending
+ * on the system.conf, it creates local cache or dist cache.
  * 
  * @author Mavlarn
  * @author JunHo Yoon
@@ -67,8 +66,8 @@ public class DynamicCacheConfig {
 	Config config;
 
 	/**
-	 * Create cache manager dynamically according to the configuration. Because
-	 * we cann't add a cluster peer provider dynamically.
+	 * Create cache manager dynamically according to the configuration. Because we cann't add a
+	 * cluster peer provider dynamically.
 	 * 
 	 * <pre>
 	 * &lt;cache name=&quot;region_list&quot; maxElementsInMemory=&quot;1000&quot; eternal=&quot;true&quot; overflowToDisk=&quot;false&quot;&gt;
@@ -140,7 +139,11 @@ public class DynamicCacheConfig {
 		int clusterListenerPort = getCacheListenerPort();
 		// rmiUrls=//10.34.223.148:40003/distributed_map|//10.34.63.28:40003/distributed_map
 		List<String> uris = new ArrayList<String>();
+		String current = config.getCurrentIP() + ":" + getCacheListenerPort();
 		for (String ip : config.getClusterURIs()) {
+			if (ip.equals(current)) {
+				continue;
+			}
 			// Verify it's ip.
 			String[] split = StringUtils.split(ip, ":");
 			ip = split[0];
@@ -153,19 +156,17 @@ public class DynamicCacheConfig {
 					continue;
 				}
 			}
-			if (ip.equals(config.getCurrentIP())) {
-				continue;
-			}
+
 			for (String cacheName : replicatedCacheNames) {
-				uris.add(String.format("%s:%d/%s", ip, port, cacheName));
+				uris.add(String.format("//%s:%d/%s", ip, port, cacheName));
 			}
 		}
-		return "peerDiscovery=manual,rmiUrls=//" + StringUtils.join(uris, "|");
+		return "peerDiscovery=manual,rmiUrls=" + StringUtils.join(uris, "|");
 	}
 
 	int getCacheListenerPort() {
 		return config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_CLUSTER_LISTENER_PORT,
-				Config.NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT);
+						Config.NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -173,8 +174,8 @@ public class DynamicCacheConfig {
 		Map<String, CacheConfiguration> cacheConfigurations = cacheManagerConfig.getCacheConfigurations();
 		List<String> replicatedCacheNames = new ArrayList<String>();
 		for (Map.Entry<String, CacheConfiguration> eachConfig : cacheConfigurations.entrySet()) {
-			for (CacheEventListenerFactoryConfiguration each : ((List<CacheEventListenerFactoryConfiguration>) eachConfig.getValue()
-					.getCacheEventListenerConfigurations())) {
+			for (CacheEventListenerFactoryConfiguration each : ((List<CacheEventListenerFactoryConfiguration>) eachConfig
+							.getValue().getCacheEventListenerConfigurations())) {
 				if (each.getFullyQualifiedClassPath().equals("net.sf.ehcache.distribution.RMICacheReplicatorFactory")) {
 					replicatedCacheNames.add(eachConfig.getKey());
 				}
