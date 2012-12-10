@@ -194,6 +194,7 @@ public class AgentManager implements NGrinderConstants {
 	 * @return {@link AgentControllerIdentityImplementation}
 	 */
 	public AgentControllerIdentityImplementation getAgentIdentityByIp(String agentIP) {
+
 		for (AgentIdentity agentIdentity : getAllAttachedAgents()) {
 			if (StringUtils.equals(convert(agentIdentity).getIp(), agentIP)) {
 				return convert(agentIdentity);

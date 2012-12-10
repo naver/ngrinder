@@ -31,9 +31,17 @@ public class AgentRequest implements Serializable {
 	public enum RequestType {
 		STOP_AGENT {
 			@Override
-			public void process(AgentManager agentManager, AgentManagerService agentManagerService,
+			public void process(Long agentId, AgentManager agentManager, AgentManagerService agentManagerService,
 							AgentControllerIdentityImplementation agentIdentity) {
 				agentManager.stopAgent(agentIdentity);
+			}
+		},
+		SHARE_AGENT_SYSTEM_DATA_MODEL {
+			@Override
+			public void process(Long agentId, AgentManager agentManager, AgentManagerService agentManagerService,
+							AgentControllerIdentityImplementation agentIdentity) {
+				// TODO Auto-generated method stub
+				agentManagerService.saveMonitoringDataOnCache(agentId, agentManager.getSystemDataModel(agentIdentity));
 			}
 		};
 
@@ -50,7 +58,7 @@ public class AgentRequest implements Serializable {
 		 * @param agentIdentity
 		 *            agentIdentity
 		 */
-		public abstract void process(AgentManager agentManager, AgentManagerService agentManagerService,
+		public abstract void process(Long agentId, AgentManager agentManager, AgentManagerService agentManagerService,
 						AgentControllerIdentityImplementation agentIdentity);
 	}
 

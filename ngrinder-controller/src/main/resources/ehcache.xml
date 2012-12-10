@@ -22,5 +22,7 @@
 		timeToLiveSeconds="3" />
 	<cache name="running_statistics" maxElementsInMemory="1000" eternal="true" overflowToDisk="false"
 		timeToLiveSeconds="3" />
+	<cache name="agent_monitoring" maxElementsInMemory="1000" eternal="true" overflowToDisk="false"
+		timeToLiveSeconds="3" />
 
 </ehcache>

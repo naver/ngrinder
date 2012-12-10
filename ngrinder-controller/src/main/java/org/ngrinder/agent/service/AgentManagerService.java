@@ -49,6 +49,7 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.schedule.ScheduledTask;
 import org.ngrinder.model.User;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +86,7 @@ public class AgentManagerService {
 
 	Cache agentRequestCache;
 
+	Cache agentMonitorCache;
 	@Autowired
 	ScheduledTask scheduledTask;
 
@@ -92,6 +94,7 @@ public class AgentManagerService {
 	public void init() {
 		if (config.isCluster()) {
 			agentRequestCache = cacheManager.getCache("agent_request");
+			agentMonitorCache = cacheManager.getCache("agent_monitoring");
 			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
 				@SuppressWarnings({ "unchecked", "rawtypes" })
 				@Override
@@ -105,7 +108,8 @@ public class AgentManagerService {
 								AgentRequest agentRequest = (AgentRequest) (valueWrapper.get());
 								AgentInfo agent = getAgent(agentRequest.getAgentId());
 								if (agent != null && agent.getAgentIdentity() != null) {
-									agentRequest.getRequestType().process(agentManager, AgentManagerService.this,
+									agentRequest.getRequestType().process(agentRequest.getAgentId(), agentManager,
+													AgentManagerService.this,
 													(AgentControllerIdentityImplementation) agent.getAgentIdentity());
 									CoreLogger.LOGGER.info("Stop is performed for {}" + agent.getAgentIdentity());
 								}
@@ -386,10 +390,33 @@ public class AgentManagerService {
 			return;
 		}
 		if (config.isCluster()) {
-			agentRequestCache.put(agent.getRegion() + "_" + agent.getId(), new AgentRequest(agent.getId(),
-							RequestType.STOP_AGENT));
+			agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "_" + agent.getId(),
+							new AgentRequest(agent.getId(), RequestType.STOP_AGENT));
 		} else {
 			agentManager.stopAgent(agent.getAgentIdentity());
 		}
+	}
+
+	public void requestShareAgentSystemDataModel(Long id) {
+		if (config.isCluster()) {
+			AgentInfo agent = getAgent(id);
+			agentRequestCache.put(
+							extractRegionFromAgentRegion(agent.getRegion()) + "_" + agent.getId() + "_monitoring",
+							new AgentRequest(agent.getId(), RequestType.SHARE_AGENT_SYSTEM_DATA_MODEL));
+		}
+	}
+
+	public SystemDataModel getAgentSystemDataModel(Long id) {
+		AgentInfo agent = getAgent(id);
+		if (config.isCluster()) {
+			ValueWrapper valueWrapper = agentMonitorCache.get(id);
+			return valueWrapper == null ? new SystemDataModel() : (SystemDataModel) valueWrapper.get();
+		} else {
+			return agentManager.getSystemDataModel(agent.getAgentIdentity());
+		}
+	}
+
+	public void saveMonitoringDataOnCache(Long agentId, SystemDataModel systemDataModel) {
+		agentMonitorCache.put(agentId, systemDataModel);
 	}
 }
