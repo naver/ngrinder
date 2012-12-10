@@ -20,7 +20,7 @@
 			properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=false, replicateRemovals=true" />
 	</cache>
 
-	<cache name="agent_stop_request" maxElementsInMemory="100" overflowToDisk="false" timeToLiveSeconds="10">
+	<cache name="agent_request" maxElementsInMemory="100" overflowToDisk="false" timeToLiveSeconds="10">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
 			properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=false, replicateRemovals=true" />
 	</cache>

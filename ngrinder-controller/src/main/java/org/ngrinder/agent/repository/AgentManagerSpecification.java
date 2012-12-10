@@ -28,6 +28,8 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import net.grinder.message.console.AgentControllerState;
+
 import org.ngrinder.agent.model.AgentInfo;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -54,6 +56,23 @@ public abstract class AgentManagerSpecification {
 				String queryStr = region + "_%";
 				Expression<String> regionField = root.get("region").as(String.class);
 				return cb.or(cb.like(regionField, queryStr), cb.equal(regionField, queryStr));
+			}
+		};
+	}
+
+	/**
+	 * Query specification which the region column start the specified region.
+	 * 
+	 * @param region
+	 *            specified region to query
+	 * @return Specification of this query
+	 */
+	public static Specification<AgentInfo> active() {
+		return new Specification<AgentInfo>() {
+			@Override
+			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				Expression<AgentControllerState> status = root.get("status").as(AgentControllerState.class);
+				return cb.notEqual(status, AgentControllerState.INACTIVE);
 			}
 		};
 	}

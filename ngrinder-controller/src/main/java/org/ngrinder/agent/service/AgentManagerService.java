@@ -34,12 +34,17 @@ import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import net.grinder.util.thread.InterruptibleRunnable;
+import net.sf.ehcache.Ehcache;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithRegion;
+import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.model.AgentInfo;
+import org.ngrinder.agent.model.AgentRequest;
+import org.ngrinder.agent.model.AgentRequest.RequestType;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.schedule.ScheduledTask;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.AgentManager;
@@ -47,6 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
+import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -75,21 +81,38 @@ public class AgentManagerService {
 	@Autowired
 	CacheManager cacheManager;
 
-	Cache agentStopRequestCache;
+	Cache agentRequestCache;
 
 	@Autowired
 	ScheduledTask scheduledTask;
 
 	@PostConstruct
 	public void init() {
-		agentStopRequestCache = cacheManager.getCache("agent_stop_request");
-		scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
-			@Override
-			public void interruptibleRun() {
-				// TODO Auto-generated method stub
-				// agentStopRequestCache.getNativeCache()
-			}
-		});
+		if (config.isCluster()) {
+			agentRequestCache = cacheManager.getCache("agent_request");
+			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
+				@SuppressWarnings({ "unchecked", "rawtypes" })
+				@Override
+				public void interruptibleRun() {
+					List keysWithExpiryCheck = ((Ehcache) agentRequestCache.getNativeCache()).getKeysWithExpiryCheck();
+					String region = config.getRegion() + "_";
+					for (String each : (List<String>) keysWithExpiryCheck) {
+						if (each.startsWith(region)) {
+							ValueWrapper valueWrapper = agentRequestCache.get(each);
+							if (valueWrapper != null) {
+								AgentRequest agentRequest = (AgentRequest) (valueWrapper.get());
+								AgentInfo agent = getAgent(agentRequest.getAgentId());
+								if (agent != null && agent.getAgentIdentity() != null) {
+									agentRequest.getRequestType().request(agentManager, AgentManagerService.this,
+													(AgentControllerIdentityImplementation) agent.getAgentIdentity());
+									CoreLogger.LOGGER.info("Stop is performed for {}" + agent.getAgentIdentity());
+								}
+							}
+						}
+					}
+				}
+			});
+		}
 	}
 
 	/**
@@ -242,8 +265,17 @@ public class AgentManagerService {
 	 * 
 	 * @return agent list
 	 */
-	public List<AgentInfo> getAgentListOnDB() {
+	public List<AgentInfo> getAgentListInThisRegionOnDB() {
 		return agentRepository.findAll(startWithRegion(config.getRegion()));
+	}
+
+	/**
+	 * Get all active agents from DB.
+	 * 
+	 * @return agent list
+	 */
+	public List<AgentInfo> getAllActiveAgentInfoFromDB() {
+		return agentRepository.findAll(active());
 	}
 
 	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation agentIdentity, List<AgentInfo> agents) {
@@ -321,23 +353,19 @@ public class AgentManagerService {
 	 * @param approve
 	 *            true/false
 	 */
-	public void approve(String ip, boolean approve) {
-		List<AgentInfo> found = agentRepository.findAllByIp(ip);
-		for (AgentInfo each : found) {
-			each.setApproved(approve);
-			agentRepository.save(each);
-			agentRepository.findOne(each.getId());
-			if (approve) {
-				LOGGER.info("agent {} is approved", ip);
-			} else {
-				LOGGER.info("agent {} is not approved", ip);
-			}
+	public void approve(Long id, boolean approve) {
+		AgentInfo found = agentRepository.findOne(id);
+		if (found != null) {
+			found.setApproved(approve);
+			agentRepository.save(found);
+			agentRepository.findOne(found.getId());
 		}
 
 	}
 
 	/**
-	 * Stop agent.
+	 * Stop agent. If it's in cluster mode, it queue to agentRequestCache. ohterwise, it send stop
+	 * message to the agent.
 	 * 
 	 * @param id
 	 *            identity of agent to stop.
@@ -347,6 +375,11 @@ public class AgentManagerService {
 		if (agent == null) {
 			return;
 		}
-		agentStopRequestCache.put(agent.getAgentIdentity(), System.currentTimeMillis());
+		if (config.isCluster()) {
+			agentRequestCache.put(agent.getRegion() + "_" + agent.getId(), new AgentRequest(agent.getId(),
+							RequestType.STOP_AGENT));
+		} else {
+			agentManager.stopAgent(agent.getAgentIdentity());
+		}
 	}
 }

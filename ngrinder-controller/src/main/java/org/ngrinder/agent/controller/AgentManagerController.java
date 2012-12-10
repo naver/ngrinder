@@ -75,7 +75,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	 */
 	@RequestMapping({ "", "/", "/list" })
 	public String getAgentList(ModelMap model) {
-		List<AgentInfo> agents = agentService.getAgentListOnDB();
+		List<AgentInfo> agents = agentService.getAllActiveAgentInfoFromDB();
 		model.addAttribute("agents", agents);
 
 		File directory = config.getHome().getDownloadDirectory();
@@ -107,9 +107,9 @@ public class AgentManagerController extends NGrinderBaseController {
 	 * @return agent/agentList
 	 */
 	@RequestMapping(value = "approve", method = RequestMethod.POST)
-	public String approveAgent(@RequestParam("ip") String ip,
+	public String approveAgent(@RequestParam("id") Long id,
 					@RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve) {
-		agentService.approve(ip, approve);
+		agentService.approve(id, approve);
 		return "agent/agentList";
 	}
 

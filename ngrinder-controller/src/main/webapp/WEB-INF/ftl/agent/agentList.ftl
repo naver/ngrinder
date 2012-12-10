@@ -61,8 +61,8 @@
 						<td>${(agent.status)!}</td>
 						<td>
 							<div class="btn-group" data-toggle="buttons-radio">
-								<button type="button" class="btn btn-mini btn-primary unapproved <#if agent.isApproved() == false>active</#if>" sid="${agent.ip}"><@spring.message "agent.table.unapproved"/> </button>
-								<button type="button" class="btn btn-mini btn-primary approved <#if agent.isApproved() == true>active</#if>" sid="${agent.ip}"><@spring.message "agent.table.approved"/> </button>
+								<button type="button" class="btn btn-mini btn-primary unapproved <#if agent.isApproved() == false>active</#if>" sid="${agent.id}"><@spring.message "agent.table.unapproved"/> </button>
+								<button type="button" class="btn btn-mini btn-primary approved <#if agent.isApproved() == true>active</#if>" sid="${agent.id}"><@spring.message "agent.table.approved"/> </button>
 							</div>
 						</td> 
 						
@@ -106,7 +106,7 @@
 						$.post(
 					  		"${req.getContextPath()}/agent/approve",
 					  		{ 
-					  			"ip": sid,
+					  			"id": sid,
 					  			"approve": "true"
 					  		},
 					  		function() {
@@ -121,7 +121,7 @@
 						$.post(
 					  		"${req.getContextPath()}/agent/approve",
 					  		{ 
-					  			"ip": sid,
+					  			"id": sid,
 					  			"approve": "false"
 					  		},
 					  		function() {

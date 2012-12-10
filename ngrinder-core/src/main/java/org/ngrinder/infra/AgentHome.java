@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
@@ -123,8 +124,8 @@ public class AgentHome {
 		InputStream is = null;
 		try {
 			File propertiesFile = new File(directory, path);
-			is = FileUtils.openInputStream(propertiesFile);
-			properties.load(is);
+			String config = FileUtils.readFileToString(propertiesFile, "UTF-8");
+			properties.load(new StringReader(config));
 		} catch (IOException e) {
 			noOp();
 		} finally {
