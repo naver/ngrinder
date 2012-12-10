@@ -43,7 +43,7 @@
 	<!-- distributed caches -->
 
 	<cache name="agent_monitoring" maxElementsInMemory="1000" eternal="true" overflowToDisk="false"
-		timeToLiveSeconds="3">
+		timeToLiveSeconds="5">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
 			properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=false" />
 	</cache>

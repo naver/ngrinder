@@ -114,7 +114,6 @@ public class AgentManagerService {
 									CoreLogger.LOGGER.info("Stop is performed for {}" + agent.getAgentIdentity());
 								}
 							}
-							agentRequestCache.equals(each);
 						}
 					}
 				}
