@@ -32,7 +32,9 @@ public class AnnouncementController extends NGrinderBaseController {
 	 */
 	@RequestMapping("")
 	public String openAnnouncement(Model model) {
-		model.addAttribute("content", announcementService.getAnnouncement());
+		String announcement = announcementService.getAnnouncement();
+		model.addAttribute("announcement", announcement);
+		model.addAttribute("content", announcement);
 		return "operation/announcement";
 	}
 

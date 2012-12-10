@@ -79,6 +79,7 @@ public class AgentManagerService {
 
 	@Autowired
 	ScheduledTask scheduledTask;
+
 	@PostConstruct
 	public void init() {
 		agentStopRequestCache = cacheManager.getCache("agent_stop_request");
@@ -86,7 +87,7 @@ public class AgentManagerService {
 			@Override
 			public void interruptibleRun() {
 				// TODO Auto-generated method stub
-				//agentStopRequestCache.getNativeCache()
+				// agentStopRequestCache.getNativeCache()
 			}
 		});
 	}

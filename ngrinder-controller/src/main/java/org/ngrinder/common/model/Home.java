@@ -26,9 +26,11 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -131,8 +133,10 @@ public class Home implements NGrinderConstants {
 		try {
 			File configFile = getSubFile(confFileName);
 			if (configFile.exists()) {
-				FileSystemResource propertyResource = new FileSystemResource(configFile);
-				return PropertiesLoaderUtils.loadProperties(propertyResource);
+				String propString = FileUtils.readFileToString(configFile, "UTF-8");
+				Properties prop = new Properties();
+				prop.load(new StringReader(propString));
+				return prop;
 			} else {
 				// default empty properties.
 				return new Properties();
