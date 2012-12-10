@@ -10,8 +10,7 @@
 
 	<!-- following caches are distributed caches -->
 	<!-- add RMIBootstrapCacheLoaderFactory to make the cache replicated from cluster. -->
-	<cache name="region_list" maxElementsInMemory="1000" overflowToDisk="false" timeToIdleSeconds="5"
-		timeToLiveSeconds="5">
+	<cache name="region_list" maxElementsInMemory="1000" overflowToDisk="false" timeToLiveSeconds="8">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
 			properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=false, replicateRemovals=false" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />
@@ -33,13 +32,13 @@
 
 	<cache name="users" maxElementsInMemory="100" eternal="false" overflowToDisk="false" timeToLiveSeconds="1800">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-			properties="replicateAsynchronously=false, replicatePuts=false, replicateUpdates=false, replicateUpdatesViaCopy=false, replicateRemovals=true" />
+			properties="replicateAsynchronously=true, replicatePuts=false, replicateUpdates=false, replicateUpdatesViaCopy=false, replicateRemovals=true" />
 	</cache>
 
 	<cache name="file_entry_search_cache" maxElementsInMemory="100" eternal="false" overflowToDisk="false"
 		timeToIdleSeconds="60" timeToLiveSeconds="60">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-			properties="replicateAsynchronously=false, replicatePuts=false, replicateUpdates=false, replicateUpdatesViaCopy=false, replicateRemovals=true" />
+			properties="replicateAsynchronously=true, replicatePuts=false, replicateUpdates=false, replicateUpdatesViaCopy=false, replicateRemovals=true" />
 	</cache>
 	<!-- distributed caches -->
 
