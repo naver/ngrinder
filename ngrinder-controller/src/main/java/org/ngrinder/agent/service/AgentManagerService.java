@@ -22,6 +22,9 @@
  */
 package org.ngrinder.agent.service;
 
+import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
+import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithRegion;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,8 +38,7 @@ import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 import net.grinder.util.thread.InterruptibleRunnable;
 import net.sf.ehcache.Ehcache;
-import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithRegion;
-import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.model.AgentInfo;

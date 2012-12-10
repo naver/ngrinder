@@ -68,7 +68,7 @@ public class DynamicCacheManagerTest {
 
 	@Test
 	public void testDynamicCache() throws InterruptedException {
-		System.setProperty("net.sf.ehcache.skipUpdateCheck", "false");
+		System.setProperty("net.sf.ehcache.skipUpdateCheck", "true");
 		dynamicCacheManager2.getCache("region_list").put("hello", "127.0.0.1");
 		ThreadUtil.sleep(1000);
 		Cache cache = dynamicCacheManager1.getCache("region_list");
@@ -79,7 +79,23 @@ public class DynamicCacheManagerTest {
 		ThreadUtil.sleep(4000);
 		assertThat(dynamicCacheManager1.getCache("region_list").get("hello"), nullValue());
 		assertThat(dynamicCacheManager2.getCache("region_list").get("hello"), nullValue());
+	}
 
+	@Test
+	public void testDynamicCacheUpdate() throws InterruptedException {
+		System.setProperty("net.sf.ehcache.skipUpdateCheck", "true");
+		String value = "127.0.0.1";
+		dynamicCacheManager2.getCache("region_list").put("hello", value);
+		ThreadUtil.sleep(1000);
+		Cache cache = dynamicCacheManager1.getCache("region_list");
+		assertThat((String) cache.get("hello").get(), is(value));
+		ThreadUtil.sleep(4000);
+		assertThat(dynamicCacheManager1.getCache("region_list").get("hello"), not(nullValue()));
+		dynamicCacheManager1.getCache("region_list").put("hello", value);
+		assertThat(dynamicCacheManager2.getCache("region_list").get("hello"), not(nullValue()));
+		ThreadUtil.sleep(4000);
+		assertThat(dynamicCacheManager1.getCache("region_list").get("hello"), not(nullValue()));
+		assertThat(dynamicCacheManager2.getCache("region_list").get("hello"), not(nullValue()));
 	}
 
 	@After
