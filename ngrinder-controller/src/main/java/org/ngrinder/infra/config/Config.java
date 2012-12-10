@@ -303,7 +303,6 @@ public class Config implements IConfig {
 			properties.putAll(exProperties);
 		}
 		systemProperties = new PropertiesWrapper(properties);
-
 	}
 
 	/**

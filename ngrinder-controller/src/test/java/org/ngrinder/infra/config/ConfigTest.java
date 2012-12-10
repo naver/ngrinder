@@ -123,17 +123,15 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGri
 
 	@Test
 	public void testLoadExtendProperties() {
-		Properties wrapper = mock(Properties.class);
-		when(wrapper.getProperty(NGRINDER_PROP_REGION)).thenReturn(Config.NON_REGION);
+		Properties wrapper = new Properties();
+		wrapper.put(NGRINDER_PROP_REGION, "TestNewRegion");
 
 		// set mock exHome and test
 		Home mockExHome = mock(Home.class);
 		when(mockExHome.getProperties("system-ex.conf")).thenReturn(wrapper);
+		when(mockExHome.exists()).thenReturn(true);
 		ReflectionTestUtils.setField(config, "exHome", mockExHome);
-		config.setSystemProperties(new PropertiesWrapper(wrapper));
-		assertThat(config.getRegion(), is(Config.NON_REGION));
-
-		when(wrapper.getProperty(NGRINDER_PROP_REGION, Config.NON_REGION)).thenReturn("TestNewRegion");
+		config.loadSystemProperties();
 		assertThat(config.getRegion(), is("TestNewRegion"));
 	}
 
