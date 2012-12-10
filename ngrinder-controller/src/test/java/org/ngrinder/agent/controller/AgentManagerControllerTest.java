@@ -56,19 +56,18 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 
 	@Autowired
 	AgentManagerController agentController;
-	
+
 	@Autowired
 	AgentManagerService agentService;
 
 	@Autowired
 	private Config config;
-	
+
 	@Before
 	public void setMockRequest() {
 		MockHttpServletRequest req = new MockHttpServletRequest();
 		req.addHeader("User-Agent", "Win");
-		SecurityContextHolderAwareRequestWrapper reqWrapper = new SecurityContextHolderAwareRequestWrapper(
-						req, "U");
+		SecurityContextHolderAwareRequestWrapper reqWrapper = new SecurityContextHolderAwareRequestWrapper(req, "U");
 		RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(reqWrapper));
 	}
 
@@ -83,8 +82,8 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 
 		ModelMap model = new ModelMap();
 		agentController.getAgentList(model);
-		
-		//create a temp download dir and file for this function
+
+		// create a temp download dir and file for this function
 		File directory = config.getHome().getDownloadDirectory();
 		if (!directory.exists()) {
 			try {
@@ -101,7 +100,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		model.clear();
 		agentController.getAgentList(model);
 		List<AgentInfo> agents = (List<AgentInfo>) model.get("agents");
@@ -121,7 +120,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 	public void testDownloadAgent() {
 		agentController.downloadAgent("helloworld", null);
 	}
-	
+
 	@Test
 	public void testApproveAgent() {
 		AgentInfo agent = new AgentInfo();
@@ -132,25 +131,25 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		agentService.saveAgent(agent);
 
 		ModelMap model = new ModelMap();
-		//test get agent
+		// test get agent
 		agentController.getAgent(model, agent.getId());
-		AgentInfo agentinDB = (AgentInfo)model.get("agent");
+		AgentInfo agentinDB = (AgentInfo) model.get("agent");
 		assertThat(agentinDB.getHostName(), is(agent.getHostName()));
 		assertThat(agentinDB.getIp(), is(agent.getIp()));
 		assertThat(agentinDB.isApproved(), is(false));
-		
-		//test approve agent
+
+		// test approve agent
 		model.clear();
-		agentController.approveAgent(agentinDB.getIp(), true);
+		agentController.approveAgent(agentinDB.getId(), true);
 		agentController.getAgent(model, agent.getId());
-		agentinDB = (AgentInfo)model.get("agent");
+		agentinDB = (AgentInfo) model.get("agent");
 		assertThat(agentinDB.isApproved(), is(true));
 
-		//test un-approve
+		// test un-approve
 		model.clear();
-		agentController.approveAgent(agentinDB.getIp(), false);
+		agentController.approveAgent(agentinDB.getId(), false);
 		agentController.getAgent(model, agent.getId());
-		agentinDB = (AgentInfo)model.get("agent");
+		agentinDB = (AgentInfo) model.get("agent");
 		assertThat(agentinDB.isApproved(), is(false));
 	}
 

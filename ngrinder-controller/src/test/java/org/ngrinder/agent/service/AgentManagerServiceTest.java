@@ -59,10 +59,10 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private Config config;
-	
+
 	@Test
 	public void testSaveGetDeleteAgent() {
-		AgentInfo agent = this.saveAgent("save");
+		AgentInfo agent = saveAgent("save");
 		AgentInfo agent2 = agentManagerService.getAgent(agent.getId());
 		Assert.assertNotNull(agent2);
 
@@ -70,14 +70,12 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		agentListDB = agentManagerService.getAgentListInThisRegionOnDB();
 		Assert.assertNotNull(agentListDB);
 
-		agentManagerService.approve("1.1.1.1", true);
-		
+		agentManagerService.approve(agent.getId(), true);
+
 		agentManagerService.deleteAgent(agent.getId());
 		agent2 = agentManagerService.getAgent(agent.getId());
 		Assert.assertNull(agent2);
 	}
-
-	
 
 	private AgentInfo saveAgent(String key) {
 		AgentInfo agent = new AgentInfo();
@@ -89,14 +87,13 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		agentManagerService.saveAgent(agent);
 		return agent;
 	}
-	
+
 	@Test
 	public void testGetUserAvailableAgentCount() {
 		List<String> regionList = regionService.getRegions();
-		Map<String, MutableInt> countMap = agentManagerService.getUserAvailableAgentCountMap(
-				regionList, getTestUser());
+		Map<String, MutableInt> countMap = agentManagerService.getUserAvailableAgentCountMap(regionList, getTestUser());
 		int oriCount = countMap.get(config.getRegion()).intValue();
-		
+
 		AgentInfo agentInfo = new AgentInfo();
 		agentInfo.setHostName("localhost");
 		agentInfo.setNumber(-1);
@@ -111,7 +108,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		int newCount = countMap.get(config.getRegion()).intValue();
 		assertThat(newCount, is(oriCount + 1));
 	}
-	
+
 	@Test
 	public void testCheckAgentStatus() {
 		AgentInfo agentInfo = new AgentInfo();
@@ -129,5 +126,5 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		assertThat(agentInDB.getHostName(), is(agentInfo.getHostName()));
 		assertThat(agentInDB.getStatus(), is(AgentControllerState.INACTIVE));
 	}
-	
+
 }

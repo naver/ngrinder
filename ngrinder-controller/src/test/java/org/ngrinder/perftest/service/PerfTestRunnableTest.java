@@ -54,13 +54,13 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	@Autowired
 	private AgentManagerService agentService;
-	
+
 	@Autowired
 	private MonitorService monitorService;
 
 	@Autowired
 	public MockFileEntityRepsotory fileEntityRepository;
-	
+
 	public PerfTest currentTest;
 
 	@BeforeClass
@@ -75,12 +75,12 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		}
 		ThreadUtil.sleep(2000);
 	}
-	
+
 	@AfterClass
 	public static void stopMonitor() {
 		AgentMonitorServer.getInstance().stop();
 	}
-	
+
 	@Before
 	public void before() throws IOException {
 		ClassPathResource classPathResource = new ClassPathResource("native_lib/.sigar_shellrc");
@@ -110,12 +110,10 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		agentControllerDaemon = new AgentControllerDaemon("127.0.0.1");
 		agentControllerDaemon.setAgentConfig(agentConfig1);
 		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
-		
+
 		LOG.info("* Start nGrinder Monitor *");
 		MonitorConstants.init(agentConfig2);
-		
 
-		
 		int agentCount = 0;
 		int checkLoop = 0;
 		while (true) {
@@ -129,7 +127,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 		List<AgentInfo> agentList = agentService.getAgentList();
 		for (AgentInfo each : agentList) {
-			agentService.approve(each.getIp(), true);
+			agentService.approve(each.getId(), true);
 		}
 
 		agentList = agentService.getAgentList();
@@ -155,7 +153,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		perfTestRunnable.finishTest();
 		sleep(5000);
 		List<SystemDataModel> systemData = monitorService.getSystemMonitorData(currentTest.getId(), "127.0.0.1");
-		assertTrue(systemData.size()>0);
+		assertTrue(systemData.size() > 0);
 
 	}
 

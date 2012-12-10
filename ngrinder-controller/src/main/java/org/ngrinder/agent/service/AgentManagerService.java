@@ -231,7 +231,7 @@ public class AgentManagerService {
 	}
 
 	protected List<AgentInfo> getAllAgentInfoFromDB() {
-		return agentRepository.findAll();
+		return agentRepository.findAll(active());
 	}
 
 	String extractRegionFromAgentRegion(String agentRegion) {
