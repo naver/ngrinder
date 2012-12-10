@@ -77,8 +77,8 @@ public interface NGrinderConstants {
 	/**
 	 * Maximum waiting seconds until all agents are connected.
 	 */
-	public static final String NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS 
-			= "ngrinder.consoleMaxWaitingMilliseconds";
+	public static final String NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS = "ngrinder."
+					+ "consoleMaxWaitingMilliseconds";
 
 	/**
 	 * Maximum waiting seconds until all agents are connected.
@@ -189,7 +189,7 @@ public interface NGrinderConstants {
 
 	public static final String NGRINDER_PROP_CLUSTER_URIS = "ngrinder.cluster.uris";
 	public static final String NGRINDER_PROP_CLUSTER_LISTENER_PORT = "ngrinder.cluster.listener.port";
-	
+
 	// key names for distributed map of EhCache
 	public static final String CACHE_NAME_DISTRIBUTED_MAP = "distributed_map";
 	public static final String CACHE_NAME_REGION_LIST = "region_list";

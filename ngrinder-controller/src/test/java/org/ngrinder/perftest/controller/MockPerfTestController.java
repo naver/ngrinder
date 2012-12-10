@@ -34,7 +34,7 @@ public class MockPerfTestController extends PerfTestController {
 	@PostConstruct
 	public void init() {
 		AgentManagerService agentManagerService = mock(AgentManagerService.class);
-		List<String> regionList = regionService.getRegionList();
+		List<String> regionList = regionService.getRegions();
 		Map<String, MutableInt> countMap = new HashMap<String, MutableInt>(1);
 		countMap.put(config.getRegion(), new MutableInt(3));
 		when(agentManagerService.getUserAvailableAgentCountMap(regionList, userContext.getCurrentUser())).thenReturn(countMap);

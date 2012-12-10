@@ -17,4 +17,11 @@ public class MockConfig extends Config {
 	public PropertiesWrapper getSystemProperties() {
 		return wrapper;
 	}
+
+	@Override
+	public void loadSystemProperties() {
+		super.loadSystemProperties();
+		setSystemProperties(super.getSystemProperties());
+	}
+
 }

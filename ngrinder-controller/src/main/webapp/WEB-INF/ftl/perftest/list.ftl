@@ -389,6 +389,7 @@
 		    $.ajax({
 			    url: '${req.getContextPath()}/perftest/updateStatus', 
 			    type: 'POST',
+			    cache: false,
 			    data: {"ids": ids.join(",")},
 			    success: function(perfTestData) {
 			    	perfTestData = eval(perfTestData); 

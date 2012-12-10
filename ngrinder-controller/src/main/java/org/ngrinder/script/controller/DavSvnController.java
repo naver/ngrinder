@@ -235,7 +235,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 		logBuffer.append("request.getServletPath(): " + request.getServletPath());
 		logBuffer.append('\n');
 		logBuffer.append("request.getRequestURL(): " + request.getRequestURL());
-		LOGGER.info(logBuffer.toString());
+		LOGGER.trace(logBuffer.toString());
 	}
 
 	/**
@@ -292,7 +292,6 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 				}
 				errorMessageBuffer.append("</D:error>\n");
 				servletResponse.getWriter().print(errorMessageBuffer.toString());
-				System.out.println(errorMessageBuffer.toString());
 				SVNDebugLog.getDefaultLog().logFine(SVNLogType.NETWORK, errorMessageBuffer.toString());
 				return;
 			}

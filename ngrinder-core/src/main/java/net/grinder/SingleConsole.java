@@ -36,8 +36,10 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.grinder.common.GrinderException;
@@ -187,8 +189,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 *            {@link ConsoleProperties} used.
 	 */
 	public SingleConsole(String ip, int port, ConsoleProperties consoleProperties) {
-		//if port is 0, it is Null singleConsole.
-		if (port  == 0) {
+		// if port is 0, it is Null singleConsole.
+		if (port == 0) {
 			return;
 		}
 		try {
@@ -239,9 +241,10 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			return "127.0.0.1";
 		}
 	}
-	
+
 	/**
 	 * Check whether the single console is proper initialized.
+	 * 
 	 * @return true if it is initialized.
 	 */
 	public boolean isValid() {
@@ -253,7 +256,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 */
 	public void start() {
 		if (consoleFoundation == null) {
-			return; //the console is not a valid console.(NullSingleConsole)
+			return; // the console is not a valid console.(NullSingleConsole)
 		}
 		synchronized (eventSyncCondition) {
 			consoleFoundationThread = new Thread(new Runnable() {
@@ -767,6 +770,16 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		return new Date().getTime() - lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue.getTime() >= TOO_MANY_ERROR_TIME;
 	}
 
+	@SuppressWarnings("serial")
+	public static Set<String> interestingStatistics = new HashSet<String>() {
+		{
+			add("Tests");
+			add("Errors");
+			add("TPS");
+			add("Mean Test Time (ms)");
+		}
+	};
+
 	/**
 	 * To update statistics data while test is running.
 	 */
@@ -796,10 +809,12 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
 				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
 				for (ExpressionView expressionView : views) {
-					statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-									getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
-					lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-									getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
+					if (interestingStatistics.contains(expressionView.getDisplayName())) {
+						statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
+										getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
+						lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
+										getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
+					}
 				}
 
 				cumulativeStatistics.add(statistics);
@@ -811,7 +826,6 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		Map<String, Object> totalStatistics = new HashMap<String, Object>();
 
 		for (ExpressionView expressionView : views) {
-
 			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
 							getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 		}

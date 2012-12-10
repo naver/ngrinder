@@ -22,108 +22,78 @@
  */
 package org.ngrinder.region.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
+import net.grinder.util.thread.InterruptibleRunnable;
 import net.sf.ehcache.Ehcache;
 
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.schedule.ScheduledTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
 /**
- * Region service class.
- *
+ * Region service class. This class responsible to keep the status of available regions.
+ * 
  * @author Mavlarn
+ * @author JunHo Yoon
  * @since 3.1
  */
 @Service
 public class RegionService {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(RegionService.class);
 
 	@Autowired
 	private Config config;
-	
+
 	@Autowired
-	private EhCacheCacheManager cacheManager;
-	
+	private CacheManager cacheManager;
+
+	@Autowired
+	private ScheduledTask scheduledTask;
+
+	private Cache regionCache;
+
 	/**
 	 * Set current region into cache, using the IP as key and region name as value.
 	 * 
 	 */
 	@PostConstruct
 	public void initRegion() {
-		String currentRegion = config.getRegion();
-		String currentIP = config.getCurrentIP();
-		Cache distCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
-
-		@SuppressWarnings("rawtypes")
-		List list = ((Ehcache) distCache.getNativeCache()).getKeys();
-		for (Object object : list) {
-			if (!(object instanceof String)) {
-				LOG.info("Evict invalid cache: {}:{} from cache.", object, distCache.get(object));
-				distCache.evict(object);
-			} else {
-				String ip = (String) object;
-				String region = (String) distCache.get(object).get();
-				if (ip.equals(currentIP) && !region.equals(currentRegion)) {
-					// ip is same, region is different, means the region name is changed
-					LOG.info("Evict invalid Region: {}:{} from cache.", region, currentIP);
-					distCache.evict(region); // remove previous region name.
-				}
+		regionCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
+		scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
+			@Override
+			public void interruptibleRun() {
+				String region = config.getRegion();
+				String currentIP = config.getCurrentIP();
+				regionCache.put(region, currentIP);
+				LOG.info("Add Region: {}:{} into cache.", region, currentIP);
 			}
-		}
-		distCache.put(currentIP, currentRegion);
-		LOG.info("Add Region: {}:{} into cache.", currentRegion, currentIP);
+		});
 	}
-	
+
+	@PreDestroy
+	public void destroy() {
+		regionCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
+		regionCache.evict(config.getRegion());
+	}
+
 	/**
 	 * get region list of all clustered controller.
+	 * 
 	 * @return region list
 	 */
-	public List<String> getRegionList() {
-		Cache distCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
-		@SuppressWarnings("rawtypes")
-		List list = ((Ehcache) distCache.getNativeCache()).getKeys();
-		List<String> regionList = new ArrayList<String>();
-		List<String> ipList = new ArrayList<String>();
-		for (Object object : list) {
-			ipList.add((String) object);
-			regionList.add((String) distCache.get(object).get());
-		}
-		LOG.debug("Region list from cache:{}, ip:{}", regionList, ipList);
-		return regionList;
+	@SuppressWarnings("unchecked")
+	public List<String> getRegions() {
+		return (List<String>) ((Ehcache) regionCache.getNativeCache()).getKeysWithExpiryCheck();
 	}
-	
-	/**
-	 * just for test and debug.
-	 */
-	@Scheduled(fixedDelay = 10000)
-	public void test() {
-		testDistCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
-		//testDistCache(NGrinderConstants.CACHE_NAME_RUNNING_STATISTICS);
-	}
-	
-	private void testDistCache(String cacheName) {
-		Cache distCache = cacheManager.getCache(cacheName);
-		@SuppressWarnings("rawtypes")
-		List list = ((Ehcache) distCache.getNativeCache()).getKeys();
-		StringBuilder valueSB = new StringBuilder();
-		StringBuilder keySB = new StringBuilder();
-		for (Object object : list) {
-			keySB.append(object).append(",");
-			valueSB.append(distCache.get(object).get()).append(",");
-		}
-		LOG.debug("Cache :{} key:{} value:{}", new String[]{cacheName, keySB.toString(), valueSB.toString()});
-	}
-
 }

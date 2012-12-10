@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<databaseChangeLog
-    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
-   
-	<changeSet author="ngrinder.3.0-SNAPSHOT" id="7"  dbms="h2, cubrid" onValidationFail="MARK_RAN">
-				<preConditions onFail="MARK_RAN">
-					<not>
-					<tableExists tableName="SHARED_USER"/>
-					</not>
-				</preConditions>
-				<comment>Add table SHARED_USER for user share function .</comment>
-				
-				<createTable tableName="SHARED_USER">
-				     <column name="owner_id" type="bigint">
-				       <constraints primaryKey="true" nullable="false"/>
-    				 </column>
-				     <column name="follow_id" type="bigint" >
-				       <constraints primaryKey="true" nullable="false"/>
-    				 </column>
-				</createTable>
+
+	<changeSet author="ngrinder.3.0-SNAPSHOT" id="7" dbms="h2, cubrid" onValidationFail="MARK_RAN">
+		<preConditions onFail="MARK_RAN">
+			<not>
+				<tableExists tableName="SHARED_USER" />
+			</not>
+		</preConditions>
+		<comment>Add table SHARED_USER for user share function .</comment>
+
+		<createTable tableName="SHARED_USER">
+			<column name="owner_id" type="bigint">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+			<column name="follow_id" type="bigint">
+				<constraints primaryKey="true" nullable="false" />
+			</column>
+		</createTable>
 	</changeSet>
 </databaseChangeLog>

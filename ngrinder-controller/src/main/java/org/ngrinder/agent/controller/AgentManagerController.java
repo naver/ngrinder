@@ -75,7 +75,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	 */
 	@RequestMapping({ "", "/", "/list" })
 	public String getAgentList(ModelMap model) {
-		List<AgentInfo> agents = agentService.getAgentList();
+		List<AgentInfo> agents = agentService.getAgentListOnDB();
 		model.addAttribute("agents", agents);
 
 		File directory = config.getHome().getDownloadDirectory();

@@ -34,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Region Service Test class.
- *
+ * 
  * @author mavlarn
  * @Since 3.1
  */
@@ -42,15 +42,14 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private Config config;
-	
+
 	@Autowired
 	private RegionService regionService;
-	
+
 	@Test
 	public void testGetRegionList() {
-		List<String> regionlist = regionService.getRegionList();
+		List<String> regionlist = regionService.getRegions();
 		LOG.debug("list:{}", regionlist);
 		assertThat(regionlist.contains(config.getRegion()), is(true));
-		regionService.test();
 	}
 }

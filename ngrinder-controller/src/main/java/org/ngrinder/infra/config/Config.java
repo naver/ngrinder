@@ -38,11 +38,9 @@ import net.grinder.util.NetworkUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.monitor.FileAlterationListener;
-import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
-import org.apache.commons.io.monitor.FileAlterationMonitor;
-import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.helpers.FileWatchdog;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.model.Home;
@@ -70,7 +68,7 @@ public class Config implements IConfig {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
 	private static final String NGRINDER_EX_FOLDER = ".ngrinder_ex";
 	public static final String MONITOR_FILE_PREFIX = "monitor_system_";
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(Config.class);
 	private Home home = null;
 	private Home exHome = null;
@@ -82,15 +80,10 @@ public class Config implements IConfig {
 	private boolean verbose;
 	private String currentIP;
 
-	static final int NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT = 40003;
-	private boolean isCluster;
-	private String[] clusterURIs;
-	
-	private String region;
+	public static final int NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT = 40003;
+
 	public static final String NON_REGION = "NONE";
-	
-	private FileAlterationMonitor homeMonitor;
-	
+
 	/**
 	 * Make it singleton.
 	 */
@@ -105,84 +98,73 @@ public class Config implements IConfig {
 	@PostConstruct
 	public void init() {
 		try {
+			CoreLogger.LOGGER.info("NGrinder is starting...");
 			home = resolveHome();
 			exHome = resolveExHome();
 			copyDefaultConfigurationFiles();
-			copyExtConfigurationFiles();
-
 			loadIntrenalProperties();
 			loadSystemProperties();
-			loadExtendProperties();
 			loadAnnouncement();
-			initLogger(isTestMode());
-			currentIP = NetworkUtil.getLocalHostAddress();
-			CoreLogger.LOGGER.info("NGrinder is starting...");
-			loadDatabaseProperties();
-			versionString = getVesion();
-			
-			//check cluster, get cluster configuration for ehcache
-			loadClusterConfig();
 			initHomeMonitor();
+			initLogger(isTestMode());
+			resolveLocalIp();
+			loadDatabaseProperties();
+			// check cluster, get cluster configuration for ehcache
+			verifyClusterConfig();
+			versionString = getVesion();
 		} catch (IOException e) {
-			throw new ConfigurationException("Error while loading NGRINDER_HOME", e);
+			throw new ConfigurationException("Error while init nGrinder", e);
 		}
 	}
-	
+
+	protected void resolveLocalIp() {
+		currentIP = NetworkUtil.getLocalHostAddress();
+	}
+
 	/**
-	 * Initialize cache cluster configuration.
+	 * Verify clustering is set up well.
 	 * 
 	 * @since 3.1
 	 */
-	protected void loadClusterConfig() {
-		String clusterUri = getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_CLUSTER_URIS, null);
-
-		if (StringUtils.isBlank(clusterUri)) {
-			return;
+	protected void verifyClusterConfig() {
+		if (isCluster()) {
+			if (getRegion().equals(NON_REGION)) {
+				LOG.error("Region is not set in cluster mode. Please set region properly.");
+			} else {
+				CoreLogger.LOGGER.info("Cache cluster URIs:{}", getClusterURIs());
+				// set rmi server host for remote serving. Otherwise, maybe it will use 127.0.0.1 to
+				// serve.
+				// then the remote client can not connect.
+				CoreLogger.LOGGER.info("Set current IP:{} for RMI server.", getCurrentIP());
+				System.setProperty("java.rmi.server.hostname", getCurrentIP());
+			}
 		}
-		isCluster = true;
-		String currentIP = NetworkUtil.getLocalHostAddress();
-		this.clusterURIs = StringUtils.split(clusterUri, ";");
-		LOG.info("Cache cluster URIs:{}", clusterURIs);
-		
-		// set rmi server host for remote serving. Otherwise, maybe it will use 127.0.0.1 to serve.
-		// then the remote client can not connect.
-		LOG.info("Set current IP:{} for RMI server.", currentIP);
-		System.setProperty("java.rmi.server.hostname", currentIP);
-		return;		 
 	}
-	
+
 	/**
 	 * Check whether the cache cluster is set.
+	 * 
 	 * @return true is cache cluster set
-	 */
-	public boolean isCluster() {
-		return this.isCluster;
-	}
-	
-	/*
-	 * return the cluster URIs in configuration.
-	 */
-	public String[] getClusterURIs() {
-		return this.clusterURIs;
-	}	
-	
-	/**
-	 * Load and initialize extended properties from .ngrinder_ex configuration directory.
 	 * @since 3.1
 	 */
-	protected void loadExtendProperties() {
-		Properties properties = exHome.getProperties("system-ex.conf");
-		String regionStr = properties.getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION);
-		region = StringUtils.isBlank(regionStr) ? NON_REGION : regionStr.trim();
-		if (isCluster && region.equals(NON_REGION)) {
-			LOG.warn("Region is not set in cluster mode. Please set region properly.");
-		}
+	public boolean isCluster() {
+		return ArrayUtils.isNotEmpty(getClusterURIs()) && !StringUtils.equals(getRegion(), NON_REGION);
 	}
-	
+
+	/**
+	 * Get the cluster URIs in configuration.
+	 * 
+	 * @return cluster uri strings
+	 */
+	public String[] getClusterURIs() {
+		String clusterUri = getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_CLUSTER_URIS, "");
+		return StringUtils.split(clusterUri, ";");
+	}
+
 	public String getRegion() {
-		return region;
+		return getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION);
 	}
-	
+
 	/**
 	 * Initialize Logger.
 	 * 
@@ -199,7 +181,7 @@ public class Config implements IConfig {
 	 * @param verbose
 	 *            verbose mode?
 	 */
-	public void setupLogger(boolean verbose) {
+	protected void setupLogger(boolean verbose) {
 		this.verbose = verbose;
 		final LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 		final JoranConfigurator configurator = new JoranConfigurator();
@@ -207,8 +189,9 @@ public class Config implements IConfig {
 		context.reset();
 		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
 		context.putProperty("LOG_DIRECTORY", getHome().getGloablLogFile().getAbsolutePath());
+		String region = getRegion();
 		context.putProperty("SUFFIX", region.equals(NON_REGION) ? "" : "_" + region);
-		
+
 		try {
 			configurator.doConfigure(new ClassPathResource("/logback/logback-ngrinder.xml").getFile());
 		} catch (JoranException e) {
@@ -224,7 +207,7 @@ public class Config implements IConfig {
 	 * @throws IOException
 	 *             occurs when there is no such a files.
 	 */
-	private void copyDefaultConfigurationFiles() throws IOException {
+	protected void copyDefaultConfigurationFiles() throws IOException {
 		checkNotNull(home);
 		home.copyFrom(new ClassPathResource("ngrinder_home_template").getFile(), false);
 		home.makeSubPath(PLUGIN_PATH);
@@ -233,36 +216,24 @@ public class Config implements IConfig {
 	}
 
 	/**
-	 * Copy extended configuration files.
-	 * 
-	 * @since 3.1
-	 * @throws IOException
-	 *             occurs when there is no such a files.
-	 */
-	private void copyExtConfigurationFiles() throws IOException {
-		checkNotNull(exHome);
-		exHome.copyFrom(new ClassPathResource("ngrinder_ex_home_template").getFile(), false);
-	}
-
-	/**
 	 * Resolve nGrinder home path.
 	 * 
 	 * @return resolved home
 	 */
-	private Home resolveHome() {
+	protected Home resolveHome() {
 		String userHomeFromEnv = System.getenv("NGRINDER_HOME");
 		String userHomeFromProperty = System.getProperty("ngrinder.home");
 		if (!StringUtils.equals(userHomeFromEnv, userHomeFromProperty)) {
-			LOG.warn("The path to ngrinder-home is ambiguous:");
-			LOG.warn("    System Environment:  NGRINDER_HOME=" + userHomeFromEnv);
-			LOG.warn("    Java Sytem Property:  ngrinder.home=" + userHomeFromProperty);
-			LOG.warn("    '" + userHomeFromProperty + "' is accepted.");
+			CoreLogger.LOGGER.warn("The path to ngrinder-home is ambiguous:");
+			CoreLogger.LOGGER.warn("    System Environment:  NGRINDER_HOME=" + userHomeFromEnv);
+			CoreLogger.LOGGER.warn("    Java Sytem Property:  ngrinder.home=" + userHomeFromProperty);
+			CoreLogger.LOGGER.warn("    '" + userHomeFromProperty + "' is accepted.");
 		}
 		String userHome = null;
 		userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
 		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
 						System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
-		LOG.info("nGrinder home directory:{}.", userHome);
+		CoreLogger.LOGGER.info("nGrinder home directory:{}.", userHome);
 
 		return new Home(homeDirectory);
 	}
@@ -272,22 +243,22 @@ public class Config implements IConfig {
 	 * 
 	 * @return resolved home
 	 */
-	private Home resolveExHome() {
+	protected Home resolveExHome() {
 		String exHomeFromEnv = System.getenv("NGRINDER_EX_HOME");
 		String exHomeFromProperty = System.getProperty("ngrinder.exhome");
 		if (!StringUtils.equals(exHomeFromEnv, exHomeFromProperty)) {
-			LOG.warn("The path to ngrinder-exhome is ambiguous:");
-			LOG.warn("    System Environment:  NGRINDER_EX_HOME=" + exHomeFromEnv);
-			LOG.warn("    Java Sytem Property:  ngrinder.exhome=" + exHomeFromProperty);
-			LOG.warn("    '" + exHomeFromProperty + "' is accepted.");
+			CoreLogger.LOGGER.warn("The path to ngrinder-exhome is ambiguous:");
+			CoreLogger.LOGGER.warn("    System Environment:  NGRINDER_EX_HOME=" + exHomeFromEnv);
+			CoreLogger.LOGGER.warn("    Java Sytem Property:  ngrinder.exhome=" + exHomeFromProperty);
+			CoreLogger.LOGGER.warn("    '" + exHomeFromProperty + "' is accepted.");
 		}
 		String userHome = null;
 		userHome = StringUtils.defaultIfEmpty(exHomeFromProperty, exHomeFromEnv);
 		File exHomeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
 						System.getProperty("user.home"), NGRINDER_EX_FOLDER);
-		LOG.info("nGrinder ex home directory:{}.", exHomeDirectory);
+		CoreLogger.LOGGER.info("nGrinder ex home directory:{}.", exHomeDirectory);
 
-		return new Home(exHomeDirectory);
+		return new Home(exHomeDirectory, false);
 	}
 
 	/**
@@ -301,7 +272,7 @@ public class Config implements IConfig {
 			properties.load(inputStream);
 			internalProperties = new PropertiesWrapper(properties);
 		} catch (IOException e) {
-			LOG.error("Error while load internal.properties", e);
+			CoreLogger.LOGGER.error("Error while load internal.properties", e);
 			internalProperties = new PropertiesWrapper(properties);
 		} finally {
 			IOUtils.closeQuietly(inputStream);
@@ -326,9 +297,14 @@ public class Config implements IConfig {
 		checkNotNull(home);
 		Properties properties = home.getProperties("system.conf");
 		properties.put("NGRINDER_HOME", home.getDirectory().getAbsolutePath());
+		// Override if exists
+		if (exHome.exists()) {
+			Properties exProperties = exHome.getProperties("system-ex.conf");
+			properties.putAll(exProperties);
+		}
 		systemProperties = new PropertiesWrapper(properties);
 	}
-	
+
 	/**
 	 * Load announcement content.
 	 */
@@ -339,36 +315,45 @@ public class Config implements IConfig {
 			announcement = FileUtils.readFileToString(sysFile, "UTF-8");
 			return;
 		} catch (IOException e) {
-			LOG.error("Error while reading announcement file.", e);
+			CoreLogger.LOGGER.error("Error while reading announcement file.", e);
 			announcement = "";
 		}
 	}
-	
+
+	/** Configuration watch docs */
+	private FileWatchdog announcementWatchDog;
+	private FileWatchdog systemConfWatchDog;
+	private FileWatchdog policyJsWatchDog;
+
 	private void initHomeMonitor() {
 		checkNotNull(home);
-		FileAlterationObserver observer = new FileAlterationObserver(home.getDirectory());
-		homeMonitor = new FileAlterationMonitor(5000);
-        FileAlterationListener listener = new FileAlterationListenerAdaptor() {
-        	
-        	@Override
-        	public void onFileChange(File file) {
-        		if (file.getPath().contains("announcement.conf")) {
-        			LOG.info("Announcement file changed.");
-        			loadAnnouncement();
-        		}
-        		if (file.getPath().contains("system.conf")) {
-        			LOG.info("System confi file changed.");
-        			loadSystemProperties();
-        		}
-        	}
-        };
-        observer.addListener(listener);
-        homeMonitor.addObserver(observer);
-        try {
-        	homeMonitor.start();
-		} catch (Exception e) {
-			LOG.error("Start home directory monitor failed:" + e.getMessage(), e);
-		}
+		this.announcementWatchDog = new FileWatchdog(getHome().getSubFile("announcement.conf").getAbsolutePath()) {
+			@Override
+			protected void doOnChange() {
+				CoreLogger.LOGGER.info("Announcement file changed.");
+				loadAnnouncement();
+			}
+		};
+		announcementWatchDog.setDelay(2000);
+		announcementWatchDog.start();
+		this.systemConfWatchDog = new FileWatchdog(getHome().getSubFile("system.conf").getAbsolutePath()) {
+			@Override
+			protected void doOnChange() {
+				CoreLogger.LOGGER.info("Announcement file changed.");
+				loadSystemProperties();
+			}
+		};
+		systemConfWatchDog.setDelay(2000);
+		systemConfWatchDog.start();
+		this.policyJsWatchDog = new FileWatchdog(getHome().getSubFile("process_and_thread_policy.js").getAbsolutePath()) {
+			@Override
+			protected void doOnChange() {
+				CoreLogger.LOGGER.info("process_and_thread_policy file changed.");
+				policyScript = "";
+			}
+		};
+		policyJsWatchDog.setDelay(2000);
+		policyJsWatchDog.start();
 	}
 
 	/**
@@ -434,18 +419,16 @@ public class Config implements IConfig {
 	 * @return {@link PropertiesWrapper} which is loaded from system.conf.
 	 */
 	public PropertiesWrapper getSystemProperties() {
-		checkNotNull(systemProperties);
-		return systemProperties;
+		return checkNotNull(systemProperties);
 	}
-	
+
 	/**
 	 * Get announcement content.
 	 * 
 	 * @return loaded from announcement.conf.
 	 */
 	public String getAnnouncement() {
-		checkNotNull(announcement);
-		return announcement;
+		return checkNotNull(announcement);
 	}
 
 	/**

@@ -24,6 +24,7 @@ package org.ngrinder.agent.repository;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -31,55 +32,29 @@ import org.ngrinder.agent.model.AgentInfo;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
- * Class description.
- *
+ * Agent Manager JPA Specification/
+ * 
  * @author Mavlarn
+ * @author JunHo Yoon
  * @since 3.1
  */
 public abstract class AgentManagerSpecification {
 
 	/**
 	 * Query specification which the region column start the specified region.
+	 * 
 	 * @param region
-	 * 				specified region to query
-	 * @return
-	 * 			Specification of this query
+	 *            specified region to query
+	 * @return Specification of this query
 	 */
 	public static Specification<AgentInfo> startWithRegion(final String region) {
 		return new Specification<AgentInfo>() {
 			@Override
 			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				String queryStr = region + "%";
-				return cb.like(root.get("region").as(String.class), queryStr);
+				String queryStr = region + "_%";
+				Expression<String> regionField = root.get("region").as(String.class);
+				return cb.or(cb.like(regionField, queryStr), cb.equal(regionField, queryStr));
 			}
 		};
 	}
-
-	/**
-	 * query specification to get available agents for user.
-	 * condition is:
-			1. the ready agents in this region
-			2. user specified agent, which name is: ${region} | "_" + {anykeywork} + "owned_${userId}"
-	 * @param region
-	 * 				agent region.
-	 * @param status
-	 * 				agent status
-	 * @param user
-	 * 				specified user.
-	 * @return
-	 */
-//	public static Specification<AgentInfo> startWithRegionEqualStatusOfUser(final String region,
-//			final AgentControllerState status, final User user) {
-//		return new Specification<AgentInfo>() {
-//			@Override
-//			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-//				String regionQueryStr = region + "%";
-//				String userQueryStr = region + "%owned_" + user.getUserId() + "%";
-//				
-//				return cb.and(cb.or(cb.like(root.get("region").as(String.class), regionQueryStr),
-//									cb.like(root.get("region").as(String.class), userQueryStr)),
-//						cb.equal(root.get("status"), status));
-//			}
-//		};
-//	}
 }

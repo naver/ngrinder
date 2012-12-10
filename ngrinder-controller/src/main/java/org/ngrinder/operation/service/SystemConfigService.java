@@ -1,6 +1,5 @@
 package org.ngrinder.operation.service;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
@@ -30,9 +29,8 @@ public class SystemConfigService {
 	 * @return file content.
 	 */
 	public String getSystemConfigFile() {
-		File sysFile = config.getHome().getSubFile("system.conf");
 		try {
-			return FileUtils.readFileToString(sysFile, "UTF-8");
+			return FileUtils.readFileToString(config.getHome().getSubFile("system.conf"), "UTF-8");
 		} catch (Exception e) {
 			LOG.error("Error while reading system configuration file.");
 			return null;
@@ -43,20 +41,16 @@ public class SystemConfigService {
 	 * Save content to system configuration file.
 	 * 
 	 * @param content
-	 * 			file content.
+	 *            file content.
 	 * @return save successfully or not.
 	 */
 	public boolean saveSystemConfigFile(String content) {
-		File sysFile = config.getHome().getSubFile("system.conf");
-
 		try {
-			FileUtils.writeStringToFile(sysFile, content);
+			FileUtils.writeStringToFile(config.getHome().getSubFile("system.conf"), content);
 		} catch (IOException e) {
 			LOG.error("Error while writing system configuration file.");
 			return false;
 		}
-		config.loadSystemProperties(); //refresh the content of systemProperties.
-		
 		return true;
 	}
 }

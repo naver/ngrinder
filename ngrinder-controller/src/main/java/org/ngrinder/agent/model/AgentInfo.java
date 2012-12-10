@@ -56,10 +56,8 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	private String ip;
 
 	/**
-	 * agent application port. It's only available when the connection is
-	 * re-established.
+	 * agent application port. It's only available when the connection is re-established.
 	 */
-	@Transient
 	private Integer port;
 
 	@Transient
@@ -72,7 +70,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 
 	@Enumerated(EnumType.STRING)
 	private AgentControllerState status;
-	
+
 	private String region;
 
 	@Column(name = "agent_number")
@@ -127,9 +125,6 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 			return false;
 		}
 		AgentInfo other = (AgentInfo) obj;
-		if (getPort() != other.getPort()) {
-			return false;
-		}
 		if (ip == null) {
 			if (other.ip != null) {
 				return false;
@@ -180,7 +175,8 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	}
 
 	/**
-	 * @param number the number to set
+	 * @param number
+	 *            the number to set
 	 */
 	public void setNumber(int number) {
 		this.number = number;

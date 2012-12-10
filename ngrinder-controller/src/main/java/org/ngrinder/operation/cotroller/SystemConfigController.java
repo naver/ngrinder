@@ -9,7 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-/** 
+/**
  * System configuration controller.
  * 
  * @author Alex Qin
@@ -19,36 +19,35 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/operation/systemConfig")
 @PreAuthorize("hasAnyRole('A', 'S')")
 public class SystemConfigController extends NGrinderBaseController {
-	
+
 	@Autowired
-	private SystemConfigService systenConfigService;
-	
+	private SystemConfigService systemConfigService;
+
 	/**
 	 * open system configuration editor.
 	 * 
 	 * @param model
-	 * 			model.
+	 *            model.
 	 * @return operation/systemConfig
 	 */
 	@RequestMapping("")
 	public String openSystemConfiguration(Model model) {
-		model.addAttribute("content", systenConfigService.getSystemConfigFile());
-		
+		model.addAttribute("content", systemConfigService.getSystemConfigFile());
 		return "operation/systemConfig";
 	}
-	
+
 	/**
 	 * Save system configuration.
+	 * 
 	 * @param model
-	 * 			model.
+	 *            model.
 	 * @param content
-	 * 			file content.
+	 *            file content.
 	 * @return operation/systemConfig
 	 */
 	@RequestMapping("/save")
 	public String saveSystemConfiguration(Model model, @RequestParam final String content) {
-		model.addAttribute("success", systenConfigService.saveSystemConfigFile(content));
-		
+		model.addAttribute("success", systemConfigService.saveSystemConfigFile(content));
 		return openSystemConfiguration(model);
 	}
 }

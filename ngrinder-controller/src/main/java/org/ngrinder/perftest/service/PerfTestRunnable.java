@@ -112,7 +112,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	@Autowired
 	private ApplicationContext appContext;
 
-	private List<OnTestSamplingRunnable> testSamplingRnnables;
+	private List<OnTestSamplingRunnable> testSamplingRunnables;
 
 	/**
 	 * Initialize plugin manager to register plugin update event.
@@ -124,7 +124,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	private void pluginInit() {
-		this.testSamplingRnnables = pluginManager.getEnabledModulesByClass(OnTestSamplingRunnable.class);
+		this.testSamplingRunnables = pluginManager.getEnabledModulesByClass(OnTestSamplingRunnable.class);
 	}
 
 	/**
@@ -383,7 +383,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 						LOG.debug(e.getMessage(), e);
 					}
 				}
-				for (OnTestSamplingRunnable each : testSamplingRnnables) {
+				for (OnTestSamplingRunnable each : testSamplingRunnables) {
 					try {
 						each.startSampling(singleConsole, perfTest, perfTestService);
 					} catch (Exception e) {
@@ -407,7 +407,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 				monitorRecordWriterMap.clear();
 				monitorClientsMap.clear();
 
-				for (OnTestSamplingRunnable each : testSamplingRnnables) {
+				for (OnTestSamplingRunnable each : testSamplingRunnables) {
 					try {
 						each.endSampling(singleConsole, perfTest, perfTestService);
 					} catch (Exception e) {
@@ -428,7 +428,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 				perfTestService.getAndPutAgentsInfo(perfTest.getRegion(), perfTest.getPort());
 				perfTestService.getAndPutStatistics(perfTest.getRegion(), perfTest.getPort());
 
-				for (OnTestSamplingRunnable each : testSamplingRnnables) {
+				for (OnTestSamplingRunnable each : testSamplingRunnables) {
 					try {
 						each.sampling(singleConsole, perfTest, perfTestService, intervalStatistics,
 										cumulativeStatistics);

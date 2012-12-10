@@ -155,6 +155,7 @@
 			  		url: "${req.getContextPath()}/agent/stop",
 			  		type: "POST",
 			  		data: {"ids" : ids},
+			  		cache: false,
 					dataType:'json',
 			    	success: function(res) {
 			    		if (res.success) {

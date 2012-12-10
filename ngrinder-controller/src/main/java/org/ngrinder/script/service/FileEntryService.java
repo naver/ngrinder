@@ -37,8 +37,6 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -52,8 +50,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -93,7 +91,7 @@ public class FileEntryService {
 
 	@Autowired
 	@Qualifier("cacheManager")
-	private EhCacheCacheManager cacheManager;
+	private CacheManager cacheManager;
 
 	@Autowired
 	private FileEntryRepository fileEntityRepository;
@@ -165,27 +163,6 @@ public class FileEntryService {
 	@Cacheable(value = "file_entry_search_cache", key = "#user.userId")
 	public List<FileEntry> getAllFileEntries(User user) {
 		return fileEntityRepository.findAll(user);
-	}
-
-	/**
-	 * Get all {@link FileEntry} for the given user which has give {@link FileType}.
-	 * 
-	 * @param user
-	 *            user
-	 * @param fileType
-	 *            fileType
-	 * @return cached {@link FileEntry} list
-	 */
-	public List<FileEntry> getAllFileEntries(User user, FileType fileType) {
-		List<FileEntry> fileEntryList = getAllFileEntries(user);
-		// Only python script is allowed right now.
-		CollectionUtils.filter(fileEntryList, new Predicate() {
-			@Override
-			public boolean evaluate(Object object) {
-				return ((FileEntry) object).getFileType() == FileType.PYTHON_SCRIPT;
-			}
-		});
-		return fileEntryList;
 	}
 
 	/**
