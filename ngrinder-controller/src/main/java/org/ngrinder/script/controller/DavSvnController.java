@@ -292,7 +292,6 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 				}
 				errorMessageBuffer.append("</D:error>\n");
 				servletResponse.getWriter().print(errorMessageBuffer.toString());
-				System.out.println(errorMessageBuffer.toString());
 				SVNDebugLog.getDefaultLog().logFine(SVNLogType.NETWORK, errorMessageBuffer.toString());
 				return;
 			}
