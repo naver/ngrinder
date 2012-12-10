@@ -142,7 +142,7 @@
             }
             function getMonitorData(){
                 $.ajax({
-                    url: "${req.getContextPath()}/monitor/getCurrentMonitorData",
+                    url: "${req.getContextPath()}/agent/systemDataModel",
                     async: false,
 					cache: false,
                     dataType:'json',

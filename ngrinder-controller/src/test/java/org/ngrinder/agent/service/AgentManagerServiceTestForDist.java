@@ -46,7 +46,7 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 
 		agentManagerService = new AgentManagerService() {
 			@Override
-			protected List<AgentInfo> getAllAgentInfoFromDB() {
+			public List<AgentInfo> getAllActiveAgentInfoFromDB() {
 				return new ArrayList<AgentInfo>() {
 					{
 						add(createAgentInfo("hello", true, AgentControllerState.READY));
@@ -63,9 +63,7 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 						add(createAgentInfo("wowo", true, AgentControllerState.READY));
 						add(createAgentInfo("wowo", true, AgentControllerState.READY));
 						add(createAgentInfo("wowo", false, AgentControllerState.READY));
-						add(createAgentInfo("wowo", true, AgentControllerState.INACTIVE));
 						add(createAgentInfo("kiki", false, AgentControllerState.READY));
-						add(createAgentInfo("kiki", true, AgentControllerState.INACTIVE));
 
 					}
 				};
@@ -94,6 +92,7 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 		user.setUserId("haha");
 		Map<String, MutableInt> userAvailableAgentCountMap = agentManagerService.getUserAvailableAgentCountMap(regions,
 						user);
+		System.out.println(userAvailableAgentCountMap);
 		assertThat(userAvailableAgentCountMap.containsKey("kiki"), is(false));
 		assertThat(userAvailableAgentCountMap.get("hello").intValue(), is(2));
 		assertThat(userAvailableAgentCountMap.get("haha").intValue(), is(3));

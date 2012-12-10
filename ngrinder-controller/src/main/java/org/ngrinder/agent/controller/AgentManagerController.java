@@ -25,7 +25,9 @@ package org.ngrinder.agent.controller;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -36,6 +38,7 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -58,7 +61,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class AgentManagerController extends NGrinderBaseController {
 
 	@Autowired
-	private AgentManagerService agentService;
+	private AgentManagerService agentManagerService;
 
 	@Autowired
 	private Config config;
@@ -75,7 +78,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	 */
 	@RequestMapping({ "", "/", "/list" })
 	public String getAgentList(ModelMap model) {
-		List<AgentInfo> agents = agentService.getAllActiveAgentInfoFromDB();
+		List<AgentInfo> agents = agentManagerService.getAllActiveAgentInfoFromDB();
 		model.addAttribute("agents", agents);
 
 		File directory = config.getHome().getDownloadDirectory();
@@ -85,8 +88,7 @@ public class AgentManagerController extends NGrinderBaseController {
 			@Override
 			public boolean accept(File dir, String name) {
 				if (name.startsWith("ngrinder")) {
-					StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url",
-									contextPath));
+					StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url", contextPath));
 					url.append("/agent/download/" + name);
 					downloads.add(url.toString());
 				}
@@ -108,8 +110,8 @@ public class AgentManagerController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "approve", method = RequestMethod.POST)
 	public String approveAgent(@RequestParam("id") Long id,
-					@RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve) {
-		agentService.approve(id, approve);
+			@RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve) {
+		agentManagerService.approve(id, approve);
 		return "agent/agentList";
 	}
 
@@ -125,7 +127,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	public String stopAgent(@RequestParam("ids") String ids) {
 		String[] split = StringUtils.split(ids, ",");
 		for (String each : split) {
-			agentService.stopAgent(Long.parseLong(each));
+			agentManagerService.stopAgent(Long.parseLong(each));
 		}
 		return returnSuccess();
 	}
@@ -141,7 +143,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/detail")
 	public String getAgent(ModelMap model, @RequestParam(required = false) Long id) {
-		AgentInfo agent = agentService.getAgent(id);
+		AgentInfo agent = agentManagerService.getAgent(id);
 		model.addAttribute("agent", agent);
 		return "agent/agentDetail";
 	}
@@ -159,4 +161,26 @@ public class AgentManagerController extends NGrinderBaseController {
 		File ngrinderFile = new File(config.getHome().getDownloadDirectory(), fileName);
 		FileDownloadUtil.downloadFile(response, ngrinderFile);
 	}
+
+	/**
+	 * Get the current system performance info for given ip.
+	 * 
+	 * @param model
+	 *            model
+	 * @param id
+	 *            id
+	 * @return json message
+	 */
+	@RequestMapping("/systemDataModel")
+	@ResponseBody
+	public String getCurrentMonitorData(ModelMap model, @RequestParam Long id) {
+		Map<String, Object> returnMap = new HashMap<String, Object>(3);
+		agentManagerService.requestShareAgentSystemDataModel(id);
+		SystemDataModel systemData = agentManagerService.getAgentSystemDataModel(id);
+		systemData = systemData != null ? systemData : new SystemDataModel();
+		returnMap.put(JSON_SUCCESS, true);
+		returnMap.put("systemData", systemData);
+		return toJson(returnMap);
+	}
+
 }

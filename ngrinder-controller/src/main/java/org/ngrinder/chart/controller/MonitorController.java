@@ -27,13 +27,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.grinder.common.processidentity.AgentIdentity;
-
-import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.chart.service.MonitorService;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
-import org.ngrinder.perftest.service.AgentManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -55,31 +51,6 @@ public class MonitorController extends NGrinderBaseController {
 	private MonitorService monitorService;
 
 	@Autowired
-	private AgentManager agentManager;
-
-	@Autowired
-	private AgentManagerService agentManagerService;
-
-	/**
-	 * Get the current system performance info for given ip.
-	 * 
-	 * @param model
-	 *            model
-	 * @param id
-	 *            id
-	 * @return json message
-	 */
-	@RequestMapping("/getCurrentMonitorData")
-	@ResponseBody
-	public String getCurrentMonitorData(ModelMap model, @RequestParam Long id) {
-		Map<String, Object> returnMap = new HashMap<String, Object>(3);
-		agentManagerService.requestShareAgentSystemDataModel(id);
-		SystemDataModel systemData = agentManagerService.getAgentSystemDataModel(id);
-		systemData = systemData != null ? systemData : new SystemDataModel();
-		returnMap.put(JSON_SUCCESS, true);
-		returnMap.put("systemData", systemData);
-		return toJson(returnMap);
-	}
 
 	/**
 	 * Get monitor data of agents.
@@ -98,7 +69,6 @@ public class MonitorController extends NGrinderBaseController {
 	@ResponseBody
 	public String getMonitorData(ModelMap model, @RequestParam(required = true) long testId,
 					@RequestParam(required = true) String monitorIP, @RequestParam int imgWidth) {
-
 		Map<String, Object> rtnMap = new HashMap<String, Object>(7);
 		rtnMap.put("SystemData", this.getMonitorDataSystem(testId, monitorIP, imgWidth));
 		rtnMap.put(JSON_SUCCESS, true);

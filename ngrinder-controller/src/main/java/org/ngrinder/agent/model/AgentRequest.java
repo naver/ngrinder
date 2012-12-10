@@ -41,7 +41,7 @@ public class AgentRequest implements Serializable {
 			public void process(Long agentId, AgentManager agentManager, AgentManagerService agentManagerService,
 							AgentControllerIdentityImplementation agentIdentity) {
 				// TODO Auto-generated method stub
-				agentManagerService.saveMonitoringDataOnCache(agentId, agentManager.getSystemDataModel(agentIdentity));
+				agentManagerService.addAgentMonitoringTarget(agentId, agentIdentity);
 			}
 		};
 

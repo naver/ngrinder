@@ -285,7 +285,7 @@ public class AgentManager implements NGrinderConstants {
 		if (agents.size() == 0) {
 			return agents;
 		}
-		List<AgentInfo> findAll = agentService.getAgentListInThisRegionOnDB();
+		List<AgentInfo> findAll = agentService.getAgentListInThisRegionFromDB();
 		Set<String> ips = new HashSet<String>();
 		for (AgentInfo each : findAll) {
 			if (each.isApproved()) {

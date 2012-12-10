@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**
- * Convenient class which make scheduled task.
+ * Convenient class which makes scheduled task.
  * 
  * @author JunHo Yoon
  * @since 3.1
