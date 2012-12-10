@@ -25,6 +25,7 @@ package org.ngrinder.region.service;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import net.grinder.util.thread.InterruptibleRunnable;
 import net.sf.ehcache.Ehcache;
@@ -78,6 +79,12 @@ public class RegionService {
 				LOG.info("Add Region: {}:{} into cache.", region, currentIP);
 			}
 		});
+	}
+
+	@PreDestroy
+	public void destroy() {
+		regionCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
+		regionCache.evict(config.getRegion());
 	}
 
 	/**
