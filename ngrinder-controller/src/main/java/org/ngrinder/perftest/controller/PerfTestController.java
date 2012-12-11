@@ -98,7 +98,6 @@ public class PerfTestController extends NGrinderBaseController {
 	@Autowired
 	private PerfTestService perfTestService;
 	@Autowired
-	
 	private FileEntryService fileEntryService;
 
 	@Autowired
@@ -109,7 +108,7 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@Autowired
 	private TagService tagService;
-	
+
 	@Autowired
 	private RegionService regionService;
 
@@ -205,11 +204,11 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute(PARAM_REGION_LIST, regionList);
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(regionList, user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
-		
+
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
-		
-		//when admin watch other user's  test,max Agent size should be observed user's agent size.
-		//User userMaxAgent = test == null ? user : test.getCreatedUser();
+
+		// when admin watch other user's test,max Agent size should be observed user's agent size.
+		// User userMaxAgent = test == null ? user : test.getCreatedUser();
 		String region;
 		if (test == null || test.getRegion() == null) {
 			region = getConfig().getRegion();
@@ -252,7 +251,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @param model
 	 *            model which will contains that value.
 	 * @param agentCount
-	 *            available agent count of the user. 
+	 *            available agent count of the user.
 	 */
 	public void addDefaultAttributeOnModel(ModelMap model, int agentCount) {
 		model.addAttribute(PARAM_CURRENT_FREE_AGENTS_COUNT, agentManager.getAllFreeAgents().size());
@@ -320,9 +319,9 @@ public class PerfTestController extends NGrinderBaseController {
 		checkArgument(test.getDuration() == null
 						|| test.getDuration() <= (((long) agentManager.getMaxRunHour()) * 3600000L),
 						"test run duration should be within %s", agentManager.getMaxRunHour());
-		
+
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(
-				regionService.getRegions(), user);
+						regionService.getRegions(), user);
 		MutableInt agentCountObj = agentCountMap.get(test.getRegion());
 		checkNotNull(agentCountObj, "test region should be within current region list");
 		int agentMaxCount = agentCountObj.intValue();
@@ -613,16 +612,8 @@ public class PerfTestController extends NGrinderBaseController {
 		PerfTest test = checkNotNull(getPerfTestWithPermissionCheck(user, testId, false),
 						"given test should be exist : " + testId);
 		if (test.getStatus().equals(Status.TESTING)) {
-			String testRegion = test.getRegion();
-			if (testRegion.equals(getConfig().getRegion())) {
-				model.addAttribute(PARAM_RESULT_AGENT_PERF,
-						getAgentPerfString(perfTestService.getAndPutAgentsInfo(testRegion, test.getPort())));
-				model.addAttribute(PARAM_RESULT_SUB, perfTestService.getAndPutStatistics(testRegion, test.getPort()));
-			} else {
-				model.addAttribute(PARAM_RESULT_AGENT_PERF,
-						getAgentPerfString(perfTestService.getCacheAgentsInfo(testRegion, test.getPort())));
-				model.addAttribute(PARAM_RESULT_SUB, perfTestService.getCacheStatistics(testRegion, test.getPort()));
-			}
+			model.addAttribute(PARAM_RESULT_AGENT_PERF, getAgentPerfString(perfTestService.getAgentInfo(test)));
+			model.addAttribute(PARAM_RESULT_SUB, perfTestService.getStatistics(test));
 		}
 		return "perftest/refreshContent";
 	}
@@ -631,7 +622,7 @@ public class PerfTestController extends NGrinderBaseController {
 		List<String> perfStringList = new ArrayList<String>();
 		for (Entry<AgentIdentity, SystemDataModel> each : agentPerfMap.entrySet()) {
 			SystemDataModel value = each.getValue();
-			long totalMemory = value.getTotalMemory();
+			Long totalMemory = value.getTotalMemory();
 			float usage = 0;
 			if (totalMemory != 0) {
 				usage = (((float) (totalMemory - value.getFreeMemory())) / totalMemory) * 100;

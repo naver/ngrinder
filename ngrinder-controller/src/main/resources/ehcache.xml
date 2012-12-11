@@ -18,7 +18,5 @@
 		
 	<cache name="running_agent_infos" maxElementsInMemory="1000"  overflowToDisk="false"
 		timeToLiveSeconds="3" />
-	<cache name="running_statistics" maxElementsInMemory="1000"  overflowToDisk="false"
-		timeToLiveSeconds="3" />
 	
 </ehcache>

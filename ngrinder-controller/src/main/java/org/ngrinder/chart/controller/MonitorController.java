@@ -70,14 +70,12 @@ public class MonitorController extends NGrinderBaseController {
 		Map<String, Object> rtnMap = new HashMap<String, Object>(7);
 		rtnMap.put("SystemData", this.getMonitorDataSystem(testId, monitorIP, imgWidth));
 		rtnMap.put(JSON_SUCCESS, true);
-
 		return toJson(rtnMap);
 	}
 
 	private Map<String, Object> getMonitorDataSystem(long testId, String monitorIP, int imgWidth) {
 		Map<String, Object> rtnMap = new HashMap<String, Object>();
 		List<SystemDataModel> systemMonitorData = monitorService.getSystemMonitorData(testId, monitorIP);
-
 		if (imgWidth < 100) {
 			imgWidth = 100;
 		}

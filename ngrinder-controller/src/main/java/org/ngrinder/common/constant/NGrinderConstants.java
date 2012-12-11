@@ -39,6 +39,7 @@ public interface NGrinderConstants {
 	public static final String PATH_LOG = "logs";
 	public static final String PATH_REPORT = "report";
 	public static final String PATH_DIST = "dist";
+	public static final String PATH_STAT = "stat";
 
 	public static final String CACHE_NAME = "cache";
 

@@ -306,6 +306,17 @@ public class Home implements NGrinderConstants {
 	public File getPerfTestDistDirectory(PerfTest perfTest) {
 		return getPerfTestSubDirectory(perfTest, PATH_DIST);
 	}
+	
+	/**
+	 * Get the statistics directory for given {@link PerfTest}.
+	 * 
+	 * @param perfTest
+	 *            perftest
+	 * @return {@link PerfTest} statistics directory
+	 */
+	public File getPerfTestStatisticPath(PerfTest perfTest) {
+		return getPerfTestSubDirectory(perfTest, PATH_STAT);
+	}
 
 	/**
 	 * Get the report directory for given {@link PerfTest} id.

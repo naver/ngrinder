@@ -423,10 +423,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 					BufferedWriter bw = monitorRecordWriterMap.get(targetIP);
 					monitorClientsMap.get(targetIP).recordMonitorData(bw);
 				}
-				
-				//update statistic cache
-				perfTestService.getAndPutAgentsInfo(perfTest.getRegion(), perfTest.getPort());
-				perfTestService.getAndPutStatistics(perfTest.getRegion(), perfTest.getPort());
+
+				// update statistic cache
+				// perfTestServcie.saveStatisticData(intervalStatistics, cumulativeStatistics);
+
+				perfTestService.saveAgentsInfo(singleConsole, perfTest);
+				perfTestService.saveStatistics(singleConsole, perfTest);
 
 				for (OnTestSamplingRunnable each : testSamplingRunnables) {
 					try {

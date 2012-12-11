@@ -826,8 +826,10 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		Map<String, Object> totalStatistics = new HashMap<String, Object>();
 
 		for (ExpressionView expressionView : views) {
-			totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-							getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
+			if (interestingStatistics.contains(expressionView.getDisplayName())) {
+				totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
+								getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
+			}
 		}
 
 		result.put("totalStatistics", totalStatistics);

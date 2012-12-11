@@ -91,13 +91,14 @@ public class DynamicCacheConfig {
 
 				FactoryConfiguration peerProviderConfig = new FactoryConfiguration();
 				peerProviderConfig.setClass(RMICacheManagerPeerProviderFactory.class.getName());
-				String properties = createCacheProperties(getReplicatedCacheNames(cacheManagerConfig));
+				List<String> replicatedCacheNames = getReplicatedCacheNames(cacheManagerConfig);
+				String properties = createCacheProperties(replicatedCacheNames);
 				peerProviderConfig.setProperties(properties);
 				cacheManagerConfig.addCacheManagerPeerProviderFactory(peerProviderConfig);
 
 				FactoryConfiguration peerListenerConfig = new FactoryConfiguration();
 				peerListenerConfig.setClass(RMICacheManagerPeerListenerFactory.class.getName());
-				String peerListenerProperties = createPearListenerProperties(getReplicatedCacheNames(cacheManagerConfig));
+				String peerListenerProperties = createPearListenerProperties(replicatedCacheNames);
 				peerListenerConfig.setProperties(peerListenerProperties);
 				cacheManagerConfig.addCacheManagerPeerListenerFactory(peerListenerConfig);
 				CoreLogger.LOGGER.info("clusterURLs:{}", peerListenerProperties);

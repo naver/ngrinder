@@ -46,7 +46,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.StringReader;
+import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -58,11 +61,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import net.grinder.SingleConsole;
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
@@ -90,7 +95,6 @@ import org.ngrinder.model.Status;
 import org.ngrinder.model.Tag;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
-import org.ngrinder.perftest.model.NullSingleConsole;
 import org.ngrinder.perftest.model.PerfTestStatistics;
 import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.repository.PerfTestRepository;
@@ -101,7 +105,6 @@ import org.ngrinder.service.IPerfTestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
@@ -291,6 +294,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 		return perfTestRepository.findAll(spec);
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -487,7 +491,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		List<PerfTest> readyPerfTests;
 		if (config.isCluster()) {
 			readyPerfTests = perfTestRepository.findAllByStatusAndRegionOrderByScheduledTimeAsc(Status.READY,
-					config.getRegion());
+							config.getRegion());
 		} else {
 			readyPerfTests = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY);
 		}
@@ -589,6 +593,21 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * .ngrinder.perftest. model.PerfTest)
 	 */
 	@Override
+	public File getPerfTestStatisticPath(PerfTest perfTest) {
+		File perfTestStatisticPath = config.getHome().getPerfTestStatisticPath(perfTest);
+		if (!perfTestStatisticPath.exists()) {
+			perfTestStatisticPath.mkdirs();
+		}
+		return perfTestStatisticPath;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ngrinder.perftest.service.IPerfTestService#getPerfTestFilePath(org
+	 * .ngrinder.perftest. model.PerfTest)
+	 */
+	@Override
 	public File getPerfTestDistributionPath(PerfTest perfTest) {
 		return config.getHome().getPerfTestDistDirectory(perfTest);
 	}
@@ -676,7 +695,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			} else {
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, 0);
 			}
-			//grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, "-Xms256m -Xmx512m");
+			// grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, "-Xms256m -Xmx512m");
 			grinderProperties.setProperty(GRINDER_PROP_JVM_CLASSPATH, getCustomClassPath(perfTest));
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, perfTest.getIgnoreSampleCount());
 			grinderProperties.setBoolean(GRINDER_PROP_SECURITY, config.isSecurityEnabled());
@@ -974,48 +993,49 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * To get statistics data when test is running and put into cache after that. If the console
-	 * is not available, it returns empty map.
+	 * To get statistics data when test is running and put into cache after that. If the console is
+	 * not available, it returns null.
 	 * 
-	 * @param region
-	 * 			region of the test, add this parameter just for the key of cache.
-	 * @param port
-	 *            port number of console
+	 * @param singleConsole
+	 *            console signle console.
+	 * @param perfTest
+	 *            perfTest
 	 * @return statistic map statistic data map of the test in that console
 	 */
-	@CachePut(value = "running_statistics", key = "#region + #port")
-	public Map<String, Object> getAndPutStatistics(String region, Integer port) {
-		return consoleManager.getConsoleUsingPort(port).getStatictisData();
+	public void saveStatistics(SingleConsole singleConsole, PerfTest perfTest) {
+		writeObjectToFile(new File(getPerfTestStatisticPath(perfTest), "statistics.stat"),
+						singleConsole.getStatictisData());
 	}
 
 	/**
-	 * get test running statistic data from cache. If there is no cache data, will return
-	 * empty statistic data.
-	 * @param region of the test
-	 * 			add this parameter just for the key of cache.
-	 * @param port of the single console
+	 * get test running statistic data from cache. If there is no cache data, will return empty
+	 * statistic data.
+	 * 
+	 * @param PerfTest
+	 *            perfTest
 	 * @return test running statistic data
 	 */
-	@Cacheable(value = "running_statistics", key = "#region + #port")
-	public Map<String, Object> getCacheStatistics(String region, Integer port) {
-		return NullSingleConsole.NULL_CONSOLE.getStatictisData();
+	public Map<String, Object> getStatistics(PerfTest perfTest) {
+		ConcurrentHashMap<String, Object> readObjectFromFile = readObjectFromFile(new File(
+						getPerfTestStatisticPath(perfTest), "statistics.stat"), new ConcurrentHashMap<String, Object>());
+		System.out.println(readObjectFromFile);
+		return readObjectFromFile;
 	}
 
 	/**
-	 * To get system monitor data of all agents connected to one console. If the console is not
+	 * Save system monitor data of all agents connected to one console. If the console is not
 	 * available, it returns empty map. After getting, it will be put into cache.
 	 * 
-	 * @param region of the test
-	 * 			add this parameter just for the key of cache.
-	 * @param port
-	 *            port number of console
+	 * @param SingleConsole
+	 *            singleConsole of the test add this parameter just for the key of cache.
+	 * @param PerfTest
+	 *            perfTest
 	 * @return agent system data map map containing all agents which connected to that console.
 	 */
-	@CachePut(value = "running_agent_infos", key = "#region + #port")
-	public Map<AgentIdentity, SystemDataModel> getAndPutAgentsInfo(String region, Integer port) {
-		List<AgentIdentity> allAttachedAgents = consoleManager.getConsoleUsingPort(port).getAllAttachedAgents();
-		Set<AgentIdentity> allControllerAgents = agentManager.getAllAttachedAgents();
+	public void saveAgentsInfo(SingleConsole singleConsole, PerfTest perfTest) {
+		List<AgentIdentity> allAttachedAgents = singleConsole.getAllAttachedAgents();
 		Map<AgentIdentity, SystemDataModel> result = new HashMap<AgentIdentity, SystemDataModel>();
+		Set<AgentIdentity> allControllerAgents = agentManager.getAllAttachedAgents();
 		for (AgentIdentity eachAgent : allAttachedAgents) {
 			for (AgentIdentity eachControllerAgent : allControllerAgents) {
 				if (eachControllerAgent.getName().equals(eachAgent.getName())) {
@@ -1023,22 +1043,76 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				}
 			}
 		}
-		return result;
+		writeObjectToFile(new File(getPerfTestStatisticPath(perfTest), "agent_info.stat"), result);
 	}
-	
-	/**
-	 * To get system monitor data from cache.
-	 * 
-	 * @param region of the test
-	 * 			add this parameter just for the key of cache.
-	 * @param port
-	 *            port number of console
-	 * @return agent system data map.
-	 */
-	@Cacheable(value = "running_agent_infos", key = "#region + #port")
-	public Map<AgentIdentity, SystemDataModel> getCacheAgentsInfo(String region, Integer port) {
-		Map<AgentIdentity, SystemDataModel> result = new HashMap<AgentIdentity, SystemDataModel>();
-		return result;
+
+	public Map<AgentIdentity, SystemDataModel> getAgentInfo(PerfTest perfTest) {
+		HashMap<AgentIdentity, SystemDataModel> readObjectFromFile = readObjectFromFile(new File(
+						getPerfTestStatisticPath(perfTest), "agent_info.stat"),
+						new HashMap<AgentIdentity, SystemDataModel>());
+		System.out.println(readObjectFromFile);
+		return readObjectFromFile;
+	}
+
+	private void writeObjectToFile(File file, Object result) {
+		FileOutputStream fout = null;
+		ObjectOutputStream oout = null;
+		FileLock lock = null;
+		try {
+			fout = new FileOutputStream(file, false);
+			lock = fout.getChannel().lock();
+			oout = new ObjectOutputStream(fout);
+			oout.writeObject(result);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (lock != null) {
+				try {
+					lock.release();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			IOUtils.closeQuietly(fout);
+			IOUtils.closeQuietly(oout);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T readObjectFromFile(File file, T defaultValue) {
+		if (!file.exists()) {
+			return defaultValue;
+		}
+		FileInputStream fin = null;
+		ObjectInputStream oin = null;
+		FileLock lock = null;
+		try {
+			fin = new FileInputStream(file);
+			lock = fin.getChannel().tryLock(0L, Long.MAX_VALUE, true);
+			oin = new ObjectInputStream(fin);
+			Object readObject = oin.readObject();
+			return (readObject == null) ? defaultValue : (T) readObject;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (lock != null) {
+				try {
+					lock.release();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			IOUtils.closeQuietly(fin);
+			IOUtils.closeQuietly(oin);
+		}
+		return defaultValue;
 	}
 
 	/*
@@ -1081,9 +1155,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            perfTest
 	 */
 	public void updatePerfTestAfterTestFinish(PerfTest perfTest) {
-
 		checkNotNull(perfTest);
-		Map<String, Object> result = getAndPutStatistics(config.getRegion(), perfTest.getPort());
+		Map<String, Object> result = getStatistics(perfTest);
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
 		LOGGER.info("Total Statistics for test {}  is {}", perfTest.getId(), totalStatistics);
@@ -1146,7 +1219,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @param user
 	 *            user
 	 * @param type
-	 * 			  permission type to check
+	 *            permission type to check
 	 * @return true if it has
 	 */
 	public boolean hasPermission(PerfTest perfTest, User user, Permission type) {

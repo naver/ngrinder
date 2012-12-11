@@ -41,22 +41,21 @@ public interface IPerfTestService {
 	 * get test detail.
 	 * 
 	 * @param user
-	 * 			  current operation user.
+	 *            current operation user.
 	 * @param id
-	 * 			  test id
-	 * @return perftestDetail
-	 * 			  perftest detail
+	 *            test id
+	 * @return perftestDetail perftest detail
 	 */
 	public abstract PerfTest getPerfTest(User user, Long id);
 
 	/**
-	 * get {@link PerfTest}} list of some IDs.
+	 * get {@link PerfTest} list of some IDs.
+	 * 
 	 * @param user
-	 * 			  current operation user
+	 *            current operation user
 	 * @param ids
-	 * 			  test IDs, which is in format: "1,3,6,11"
-	 * @return perftestList
-	 * 			  test list of those IDs
+	 *            test IDs, which is in format: "1,3,6,11"
+	 * @return perftestList test list of those IDs
 	 */
 	public abstract List<PerfTest> getPerfTest(User user, Long[] ids);
 
@@ -83,7 +82,8 @@ public interface IPerfTestService {
 	public abstract List<PerfTest> getPerfTest(User user, Status... statuses);
 
 	/**
-	 * Save {@link PerfTest}. This function includes logic the updating script revision when it's READY status.
+	 * Save {@link PerfTest}. This function includes logic the updating script revision when it's
+	 * READY status.
 	 * 
 	 * @param user
 	 *            user
@@ -120,7 +120,6 @@ public interface IPerfTestService {
 	 */
 	public abstract PerfTest getPerfTestWithTag(Long testId);
 
-	
 	/**
 	 * Get currently testing PerfTest.
 	 * 
@@ -142,8 +141,7 @@ public interface IPerfTestService {
 	 * 
 	 * @param perfTest
 	 *            perfTest
-	 * @return directory
-	 * 			  prefTest base path
+	 * @return directory prefTest base path
 	 */
 	public abstract File getPerfTestDirectory(PerfTest perfTest);
 
@@ -178,12 +176,13 @@ public interface IPerfTestService {
 	 * Add comment on {@link PerfTest}.
 	 * 
 	 * @param user
-	 * 			  current operated user
+	 *            current operated user
 	 * @param testId
 	 *            perftest id
 	 * @param testComment
 	 *            comment
-	 * @param tagString tagString
+	 * @param tagString
+	 *            tagString
 	 */
 	public abstract void addCommentOn(User user, Long testId, String testComment, String tagString);
 
@@ -201,5 +200,14 @@ public interface IPerfTestService {
 	 * @return saved {@link PerfTest}
 	 */
 	public abstract PerfTest markStatusAndProgress(PerfTest perfTest, Status status, String message);
+
+	/**
+	 * Get performance test statistic path.
+	 * 
+	 * @param perfTest
+	 *            perftest
+	 * @return statistic path
+	 */
+	public abstract File getPerfTestStatisticPath(PerfTest perfTest);
 
 }
