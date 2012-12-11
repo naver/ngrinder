@@ -75,7 +75,7 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 			}
 		};
 		agentManagerService.config = this.config;
-		agentManagerService.agentManager = this.agentManager;
+		agentManagerService.setAgentManager(this.agentManager);
 		agentManagerService.agentRepository = this.agentRepository;
 	}
 

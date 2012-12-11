@@ -52,7 +52,7 @@ public class DynamicCacheManagerTest {
 	public void before() {
 		dynamicCacheManagerConfig1 = new ReloadableDynamicCacheManager(40001, "cache1");
 		Config config = mock(Config.class);
-		dynamicCacheManagerConfig1.config = config;
+		dynamicCacheManagerConfig1.setConfig(config);
 		String currentIp = NetworkUtil.getLocalHostAddress();
 		when(config.getClusterURIs()).thenReturn(new String[] { currentIp + ":40001", currentIp + ":40002" });
 		when(config.getCurrentIP()).thenReturn(currentIp);
@@ -61,7 +61,7 @@ public class DynamicCacheManagerTest {
 		dynamicCacheManager1.afterPropertiesSet();
 		dynamicCacheManagerConfig2 = new ReloadableDynamicCacheManager(40002, "cache2");
 		when(config.getClusterURIs()).thenReturn(new String[] { currentIp + ":40001", currentIp + ":40002" });
-		dynamicCacheManagerConfig2.config = config;
+		dynamicCacheManagerConfig2.setConfig(config);
 		dynamicCacheManager2 = dynamicCacheManagerConfig2.dynamicCacheManager();
 		dynamicCacheManager2.afterPropertiesSet();
 	}

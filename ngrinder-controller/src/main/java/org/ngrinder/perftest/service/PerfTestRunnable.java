@@ -401,7 +401,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 				for (String ip : monitorRecordWriterMap.keySet()) {
 					BufferedWriter bw = monitorRecordWriterMap.get(ip);
 					IOUtils.closeQuietly(bw);
-
 					monitorClientsMap.get(ip).close();
 				}
 				monitorRecordWriterMap.clear();
@@ -423,9 +422,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 					BufferedWriter bw = monitorRecordWriterMap.get(targetIP);
 					monitorClientsMap.get(targetIP).recordMonitorData(bw);
 				}
-
-				// update statistic cache
-				// perfTestServcie.saveStatisticData(intervalStatistics, cumulativeStatistics);
 
 				perfTestService.saveAgentsInfo(singleConsole, perfTest);
 				perfTestService.saveStatistics(singleConsole, perfTest);

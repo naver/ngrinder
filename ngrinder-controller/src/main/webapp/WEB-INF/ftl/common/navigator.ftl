@@ -15,14 +15,13 @@
 					<li class="dropdown">
 		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">${(currentUser.userName)!}<#if (currentUser.ownerUser)?exists> (${currentUser.ownerUser.userName})<#else></#if><b class="caret"></b></a>
 		            	<ul class="dropdown-menu">
-		                	<@security.authorize ifAnyGranted="U">
-			            		<#if (currentUser.ownerUser)?exists>
+		            		<#if (currentUser.ownerUser)?exists>
 			            		<li><a href="${req.getContextPath()}/user/switchUser?switchUserId=${(currentUser.userId)!}"><@spring.message "common.button.return"/></a></li>
-			            		<#else>
+		            		<#else>
 			                	<li><a id="user_profile_id" href="#"><@spring.message "navigator.dropdown.profile"/></a></li>
 			                	<li><a id="switch_user_id" href="#"><@spring.message "navigator.dropdown.switchUser"/></a></li>
-			                	</#if>
-		                	</@security.authorize>
+		                	</#if>
+
 		                	<@security.authorize ifAnyGranted="S">
 			                	<li><a id="user_profile_id" href="#"><@spring.message "navigator.dropdown.profile"/></a></li>
 		                	</@security.authorize>
