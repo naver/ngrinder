@@ -147,6 +147,7 @@
 					cache: false,
                     dataType:'json',
                     data: {'id': '${(agent.id)!}',
+                    		'ip': '${(agent.ip)!}',
                            'imgWidth':700},
                     success: function(res) {
                         if (res.success) {

@@ -22,6 +22,9 @@
  */
 package org.ngrinder.region.service;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -29,7 +32,9 @@ import javax.annotation.PreDestroy;
 
 import net.grinder.util.thread.InterruptibleRunnable;
 import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
 
+import org.apache.commons.io.FileUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.schedule.ScheduledTask;
@@ -38,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.stereotype.Service;
 
 /**
@@ -56,27 +62,25 @@ public class RegionService {
 	private Config config;
 
 	@Autowired
-	private CacheManager cacheManager;
-
-	@Autowired
 	private ScheduledTask scheduledTask;
 
-	private Cache regionCache;
-
+	
 	/**
 	 * Set current region into cache, using the IP as key and region name as value.
 	 * 
 	 */
 	@PostConstruct
 	public void initRegion() {
-		regionCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
 		scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
 			@Override
 			public void interruptibleRun() {
 				String region = config.getRegion();
-				String currentIP = config.getCurrentIP();
-				regionCache.put(region, currentIP);
-				LOG.info("Add Region: {}:{} into cache.", region, currentIP);
+				File file = new File(config.getHome().getControllerShareDirectory(), region);
+				try {
+					FileUtils.writeStringToFile(file, config.getCurrentIP(), "UTF-8");
+				} catch (IOException e) {
+				}
+				LOG.trace("Add Region: {}:{} into cache.", region);
 			}
 		});
 	}
@@ -86,8 +90,8 @@ public class RegionService {
 	 */
 	@PreDestroy
 	public void destroy() {
-		regionCache = cacheManager.getCache(NGrinderConstants.CACHE_NAME_REGION_LIST);
-		regionCache.evict(config.getRegion());
+		File file = new File(config.getHome().getControllerShareDirectory(), config.getRegion());
+		FileUtils.deleteQuietly(file);
 	}
 
 	/**
@@ -97,6 +101,12 @@ public class RegionService {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<String> getRegions() {
-		return (List<String>) ((Ehcache) regionCache.getNativeCache()).getKeysWithExpiryCheck();
+		List<String> regions = new ArrayList<String>();
+		for (File each : config.getHome().getControllerShareDirectory().listFiles()) {
+			if (System.currentTimeMillis() - (1000 * 60) < each.lastModified()) {
+				regions.add(each.getName());
+			}
+		}
+		return regions;
 	}
 }

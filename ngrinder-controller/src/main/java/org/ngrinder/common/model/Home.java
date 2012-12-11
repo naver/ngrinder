@@ -348,13 +348,23 @@ public class Home implements NGrinderConstants {
 	}
 
 	/**
+	 * Get download directory.
+	 * 
+	 * @return download directory
+	 */
+	public File getControllerShareDirectory() {
+		File subFile = getSubFile(SHARE_PATH);
+		File controller = new File(subFile, CONTROLLER_PATH);
+		controller.mkdirs();
+		return controller;
+	}
+	/**
 	 * Get global log file.
 	 * 
 	 * @return log file
 	 */
 	public File getGloablLogFile() {
 		File subFile = getSubFile(GLOBAL_LOG_PATH);
-		subFile.mkdirs();
 		return subFile;
 	}
 

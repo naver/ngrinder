@@ -115,11 +115,12 @@ public class AgentManagerService {
 								ValueWrapper valueWrapper = agentRequestCache.get(each);
 								if (valueWrapper != null) {
 									AgentRequest agentRequest = (AgentRequest) (valueWrapper.get());
-									AgentInfo agent = getAgent(agentRequest.getAgentId());
-									if (agent != null && agent.getAgentIdentity() != null) {
-										agentRequest.getRequestType().process(agentRequest.getAgentId(), agentManager,
-												AgentManagerService.this, (AgentControllerIdentityImplementation) agent.getAgentIdentity());
-										CoreLogger.LOGGER.info("Stop is performed for {}" + agent.getAgentIdentity());
+									AgentControllerIdentityImplementation agentIdentityByIp = getAgentIdentityByIp(agentRequest
+													.getAgentIp());
+									if (agentIdentityByIp != null) {
+										agentRequest.getRequestType().process(agentRequest.getAgentId(),
+														agentRequest.getAgentIp(), agentManager,
+														AgentManagerService.this, agentIdentityByIp);
 									}
 								}
 							}
@@ -186,7 +187,7 @@ public class AgentManagerService {
 	@Scheduled(fixedDelay = 1000)
 	public void collectAgentSystemData() {
 		Ehcache nativeCache = (Ehcache) agentMonioringTargetsCache.getNativeCache();
-		for (Long each : (List<Long>) nativeCache.getKeysWithExpiryCheck()) {
+		for (String each : (List<String>) nativeCache.getKeysWithExpiryCheck()) {
 			ValueWrapper value = agentMonioringTargetsCache.get(each);
 			if (value != null && value.get() != null) {
 				agentMonitorCache.put(each, agentManager.getSystemDataModel((AgentIdentity) value.get()));
@@ -199,8 +200,8 @@ public class AgentManagerService {
 	}
 
 	/**
-	 * get the available agent count map in all regions of the user, including
-	 * the free agents and user specified agents.
+	 * get the available agent count map in all regions of the user, including the free agents and
+	 * user specified agents.
 	 * 
 	 * @param regions
 	 *            current region list
@@ -274,8 +275,7 @@ public class AgentManagerService {
 	}
 
 	/**
-	 * Get all agent agents. agent list is obtained from DB and
-	 * {@link AgentManager}
+	 * Get all agent agents. agent list is obtained from DB and {@link AgentManager}
 	 * 
 	 * This includes not persisted agent as well.
 	 * 
@@ -291,6 +291,17 @@ public class AgentManagerService {
 			agentList.add(creatAgentInfo(agentControllerIdentity, agents));
 		}
 		return agentList;
+	}
+
+	public AgentControllerIdentityImplementation getAgentIdentityByIp(String ip) {
+		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
+		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
+			AgentControllerIdentityImplementation convert = convert(eachAgentIdentity);
+			if (ip.equals(convert.getIp())) {
+				return convert;
+			}
+		}
+		return null;
 	}
 
 	private AgentControllerIdentityImplementation convert(AgentIdentity eachAgentIdentity) {
@@ -321,7 +332,7 @@ public class AgentManagerService {
 			// should use IP and number to identify an agent, but now number is
 			// not used, it is
 			// always -1.
-			if (StringUtils.equals(each.getIp(), agentIdentity.getIp()) && each.getNumber() == agentIdentity.getNumber()) {
+			if (StringUtils.equals(each.getIp(), agentIdentity.getIp())) {
 				agentInfo = each;
 				break;
 			}
@@ -330,12 +341,15 @@ public class AgentManagerService {
 	}
 
 	private AgentInfo fillUpAgentInfo(AgentInfo agentInfo, AgentControllerIdentityImplementation agentIdentity) {
-		agentInfo.setHostName(agentIdentity.getName());
-		agentInfo.setNumber(agentIdentity.getNumber());
-		agentInfo.setRegion(agentIdentity.getRegion());
-		agentInfo.setIp(agentIdentity.getIp());
-		agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
-		agentInfo.setStatus(agentManager.getAgentState(agentIdentity));
+		if (agentIdentity != null) {
+			agentInfo.setAgentIdentity(agentIdentity);
+			agentInfo.setHostName(agentIdentity.getName());
+			agentInfo.setNumber(agentIdentity.getNumber());
+			agentInfo.setRegion(agentIdentity.getRegion());
+			agentInfo.setIp(agentIdentity.getIp());
+			agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
+			agentInfo.setStatus(agentManager.getAgentState(agentIdentity));
+		}
 		return agentInfo;
 	}
 
@@ -347,7 +361,9 @@ public class AgentManagerService {
 	 * @return agent
 	 */
 	public AgentInfo getAgent(long id) {
-		return agentRepository.findOne(id);
+		AgentInfo findOne = agentRepository.findOne(id);
+		AgentControllerIdentityImplementation agentIdentityByIp = getAgentIdentityByIp(findOne.getIp());
+		return fillUpAgentInfo(findOne, agentIdentityByIp);
 	}
 
 	/**
@@ -389,8 +405,8 @@ public class AgentManagerService {
 	}
 
 	/**
-	 * Stop agent. If it's in cluster mode, it queue to agentRequestCache.
-	 * ohterwise, it send stop message to the agent.
+	 * Stop agent. If it's in cluster mode, it queue to agentRequestCache. ohterwise, it send stop
+	 * message to the agent.
 	 * 
 	 * @param id
 	 *            identity of agent to stop.
@@ -401,8 +417,9 @@ public class AgentManagerService {
 			return;
 		}
 		if (config.isCluster()) {
-			agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "_" + agent.getId() + "_stop_agent", new AgentRequest(
-					agent.getId(), RequestType.STOP_AGENT));
+			agentRequestCache.put(
+							extractRegionFromAgentRegion(agent.getRegion()) + "_" + agent.getId() + "_stop_agent",
+							new AgentRequest(agent.getId(), agent.getIp(), RequestType.STOP_AGENT));
 		} else {
 			agentManager.stopAgent(agent.getAgentIdentity());
 		}
@@ -411,22 +428,24 @@ public class AgentManagerService {
 	public void requestShareAgentSystemDataModel(Long id) {
 		if (config.isCluster()) {
 			AgentInfo agent = getAgent(id);
-			agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "_" + agent.getId() + "_monitoring", new AgentRequest(
-					agent.getId(), RequestType.SHARE_AGENT_SYSTEM_DATA_MODEL));
+			agentRequestCache.put(
+							extractRegionFromAgentRegion(agent.getRegion()) + "_" + agent.getId() + "_monitoring",
+							new AgentRequest(agent.getId(), agent.getIp(), RequestType.SHARE_AGENT_SYSTEM_DATA_MODEL));
 		}
 	}
 
-	public SystemDataModel getAgentSystemDataModel(Long id) {
-		AgentInfo agent = getAgent(id);
+	public SystemDataModel getAgentSystemDataModel(String ip) {
+
 		if (config.isCluster()) {
-			ValueWrapper valueWrapper = agentMonitorCache.get(id);
+			ValueWrapper valueWrapper = agentMonitorCache.get(ip);
 			return valueWrapper == null ? new SystemDataModel() : (SystemDataModel) valueWrapper.get();
 		} else {
-			return agentManager.getSystemDataModel(agent.getAgentIdentity());
+			return agentManager.getSystemDataModel(getAgentIdentityByIp(ip));
 		}
 	}
 
-	public void addAgentMonitoringTarget(Long agentId, AgentControllerIdentityImplementation agentIdentity) {
-		agentMonioringTargetsCache.put(agentId, agentIdentity);
+	public void addAgentMonitoringTarget(Long agentId, String agentIp,
+					AgentControllerIdentityImplementation agentIdentity) {
+		agentMonioringTargetsCache.put(agentIp, agentIdentity);
 	}
 }

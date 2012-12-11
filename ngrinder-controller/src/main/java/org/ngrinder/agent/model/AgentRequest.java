@@ -23,6 +23,8 @@ public class AgentRequest implements Serializable {
 
 	private final Long agentId;
 
+	private final String agentIp;
+
 	/**
 	 * Request Type.
 	 * 
@@ -31,17 +33,16 @@ public class AgentRequest implements Serializable {
 	public enum RequestType {
 		STOP_AGENT {
 			@Override
-			public void process(Long agentId, AgentManager agentManager, AgentManagerService agentManagerService,
-							AgentControllerIdentityImplementation agentIdentity) {
+			public void process(Long agentId, String agentIp, AgentManager agentManager,
+							AgentManagerService agentManagerService, AgentControllerIdentityImplementation agentIdentity) {
 				agentManager.stopAgent(agentIdentity);
 			}
 		},
 		SHARE_AGENT_SYSTEM_DATA_MODEL {
 			@Override
-			public void process(Long agentId, AgentManager agentManager, AgentManagerService agentManagerService,
-							AgentControllerIdentityImplementation agentIdentity) {
-				// TODO Auto-generated method stub
-				agentManagerService.addAgentMonitoringTarget(agentId, agentIdentity);
+			public void process(Long agentId, String agentIp, AgentManager agentManager,
+							AgentManagerService agentManagerService, AgentControllerIdentityImplementation agentIdentity) {
+				agentManagerService.addAgentMonitoringTarget(agentId, agentIp, agentIdentity);
 			}
 		};
 
@@ -58,8 +59,8 @@ public class AgentRequest implements Serializable {
 		 * @param agentIdentity
 		 *            agentIdentity
 		 */
-		public abstract void process(Long agentId, AgentManager agentManager, AgentManagerService agentManagerService,
-						AgentControllerIdentityImplementation agentIdentity);
+		public abstract void process(Long agentId, String agentIp, AgentManager agentManager,
+						AgentManagerService agentManagerService, AgentControllerIdentityImplementation agentIdentity);
 	}
 
 	/**
@@ -70,8 +71,9 @@ public class AgentRequest implements Serializable {
 	 * @param requestType
 	 *            request type
 	 */
-	public AgentRequest(Long agentId, RequestType requestType) {
+	public AgentRequest(Long agentId, String agentIp, RequestType requestType) {
 		this.agentId = agentId;
+		this.agentIp = agentIp;
 		this.requestType = requestType;
 	}
 
@@ -85,5 +87,9 @@ public class AgentRequest implements Serializable {
 
 	public Long getAgentId() {
 		return agentId;
+	}
+
+	public String getAgentIp() {
+		return agentIp;
 	}
 }

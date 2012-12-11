@@ -50,8 +50,6 @@ public class MonitorController extends NGrinderBaseController {
 	@Autowired
 	private MonitorService monitorService;
 
-	@Autowired
-
 	/**
 	 * Get monitor data of agents.
 	 * 

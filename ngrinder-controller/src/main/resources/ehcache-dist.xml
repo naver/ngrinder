@@ -10,12 +10,6 @@
 
 	<!-- following caches are distributed caches -->
 	<!-- add RMIBootstrapCacheLoaderFactory to make the cache replicated from cluster. -->
-	<cache name="region_list" maxElementsInMemory="100" overflowToDisk="false" timeToLiveSeconds="8">
-		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-			properties="replicateAsynchronously=false, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=true, replicateRemovals=true" />
-		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />
-	</cache>
-	
 	<cache name="running_agent_infos" maxElementsInMemory="1000" overflowToDisk="false" timeToLiveSeconds="3">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
 			properties="replicateAsynchronously=false, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=true, replicateRemovals=true" />

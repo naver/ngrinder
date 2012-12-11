@@ -173,10 +173,10 @@ public class AgentManagerController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/systemDataModel")
 	@ResponseBody
-	public String getCurrentMonitorData(ModelMap model, @RequestParam Long id) {
+	public String getCurrentMonitorData(ModelMap model, @RequestParam Long id, @RequestParam String ip) {
 		Map<String, Object> returnMap = new HashMap<String, Object>(3);
 		agentManagerService.requestShareAgentSystemDataModel(id);
-		SystemDataModel systemData = agentManagerService.getAgentSystemDataModel(id);
+		SystemDataModel systemData = agentManagerService.getAgentSystemDataModel(ip);
 		systemData = systemData != null ? systemData : new SystemDataModel();
 		returnMap.put(JSON_SUCCESS, true);
 		returnMap.put("systemData", systemData);
