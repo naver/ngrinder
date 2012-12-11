@@ -24,14 +24,13 @@ package org.ngrinder.agent.service;
 
 import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithRegion;
+import static org.ngrinder.common.util.TypeConvertUtil.convert;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 
@@ -75,34 +74,35 @@ public class AgentManagerService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentManagerService.class);
 
 	@Autowired
-	AgentManager agentManager;
+	private AgentManager agentManager;
 
 	@Autowired
-	AgentManagerRepository agentRepository;
+	private AgentManagerRepository agentRepository;
 
 	@Autowired
-	Config config;
+	private Config config;
 
 	@Autowired
-	CacheManager cacheManager;
+	private CacheManager cacheManager;
 
-	Cache agentRequestCache;
+	private Cache agentRequestCache;
 
-	Cache agentMonitorCache;
+	private Cache agentMonitorCache;
 
-	Cache agentMonioringTargetsCache;
+	private Cache agentMonioringTargetsCache;
 
 	@Autowired
-	ScheduledTask scheduledTask;
+	private ScheduledTask scheduledTask;
 
-	Set<AgentIdentity> agentSystemModelSet = Collections.newSetFromMap(new ConcurrentHashMap<AgentIdentity, Boolean>());;
-
+	/**
+	 * Initialize.
+	 */
 	@PostConstruct
 	public void init() {
 		if (config.isCluster()) {
-			agentRequestCache = cacheManager.getCache("agent_request");
-			agentMonitorCache = cacheManager.getCache("agent_monitoring");
-			agentMonioringTargetsCache = cacheManager.getCache("agent_monitoring_targets");
+			agentRequestCache = getCacheManager().getCache("agent_request");
+			agentMonitorCache = getCacheManager().getCache("agent_monitoring");
+			agentMonioringTargetsCache = getCacheManager().getCache("agent_monitoring_targets");
 			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
 				@SuppressWarnings({ "unchecked", "rawtypes" })
 				@Override
@@ -111,19 +111,17 @@ public class AgentManagerService {
 					String region = config.getRegion() + "_";
 					for (String each : (List<String>) keysWithExpiryCheck) {
 						try {
-							if (each.startsWith(region)) {
-								ValueWrapper valueWrapper = agentRequestCache.get(each);
-								if (valueWrapper != null) {
-									AgentRequest agentRequest = (AgentRequest) (valueWrapper.get());
-									AgentControllerIdentityImplementation agentIdentityByIp = getAgentIdentityByIp(agentRequest
-													.getAgentIp());
-									if (agentIdentityByIp != null) {
-										agentRequest.getRequestType().process(agentRequest.getAgentId(),
-														agentRequest.getAgentIp(), agentManager,
-														AgentManagerService.this, agentIdentityByIp);
-									}
+							if (each.startsWith(region) && agentRequestCache.get(each) != null) {
+								AgentRequest agentRequest = (AgentRequest) (agentRequestCache.get(each).get());
+								AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIp(agentRequest
+												.getAgentIp());
+								if (agentIdentity != null) {
+									agentRequest.getRequestType().process(agentRequest.getAgentId(),
+													agentRequest.getAgentIp(), getAgentManager(),
+													AgentManagerService.this, agentIdentity);
 								}
 							}
+
 						} catch (Exception e) {
 							CoreLogger.LOGGER.error(e.getMessage(), e);
 						}
@@ -145,7 +143,7 @@ public class AgentManagerService {
 	public void checkAgentStatus() {
 		List<AgentInfo> changeAgentList = new ArrayList<AgentInfo>();
 
-		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
+		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = createMap(allAttachedAgents);
 		for (AgentIdentity agentIdentity : allAttachedAgents) {
 			AgentControllerIdentityImplementation agentControllerIdentity = convert(agentIdentity);
@@ -163,10 +161,10 @@ public class AgentManagerService {
 				// this agent is not attached to controller
 				agentInfoInDB.setStatus(AgentControllerState.INACTIVE);
 			} else {
-				agentInfoInDB.setStatus(agentManager.getAgentState(agentIdentity));
+				agentInfoInDB.setStatus(getAgentManager().getAgentState(agentIdentity));
 				agentInfoInDB.setNumber(agentIdentity.getNumber());
 				agentInfoInDB.setRegion(agentIdentity.getRegion());
-				agentInfoInDB.setPort(agentManager.getAgentConnectingPort(agentIdentity));
+				agentInfoInDB.setPort(getAgentManager().getAgentConnectingPort(agentIdentity));
 			}
 			changeAgentList.add(agentInfoInDB);
 		}
@@ -183,14 +181,18 @@ public class AgentManagerService {
 		agentRepository.save(changeAgentList);
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * collect agent system data every 1 sec.
+	 * 
+	 */
 	@Scheduled(fixedDelay = 1000)
 	public void collectAgentSystemData() {
 		Ehcache nativeCache = (Ehcache) agentMonioringTargetsCache.getNativeCache();
-		for (String each : (List<String>) nativeCache.getKeysWithExpiryCheck()) {
+		List<String> keysWithExpiryCheck = convert(nativeCache.getKeysWithExpiryCheck());
+		for (String each : keysWithExpiryCheck) {
 			ValueWrapper value = agentMonioringTargetsCache.get(each);
 			if (value != null && value.get() != null) {
-				agentMonitorCache.put(each, agentManager.getSystemDataModel((AgentIdentity) value.get()));
+				agentMonitorCache.put(each, getAgentManager().getSystemDataModel((AgentIdentity) value.get()));
 			}
 		}
 	}
@@ -216,6 +218,7 @@ public class AgentManagerService {
 			availableShareAgents.put(region, new MutableInt(0));
 			availableUserOwnAgent.put(region, new MutableInt(0));
 		}
+		String myAgentSuffix = "_owned_" + user.getUserId();
 
 		for (AgentInfo agentInfo : getAllActiveAgentInfoFromDB()) {
 			// Skip the all agents which doesn't approved, is inactive or
@@ -229,15 +232,11 @@ public class AgentManagerService {
 			if (StringUtils.isBlank(region)) {
 				continue;
 			}
-
-			String myAgentSuffix = "_owned_" + user.getUserId();
-
 			// It's my own agent
 			if (fullRegion.endsWith(myAgentSuffix)) {
 				incrementAgentCount(availableUserOwnAgent, region, user.getUserId());
-			}
-			// If it's the others agent.. skip..
-			else if (fullRegion.contains("_owned_")) {
+			} else if (fullRegion.contains("_owned_")) {
+				// If it's the others agent.. skip..
 				continue;
 			} else {
 				incrementAgentCount(availableShareAgents, region, user.getUserId());
@@ -256,7 +255,7 @@ public class AgentManagerService {
 	}
 
 	int getMaxAgentSizePerConsole() {
-		return agentManager.getMaxAgentSizePerConsole();
+		return getAgentManager().getMaxAgentSizePerConsole();
 	}
 
 	private void incrementAgentCount(Map<String, MutableInt> agentMap, String region, String userId) {
@@ -283,7 +282,7 @@ public class AgentManagerService {
 	 */
 	@Transactional
 	public List<AgentInfo> getLocalAgents() {
-		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
+		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		List<AgentInfo> agents = agentRepository.findAll(startWithRegion(config.getRegion()));
 		List<AgentInfo> agentList = new ArrayList<AgentInfo>(allAttachedAgents.size());
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
@@ -293,8 +292,15 @@ public class AgentManagerService {
 		return agentList;
 	}
 
+	/**
+	 * Get agent identity by ip.
+	 * 
+	 * @param ip
+	 *            ip
+	 * @return {@link AgentControllerIdentityImplementation} instance.
+	 */
 	public AgentControllerIdentityImplementation getAgentIdentityByIp(String ip) {
-		Set<AgentIdentity> allAttachedAgents = agentManager.getAllAttachedAgents();
+		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
 			AgentControllerIdentityImplementation convert = convert(eachAgentIdentity);
 			if (ip.equals(convert.getIp())) {
@@ -302,10 +308,6 @@ public class AgentManagerService {
 			}
 		}
 		return null;
-	}
-
-	private AgentControllerIdentityImplementation convert(AgentIdentity eachAgentIdentity) {
-		return (AgentControllerIdentityImplementation) eachAgentIdentity;
 	}
 
 	/**
@@ -347,8 +349,8 @@ public class AgentManagerService {
 			agentInfo.setNumber(agentIdentity.getNumber());
 			agentInfo.setRegion(agentIdentity.getRegion());
 			agentInfo.setIp(agentIdentity.getIp());
-			agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
-			agentInfo.setStatus(agentManager.getAgentState(agentIdentity));
+			agentInfo.setPort(getAgentManager().getAgentConnectingPort(agentIdentity));
+			agentInfo.setStatus(getAgentManager().getAgentState(agentIdentity));
 		}
 		return agentInfo;
 	}
@@ -421,10 +423,16 @@ public class AgentManagerService {
 							extractRegionFromAgentRegion(agent.getRegion()) + "_" + agent.getId() + "_stop_agent",
 							new AgentRequest(agent.getId(), agent.getIp(), RequestType.STOP_AGENT));
 		} else {
-			agentManager.stopAgent(agent.getAgentIdentity());
+			getAgentManager().stopAgent(agent.getAgentIdentity());
 		}
 	}
 
+	/**
+	 * Add the agent system data model share request on cache.
+	 * 
+	 * @param id
+	 *            agent id.
+	 */
 	public void requestShareAgentSystemDataModel(Long id) {
 		if (config.isCluster()) {
 			AgentInfo agent = getAgent(id);
@@ -434,18 +442,52 @@ public class AgentManagerService {
 		}
 	}
 
+	/**
+	 * Get agent system data model for the given ip. This method is cluster aware.
+	 * 
+	 * @param ip
+	 *            agent ip.
+	 * @return {@link SystemDataModel} instance.
+	 */
 	public SystemDataModel getAgentSystemDataModel(String ip) {
 
 		if (config.isCluster()) {
 			ValueWrapper valueWrapper = agentMonitorCache.get(ip);
 			return valueWrapper == null ? new SystemDataModel() : (SystemDataModel) valueWrapper.get();
 		} else {
-			return agentManager.getSystemDataModel(getAgentIdentityByIp(ip));
+			return getAgentManager().getSystemDataModel(getAgentIdentityByIp(ip));
 		}
 	}
 
+	/**
+	 * Register agent monitoring target. This method should be called in the controller in which the
+	 * given agent exists.
+	 * 
+	 * @param agentId
+	 *            agent id
+	 * @param agentIp
+	 *            agent ip
+	 * @param agentIdentity
+	 *            agent identity
+	 */
 	public void addAgentMonitoringTarget(Long agentId, String agentIp,
 					AgentControllerIdentityImplementation agentIdentity) {
 		agentMonioringTargetsCache.put(agentIp, agentIdentity);
+	}
+
+	AgentManager getAgentManager() {
+		return agentManager;
+	}
+
+	void setAgentManager(AgentManager agentManager) {
+		this.agentManager = agentManager;
+	}
+
+	CacheManager getCacheManager() {
+		return cacheManager;
+	}
+
+	void setCacheManager(CacheManager cacheManager) {
+		this.cacheManager = cacheManager;
 	}
 }

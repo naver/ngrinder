@@ -22,6 +22,8 @@
  */
 package org.ngrinder.infra.config;
 
+import static org.ngrinder.common.util.TypeConvertUtil.convert;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -64,7 +66,7 @@ import com.google.common.net.InetAddresses;
 public class DynamicCacheConfig {
 
 	@Autowired
-	Config config;
+	private Config config;
 
 	/**
 	 * Create cache manager dynamically according to the configuration. Because we cann't add a
@@ -164,18 +166,26 @@ public class DynamicCacheConfig {
 						Config.NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT);
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<String> getReplicatedCacheNames(Configuration cacheManagerConfig) {
 		Map<String, CacheConfiguration> cacheConfigurations = cacheManagerConfig.getCacheConfigurations();
 		List<String> replicatedCacheNames = new ArrayList<String>();
 		for (Map.Entry<String, CacheConfiguration> eachConfig : cacheConfigurations.entrySet()) {
-			for (CacheEventListenerFactoryConfiguration each : ((List<CacheEventListenerFactoryConfiguration>) eachConfig
-							.getValue().getCacheEventListenerConfigurations())) {
+			List<CacheEventListenerFactoryConfiguration> list = convert(eachConfig.getValue()
+							.getCacheEventListenerConfigurations());
+			for (CacheEventListenerFactoryConfiguration each : list) {
 				if (each.getFullyQualifiedClassPath().equals("net.sf.ehcache.distribution.RMICacheReplicatorFactory")) {
 					replicatedCacheNames.add(eachConfig.getKey());
 				}
 			}
 		}
 		return replicatedCacheNames;
+	}
+
+	Config getConfig() {
+		return config;
+	}
+
+	void setConfig(Config config) {
+		this.config = config;
 	}
 }
