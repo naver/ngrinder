@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 @RequestMapping("/operation/systemConfig")
-@PreAuthorize("hasAnyRole('A', 'S')")
+@PreAuthorize("hasAnyRole('A')")
 public class SystemConfigController extends NGrinderBaseController {
 
 	@Autowired

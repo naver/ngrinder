@@ -63,7 +63,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @RuntimeOnlyController
 @RequestMapping("/operation/scriptConsole")
-@PreAuthorize("hasAnyRole('A', 'S')")
+@PreAuthorize("hasAnyRole('A')")
 public class ScriptConsoleController extends NGrinderBaseController implements ApplicationContextAware {
 	private static final int SCRIPT_CONSOLE_PYTHON_EXPIRE_TIMEOUT = 30000;
 

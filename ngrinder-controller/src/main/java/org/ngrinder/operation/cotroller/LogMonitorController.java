@@ -53,7 +53,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 @RequestMapping("/operation/log")
-@PreAuthorize("hasAnyRole('A', 'S')")
+@PreAuthorize("hasAnyRole('A')")
 public class LogMonitorController extends NGrinderBaseController {
 
 	private static final int LOGGER_BUFFER_SIZE = 10000;

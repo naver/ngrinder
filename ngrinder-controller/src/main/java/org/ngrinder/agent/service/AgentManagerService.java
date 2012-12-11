@@ -150,7 +150,9 @@ public class AgentManagerService {
 			attachedAgentMap.put(agentControllerIdentity.getIp(), agentControllerIdentity);
 		}
 
-		List<AgentInfo> agentsInDB = getAgentRepository().findAll(startWithRegion(getConfig().getRegion()));
+		String region = getConfig().getRegion();
+		List<AgentInfo> agentsInDB = (StringUtils.equals(region, "NONE")) ? getAgentRepository().findAll()
+						: getAgentRepository().findAll(startWithRegion(region));
 		Map<String, AgentInfo> agentsInDBMap = new HashMap<String, AgentInfo>(agentsInDB.size());
 		// step1. check all agents in DB, whether they are attached to
 		// controller.
@@ -172,7 +174,8 @@ public class AgentManagerService {
 		// step2. check all attached agents, whether they are new, and not saved
 		// in DB.
 		for (AgentControllerIdentityImplementation agentIdentity : attachedAgentMap.values()) {
-			if (!agentsInDBMap.containsKey(agentIdentity.getIp())) {
+			if (!agentsInDBMap.containsKey(agentIdentity.getIp())
+							&& StringUtils.equals(agentIdentity.getRegion(), region)) {
 				changeAgentList.add(fillUpAgentInfo(new AgentInfo(), agentIdentity));
 			}
 		}
@@ -219,7 +222,7 @@ public class AgentManagerService {
 			availableUserOwnAgent.put(region, new MutableInt(0));
 		}
 		String myAgentSuffix = "_owned_" + user.getUserId();
-
+		boolean clusterMode = config.isCluster();
 		for (AgentInfo agentInfo : getAllActiveAgentInfoFromDB()) {
 			// Skip the all agents which doesn't approved, is inactive or
 			// doesn't have region
@@ -229,7 +232,7 @@ public class AgentManagerService {
 			}
 			String fullRegion = agentInfo.getRegion();
 			String region = extractRegionFromAgentRegion(fullRegion);
-			if (StringUtils.isBlank(region)) {
+			if (StringUtils.isBlank(region) && clusterMode) {
 				continue;
 			}
 			// It's my own agent

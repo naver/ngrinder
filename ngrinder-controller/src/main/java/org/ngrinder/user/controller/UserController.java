@@ -71,7 +71,7 @@ public class UserController extends NGrinderBaseController {
 	 *            search keyword.
 	 * @return user/userList
 	 */
-	@PreAuthorize("hasAnyRole('A', 'S')")
+	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping("/list")
 	public String getUserList(ModelMap model, @RequestParam(required = false) String roleName,
 					@RequestParam(required = false) String keywords) {
@@ -104,7 +104,7 @@ public class UserController extends NGrinderBaseController {
 	 * @return "user/userDetail"
 	 */
 	@RequestMapping("/detail")
-	@PreAuthorize("hasAnyRole('A', 'S') or #user.userId == #userId")
+	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
 	public String getUserDetail(User user, final ModelMap model, @RequestParam(required = false) final String userId) {
 
 		List<User> userList = userService.getAllUserByRole(null);
@@ -133,7 +133,7 @@ public class UserController extends NGrinderBaseController {
 	 * @return "redirect:/user/list" if current user change his info, otheriwise return "redirect:/"
 	 */
 	@RequestMapping("/save")
-	@PreAuthorize("hasAnyRole('A', 'S') or #user.id == #updatedUser.id")
+	@PreAuthorize("hasAnyRole('A') or #user.id == #updatedUser.id")
 	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser,
 					@RequestParam(required = false) String followersStr) {
 		checkArgument(updatedUser.validate());
@@ -168,7 +168,7 @@ public class UserController extends NGrinderBaseController {
 	 *            comma separated user ids.
 	 * @return "redirect:/user/list"
 	 */
-	@PreAuthorize("hasAnyRole('A', 'S')")
+	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping("/delete")
 	public String deleteUser(ModelMap model, @RequestParam String userIds) {
 		String[] ids = userIds.split(",");
@@ -186,7 +186,7 @@ public class UserController extends NGrinderBaseController {
 	 *            userId to be checked
 	 * @return success json if true.
 	 */
-	@PreAuthorize("hasAnyRole('A', 'S')")
+	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping("/checkUserId")
 	@ResponseBody
 	public String checkUserId(ModelMap model, @RequestParam String userId) {
