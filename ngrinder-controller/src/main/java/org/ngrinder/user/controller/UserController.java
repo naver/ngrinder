@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.model.Permission;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
@@ -134,7 +135,7 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping("/save")
 	@PreAuthorize("hasAnyRole('A', 'S') or #user.id == #updatedUser.id")
 	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser,
-			@RequestParam(required = false) String followersStr) {
+					@RequestParam(required = false) String followersStr) {
 		checkArgument(updatedUser.validate());
 		if (user.getRole() == Role.USER) {
 			// General user can not change their role.
@@ -209,10 +210,10 @@ public class UserController extends NGrinderBaseController {
 		model.addAttribute("user", newUser);
 		model.addAttribute("action", "profile");
 		getUserShareList(newUser, model);
-		
+
 		return "user/userInfo";
 	}
-	
+
 	/**
 	 * Get the follower list.
 	 * 
@@ -226,7 +227,12 @@ public class UserController extends NGrinderBaseController {
 	public String switchUserList(User user, ModelMap model) {
 		User currUser = userService.getUserByIdWithoutCache(user.getUserId());
 		checkNotNull(currUser);
-		model.addAttribute("shareUserList", currUser.getOwners());
+		if (user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
+			List<User> allUserByRole = userService.getAllUserByRole(Role.USER.getFullName());
+			model.addAttribute("shareUserList", allUserByRole);
+		} else {
+			model.addAttribute("shareUserList", currUser.getOwners());
+		}
 		return "user/userOptionGroup";
 	}
 
@@ -234,20 +240,20 @@ public class UserController extends NGrinderBaseController {
 	 * Switch user identity.
 	 * 
 	 * @param user
-	 * 			current user
+	 *            current user
 	 * @param model
-	 * 			model
+	 *            model
 	 * @param switchUserId
-	 * 			the user who will switch.
+	 *            the user who will switch.
 	 * 
 	 * @return redirect:/perftest/list
 	 */
 	@RequestMapping("/switchUser")
 	public String switchUser(User user, ModelMap model, @RequestParam String switchUserId) {
-		//do the switching works and remember the ownerId.
+		// do the switching works and remember the ownerId.
 		return "redirect:/perftest/list";
 	}
-	
+
 	/**
 	 * Get user list that current user will be shared, excluding current user.
 	 * 
@@ -260,19 +266,19 @@ public class UserController extends NGrinderBaseController {
 		if (user == null) {
 			return;
 		}
-		
+
 		List<User> currFollowers = user.getFollowers();
 		List<User> userList = new ArrayList<User>();
 		String userId = user.getUserId();
-		
+
 		for (User u : userService.getAllUserByRole(Role.USER.getFullName())) {
 			if (u.getUserId().equals(userId)) {
 				continue;
 			}
-			
+
 			userList.add(u.getUserBaseInfo());
 		}
-		
+
 		model.addAttribute("followers", currFollowers);
 		model.addAttribute("shareUserList", userList);
 	}
