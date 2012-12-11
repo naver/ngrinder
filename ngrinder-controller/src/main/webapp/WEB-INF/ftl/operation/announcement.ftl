@@ -70,7 +70,7 @@
 					content = content.replaceAll("\n", "<br>");
 					content = content.replaceAll('\t', '&nbsp;&nbsp;&nbsp;&nbsp;')
 				}
-				$("#ancemtContentDiv").html(content);
+				$("#announcementContentDiv").html(content);
 				$("#announcementDiv").slideDown();
 			});
 			String.prototype.replaceAll = function(s1,s2) { 

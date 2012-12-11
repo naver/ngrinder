@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -69,8 +70,7 @@ public class HomeController extends NGrinderBaseController {
 	@Autowired
 	private HomeService homeService;
 
-	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|"
-					+ "Australia|Europe|Indian|Pacific)/.*";
+	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|" + "Australia|Europe|Indian|Pacific)/.*";
 
 	private List<TimeZone> timeZones = null;
 
@@ -133,8 +133,7 @@ public class HomeController extends NGrinderBaseController {
 	}
 
 	private void setLanguage(String lan, HttpServletResponse response, HttpServletRequest request) {
-		LocaleResolver localeResolver = checkNotNull(RequestContextUtils.getLocaleResolver(request),
-						"No LocaleResolver found!");
+		LocaleResolver localeResolver = checkNotNull(RequestContextUtils.getLocaleResolver(request), "No LocaleResolver found!");
 		LocaleEditor localeEditor = new LocaleEditor();
 		localeEditor.setAsText(checkNotNull(lan, "No User Language found!"));
 		localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
@@ -156,6 +155,7 @@ public class HomeController extends NGrinderBaseController {
 			CoreLogger.LOGGER.info("Login Failure " + e.getMessage());
 			return "login";
 		}
+		model.clear();
 		return "redirect:/";
 	}
 

@@ -21,7 +21,7 @@
 			                	<li><a id="user_profile_id" href="#"><@spring.message "navigator.dropdown.profile"/></a></li>
 			                	<li><a id="switch_user_id" href="#"><@spring.message "navigator.dropdown.switchUser"/></a></li>
 		                	</#if>
-		                	
+		                	 
 			            	<@security.authorize ifAnyGranted="A">
 			            		<li class="divider"/> 
 		               			<li><a href="${req.getContextPath()}/user/list"><@spring.message "navigator.dropdown.userManagement"/></a></li>
@@ -45,23 +45,41 @@
 		</div>
 	</div>
 </div>
-<div class="container <#if announcement?has_content><@security.authorize ifAnyGranted="A">hidden</@security.authorize><#else>hidden</#if>" style="margin:0 auto" id="announcementDiv">
+<div class="container <#if announcement?has_content><#else>hidden</#if>" style="margin:0 auto" id="announcementDiv">
 	<div class="alert alert-block" style="padding:10px 20px; margin-bottom:-20px">
 		<div class="page-header" style="margin:0; padding-bottom:2px">
-			<h3><@spring.message "announcement.alert.title"/></h3> 
+			<span><h4><@spring.message "announcement.alert.title"/></h4> <a href="#" id="hide_announcement">
+				<i class="<#if announcement_hide == false>icon-minus<#else>icon-plus</#if> pull-right" id="announcement_icon" style="margin-top:-20px"></i>
+			</a></span>
 		</div>
-		<div style="margin:10px 5px 0;" id="ancemtContentDiv">
+		<div style="margin:10px 5px 0;" class="<#if announcement_hide == true>hidden</#if>" id="announcementContentDiv">
 			<#if announcement?has_content>
-			<#if announcement?index_of('</') gt 0 || announcement?index_of('<br>') gt 0>
-			${announcement}
-			<#else>
-			${announcement?replace('\n', '<br>')?replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp;')}
-			</#if>
-			</#if>
+				<#if announcement?index_of('</') gt 0 || announcement?index_of('<br>') gt 0> 
+					${announcement}
+				<#else>
+					${announcement?replace('\n', '<br>')?replace('\t', '&nbsp;&nbsp;&nbsp;&nbsp;')}
+				</#if>
+			</#if> 
 		</div>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$("#hide_announcement").click( function() {
+					if ($("#announcementContentDiv").is(":hidden")) {
+						$("#announcementContentDiv").show("slow");
+						$("#announcement_icon").removeClass("icon-plus").addClass("icon-minus");
+						cookie("announcement_hide", "false", 6);
+					} else {
+						$("#announcementContentDiv").slideUp();
+						$("#announcement_icon").removeClass("icon-minus").addClass("icon-plus");
+						cookie("announcement_hide", "true", 6);
+					}
+				})
+			});
+		</script>
 	</div>
 </div>
 <div class="modal fade" id="userProfileModal">
+
 	<div class="modal-header">
 		<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
 		<h3><@spring.message "navigator.dropdown.profile.title"/></h3>

@@ -261,3 +261,9 @@ function markInput(obj, success, message) {
 $(document).ready(function() {
 	$("div[rel=popover], span[rel=popover]").hover(popover, popunover);
 });
+
+function cookie(name,value,expiredays){
+  var today = new Date();
+  today.setDate( today.getDate() + expiredays );
+  document.cookie = name + "=" + escape( value ) + "; path=/; expires=" + today.toGMTString() + ";";
+}

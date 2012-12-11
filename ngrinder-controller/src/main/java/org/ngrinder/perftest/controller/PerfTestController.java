@@ -354,6 +354,7 @@ public class PerfTestController extends NGrinderBaseController {
 			test.setRegion(Config.NON_REGION);
 		}
 		perfTestService.savePerfTest(user, test);
+		model.clear();
 		return "redirect:/perftest/list";
 	}
 

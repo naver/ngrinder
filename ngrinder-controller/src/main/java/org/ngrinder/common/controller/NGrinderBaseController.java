@@ -39,6 +39,7 @@ import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.google.gson.Gson;
@@ -72,7 +73,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	@Autowired
 	private Config config;
-	
+
 	@Autowired
 	private AnnouncementService announcementService;
 
@@ -113,7 +114,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 		}
 		return new User();
 	}
-	
+
 	/**
 	 * Provide announcement content as a model attributes.
 	 * 
@@ -123,9 +124,20 @@ public class NGrinderBaseController implements NGrinderConstants {
 	public String announcement() {
 		return announcementService.getAnnouncement();
 	}
-	
+
+	/**
+	 * Provide announcement disability as a model attributes.
+	 * 
+	 * @return announcement content
+	 */
+	@ModelAttribute("announcement_hide")
+	public boolean announcement(@CookieValue(value = "announcement_hide", defaultValue = "false") boolean annoucnementHide) {
+		return annoucnementHide;
+	}
+
 	/**
 	 * Check whether the cache cluster is open.
+	 * 
 	 * @return true is cache cluster set
 	 */
 	@ModelAttribute("controllerRegion")
@@ -154,7 +166,9 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Return success json message.
-	 * @param message message
+	 * 
+	 * @param message
+	 *            message
 	 * @return json message
 	 */
 	public String returnSuccess(String message) {
@@ -166,7 +180,9 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Return error json message.
-	 * @param message message
+	 * 
+	 * @param message
+	 *            message
 	 * @return json message
 	 */
 	public String returnError(String message) {
@@ -178,6 +194,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Return raw success json message.
+	 * 
 	 * @return json message
 	 */
 	public String returnSuccess() {
@@ -186,6 +203,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Return raw error json message.
+	 * 
 	 * @return json message
 	 */
 	public String returnError() {
@@ -194,7 +212,9 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Convert the given list into json message.
-	 * @param list list
+	 * 
+	 * @param list
+	 *            list
 	 * @return json message
 	 */
 	public String toJson(List<?> list) {
@@ -203,16 +223,19 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	/**
 	 * Convert the given map into json message.
-	 * @param map map
+	 * 
+	 * @param map
+	 *            map
 	 * @return json message
 	 */
 	public String toJson(Map<String, Object> map) {
 		return gson.toJson(map);
 	}
-	
+
 	/**
 	 * Get nGrinder Config Object.
-	 * @return Config 
+	 * 
+	 * @return Config
 	 */
 	public Config getConfig() {
 		return config;
