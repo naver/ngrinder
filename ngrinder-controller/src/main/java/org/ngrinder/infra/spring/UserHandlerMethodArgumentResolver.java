@@ -22,13 +22,10 @@
  */
 package org.ngrinder.infra.spring;
 
-import java.util.EnumSet;
-
 import javax.servlet.http.Cookie;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.Permission;
-import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserContext;
 import org.ngrinder.user.service.UserService;

@@ -126,7 +126,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Provide announcement disability as a model attributes.
+	 * Provide announcement hide cookie as a model attributes.
 	 * 
 	 * @return announcement content
 	 */

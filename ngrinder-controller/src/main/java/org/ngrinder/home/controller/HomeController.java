@@ -32,7 +32,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
