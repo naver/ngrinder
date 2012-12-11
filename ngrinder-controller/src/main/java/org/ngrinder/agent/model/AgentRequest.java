@@ -25,6 +25,8 @@ public class AgentRequest implements Serializable {
 
 	private final String agentIp;
 
+	private final String agentName;
+
 	/**
 	 * Request Type.
 	 * 
@@ -71,9 +73,10 @@ public class AgentRequest implements Serializable {
 	 * @param requestType
 	 *            request type
 	 */
-	public AgentRequest(Long agentId, String agentIp, RequestType requestType) {
+	public AgentRequest(Long agentId, String agentIp, String agentName, RequestType requestType) {
 		this.agentId = agentId;
 		this.agentIp = agentIp;
+		this.agentName = agentName;
 		this.requestType = requestType;
 	}
 
@@ -91,5 +94,9 @@ public class AgentRequest implements Serializable {
 
 	public String getAgentIp() {
 		return agentIp;
+	}
+
+	public String getAgentName() {
+		return agentName;
 	}
 }

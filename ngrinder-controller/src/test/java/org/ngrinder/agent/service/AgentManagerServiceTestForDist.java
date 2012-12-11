@@ -2,6 +2,8 @@ package org.ngrinder.agent.service;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +30,13 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 	@Autowired
 	AgentManagerRepository agentRepository;
 
-	@Autowired
 	Config config;
 
 	AgentManagerService agentManagerService;
+
+	@Before
+	public void before() {
+	}
 
 	public AgentInfo createAgentInfo(String region, boolean approved, AgentControllerState status) {
 		AgentInfo agentInfo1 = new AgentInfo();
@@ -74,7 +79,11 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 				return 3;
 			}
 		};
-		agentManagerService.setConfig(this.config);
+
+
+		config = mock(Config.class);
+		when(config.isCluster()).thenReturn(true);
+		agentManagerService.setConfig(config);
 		agentManagerService.setAgentManager(this.agentManager);
 		agentManagerService.setAgentRepository(this.agentRepository);
 	}

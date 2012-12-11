@@ -24,6 +24,9 @@ package org.ngrinder.agent.service;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +35,7 @@ import junit.framework.Assert;
 import net.grinder.message.console.AgentControllerState;
 
 import org.apache.commons.lang.mutable.MutableInt;
+import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.model.AgentInfo;
@@ -41,7 +45,7 @@ import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Agent service test
+ * Agent service test.
  * 
  * @author Tobi
  * @since 3.0
@@ -57,8 +61,14 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	private AgentManagerRepository agentRepository;
 
-	@Autowired
 	private Config config;
+
+	@Before
+	public void before() {
+		config = mock(Config.class);
+		when(config.isCluster()).thenReturn(true);
+		agentManagerService.setConfig(config);
+	}
 
 	@Test
 	public void testSaveGetDeleteAgent() {

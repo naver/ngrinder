@@ -71,7 +71,6 @@ import com.google.common.collect.Multimap;
 /**
  * agent service.
  * 
- * @author Tobi
  * @author JunHo Yoon
  * @since 3.0
  */
@@ -119,8 +118,8 @@ public class AgentManagerService {
 						try {
 							if (each.startsWith(region) && agentRequestCache.get(each) != null) {
 								AgentRequest agentRequest = (AgentRequest) (agentRequestCache.get(each).get());
-								AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIp(agentRequest
-												.getAgentIp());
+								AgentControllerIdentityImplementation agentIdentity = getAgentIdentityByIpAndName(
+												agentRequest.getAgentIp(), agentRequest.getAgentName());
 								if (agentIdentity != null) {
 									agentRequest.getRequestType().process(agentRequest.getAgentId(),
 													agentRequest.getAgentIp(), getAgentManager(),
@@ -326,17 +325,19 @@ public class AgentManagerService {
 	}
 
 	/**
-	 * Get agent identity by ip.
+	 * Get agent identity by ip and name
 	 * 
 	 * @param ip
 	 *            ip
+	 * @param name
+	 *            name
 	 * @return {@link AgentControllerIdentityImplementation} instance.
 	 */
-	public AgentControllerIdentityImplementation getAgentIdentityByIp(String ip) {
+	public AgentControllerIdentityImplementation getAgentIdentityByIpAndName(String ip, String name) {
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
 			AgentControllerIdentityImplementation convert = convert(eachAgentIdentity);
-			if (ip.equals(convert.getIp())) {
+			if (StringUtils.equals(ip, convert.getIp()) && StringUtils.equals(name, convert.getName())) {
 				return convert;
 			}
 		}
@@ -374,7 +375,8 @@ public class AgentManagerService {
 			// should use IP and number to identify an agent, but now number is
 			// not used, it is
 			// always -1.
-			if (StringUtils.equals(each.getIp(), agentIdentity.getIp())) {
+			if (StringUtils.equals(each.getIp(), agentIdentity.getIp())
+							&& StringUtils.equals(each.getHostName(), agentIdentity.getName())) {
 				agentInfo = each;
 				break;
 			}
@@ -404,7 +406,8 @@ public class AgentManagerService {
 	 */
 	public AgentInfo getAgent(long id) {
 		AgentInfo findOne = getAgentRepository().findOne(id);
-		AgentControllerIdentityImplementation agentIdentityByIp = getAgentIdentityByIp(findOne.getIp());
+		AgentControllerIdentityImplementation agentIdentityByIp = getAgentIdentityByIpAndName(findOne.getIp(),
+						findOne.getHostName());
 		return fillUpAgentInfo(findOne, agentIdentityByIp);
 	}
 
@@ -459,9 +462,10 @@ public class AgentManagerService {
 			return;
 		}
 		if (getConfig().isCluster()) {
-			agentRequestCache.put(
-							extractRegionFromAgentRegion(agent.getRegion()) + "_" + agent.getId() + "_stop_agent",
-							new AgentRequest(agent.getId(), agent.getIp(), RequestType.STOP_AGENT));
+			agentRequestCache
+							.put(extractRegionFromAgentRegion(agent.getRegion()) + "_" + agent.getId() + "_stop_agent",
+											new AgentRequest(agent.getId(), agent.getIp(), agent.getHostName(),
+															RequestType.STOP_AGENT));
 		} else {
 			getAgentManager().stopAgent(agent.getAgentIdentity());
 		}
@@ -478,7 +482,8 @@ public class AgentManagerService {
 			AgentInfo agent = getAgent(id);
 			agentRequestCache.put(
 							extractRegionFromAgentRegion(agent.getRegion()) + "_" + agent.getId() + "_monitoring",
-							new AgentRequest(agent.getId(), agent.getIp(), RequestType.SHARE_AGENT_SYSTEM_DATA_MODEL));
+							new AgentRequest(agent.getId(), agent.getIp(), agent.getHostName(),
+											RequestType.SHARE_AGENT_SYSTEM_DATA_MODEL));
 		}
 	}
 
@@ -489,13 +494,13 @@ public class AgentManagerService {
 	 *            agent ip.
 	 * @return {@link SystemDataModel} instance.
 	 */
-	public SystemDataModel getAgentSystemDataModel(String ip) {
+	public SystemDataModel getAgentSystemDataModel(String ip, String name) {
 
 		if (getConfig().isCluster()) {
 			ValueWrapper valueWrapper = agentMonitorCache.get(ip);
 			return valueWrapper == null ? new SystemDataModel() : (SystemDataModel) valueWrapper.get();
 		} else {
-			return getAgentManager().getSystemDataModel(getAgentIdentityByIp(ip));
+			return getAgentManager().getSystemDataModel(getAgentIdentityByIpAndName(ip, name));
 		}
 	}
 

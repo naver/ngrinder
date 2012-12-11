@@ -88,7 +88,8 @@ public class AgentManagerController extends NGrinderBaseController {
 			@Override
 			public boolean accept(File dir, String name) {
 				if (name.startsWith("ngrinder")) {
-					StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url", contextPath));
+					StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url",
+									contextPath));
 					url.append("/agent/download/" + name);
 					downloads.add(url.toString());
 				}
@@ -110,7 +111,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "approve", method = RequestMethod.POST)
 	public String approveAgent(@RequestParam("id") Long id,
-			@RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve) {
+					@RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve) {
 		agentManagerService.approve(id, approve);
 		return "agent/agentList";
 	}
@@ -173,10 +174,11 @@ public class AgentManagerController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/systemDataModel")
 	@ResponseBody
-	public String getCurrentMonitorData(ModelMap model, @RequestParam Long id, @RequestParam String ip) {
+	public String getCurrentMonitorData(ModelMap model, @RequestParam Long id, @RequestParam String ip,
+					@RequestParam String name) {
 		Map<String, Object> returnMap = new HashMap<String, Object>(3);
 		agentManagerService.requestShareAgentSystemDataModel(id);
-		SystemDataModel systemData = agentManagerService.getAgentSystemDataModel(ip);
+		SystemDataModel systemData = agentManagerService.getAgentSystemDataModel(ip, name);
 		systemData = systemData != null ? systemData : new SystemDataModel();
 		returnMap.put(JSON_SUCCESS, true);
 		returnMap.put("systemData", systemData);
