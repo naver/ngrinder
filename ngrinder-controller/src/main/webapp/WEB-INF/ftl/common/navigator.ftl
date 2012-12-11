@@ -21,11 +21,9 @@
 			                	<li><a id="user_profile_id" href="#"><@spring.message "navigator.dropdown.profile"/></a></li>
 			                	<li><a id="switch_user_id" href="#"><@spring.message "navigator.dropdown.switchUser"/></a></li>
 		                	</#if>
-
-		                	<@security.authorize ifAnyGranted="S">
-			                	<li><a id="user_profile_id" href="#"><@spring.message "navigator.dropdown.profile"/></a></li>
-		                	</@security.authorize>
+		                	
 			            	<@security.authorize ifAnyGranted="A">
+			            		<li class="divider"/> 
 		               			<li><a href="${req.getContextPath()}/user/list"><@spring.message "navigator.dropdown.userManagement"/></a></li>
 				                <li><a href="${req.getContextPath()}/agent/list"><@spring.message "navigator.dropdown.agentManagement"/></a></li>
 				                <li><a href="${req.getContextPath()}/operation/log"><@spring.message "navigator.dropdown.logMonitoring"/></a></li>

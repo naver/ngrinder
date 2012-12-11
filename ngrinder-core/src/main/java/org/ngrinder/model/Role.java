@@ -22,7 +22,6 @@
  */
 package org.ngrinder.model;
 
-
 /**
  * Role of the User.
  * 
@@ -44,7 +43,7 @@ public enum Role {
 		 * Has admin permission or not.
 		 * 
 		 * @param type
-		 * 			permission type
+		 *            permission type
 		 * 
 		 * @return has the permission or not
 		 */
@@ -60,6 +59,8 @@ public enum Role {
 				return true;
 			case STOP_TEST_OFOTHER:
 				return true;
+			case SWITCH_TO_ANYONE:
+				return true;
 			default:
 				return false;
 			}
@@ -69,12 +70,12 @@ public enum Role {
 	 * Super user role who can set system settings and manage user account.
 	 */
 	SUPER_USER("S", "Super") {
-		
+
 		/**
 		 * Has super permission or not.
 		 * 
 		 * @param type
-		 * 			permission type
+		 *            permission type
 		 * 
 		 * @return has the permission or not
 		 */
@@ -86,6 +87,8 @@ public enum Role {
 				return true;
 			case VALIDATE_SCRIPT_OFOTHER:
 				return true;
+			case SWITCH_TO_ANYONE:
+				return true;
 			default:
 				return false;
 			}
@@ -95,13 +98,12 @@ public enum Role {
 	 * System user role. This is for the automatic batch.
 	 */
 	SYSTEM_USER("SYSTEM", "System User") {
-		
+
 	};
-	
+
 	private final String shortName;
 
 	private final String fullName;
-	
 
 	/**
 	 * Constructor.
@@ -133,12 +135,12 @@ public enum Role {
 	public String getFullName() {
 		return fullName;
 	}
-	
+
 	/**
 	 * check this role whether has permission.
 	 * 
 	 * @param type
-	 * 			permission type
+	 *            permission type
 	 * 
 	 * @return true if can
 	 */

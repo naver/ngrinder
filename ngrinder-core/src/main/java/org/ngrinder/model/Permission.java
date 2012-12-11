@@ -30,6 +30,9 @@ public enum Permission {
 	/** Can check all perTest. */
 	GET_ALL_TESTS,
 
+	/** Can switch to anyone. */
+	SWITCH_TO_ANYONE,
+
 	/** An modify perTest that other created. */
 	MODIFY_TEST_OFOTHER,
 

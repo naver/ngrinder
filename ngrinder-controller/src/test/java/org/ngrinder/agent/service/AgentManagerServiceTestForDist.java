@@ -74,9 +74,9 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 				return 3;
 			}
 		};
-		agentManagerService.config = this.config;
+		agentManagerService.setConfig(this.config);
 		agentManagerService.setAgentManager(this.agentManager);
-		agentManagerService.agentRepository = this.agentRepository;
+		agentManagerService.setAgentRepository(this.agentRepository);
 	}
 
 	@Test
@@ -101,7 +101,7 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 		userAvailableAgentCountMap = agentManagerService.getUserAvailableAgentCountMap(regions, user);
 		assertThat(userAvailableAgentCountMap.get("hello").intValue(), is(3));
 		assertThat(userAvailableAgentCountMap.get("haha").intValue(), is(3));
-		
+
 		user.setUserId("my");
 		userAvailableAgentCountMap = agentManagerService.getUserAvailableAgentCountMap(regions, user);
 		assertThat(userAvailableAgentCountMap.get("hello").intValue(), is(2));
