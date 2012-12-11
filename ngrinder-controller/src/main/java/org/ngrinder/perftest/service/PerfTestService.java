@@ -48,6 +48,7 @@ import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.RandomAccessFile;
 import java.io.StringReader;
 import java.nio.channels.FileLock;
 import java.util.ArrayList;
@@ -1018,7 +1019,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public Map<String, Object> getStatistics(PerfTest perfTest) {
 		ConcurrentHashMap<String, Object> readObjectFromFile = readObjectFromFile(new File(
 						getPerfTestStatisticPath(perfTest), "statistics.stat"), new ConcurrentHashMap<String, Object>());
-		System.out.println(readObjectFromFile);
 		return readObjectFromFile;
 	}
 
@@ -1050,7 +1050,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		HashMap<AgentIdentity, SystemDataModel> readObjectFromFile = readObjectFromFile(new File(
 						getPerfTestStatisticPath(perfTest), "agent_info.stat"),
 						new HashMap<AgentIdentity, SystemDataModel>());
-		System.out.println(readObjectFromFile);
 		return readObjectFromFile;
 	}
 
@@ -1065,15 +1064,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			oout.writeObject(result);
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.error("IO error for file {}", file, e);
 		} finally {
 			if (lock != null) {
 				try {
 					lock.release();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOGGER.error("unlocking is failed for file {}", file, e);
 				}
 			}
 
@@ -1092,20 +1089,19 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		FileLock lock = null;
 		try {
 			fin = new FileInputStream(file);
-			lock = fin.getChannel().tryLock(0L, Long.MAX_VALUE, true);
+			lock = fin.getChannel().lock(0, Long.MAX_VALUE, true);
 			oin = new ObjectInputStream(fin);
 			Object readObject = oin.readObject();
 			return (readObject == null) ? defaultValue : (T) readObject;
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("IO error for file {}", file, e);
 		} finally {
 			if (lock != null) {
 				try {
 					lock.release();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOGGER.error("unlocking is failed for file {}", file, e);
 				}
 			}
 

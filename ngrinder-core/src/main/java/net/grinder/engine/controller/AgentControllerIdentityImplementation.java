@@ -30,8 +30,8 @@ import net.grinder.common.processidentity.AgentIdentity;
  * 
  * @author JunHo Yoon
  */
-public class AgentControllerIdentityImplementation extends AbstractAgentControllerIdentityImplementation
-				implements AgentIdentity {
+public class AgentControllerIdentityImplementation extends AbstractAgentControllerIdentityImplementation implements
+				AgentIdentity {
 
 	private static final long serialVersionUID = 2;
 

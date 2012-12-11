@@ -162,7 +162,8 @@ public class Config implements IConfig {
 	}
 
 	public String getRegion() {
-		return getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION);
+		return isCluster() ? getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION)
+						: NON_REGION;
 	}
 
 	/**
