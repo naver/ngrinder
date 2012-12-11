@@ -12,10 +12,10 @@
 				<div class="page-header pageHeader">
 					<h3><@spring.message "navigator.dropdown.announcement"/>&nbsp;&nbsp;<small><@spring.message "announcement.view.message"/></small></h3>
 				</div>
-				<form id="annountcementForm" method="post">
-				<a id="testBtn" class="btn btn-primary pull-right" href="javascript:void(0);" style="margin-top:-55px; margin-right:55px">Test</a>
-				<button id="saveBtn" class="btn btn-success pull-right" style="margin-top:-55px;"><@spring.message "common.button.save"/></button>
-				<textarea id="announcementTT" name="content">${content!}</textarea>
+				<form id="annountcementForm" method="POST">
+					<a id="testBtn" class="btn btn-primary pull-right" href="javascript:void(0);" style="margin-top:-55px; margin-right:55px">Test</a>
+					<button id="saveBtn" class="btn btn-success pull-right" style="margin-top:-55px;"><@spring.message "common.button.save"/></button>
+					<textarea id="announcementTT" name="content">${content!}</textarea>
 				</form>
 			</div>
 		</div>
@@ -56,7 +56,7 @@
 			
 			$("#saveBtn").click(function() {
 				$('#annountcementTT').text(editor.getValue());
-				document.forms.annountcementForm.action = "${req.getContextPath()}/operation/announcement/save";
+				document.forms.annountcementForm.action = "${req.getContextPath()}/operation/announcement/";
 				document.forms.annountcementForm.submit();
 			});
 			

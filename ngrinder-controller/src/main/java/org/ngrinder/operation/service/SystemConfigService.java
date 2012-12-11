@@ -46,7 +46,7 @@ public class SystemConfigService {
 	 */
 	public boolean saveSystemConfigFile(String content) {
 		try {
-			FileUtils.writeStringToFile(config.getHome().getSubFile("system.conf"), content);
+			FileUtils.writeStringToFile(config.getHome().getSubFile("system.conf"), content, "UTF-8");
 		} catch (IOException e) {
 			LOG.error("Error while writing system configuration file.");
 			return false;

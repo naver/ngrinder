@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -30,7 +31,7 @@ public class AnnouncementController extends NGrinderBaseController {
 	 *            model.
 	 * @return operation/announcement
 	 */
-	@RequestMapping("")
+	@RequestMapping(value = "", method = RequestMethod.GET)
 	public String openAnnouncement(Model model) {
 		String announcement = announcementService.getAnnouncement();
 		model.addAttribute("announcement", announcement);
@@ -47,9 +48,12 @@ public class AnnouncementController extends NGrinderBaseController {
 	 *            file content.
 	 * @return operation/announcement
 	 */
-	@RequestMapping("/save")
+	@RequestMapping(value = "", method = RequestMethod.POST)
 	public String saveAnnouncement(Model model, @RequestParam final String content) {
 		model.addAttribute("success", announcementService.saveAnnouncement(content));
-		return openAnnouncement(model);
+		String announcement = announcementService.getAnnouncement();
+		model.addAttribute("announcement", announcement);
+		model.addAttribute("content", announcement);
+		return "operation/announcement";
 	}
 }
