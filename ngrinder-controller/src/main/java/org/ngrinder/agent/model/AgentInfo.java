@@ -143,12 +143,32 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 		this.port = port;
 	}
 
+	/**
+	 * Get host name.
+	 * 
+	 * @return hostName
+	 * @deprecated use {@link #getName()} instead.
+	 */
 	public String getHostName() {
 		return hostName;
 	}
 
+	/**
+	 * Set host name.
+	 * 
+	 * @param hostName
+	 * @deprecated use {@link #setName(String)} instead
+	 */
 	public void setHostName(String hostName) {
 		this.hostName = hostName;
+	}
+
+	public String getName() {
+		return getHostName();
+	}
+
+	public void setName(String name) {
+		setHostName(name);
 	}
 
 	public AgentIdentity getAgentIdentity() {

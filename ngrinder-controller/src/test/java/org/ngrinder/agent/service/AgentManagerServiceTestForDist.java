@@ -49,7 +49,7 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 	@Before
 	public void init() {
 
-		agentManagerService = new AgentManagerService() {
+		agentManagerService = new ClusteredAgentManagerService() {
 			@Override
 			public List<AgentInfo> getAllActiveAgentInfoFromDB() {
 				return new ArrayList<AgentInfo>() {
@@ -79,7 +79,6 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 				return 3;
 			}
 		};
-
 
 		config = mock(Config.class);
 		when(config.isCluster()).thenReturn(true);

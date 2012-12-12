@@ -110,7 +110,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specifications;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -123,7 +122,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Mavlarn
  * @since 3.0
  */
-@Service
 public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 	private static final int MAX_POINT_COUNT = 100;
@@ -133,7 +131,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	private static final String DATA_FILE_EXTENSION = ".data";
 
 	@Autowired
-	private PerfTestRepository perfTestRepository;
+	protected PerfTestRepository perfTestRepository;
 
 	@Autowired
 	private ConsoleManager consoleManager;
@@ -142,7 +140,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	private AgentManager agentManager;
 
 	@Autowired
-	private Config config;
+	protected Config config;
 
 	@Autowired
 	private FileEntryService fileEntryService;
@@ -488,13 +486,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	@Transactional
 	public PerfTest getPerfTestCandiate() {
-		List<PerfTest> readyPerfTests;
-		if (config.isCluster()) {
-			readyPerfTests = perfTestRepository.findAllByStatusAndRegionOrderByScheduledTimeAsc(Status.READY,
-							config.getRegion());
-		} else {
-			readyPerfTests = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY);
-		}
+		List<PerfTest> readyPerfTests = perfTestRepository.findAllByStatusOrderByScheduledTimeAsc(Status.READY);
 		List<PerfTest> usersFirstPerfTests = filterCurrentlyRunningTestUsersTest(readyPerfTests);
 		return usersFirstPerfTests.isEmpty() ? null : readyPerfTests.get(0);
 	}
@@ -515,7 +507,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            perf test
 	 * @return filtered perf test
 	 */
-	private List<PerfTest> filterCurrentlyRunningTestUsersTest(List<PerfTest> perfTestLists) {
+	protected List<PerfTest> filterCurrentlyRunningTestUsersTest(List<PerfTest> perfTestLists) {
 		List<PerfTest> currentlyRunningTests = getCurrentlyRunningTest();
 		final Set<User> currentlyRunningTestOwners = new HashSet<User>();
 		for (PerfTest each : currentlyRunningTests) {

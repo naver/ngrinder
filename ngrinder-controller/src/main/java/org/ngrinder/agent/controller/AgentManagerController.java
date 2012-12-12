@@ -144,7 +144,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/detail")
 	public String getAgent(ModelMap model, @RequestParam(required = false) Long id) {
-		AgentInfo agent = agentManagerService.getAgent(id);
+		AgentInfo agent = agentManagerService.getAgent(id, false);
 		model.addAttribute("agent", agent);
 		return "agent/agentDetail";
 	}
