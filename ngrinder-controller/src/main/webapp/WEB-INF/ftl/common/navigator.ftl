@@ -49,10 +49,10 @@
 	<div class="alert alert-block" style="padding:10px 20px; margin-bottom:-20px">
 		<div class="page-header" style="margin:0; padding-bottom:2px">
 			<span><h4><@spring.message "announcement.alert.title"/></h4> <a href="#" id="hide_announcement">
-				<i class="<#if announcement_hide == false>icon-minus<#else>icon-plus</#if> pull-right" id="announcement_icon" style="margin-top:-20px"></i>
+				<i class="<#if announcement_hide?has_content && announcement_hide == true>icon-minus<#else>icon-plus</#if> pull-right" id="announcement_icon" style="margin-top:-20px"></i>
 			</a></span>
 		</div>
-		<div style="margin:10px 5px 0;" class="<#if announcement_hide == true>hidden</#if>" id="announcementContentDiv">
+		<div style="margin:10px 5px 0;" class="<#if announcement_hide?has_content && announcement_hide == true>hidden</#if>" id="announcementContentDiv">
 			<#if announcement?has_content>
 				<#if announcement?index_of('</') gt 0 || announcement?index_of('<br>') gt 0> 
 					${announcement}

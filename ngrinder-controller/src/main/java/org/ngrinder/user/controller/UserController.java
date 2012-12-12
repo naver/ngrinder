@@ -40,6 +40,7 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.model.Permission;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
+import org.ngrinder.user.service.UserContext;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -254,10 +255,14 @@ public class UserController extends NGrinderBaseController {
 	 * @return redirect:/perftest/list
 	 */
 	@RequestMapping("/switchUser")
-	public String switchUser(User user, ModelMap model, @RequestParam String switchUserId, HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse) {
+	public String switchUser(User user, ModelMap model, @RequestParam(required=false, defaultValue = "") String switchUserId,
+			HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
 		Cookie cookie = new Cookie("switchUser", switchUserId);
 		cookie.setPath("/");
+		// Delete Cookie if empty switchUser
+		if (StringUtils.isEmpty(switchUserId)) {
+			cookie.setMaxAge(0);
+		}
 		httpServletResponse.addCookie(cookie);
 		model.clear();
 		return "redirect:/perftest/list";

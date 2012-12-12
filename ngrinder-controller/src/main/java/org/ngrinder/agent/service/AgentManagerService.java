@@ -104,10 +104,10 @@ public class AgentManagerService {
 	 */
 	@PostConstruct
 	public void init() {
+		agentMonioringTargetsCache = getCacheManager().getCache("agent_monitoring_targets");
 		if (getConfig().isCluster()) {
 			agentRequestCache = getCacheManager().getCache("agent_request");
 			agentMonitorCache = getCacheManager().getCache("agent_monitoring");
-			agentMonioringTargetsCache = getCacheManager().getCache("agent_monitoring_targets");
 			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
 				@SuppressWarnings({ "unchecked", "rawtypes" })
 				@Override

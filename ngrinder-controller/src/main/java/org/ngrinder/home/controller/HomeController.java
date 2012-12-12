@@ -35,6 +35,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
@@ -134,7 +135,7 @@ public class HomeController extends NGrinderBaseController {
 	private void setLanguage(String lan, HttpServletResponse response, HttpServletRequest request) {
 		LocaleResolver localeResolver = checkNotNull(RequestContextUtils.getLocaleResolver(request), "No LocaleResolver found!");
 		LocaleEditor localeEditor = new LocaleEditor();
-		localeEditor.setAsText(checkNotNull(lan, "No User Language found!"));
+		localeEditor.setAsText(StringUtils.defaultIfBlank(lan, "en"));
 		localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
 	}
 
