@@ -40,6 +40,7 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.home.service.HomeService;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -70,7 +71,11 @@ public class HomeController extends NGrinderBaseController {
 	@Autowired
 	private HomeService homeService;
 
-	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|" + "Australia|Europe|Indian|Pacific)/.*";
+	@Autowired
+	private Config config;
+
+	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|"
+					+ "Australia|Europe|Indian|Pacific)/.*";
 
 	private List<TimeZone> timeZones = null;
 
@@ -133,9 +138,11 @@ public class HomeController extends NGrinderBaseController {
 	}
 
 	private void setLanguage(String lan, HttpServletResponse response, HttpServletRequest request) {
-		LocaleResolver localeResolver = checkNotNull(RequestContextUtils.getLocaleResolver(request), "No LocaleResolver found!");
+		LocaleResolver localeResolver = checkNotNull(RequestContextUtils.getLocaleResolver(request),
+						"No LocaleResolver found!");
 		LocaleEditor localeEditor = new LocaleEditor();
-		localeEditor.setAsText(StringUtils.defaultIfBlank(lan, "en"));
+		localeEditor.setAsText(StringUtils.defaultIfBlank(lan,
+						config.getSystemProperties().getProperty(NGRINDER_PROP_DEFAULT_LANGUAGE, "en")));
 		localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
 	}
 

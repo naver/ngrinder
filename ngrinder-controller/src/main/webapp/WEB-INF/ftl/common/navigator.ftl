@@ -12,6 +12,10 @@
 				</ul>
 				
 				<ul class="nav pull-right">
+					<#if clustered==true>
+						<li style="padding-top:5px"><img src="${req.getContextPath()}/img/cluster_icon.png" title="Cluster Mode" alt="Cluster Mode"></li>  
+						<li class="divider-vertical"></li>
+					</#if>
 					<li class="dropdown">
 		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">${(currentUser.userName)!}<#if (currentUser.ownerUser)?exists> (${currentUser.ownerUser.userName})<#else></#if><b class="caret"></b></a>
 		            	<ul class="dropdown-menu">
@@ -49,7 +53,7 @@
 	<div class="alert alert-block" style="padding:10px 20px; margin-bottom:-20px">
 		<div class="page-header" style="margin:0; padding-bottom:2px">
 			<span><h4><@spring.message "announcement.alert.title"/></h4> <a href="#" id="hide_announcement">
-				<i class="<#if announcement_hide?has_content && announcement_hide == true>icon-minus<#else>icon-plus</#if> pull-right" id="announcement_icon" style="margin-top:-20px"></i>
+				<i class="<#if announcement_hide?has_content && announcement_hide == true>icon-plus<#else>icon-minus</#if> pull-right" id="announcement_icon" style="margin-top:-20px"></i>
 			</a></span>
 		</div>
 		<div style="margin:10px 5px 0;" class="<#if announcement_hide?has_content && announcement_hide == true>hidden</#if>" id="announcementContentDiv">

@@ -123,7 +123,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		}
 	}
 
-	/**
+	/**   
 	 * Run a scheduled task to check the agent status.
 	 * 
 	 * This method has some
@@ -187,6 +187,19 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		for (AgentControllerIdentityImplementation agentIdentity : attachedAgentMap.values()) {
 			if (StringUtils.equals(region, agentIdentity.getRegion())) {
 				changeAgents.add(fillUpAgentInfo(new AgentInfo(), agentIdentity));
+			} else {
+				// If
+				AgentInfo findByIpAndHostName = getAgentRepository().findByIpAndHostName(agentIdentity.getIp(),
+								agentIdentity.getName());
+				if (findByIpAndHostName != null) {
+					findByIpAndHostName.setStatus(AgentControllerState.UNKNOWN);
+					changeAgents.add(findByIpAndHostName);
+				} else {
+					AgentInfo fillUpAgentInfo = fillUpAgentInfo(new AgentInfo(), agentIdentity);
+					fillUpAgentInfo.setApproved(false);
+					fillUpAgentInfo.setStatus(AgentControllerState.UNKNOWN);
+					changeAgents.add(findByIpAndHostName);
+				}
 			}
 		}
 

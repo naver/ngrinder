@@ -40,7 +40,6 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.model.Permission;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
-import org.ngrinder.user.service.UserContext;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
