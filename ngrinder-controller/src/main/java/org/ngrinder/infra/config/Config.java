@@ -161,9 +161,13 @@ public class Config implements IConfig {
 		return StringUtils.split(clusterUri, ";");
 	}
 
+	/**
+	 * Get the region in configuration.
+	 * 
+	 * @return region
+	 */
 	public String getRegion() {
-		return isCluster() ? getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION)
-						: NON_REGION;
+		return getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION);
 	}
 
 	/**
