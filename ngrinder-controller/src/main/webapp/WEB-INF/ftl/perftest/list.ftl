@@ -332,9 +332,6 @@
 		    	success: function(res) {
 		    		if (res.success) {
 			    		showSuccessMsg("<@spring.message "perfTest.table.message.success.stop"/>");
-							setTimeout(function() {
-								getList(1);
-							}, 500);
 		    		} else {
 			    		showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>:" + res.message);
 		    		}
@@ -370,15 +367,15 @@
 			if (deletable == true) {
 				$("#delete_" + id).parent().show();
 			} else { 
+				$("#check_" + id).attr("disabled", true);
 				$("#delete_" + id).parent().hide(); 
 			}
 		}
 		// Wrap this function in a closure so we don't pollute the namespace
 		(function refreshContent() {
-		
-			var ids = $('.perf_test').map(function() {
+			var ids = $('input.perf_test').map(function() {
 		    	var perTestStatus = $(this).attr("status")
-				if(perTestStatus!="FINISHED")
+				if(!(perTestStatus == "FINISHED" || perTestStatus == "STOP_ON_ERROR" || perTestStatus == "CANCELED"))
 					return this.value;
 		  	}).get();
 			if (ids.length == 0) {
@@ -398,10 +395,12 @@
 			    	var springMessage = perfTest.length + " <@spring.message "perfTest.currentRunning.summary"/>";
 			    	
 			    	$("#currentRunning").text(springMessage);
+			    	var testStatus;
 			    	for (var i = 0; i < data.length; i++) { 
-			
-			    	    $("#check_" + data[i].id).attr("status", data[i].status_id);
-			    		if(data[i].status_id=="FINISHED"){
+			    		testStatus = data[i].status_id;
+			    	    $("#check_" + data[i].id).attr("status", testStatus);
+			    	    
+			    		if(testStatus == "FINISHED" || testStatus == "STOP_ON_ERROR" || testStatus == "CANCELED"){
 			    			location.reload();
 			    		}
 			    		updateStatus(data[i].id, data[i].name, data[i].icon, data[i].stoppable, data[i].deletable, data[i].message);
