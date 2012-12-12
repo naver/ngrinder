@@ -187,9 +187,10 @@ public interface NGrinderConstants {
 	public static final int MAX_STACKTRACE_STRING_SIZE = 2048;
 	public static final String NGRINDER_PROP_FRONT_PAGE_RSS = "ngrinder.frontpage.rss";
 	public static final String NGRINDER_NEWS_RSS_URL = "http://www.cubrid.org/wiki_ngrinder/rss";
-	public static final String NGRINDER_PROP_REGION = "ngrinder.region";
+	public static final String NGRINDER_PROP_REGION = "ngrinder.cluster.region";
 	public static final int MAX_RUN_HOUR = 8;
 
+	public static final String NGRINDER_PROP_CLUSTER_MODE = "ngrinder.cluster.mode";
 	public static final String NGRINDER_PROP_CLUSTER_URIS = "ngrinder.cluster.uris";
 	public static final String NGRINDER_PROP_CLUSTER_LISTENER_PORT = "ngrinder.cluster.listener.port";
 
