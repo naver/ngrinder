@@ -24,7 +24,6 @@ package org.ngrinder.common.controller;
 
 import static org.ngrinder.common.util.NoOp.noOp;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -57,8 +56,6 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	protected static final int DEFAULT_PAGE_LIMIT = 20;
 
-	private static Map<String, Object> regionInfo;
-
 	private static String successJson;
 
 	private static String errorJson;
@@ -84,9 +81,6 @@ public class NGrinderBaseController implements NGrinderConstants {
 		successJson = rtnJson.toString();
 		rtnJson.addProperty(JSON_SUCCESS, false);
 		errorJson = rtnJson.toString();
-		regionInfo = new HashMap<String, Object>();
-		regionInfo.put("isClusterEnabled", config.isCluster());
-		regionInfo.put("region", config.getRegion());
 	}
 
 	/**
@@ -99,7 +93,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Provide current login user as a model attributes. If it's not found, return empty user.
+	 * Provide current login user as a model attributes. If it's not found,
+	 * return empty user.
 	 * 
 	 * @return login user
 	 */
@@ -136,18 +131,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 	 */
 	@ModelAttribute("announcement_hide")
 	public boolean announcement(
-					@CookieValue(value = "announcement_hide", defaultValue = "false") boolean annoucnementHide) {
+			@CookieValue(value = "announcement_hide", defaultValue = "false") boolean annoucnementHide) {
 		return annoucnementHide;
-	}
-
-	/**
-	 * Check whether the cache cluster is open.
-	 * 
-	 * @return true is cache cluster set
-	 */
-	@ModelAttribute("controllerRegion")
-	public Map<String, Object> getControllerRegionInfo() {
-		return regionInfo;
 	}
 
 	/**

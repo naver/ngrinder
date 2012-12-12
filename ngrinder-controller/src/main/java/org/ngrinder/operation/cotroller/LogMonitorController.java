@@ -32,7 +32,6 @@ import javax.annotation.PreDestroy;
 import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 import org.ngrinder.common.controller.NGrinderBaseController;
-import org.ngrinder.infra.config.Config;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,9 +43,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * Log monitor controller.
  * 
- * This class runs with {@link Tailer} implementation. Whenever the underlying log file is changed.
- * this class gets the changes. and keep them(max 10000 byte) in the memory. Whenever user requests
- * the log, it returns latest changes with the index of the log.
+ * This class runs with {@link Tailer} implementation. Whenever the underlying
+ * log file is changed. this class gets the changes. and keep them(max 10000
+ * byte) in the memory. Whenever user requests the log, it returns latest
+ * changes with the index of the log.
  * 
  * @author JunHo Yoon
  * 
@@ -83,7 +83,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	/**
 	 * Initialize tailer.
 	 */
-	private void initTailer() {
+	private synchronized void initTailer() {
 		File logFile = getLogFile();
 		if (tailer != null) {
 			tailer.stop();
@@ -119,10 +119,10 @@ public class LogMonitorController extends NGrinderBaseController {
 	 */
 	File getLogFile() {
 		String logFileName;
-		if (Config.NON_REGION.equals(getConfig().getRegion())) {
-			logFileName = "ngrinder.log";
-		} else {
+		if (getConfig().isCluster()) {
 			logFileName = "ngrinder_" + getConfig().getRegion() + ".log";
+		} else {
+			logFileName = "ngrinder.log";
 		}
 		return new File(getConfig().getHome().getGloablLogFile(), logFileName);
 	}

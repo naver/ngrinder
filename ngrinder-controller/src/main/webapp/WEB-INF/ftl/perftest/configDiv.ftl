@@ -20,21 +20,18 @@
 											<input type="text" class="input input-mini" rel="popover"
 												id="agentCount" name="agentCount" value="${(test.agentCount)!0}" 
 												data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
-												data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span id="maxAgentCount" class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxAgentSizePerConsole)}</span>
+												data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/><span id="maxAgentCount"></span></span>
 										</div>
-								 		<input type="hidden" id="maxAgtCountInput" value="${(maxAgentSizePerConsole)}">
 									</td>
 									<td>
-										<label for="regionSelect" class="region"><@spring.message "perfTest.configuration.region"/></label>
-								 		<select id="regionSelect" name="region" class="pull-right" style="width:120px">
-											<#if regionList?size &gt; 0>
-												<#list regionList as regionName>
-													<option value="${regionName}" <#if (test?? && test.region?? && test.region == regionName) ||(!(test??)&&controllerRegion.isClusterEnabled&&controllerRegion.region == regionName)>selected </#if> >${regionName}</option>
-												</#list>
-											<#else>
-												<option value="NONE">NONE</option>
-											</#if>
-										</select>
+										<#if clustered == true>											
+											<label for="regionSelect" class="region"><@spring.message "perfTest.configuration.region"/></label>
+								 			<select id="regionSelect" name="region" class="pull-right" style="width:120px">
+												<#list regionList as eachRegion>
+													<option value="${eachRegion}" <#if (test?? && test.region?? && test.region == eachRegion)>selected </#if> >${eachRegion}</option>
+												</#list> 
+											</select>
+										</#if>
 									</td>
 								</tr>
 							</tbody>
