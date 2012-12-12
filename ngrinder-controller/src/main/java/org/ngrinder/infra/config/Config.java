@@ -82,6 +82,7 @@ public class Config implements IConfig {
 	public static final int NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT = 40003;
 
 	public static final String NON_REGION = "NONE";
+	private boolean cluster;
 
 	/**
 	 * Make it singleton.
@@ -103,6 +104,8 @@ public class Config implements IConfig {
 			copyDefaultConfigurationFiles();
 			loadIntrenalProperties();
 			loadSystemProperties();
+			// Load cluster in advance. cluster mode is not dynamically reloadable.
+			cluster = getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_PROP_CLUSTER_MODE, false);
 			loadAnnouncement();
 			initHomeMonitor();
 			initLogger(isTestMode());
@@ -147,7 +150,7 @@ public class Config implements IConfig {
 	 * @since 3.1
 	 */
 	public boolean isCluster() {
-		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_PROP_CLUSTER_MODE, false);
+		return cluster;
 	}
 
 	/**
