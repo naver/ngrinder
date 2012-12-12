@@ -38,7 +38,6 @@ import net.grinder.util.NetworkUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.helpers.FileWatchdog;
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -129,7 +128,7 @@ public class Config implements IConfig {
 	protected void verifyClusterConfig() {
 		if (isCluster()) {
 			if (getRegion().equals(NON_REGION)) {
-				LOG.error("Region is not set in cluster mode. Please set region properly.");
+				LOG.error("Region is not set in cluster mode. Please set ngrinder.region properly.");
 			} else {
 				CoreLogger.LOGGER.info("Cache cluster URIs:{}", getClusterURIs());
 				// set rmi server host for remote serving. Otherwise, maybe it will use 127.0.0.1 to
@@ -148,7 +147,7 @@ public class Config implements IConfig {
 	 * @since 3.1
 	 */
 	public boolean isCluster() {
-		return ArrayUtils.isNotEmpty(getClusterURIs()) && !StringUtils.equals(getRegion(), NON_REGION);
+		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_PROP_CLUSTER_MODE, false);
 	}
 
 	/**
@@ -161,6 +160,11 @@ public class Config implements IConfig {
 		return StringUtils.split(clusterUri, ";");
 	}
 
+	/**
+	 * Get the region in configuration.
+	 * 
+	 * @return region
+	 */
 	public String getRegion() {
 		return isCluster() ? getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION)
 						: NON_REGION;

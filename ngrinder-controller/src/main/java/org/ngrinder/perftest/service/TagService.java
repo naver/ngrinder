@@ -40,6 +40,7 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Tag;
 import org.ngrinder.model.User;
+import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.ngrinder.perftest.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specifications;
@@ -60,7 +61,7 @@ public class TagService {
 	private TagRepository tagRepository;
 
 	@Autowired
-	private PerfTestService perfTestService;
+	private PerfTestRepository perfTestRepository;
 
 	/**
 	 * Add tags.
@@ -159,7 +160,10 @@ public class TagService {
 	 */
 	@Transactional
 	public void deleteTag(User user, Tag tag) {
-		perfTestService.removeTag(tag.getPerfTests(), tag);
+		for (PerfTest each : tag.getPerfTests()) {
+			each.getTags().remove(tag);
+		}
+		perfTestRepository.save(tag.getPerfTests());
 		tagRepository.delete(tag);
 	}
 
@@ -176,7 +180,10 @@ public class TagService {
 		for (Tag each : userTags) {
 			Set<PerfTest> perfTests = each.getPerfTests();
 			if (perfTests != null) {
-				perfTestService.removeTag(perfTests, each);
+				for (PerfTest eachPerfTest : perfTests) {
+					eachPerfTest.getTags().remove(each);
+				}
+				perfTestRepository.save(each.getPerfTests());
 			}
 		}
 		tagRepository.delete(userTags);

@@ -118,13 +118,14 @@
 		</div>
 	</fieldset>
 </form>
+wewewe
 <script type="text/javascript">	
 	$(document).ready(function(){
 		<#if !(user?has_content)>
 		$(".collapse").collapse();
 		$("#user_pw_head").attr("href","");
 		
-		jQuery.validator.addMethod("userIdFmt", function(userId, element ) {
+		$.validator.addMethod("userIdFmt", function(userId, element ) {
 			var patrn = /^[a-zA-Z]{1}[a-zA-Z0-9_]{3,19}$/;
 			var rule = new RegExp(patrn);
 			if (!rule.test($.trim(userId))) {
@@ -134,7 +135,7 @@
 			return true;
 		}, "<@spring.message 'user.info.warning.userId.invalid'/>" );
 
-		jQuery.validator.addMethod("userIdExist", function(userId, element) {
+		$.validator.addMethod("userIdExist", function(userId, element) {
 			if(userId != null && userId.length > 0){
 				var result ;
 				$.ajax({
@@ -158,7 +159,7 @@
 		}, "<@spring.message 'user.info.warning.userId.exist'/>");
 		</#if>
 	    	    
-	    jQuery.validator.addMethod("userPhoneNumber", function(mobilePhone, element) {
+	    $.validator.addMethod("userPhoneNumber", function(mobilePhone, element) {
 			var patrn = /^\+?\d{2,3}-?\d{2,5}(-?\d+)?$/;
 			var rule = new RegExp(patrn);
 			if (!rule.test($.trim(mobilePhone))) {
@@ -172,9 +173,12 @@
 	    	rules: {
 	    		userId: {
 	    			required: true,
-	    			maxlength: 20,
+	    			maxlength: 20
+	    			<#if !(user?has_content)>
+	    			,
 	    			userIdFmt: true,
 	    			userIdExist: true
+	    			</#if>
 	    		},
 	    		userName: {
 	    			required: true,

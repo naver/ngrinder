@@ -18,5 +18,8 @@
 		
 	<cache name="running_agent_infos" maxElementsInMemory="1000"  overflowToDisk="false"
 		timeToLiveSeconds="3" />
+	<cache name="agent_monitoring_targets" maxElementsInMemory="1000" overflowToDisk="false"
+		timeToLiveSeconds="5"/>
+	
 	
 </ehcache>

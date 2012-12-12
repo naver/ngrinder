@@ -125,7 +125,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 	public void testApproveAgent() {
 		AgentInfo agent = new AgentInfo();
 		agent.setApproved(false);
-		agent.setHostName("Test-Host");
+		agent.setName("Test-Host");
 		agent.setIp("127.0.0.1");
 		agent.setStatus(AgentControllerState.READY);
 		agentService.saveAgent(agent);

@@ -31,6 +31,10 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.model.Permission;
@@ -152,6 +156,7 @@ public class UserController extends NGrinderBaseController {
 		} else {
 			userService.saveUser(updatedUser);
 		}
+		model.clear();
 		if (user.getId().equals(updatedUser.getId())) {
 			return "redirect:/";
 		} else {
@@ -174,6 +179,7 @@ public class UserController extends NGrinderBaseController {
 		String[] ids = userIds.split(",");
 		ArrayList<String> aListNumbers = new ArrayList<String>(Arrays.asList(ids));
 		userService.deleteUsers(aListNumbers);
+		model.clear();
 		return "redirect:/user/list";
 	}
 
@@ -210,7 +216,6 @@ public class UserController extends NGrinderBaseController {
 		model.addAttribute("user", newUser);
 		model.addAttribute("action", "profile");
 		getUserShareList(newUser, model);
-
 		return "user/userInfo";
 	}
 
@@ -249,8 +254,18 @@ public class UserController extends NGrinderBaseController {
 	 * @return redirect:/perftest/list
 	 */
 	@RequestMapping("/switchUser")
-	public String switchUser(User user, ModelMap model, @RequestParam String switchUserId) {
-		// do the switching works and remember the ownerId.
+	public String switchUser(User user, ModelMap model,
+					@RequestParam(required = false, defaultValue = "") String switchUserId,
+					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+		Cookie cookie = new Cookie("switchUser", switchUserId);
+		cookie.setPath("/");
+		// Delete Cookie if empty switchUser
+		if (StringUtils.isEmpty(switchUserId)) {
+			cookie.setMaxAge(0);
+		}
+		httpServletResponse.addCookie(cookie);
+
+		model.clear();
 		return "redirect:/perftest/list";
 	}
 

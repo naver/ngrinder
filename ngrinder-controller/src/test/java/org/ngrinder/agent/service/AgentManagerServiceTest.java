@@ -25,7 +25,6 @@ package org.ngrinder.agent.service;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -73,24 +72,24 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testSaveGetDeleteAgent() {
 		AgentInfo agent = saveAgent("save");
-		AgentInfo agent2 = agentManagerService.getAgent(agent.getId());
+		AgentInfo agent2 = agentManagerService.getAgent(agent.getId(), false);
 		Assert.assertNotNull(agent2);
 
-		List<AgentInfo> agentListDB = agentManagerService.getAgentListInThisRegionFromDB();
-		agentListDB = agentManagerService.getAgentListInThisRegionFromDB();
+		List<AgentInfo> agentListDB = agentManagerService.getLocalAgentListFromDB();
+		agentListDB = agentManagerService.getLocalAgentListFromDB();
 		Assert.assertNotNull(agentListDB);
 
 		agentManagerService.approve(agent.getId(), true);
 
 		agentManagerService.deleteAgent(agent.getId());
-		agent2 = agentManagerService.getAgent(agent.getId());
+		agent2 = agentManagerService.getAgent(agent.getId(), false);
 		Assert.assertNull(agent2);
 	}
 
 	private AgentInfo saveAgent(String key) {
 		AgentInfo agent = new AgentInfo();
 		agent.setIp("1.1.1.1");
-		agent.setHostName("testAppName" + key);
+		agent.setName("testAppName" + key);
 		agent.setPort(8080);
 		agent.setRegion("testRegion" + key);
 		agent.setStatus(AgentControllerState.BUSY);
@@ -105,7 +104,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		int oriCount = countMap.get(config.getRegion()).intValue();
 
 		AgentInfo agentInfo = new AgentInfo();
-		agentInfo.setHostName("localhost");
+		agentInfo.setName("localhost");
 		agentInfo.setNumber(-1);
 		agentInfo.setRegion(config.getRegion());
 		agentInfo.setIp("127.127.127.127");
@@ -122,7 +121,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testCheckAgentStatus() {
 		AgentInfo agentInfo = new AgentInfo();
-		agentInfo.setHostName("localhost");
+		agentInfo.setName("localhost");
 		agentInfo.setNumber(-1);
 		agentInfo.setRegion(config.getRegion());
 		agentInfo.setIp("127.127.127.127");
@@ -133,7 +132,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 
 		AgentInfo agentInDB = agentRepository.findOne(agentInfo.getId());
 		assertThat(agentInDB.getIp(), is(agentInfo.getIp()));
-		assertThat(agentInDB.getHostName(), is(agentInfo.getHostName()));
+		assertThat(agentInDB.getName(), is(agentInfo.getName()));
 		assertThat(agentInDB.getStatus(), is(AgentControllerState.INACTIVE));
 	}
 

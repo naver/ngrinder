@@ -125,7 +125,7 @@ public class LocalScriptTestDriveService {
 			// Wait for a termination event.
 			synchronized (eventSynchronisation) {
 				final long sleeptime = 1000;
-				final int maximumWaitingCount = 20;
+				final int maximumWaitingCount = 100;
 				int waitingCount = 0;
 				while (true) {
 					if (workerLauncher.allFinished()) {

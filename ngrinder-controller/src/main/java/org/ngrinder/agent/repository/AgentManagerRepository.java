@@ -42,6 +42,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, JpaSpecificationExecutor<AgentInfo> {
 
+	AgentInfo findByIpAndHostName(String ip, String hostName);
+
 	/**
 	 * Find {@link AgentInfo} by ip.
 	 * 
@@ -62,12 +64,12 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, 
 
 	/**
 	 * find all agents of the status and approved.
+	 * 
 	 * @param status
-	 * 				query status
+	 *            query status
 	 * @param isApproved
-	 * 				whether the agent is approved
-	 * @return
-	 * 		agent list
+	 *            whether the agent is approved
+	 * @return agent list
 	 */
 	List<AgentInfo> findAllByStatusAndApproved(AgentControllerState status, boolean isApproved);
 
@@ -76,8 +78,7 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, 
 	 * 
 	 * @param spec
 	 *            Query specification
-	 * @return
-	 * 		agent count
+	 * @return agent count
 	 */
 	long count(Specification<AgentInfo> spec);
 }

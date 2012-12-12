@@ -121,7 +121,7 @@ public class AgentController implements Agent {
 	 */
 	public void run() throws GrinderException {
 		GrinderProperties grinderProperties = new GrinderProperties();
-		grinderProperties.setInt(AgentConfig.AGENT_HOSTID,
+		grinderProperties.setInt(AgentConfig.AGENT_CONTROLER_SERVER_PORT,
 						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		synchronized (m_eventSyncCondition) {
 			m_eventSyncCondition.notifyAll();
@@ -151,8 +151,8 @@ public class AgentController implements Agent {
 		try {
 			while (true) {
 				do {
-					m_agentIdentity.setName(
-							agentConfig.getProperty(AgentConfig.AGENT_HOSTID, NetworkUtil.getLocalHostName()));
+					m_agentIdentity.setName(agentConfig.getProperty(AgentConfig.AGENT_HOSTID,
+									NetworkUtil.getLocalHostName()));
 					m_agentIdentity.setRegion(agentConfig.getProperty(AgentConfig.AGENT_REGION, ""));
 					final Connector connector = m_connectorFactory.create(m_grinderProperties);
 
@@ -318,8 +318,6 @@ public class AgentController implements Agent {
 		m_agentControllerServerListener.shutdown();
 		LOGGER.info("finished");
 	}
-
-	
 
 	/**
 	 * Get current System performance.

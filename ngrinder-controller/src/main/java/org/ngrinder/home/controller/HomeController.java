@@ -35,10 +35,12 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.home.service.HomeService;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -68,6 +70,9 @@ public class HomeController extends NGrinderBaseController {
 
 	@Autowired
 	private HomeService homeService;
+
+	@Autowired
+	private Config config;
 
 	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|"
 					+ "Australia|Europe|Indian|Pacific)/.*";
@@ -136,7 +141,8 @@ public class HomeController extends NGrinderBaseController {
 		LocaleResolver localeResolver = checkNotNull(RequestContextUtils.getLocaleResolver(request),
 						"No LocaleResolver found!");
 		LocaleEditor localeEditor = new LocaleEditor();
-		localeEditor.setAsText(checkNotNull(lan, "No User Language found!"));
+		localeEditor.setAsText(StringUtils.defaultIfBlank(lan,
+						config.getSystemProperties().getProperty(NGRINDER_PROP_DEFAULT_LANGUAGE, "en")));
 		localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
 	}
 
@@ -156,6 +162,7 @@ public class HomeController extends NGrinderBaseController {
 			CoreLogger.LOGGER.info("Login Failure " + e.getMessage());
 			return "login";
 		}
+		model.clear();
 		return "redirect:/";
 	}
 

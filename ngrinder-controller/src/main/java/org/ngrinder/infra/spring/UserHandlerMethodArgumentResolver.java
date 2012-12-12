@@ -22,11 +22,10 @@
  */
 package org.ngrinder.infra.spring;
 
-import java.util.EnumSet;
+import javax.servlet.http.Cookie;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.model.Role;
+import org.ngrinder.model.Permission;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserContext;
 import org.ngrinder.user.service.UserService;
@@ -34,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
@@ -48,7 +48,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentResolver {
 
 	private UserContext userContext;
-	private EnumSet<Role> adminRole = EnumSet.of(Role.ADMIN, Role.SUPER_USER);
 
 	@Autowired
 	private UserService userService;
@@ -57,8 +56,8 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.springframework.web.method.support.HandlerMethodArgumentResolver#supportsParameter(org
-	 * .springframework.core.MethodParameter)
+	 * org.springframework.web.method.support.HandlerMethodArgumentResolver#
+	 * supportsParameter(org .springframework.core.MethodParameter)
 	 */
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
@@ -69,33 +68,41 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.springframework.web.method.support.HandlerMethodArgumentResolver#resolveArgument(org.
-	 * springframework.core.MethodParameter,
+	 * org.springframework.web.method.support.HandlerMethodArgumentResolver#
+	 * resolveArgument(org. springframework.core.MethodParameter,
 	 * org.springframework.web.method.support.ModelAndViewContainer,
 	 * org.springframework.web.context.request.NativeWebRequest,
 	 * org.springframework.web.bind.support.WebDataBinderFactory)
 	 */
 	@Override
-	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
+			WebDataBinderFactory binderFactory) throws Exception {
 		User currentUser = getUserContext().getCurrentUser();
-		String userParam = webRequest.getParameter("ownerId");
-
 		// User want to do something through other User status and this
 		// switchUserId is other user Id
-		String switchUserId = (String) ObjectUtils.defaultIfNull(webRequest.getParameter("switchUserId"), "");
+		String userParam = webRequest.getParameter("ownerId");
+		String switchUserId = null;
+		for (Cookie cookie : ((ServletWebRequest) webRequest).getRequest().getCookies()) {
+			if ("switchUser".equals(cookie.getName()) && cookie.getMaxAge() != 0) {
+				switchUserId = cookie.getValue();
+			}
+		}
 
-		if (StringUtils.isNotBlank(userParam) && adminRole.contains(currentUser.getRole())) {
+		if (StringUtils.isNotBlank(userParam) && currentUser.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
 			return getUserService().getUserById(userParam);
 		}
+
 		if (currentUser.getUserId().equals(switchUserId)) {
 			currentUser.setOwnerUser(null);
-		} else if (switchUserId.length() != 0) {
+		} else if (StringUtils.isNotEmpty(switchUserId)) {
 			User ownerUser = getUserService().getUserById(switchUserId);
 			// CurrentUser should remember whose status he used
-			currentUser.setOwnerUser(ownerUser);
-
-			return ownerUser;
+			if (currentUser.getRole().hasPermission(Permission.SWITCH_TO_ANYONE) || ownerUser.getFollowers().contains(currentUser)) {
+				currentUser.setOwnerUser(ownerUser);
+				return ownerUser;
+			}
+		} else if (StringUtils.isEmpty(switchUserId)) {
+			currentUser.setOwnerUser(null);
 		}
 
 		return currentUser.getFactualUser();

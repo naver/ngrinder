@@ -149,6 +149,7 @@ public class FileEntryController extends NGrinderBaseController {
 		} catch (Exception e) {
 			return "error/errors";
 		}
+		model.clear();
 		return "redirect:/script/list/" + path;
 	}
 
@@ -212,6 +213,7 @@ public class FileEntryController extends NGrinderBaseController {
 		FileEntry script = fileEntryService.getFileEntry(user, path, revision);
 		if (script == null || !script.getFileType().isEditable()) {
 			LOG.error("Error while getting file detail on {}. the file does not exist or not editable", path);
+			model.clear();
 			return "redirect:/script/list";
 		}
 		model.addAttribute("file", script);
@@ -333,6 +335,7 @@ public class FileEntryController extends NGrinderBaseController {
 			fileEntryService.addFolder(user, basePath, "lib", getMessages("script.commit.libfolder"));
 			fileEntryService.addFolder(user, basePath, "resources", getMessages("script.commit.resourcefolder"));
 		}
+		model.clear();
 		return "redirect:/script/list/" + basePath;
 	}
 

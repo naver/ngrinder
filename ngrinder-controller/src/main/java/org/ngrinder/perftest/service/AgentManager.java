@@ -48,7 +48,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.AgentInfo;
-import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
@@ -78,7 +78,7 @@ public class AgentManager implements NGrinderConstants {
 	private Config config;
 
 	@Autowired
-	private AgentManagerService agentService;
+	private AgentManagerRepository agentManagerRepository;
 
 	/**
 	 * Initialize agent manager.
@@ -285,16 +285,16 @@ public class AgentManager implements NGrinderConstants {
 		if (agents.size() == 0) {
 			return agents;
 		}
-		List<AgentInfo> findAll = agentService.getAgentListInThisRegionFromDB();
+		List<AgentInfo> findAll = agentManagerRepository.findAll();
 		Set<String> ips = new HashSet<String>();
 		for (AgentInfo each : findAll) {
 			if (each.isApproved()) {
-				ips.add(each.getIp());
+				ips.add(each.getIp() + each.getName());
 			}
 		}
 		Set<AgentIdentity> approvedAgent = new HashSet<AgentIdentity>();
 		for (AgentIdentity each : agents) {
-			if (ips.contains(((AgentControllerIdentityImplementation) each).getIp())) {
+			if (ips.contains(((AgentControllerIdentityImplementation) each).getIp() + each.getName())) {
 				approvedAgent.add(each);
 			}
 		}
