@@ -185,7 +185,9 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		// step2. check all attached agents, whether they are new, and not saved
 		// in DB.
 		for (AgentControllerIdentityImplementation agentIdentity : attachedAgentMap.values()) {
-			changeAgents.add(fillUpAgentInfo(new AgentInfo(), agentIdentity));
+			if (StringUtils.equals(region, agentIdentity.getRegion())) {
+				changeAgents.add(fillUpAgentInfo(new AgentInfo(), agentIdentity));
+			}
 		}
 
 		// step3. update into DB
