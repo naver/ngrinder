@@ -276,7 +276,6 @@ public class AgentManagerService {
 		if (agentIdentity != null) {
 			agentInfo.setAgentIdentity(agentIdentity);
 			agentInfo.setName(agentIdentity.getName());
-			agentInfo.setNumber(agentIdentity.getNumber());
 			agentInfo.setRegion(agentIdentity.getRegion());
 			agentInfo.setIp(agentIdentity.getIp());
 			agentInfo.setPort(getAgentManager().getAgentConnectingPort(agentIdentity));

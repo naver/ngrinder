@@ -105,7 +105,6 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 
 		AgentInfo agentInfo = new AgentInfo();
 		agentInfo.setName("localhost");
-		agentInfo.setNumber(-1);
 		agentInfo.setRegion(config.getRegion());
 		agentInfo.setIp("127.127.127.127");
 		agentInfo.setPort(1);
@@ -122,7 +121,6 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	public void testCheckAgentStatus() {
 		AgentInfo agentInfo = new AgentInfo();
 		agentInfo.setName("localhost");
-		agentInfo.setNumber(-1);
 		agentInfo.setRegion(config.getRegion());
 		agentInfo.setIp("127.127.127.127");
 		agentInfo.setPort(1);

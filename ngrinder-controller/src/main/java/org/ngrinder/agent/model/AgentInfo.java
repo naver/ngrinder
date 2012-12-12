@@ -73,7 +73,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 
 	private String region;
 
-	@Column(name = "agent_number")
+	@Transient
 	private int number;
 
 	@Type(type = "true_false")
@@ -188,6 +188,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	}
 
 	/**
+	 * @deprecated
 	 * @return the number
 	 */
 	public int getNumber() {
@@ -195,6 +196,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	}
 
 	/**
+	 * @deprecated
 	 * @param number
 	 *            the number to set
 	 */
