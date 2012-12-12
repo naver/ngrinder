@@ -83,7 +83,7 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 		String userParam = webRequest.getParameter("ownerId");
 		String switchUserId = null;
 		for (Cookie cookie : ((ServletWebRequest) webRequest).getRequest().getCookies()) {
-			if ("switchUser".equals(cookie.getName())) {
+			if ("switchUser".equals(cookie.getName()) && cookie.getMaxAge() != 0) {
 				switchUserId = cookie.getValue();
 			}
 		}
@@ -101,6 +101,8 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 				currentUser.setOwnerUser(ownerUser);
 				return ownerUser;
 			}
+		} else if (StringUtils.isEmpty(switchUserId)) {
+			currentUser.setOwnerUser(null);
 		}
 
 		return currentUser.getFactualUser();

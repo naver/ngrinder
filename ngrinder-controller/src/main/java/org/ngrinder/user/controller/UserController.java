@@ -79,7 +79,7 @@ public class UserController extends NGrinderBaseController {
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping("/list")
 	public String getUserList(ModelMap model, @RequestParam(required = false) String roleName,
-			@RequestParam(required = false) String keywords) {
+					@RequestParam(required = false) String keywords) {
 
 		List<User> userList = null;
 		if (StringUtils.isEmpty(keywords)) {
@@ -135,13 +135,12 @@ public class UserController extends NGrinderBaseController {
 	 *            user to be updated.
 	 * @param followersStr
 	 *            user Id list that current will share his permission to.
-	 * @return "redirect:/user/list" if current user change his info, otheriwise
-	 *         return "redirect:/"
+	 * @return "redirect:/user/list" if current user change his info, otheriwise return "redirect:/"
 	 */
 	@RequestMapping("/save")
 	@PreAuthorize("hasAnyRole('A') or #user.id == #updatedUser.id")
 	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser,
-			@RequestParam(required = false) String followersStr) {
+					@RequestParam(required = false) String followersStr) {
 		checkArgument(updatedUser.validate());
 		if (user.getRole() == Role.USER) {
 			// General user can not change their role.
@@ -150,7 +149,8 @@ public class UserController extends NGrinderBaseController {
 			updatedUser.setRole(updatedUserInDb.getRole());
 
 			// prevent user to modify with other user id
-			checkArgument(updatedUserInDb.getId().equals(updatedUser.getId()), "Illegal request to update user:%s", updatedUser);
+			checkArgument(updatedUserInDb.getId().equals(updatedUser.getId()), "Illegal request to update user:%s",
+							updatedUser);
 		}
 		if (updatedUser.exist()) {
 			userService.modifyUser(updatedUser, followersStr);
@@ -255,8 +255,9 @@ public class UserController extends NGrinderBaseController {
 	 * @return redirect:/perftest/list
 	 */
 	@RequestMapping("/switchUser")
-	public String switchUser(User user, ModelMap model, @RequestParam(required=false, defaultValue = "") String switchUserId,
-			HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+	public String switchUser(User user, ModelMap model,
+					@RequestParam(required = false, defaultValue = "") String switchUserId,
+					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
 		Cookie cookie = new Cookie("switchUser", switchUserId);
 		cookie.setPath("/");
 		// Delete Cookie if empty switchUser
@@ -264,6 +265,7 @@ public class UserController extends NGrinderBaseController {
 			cookie.setMaxAge(0);
 		}
 		httpServletResponse.addCookie(cookie);
+
 		model.clear();
 		return "redirect:/perftest/list";
 	}
