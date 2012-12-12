@@ -99,8 +99,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Provide current login user as a model attributes. If it's not found,
-	 * return empty user.
+	 * Provide current login user as a model attributes. If it's not found, return empty user.
 	 * 
 	 * @return login user
 	 */
@@ -125,13 +124,19 @@ public class NGrinderBaseController implements NGrinderConstants {
 		return announcementService.getAnnouncement();
 	}
 
+	@ModelAttribute("clustered")
+	public boolean clustered() {
+		return config.isCluster();
+	}
+
 	/**
 	 * Provide announcement hide cookie as a model attributes.
 	 * 
 	 * @return announcement content
 	 */
 	@ModelAttribute("announcement_hide")
-	public boolean announcement(@CookieValue(value = "announcement_hide", defaultValue = "false") boolean annoucnementHide) {
+	public boolean announcement(
+					@CookieValue(value = "announcement_hide", defaultValue = "false") boolean annoucnementHide) {
 		return annoucnementHide;
 	}
 

@@ -123,7 +123,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		}
 	}
 
-	/**
+	/**   
 	 * Run a scheduled task to check the agent status.
 	 * 
 	 * This method has some
