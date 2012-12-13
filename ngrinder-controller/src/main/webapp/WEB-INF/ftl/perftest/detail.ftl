@@ -825,7 +825,7 @@ var agentCountMap = {};
 agentCountMap["${key}"] = ${regionAgentCountMap[key]};
 </#list>
 
-function changAgentMaxCount(region) {
+function changeAgentMaxCount(region) {
 	var count = agentCountMap[region];
 	if (count === undefined) {
 		count = 0;
