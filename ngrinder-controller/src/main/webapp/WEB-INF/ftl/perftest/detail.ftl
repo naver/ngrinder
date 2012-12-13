@@ -814,7 +814,7 @@ function bindEvent() {
 		var region = $(this).val();
 		changAgentMaxCount(region);
 	});
-	}
+	changeAgentMaxCount($("#regionSelect").val());
 <#else>
 	var maxAgentPerConsole = agentCountMap["NONE"];
 	changAgentMaxCount("NONE");
@@ -830,16 +830,15 @@ function changAgentMaxCount(region) {
 	if (count === undefined) {
 		count = 0;
 	}
-	var $countObj = $("#maxAgentCount");
-	$("#agentCount").rules("add", {
+	var maxAgentCount = $("#maxAgentCount");
+	var agentCountObj = $("#agentCount");
+	agentCountObj.rules("add", {
 		max:count
 	});
-	$("#agentCount").rules("add", {
-		min:0
-	});
-	$countObj.text(count);
-	$("#agentCount").valid();
+	maxAgentCount.text(count);
+	agentCountObj.valid();
 }
+
 function buildTagString() {
 	return $.map($("#tagString").select2("data"), function(obj) {
 		return obj.text;
@@ -909,7 +908,6 @@ function updateVuserPolicy(vuser) {
 	var threads = $('#threads');
 	threads.val(threadCount);
 	threads.valid();
-
 	return [ processCount, threadCount ];
 }
 
