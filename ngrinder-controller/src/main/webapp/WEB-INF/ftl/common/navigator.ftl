@@ -56,7 +56,7 @@
 				<i class="<#if announcement_hide?has_content && announcement_hide == true>icon-plus<#else>icon-minus</#if> pull-right" id="announcement_icon" style="margin-top:-20px"></i>
 			</a></span>
 		</div>
-		<div style="margin:10px 5px 0;" class="<#if announcement_hide?has_content && announcement_hide == true>hidden</#if>" id="announcementContentDiv">
+		<div style="margin:10px 5px 0;<#if announcement_hide?? && announcement_hide>display:none;</#if>" id="announcementContentDiv">
 			<#if announcement?has_content>
 				<#if announcement?index_of('</') gt 0 || announcement?index_of('<br>') gt 0> 
 					${announcement}
@@ -65,21 +65,6 @@
 				</#if>
 			</#if> 
 		</div>
-		<script type="text/javascript">
-			$(document).ready(function() {
-				$("#hide_announcement").click( function() {
-					if ($("#announcementContentDiv").is(":hidden")) {
-						$("#announcementContentDiv").show("slow");
-						$("#announcement_icon").removeClass("icon-plus").addClass("icon-minus");
-						cookie("announcement_hide", "false", 6);
-					} else {
-						$("#announcementContentDiv").slideUp();
-						$("#announcement_icon").removeClass("icon-minus").addClass("icon-plus");
-						cookie("announcement_hide", "true", 6);
-					}
-				})
-			});
-		</script>
 	</div>
 </div>
 <div class="modal fade" id="userProfileModal">
@@ -114,6 +99,19 @@
 <#include "messages.ftl">
 
 <script type="text/javascript">
+	$(document).ready(function() {
+		$("#hide_announcement").click( function() {
+			if ($("#announcementContentDiv").is(":hidden")) {
+				$("#announcementContentDiv").show("slow");
+				$("#announcement_icon").removeClass("icon-plus").addClass("icon-minus");
+				cookie("announcement_hide", "false", 6);
+			} else {
+				$("#announcementContentDiv").slideUp();
+				$("#announcement_icon").removeClass("icon-minus").addClass("icon-plus");
+				cookie("announcement_hide", "true", 6);
+			}
+		})
+	});
 	function init() {
 		$.ajaxSetup({ cache: false });
 		myProfile();

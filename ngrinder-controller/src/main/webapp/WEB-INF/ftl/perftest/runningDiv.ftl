@@ -68,7 +68,7 @@
 				<div class="control-group">
 					<label for="ignoreSampleCount" class="control-label"><@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
 					<div class="controls">
-						<span>0</span> 
+						<span>${(test.ignoreSampleCount)!0}</span> 
 					</div>
 				</div>
 				<div class="control-group">
