@@ -33,6 +33,7 @@ import org.apache.commons.io.FileUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.EncodingUtil;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 
@@ -130,7 +131,8 @@ public class Home implements NGrinderConstants {
 		try {
 			File configFile = getSubFile(confFileName);
 			if (configFile.exists()) {
-				String propString = FileUtils.readFileToString(configFile, "UTF-8");
+				byte[] propByte = FileUtils.readFileToByteArray(configFile);
+				String propString = EncodingUtil.getAutoDecodedString(propByte, "UTF-8");
 				Properties prop = new Properties();
 				prop.load(new StringReader(propString));
 				return prop;

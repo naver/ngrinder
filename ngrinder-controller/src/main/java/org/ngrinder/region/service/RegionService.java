@@ -70,9 +70,16 @@ public class RegionService {
 				public void interruptibleRun() {
 					String region = config.getRegion();
 					File file = new File(config.getHome().getControllerShareDirectory(), region);
-					try {
-						FileUtils.writeStringToFile(file, config.getCurrentIP(), "UTF-8");
-					} catch (IOException e) {
+					if (!file.exists()) {
+						try {
+							FileUtils.writeStringToFile(file, config.getCurrentIP(), "UTF-8");
+						} catch (IOException e) {
+						}
+					} else {
+						try {
+							FileUtils.touch(file);
+						} catch (IOException e) {
+						}
 					}
 					LOG.trace("Add Region: {}:{} into cache.", region);
 				}
@@ -100,7 +107,7 @@ public class RegionService {
 		List<String> regions = new ArrayList<String>();
 		if (config.isCluster()) {
 			for (File each : config.getHome().getControllerShareDirectory().listFiles()) {
-				if (System.currentTimeMillis() - (1000 * 60) < each.lastModified()) {
+				if (System.currentTimeMillis() - (1000 * 3) < each.lastModified()) {
 					regions.add(each.getName());
 				}
 			}

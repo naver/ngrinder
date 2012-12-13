@@ -104,11 +104,10 @@ public class Config implements IConfig {
 			copyDefaultConfigurationFiles();
 			loadIntrenalProperties();
 			loadSystemProperties();
+			initHomeMonitor();
 			// Load cluster in advance. cluster mode is not dynamically
 			// reloadable.
 			cluster = getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_PROP_CLUSTER_MODE, false);
-			loadAnnouncement();
-			initHomeMonitor();
 			initLogger(isTestMode());
 			resolveLocalIp();
 			loadDatabaseProperties();
@@ -302,7 +301,7 @@ public class Config implements IConfig {
 	/**
 	 * Load system related properties. (system.conf)
 	 */
-	public void loadSystemProperties() {
+	public synchronized void loadSystemProperties() {
 		checkNotNull(home);
 		Properties properties = home.getProperties("system.conf");
 		properties.put("NGRINDER_HOME", home.getDirectory().getAbsolutePath());
@@ -317,7 +316,7 @@ public class Config implements IConfig {
 	/**
 	 * Load announcement content.
 	 */
-	public void loadAnnouncement() {
+	public synchronized void loadAnnouncement() {
 		checkNotNull(home);
 		File sysFile = home.getSubFile("announcement.conf");
 		try {
@@ -348,7 +347,7 @@ public class Config implements IConfig {
 		this.systemConfWatchDog = new FileWatchdog(getHome().getSubFile("system.conf").getAbsolutePath()) {
 			@Override
 			protected void doOnChange() {
-				CoreLogger.LOGGER.info("Announcement file changed.");
+				CoreLogger.LOGGER.info("System conf file changed.");
 				loadSystemProperties();
 			}
 		};
