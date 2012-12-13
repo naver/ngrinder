@@ -94,13 +94,11 @@ public class User extends BaseModel<User> {
 	private User ownerUser;
 
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "owner_id"), 
-			inverseJoinColumns = @JoinColumn(name = "follow_id"))
+	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "owner_id"), inverseJoinColumns = @JoinColumn(name = "follow_id"))
 	private List<User> followers;
 
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "follow_id"), 
-			inverseJoinColumns = @JoinColumn(name = "owner_id"))
+	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "follow_id"), inverseJoinColumns = @JoinColumn(name = "owner_id"))
 	private List<User> owners;
 
 	/**
@@ -118,8 +116,29 @@ public class User extends BaseModel<User> {
 	 *            user name
 	 * @param password
 	 *            password
+	 * @param role
+	 *            role
+	 * @deprecated
+	 */
+	public User(String userId, String name, String password, Role role) {
+		this.userId = userId;
+		this.password = password;
+		this.userName = name;
+		this.role = role;
+		isEnabled();
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param userId
+	 *            user id
+	 * @param name
+	 *            user name
+	 * @param password
+	 *            password
 	 * @param email
-	 * 			  email
+	 *            email
 	 * @param role
 	 *            role
 	 */
@@ -298,18 +317,18 @@ public class User extends BaseModel<User> {
 	public void setFollower(User follower) {
 		this.follower = follower;
 	}
-	
+
 	public User getFactualUser() {
 		return ownerUser == null ? this : ownerUser;
 	}
-	
+
 	/**
 	 * Get user simple information.
 	 * 
 	 * @return user
 	 */
-	//It will throw StackOverflowException if return User that contains owners and followers value
-	//in getCurrentPerfTestStatistics() method.so just return base User info 
+	// It will throw StackOverflowException if return User that contains owners and followers value
+	// in getCurrentPerfTestStatistics() method.so just return base User info
 	public User getUserBaseInfo() {
 		User userInfo = new User();
 		userInfo.setId(this.getId());
@@ -317,14 +336,15 @@ public class User extends BaseModel<User> {
 		userInfo.setUserName(this.getUserName());
 		return userInfo;
 	}
+
 	/**
 	 * a string representation of User object
 	 * 
-	 * @return   User object information String.
+	 * @return User object information String.
 	 */
-	//avoid lazy initialization issues ,method toString not contain followers and owners
+	// avoid lazy initialization issues ,method toString not contain followers and owners
 	@Override
 	public String toString() {
-		return "User[ID="+this.getId()+",name="+this.getUserId()+",Role="+this.getRole()+"]";
+		return "User[ID=" + this.getId() + ",name=" + this.getUserId() + ",Role=" + this.getRole() + "]";
 	}
 }
