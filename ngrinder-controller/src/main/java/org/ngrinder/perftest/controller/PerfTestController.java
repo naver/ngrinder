@@ -121,16 +121,15 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @param tag
 	 *            tag
 	 * @param queryFilter
-	 *            "F" means get only finished, "S" means get only scheduled
-	 *            tests.
+	 *            "F" means get only finished, "S" means get only scheduled tests.
 	 * @param pageable
 	 *            page
 	 * @return perftest/list
 	 */
 	@RequestMapping({ "/list", "/" })
-	public String getPerfTestList(User user, @RequestParam(required = false) String query, @RequestParam(required = false) String tag,
-			@RequestParam(required = false) String queryFilter, @PageableDefaults(pageNumber = 0, value = 10) Pageable pageable,
-			ModelMap model) {
+	public String getPerfTestList(User user, @RequestParam(required = false) String query,
+					@RequestParam(required = false) String tag, @RequestParam(required = false) String queryFilter,
+					@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
 		PageRequest pageReq = ((PageRequest) pageable);
 		Sort sort = pageReq == null ? null : pageReq.getSort();
 		if (sort == null && pageReq != null) {
@@ -146,7 +145,8 @@ public class PerfTestController extends NGrinderBaseController {
 
 		for (PerfTest test : testList) {
 			Calendar localedModified = Calendar.getInstance(userTZ);
-			localedModified.setTime(DateUtil.convertToUserDate(getCurrentUser().getTimeZone(), test.getLastModifiedDate()));
+			localedModified.setTime(DateUtil.convertToUserDate(getCurrentUser().getTimeZone(),
+							test.getLastModifiedDate()));
 			if (DateUtils.isSameDay(userToday, localedModified)) {
 				test.setDateString("today");
 			} else if (DateUtils.isSameDay(userYesterday, localedModified)) {
@@ -258,7 +258,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return "perftest/detail"
 	 */
 	@RequestMapping("/quickStart")
-	public String getQuickStart(User user, @RequestParam(value = "url", required = true) String urlString, ModelMap model) {
+	public String getQuickStart(User user, @RequestParam(value = "url", required = true) String urlString,
+					ModelMap model) {
 		URL url = checkValidURL(urlString);
 		List<FileEntry> scriptList = new ArrayList<FileEntry>();
 		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString);
@@ -288,15 +289,16 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String savePerfTest(User user, ModelMap model, PerfTest test,
-			@RequestParam(value = "isClone", required = false, defaultValue = "false") boolean isClone) {
+					@RequestParam(value = "isClone", required = false, defaultValue = "false") boolean isClone) {
 		test.setTestName(StringUtils.trimToEmpty(test.getTestName()));
 		checkNotEmpty(test.getTestName(), "test name should be provided");
 		checkArgument(test.getStatus().equals(Status.READY) || test.getStatus().equals(Status.SAVED),
-				"save test only support for SAVE or READY status");
+						"save test only support for SAVE or READY status");
 		checkArgument(test.getRunCount() == null || test.getRunCount() <= agentManager.getMaxRunCount(),
-				"test run count should be within %s", agentManager.getMaxRunCount());
-		checkArgument(test.getDuration() == null || test.getDuration() <= (((long) agentManager.getMaxRunHour()) * 3600000L),
-				"test run duration should be within %s", agentManager.getMaxRunHour());
+						"test run count should be within %s", agentManager.getMaxRunCount());
+		checkArgument(test.getDuration() == null
+						|| test.getDuration() <= (((long) agentManager.getMaxRunHour()) * 3600000L),
+						"test run duration should be within %s", agentManager.getMaxRunHour());
 
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		MutableInt agentCountObj = agentCountMap.get(clustered() ? test.getRegion() : Config.NONE_REGION);
@@ -304,10 +306,10 @@ public class PerfTestController extends NGrinderBaseController {
 		int agentMaxCount = agentCountObj.intValue();
 		checkArgument(test.getAgentCount() <= agentMaxCount, "test agent shoule be within %s", agentMaxCount);
 		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
-				"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());
+						"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());
 		if (getConfig().isSecurityEnabled()) {
 			checkArgument(StringUtils.isNotEmpty(test.getTargetHosts()),
-					"test taget hosts should be provided when security mode is enabled");
+							"test taget hosts should be provided when security mode is enabled");
 		}
 		checkArgument(test.getProcesses() != null && 0 != test.getProcesses(), "test process should not be 0");
 		checkArgument(test.getThreads() != null && 0 != test.getThreads(), "test thread should not be 0");
@@ -351,7 +353,8 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = "/leaveComment", method = RequestMethod.POST)
 	@ResponseBody
 	public String leaveComment(User user, @RequestParam("testComment") String testComment,
-			@RequestParam(value = "tagString", required = false) String tagString, @RequestParam("testId") Long testId) {
+					@RequestParam(value = "tagString", required = false) String tagString,
+					@RequestParam("testId") Long testId) {
 		perfTestService.addCommentOn(user, testId, testComment, tagString);
 		return returnSuccess();
 	}
@@ -383,11 +386,9 @@ public class PerfTestController extends NGrinderBaseController {
 			String errorMessages = getMessages(each.getStatus().getSpringMessageKey());
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_NAME, errorMessages);
 			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_ICON, each.getStatus().getIconName());
-			rtnMap.put(
-					PARAM_STATUS_UPDATE_STATUS_MESSAGE,
-					StringUtils.replace(
-							each.getProgressMessage() + "\n<b>" + each.getLastProgressMessage() + "</b>\n"
-									+ each.getLastModifiedDateToStr(), "\n", "<br/>"));
+			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_MESSAGE,
+							StringUtils.replace(each.getProgressMessage() + "\n<b>" + each.getLastProgressMessage()
+											+ "</b>\n" + each.getLastModifiedDateToStr(), "\n", "<br/>"));
 			rtnMap.put(PARAM_STATUS_UPDATE_DELETABLE, each.getStatus().isDeletable());
 			rtnMap.put(PARAM_STATUS_UPDATE_STOPPABLE, each.getStatus().isStoppable());
 			statusList.add(rtnMap);
@@ -441,8 +442,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get resources and lib files on the same folder with the given script
-	 * path.
+	 * Get resources and lib files on the same folder with the given script path.
 	 * 
 	 * @param user
 	 *            user
@@ -454,7 +454,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/getResourcesOnScriptFolder")
 	public HttpEntity<String> getResourcesOnScriptFolder(User user, @RequestParam String scriptPath,
-			@RequestParam(value = "r", required = false) Long revision) {
+					@RequestParam(value = "r", required = false) Long revision) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.set("content-type", "application/json; charset=UTF-8");
 
@@ -493,7 +493,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = "/getReportData")
 	@ResponseBody
 	public String getReportData(User user, ModelMap model, @RequestParam long testId,
-			@RequestParam(required = true, defaultValue = "") String dataType, @RequestParam int imgWidth) {
+					@RequestParam(required = true, defaultValue = "") String dataType, @RequestParam int imgWidth) {
 		getPerfTestWithPermissionCheck(user, testId, false);
 		String[] dataTypes = StringUtils.split(dataType, ",");
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1 + dataTypes.length);
@@ -569,7 +569,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            repsonse
 	 */
 	@RequestMapping(value = "/downloadLog/**")
-	public void downloadLogData(User user, @RemainedPath String path, @RequestParam long testId, HttpServletResponse response) {
+	public void downloadLogData(User user, @RemainedPath String path, @RequestParam long testId,
+					HttpServletResponse response) {
 		getPerfTestWithPermissionCheck(user, testId, false);
 		File targetFile = perfTestService.getLogFile(testId, path);
 		FileDownloadUtil.downloadFile(response, targetFile);
@@ -588,7 +589,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/running/refresh")
 	public String refreshTestRunning(User user, ModelMap model, @RequestParam long testId) {
-		PerfTest test = checkNotNull(getPerfTestWithPermissionCheck(user, testId, false), "given test should be exist : " + testId);
+		PerfTest test = checkNotNull(getPerfTestWithPermissionCheck(user, testId, false),
+						"given test should be exist : " + testId);
 		if (test.getStatus().equals(Status.TESTING)) {
 			model.addAttribute(PARAM_RESULT_AGENT_PERF, getAgentPerfString(perfTestService.getAgentInfo(test)));
 			model.addAttribute(PARAM_RESULT_SUB, perfTestService.getStatistics(test));
@@ -606,7 +608,7 @@ public class PerfTestController extends NGrinderBaseController {
 				usage = (((float) (totalMemory - value.getFreeMemory())) / totalMemory) * 100;
 			}
 			perfStringList.add(String.format(" {'agent' : '%s', 'cpu' : %3.02f, 'mem' : %3.02f }",
-					StringUtils.abbreviate(each.getKey().getName(), 25), value.getCpuUsedPercentage(), usage));
+							StringUtils.abbreviate(each.getKey().getName(), 25), value.getCpuUsedPercentage(), usage));
 		}
 		return StringUtils.join(perfStringList, ",");
 	}

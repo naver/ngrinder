@@ -150,7 +150,7 @@
 	
 	function showExceptionMsg() {
 		<#if exception??>
-			showErrorMsg("Error:${(exception.message)!}");
+			showErrorMsg("${(exception)}");
 		</#if> 
 	}
 	

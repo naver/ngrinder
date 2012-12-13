@@ -31,6 +31,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.operation.service.AnnouncementService;
@@ -39,7 +40,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -93,8 +96,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Provide current login user as a model attributes. If it's not found,
-	 * return empty user.
+	 * Provide current login user as a model attributes. If it's not found, return empty user.
 	 * 
 	 * @return login user
 	 */
@@ -131,7 +133,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	 */
 	@ModelAttribute("announcement_hide")
 	public boolean announcement(
-			@CookieValue(value = "announcement_hide", defaultValue = "false") boolean annoucnementHide) {
+					@CookieValue(value = "announcement_hide", defaultValue = "false") boolean annoucnementHide) {
 		return annoucnementHide;
 	}
 
@@ -220,6 +222,13 @@ public class NGrinderBaseController implements NGrinderConstants {
 	 */
 	public String toJson(Map<String, Object> map) {
 		return gson.toJson(map);
+	}
+
+	@ExceptionHandler({ RuntimeException.class })
+	public ModelAndView handleException(RuntimeException e) {
+		ModelAndView modelAndView = new ModelAndView("forward:/");
+		modelAndView.addObject("exception", e.getMessage());
+		return modelAndView;
 	}
 
 	/**
