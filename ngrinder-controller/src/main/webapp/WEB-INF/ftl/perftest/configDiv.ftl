@@ -27,7 +27,7 @@
 										<#if clustered == true>											
 											<label for="regionSelect" class="region"><@spring.message "perfTest.configuration.region"/></label>
 								 			<select id="regionSelect" name="region" class="pull-right" style="width:120px">
-												<#list regionList as eachRegion>
+												<#list regionAgentCountMap?keys as eachRegion>
 													<option value="${eachRegion}" <#if (test?? && test.region?? && test.region == eachRegion)>selected </#if> >${eachRegion}</option>
 												</#list> 
 											</select>
