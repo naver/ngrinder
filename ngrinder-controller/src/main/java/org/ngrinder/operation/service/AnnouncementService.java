@@ -63,7 +63,7 @@ public class AnnouncementService {
 	 */
 	public boolean saveAnnouncement(String content) {
 		try {
-			FileUtils.writeStringToFile(config.getHome().getSubFile("announcement.conf"), content);
+			FileUtils.writeStringToFile(config.getHome().getSubFile("announcement.conf"), content, "UTF-8");
 			config.loadAnnouncement();
 		} catch (IOException e) {
 			LOGGER.error("Error while writing announcement file.");

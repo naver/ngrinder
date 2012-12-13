@@ -107,6 +107,8 @@ public class HomeController extends NGrinderBaseController {
 	 * 
 	 * @param user
 	 *            user
+	 * @param exception
+	 *            exception string which will be used to show error.
 	 * @param model
 	 *            model
 	 * @param response
@@ -118,26 +120,32 @@ public class HomeController extends NGrinderBaseController {
 	@RequestMapping(value = { "/home", "/" })
 	public String home(User user, @RequestParam(value = "exception", defaultValue = "") String exception,
 					ModelMap model, HttpServletResponse response, HttpServletRequest request) {
-		Role role = null;
 		try {
-			// set local language
-			setLanguage(getCurrentUser().getUserLanguage(), response, request);
-			setLoginPageDate(model);
-			role = user.getRole();
-		} catch (AuthenticationCredentialsNotFoundException e) {
-			CoreLogger.LOGGER.info("Login Failure", e);
-			return "login";
-		}
-		model.addAttribute("right_panel_entries", homeService.getRightPanelEntries());
-		model.addAttribute("left_panel_entries", homeService.getLeftPanelEntries());
-		if (StringUtils.isNotBlank(exception)) {
-			model.addAttribute("exception", exception);
-		}
-		if (role == Role.ADMIN || role == Role.SUPER_USER || role == Role.USER) {
+			Role role = null;
+			try {
+				// set local language
+				setLanguage(getCurrentUser().getUserLanguage(), response, request);
+				setLoginPageDate(model);
+				role = user.getRole();
+			} catch (AuthenticationCredentialsNotFoundException e) {
+				CoreLogger.LOGGER.info("Login Failure", e);
+				return "login";
+			}
+			model.addAttribute("right_panel_entries", homeService.getRightPanelEntries());
+			model.addAttribute("left_panel_entries", homeService.getLeftPanelEntries());
+			if (StringUtils.isNotBlank(exception)) {
+				model.addAttribute("exception", exception);
+			}
+			if (role == Role.ADMIN || role == Role.SUPER_USER || role == Role.USER) {
+				return "index";
+			} else {
+				LOG.info("Invalid user role:{}", role.getFullName());
+				return "login";
+			}
+		} catch (Exception e) {
+			// Make the home reliable...
+			model.addAttribute("exception", e.getMessage());
 			return "index";
-		} else {
-			LOG.info("Invalid user role:{}", role.getFullName());
-			return "login";
 		}
 	}
 
