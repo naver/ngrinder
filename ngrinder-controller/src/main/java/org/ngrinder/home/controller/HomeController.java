@@ -52,6 +52,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
@@ -115,11 +116,12 @@ public class HomeController extends NGrinderBaseController {
 	 * @return "index" if loggined. "login", otherwise.
 	 */
 	@RequestMapping(value = { "/home", "/" })
-	public String home(User user, ModelMap model, HttpServletResponse response, HttpServletRequest request) {
+	public String home(User user, @RequestParam(value = "exception", defaultValue = "") String exception,
+					ModelMap model, HttpServletResponse response, HttpServletRequest request) {
 		Role role = null;
 		try {
 			// set local language
-			setLanguage(user.getUserLanguage(), response, request);
+			setLanguage(getCurrentUser().getUserLanguage(), response, request);
 			setLoginPageDate(model);
 			role = user.getRole();
 		} catch (AuthenticationCredentialsNotFoundException e) {
@@ -128,7 +130,9 @@ public class HomeController extends NGrinderBaseController {
 		}
 		model.addAttribute("right_panel_entries", homeService.getRightPanelEntries());
 		model.addAttribute("left_panel_entries", homeService.getLeftPanelEntries());
-
+		if (StringUtils.isNotBlank(exception)) {
+			model.addAttribute("exception", exception);
+		}
 		if (role == Role.ADMIN || role == Role.SUPER_USER || role == Role.USER) {
 			return "index";
 		} else {
@@ -210,7 +214,7 @@ public class HomeController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/error_404")
 	public String error404(RedirectAttributesModelMap model) {
-		model.addFlashAttribute("exception", new NGrinderRuntimeException("Requested URL does not exist !"));
+		model.addFlashAttribute("exception", new NGrinderRuntimeException("Requested URL does not exist"));
 		return "redirect:/doError";
 	}
 
@@ -222,8 +226,8 @@ public class HomeController extends NGrinderBaseController {
 	 * @return "index"
 	 */
 	@RequestMapping(value = "/doError")
-	public String second(ModelMap model) {
-		return "index";
+	public String second(User user, ModelMap model, HttpServletResponse response, HttpServletRequest request) {
+		return home(user, null, model, response, request);
 	}
 
 }

@@ -199,11 +199,11 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 					AgentInfo fillUpAgentInfo = fillUpAgentInfo(new AgentInfo(), agentIdentity);
 					fillUpAgentInfo.setApproved(false);
 					fillUpAgentInfo.setStatus(AgentControllerState.UNKNOWN);
-					changeAgents.add(findByIpAndHostName);
+					changeAgents.add(fillUpAgentInfo);
 				}
 			}
 		}
-
+	
 		// step3. update into DB
 		getAgentRepository().save(changeAgents);
 		getAgentRepository().delete(agentsToBeDeleted);

@@ -6,12 +6,12 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd">
 
-	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
-		  <property name="locations">  
-	          <list>  
-	                <value>classpath:internal.properties</value>
-	          </list>
-		   </property>  
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:internal.properties</value>
+			</list>
+		</property>
 	</bean>
 	<!-- Configures support for @Controllers -->
 	<mvc:annotation-driven>
@@ -23,8 +23,13 @@
 			<bean class="org.ngrinder.infra.spring.RemainedPathMethodArgumentResolver" />
 			<bean class="org.springframework.data.web.PageableArgumentResolver" />
 		</mvc:argument-resolvers>
-	</mvc:annotation-driven>
 
+	</mvc:annotation-driven>
+	
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver">
+		<property name="order" value="0" />
+	</bean>
+	
 	<!-- customization to search RequestMapping in the parent context -->
 	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
 		<property name="detectHandlerMethodsInAncestorContexts" value="true" />
@@ -55,11 +60,11 @@
 		<property name="attributes">
 			<props>
 				<prop key="nGrinderVersion">${ngrinder.version}</prop>
-			</props> 
+			</props>
 		</property>
 		<property name="contentType" value="text/html;charset=UTF-8" />
 		<property name="exposeSpringMacroHelpers" value="true" />
-		<property name="cache" value="yes" /> 
+		<property name="cache" value="yes" />
 	</bean>
 
 
@@ -70,16 +75,6 @@
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<property name="maxUploadSize" value="50000000" />
 		<property name="defaultEncoding" value="utf-8" />
-	</bean>
-
-	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
-		<property name="order" value="2" />
-		<property name="exceptionMappings">
-			<props>
-				<prop key="java.lang.Exception">index</prop>
-			</props>
-		</property>
-		<property name="warnLogCategory" value="WARN"></property>
 	</bean>
 
 	<!-- resources exclusions from servlet mapping -->

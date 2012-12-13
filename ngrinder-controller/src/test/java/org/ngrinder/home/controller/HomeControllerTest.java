@@ -27,7 +27,7 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 		User testUser2 = getTestUser();
 		testUser2.setUserLanguage("EN");
 		ModelMap model = new ModelMap();
-		String viewName = homeController.home(testUser2, model, res, req);
+		String viewName = homeController.home(testUser2, null, model, res, req);
 		assertThat(viewName, is("index"));
 
 	}
@@ -45,6 +45,5 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 		String viewName = homeController.getAllTimeZone(model);
 		assertThat(viewName, is("allTimeZone"));
 	}
-
 
 }
