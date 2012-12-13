@@ -121,7 +121,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		agentInfo.setPort(1);
 		agentInfo.setStatus(AgentControllerState.READY);
 		agentManagerService.saveAgent(agentInfo);
-		agentManagerService.checkAgentStatus();
+		agentManagerService.checkAgentStatusRegularly();
 
 		AgentInfo agentInDB = agentRepository.findOne(agentInfo.getId());
 		assertThat(agentInDB.getIp(), is(agentInfo.getIp()));

@@ -106,12 +106,14 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 					for (String each : (List<String>) keysWithExpiryCheck) {
 						try {
 							if (each.startsWith(region) && agentRequestCache.get(each) != null) {
-								ClustedAgentRequest agentRequest = (ClustedAgentRequest) (agentRequestCache.get(each).get());
+								ClustedAgentRequest agentRequest = (ClustedAgentRequest) (agentRequestCache.get(each)
+												.get());
 								AgentControllerIdentityImplementation agentIdentity = getLocalAgentIdentityByIpAndName(
-										agentRequest.getAgentIp(), agentRequest.getAgentName());
+												agentRequest.getAgentIp(), agentRequest.getAgentName());
 								if (agentIdentity != null) {
-									agentRequest.getRequestType().process(agentRequest.getAgentId(), agentRequest.getAgentIp(),
-											getAgentManager(), ClusteredAgentManagerService.this, agentIdentity);
+									agentRequest.getRequestType().process(agentRequest.getAgentId(),
+													agentRequest.getAgentIp(), getAgentManager(),
+													ClusteredAgentManagerService.this, agentIdentity);
 								}
 							}
 
@@ -132,8 +134,6 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 * 
 	 * @since 3.1
 	 */
-	@Scheduled(fixedDelay = 5000)
-	@Transactional
 	public void checkAgentStatus() {
 		List<AgentInfo> changeAgents = Lists.newArrayList();
 
@@ -191,7 +191,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 				changeAgents.add(fillUpAgentInfo(new AgentInfo(), agentIdentity));
 			} else {
 				// If
-				AgentInfo findByIpAndHostName = getAgentRepository().findByIpAndHostName(agentIdentity.getIp(), agentIdentity.getName());
+				AgentInfo findByIpAndHostName = getAgentRepository().findByIpAndHostName(agentIdentity.getIp(),
+								agentIdentity.getName());
 				if (findByIpAndHostName != null) {
 					findByIpAndHostName.setStatus(AgentControllerState.UNKNOWN);
 					changeAgents.add(findByIpAndHostName);
@@ -203,7 +204,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 				}
 			}
 		}
-	
+
 		// step3. update into DB
 		getAgentRepository().save(changeAgents);
 		getAgentRepository().delete(agentsToBeDeleted);
@@ -226,8 +227,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	}
 
 	/**
-	 * get the available agent count map in all regions of the user, including
-	 * the free agents and user specified agents.
+	 * get the available agent count map in all regions of the user, including the free agents and
+	 * user specified agents.
 	 * 
 	 * @param regions
 	 *            current region list
@@ -306,8 +307,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	/**
 	 * /** Get all agents attached of this region from DB.
 	 * 
-	 * This method is cluster aware. If it's cluster mode it return all agents
-	 * attached in this region.
+	 * This method is cluster aware. If it's cluster mode it return all agents attached in this
+	 * region.
 	 * 
 	 * @return agent list
 	 */
@@ -317,8 +318,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	}
 
 	/**
-	 * Stop agent. In cluster mode, it queues the agent stop request to
-	 * agentRequestCache.
+	 * Stop agent. In cluster mode, it queues the agent stop request to agentRequestCache.
 	 * 
 	 * @param id
 	 *            agent id in db
@@ -331,7 +331,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			return;
 		}
 		agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "_" + agent.getId() + "_stop_agent",
-				new ClustedAgentRequest(agent.getId(), agent.getIp(), agent.getName(), RequestType.STOP_AGENT));
+						new ClustedAgentRequest(agent.getId(), agent.getIp(), agent.getName(), RequestType.STOP_AGENT));
 	}
 
 	/**
@@ -344,12 +344,12 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	public void requestShareAgentSystemDataModel(Long id) {
 		AgentInfo agent = getAgent(id, false);
 		agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "_" + agent.getId() + "_monitoring",
-				new ClustedAgentRequest(agent.getId(), agent.getIp(), agent.getName(), RequestType.SHARE_AGENT_SYSTEM_DATA_MODEL));
+						new ClustedAgentRequest(agent.getId(), agent.getIp(), agent.getName(),
+										RequestType.SHARE_AGENT_SYSTEM_DATA_MODEL));
 	}
 
 	/**
-	 * Get agent system data model for the given ip. This method is cluster
-	 * aware.
+	 * Get agent system data model for the given ip. This method is cluster aware.
 	 * 
 	 * @param ip
 	 *            agent ip.
@@ -362,8 +362,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	}
 
 	/**
-	 * Register agent monitoring target. This method should be called in the
-	 * controller in which the given agent exists.
+	 * Register agent monitoring target. This method should be called in the controller in which the
+	 * given agent exists.
 	 * 
 	 * @param id
 	 *            agent id

@@ -81,7 +81,11 @@ public class AgentManagerService {
 	 */
 	@Scheduled(fixedDelay = 5000)
 	@Transactional
-	public void checkAgentStatus() {
+	public void checkAgentStatusRegularly() {
+		checkAgentStatus();
+	}
+
+	protected void checkAgentStatus() {
 		List<AgentInfo> changeAgents = Lists.newArrayList();
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = Maps.newHashMap();
