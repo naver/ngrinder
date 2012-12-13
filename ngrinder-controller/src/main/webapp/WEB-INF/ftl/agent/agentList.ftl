@@ -132,7 +132,6 @@
 					});
 	            });
 			</#if>
-			
 			$("#stopAgenButton").on('click', function() {
 				var ids = "";
 				var list = $("td input:checked");
@@ -141,13 +140,14 @@
 					return;
 				}
 				
-				bootbox.confirm("<@spring.message "agent.table.message.confirm.stop"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
+				var $confirm = bootbox.confirm("<@spring.message "agent.table.message.confirm.stop"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
 				    if (result) {
 						stopAgents(list.map(function() {
 							return $(this).val();
 						}).get().join(","));
 				    }
 				});
+				$confirm.children(".modal-body").addClass("errorColor");
 			});
 			
 			function stopAgents(ids) {
