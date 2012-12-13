@@ -118,7 +118,6 @@
 		</div>
 	</fieldset>
 </form>
-wewewe
 <script type="text/javascript">	
 	$(document).ready(function(){
 		<#if !(user?has_content)>

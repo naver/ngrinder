@@ -64,18 +64,20 @@ public class RegionService {
 	 */
 	@PostConstruct
 	public void initRegion() {
-		scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
-			@Override
-			public void interruptibleRun() {
-				String region = config.getRegion();
-				File file = new File(config.getHome().getControllerShareDirectory(), region);
-				try {
-					FileUtils.writeStringToFile(file, config.getCurrentIP(), "UTF-8");
-				} catch (IOException e) {
+		if (config.isCluster()) {
+			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
+				@Override
+				public void interruptibleRun() {
+					String region = config.getRegion();
+					File file = new File(config.getHome().getControllerShareDirectory(), region);
+					try {
+						FileUtils.writeStringToFile(file, config.getCurrentIP(), "UTF-8");
+					} catch (IOException e) {
+					}
+					LOG.trace("Add Region: {}:{} into cache.", region);
 				}
-				LOG.trace("Add Region: {}:{} into cache.", region);
-			}
-		});
+			});
+		}
 	}
 
 	/**
@@ -83,8 +85,10 @@ public class RegionService {
 	 */
 	@PreDestroy
 	public void destroy() {
-		File file = new File(config.getHome().getControllerShareDirectory(), config.getRegion());
-		FileUtils.deleteQuietly(file);
+		if (config.isCluster()) {
+			File file = new File(config.getHome().getControllerShareDirectory(), config.getRegion());
+			FileUtils.deleteQuietly(file);
+		}
 	}
 
 	/**
@@ -94,9 +98,11 @@ public class RegionService {
 	 */
 	public List<String> getRegions() {
 		List<String> regions = new ArrayList<String>();
-		for (File each : config.getHome().getControllerShareDirectory().listFiles()) {
-			if (System.currentTimeMillis() - (1000 * 60) < each.lastModified()) {
-				regions.add(each.getName());
+		if (config.isCluster()) {
+			for (File each : config.getHome().getControllerShareDirectory().listFiles()) {
+				if (System.currentTimeMillis() - (1000 * 60) < each.lastModified()) {
+					regions.add(each.getName());
+				}
 			}
 		}
 		return regions;

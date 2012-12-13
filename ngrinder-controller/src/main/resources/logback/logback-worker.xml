@@ -6,7 +6,7 @@
 		<file>${PREFIX}.log</file>
  
 		<encoder>
-			<pattern>%d{HH:mm:ss} %-5level %message%n</pattern>
+			<pattern>%d %-5level %message%n</pattern>
 		</encoder>
 
 		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">

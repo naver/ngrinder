@@ -56,8 +56,8 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 
 /**
- * Spring component which is responsible to get the nGrinder configurations which is stored
- * ${NGRINDER_HOME}.
+ * Spring component which is responsible to get the nGrinder configurations
+ * which is stored ${NGRINDER_HOME}.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -81,7 +81,8 @@ public class Config implements IConfig {
 
 	public static final int NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT = 40003;
 
-	public static final String NON_REGION = "NONE";
+	public static final String NONE_REGION = "NONE";
+	private boolean cluster;
 
 	/**
 	 * Make it singleton.
@@ -90,9 +91,9 @@ public class Config implements IConfig {
 	}
 
 	/**
-	 * Initialize Config. This method mainly perform NGRINDER_HOME resolution and system properties
-	 * load. In addition, Logger is initialized and default configuration file is copied into
-	 * NGRINDER_HOME if it's the first
+	 * Initialize Config. This method mainly perform NGRINDER_HOME resolution
+	 * and system properties load. In addition, Logger is initialized and
+	 * default configuration file is copied into NGRINDER_HOME if it's the first
 	 */
 	@PostConstruct
 	public void init() {
@@ -103,6 +104,9 @@ public class Config implements IConfig {
 			copyDefaultConfigurationFiles();
 			loadIntrenalProperties();
 			loadSystemProperties();
+			// Load cluster in advance. cluster mode is not dynamically
+			// reloadable.
+			cluster = getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_PROP_CLUSTER_MODE, false);
 			loadAnnouncement();
 			initHomeMonitor();
 			initLogger(isTestMode());
@@ -127,11 +131,12 @@ public class Config implements IConfig {
 	 */
 	protected void verifyClusterConfig() {
 		if (isCluster()) {
-			if (getRegion().equals(NON_REGION)) {
+			if (getRegion().equals(NONE_REGION)) {
 				LOG.error("Region is not set in cluster mode. Please set ngrinder.region properly.");
 			} else {
 				CoreLogger.LOGGER.info("Cache cluster URIs:{}", getClusterURIs());
-				// set rmi server host for remote serving. Otherwise, maybe it will use 127.0.0.1 to
+				// set rmi server host for remote serving. Otherwise, maybe it
+				// will use 127.0.0.1 to
 				// serve.
 				// then the remote client can not connect.
 				CoreLogger.LOGGER.info("Set current IP:{} for RMI server.", getCurrentIP());
@@ -147,7 +152,7 @@ public class Config implements IConfig {
 	 * @since 3.1
 	 */
 	public boolean isCluster() {
-		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_PROP_CLUSTER_MODE, false);
+		return cluster;
 	}
 
 	/**
@@ -166,8 +171,7 @@ public class Config implements IConfig {
 	 * @return region
 	 */
 	public String getRegion() {
-		return isCluster() ? getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NON_REGION)
-						: NON_REGION;
+		return isCluster() ? getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NONE_REGION) : NONE_REGION;
 	}
 
 	/**
@@ -176,7 +180,7 @@ public class Config implements IConfig {
 	 * @param forceToVerbose
 	 *            force to verbose logging.
 	 */
-	public void initLogger(boolean forceToVerbose) {
+	public synchronized void initLogger(boolean forceToVerbose) {
 		setupLogger((forceToVerbose) ? true : getSystemProperties().getPropertyBoolean("verbose", false));
 	}
 
@@ -195,7 +199,7 @@ public class Config implements IConfig {
 		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
 		context.putProperty("LOG_DIRECTORY", getHome().getGloablLogFile().getAbsolutePath());
 		String region = getRegion();
-		context.putProperty("SUFFIX", region.equals(NON_REGION) ? "" : "_" + region);
+		context.putProperty("SUFFIX", region.equals(NONE_REGION) ? "" : "_" + region);
 
 		try {
 			configurator.doConfigure(new ClassPathResource("/logback/logback-ngrinder.xml").getFile());
@@ -236,8 +240,8 @@ public class Config implements IConfig {
 		}
 		String userHome = null;
 		userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
-		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
-						System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
+		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(System.getProperty("user.home"),
+				NGRINDER_DEFAULT_FOLDER);
 		CoreLogger.LOGGER.info("nGrinder home directory:{}.", userHome);
 
 		return new Home(homeDirectory);
@@ -259,8 +263,8 @@ public class Config implements IConfig {
 		}
 		String userHome = null;
 		userHome = StringUtils.defaultIfEmpty(exHomeFromProperty, exHomeFromEnv);
-		File exHomeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
-						System.getProperty("user.home"), NGRINDER_EX_FOLDER);
+		File exHomeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(System.getProperty("user.home"),
+				NGRINDER_EX_FOLDER);
 		CoreLogger.LOGGER.info("nGrinder ex home directory:{}.", exHomeDirectory);
 
 		return new Home(exHomeDirectory, false);
@@ -391,8 +395,9 @@ public class Config implements IConfig {
 	}
 
 	/**
-	 * Check if plugin support is enabled. The reason why we need this configuration is that it
-	 * takes time to initialize plugin system in unit test context.
+	 * Check if plugin support is enabled. The reason why we need this
+	 * configuration is that it takes time to initialize plugin system in unit
+	 * test context.
 	 * 
 	 * @return true if plugin is supported.
 	 */

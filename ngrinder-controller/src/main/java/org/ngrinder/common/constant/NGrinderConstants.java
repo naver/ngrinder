@@ -138,6 +138,7 @@ public interface NGrinderConstants {
 
 	public static final String PARAM_REGION_LIST = "regionList";
 	public static final String PARAM_REGION_AGENT_COUNT_MAP = "regionAgentCountMap";
+	public static final String PARAM_MAX_AGENT_COUNT = "maxAgentCount";
 	public static final String PARAM_SCRIPT_LIST = "scriptList";
 	public static final String PARAM_QUICK_SCRIPT = "quickScript";
 	public static final String PARAM_TARGET_HOST = "targetHostString";
