@@ -812,12 +812,11 @@ function bindEvent() {
 	$("#regionSelect").select2();
 	$("#regionSelect").change(function(){
 		var region = $(this).val();
-		changAgentMaxCount(region);
+		changeAgentMaxCount(region);
 	});
 	changeAgentMaxCount($("#regionSelect").val());
 <#else>
-	var maxAgentPerConsole = agentCountMap["NONE"];
-	changAgentMaxCount("NONE");
+	changeAgentMaxCount("NONE");
 </#if>	
 }
 var agentCountMap = {};
