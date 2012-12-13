@@ -160,9 +160,9 @@
 			    	success: function(res) {
 			    		if (res.success) {
 				    		showSuccessMsg("<@spring.message "agent.table.message.success.stop"/>");
-								setTimeout(function() {
-									window.location.reload();
-								}, 1000);
+							setTimeout(function() {
+								location.reload();
+							}, 2000);
 			    		} else {
 				    		showErrorMsg("<@spring.message "agent.table.message.error.stop"/>:" + res.message);
 			    		}
