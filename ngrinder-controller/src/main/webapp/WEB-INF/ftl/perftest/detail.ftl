@@ -340,11 +340,6 @@ var objTimer;
 var test_tps_data = new Queue();
 var durationMap = [];
 
-var agentCountMap = {};
-<#list regionAgentCountMap?keys as key>
-	agentCountMap["${key}"] = ${regionAgentCountMap[key]};
-</#list>
-
 $(document).ready(function () {
 	$.ajaxSetup({
 		cache : false //close AJAX cache
@@ -506,8 +501,7 @@ function addValidation() {
 			agentCount: {
 				required: true,
 				digits: true,
-				min: 0,
-				max: ${(maxAgentSizePerConsole)}
+				min: 0
 			},
 			vuserPerAgent: {
 				required: true,
@@ -814,26 +808,35 @@ function bindEvent() {
 		$("#runCountRadio").click();
 	});
 	
+<#if clustered>
 	$("#regionSelect").select2();
-	
 	$("#regionSelect").change(function(){
 		var region = $(this).val();
-		var count = agentCountMap[region];
-		if (count === undefined) {
-			count = 0;
-		}
-		var $countObj = $("#maxAgentCount");
-		var oriValue = $countObj.html();
-		var prefix = oriValue.substr(0, oriValue.indexOf(":") + 1);
-		$("#agentCount").rules("add", {
-			max:count
-		});
-		$("#agentCount").rules("add", {
-			min:0
-		});
-		$countObj.html(prefix + count);
-		$("#agentCount").valid();
-	});	
+		changAgentMaxCount(region);
+	});
+	changeAgentMaxCount($("#regionSelect").val());
+<#else>
+	var maxAgentPerConsole = agentCountMap["NONE"];
+	changAgentMaxCount("NONE");
+</#if>	
+}
+var agentCountMap = {};
+<#list regionAgentCountMap?keys as key>
+agentCountMap["${key}"] = ${regionAgentCountMap[key]};
+</#list>
+
+function changAgentMaxCount(region) {
+	var count = agentCountMap[region];
+	if (count === undefined) {
+		count = 0;
+	}
+	var maxAgentCount = $("#maxAgentCount");
+	var agentCountObj = $("#agentCount");
+	agentCountObj.rules("add", {
+		max:count
+	});
+	maxAgentCount.text(count);
+	agentCountObj.valid();
 }
 
 function buildTagString() {
@@ -905,7 +908,6 @@ function updateVuserPolicy(vuser) {
 	var threads = $('#threads');
 	threads.val(threadCount);
 	threads.valid();
-
 	return [ processCount, threadCount ];
 }
 

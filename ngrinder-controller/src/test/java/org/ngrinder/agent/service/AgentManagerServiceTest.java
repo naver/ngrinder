@@ -40,7 +40,6 @@ import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -53,9 +52,6 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private AgentManagerService agentManagerService;
-
-	@Autowired
-	private RegionService regionService;
 
 	@Autowired
 	private AgentManagerRepository agentRepository;
@@ -99,8 +95,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void testGetUserAvailableAgentCount() {
-		List<String> regionList = regionService.getRegions();
-		Map<String, MutableInt> countMap = agentManagerService.getUserAvailableAgentCountMap(regionList, getTestUser());
+		Map<String, MutableInt> countMap = agentManagerService.getUserAvailableAgentCountMap(getTestUser());
 		int oriCount = countMap.get(config.getRegion()).intValue();
 
 		AgentInfo agentInfo = new AgentInfo();
@@ -111,7 +106,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		agentInfo.setStatus(AgentControllerState.READY);
 		agentInfo.setApproved(true);
 		agentManagerService.saveAgent(agentInfo);
-		countMap = agentManagerService.getUserAvailableAgentCountMap(regionList, getTestUser());
+		countMap = agentManagerService.getUserAvailableAgentCountMap(getTestUser());
 
 		int newCount = countMap.get(config.getRegion()).intValue();
 		assertThat(newCount, is(oriCount + 1));

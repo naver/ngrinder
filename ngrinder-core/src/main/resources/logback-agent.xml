@@ -5,7 +5,7 @@
 		<file>${LOG_DIRECTORY}/agent.log</file>
  
 		<encoder>
-			<pattern>%d{HH:mm:ss} %-5level %logger{36}  %marker:  %message%n</pattern>
+			<pattern>%d %-5level %logger{36}  %marker:  %message%n</pattern>
 		</encoder>
 
 		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">

@@ -12,7 +12,7 @@
 				</ul>
 				
 				<ul class="nav pull-right">
-					<#if clustered==true>
+					<#if clustered?? && clustered=true>
 						<li style="padding-top:5px"><img src="${req.getContextPath()}/img/cluster_icon.png" title="Cluster Mode" alt="Cluster Mode"></li>  
 						<li class="divider-vertical"></li>
 					</#if>

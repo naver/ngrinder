@@ -150,7 +150,7 @@ public class AgentManagerService {
 	 *            current user
 	 * @return user available agent count map
 	 */
-	public Map<String, MutableInt> getUserAvailableAgentCountMap(List<String> regions, User user) {
+	public Map<String, MutableInt> getUserAvailableAgentCountMap(User user) {
 		int availableShareAgents = 0;
 		int availableUserOwnAgent = 0;
 		String myAgentSuffix = "owned_" + user.getUserId();
@@ -179,7 +179,7 @@ public class AgentManagerService {
 		availableShareAgents = (Math.min(availableShareAgents, maxAgentSizePerConsole));
 
 		Map<String, MutableInt> result = Maps.newHashMap();
-		result.put(Config.NON_REGION, new MutableInt(availableShareAgents + availableUserOwnAgent));
+		result.put(Config.NONE_REGION, new MutableInt(availableShareAgents + availableUserOwnAgent));
 		return result;
 	}
 

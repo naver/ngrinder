@@ -84,7 +84,7 @@
 					<col> 
 					<col> 
 			        <col width="70"> 
-			        <#if controllerRegion.isClusterEnabled>
+			        <#if clustered>
 						<col width="70"> 
 					</#if>	
 					<col width="120">
@@ -101,12 +101,11 @@
 						<th class="nothing"><@spring.message "common.label.status"/></th>
 						<th id="testName"><@spring.message "perfTest.table.testName"/></th>
 						<th id="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
-						<th class="nothing" <#if !(isAdmin??)>title="<@spring.message "perfTest.table.modifier"/>"</#if>>
-						<@spring.message "perfTest.table.creator"/>
+						<th class="nothing"><@spring.message "perfTest.table.modifier"/></th>
 						</th>
-						<#if controllerRegion.isClusterEnabled>
+					<#if clustered>
 						<th id="region"><@spring.message "agent.table.region"/></th>
-						</#if>
+					</#if>
 						<th id="startTime"><@spring.message "perfTest.table.startTime"/></th>
 						<th class="nothing"><@spring.message "perfTest.table.threshold"/></th>
 						<th id="tps"><@spring.message "perfTest.table.tps"/></th> 
@@ -146,12 +145,9 @@
 										<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}">${test.scriptName}</a>
 									</#if>
 								</td>
-								<#if isAdmin??>
-			            			<td class="ellipsis" title="<#if isAdmin??><@spring.message "perfTest.table.creator"/><#else><@spring.message "perfTest.table.modifier"/></#if>" data-content="${test.createdUser.userName}">${test.createdUser.userName}</td>
-			            		<#else>
-			            			<td class="ellipsis" title="<#if isAdmin??><@spring.message "perfTest.table.creator"/><#else><@spring.message "perfTest.table.modifier"/></#if>" data-content="${test.lastModifiedUser.userName}">${test.lastModifiedUser.userName}</td>
-								</#if>
-								<#if controllerRegion.isClusterEnabled>
+		            			<td class="ellipsis" data-original-title="<@spring.message "perfTest.table.modifier"/>" 
+		            				data-content="<@spring.message "perfTest.table.creator"/> : ${test.createdUser.userName}&lt;br&gt; <@spring.message "perfTest.table.modifier"/> : ${test.lastModifiedUser.userName}">${test.lastModifiedUser.userName}</td>
+								<#if clustered>
 									<td class="ellipsis" title="<@spring.message "agent.table.region"/>" data-content="${test.region}">${test.region}</td>
 								</#if>
 								<td>

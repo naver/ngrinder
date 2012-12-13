@@ -50,6 +50,7 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 	public void init() {
 
 		agentManagerService = new ClusteredAgentManagerService() {
+			@SuppressWarnings("serial")
 			@Override
 			public List<AgentInfo> getAllActiveAgentInfoFromDB() {
 				return new ArrayList<AgentInfo>() {
@@ -74,6 +75,19 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 				};
 			}
 
+			@SuppressWarnings("serial")
+			@Override
+			List<String> getRegions() {
+				List<String> regions = new ArrayList<String>() {
+					{
+						add("hello");
+						add("haha");
+						add("wowo");
+					}
+				};
+				return regions;
+			}
+
 			@Override
 			int getMaxAgentSizePerConsole() {
 				return 3;
@@ -89,29 +103,22 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 
 	@Test
 	public void test() {
-		List<String> regions = new ArrayList<String>() {
-			{
-				add("hello");
-				add("haha");
-				add("wowo");
-			}
-		};
+
 		User user = new User();
 		user.setUserId("haha");
-		Map<String, MutableInt> userAvailableAgentCountMap = agentManagerService.getUserAvailableAgentCountMap(regions,
-						user);
+		Map<String, MutableInt> userAvailableAgentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		System.out.println(userAvailableAgentCountMap);
 		assertThat(userAvailableAgentCountMap.containsKey("kiki"), is(false));
 		assertThat(userAvailableAgentCountMap.get("hello").intValue(), is(2));
 		assertThat(userAvailableAgentCountMap.get("haha").intValue(), is(3));
 
 		user.setUserId("wow");
-		userAvailableAgentCountMap = agentManagerService.getUserAvailableAgentCountMap(regions, user);
+		userAvailableAgentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		assertThat(userAvailableAgentCountMap.get("hello").intValue(), is(3));
 		assertThat(userAvailableAgentCountMap.get("haha").intValue(), is(3));
 
 		user.setUserId("my");
-		userAvailableAgentCountMap = agentManagerService.getUserAvailableAgentCountMap(regions, user);
+		userAvailableAgentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		assertThat(userAvailableAgentCountMap.get("hello").intValue(), is(2));
 		assertThat(userAvailableAgentCountMap.get("haha").intValue(), is(4));
 		assertThat(userAvailableAgentCountMap.get("wowo").intValue(), is(3));
