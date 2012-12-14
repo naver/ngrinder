@@ -33,7 +33,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * Dynamic creation of {@link AgentManagerService} depending on the cluster enable or disable.
+ * Dynamic creation of {@link PerfTestService} depending on the cluster enable or disable.
  * 
  * @author JunHo Yoon
  * @since 3.1
@@ -49,9 +49,9 @@ public class PerfTestServiceConfig implements ApplicationContextAware {
 	private ApplicationContext applicationContext;
 
 	/**
-	 * Create agent manager service depending on cluster mode.
+	 * Create PerTest service depending on cluster mode.
 	 * 
-	 * @return {@link AgentManagerService}
+	 * @return {@link PerfTestService}
 	 */
 	@Bean(name = "perfTestService")
 	public PerfTestService perfTestService() {
