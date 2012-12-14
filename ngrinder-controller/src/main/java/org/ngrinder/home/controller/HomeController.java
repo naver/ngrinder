@@ -39,11 +39,13 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
+import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.home.service.HomeService;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
+import org.ngrinder.region.service.RegionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,10 +75,12 @@ public class HomeController extends NGrinderBaseController {
 	private HomeService homeService;
 
 	@Autowired
+	private RegionService regionService;
+
+	@Autowired
 	private Config config;
 
-	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|"
-					+ "Australia|Europe|Indian|Pacific)/.*";
+	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|" + "Australia|Europe|Indian|Pacific)/.*";
 
 	private List<TimeZone> timeZones = null;
 
@@ -102,24 +106,9 @@ public class HomeController extends NGrinderBaseController {
 		});
 	}
 
-	/**
-	 * Home.
-	 * 
-	 * @param user
-	 *            user
-	 * @param exception
-	 *            exception string which will be used to show error.
-	 * @param model
-	 *            model
-	 * @param response
-	 *            {@link HttpServletResponse}
-	 * @param request
-	 *            {@link HttpServletRequest}
-	 * @return "index" if loggined. "login", otherwise.
-	 */
 	@RequestMapping(value = { "/home", "/" })
-	public String home(User user, @RequestParam(value = "exception", defaultValue = "") String exception,
-					ModelMap model, HttpServletResponse response, HttpServletRequest request) {
+	public String home(User user, @RequestParam(value = "exception", defaultValue = "") String exception, ModelMap model,
+			HttpServletResponse response, HttpServletRequest request) {
 		try {
 			Role role = null;
 			try {
@@ -149,12 +138,24 @@ public class HomeController extends NGrinderBaseController {
 		}
 	}
 
+	@ResponseBody
+	@RequestMapping("/check/healthcheck")
+	public String healthcheck() {
+		return regionService.getCurrentRegion();
+	}
+
+	@ResponseBody
+	@RequestMapping("/check/healthcheck_slow")
+	public String healthcheckSlowly(@RequestParam(value = "delay", defaultValue = "1000") int sleep) {
+		ThreadUtil.sleep(sleep);
+		return regionService.getCurrentRegion();
+	}
+
 	private void setLanguage(String lan, HttpServletResponse response, HttpServletRequest request) {
-		LocaleResolver localeResolver = checkNotNull(RequestContextUtils.getLocaleResolver(request),
-						"No LocaleResolver found!");
+		LocaleResolver localeResolver = checkNotNull(RequestContextUtils.getLocaleResolver(request), "No LocaleResolver found!");
 		LocaleEditor localeEditor = new LocaleEditor();
 		localeEditor.setAsText(StringUtils.defaultIfBlank(lan,
-						config.getSystemProperties().getProperty(NGRINDER_PROP_DEFAULT_LANGUAGE, "en")));
+				config.getSystemProperties().getProperty(NGRINDER_PROP_DEFAULT_LANGUAGE, "en")));
 		localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
 	}
 

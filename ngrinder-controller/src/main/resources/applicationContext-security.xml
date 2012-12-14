@@ -60,6 +60,10 @@
 	<http pattern="/login" security="none" />
 	<!-- used for shared test report page -->
 	<http pattern="/test/report/**" security="none" />
+	
+	<!-- accessible from no authorized users -->
+	<http pattern="/check/**" security="none" />
+	<http pattern="/agent/download/**" security="none" />
 
 	<!-- used for svn access -->
 	<http realm="svn" pattern="/svn/**" access-decision-manager-ref="accessDecisionManager">
@@ -74,14 +78,13 @@
 		<intercept-url pattern="/help**" access="A,S,U" />
 		<intercept-url pattern="/script**" access="A,S,U" />
 		<intercept-url pattern="/monitor**" access="A,S,U" />
-
 		<intercept-url pattern="/agent/**" access="A,S" />
 		<intercept-url pattern="/user/**" access="A,S,U" />
 		<custom-filter ref="pluggablePreAuthFilter" position="PRE_AUTH_FILTER"/>
 		<custom-filter ref="customFilter" position="FORM_LOGIN_FILTER" />
 
 		<!-- logout to home, and then it will redirect to login. otherwise, there will be some ajax problem. -->
-		<logout logout-success-url="/" logout-url="/logout" delete-cookies="JSESSIONID" invalidate-session="true" />
+		<logout logout-success-url="/" logout-url="/logout" delete-cookies="JSESSIONID"  invalidate-session="true" />
 
 		<session-management invalid-session-url="/login" session-fixation-protection="newSession" />
 
