@@ -422,7 +422,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 					BufferedWriter bw = monitorRecordWriterMap.get(targetIP);
 					monitorClientsMap.get(targetIP).recordMonitorData(bw);
 				}
-
+				if (singleConsole.getAllAttachedAgentsCount() == 0) {
+					perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING,
+									"All agents are unexpectively lost.");
+				}
 				perfTestService.saveAgentsInfo(singleConsole, perfTest);
 				perfTestService.saveStatistics(singleConsole, perfTest);
 

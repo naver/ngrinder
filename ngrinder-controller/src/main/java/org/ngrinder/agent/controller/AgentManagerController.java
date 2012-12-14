@@ -38,7 +38,6 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -78,7 +77,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	 */
 	@RequestMapping({ "", "/", "/list" })
 	public String getAgentList(ModelMap model) {
-		List<AgentInfo> agents = agentManagerService.getAllActiveAgentInfoFromDB();
+		List<AgentInfo> agents = agentManagerService.getAllVisibleAgentInfoFromDB();
 		model.addAttribute("agents", agents);
 
 		File directory = config.getHome().getDownloadDirectory();
@@ -178,10 +177,8 @@ public class AgentManagerController extends NGrinderBaseController {
 					@RequestParam String name) {
 		Map<String, Object> returnMap = new HashMap<String, Object>(3);
 		agentManagerService.requestShareAgentSystemDataModel(id);
-		SystemDataModel systemData = agentManagerService.getAgentSystemDataModel(ip, name);
-		systemData = systemData != null ? systemData : new SystemDataModel();
 		returnMap.put(JSON_SUCCESS, true);
-		returnMap.put("systemData", systemData);
+		returnMap.put("systemData", agentManagerService.getAgentSystemDataModel(ip, name));
 		return toJson(returnMap);
 	}
 

@@ -23,6 +23,7 @@
 package org.ngrinder.agent.service;
 
 import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
+import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.TypeConvertUtil.convert;
 
@@ -138,7 +139,7 @@ public class AgentManagerService {
 		// step2. check all attached agents, whether they are new, and not saved
 		// in DB.
 		for (AgentControllerIdentityImplementation agentIdentity : attachedAgentMap.values()) {
-			changeAgents.add(fillUpAgentInfo(new AgentInfo(), agentIdentity));
+			changeAgents.add(fillUp(new AgentInfo(), agentIdentity));
 		}
 
 		// step3. update into DB
@@ -223,11 +224,15 @@ public class AgentManagerService {
 	}
 
 	public String createAgentKey(AgentInfo agentInfo) {
-		return agentInfo.getIp() + "_" + agentInfo.getName();
+		return createAgentKey(agentInfo.getIp(), agentInfo.getName());
 	}
 
 	public String createAgentKey(AgentControllerIdentityImplementation agentIdentity) {
-		return agentIdentity.getIp() + "_" + agentIdentity.getName();
+		return createAgentKey(agentIdentity.getIp(), agentIdentity.getName());
+	}
+
+	protected String createAgentKey(String ip, String name) {
+		return ip + "_" + name;
 	}
 
 	/**
@@ -242,9 +247,9 @@ public class AgentManagerService {
 	public AgentControllerIdentityImplementation getLocalAgentIdentityByIpAndName(String ip, String name) {
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
-			AgentControllerIdentityImplementation convert = convert(eachAgentIdentity);
-			if (StringUtils.equals(ip, convert.getIp()) && StringUtils.equals(name, convert.getName())) {
-				return convert;
+			AgentControllerIdentityImplementation agentIdentity = convert(eachAgentIdentity);
+			if (StringUtils.equals(ip, agentIdentity.getIp()) && StringUtils.equals(name, agentIdentity.getName())) {
+				return agentIdentity;
 			}
 		}
 		return null;
@@ -271,23 +276,33 @@ public class AgentManagerService {
 		return getAgentRepository().findAll(active());
 	}
 
+	/**
+	 * Get all visible agents from DB.
+	 * 
+	 * @return agent list
+	 */
+	public List<AgentInfo> getAllVisibleAgentInfoFromDB() {
+		return getAgentRepository().findAll(visible());
+	}
+
 	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation agentIdentity,
 					Map<String, AgentInfo> agentInfoMap) {
 		AgentInfo agentInfo = agentInfoMap.get(createAgentKey(agentIdentity));
 		if (agentInfo == null) {
 			agentInfo = new AgentInfo();
 		}
-		return fillUpAgentInfo(agentInfo, agentIdentity);
+		return fillUp(agentInfo, agentIdentity);
 	}
 
-	protected AgentInfo fillUpAgentInfo(AgentInfo agentInfo, AgentControllerIdentityImplementation agentIdentity) {
+	protected AgentInfo fillUp(AgentInfo agentInfo, AgentControllerIdentityImplementation agentIdentity) {
 		if (agentIdentity != null) {
 			agentInfo.setAgentIdentity(agentIdentity);
 			agentInfo.setName(agentIdentity.getName());
 			agentInfo.setRegion(agentIdentity.getRegion());
 			agentInfo.setIp(agentIdentity.getIp());
-			agentInfo.setPort(getAgentManager().getAgentConnectingPort(agentIdentity));
-			agentInfo.setStatus(getAgentManager().getAgentState(agentIdentity));
+			AgentManager agentManager = getAgentManager();
+			agentInfo.setPort(agentManager.getAgentConnectingPort(agentIdentity));
+			agentInfo.setStatus(agentManager.getAgentState(agentIdentity));
 		}
 		return agentInfo;
 	}
@@ -307,7 +322,7 @@ public class AgentManagerService {
 		if (includeAgentIndentity) {
 			AgentControllerIdentityImplementation agentIdentityByIp = getLocalAgentIdentityByIpAndName(findOne.getIp(),
 							findOne.getName());
-			return fillUpAgentInfo(findOne, agentIdentityByIp);
+			return fillUp(findOne, agentIdentityByIp);
 		} else {
 			return findOne;
 		}
@@ -388,7 +403,8 @@ public class AgentManagerService {
 	 * @return {@link SystemDataModel} instance.
 	 */
 	public SystemDataModel getAgentSystemDataModel(String ip, String name) {
-		return getAgentManager().getSystemDataModel(getLocalAgentIdentityByIpAndName(ip, name));
+		AgentControllerIdentityImplementation agentIdentity = getLocalAgentIdentityByIpAndName(ip, name);
+		return agentIdentity != null ? getAgentManager().getSystemDataModel(agentIdentity) : new SystemDataModel();
 	}
 
 	AgentManager getAgentManager() {
@@ -414,4 +430,5 @@ public class AgentManagerService {
 	void setConfig(Config config) {
 		this.config = config;
 	}
+
 }

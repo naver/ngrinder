@@ -53,9 +53,8 @@ public abstract class AgentManagerSpecification {
 		return new Specification<AgentInfo>() {
 			@Override
 			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-				String queryStr = region + "_%";
 				Expression<String> regionField = root.get("region").as(String.class);
-				return cb.or(cb.like(regionField, queryStr), cb.equal(regionField, region));
+				return cb.or(cb.like(regionField, region + "_%"), cb.equal(regionField, region));
 			}
 		};
 	}
@@ -66,6 +65,24 @@ public abstract class AgentManagerSpecification {
 	 * @return Specification of this query
 	 */
 	public static Specification<AgentInfo> active() {
+		return new Specification<AgentInfo>() {
+			@Override
+			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+				Expression<AgentControllerState> status = root.get("status").as(AgentControllerState.class);
+				return cb.and(cb.notEqual(status, AgentControllerState.INACTIVE),
+								cb.notEqual(status, AgentControllerState.UNKNOWN),
+								cb.notEqual(status, AgentControllerState.WRONG_REGION));
+			}
+		};
+	}
+
+	/**
+	 * Query specification which the status is visible. visible means.. it's visible in the agent
+	 * monitor.
+	 * 
+	 * @return Specification of this query
+	 */
+	public static Specification<AgentInfo> visible() {
 		return new Specification<AgentInfo>() {
 			@Override
 			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {

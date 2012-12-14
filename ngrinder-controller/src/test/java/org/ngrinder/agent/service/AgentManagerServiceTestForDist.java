@@ -77,7 +77,7 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 
 			@SuppressWarnings("serial")
 			@Override
-			List<String> getRegions() {
+			protected List<String> getRegions() {
 				List<String> regions = new ArrayList<String>() {
 					{
 						add("hello");

@@ -22,6 +22,8 @@
  */
 package org.ngrinder.common.util;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -53,5 +55,13 @@ public abstract class CollectionUtils {
 			newSet.add(each);
 		}
 		return newSet;
+	}
+
+	public static <K, V> HashMap<K, V> newHashMap(int size) {
+		return new HashMap<K, V>(size);
+	}
+
+	public static <K, V> HashMap<K, V> newHashMap(Collection<?> base) {
+		return new HashMap<K, V>(base.size());
 	}
 }

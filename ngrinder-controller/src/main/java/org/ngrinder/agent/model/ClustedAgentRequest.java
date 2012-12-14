@@ -27,10 +27,9 @@ import java.io.Serializable;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 
 import org.ngrinder.agent.service.ClusteredAgentManagerService;
-import org.ngrinder.perftest.service.AgentManager;
 
 /**
- * Agent related Request.
+ * Agent control request b/w controllers.
  * 
  * @author JunHo Yoon
  * @since 3.1
@@ -42,8 +41,6 @@ public class ClustedAgentRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private RequestType requestType;
-
-	private final Long agentId;
 
 	private final String agentIp;
 
@@ -57,18 +54,16 @@ public class ClustedAgentRequest implements Serializable {
 	public enum RequestType {
 		STOP_AGENT {
 			@Override
-			public void process(Long agentId, String agentIp, AgentManager agentManager,
-							ClusteredAgentManagerService agentManagerService,
+			public void process(ClusteredAgentManagerService agentManagerService,
 							AgentControllerIdentityImplementation agentIdentity) {
-				agentManager.stopAgent(agentIdentity);
+				agentManagerService.stopAgent(agentIdentity);
 			}
 		},
 		SHARE_AGENT_SYSTEM_DATA_MODEL {
 			@Override
-			public void process(Long agentId, String agentIp, AgentManager agentManager,
-							ClusteredAgentManagerService agentManagerService,
+			public void process(ClusteredAgentManagerService agentManagerService,
 							AgentControllerIdentityImplementation agentIdentity) {
-				agentManagerService.addAgentMonitoringTarget(agentId, agentIp, agentIdentity);
+				agentManagerService.addAgentMonitoringTarget(agentIdentity);
 			}
 		};
 
@@ -78,28 +73,26 @@ public class ClustedAgentRequest implements Serializable {
 		/**
 		 * Process the request.
 		 * 
-		 * @param agentManager
-		 *            agentManager
 		 * @param agentManagerService
 		 *            agentManagerService
 		 * @param agentIdentity
 		 *            agentIdentity
 		 */
-		public abstract void process(Long agentId, String agentIp, AgentManager agentManager,
-						ClusteredAgentManagerService agentManagerService,
+		public abstract void process(ClusteredAgentManagerService agentManagerService,
 						AgentControllerIdentityImplementation agentIdentity);
 	}
 
 	/**
 	 * Constructor.
 	 * 
-	 * @param agentId
-	 *            agent id
+	 * @param agentIp
+	 *            agent ip
+	 * @param agentName
+	 *            agent name
 	 * @param requestType
 	 *            request type
 	 */
-	public ClustedAgentRequest(Long agentId, String agentIp, String agentName, RequestType requestType) {
-		this.agentId = agentId;
+	public ClustedAgentRequest(String agentIp, String agentName, RequestType requestType) {
 		this.agentIp = agentIp;
 		this.agentName = agentName;
 		this.requestType = requestType;
@@ -111,10 +104,6 @@ public class ClustedAgentRequest implements Serializable {
 
 	public void setRequestType(RequestType requestType) {
 		this.requestType = requestType;
-	}
-
-	public Long getAgentId() {
-		return agentId;
 	}
 
 	public String getAgentIp() {

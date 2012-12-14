@@ -1160,7 +1160,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @return true if it's over.
 	 */
 	public boolean isCurrentRunningTimeOverDuration(long duration) {
-		return getCurrentRunningTime() > (duration + TEST_DURATION_CHECK_MARGIN);
+		return getCurrentRunningTime() > (duration);
 	}
 
 	/*

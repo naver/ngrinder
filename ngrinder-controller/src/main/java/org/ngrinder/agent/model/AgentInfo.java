@@ -208,4 +208,5 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}
+
 }
