@@ -79,7 +79,7 @@ public interface NGrinderConstants {
 	 * Maximum waiting seconds until all agents are connected.
 	 */
 	public static final String NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS = "ngrinder."
-					+ "consoleMaxWaitingMilliseconds";
+					+ "max.waitingmilliseconds";
 
 	/**
 	 * Maximum waiting seconds until all agents are connected.
