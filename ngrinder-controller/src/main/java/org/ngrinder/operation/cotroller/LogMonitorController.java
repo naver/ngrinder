@@ -43,10 +43,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * Log monitor controller.
  * 
- * This class runs with {@link Tailer} implementation. Whenever the underlying
- * log file is changed. this class gets the changes. and keep them(max 10000
- * byte) in the memory. Whenever user requests the log, it returns latest
- * changes with the index of the log.
+ * This class runs with {@link Tailer} implementation. Whenever the underlying log file is changed.
+ * this class gets the changes. and keep them(max 10000 byte) in the memory. Whenever user requests
+ * the log, it returns latest changes with the index of the log.
+ * 
+ * This is only available in the non-clustered instance.
  * 
  * @author JunHo Yoon
  * 
@@ -74,7 +75,9 @@ public class LogMonitorController extends NGrinderBaseController {
 	 */
 	@PostConstruct
 	public void init() {
-		initTailer();
+		if (!clustered()) {
+			initTailer();
+		}
 		commonResponseHeaders = new HttpHeaders();
 		commonResponseHeaders.set("content-type", "application/json; charset=UTF-8");
 		commonResponseHeaders.setPragma("no-cache");
@@ -118,12 +121,8 @@ public class LogMonitorController extends NGrinderBaseController {
 	 * @return log file
 	 */
 	File getLogFile() {
-		String logFileName;
-		if (getConfig().isCluster()) {
-			logFileName = "ngrinder_" + getConfig().getRegion() + ".log";
-		} else {
-			logFileName = "ngrinder.log";
-		}
+		String logFileName = "ngrinder.log";
+
 		return new File(getConfig().getHome().getGloablLogFile(), logFileName);
 	}
 
@@ -132,7 +131,9 @@ public class LogMonitorController extends NGrinderBaseController {
 	 */
 	@PreDestroy
 	public void destroy() {
-		tailer.stop();
+		if (!clustered()) {
+			tailer.stop();
+		}
 	}
 
 	/**
