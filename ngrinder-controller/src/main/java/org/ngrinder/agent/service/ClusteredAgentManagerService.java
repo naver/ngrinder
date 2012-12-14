@@ -134,46 +134,45 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		List<AgentInfo> deleteAgentList = new ArrayList<AgentInfo>();
 		String currentRegion = getConfig().getRegion();
 		List<String> regionList = getRegions();
-		
+
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
-		Map<String, AgentControllerIdentityImplementation> attachedAgentMap =
-				new HashMap<String, AgentControllerIdentityImplementation>(allAttachedAgents.size());
+		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = new HashMap<String, AgentControllerIdentityImplementation>(
+						allAttachedAgents.size());
 		for (AgentIdentity agentIdentity : allAttachedAgents) {
-			AgentControllerIdentityImplementation agentControllerIdentity = 
-					(AgentControllerIdentityImplementation) agentIdentity;
+			AgentControllerIdentityImplementation agentControllerIdentity = (AgentControllerIdentityImplementation) agentIdentity;
 			attachedAgentMap.put(createAgentKey(agentControllerIdentity), agentControllerIdentity);
 		}
 
 		List<AgentInfo> agentsInDB = getAgentRepository().findAll();
 		Map<String, AgentInfo> agentsInDBMap = new HashMap<String, AgentInfo>(agentsInDB.size());
-		//step1. check all agents in DB, whether they are attached to controller.
+		// step1. check all agents in DB, whether they are attached to controller.
 		for (AgentInfo agentInfoInDB : agentsInDB) {
 			String keyOfAgentInDB = createAgentKey(agentInfoInDB);
 			agentsInDBMap.put(keyOfAgentInDB, agentInfoInDB);
 			AgentControllerIdentityImplementation agentIdt = attachedAgentMap.get(keyOfAgentInDB);
 			String regionOfAgentInDB = extractRegionFromAgentRegion(agentInfoInDB.getRegion());
-			
-			if (agentIdt != null) {//if the agent attached to current controller
+
+			if (agentIdt != null) {// if the agent attached to current controller
 				if (StringUtils.equals(regionOfAgentInDB, currentRegion)) {
 					fillUpAgentInfo(agentInfoInDB, agentIdt);
 					changeAgentList.add(agentInfoInDB);
-				} else { //the region config is wrong
+				} else { // the region config is wrong
 					agentInfoInDB.setStatus(AgentControllerState.UNKNOWN);
 					changeAgentList.add(agentInfoInDB);
 				}
 			} else { // the agent in DB is not attached to current controller
 				if (StringUtils.equals(regionOfAgentInDB, currentRegion)) {
-					//the agent WAS attached to this controller before, but it is down.
+					// the agent WAS attached to this controller before, but it is down.
 					agentInfoInDB.setStatus(AgentControllerState.INACTIVE);
 					changeAgentList.add(agentInfoInDB);
 				} else if (!regionList.contains(regionOfAgentInDB)) {
-					//this agent in DB 's region is not in any region
+					// this agent in DB 's region is not in any region
 					deleteAgentList.add(agentInfoInDB);
 				}
 			}
 		}
-		
-		//step2. check all attached agents, whether they are new, and not saved in DB.
+
+		// step2. check all attached agents, whether they are new, and not saved in DB.
 		for (String agentIdentityKey : attachedAgentMap.keySet()) {
 			if (!agentsInDBMap.containsKey(agentIdentityKey)) {
 				AgentControllerIdentityImplementation agentIdt = attachedAgentMap.get(agentIdentityKey);
@@ -187,8 +186,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 				}
 			}
 		}
-		
-		//step3. update into DB
+
+		// step3. update into DB
 		getAgentRepository().save(changeAgentList);
 		getAgentRepository().delete(deleteAgentList);
 	}
@@ -340,7 +339,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 	@Override
 	public SystemDataModel getAgentSystemDataModel(String ip, String name) {
-		ValueWrapper valueWrapper = agentMonitorCache.get(ip);
+		ValueWrapper valueWrapper = agentMonitorCache.get(ip + "_" + name);
 		return valueWrapper == null ? new SystemDataModel() : (SystemDataModel) valueWrapper.get();
 	}
 

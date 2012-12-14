@@ -30,7 +30,9 @@
 			            		<li class="divider"/> 
 		               			<li><a href="${req.getContextPath()}/user/list"><@spring.message "navigator.dropdown.userManagement"/></a></li>
 				                <li><a href="${req.getContextPath()}/agent/list"><@spring.message "navigator.dropdown.agentManagement"/></a></li>
-				                <li><a href="${req.getContextPath()}/operation/log"><@spring.message "navigator.dropdown.logMonitoring"/></a></li>
+							<#if clustered == false>
+				            	<li><a href="${req.getContextPath()}/operation/log"><@spring.message "navigator.dropdown.logMonitoring"/></a></li>
+				            </#if>
 				                <li><a href="${req.getContextPath()}/operation/scriptConsole"><@spring.message "navigator.dropdown.scriptConsole"/></a></li>  
 			                	<li><a href="${req.getContextPath()}/operation/systemConfig"><@spring.message "navigator.dropdown.systemConfig"/></a></li>
 			            	</@security.authorize>

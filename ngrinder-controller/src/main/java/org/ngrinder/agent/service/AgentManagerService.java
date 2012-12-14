@@ -23,6 +23,7 @@
 package org.ngrinder.agent.service;
 
 import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.TypeConvertUtil.convert;
 
 import java.util.ArrayList;
@@ -170,13 +171,13 @@ public class AgentManagerService {
 
 			// It's my own agent
 			if (fullRegion.endsWith(myAgentSuffix)) {
-				//availableShareAgents++;
+				// availableShareAgents++;
 				availableUserOwnAgent++;
 			} else if (fullRegion.contains("owned_")) {
 				// If it's the others agent.. skip..
 				continue;
 			} else {
-				//availableUserOwnAgent++;
+				// availableUserOwnAgent++;
 				availableShareAgents++;
 			}
 		}
@@ -374,7 +375,7 @@ public class AgentManagerService {
 	 *            agent id.
 	 */
 	public void requestShareAgentSystemDataModel(Long id) {
-
+		noOp();
 	}
 
 	/**

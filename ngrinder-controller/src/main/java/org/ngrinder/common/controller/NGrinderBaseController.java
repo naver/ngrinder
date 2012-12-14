@@ -31,6 +31,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.operation.service.AnnouncementService;
@@ -223,8 +224,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 		return gson.toJson(map);
 	}
 
-	@ExceptionHandler({ RuntimeException.class })
-	public ModelAndView handleException(RuntimeException e) {
+	@ExceptionHandler({ NGrinderRuntimeException.class })
+	public ModelAndView handleException(NGrinderRuntimeException e) {
 		ModelAndView modelAndView = new ModelAndView("forward:/");
 		modelAndView.addObject("exception", e.getMessage());
 		return modelAndView;

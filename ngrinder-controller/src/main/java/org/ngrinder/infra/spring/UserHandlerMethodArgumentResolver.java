@@ -90,7 +90,7 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 
 		if (StringUtils.isNotBlank(userParam) && currentUser.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
 			return getUserService().getUserById(userParam);
-		}
+		} 
 
 		if (currentUser.getUserId().equals(switchUserId)) {
 			currentUser.setOwnerUser(null);
