@@ -102,6 +102,15 @@ public class RegionService {
 	}
 
 	/**
+	 * Get current region. This method returns where this service is running.
+	 * 
+	 * @return current region.
+	 */
+	public String getCurrentRegion() {
+		return config.getRegion();
+	}
+
+	/**
 	 * Get region list of all clustered controller.
 	 * 
 	 * @return region list
