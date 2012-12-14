@@ -25,6 +25,7 @@ package org.ngrinder.agent.service;
 import org.ngrinder.infra.config.Config;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -55,8 +56,8 @@ public class AgentManagerServiceConfig implements ApplicationContextAware {
 	 */
 	@Bean(name = "agentManagerService")
 	public AgentManagerService agentManagerService() {
-		AgentManagerService createBean = applicationContext.getAutowireCapableBeanFactory().createBean(
-						config.isCluster() ? ClusteredAgentManagerService.class : AgentManagerService.class);
+		AgentManagerService createBean = (AgentManagerService)applicationContext.getAutowireCapableBeanFactory().autowire(
+						config.isCluster() ? ClusteredAgentManagerService.class : AgentManagerService.class,AutowireCapableBeanFactory.AUTOWIRE_BY_NAME,true);
 		return createBean;
 	}
 
