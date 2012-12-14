@@ -151,31 +151,40 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			String keyOfAgentInDB = createAgentKey(agentInfoInDB);
 			agentsInDBMap.put(keyOfAgentInDB, agentInfoInDB);
 			AgentControllerIdentityImplementation agentIdt = attachedAgentMap.get(keyOfAgentInDB);
-			if (agentInfoInDB.getRegion().startsWith(currentRegion)) {
-				if (agentIdt == null) {
-					// this agent is not attached to controller
-					agentInfoInDB.setStatus(AgentControllerState.INACTIVE);
+			String regionOfAgentInDB = extractRegionFromAgentRegion(agentInfoInDB.getRegion());
+			
+			if (agentIdt != null) {//if the agent attached to current controller
+				if (StringUtils.equals(regionOfAgentInDB, currentRegion)) {
+					fillUpAgentInfo(agentInfoInDB, agentIdt);
 					changeAgentList.add(agentInfoInDB);
-				} else {
-					agentInfoInDB.setStatus(getAgentManager().getAgentState(agentIdt));
-					agentInfoInDB.setAgentIdentity(agentIdt);
+				} else { //the region config is wrong
+					agentInfoInDB.setStatus(AgentControllerState.UNKNOWN);
 					changeAgentList.add(agentInfoInDB);
 				}
-			} else if (!regionList.contains(agentInfoInDB.getRegion())){
-				//for agent not in any region anymore, just delete it.
-				deleteAgentList.add(agentInfoInDB);
-			} else if (agentIdt != null) {
-				// if the agent which is attached to current controller, but the record in DB has different region,
-				// it means this agent's region is changed. Then just update the record in DB
-				fillUpAgentInfo(agentInfoInDB, agentIdt);
-				changeAgentList.add(agentInfoInDB);
+			} else { // the agent in DB is not attached to current controller
+				if (StringUtils.equals(regionOfAgentInDB, currentRegion)) {
+					//the agent WAS attached to this controller before, but it is down.
+					agentInfoInDB.setStatus(AgentControllerState.INACTIVE);
+					changeAgentList.add(agentInfoInDB);
+				} else if (!regionList.contains(regionOfAgentInDB)) {
+					//this agent in DB 's region is not in any region
+					deleteAgentList.add(agentInfoInDB);
+				}
 			}
 		}
 		
 		//step2. check all attached agents, whether they are new, and not saved in DB.
 		for (String agentIdentityKey : attachedAgentMap.keySet()) {
 			if (!agentsInDBMap.containsKey(agentIdentityKey)) {
-				changeAgentList.add(fillUpAgentInfo(new AgentInfo(), attachedAgentMap.get(agentIdentityKey)));
+				AgentControllerIdentityImplementation agentIdt = attachedAgentMap.get(agentIdentityKey);
+				String regionOfAgent = extractRegionFromAgentRegion(agentIdt.getRegion());
+				if (StringUtils.equals(regionOfAgent, currentRegion)) {
+					changeAgentList.add(fillUpAgentInfo(new AgentInfo(), agentIdt));
+				} else {
+					AgentInfo unknownAgt = fillUpAgentInfo(new AgentInfo(), agentIdt);
+					unknownAgt.setStatus(AgentControllerState.UNKNOWN);
+					changeAgentList.add(unknownAgt);
+				}
 			}
 		}
 		
