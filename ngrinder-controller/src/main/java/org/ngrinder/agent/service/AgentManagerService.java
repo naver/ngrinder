@@ -27,6 +27,7 @@ import static org.ngrinder.common.util.TypeConvertUtil.convert;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -169,12 +170,14 @@ public class AgentManagerService {
 
 			// It's my own agent
 			if (fullRegion.endsWith(myAgentSuffix)) {
-				availableShareAgents++;
+				//availableShareAgents++;
+				availableUserOwnAgent++;
 			} else if (fullRegion.contains("owned_")) {
 				// If it's the others agent.. skip..
 				continue;
 			} else {
-				availableUserOwnAgent++;
+				//availableUserOwnAgent++;
+				availableShareAgents++;
 			}
 		}
 
@@ -182,7 +185,7 @@ public class AgentManagerService {
 
 		availableShareAgents = (Math.min(availableShareAgents, maxAgentSizePerConsole));
 
-		Map<String, MutableInt> result = Maps.newHashMap();
+		Map<String, MutableInt> result = new HashMap<String, MutableInt>(1);
 		result.put(Config.NONE_REGION, new MutableInt(availableShareAgents + availableUserOwnAgent));
 		return result;
 	}

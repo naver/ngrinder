@@ -829,13 +829,13 @@ function changeAgentMaxCount(region) {
 	if (count === undefined) {
 		count = 0;
 	}
-	var maxAgentCount = $("#maxAgentCount");
-	var agentCountObj = $("#agentCount");
-	agentCountObj.rules("add", {
+	var $maxAgentCount = $("#maxAgentCount");
+	var $agentCountObj = $("#agentCount");
+	$agentCountObj.rules("add", {
 		max:count
 	});
-	maxAgentCount.text(count);
-	agentCountObj.valid();
+	$maxAgentCount.text(count);
+	$agentCountObj.valid();
 }
 
 function buildTagString() {

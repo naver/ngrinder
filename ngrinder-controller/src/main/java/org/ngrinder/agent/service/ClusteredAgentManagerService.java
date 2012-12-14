@@ -25,7 +25,7 @@ package org.ngrinder.agent.service;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithRegion;
 import static org.ngrinder.common.util.TypeConvertUtil.convert;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,11 +58,6 @@ import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 
 /**
  * Cluster enabled version of {@link AgentManagerService}.
@@ -135,79 +130,64 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 * @since 3.1
 	 */
 	public void checkAgentStatus() {
-		List<AgentInfo> changeAgents = Lists.newArrayList();
-
+		List<AgentInfo> changeAgentList = new ArrayList<AgentInfo>();
+		List<AgentInfo> deleteAgentList = new ArrayList<AgentInfo>();
+		String currentRegion = getConfig().getRegion();
+		List<String> regionList = getRegions();
+		
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
-		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = Maps.newHashMap();
+		Map<String, AgentControllerIdentityImplementation> attachedAgentMap =
+				new HashMap<String, AgentControllerIdentityImplementation>(allAttachedAgents.size());
 		for (AgentIdentity agentIdentity : allAttachedAgents) {
-			AgentControllerIdentityImplementation agentControllerIdentity = convert(agentIdentity);
+			AgentControllerIdentityImplementation agentControllerIdentity = 
+					(AgentControllerIdentityImplementation) agentIdentity;
 			attachedAgentMap.put(createAgentKey(agentControllerIdentity), agentControllerIdentity);
 		}
 
-		String region = getConfig().getRegion();
-		// If region is not specified retrieved all
-		List<AgentInfo> agentsInDB = getAgentRepository().findAll(startWithRegion(region));
-
-		Multimap<String, AgentInfo> agentInDBMap = ArrayListMultimap.create();
-		// step1. check all agents in DB, whether they are attached to
-		// controller.
-		for (AgentInfo each : agentsInDB) {
-			agentInDBMap.put(createAgentKey(each), each);
-		}
-
-		List<AgentInfo> agentsToBeDeleted = Lists.newArrayList();
-		for (String entryKey : agentInDBMap.keySet()) {
-			Collection<AgentInfo> collection = agentInDBMap.get(entryKey);
-			int count = 0;
-			AgentInfo interestingAgentInfo = null;
-			for (AgentInfo each : collection) {
-				// Just select one element and delete others.
-				if (count++ == 0) {
-					interestingAgentInfo = each;
+		List<AgentInfo> agentsInDB = getAgentRepository().findAll();
+		Map<String, AgentInfo> agentsInDBMap = new HashMap<String, AgentInfo>(agentsInDB.size());
+		//step1. check all agents in DB, whether they are attached to controller.
+		for (AgentInfo agentInfoInDB : agentsInDB) {
+			String keyOfAgentInDB = createAgentKey(agentInfoInDB);
+			agentsInDBMap.put(keyOfAgentInDB, agentInfoInDB);
+			AgentControllerIdentityImplementation agentIdt = attachedAgentMap.get(keyOfAgentInDB);
+			if (agentInfoInDB.getRegion().startsWith(currentRegion)) {
+				if (agentIdt == null) {
+					// this agent is not attached to controller
+					agentInfoInDB.setStatus(AgentControllerState.INACTIVE);
+					changeAgentList.add(agentInfoInDB);
 				} else {
-					agentsToBeDeleted.add(each);
+					agentInfoInDB.setStatus(getAgentManager().getAgentState(agentIdt));
+					agentInfoInDB.setAgentIdentity(agentIdt);
+					changeAgentList.add(agentInfoInDB);
 				}
+			} else if (!regionList.contains(agentInfoInDB.getRegion())){
+				//for agent not in any region anymore, just delete it.
+				deleteAgentList.add(agentInfoInDB);
+			} else if (agentIdt != null) {
+				// if the agent which is attached to current controller, but the record in DB has different region,
+				// it means this agent's region is changed. Then just update the record in DB
+				fillUpAgentInfo(agentInfoInDB, agentIdt);
+				changeAgentList.add(agentInfoInDB);
 			}
-			if (interestingAgentInfo == null) {
-				continue;
-			}
-
-			AgentControllerIdentityImplementation agentIdentity = attachedAgentMap.remove(entryKey);
-			if (agentIdentity == null) {
-				// this agent is not attached to controller
-				interestingAgentInfo.setStatus(AgentControllerState.INACTIVE);
-			} else {
-				interestingAgentInfo.setStatus(getAgentManager().getAgentState(agentIdentity));
-				interestingAgentInfo.setRegion(agentIdentity.getRegion());
-				interestingAgentInfo.setPort(getAgentManager().getAgentConnectingPort(agentIdentity));
-			}
-			changeAgents.add(interestingAgentInfo);
 		}
-
-		// step2. check all attached agents, whether they are new, and not saved
-		// in DB.
+		
+		//step2. check all attached agents, whether they are new, and not saved in DB.
+		for (String agentIdentityKey : attachedAgentMap.keySet()) {
+			if (!agentsInDBMap.containsKey(agentIdentityKey)) {
+				changeAgentList.add(fillUpAgentInfo(new AgentInfo(), attachedAgentMap.get(attachedAgentMap)));
+			}
+		}
+		
 		for (AgentControllerIdentityImplementation agentIdentity : attachedAgentMap.values()) {
-			if (StringUtils.equals(region, agentIdentity.getRegion())) {
-				changeAgents.add(fillUpAgentInfo(new AgentInfo(), agentIdentity));
-			} else {
-				// If
-				AgentInfo findByIpAndHostName = getAgentRepository().findByIpAndHostName(agentIdentity.getIp(),
-								agentIdentity.getName());
-				if (findByIpAndHostName != null) {
-					findByIpAndHostName.setStatus(AgentControllerState.UNKNOWN);
-					changeAgents.add(findByIpAndHostName);
-				} else {
-					AgentInfo fillUpAgentInfo = fillUpAgentInfo(new AgentInfo(), agentIdentity);
-					fillUpAgentInfo.setApproved(false);
-					fillUpAgentInfo.setStatus(AgentControllerState.UNKNOWN);
-					changeAgents.add(fillUpAgentInfo);
-				}
+			if (!agentsInDBMap.containsKey(createAgentKey(agentIdentity))) {
+				changeAgentList.add(fillUpAgentInfo(new AgentInfo(), agentIdentity));
 			}
 		}
-
-		// step3. update into DB
-		getAgentRepository().save(changeAgents);
-		getAgentRepository().delete(agentsToBeDeleted);
+		
+		//step3. update into DB
+		getAgentRepository().save(changeAgentList);
+		getAgentRepository().delete(deleteAgentList);
 	}
 
 	/**
@@ -258,7 +238,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 			String fullRegion = agentInfo.getRegion();
 			String region = extractRegionFromAgentRegion(fullRegion);
-			if (StringUtils.isBlank(region)) {
+			if (StringUtils.isBlank(region) || !StringUtils.equals(region, getConfig().getRegion())) {
 				continue;
 			}
 			// It's my own agent
