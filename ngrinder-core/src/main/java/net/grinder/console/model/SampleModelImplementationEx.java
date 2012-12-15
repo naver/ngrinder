@@ -1,3 +1,16 @@
+/* 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
+ */
 package net.grinder.console.model;
 
 import java.util.Collection;
@@ -28,10 +41,9 @@ import net.grinder.util.ListenerSupport;
  * <p>
  * NHN Customized version
  * 
- * When notifying listeners of changes to the number of tests we send copies of
- * the new index arrays. This helps because most listeners are Swing dispatched
- * and so can't guarantee the model is in a reasonable state when they call
- * back.
+ * When notifying listeners of changes to the number of tests we send copies of the new index
+ * arrays. This helps because most listeners are Swing dispatched and so can't guarantee the model
+ * is in a reasonable state when they call back.
  * </p>
  * 
  * @author JunHo Yoon
@@ -52,8 +64,7 @@ public class SampleModelImplementationEx implements SampleModel {
 	private final String m_unknownTestString;
 
 	/**
-	 * The current test set. A TreeSet is used to maintain the test order.
-	 * Guarded by itself.
+	 * The current test set. A TreeSet is used to maintain the test order. Guarded by itself.
 	 */
 	private final Set<Test> m_tests = new TreeSet<Test>();
 
@@ -71,7 +82,7 @@ public class SampleModelImplementationEx implements SampleModel {
 	 * A {@link SampleAccumulator} for each test. Guarded by itself.
 	 */
 	private final Map<Test, SampleAccumulator> m_accumulators = Collections
-			.synchronizedMap(new HashMap<Test, SampleAccumulator>());
+					.synchronizedMap(new HashMap<Test, SampleAccumulator>());
 
 	// Guarded by this.
 	private InternalState m_state;
@@ -94,7 +105,7 @@ public class SampleModelImplementationEx implements SampleModel {
 	 *                if an error occurs
 	 */
 	public SampleModelImplementationEx(ConsoleProperties properties, StatisticsServices statisticsServices,
-			Timer timer, Resources resources, ErrorHandler errorHandler) throws GrinderException {
+					Timer timer, Resources resources, ErrorHandler errorHandler) throws GrinderException {
 
 		m_properties = properties;
 		m_statisticsServices = statisticsServices;
@@ -112,15 +123,15 @@ public class SampleModelImplementationEx implements SampleModel {
 		m_periodIndex = indexMap.getLongIndex("period");
 
 		final StatisticExpressionFactory statisticExpressionFactory = m_statisticsServices
-				.getStatisticExpressionFactory();
+						.getStatisticExpressionFactory();
 
 		m_tpsExpression = statisticsServices.getTPSExpression();
 
 		m_peakTPSExpression = statisticExpressionFactory
-				.createPeak(indexMap.getDoubleIndex("peakTPS"), m_tpsExpression);
+						.createPeak(indexMap.getDoubleIndex("peakTPS"), m_tpsExpression);
 
 		m_totalSampleAccumulator = new SampleAccumulator(m_peakTPSExpression, m_periodIndex,
-				m_statisticsServices.getStatisticsSetFactory());
+						m_statisticsServices.getStatisticsSetFactory());
 
 		setInternalState(new WaitingForTriggerState());
 	}
@@ -174,9 +185,9 @@ public class SampleModelImplementationEx implements SampleModel {
 		synchronized (m_accumulators) {
 			for (Test test : newTests) {
 				m_accumulators.put(
-						test,
-						new SampleAccumulator(m_peakTPSExpression, m_periodIndex, m_statisticsServices
-								.getStatisticsSetFactory()));
+								test,
+								new SampleAccumulator(m_peakTPSExpression, m_periodIndex, m_statisticsServices
+												.getStatisticsSetFactory()));
 			}
 
 			for (int i = 0; i < accumulatorArray.length; i++) {
@@ -242,8 +253,7 @@ public class SampleModelImplementationEx implements SampleModel {
 	 * Reset the model.
 	 * 
 	 * <p>
-	 * This doesn't affect our internal state, just the statistics and the
-	 * listeners.
+	 * This doesn't affect our internal state, just the statistics and the listeners.
 	 * </p>
 	 */
 	public void reset() {

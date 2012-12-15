@@ -1,24 +1,15 @@
-/*
- * Copyright (C) 2012 - 2012 NHN Corporation
- * All rights reserved.
+/* 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * This file is part of The nGrinder software distribution. Refer to
- * the file LICENSE which is part of The nGrinder distribution for
- * licensing details. The nGrinder distribution is available on the
- * Internet at http://nhnopensource.org/ngrinder
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
  */
 package org.ngrinder.common.util;
 
@@ -36,7 +27,7 @@ import org.junit.Test;
 
 /**
  * Class description.
- *
+ * 
  * @author Mavlarn
  * @since
  */
@@ -55,24 +46,24 @@ public class DateUtilTest {
 	public void testConvertToServerDate() {
 		String userLocaleId = "Asia/Seoul";
 		TimeZone tz = TimeZone.getTimeZone(userLocaleId);
-		
+
 		Date userDate = new Date();
 		Date serverDate = DateUtil.convertToServerDate(userLocaleId, userDate);
-		//userDate - serverDate should be equal as offset
-		assertThat((int)(userDate.getTime() - serverDate.getTime()),
-				is(tz.getRawOffset() - TimeZone.getDefault().getRawOffset()));
+		// userDate - serverDate should be equal as offset
+		assertThat((int) (userDate.getTime() - serverDate.getTime()), is(tz.getRawOffset()
+						- TimeZone.getDefault().getRawOffset()));
 	}
 
 	@Test
 	public void testConvertToServerDateSameLocal() {
 		String userLocaleId = "Asia/Shanghai";
 		TimeZone tz = TimeZone.getTimeZone(userLocaleId);
-		
+
 		Date userDate = new Date();
 		Date serverDate = DateUtil.convertToServerDate(userLocaleId, userDate);
-		//userDate - serverDate should be equal as offset
-		assertThat((int)(userDate.getTime() - serverDate.getTime()),
-				is(tz.getRawOffset() - TimeZone.getDefault().getRawOffset()));
+		// userDate - serverDate should be equal as offset
+		assertThat((int) (userDate.getTime() - serverDate.getTime()), is(tz.getRawOffset()
+						- TimeZone.getDefault().getRawOffset()));
 	}
 
 	@Test
@@ -81,14 +72,14 @@ public class DateUtilTest {
 		TimeZone tz = TimeZone.getTimeZone(userLocaleId);
 		Date serverDate = new Date();
 		Date userDate = DateUtil.convertToUserDate(userLocaleId, serverDate);
-		assertThat((int)(userDate.getTime() - serverDate.getTime()),
-				is(tz.getRawOffset() - TimeZone.getDefault().getRawOffset()));
-		
-		//convert the server date back to test.
+		assertThat((int) (userDate.getTime() - serverDate.getTime()), is(tz.getRawOffset()
+						- TimeZone.getDefault().getRawOffset()));
+
+		// convert the server date back to test.
 		Date newServerDate = DateUtil.convertToServerDate(userLocaleId, userDate);
 		assertThat(serverDate.getTime(), is(newServerDate.getTime()));
 	}
-	
+
 	@Test
 	public void testGetFilteredTimeZoneMap() {
 		Map<String, String> tzMap = DateUtil.getFilteredTimeZoneMap();
@@ -99,7 +90,8 @@ public class DateUtilTest {
 
 	/**
 	 * Test method for {@link org.ngrinder.common.util.DateUtil#toSimpleDate(java.lang.String)}.
-	 * @throws ParseException 
+	 * 
+	 * @throws ParseException
 	 */
 	@Test
 	public void testToSimpleDate() throws ParseException {
@@ -110,7 +102,8 @@ public class DateUtilTest {
 
 	/**
 	 * Test method for {@link org.ngrinder.common.util.DateUtil#toDate(java.lang.String)}.
-	 * @throws ParseException 
+	 * 
+	 * @throws ParseException
 	 */
 	@Test
 	public void testToDate() throws ParseException {
@@ -169,29 +162,28 @@ public class DateUtilTest {
 		int hour = 1;
 		int min = 1;
 		int second = 1;
-		
+
 		long duration = DateUtil.timeToMs(day, hour, min, second);
-		long expected = 1000L * ((((day * 24) + hour) * 60 + min) * 60 + second );
+		long expected = 1000L * ((((day * 24) + hour) * 60 + min) * 60 + second);
 		assertThat(duration, is(expected));
-		
 
 		day = 30;
 		hour = 10;
 		min = 10;
 		second = 10;
-		
+
 		duration = DateUtil.timeToMs(day, hour, min, second);
-		expected = 1000L * ((((day * 24) + hour) * 60 + min) * 60 + second );
+		expected = 1000L * ((((day * 24) + hour) * 60 + min) * 60 + second);
 		assertThat(duration, is(expected));
 
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	@Test
 	public void testCompareDateEndWithMinute() {
 		Date date1 = new Date();
 		date1.setSeconds(0);
-		
+
 		Date date2 = new Date(date1.getTime());
 		date2.setSeconds(10);
 		assertTrue(DateUtil.compareDateEndWithMinute(date1, date2));

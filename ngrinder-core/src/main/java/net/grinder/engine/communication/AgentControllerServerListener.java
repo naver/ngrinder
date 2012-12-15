@@ -32,9 +32,10 @@ import net.grinder.util.thread.Condition;
 import org.slf4j.Logger;
 
 /**
- * Process console messages and allows them to be asynchronously queried.
+ * Agent control messages and allows them to be asynchronously queried.
  * 
- * @author Philip Aston
+ * @author JunHo Yoon
+ * @since 3.0
  */
 public final class AgentControllerServerListener {
 

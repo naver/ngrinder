@@ -1,24 +1,15 @@
-/*
- * Copyright (C) 2012 - 2012 NHN Corporation
- * All rights reserved.
+/* 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * This file is part of The nGrinder software distribution. Refer to
- * the file LICENSE which is part of The nGrinder distribution for
- * licensing details. The nGrinder distribution is available on the
- * Internet at http://nhnopensource.org/ngrinder
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
  */
 package org.ngrinder.perftest.service;
 
@@ -46,7 +37,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 /**
- * {@link PerfTestService} test
+ * {@link PerfTestService} test.
  * 
  * @author Mavlarn
  * @since 3.0
@@ -63,6 +54,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 	public void clearPerfTest() {
 		clearAllPerfTest();
 	}
+
 	@Test
 	public void testGetTestListAll() {
 
@@ -75,11 +67,11 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		Pageable pageable = new PageRequest(0, 10);
 		Page<PerfTest> testList = testService.getPerfTestList(getTestUser(), null, null, null, pageable);
 		assertThat(testList.getContent().size(), is(2));
-		testList = testService.getPerfTestList(getTestUser(), null,  null, "F", pageable);
+		testList = testService.getPerfTestList(getTestUser(), null, null, "F", pageable);
 		assertThat(testList.getContent().size(), is(1));
- 
+
 		// test with no paging
-		testList = testService.getPerfTestList(getTestUser(), null, null,  null, null);
+		testList = testService.getPerfTestList(getTestUser(), null, null, null, null);
 		assertThat(testList.getContent().size(), is(2));
 		testList = testService.getPerfTestList(getTestUser(), null, null, "F", null);
 		assertThat(testList.getContent().size(), is(1));
@@ -127,7 +119,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		assertThat(errorList.size(), is(1));
 		testService.markAbromalTermination(errorList.get(0), "this is error test");
 	}
-	
+
 	@Test
 	public void testTestScriptAll() {
 		int maxConcurrent = testService.getMaximumConcurrentTestCount();
@@ -135,7 +127,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 		PerfTest testScript = createPerfTest("new TestScript", Status.READY, new Date());
 		testService.addCommentOn(getTestUser(), testScript.getId(), "this is TestScript method", "");
-		
+
 		PerfTest testing = testService.markProgressAndStatus(testScript, Status.TESTING, "It is testing from ready");
 		assertThat(testing.getStatus(), is(Status.TESTING));
 
@@ -144,13 +136,13 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 		List<String> fileList = testService.getLogFiles(testScript.getId());
 		assertThat(fileList, not(nullValue()));
-		
+
 		File scriptFile = testService.getLogFile(testScript.getId(), testScript.getScriptName());
 		assertThat(scriptFile, not(nullValue()));
-		
+
 		ConsoleProperties consoleProperties = testService.createConsoleProperties(testScript);
 		assertThat(consoleProperties, not(nullValue()));
-		
+
 	}
 
 }

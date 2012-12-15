@@ -1,3 +1,16 @@
+/* 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
+ */
 package org.ngrinder.user.service;
 
 import static org.hamcrest.Matchers.is;
@@ -88,13 +101,13 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		role = userService.getRole("Test");
 		Assert.assertNull(role);
 	}
-	
+
 	@Autowired
 	PerfTestService perfTestService;
-	
+
 	@Autowired
 	Config config;
-	
+
 	@SuppressWarnings("serial")
 	@Test
 	public void testUserDelete() {
@@ -105,9 +118,11 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		perfTest.setTestName("Hello");
 		perfTest.setTagString("Hello,World");
 		perfTest = perfTestService.savePerfTest(user, perfTest);
-		userService.deleteUsers(new ArrayList<String>() {{
-			add(user.getUserId());
-		}});
+		userService.deleteUsers(new ArrayList<String>() {
+			{
+				add(user.getUserId());
+			}
+		});
 		assertThat(perfTestService.getPerfTest(perfTest.getId()), nullValue());
 		assertThat(scriptDirectory.exists(), is(false));
 	}

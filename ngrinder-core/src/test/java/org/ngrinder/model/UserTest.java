@@ -1,24 +1,15 @@
-/*
- * Copyright (C) 2012 - 2012 NHN Corporation
- * All rights reserved.
+/* 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * This file is part of The nGrinder software distribution. Refer to
- * the file LICENSE which is part of The nGrinder distribution for
- * licensing details. The nGrinder distribution is available on the
- * Internet at http://nhnopensource.org/ngrinder
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
  */
 package org.ngrinder.model;
 
@@ -30,12 +21,11 @@ import org.junit.Test;
 
 /**
  * Class description.
- *
+ * 
  * @author Mavlarn
  * @since
  */
 public class UserTest {
-
 
 	@Test
 	public void testValidate() {
@@ -50,12 +40,12 @@ public class UserTest {
 		user2 = new User("Uid1", "name", "pwd1", "user2@nhn.com", null);
 		assertTrue(user2.validate());
 		assertTrue(user2.getRole() == null);
-		
+
 	}
-	
+
 	@Test
 	public void testEqualsObject() {
-		User user1 = new User("Uid1", "name1", "pwd1", "user1@nhn.com", Role.USER);		
+		User user1 = new User("Uid1", "name1", "pwd1", "user1@nhn.com", Role.USER);
 		User user2 = new User("Uid1", "name2", "pwd2", "user2@nhn.com", Role.USER);
 		assertThat(user1, is(user2));
 		assertThat(user1.hashCode(), is(user2.hashCode()));
@@ -67,7 +57,7 @@ public class UserTest {
 		user2.setUserId(null);
 		assertThat(user1, not(user2));
 		assertThat(user1.hashCode(), not(user2.hashCode()));
-		
+
 		assertTrue(!user1.equals(null));
 	}
 

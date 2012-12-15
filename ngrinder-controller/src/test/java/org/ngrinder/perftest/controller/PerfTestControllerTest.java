@@ -1,24 +1,15 @@
-/*
- * Copyright (C) 2012 - 2012 NHN Corporation
- * All rights reserved.
+/* 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * This file is part of The nGrinder software distribution. Refer to
- * the file LICENSE which is part of The nGrinder distribution for
- * licensing details. The nGrinder distribution is available on the
- * Internet at http://nhnopensource.org/ngrinder
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
  */
 package org.ngrinder.perftest.controller;
 
@@ -79,13 +70,12 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 		model.clear();
 		controller.getPerfTestDetail(getTestUser(), 0L, model);
-		
+
 		assertThat(model.get(PARAM_TEST), nullValue());
 		model.clear();
 		long invalidId = 1234567890;
 		controller.getPerfTestDetail(getTestUser(), invalidId, model);
 		assertThat(model.get(PARAM_TEST), nullValue());
-
 
 		PerfTest createPerfTest = createPerfTest("hello", Status.READY, new Date());
 		model.clear();
@@ -133,22 +123,22 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		String testName = "test1";
 		PerfTest test = createPerfTest(testName, Status.READY, null);
 		long preId = test.getId();
-		
+
 		PerfTest cloneTest = newPerfTest(testName, Status.READY, null);
-		cloneTest.setId(test.getId()); //set cloned test's ID as previous test
+		cloneTest.setId(test.getId()); // set cloned test's ID as previous test
 
 		ModelMap model = new ModelMap();
 		controller.savePerfTest(getTestUser(), model, cloneTest, true);
 		assertThat(preId, not(cloneTest.getId()));
-		
-		//test leave comment
+
+		// test leave comment
 		controller.leaveComment(getTestUser(), "TestComment", "", cloneTest.getId());
 		model.clear();
 		controller.getPerfTestDetail(getTestUser(), cloneTest.getId(), model);
 		PerfTest testInDB = (PerfTest) model.get(PARAM_TEST);
 		assertThat(testInDB.getTestComment(), is("TestComment"));
-		
-		//test stop test
+
+		// test stop test
 		cloneTest.setStatus(Status.TESTING);
 		perfTestService.savePerfTest(cloneTest);
 		controller.stopPerfTests(getTestUser(), model, String.valueOf(cloneTest.getId()));
@@ -180,7 +170,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		newTest.setThreads(1);
 		newTest.setRegion(config.getRegion());
 		newTest.setAgentCount(1);
-		
+
 		ModelMap model = new ModelMap();
 		controller.savePerfTest(getTestUser(), model, newTest, false);
 		controller.getPerfTestDetail(getTestUser(), newTest.getId(), model);
@@ -261,8 +251,8 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		List<PerfTest> testList = testPage.getContent();
 
 		assertThat(testList.size(), is(0));
-		
-		//test no permission for other user
+
+		// test no permission for other user
 		model.clear();
 		try {
 			controller.getPerfTestDetail(otherTestUser, test.getId(), model);
@@ -282,13 +272,13 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 		Sort sort = new Sort("testName");
 		Pageable pageable = new PageRequest(0, 10, sort);
-		controller.getPerfTestList(getTestUser(), strangeName, null,  null, pageable, model);
+		controller.getPerfTestList(getTestUser(), strangeName, null, null, pageable, model);
 		Page<PerfTest> testPage = (Page<PerfTest>) model.get("testListPage");
 		List<PerfTest> testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
 
-		controller.getPerfTestList(getTestUser(), strangeName.substring(2, 10), null,  null,
-						new PageRequest(0, 10), model);
+		controller.getPerfTestList(getTestUser(), strangeName.substring(2, 10), null, null, new PageRequest(0, 10),
+						model);
 		testPage = (Page<PerfTest>) model.get("testListPage");
 		testList = testPage.getContent();
 		assertThat(testList.size(), is(1));
@@ -316,7 +306,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		try {
 			controller.downloadReportData(getTestUser(), resp, test.getId());
 		} catch (IllegalStateException e) {
-			//the report file doesn'r exist
+			// the report file doesn'r exist
 			assertTrue(true);
 		}
 		resp.reset();

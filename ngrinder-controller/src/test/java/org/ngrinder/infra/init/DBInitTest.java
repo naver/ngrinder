@@ -1,3 +1,16 @@
+/* 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
+ */
 package org.ngrinder.infra.init;
 
 import static org.hamcrest.Matchers.is;
@@ -23,10 +36,10 @@ public class DBInitTest extends org.ngrinder.AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private PerfTestRepository perfTestRepository;
-	
+
 	@Autowired
 	private TagRepository tagRepository;
-	
+
 	@Before
 	public void before() {
 		List<PerfTest> findAll = perfTestRepository.findAll();
@@ -42,9 +55,9 @@ public class DBInitTest extends org.ngrinder.AbstractNGrinderTransactionalTest {
 
 	@Test
 	public void initUserDB() {
-		dbInit.init(); 
+		dbInit.init();
 		List<User> users = userRepository.findAll();
-		
+
 		// Two users should be exist
 		assertThat(users.size(), is(4));
 		assertThat(users.get(0).getUserId(), is("admin"));

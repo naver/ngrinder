@@ -1,3 +1,16 @@
+/* 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
+ */
 package org.ngrinder.perftest.repository;
 
 import static org.hamcrest.Matchers.is;
@@ -23,7 +36,6 @@ public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	private TagRepository tagRepository;
 
-	
 	@Before
 	public void before() {
 		List<PerfTest> findAll = perfTestRepository.findAll();
@@ -54,7 +66,8 @@ public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 		// Then all should be 3
 		assertThat(perfTestRepository.findAll().size(), is(3));
 		// Then finished and canceled perftest should 2
-		assertThat(perfTestRepository.findAll(PerfTestSpecification.statusSetEqual(Status.FINISHED, Status.CANCELED)).size(), is(2));
+		assertThat(perfTestRepository.findAll(PerfTestSpecification.statusSetEqual(Status.FINISHED, Status.CANCELED))
+						.size(), is(2));
 	}
 
 	@SuppressWarnings("serial")
@@ -75,7 +88,6 @@ public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 		assertThat(tags.last(), is(new Tag("world")));
 	}
 
-	
 	@SuppressWarnings("serial")
 	@Test
 	public void testPerfTestTag2() {
@@ -95,7 +107,7 @@ public class PerfTestRepositoryTest extends AbstractNGrinderTransactionalTest {
 		SortedSet<Tag> tags2 = entity.getTags();
 		assertThat(tags2.first(), is(hello));
 		assertThat(tags2.last(), is(world));
-		
+
 		PerfTest entity2 = new PerfTest();
 		entity2.setTestName("test1");
 		entity2.setTags(new TreeSet<Tag>() {

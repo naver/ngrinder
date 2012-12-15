@@ -1,3 +1,16 @@
+/* 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
+ */
 package org.ngrinder.tracking;
 
 import java.net.InetAddress;
@@ -72,9 +85,9 @@ public class GoogleAnalyticsV1URLBuildingStrategy implements URLBuildingStrategy
 		url.append("&utmp=" + focusPoint.getContentURI());// document page URL
 		url.append("&utmac=" + googleAnalyticsTrackingCode);// Google Analytics
 															// account
-		url.append("&utmcc=__utma%3D'" + cookie + "." + randomValue + "." + now + "." + now + "." + now + ".2%3B%2B__utmb%3D" + cookie
-				+ "%3B%2B__utmc%3D" + cookie + "%3B%2B__utmz%3D" + cookie + "." + now
-				+ ".2.2.utmccn%3D(direct)%7Cutmcsr%3D(direct)%7Cutmcmd%3D(none)%3B%2B__utmv%3D" + cookie);
+		url.append("&utmcc=__utma%3D'" + cookie + "." + randomValue + "." + now + "." + now + "." + now
+						+ ".2%3B%2B__utmb%3D" + cookie + "%3B%2B__utmc%3D" + cookie + "%3B%2B__utmz%3D" + cookie + "."
+						+ now + ".2.2.utmccn%3D(direct)%7Cutmcsr%3D(direct)%7Cutmcmd%3D(none)%3B%2B__utmv%3D" + cookie);
 		return url.toString();
 	}
 

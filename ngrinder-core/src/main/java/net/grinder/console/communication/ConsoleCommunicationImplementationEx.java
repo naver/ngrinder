@@ -1,24 +1,16 @@
-// Copyright (C) 2000 - 2012 Philip Aston
-// All rights reserved.
-//
-// This file is part of The Grinder software distribution. Refer to
-// the file LICENSE which is part of The Grinder distribution for
-// licensing details. The Grinder distribution is available on the
-// Internet at http://grinder.sourceforge.net/
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-// COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-// OF THE POSSIBILITY OF SUCH DAMAGE.
-
+/* 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
+ */
 package net.grinder.console.communication;
 
 import static org.ngrinder.common.util.NoOp.noOp;
@@ -44,9 +36,12 @@ import net.grinder.util.TimeAuthority;
 import net.grinder.util.thread.BooleanCondition;
 
 /**
- * Handles communication for the console.
+ * Handles communication for the console. This is the extension of
+ * {@link ConsoleCommunicationImplementation}.
  * 
- * @author Philip Aston
+ * @author JunHo Yoon
+ * @see ConsoleCommunicationImplementation
+ * @since 3.0
  */
 public final class ConsoleCommunicationImplementationEx implements ConsoleCommunication {
 
@@ -82,8 +77,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 	 *             If properties are invalid.
 	 */
 	public ConsoleCommunicationImplementationEx(Resources resources, ConsoleProperties properties,
-					ErrorHandler errorHandler, TimeAuthority timeAuthority)
-					throws DisplayMessageConsoleException {
+					ErrorHandler errorHandler, TimeAuthority timeAuthority) throws DisplayMessageConsoleException {
 		this(resources, properties, errorHandler, timeAuthority, 500, 30000);
 	}
 
@@ -137,7 +131,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 			m_acceptorProblemListener.interrupt();
 			m_acceptorProblemListener = null;
 		}
-		
+
 		try {
 			if (m_acceptor != null) {
 				m_acceptor.shutdown();
@@ -163,18 +157,14 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 			m_processing.await(false);
 		}
 
-		
-
 		if (m_shutdown.get()) {
 			return;
 		}
 
 		try {
-			m_acceptor = new Acceptor(m_properties.getConsoleHost(), m_properties.getConsolePort(), 1,
-							m_timeAuthority);
+			m_acceptor = new Acceptor(m_properties.getConsoleHost(), m_properties.getConsolePort(), 1, m_timeAuthority);
 		} catch (CommunicationException e) {
-			m_errorHandler.handleException(new DisplayMessageConsoleException(m_resources,
-							"localBindError.text", e));
+			m_errorHandler.handleException(new DisplayMessageConsoleException(m_resources, "localBindError.text", e));
 
 			// Wake up any threads waiting in processOneMessage().
 			m_processing.wakeUpAllWaiters();
@@ -185,7 +175,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 		m_acceptorProblemListener = new Thread("Acceptor problem listener") {
 			public void run() {
 				while (true) {
-					
+
 					Exception exception = null;
 					try {
 						exception = m_acceptor.getPendingException();
@@ -326,8 +316,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 			try {
 				m_sender.send(message);
 			} catch (CommunicationException e) {
-				m_errorHandler.handleException(new DisplayMessageConsoleException(m_resources,
-								"sendError.text", e));
+				m_errorHandler.handleException(new DisplayMessageConsoleException(m_resources, "sendError.text", e));
 			}
 		}
 	}
@@ -351,8 +340,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 			try {
 				m_sender.send(address, message);
 			} catch (CommunicationException e) {
-				m_errorHandler.handleException(new DisplayMessageConsoleException(m_resources,
-								"sendError.text", e));
+				m_errorHandler.handleException(new DisplayMessageConsoleException(m_resources, "sendError.text", e));
 			}
 		}
 	}

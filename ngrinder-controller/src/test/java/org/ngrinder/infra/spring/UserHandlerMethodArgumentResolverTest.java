@@ -1,3 +1,16 @@
+/* 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
+ */
 package org.ngrinder.infra.spring;
 
 import static org.hamcrest.Matchers.is;
@@ -30,8 +43,8 @@ public class UserHandlerMethodArgumentResolverTest extends AbstractNGrinderTrans
 
 	@Test
 	public void testUserHandlerMethodArgument() throws Exception {
-		
-		//create a tmp test user "TEST2_USER" for this test
+
+		// create a tmp test user "TEST2_USER" for this test
 		User user = new User();
 		user.setUserId("TEST2_USER");
 		user.setUserName("TEST2_USER");
@@ -39,8 +52,7 @@ public class UserHandlerMethodArgumentResolverTest extends AbstractNGrinderTrans
 		user.setPassword("123");
 		user.setRole(Role.USER);
 		userRepository.save(user);
-		
-		
+
 		resolver = new UserHandlerMethodArgumentResolver();
 		resolver.setUserService(userService);
 		MethodParameter parameter = mock(MethodParameter.class);
@@ -52,16 +64,16 @@ public class UserHandlerMethodArgumentResolverTest extends AbstractNGrinderTrans
 			}
 		});
 		assertThat(resolver.supportsParameter(parameter), is(true));
-		
-		//test1 scenario: general user can not check other user's script
+
+		// test1 scenario: general user can not check other user's script
 		// has parameter "ownerId", and current user is general, resolved user is "TEST_USER"
 		NativeWebRequest webRequest1 = mock(NativeWebRequest.class);
 		when(webRequest1.getParameter("ownerId")).thenReturn("TEST2_USER");
 		resolver.setUserContext(mockUserContext);
 		Object resolveArgument1 = resolver.resolveArgument(parameter, null, webRequest1, null);
 		assertThat(((User) resolveArgument1).getUserId(), is(getTestUser().getUserId()));
-		
-		//test2 scenario: admin can check other user's script
+
+		// test2 scenario: admin can check other user's script
 		// has parameter "ownerId", and current user is Admin, resolved user is "TEST2_USER"
 		NativeWebRequest webRequest2 = mock(NativeWebRequest.class);
 		when(webRequest2.getParameter("ownerId")).thenReturn("TEST2_USER");
@@ -72,25 +84,24 @@ public class UserHandlerMethodArgumentResolverTest extends AbstractNGrinderTrans
 		Object resolveArgument2 = resolver.resolveArgument(parameter, null, webRequest2, null);
 		assertThat(((User) resolveArgument2).getUserId(), is("TEST2_USER"));
 
-		
-		//test3 scenario: general user switch to use other's permission
+		// test3 scenario: general user switch to use other's permission
 		// has parameter "switchUserId", resolved user id is "TEST2_USER"
 		NativeWebRequest webRequest3 = mock(NativeWebRequest.class);
 		when(webRequest3.getParameter("switchUserId")).thenReturn("TEST2_USER");
 		resolver.setUserContext(mockUserContext);
 		Object resolveArgument3 = resolver.resolveArgument(parameter, null, webRequest3, null);
 		assertThat(((User) resolveArgument3).getUserId(), is("TEST2_USER"));
-		//current user's owner is "TEST2_USER"
+		// current user's owner is "TEST2_USER"
 		assertThat(getTestUser().getOwnerUser().getUserId(), is("TEST2_USER"));
-		
-		//test4 scenario: general user switch back to its own user permission
+
+		// test4 scenario: general user switch back to its own user permission
 		// has parameter "switchUserId", resolved user id is "TEST_USER"
 		NativeWebRequest webRequest4 = mock(NativeWebRequest.class);
 		when(webRequest4.getParameter("switchUserId")).thenReturn("TEST_USER");
 		resolver.setUserContext(mockUserContext);
 		Object resolveArgument4 = resolver.resolveArgument(parameter, null, webRequest4, null);
 		assertThat(((User) resolveArgument4).getUserId(), is("TEST_USER"));
-		//current user's owner is null
+		// current user's owner is null
 		assertThat(getTestUser().getOwnerUser(), nullValue());
 	}
 }

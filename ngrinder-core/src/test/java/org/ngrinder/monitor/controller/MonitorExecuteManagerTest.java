@@ -1,24 +1,15 @@
-/*
- * Copyright (C) 2012 - 2012 NHN Corporation
- * All rights reserved.
+/* 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * This file is part of The nGrinder software distribution. Refer to
- * the file LICENSE which is part of The nGrinder distribution for
- * licensing details. The nGrinder distribution is available on the
- * Internet at http://nhnopensource.org/ngrinder
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- * COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
  */
 package org.ngrinder.monitor.controller;
 
@@ -44,14 +35,14 @@ import org.ngrinder.monitor.controller.domain.MonitorAgentInfo;
  * @since 3.0
  * @date 2012-7-20
  */
-public class MonitorExecuteManagerTest extends SigarTestBase{
+public class MonitorExecuteManagerTest extends SigarTestBase {
 
 	@Before
 	public void startMonitorServer() throws IOException {
 		AgentMonitorServer.getInstance().init();
 		AgentMonitorServer.getInstance().start();
 	}
-	
+
 	@After
 	public void stopMonitorServer() throws IOException {
 		AgentMonitorServer.getInstance().stop();
@@ -63,34 +54,34 @@ public class MonitorExecuteManagerTest extends SigarTestBase{
 		int port = AgentMonitorServer.getInstance().getPort();
 		assertTrue(MonitorConstants.DEFAULT_MONITOR_PORT == port);
 		assertTrue(AgentMonitorServer.getInstance().isRunning());
-		
+
 		MonitorRecoderDemo mrd = new MonitorRecoderDemo();
 		MonitorAgentInfo monitorAgentInfo = MonitorAgentInfo.getSystemMonitor("127.0.0.1",
-				MonitorConstants.DEFAULT_MONITOR_PORT, mrd);
+						MonitorConstants.DEFAULT_MONITOR_PORT, mrd);
 
 		MonitorExecuteManager.getInstance().addAgentMonitor("127.0.0.1", monitorAgentInfo);
-		
+
 		assertTrue(mrd.isRunning());
 		ThreadUtil.sleep(3000);
 		int recordCount = mrd.getData().size();
 		assertTrue(recordCount > 0);
-		
+
 		MonitorExecuteManager.getInstance().removeAgentMonitor("127.0.0.1");
-		recordCount = mrd.getData().size(); //get latest record count
+		recordCount = mrd.getData().size(); // get latest record count
 		ThreadUtil.sleep(3000);
 		assertTrue(!mrd.isRunning());
-		
-		//make sure no monitoring record saved anymore
+
+		// make sure no monitoring record saved anymore
 		assertThat(mrd.getData().size(), is(recordCount));
-		
-		//test adding 2 monitoring job on same target
+
+		// test adding 2 monitoring job on same target
 		MonitorExecuteManager.getInstance().addAgentMonitor("127.0.0.1", monitorAgentInfo);
 		ThreadUtil.sleep(2000);
 		MonitorExecuteManager.getInstance().addAgentMonitor("127.0.0.1", monitorAgentInfo);
 		ThreadUtil.sleep(2000);
 
 		MonitorExecuteManager.getInstance().removeAgentMonitor("127.0.0.1");
-		assertTrue(mrd.isRunning()); //monitoring job is still running
+		assertTrue(mrd.isRunning()); // monitoring job is still running
 		MonitorExecuteManager.getInstance().removeAgentMonitor("127.0.0.1");
 		assertTrue(!mrd.isRunning());
 	}

@@ -1,3 +1,16 @@
+/* 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
+ */
 package org.ngrinder.dns;
 
 import static org.hamcrest.Matchers.is;
@@ -13,14 +26,13 @@ import org.junit.Test;
 /**
  * 
  * To test the custom DNS, should to add vm arguments as below:
-	-Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns
-	-Dngrinder.etc.hosts=10.0.0.1:www.google.com,10.0.0.2:www.google2.com
- *
+ * -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns
+ * -Dngrinder.etc.hosts=10.0.0.1:www.google.com,10.0.0.2:www.google2.com.
+ * 
  * @author Mavlarn
- * @since
  */
 public class LocalManagedDnsTest {
-	
+
 	LocalManagedDns localNS = new LocalManagedDns();
 
 	public void beforeCustomDNS() {
@@ -32,7 +44,7 @@ public class LocalManagedDnsTest {
 		// Cache should be enabled later..
 		Security.setProperty("networkaddress.cache.ttl", "0");
 	}
-	
+
 	public void cleanCustomDNS() {
 		// enable local DNS
 		System.clearProperty("sun.net.spi.nameservice.provider.1");
@@ -51,9 +63,9 @@ public class LocalManagedDnsTest {
 		performLookup("www.google2.com");
 		performLookup("www.baidu.com");
 		performLookup("www.naver.com");
-		
+
 		NameStore.getInstance().put("mydomain.com", "10.10.10.10");
-		//performLookupLocal("mydomain.com");
+		// performLookupLocal("mydomain.com");
 		performLookup("mydomain.com");
 		cleanCustomDNS();
 	}
@@ -61,6 +73,7 @@ public class LocalManagedDnsTest {
 	/**
 	 * This test can only run with vm option:
 	 * -Dsun.net.spi.nameservice.provider.1=dns,LocalManagedDns
+	 * 
 	 * @throws UnknownHostException
 	 */
 	@Test
@@ -72,9 +85,9 @@ public class LocalManagedDnsTest {
 		performLookup("www.google2.com");
 		performLookup("www.baidu.com");
 		performLookup("www.naver.com");
-		
+
 		NameStore.getInstance().put("mydomain.com", "10.10.10.10");
-		//performLookupLocal("mydomain.com");
+		// performLookupLocal("mydomain.com");
 		performLookup("mydomain.com");
 
 	}
@@ -86,7 +99,7 @@ public class LocalManagedDnsTest {
 
 		NameStore.getInstance().put("www.google.com", "10.0.0.1");
 		NameStore.getInstance().put("www.google2.com", "10.0.0.2");
-		
+
 		InetAddress[] addrs = localNS.lookupAllHostAddr("www.google.com");
 		boolean success = false;
 		for (InetAddress inetAddress : addrs) {
@@ -96,7 +109,7 @@ public class LocalManagedDnsTest {
 			}
 		}
 		assertTrue(success);
-		
+
 		performLookupLocal("www.google2.com");
 		addrs = localNS.lookupAllHostAddr("www.google2.com");
 		for (InetAddress inetAddress : addrs) {
@@ -106,7 +119,7 @@ public class LocalManagedDnsTest {
 			}
 		}
 		assertTrue(success);
-		
+
 		NameStore.getInstance().put("mydomain.com", "10.10.10.10");
 		performLookupLocal("mydomain.com");
 		addrs = localNS.lookupAllHostAddr("mydomain.com");
@@ -117,8 +130,8 @@ public class LocalManagedDnsTest {
 			}
 		}
 		assertTrue(success);
-		
-		//naver.com is not registered by us, it will use system DNS
+
+		// naver.com is not registered by us, it will use system DNS
 		performLookupLocal("naver.com");
 
 		NameStore.getInstance().remove("www.google.com");
@@ -131,19 +144,19 @@ public class LocalManagedDnsTest {
 		cleanCustomDNS();
 
 		NameStore.getInstance().put("www.google2.com", "10.0.0.2");
-		
+
 		String domain = localNS.getHostByAddr(DnsUtil.textToNumericFormat("10.0.0.2"));
 		assertThat(domain, is("www.google2.com"));
-		
-		//naver.com is not registered by us, it will use system DNS
+
+		// naver.com is not registered by us, it will use system DNS
 		InetAddress[] addrs = localNS.lookupAllHostAddr("naver.com");
 		String ip1 = addrs[0].getHostAddress();
 		try {
 			domain = localNS.getHostByAddr(DnsUtil.textToNumericFormat(ip1));
 		} catch (UnknownHostException e) {
-			//FIXME Is it right? can not resolve in unit test.
+			// FIXME Is it right? can not resolve in unit test.
 		}
-		//assertThat(domain, is("naver.com"));
+		// assertThat(domain, is("naver.com"));
 
 		NameStore.getInstance().remove("www.google2.com");
 	}
