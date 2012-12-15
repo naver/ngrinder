@@ -15,6 +15,7 @@ package org.ngrinder.infra.spring;
 
 import javax.servlet.http.Cookie;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.Permission;
 import org.ngrinder.model.User;
@@ -46,8 +47,7 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.web.method.support.HandlerMethodArgumentResolver#
+	 * @see org.springframework.web.method.support.HandlerMethodArgumentResolver#
 	 * supportsParameter(org .springframework.core.MethodParameter)
 	 */
 	@Override
@@ -58,27 +58,26 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.web.method.support.HandlerMethodArgumentResolver#
+	 * @see org.springframework.web.method.support.HandlerMethodArgumentResolver#
 	 * resolveArgument(org. springframework.core.MethodParameter,
 	 * org.springframework.web.method.support.ModelAndViewContainer,
 	 * org.springframework.web.context.request.NativeWebRequest,
 	 * org.springframework.web.bind.support.WebDataBinderFactory)
 	 */
 	@Override
-	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
-			WebDataBinderFactory binderFactory) throws Exception {
+	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
+					NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		User currentUser = getUserContext().getCurrentUser();
 
 		String userParam = webRequest.getParameter("ownerId");
 		if (StringUtils.isNotBlank(userParam) && currentUser.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
 			return getUserService().getUserById(userParam);
-		} 
+		}
 
 		// User want to do something through other User status and this
 		// switchUser is other user Id
 		String switchUser = null;
-		for (Cookie cookie : ((ServletWebRequest) webRequest).getRequest().getCookies()) {
+		for (Cookie cookie : getCookies(webRequest)) {
 			if ("switchUser".equals(cookie.getName()) && cookie.getMaxAge() != 0) {
 				switchUser = cookie.getValue();
 			}
@@ -89,7 +88,8 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 		} else if (StringUtils.isNotEmpty(switchUser)) {
 			User ownerUser = getUserService().getUserById(switchUser);
 			// CurrentUser should remember whose status he used
-			if (currentUser.getRole().hasPermission(Permission.SWITCH_TO_ANYONE) || ownerUser.getFollowers().contains(currentUser)) {
+			if (currentUser.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)
+							|| (ownerUser.getFollowers() != null && ownerUser.getFollowers().contains(currentUser))) {
 				currentUser.setOwnerUser(ownerUser);
 				return ownerUser;
 			}
@@ -98,6 +98,10 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 		}
 
 		return currentUser.getFactualUser();
+	}
+
+	Cookie[] getCookies(NativeWebRequest webRequest) {
+		return ((ServletWebRequest) webRequest).getRequest().getCookies();
 	}
 
 	/**
