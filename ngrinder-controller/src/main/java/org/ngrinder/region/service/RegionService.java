@@ -32,8 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Region service class. This class responsible to keep the status of available
- * regions.
+ * Region service class. This class responsible to keep the status of available regions.
  * 
  * @author Mavlarn
  * @author JunHo Yoon
@@ -51,8 +50,7 @@ public class RegionService {
 	private ScheduledTask scheduledTask;
 
 	/**
-	 * Set current region into cache, using the IP as key and region name as
-	 * value.
+	 * Set current region into cache, using the IP as key and region name as value.
 	 * 
 	 */
 	@PostConstruct
@@ -61,28 +59,32 @@ public class RegionService {
 			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
 				@Override
 				public void interruptibleRun() {
-					String region = config.getRegion();
-					File file = new File(config.getHome().getControllerShareDirectory(), region);
-					if (!file.exists()) {
-						try {
-							FileUtils.writeStringToFile(file, config.getCurrentIP(), "UTF-8");
-						} catch (IOException e) {
-						}
-					} else {
-						try {
-							FileUtils.touch(file);
-						} catch (IOException e) {
-						}
-					}
-					LOG.trace("Add Region: {}:{} into cache.", region);
+					checkRegionUdate();
 				}
+
 			});
 		}
 	}
 
+	void checkRegionUdate() {
+		String region = config.getRegion();
+		File file = new File(config.getHome().getControllerShareDirectory(), region);
+		if (!file.exists()) {
+			try {
+				FileUtils.writeStringToFile(file, config.getCurrentIP(), "UTF-8");
+			} catch (IOException e) {
+			}
+		} else {
+			try {
+				FileUtils.touch(file);
+			} catch (IOException e) {
+			}
+		}
+		LOG.trace("Add Region: {}:{} into cache.", region);
+	}
+
 	/**
-	 * Destroy method. this method is responsible to delete our current region
-	 * from dist cache.
+	 * Destroy method. this method is responsible to delete our current region from dist cache.
 	 */
 	@PreDestroy
 	public void destroy() {
@@ -116,5 +118,13 @@ public class RegionService {
 			}
 		}
 		return regions;
+	}
+
+	Config getConfig() {
+		return config;
+	}
+
+	void setConfig(Config config) {
+		this.config = config;
 	}
 }

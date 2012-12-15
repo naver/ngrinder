@@ -15,11 +15,18 @@ package org.ngrinder.region.service;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,10 +44,29 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	private RegionService regionService;
 
+	@Before
+	public void before() {
+		FileUtils.deleteQuietly(config.getHome().getControllerShareDirectory());
+	}
+
 	@Test
-	public void testGetRegionList() {
-		List<String> regionlist = regionService.getRegions();
-		LOG.debug("list:{}", regionlist);
-		assertThat(regionlist.contains(config.getRegion()), is(true));
+	public void testGetRegionsInCluster() throws IOException {
+		Config spiedConfig = spy(config);
+		when(spiedConfig.isCluster()).thenReturn(true);
+		when(spiedConfig.getRegion()).thenReturn("TEST_REGION");
+		regionService.setConfig(spiedConfig);
+		regionService.checkRegionUdate();
+		List<String> regions = regionService.getRegions();
+		LOG.debug("list:{}", regions);
+		assertThat(regions.contains("TEST_REGION"), is(true));
+	}
+
+	@Test
+	public void testGetRegions() {
+		Config spiedConfig = spy(config);
+		when(spiedConfig.isCluster()).thenReturn(false);
+		regionService.setConfig(spiedConfig);
+		regionService.checkRegionUdate();
+		assertThat(regionService.getRegions().isEmpty(), is(true));
 	}
 }
