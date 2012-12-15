@@ -18,15 +18,13 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -56,7 +54,7 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 		when(spiedConfig.getRegion()).thenReturn("TEST_REGION");
 		regionService.setConfig(spiedConfig);
 		regionService.checkRegionUdate();
-		List<String> regions = regionService.getRegions();
+		Collection<String> regions = regionService.getRegions().keySet();
 		LOG.debug("list:{}", regions);
 		assertThat(regions.contains("TEST_REGION"), is(true));
 	}

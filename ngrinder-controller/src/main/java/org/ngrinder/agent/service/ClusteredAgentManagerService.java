@@ -124,7 +124,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		List<AgentInfo> changeAgents = new ArrayList<AgentInfo>();
 		List<AgentInfo> deleteAgents = new ArrayList<AgentInfo>();
 		String curRegion = getConfig().getRegion();
-		List<String> regions = getRegions();
+		Set<String> regions = getRegions();
 
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = newHashMap(allAttachedAgents);
@@ -218,7 +218,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	@Override
 	@Transactional
 	public Map<String, MutableInt> getUserAvailableAgentCountMap(User user) {
-		List<String> regions = getRegions();
+		Set<String> regions = getRegions();
 		Map<String, MutableInt> availShareAgents = newHashMap(regions);
 		Map<String, MutableInt> availUserOwnAgent = newHashMap(regions);
 		for (String region : regions) {
@@ -237,7 +237,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 			String fullRegion = agentInfo.getRegion();
 			String region = extractRegionFromAgentRegion(fullRegion);
-			if (StringUtils.isBlank(region) || !StringUtils.equals(region, getConfig().getRegion())) {
+			if (StringUtils.isBlank(region) || !regions.contains(region)) {
 				continue;
 			}
 			// It's my own agent
@@ -262,8 +262,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		return availShareAgents;
 	}
 
-	protected List<String> getRegions() {
-		return regionService.getRegions();
+	protected Set<String> getRegions() {
+		return regionService.getRegions().keySet();
 	}
 
 	String extractRegionFromAgentRegion(String agentRegion) {

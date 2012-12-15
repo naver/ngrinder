@@ -19,8 +19,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.grinder.message.console.AgentControllerState;
 
@@ -34,6 +36,8 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.AgentManager;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.collect.Sets;
 
 public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactionalTest {
 
@@ -90,14 +94,8 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 
 			@SuppressWarnings("serial")
 			@Override
-			protected List<String> getRegions() {
-				List<String> regions = new ArrayList<String>() {
-					{
-						add("hello");
-						add("haha");
-						add("wowo");
-					}
-				};
+			protected Set<String> getRegions() {
+				Set<String> regions = Sets.newHashSet("hello", "haha", "wowo");
 				return regions;
 			}
 

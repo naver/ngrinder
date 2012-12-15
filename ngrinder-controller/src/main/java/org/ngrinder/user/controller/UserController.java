@@ -246,12 +246,12 @@ public class UserController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/switchUser")
 	public String switchUser(User user, ModelMap model,
-					@RequestParam(required = false, defaultValue = "") String switchUserId,
+					@RequestParam(required = false, defaultValue = "") String switchUser,
 					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
-		Cookie cookie = new Cookie("switchUser", switchUserId);
+		Cookie cookie = new Cookie("switchUser", switchUser);
 		cookie.setPath("/");
 		// Delete Cookie if empty switchUser
-		if (StringUtils.isEmpty(switchUserId)) {
+		if (StringUtils.isEmpty(switchUser)) {
 			cookie.setMaxAge(0);
 		}
 		httpServletResponse.addCookie(cookie);

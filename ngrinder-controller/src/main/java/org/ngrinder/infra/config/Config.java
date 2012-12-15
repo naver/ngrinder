@@ -13,9 +13,6 @@
  */
 package org.ngrinder.infra.config;
 
-import static org.ngrinder.common.constant.NGrinderConstants.DOWNLOAD_PATH;
-import static org.ngrinder.common.constant.NGrinderConstants.PERF_TEST_PATH;
-import static org.ngrinder.common.constant.NGrinderConstants.PLUGIN_PATH;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
@@ -54,7 +51,7 @@ import ch.qos.logback.core.joran.spi.JoranException;
  * @since 3.0
  */
 @Component
-public class Config implements IConfig {
+public class Config implements IConfig, NGrinderConstants {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
 	private static final String NGRINDER_EX_FOLDER = ".ngrinder_ex";
 	public static final String MONITOR_FILE_PREFIX = "monitor_system_";
@@ -151,7 +148,7 @@ public class Config implements IConfig {
 	 * @return cluster uri strings
 	 */
 	public String[] getClusterURIs() {
-		String clusterUri = getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_CLUSTER_URIS, "");
+		String clusterUri = getSystemProperties().getProperty(NGRINDER_PROP_CLUSTER_URIS, "");
 		return StringUtils.split(clusterUri, ";");
 	}
 
@@ -161,8 +158,7 @@ public class Config implements IConfig {
 	 * @return region
 	 */
 	public String getRegion() {
-		return isCluster() ? getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_REGION, NONE_REGION)
-						: NONE_REGION;
+		return isCluster() ? getSystemProperties().getProperty(NGRINDER_PROP_REGION, NONE_REGION) : NONE_REGION;
 	}
 
 	/**
@@ -494,6 +490,10 @@ public class Config implements IConfig {
 
 	public String getCurrentIP() {
 		return currentIP;
+	}
+
+	public boolean isInvisibleRegion() {
+		return getSystemProperties().getPropertyBoolean(NGRINDER_PROP_REGION_HIDE, false); 
 	}
 
 }

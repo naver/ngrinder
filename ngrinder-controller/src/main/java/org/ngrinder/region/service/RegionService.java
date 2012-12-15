@@ -14,22 +14,29 @@
 package org.ngrinder.region.service;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import net.grinder.util.thread.InterruptibleRunnable;
+import net.sf.ehcache.Ehcache;
 
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.schedule.ScheduledTask;
+import org.ngrinder.perftest.service.AgentManager;
+import org.ngrinder.region.model.RegionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.Cache.ValueWrapper;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * Region service class. This class responsible to keep the status of available regions.
@@ -41,13 +48,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class RegionService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(RegionService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RegionService.class);
 
 	@Autowired
 	private Config config;
 
 	@Autowired
 	private ScheduledTask scheduledTask;
+
+	@Autowired
+	private CacheManager cacheManager;
+	private Cache cache;
 
 	/**
 	 * Set current region into cache, using the IP as key and region name as value.
@@ -56,6 +67,7 @@ public class RegionService {
 	@PostConstruct
 	public void initRegion() {
 		if (config.isCluster()) {
+			cache = cacheManager.getCache("regions");
 			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
 				@Override
 				public void interruptibleRun() {
@@ -66,21 +78,14 @@ public class RegionService {
 		}
 	}
 
+	@Autowired
+	private AgentManager agentManager;
+
 	void checkRegionUdate() {
-		String region = config.getRegion();
-		File file = new File(config.getHome().getControllerShareDirectory(), region);
-		if (!file.exists()) {
-			try {
-				FileUtils.writeStringToFile(file, config.getCurrentIP(), "UTF-8");
-			} catch (IOException e) {
-			}
-		} else {
-			try {
-				FileUtils.touch(file);
-			} catch (IOException e) {
-			}
+		if (!config.isInvisibleRegion()) {
+			cache.put(getCurrentRegion(),
+							new RegionInfo(config.getCurrentIP(), Sets.newHashSet(agentManager.getAllAttachedAgents())));
 		}
-		LOG.trace("Add Region: {}:{} into cache.", region);
 	}
 
 	/**
@@ -108,12 +113,13 @@ public class RegionService {
 	 * 
 	 * @return region list
 	 */
-	public List<String> getRegions() {
-		List<String> regions = new ArrayList<String>();
+	public Map<String, RegionInfo> getRegions() {
+		Map<String, RegionInfo> regions = Maps.newHashMap();
 		if (config.isCluster()) {
-			for (File each : config.getHome().getControllerShareDirectory().listFiles()) {
-				if (System.currentTimeMillis() - (1000 * 60) < each.lastModified()) {
-					regions.add(each.getName());
+			for (Object eachKey : ((Ehcache) (cache.getNativeCache())).getKeys()) {
+				ValueWrapper valueWrapper = cache.get(eachKey);
+				if (valueWrapper != null && valueWrapper.get() != null) {
+					regions.put((String) eachKey, (RegionInfo) valueWrapper.get());
 				}
 			}
 		}

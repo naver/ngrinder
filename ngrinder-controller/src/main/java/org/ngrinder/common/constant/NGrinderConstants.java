@@ -69,8 +69,7 @@ public interface NGrinderConstants {
 	/**
 	 * Maximum waiting seconds until all agents are connected.
 	 */
-	public static final String NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS = "ngrinder."
-					+ "max.waitingmilliseconds";
+	public static final String NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS = "ngrinder." + "max.waitingmilliseconds";
 
 	/**
 	 * Maximum waiting seconds until all agents are connected.
@@ -181,6 +180,7 @@ public interface NGrinderConstants {
 	public static final String NGRINDER_PROP_FRONT_PAGE_RSS = "ngrinder.frontpage.rss";
 	public static final String NGRINDER_NEWS_RSS_URL = "http://www.cubrid.org/wiki_ngrinder/rss";
 	public static final String NGRINDER_PROP_REGION = "ngrinder.cluster.region";
+	public static final String NGRINDER_PROP_REGION_HIDE = "ngrinder.cluster.region.hide";
 	public static final int MAX_RUN_HOUR = 8;
 
 	public static final String NGRINDER_PROP_CLUSTER_MODE = "ngrinder.cluster.mode";

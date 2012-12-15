@@ -13,7 +13,7 @@
 
 	<cache name="users" maxElementsInMemory="100" eternal="false" overflowToDisk="false" timeToLiveSeconds="1800">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-			properties="replicateAsynchronously=true, replicatePuts=false, replicateUpdates=false, replicateUpdatesViaCopy=false, replicateRemovals=true" />
+			properties="replicateAsynchronously=false, replicatePuts=false, replicateUpdates=true, replicateUpdatesViaCopy=false, replicateRemovals=true" />
 	</cache>
 
 	<cache name="file_entry_search_cache" maxElementsInMemory="100" eternal="false" overflowToDisk="false"
@@ -22,8 +22,12 @@
 			properties="replicateAsynchronously=true, replicatePuts=false, replicateUpdates=false, replicateUpdatesViaCopy=false, replicateRemovals=true" />
 	</cache>
 
-	<cache name="agent_monitoring" maxElementsInMemory="1000" overflowToDisk="false"
-		timeToLiveSeconds="5">
+	<cache name="agent_monitoring" maxElementsInMemory="1000" overflowToDisk="false" timeToLiveSeconds="5">
+		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+			properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=true, replicateRemovals=true" />
+	</cache>
+
+	<cache name="regions" maxElementsInMemory="100" overflowToDisk="false" timeToLiveSeconds="20">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
 			properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=true, replicateRemovals=true" />
 	</cache>
@@ -33,11 +37,10 @@
 			properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=true, replicateRemovals=true" />
 	</cache>
 
-	<cache name="running_statistics" maxElementsInMemory="1000" overflowToDisk="false" timeToLiveSeconds="3"/>
+	<cache name="running_statistics" maxElementsInMemory="1000" overflowToDisk="false" timeToLiveSeconds="3" />
 
 	<!-- distributed caches -->
-	<cache name="agent_monitoring_targets" maxElementsInMemory="1000" overflowToDisk="false"
-		timeToLiveSeconds="5"/>
+	<cache name="agent_monitoring_targets" maxElementsInMemory="1000" overflowToDisk="false" timeToLiveSeconds="5" />
 
 	<cache name="right_panel_entries" maxElementsInMemory="2" eternal="false" overflowToDisk="false"
 		timeToLiveSeconds="100000" />

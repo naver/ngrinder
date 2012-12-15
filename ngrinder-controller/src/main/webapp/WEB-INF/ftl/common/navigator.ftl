@@ -132,7 +132,7 @@
 	
 	function switchUser() {
 		$("#switchUserSelect").change(function() {
-			document.location.href = "${req.getContextPath()}/user/switchUser?switchUserId=" + $(this).val();
+			document.location.href = "${req.getContextPath()}/user/switchUser?switchUser=" + $(this).val();
 		});
 		
 		var url = "${req.getContextPath()}/user/switchUserList";

@@ -24,6 +24,7 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.infra.annotation.RuntimeOnlyController;
 import org.ngrinder.infra.plugin.PluginManager;
@@ -31,6 +32,7 @@ import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.ConsoleManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
+import org.ngrinder.region.service.RegionService;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.service.UserService;
 import org.python.util.PythonInterpreter;
@@ -64,6 +66,9 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	private AgentManager agentManager;
 
 	@Autowired
+	private AgentManagerService agentManagerService;
+
+	@Autowired
 	private ConsoleManager consoleManager;
 
 	@Autowired
@@ -75,6 +80,9 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private RegionService regionService;
+	
 	@Autowired
 	private PluginManager pluginManager;
 
@@ -111,6 +119,8 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	protected void intVars(PythonInterpreter interp) {
 		interp.set("applicationContext", this.applicationContext);
 		interp.set("agentManager", this.agentManager);
+		interp.set("agentManagerService", this.agentManagerService);
+		interp.set("regionService", this.regionService);
 		interp.set("consoleManager", this.consoleManager);
 		interp.set("userService", this.userService);
 		interp.set("perfTestService", this.perfTestService);

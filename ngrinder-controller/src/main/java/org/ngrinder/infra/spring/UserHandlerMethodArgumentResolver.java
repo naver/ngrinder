@@ -69,30 +69,31 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest,
 			WebDataBinderFactory binderFactory) throws Exception {
 		User currentUser = getUserContext().getCurrentUser();
-		// User want to do something through other User status and this
-		// switchUserId is other user Id
-		String userParam = webRequest.getParameter("ownerId");
-		String switchUserId = null;
-		for (Cookie cookie : ((ServletWebRequest) webRequest).getRequest().getCookies()) {
-			if ("switchUser".equals(cookie.getName()) && cookie.getMaxAge() != 0) {
-				switchUserId = cookie.getValue();
-			}
-		}
 
+		String userParam = webRequest.getParameter("ownerId");
 		if (StringUtils.isNotBlank(userParam) && currentUser.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
 			return getUserService().getUserById(userParam);
 		} 
 
-		if (currentUser.getUserId().equals(switchUserId)) {
+		// User want to do something through other User status and this
+		// switchUser is other user Id
+		String switchUser = null;
+		for (Cookie cookie : ((ServletWebRequest) webRequest).getRequest().getCookies()) {
+			if ("switchUser".equals(cookie.getName()) && cookie.getMaxAge() != 0) {
+				switchUser = cookie.getValue();
+			}
+		}
+
+		if (currentUser.getUserId().equals(switchUser)) {
 			currentUser.setOwnerUser(null);
-		} else if (StringUtils.isNotEmpty(switchUserId)) {
-			User ownerUser = getUserService().getUserById(switchUserId);
+		} else if (StringUtils.isNotEmpty(switchUser)) {
+			User ownerUser = getUserService().getUserById(switchUser);
 			// CurrentUser should remember whose status he used
 			if (currentUser.getRole().hasPermission(Permission.SWITCH_TO_ANYONE) || ownerUser.getFollowers().contains(currentUser)) {
 				currentUser.setOwnerUser(ownerUser);
 				return ownerUser;
 			}
-		} else if (StringUtils.isEmpty(switchUserId)) {
+		} else if (StringUtils.isEmpty(switchUser)) {
 			currentUser.setOwnerUser(null);
 		}
 

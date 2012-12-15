@@ -71,7 +71,8 @@ public class HomeController extends NGrinderBaseController {
 	@Autowired
 	private Config config;
 
-	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|" + "Australia|Europe|Indian|Pacific)/.*";
+	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|"
+					+ "Australia|Europe|Indian|Pacific)/.*";
 
 	private List<TimeZone> timeZones = null;
 
@@ -98,8 +99,8 @@ public class HomeController extends NGrinderBaseController {
 	}
 
 	@RequestMapping(value = { "/home", "/" })
-	public String home(User user, @RequestParam(value = "exception", defaultValue = "") String exception, ModelMap model,
-			HttpServletResponse response, HttpServletRequest request) {
+	public String home(User user, @RequestParam(value = "exception", defaultValue = "") String exception,
+					ModelMap model, HttpServletResponse response, HttpServletRequest request) {
 		try {
 			Role role = null;
 			try {
@@ -132,7 +133,7 @@ public class HomeController extends NGrinderBaseController {
 	@ResponseBody
 	@RequestMapping("/check/healthcheck")
 	public String healthcheck() {
-		return regionService.getCurrentRegion();
+		return regionService.getCurrentRegion() + ":" + StringUtils.join(regionService.getRegions().keySet(), "|");
 	}
 
 	@ResponseBody
@@ -143,10 +144,11 @@ public class HomeController extends NGrinderBaseController {
 	}
 
 	private void setLanguage(String lan, HttpServletResponse response, HttpServletRequest request) {
-		LocaleResolver localeResolver = checkNotNull(RequestContextUtils.getLocaleResolver(request), "No LocaleResolver found!");
+		LocaleResolver localeResolver = checkNotNull(RequestContextUtils.getLocaleResolver(request),
+						"No LocaleResolver found!");
 		LocaleEditor localeEditor = new LocaleEditor();
 		localeEditor.setAsText(StringUtils.defaultIfBlank(lan,
-				config.getSystemProperties().getProperty(NGRINDER_PROP_DEFAULT_LANGUAGE, "en")));
+						config.getSystemProperties().getProperty(NGRINDER_PROP_DEFAULT_LANGUAGE, "en")));
 		localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
 	}
 

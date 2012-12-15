@@ -17,7 +17,6 @@ import javax.persistence.Entity;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.reflections.Reflections;
@@ -84,8 +83,6 @@ public class DatabaseConfig implements NGrinderConstants {
 						"[FATAL] Database type is not sepecfied. In default, use H2."));
 		if (config.isCluster() && !database.isClusterSupport()) {
 			CoreLogger.LOGGER.error("In cluster mode, H2 is not allowed to use. Please select cubrid as database");
-			throw new NGrinderRuntimeException(
-							"In cluster mode, H2 is not allowed to use. Please select cubrid as database");
 		}
 		hibernateJpaVendorAdapter.setDatabasePlatform(database.getDialect());
 		hibernateJpaVendorAdapter.setShowSql(false);
