@@ -15,7 +15,6 @@ package org.ngrinder.infra.spring;
 
 import javax.servlet.http.Cookie;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.model.Permission;
 import org.ngrinder.model.User;
