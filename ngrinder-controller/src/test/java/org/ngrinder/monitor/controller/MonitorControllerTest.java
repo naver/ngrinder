@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ngrinder.chart.controller;
+package org.ngrinder.monitor.controller;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -21,9 +21,10 @@ import java.io.IOException;
 import java.text.ParseException;
 
 import org.junit.Test;
-import org.ngrinder.chart.AbstractChartTransactionalTest;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.monitor.AbstractChartTransactionalTest;
+import org.ngrinder.monitor.controller.MonitorController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;

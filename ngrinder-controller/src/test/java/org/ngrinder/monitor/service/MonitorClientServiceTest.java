@@ -11,14 +11,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ngrinder.chart.service;
+package org.ngrinder.monitor.service;
 
 import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 
 import org.junit.Test;
-import org.ngrinder.chart.AbstractChartTransactionalTest;
+import org.ngrinder.monitor.AbstractChartTransactionalTest;
 import org.ngrinder.monitor.MonitorConstants;
+import org.ngrinder.monitor.service.MonitorClientSerivce;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
 /**

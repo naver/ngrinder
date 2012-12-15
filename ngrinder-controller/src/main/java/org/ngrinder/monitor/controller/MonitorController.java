@@ -11,16 +11,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ngrinder.chart.controller;
+package org.ngrinder.monitor.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.ngrinder.chart.service.MonitorService;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.ngrinder.monitor.service.MonitorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
