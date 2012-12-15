@@ -46,7 +46,7 @@ public enum Database {
 	},
 
 	/** H2. */
-	H2(org.h2.Driver.class, H2ExDialect.class, "jdbc:h2:%s/db/h2") {
+	H2(org.h2.Driver.class, H2ExDialect.class, "jdbc:h2:%s/db/h2", false) {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
 			String format = String.format(getUrlTemplate(), databaseProperties.getProperty("NGRINDER_HOME", "."),
@@ -69,6 +69,22 @@ public enum Database {
 	private final String urlTemplate;
 	private final String jdbcDriverName;
 	private final String dialect;
+	private final boolean clusterSupport;
+
+	/**
+	 * Constructor with cluster mode true.
+	 * 
+	 * @param jdbcDriver
+	 *            JDBC Driver class
+	 * @param dialect
+	 *            the dialect to be used
+	 * @param urlTemplate
+	 *            database url template. This will be used to be combined with database_url property
+	 *            in database.conf
+	 */
+	Database(Class<? extends Driver> jdbcDriver, Class<? extends Dialect> dialect, String urlTemplate) {
+		this(jdbcDriver, dialect, urlTemplate, true);
+	}
 
 	/**
 	 * Constructor.
@@ -80,11 +96,17 @@ public enum Database {
 	 * @param urlTemplate
 	 *            database url template. This will be used to be combined with database_url property
 	 *            in database.conf
+	 * @param clusterSupport
+	 *            true if cluster mode is supported.
+	 * @since 3.1
 	 */
-	Database(Class<? extends Driver> jdbcDriver, Class<? extends Dialect> dialect, String urlTemplate) {
+	Database(Class<? extends Driver> jdbcDriver, Class<? extends Dialect> dialect, String urlTemplate,
+					boolean clusterSupport) {
+		this.clusterSupport = clusterSupport;
 		this.dialect = dialect.getCanonicalName();
 		this.jdbcDriverName = jdbcDriver.getCanonicalName();
 		this.urlTemplate = urlTemplate;
+
 	}
 
 	/**
@@ -138,8 +160,8 @@ public enum Database {
 	}
 
 	/**
-	 * Setup the database specific features.
-	 * Each {@link Database} enums should inherits this method.
+	 * Setup the database specific features. Each {@link Database} enums should inherits this
+	 * method.
 	 * 
 	 * @param dataSource
 	 *            dataSource
@@ -170,9 +192,14 @@ public enum Database {
 
 	/**
 	 * Get the current used dialect.
+	 * 
 	 * @return dialect name
 	 */
 	public String getDialect() {
 		return dialect;
+	}
+
+	public boolean isClusterSupport() {
+		return clusterSupport;
 	}
 }
