@@ -347,7 +347,7 @@ public class NGrinderStarter {
 		String pid = agentConfig.getAgentPidProperties(mode);
 		try {
 			if (StringUtils.isNotBlank(pid)) {
-				new Sigar().kill(pid, 7);
+				new Sigar().kill(pid, 15);
 			}
 		} catch (SigarException e) {
 			printHelpAndExit(String.format("Error occurs while terminating %s process."
