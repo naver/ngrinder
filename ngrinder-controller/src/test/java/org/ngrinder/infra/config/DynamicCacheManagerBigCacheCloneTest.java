@@ -22,21 +22,20 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.common.util.ThreadUtil;
 import org.springframework.cache.Cache;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 
 public class DynamicCacheManagerBigCacheCloneTest {
-	ReloadableDynamicCacheManager dynamicCacheManagerConfig1;
-	ReloadableDynamicCacheManager dynamicCacheManagerConfig2;
+	private ReloadableDynamicCacheManager dynamicCacheManagerConfig1;
+	private ReloadableDynamicCacheManager dynamicCacheManagerConfig2;
 	private EhCacheCacheManager dynamicCacheManager1;
 	private EhCacheCacheManager dynamicCacheManager2;
 
 	class ReloadableDynamicCacheManager extends DynamicCacheConfig {
-		final int port;
-		final String cacheName;
+		private final int port;
+		private final String cacheName;
 		CacheManager mgr;
 
 		ReloadableDynamicCacheManager(int port, String cacheName) {
@@ -60,13 +59,8 @@ public class DynamicCacheManagerBigCacheCloneTest {
 		}
 	}
 
-	Config config;
-	String currentIp;
-
-	@Before
-	public void before() {
-
-	}
+	private Config config;
+	private String currentIp;
 
 	@Test
 	public void testDynamicCache() throws InterruptedException {
@@ -79,21 +73,23 @@ public class DynamicCacheManagerBigCacheCloneTest {
 		when(config.isCluster()).thenReturn(true);
 		dynamicCacheManager1 = dynamicCacheManagerConfig1.dynamicCacheManager();
 		dynamicCacheManager1.afterPropertiesSet();
-		Cache cache = dynamicCacheManager1.getCache("region_list");
-		for (int i = 0; i < 1000; i++) {
+		Cache cache = dynamicCacheManager1.getCache("agent_request");
+		for (int i = 0; i < 100; i++) {
 			cache.put("Hello" + i, i);
 		}
-		ThreadUtil.sleep(3000);
 		dynamicCacheManagerConfig2 = new ReloadableDynamicCacheManager(40002, "cache2");
 		when(config.getClusterURIs()).thenReturn(new String[] { currentIp + ":40001", currentIp + ":40002" });
 		dynamicCacheManagerConfig2.setConfig(config);
 		dynamicCacheManager2 = dynamicCacheManagerConfig2.dynamicCacheManager();
 		dynamicCacheManager2.afterPropertiesSet();
 		ThreadUtil.sleep(3000);
-		assertThat(((Ehcache) (dynamicCacheManager2.getCache("region_list").getNativeCache())).getKeys().size(),
-						is(1000));
+		assertThat(((Ehcache) (dynamicCacheManager2.getCache("agent_request").getNativeCache())).getKeys().size(),
+						is(100));
 	}
 
+	/**
+	 * Clean up
+	 */
 	@After
 	public void after() {
 		dynamicCacheManagerConfig1.mgr.shutdown();

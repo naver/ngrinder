@@ -82,33 +82,45 @@ public class DynamicCacheManagerTest {
 	@Test
 	public void testDynamicCache() throws InterruptedException {
 		System.setProperty("net.sf.ehcache.skipUpdateCheck", "true");
-		dynamicCacheManager2.getCache("region_list").put("hello", "127.0.0.1");
+		Cache cache1 = dynamicCacheManager1.getCache("agent_request");
+		Cache cache2 = dynamicCacheManager2.getCache("agent_request");
+
+		cache2.put("hello", "127.0.0.1");
 		ThreadUtil.sleep(1000);
-		Cache cache = dynamicCacheManager1.getCache("region_list");
-		assertThat((String) cache.get("hello").get(), is("127.0.0.1"));
+		assertThat((String) cache1.get("hello").get(), is("127.0.0.1"));
 		ThreadUtil.sleep(4000);
-		assertThat(dynamicCacheManager1.getCache("region_list").get("hello"), not(nullValue()));
-		assertThat(dynamicCacheManager2.getCache("region_list").get("hello"), not(nullValue()));
-		ThreadUtil.sleep(4000);
-		assertThat(dynamicCacheManager1.getCache("region_list").get("hello"), nullValue());
-		assertThat(dynamicCacheManager2.getCache("region_list").get("hello"), nullValue());
+		assertThat(cache1.get("hello"), not(nullValue()));
+		assertThat(cache2.get("hello"), not(nullValue()));
+		// After timeout
+		ThreadUtil.sleep(8000);
+		assertThat(cache1.get("hello"), nullValue());
+		assertThat(cache2.get("hello"), nullValue());
 	}
 
 	@Test
 	public void testDynamicCacheUpdate() throws InterruptedException {
+		// Given
 		System.setProperty("net.sf.ehcache.skipUpdateCheck", "true");
 		String value = "127.0.0.1";
-		dynamicCacheManager2.getCache("region_list").put("hello", value);
+		Cache cache1 = dynamicCacheManager1.getCache("agent_request");
+		Cache cache2 = dynamicCacheManager2.getCache("agent_request");
+		cache2.put("hello", value);
+		cache2.put("hello2", value);
+
 		ThreadUtil.sleep(1000);
-		Cache cache = dynamicCacheManager1.getCache("region_list");
-		assertThat((String) cache.get("hello").get(), is(value));
+		// When
+		assertThat((String) cache1.get("hello").get(), is(value));
+		assertThat((String) cache1.get("hello2").get(), is(value));
+
+		// Update Cache after 4 sec
 		ThreadUtil.sleep(4000);
-		assertThat(dynamicCacheManager1.getCache("region_list").get("hello"), not(nullValue()));
-		dynamicCacheManager1.getCache("region_list").put("hello", value);
-		assertThat(dynamicCacheManager2.getCache("region_list").get("hello"), not(nullValue()));
-		ThreadUtil.sleep(4000);
-		assertThat(dynamicCacheManager1.getCache("region_list").get("hello"), not(nullValue()));
-		assertThat(dynamicCacheManager2.getCache("region_list").get("hello"), not(nullValue()));
+		assertThat(cache1.get("hello"), not(nullValue()));
+		cache1.put("hello", value);
+
+		// Then
+		ThreadUtil.sleep(8000);
+		assertThat(cache1.get("hello"), not(nullValue()));
+		assertThat(cache2.get("hello"), not(nullValue()));
 	}
 
 	@After

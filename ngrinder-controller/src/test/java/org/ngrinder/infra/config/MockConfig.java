@@ -22,6 +22,9 @@ import org.ngrinder.infra.annotation.TestOnlyComponent;
 public class MockConfig extends Config {
 	private PropertiesWrapper wrapper = new PropertiesWrapper(new Properties());
 
+	public boolean cluster;
+	public boolean doRealOnRegion = false;
+
 	public void setSystemProperties(PropertiesWrapper wrapper) {
 		this.wrapper = wrapper;
 	}
@@ -35,6 +38,17 @@ public class MockConfig extends Config {
 	public void loadSystemProperties() {
 		super.loadSystemProperties();
 		setSystemProperties(super.getSystemProperties());
+	}
+
+	@Override
+	public boolean isCluster() {
+		// TODO Auto-generated method stub
+		return cluster;
+	}
+
+	@Override
+	public String getRegion() {
+		return isCluster() ? (doRealOnRegion == true ? super.getRegion() : "TestRegion") : NONE_REGION;
 	}
 
 }

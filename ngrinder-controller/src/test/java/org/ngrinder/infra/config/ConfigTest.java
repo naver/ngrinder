@@ -98,25 +98,16 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGri
 
 	@Test
 	public void testLoadClusterConfig() {
-		PropertiesWrapper wrapper = mock(PropertiesWrapper.class);
-		config.setSystemProperties(wrapper);
-		when(wrapper.getPropertyInt(NGRINDER_PROP_CLUSTER_LISTENER_PORT, 40003)).thenReturn(40003);
-		when(wrapper.getProperty(NGRINDER_PROP_CLUSTER_URIS, null)).thenReturn("");
-
+		config.cluster = true;
 		config.verifyClusterConfig();
-		assertThat(config.isCluster(), is(false));
-
-		when(wrapper.getPropertyInt(NGRINDER_PROP_CLUSTER_LISTENER_PORT, 40003)).thenReturn(40003);
-		when(wrapper.getProperty(NGRINDER_PROP_CLUSTER_URIS, null)).thenReturn("192.168.1.1;192.168.2.2;192.168.3.3");
-		config.verifyClusterConfig();
-		assertThat(config.isCluster(), is(true));
 	}
 
 	@Test
 	public void testLoadExtendProperties() {
+		config.cluster = true;
 		Properties wrapper = new Properties();
 		wrapper.put(NGRINDER_PROP_REGION, "TestNewRegion");
-
+		config.doRealOnRegion = true;
 		// set mock exHome and test
 		Home mockExHome = mock(Home.class);
 		when(mockExHome.getProperties("system-ex.conf")).thenReturn(wrapper);
@@ -125,5 +116,4 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGri
 		config.loadSystemProperties();
 		assertThat(config.getRegion(), is("TestNewRegion"));
 	}
-
 }
