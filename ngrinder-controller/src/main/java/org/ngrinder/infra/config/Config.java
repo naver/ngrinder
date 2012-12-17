@@ -184,7 +184,8 @@ public class Config implements IConfig, NGrinderConstants {
 		configurator.setContext(context);
 		context.reset();
 		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
-		context.putProperty("LOG_DIRECTORY", getHome().getGloablLogFile().getAbsolutePath());
+		Home logHome = exHome.exists() ? exHome : home;
+		context.putProperty("LOG_DIRECTORY", logHome.getGloablLogFile().getAbsolutePath());
 		String region = getRegion();
 		context.putProperty("SUFFIX", region.equals(NONE_REGION) ? "" : "_" + region);
 
