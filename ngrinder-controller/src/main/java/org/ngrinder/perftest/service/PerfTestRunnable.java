@@ -253,7 +253,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	SingleConsole checkCancellation(SingleConsole singleConsole) {
 		if (singleConsole.isCanceled()) {
-			throw new SinlgeConsolCancellationException();
+			throw new SinlgeConsolCancellationException("Single Console " + singleConsole.getConsolePort()
+							+ " is canceled");
 		}
 		return singleConsole;
 	}

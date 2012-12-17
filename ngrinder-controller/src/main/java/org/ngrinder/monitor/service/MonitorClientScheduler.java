@@ -19,6 +19,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.ngrinder.agent.model.AgentInfo;
+import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
@@ -28,10 +29,10 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Maps;
 
 /**
- * Used to get monitor data directly from MBeanClient and save. For every MBClient, one instance
- * will be created. So it is not singleton.
+ * Scheduler to monitor and save the monitoring data.
  * 
  * @author Mavlarn
+ * @author JunHo Yoon
  * @since 3.1
  */
 @Service
@@ -40,12 +41,20 @@ public class MonitorClientScheduler {
 
 	@Autowired
 	private ApplicationContext applicationContext;
-	
+
 	@Autowired
 	private CacheManager cacheManager;
 
-	public void add(Set<AgentInfo> agents, File reportPath) {
-		for (AgentInfo target : agents) {
+	/**
+	 * Add MBean Monitors on given monitorTargets.
+	 * 
+	 * @param monitorTargets
+	 *            monitor taget set
+	 * @param reportPath
+	 *            report path
+	 */
+	public void add(Set<AgentInfo> monitorTargets, File reportPath) {
+		for (AgentInfo target : monitorTargets) {
 			String targetKey = createTargetKey(target, reportPath);
 			MonitorClientSerivce bean = applicationContext.getBean(MonitorClientSerivce.class);
 			bean.init(target.getIp(), target.getPort(), reportPath, cacheManager.getCache("monitor_data"));
@@ -53,6 +62,14 @@ public class MonitorClientScheduler {
 		}
 	}
 
+	/**
+	 * Delete MBean Monitors on given monitorTargets.
+	 * 
+	 * @param monitorTargets
+	 *            monitor target set
+	 * @param reportPath
+	 *            report path
+	 */
 	public void remove(Set<AgentInfo> agents, File reportPath) {
 		for (AgentInfo target : agents) {
 			String targetIP = createTargetKey(target, reportPath);
@@ -65,6 +82,9 @@ public class MonitorClientScheduler {
 		return target.getIp() + "_" + reportPath;
 	}
 
+	/**
+	 * Retrieve the {@link SystemInfo} from monitor targets and save it into local cache.
+	 */
 	@Scheduled(fixedDelay = 500)
 	public void retriveData() {
 		for (Entry<String, MonitorClientSerivce> target : monitorClientsMap.entrySet()) {
@@ -73,6 +93,9 @@ public class MonitorClientScheduler {
 		}
 	}
 
+	/**
+	 * Save the {@link SystemInfo} into the report path.
+	 */
 	@Scheduled(fixedRate = 1000)
 	public void saveData() {
 		for (Entry<String, MonitorClientSerivce> target : monitorClientsMap.entrySet()) {

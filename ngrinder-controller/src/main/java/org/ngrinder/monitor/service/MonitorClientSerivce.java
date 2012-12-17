@@ -76,6 +76,8 @@ public class MonitorClientSerivce {
 	 *            port of the monitor target
 	 * @param reportPath
 	 *            report path
+	 * @param cache
+	 *            cache for {@link SystemInfo} data.
 	 */
 	public void init(String ip, int port, File reportPath, Cache cache) {
 		LOGGER.debug("Init MonitorClientSerivce for {}:{}", ip, port);
@@ -145,11 +147,17 @@ public class MonitorClientSerivce {
 		IOUtils.closeQuietly(bw);
 	}
 
+	/**
+	 * Put the monitor data into Cache.
+	 */
 	@Async
 	public void putCache() {
 		cache.put(ip, getMonitorData());
 	}
 
+	/**
+	 * Record the data into file.
+	 */
 	@Async
 	public void record() {
 		ValueWrapper valueWrapper = cache.get(ip);
