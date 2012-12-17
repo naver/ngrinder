@@ -496,4 +496,11 @@ public class Config implements IConfig, NGrinderConstants {
 		return getSystemProperties().getPropertyBoolean(NGRINDER_PROP_REGION_HIDE, false); 
 	}
 
+	public boolean hasShutdownLock() {
+		if (exHome.exists()) {
+			return exHome.getSubFile("shutdown.lock").exists();
+		}
+		return false;
+	}
+
 }
