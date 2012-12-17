@@ -143,6 +143,9 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
 	public void startTest() {
+		if (config.hasNoMoreTestLock()) {
+			return;
+		}
 		// Block if the count of testing exceed the limit
 		if (!perfTestService.canExecuteTestMore()) {
 			// LOG MORE

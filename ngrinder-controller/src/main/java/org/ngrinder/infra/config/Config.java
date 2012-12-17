@@ -493,9 +493,26 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	public boolean isInvisibleRegion() {
-		return getSystemProperties().getPropertyBoolean(NGRINDER_PROP_REGION_HIDE, false); 
+		return getSystemProperties().getPropertyBoolean(NGRINDER_PROP_REGION_HIDE, false);
 	}
 
+	/**
+	 * Check the no more test lock to block further test execution.
+	 * 
+	 * @return true if it exists
+	 */
+	public boolean hasNoMoreTestLock() {
+		if (exHome.exists()) {
+			return exHome.getSubFile("no_more_test.lock").exists();
+		}
+		return false;
+	}
+
+	/**
+	 * Check the shutdown lock to exclude this machine from somewhere(maybe L4).
+	 * 
+	 * @return true if it exists
+	 */
 	public boolean hasShutdownLock() {
 		if (exHome.exists()) {
 			return exHome.getSubFile("shutdown.lock").exists();
