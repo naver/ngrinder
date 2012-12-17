@@ -159,6 +159,15 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 					eachAgentInDB.setStatus(INACTIVE);
 					changeAgents.add(eachAgentInDB);
 				}
+				// the agent in DB is not attached to current controller
+				if (StringUtils.equals(regionOfEachAgentInDB, curRegion)) {
+					// the agent WAS attached to this controller before, but it is down.
+					
+				}
+				else if (!regions.contains(regionOfEachAgentInDB)) {
+					// this agent in DB 's region is not in any region
+					deleteAgents.add(eachAgentInDB);
+				}
 			}
 
 		}
