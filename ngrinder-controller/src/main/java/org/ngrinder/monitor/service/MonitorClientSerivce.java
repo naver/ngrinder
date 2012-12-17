@@ -103,10 +103,8 @@ public class MonitorClientSerivce {
 	}
 
 	/**
-	 * get monitor data from MBClient and record into writer.
+	 * Get monitor data from MBClient and record into writer.
 	 * 
-	 * @param bw
-	 *            buffered writer of file
 	 */
 	public SystemInfo getMonitorData() {
 		SystemInfo retData = new SystemInfo();
