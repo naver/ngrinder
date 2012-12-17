@@ -792,7 +792,7 @@ function bindEvent() {
 			var ownerId = ""; 
 			<@security.authorize ifAnyGranted="A, S">					
 				<#if test??>
-					ownerId = "&ownerId=${(test.lastModifiedUser.userId)!}";
+					ownerId = "&ownerId=${(test.createdUser.userId)!}";
 				</#if>
 			</@security.authorize>
 			var scriptRevision = $("#scriptRevision").val();
