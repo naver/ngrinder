@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 
 import javax.annotation.PostConstruct;
 
@@ -51,10 +52,12 @@ import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.monitor.service.MonitorClientScheduler;
+import org.ngrinder.monitor.service.MontorClientManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.atlassian.plugin.event.PluginEventListener;
@@ -91,10 +94,13 @@ public class PerfTestRunnable implements NGrinderConstants {
 	@Autowired
 	private Config config;
 
-	@Autowired
-	private MonitorClientScheduler monitorClientScheduler;
-
 	private List<OnTestSamplingRunnable> testSamplingRunnables;
+
+	@Autowired
+	private ApplicationContext applicationContext;
+
+	@Autowired
+	TaskScheduler scheduler;
 
 	/**
 	 * Initialize plugin manager to register plugin update event.
@@ -335,11 +341,15 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// Add monitors when sampling is started.
 		final Set<AgentInfo> agents = createMonitorTargets(perfTest);
 		singleConsole.addSamplingLifeCyleListener(new SamplingLifeCycleListener() {
+			private MontorClientManager monitorClientScheduler = null;
+			private ScheduledFuture<?> scheduleWithFixedDelay = null;
 
 			@Override
 			public void onSamplingStarted() {
 				LOG.info("add monitors on {} for perftest {}", agents, perfTest.getId());
+				monitorClientScheduler = applicationContext.getBean(MontorClientManager.class);
 				monitorClientScheduler.add(agents, singleConsole.getReportPath());
+				scheduleWithFixedDelay = scheduler.scheduleWithFixedDelay(monitorClientScheduler, 600);
 				for (OnTestSamplingRunnable each : testSamplingRunnables) {
 					try {
 						each.startSampling(singleConsole, perfTest, perfTestService);
@@ -353,8 +363,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 			@Override
 			public void onSamplingEnded() {
 				LOG.info("remove monitors on {} for perftest {}", agents, perfTest.getId());
-
-				monitorClientScheduler.remove(agents, singleConsole.getReportPath());
+				scheduleWithFixedDelay.cancel(false);
+				monitorClientScheduler.destroy();
 				for (OnTestSamplingRunnable each : testSamplingRunnables) {
 					try {
 						each.endSampling(singleConsole, perfTest, perfTestService);
@@ -371,6 +381,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 					perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING,
 									"All agents are unexpectively lost.");
 				}
+				monitorClientScheduler.saveData();
 				perfTestService.saveAgentsInfo(singleConsole, perfTest);
 				perfTestService.saveStatistics(singleConsole, perfTest);
 

@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.context.annotation.Scope;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 /**
@@ -148,15 +147,13 @@ public class MonitorClientSerivce {
 	/**
 	 * Put the monitor data into Cache.
 	 */
-	@Async
-	public void putCache() {
+	public void saveDataCache() {
 		cache.put(ip, getMonitorData());
 	}
 
 	/**
 	 * Record the data into file.
 	 */
-	@Async
 	public void record() {
 		ValueWrapper valueWrapper = cache.get(ip);
 		SystemInfo systemInfo = null;

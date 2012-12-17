@@ -23,7 +23,7 @@ import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
@@ -36,7 +36,8 @@ import com.google.common.collect.Maps;
  * @since 3.1
  */
 @Service
-public class MonitorClientScheduler {
+@Scope(value = "prototype")
+public class MontorClientManager implements Runnable {
 	private Map<String, MonitorClientSerivce> monitorClientsMap = Maps.newConcurrentMap();
 
 	@Autowired
@@ -55,52 +56,50 @@ public class MonitorClientScheduler {
 	 */
 	public void add(Set<AgentInfo> monitorTargets, File reportPath) {
 		for (AgentInfo target : monitorTargets) {
-			String targetKey = createTargetKey(target, reportPath);
-			MonitorClientSerivce bean = applicationContext.getBean(MonitorClientSerivce.class);
-			bean.init(target.getIp(), target.getPort(), reportPath, cacheManager.getCache("monitor_data"));
-			monitorClientsMap.put(targetKey, bean);
+			String targetKey = createTargetKey(target);
+			if (!monitorClientsMap.containsKey(targetKey)) {
+				MonitorClientSerivce bean = applicationContext.getBean(MonitorClientSerivce.class);
+				bean.init(target.getIp(), target.getPort(), reportPath, cacheManager.getCache("monitor_data"));
+				monitorClientsMap.put(targetKey, bean);
+			}
 		}
 	}
 
 	/**
-	 * Delete MBean Monitors on given monitorTargets.
-	 * 
-	 * @param monitorTargets
-	 *            monitor target set
-	 * @param reportPath
-	 *            report path
+	 * Delete All MBean Monitors.
 	 */
-	public void remove(Set<AgentInfo> agents, File reportPath) {
-		for (AgentInfo target : agents) {
-			String targetIP = createTargetKey(target, reportPath);
-			MonitorClientSerivce monitorClient = monitorClientsMap.remove(targetIP);
-			monitorClient.close();
+	public void destroy() {
+		for (Entry<String, MonitorClientSerivce> target : monitorClientsMap.entrySet()) {
+			target.getValue().close();
 		}
 	}
 
-	private String createTargetKey(AgentInfo target, File reportPath) {
-		return target.getIp() + "_" + reportPath;
+	private String createTargetKey(AgentInfo target) {
+		return target.getIp();
 	}
 
 	/**
 	 * Retrieve the {@link SystemInfo} from monitor targets and save it into local cache.
 	 */
-	@Scheduled(fixedDelay = 500)
 	public void retriveData() {
-		for (Entry<String, MonitorClientSerivce> target : monitorClientsMap.entrySet()) {
-			MonitorClientSerivce monitorClientSerivce = target.getValue();
-			monitorClientSerivce.putCache();
-		}
+
 	}
 
 	/**
 	 * Save the {@link SystemInfo} into the report path.
 	 */
-	@Scheduled(fixedRate = 1000)
 	public void saveData() {
 		for (Entry<String, MonitorClientSerivce> target : monitorClientsMap.entrySet()) {
 			MonitorClientSerivce monitorClientSerivce = target.getValue();
 			monitorClientSerivce.record();
+		}
+	}
+
+	@Override
+	public void run() {
+		for (Entry<String, MonitorClientSerivce> target : monitorClientsMap.entrySet()) {
+			MonitorClientSerivce monitorClientSerivce = target.getValue();
+			monitorClientSerivce.saveDataCache();
 		}
 	}
 
