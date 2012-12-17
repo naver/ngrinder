@@ -117,6 +117,10 @@ public class NGrinderBaseController implements NGrinderConstants {
 		return config.isCluster();
 	}
 
+	@ModelAttribute("helpUrl")
+	public String helpUrl() {
+		return config.getHelpUrl();
+	}
 	/**
 	 * Provide announcement hide cookie as a model attributes.
 	 * 

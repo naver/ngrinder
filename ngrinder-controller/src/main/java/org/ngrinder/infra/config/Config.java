@@ -520,4 +520,12 @@ public class Config implements IConfig, NGrinderConstants {
 		return false;
 	}
 
+	/**
+	 * Get ngrinder help url
+	 * @return help url
+	 */
+	public String getHelpUrl() {
+		return getSystemProperties().getProperty("ngrinder.help.url", "http://www.cubrid.org/wiki_ngrinder/entry/user-guide");
+	}
+
 }
