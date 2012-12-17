@@ -11,7 +11,7 @@
 	<!-- add RMIBootstrapCacheLoaderFactory to make the cache replicated from cluster. -->
 
 
-	<cache name="users" maxElementsInMemory="100" eternal="false" overflowToDisk="false" timeToIdleSeconds=30 timeToLiveSeconds="30">
+	<cache name="users" maxElementsInMemory="100" eternal="false" overflowToDisk="false" timeToIdleSeconds="30" timeToLiveSeconds="30">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
 			properties="replicateAsynchronously=false, replicatePuts=false, replicateUpdates=true, replicateUpdatesViaCopy=false, replicateRemovals=true" />
 	</cache>
