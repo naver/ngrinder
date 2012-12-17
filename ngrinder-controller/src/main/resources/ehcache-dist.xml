@@ -41,7 +41,8 @@
 
 	<!-- distributed caches -->
 	<cache name="agent_monitoring_targets" maxElementsInMemory="1000" overflowToDisk="false" timeToLiveSeconds="5" />
-
+	<cache name="system_info" maxElementsInMemory="1000"  overflowToDisk="false" timeToLiveSeconds="3" />
+	
 	<cache name="right_panel_entries" maxElementsInMemory="2" eternal="false" overflowToDisk="false"
 		timeToLiveSeconds="100000" />
 	<cache name="left_panel_entries" maxElementsInMemory="2" eternal="false" overflowToDisk="false"

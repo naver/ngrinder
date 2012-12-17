@@ -83,7 +83,7 @@ public class MBeanClient {
 		try {
 			connectClient();
 		} catch (IOException ex) {
-			LOG.error(ex.getMessage());
+			LOG.debug(ex.getMessage());
 			LOG.trace(ex.getMessage(), ex.getCause());
 			bConnect = false;
 		}
