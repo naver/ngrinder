@@ -122,9 +122,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 	public void checkAgentStatus() {
 		List<AgentInfo> changeAgents = new ArrayList<AgentInfo>();
-		List<AgentInfo> deleteAgents = new ArrayList<AgentInfo>();
 		String curRegion = getConfig().getRegion();
-		Set<String> regions = getRegions();
 
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = newHashMap(allAttachedAgents);
@@ -133,57 +131,62 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			attachedAgentMap.put(createAgentKey(existingAgent), existingAgent);
 		}
 
-		List<AgentInfo> agentsInDB = getAgentRepository().findAll();
+		List<AgentInfo> agentsInDB = getAgentRepository().findAll(startWithRegion(curRegion));
 		Map<String, AgentInfo> agentsInDBMap = Maps.newHashMap();
 		// step1. check all agents in DB, whether they are attached to controller.
 		for (AgentInfo eachAgentInDB : agentsInDB) {
 			String keyOfAgentInDB = createAgentKey(eachAgentInDB);
 			agentsInDBMap.put(keyOfAgentInDB, eachAgentInDB);
 			AgentControllerIdentityImplementation agentIdentity = attachedAgentMap.remove(keyOfAgentInDB);
-			String regionOfEachAgentInDB = extractRegionFromAgentRegion(eachAgentInDB.getRegion());
-
+			
 			if (agentIdentity != null) {// if the agent attached to current controller
-				if (StringUtils.equals(regionOfEachAgentInDB, curRegion)) {
-					if (!hasSamePortAndStatus(eachAgentInDB, agentIdentity)) {
-						fillUp(eachAgentInDB, agentIdentity);
-						changeAgents.add(eachAgentInDB);
-					}
-				} else if (eachAgentInDB.getStatus() != WRONG_REGION) {
-					// the region config is wrong
-					eachAgentInDB.setStatus(WRONG_REGION);
+				if (!hasSamePortAndStatus(eachAgentInDB, agentIdentity)) {
+					fillUp(eachAgentInDB, agentIdentity);
 					changeAgents.add(eachAgentInDB);
-
+				} else if (!StringUtils.equals(eachAgentInDB.getRegion(), agentIdentity.getRegion())) {
+					fillUp(eachAgentInDB, agentIdentity);
+					eachAgentInDB.setStatus(WRONG_REGION);
+					eachAgentInDB.setApproved(false);
+					changeAgents.add(eachAgentInDB);
 				}
+
 			} else { // the agent in DB is not attached to current controller
-				if (StringUtils.equals(regionOfEachAgentInDB, curRegion)) {
-					// the agent WAS attached to this controller before, but it is down.
-					if (eachAgentInDB.getStatus() != INACTIVE) {
-						eachAgentInDB.setStatus(INACTIVE);
-						changeAgents.add(eachAgentInDB);
-					}
-				} else if (!regions.contains(regionOfEachAgentInDB)) {
-					// this agent in DB 's region is not in any region
-					deleteAgents.add(eachAgentInDB);
+
+				if (eachAgentInDB.getStatus() != INACTIVE) {
+					eachAgentInDB.setStatus(INACTIVE);
+					changeAgents.add(eachAgentInDB);
 				}
 			}
-
 		}
 
 		// step2. check all attached agents, whether they are new, and not saved in DB.
 		for (AgentControllerIdentityImplementation agentIdentity : attachedAgentMap.values()) {
-			AgentInfo newAgentInfo = fillUp(new AgentInfo(), agentIdentity);
-			if (!StringUtils.equals(extractRegionFromAgentRegion(agentIdentity.getRegion()), curRegion)) {
-				newAgentInfo.setStatus(WRONG_REGION);
+			AgentInfo agentInfo = getAgentRepository().findByIpAndHostName(agentIdentity.getIp(),
+							agentIdentity.getName());
+			if (agentInfo == null) {
+				agentInfo = new AgentInfo();
 			}
-			changeAgents.add(newAgentInfo);
+			if (StringUtils.equals(extractRegionFromAgentRegion(agentIdentity.getRegion()), curRegion)) {
+				AgentInfo newAgentInfo = fillUp(agentInfo, agentIdentity);
+				changeAgents.add(newAgentInfo);
+			} else {
+				if (agentInfo.getStatus() != WRONG_REGION) {
+					AgentInfo newAgentInfo = fillUp(agentInfo, agentIdentity);
+					agentInfo.setStatus(WRONG_REGION);
+					agentInfo.setApproved(false);
+					changeAgents.add(newAgentInfo);
+				}
+			}
 		}
 
 		// step3. update into DB
 		getAgentRepository().save(changeAgents);
-		getAgentRepository().delete(deleteAgents);
 	}
 
 	private boolean hasSamePortAndStatus(AgentInfo agentInfo, AgentControllerIdentityImplementation agentIdentity) {
+		if (agentInfo == null) {
+			return false;
+		}
 		AgentManager agentManager = getAgentManager();
 		return agentInfo.getPort() == agentManager.getAgentConnectingPort(agentIdentity)
 						&& agentInfo.getStatus() == agentManager.getAgentState(agentIdentity);

@@ -100,7 +100,7 @@
 	            <beans:property name="userDetailsService" ref="ngrinderUserDetailsService"/>
 	        </beans:bean>
 	    </beans:property>
-	    <beans:property name="userRepository" ref="userRepository"/>
+	    <beans:property name="userService" ref="userService"/>
 	</beans:bean> 
 
 

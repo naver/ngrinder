@@ -18,7 +18,7 @@ import java.util.HashMap;
 
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
-import org.ngrinder.user.repository.UserRepository;
+import org.ngrinder.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -36,7 +36,7 @@ public class NGrinderAuthenticationPreAuthProvider extends PreAuthenticatedAuthe
 
 	protected static final Logger LOG = LoggerFactory.getLogger(NGrinderAuthenticationPreAuthProvider.class);
 
-	private UserRepository userRepository;
+	private UserService userService;
 
 	// ~ Methods
 	// ========================================================================================================
@@ -100,23 +100,23 @@ public class NGrinderAuthenticationPreAuthProvider extends PreAuthenticatedAuthe
 		User user = securedUser.getUser();
 		user.setAuthProviderClass(securedUser.getUserInfoProviderClass());
 		user.setCreatedDate(new Date());
-		User findOneByUserId = getUserRepository().findOneByUserId(user.getUserId());
+		User findOneByUserId = userService.getUserById(user.getUserId());
 		if (findOneByUserId != null) {
 			user = findOneByUserId.merge(user);
 		}
 		if (user.getRole() == null) {
 			user.setRole(Role.USER);
 		}
-		User savedUser = getUserRepository().save(user);
+		User savedUser = userService.saveUser(user);
 		securedUser.setUser(savedUser);
 	}
 
-	public UserRepository getUserRepository() {
-		return userRepository;
+	public UserService getUserService() {
+		return userService;
 	}
 
-	public void setUserRepository(UserRepository userRepository) {
-		this.userRepository = userRepository;
+	public void setUserService(UserService userService) {
+		this.userService = userService;
 	}
 
 }
