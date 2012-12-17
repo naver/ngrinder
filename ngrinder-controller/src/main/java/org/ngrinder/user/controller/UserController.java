@@ -107,7 +107,7 @@ public class UserController extends NGrinderBaseController {
 		EnumSet<Role> roleSet = EnumSet.allOf(Role.class);
 		model.addAttribute("roleSet", roleSet);
 
-		User retrievedUser = userService.getUserById(userId);
+		User retrievedUser = userService.getUserByIdWithoutCache(userId);
 
 		getUserShareList(retrievedUser, model);
 		model.addAttribute("user", retrievedUser);
