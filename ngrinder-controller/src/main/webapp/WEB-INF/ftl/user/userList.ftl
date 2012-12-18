@@ -13,21 +13,24 @@
 			<h3><@spring.message "navigator.dropdown.userManagement"/></h3>
 		</div>
 		<#include "roleSelector.ftl">
-		<div class="well form-inline searchBar">
-			<input type="text" class="search-query search-query-without-radios" placeholder="Keywords" id="searchText"
-				value="${keywords!}">
-			<a class="btn" id="search_user">
-				<i class="icon-search"></i> <@spring.message "common.button.search"/>
-			</a>
-			<span class="pull-right">
-				<a class="btn" href="${req.getContextPath()}/user/detail" id="createBtn" data-toggle="modal">
-					<i class="icon-user"></i> <@spring.message "user.list.button.create"/>
+		<form id="userListForm" action="${req.getContextPath()}/user/list" method="POST">
+			<div class="well form-inline searchBar">
+			 
+				<input type="text" class="search-query search-query-without-radios" placeholder="Keywords" id="searchText" name="keywords"
+					value="${keywords!}">
+				<a class="btn" id="search_user">
+					<i class="icon-search"></i> <@spring.message "common.button.search"/>
 				</a>
-				<a href="javascript:deleteCheckedUsers()" class="btn btn-danger">
-					<i class="icon-remove"></i> <@spring.message "user.list.button.delete"/>
-				</a>
-			</span>
-		</div>
+				<span class="pull-right">
+					<a class="btn" href="${req.getContextPath()}/user/detail" id="createBtn" data-toggle="modal">
+						<i class="icon-user"></i> <@spring.message "user.list.button.create"/>
+					</a>
+					<a href="javascript:deleteCheckedUsers()" class="btn btn-danger">
+						<i class="icon-remove"></i> <@spring.message "user.list.button.delete"/>
+					</a>
+				</span>
+			</div>
+		</form>
 		<table class="table table-striped table-bordered ellipsis" id="userTable">
 			<colgroup>
 				<col width="30">
@@ -80,7 +83,7 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$("#search_user").on('click', function() {
-				document.location.href = "${req.getContextPath()}/user/list?keywords=" + $("#searchText").val() ;
+				$("#userListForm").submit();
 			});
 			
 			enableChkboxSelectAll("userTable");
