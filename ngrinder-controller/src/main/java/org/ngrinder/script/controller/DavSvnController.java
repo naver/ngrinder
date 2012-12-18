@@ -135,7 +135,6 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 			logRequest(request);
 		}
 		try {
-			ServletDAVHandler handler = null;
 			final String head = DAVPathUtil.head(request.getPathInfo());
 			final User currentUser = userContext.getCurrentUser();
 			// check the security. If the other user tries to the other user's
@@ -149,7 +148,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 			// To make it understand Asian Language..
 			request = new MyHttpServletRequestWrapper(request);
 			DAVRepositoryManager repositoryManager = new DAVRepositoryManager(getDAVConfig(), request);
-			handler = DAVHandlerExFactory.createHandler(repositoryManager, request, response);
+			ServletDAVHandler handler = DAVHandlerExFactory.createHandler(repositoryManager, request, response);
 			handler.execute();
 		} catch (DAVException de) {
 			response.setContentType(XML_CONTENT_TYPE);
