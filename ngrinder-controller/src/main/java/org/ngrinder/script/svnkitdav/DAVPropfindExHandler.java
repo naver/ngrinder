@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.tmatesoft.svn.core.SVNErrorCode;
 import org.tmatesoft.svn.core.SVNErrorMessage;
 import org.tmatesoft.svn.core.SVNException;
@@ -504,7 +505,7 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 	}
 
 	private int outputPropName(DAVElement propName, Map namespacesToPrefixes, int ind, StringBuffer buffer) {
-		if ("".equals(propName.getNamespace())) {
+		if (StringUtils.isEmpty(propName.getNamespace())) {
 			SVNXMLUtil.openXMLTag(null, propName.getName(), SVNXMLUtil.XML_STYLE_SELF_CLOSING, null, buffer);
 		} else {
 			String prefix = namespacesToPrefixes != null ? (String) namespacesToPrefixes.get(propName.getNamespace())
@@ -557,13 +558,13 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 		if (value != null) {
 			if (propAction == DAVInsertPropAction.INSERT_SUPPORTED) {
 				SVNXMLUtil.openXMLTag(SVNXMLUtil.DAV_NAMESPACE_PREFIX, DAVElement.SUPPORTED_LIVE_PROPERTY.getName(),
-								SVNXMLUtil.XML_STYLE_NORMAL, "D:name", livePropElement.getName(), buffer);
-			} else if (propAction == DAVInsertPropAction.INSERT_VALUE && !"".equals(value)) {
+						SVNXMLUtil.XML_STYLE_NORMAL, "D:name", livePropElement.getName(), buffer);
+			} else if (propAction == DAVInsertPropAction.INSERT_VALUE && value.length() != 0) {
 				SVNXMLUtil.openCDataTag(SVNXMLUtil.DAV_NAMESPACE_PREFIX, livePropElement.getName(), value, null, false,
-								false, buffer);
+						false, buffer);
 			} else {
 				SVNXMLUtil.openXMLTag(SVNXMLUtil.DAV_NAMESPACE_PREFIX, livePropElement.getName(),
-								SVNXMLUtil.XML_STYLE_SELF_CLOSING, null, buffer);
+						SVNXMLUtil.XML_STYLE_SELF_CLOSING, null, buffer);
 			}
 			inserted = propAction;
 		}
