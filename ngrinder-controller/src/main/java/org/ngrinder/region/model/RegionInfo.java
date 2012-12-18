@@ -41,7 +41,7 @@ public class RegionInfo implements Serializable {
 
 	/**
 	 * @param ip IP
-	 * @param agentIdentity agent identity
+	 * @param agentIdentities agent identity
 	 * @param visible visible mark
 	 */
 	public RegionInfo(String ip, Set<AgentIdentity> agentIdentities, boolean visible) {

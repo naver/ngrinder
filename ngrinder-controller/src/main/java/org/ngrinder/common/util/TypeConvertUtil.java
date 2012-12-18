@@ -19,7 +19,7 @@ package org.ngrinder.common.util;
  * @author JunHo Yoon
  * @since 3.1
  */
-public class TypeConvertUtil {
+public final class TypeConvertUtil {
 	
 	private TypeConvertUtil() {
 	}
