@@ -37,6 +37,7 @@ public class SinlgeConsolCancellationException extends NGrinderRuntimeException 
 	 * Constructor.
 	 * 
 	 * @param message
+	 *            message
 	 */
 	public SinlgeConsolCancellationException(String message) {
 		super(message);

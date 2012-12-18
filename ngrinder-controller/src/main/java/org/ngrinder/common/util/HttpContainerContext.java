@@ -13,6 +13,8 @@
  */
 package org.ngrinder.common.util;
 
+import static org.ngrinder.common.util.TypeConvertUtil.convert;
+
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +53,8 @@ public class HttpContainerContext {
 		}
 
 		// if empty
-		SecurityContextHolderAwareRequestWrapper request = (SecurityContextHolderAwareRequestWrapper) RequestContextHolder
-						.currentRequestAttributes().resolveReference("request");
+		SecurityContextHolderAwareRequestWrapper request = convert(RequestContextHolder.currentRequestAttributes()
+						.resolveReference("request"));
 		int serverPort = request.getServerPort();
 		// If it's http default port it will ignore the port part.
 		// However, if ngrinder is provided in HTTPS.. it can be a problem.
@@ -68,8 +70,8 @@ public class HttpContainerContext {
 	 * @return true if unix.
 	 */
 	public boolean isUnixUser() {
-		SecurityContextHolderAwareRequestWrapper request = (SecurityContextHolderAwareRequestWrapper) RequestContextHolder
-						.currentRequestAttributes().resolveReference("request");
+		SecurityContextHolderAwareRequestWrapper request = convert(RequestContextHolder.currentRequestAttributes()
+						.resolveReference("request"));
 		return !StringUtils.containsIgnoreCase(request.getHeader("User-Agent"), "Win");
 	}
 }

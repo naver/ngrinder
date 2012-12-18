@@ -99,6 +99,21 @@ public class HomeController extends NGrinderBaseController {
 		});
 	}
 
+	/**
+	 * Provide nGrinder home.
+	 * 
+	 * @param user
+	 *            user
+	 * @param exception
+	 *            exception if it's redirection from exception handling
+	 * @param model
+	 *            model
+	 * @param response
+	 *            response
+	 * @param request
+	 *            request
+	 * @return index if loggined. login if not.
+	 */
 	@RequestMapping(value = { "/home", "/" })
 	public String home(User user, @RequestParam(value = "exception", defaultValue = "") String exception,
 					ModelMap model, HttpServletResponse response, HttpServletRequest request) {
@@ -131,6 +146,14 @@ public class HomeController extends NGrinderBaseController {
 		}
 	}
 
+	/**
+	 * Return health check message. If there are shutdown lock, it returns 503, otherwise return
+	 * region lists.
+	 * 
+	 * @param response
+	 *            response
+	 * @return region list
+	 */
 	@ResponseBody
 	@RequestMapping("/check/healthcheck")
 	public String healthcheck(HttpServletResponse response) {
@@ -145,11 +168,31 @@ public class HomeController extends NGrinderBaseController {
 		return regionService.getCurrentRegion() + ":" + StringUtils.join(regionService.getRegions().keySet(), "|");
 	}
 
+	/**
+	 * Return health check message with 1 sec delay. If there are shutdown lock, it returns 503,
+	 * otherwise return region lists.
+	 * 
+	 * @param sleep
+	 *            in milliseconds.
+	 * @param response
+	 *            response
+	 * @return region list
+	 */
 	@ResponseBody
 	@RequestMapping("/check/healthcheck_slow")
-	public String healthcheckSlowly(@RequestParam(value = "delay", defaultValue = "1000") int sleep) {
+	public String healthcheckSlowly(@RequestParam(value = "delay", defaultValue = "1000") int sleep,
+					HttpServletResponse response) {
 		ThreadUtil.sleep(sleep);
-		return regionService.getCurrentRegion();
+		if (config.hasShutdownLock()) {
+			try {
+				response.sendError(503, "the ngrinder is about to down");
+			} catch (IOException e) {
+				LOG.error("While running healthcheck() in HomeController, the error occurs.");
+				LOG.error("Details : ", e);
+			}
+		}
+		return regionService.getCurrentRegion() + ":" + StringUtils.join(regionService.getRegions().keySet(), "|");
+
 	}
 
 	private void setLanguage(String lan, HttpServletResponse response, HttpServletRequest request) {
@@ -232,8 +275,14 @@ public class HomeController extends NGrinderBaseController {
 	/**
 	 * Error redirection for second phase.
 	 * 
+	 * @param user
+	 *            user
 	 * @param model
 	 *            model
+	 * @param response
+	 *            response
+	 * @param request
+	 *            request
 	 * @return "index"
 	 */
 	@RequestMapping(value = "/doError")

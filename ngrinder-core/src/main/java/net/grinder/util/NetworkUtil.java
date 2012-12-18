@@ -39,10 +39,6 @@ import org.slf4j.LoggerFactory;
 public abstract class NetworkUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(NetworkUtil.class);
 
-	public static void main(String[] args) {
-		System.out.println("host addr:" + NetworkUtil.getLocalHostAddress());
-		System.out.println("host name:" + NetworkUtil.getLocalHostName());
-	}
 	/**
 	 * Get the local host address, try to get actual IP.
 	 * 

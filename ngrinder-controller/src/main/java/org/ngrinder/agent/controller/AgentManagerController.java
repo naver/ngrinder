@@ -159,7 +159,11 @@ public class AgentManagerController extends NGrinderBaseController {
 	 * @param model
 	 *            model
 	 * @param id
-	 *            id
+	 *            agent id
+	 * @param ip
+	 *            ip
+	 * @param name
+	 *            agent name
 	 * @return json message
 	 */
 	@RequestMapping("/systemDataModel")

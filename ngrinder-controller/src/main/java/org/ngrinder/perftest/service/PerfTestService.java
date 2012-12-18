@@ -122,7 +122,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	private static final String DATA_FILE_EXTENSION = ".data";
 
 	@Autowired
-	protected PerfTestRepository perfTestRepository;
+	private PerfTestRepository perfTestRepository;
 
 	@Autowired
 	private ConsoleManager consoleManager;
@@ -131,7 +131,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	private AgentManager agentManager;
 
 	@Autowired
-	protected Config config;
+	private Config config;
 
 	@Autowired
 	private FileEntryService fileEntryService;
@@ -975,14 +975,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * To get statistics data when test is running and put into cache after that. If the console is
+	 * To save statistics data when test is running and put into cache after that. If the console is
 	 * not available, it returns null.
 	 * 
 	 * @param singleConsole
 	 *            console signle console.
 	 * @param perfTest
 	 *            perfTest
-	 * @return statistic map statistic data map of the test in that console
 	 */
 	public void saveStatistics(SingleConsole singleConsole, PerfTest perfTest) {
 		writeObjectToFile(new File(getPerfTestStatisticPath(perfTest), "statistics.stat"),
@@ -993,13 +992,15 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * get test running statistic data from cache. If there is no cache data, will return empty
 	 * statistic data.
 	 * 
-	 * @param PerfTest
+	 * @param perfTest
 	 *            perfTest
+	 * 
 	 * @return test running statistic data
 	 */
 	public Map<String, Object> getStatistics(PerfTest perfTest) {
-		ConcurrentHashMap<String, Object> readObjectFromFile = readObjectFromFile(new File(
-						getPerfTestStatisticPath(perfTest), "statistics.stat"), new ConcurrentHashMap<String, Object>());
+		File file = new File(getPerfTestStatisticPath(perfTest), "statistics.stat");
+		ConcurrentHashMap<String, Object> readObjectFromFile = readObjectFromFile(file,
+						new ConcurrentHashMap<String, Object>());
 		return readObjectFromFile;
 	}
 
@@ -1007,11 +1008,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * Save system monitor data of all agents connected to one console. If the console is not
 	 * available, it returns empty map. After getting, it will be put into cache.
 	 * 
-	 * @param SingleConsole
+	 * @param singleConsole
 	 *            singleConsole of the test add this parameter just for the key of cache.
-	 * @param PerfTest
+	 * @param perfTest
 	 *            perfTest
-	 * @return agent system data map map containing all agents which connected to that console.
 	 */
 	public void saveAgentsInfo(SingleConsole singleConsole, PerfTest perfTest) {
 		List<AgentIdentity> allAttachedAgents = singleConsole.getAllAttachedAgents();
@@ -1027,6 +1027,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		writeObjectToFile(new File(getPerfTestStatisticPath(perfTest), "agent_info.stat"), result);
 	}
 
+	/**
+	 * Get agent info from saved file.
+	 * 
+	 * @param perfTest
+	 *            perftest
+	 * @return agent info map
+	 */
 	public Map<AgentIdentity, SystemDataModel> getAgentInfo(PerfTest perfTest) {
 		HashMap<AgentIdentity, SystemDataModel> readObjectFromFile = readObjectFromFile(new File(
 						getPerfTestStatisticPath(perfTest), "agent_info.stat"),
@@ -1310,6 +1317,18 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			each.getTags().remove(tag);
 		}
 		perfTestRepository.save(perfTests);
+	}
+
+	public PerfTestRepository getPerfTestRepository() {
+		return perfTestRepository;
+	}
+
+	public Config getConfig() {
+		return config;
+	}
+
+	public void setConfig(Config config) {
+		this.config = config;
 	}
 
 }

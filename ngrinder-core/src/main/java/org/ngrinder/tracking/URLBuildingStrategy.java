@@ -21,7 +21,20 @@ package org.ngrinder.tracking;
  */
 
 public interface URLBuildingStrategy {
+	
+	/**
+	 * Build URL.
+	 * 
+	 * @param focusPoint focus point
+	 * 
+	 * @return URL
+	 */
 	public String buildURL(FocusPoint focusPoint);
 
+	/**
+	 * Set referer URL
+	 * 
+	 * @param refererURL referer URL
+	 */
 	public void setRefererURL(String refererURL);
 }

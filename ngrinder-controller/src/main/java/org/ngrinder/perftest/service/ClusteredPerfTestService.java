@@ -37,8 +37,8 @@ public class ClusteredPerfTestService extends PerfTestService {
 	 */
 	@Transactional
 	public PerfTest getPerfTestCandiate() {
-		List<PerfTest> readyPerfTests = perfTestRepository.findAllByStatusAndRegionOrderByScheduledTimeAsc(
-						Status.READY, config.getRegion());
+		List<PerfTest> readyPerfTests = getPerfTestRepository().findAllByStatusAndRegionOrderByScheduledTimeAsc(
+						Status.READY, getConfig().getRegion());
 		List<PerfTest> usersFirstPerfTests = filterCurrentlyRunningTestUsersTest(readyPerfTests);
 		return usersFirstPerfTests.isEmpty() ? null : readyPerfTests.get(0);
 	}

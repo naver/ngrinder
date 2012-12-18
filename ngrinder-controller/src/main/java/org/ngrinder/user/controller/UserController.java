@@ -236,22 +236,26 @@ public class UserController extends NGrinderBaseController {
 	 *            current user
 	 * @param model
 	 *            model
-	 * @param switchUserId
-	 *            the user who will switch.
+	 * @param switchUser
+	 *            the user who will switch
+	 * @param request
+	 *            request
+	 * @param response
+	 *            response
 	 * 
 	 * @return redirect:/perftest/list
 	 */
 	@RequestMapping("/switchUser")
 	public String switchUser(User user, ModelMap model,
-					@RequestParam(required = false, defaultValue = "") String switchUser,
-					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+					@RequestParam(required = false, defaultValue = "") String switchUser, HttpServletRequest request,
+					HttpServletResponse response) {
 		Cookie cookie = new Cookie("switchUser", switchUser);
 		cookie.setPath("/");
 		// Delete Cookie if empty switchUser
 		if (StringUtils.isEmpty(switchUser)) {
 			cookie.setMaxAge(0);
 		}
-		httpServletResponse.addCookie(cookie);
+		response.addCookie(cookie);
 
 		model.clear();
 		return "redirect:/perftest/list";

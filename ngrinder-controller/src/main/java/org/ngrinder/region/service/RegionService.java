@@ -14,11 +14,13 @@
 package org.ngrinder.region.service;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.util.thread.InterruptibleRunnable;
 import net.sf.ehcache.Ehcache;
 
@@ -79,8 +81,8 @@ public class RegionService {
 
 	void checkRegionUdate() {
 		if (!config.isInvisibleRegion()) {
-			cache.put(getCurrentRegion(),
-							new RegionInfo(config.getCurrentIP(), Sets.newHashSet(agentManager.getAllAttachedAgents())));
+			HashSet<AgentIdentity> newHashSet = Sets.newHashSet(agentManager.getAllAttachedAgents());
+			cache.put(getCurrentRegion(), new RegionInfo(config.getCurrentIP(), newHashSet));
 		}
 	}
 

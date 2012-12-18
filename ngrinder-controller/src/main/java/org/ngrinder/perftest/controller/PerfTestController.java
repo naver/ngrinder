@@ -227,8 +227,6 @@ public class PerfTestController extends NGrinderBaseController {
 	 * 
 	 * @param model
 	 *            model which will contains that value.
-	 * @param agentCount
-	 *            available agent count of the user.
 	 */
 	public void addDefaultAttributeOnModel(ModelMap model) {
 		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());

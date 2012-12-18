@@ -18,7 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Simple class peforming HTTP Get method on the requested url
+ * Simple class peforming HTTP Get method on the requested url.
  * 
  * @author : Siddique Hameed
  * @version : 0.1
@@ -57,6 +57,11 @@ public class HTTPGetMethod {
 		}
 	}
 
+	/**
+	 * Tracking request.
+	 * 
+	 * @param urlString URL
+	 */
 	public void request(String urlString) {
 		HttpURLConnection urlConnection = null;
 		try {

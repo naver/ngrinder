@@ -31,8 +31,9 @@ public class JGoogleAnalyticsTracker {
 	private LoggingAdapter loggingAdapter;
 
 	/**
-	 * Simple constructor passing the application name & google analytics tracking code
+	 * Simple constructor passing the application name & google analytics tracking code.
 	 * 
+	 * @param agentConfig agent configuration
 	 * @param appName
 	 *            Application name (For ex: "LibraryFinder")
 	 * @param googleAnalyticsTrackingCode
@@ -43,7 +44,7 @@ public class JGoogleAnalyticsTracker {
 	}
 
 	/**
-	 * Constructor passing the application name, application version & google analytics tracking
+	 * Constructor passing the application name, application version & google analytics tracking.
 	 * code
 	 * 
 	 * @param appName

@@ -142,8 +142,6 @@ public class AgentManagerService {
 	 * get the available agent count map in all regions of the user, including the free agents and
 	 * user specified agents.
 	 * 
-	 * @param regions
-	 *            current region list
 	 * @param user
 	 *            current user
 	 * @return user available agent count map
@@ -214,10 +212,24 @@ public class AgentManagerService {
 		return agentInfoMap;
 	}
 
+	/**
+	 * Create agent key.
+	 * 
+	 * @param agentInfo agent information
+	 * 
+	 * @return agent key
+	 */
 	public String createAgentKey(AgentInfo agentInfo) {
 		return createAgentKey(agentInfo.getIp(), agentInfo.getName());
 	}
 
+	/**
+	 * Create agent key.
+	 * 
+	 * @param agentIdentity agent identity
+	 * 
+	 * @return agent key
+	 */
 	public String createAgentKey(AgentControllerIdentityImplementation agentIdentity) {
 		return createAgentKey(agentIdentity.getIp(), agentIdentity.getName());
 	}
@@ -227,7 +239,7 @@ public class AgentManagerService {
 	}
 
 	/**
-	 * Get agent identity by ip and name
+	 * Get agent identity by ip and name.
 	 * 
 	 * @param ip
 	 *            ip

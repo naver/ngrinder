@@ -19,7 +19,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.ngrinder.agent.model.AgentInfo;
-import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
@@ -79,14 +78,15 @@ public class MontorClientManager implements Runnable {
 	}
 
 	/**
-	 * Retrieve the {@link SystemInfo} from monitor targets and save it into local cache.
+	 * Retrieve the {@link org.ngrinder.monitor.share.domain.SystemInfo} from monitor targets and
+	 * save it into local cache.
 	 */
 	public void retriveData() {
 
 	}
 
 	/**
-	 * Save the {@link SystemInfo} into the report path.
+	 * Save the {@link org.ngrinder.monitor.share.domain.SystemInfo} into the report path.
 	 */
 	public void saveData() {
 		for (Entry<String, MonitorClientSerivce> target : monitorClientsMap.entrySet()) {

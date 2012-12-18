@@ -761,7 +761,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	@SuppressWarnings("serial")
-	public static Set<String> interestingStatistics = new HashSet<String>() {
+	public static final Set<String> INTERESTING_STATISTICS = new HashSet<String>() {
 		{
 			add("Tests");
 			add("Errors");
@@ -800,7 +800,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
 				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
 				for (ExpressionView expressionView : views) {
-					if (interestingStatistics.contains(expressionView.getDisplayName())) {
+					if (INTERESTING_STATISTICS.contains(expressionView.getDisplayName())) {
 						statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
 										getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
 						lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
@@ -817,7 +817,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		Map<String, Object> totalStatistics = new HashMap<String, Object>();
 
 		for (ExpressionView expressionView : views) {
-			if (interestingStatistics.contains(expressionView.getDisplayName())) {
+			if (INTERESTING_STATISTICS.contains(expressionView.getDisplayName())) {
 				totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
 								getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
 			}

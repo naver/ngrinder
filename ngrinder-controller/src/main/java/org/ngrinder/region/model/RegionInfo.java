@@ -19,32 +19,38 @@ import java.util.Set;
 import net.grinder.common.processidentity.AgentIdentity;
 
 /**
- * Region info to be shared.
+ * Region info to be shared b/w controllers.
  * 
  * @author JunHo Yoon
  * @since 3.1
  */
 public class RegionInfo implements Serializable {
-	/**
-	 * UUID
-	 */
+
 	private static final long serialVersionUID = 1L;
 	private String ip;
 	private boolean visible = true;
 	private Set<AgentIdentity> agentIdentities;
 
 	/**
+	 * Constructor with true visibility.
+	 * 
 	 * @param ip
-	 * @param agentIdentitySet
+	 *            ip
+	 * @param agentIdentities
+	 *            agentIdentity Set
 	 */
 	public RegionInfo(String ip, Set<AgentIdentity> agentIdentities) {
 		this(ip, agentIdentities, true);
 	}
 
 	/**
+	 * Constructor.
 	 * @param ip
-	 * @param agentIdentity
+	 *            ip
+	 * @param agentIdentities
+	 *            agentIdentity Set
 	 * @param visible
+	 *            true if visible
 	 */
 	public RegionInfo(String ip, Set<AgentIdentity> agentIdentities, boolean visible) {
 		super();

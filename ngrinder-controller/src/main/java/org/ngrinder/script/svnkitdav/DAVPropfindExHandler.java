@@ -55,7 +55,6 @@ import org.tmatesoft.svn.core.internal.server.dav.DAVXMLUtil;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVElementProperty;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVLockInfoProvider;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVPropertiesProvider;
-import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVPropfindHandler;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVPropfindRequest;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVPropsResult;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVRequest;
@@ -508,8 +507,7 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 		if (StringUtils.isEmpty(propName.getNamespace())) {
 			SVNXMLUtil.openXMLTag(null, propName.getName(), SVNXMLUtil.XML_STYLE_SELF_CLOSING, null, buffer);
 		} else {
-			String prefix = namespacesToPrefixes != null ? (String) namespacesToPrefixes.get(propName.getNamespace())
-							: null;
+			String prefix = (String) namespacesToPrefixes.get(propName.getNamespace());
 			if (prefix == null) {
 				prefix = "g" + ind;
 				namespacesToPrefixes.put(propName.getNamespace(), prefix);
