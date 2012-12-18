@@ -27,6 +27,9 @@ import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.test.util.ReflectionTestUtils;
 
 /**
  * Region Service Test class.
@@ -42,6 +45,9 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	private RegionService regionService;
 
+	@Autowired
+	private CacheManager cacheManager;
+	
 	@Before
 	public void before() {
 		FileUtils.deleteQuietly(config.getHome().getControllerShareDirectory());
@@ -52,11 +58,17 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 		Config spiedConfig = spy(config);
 		when(spiedConfig.isCluster()).thenReturn(true);
 		when(spiedConfig.getRegion()).thenReturn("TEST_REGION");
-		regionService.setConfig(spiedConfig);
-		regionService.checkRegionUdate();
+
+		RegionService spiedRegionService = spy(regionService);
+		Cache cache = cacheManager.getCache("default"); //use default cache for test
+		ReflectionTestUtils.setField(spiedRegionService, "cache", cache);
+		
+		spiedRegionService.setConfig(spiedConfig);
+		spiedRegionService.checkRegionUdate();
 		Collection<String> regions = regionService.getRegions().keySet();
 		LOG.debug("list:{}", regions);
 		assertThat(regions.contains("TEST_REGION"), is(true));
+		
 	}
 
 	@Test

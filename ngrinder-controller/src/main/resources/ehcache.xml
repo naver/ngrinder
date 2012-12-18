@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd">
 
-	<defaultCache eternal="false" maxElementsInMemory="100" overflowToDisk="false" timeToIdleSeconds="900"
+	<defaultCache name="defaut" eternal="false" maxElementsInMemory="100" overflowToDisk="false" timeToIdleSeconds="900"
 		timeToLiveSeconds="1800" />
 	<cache name="users" maxElementsInMemory="100" eternal="false" overflowToDisk="false" timeToIdleSeconds="30"
 		timeToLiveSeconds="30" />

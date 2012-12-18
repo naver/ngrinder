@@ -18,6 +18,7 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.operation.cotroller.SystemConfigController;
 import org.ngrinder.operation.service.SystemConfigService;
@@ -46,12 +47,19 @@ public class SystemConfigControllerTest extends AbstractNGrinderTransactionalTes
 
 	@Test
 	public void testSaveSystemConfiguration() {
+		String oriContent = service.getSystemConfigFile();
 		Model model = new ExtendedModelMap();
 		String content = "test=My test.";
-		controller.saveSystemConfiguration(model, content);
-
-		assertThat(model.containsAttribute("success"), is(true));
-		assertThat(service.getSystemConfigFile(), is(content));
-		assertThat(config.getSystemProperties().getProperty("test", ""), is("My test."));
+		try {
+			controller.saveSystemConfiguration(model, content);
+			ThreadUtil.sleep(2500); //sleep a while to wait for the file monitor to update the system properties.
+	
+			assertThat(model.containsAttribute("success"), is(true));
+			assertThat(service.getSystemConfigFile(), is(content));
+			assertThat(config.getSystemProperties().getProperty("test", ""), is("My test."));
+		} finally {
+			//reset system config
+			controller.saveSystemConfiguration(model, oriContent);
+		}
 	}
 }
