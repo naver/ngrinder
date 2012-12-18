@@ -102,7 +102,7 @@ public class UserController extends NGrinderBaseController {
 	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
 	public String getUserDetail(User user, final ModelMap model, @RequestParam(required = false) final String userId) {
 		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
-		model.addAttribute("user", userService.getUserById(userId));
+		model.addAttribute("user", userService.getUserByIdWithoutCache(userId));
 		
 		return "user/userDetail";
 	}
