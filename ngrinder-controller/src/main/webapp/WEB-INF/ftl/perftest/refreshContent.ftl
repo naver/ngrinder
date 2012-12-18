@@ -25,7 +25,7 @@
 							<td>${statistics.Tests!'&nbsp;'}</td>
 							<td>${statistics.Errors!'&nbsp;'}</td>
 							<td>${(statistics['Mean_Test_Time_(ms)']!0)?string("0.##")}</td>
-							<td>${statistics.TPS!'&nbsp;'}</td>
+							<td>${statistics.TPS!'0'}</td>
 							<td>-</td>
 							<td>${(statistics['Test_Time_Standard_Deviation_(ms)']!0)?string("0.##")}</td>
 						</tr>
@@ -41,7 +41,7 @@
 							<td>${statistics.Errors!'&nbsp;'}</td>
 							<td>${(statistics['Mean_Test_Time_(ms)']!0)?string("0.##")}</td>
 							<td>${(statistics.TPS!0)?string("0.##")}</td>
-							<td>${statistics.Peak_TPS!'&nbsp;'}</td>
+							<td>${statistics.Peak_TPS!'-'}</td>
 							<td>${(statistics['Test_Time_Standard_Deviation_(ms)']!0)?string("0.##")}</td>
 						</tr>
 						</#list>
