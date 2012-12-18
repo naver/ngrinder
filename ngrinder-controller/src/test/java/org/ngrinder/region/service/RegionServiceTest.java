@@ -26,9 +26,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.config.DynamicCacheConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
@@ -45,8 +45,7 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	private RegionService regionService;
 
-	@Autowired
-	private CacheManager cacheManager;
+	private EhCacheCacheManager cacheManager;
 	
 	@Before
 	public void before() {
@@ -60,10 +59,15 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 		when(spiedConfig.getRegion()).thenReturn("TEST_REGION");
 
 		RegionService spiedRegionService = spy(regionService);
-		Cache cache = cacheManager.getCache("default"); //use default cache for test
-		ReflectionTestUtils.setField(spiedRegionService, "cache", cache);
-		
 		spiedRegionService.setConfig(spiedConfig);
+		
+		DynamicCacheConfig cacheConfig = new DynamicCacheConfig();
+		ReflectionTestUtils.setField(cacheConfig, "config", spiedConfig);
+		cacheManager = cacheConfig.dynamicCacheManager();
+		cacheManager.afterPropertiesSet();
+		ReflectionTestUtils.setField(spiedRegionService, "cacheManager", cacheManager);
+		
+		spiedRegionService.initRegion();
 		spiedRegionService.checkRegionUdate();
 		Collection<String> regions = regionService.getRegions().keySet();
 		LOG.debug("list:{}", regions);
@@ -71,12 +75,4 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 		
 	}
 
-	@Test
-	public void testGetRegions() {
-		Config spiedConfig = spy(config);
-		when(spiedConfig.isCluster()).thenReturn(false);
-		regionService.setConfig(spiedConfig);
-		regionService.checkRegionUdate();
-		assertThat(regionService.getRegions().isEmpty(), is(true));
-	}
 }
