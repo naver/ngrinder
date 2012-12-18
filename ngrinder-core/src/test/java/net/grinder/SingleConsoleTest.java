@@ -73,10 +73,10 @@ public class SingleConsoleTest {
 				return new Date().getTime() - current.getTime();
 			}
 		};
-		ThreadUtil.sleep(1000);
-		assertThat(singleConsole.isCurrentRunningTimeOverDuration(500), is(false));
-		ThreadUtil.sleep(5000);
-		assertThat(singleConsole.isCurrentRunningTimeOverDuration(500), is(true));
+		ThreadUtil.sleep(200);
+		assertThat(singleConsole.isCurrentRunningTimeOverDuration(1000), is(false));
+		ThreadUtil.sleep(800);
+		assertThat(singleConsole.isCurrentRunningTimeOverDuration(1000), is(true));
 	}
 
 	public boolean cancelded = false;
