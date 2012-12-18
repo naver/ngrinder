@@ -227,8 +227,7 @@ public class Config implements IConfig, NGrinderConstants {
 			CoreLogger.LOGGER.warn("    Java Sytem Property:  ngrinder.home=" + userHomeFromProperty);
 			CoreLogger.LOGGER.warn("    '" + userHomeFromProperty + "' is accepted.");
 		}
-		String userHome = null;
-		userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
+		String userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
 		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
 						System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
 		CoreLogger.LOGGER.info("nGrinder home directory:{}.", userHome);
@@ -250,8 +249,7 @@ public class Config implements IConfig, NGrinderConstants {
 			CoreLogger.LOGGER.warn("    Java Sytem Property:  ngrinder.exhome=" + exHomeFromProperty);
 			CoreLogger.LOGGER.warn("    '" + exHomeFromProperty + "' is accepted.");
 		}
-		String userHome = null;
-		userHome = StringUtils.defaultIfEmpty(exHomeFromProperty, exHomeFromEnv);
+		String userHome = StringUtils.defaultIfEmpty(exHomeFromProperty, exHomeFromEnv);
 		File exHomeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
 						System.getProperty("user.home"), NGRINDER_EX_FOLDER);
 		CoreLogger.LOGGER.info("nGrinder ex home directory:{}.", exHomeDirectory);
