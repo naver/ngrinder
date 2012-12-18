@@ -19,7 +19,7 @@ package org.ngrinder.common.util;
  * @author JunHo Yoon
  * @since 3.1
  */
-public class TypeConvertUtil {
+public abstract class TypeConvertUtil {
 	
 	private TypeConvertUtil() {
 	}
@@ -27,8 +27,10 @@ public class TypeConvertUtil {
 	/**
 	 * Convert object to return type.
 	 * 
-	 * @param object converted object
-	 * 
+	 * @param object
+	 *            object to be converted.
+	 * @param <T>
+	 *            converted type
 	 * @return converted object.
 	 */
 	@SuppressWarnings("unchecked")

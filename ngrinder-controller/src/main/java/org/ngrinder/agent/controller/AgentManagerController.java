@@ -156,11 +156,14 @@ public class AgentManagerController extends NGrinderBaseController {
 	/**
 	 * Get the current system performance info for given ip.
 	 * 
-	 * @param model model
-	 * @param id id
-	 * @param ip ip
-	 * @param name name
-	 * 
+	 * @param model
+	 *            model
+	 * @param id
+	 *            agent id
+	 * @param ip
+	 *            ip
+	 * @param name
+	 *            agent name
 	 * @return json message
 	 */
 	@RequestMapping("/systemDataModel")

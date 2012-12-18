@@ -141,7 +141,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			agentsInDBMap.put(keyOfAgentInDB, eachAgentInDB);
 			AgentControllerIdentityImplementation agentIdentity = attachedAgentMap.remove(keyOfAgentInDB);
 
-			if (agentIdentity != null) { // if the agent attached to current controller
+			if (agentIdentity != null) {
+				// if the agent attached to current controller
 				if (!hasSamePortAndStatus(eachAgentInDB, agentIdentity)) {
 					fillUp(eachAgentInDB, agentIdentity);
 					changeAgents.add(eachAgentInDB);
@@ -349,9 +350,11 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 	/**
 	 * Get agent system data model for the given IP. This method is cluster aware.
-	 * 
-	 * @param ip agent IP
-	 * @param name agent name
+	 *
+	 * @param ip
+	 *            agent ip
+	 * @param name
+	 *            agent name
 	 * 
 	 * @return {@link SystemDataModel} instance.
 	 */
@@ -384,7 +387,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 * Stop agent.
 	 * 
 	 * @param agentIdentity
-	 * 			agent identity
+	 *            agent identity to be stopped.
 	 */
 	public void stopAgent(AgentControllerIdentityImplementation agentIdentity) {
 		getAgentManager().stopAgent(agentIdentity);

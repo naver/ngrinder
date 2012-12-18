@@ -975,11 +975,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * To get statistics data when test is running and put into cache after that. If the console is
+	 * To save statistics data when test is running and put into cache after that. If the console is
 	 * not available, it returns null.
 	 * 
-	 * @param singleConsole console single console.
-	 * @param perfTest test
+	 * @param singleConsole
+	 *            console signle console.
+	 * @param perfTest
+	 *            perfTest
 	 */
 	public void saveStatistics(SingleConsole singleConsole, PerfTest perfTest) {
 		writeObjectToFile(new File(getPerfTestStatisticPath(perfTest), "statistics.stat"),
@@ -990,13 +992,14 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * get test running statistic data from cache. If there is no cache data, will return empty
 	 * statistic data.
 	 * 
-	 * @param perfTest test
+	 * @param perfTest
+	 *            perfTest
 	 * 
 	 * @return test running statistic data
 	 */
 	public Map<String, Object> getStatistics(PerfTest perfTest) {
-		ConcurrentHashMap<String, Object> readObjectFromFile = 
-				readObjectFromFile(new File(getPerfTestStatisticPath(perfTest), "statistics.stat"), 
+		File file = new File(getPerfTestStatisticPath(perfTest), "statistics.stat");
+		ConcurrentHashMap<String, Object> readObjectFromFile = readObjectFromFile(file,
 						new ConcurrentHashMap<String, Object>());
 		return readObjectFromFile;
 	}
@@ -1007,7 +1010,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * 
 	 * @param singleConsole
 	 *            singleConsole of the test add this parameter just for the key of cache.
-	 * @param perfTest test
+	 * @param perfTest
+	 *            perfTest
 	 */
 	public void saveAgentsInfo(SingleConsole singleConsole, PerfTest perfTest) {
 		List<AgentIdentity> allAttachedAgents = singleConsole.getAllAttachedAgents();
@@ -1024,11 +1028,11 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Get agent information.
+	 * Get agent info from saved file.
 	 * 
-	 * @param perfTest test
-	 * 
-	 * @return agent information
+	 * @param perfTest
+	 *            perftest
+	 * @return agent info map
 	 */
 	public Map<AgentIdentity, SystemDataModel> getAgentInfo(PerfTest perfTest) {
 		HashMap<AgentIdentity, SystemDataModel> readObjectFromFile = readObjectFromFile(new File(
@@ -1322,4 +1326,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public Config getConfig() {
 		return config;
 	}
+
+	public void setConfig(Config config) {
+		this.config = config;
+	}
+
 }

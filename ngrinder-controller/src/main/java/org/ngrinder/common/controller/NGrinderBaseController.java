@@ -134,8 +134,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 	/**
 	 * Provide announcement hide cookie as a model attributes.
 	 * 
-	 * @param annoucnementHide announcement hidden mark
-	 * 
+	 * @param annoucnementHide
+	 *            true if hidden.
 	 * @return announcement content
 	 */
 	@ModelAttribute("announcement_hide")
