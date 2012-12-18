@@ -140,6 +140,8 @@ public class MonitorClientSerivce {
 		try {
 			bw.flush();
 		} catch (IOException e) {
+			LOGGER.error("While running flushAndClose() in MonitorClientSerivce, the error occurs.");
+			LOGGER.error("Details : ", e);
 		}
 		IOUtils.closeQuietly(bw);
 	}
@@ -156,17 +158,12 @@ public class MonitorClientSerivce {
 	 */
 	public void record() {
 		ValueWrapper valueWrapper = cache.get(ip);
-		SystemInfo systemInfo = null;
-		if (valueWrapper == null || valueWrapper.get() == null) {
-			systemInfo = new SystemInfo();
-		} else {
-			systemInfo = convert(valueWrapper.get());
-		}
+		SystemInfo systemInfo = (valueWrapper == null || valueWrapper.get() == null) ? new SystemInfo()
+				: (SystemInfo) convert(valueWrapper.get());
 		try {
 			bw.write(systemInfo.getRecordString() + "\n");
 		} catch (IOException e) {
 			LOGGER.error("Error while MonitorExecutorWorker is recoding, e", e);
 		}
-
 	}
 }

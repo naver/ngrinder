@@ -184,11 +184,16 @@ public class Config implements IConfig, NGrinderConstants {
 		configurator.setContext(context);
 		context.reset();
 		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
-		Home logHome = exHome.exists() ? exHome : home;
-		context.putProperty("LOG_DIRECTORY", logHome.getGloablLogFile().getAbsolutePath());
-		String region = getRegion();
-		context.putProperty("SUFFIX", region.equals(NONE_REGION) ? "" : "_" + region);
-
+		if (exHome.exists()) {
+			context.putProperty("LOG_DIRECTORY", exHome.getGlobalLogFile().getAbsolutePath());
+		} else {
+			context.putProperty("LOG_DIRECTORY", home.getGlobalLogFile().getAbsolutePath());
+		}
+		if (!exHome.exists() && isCluster()) {
+			context.putProperty("SUFFIX", "_" + getRegion());
+		} else {
+			context.putProperty("SUFFIX", "");
+		}
 		try {
 			configurator.doConfigure(new ClassPathResource("/logback/logback-ngrinder.xml").getFile());
 		} catch (JoranException e) {
@@ -226,8 +231,7 @@ public class Config implements IConfig, NGrinderConstants {
 			CoreLogger.LOGGER.warn("    Java Sytem Property:  ngrinder.home=" + userHomeFromProperty);
 			CoreLogger.LOGGER.warn("    '" + userHomeFromProperty + "' is accepted.");
 		}
-		String userHome = null;
-		userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
+		String userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
 		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
 						System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
 		CoreLogger.LOGGER.info("nGrinder home directory:{}.", userHome);
@@ -249,8 +253,7 @@ public class Config implements IConfig, NGrinderConstants {
 			CoreLogger.LOGGER.warn("    Java Sytem Property:  ngrinder.exhome=" + exHomeFromProperty);
 			CoreLogger.LOGGER.warn("    '" + exHomeFromProperty + "' is accepted.");
 		}
-		String userHome = null;
-		userHome = StringUtils.defaultIfEmpty(exHomeFromProperty, exHomeFromEnv);
+		String userHome = StringUtils.defaultIfEmpty(exHomeFromProperty, exHomeFromEnv);
 		File exHomeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
 						System.getProperty("user.home"), NGRINDER_EX_FOLDER);
 		CoreLogger.LOGGER.info("nGrinder ex home directory:{}.", exHomeDirectory);
@@ -523,10 +526,12 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get ngrinder help url
+	 * 
 	 * @return help url
 	 */
 	public String getHelpUrl() {
-		return getSystemProperties().getProperty("ngrinder.help.url", "http://www.cubrid.org/wiki_ngrinder/entry/user-guide");
+		return getSystemProperties().getProperty("ngrinder.help.url",
+						"http://www.cubrid.org/wiki_ngrinder/entry/user-guide");
 	}
 
 }

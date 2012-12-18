@@ -126,4 +126,14 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		assertThat(perfTestService.getPerfTest(perfTest.getId()), nullValue());
 		assertThat(scriptDirectory.exists(), is(false));
 	}
+	
+	@Test
+	public void testGetUserListByKeyWord() {
+		User user = createTestUser("testIdForSearch");
+		List<User> userList = userService.getUserListByKeyWord("ForSearch");
+		assertThat(userList.size(), is(1));
+
+		userList = userService.getUserListByKeyWord("IdForSear");
+		assertThat(userList.size(), is(1));
+	}
 }

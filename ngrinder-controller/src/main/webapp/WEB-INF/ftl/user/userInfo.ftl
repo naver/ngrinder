@@ -68,8 +68,7 @@
 					data-original-title="<@spring.message "user.info.form.phone"/>">
 			</div>
 		</div>
-		<#if user?exists && user.userId == currentUser.userId>
-		<@security.authorize ifAnyGranted="U">
+		<#if user?exists>
 		<div class="control-group" >
 			<label class="control-label"><@spring.message "user.share.title"/></label>
 			<div class="controls">
@@ -78,7 +77,6 @@
 				</select>
 			</div>
 		</div>
-		</@security.authorize>
 		</#if>
   		<div class="control-group">
               <div class="accordion-heading"> 
@@ -246,7 +244,6 @@
 	        $(this).popover('show')
 	    });
 	    
-		<@security.authorize ifAnyGranted="U">
 	    var switchedUsers = [];
 	    <#if followers?has_content>
 	    	<#list followers as user>
@@ -254,7 +251,6 @@
 	    	</#list>
 	    </#if>
 	    $("#userListSelect").val(switchedUsers).select2();
-	    </@security.authorize>
 	});
 	
 	function removeSuccess(elem) {

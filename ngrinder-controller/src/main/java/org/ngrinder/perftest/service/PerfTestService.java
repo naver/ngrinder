@@ -841,8 +841,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public String getReportDataAsString(long testId, String dataType, int interval) {
 		StringBuilder reportData = new StringBuilder("[");
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
-		File targetFile = null;
-		targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
+		File targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
 		if (!targetFile.exists()) {
 			LOGGER.error("Report data for {} in {} does not exisit.", testId, dataType);
 			return "[ ]";
