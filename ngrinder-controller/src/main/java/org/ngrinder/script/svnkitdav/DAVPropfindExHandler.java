@@ -507,8 +507,7 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 		if (StringUtils.isEmpty(propName.getNamespace())) {
 			SVNXMLUtil.openXMLTag(null, propName.getName(), SVNXMLUtil.XML_STYLE_SELF_CLOSING, null, buffer);
 		} else {
-			String prefix = namespacesToPrefixes != null ? (String) namespacesToPrefixes.get(propName.getNamespace())
-							: null;
+			String prefix = (String) namespacesToPrefixes.get(propName.getNamespace());
 			if (prefix == null) {
 				prefix = "g" + ind;
 				namespacesToPrefixes.put(propName.getNamespace(), prefix);
