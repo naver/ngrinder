@@ -49,22 +49,30 @@ public abstract class CollectionUtils {
 	}
 
 	/**
-	 * Create a new hashmap object.
+	 * Create new {@link HashMap}.
 	 * 
-	 * @param size map size
-	 * 
-	 * @return a new map object
+	 * @param size
+	 *            size of {@link HashMap}
+	 * @param <K>
+	 *            keyType
+	 * @param <V>
+	 *            valueType
+	 * @return created {@link HashMap} instance
 	 */
 	public static <K, V> HashMap<K, V> newHashMap(int size) {
 		return new HashMap<K, V>(size);
 	}
 
 	/**
-	 * Create a new hashmap object based on a collection.
+	 * Create new {@link HashMap} having same size of given base collection.
 	 * 
-	 * @param base a collection
-	 * 
-	 * @return a new map object
+	 * @param base
+	 *            collection which size will be referred
+	 * @param <K>
+	 *            keyType
+	 * @param <V>
+	 *            valueType
+	 * @return created {@link HashMap} instance
 	 */
 	public static <K, V> HashMap<K, V> newHashMap(Collection<?> base) {
 		return new HashMap<K, V>(base.size());
