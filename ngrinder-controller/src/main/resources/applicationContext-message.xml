@@ -15,5 +15,8 @@
 		</property>
 		<property name="useCodeAsDefaultMessage" value="true" />
 		<property name="defaultEncoding" value="UTF-8" />
+		<property name="parentMessageSource">
+			<ref bean="userMessageSource"/>
+		</property>
 	</bean>
 </beans>
