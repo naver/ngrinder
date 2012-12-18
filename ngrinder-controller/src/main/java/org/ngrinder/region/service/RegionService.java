@@ -69,7 +69,7 @@ public class RegionService {
 			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
 				@Override
 				public void interruptibleRun() {
-					checkRegionUdate();
+					checkRegionUpdate();
 				}
 
 			});
@@ -79,7 +79,10 @@ public class RegionService {
 	@Autowired
 	private AgentManager agentManager;
 
-	void checkRegionUdate() {
+	/**
+	 * check Region and Update its value.
+	 */
+	public void checkRegionUpdate() {
 		if (!config.isInvisibleRegion()) {
 			HashSet<AgentIdentity> newHashSet = Sets.newHashSet(agentManager.getAllAttachedAgents());
 			cache.put(getCurrentRegion(), new RegionInfo(config.getCurrentIP(), newHashSet));
