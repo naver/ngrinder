@@ -54,7 +54,7 @@ public class UserService implements IUserService {
 
 	@Autowired
 	private PerfTestService perfTestService;
-	
+
 	@Autowired
 	private FileEntryService scriptService;
 
@@ -64,10 +64,9 @@ public class UserService implements IUserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-
 	@Autowired
 	private Config config;
-	
+
 	/**
 	 * get user by user id.
 	 * 
@@ -82,7 +81,9 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * get user by user id without using Cache. The user in cache has no followers and owners initialized.
+	 * get user by user id without using Cache. The user in cache has no followers and owners
+	 * initialized.
+	 * 
 	 * @param userId
 	 *            user id
 	 * @return user
@@ -90,28 +91,32 @@ public class UserService implements IUserService {
 	@Transactional
 	public User getUserByIdWithoutCache(String userId) {
 		User user = userRepository.findOneByUserId(userId);
-		Hibernate.initialize(user.getOwners());
-		Hibernate.initialize(user.getFollowers());
+		if (user != null) {
+			Hibernate.initialize(user.getOwners());
+			Hibernate.initialize(user.getFollowers());
+		}
 		return user;
 	}
 
 	/**
 	 * Encoding given user's password.
-	 * @param user user
+	 * 
+	 * @param user
+	 *            user
 	 */
 	public void encodePassword(User user) {
 		if (StringUtils.isNotBlank(user.getPassword())) {
 			SecuredUser securedUser = new SecuredUser(user, null);
-			String encodePassword = passwordEncoder.encodePassword(user.getPassword(),
-							saltSource.getSalt(securedUser));
+			String encodePassword = passwordEncoder.encodePassword(user.getPassword(), saltSource.getSalt(securedUser));
 			user.setPassword(encodePassword);
 		}
 	}
-	
+
 	/**
 	 * get all users by role.
 	 * 
-	 * @param roleName role name
+	 * @param roleName
+	 *            role name
 	 * @return found user list
 	 */
 	public List<User> getAllUserByRole(String roleName) {
@@ -146,8 +151,10 @@ public class UserService implements IUserService {
 	/**
 	 * Add user.
 	 * 
-	 * @param user user
-	 * @param role role
+	 * @param user
+	 *            user
+	 * @param role
+	 *            role
 	 */
 	@CacheEvict(value = "users", key = "#user.userId")
 	public void saveUser(User user, Role role) {
@@ -155,13 +162,14 @@ public class UserService implements IUserService {
 		user.setRole(role);
 		userRepository.save(user);
 	}
-	
+
 	/**
 	 * modify user information.
 	 * 
-	 * @param user user
+	 * @param user
+	 *            user
 	 * @param shareUserIds
-	 * 				It is a list of user IDs to share the permission of user
+	 *            It is a list of user IDs to share the permission of user
 	 * @return user id
 	 */
 	@Transactional
@@ -169,7 +177,7 @@ public class UserService implements IUserService {
 	public String modifyUser(User user, String shareUserIds) {
 		checkNotNull(user, "user should be not null, when modifying user");
 		checkNotNull(user.getId(), "user id should be provided when modifying user");
-		
+
 		shareUserIds = (String) ObjectUtils.defaultIfNull(shareUserIds, "");
 		List<User> newShareUsers = new ArrayList<User>();
 		String[] userIds = shareUserIds.split(",");
@@ -178,7 +186,7 @@ public class UserService implements IUserService {
 			newShareUsers.add(shareUser);
 		}
 		user.setFollowers(newShareUsers);
-		
+
 		encodePassword(user);
 		User targetUser = userRepository.findOne(user.getId());
 		targetUser.merge(user);
@@ -198,7 +206,7 @@ public class UserService implements IUserService {
 		for (String userId : userIds) {
 			User user = getUserById(userId);
 			List<PerfTest> deletePerfTests = perfTestService.deleteAllPerfTests(user);
-			userRepository.delete(user);			
+			userRepository.delete(user);
 			for (PerfTest perfTest : deletePerfTests) {
 				FileUtils.deleteQuietly(config.getHome().getPerfTestDirectory(perfTest));
 			}
@@ -210,7 +218,8 @@ public class UserService implements IUserService {
 	/**
 	 * get the user list by the given role.
 	 * 
-	 * @param role role
+	 * @param role
+	 *            role
 	 * @return found user list
 	 * @throws Exception
 	 */
@@ -221,7 +230,8 @@ public class UserService implements IUserService {
 	/**
 	 * get Role object based on role name.
 	 * 
-	 * @param roleName role name
+	 * @param roleName
+	 *            role name
 	 * @return found Role
 	 */
 	public Role getRole(String roleName) {
@@ -240,11 +250,13 @@ public class UserService implements IUserService {
 
 	/**
 	 * Get the user list by nameLike spec.
-	 * @param name name of user
+	 * 
+	 * @param name
+	 *            name of user
 	 * @return found user list
 	 */
 	public List<User> getUserListByKeyWord(String name) {
 		return userRepository.findAll(UserSpecification.nameLike(name));
 	}
-	
+
 }
