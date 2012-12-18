@@ -135,9 +135,6 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	}
 
 	/**
-	 * Get host name.
-	 * 
-	 * @return hostName
 	 * @deprecated use {@link #getName()} instead.
 	 */
 	public String getHostName() {
@@ -145,10 +142,7 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	}
 
 	/**
-	 * Set host name.
-	 * 
-	 * @param hostName
-	 * @deprecated use {@link #setName(String)} instead
+	 * @deprecated use {@link #setName(String)} instead.
 	 */
 	public void setHostName(String hostName) {
 		this.hostName = hostName;
@@ -179,18 +173,12 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	}
 
 	/**
-	 * @deprecated
-	 * @return the number
+	 * @deprecated unused now.
 	 */
 	public int getNumber() {
 		return number;
 	}
 
-	/**
-	 * @deprecated
-	 * @param number
-	 *            the number to set
-	 */
 	public void setNumber(int number) {
 		this.number = number;
 	}
@@ -199,5 +187,4 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}
-
 }

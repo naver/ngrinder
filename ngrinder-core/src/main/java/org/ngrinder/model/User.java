@@ -331,7 +331,7 @@ public class User extends BaseModel<User> {
 	}
 
 	/**
-	 * a string representation of User object
+	 * a string representation of User object.
 	 * 
 	 * @return User object information String.
 	 */

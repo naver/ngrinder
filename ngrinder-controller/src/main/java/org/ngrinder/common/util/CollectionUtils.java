@@ -48,10 +48,24 @@ public abstract class CollectionUtils {
 		return newSet;
 	}
 
+	/**
+	 * Create a new hashmap object.
+	 * 
+	 * @param size map size
+	 * 
+	 * @return a new map object
+	 */
 	public static <K, V> HashMap<K, V> newHashMap(int size) {
 		return new HashMap<K, V>(size);
 	}
 
+	/**
+	 * Create a new hashmap object based on a collection.
+	 * 
+	 * @param base a collection
+	 * 
+	 * @return a new map object
+	 */
 	public static <K, V> HashMap<K, V> newHashMap(Collection<?> base) {
 		return new HashMap<K, V>(base.size());
 	}

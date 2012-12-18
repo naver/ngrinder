@@ -19,11 +19,20 @@ package org.ngrinder.tracking;
  * @author : Siddique Hameed
  * @version : 0.1
  */
-
 public interface LoggingAdapter {
 
+	/**
+	 * Set log error message.
+	 * 
+	 * @param errorMessage error message
+	 */
 	public void logError(String errorMessage);
 
+	/**
+	 * Set log message.
+	 * 
+	 * @param message message
+	 */
 	public void logMessage(String message);
 
 }

@@ -31,6 +31,11 @@ public class SecurityConfig {
 	@Autowired
 	private Config config;
 
+	/**
+	 * Get ShaPasswordEncoder.
+	 * 
+	 * @return ShaPasswordEncoder object
+	 */
 	@Bean(name = "shaPasswordEncoder")
 	public ShaPasswordEncoder sharPasswordEncoder() {
 		boolean useEnhancedEncoding = config.getSystemProperties()

@@ -104,6 +104,7 @@ public class MonitorClientSerivce {
 	/**
 	 * Get monitor data from MBClient and record into writer.
 	 * 
+	 * @return system information object
 	 */
 	public SystemInfo getMonitorData() {
 		SystemInfo retData = new SystemInfo();

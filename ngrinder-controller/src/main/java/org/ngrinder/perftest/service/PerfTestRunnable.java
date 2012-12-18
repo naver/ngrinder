@@ -100,7 +100,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	private ApplicationContext applicationContext;
 
 	@Autowired
-	TaskScheduler scheduler;
+	private TaskScheduler scheduler;
 
 	/**
 	 * Initialize plugin manager to register plugin update event.

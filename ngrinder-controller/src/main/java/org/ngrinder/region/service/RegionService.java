@@ -79,8 +79,9 @@ public class RegionService {
 
 	void checkRegionUdate() {
 		if (!config.isInvisibleRegion()) {
-			cache.put(getCurrentRegion(),
-							new RegionInfo(config.getCurrentIP(), Sets.newHashSet(agentManager.getAllAttachedAgents())));
+			cache.put(getCurrentRegion(), 
+					new RegionInfo(config.getCurrentIP(), Sets.newHashSet(
+							agentManager.getAllAttachedAgents())));
 		}
 	}
 

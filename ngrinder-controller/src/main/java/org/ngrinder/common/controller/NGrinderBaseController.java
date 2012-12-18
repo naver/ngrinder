@@ -112,17 +112,29 @@ public class NGrinderBaseController implements NGrinderConstants {
 		return announcementService.getAnnouncement();
 	}
 
+	/**
+	 * Provide clustered mark as a model attributes.
+	 * 
+	 * @return clustered mark
+	 */
 	@ModelAttribute("clustered")
 	public boolean clustered() {
 		return config.isCluster();
 	}
 
+	/**
+	 * Provide help URL as a model attributes.
+	 * 
+	 * @return help URL
+	 */
 	@ModelAttribute("helpUrl")
 	public String helpUrl() {
 		return config.getHelpUrl();
 	}
 	/**
 	 * Provide announcement hide cookie as a model attributes.
+	 * 
+	 * @param annoucnementHide announcement hidden mark
 	 * 
 	 * @return announcement content
 	 */
@@ -219,6 +231,13 @@ public class NGrinderBaseController implements NGrinderConstants {
 		return gson.toJson(map);
 	}
 
+	/**
+	 * Handle exception.
+	 * 
+	 * @param e exception
+	 * 
+	 * @return modal and view
+	 */
 	@ExceptionHandler({ NGrinderRuntimeException.class })
 	public ModelAndView handleException(NGrinderRuntimeException e) {
 		ModelAndView modelAndView = new ModelAndView("forward:/");

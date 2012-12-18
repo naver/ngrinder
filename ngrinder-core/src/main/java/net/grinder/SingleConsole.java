@@ -761,7 +761,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	@SuppressWarnings("serial")
-	public static Set<String> interestingStatistics = new HashSet<String>() {
+	private static Set<String> interestingStatistics = new HashSet<String>() {
 		{
 			add("Tests");
 			add("Errors");

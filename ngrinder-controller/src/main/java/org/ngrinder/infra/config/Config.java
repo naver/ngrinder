@@ -525,9 +525,9 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Get ngrinder help url
+	 * Get ngrinder help URL.
 	 * 
-	 * @return help url
+	 * @return help URL
 	 */
 	public String getHelpUrl() {
 		return getSystemProperties().getProperty("ngrinder.help.url",

@@ -99,6 +99,17 @@ public class HomeController extends NGrinderBaseController {
 		});
 	}
 
+	/**
+	 * Home page.
+	 * 
+	 * @param user user
+	 * @param exception exception
+	 * @param model modal
+	 * @param response http response
+	 * @param request http request
+	 * 
+	 * @return page file name
+	 */
 	@RequestMapping(value = { "/home", "/" })
 	public String home(User user, @RequestParam(value = "exception", defaultValue = "") String exception,
 					ModelMap model, HttpServletResponse response, HttpServletRequest request) {
@@ -131,6 +142,13 @@ public class HomeController extends NGrinderBaseController {
 		}
 	}
 
+	/**
+	 * Health check.
+	 * 
+	 * @param response http response
+	 * 
+	 * @return current region
+	 */
 	@ResponseBody
 	@RequestMapping("/check/healthcheck")
 	public String healthcheck(HttpServletResponse response) {
@@ -145,6 +163,13 @@ public class HomeController extends NGrinderBaseController {
 		return regionService.getCurrentRegion() + ":" + StringUtils.join(regionService.getRegions().keySet(), "|");
 	}
 
+	/**
+	 * Health check slowly.
+	 * 
+	 * @param sleep sleep time
+	 * 
+	 * @return current region
+	 */
 	@ResponseBody
 	@RequestMapping("/check/healthcheck_slow")
 	public String healthcheckSlowly(@RequestParam(value = "delay", defaultValue = "1000") int sleep) {
@@ -232,8 +257,11 @@ public class HomeController extends NGrinderBaseController {
 	/**
 	 * Error redirection for second phase.
 	 * 
-	 * @param model
-	 *            model
+	 * @param user user
+	 * @param model model
+	 * @param response http response
+	 * @param request http request
+	 * 
 	 * @return "index"
 	 */
 	@RequestMapping(value = "/doError")

@@ -232,8 +232,12 @@ public class UserController extends NGrinderBaseController {
 	 *            current user
 	 * @param model
 	 *            model
-	 * @param switchUserId
-	 *            the user who will switch.
+	 * @param switchUser
+	 *            the user who will switch
+	 * @param httpServletRequest 
+	 * 			  http request
+	 * @param httpServletResponse 
+	 * 			  http response
 	 * 
 	 * @return redirect:/perftest/list
 	 */

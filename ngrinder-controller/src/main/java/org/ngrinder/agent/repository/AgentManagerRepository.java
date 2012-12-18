@@ -33,6 +33,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, JpaSpecificationExecutor<AgentInfo> {
 
+	/**
+	 * Find agent by IP and host name.
+	 * 
+	 * @param ip IP
+	 * @param hostName host name
+	 * 
+	 * @return agent information
+	 */
 	AgentInfo findByIpAndHostName(String ip, String hostName);
 
 	/**

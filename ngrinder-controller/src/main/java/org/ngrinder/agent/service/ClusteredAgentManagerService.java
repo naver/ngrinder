@@ -53,7 +53,6 @@ import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -142,7 +141,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			agentsInDBMap.put(keyOfAgentInDB, eachAgentInDB);
 			AgentControllerIdentityImplementation agentIdentity = attachedAgentMap.remove(keyOfAgentInDB);
 
-			if (agentIdentity != null) {// if the agent attached to current controller
+			if (agentIdentity != null) { // if the agent attached to current controller
 				if (!hasSamePortAndStatus(eachAgentInDB, agentIdentity)) {
 					fillUp(eachAgentInDB, agentIdentity);
 					changeAgents.add(eachAgentInDB);
@@ -232,8 +231,6 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 * get the available agent count map in all regions of the user, including the free agents and
 	 * user specified agents.
 	 * 
-	 * @param regions
-	 *            current region list
 	 * @param user
 	 *            current user
 	 * @return user available agent count map
@@ -351,10 +348,11 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	}
 
 	/**
-	 * Get agent system data model for the given ip. This method is cluster aware.
+	 * Get agent system data model for the given IP. This method is cluster aware.
 	 * 
-	 * @param ip
-	 *            agent ip.
+	 * @param ip agent IP
+	 * @param name agent name
+	 * 
 	 * @return {@link SystemDataModel} instance.
 	 */
 	@Override
@@ -367,10 +365,6 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 * Register agent monitoring target. This method should be called in the controller in which the
 	 * given agent exists.
 	 * 
-	 * @param id
-	 *            agent id
-	 * @param ip
-	 *            agent ip
 	 * @param agentIdentity
 	 *            agent identity
 	 */
@@ -386,8 +380,13 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		this.cacheManager = cacheManager;
 	}
 
+	/**
+	 * Stop agent.
+	 * 
+	 * @param agentIdentity
+	 * 			agent identity
+	 */
 	public void stopAgent(AgentControllerIdentityImplementation agentIdentity) {
 		getAgentManager().stopAgent(agentIdentity);
 	}
-
 }

@@ -54,7 +54,6 @@ import org.tmatesoft.svn.core.internal.server.dav.DAVXMLUtil;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVElementProperty;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVLockInfoProvider;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVPropertiesProvider;
-import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVPropfindHandler;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVPropfindRequest;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVPropsResult;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVRequest;

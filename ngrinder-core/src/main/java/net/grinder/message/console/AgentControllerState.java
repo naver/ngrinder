@@ -30,7 +30,7 @@ public enum AgentControllerState {
 	FINISHED,
 	/** When agent controller is down. */
 	INACTIVE,
-	/** When agent is attached wrong region */
+	/** When agent is attached wrong region. */
 	WRONG_REGION,
 	/** Unknown. */
 	UNKNOWN

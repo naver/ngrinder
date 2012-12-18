@@ -25,26 +25,24 @@ import net.grinder.common.processidentity.AgentIdentity;
  * @since 3.1
  */
 public class RegionInfo implements Serializable {
-	/**
-	 * UUID
-	 */
+
 	private static final long serialVersionUID = 1L;
 	private String ip;
 	private boolean visible = true;
 	private Set<AgentIdentity> agentIdentities;
 
 	/**
-	 * @param ip
-	 * @param agentIdentitySet
+	 * @param ip IP
+	 * @param agentIdentities agent identity
 	 */
 	public RegionInfo(String ip, Set<AgentIdentity> agentIdentities) {
 		this(ip, agentIdentities, true);
 	}
 
 	/**
-	 * @param ip
-	 * @param agentIdentity
-	 * @param visible
+	 * @param ip IP
+	 * @param agentIdentity agent identity
+	 * @param visible visible mark
 	 */
 	public RegionInfo(String ip, Set<AgentIdentity> agentIdentities, boolean visible) {
 		super();
