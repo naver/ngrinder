@@ -140,6 +140,8 @@ public class MonitorClientSerivce {
 		try {
 			bw.flush();
 		} catch (IOException e) {
+			LOGGER.error("While running flushAndClose() in MonitorClientSerivce, the error occurs.");
+			LOGGER.error("Details : ", e);
 		}
 		IOUtils.closeQuietly(bw);
 	}

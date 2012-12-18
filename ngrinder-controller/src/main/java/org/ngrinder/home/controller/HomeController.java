@@ -138,6 +138,8 @@ public class HomeController extends NGrinderBaseController {
 			try {
 				response.sendError(503, "the ngrinder is about to down");
 			} catch (IOException e) {
+				LOG.error("While running healthcheck() in HomeController, the error occurs.");
+				LOG.error("Details : ", e);
 			}
 		}
 		return regionService.getCurrentRegion() + ":" + StringUtils.join(regionService.getRegions().keySet(), "|");
