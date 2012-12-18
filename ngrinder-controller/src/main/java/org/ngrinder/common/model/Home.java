@@ -367,7 +367,7 @@ public class Home implements NGrinderConstants {
 	 * 
 	 * @return log file
 	 */
-	public File getGloablLogFile() {
+	public File getGlobalLogFile() {
 		File subFile = getSubFile(GLOBAL_LOG_PATH);
 		return subFile;
 	}
