@@ -41,10 +41,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.common.collect.Lists;
+
 /**
  * User management controller.
  * 
  * @author JunHo Yoon
+ * @author Alex Quin
  * @since 3.0
  * 
  */
@@ -102,8 +105,9 @@ public class UserController extends NGrinderBaseController {
 	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
 	public String getUserDetail(User user, final ModelMap model, @RequestParam(required = false) final String userId) {
 		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
-		model.addAttribute("user", userService.getUserById(userId));
-		
+		User userFromDB = userService.getUserByIdWithoutCache(userId);
+		model.addAttribute("user", userFromDB);
+		getUserShareList(userFromDB, model);
 		return "user/userDetail";
 	}
 
@@ -200,7 +204,7 @@ public class UserController extends NGrinderBaseController {
 		model.addAttribute("user", currentUser);
 		getUserShareList(currentUser, model);
 		model.addAttribute("action", "profile");
-		
+
 		return "user/userInfo";
 	}
 
@@ -267,22 +271,21 @@ public class UserController extends NGrinderBaseController {
 	 */
 	private void getUserShareList(User user, ModelMap model) {
 		if (user == null) {
+			model.addAttribute("followers", Lists.newArrayList());
+			model.addAttribute("shareUserList", Lists.newArrayList());
 			return;
 		}
 
-		List<User> currFollowers = user.getFollowers();
-		List<User> userList = new ArrayList<User>();
+		List<User> users = Lists.newArrayList();
 		String userId = user.getUserId();
-
 		for (User u : userService.getAllUserByRole(Role.USER.getFullName())) {
 			if (u.getUserId().equals(userId)) {
 				continue;
 			}
-
-			userList.add(u.getUserBaseInfo());
+			users.add(u.getUserBaseInfo());
 		}
+		model.addAttribute("followers", user.getFollowers());
+		model.addAttribute("shareUserList", users);
 
-		model.addAttribute("followers", currFollowers);
-		model.addAttribute("shareUserList", userList);
 	}
 }

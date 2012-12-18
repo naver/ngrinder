@@ -129,11 +129,19 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 	
 	@Test
 	public void testGetUserListByKeyWord() {
-		User user = createTestUser("testIdForSearch");
-		List<User> userList = userService.getUserListByKeyWord("ForSearch");
+		User user = new User();
+		user.setUserId("testIdForNameSearch");
+		user.setUserName("testIdForNameSearch");
+		user.setPassword("111111");
+		user.setEmail("testIdForNameSearch@test.com");
+		user.setRole(Role.USER);
+		user = userService.saveUser(user);
+		assertThat(user.getUserId(), is("testIdForNameSearch"));
+		
+		List<User> userList = userService.getUserListByKeyWord("ForNameSearch");
 		assertThat(userList.size(), is(1));
 
-		userList = userService.getUserListByKeyWord("IdForSear");
+		userList = userService.getUserListByKeyWord("ForName");
 		assertThat(userList.size(), is(1));
 	}
 }

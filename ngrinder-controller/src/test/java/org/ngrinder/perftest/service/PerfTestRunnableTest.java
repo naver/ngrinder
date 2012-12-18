@@ -138,12 +138,12 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 			sleep(1000);
 		}
 
-		List<AgentInfo> agentList = agentService.getLocalAgents();
+		List<AgentInfo> agentList = agentService.getLocalAgentListFromDB();
 		for (AgentInfo each : agentList) {
 			agentService.approve(each.getId(), true);
 		}
 
-		agentList = agentService.getLocalAgents();
+		//agentList = agentService.getLocalAgents();
 		assertThat(agentCount, is(1));
 	}
 
