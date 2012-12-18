@@ -127,8 +127,11 @@
 									<input id="check_${test.id}" type="checkbox" class="checkbox perf_test" value="${test.id}" status="${test.status}" <#if deletable>disabled</#if>>
 								</td>
 								<td class="center"  id="row_${test.id}">
-									<div class="ball" id="ball_${test.id}" rel="popover" data-content='${"${test.progressMessage}/n${test.lastProgressMessage}"?replace('/n', '<br>')?html}'>
-										<img class="status" src="${req.getContextPath()}/img/ball/${test.status.iconName}"/>
+									<div class="ball" id="ball_${test.id}" 
+													rel="popover"
+													data-content='${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}'  
+													data-original-title="<@spring.message "${test.status.springMessageKey}"/>" type="toggle"> 
+										<img class="status" src="${req.getContextPath()}/img/ball/${test.status.iconName}"/> 
 									</div>
 								</td>
 
