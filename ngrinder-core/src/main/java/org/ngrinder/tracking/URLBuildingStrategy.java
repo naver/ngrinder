@@ -14,7 +14,7 @@
 package org.ngrinder.tracking;
 
 /**
- * Interface for the URL building strategy
+ * Interface for the URL building strategy.
  * 
  * @author : Siddique Hameed
  * @version : 0.1
@@ -32,7 +32,7 @@ public interface URLBuildingStrategy {
 	public String buildURL(FocusPoint focusPoint);
 
 	/**
-	 * Set referer URL
+	 * Set referer URL.
 	 * 
 	 * @param refererURL referer URL
 	 */

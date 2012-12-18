@@ -108,7 +108,7 @@ public class BaseEntity<M> implements Serializable {
 				}
 
 				if (writeMethod.getAnnotation(ForceMergable.class) != null 
-								|| isNotBlankStringOrNotString(defaultValue)) {
+						|| isNotBlankStringOrNotString(defaultValue)) {
 					writeMethod.invoke(this, defaultValue);
 				}
 			}

@@ -60,6 +60,7 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 
 		RegionService spiedRegionService = spy(regionService);
 		spiedRegionService.setConfig(spiedConfig);
+<<<<<<< HEAD
 		
 		DynamicCacheConfig cacheConfig = new DynamicCacheConfig();
 		ReflectionTestUtils.setField(cacheConfig, "config", spiedConfig);
@@ -69,10 +70,24 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 		
 		spiedRegionService.initRegion();
 		spiedRegionService.checkRegionUdate();
+=======
+		spiedRegionService.checkRegionUpdate();
+>>>>>>> e47f72363427be11e870294a30ece2cf517f48c8
 		Collection<String> regions = regionService.getRegions().keySet();
 		LOG.debug("list:{}", regions);
 		assertThat(regions.contains("TEST_REGION"), is(true));
 		
 	}
 
+<<<<<<< HEAD
+=======
+	@Test
+	public void testGetRegions() {
+		Config spiedConfig = spy(config);
+		when(spiedConfig.isCluster()).thenReturn(false);
+		regionService.setConfig(spiedConfig);
+		regionService.checkRegionUpdate();
+		assertThat(regionService.getRegions().isEmpty(), is(true));
+	}
+>>>>>>> e47f72363427be11e870294a30ece2cf517f48c8
 }

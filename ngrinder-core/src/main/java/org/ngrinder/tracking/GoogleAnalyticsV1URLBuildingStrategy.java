@@ -66,16 +66,24 @@ public class GoogleAnalyticsV1URLBuildingStrategy implements URLBuildingStrategy
 		this.appFocusPoint = new FocusPoint(appVersion, new FocusPoint(appName));
 	}
 
+	/**
+	 * Build URL
+	 * 
+	 * @param focusPoint focus point
+	 * 
+	 * @return URL
+	 */
 	public String buildURL(FocusPoint focusPoint) {
 		int cookie = RANDOM.nextInt();
 		int randomValue = RANDOM.nextInt(2147483647) - 1;
 		long now = new Date().getTime();
 
-		// String
-		// $urchinUrl="http://www.google-analytics.com/__utm.gif?utmwv=1&utmn='.$var_utmn.'&utmsr=-&utmsc=-&utmul=-&utmje=0&utmfl=-&utmdt=-&utmhn='.$var_utmhn.'&utmr='.$var_referer.'&utmp='.$var_utmp."
-		// +
-		// "'&utmac='.$var_utmac.'" +
-		// "&utmcc=__utma%3D'.$var_cookie.'.'.$var_random.'.'.$var_today.'.'.$var_today.'.'.$var_today.'.2%3B%2B__utmb%3D'.$var_cookie.'%3B%2B__utmc%3D'.$var_cookie.'%3B%2B__utmz%3D'.$var_cookie.'.'.$var_today.'.2.2.utmccn%3D(direct)%7Cutmcsr%3D(direct)%7Cutmcmd%3D(none)%3B%2B__utmv%3D'.$var_cookie.'.'.$var_uservar.'%3B";
+		// String $urchinUrl="http://www.google-analytics.com/__utm.gif?utmwv=1&utmn='.$var_utmn." +
+		// "'&utmsr=-&utmsc=-&utmul=-&utmje=0&utmfl=-&utmdt=-&utmhn='.$var_utmhn.'&utmr='.$var_referer." +
+		// "'&utmp='.$var_utmp.'&utmac='.$var_utmac.'&utmcc=__utma%3D'.$var_cookie.'.'.$var_random.'." +
+		// "'.$var_today.'.'.$var_today.'.'.$var_today.'.2%3B%2B__utmb%3D'.$var_cookie.'%3B%2B__utmc%3D'." + 
+		// "$var_cookie.'%3B%2B__utmz%3D'.$var_cookie.'.'.$var_today.'.2.2." + 
+		// "utmccn%3D(direct)%7Cutmcsr%3D(direct)%7Cutmcmd%3D(none)%3B%2B__utmv%3D'.$var_cookie.'.'.$var_uservar.'%3B";
 
 		focusPoint.setParentTrackPoint(appFocusPoint);
 		StringBuffer url = new StringBuffer(TRACKING_URL_PREFIX);
