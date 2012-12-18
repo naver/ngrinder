@@ -242,7 +242,7 @@ public class User extends BaseModel<User> {
 	}
 
 	public void setEmail(String email) {
-		this.email = email;
+		this.email = email.toLowerCase();
 	}
 
 	public String getTimeZone() {
@@ -325,6 +325,8 @@ public class User extends BaseModel<User> {
 		userInfo.setId(this.getId());
 		userInfo.setUserId(this.getUserId());
 		userInfo.setUserName(this.getUserName());
+		userInfo.setEmail(this.getEmail());
+		
 		return userInfo;
 	}
 

@@ -101,16 +101,9 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping("/detail")
 	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
 	public String getUserDetail(User user, final ModelMap model, @RequestParam(required = false) final String userId) {
-
-		List<User> userList = userService.getAllUserByRole(null);
-		model.addAttribute("userList", userList);
-		EnumSet<Role> roleSet = EnumSet.allOf(Role.class);
-		model.addAttribute("roleSet", roleSet);
-
-		User retrievedUser = userService.getUserByIdWithoutCache(userId);
-
-		getUserShareList(retrievedUser, model);
-		model.addAttribute("user", retrievedUser);
+		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
+		model.addAttribute("user", userService.getUserById(userId));
+		
 		return "user/userDetail";
 	}
 
@@ -203,10 +196,11 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping("/profile")
 	public String userProfile(User user, ModelMap model) {
 		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
-		User newUser = userService.getUserByIdWithoutCache(user.getUserId());
-		model.addAttribute("user", newUser);
+		User currentUser = userService.getUserByIdWithoutCache(user.getUserId());
+		model.addAttribute("user", currentUser);
+		getUserShareList(currentUser, model);
 		model.addAttribute("action", "profile");
-		getUserShareList(newUser, model);
+		
 		return "user/userInfo";
 	}
 

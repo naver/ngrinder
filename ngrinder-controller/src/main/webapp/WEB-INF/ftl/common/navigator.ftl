@@ -87,9 +87,9 @@
 		<div class="form-horizontal" style="margin-left:20px">
 			<fieldset>
 				<div class="control-group">
-					<label class="control-label"><@spring.message "user.switch.title"/></label>
-					<div class="controls">
-						<select id="switchUserSelect" class="span3">
+					<label class="control-label" style="width:100px"><@spring.message "user.switch.title"/></label>
+					<div class="controls" style="margin-left:140px">
+						<select id="switchUserSelect" style="width:300px">
 						</select>
 					</div>
 				</div>
