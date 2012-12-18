@@ -21,8 +21,6 @@ package org.ngrinder.common.util;
  */
 public abstract class TypeConvertUtil {
 	
-	private TypeConvertUtil() {
-	}
 
 	/**
 	 * Convert object to return type.
