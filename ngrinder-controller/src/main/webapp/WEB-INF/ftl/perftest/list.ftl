@@ -153,14 +153,13 @@
 								<td>
 									<#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if>
 								</td>
-								<td>
+								<td
 									<#if test.threshold == "D">
-										${(test.durationStr)!}</td>
+										>${(test.durationStr)!}
 									<#else>
-										${test.runCount}
-										<@spring.message "perfTest.table.runcount"/>
-										</td>
+										title="<@spring.message "perfTest.table.runcount"/>">${test.runCount}
 									</#if>
+								</td>
 								<td><#if test.tps??>${(test.tps)?string("0.#")}</#if></td>  
 								<td><#if test.meanTestTime??>${(test.meanTestTime)?string("0.##")}</#if></td>
 								<td><#if test.errors??>${test.errors}</#if></td>
