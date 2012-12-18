@@ -109,7 +109,6 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	private long startTime = 0;
 	private Date momentWhenTpsBeganToHaveVerySmall;
 	private Date lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue;
-	private static final int TEST_DURATION_CHECK_MARGIN = 5000;
 	private final ListenerSupport<ConsoleShutdownListener> showdownListner = ListenerHelper.create();
 	private final ListenerSupport<SamplingLifeCycleListener> samplingLifeCycleListener = ListenerHelper.create();
 
@@ -767,6 +766,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			add("Tests");
 			add("Errors");
 			add("TPS");
+			add("Peak TPS");
 			add("Mean Test Time (ms)");
 		}
 	};

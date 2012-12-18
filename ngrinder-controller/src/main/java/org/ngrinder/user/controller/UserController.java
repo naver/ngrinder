@@ -107,7 +107,7 @@ public class UserController extends NGrinderBaseController {
 		EnumSet<Role> roleSet = EnumSet.allOf(Role.class);
 		model.addAttribute("roleSet", roleSet);
 
-		User retrievedUser = userService.getUserById(userId);
+		User retrievedUser = userService.getUserByIdWithoutCache(userId);
 
 		getUserShareList(retrievedUser, model);
 		model.addAttribute("user", retrievedUser);
@@ -221,12 +221,11 @@ public class UserController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/switchUserList")
 	public String switchUserList(User user, ModelMap model) {
-		User currUser = userService.getUserByIdWithoutCache(user.getUserId());
-		checkNotNull(currUser);
 		if (user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
 			List<User> allUserByRole = userService.getAllUserByRole(Role.USER.getFullName());
 			model.addAttribute("shareUserList", allUserByRole);
 		} else {
+			User currUser = userService.getUserByIdWithoutCache(user.getUserId());
 			model.addAttribute("shareUserList", currUser.getOwners());
 		}
 		return "user/userOptionGroup";

@@ -15,6 +15,7 @@ package org.ngrinder.home.controller;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -132,7 +133,13 @@ public class HomeController extends NGrinderBaseController {
 
 	@ResponseBody
 	@RequestMapping("/check/healthcheck")
-	public String healthcheck() {
+	public String healthcheck(HttpServletResponse response) {
+		if (config.hasShutdownLock()) {
+			try {
+				response.sendError(503, "the ngrinder is about to down");
+			} catch (IOException e) {
+			}
+		}
 		return regionService.getCurrentRegion() + ":" + StringUtils.join(regionService.getRegions().keySet(), "|");
 	}
 

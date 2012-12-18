@@ -23,18 +23,13 @@ import static org.ngrinder.model.Status.START_CONSOLE;
 import static org.ngrinder.model.Status.START_TESTING;
 import static org.ngrinder.model.Status.TESTING;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 
 import javax.annotation.PostConstruct;
 
@@ -46,7 +41,6 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.statistics.StatisticsSet;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -58,12 +52,12 @@ import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.monitor.service.MonitorClientSerivce;
-import org.ngrinder.monitor.share.domain.SystemInfo;
+import org.ngrinder.monitor.service.MontorClientManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.atlassian.plugin.event.PluginEventListener;
@@ -100,10 +94,13 @@ public class PerfTestRunnable implements NGrinderConstants {
 	@Autowired
 	private Config config;
 
-	@Autowired
-	private ApplicationContext appContext;
-
 	private List<OnTestSamplingRunnable> testSamplingRunnables;
+
+	@Autowired
+	private ApplicationContext applicationContext;
+
+	@Autowired
+	TaskScheduler scheduler;
 
 	/**
 	 * Initialize plugin manager to register plugin update event.
@@ -146,6 +143,9 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
 	public void startTest() {
+		if (config.hasNoMoreTestLock()) {
+			return;
+		}
 		// Block if the count of testing exceed the limit
 		if (!perfTestService.canExecuteTestMore()) {
 			// LOG MORE
@@ -262,7 +262,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	SingleConsole checkCancellation(SingleConsole singleConsole) {
 		if (singleConsole.isCanceled()) {
-			throw new SinlgeConsolCancellationException();
+			throw new SinlgeConsolCancellationException("Single Console " + singleConsole.getConsolePort()
+							+ " is canceled");
 		}
 		return singleConsole;
 	}
@@ -343,37 +344,15 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// Add monitors when sampling is started.
 		final Set<AgentInfo> agents = createMonitorTargets(perfTest);
 		singleConsole.addSamplingLifeCyleListener(new SamplingLifeCycleListener() {
-
-			private Map<String, MonitorClientSerivce> monitorClientsMap;
-			private Map<String, BufferedWriter> monitorRecordWriterMap;
+			private MontorClientManager monitorClientScheduler = null;
+			private ScheduledFuture<?> scheduleWithFixedDelay = null;
 
 			@Override
 			public void onSamplingStarted() {
 				LOG.info("add monitors on {} for perftest {}", agents, perfTest.getId());
-				monitorRecordWriterMap = new Hashtable<String, BufferedWriter>(agents.size());
-				monitorClientsMap = new HashMap<String, MonitorClientSerivce>(agents.size());
-				for (AgentInfo target : agents) {
-					String targetIP = target.getIp();
-					// create from context, because we use spring Asycn function to get monitor data
-					// from MBClient asynchronized.
-					MonitorClientSerivce clientServ = appContext.getBean(MonitorClientSerivce.class);
-					clientServ.init(targetIP, target.getPort());
-					monitorClientsMap.put(targetIP, clientServ);
-
-					// prepare monitor data file
-					try {
-						BufferedWriter bw = new BufferedWriter(new FileWriter(new File(singleConsole.getReportPath(),
-										Config.MONITOR_FILE_PREFIX + targetIP + ".data"), false));
-						monitorRecordWriterMap.put(targetIP, bw);
-						// write header info
-						bw.write(SystemInfo.HEADER);
-						bw.newLine();
-						bw.flush();
-					} catch (IOException e) {
-						LOG.error("Creating monitor data file error:{}", e.getMessage());
-						LOG.debug(e.getMessage(), e);
-					}
-				}
+				monitorClientScheduler = applicationContext.getBean(MontorClientManager.class);
+				monitorClientScheduler.add(agents, singleConsole.getReportPath());
+				scheduleWithFixedDelay = scheduler.scheduleWithFixedDelay(monitorClientScheduler, 600);
 				for (OnTestSamplingRunnable each : testSamplingRunnables) {
 					try {
 						each.startSampling(singleConsole, perfTest, perfTestService);
@@ -387,16 +366,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 			@Override
 			public void onSamplingEnded() {
 				LOG.info("remove monitors on {} for perftest {}", agents, perfTest.getId());
-
-				// monitorDataService.removeMonitorAgents(agents);
-				for (String ip : monitorRecordWriterMap.keySet()) {
-					BufferedWriter bw = monitorRecordWriterMap.get(ip);
-					IOUtils.closeQuietly(bw);
-					monitorClientsMap.get(ip).close();
-				}
-				monitorRecordWriterMap.clear();
-				monitorClientsMap.clear();
-
+				scheduleWithFixedDelay.cancel(false);
+				monitorClientScheduler.destroy();
 				for (OnTestSamplingRunnable each : testSamplingRunnables) {
 					try {
 						each.endSampling(singleConsole, perfTest, perfTestService);
@@ -409,14 +380,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 			@Override
 			public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-				for (String targetIP : monitorRecordWriterMap.keySet()) {
-					BufferedWriter bw = monitorRecordWriterMap.get(targetIP);
-					monitorClientsMap.get(targetIP).recordMonitorData(bw);
-				}
 				if (singleConsole.getAllAttachedAgentsCount() == 0) {
 					perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING,
 									"All agents are unexpectively lost.");
 				}
+				monitorClientScheduler.saveData();
 				perfTestService.saveAgentsInfo(singleConsole, perfTest);
 				perfTestService.saveStatistics(singleConsole, perfTest);
 

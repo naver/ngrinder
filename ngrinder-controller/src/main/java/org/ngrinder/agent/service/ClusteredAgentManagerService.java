@@ -18,6 +18,7 @@ import static net.grinder.message.console.AgentControllerState.WRONG_REGION;
 import static org.ngrinder.agent.model.ClustedAgentRequest.RequestType.SHARE_AGENT_SYSTEM_DATA_MODEL;
 import static org.ngrinder.agent.model.ClustedAgentRequest.RequestType.STOP_AGENT;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithRegion;
+import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.TypeConvertUtil.convert;
 
@@ -52,6 +53,8 @@ import org.springframework.cache.CacheManager;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -138,7 +141,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			String keyOfAgentInDB = createAgentKey(eachAgentInDB);
 			agentsInDBMap.put(keyOfAgentInDB, eachAgentInDB);
 			AgentControllerIdentityImplementation agentIdentity = attachedAgentMap.remove(keyOfAgentInDB);
-			
+
 			if (agentIdentity != null) {// if the agent attached to current controller
 				if (!hasSamePortAndStatus(eachAgentInDB, agentIdentity)) {
 					fillUp(eachAgentInDB, agentIdentity);
@@ -206,6 +209,23 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 				agentMonitorCache.put(each, getAgentManager().getSystemDataModel((AgentIdentity) value.get()));
 			}
 		}
+	}
+
+	/**
+	 * Get all visible agents from DB.
+	 * 
+	 * @return agent list
+	 */
+	@Override
+	public List<AgentInfo> getAllVisibleAgentInfoFromDB() {
+		List<AgentInfo> result = Lists.newArrayList();
+		Set<String> regions = getRegions();
+		for (AgentInfo each : getAgentRepository().findAll(visible())) {
+			if (regions.contains(extractRegionFromAgentRegion(each.getRegion()))) {
+				result.add(each);
+			}
+		}
+		return result;
 	}
 
 	/**

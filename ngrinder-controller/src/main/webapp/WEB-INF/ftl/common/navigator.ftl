@@ -45,7 +45,7 @@
 		            	</ul>
 		            </li>
 					<li class="divider-vertical"></li>
-					<li><a href="http://www.cubrid.org/wiki_ngrinder/entry/user-guide"><@spring.message "navigator.help"/></a></li>
+					<li><a href="${helpUrl}"><@spring.message "navigator.help"/></a></li>
          		</ul>      		    
 			</div>
 		</div>

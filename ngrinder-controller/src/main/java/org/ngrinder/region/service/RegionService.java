@@ -27,8 +27,6 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.schedule.ScheduledTask;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.region.model.RegionInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
@@ -47,8 +45,6 @@ import com.google.common.collect.Sets;
  */
 @Service
 public class RegionService {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(RegionService.class);
 
 	@Autowired
 	private Config config;

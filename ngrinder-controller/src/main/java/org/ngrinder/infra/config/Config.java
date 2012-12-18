@@ -184,7 +184,8 @@ public class Config implements IConfig, NGrinderConstants {
 		configurator.setContext(context);
 		context.reset();
 		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
-		context.putProperty("LOG_DIRECTORY", getHome().getGloablLogFile().getAbsolutePath());
+		Home logHome = exHome.exists() ? exHome : home;
+		context.putProperty("LOG_DIRECTORY", logHome.getGloablLogFile().getAbsolutePath());
 		String region = getRegion();
 		context.putProperty("SUFFIX", region.equals(NONE_REGION) ? "" : "_" + region);
 
@@ -493,7 +494,39 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	public boolean isInvisibleRegion() {
-		return getSystemProperties().getPropertyBoolean(NGRINDER_PROP_REGION_HIDE, false); 
+		return getSystemProperties().getPropertyBoolean(NGRINDER_PROP_REGION_HIDE, false);
+	}
+
+	/**
+	 * Check the no more test lock to block further test execution.
+	 * 
+	 * @return true if it exists
+	 */
+	public boolean hasNoMoreTestLock() {
+		if (exHome.exists()) {
+			return exHome.getSubFile("no_more_test.lock").exists();
+		}
+		return false;
+	}
+
+	/**
+	 * Check the shutdown lock to exclude this machine from somewhere(maybe L4).
+	 * 
+	 * @return true if it exists
+	 */
+	public boolean hasShutdownLock() {
+		if (exHome.exists()) {
+			return exHome.getSubFile("shutdown.lock").exists();
+		}
+		return false;
+	}
+
+	/**
+	 * Get ngrinder help url
+	 * @return help url
+	 */
+	public String getHelpUrl() {
+		return getSystemProperties().getProperty("ngrinder.help.url", "http://www.cubrid.org/wiki_ngrinder/entry/user-guide");
 	}
 
 }

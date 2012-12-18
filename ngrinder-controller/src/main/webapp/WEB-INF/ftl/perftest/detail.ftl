@@ -656,6 +656,12 @@ function bindEvent() {
 			return false;
 		}
 
+		if (scheduleTestHook !== undefined) {
+			if (!scheduleTestHook()) {
+				return false;
+			}
+		}
+		
 		if ($("#scriptName option:selected").attr("validated") == "0") {
 			$("small.errorColor").text("<@spring.message "perfTest.detail.message.validatedScript"/>");
 		} else {
@@ -786,7 +792,7 @@ function bindEvent() {
 			var ownerId = ""; 
 			<@security.authorize ifAnyGranted="A, S">					
 				<#if test??>
-					ownerId = "&ownerId=${(test.lastModifiedUser.userId)!}";
+					ownerId = "&ownerId=${(test.createdUser.userId)!}";
 				</#if>
 			</@security.authorize>
 			var scriptRevision = $("#scriptRevision").val();
