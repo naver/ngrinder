@@ -35,11 +35,11 @@ import cubrid.jdbc.driver.CUBRIDDriver;
 public enum Database {
 
 	/** CUBRID. */
-	cubrid(CUBRIDDriver.class, CUBRIDExDialect.class, "jdbc:CUBRID:%s:::?charset=utf-8") {
+	cubrid(CUBRIDDriver.class, CUBRIDExDialect.class, "jdbc:CUBRID:%s:::?charset=utf-8%s") {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
 			dataSource.setUrl(String.format(getUrlTemplate(), databaseProperties.getProperty("database_url",
-							"localhost:33000:ngrinder", " is not defined")));
+							"localhost:33000:ngrinder", " is not defined"), databaseProperties.getProperty("database_url_option", "")));
 			dataSource.setUsername(databaseProperties.getProperty("database_username", "ngrinder"));
 			dataSource.setPassword(databaseProperties.getProperty("database_password", "ngrinder"));
 		}
