@@ -186,9 +186,12 @@ public class Config implements IConfig, NGrinderConstants {
 		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
 		if (exHome.exists()) {
 			context.putProperty("LOG_DIRECTORY", exHome.getGlobalLogFile().getAbsolutePath());
-			context.putProperty("SUFFIX", "_" + getRegion());	
 		} else {
 			context.putProperty("LOG_DIRECTORY", home.getGlobalLogFile().getAbsolutePath());
+		}
+		if (!exHome.exists() && isCluster()) {
+			context.putProperty("SUFFIX", "_" + getRegion());
+		} else {
 			context.putProperty("SUFFIX", "");
 		}
 		try {
@@ -523,10 +526,12 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Get ngrinder help url
+	 * 
 	 * @return help url
 	 */
 	public String getHelpUrl() {
-		return getSystemProperties().getProperty("ngrinder.help.url", "http://www.cubrid.org/wiki_ngrinder/entry/user-guide");
+		return getSystemProperties().getProperty("ngrinder.help.url",
+						"http://www.cubrid.org/wiki_ngrinder/entry/user-guide");
 	}
 
 }
