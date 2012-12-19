@@ -13,15 +13,20 @@
  */
 package org.ngrinder.script.controller;
 
+import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.script.repository.MockFileEntityRepsotory;
+import org.ngrinder.script.svnkitdav.DAVHandlerExFactory;
+import org.ngrinder.script.util.CompressionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.tmatesoft.svn.core.internal.server.dav.DAVException;
@@ -37,11 +42,39 @@ public class DavSvnControllerTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	DavSvnController svnController;
 
+	@Autowired
+	private MockFileEntityRepsotory fileEntityRepository;
+
+	private void prepareSVN() {
+		try {
+			CompressionUtil compressUtil = new CompressionUtil();
+
+			File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
+			fileEntityRepository.setUserRepository(new File(tempRepo, getTestUser().getUserId()));
+			tempRepo.deleteOnExit();
+			File testUserRoot = fileEntityRepository.getUserRepoDirectory(getTestUser()).getParentFile();
+			FileUtils.deleteQuietly(testUserRoot);
+			testUserRoot.mkdirs();
+			compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
+			testUserRoot.deleteOnExit();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	@Test
 	public void testHandleRequest() throws ServletException, IOException {
-		HttpServletRequest req = new MockHttpServletRequest(getTestUser().getUserId(), "");
+		prepareSVN();
+		
+		//test SC_UNAUTHORIZED
+		MockHttpServletRequest req = new MockHttpServletRequest(DAVHandlerExFactory.METHOD_PROPFIND, "/svn/" + getTestUser().getUserId());
 		HttpServletResponse resp = new MockHttpServletResponse();
 		svnController.handleRequest(req, resp);
+
+		req.setPathInfo(getTestUser().getUserId());
+		resp = new MockHttpServletResponse();
+		svnController.handleRequest(req, resp);
+		
 	}
 
 	@Test
