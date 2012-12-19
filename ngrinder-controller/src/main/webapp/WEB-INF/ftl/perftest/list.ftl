@@ -102,10 +102,9 @@
 						<th id="testName"><@spring.message "perfTest.table.testName"/></th>
 						<th id="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
 						<th class="nothing"><@spring.message "perfTest.table.modifier"/></th>
-						</th>
-					<#if clustered>
+						<#if clustered>
 						<th id="region"><@spring.message "agent.table.region"/></th>
-					</#if>
+						</#if>
 						<th id="startTime"><@spring.message "perfTest.table.startTime"/></th>
 						<th class="nothing"><@spring.message "perfTest.table.threshold"/></th>
 						<th id="tps"><@spring.message "perfTest.table.tps"/></th> 
@@ -160,7 +159,7 @@
 									<#if test.threshold == "D">
 										>${(test.durationStr)!}
 									<#else>
-										title="<@spring.message "perfTest.table.runcount"/>">${test.runCount}
+										title="<@spring.message "perfTest.configuration.runCount"/>">${test.runCount}
 									</#if>
 								</td>
 								<td><#if test.tps??>${(test.tps)?string("0.#")}</#if></td>  

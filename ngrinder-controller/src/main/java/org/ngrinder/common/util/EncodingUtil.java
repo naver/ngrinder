@@ -27,7 +27,7 @@ import com.ibm.icu.text.CharsetMatch;
  */
 public abstract class EncodingUtil {
 
-	private static final int MINIMAL_CONFIDENCE_LEVEL = 50;
+	private static final int MINIMAL_CONFIDENCE_LEVEL = 70;
 
 	/**
 	 * Decode the byte array with auto encoding detection feature.

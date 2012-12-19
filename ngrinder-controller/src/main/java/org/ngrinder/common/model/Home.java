@@ -381,4 +381,8 @@ public class Home implements NGrinderConstants {
 		return directory.exists();
 	}
 
+	public File getMessagesDirectory() {
+		return getSubFile("messages");
+	}
+
 }
