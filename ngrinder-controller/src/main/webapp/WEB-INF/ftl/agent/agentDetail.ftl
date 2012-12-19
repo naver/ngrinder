@@ -10,7 +10,6 @@
             .jqplot-yaxis {
 			    margin-right: 10px; 
 			}
-			
 			.jqplot-xaxis {
 			    margin-top: 5px; 
 			} 
@@ -26,7 +25,7 @@
 			<button onClick="window.history.back();" class="btn pull-right" style="margin-top:-45px;"><@spring.message "common.button.return"/></button>
             <div class="row">
                 <div class="span3">
-                    <table class="table table-bordered table-striped" style="border-top:#cccccc solid 1px">
+                    <table class="table table-bordered table-striped" style="border-top:#cccccc solid 1px;margin-top:14px">
 				    <tbody>
 					    <tr>
 					    	<th><@spring.message "agent.table.IP"/></th>
@@ -64,23 +63,13 @@
                     <input id="rinterval" type="text" class="span3" placeholder="number" value="1">
                 </div>
                 <div class="span9">
-					<div class="tabbable" style="margin-left:20px">
-                        <ul class="nav nav-tabs" id="chartTab">
-                            <li><a href="#systemData" data-toggle="tab"><@spring.message "agent.info.systemData"/></a></li>
-                        </ul>
-                        <div class="tab-content">
-                            <div class="tab-pane active" id="systemData">
-								<div class="page-header">
-									<h4>CPU</h4>
-								</div>
-                                <div class="chart" id="cpuDiv"></div>
-								<div class="page-header">
-									<h4>Used Memory</h4>
-								</div>
-                                <div class="chart" id="memoryDiv"></div>
-                            </div>
-					     </div>
-                    </div>
+                	<div class="page-header pageHeader">
+			    		<h4><@spring.message "agent.info.systemData"/></h4>
+					</div>
+					<h6>CPU</h6>
+                    <div class="chart" id="cpuDiv"></div>
+					<h6 style="margin-top:20px">Used Memory</h6>
+                    <div class="chart" id="memoryDiv"></div>
                 </div>
             </div>
         	<#include "../common/copyright.ftl">
@@ -95,8 +84,6 @@
 			initChartData();
 			var jqplots = [];
             $(document).ready(function() {
-            	$("#chartTab a:first").tab('show');
-            	
                 $("#returnBtn").on('click', function() {
                     history.back();
                 });
@@ -117,10 +104,6 @@
                     cleanChartData();
                     timer=window.setInterval("getMonitorData()",interval * 1000);
                 });
-                
-                $('#chartTab a').click(function () {
-					resetFooter();
-				});
 				
                 getMonitorData();
                 $("#rinterval").blur();
@@ -153,14 +136,11 @@
                     success: function(res) {
                         if (res.success) {
                         	getChartData(res);
-                        	if ($("#chartTab li:first").hasClass("active")) {
-                        		maxCPU = getMax(maxCPU, sys_totalCpuValue.aElement);
-                        		showChart('CPU', 'cpuDiv', sys_totalCpuValue.aElement, 0, formatPercentage, maxCPU);
-                        		maxMemory = getMax(maxMemory, sys_usedMemory.aElement);
-                            	showChart('Used Memory', 'memoryDiv', sys_usedMemory.aElement, 1, formatMemory, maxMemory);
-                        	} else {
-                        		
-                        	}
+                    		maxCPU = getMax(maxCPU, sys_totalCpuValue.aElement);
+                    		showChart('CPU', 'cpuDiv', sys_totalCpuValue.aElement, 0, formatPercentage, maxCPU);
+                    		maxMemory = getMax(maxMemory, sys_usedMemory.aElement);
+                        	showChart('Used Memory', 'memoryDiv', sys_usedMemory.aElement, 1, formatMemory, maxMemory);
+                            
                             return true;
                         } else {
                             showErrorMsg("Get monitor data failed.");
