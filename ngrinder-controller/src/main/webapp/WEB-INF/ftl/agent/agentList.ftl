@@ -65,7 +65,6 @@
 								<button type="button" class="btn btn-mini btn-primary approved <#if agent.isApproved() == true>active</#if>" sid="${agent.id}"><@spring.message "agent.table.approved"/> </button>
 							</div>
 						</td> 
-						
 					</tr> 
 					</#list>
 					<#else>
@@ -78,77 +77,78 @@
 			<#include "../common/copyright.ftl">
 			<!--content-->
 		</div>
-			<script>
-	        <#if agents?has_content>
-	            $(document).ready(function() {
-					oTable = $("#agentTable").dataTable({
-						"bAutoWidth": false,
-						"bFilter": false,
-						"bLengthChange": false,
-						"bInfo": false,
-						"iDisplayLength": 15,
-						"aaSorting": [[1, "asc"]],
-						"aoColumns": [{"asSorting": []}, null, {"asSorting": []}, null, null, null, {"asSorting": []}],
-						"sPaginationType": "bootstrap",
-						"oLanguage": {
-							"oPaginate": {
-								"sPrevious": "<@spring.message "common.paging.previous"/>",
-								"sNext":     "<@spring.message "common.paging.next"/>"
-							}
+		<script>
+            $(document).ready(function() {
+		        <#if agents?has_content>
+				oTable = $("#agentTable").dataTable({
+					"bAutoWidth": false,
+					"bFilter": false,
+					"bLengthChange": false,
+					"bInfo": false,
+					"iDisplayLength": 15,
+					"aaSorting": [[1, "asc"]],
+					"aoColumns": [{"asSorting": []}, null, {"asSorting": []}, null, null, null, {"asSorting": []}],
+					"sPaginationType": "bootstrap",
+					"oLanguage": {
+						"oPaginate": {
+							"sPrevious": "<@spring.message "common.paging.previous"/>",
+							"sNext":     "<@spring.message "common.paging.next"/>"
 						}
-					});
-					
-					removeClick();
-					enableChkboxSelectAll("agentTable");
-					
-					$(".approved").live("click", function() {
-						var sid = $(this).attr("sid");
-						$.post(
-					  		"${req.getContextPath()}/agent/approve",
-					  		{ 
-					  			"id": sid,
-					  			"approve": "true"
-					  		},
-					  		function() {
-					  			showSuccessMsg("Agent is approved");
-					  			window.location.reload();
-					  		}
-					     );
-					});
-					
-					$(".unapproved").live("click", function() {
-						var sid = $(this).attr("sid");
-						$.post(
-					  		"${req.getContextPath()}/agent/approve",
-					  		{ 
-					  			"id": sid,
-					  			"approve": "false"
-					  		},
-					  		function() {
-					  			showSuccessMsg("Agent is unapproved");
-					  			window.location.reload();
-					  		}
-					     );					
-					});
-	            });
-			</#if>
-			$("#stopAgenButton").on('click', function() {
-				var ids = "";
-				var list = $("td input:checked");
-				if(list.length == 0) {
-					bootbox.alert("<@spring.message "agent.table.message.alert.stop"/>", "<@spring.message "common.button.ok"/>");
-					return;
-				}
-				
-				var $confirm = bootbox.confirm("<@spring.message "agent.table.message.confirm.stop"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
-				    if (result) {
-						stopAgents(list.map(function() {
-							return $(this).val();
-						}).get().join(","));
-				    }
+					}
 				});
-				$confirm.children(".modal-body").addClass("errorColor");
-			});
+				
+				removeClick();
+				enableChkboxSelectAll("agentTable");
+				
+				$(".approved").click(function() {
+					var sid = $(this).attr("sid");
+					$.post(
+				  		"${req.getContextPath()}/agent/approve",
+				  		{ 
+				  			"id": sid,
+				  			"approve": "true"
+				  		},
+				  		function() {
+				  			showSuccessMsg("Agent is approved");
+				  			window.location.reload();
+				  		}
+				     );
+				});
+				
+				$(".unapproved").click(function() {
+					var sid = $(this).attr("sid");
+					$.post(
+				  		"${req.getContextPath()}/agent/approve",
+				  		{ 
+				  			"id": sid,
+				  			"approve": "false"
+				  		},
+				  		function() {
+				  			showSuccessMsg("Agent is unapproved");
+				  			window.location.reload();
+				  		}
+				     );					
+				});
+				</#if>
+				
+				$("#stopAgenButton").click(function() {
+					var ids = "";
+					var list = $("td input:checked");
+					if(list.length == 0) {
+						bootbox.alert("<@spring.message "agent.table.message.alert.stop"/>", "<@spring.message "common.button.ok"/>");
+						return;
+					}
+					
+					var $confirm = bootbox.confirm("<@spring.message "agent.table.message.confirm.stop"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
+					    if (result) {
+							stopAgents(list.map(function() {
+								return $(this).val();
+							}).get().join(","));
+					    }
+					});
+					$confirm.children(".modal-body").addClass("errorColor");
+				});
+            });
 			
 			function stopAgents(ids) {
 				$.ajax({
@@ -172,8 +172,6 @@
 			    	}
 			  	});
 			}
-			
-		
 	     </script>
 	</body>
 </html>

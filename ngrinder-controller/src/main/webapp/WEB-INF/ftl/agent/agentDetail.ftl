@@ -6,13 +6,9 @@
         <title><@spring.message "agent.info.title"/></title>
        	<style>
             .left { border-right: 1px solid #878988 }
-            div.chart { border: 1px solid #878988; height:250px; min-width:615px; margin-bottom:12px; padding: 5px }
-            .jqplot-yaxis {
-			    margin-right: 10px; 
-			}
-			.jqplot-xaxis {
-			    margin-top: 5px; 
-			} 
+            div.chart { border:1px solid #878988; height:250px; min-width:615px; margin-bottom:12px; padding:5px }
+            .jqplot-yaxis { margin-right:10px; }
+			.jqplot-xaxis { margin-top:5px; } 
         </style>
     </head>
 
@@ -81,19 +77,23 @@
             var timer;
 			var sys_totalCpuValue = new Queue();
 			var sys_usedMemory = new Queue();
-			initChartData();
 			var jqplots = [];
+			var maxCPU = 0;
+            var maxMemory = 0;
+            
             $(document).ready(function() {
+            	initChartData();
+            	
                 $("#returnBtn").on('click', function() {
                     history.back();
                 });
                 
+                getMonitorData();
+                
                 $("#rinterval").keyup(function() {
                     var number = $(this).val();
                     $(this).val(number.replace(/[\D]/g,""))
-                });
-                
-                $("#rinterval").blur(function() {
+                }).blur(function() {
                     if(timer){
                         window.clearInterval(timer);
                     }
@@ -103,13 +103,8 @@
                     }
                     cleanChartData();
                     timer=window.setInterval("getMonitorData()",interval * 1000);
-                });
-				
-                getMonitorData();
-                $("#rinterval").blur();
+                }).blur();
             });
-            var maxCPU = 0;
-            var maxMemory = 0;
             
             function getMax(prev, current) {
             	var currentMax = 0;
@@ -123,6 +118,7 @@
             	}
             	return currentMax;
             }
+            
             function getMonitorData(){
                 $.ajax({
                     url: "${req.getContextPath()}/agent/systemDataModel",
