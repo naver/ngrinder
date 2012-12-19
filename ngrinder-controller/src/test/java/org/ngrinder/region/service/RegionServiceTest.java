@@ -60,19 +60,26 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 
 		RegionService spiedRegionService = spy(regionService);
 		spiedRegionService.setConfig(spiedConfig);
-		
+
 		DynamicCacheConfig cacheConfig = new DynamicCacheConfig();
 		ReflectionTestUtils.setField(cacheConfig, "config", spiedConfig);
 		cacheManager = cacheConfig.dynamicCacheManager();
+		net.sf.ehcache.CacheManager sfCacheManager = (net.sf.ehcache.CacheManager) ReflectionTestUtils.getField(cacheManager,
+				"cacheManager");
+		//remove ecache.xml content
+		sfCacheManager.shutdown();
+		
+		//initial ecache-dist.xml content in cluster mode
+		cacheManager = cacheConfig.dynamicCacheManager();
 		cacheManager.afterPropertiesSet();
 		ReflectionTestUtils.setField(spiedRegionService, "cacheManager", cacheManager);
-		
+
 		spiedRegionService.initRegion();
 		spiedRegionService.checkRegionUpdate();
-		Collection<String> regions = regionService.getRegions().keySet();
+		Collection<String> regions = spiedRegionService.getRegions().keySet();
 		LOG.debug("list:{}", regions);
 		assertThat(regions.contains("TEST_REGION"), is(true));
-		
+
 	}
 
 }
