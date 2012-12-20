@@ -56,7 +56,7 @@
 							<a href="${req.getContextPath()}/agent/detail?id=${agent.id}" target="_self">${agent.ip}</a>
 						</td>
 						<td>${(agent.port)!}</td>
-						<td>${(agent.hostName)!}</td>
+						<td class="ellipsis">${(agent.hostName)!}</td>
 						<td>${(agent.region)!}</td>
 						<td>${(agent.status)!}</td>
 						<td>
@@ -100,7 +100,7 @@
 				removeClick();
 				enableChkboxSelectAll("agentTable");
 				
-				$(".approved").click(function() {
+				$(".approved").live("click", function() {
 					var sid = $(this).attr("sid");
 					$.post(
 				  		"${req.getContextPath()}/agent/approve",
@@ -115,7 +115,7 @@
 				     );
 				});
 				
-				$(".unapproved").click(function() {
+				$(".unapproved").live("click", function() {
 					var sid = $(this).attr("sid");
 					$.post(
 				  		"${req.getContextPath()}/agent/approve",
