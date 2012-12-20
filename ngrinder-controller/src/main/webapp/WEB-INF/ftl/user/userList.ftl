@@ -86,8 +86,6 @@
 				$("#userListForm").submit();
 			});
 			
-			enableChkboxSelectAll("userTable");
-			
 		    <#if userList?has_content>
 			oTable = $("#userTable").dataTable({
 				"bAutoWidth": false,
@@ -107,6 +105,8 @@
 			});
 			
 			removeClick();
+			
+			enableChkboxSelectAll("userTable");
 			</#if>
 		});
 	

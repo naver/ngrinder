@@ -158,7 +158,7 @@
 	<#include "uploadFileModal.ftl">
 	<script>
 		$(document).ready(function() {
-			$("#n_script").addClass("active");
+			$("#nav_script").addClass("active");
 			
 			$('form input').hover(function () {
 	        	$(this).popover('show');
