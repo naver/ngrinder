@@ -13,6 +13,7 @@
  */
 package net.grinder.engine.agent;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -29,6 +30,9 @@ import org.junit.Test;
 public class PropertyBuilderTest {
 	@Test
 	public void testPropertyBuilder() throws DirectoryException {
+		System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator
+						+ new File("./native_lib").getAbsolutePath());
+
 		PropertyBuilder createPropertyBuilder = createPropertyBuilder("www.sample.com,:127.0.0.1");
 		assertThat(createPropertyBuilder.rebaseHostString("www.sample.com,:127.0.0.1"),
 						is("www.sample.com:173.230.129.147,:127.0.0.1"));
@@ -38,9 +42,21 @@ public class PropertyBuilderTest {
 		assertThat(createPropertyBuilder.rebaseHostString(":127.0.0.1"), is(":127.0.0.1"));
 	}
 
+	@Test
+	public void testPropertyBuilderMemSize() throws DirectoryException {
+		System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator
+						+ new File("./native_lib").getAbsolutePath());
+
+		PropertyBuilder createPropertyBuilder = createPropertyBuilder("www.sample.com,:127.0.0.1");
+		createPropertyBuilder.addProperties("grinder.processes", "10");
+		String buildJVMArgument = createPropertyBuilder.buildJVMArgument();
+		assertThat(buildJVMArgument, containsString("-Xmx"));
+	}
+
 	public PropertyBuilder createPropertyBuilder(String hostString) throws DirectoryException {
 		Directory directory = new Directory(new File("."));
 		GrinderProperties property = new GrinderProperties();
+
 		return new PropertyBuilder(property, directory, new File("."), true, hostString, NetworkUtil.getLocalHostName());
 	}
 }
