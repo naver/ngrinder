@@ -13,6 +13,8 @@
  */
 package org.ngrinder.infra;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -40,6 +42,16 @@ public class AgentConfigTest {
 		config.init();
 		File homeDir = config.getHome().getDirectory();
 		System.out.println("Home:" + homeDir.getAbsolutePath());
+		
+		config.saveAgentPidProperties("1000", "agent");
+		String pid  = config.getAgentPidProperties("agent");
+		assertThat(pid, is("1000"));
+		
+		config.saveAgentPidProperties("1001", "monitor");
+		String monitorPid  = config.getAgentPidProperties("monitor");
+		assertThat(monitorPid, is("1001"));
+
+		assertThat(config.isTestMode(), is(false));
 
 		System.setProperty("ngrinder.agent.home", "./tmp_agent_home");
 		config.init();

@@ -45,11 +45,12 @@ public class UserMessageSource extends AbstractMessageSource {
 	 * @since 3.1
 	 */
 	static class LocaleAndCode {
+		
 		/**
 		 * Constructor.
 		 * 
-		 * @param locale
-		 * @param code
+		 * @param locale locale
+		 * @param code code
 		 */
 		public LocaleAndCode(String locale, String code) {
 			this.locale = locale;
@@ -75,12 +76,16 @@ public class UserMessageSource extends AbstractMessageSource {
 
 	}
 
+	/**
+	 * Refresh i18n messages.
+	 * @throws IOException IO exception
+	 */
 	public void refresh() throws IOException {
 		init();
 	}
 
 	/**
-	 * Initialize
+	 * Initialize.
 	 */
 	@PostConstruct
 	public void init() {

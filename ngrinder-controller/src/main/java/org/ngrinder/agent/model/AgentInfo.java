@@ -137,7 +137,6 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	/**
 	 * Get host name.
 	 * 
-	 * @return hostName
 	 * @deprecated use {@link #getName()} instead.
 	 * @return host name
 	 */

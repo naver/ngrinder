@@ -67,7 +67,7 @@ public class GoogleAnalyticsV1URLBuildingStrategy implements URLBuildingStrategy
 	}
 
 	/**
-	 * Build URL
+	 * Build URL.
 	 * 
 	 * @param focusPoint focus point
 	 * 

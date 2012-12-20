@@ -67,9 +67,12 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 		cacheManager.afterPropertiesSet();
 		ReflectionTestUtils.setField(spiedRegionService, "cacheManager", cacheManager);
 		
+		net.sf.ehcache.CacheManager sfcacheManager = (net.sf.ehcache.CacheManager)ReflectionTestUtils.getField(cacheManager, "cacheManager");
+		sfcacheManager.addCache("regions");
+		
 		spiedRegionService.initRegion();
 		spiedRegionService.checkRegionUpdate();
-		Collection<String> regions = regionService.getRegions().keySet();
+		Collection<String> regions = spiedRegionService.getRegions().keySet();
 		LOG.debug("list:{}", regions);
 		assertThat(regions.contains("TEST_REGION"), is(true));
 		

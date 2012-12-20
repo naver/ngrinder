@@ -42,6 +42,8 @@ public class MyHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
 	@Override
 	public String getPathInfo() {
+		// FIXME this function will be called many times just in one request.
+		// it is better to handle the url outside.
 		try {
 			return SVNEncodingUtil.uriEncode(URLDecoder
 							.decode(getRequestURI()

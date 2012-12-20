@@ -39,7 +39,8 @@ public enum Database {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
 			dataSource.setUrl(String.format(getUrlTemplate(), databaseProperties.getProperty("database_url",
-							"localhost:33000:ngrinder", " is not defined"), databaseProperties.getProperty("database_url_option", "")));
+							"localhost:33000:ngrinder", " is not defined"), 
+							databaseProperties.getProperty("database_url_option", "")));
 			dataSource.setUsername(databaseProperties.getProperty("database_username", "ngrinder"));
 			dataSource.setPassword(databaseProperties.getProperty("database_password", "ngrinder"));
 		}

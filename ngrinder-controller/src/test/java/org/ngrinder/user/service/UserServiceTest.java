@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
+import org.ngrinder.model.Permission;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.PerfTestService;
@@ -50,6 +51,10 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		user.setEmail("www@test.com");
 		user.setRole(Role.SUPER_USER);
 		user = userService.saveUser(user);
+		assertThat(user.getRole().hasPermission(Permission.GET_ALL_TESTS),is(true));
+		assertThat(user.getRole().hasPermission(Permission.CHECK_SCRIPT_OFOTHER),is(true));
+		assertThat(user.getRole().hasPermission(Permission.VALIDATE_SCRIPT_OFOTHER),is(true));
+		assertThat(user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE),is(true));
 		assertThat(user.getUserId(), is(userId));
 		return user;
 	}
@@ -70,7 +75,10 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 
 		userService.saveUser(user2, Role.ADMIN);
 		userById = userService.getUserById("hello");
-
+		assertThat(userById.getRole().hasPermission(Permission.GET_ALL_TESTS),is(true));
+		assertThat(userById.getRole().hasPermission(Permission.CHECK_SCRIPT_OFOTHER),is(true));
+		assertThat(userById.getRole().hasPermission(Permission.VALIDATE_SCRIPT_OFOTHER),is(true));
+		assertThat(userById.getRole().hasPermission(Permission.SWITCH_TO_ANYONE),is(true));
 		assertThat(userById.getRole(), is(Role.ADMIN));
 	}
 

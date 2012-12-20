@@ -41,7 +41,8 @@ public abstract class UserSpecification {
 			@Override
 			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb) {
 				String pattern = "%" + query + "%";
-				return cb.or(cb.like(root.get("userName").as(String.class), pattern), cb.like(root.get("userId").as(String.class), pattern));
+				return cb.or(cb.like(root.get("userName").as(String.class), pattern), 
+						cb.like(root.get("userId").as(String.class), pattern));
 			}
 		};
 	}
