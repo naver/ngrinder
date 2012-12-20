@@ -107,7 +107,6 @@ public class MonitorClientSerivce {
 	 * @return {@link SystemInfo}
 	 */
 	public SystemInfo getMonitorData() {
-		SystemInfo retData = new SystemInfo();
 		try {
 			if (!mbeanClient.isConnected()) {
 				mbeanClient.connect();
@@ -116,6 +115,7 @@ public class MonitorClientSerivce {
 				// if the monitor client can not be connected, just return, to avoid error.
 				return null;
 			}
+			SystemInfo retData = new SystemInfo();
 			CompositeData cd = (CompositeData) mbeanClient.getAttribute(sysInfoMBeanObj.getObjectName(),
 							sysInfoMBeanObj.getAttrName());
 			retData.parse(cd);
