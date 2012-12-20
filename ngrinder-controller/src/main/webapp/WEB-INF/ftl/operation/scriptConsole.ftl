@@ -4,8 +4,12 @@
 <#include "../common/common.ftl">
 <#include "../common/datatables.ftl">
 <title><@spring.message "script.view.title"/></title>
+<style>
+	.CodeMirror-scroll {
+		height: 400px;
+	}
+</style>
 </head>
-
 <body>
 	<#include "../common/navigator.ftl">
 	<div class="container">
@@ -45,42 +49,9 @@ please refer nGrinder javadoc to find out more APIs on the given variables.
 		</div>
 		<#include "../common/copyright.ftl">
 	</div>
-	<script src="${req.getContextPath()}/plugins/codemirror/codemirror.js" type="text/javascript" charset="utf-8"></script>
-	<link rel="stylesheet" href="${req.getContextPath()}/plugins/codemirror/codemirror.css"/>
-	<link rel="stylesheet" href="${req.getContextPath()}/plugins/codemirror/eclipse.css">
+    <#include "../common/codemirror.ftl">
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/python.js"></script>
-	<script src="${req.getContextPath()}/plugins/codemirror/util/dialog.js"></script>
-	
-    <link rel="stylesheet" href="${req.getContextPath()}/plugins/codemirror/util/dialog.css">
-    <script src="${req.getContextPath()}/plugins/codemirror/util/searchcursor.js"></script>
-    <script src="${req.getContextPath()}/plugins/codemirror/util/search.js"></script>
-    <script src="${req.getContextPath()}/plugins/codemirror/util/foldcode.js"></script> 
-    <style>
-		.CodeMirror-scroll {
-			height: 400px;
-		}
-	</style>
     <script>
-    	function isFullScreen(cm) {
-	      return /\bCodeMirror-fullscreen\b/.test(cm.getWrapperElement().className);
-	    }
-	    function winHeight() {
-	      return window.innerHeight || (document.documentElement || document.body).clientHeight;
-	    }
-	    function setFullScreen(cm, full) {
-	      var wrap = cm.getWrapperElement(), scroll = cm.getScrollerElement();
-	      if (full) {
-	        wrap.className += " CodeMirror-fullscreen";
-	        scroll.style.height = winHeight() + "px";
-	        document.documentElement.style.overflow = "hidden";
-	      } else {
-	        wrap.className = wrap.className.replace(" CodeMirror-fullscreen", "");
-	        scroll.style.height = "";
-	        document.documentElement.style.overflow = "";
-	      }
-	      cm.refresh(); 
-	    }
-	    
 	    $(document).ready(function() {
 			var editor = CodeMirror.fromTextArea(document.getElementById("scriptEditor"), {
 			   mode: "python",
@@ -106,12 +77,12 @@ please refer nGrinder javadoc to find out more APIs on the given variables.
 			   }
 			});
 			var hlLine = editor.setLineClass(0, "activeline");
+			
 			$("#runBtn").click(function() {
 				$('#script').val(editor.getValue());
 				document.forms.scriptForm.submit();
 			});
 		});
-		
 	 </script>
 </body>
 </html>
