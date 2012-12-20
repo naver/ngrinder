@@ -150,7 +150,7 @@
 		            			<td class="ellipsis" data-original-title="<@spring.message "perfTest.table.modifier"/>" 
 		            				data-content="<@spring.message "perfTest.table.creator"/> : ${test.createdUser.userName}&lt;br&gt; <@spring.message "perfTest.table.modifier"/> : ${test.lastModifiedUser.userName}">${test.lastModifiedUser.userName}</td>
 								<#if clustered>
-									<td class="ellipsis" title="<@spring.message "agent.table.region"/>" data-content="${(test.region)!}">${(test.region)!}</td>
+									<td class="ellipsis" title="<@spring.message "agent.table.region"/>" data-content='<#if test.region?has_content><@spring.message "${test.region}"/></#if>'> <#if test.region?has_content><@spring.message "${test.region}"/></#if> </td>
 								</#if>
 								<td>
 									<#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if>
