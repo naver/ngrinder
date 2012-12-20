@@ -27,6 +27,11 @@ import net.grinder.util.NetworkUtil;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
+import org.hyperic.sigar.Sigar;
+import org.hyperic.sigar.SigarException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class which is responsible to build custom jvm arguments.
@@ -38,6 +43,7 @@ import org.apache.commons.lang.StringUtils;
  * @since 3.0
  */
 public class PropertyBuilder {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProcessBuilder.class);
 	private final GrinderProperties properties;
 	private final Directory baseDirectory;
 	private final String hostName;
@@ -77,6 +83,15 @@ public class PropertyBuilder {
 	 * @return generated jvm arguments
 	 */
 	public String buildJVMArgument() {
+		return addMemorySettings(new StringBuilder(buildJVMArgumentWithoutMemory())).toString();
+	}
+	
+	/**
+	 * Build JVM Arguments.
+	 * 
+	 * @return generated jvm arguments
+	 */
+	public String buildJVMArgumentWithoutMemory() {
 		StringBuilder jvmArguments = new StringBuilder(properties.getProperty("grinder.jvm.arguments", ""));
 		if (securityEnabled) {
 			jvmArguments = addSecurityManager(jvmArguments);
@@ -85,7 +100,45 @@ public class PropertyBuilder {
 			jvmArguments = addDNSIP(jvmArguments);
 		}
 		jvmArguments = addPythonPathJvmArgument(jvmArguments);
-		return addCustomDns(jvmArguments).toString();
+		jvmArguments = addCustomDns(jvmArguments);
+		jvmArguments = addServerMode(jvmArguments);
+		return jvmArguments.toString();
+	}
+
+	protected final long DEFAULT_XMX_SIZE = 500 * 1024 * 1024;
+	protected final long DEFAULT_MIN_XMX_SIZE = 200 * 1024 * 1024;
+	protected final long DEFAULT_MAX_XMX_SIZE = 1024 * 1024 * 1024;
+
+	protected StringBuilder addMemorySettings(StringBuilder jvmArguments) {
+		String processCountStr = properties.getProperty("grinder.processes", "1");
+		int processCount = NumberUtils.toInt(processCountStr, 1);
+		long desirableXmx = DEFAULT_XMX_SIZE; // make 500M as default.
+		try {
+			// Make a room with 100MB.
+			long actualFree = new Sigar().getMem().getActualFree() - (100 * 1024 * 1024);
+			// If memory enough..
+			desirableXmx = actualFree / processCount;
+
+			if (desirableXmx < (DEFAULT_MIN_XMX_SIZE)) {
+				LOGGER.error("There is very few memory availble {}. It's not enough to run test", actualFree);
+				desirableXmx = DEFAULT_MIN_XMX_SIZE;
+			} else if (desirableXmx > DEFAULT_MAX_XMX_SIZE) {
+				desirableXmx = DEFAULT_MAX_XMX_SIZE;
+			}
+		} catch (SigarException e) {
+			LOGGER.error("Error occurs while calculating memory size", e);
+			desirableXmx = DEFAULT_XMX_SIZE;
+		}
+		return jvmArguments.append(" -Xms" + getMemorySizeStr(desirableXmx / 2) + "M -Xmx"
+						+ getMemorySizeStr(desirableXmx) + "M ");
+	}
+
+	private String getMemorySizeStr(long desirableXmx) {
+		return String.valueOf(desirableXmx / (1024 * 1024));
+	}
+
+	protected StringBuilder addServerMode(StringBuilder jvmArguments) {
+		return jvmArguments.append(" -server ");
 	}
 
 	protected StringBuilder addSecurityManager(StringBuilder jvmArguments) {
@@ -220,5 +273,9 @@ public class PropertyBuilder {
 			}
 		}
 		return newHostString.toString();
+	}
+
+	void addProperties(String key, String value) {
+		this.properties.put(key, value);
 	}
 }

@@ -21,6 +21,7 @@ import org.aspectj.lang.annotation.Before;
 import org.ngrinder.infra.spring.SpringContext;
 import org.ngrinder.model.BaseModel;
 import org.ngrinder.model.User;
+import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,8 +45,13 @@ public class ModelAspect {
 	@Autowired
 	private SpringContext springContext;
 
+	@Autowired
+	private UserRepository userRepository;
+
+
 	/**
-	 * Save current user to modified date or created date. It's only workable when it's from servlet context.
+	 * Save current user to modified date or created date. It's only workable when it's from servlet
+	 * context.
 	 * 
 	 * @param joinPoint
 	 *            joint point
@@ -57,16 +63,17 @@ public class ModelAspect {
 			// It's not executed on Task scheduling.
 			SpringContext springContext = getSpringContext();
 			if (object instanceof BaseModel
-					&& (springContext.isServletRequestContext() || springContext.isUnitTestContext())) {
+							&& (springContext.isServletRequestContext() || springContext.isUnitTestContext())) {
 				BaseModel<?> model = (BaseModel<?>) object;
 				Date lastModifiedDate = new Date();
 				model.setLastModifiedDate(lastModifiedDate);
 				User currentUser = userContext.getCurrentUser();
-				model.setLastModifiedUser(currentUser);
+				model.setLastModifiedUser(userRepository.findOne(currentUser.getId()));
 
 				if (!model.exist() || model.getCreatedUser() == null) {
 					model.setCreatedDate(lastModifiedDate);
-					model.setCreatedUser(currentUser.getFactualUser());
+					User factualUser = currentUser.getFactualUser();
+					model.setCreatedUser(userRepository.findOne(factualUser.getId()));
 				}
 			}
 		}

@@ -102,7 +102,7 @@ public class LocalScriptTestDriveService {
 			systemProperties.put("java.class.path", base.getAbsolutePath() + File.pathSeparator + newClassPath);
 			Directory workingDirectory = new Directory(base);
 			final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
-							systemProperties, builder.buildJVMArgument(), workingDirectory);
+							systemProperties, builder.buildJVMArgumentWithoutMemory(), workingDirectory);
 
 			ScriptLocation scriptLocation = new ScriptLocation(workingDirectory, script);
 			ProcessWorkerFactory workerFactory = new ProcessWorkerFactory(workerCommandLine, agentIndentity,

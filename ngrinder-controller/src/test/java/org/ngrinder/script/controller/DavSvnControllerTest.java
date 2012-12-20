@@ -67,7 +67,8 @@ public class DavSvnControllerTest extends AbstractNGrinderTransactionalTest {
 		prepareSVN();
 		
 		//test SC_UNAUTHORIZED
-		MockHttpServletRequest req = new MockHttpServletRequest(DAVHandlerExFactory.METHOD_PROPFIND, "/svn/" + getTestUser().getUserId());
+		MockHttpServletRequest req = new MockHttpServletRequest(DAVHandlerExFactory.METHOD_PROPFIND,
+				"/svn/" + getTestUser().getUserId());
 		HttpServletResponse resp = new MockHttpServletResponse();
 		svnController.handleRequest(req, resp);
 
