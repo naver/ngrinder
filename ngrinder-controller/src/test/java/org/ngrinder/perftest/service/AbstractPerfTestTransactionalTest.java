@@ -16,11 +16,8 @@ package org.ngrinder.perftest.service;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.infra.config.MockAgentConfigInControllerSide;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
@@ -40,14 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 abstract public class AbstractPerfTestTransactionalTest extends AbstractNGrinderTransactionalTest {
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractPerfTestTransactionalTest.class);
 
-	protected AgentConfig agentConfig1;
-	protected AgentConfig agentConfig2;
 
-	@Before
-	public void firstInit() {
-		agentConfig1 = new MockAgentConfigInControllerSide(1).init();
-		agentConfig2 = new MockAgentConfigInControllerSide(2).init();
-	}
 
 	@Autowired
 	protected PerfTestService perfTestService;

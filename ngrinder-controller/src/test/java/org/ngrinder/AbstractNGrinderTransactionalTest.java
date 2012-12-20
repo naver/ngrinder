@@ -13,11 +13,21 @@
  */
 package org.ngrinder;
 
+
+import java.util.Set;
+
 import javax.sql.DataSource;
+
+import net.grinder.AgentControllerDaemon;
+import net.grinder.communication.AgentControllerCommunicationDefauts;
 
 import org.junit.Before;
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.infra.AgentConfig;
+import org.ngrinder.infra.config.MockAgentConfigInControllerSide;
 import org.ngrinder.model.User;
+import org.ngrinder.monitor.MonitorConstants;
+import org.ngrinder.monitor.agent.AgentMonitorServer;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
@@ -47,6 +57,25 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 	protected UserRepository userRepository;
 
 	protected User testUser = null;
+	
+	static {
+		LOG.info("* Start nGrinder Agent *");
+		AgentConfig agentConfig = new MockAgentConfigInControllerSide(1).init();
+		AgentControllerDaemon agentControllerDaemon = new AgentControllerDaemon("127.0.0.1");
+		agentControllerDaemon.setAgentConfig(agentConfig);
+		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+	
+		LOG.info("* Start nGrinder Monitor *");
+		try {
+			Set<String> collector = MonitorConstants.SYSTEM_DATA_COLLECTOR;
+			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_MONITOR_PORT, collector);
+			AgentMonitorServer.getInstance().start();
+		} catch (Exception e) {
+			LOG.error("ERROR: {}", e.getMessage());
+			LOG.debug("Error while starting Monitor", e);
+		}
+	}
+
 
 	@Before
 	public void beforeSetSecurity() {
