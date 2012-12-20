@@ -83,6 +83,15 @@ public class PropertyBuilder {
 	 * @return generated jvm arguments
 	 */
 	public String buildJVMArgument() {
+		return addMemorySettings(new StringBuilder(buildJVMArgumentWithoutMemory())).toString();
+	}
+	
+	/**
+	 * Build JVM Arguments.
+	 * 
+	 * @return generated jvm arguments
+	 */
+	public String buildJVMArgumentWithoutMemory() {
 		StringBuilder jvmArguments = new StringBuilder(properties.getProperty("grinder.jvm.arguments", ""));
 		if (securityEnabled) {
 			jvmArguments = addSecurityManager(jvmArguments);
@@ -93,7 +102,6 @@ public class PropertyBuilder {
 		jvmArguments = addPythonPathJvmArgument(jvmArguments);
 		jvmArguments = addCustomDns(jvmArguments);
 		jvmArguments = addServerMode(jvmArguments);
-		jvmArguments = addMemorySettings(jvmArguments);
 		return jvmArguments.toString();
 	}
 
