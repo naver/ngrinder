@@ -93,7 +93,6 @@ public class PropertyBuilder {
 		jvmArguments = addPythonPathJvmArgument(jvmArguments);
 		jvmArguments = addCustomDns(jvmArguments);
 		jvmArguments = addServerMode(jvmArguments);
-		jvmArguments = addServerMode(jvmArguments);
 		jvmArguments = addMemorySettings(jvmArguments);
 		return jvmArguments.toString();
 	}
