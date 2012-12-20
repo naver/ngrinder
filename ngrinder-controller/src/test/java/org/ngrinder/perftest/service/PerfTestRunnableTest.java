@@ -22,30 +22,21 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
-import net.grinder.AgentControllerDaemon;
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.common.GrinderProperties;
-import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.statistics.StatisticsSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
-import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.monitor.agent.AgentMonitorServer;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.service.MonitorService;
 import org.ngrinder.script.model.FileEntry;
@@ -59,9 +50,6 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	@Autowired
 	private MockPerfTestRunnable perfTestRunnable;
-
-	AgentControllerDaemon agentControllerDaemon;
-
 	@Autowired
 	private AgentManager agentManager;
 
@@ -76,24 +64,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	public PerfTest currentTest;
 
-	@BeforeClass
-	public static void initMonitor() {
-		try {
-			Set<String> collector = MonitorConstants.SYSTEM_DATA_COLLECTOR;
-			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_MONITOR_PORT, collector);
-			AgentMonitorServer.getInstance().start();
-		} catch (Exception e) {
-			LOG.error("ERROR: {}", e.getMessage());
-			LOG.debug("Error while starting Monitor", e);
-		}
-		ThreadUtil.sleep(2000);
-	}
-
-	@AfterClass
-	public static void stopMonitor() {
-		AgentMonitorServer.getInstance().stop();
-	}
-
+	
 	@Before
 	public void before() throws IOException {
 		ClassPathResource classPathResource = new ClassPathResource("native_lib/.sigar_shellrc");
@@ -120,12 +91,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		allPerfTest.get(0).setScriptName("/hello/world.py");
 		allPerfTest.get(0).setDuration(30000L);
 		perfTestService.savePerfTest(testUser, allPerfTest.get(0));
-		agentControllerDaemon = new AgentControllerDaemon("127.0.0.1");
-		agentControllerDaemon.setAgentConfig(agentConfig1);
-		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
-
-		LOG.info("* Start nGrinder Monitor *");
-		MonitorConstants.init(agentConfig2);
+		
 
 		int agentCount = 0;
 		int checkLoop = 0;
@@ -147,11 +113,6 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		assertThat(agentCount, is(1));
 	}
 
-	@After
-	public void after() {
-		agentControllerDaemon.shutdown();
-		sleep(3000);
-	}
 
 	@Test
 	public void testDoTest() throws IOException {

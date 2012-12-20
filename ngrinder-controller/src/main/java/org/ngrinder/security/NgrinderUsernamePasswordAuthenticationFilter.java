@@ -78,10 +78,6 @@ public class NgrinderUsernamePasswordAuthenticationFilter extends UsernamePasswo
 		super.unsuccessfulAuthentication(request, response, failed);
 	}
 
-	public UserRepository getUserRepository() {
-		return userRepository;
-	}
-
 	public void setUserRepository(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}

@@ -143,7 +143,6 @@
 		font-weight: bold;
 	}
 	</style>
-
 </head>
 
 <body>
@@ -220,12 +219,7 @@
 												</button>
 												
 												<button class="btn btn-primary" style="width:116px" data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn" ${disabled!}>
-													<#if isClone>
-														<@spring.message "perfTest.detail.clone"/>
-													<#else>
-														<@spring.message "common.button.save"/>
-													</#if>
-													&nbsp;<@spring.message "perfTest.detail.andStart"/>
+													<#if isClone><@spring.message "perfTest.detail.clone"/><#else><@spring.message "common.button.save"/></#if>&nbsp;<@spring.message "perfTest.detail.andStart"/>
 												</button>
 										</td>
 									</tr>
@@ -358,9 +352,10 @@ $(document).ready(function () {
 	updateRampupChart();
 	
 	<#if test??>
-		<#if test.status.category == "TESTING"> 
+		<#assign category = test.status.category>
+		<#if category == "TESTING"> 
   			displayCfgAndTestRunning(); 
-		<#elseif test.status.category == "FINISHED" || test.status.category == "STOP" || test.status.category == "ERROR"> 
+		<#elseif category == "FINISHED" || category == "STOP" || category == "ERROR"> 
 			displayCfgAndTestReport(); 
 		<#else>
 			displayCfgOnly(); 
@@ -387,41 +382,39 @@ function formatTags(e) {
 }
 
 function initTags() {
-	$("#tagString").select2(
-		{	
-            tokenSeparators: [",", " "],
-			tags:[""],
-			placeholder: '<@spring.message "perfTest.configuration.tagInput"/>',
-			initSelection : function (element, callback) {
-       			var data = [];
-      			$(element.val().split(",")).each(function () {
-      			 	if (this.indexOf("q_") !== 0) {
-       			    	data.push({id: "q_" + this, text: this});
-       			    }
-      			});
-        		callback(data);
-    		},
-    		maximumSelectionSize: 5,
-			query: function(query) {
-				var data = {results:[]};
-				$.ajax({
-					url : "${req.getContextPath()}/perftest/tagSearch",
-					dataType : 'json',
-					type : 'POST',
-					cache : true,
-					data : {
-						'query' : query.term
-					},
-					success : function(res) {
-						for (var i = 0; i < res.length; i++) {
-							data.results.push({id:"q_" + res[i], text:res[i]});
-						} 
-						query.callback(data);
-					}
-				});
-			}
+	$("#tagString").select2({	
+        tokenSeparators: [",", " "],
+		tags:[""],
+		placeholder: '<@spring.message "perfTest.configuration.tagInput"/>',
+		initSelection : function (element, callback) {
+   			var data = [];
+  			$(element.val().split(",")).each(function () {
+  			 	if (this.indexOf("q_") !== 0) {
+   			    	data.push({id: "q_" + this, text: this});
+   			    }
+  			});
+    		callback(data);
+		},
+		maximumSelectionSize: 5,
+		query: function(query) {
+			var data = {results:[]};
+			$.ajax({
+				url : "${req.getContextPath()}/perftest/tagSearch",
+				dataType : 'json',
+				type : 'POST',
+				cache : true,
+				data : {
+					'query' : query.term
+				},
+				success : function(res) {
+					for (var i = 0; i < res.length; i++) {
+						data.results.push({id:"q_" + res[i], text:res[i]});
+					} 
+					query.callback(data);
+				}
+			});
 		}
-	).on("change", formatTags);
+	}).change(formatTags);
 	$("#scriptName").select2({
 		placeholder: '<@spring.message "perfTest.configuration.scriptInput"/>'
 	});
@@ -437,6 +430,9 @@ function initScheduleDate() {
 	$('#sDateInput').datepicker({
 		format : 'yyyy-mm-dd'
 	});
+	
+	$("#shSelect").append(getOption(24));
+	$("#smSelect").append(getOption(60));
 }
 
 function initDuration() {
@@ -485,16 +481,10 @@ function initDuration() {
 	$("#sSelect").append(getOption(60));
 	$("#sSelect").change(getDurationMS);
 	
-	$("#shSelect").append(getOption(24));
-	$("#smSelect").append(getOption(60));
-	
 	setDuration();
 }
 
 function addValidation() {
-	$.validator.addMethod('Decimal', function(value, element) {
-    	return this.optional(element) || /^\d+(\.\d{0,3})?$/.test(value); 
-	}, "Please enter a correct number, format xxxx.xxx");
 	$("#testContentForm").validate({
 		rules: {
 			testName: "required",
@@ -638,7 +628,7 @@ function bindEvent() {
 		$("#duration").valid();
 	});
 	
-	$("#saveScheduleBtn").click(function() {
+	$("#saveScheduleBtn").click(function() {		
 		$("#agentCount").rules("add", {
 			min:1
 		});
@@ -656,7 +646,7 @@ function bindEvent() {
 			return false;
 		}
 
-		if (scheduleTestHook !== undefined) {
+		if (typeof(scheduleTestHook) != "undefined") {
 			if (!scheduleTestHook()) {
 				return false;
 			}
@@ -667,9 +657,10 @@ function bindEvent() {
 		} else {
 			$("small.errorColor").text("");
 		}
+	    
+	   	initScheduleTime();
 		
-	    $("#tagString").val(buildTagString());
-	    initScheduleTime();
+		$("#tagString").val(buildTagString());
 	});
 	
 	$("#saveTestBtn").click(function() {
@@ -683,6 +674,7 @@ function bindEvent() {
 		$("#testStatus").val("SAVED");
 		$("#scheduleInput").attr('name', '');
 		$("#tagString").val(buildTagString());
+		
 		return true;
 	});
 	
@@ -1046,9 +1038,11 @@ function displayCfgAndTestReport() {
 }
 
 function initScheduleTime() {
-	$("#shSelect").val(new Date().getHours());
-	$("#smSelect").val(new Date().getMinutes());
+	var date = new Date();
+	$("#shSelect").val(date.getHours());
+	$("#smSelect").val(date.getMinutes());
 }
+
 </script>
 	</body>
 </html>

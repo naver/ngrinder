@@ -40,85 +40,62 @@ rel="popover" placement="bottom"></div>
 </div>
 
 <script>
-	 /*function validateHostForm() {
-	      $("#ipInput").blur(function () {
-	          var $this = $(this);
-	          if (!checkEmptyByObj($this)) {
-	              markInput($this, isIPByObj($this), "<@spring.message "perfTest.configuration.addHost.inputTargetIp"/>");
-	          }
-	      });
-	      $("#domainInput").blur(function () {
-	          var $this = $(this);
-	          if (!checkEmptyByObj($this)) {
-	              var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$";
-	              var str = $this.val();
-	              markInput($this, checkStringFormat(str, rule), "<@spring.message "perfTest.configuration.addHost.inputTargetDomain"/>");
-	          }
-	      });
-	}*/
-	function validateHost() {
-	      var ipValue = $("#ipInput");
-          if (!checkEmptyByObj(ipValue)) {
-              if(!isIPByObj(ipValue)){
-                  markInput(ipValue, false, "<@spring.message "perfTest.configuration.addHost.inputTargetIp"/>");
+	function validateHost(arr) {
+		  var success;
+	      var $ip = $("#ipInput");
+          if (!checkEmptyByObj($ip)) {
+          	  success = isIPByObj($ip);
+          	  markInput($ip, success, "<@spring.message "perfTest.configuration.addHost.inputTargetIp"/>");
+              if(!success){
                   return false;
               }
+              arr.push($ip.val());
           }
-          var domainValue = $("#domainInput");
-          if (!checkEmptyByObj(domainValue)) {
+          
+          var $domain = $("#domainInput");
+          if (!checkEmptyByObj($domain)) {
               var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,3}$";
-              var str = domainValue.val();
-              if(!checkStringFormat(str, rule)){
-                  markInput(domainValue, false, "<@spring.message "perfTest.configuration.addHost.inputTargetDomain"/>");
+              var str = $domain.val();
+              success = checkStringFormat(str, rule);
+              markInput($domain, success, "<@spring.message "perfTest.configuration.addHost.inputTargetDomain"/>");
+              if(!success){
                   return false;
               }
+              arr.push(str);
           }
+          
           return true;
     }
 	  
 	$(document).ready(function() {
-	      // validateHostForm();
-		  
 	      $("#addHostBtn").click(function () {
-	          if(!validateHost()){
+	          var content = [];
+	          
+	          if(!validateHost(content)){
 	              return;
 	          }
-	          
-	          var content = [];
-	             
-	          if (!checkEmptyByID("domainInput")) {
-	              content.push(getValueByID("domainInput"));
-	          }
-	          if (!checkEmptyByID("ipInput")) {
-	              content.push(getValueByID("ipInput"));
-	          }
-
 	          if (content.length == 0) {
 	              $("#addHostModal small").addClass("errorColor");
 	              return;
 	          }
-
-			  if (!$("#domainInput").valid() &&  !$("#ipInput").valid()) {
-		  	     return;
-		      } 
-	          var contentStr = content.join(":");
-	          
-	          $(".div-host").html($(".div-host").html() + hostItem(contentStr));
-	          
+	           
+	          var contentHTML = hostItem(content.join(":"));
+	          $(".div-host").html($(".div-host").html() + contentHTML);
 	          updateHostHiddenValue();
+	          
 	          $("#addHostModal").modal("hide");
 	          $("#addHostModal small").removeClass("errorColor");
 	      });
 	      
-	      
 	      $(".icon-remove-circle").live("click", function() {
 	      	deleteHost($(this));
 	      });
+	      
 	      initHosts();
 	  });
 
       function updateHostHiddenValue() {
-          var contentStr = $(".host").map(function() {
+          var contentStr = $("p.host").map(function() {
           		return $.trim($(this).text());    
           }).get().join(",");
           

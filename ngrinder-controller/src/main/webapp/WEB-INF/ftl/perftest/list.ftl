@@ -25,8 +25,8 @@
 			<img src="${req.getContextPath()}/img/bg_perftest_banner_<@spring.message "common.language"/>.png"/>
 			
 			<form id="listForm" class="well form-inline searchBar" action=""${req.getContextPath()}/perftest/list" method="POST">
-				<input type="hidden" id="sortColumn" name="page.sort" value="${(sortColumn)!'lastModifiedDate'}">
-				<input type="hidden" id="sortDirection" name="page.sort.dir" value="${(sortDirection)!'desc'}">
+				<input type="hidden" id="sortColumn" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
+				<input type="hidden" id="sortDirection" name="page.sort.dir" value="${sortDirection!'desc'}">
 		
 				<table style="width:100%">
 					<colspan>
@@ -200,19 +200,19 @@
 			$("#tag").select2({
 				placeholder: '<@spring.message "perfTest.table.selectATag"/>',
 				allowClear: true
-			});
-			$("#tag").change(function() {
+			}).change(function() {
 				document.forms.listForm.submit();
 			});
+			
 			$('td.ellipsis').hover(function () {
 	          $(this).popover('show');
 	      	});
 	      	
-			$("#n_test").addClass("active");
+			$("#nav_test").addClass("active");
 			
 			enableChkboxSelectAll("testTable");
 			
-			$("#deleteBtn").on('click', function() {
+			$("#deleteBtn").click(function() {
 				var list = $("td input:checked");
 				if(list.length == 0) {
 					bootbox.alert("<@spring.message "perfTest.table.message.alert.delete"/>", "<@spring.message "common.button.ok"/>");
@@ -261,7 +261,7 @@
 			
 			$("#" + sortColumn).addClass("sorting_" + sortDir);
 
-			$("th.sorting").on('click', function() {
+			$("th.sorting").click(function() {
 				var $currObj = $(this);
 				var sortDirection = "ASC";
 				if ($currObj.hasClass("sorting_asc")) {
