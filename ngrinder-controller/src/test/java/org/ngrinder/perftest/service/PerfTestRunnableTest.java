@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import net.grinder.AgentControllerDaemon;
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.common.GrinderProperties;
@@ -31,7 +30,6 @@ import net.grinder.statistics.StatisticsSet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.agent.model.AgentInfo;
@@ -52,9 +50,6 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	@Autowired
 	private MockPerfTestRunnable perfTestRunnable;
-
-	AgentControllerDaemon agentControllerDaemon;
-
 	@Autowired
 	private AgentManager agentManager;
 
@@ -118,11 +113,6 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		assertThat(agentCount, is(1));
 	}
 
-	@After
-	public void after() {
-		agentControllerDaemon.shutdown();
-		sleep(3000);
-	}
 
 	@Test
 	public void testDoTest() throws IOException {
