@@ -85,10 +85,10 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 	@PostConstruct
 	public void init() {
-		agentMonioringTargetsCache = getCacheManager().getCache("agent_monitoring_targets");
+		agentMonioringTargetsCache = cacheManager.getCache("agent_monitoring_targets");
 		if (getConfig().isCluster()) {
-			agentRequestCache = getCacheManager().getCache("agent_request");
-			agentMonitorCache = getCacheManager().getCache("agent_monitoring");
+			agentRequestCache = cacheManager.getCache("agent_request");
+			agentMonitorCache = cacheManager.getCache("agent_monitoring");
 			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
 				@Override
 				public void interruptibleRun() {
@@ -373,14 +373,6 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 	public void addAgentMonitoringTarget(AgentControllerIdentityImplementation agentIdentity) {
 		agentMonioringTargetsCache.put(createAgentKey(agentIdentity), agentIdentity);
-	}
-
-	CacheManager getCacheManager() {
-		return cacheManager;
-	}
-
-	void setCacheManager(CacheManager cacheManager) {
-		this.cacheManager = cacheManager;
 	}
 
 	/**

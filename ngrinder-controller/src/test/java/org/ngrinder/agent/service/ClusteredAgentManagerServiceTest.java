@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
+import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 
 import org.apache.commons.lang.mutable.MutableInt;
@@ -48,9 +49,14 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 	private AgentManagerRepository agentRepository;
 
 	private Config config;
+	
+	private boolean initialed = false;
 
 	@Before
 	public void before() {
+		if (initialed) {
+			return;
+		}
 		config = mock(Config.class);
 		when(config.isCluster()).thenReturn(true);
 		when(config.getRegion()).thenReturn("TestRegion");
@@ -60,6 +66,20 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		servConfig.setApplicationContext(applicationContext);
 		agentManagerService = (ClusteredAgentManagerService)servConfig.agentManagerService();
 		agentManagerService.setConfig(config);
+		agentManagerService.init();
+		initialed = true;
+	}
+	
+	@Test
+	public void testOther() {
+		agentManagerService.getAllVisibleAgentInfoFromDB();
+		agentManagerService.getAllActiveAgentInfoFromDB();
+		agentManagerService.stopAgent(0L);
+		agentManagerService.requestShareAgentSystemDataModel(0L);
+		agentManagerService.getAgentSystemDataModel("127.0.0.1", "127.0.0.1");
+		agentManagerService.addAgentMonitoringTarget(new AgentControllerIdentityImplementation("127.0.0.1",
+				"127.0.0.1"));
+		agentManagerService.stopAgent(new AgentControllerIdentityImplementation("127.0.0.1", "127.0.0.1"));
 	}
 
 	@Test

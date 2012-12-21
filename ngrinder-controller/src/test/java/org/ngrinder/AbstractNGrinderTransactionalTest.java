@@ -64,7 +64,7 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 		AgentControllerDaemon agentControllerDaemon = new AgentControllerDaemon("127.0.0.1");
 		agentControllerDaemon.setAgentConfig(agentConfig);
 		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
-	
+		
 		LOG.info("* Start nGrinder Monitor *");
 		try {
 			Set<String> collector = MonitorConstants.SYSTEM_DATA_COLLECTOR;
