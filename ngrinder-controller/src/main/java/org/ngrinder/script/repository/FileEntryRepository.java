@@ -120,9 +120,8 @@ public class FileEntryRepository {
 		final List<FileEntry> fileEntries = new ArrayList<FileEntry>();
 		SVNClientManager svnClientManager = SVNClientManager.newInstance();
 		try {
-			svnClientManager.getLogClient().doList(
-							SVNURL.fromFile(getUserRepoDirectory(user)).appendPath(path, true), svnRevision,
-							svnRevision, true, false, new ISVNDirEntryHandler() {
+			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepoDirectory(user)).appendPath(path, true),
+							svnRevision, svnRevision, true, false, new ISVNDirEntryHandler() {
 								@Override
 								public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
 
@@ -131,14 +130,13 @@ public class FileEntryRepository {
 									if (StringUtils.isBlank(dirEntry.getRelativePath())) {
 										return;
 									}
-									script.setPath(FilenameUtils.normalize(
-													path + "/" + dirEntry.getRelativePath(), true));
+									script.setPath(FilenameUtils.normalize(path + "/" + dirEntry.getRelativePath(),
+													true));
 									script.setCreatedDate(dirEntry.getDate());
 									script.setLastModifiedDate(dirEntry.getDate());
 									script.setDescription(dirEntry.getCommitMessage());
 									script.setRevision(dirEntry.getRevision());
-									script.setLastModifiedUser(userRepository.findOneByUserId(dirEntry
-													.getAuthor()));
+									script.setLastModifiedUser(userRepository.findOneByUserId(dirEntry.getAuthor()));
 									if (dirEntry.getKind() == SVNNodeKind.DIR) {
 										script.setFileType(FileType.DIR);
 									} else {
@@ -166,8 +164,8 @@ public class FileEntryRepository {
 		final List<FileEntry> scripts = new ArrayList<FileEntry>();
 		SVNClientManager svnClientManager = SVNClientManager.newInstance();
 		try {
-			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepoDirectory(user)),
-							SVNRevision.HEAD, SVNRevision.HEAD, true, true, new ISVNDirEntryHandler() {
+			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepoDirectory(user)), SVNRevision.HEAD,
+							SVNRevision.HEAD, true, true, new ISVNDirEntryHandler() {
 								@Override
 								public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
 									FileEntry script = new FileEntry();
@@ -182,17 +180,16 @@ public class FileEntryRepository {
 									script.setDescription(dirEntry.getCommitMessage());
 									long reversion = dirEntry.getRevision();
 									script.setRevision(reversion);
-									script.setFileType(dirEntry.getKind() == SVNNodeKind.DIR ? FileType.DIR
-													: null);
+									script.setFileType(dirEntry.getKind() == SVNNodeKind.DIR ? FileType.DIR : null);
 									script.setFileSize(dirEntry.getSize());
 									if (dirEntry.hasProperties()) {
 										setScriptProperties(user, relativePath, reversion, script.getProperties());
 									}
 									scripts.add(script);
 								}
-								
-								private void setScriptProperties(
-										User user, String path, long revision, Map<String, String> propertiesMap) {
+
+								private void setScriptProperties(User user, String path, long revision,
+												Map<String, String> propertiesMap) {
 									SVNClientManager svnClientManager = null;
 									try {
 										svnClientManager = SVNClientManager.newInstance();
@@ -256,8 +253,7 @@ public class FileEntryRepository {
 			for (String name : fileProperty.nameSet()) {
 				script.getProperties().put(name, fileProperty.getStringValue(name));
 			}
-			script.setFileType(FileType.getFileTypeByExtension(FilenameUtils.getExtension(script
-							.getFileName())));
+			script.setFileType(FileType.getFileTypeByExtension(FilenameUtils.getExtension(script.getFileName())));
 			if (script.getFileType().isEditable()) {
 				String autoDetectedEncoding = EncodingUtil.detectEncoding(byteArray, "UTF-8");
 				script.setContent(new String(byteArray, autoDetectedEncoding));
@@ -269,7 +265,7 @@ public class FileEntryRepository {
 			script.setDescription(info.getCommitMessage());
 			script.setRevision(lastRevision);
 		} catch (Exception e) {
-			LOG.error("Error while fetching a file from SVN {} {}", user.getUserId(), path);
+			LOG.error("Error while fetching a file from SVN {}", user.getUserId() + "_" + path, e);
 			return null;
 		} finally {
 			closeSVNClientManagerQuietly(svnClientManager);
@@ -284,8 +280,7 @@ public class FileEntryRepository {
 		}
 		if (fileEntry.getFileType() != FileType.DIR) {
 			for (Entry<String, String> each : fileEntry.getProperties().entrySet()) {
-				editor.changeFileProperty(fileEntry.getPath(), each.getKey(),
-								SVNPropertyValue.create(each.getValue()));
+				editor.changeFileProperty(fileEntry.getPath(), each.getKey(), SVNPropertyValue.create(each.getValue()));
 			}
 		}
 	}
@@ -309,8 +304,7 @@ public class FileEntryRepository {
 		InputStream bais = null;
 		try {
 			svnClientManager = SVNClientManager.newInstance();
-			SVNRepository repo = svnClientManager.createRepository(
-							SVNURL.fromFile(getUserRepoDirectory(user)), true);
+			SVNRepository repo = svnClientManager.createRepository(SVNURL.fromFile(getUserRepoDirectory(user)), true);
 			SVNDirEntry dirEntry = repo.info(fileEntry.getPath(), -1);
 
 			// Add base pathes
@@ -320,8 +314,8 @@ public class FileEntryRepository {
 				fullPath = fullPath + "/" + each;
 				SVNDirEntry folderStepEntry = repo.info(fullPath, -1);
 				if (folderStepEntry != null && folderStepEntry.getKind() == SVNNodeKind.FILE) {
-					throw new NGrinderRuntimeException("User " + user.getUserId()
-									+ " tried to create folder " + fullPath + ". It's file..");
+					throw new NGrinderRuntimeException("User " + user.getUserId() + " tried to create folder "
+									+ fullPath + ". It's file..");
 				}
 			}
 
@@ -367,8 +361,7 @@ public class FileEntryRepository {
 			abortSVNEditorQuietly(editor);
 			// If it's adding the folder which already exists... ignore..
 			if (e instanceof SVNException && fileEntry.getFileType() == FileType.DIR) {
-				if (SVNErrorCode.FS_ALREADY_EXISTS
-								.equals(((SVNException) e).getErrorMessage().getErrorCode())) {
+				if (SVNErrorCode.FS_ALREADY_EXISTS.equals(((SVNException) e).getErrorMessage().getErrorCode())) {
 					return;
 				}
 			}
@@ -450,8 +443,7 @@ public class FileEntryRepository {
 		ISVNEditor editor = null;
 		try {
 			svnClientManager = SVNClientManager.newInstance();
-			SVNRepository repo = svnClientManager.createRepository(
-							SVNURL.fromFile(getUserRepoDirectory(user)), true);
+			SVNRepository repo = svnClientManager.createRepository(SVNURL.fromFile(getUserRepoDirectory(user)), true);
 
 			editor = repo.getCommitEditor("delete", null, true, null);
 			editor.openRoot(-1);
@@ -522,8 +514,7 @@ public class FileEntryRepository {
 			SVNNodeKind nodeKind = repo.checkPath(path, -1);
 			// If it's DIR, it does not work.
 			if (nodeKind == SVNNodeKind.NONE || nodeKind == SVNNodeKind.DIR) {
-				throw new NGrinderRuntimeException("It's not pssible write directory. nodeKind is "
-								+ nodeKind);
+				throw new NGrinderRuntimeException("It's not pssible write directory. nodeKind is " + nodeKind);
 			}
 			toPath.mkdirs();
 			File destFile = new File(toPath, FilenameUtils.getName(path));

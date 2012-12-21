@@ -113,8 +113,7 @@ function drawChart(title, containerId, data, formatYaxis, interval) {
 				numberTicks : 7,
 				pad : 3,
 				show : true
-			},
-
+			}
 		},
 		highlighter : {
 			show : true,
