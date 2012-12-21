@@ -15,9 +15,6 @@ package org.ngrinder.monitor.controller.domain;
 
 import javax.management.ObjectName;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 import org.ngrinder.monitor.share.domain.MonitorInfo;
 
 /**
@@ -52,11 +49,6 @@ public class MonitorCollectionInfoDomain {
 
 	public String getAttrName() {
 		return attrName;
-	}
-
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}
 
 }

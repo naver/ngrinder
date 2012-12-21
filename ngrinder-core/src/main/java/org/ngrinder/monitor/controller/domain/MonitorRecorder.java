@@ -37,7 +37,7 @@ public interface MonitorRecorder {
 	 * @param systemInfo is current collected system data
 	 * @param agentInfo is the target of this monitoring
 	 */
-	void recoderSystemInfo(final String key, final SystemInfo systemInfo, final MonitorAgentInfo agentInfo);
+	//void recoderSystemInfo(final String key, final SystemInfo systemInfo, final MonitorAgentInfo agentInfo);
 
 	/**
 	 * Used to finalize after recording all data. It is called when MonitorExecuteWorker is closed.
