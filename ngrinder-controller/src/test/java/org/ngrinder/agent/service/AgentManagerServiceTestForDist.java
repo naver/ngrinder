@@ -19,7 +19,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -92,7 +91,6 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 				};
 			}
 
-			@SuppressWarnings("serial")
 			@Override
 			protected Set<String> getRegions() {
 				Set<String> regions = Sets.newHashSet("hello", "haha", "wowo");
