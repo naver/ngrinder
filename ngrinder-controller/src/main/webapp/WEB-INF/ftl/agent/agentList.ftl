@@ -85,7 +85,7 @@
 					"bFilter": false,
 					"bLengthChange": false,
 					"bInfo": false,
-					"iDisplayLength": 15,
+					"iDisplayLength": 10,
 					"aaSorting": [[1, "asc"]],
 					"aoColumns": [{"asSorting": []}, null, {"asSorting": []}, null, null, null, {"asSorting": []}],
 					"sPaginationType": "bootstrap",
