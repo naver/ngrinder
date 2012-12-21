@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.tmatesoft.svn.core.internal.server.dav.DAVDepth;
 import org.tmatesoft.svn.core.internal.server.dav.DAVException;
 
 /**
@@ -69,10 +70,11 @@ public class DavSvnControllerTest extends AbstractNGrinderTransactionalTest {
 		//test SC_UNAUTHORIZED
 		MockHttpServletRequest req = new MockHttpServletRequest(DAVHandlerExFactory.METHOD_PROPFIND,
 				"/svn/" + getTestUser().getUserId());
+		req.addHeader("Depth", DAVDepth.DEPTH_ONE);
 		HttpServletResponse resp = new MockHttpServletResponse();
 		svnController.handleRequest(req, resp);
 
-		req.setPathInfo(getTestUser().getUserId());
+		req.setPathInfo("/" + getTestUser().getUserId());
 		resp = new MockHttpServletResponse();
 		svnController.handleRequest(req, resp);
 		

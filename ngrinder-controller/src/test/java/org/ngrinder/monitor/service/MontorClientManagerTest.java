@@ -23,6 +23,7 @@
 package org.ngrinder.monitor.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,8 +42,9 @@ import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
 public class MontorClientManagerTest extends AbstractPerfTestTransactionalTest {
 
 	@Test
-	public void testAddMonitor() {
+	public void testAddMonitor() throws IOException {
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "test-repo");
+		tempRepo.mkdir();
 		tempRepo.deleteOnExit();
 		AgentInfo monitorAgt = new AgentInfo();
 		monitorAgt.setIp("127.0.0.1");
@@ -58,6 +60,28 @@ public class MontorClientManagerTest extends AbstractPerfTestTransactionalTest {
 		// test to add again
 		monitorMngr.add(agents, tempRepo);
 
+		ThreadUtil.sleep(3000);
+		monitorMngr.destroy();
+	}
+
+	@Test
+	public void testAddMonitorInvalid() throws IOException {
+		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "test-repo");
+		tempRepo.mkdir();
+		tempRepo.deleteOnExit();
+		AgentInfo monitorAgt = new AgentInfo();
+		monitorAgt.setIp("10.10.10.10");
+		monitorAgt.setPort(MonitorConstants.DEFAULT_MONITOR_PORT);
+		AgentInfo monitorAgt2 = new AgentInfo();
+		monitorAgt2.setIp("localhost");
+		monitorAgt2.setPort(MonitorConstants.DEFAULT_MONITOR_PORT);
+		Set<AgentInfo> agents = new HashSet<AgentInfo>(2);
+		agents.add(monitorAgt);
+		agents.add(monitorAgt2);
+		MontorClientManager monitorMngr = applicationContext.getBean(MontorClientManager.class);
+		monitorMngr.add(agents, tempRepo);
+		new Thread(monitorMngr).start();
+		monitorMngr.saveData();
 		ThreadUtil.sleep(3000);
 		monitorMngr.destroy();
 	}

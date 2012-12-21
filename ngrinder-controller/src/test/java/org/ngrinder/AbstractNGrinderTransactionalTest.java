@@ -14,6 +14,8 @@
 package org.ngrinder;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 
 import javax.sql.DataSource;
@@ -34,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -64,15 +67,30 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 		AgentControllerDaemon agentControllerDaemon = new AgentControllerDaemon("127.0.0.1");
 		agentControllerDaemon.setAgentConfig(agentConfig);
 		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
-	
+		
 		LOG.info("* Start nGrinder Monitor *");
 		try {
+			setupSigar();
 			Set<String> collector = MonitorConstants.SYSTEM_DATA_COLLECTOR;
 			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_MONITOR_PORT, collector);
 			AgentMonitorServer.getInstance().start();
 		} catch (Exception e) {
 			LOG.error("ERROR: {}", e.getMessage());
 			LOG.debug("Error while starting Monitor", e);
+		}
+	}
+	
+	private static void setupSigar() {
+		try {
+			ClassPathResource classPathResource = new ClassPathResource("native_lib/.sigar_shellrc");
+			String nativeLib = classPathResource.getFile().getParentFile().getAbsolutePath();
+			String javaLib = System.getProperty("java.library.path");
+			if (!javaLib.contains("native_lib")) {
+				System.setProperty("java.library.path", nativeLib + File.pathSeparator + javaLib);
+			}
+			System.out.println("Java Lib Path : " + System.getProperty("java.library.path"));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
