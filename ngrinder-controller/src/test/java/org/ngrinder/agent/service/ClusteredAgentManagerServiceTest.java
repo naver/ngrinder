@@ -15,7 +15,7 @@ package org.ngrinder.agent.service;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -32,7 +32,10 @@ import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.config.DynamicCacheConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
@@ -48,7 +51,10 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 	@Autowired
 	private AgentManagerRepository agentRepository;
 
+	@Autowired
 	private Config config;
+
+	private Config spiedConfig;
 	
 	private boolean initialed = false;
 
@@ -57,15 +63,23 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		if (initialed) {
 			return;
 		}
-		config = mock(Config.class);
-		when(config.isCluster()).thenReturn(true);
-		when(config.getRegion()).thenReturn("TestRegion");
+		spiedConfig = spy(config);
+		when(spiedConfig.isCluster()).thenReturn(true);
+		when(spiedConfig.getRegion()).thenReturn("TestRegion");
 		
 		AgentManagerServiceConfig servConfig = new AgentManagerServiceConfig();
-		ReflectionTestUtils.setField(servConfig, "config", config);
+		ReflectionTestUtils.setField(servConfig, "config", spiedConfig);
 		servConfig.setApplicationContext(applicationContext);
 		agentManagerService = (ClusteredAgentManagerService)servConfig.agentManagerService();
-		agentManagerService.setConfig(config);
+		agentManagerService.setConfig(spiedConfig);
+		
+		//set clustered cache manager.
+		DynamicCacheConfig cacheConfig = new DynamicCacheConfig();
+		ReflectionTestUtils.setField(cacheConfig, "config", spiedConfig);
+		CacheManager cacheManager = cacheConfig.dynamicCacheManager();
+		((EhCacheCacheManager)cacheManager).afterPropertiesSet(); //it will not be called if we create manually
+		ReflectionTestUtils.setField(agentManagerService, "cacheManager", cacheManager);
+		
 		agentManagerService.init();
 		initialed = true;
 	}
@@ -113,7 +127,7 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 	@Test
 	public void testGetUserAvailableAgentCount() {
 		Map<String, MutableInt> countMap = agentManagerService.getUserAvailableAgentCountMap(getTestUser());
-		String currRegion = config.getRegion();
+		String currRegion = spiedConfig.getRegion();
 		System.out.println(countMap.get(currRegion));
 	}
 
@@ -121,7 +135,7 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 	public void testCheckAgentStatus() {
 		AgentInfo agentInfo = new AgentInfo();
 		agentInfo.setName("localhost");
-		agentInfo.setRegion(config.getRegion());
+		agentInfo.setRegion(spiedConfig.getRegion());
 		agentInfo.setIp("127.127.127.127");
 		agentInfo.setPort(1);
 		agentInfo.setStatus(AgentControllerState.READY);
