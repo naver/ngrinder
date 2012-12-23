@@ -29,6 +29,7 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -38,6 +39,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 
 /**
  * agent controller.
@@ -59,6 +63,9 @@ public class AgentManagerController extends NGrinderBaseController {
 	@Autowired
 	private HttpContainerContext httpContainerContext;
 
+	@Autowired
+	private RegionService regionService;
+
 	/**
 	 * Get agent list.
 	 * 
@@ -67,10 +74,23 @@ public class AgentManagerController extends NGrinderBaseController {
 	 * @return viewName
 	 */
 	@RequestMapping({ "", "/", "/list" })
-	public String getAgentList(ModelMap model) {
+	public String getAgentList(@RequestParam(value = "region", required = false) final String region, ModelMap model) {
 		List<AgentInfo> agents = agentManagerService.getAllVisibleAgentInfoFromDB();
-		model.addAttribute("agents", agents);
 
+		model.addAttribute("agents", Collections2.filter(agents, new Predicate<AgentInfo>() {
+			@Override
+			public boolean apply(AgentInfo agentInfo) {
+				if (StringUtils.equals(region, "all") || StringUtils.isEmpty(region)) {
+					return true;
+				}
+				if (agentInfo.getRegion().startsWith(region)) {
+					return true;
+				}
+				return false;
+			}
+		}));
+		model.addAttribute("region", region);
+		model.addAttribute("regions", regionService.getRegions().keySet());
 		File directory = config.getHome().getDownloadDirectory();
 		final String contextPath = httpContainerContext.getCurrentRequestUrlFromUserRequest();
 		final List<String> downloads = new ArrayList<String>();

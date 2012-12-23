@@ -72,7 +72,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 	public void testGetAgentList() {
 
 		ModelMap model = new ModelMap();
-		agentController.getAgentList(model);
+		agentController.getAgentList("", model);
 
 		// create a temp download dir and file for this function
 		File directory = config.getHome().getDownloadDirectory();
@@ -93,7 +93,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		}
 
 		model.clear();
-		agentController.getAgentList(model);
+		agentController.getAgentList("", model);
 		List<AgentInfo> agents = (List<AgentInfo>) model.get("agents");
 		if (agents.size() > 0) {
 			AgentInfo testAgt = agents.get(0);
