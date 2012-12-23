@@ -484,10 +484,13 @@ function initDuration() {
 	setDuration();
 }
 
+var validationOptions = {};
 function addValidation() {
-	$("#testContentForm").validate({
+	validationOptions = {
 		rules: {
-			testName: "required",
+			testName: {
+			 	required : true
+			},
 			agentCount: {
 				required: true,
 				digits: true,
@@ -509,7 +512,9 @@ function addValidation() {
 				min:0
 			},
 			<#if securityMode?? && securityMode == true>
-			targetHosts: "required",
+			hostsHidden: {
+				required: true
+			},
 			</#if>
 			initProcesses: {
 				required: true,
@@ -560,7 +565,7 @@ function addValidation() {
 	        threads: {
 	        	required: "<@spring.message "perfTest.warning.threads"/>"
 	        },
-	        targetHosts: {
+	        hostsHidden: {
 	        	required: "<@spring.message "perfTest.warning.hostString"/>"
 	        }
 	    },
@@ -604,7 +609,9 @@ function addValidation() {
 				}
 			}
 		}
-	});
+	};
+	
+	$("#testContentForm").validate(validationOptions);
 }
 
 function bindEvent() {
@@ -632,9 +639,25 @@ function bindEvent() {
 		$("#agentCount").rules("add", {
 			min:1
 		});
-		if (!$("#testContentForm").valid()) {
-			$("#testContent_tab a").tab('show');
-			return false;
+
+		if ($.browser.msie  && parseInt($.browser.version, 10) === 8) {
+			var result = true;
+			var rules = validationOptions["rules"];
+			$.each(rules, function(key, value) {
+				if (!$("#" + key).valid() && result == true) {
+					result = false;
+				}
+			});
+		
+			if (result == false) {
+				$("#testContent_tab a").tab('show');
+				return false;
+			} 
+		} else {
+			if (!$("#testContentForm").valid()) {
+				$("#testContent_tab a").tab('show');
+				return false;
+			} 
 		}
 
 		var $agentCount = $("#agentCount");
@@ -664,13 +687,26 @@ function bindEvent() {
 	});
 	
 	$("#saveTestBtn").click(function() {
-		$("#agentCount").rules("add", {
-			min:0
-		});
-		if (!$("#testContentForm").valid()) {
-			$("#testContent_tab a").tab('show');
-			return false;
+		if ($.browser.msie  && parseInt($.browser.version, 10) === 8) {
+			var result = true;
+			var rules = validationOptions["rules"];
+			$.each(rules, function(key, value) {
+				if (!$("#" + key).valid() && result == true) {
+					result = false;
+				}
+			});
+		
+			if (result == false) {
+				$("#testContent_tab a").tab('show');
+				return false;
+			} 
+		} else {
+			if (!$("#testContentForm").valid()) {
+				$("#testContent_tab a").tab('show');
+				return false;
+			} 
 		}
+	
 		$("#testStatus").val("SAVED");
 		$("#scheduleInput").attr('name', '');
 		$("#tagString").val(buildTagString());
