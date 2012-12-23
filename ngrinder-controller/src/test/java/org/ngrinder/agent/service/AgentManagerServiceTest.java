@@ -112,5 +112,16 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		assertThat(agentInDB.getName(), is(agentInfo.getName()));
 		assertThat(agentInDB.getStatus(), is(AgentControllerState.INACTIVE));
 	}
+	
+	@Test
+	public void testOther() {
+		agentManagerService.getLocalAgents();
+		agentManagerService.getLocalAgentIdentityByIpAndName("127.0.0.1", "127.0.0.1");
+		agentManagerService.stopAgent(0L);
+		agentManagerService.requestShareAgentSystemDataModel(0L);
+		agentManagerService.getAgentSystemDataModel("127.0.0.1", "127.0.0.1");
+		agentManagerService.setAgentManager(agentManagerService.getAgentManager());
+		agentManagerService.setAgentRepository(agentManagerService.getAgentRepository());
+	}
 
 }

@@ -17,7 +17,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -25,6 +27,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
+import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
 public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 
@@ -43,6 +46,19 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 		String viewName = homeController.home(testUser2, null, model, res, req);
 		assertThat(viewName, is("index"));
 
+		User testUserError = Mockito.spy(testUser2);
+		Mockito.when(testUserError.getRole()).thenReturn(Role.SYSTEM_USER);
+		viewName = homeController.home(testUserError, "Test Error message!", model, res, req);
+		assertThat(viewName, is("login"));
+
+	}
+
+	@Test
+	public void testHealthcheck() {
+		MockHttpServletResponse resq = new MockHttpServletResponse();
+		String viewName = homeController.healthcheck(resq);
+		homeController.healthcheckSlowly(500, resq);
+		assertThat(viewName, is("redirect:/"));
 	}
 
 	@Test
@@ -57,6 +73,20 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 		ModelMap model = new ModelMap();
 		String viewName = homeController.getAllTimeZone(model);
 		assertThat(viewName, is("allTimeZone"));
+		
+		homeController.changeTimeZone(getTestUser(), "Asia/Shanghai");
+	}
+
+	@Test
+	public void testErrorPage() {
+		RedirectAttributesModelMap  model = new RedirectAttributesModelMap ();
+		String viewName = homeController.error404(model);
+		assertThat(viewName, is("redirect:/doError"));
+
+		MockHttpServletResponse res = new MockHttpServletResponse();
+		MockHttpServletRequest req = new MockHttpServletRequest();
+		viewName= homeController.second(getTestUser(), model, res, req);
+		assertThat(viewName, is("index"));
 	}
 
 }

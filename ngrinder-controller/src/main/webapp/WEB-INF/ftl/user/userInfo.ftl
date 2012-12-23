@@ -120,7 +120,7 @@
 	$(document).ready(function(){
 		<#if !(user?has_content)>
 		$(".collapse").collapse();
-		$("#user_pw_head").attr("href","");
+		$("#user_pw_head").attr("href", "");
 		
 		$.validator.addMethod("userIdFmt", function(userId, element ) {
 			var patrn = /^[a-zA-Z]{1}[a-zA-Z0-9_]{3,19}$/;
@@ -170,12 +170,11 @@
 	    	rules: {
 	    		userId: {
 	    			required: true,
-	    			maxlength: 20
 	    			<#if !(user?has_content)>
-	    			,
 	    			userIdFmt: true,
-	    			userIdExist: true
+	    			userIdExist: true,
 	    			</#if>
+	    			maxlength: 20
 	    		},
 	    		userName: {
 	    			required: true,

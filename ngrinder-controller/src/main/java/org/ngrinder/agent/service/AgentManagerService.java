@@ -322,6 +322,9 @@ public class AgentManagerService {
 	 */
 	public AgentInfo getAgent(long id, boolean includeAgentIndentity) {
 		AgentInfo findOne = getAgentRepository().findOne(id);
+		if (findOne == null) {
+			return null;
+		}
 		if (includeAgentIndentity) {
 			AgentControllerIdentityImplementation agentIdentityByIp = getLocalAgentIdentityByIpAndName(findOne.getIp(),
 							findOne.getName());

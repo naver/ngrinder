@@ -26,6 +26,7 @@ $.extend( $.fn.dataTableExt.oPagination, {
 				e.preventDefault();
 				if ( oSettings.oApi._fnPageChange(oSettings, e.data.action) ) {
 					fnDraw( oSettings );
+					cleanCheckboxChecked();
 				}
 			};
 
@@ -74,6 +75,9 @@ $.extend( $.fn.dataTableExt.oPagination, {
 							e.preventDefault();
 							oSettings._iDisplayStart = (parseInt($('a', this).text(),10)-1) * oPaging.iLength;
 							fnDraw( oSettings );
+							if (!$(this).hasClass("active")) {
+								cleanCheckboxChecked();
+							}
 						} );
 				}
 
@@ -93,3 +97,10 @@ $.extend( $.fn.dataTableExt.oPagination, {
 		}
 	}
 } );
+
+function cleanCheckboxChecked() {
+	$("th > input[type='checkbox']").removeAttr("checked");
+	$("td > input[type='checkbox']").each(function(){
+		$(this).removeAttr("checked");
+	});
+}

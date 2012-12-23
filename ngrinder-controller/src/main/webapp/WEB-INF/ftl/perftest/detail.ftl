@@ -626,13 +626,14 @@ function bindEvent() {
 	
 	$("#hiddenDurationInput").bind("slide", function(e) {
 		var maxIndex = durationMap.length - 1;
+		var $duration = $("#duration");
 		if (maxIndex == this.value) {
-			$("#duration").val((durationMap[maxIndex] + 59) * 60000 + 59000);
+			$duration.val((durationMap[maxIndex] + 59) * 60000 + 59000);
 		} else {
-			$("#duration").val(durationMap[this.value] * 60000);
+			$duration.val(durationMap[this.value] * 60000);
 		}
 		setDuration(); 
-		$("#duration").valid();
+		$duration.valid();
 	});
 	
 	$("#saveScheduleBtn").click(function() {		
@@ -706,7 +707,6 @@ function bindEvent() {
 				return false;
 			} 
 		}
-	
 		$("#testStatus").val("SAVED");
 		$("#scheduleInput").attr('name', '');
 		$("#tagString").val(buildTagString());
@@ -743,23 +743,29 @@ function bindEvent() {
 	
 	$("#runCountRadio").click(function() {
 		if ($(this).attr("checked") == "checked") {
-			$("#runCount").addClass("required");
-			$("#runCount").addClass("positiveNumber");
-			$("#duration").removeClass("required");
-			$("#duration").removeClass("positiveNumber");
-			$("#duration").valid();
-			$("#runCount").valid();
+			var $runCnt = $("#runCount");
+			$runCnt.addClass("required");
+			$runCnt.addClass("positiveNumber");
+			$runCnt.valid();
+
+			var $duration = $("#duration");
+			$duration.removeClass("required");
+			$duration.removeClass("positiveNumber");
+			$duration.valid();
 		}
 	});
 	
 	$("#durationRadio").click(function() {
 		if ($(this).attr("checked") == "checked") {
-			$("#duration").addClass("required");
-			$("#duration").addClass("positiveNumber");
-			$("#runCount").removeClass("required");
-			$("#runCount").removeClass("positiveNumber");
-			$("#duration").valid();
-			$("#runCount").valid();
+			var $duration = $("#duration");
+			$duration.addClass("required");
+			$duration.addClass("positiveNumber");
+			$duration.valid();
+			
+			var $runCnt = $("#runCount");
+			$runCnt.removeClass("required");
+			$runCnt.removeClass("positiveNumber");
+			$runCnt.valid();
 		}
 	});
 	
@@ -773,27 +779,20 @@ function bindEvent() {
 		updateVuserTotal();
 	});
 	
-	$("#threads").change(function() {
-		$("#vuserPerAgent").val($("#processes").val() * $("#threads").val());
-		if ($("#vuserPerAgent").valid()) {
-			updateVuserGraph();
-			updateVuserTotal();
-		}
-	});
-	
-	$("#processes").change(function() {
-		$("#vuserPerAgent").val($("#processes").val() * $("#threads").val());
-		if ($("#vuserPerAgent").valid()) {
+	$("#threads, #processes").change(function() {
+		var $vuer = $("#vuserPerAgent");
+		$vuer.val($("#processes").val() * $("#threads").val());
+		if ($vuer.valid()) {
 			updateVuserGraph();
 			updateVuserTotal();
 		}
 	});
 	
 	$("#vuserPerAgent").change(function() {
-		var vuserElement = $(this);
+		var $vuserElement = $(this);
 		var processCount = $("#processes").val();
-		if (vuserElement.valid()) {
-			var result = updateVuserPolicy(vuserElement.val());
+		if ($vuserElement.valid()) {
+			var result = updateVuserPolicy($vuserElement.val());
 			$(this).val(result[0] * result[1]);
 			if (processCount != result[0]) {
 				updateVuserGraph();
@@ -843,12 +842,13 @@ function bindEvent() {
 	});
 	
 <#if clustered>
-	$("#regionSelect").select2();
-	$("#regionSelect").change(function(){
+	var $regionSelect = $("#regionSelect");
+	$regionSelect.select2();
+	$regionSelect.change(function(){
 		var region = $(this).val();
 		changeAgentMaxCount(region);
 	});
-	changeAgentMaxCount($("#regionSelect").val());
+	changeAgentMaxCount($regionSelect.val());
 <#else>
 	changeAgentMaxCount("NONE");
 </#if>	
@@ -863,12 +863,12 @@ function changeAgentMaxCount(region) {
 	if (count === undefined) {
 		count = 0;
 	}
-	var $maxAgentCount = $("#maxAgentCount");
+	$("#maxAgentCount").text(count);
+
 	var $agentCountObj = $("#agentCount");
 	$agentCountObj.rules("add", {
 		max:count
 	});
-	$maxAgentCount.text(count);
 	$agentCountObj.valid();
 }
 
@@ -879,9 +879,7 @@ function buildTagString() {
 }
 	
 function updateVuserTotal() {
-	var agtCount = $("#agentCount").val();
-	var vcount = $("#vuserPerAgent").val();
-	$("#vuserTotal").text(agtCount * vcount);
+	$("#vuserTotal").text($("#agentCount").val() * $("#vuserPerAgent").val());
 }
 
 function initChartData() {
@@ -935,9 +933,9 @@ function updateScriptResources(first) {
 function updateVuserPolicy(vuser) {
 	var processCount = getProcessCount(vuser);
 	var threadCount = getThreadCount(vuser);
-	var processes = $('#processes');
-	processes.val(processCount);
-	processes.valid();
+	var $processes = $('#processes');
+	$processes.val(processCount);
+	$processes.valid();
 	var threads = $('#threads');
 	threads.val(threadCount);
 	threads.valid();
@@ -968,9 +966,9 @@ function getDurationMS() {
 	var durationM = parseInt($("#mSelect").val());
 	var durationS = parseInt($("#sSelect").val());
 	var durationMs = (durationS + durationM * 60 + durationH * 3600) * 1000;
-	var durationObj = $("#duration");
-	durationObj.val(durationMs);
-	durationObj.valid(); //trigger validation
+	var $durationObj = $("#duration");
+	$durationObj.val(durationMs);
+	$durationObj.valid(); //trigger validation
 	return durationMs;
 }
 

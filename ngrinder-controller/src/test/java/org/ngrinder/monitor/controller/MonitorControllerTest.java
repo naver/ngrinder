@@ -21,10 +21,9 @@ import java.io.IOException;
 import java.text.ParseException;
 
 import org.junit.Test;
+import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.monitor.AbstractChartTransactionalTest;
-import org.ngrinder.monitor.controller.MonitorController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -36,7 +35,7 @@ import org.springframework.ui.ModelMap;
  * @author Mavlarn
  * @since
  */
-public class MonitorControllerTest extends AbstractChartTransactionalTest {
+public class MonitorControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private MonitorController monitorController;
