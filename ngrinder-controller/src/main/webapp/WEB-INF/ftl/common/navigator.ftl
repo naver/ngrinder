@@ -17,7 +17,7 @@
 						<li class="divider-vertical"></li>
 					</#if>
 					<li class="dropdown">
-		            	<a data-toggle="dropdown" class="dropdown-toggle" href="javascript:void(0);">${(currentUser.userName)!}<#if (currentUser.ownerUser)?exists> (${currentUser.ownerUser.userName})<#else></#if><b class="caret"></b></a>
+		            	<a data-toggle="dropdown" class="dropdown-toggle" href="#">${(currentUser.userName)!}<#if (currentUser.ownerUser)?exists> (${currentUser.ownerUser.userName})<#else></#if><b class="caret"></b></a>
 		            	<ul class="dropdown-menu">
 		            		<#if (currentUser.ownerUser)?exists>
 			            		<li><a href="${req.getContextPath()}/user/switchUser?switchUserId="><@spring.message "common.button.return"/></a></li>
