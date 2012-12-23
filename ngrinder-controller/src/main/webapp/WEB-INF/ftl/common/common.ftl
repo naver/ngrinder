@@ -4,13 +4,14 @@
 <link rel="shortcut icon" type="image/png" href="${req.getContextPath()}/img/favicon.png" />
 <link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
 <link href="${req.getContextPath()}/css/ngrinder.css?${nGrinderVersion}" rel="stylesheet">
-<script src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script>
-<script src="${req.getContextPath()}/js/bootstrap.min.js"></script>
-<script src="${req.getContextPath()}/js/bootbox.min.js"></script>
-<script src="${req.getContextPath()}/js/utils.js?${nGrinderVersion}"></script>
-<script src="${req.getContextPath()}/js/jquery.validate.js"></script>
+<script type="text/javascript" src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script> 
+<script type="text/javascript" src="${req.getContextPath()}/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="${req.getContextPath()}/js/bootbox.min.js"></script>
+<script type="text/javascript" src="${req.getContextPath()}/js/utils.js?${nGrinderVersion}"></script>
+<script type="text/javascript" src="${req.getContextPath()}/js/jquery.validate.js"></script>
+<script type="text/javascript" src="${req.getContextPath()}/js/jquery.placeholder.min.js?${nGrinderVersion}"></script>
 <#import "spring.ftl" as spring/>
-<script>
+<script type="text/javascript">
 	//common validation function and options. 
 	$.validator.addMethod('positiveNumber',
 		    function (value) { 
@@ -29,7 +30,10 @@
 		maxlength: $.validator.format("<@spring.message "common.message.validate.maxlength"/>"),
 		rangelength: $.validator.format("<@spring.message "common.message.validate.rangelength"/>")
 	});
-</script> 
+	$(document).ready(function() {
+		$('input[placeholder], textarea[placeholder]').placeholder();
+	});
+</script>  
 <input type="hidden" id="contextPath" value="${req.getContextPath()}">
 
 <#setting number_format="computer">
