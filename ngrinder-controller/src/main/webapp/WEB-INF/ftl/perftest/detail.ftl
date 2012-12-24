@@ -489,7 +489,7 @@ function addValidation() {
 	validationOptions = {
 		rules: {
 			testName: {
-			 	required : true
+			 	required: true
 			},
 			agentCount: {
 				required: true,
@@ -515,7 +515,7 @@ function addValidation() {
 				min:0
 			},
 			<#if securityMode?? && securityMode == true>
-			hostsHidden: {
+			targetHosts: {
 				required: true
 			},
 			</#if>
@@ -568,7 +568,7 @@ function addValidation() {
 	        threads: {
 	        	required: "<@spring.message "perfTest.warning.threads"/>"
 	        },
-	        hostsHidden: {
+	        targetHosts: {
 	        	required: "<@spring.message "perfTest.warning.hostString"/>"
 	        }
 	    },

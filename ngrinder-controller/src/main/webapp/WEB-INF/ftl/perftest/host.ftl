@@ -2,7 +2,7 @@
 data-original-title="<@spring.message "perfTest.configuration.targetHost"/>"
 data-content='<@spring.message "perfTest.configuration.targetHost.help"/>'
 rel="popover" placement="bottom"></div>
-<input type="hidden" name="targetHosts" id="hostsHidden" value="${(targetHosts)!}"> 
+<input type="hidden" name="targetHosts" id="targetHosts" value="${(targetHosts)!}"> 
 <a class="btn pull-right btn-mini addhostbtn" data-toggle="modal" href="#addHostModal">   
 	<@spring.message "perfTest.configuration.add"/>
 </a>
@@ -87,6 +87,7 @@ rel="popover" placement="bottom"></div>
 	          
 	          $("#addHostModal").modal("hide");
 	          $("#addHostModal small").removeClass("errorColor");
+	          $("#targetHosts").nextAll("span.help-inline").empty();
 	      });
 	      
 	      $(".icon-remove-circle").live("click", function() {
@@ -101,7 +102,7 @@ rel="popover" placement="bottom"></div>
           		return $.trim($(this).text());    
           }).get().join(",");
           
-          $("#hostsHidden").val(contentStr);
+          $("#targetHosts").val(contentStr);
       }
 
       function hostItem(content) {
@@ -111,16 +112,16 @@ rel="popover" placement="bottom"></div>
       function initHosts(newHosts) {
       	  if (newHosts != undefined) {
       	  	  newHosts = $.trim(newHosts);
-      	  	  $("#hostsHidden").val(newHosts);
+      	  	  $("#targetHosts").val(newHosts);
       	  	  if (newHosts == "") {
       	  	  	  $(".div-host").html("");
       	  	  	  return;
       	  	  }
-      	  } else if (checkEmptyByID("hostsHidden")) {
+      	  } else if (checkEmptyByID("targetHosts")) {
               return;
           }
           
-		  var hosts = $("#hostsHidden").val().split(",");
+		  var hosts = $("#targetHosts").val().split(",");
 		  $(".div-host").html($.map(hosts, function(val) {
 		      val = $.trim(val);
 		  	  if (val != "") {

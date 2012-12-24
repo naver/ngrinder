@@ -123,9 +123,13 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 			sleep(1000);
 		}
 		perfTestRunnable.startTest();
-		sleep(20000);
+		sleep(15000);
 		perfTestRunnable.finishTest();
 		sleep(5000);
+		perfTestService.stopPerfTest(getTestUser(), currentTest.getId());
+		perfTestRunnable.finishTest();
+		sleep(10000);
+
 		List<SystemDataModel> systemData = monitorService.getSystemMonitorData(currentTest.getId(), "127.0.0.1");
 		assertTrue(systemData.size() > 0);
 
