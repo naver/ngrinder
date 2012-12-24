@@ -13,6 +13,14 @@
 <#import "spring.ftl" as spring/>
 <script type="text/javascript">
 	//common validation function and options. 
+	$.validator.addMethod('positiveNumber',
+		    function (value) { 
+		        return Number(value) > 0;
+		    }, '<@spring.message "common.form.validate.positiveNumber"/>');
+	$.validator.addMethod('countNumber',
+		    function (value) { 
+		        return Number(value) >= 0;
+		    }, '<@spring.message "common.form.validate.countNumber"/>');
 	$.extend(jQuery.validator.messages, {
 	    required: "<@spring.message "common.form.validate.empty"/>",
 	    digits: "<@spring.message "common.message.validate.digits"/>",

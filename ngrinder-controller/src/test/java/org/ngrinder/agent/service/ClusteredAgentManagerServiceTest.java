@@ -26,6 +26,7 @@ import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 
 import org.apache.commons.lang.mutable.MutableInt;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
@@ -54,12 +55,14 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 	@Autowired
 	private Config config;
 
+	private CacheManager cacheManager ;
+	
 	private Config spiedConfig;
 	
 	private boolean initialed = false;
 
 	@Before
-	public void before() {
+	public  void before() {
 		if (initialed) {
 			return;
 		}
@@ -74,15 +77,18 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		agentManagerService.setConfig(spiedConfig);
 		
 		//set clustered cache manager.
-		DynamicCacheConfig cacheConfig = new DynamicCacheConfig();
+		MockDynamicCacheConfig cacheConfig = new MockDynamicCacheConfig();
+
 		ReflectionTestUtils.setField(cacheConfig, "config", spiedConfig);
-		CacheManager cacheManager = cacheConfig.dynamicCacheManager();
+		cacheManager = cacheConfig.dynamicCacheManager();
 		((EhCacheCacheManager)cacheManager).afterPropertiesSet(); //it will not be called if we create manually
 		ReflectionTestUtils.setField(agentManagerService, "cacheManager", cacheManager);
 		
 		agentManagerService.init();
 		initialed = true;
 	}
+	
+
 	
 	@Test
 	public void testOther() {

@@ -42,16 +42,7 @@ rel="popover" placement="bottom"></div>
 <script>
 	function validateHost(arr) {
 		  var success;
-	      var $ip = $("#ipInput");
-          if (!checkEmptyByObj($ip)) {
-          	  success = isIPByObj($ip);
-          	  markInput($ip, success, "<@spring.message "perfTest.configuration.addHost.inputTargetIp"/>");
-              if(!success){
-                  return false;
-              }
-              arr.push($ip.val());
-          }
-          
+		  
           var $domain = $("#domainInput");
           if (!checkEmptyByObj($domain)) {
               var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,3}$";
@@ -63,6 +54,17 @@ rel="popover" placement="bottom"></div>
               }
               arr.push(str);
           }
+          
+	      var $ip = $("#ipInput");
+          if (!checkEmptyByObj($ip)) {
+          	  success = isIPByObj($ip);
+          	  markInput($ip, success, "<@spring.message "perfTest.configuration.addHost.inputTargetIp"/>");
+              if(!success){
+                  return false;
+              }
+              arr.push($ip.val());
+          }
+          
           
           return true;
     }
