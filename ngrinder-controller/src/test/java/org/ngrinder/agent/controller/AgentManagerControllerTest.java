@@ -18,7 +18,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import net.grinder.message.console.AgentControllerState;
 
@@ -94,9 +94,9 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 
 		model.clear();
 		agentController.getAgentList("", model);
-		List<AgentInfo> agents = (List<AgentInfo>) model.get("agents");
-		if (agents.size() > 0) {
-			AgentInfo testAgt = agents.get(0);
+		Collection<AgentInfo> agents = (Collection<AgentInfo>) model.get("agents");
+		if (!agents.isEmpty()) {
+			AgentInfo testAgt = agents.iterator().next();
 			model.clear();
 			agentController.getAgent(model, testAgt.getId());
 			AgentInfo agentInDB = (AgentInfo) model.get("agent");
