@@ -54,7 +54,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	private static String errorJson;
 
-	private static Gson gson = new Gson();
+	protected static Gson gson = new Gson();
 
 	@Autowired
 	private MessageSource messageSource;
