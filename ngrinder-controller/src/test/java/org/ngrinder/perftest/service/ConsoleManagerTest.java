@@ -30,6 +30,7 @@ import net.grinder.util.ConsolePropertiesFactory;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.ThreadUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StopWatch;
 
@@ -95,7 +96,7 @@ public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 
 		// return console again is always allowed
 		manager.returnBackConsole("test", anotherConsole);
-
+		ThreadUtil.sleep(2000);
 		assertThat(manager.getAvailableConsoleSize(), is(1));
 		assertThat(manager.getConsoleInUse().size(), is(initialSize - 1));
 	}
