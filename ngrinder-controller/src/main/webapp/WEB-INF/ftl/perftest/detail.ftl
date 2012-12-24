@@ -501,6 +501,9 @@ function addValidation() {
 				digits: true,
 				range: [1, ${(maxVuserPerAgent)}]
 			},
+	        scriptName: {
+	        	required:true
+	        },
 			duration : {
 				max:${maxRunHour}*3600000,
 				min:0
@@ -641,24 +644,8 @@ function bindEvent() {
 			min:1
 		});
 
-		if ($.browser.msie  && parseInt($.browser.version, 10) === 8) {
-			var result = true;
-			var rules = validationOptions["rules"];
-			$.each(rules, function(key, value) {
-				if (!$("#" + key).valid() && result == true) {
-					result = false;
-				}
-			});
-		
-			if (result == false) {
-				$("#testContent_tab a").tab('show');
-				return false;
-			} 
-		} else {
-			if (!$("#testContentForm").valid()) {
-				$("#testContent_tab a").tab('show');
-				return false;
-			} 
+		if (!validateForm()) {
+			return false;
 		}
 
 		var $agentCount = $("#agentCount");
@@ -688,25 +675,14 @@ function bindEvent() {
 	});
 	
 	$("#saveTestBtn").click(function() {
-		if ($.browser.msie  && parseInt($.browser.version, 10) === 8) {
-			var result = true;
-			var rules = validationOptions["rules"];
-			$.each(rules, function(key, value) {
-				if (!$("#" + key).valid() && result == true) {
-					result = false;
-				}
-			});
+		$("#agentCount").rules("add", {
+			min:0
+		});
 		
-			if (result == false) {
-				$("#testContent_tab a").tab('show');
-				return false;
-			} 
-		} else {
-			if (!$("#testContentForm").valid()) {
-				$("#testContent_tab a").tab('show');
-				return false;
-			} 
+		if (!validateForm()) {
+			return false;
 		}
+
 		$("#testStatus").val("SAVED");
 		$("#scheduleInput").attr('name', '');
 		$("#tagString").val(buildTagString());
@@ -870,6 +846,25 @@ function changeAgentMaxCount(region) {
 		max:count
 	});
 	$agentCountObj.valid();
+}
+
+function validateForm() {
+	var result = true;
+	// For IE 7, 8
+	if ($.browser.msie  && parseInt($.browser.version, 10) <= 8) {
+		var rules = validationOptions["rules"];
+		$.each(rules, function(key, value) {
+			if (!$("#" + key).valid() && result == true) {
+				result = false;
+			}
+		});		
+	} else {
+		result = (!$("#testContentForm").valid());
+	}
+	if (result == false) {
+		$("#testContent_tab a").tab('show');
+		return false;
+	} 
 }
 
 function buildTagString() {

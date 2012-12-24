@@ -55,8 +55,8 @@
 						</td>
 						<td>
 							<span class="pull-right">
-								<a class="btn btn-primary" href="${req.getContextPath()}/perftest/detail" id="createBtn" data-toggle="modal">
-									<i class="icon-file"></i>
+								<a class="btn btn-primary" href="${req.getContextPath()}/perftest/detail" id="createBtn">
+									<i class="icon-file"></i> 
 									<@spring.message "perfTest.formInline.createTest"/>
 								</a>
 								<a class="btn btn-danger" href="javascript:void(0);" id="deleteBtn">
