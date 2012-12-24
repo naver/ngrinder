@@ -34,7 +34,6 @@ import net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory;
 import net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory;
 
 import org.apache.commons.io.IOUtils;
-import org.hibernate.annotations.OnDelete;
 import org.ngrinder.infra.annotation.TestOnlyComponent;
 import org.ngrinder.infra.config.DynamicCacheConfig;
 import org.ngrinder.infra.logger.CoreLogger;
