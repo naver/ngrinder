@@ -190,6 +190,7 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 											+ "preventing access to the various lock properties for the PROPFIND.",
 											null);
 		}
+		
 
 		myResponseBuffer = new StringBuffer();
 		DAVXMLUtil.beginMultiStatus(getHttpServletResponse(), SC_MULTISTATUS, getNamespaces(), myResponseBuffer);
@@ -211,7 +212,12 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 
 		SVNXMLUtil.closeXMLTag(SVNXMLUtil.DAV_NAMESPACE_PREFIX, DAVElement.MULTISTATUS.getName(), myResponseBuffer);
 		String responseBody = myResponseBuffer.toString();
-
+		
+		//ServletDAVHandler.DEFAULT_XML_CONTENT_TYPE is  "text/xml; charset=\"utf-8\"";
+		//charset value is ""utf-8"", and it will throw java.io.UnsupportedEncodingException: "utf-8"
+		//so set "text/html;charset=utf-8"  
+		HttpServletResponse myResponse = getHttpServletResponse();
+		myResponse.setContentType("text/html;charset=utf-8");
 		try {
 			setResponseContentLength(responseBody.getBytes(UTF8_ENCODING).length);
 		} catch (UnsupportedEncodingException e) {
