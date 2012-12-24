@@ -108,7 +108,7 @@ public class DynamicCacheConfig {
 		return cacheManager;
 	}
 
-	String createPearListenerProperties(List<String> replicatedCacheNames) {
+	protected String createPearListenerProperties(List<String> replicatedCacheNames) {
 		int clusterListenerPort = getCacheListenerPort();
 		String currentIP = config.getCurrentIP();
 		return String.format("hostName=%s, port=%d, socketTimeoutMillis=200", currentIP, clusterListenerPort);
@@ -122,7 +122,7 @@ public class DynamicCacheConfig {
 		return "cacheManager";
 	}
 
-	String createCacheProperties(List<String> replicatedCacheNames) {
+	protected String createCacheProperties(List<String> replicatedCacheNames) {
 		int clusterListenerPort = getCacheListenerPort();
 		// rmiUrls=//10.34.223.148:40003/distributed_map|//10.34.63.28:40003/distributed_map
 		List<String> uris = new ArrayList<String>();
@@ -157,7 +157,7 @@ public class DynamicCacheConfig {
 						Config.NGRINDER_DEFAULT_CLUSTER_LISTENER_PORT);
 	}
 
-	private List<String> getReplicatedCacheNames(Configuration cacheManagerConfig) {
+	protected List<String> getReplicatedCacheNames(Configuration cacheManagerConfig) {
 		Map<String, CacheConfiguration> cacheConfigurations = cacheManagerConfig.getCacheConfigurations();
 		List<String> replicatedCacheNames = new ArrayList<String>();
 		for (Map.Entry<String, CacheConfiguration> eachConfig : cacheConfigurations.entrySet()) {
@@ -172,11 +172,11 @@ public class DynamicCacheConfig {
 		return replicatedCacheNames;
 	}
 
-	Config getConfig() {
+	public Config getConfig() {
 		return config;
 	}
 
-	void setConfig(Config config) {
+	public void setConfig(Config config) {
 		this.config = config;
 	}
 }
