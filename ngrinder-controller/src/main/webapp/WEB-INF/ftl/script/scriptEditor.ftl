@@ -154,7 +154,7 @@
 
 			$("#validateBtn").click(function() {
 				var scriptPath = $("#scriptNameInput").val();
-				var hostString = $("#hostsHidden").val();
+				var hostString = $("#targetHosts").val();
 				$('#validateRsPre').hide();
 				var newContent = editor.getValue();
 				showProgressBar("<@spring.message "script.editor.message.validate"/>");

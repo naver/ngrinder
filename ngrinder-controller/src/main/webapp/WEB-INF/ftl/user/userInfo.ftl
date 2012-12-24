@@ -188,9 +188,15 @@
 	    			email: true
 	    		},
 	    		password: {
+	    			<#if !(user?has_content)>
+	    			required: true,
+	    			</#if>
 	    			rangelength: [6,15]
 	    		},
 	    		cpwd: {
+	    			<#if !(user?has_content)>
+	    			required: true,
+	    			</#if>
 	    			rangelength: [6,15]
 	    		}
 	    	}, 
