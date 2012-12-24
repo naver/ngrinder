@@ -14,7 +14,6 @@
 package org.ngrinder.perftest.service;
 
 import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
-import static org.ngrinder.common.util.TypeConvertUtil.convert;
 import static org.ngrinder.model.Status.CANCELED;
 import static org.ngrinder.model.Status.DISTRIBUTE_FILES;
 import static org.ngrinder.model.Status.DISTRIBUTE_FILES_FINISHED;
@@ -29,7 +28,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 
@@ -46,7 +44,6 @@ import net.grinder.statistics.StatisticsSet;
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.common.util.ReflectionUtil;
 import org.ngrinder.extension.OnTestLifeCycleRunnable;
 import org.ngrinder.extension.OnTestSamplingRunnable;
 import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
@@ -62,7 +59,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 import com.atlassian.plugin.event.PluginEventListener;
 import com.atlassian.plugin.event.events.PluginDisabledEvent;
@@ -105,9 +101,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	@Autowired
 	private TaskScheduler scheduler;
-
-	@Autowired
-	private ScheduledTaskRegistrar taskRegistarar;
 
 	/**
 	 * Initialize plugin manager to register plugin update event.
@@ -359,9 +352,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 				LOG.info("add monitors on {} for perftest {}", agents, perfTest.getId());
 				monitorClientScheduler = applicationContext.getBean(MontorClientManager.class);
 				monitorClientScheduler.add(agents, singleConsole.getReportPath());
-				synchronized (PerfTestRunnable.this) {
-					scheduleWithFixedDelay = scheduler.scheduleWithFixedDelay(monitorClientScheduler, 600);
-				}
+				scheduleWithFixedDelay = scheduler.scheduleWithFixedDelay(monitorClientScheduler, 600);
 				for (OnTestSamplingRunnable each : testSamplingRunnables) {
 					try {
 						each.startSampling(singleConsole, perfTest, perfTestService);
@@ -376,12 +367,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 			public void onSamplingEnded() {
 				LOG.info("remove monitors on {} for perftest {}", agents, perfTest.getId());
 				scheduleWithFixedDelay.cancel(false);
-				synchronized (PerfTestRunnable.this) {
-					Map<Runnable, Long> fixedDelayTasks = convert(ReflectionUtil.getFieldValue(taskRegistarar,
-									"fixedDelayTasks"));
-					fixedDelayTasks.remove(monitorClientScheduler);
-					taskRegistarar.setFixedDelayTasks(fixedDelayTasks);
-				}
 				monitorClientScheduler.destroy();
 				for (OnTestSamplingRunnable each : testSamplingRunnables) {
 					try {
