@@ -13,7 +13,6 @@
  */
 package net.grinder.util;
 
-import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -92,38 +91,37 @@ public abstract class NetworkUtil {
 			return "localhost";
 		}
 	}
-	
-	private static InetAddress getLocalInetAddress(String byConnecting, int port) {
-		Socket s = null;
-		Socket s2 = null;
 
+	private static InetAddress getLocalInetAddress(String byConnecting, int port) {
+
+		InetAddress addr = getAddressWithSocket(byConnecting, port);
+		if (addr == null) {
+			addr = getAddressWithSocket("www.google.com", 80);
+		}
+		if (addr == null) {
+			try {
+				addr = getFirstNonLoopbackAddress(true, false);
+			} catch (SocketException e2) {
+				addr = null;
+			}
+		}
+		return addr;
+	}
+
+	private static InetAddress getAddressWithSocket(String byConnecting, int port) {
+		Socket s = null;
 		try {
 			s = new Socket();
 			SocketAddress addr = new InetSocketAddress(byConnecting, port);
 			s.connect(addr, 1000); // 1 seconds timeout
 			return s.getLocalAddress();
-		} catch (IOException e) {
-			// For safety.
-			try {
-				s2 = new Socket();
-				SocketAddress addr = new InetSocketAddress("www.google.com", 80);
-				s2.connect(addr, 1000); // 1 seconds timeout
-				return s2.getLocalAddress();
-			} catch (Exception e1) {
-				try {
-					return getFirstNonLoopbackAddress(true, false);
-				} catch (SocketException e2) {
-					return null;
-				}
-			}
+		} catch (Exception e) {
+			return null;
 		} finally {
 			IOUtils.closeQuietly(s);
-			IOUtils.closeQuietly(s2);
-
 		}
-
 	}
-	
+
 	private static InetAddress getFirstNonLoopbackAddress(boolean preferIpv4, boolean preferIPv6)
 					throws SocketException {
 		Enumeration<?> en = NetworkInterface.getNetworkInterfaces();
