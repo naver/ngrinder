@@ -26,8 +26,6 @@ import java.util.Map;
 
 import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.communication.ProcessControl.ProcessReports;
-import net.grinder.console.model.ModelTestIndex;
-import net.grinder.console.model.SampleModel;
 import net.grinder.console.model.SampleModelImplementationEx;
 import net.grinder.statistics.StatisticExpression;
 import net.grinder.statistics.StatisticsSet;
