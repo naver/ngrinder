@@ -18,8 +18,11 @@ import javax.annotation.PostConstruct;
 import org.ngrinder.infra.annotation.TestOnlyComponent;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
+import org.ngrinder.security.SecuredUser;
 import org.ngrinder.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.dao.SaltSource;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
 
 /**
  * user util
@@ -37,6 +40,12 @@ public class MockUserContext extends UserContext {
 	@Autowired
 	protected UserRepository userRepository;
 
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private SaltSource saltSource;
+	
 	@PostConstruct
 	public void init() {
 		User user = userRepository.findOneByUserId(TEST_USER_ID);
@@ -47,6 +56,11 @@ public class MockUserContext extends UserContext {
 			user.setEmail("TEST_USER@nhn.com");
 			user.setPassword("123");
 			user.setRole(Role.USER);
+			
+			SecuredUser securedUser = new SecuredUser(user, null);
+			String encodePassword = passwordEncoder.encodePassword(user.getPassword(), saltSource.getSalt(securedUser));
+			user.setPassword(encodePassword);
+			
 			userRepository.save(user);
 		}
 	}

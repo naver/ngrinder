@@ -22,12 +22,17 @@
  */
 package org.ngrinder.security;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
@@ -47,7 +52,20 @@ public class NGrinderAuthenticationProviderTest extends AbstractNGrinderTransact
 	@Test
 	public void testAdditionalAuthenticationChecks() {
 		UserDetails user = userDetailService.loadUserByUsername(getTestUser().getUserId());
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		provider.additionalAuthenticationChecks(user, (UsernamePasswordAuthenticationToken)auth);
+		
+		//remove authentication temporally
+		SecurityContextImpl context = new SecurityContextImpl();
+		SecurityContextHolder.setContext(context);
+
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("admin", null);
+		try {
+			provider.additionalAuthenticationChecks(user, token);
+			assertTrue(false);
+		} catch (BadCredentialsException e) {
+			assertTrue(true);
+		}
+
+		token = new UsernamePasswordAuthenticationToken("TEST_USER", "123");
+		provider.additionalAuthenticationChecks(user, token);
 	}
 }
