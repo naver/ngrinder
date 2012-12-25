@@ -13,6 +13,8 @@
  */
 package org.ngrinder.perftest.service;
 
+import static org.ngrinder.common.util.FileUtil.readObjectFromFile;
+import static org.ngrinder.common.util.FileUtil.writeObjectToFile;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.model.Status.getProcessingOrTestingTestStatus;
@@ -37,10 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.StringReader;
-import java.nio.channels.FileLock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1039,64 +1038,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 						getPerfTestStatisticPath(perfTest), "agent_info.stat"),
 						new HashMap<AgentIdentity, SystemDataModel>());
 		return readObjectFromFile;
-	}
-
-	private void writeObjectToFile(File file, Object result) {
-		FileOutputStream fout = null;
-		ObjectOutputStream oout = null;
-		FileLock lock = null;
-		try {
-			fout = new FileOutputStream(file, false);
-			lock = fout.getChannel().lock();
-			oout = new ObjectOutputStream(fout);
-			oout.writeObject(result);
-
-		} catch (Exception e) {
-			LOGGER.error("IO error for file {}", file, e);
-		} finally {
-			if (lock != null) {
-				try {
-					lock.release();
-				} catch (IOException e) {
-					LOGGER.error("unlocking is failed for file {}", file, e);
-				}
-			}
-
-			IOUtils.closeQuietly(fout);
-			IOUtils.closeQuietly(oout);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> T readObjectFromFile(File file, T defaultValue) {
-		if (!file.exists()) {
-			return defaultValue;
-		}
-		FileInputStream fin = null;
-		ObjectInputStream oin = null;
-		FileLock lock = null;
-		try {
-			fin = new FileInputStream(file);
-			lock = fin.getChannel().lock(0, Long.MAX_VALUE, true);
-			oin = new ObjectInputStream(fin);
-			Object readObject = oin.readObject();
-			return (readObject == null) ? defaultValue : (T) readObject;
-
-		} catch (Exception e) {
-			LOGGER.error("IO error for file {}", file, e);
-		} finally {
-			if (lock != null) {
-				try {
-					lock.release();
-				} catch (IOException e) {
-					LOGGER.error("unlocking is failed for file {}", file, e);
-				}
-			}
-
-			IOUtils.closeQuietly(fin);
-			IOUtils.closeQuietly(oin);
-		}
-		return defaultValue;
 	}
 
 	/*
