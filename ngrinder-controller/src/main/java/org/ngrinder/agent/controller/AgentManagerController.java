@@ -69,6 +69,8 @@ public class AgentManagerController extends NGrinderBaseController {
 	/**
 	 * Get agent list.
 	 * 
+	 * @param region
+	 *            the region to search
 	 * @param model
 	 *            model
 	 * @return viewName
