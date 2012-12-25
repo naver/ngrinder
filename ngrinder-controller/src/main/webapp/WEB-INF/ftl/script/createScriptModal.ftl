@@ -57,38 +57,37 @@
 		<script>
 			$(document).ready(function() {
 				$("#createBtn2").on('click', function() {
-				var $name = $("#scriptNameInput");
-				if (checkEmptyByObj($name)) {
-					markInput($name, false, "<@spring.message "common.form.validate.empty"/>");
-					return;
-				} else {
-					if (!checkSimpleNameByObj($name)) {
-						markInput($name, false, "<@spring.message "common.form.validate.format"/>");
+					var $name = $("#scriptNameInput");
+					if (checkEmptyByObj($name)) {
+						markInput($name, false, "<@spring.message "common.form.validate.empty"/>");
 						return;
+					} else {
+						if (!checkSimpleNameByObj($name)) {
+							markInput($name, false, "<@spring.message "common.form.validate.format"/>");
+							return;
+						}
+						
+						markInput($name, true);
 					}
 					
-					markInput($name, true);
-				}
-				
-				var name = $name.val();
-				var extension = "." + $("#languageSelect").val().toLowerCase();
-				var idx = name.toLowerCase().indexOf(extension);
-				if (name.length < 3 || idx == -1 || idx < name.length - 3) {
-					$name.val(name + extension);
-				}
-				
-				var urlValue = $("#urlInput");
-				if (!checkEmptyByObj(urlValue)) {
-				
-					if (!urlValue.valid()) {
-						markInput(urlValue, false, "<@spring.message "common.form.validate.format"/>");
-						return;
+					var name = $name.val();
+					var extension = "." + $("#languageSelect").val().toLowerCase();
+					var idx = name.toLowerCase().indexOf(extension);
+					if (name.length < 3 || idx == -1 || idx < name.length - 3) {
+						$name.val(name + extension);
 					}
 					
-					markInput(urlValue, true);
-				}
-				
-				document.forms.createForm.submit();
+					var urlValue = $("#urlInput");
+					if (!checkEmptyByObj(urlValue)) {
+						if (!urlValue.valid()) {
+							markInput(urlValue, false, "<@spring.message "common.form.validate.format"/>");
+							return;
+						}
+						
+						markInput(urlValue, true);
+					}
+					
+					document.forms.createForm.submit();
+				});
 			});
-		});
 		</script>

@@ -26,14 +26,12 @@ import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 
 import org.apache.commons.lang.mutable.MutableInt;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.infra.config.DynamicCacheConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
@@ -97,9 +95,13 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		agentManagerService.stopAgent(0L);
 		agentManagerService.requestShareAgentSystemDataModel(0L);
 		agentManagerService.getAgentSystemDataModel("127.0.0.1", "127.0.0.1");
-		agentManagerService.addAgentMonitoringTarget(new AgentControllerIdentityImplementation("127.0.0.1",
-				"127.0.0.1"));
-		agentManagerService.stopAgent(new AgentControllerIdentityImplementation("127.0.0.1", "127.0.0.1"));
+		AgentControllerIdentityImplementation monitor = new AgentControllerIdentityImplementation("testAgent",
+				"127.0.0.1");
+		monitor.setRegion(spiedConfig.getRegion());
+		agentManagerService.addAgentMonitoringTarget(monitor);
+		agentManagerService.stopAgent(new AgentControllerIdentityImplementation("testAgent", "127.0.0.1"));
+		
+		agentManagerService.collectAgentSystemData();
 	}
 
 	@Test

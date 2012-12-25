@@ -62,6 +62,7 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 	protected User testUser = null;
 	
 	static {
+		setupSigar();
 		LOG.info("* Start nGrinder Agent *");
 		AgentConfig agentConfig = new MockAgentConfigInControllerSide(1).init();
 		AgentControllerDaemon agentControllerDaemon = new AgentControllerDaemon("127.0.0.1");
@@ -70,7 +71,6 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 		
 		LOG.info("* Start nGrinder Monitor *");
 		try {
-			setupSigar();
 			Set<String> collector = MonitorConstants.SYSTEM_DATA_COLLECTOR;
 			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_MONITOR_PORT, collector);
 			AgentMonitorServer.getInstance().start();

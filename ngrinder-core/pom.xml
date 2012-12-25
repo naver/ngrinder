@@ -9,41 +9,7 @@
 	<artifactId>ngrinder-core</artifactId>
 	<name>ngrinder-core</name>
 	<packaging>jar</packaging>
-	<profiles>
-		<profile>
-			<id>windows_profile</id>
-			<activation>
-				<os>
-					<family>Windows</family>
-				</os>
-			</activation>
-			<properties>
-				<toolsjar>${java.home}/../lib/tools.jar</toolsjar>
-			</properties>
-		</profile>
-		<profile>
-			<id>unix_profile</id>
-			<activation>
-				<os>
-					<family>unix</family>
-				</os>
-			</activation>
-			<properties>
-				<toolsjar>${java.home}/../lib/tools.jar</toolsjar>
-			</properties>
-		</profile>
-		<profile>
-			<id>osx_profile</id>
-			<activation>
-				<os>
-					<family>mac</family>
-				</os>
-			</activation>
-			<properties>
-				<toolsjar>${java.home}/../Classes/classes.jar</toolsjar>
-			</properties>
-		</profile>
-	</profiles>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -66,13 +32,7 @@
 			<artifactId>ngrinder-dns</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.sun</groupId>
-			<artifactId>tools</artifactId>
-			<version>1.6.0</version>
-			<scope>system</scope>
-			<systemPath>${toolsjar}</systemPath>
-		</dependency>
+
 		<dependency>
 			<groupId>org.fusesource</groupId>
 			<artifactId>sigar</artifactId>

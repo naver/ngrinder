@@ -20,73 +20,55 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.ngrinder.security;
+package org.ngrinder.user.service;
 
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.model.User;
+import org.ngrinder.security.NGrinderUserDetailsService;
+import org.ngrinder.security.SecuredUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.encoding.PasswordEncoder;
-import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 /**
  * Class description.
- * 
+ *
  * @author Mavlarn
- * @since
+ * @since 3.1
  */
-public class NGrinderAuthenticationProviderTest extends AbstractNGrinderTransactionalTest {
+public class UserContextTest extends AbstractNGrinderTransactionalTest {
 
-	@Autowired
-	private NGrinderAuthenticationProvider provider;
-	
 	@Autowired
 	private NGrinderUserDetailsService userDetailService;
-
-	@Autowired
-	@Qualifier("shaPasswordEncoder")
-	private PasswordEncoder passwordEncoder;
 	
 	@Test
-	public void testAdditionalAuthenticationChecks() {
-		UserDetails user = userDetailService.loadUserByUsername(getTestUser().getUserId());
+	public void testGetUser() {
+		UserContext userCtx = new UserContext();
 		
-		//remove authentication temporally
-		Authentication oriAuth = SecurityContextHolder.getContext().getAuthentication();
-		SecurityContextImpl context = new SecurityContextImpl();
-		SecurityContextHolder.setContext(context);
-
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("admin", null);
+		//in super.beforeSetSecurity(), there is an admin user is set, but the auth is invalid
 		try {
-			provider.additionalAuthenticationChecks(user, token);
+			userCtx.getCurrentUser();
 			assertTrue(false);
-		} catch (BadCredentialsException e) {
+		} catch (AuthenticationCredentialsNotFoundException e) {
 			assertTrue(true);
 		}
 
-		token = new UsernamePasswordAuthenticationToken("TEST_USER", "123");
-		provider.additionalAuthenticationChecks(user, token);
-		
-		context.setAuthentication(oriAuth);
-	}
-	
-	@Test
-	public void testSetPasswordEncoder() {
-		org.springframework.security.authentication.encoding.PasswordEncoder enc1 = new PlaintextPasswordEncoder();
-		provider.setPasswordEncoder(enc1);
+		UserDetails user = userDetailService.loadUserByUsername(getTestUser().getUserId());
 
-		org.springframework.security.crypto.password.PasswordEncoder enc2 = new StandardPasswordEncoder();
-		provider.setPasswordEncoder(enc2);
-		
-		provider.setPasswordEncoder(passwordEncoder);
+		Authentication oriAuth = SecurityContextHolder.getContext().getAuthentication();
+
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user, "123");
+		SecurityContextHolder.getContext().setAuthentication(token);
+		userCtx.getCurrentUser();
+		assertTrue(true);
+
+		SecurityContextHolder.getContext().setAuthentication(oriAuth);
 	}
 }

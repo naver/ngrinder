@@ -591,8 +591,9 @@ public class PerfTestController extends NGrinderBaseController {
 		List<String> perfStringList = new ArrayList<String>();
 		for (Entry<AgentIdentity, SystemDataModel> each : agentPerfMap.entrySet()) {
 			SystemDataModel value = each.getValue();
-			if (value == null)
+			if (value == null) {
 				continue;
+			}
 			Long totalMemory = value.getTotalMemory();
 
 			float usage = 0;

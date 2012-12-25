@@ -338,4 +338,12 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		HttpEntity<String> rtnJson = controller.updateStatus(getTestUser(), ids);
 		assertThat(rtnJson.getBody(), notNullValue());
 	}
+
+	@Test
+	public void testSearchTag() {
+		HttpEntity<String> rtn = controller.searchTag(getAdminUser(), "");
+		assertThat(rtn.getBody(), notNullValue());
+		rtn = controller.searchTag(getAdminUser(), "test");
+		assertThat(rtn.getBody(), notNullValue());
+	}
 }

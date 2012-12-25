@@ -17,6 +17,8 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -41,16 +43,16 @@ public class NetworkUtilTest {
 	@Test
 	public void testLocalHostAddressByConnecting() {
 
-		String localHostAddress = NetworkUtil.getLocalHostAddress("www.baidu.com", 80);
+		String localHostAddress = NetworkUtil.getLocalHostAddress("www.baiduerror.com", 80);
 		assertThat(localHostAddress, notNullValue());
 		assertThat(localHostAddress, not("127.0.0.1"));
 		localHostAddress = NetworkUtil.getLocalHostAddress("www.invalidaddress", 80);
 		assertThat(localHostAddress, notNullValue());
 		assertThat(localHostAddress, not("127.0.0.1"));
 	}
-
+   
 	@Test
-	public void testLocalHostName() {
+	public void testLocalHostName() throws ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException {
 		try {
 			System.out.println("Local host:" + InetAddress.getLocalHost().getHostName());
 		} catch (UnknownHostException e) {
@@ -59,5 +61,18 @@ public class NetworkUtilTest {
 		String localHostAddress = NetworkUtil.getLocalHostName();
 		System.out.println("NetworkUtil.getLocalHostName:" + localHostAddress);
 		assertThat(localHostAddress, notNullValue());
+		
+		Class<?> networkClas = Class.forName("net.grinder.util.NetworkUtil");
+		Method NonLoopbackMethod= networkClas.getDeclaredMethod("getFirstNonLoopbackAddress", new Class[] {boolean.class, boolean.class});
+		NonLoopbackMethod.setAccessible(true);
+		NonLoopbackMethod.invoke(networkClas, true,false);
+		
 	}
+	   
+		@Test
+		public void testLocalHostNameByConnecting() {
+			String localHostAddress = NetworkUtil.getLocalHostName("www.baidu.com", 80);
+			System.out.println("NetworkUtil.getLocalHostName:" + localHostAddress);
+			assertThat(localHostAddress, notNullValue());			
+		}
 }

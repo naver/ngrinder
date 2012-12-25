@@ -84,11 +84,11 @@
 		var comment = $("#testComment").val();
 		var tagString = buildTagString();
 		$.post(
-				"${req.getContextPath()}/perftest/leaveComment",
-				{"testId": ${test.id?c}, "testComment": comment, "tagString":tagString},
-				function() {
-					showSuccessMsg("<@spring.message "perfTest.report.message.leaveComment"/>");
-				}
+			"${req.getContextPath()}/perftest/leaveComment",
+			{"testId": ${test.id?c}, "testComment": comment, "tagString":tagString},
+			function() {
+				showSuccessMsg("<@spring.message "perfTest.report.message.leaveComment"/>");
+			}
 		);
 	});
 

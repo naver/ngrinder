@@ -107,7 +107,7 @@
 			    ><code>Tip</code></div> 
 			</div>
 		</div>
-		<pre style="height:100px; margin:5px 0 10px;" class="prettyprint pre-scrollable hidden" id="validateRsPre">
+		<pre style="height:100px; margin:5px 0 10px; display:none;" class="prettyprint pre-scrollable" id="validateRsPre">
 		</pre>
 		<#include "../common/copyright.ftl">
 	</div>
@@ -162,13 +162,13 @@
 			  		url: "${req.getContextPath()}/script/validate",
 			    	async: true,
 			    	type: "POST",
-					data: {'path':scriptPath, 'content': newContent, 'hostString' : hostString
+					data: {'path':scriptPath, 'content': newContent, 
 						<@security.authorize ifAnyGranted="A, S">
 							<#if ownerId??>	
-				  				, 'ownerId': "${ownerId}"
+				  				'ownerId': "${ownerId}",
 							</#if>
 						</@security.authorize>
-					},
+					'hostString': hostString},
 			    	success: function(res) {
 						$('#validateRsPre').text(res);
 						$('#validateRsPre').show();
@@ -181,33 +181,6 @@
 			    	}
 			  	});
 			});
-			
-	      $("#contentForm").validate({
-	          rules: {
-	          },
-	          messages: {
-	              
-	          },
-	          ignore: "", //make the validation on hidden input work
-	          errorClass: "help-inline",
-	          errorElement: "span",
-	          errorPlacement: function (error, element) {
-	              if (element.next().attr("class") == "add-on") {
-	                  error.insertAfter(element.next());
-	              } else {
-	                  error.insertAfter(element);
-	              }
-	          },
-	          highlight: function (element, errorClass, validClass) {
-	              $(element).parents('.control-group').addClass('error');
-	              $(element).parents('.control-group').removeClass('success');
-	          },
-	          unhighlight: function (element, errorClass, validClass) {
-	              $(element).parents('.control-group').removeClass('error');
-	              $(element).parents('.control-group').addClass('success');
-	          }
-	      });
-	      
 		});
 		</script>
 	</body>

@@ -15,6 +15,7 @@ package org.ngrinder.agent.controller;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -142,6 +143,18 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		agentController.getAgent(model, agent.getId());
 		agentinDB = (AgentInfo) model.get("agent");
 		assertThat(agentinDB.isApproved(), is(false));
+	}
+	
+	@Test
+	public void testStopAgent() {
+		agentController.stopAgent("0");
+	}
+	
+	@Test
+	public void testGetCurrentMonitorData() {
+		ModelMap model = new ModelMap();
+		String rtnStr = agentController.getCurrentMonitorData(model, 0L, "127.0.0.1", "127.0.0.1");
+		assertTrue(rtnStr.contains("systemData"));
 	}
 
 }
