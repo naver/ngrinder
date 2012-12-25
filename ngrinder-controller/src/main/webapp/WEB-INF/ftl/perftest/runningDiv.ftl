@@ -158,116 +158,113 @@
 	<!-- end running content right -->
 </div>
 <script>
-
-var curPeakTps = 0;
-var curTps = 0;
-var curRunningTime = 0;
-var curRunningProcesses = 0;
-var curRunningThreads = 0;
-var curRunningCount = 0;
-var curStatus = false;
-var curAgentPerfStates = [];
-var agentPerfStates = [];
-function refreshData() {
-	var refreshDiv = $("<div></div>");
-	var url = "${req.getContextPath()}/perftest/running/refresh?testId=" + $("#testId").val();
-	var peakTps = 50;
-	refreshDiv.load(url, function() {
-		$("#running_time").text(showRunTime(curRunningTime));
-		if (curStatus == true) {
-			$("#lsTable tbody").empty();
-			$("#asTable tbody").empty();
-			$("#lsTable tbody").prepend(refreshDiv.find("#lsTableItem"));
-			$("#asTable tbody").prepend(refreshDiv.find("#asTableItem"));
-
-			$("#process_data").text(curRunningProcesses);
-			$("#thread_data").text(curRunningThreads);
-			$("#running_count").text(curRunningCount);
-			var agentStatusString = "<ul>";
-			for ( var i = 0; i < curAgentPerfStates.length; i++) {
-				var eachAgent = curAgentPerfStates[i];
-				if (agentPerfStates[eachAgent.agent] === undefined) {
-					agentPerfStates[eachAgent.agent] = {"cpu" : {}, "mem" : {}};
+	var curPeakTps = 0;
+	var curTps = 0;
+	var curRunningTime = 0;
+	var curRunningProcesses = 0;
+	var curRunningThreads = 0;
+	var curRunningCount = 0;
+	var curStatus = false;
+	var curAgentPerfStates = [];
+	var agentPerfStates = [];
+	function refreshData() {
+		var refreshDiv = $("<div></div>");
+		var peakTps = 50;
+		refreshDiv.load(
+			"${req.getContextPath()}/perftest/running/refresh",
+			{"testId": $("#testId").val()},
+			function() {
+				$("#running_time").text(showRunTime(curRunningTime));
+				if (curStatus == true) {
+					$("#lsTable tbody").html(refreshDiv.find("#lsTableItem"));
+					$("#asTable tbody").html(refreshDiv.find("#asTableItem"));
+		
+					$("#process_data").text(curRunningProcesses);
+					$("#thread_data").text(curRunningThreads);
+					$("#running_count").text(curRunningCount);
+					var agentStatusString = "";
+					for ( var i = 0; i < curAgentPerfStates.length; i++) {
+						var eachAgent = curAgentPerfStates[i];
+						if (agentPerfStates[eachAgent.agent] === undefined) {
+							agentPerfStates[eachAgent.agent] = {"cpu" : {}, "mem" : {}};
+						}
+						agentPerfStates[eachAgent.agent].cpu = eachAgent.cpu;
+						agentPerfStates[eachAgent.agent].mem = eachAgent.mem;
+						// Use sparkle line...     
+						agentStatusString = curAgentPerfStates[i].agent + " CPU - "
+							+ curAgentPerfStates[i].cpu + "%   MEM - "
+							+ curAgentPerfStates[i].mem + "%";
+					}
+					$("#agent_status").html(agentStatusString);
+					peakTps = curPeakTps;
+					test_tps_data.enQueue(curTps);
+				} else {
+					if ($('#runningContent_tab:hidden')[0]) {
+						window.clearInterval(objTimer);
+						return;
+					} else {
+						test_tps_data.enQueue(0);
+					}
 				}
-				agentPerfStates[eachAgent.agent].cpu = eachAgent.cpu;
-				agentPerfStates[eachAgent.agent].mem = eachAgent.mem;
-				// Use sparkle line...     
-				agentStatusString = agentStatusString
-						+ "<li>" + curAgentPerfStates[i].agent + " CPU - "
-						+ curAgentPerfStates[i].cpu + "%   MEM - "
-						+ curAgentPerfStates[i].mem + "%</li>";
+		
+				if (test_tps_data.getSize() > 60) {
+					test_tps_data.deQueue();
+				}
+		
+				showChart('runningTps', test_tps_data.aElement, peakTps);
 			}
-			agentStatusString += "</ul>"; 
-			$("#agent_status").html(agentStatusString);
-			peakTps = curPeakTps;
-			test_tps_data.enQueue(curTps);
+		);
+	}
+	
+	function showRunTime(s) {
+		if (s < 60) {
+			return "" + s + "s";
+		}
+		if (s < 3600) {
+			return "" + parseInt(s / 60) + "m " + (s % 60) + "s";
+		}
+		if (s < 86400) {
+			return "" + parseInt(s / 3600) + "h " + parseInt(s % 3600 / 60) + "m " + (s % 3600 % 60) + "s";
+		}
+	
+		return "" + parseInt(s / 86400) + "d " + parseInt(s % 86400 / 3600) + "h " + parseInt(s % 86400 % 3600 / 60) + "m " + (s % 86400 % 3600 % 60) + "s";
+	}
+	
+	function showChart(containerId, data, peakTps) {
+		if (jqplotObj) {
+			replotChart(jqplotObj, data, peakTps);
 		} else {
-			if ($('#runningContent_tab:hidden')[0]) {
-				window.clearInterval(objTimer);
-				return;
-			} else {
-				test_tps_data.enQueue(0);
-			}
+			jqplotObj = drawChart('TPS', containerId, data);
 		}
-
-		if (test_tps_data.getSize() > 60) {
-			test_tps_data.deQueue();
-		}
-
-		showChart('runningTps', test_tps_data.aElement, peakTps);
-	});
-}
-
-function showRunTime(s) {
-	if (s < 60) {
-		return "" + s + "s";
 	}
-	if (s < 3600) {
-		return "" + parseInt(s / 60) + "m " + (s % 60) + "s";
+	
+	function stopTests(ids) {
+		$.ajax({
+	  		url: "${req.getContextPath()}/perftest/stopTests",
+			type: "POST",
+	  		data: {"ids":ids},
+			dataType:'json',
+	    	success: function(res) {
+	    		if (res.success) {
+		    		showSuccessMsg("<@spring.message "perfTest.table.message.success.stop"/>");
+	    		} else {
+		    		showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>:" + res.message);
+	    		}
+	    	},
+	    	error: function() {
+	    		showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>!");
+	    	}
+	  	});
 	}
-	if (s < 86400) {
-		return "" + parseInt(s / 3600) + "h " + parseInt(s % 3600 / 60) + "m " + (s % 3600 % 60) + "s";
-	}
-
-	return "" + parseInt(s / 86400) + "d " + parseInt(s % 86400 / 3600) + "h " + parseInt(s % 86400 % 3600 / 60) + "m " + (s % 86400 % 3600 % 60) + "s";
-}
-
-function showChart(containerId, data, peakTps) {
-	if (jqplotObj) {
-		replotChart(jqplotObj, data, peakTps);
-	} else {
-		jqplotObj = drawChart('TPS', containerId, data);
-	}
-}
-
-function stopTests(ids) {
-	$.ajax({
-  		url: "${req.getContextPath()}/perftest/stopTests",
-		type: "POST",
-  		data: {"ids":ids},
-		dataType:'json',
-    	success: function(res) {
-    		if (res.success) {
-	    		showSuccessMsg("<@spring.message "perfTest.table.message.success.stop"/>");
-    		} else {
-	    		showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>:" + res.message);
-    		}
-    	},
-    	error: function() {
-    		showErrorMsg("<@spring.message "perfTest.table.message.error.stop"/>!");
-    	}
-  	});
-}
-
-$(document).ready(function() {
-	$("#stopTestButton").click(function() {
-		var id = $(this).attr("sid");
-		bootbox.confirm("<@spring.message "perfTest.table.message.confirm.stop"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
-			if (result) {
-				stopTests(id);
-			}
+	
+	$(document).ready(function() {
+		$("#stopTestButton").click(function() {
+			var id = $(this).attr("sid");
+			bootbox.confirm("<@spring.message "perfTest.table.message.confirm.stop"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
+				if (result) {
+					stopTests(id);
+				}
+			});
 		});
 	});
-});
-
 </script>
