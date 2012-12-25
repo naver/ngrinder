@@ -95,9 +95,11 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		agentManagerService.stopAgent(0L);
 		agentManagerService.requestShareAgentSystemDataModel(0L);
 		agentManagerService.getAgentSystemDataModel("127.0.0.1", "127.0.0.1");
-		agentManagerService.addAgentMonitoringTarget(new AgentControllerIdentityImplementation("127.0.0.1",
-				"127.0.0.1"));
-		agentManagerService.stopAgent(new AgentControllerIdentityImplementation("127.0.0.1", "127.0.0.1"));
+		AgentControllerIdentityImplementation monitor = new AgentControllerIdentityImplementation("testAgent",
+				"127.0.0.1");
+		monitor.setRegion(spiedConfig.getRegion());
+		agentManagerService.addAgentMonitoringTarget(monitor);
+		agentManagerService.stopAgent(new AgentControllerIdentityImplementation("testAgent", "127.0.0.1"));
 		
 		agentManagerService.collectAgentSystemData();
 	}
