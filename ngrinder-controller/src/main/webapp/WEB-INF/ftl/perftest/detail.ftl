@@ -501,9 +501,6 @@ function addValidation() {
 				digits: true,
 				range: [1, ${(maxVuserPerAgent)}]
 			},
-	        scriptName: {
-	        	required:true
-	        },
 			duration : {
 				max:${maxRunHour}*3600000,
 				min:0
@@ -859,12 +856,14 @@ function validateForm() {
 			}
 		});		
 	} else {
-		result = (!$("#testContentForm").valid());
+		result = $("#testContentForm").valid();
 	}
 	if (result == false) {
 		$("#testContent_tab a").tab('show');
-		return false;
-	} 
+		
+	}
+	
+	return result;
 }
 
 function buildTagString() {
