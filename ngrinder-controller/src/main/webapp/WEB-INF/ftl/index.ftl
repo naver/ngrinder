@@ -25,7 +25,7 @@
 	<div class="container">
 		<div class="hero-unit"/>	
 			<form class="form-inline" name="quickStart" id="quickStart" action="${req.getContextPath()}/perftest/quickStart" method="POST">
-				<div class="quickStart" data-original-title="<@spring.message "home.tip.url.title"/>" data-content="<@spring.message "home.tip.url.content"/>" rel="popover">
+				<div class="quickStart" data-original-title="<@spring.message "home.tip.url.title"/>" data-content="<@spring.message "home.tip.url.content"/>" data-placement="bottom" rel="popover">
 					<input type="text" name="url" id="url" class="span7 url required" placeholder="<@spring.message "home.placeholder.url"/>"/> 
 					<button id="startTestBtn" class="btn btn-primary"  type="submit"><@spring.message "home.button.startTest"/></button>
 				</div>
@@ -102,31 +102,22 @@
 			  	</div>
 			</div>
 		</div>
-		<script>
-			$(document).ready(function(){
-		        $("div.quickStart").popover(
-		          	{
-		          		placement:"bottom",
-		           		trigger:"manual",
-		           		animation:false
-		           	}
-		        );
-			
-		        $("form#quickStart").validate({
-		            errorPlacement: function(error, element) {
-		            	$("div.quickStart").popover("show");
-			        }
-			    });
-			   	
-			    $("#url").change(function() {
-			    	var valid = $("form#quickStart").valid();
-			    	if (valid == true) {
-			    		$("div.quickStart").popover("hide");
-			    	}
-			    });
-		    });
-		</script>
 		<#include "common/copyright.ftl">
 	</div>
+	<script>
+		$(document).ready(function(){
+	        $("#quickStart").validate({
+	            errorPlacement: function(error, element) {
+	            	$("div.quickStart").popover("show");
+		        }
+		    });
+		   	
+		    $("#url").change(function() {
+		    	if ($(this).valid()) {
+		    		$("div.quickStart").popover("hide");
+		    	}
+		    });
+	    });
+	</script>
 	</body>
 </html>

@@ -501,15 +501,17 @@ function addValidation() {
 				digits: true,
 				range: [1, ${(maxVuserPerAgent)}]
 			},
-			duration : {
-				max:${maxRunHour}*3600000,
-				min:0
+			scriptName: {
+	        	required: true
+	        },
+			duration: {
+				max: ${maxRunHour}*3600000,
+				min: 0
 			},
-			
-			ignoreSampleCount : {
-				required : false,
+			ignoreSampleCount: {
+				required: false,
 				digits: true,
-				min:0
+				min: 0
 			},
 			<#if securityMode?? && securityMode == true>
 			targetHosts: {
@@ -534,10 +536,10 @@ function addValidation() {
 				digits: true,
 				min: 1
 			},				
-			runCount : {
+			runCount: {
 				digits: true,
-				max:${maxRunCount},
-				min:0
+				max: ${maxRunCount},
+				min: 0
 			}
 		},
 	    messages: { 
