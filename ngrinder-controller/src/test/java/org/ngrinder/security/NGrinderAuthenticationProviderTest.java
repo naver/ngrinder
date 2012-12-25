@@ -22,18 +22,20 @@
  */
 package org.ngrinder.security;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 /**
  * Class description.
@@ -48,6 +50,10 @@ public class NGrinderAuthenticationProviderTest extends AbstractNGrinderTransact
 	
 	@Autowired
 	private NGrinderUserDetailsService userDetailService;
+
+	@Autowired
+	@Qualifier("shaPasswordEncoder")
+	private PasswordEncoder passwordEncoder;
 	
 	@Test
 	public void testAdditionalAuthenticationChecks() {
@@ -67,5 +73,16 @@ public class NGrinderAuthenticationProviderTest extends AbstractNGrinderTransact
 
 		token = new UsernamePasswordAuthenticationToken("TEST_USER", "123");
 		provider.additionalAuthenticationChecks(user, token);
+	}
+	
+	@Test
+	public void testSetPasswordEncoder() {
+		org.springframework.security.authentication.encoding.PasswordEncoder enc1 = new PlaintextPasswordEncoder();
+		provider.setPasswordEncoder(enc1);
+
+		org.springframework.security.crypto.password.PasswordEncoder enc2 = new StandardPasswordEncoder();
+		provider.setPasswordEncoder(enc2);
+		
+		provider.setPasswordEncoder(passwordEncoder);
 	}
 }
