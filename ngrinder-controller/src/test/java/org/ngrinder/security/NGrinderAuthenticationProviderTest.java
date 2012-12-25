@@ -22,13 +22,20 @@
  */
 package org.ngrinder.security;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.encoding.PasswordEncoder;
+import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.StandardPasswordEncoder;
 
 /**
  * Class description.
@@ -43,11 +50,39 @@ public class NGrinderAuthenticationProviderTest extends AbstractNGrinderTransact
 	
 	@Autowired
 	private NGrinderUserDetailsService userDetailService;
+
+	@Autowired
+	@Qualifier("shaPasswordEncoder")
+	private PasswordEncoder passwordEncoder;
 	
 	@Test
 	public void testAdditionalAuthenticationChecks() {
 		UserDetails user = userDetailService.loadUserByUsername(getTestUser().getUserId());
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		provider.additionalAuthenticationChecks(user, (UsernamePasswordAuthenticationToken)auth);
+		
+		//remove authentication temporally
+		SecurityContextImpl context = new SecurityContextImpl();
+		SecurityContextHolder.setContext(context);
+
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("admin", null);
+		try {
+			provider.additionalAuthenticationChecks(user, token);
+			assertTrue(false);
+		} catch (BadCredentialsException e) {
+			assertTrue(true);
+		}
+
+		token = new UsernamePasswordAuthenticationToken("TEST_USER", "123");
+		provider.additionalAuthenticationChecks(user, token);
+	}
+	
+	@Test
+	public void testSetPasswordEncoder() {
+		org.springframework.security.authentication.encoding.PasswordEncoder enc1 = new PlaintextPasswordEncoder();
+		provider.setPasswordEncoder(enc1);
+
+		org.springframework.security.crypto.password.PasswordEncoder enc2 = new StandardPasswordEncoder();
+		provider.setPasswordEncoder(enc2);
+		
+		provider.setPasswordEncoder(passwordEncoder);
 	}
 }

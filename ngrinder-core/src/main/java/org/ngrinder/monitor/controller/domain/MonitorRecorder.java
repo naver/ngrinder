@@ -13,7 +13,6 @@
  */
 package org.ngrinder.monitor.controller.domain;
 
-import org.ngrinder.monitor.share.domain.SystemInfo;
 
 /**
  * 

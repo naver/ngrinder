@@ -24,7 +24,6 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map.Entry;
 
 import net.grinder.AgentControllerDaemon;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
@@ -32,7 +31,6 @@ import net.grinder.util.NetworkUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.SystemUtils;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 import org.ngrinder.common.util.ReflectionUtil;
@@ -57,8 +55,6 @@ public class NGrinderStarter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(NGrinderStarter.class);
 
-	private boolean localAttachmentSupported;
-
 	private AgentConfig agentConfig;
 
 	private AgentControllerDaemon agentController;
@@ -67,25 +63,16 @@ public class NGrinderStarter {
 	 * Constructor.
 	 */
 	public NGrinderStarter() {
-		try {
-			agentConfig = new AgentConfig();
-			agentConfig.init();
+		agentConfig = new AgentConfig();
+		agentConfig.init();
 
-			// Configure log.
-			Boolean verboseMode = agentConfig.getAgentProperties().getPropertyBoolean("verbose", false);
-			File logDirectory = agentConfig.getHome().getLogDirectory();
-			configureLogging(verboseMode, logDirectory);
+		// Configure log.
+		Boolean verboseMode = agentConfig.getAgentProperties().getPropertyBoolean("verbose", false);
+		File logDirectory = agentConfig.getHome().getLogDirectory();
+		configureLogging(verboseMode, logDirectory);
 
-			addClassPath();
-			addLibarayPath();
-
-			Class.forName("com.sun.tools.attach.VirtualMachine");
-			Class.forName("sun.management.ConnectorAddressLink");
-			localAttachmentSupported = true;
-		} catch (ClassNotFoundException x) {
-			LOG.error("Local attachement is not supported", x);
-			localAttachmentSupported = false;
-		}
+		addClassPath();
+		addLibarayPath();
 	}
 
 	/*
@@ -112,7 +99,6 @@ public class NGrinderStarter {
 		LOG.info("**************************");
 		LOG.info("* Start nGrinder Monitor *");
 		LOG.info("**************************");
-		LOG.info("* Local JVM link support :{}", localAttachmentSupported);
 		LOG.info("* Colllect SYSTEM data. **");
 
 		MonitorConstants.init(agentConfig);
@@ -168,58 +154,6 @@ public class NGrinderStarter {
 		agentController.shutdown();
 	}
 
-	/**
-	 * Do best to find tools.jar path.
-	 * 
-	 * <ol>
-	 * <li>First try to resolve JAVA_HOME</li>
-	 * <li>If it's not defined, try to get java.home system property</li>
-	 * <li>Try to find the ${java.home}/lib/tools.jar</li>
-	 * <li>Try to find the ${java.home}/../lib/tools.jar</li>
-	 * <li>Try to find the ${java.home}/../{any_subpath}/lib/tools.jar</li>
-	 * </ol>
-	 * 
-	 * @return found tools.jar path.
-	 */
-	public URL findToolsJarPath() {
-		// In OSX, tools.jar should be classes.jar
-		String toolsJar = SystemUtils.IS_OS_MAC_OSX ? "Classes/classes.jar" : "lib/tools.jar";
-		try {
-			for (Entry<Object, Object> each : System.getProperties().entrySet()) {
-				LOG.trace("{}={}", each.getKey(), each.getValue());
-			}
-			String javaHomePath = System.getenv().get("JAVA_HOME");
-			if (StringUtils.isBlank(javaHomePath)) {
-				LOG.warn("JAVA_HOME is not set. NGrinder is trying to find the JAVA_HOME programically");
-				javaHomePath = System.getProperty("java.home");
-			}
-
-			File javaHome = new File(javaHomePath);
-			File toolsJarPath = new File(javaHome, toolsJar);
-			if (toolsJarPath.exists()) {
-				return toolsJarPath.toURI().toURL();
-			}
-			File parentFile = javaHome.getParentFile();
-			if (parentFile != null) {
-				toolsJarPath = new File(parentFile, toolsJar);
-				if (toolsJarPath.exists()) {
-					return toolsJarPath.toURI().toURL();
-				}
-				Collection<File> fileList = FileUtils.listFiles(parentFile, null, false);
-				for (File eachCandidate : fileList) {
-					toolsJarPath = new File(eachCandidate, toolsJar);
-					if (toolsJarPath.exists()) {
-						return toolsJarPath.toURI().toURL();
-					}
-				}
-			}
-		} catch (MalformedURLException e) {
-			LOG.error("Error while patching tools.jar file. Please set JAVA_HOME env home correctly", e);
-		}
-		printHelpAndExit("tools.jar path is not found. Please set up JAVA_HOME env var to JDK(not JRE)");
-		return null;
-	}
-
 	private void addLibarayPath() {
 		String property = StringUtils.trimToEmpty(System.getProperty("java.library.path"));
 		System.setProperty("java.library.path",
@@ -232,10 +166,10 @@ public class NGrinderStarter {
 	 */
 	protected void addClassPath() {
 		URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-		URL toolsJarPath = findToolsJarPath();
-		LOG.info("tools.jar is found in {}", checkNotNull(toolsJarPath).toString());
+		//URL toolsJarPath = findToolsJarPath();
+		//LOG.info("tools.jar is found in {}", checkNotNull(toolsJarPath).toString());
 
-		ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { toolsJarPath });
+		//ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { toolsJarPath });
 
 		List<String> libString = new ArrayList<String>();
 		File libFolder = new File(".", "lib").getAbsoluteFile();
