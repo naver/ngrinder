@@ -133,7 +133,7 @@
 							</td>
 							<td class="center">
 								<#if script.fileType != "dir">
-									<a href="javascript:void(0);"><i class="icon-download-alt script-download" spath="${script.path}" sname="${script.fileName}"></i>
+									<a href="javascript:void(0);"><i class="icon-download-alt script-download" spath="${script.path}"></i>
 									</a>
 								</#if>
 							</td>
@@ -160,11 +160,9 @@
 		$(document).ready(function() {
 			$("#nav_script").addClass("active");
 			
-			$('form input').hover(function () {
+			$('form input').hover(function () { // for input element in modals.
 	        	$(this).popover('show');
 	      	});
-			
-			
 						
 			$("#deleteBtn").click(function() {
 				var list = $("td input:checked");
@@ -199,8 +197,7 @@
 			enableChkboxSelectAll("scriptTable");
 			
 			$("i.script-download").on('click', function() {
-				var $elem = $(this);
-				window.location  = "${req.getContextPath()}/script/download/" + $elem.attr("spath");
+				window.location  = "${req.getContextPath()}/script/download/" + $(this).attr("spath");
 			});
 
 			<#if files?has_content>

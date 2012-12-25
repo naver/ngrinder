@@ -12,7 +12,12 @@
 		<div class="page-header pageHeader">
 			<h3><@spring.message "navigator.dropdown.userManagement"/></h3>
 		</div>
-		<#include "roleSelector.ftl">
+		<select id="roles" class="pull-right" style="margin-top:-55px" name="roles">
+			<option value="all" <#if listPage?exists && !roleName?exists>selected</#if>"><@spring.message "user.left.all"/></option>
+			<#list roleSet as role> 
+				<option value="${role.fullName}" <#if roleName?exists && role.fullName == roleName>selected</#if>>${role.fullName}</option>
+			</#list>
+		</select>
 		<form id="userListForm" action="${req.getContextPath()}/user/list" method="POST">
 			<div class="well form-inline searchBar">
 			 
@@ -82,8 +87,17 @@
 
 	<script type="text/javascript">
 		$(document).ready(function(){
-			$("#search_user").on('click', function() {
+			$("#search_user").click(function() {
 				$("#userListForm").submit();
+			});
+			
+			$("#roles").change(function() {
+				var selectedValue = $(this).val();
+				var destUrl = "${req.getContextPath()}/user/list";
+				if (selectedValue != "all") {
+					destUrl = destUrl + "?roleName=" + selectedValue;
+				}
+				window.location.href=destUrl;
 			});
 			
 		    <#if userList?has_content>
@@ -125,7 +139,7 @@
 				checkedUserId.push($elem.val());
 			});
 			
-			deleteUsers(checkedUserId.join(","), checkedUserNm.join(","));	
+			deleteUsers(checkedUserId.join(","), checkedUserNm.join(", "));	
 		}
 		
 		function deleteUsers(ids, names) {

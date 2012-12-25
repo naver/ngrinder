@@ -860,7 +860,6 @@ function validateForm() {
 	}
 	if (result == false) {
 		$("#testContent_tab a").tab('show');
-		
 	}
 	
 	return result;
