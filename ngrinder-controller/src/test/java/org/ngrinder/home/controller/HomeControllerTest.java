@@ -15,12 +15,14 @@ package org.ngrinder.home.controller;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
+import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -33,6 +35,9 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private HomeController homeController;
+
+	@Autowired
+	private RegionService regionService;
 
 	@Test
 	public void testHome() {
@@ -58,7 +63,7 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 		MockHttpServletResponse resq = new MockHttpServletResponse();
 		String viewName = homeController.healthcheck(resq);
 		homeController.healthcheckSlowly(500, resq);
-		assertThat(viewName, is("redirect:/"));
+		assertTrue(viewName.startsWith(regionService.getCurrentRegion()));
 	}
 
 	@Test
