@@ -32,6 +32,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.security.authentication.encoding.PlaintextPasswordEncoder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -60,6 +61,7 @@ public class NGrinderAuthenticationProviderTest extends AbstractNGrinderTransact
 		UserDetails user = userDetailService.loadUserByUsername(getTestUser().getUserId());
 		
 		//remove authentication temporally
+		Authentication oriAuth = SecurityContextHolder.getContext().getAuthentication();
 		SecurityContextImpl context = new SecurityContextImpl();
 		SecurityContextHolder.setContext(context);
 
@@ -73,6 +75,8 @@ public class NGrinderAuthenticationProviderTest extends AbstractNGrinderTransact
 
 		token = new UsernamePasswordAuthenticationToken("TEST_USER", "123");
 		provider.additionalAuthenticationChecks(user, token);
+		
+		context.setAuthentication(oriAuth);
 	}
 	
 	@Test

@@ -98,6 +98,8 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		agentManagerService.addAgentMonitoringTarget(new AgentControllerIdentityImplementation("127.0.0.1",
 				"127.0.0.1"));
 		agentManagerService.stopAgent(new AgentControllerIdentityImplementation("127.0.0.1", "127.0.0.1"));
+		
+		agentManagerService.collectAgentSystemData();
 	}
 
 	@Test

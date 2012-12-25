@@ -68,4 +68,11 @@ public class NetworkUtilTest {
 		NonLoopbackMethod.invoke(networkClas, true,false);
 		
 	}
+	   
+		@Test
+		public void testLocalHostNameByConnecting() {
+			String localHostAddress = NetworkUtil.getLocalHostName("www.baidu.com", 80);
+			System.out.println("NetworkUtil.getLocalHostName:" + localHostAddress);
+			assertThat(localHostAddress, notNullValue());			
+		}
 }

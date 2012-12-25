@@ -51,7 +51,7 @@ public abstract class NetworkUtil {
 		} catch (UnknownHostException e) {
 			LOGGER.error("Error while get localhost address", e);
 		}
-		if (addr == null && !"127.0.0.1".equals(addr)) {
+		if (addr != null && !"127.0.0.1".equals(addr)) {
 			return addr;
 		}
 		return getLocalHostAddress("www.baidu.com", 80);
