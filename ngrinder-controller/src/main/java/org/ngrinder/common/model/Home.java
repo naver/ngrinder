@@ -92,7 +92,9 @@ public class Home implements NGrinderConstants {
 				if (!(new File(directory, file.getName()).exists())) {
 					FileUtils.copyFileToDirectory(file, directory);
 				} else {
-					FileUtils.copyFile(file, new File(directory, file.getName() + "_org"));
+					File orgConf = new File(directory, "org_conf");
+					orgConf.mkdirs();
+					FileUtils.copyFile(file, new File(orgConf, file.getName()));
 				}
 			}
 		} catch (IOException e) {
@@ -354,9 +356,9 @@ public class Home implements NGrinderConstants {
 	}
 
 	/**
-	 * Get download directory.
+	 * Get controller share directory.
 	 * 
-	 * @return download directory
+	 * @return controller share directory
 	 */
 	public File getControllerShareDirectory() {
 		File subFile = getSubFile(SHARE_PATH);
