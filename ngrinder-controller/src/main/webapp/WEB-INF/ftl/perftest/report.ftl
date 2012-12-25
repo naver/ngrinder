@@ -180,17 +180,18 @@
 		        getPerformanceData();
 		        changActiveLink($(this));
 		    });
+		    
 		    $("a.targetMontor").click(function() {
                 $("#performanceDiv").hide();
                 $("#monitorDiv").show();
                 var $elem = $(this);
                 getMonitorData($elem.attr("ip"), false);
-                changActiveLink($(this));
+                changActiveLink($elem);
             });
 
             $("#downloadReportData").click(function() {
-                var url = "${req.getContextPath()}/perftest/downloadReportData?testId=" + $("#testId").val();
-                document.forms.downloadForm.action = url;
+                document.forms.downloadForm.action = 
+                	"${req.getContextPath()}/perftest/downloadReportData?testId=" + $("#testId").val();
                 document.forms.downloadForm.submit();
             });
 			
