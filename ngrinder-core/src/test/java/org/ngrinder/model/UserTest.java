@@ -41,6 +41,10 @@ public class UserTest {
 		assertTrue(user2.validate());
 		assertTrue(user2.getRole() == null);
 
+		@SuppressWarnings("deprecation")
+		User user3 = new User("Uid1", "name", "pwd1", null);
+		assertTrue(!user3.validate());
+
 	}
 
 	@Test
