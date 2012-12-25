@@ -75,6 +75,13 @@ public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 		addTags = tagService.addTags(getTestUser(), new String[] { "HELLO", "world" });
 		assertThat(addTags.size(), is(2));
 		assertThat(tagRepository.findAll().size(), is(3));
+		
+		addTags = tagService.addTags(getTestUser(), new String[] {});
+		assertThat(tagRepository.findAll().size(), is(3));
+		
+
+		tagService.deleteTags(getTestUser());
+		assertThat(tagRepository.findAll().size(), is(0));
 	}
 
 	@Test
@@ -85,6 +92,8 @@ public class TagServiceTest extends AbstractPerfTestTransactionalTest {
 		newPerfTest.setTags(tagService.addTags(getTestUser(), new String[] { "HELLO", "WORLD" }));
 		PerfTest createPerfTest = createPerfTest(newPerfTest);
 		PerfTest perfTestWithTag = perfTestService.getPerfTestWithTag(createPerfTest.getId());
+		List<Tag> listTags = tagService.getAllTags(getTestUser(), "H");
+		assertThat(listTags.size(), is(1));
 		assertThat(tagRepository.count(hasPerfTest()), is(1L));
 		assertThat(perfTestWithTag.getTags().size(), is(2));
 	}
