@@ -147,20 +147,17 @@
 										<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}">${test.scriptName}</a>
 									</#if>
 								</td>
-		            			<td class="ellipsis" data-original-title="<@spring.message "perfTest.table.modifier"/>" 
-		            				data-content="<@spring.message "perfTest.table.creator"/> : ${test.createdUser.userName}&lt;br&gt; <@spring.message "perfTest.table.modifier"/> : ${test.lastModifiedUser.userName}">${test.lastModifiedUser.userName}</td>
-								<#if clustered>
-									<td class="ellipsis" title="<@spring.message "agent.table.region"/>" data-content='<#if test.region?has_content><@spring.message "${test.region}"/></#if>'> <#if test.region?has_content><@spring.message "${test.region}"/></#if> </td>
-								</#if>
+		            			<td class="ellipsis" data-original-title="<@spring.message "perfTest.table.modifier.oneline"/>" 
+		            				data-content="<@spring.message "perfTest.table.creator"/> : ${test.createdUser.userName}&lt;br&gt; <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName}">${test.lastModifiedUser.userName}
+		            			</td>
+							<#if clustered>
+								<td class="ellipsis" title="<@spring.message "agent.table.region"/>" data-content='<#if test.region?has_content><@spring.message "${test.region}"/></#if>'> <#if test.region?has_content><@spring.message "${test.region}"/></#if> 
+								</td>
+							</#if>
 								<td>
 									<#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if>
 								</td>
-								<td
-									<#if test.threshold == "D">
-										>${(test.durationStr)!}
-									<#else>
-										title="<@spring.message "perfTest.configuration.runCount"/>">${test.runCount}
-									</#if>
+								<td	<#if test.threshold == "D">	>${(test.durationStr)!}<#else> title="<@spring.message "perfTest.configuration.runCount"/>" >${test.runCount}</#if>
 								</td>
 								<td><#if test.tps??>${(test.tps)?string("0.#")}</#if></td>  
 								<td><#if test.meanTestTime??>${(test.meanTestTime)?string("0.##")}</#if></td>

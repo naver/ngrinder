@@ -84,7 +84,7 @@
                    </tr>
                    <tr>
                        <th>TPS</th>
-                       <td><strong><#if test.tps??>Total ${(test.tps)?string("0.#")}</#if></strong></td>
+                       <td><strong><#if test.tps??>${(test.tps)?string("0.#")}</#if></strong></td>
                    </tr>
                    <tr>
                        <th><@spring.message "perfTest.report.meantime"/></th>
@@ -92,7 +92,7 @@
                        
                    </tr>
                    <tr>
-                       <th>Peak TPS</th> 
+                       <th><@spring.message "perfTest.report.peakTPS"/></th> 
                        <td><strong>${test.peakTps!""}</strong></td>
                    </tr>
                    <tr>
