@@ -144,5 +144,5 @@ Copyright and license
       * https://github.com/nhnopensource/ngrinder/tree/master/license
       
       
-nGrinder includes the following softwares and libraries as follows. See the LICENCE folder LICENCE for the license and copyright details for each.
+nGrinder includes the following software and libraries as follows. See the LICENCE folder for the license and copyright details for each.
 * https://github.com/nhnopensource/ngrinder/tree/master/license
