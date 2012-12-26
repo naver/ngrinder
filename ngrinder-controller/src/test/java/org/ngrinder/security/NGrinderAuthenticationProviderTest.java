@@ -22,10 +22,14 @@
  */
 package org.ngrinder.security;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.model.Role;
+import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -88,5 +92,17 @@ public class NGrinderAuthenticationProviderTest extends AbstractNGrinderTransact
 		provider.setPasswordEncoder(enc2);
 		
 		provider.setPasswordEncoder(passwordEncoder);
+	}
+	
+	@Test
+	public void testAddNewUserIntoLocal() {
+		SecuredUser secUser = new SecuredUser(getTestUser(), null);
+		provider.addNewUserIntoLocal(secUser);
+		assertThat(secUser.getUser(), is(getTestUser()));
+		
+		User tmpUser = new User("tmpUserId", "tmpName", "123", "test.nhn.com", Role.USER);
+		SecuredUser tmpSecUser = new SecuredUser(tmpUser, null);
+		provider.addNewUserIntoLocal(tmpSecUser);
+		assertThat(tmpSecUser.getUser(), is(tmpUser));
 	}
 }

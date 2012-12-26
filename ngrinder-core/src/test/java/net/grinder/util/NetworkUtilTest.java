@@ -43,10 +43,10 @@ public class NetworkUtilTest {
 	@Test
 	public void testLocalHostAddressByConnecting() {
 
-		String localHostAddress = NetworkUtil.getLocalHostAddress("www.baiduerror.com", 80);
+		String localHostAddress = NetworkUtil.getLocalHostAddress("www.baidu.com", 80);
 		assertThat(localHostAddress, notNullValue());
 		assertThat(localHostAddress, not("127.0.0.1"));
-		localHostAddress = NetworkUtil.getLocalHostAddress("www.invalidaddress", 80);
+		localHostAddress = NetworkUtil.getLocalHostAddress("www.invalidaddresssss", 80);
 		assertThat(localHostAddress, notNullValue());
 		assertThat(localHostAddress, not("127.0.0.1"));
 	}

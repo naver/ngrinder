@@ -47,13 +47,13 @@ public abstract class NetworkUtil {
 		String addr = null;
 		try {
 			addr = InetAddress.getLocalHost().getHostAddress();
-		} catch (UnknownHostException e) {
+		} catch (Exception e) {
 			LOGGER.error("Error while get localhost address", e);
 		}
 		if (addr != null && !"127.0.0.1".equals(addr)) {
 			return addr;
 		}
-		return getLocalHostAddress("www.baidu.com", 80);
+		return getLocalHostAddress("www.google.com", 80);
 	}
 
 	/**
@@ -96,7 +96,7 @@ public abstract class NetworkUtil {
 
 		InetAddress addr = getAddressWithSocket(byConnecting, port);
 		if (addr == null) {
-			addr = getAddressWithSocket("www.google.com", 80);
+			addr = getAddressWithSocket("www.nhnopensource.org", 80);
 		}
 		if (addr == null) {
 			try {
@@ -153,18 +153,23 @@ public abstract class NetworkUtil {
 
 	/**
 	 * Get local host name.
+	 * On some platform, InetAddress.getLocalHost().getHostName() will return "localhost". If the /etc/hosts file is not set properly, it will return
+	 * "localhost" or throw exception. So, at this circumstance, we will get the address by connecting a network address.
 	 * 
 	 * @return local host name
 	 */
 	public static String getLocalHostName() {
+		String hostName = null;
 		try {
-			String hostName = InetAddress.getLocalHost().getHostName();
-			return hostName;
-		} catch (UnknownHostException e) {
+			hostName = InetAddress.getLocalHost().getHostName();
+		} catch (Exception e) {
 			LOGGER.error("Error while get localhost name", e);
-			//get by connecting to server
-			return getLocalHostName("www.nhnopensource.org", 80);
 		}
+		if (hostName != null && !"localhost".equals(hostName)) {
+			return hostName;
+		}
+		return getLocalHostName("www.google.com", 80);
+		
 	}
 
 	/**
