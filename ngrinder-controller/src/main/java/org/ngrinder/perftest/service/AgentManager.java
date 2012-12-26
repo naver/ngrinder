@@ -363,6 +363,10 @@ public class AgentManager implements NGrinderConstants {
 					final GrinderProperties grinderProperties, final Integer agentCount) {
 		final Set<AgentIdentity> allFreeAgents = getAllFreeApprovedAgentsForUser(user);
 		final Set<AgentIdentity> neccessaryAgents = selectAgent(user, allFreeAgents, agentCount);
+		LOGGER.info("{} agents are starting for user {}", agentCount, user.getUserId());
+		for (AgentIdentity each : neccessaryAgents) {
+			LOGGER.info("- Agent {}", each.getName());	
+		}
 		ExecutorService execService = null;
 		try {
 			// Make the agents connect to console.
