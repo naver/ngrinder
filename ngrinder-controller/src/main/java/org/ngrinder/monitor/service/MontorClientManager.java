@@ -71,19 +71,13 @@ public class MontorClientManager implements Runnable {
 		for (Entry<String, MonitorClientSerivce> target : monitorClientsMap.entrySet()) {
 			target.getValue().close();
 		}
+		monitorClientsMap.clear();
 	}
 
 	private String createTargetKey(AgentInfo target) {
 		return target.getIp();
 	}
 
-	/**
-	 * Retrieve the {@link org.ngrinder.monitor.share.domain.SystemInfo} from monitor targets and
-	 * save it into local cache.
-	 */
-	public void retriveData() {
-
-	}
 
 	/**
 	 * Save the {@link org.ngrinder.monitor.share.domain.SystemInfo} into the report path.

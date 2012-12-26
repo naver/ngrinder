@@ -91,6 +91,10 @@ public class Home implements NGrinderConstants {
 			for (File file : from.listFiles()) {
 				if (!(new File(directory, file.getName()).exists())) {
 					FileUtils.copyFileToDirectory(file, directory);
+				} else {
+					File orgConf = new File(directory, "org_conf");
+					orgConf.mkdirs();
+					FileUtils.copyFile(file, new File(orgConf, file.getName()));
 				}
 			}
 		} catch (IOException e) {
@@ -299,7 +303,7 @@ public class Home implements NGrinderConstants {
 	public File getPerfTestDistDirectory(PerfTest perfTest) {
 		return getPerfTestSubDirectory(perfTest, PATH_DIST);
 	}
-	
+
 	/**
 	 * Get the statistics directory for given {@link PerfTest}.
 	 * 
@@ -352,9 +356,9 @@ public class Home implements NGrinderConstants {
 	}
 
 	/**
-	 * Get download directory.
+	 * Get controller share directory.
 	 * 
-	 * @return download directory
+	 * @return controller share directory
 	 */
 	public File getControllerShareDirectory() {
 		File subFile = getSubFile(SHARE_PATH);
@@ -362,6 +366,7 @@ public class Home implements NGrinderConstants {
 		controller.mkdirs();
 		return controller;
 	}
+
 	/**
 	 * Get global log file.
 	 * 

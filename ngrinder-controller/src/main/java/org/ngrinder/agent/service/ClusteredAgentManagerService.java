@@ -20,8 +20,11 @@ import static org.ngrinder.agent.model.ClustedAgentRequest.RequestType.STOP_AGEN
 import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithRegion;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+import static org.ngrinder.common.util.FileUtil.readObjectFromFile;
+import static org.ngrinder.common.util.FileUtil.writeObjectToFile;
 import static org.ngrinder.common.util.TypeConvertUtil.convert;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +41,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.model.ClustedAgentRequest;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.schedule.ScheduledTask;
 import org.ngrinder.model.User;
@@ -70,8 +74,6 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 	private Cache agentRequestCache;
 
-	private Cache agentMonitorCache;
-
 	private Cache agentMonioringTargetsCache;
 
 	@Autowired
@@ -79,6 +81,9 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 	@Autowired
 	private RegionService regionService;
+
+	@Autowired
+	private Config config;
 
 	/**
 	 * Initialize.
@@ -88,7 +93,6 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		agentMonioringTargetsCache = cacheManager.getCache("agent_monitoring_targets");
 		if (getConfig().isCluster()) {
 			agentRequestCache = cacheManager.getCache("agent_request");
-			agentMonitorCache = cacheManager.getCache("agent_monitoring");
 			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
 				@Override
 				public void interruptibleRun() {
@@ -195,6 +199,14 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 						&& agentInfo.getStatus() == agentManager.getAgentState(agentIdentity);
 	}
 
+	public File getAgentPath(String key) {
+		File file = new File(config.getHome().getControllerShareDirectory(), "agents");
+		if (!file.exists()) {
+			file.mkdirs();
+		}
+		return new File(file, key);
+	}
+
 	/**
 	 * Collect agent system data every second.
 	 * 
@@ -206,7 +218,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		for (String each : keysWithExpiryCheck) {
 			ValueWrapper value = agentMonioringTargetsCache.get(each);
 			if (value != null && value.get() != null) {
-				agentMonitorCache.put(each, getAgentManager().getSystemDataModel((AgentIdentity) value.get()));
+				writeObjectToFile(getAgentPath(each), getAgentManager().getSystemDataModel((AgentIdentity) value.get()));
 			}
 		}
 	}
@@ -350,7 +362,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 	/**
 	 * Get agent system data model for the given IP. This method is cluster aware.
-	 *
+	 * 
 	 * @param ip
 	 *            agent ip
 	 * @param name
@@ -360,8 +372,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 	@Override
 	public SystemDataModel getAgentSystemDataModel(String ip, String name) {
-		ValueWrapper valueWrapper = agentMonitorCache.get(createAgentKey(ip, name));
-		return valueWrapper == null ? new SystemDataModel() : (SystemDataModel) valueWrapper.get();
+		return readObjectFromFile(getAgentPath(createAgentKey(ip, name)), new SystemDataModel());
 	}
 
 	/**
