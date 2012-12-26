@@ -7,10 +7,10 @@ We are ACTIVE.
 nGrinder 
 ========
 
-It is the platform of stress tests which enables you to execute script creation, test execution, monitoring, and result report generator simultaneously. The opensource nGrinder offers easy ways to conduct stress tests by eliminating inconveniences and providing integrated environments.
+nGrinder is a platform for stress tests that enables you to execute script creation, test execution, monitoring, and result report generator simultaneously. The open-source nGrinder offers easy ways to conduct stress tests by eliminating inconveniences and providing integrated environments.
 
 
-To get to know what's different from grinder?
+Want to to know what's changed from the orginial grinder platform?
  * Checkout http://www.cubrid.org/wiki_ngrinder/entry/architecture !
 
 To get to know what's different from previous ngrinder 2.0?
@@ -25,77 +25,78 @@ You can find out what nGrinder looks like with screenshot.
 nGrinder consists of two major components. 
 
 nGrinder controller
- * a web application which let performance tester create test script and configure test run
+ * a web application that enables the performance tester to create a test script and configure a test run
 
 nGrinder agent
-* virtual user generator which makes loads.
+* a virtual user generator that creates loads.
 
 Features
 --------
 
 * Use Jython script to create test scenario and generate stress in JVM using multiple agents.
 * Provide web-based interface for project management, monitoring, result management and report management.
-* Run multiple tests concurrently. Assign the preinstalled multiple agents to maximize the agent's utilization.
+* Run multiple tests concurrently. Assign the preinstalled multiple agents to maximize each agent's utilization.
 * Embed Subversion to manage scripts.
-* Enable to monitor the state of agents generating stress and target machines receiving stress
+* Allow to monitor the state of agents generating stress and target machines receiving stress
 * Support Enable to monitor the state of agents generating stress and target machines receiving stress
 
 
 Download
 --------
 
-nGrinder 3.0 Official version is ready to download. It's stable enought to use.
+nGrinder 3.0 Official version is available for download. It's stable enought to use.
 * https://github.com/nhnopensource/ngrinder/downloads
 
 Documentation
 -------------
-You can find the installation guide in the following.
+You can find the installation guide at the following link.
 * http://www.cubrid.org/wiki_ngrinder/entry/installation-guide
 
-You can find the user guide in the following location.
+You can find the user guide at the following location link.
 * http://www.cubrid.org/wiki_ngrinder/entry/user-guide
 
 Road Map
 --------
-nGrinder has the explicit roadmap to be a most effective and efficient performance test tool.
-Check out the our roadmap
+The explicit roadmap of nGrinder enables it to be a most effective and efficient performance test tool.
+Check out our roadmap :
 * http://www.cubrid.org/wiki_ngrinder/entry/road-map
 
 
 Contribution?
 -------------
-nGrinder is welcoming any contribution from users. Please make all pull requests against master branches.
+nGrinder welcomes any contributions from users. Please make all pull requests against master branches.
 * Clone the REPO : 'git clone git://github.com/nhnopensource/ngrinder.git'
 
-You can find out general developer document following location.
+You can find general developer documents at the following link.
  * http://www.cubrid.org/wiki_ngrinder/entry/dev-document
 
 Versioning
 ----------
 
-For transparency and insight into our release cycle, and for striving to maintain backward compatibility, Bootstrap will be maintained under the Semantic Versioning guidelines as much as possible.
+For transparency and insight into our release cycle, and to strive to maintain backward compatibility, Bootstrap will be maintained under the Semantic Versioning guidelines to the greatest extent possible.
 
-Releases will be numbered with the follow format:
+Releases will be numbered in the following format:
 
       `<major>.<minor>.<patch>`
 
-And constructed with the following guidelines:
+Release will be constructed based on the following guidelines:
 
 * Breaking backward compatibility bumps the major (and resets the minor and patch)
-* New additions without breaking backward compatibility bumps the minor (and resets the patch)
-* Bug fixes and misc changes bumps the patch
+* New additions without breaking backward compatibility bump the minor (and reset the patch)
+* Bug fixes and misc. changes bump the patch
 
 
 Q/A and Bug tracker
 -------------------
-Have a bug or enhancement idea? Please create an issue here on GitHub if you want just notify to us!
+Found a bug? Got an idea for an enhancement? Please create an issue here on GitHub so you can notify us!
 * https://github.com/nhnopensource/ngrinder/issues
 
-Our official bug tracker is following. You can monitor our development status.
+Our official bug tracker is at the following link. Check here to monitor our development status.
 * http://jira.cubrid.org/browse/NGRINDER
 
-You can check the our mailing list as well
-* http://ngrinder-dev.642.n7.nabble.com/
+You can join our mailing list as well
+* Dev : http://ngrinder.642.n7.nabble.com/ngrinder-dev-f1.html 
+* User : http://ngrinder.642.n7.nabble.com/ngrinder-user-f50.html
 
 
 
@@ -141,3 +142,7 @@ Copyright and license
       See the folder LICENCE for license and copyright details for each.
       
       * https://github.com/nhnopensource/ngrinder/tree/master/license
+      
+      
+nGrinder includes the following softwares and libraries as follows. See the LICENCE folder LICENCE for the license and copyright details for each.
+* https://github.com/nhnopensource/ngrinder/tree/master/license
