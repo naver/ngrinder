@@ -14,6 +14,8 @@
 package org.ngrinder.agent.service;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
@@ -76,12 +78,12 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		
 		//set clustered cache manager.
 		MockDynamicCacheConfig cacheConfig = new MockDynamicCacheConfig();
-
-		ReflectionTestUtils.setField(cacheConfig, "config", spiedConfig);
+		cacheConfig.setConfig(spiedConfig);
 		cacheManager = cacheConfig.dynamicCacheManager();
 		((EhCacheCacheManager)cacheManager).afterPropertiesSet(); //it will not be called if we create manually
 		ReflectionTestUtils.setField(agentManagerService, "cacheManager", cacheManager);
-		
+		assertThat(cacheConfig.getConfig(), not(nullValue()));
+
 		agentManagerService.init();
 		initialed = true;
 	}
