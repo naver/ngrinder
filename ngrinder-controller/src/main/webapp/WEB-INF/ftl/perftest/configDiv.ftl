@@ -147,11 +147,10 @@
 						<select class="select-item" id="mSelect"></select> : 
 						<select class="select-item" id="sSelect"></select> &nbsp;&nbsp;
 						<code>HH:MM:SS</code>
-						<input type="hidden" id="duration" class="required positiveNumber" name="duration"
-							value="${(test.duration)!60000}">
+						<input type="hidden" id="duration" name="duration" value="${(test.duration)!60000}">
+						<input type="hidden" id="durationHour" name="durationHour" value="0">
 						<div id="durationSlider" class="slider" style="margin-left: 0; width: 255px"></div>
 						<input id="hiddenDurationInput" class="hide" data-step="1">
-
 					</div>
 				</div>
 				<div class="control-group">
