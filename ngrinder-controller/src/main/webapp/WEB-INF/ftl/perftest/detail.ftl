@@ -436,6 +436,10 @@ function initScheduleDate() {
 }
 
 function initDuration() {
+	var durationVal = $("#duration").val();
+	var durationHour = parseInt(durationVal / 3600000) + 1;
+	var durationMaxHour =  durationHour > ${maxRunHour} ? durationHour : ${maxRunHour};
+	
 	var sliderMax = 1000;
 	durationMap[0] = 0;
 	
@@ -457,22 +461,22 @@ function initDuration() {
 		} else {
 			durationMap[i] = durationMap[i - 1] + 60 * 24;
 		}
-		if ((durationMap[i]/60) >= ${maxRunHour}) {
+		if ((durationMap[i]/60) >= durationMaxHour) {
 			 sliderMax = i;
-		     durationMap[i] = (${maxRunHour} - 1) * 60;
+		     durationMap[i] = (durationMaxHour - 1) * 60;
 		     break;
 		}
 	}
 	$("#hiddenDurationInput").attr("data-slider", "#durationSlider");
 	$("#hiddenDurationInput").slider({min:1, max:sliderMax});
 	for ( var i = 0; i <= sliderMax; i++) {
-		if (durationMap[i] * 60000 == $("#duration").val()) {
+		if (durationMap[i] * 60000 == durationVal) {
 			$("#hiddenDurationInput").val(i);
 			break;
 		}
 	}
 	
-	$("#hSelect").append(getOption(${maxRunHour}));
+	$("#hSelect").append(getOption(durationMaxHour));
 	$("#hSelect").change(getDurationMS);
 	
 	$("#mSelect").append(getOption(60));
@@ -501,15 +505,16 @@ function addValidation() {
 				digits: true,
 				range: [1, ${(maxVuserPerAgent)}]
 			},
-			duration : {
-				max:${maxRunHour}*3600000,
-				min:0
+			scriptName: {
+	        	required: true
+	        },
+			durationHour: {
+				max: ${maxRunHour}
 			},
-			
-			ignoreSampleCount : {
-				required : false,
+			ignoreSampleCount: {
+				required: false,
 				digits: true,
-				min:0
+				min: 0
 			},
 			<#if securityMode?? && securityMode == true>
 			targetHosts: {
@@ -534,10 +539,10 @@ function addValidation() {
 				digits: true,
 				min: 1
 			},				
-			runCount : {
+			runCount: {
 				digits: true,
-				max:${maxRunCount},
-				min:0
+				max: ${maxRunCount},
+				min: 0
 			}
 		},
 	    messages: { 
@@ -553,8 +558,8 @@ function addValidation() {
 	        scriptName: {
 	        	required: "<@spring.message "perfTest.warning.script"/>"
 	        },
-	        duration: {
-	        	required: "<@spring.message "perfTest.warning.duration"/>"
+	        durationHour: {
+	        	max: "<@spring.message "perfTest.warning.duration.maxHour"/>"
 	        },
 	        runCount: {
 	        	required: "<@spring.message "perfTest.warning.runCount"/>"
@@ -633,7 +638,7 @@ function bindEvent() {
 			$duration.val(durationMap[this.value] * 60000);
 		}
 		setDuration(); 
-		$duration.valid();
+		$("#durationRadio").click();
 	});
 	
 	$("#saveScheduleBtn").click(function() {		
@@ -721,8 +726,10 @@ function bindEvent() {
 			$runCnt.addClass("positiveNumber");
 			$runCnt.valid();
 
+			var $durationHour = $("#durationHour");
+			$durationHour.val(0);
+			$("#durationHour").valid();
 			var $duration = $("#duration");
-			$duration.removeClass("required");
 			$duration.removeClass("positiveNumber");
 			$duration.valid();
 		}
@@ -730,8 +737,15 @@ function bindEvent() {
 	
 	$("#durationRadio").click(function() {
 		if ($(this).attr("checked") == "checked") {
+			var duration = $("#duration").val();
+			var durationHour = parseInt(duration / 3600000);
+			if (duration > ${maxRunHour} * 3600000) {
+				durationHour += 1;
+			}
+			var $durationHour = $("#durationHour");
+			$durationHour.val(durationHour);
+			$durationHour.valid();
 			var $duration = $("#duration");
-			$duration.addClass("required");
 			$duration.addClass("positiveNumber");
 			$duration.valid();
 			
@@ -806,7 +820,7 @@ function bindEvent() {
 		$("#processAndThreadPanel").toggle();
 	});
 	
-	$("#durationSlider, #hSelect, #mSelect, sSelect").mousedown(function() {
+	$("#hSelect, #mSelect, sSelect").change(function() {
 		$("#durationRadio").click();
 	});
 	

@@ -20,13 +20,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.controller.NGrinderBaseController;
-import org.ngrinder.common.util.FileDownloadUtil;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.region.service.RegionService;
@@ -34,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,15 +40,16 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
 /**
- * agent controller.
+ * agent download controller.
  * 
- * @author Tobi
- * @since 3.0
+ * @author JunHo Yoon
+ * @since 3.1
  */
 @Controller
 @RequestMapping("/agent")
 @PreAuthorize("hasAnyRole('A', 'S')")
 public class AgentManagerController extends NGrinderBaseController {
+
 
 	@Autowired
 	private AgentManagerService agentManagerService;
@@ -162,20 +159,6 @@ public class AgentManagerController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Download agent.
-	 * 
-	 * @param fileName
-	 *            file path of agent
-	 * @param response
-	 *            reponse.
-	 */
-	@RequestMapping(value = "/download/{fileName}")
-	public void downloadAgent(@PathVariable String fileName, HttpServletResponse response) {
-		File ngrinderFile = new File(config.getHome().getDownloadDirectory(), fileName);
-		FileDownloadUtil.downloadFile(response, ngrinderFile);
-	}
-
-	/**
 	 * Get the current system performance info for given ip.
 	 * 
 	 * @param model
@@ -198,5 +181,4 @@ public class AgentManagerController extends NGrinderBaseController {
 		returnMap.put("systemData", agentManagerService.getAgentSystemDataModel(ip, name));
 		return toJson(returnMap);
 	}
-
 }

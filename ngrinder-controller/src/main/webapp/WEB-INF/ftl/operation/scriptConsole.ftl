@@ -32,9 +32,12 @@ Following variables are available.
 
 - applicationContext (org.springframework.context.ApplicationContext)
 - agentManager (org.ngrinder.perftest.service.AgentManager)
+- agentManagerService (org.ngrinder.agent.service.AgentManagerService)
+- regionService (org.ngrinder.region.service.RegionService)
 - consoleManager (org.ngrinder.perftest.service.ConsoleManager)
 - userService (org.ngrinder.user.service.UserService)
 - perfTestService  (org.ngrinder.perftest.service.PerfTestService)
+- tagService (org.ngrinder.perftest.service.TagService)
 - fileEntryService	(org.ngrinder.script.service.FileEntryService)
 - config (org.ngrinder.infra.config.Config)
 - pluginManager (org.ngrinder.infra.plugin.PluginManager)

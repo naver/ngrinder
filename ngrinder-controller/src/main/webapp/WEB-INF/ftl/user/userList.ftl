@@ -39,18 +39,20 @@
 		<table class="table table-striped table-bordered ellipsis" id="userTable">
 			<colgroup>
 				<col width="30">
-				<col width="150">
-				<col width="130">
+				<col width="100">
+				<col width="100">
+				<col width="160"> 
 				<col>
 				<col width="120">
 				<col width="45">
-				<col width="50">
+				<col width="45">
 			</colgroup>
 			<thead>
 				<tr>
 					<th class="noClick"><input type="checkbox" class="checkbox" value=""></th>
 					<th><@spring.message "user.option.name"/></th>
 					<th><@spring.message "user.option.role"/></th>
+					<th><@spring.message "user.option.email"/></th>
 					<th class="noClick"><@spring.message "common.label.description"/></th>
 					<th><@spring.message "user.list.table.date"/></th>
 					<th class="noClick"><@spring.message "user.list.table.edit"/></th>
@@ -63,7 +65,8 @@
 					<td class="center"><input type="checkbox" id="user_info_check"<#if user.userId == "admin">disabled</#if>
 						value="${user.userId}" uname="${user.userName}"/></td>
 					<td><a href="${req.getContextPath()}/user/detail?userId=${user.userId}">${user.userName}</a></td>
-					<td>${user.role}</td>
+					<td class="ellipsis" title="${user.role}">${user.role}</td>
+					<td class="ellipsis">${user.email!""}</td>
 					<td class="ellipsis">${user.description!}</td>
 					<td><#if user.createdDate?has_content> ${user.createdDate?string("yyyy-MM-dd HH:mm")} </#if></td>
 					<td class="center">
@@ -108,7 +111,7 @@
 				"bInfo": false,
 				"iDisplayLength": 10,
 				"aaSorting": [[1, "asc"]],
-				"aoColumns": [{"asSorting": []}, null, null, {"asSorting": []}, null, {"asSorting": []}, {"asSorting": []}],
+				"aoColumns": [{"asSorting": []}, null, null, null, {"asSorting": []}, null, {"asSorting": []}, {"asSorting": []}],
 				"sPaginationType": "bootstrap",
 				"oLanguage": {
 					"oPaginate": {

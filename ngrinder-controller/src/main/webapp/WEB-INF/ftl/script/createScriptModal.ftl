@@ -78,6 +78,9 @@
 					}
 					
 					var urlValue = $("#urlInput");
+					if (urlValue.val() == "Type URL...") {
+						$("#urlInput").val("");
+					}
 					if (!checkEmptyByObj(urlValue)) {
 						if (!urlValue.valid()) {
 							markInput(urlValue, false, "<@spring.message "common.form.validate.format"/>");

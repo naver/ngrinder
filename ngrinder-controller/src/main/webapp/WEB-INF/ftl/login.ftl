@@ -23,9 +23,9 @@
 <body>
 	<div>
 		<script language="javascript">
-				if (top.location.href.indexOf("login") == -1) {
-					top.location = "${req.getContextPath()}/login";
-				}
+			if (top.location.href.indexOf("login") == -1) {
+				top.location.href = "${req.getContextPath()}/login";
+			}
 		</script>	
 		<div class="logo"><img src="${req.getContextPath()}/img/logo_ngrinder_a.png" width="400" height="106" alt="nGrinder"></div>
 		<div class="content">
@@ -69,8 +69,9 @@
 	</div>
 
 	<script language="javascript">
-		$.ajaxSetup({ cache: false });
-		$(function(){
+		$(document).ready(function() {
+			$.ajaxSetup({ cache: false });
+			
 			var language=getCookie("org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE");
 			if (language.indexOf("kr") > -1){
 				$("#native_language").val("kr");
@@ -79,19 +80,11 @@
 			} else {
 				$("#native_language").val("en");
 			}
-			
-			$("#user_timezone").change(function() {
-				if ($("#user_timezone option:selected").val() == "all") {
-					$("#user_timezone").load("${req.getContextPath()}/allTimeZone");
-				}
-			});
-		});
-		
-		
-		$(document).ready(function() {
+						
 			$("#user_timezone").select2({
 				placeholder: "Select a Timezone"
 			});
+			
 			var timezone = jstz.determine();
 			$("#user_timezone").select2("val", timezone.name());
 		});
