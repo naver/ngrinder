@@ -559,7 +559,7 @@ function addValidation() {
 	        	required: "<@spring.message "perfTest.warning.script"/>"
 	        },
 	        durationHour: {
-	        	max: "<@spring.message "perfTest.warning.duration.maxDay"/>"
+	        	max: "<@spring.message "perfTest.warning.duration.maxHour"/>"
 	        },
 	        runCount: {
 	        	required: "<@spring.message "perfTest.warning.runCount"/>"
