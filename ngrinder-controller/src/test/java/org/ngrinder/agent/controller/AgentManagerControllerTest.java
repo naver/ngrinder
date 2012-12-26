@@ -108,10 +108,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		}
 	}
 
-	@Test
-	public void testDownloadAgent() {
-		agentController.downloadAgent("helloworld", null);
-	}
+
 
 	@Test
 	public void testApproveAgent() {

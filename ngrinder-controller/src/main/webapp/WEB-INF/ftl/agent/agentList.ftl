@@ -27,13 +27,13 @@
 				</div>
 			</div>
 			
-			<table class="table table-striped table-bordered" id="agentTable">
+			<table class="table table-striped table-bordered ellipsis" id="agentTable">
 				<colgroup>
 					<col width="30">
 					<col width="150">
-					<col width="100">
+					<col width="60"> 
 					<col width="*">
-					<col width="150">
+					<col width="200">
 					<col width="100">
 					<col width="165">   
 				</colgroup>
@@ -42,7 +42,7 @@
 						<th class="noClick"><input type="checkbox" class="checkbox" value=""></th>
 						<th><@spring.message "agent.table.IPAndDns"/></th>
 						<th class="noClick"><@spring.message "agent.table.port"/></th>
-						<th><@spring.message "agent.table.name"/></th>
+						<th class="ellipsis"><@spring.message "agent.table.name"/></th>
 						<th><@spring.message "agent.table.region"/></th>
 						<th><@spring.message "common.label.status"/></th>
 						<th class="noClick"><@spring.message "agent.table.approve"/></th>
@@ -57,8 +57,8 @@
 							<a href="${req.getContextPath()}/agent/detail?id=${agent.id}" target="_self">${agent.ip}</a>
 						</td>
 						<td>${(agent.port)!}</td>
-						<td class="ellipsis">${(agent.hostName)!}</td>
-						<td>${(agent.region)!}</td>
+						<td class="ellipsis" title="${(agent.hostName)!}">${(agent.hostName)!}</td>
+						<td>${(agent.region)!}</td> 
 						<td>${(agent.status)!}</td>
 						<td>
 							<div class="btn-group" data-toggle="buttons-radio">

@@ -57,7 +57,7 @@
 	<http pattern="/editarea/**" security="none" />
 	<http pattern="/login" security="none" />
 	<!-- used for shared test report page -->
-	<http pattern="/test/report/**" security="none" />
+	<http pattern="/perftest/report/**" security="none" />
 	
 	<!-- accessible from no authorized users -->
 	<http pattern="/check/**" security="none" />
