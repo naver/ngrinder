@@ -274,8 +274,6 @@ public class AgentController implements Agent {
 		FileUtils.deleteQuietly(logFolder);
 	}
 
-	// /////////////////////////////////////////////////////
-
 	private void shutdownConsoleCommunication(ConsoleCommunication consoleCommunication) {
 		sendCurrentState(consoleCommunication);
 		if (consoleCommunication != null) {

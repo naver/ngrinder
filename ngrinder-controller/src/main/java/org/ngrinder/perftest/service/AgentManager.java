@@ -61,7 +61,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class AgentManager implements NGrinderConstants {
 	public static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);
-	private AgentControllerServerDaemon agentControllerServer;
+	private AgentControllerServerDaemon agentControllerServerDaemon;
 	private static final int NUMBER_OF_THREAD = 3;
 	private static final int AGENT_RUN_TIMEOUT_SECOND = 10;
 
@@ -76,10 +76,10 @@ public class AgentManager implements NGrinderConstants {
 	 */
 	@PostConstruct
 	public void init() {
-		agentControllerServer = new AgentControllerServerDaemon(
+		agentControllerServerDaemon = new AgentControllerServerDaemon(
 						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
-		agentControllerServer.start();
-		agentControllerServer.addLogArrivedListener(new LogArrivedListener() {
+		agentControllerServerDaemon.start();
+		agentControllerServerDaemon.addLogArrivedListener(new LogArrivedListener() {
 			@Override
 			public void logArrived(String testId, AgentAddress agentAddress, byte[] logs) {
 				AgentControllerIdentityImplementation agentIdentity = convert(agentAddress.getIdentity());
@@ -105,7 +105,7 @@ public class AgentManager implements NGrinderConstants {
 	 */
 	@PreDestroy
 	public void destroy() {
-		agentControllerServer.shutdown();
+		agentControllerServerDaemon.shutdown();
 	}
 
 	/**
@@ -117,7 +117,7 @@ public class AgentManager implements NGrinderConstants {
 	 * @return port
 	 */
 	public int getAgentConnectingPort(AgentIdentity agentIdentity) {
-		return agentControllerServer.getAgentConnectingPort(agentIdentity);
+		return agentControllerServerDaemon.getAgentConnectingPort(agentIdentity);
 	}
 
 	/**
@@ -128,7 +128,7 @@ public class AgentManager implements NGrinderConstants {
 	 * @return status agent controller status of one agent
 	 */
 	public AgentControllerState getAgentState(AgentIdentity agentIdentity) {
-		return agentControllerServer.getAgentState(agentIdentity);
+		return agentControllerServerDaemon.getAgentState(agentIdentity);
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class AgentManager implements NGrinderConstants {
 	 * @return agents set
 	 */
 	public Set<AgentIdentity> getAllAttachedAgents() {
-		return agentControllerServer.getAllAvailableAgents();
+		return agentControllerServerDaemon.getAllAvailableAgents();
 	}
 
 	/**
@@ -211,7 +211,7 @@ public class AgentManager implements NGrinderConstants {
 	 * @return AgentIndentity set
 	 */
 	public Set<AgentIdentity> getAllFreeAgents() {
-		return agentControllerServer.getAllFreeAgents();
+		return agentControllerServerDaemon.getAllFreeAgents();
 	}
 
 	/**
@@ -231,7 +231,7 @@ public class AgentManager implements NGrinderConstants {
 	 * @return AgentIndentity set
 	 */
 	public Set<AgentIdentity> getAllFreeApprovedAgents() {
-		Set<AgentIdentity> allFreeAgents = agentControllerServer.getAllFreeAgents();
+		Set<AgentIdentity> allFreeAgents = agentControllerServerDaemon.getAllFreeAgents();
 		return filterApprovedAgents(allFreeAgents);
 	}
 
@@ -261,7 +261,7 @@ public class AgentManager implements NGrinderConstants {
 	 * @return AgentIndentity set
 	 */
 	public Set<AgentIdentity> getAllApprovedAgents() {
-		Set<AgentIdentity> allAgents = agentControllerServer.getAllAvailableAgents();
+		Set<AgentIdentity> allAgents = agentControllerServerDaemon.getAllAvailableAgents();
 		return filterApprovedAgents(allAgents);
 	}
 
@@ -344,7 +344,7 @@ public class AgentManager implements NGrinderConstants {
 	 * @return {@link SystemDataModel} instance.
 	 */
 	public SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {
-		return agentControllerServer.getSystemDataModel(agentIdentity);
+		return agentControllerServerDaemon.getSystemDataModel(agentIdentity);
 	}
 
 	/**
@@ -377,7 +377,7 @@ public class AgentManager implements NGrinderConstants {
 				execService.submit(new Runnable() {
 					@Override
 					public void run() {
-						agentControllerServer.startAgent(grinderProperties, eachAgentIdentity);
+						agentControllerServerDaemon.startAgent(grinderProperties, eachAgentIdentity);
 					}
 				});
 			}
@@ -434,7 +434,7 @@ public class AgentManager implements NGrinderConstants {
 	 *            agent identity
 	 */
 	public void stopAgent(AgentIdentity agentIdentity) {
-		agentControllerServer.stopAgent(agentIdentity);
+		agentControllerServerDaemon.stopAgent(agentIdentity);
 	}
 
 	/**
@@ -444,11 +444,11 @@ public class AgentManager implements NGrinderConstants {
 	 *            console port.
 	 */
 	public void stopAgent(int consolePort) {
-		for (AgentIdentity each : agentControllerServer.getAllAvailableAgents()) {
-			int agentConnectingPort = agentControllerServer.getAgentConnectingPort(each);
+		for (AgentIdentity each : agentControllerServerDaemon.getAllAvailableAgents()) {
+			int agentConnectingPort = agentControllerServerDaemon.getAgentConnectingPort(each);
 			if (agentConnectingPort == consolePort
-							&& agentControllerServer.getAgentState(each) == AgentControllerState.BUSY) {
-				agentControllerServer.stopAgent(each);
+							&& agentControllerServerDaemon.getAgentState(each) == AgentControllerState.BUSY) {
+				agentControllerServerDaemon.stopAgent(each);
 			}
 		}
 	}
