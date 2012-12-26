@@ -18,7 +18,8 @@
 				margin-bottom: 5px
 			} 
 		</style> 
-
+		<script type="text/javascript">
+				</script>
 	</head>
 	<body>
 	<#include "common/navigator.ftl">
@@ -26,8 +27,8 @@
 		<div class="hero-unit"/>	
 			<form class="form-inline" name="quickStart" id="quickStart" action="${req.getContextPath()}/perftest/quickStart" method="POST">
 				<div class="quickStart" data-original-title="<@spring.message "home.tip.url.title"/>" data-content="<@spring.message "home.tip.url.content"/>" data-placement="bottom" rel="popover">
-					<input type="text" name="url" id="url" class="span7 url required" placeholder="<@spring.message "home.placeholder.url"/>"/> 
-					<button id="startTestBtn" class="btn btn-primary"  type="submit"><@spring.message "home.button.startTest"/></button>
+					<input type="text" name="url" id="url" class="span7 url_ex required" placeholder="<@spring.message "home.placeholder.url"/>"/> 
+					<button id="startTestBtn" class="btn btn-primary" ><@spring.message "home.button.startTest"/></button>
 				</div>
 			</form>
 		</div>
@@ -106,6 +107,24 @@
 	</div>
 	<script>
 		$(document).ready(function(){
+			$.validator.addMethod('url_ex',
+				    function (value) { 
+				        return /^((https?|ftp):\/\/)?(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i.test(value);
+			}, '');
+			
+			
+			$("#startTestBtn").click(function() {
+				if ($("#url").valid()) {
+					var urlValue = $("#url").val();
+					if (!urlValue.match("^(http|ftp)")) {
+						$("#url").val("http://" + urlValue);
+					}
+					$("#quickStart").submit();
+					return true;
+				}
+				return false;
+			})
+			
 	        $("#quickStart").validate({
 	            errorPlacement: function(error, element) {
 	            	$("div.quickStart").popover("show");
