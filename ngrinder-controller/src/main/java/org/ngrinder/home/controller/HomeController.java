@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
@@ -38,7 +37,6 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
-import org.ngrinder.region.model.RegionInfo;
 import org.ngrinder.region.service.RegionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

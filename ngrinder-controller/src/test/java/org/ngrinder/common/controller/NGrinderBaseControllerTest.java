@@ -44,7 +44,7 @@ public class NGrinderBaseControllerTest extends AbstractPerfTestTransactionalTes
 	@Test
 	public void testGetMessages() {
 		String errMsg = perfTestController.getMessages("home.qa.message");
-		assertThat(errMsg, is("You can ask a question and track the progress."));
+		assertThat(errMsg, is("You can ask any questions and track the progress."));
 	}
 
 }

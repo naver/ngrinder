@@ -243,7 +243,7 @@ public class NGrinderStarter {
 	 */
 	public static void main(String[] args) {
 
-		if (!idValidCurrentDirectory()) {
+		if (!isValidCurrentDirectory()) {
 			staticPrintHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
 		}
 
@@ -318,7 +318,7 @@ public class NGrinderStarter {
 	 * 
 	 * @return true if it's valid
 	 */
-	private static boolean idValidCurrentDirectory() {
+	private static boolean isValidCurrentDirectory() {
 		File currentFolder = new File(System.getProperty("user.dir"));
 		String[] list = currentFolder.list(new FilenameFilter() {
 			@Override

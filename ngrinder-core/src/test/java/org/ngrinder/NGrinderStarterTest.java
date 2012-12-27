@@ -14,6 +14,11 @@
 package org.ngrinder;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
@@ -52,6 +57,17 @@ public class NGrinderStarterTest {
 		ThreadUtil.sleep(3000);
 		starter.stopMonitor();
 		starter.stopMonitor();
+	}
+	
+	@Test
+	public void testIsValidCurrentDirectory() throws ClassNotFoundException, SecurityException, NoSuchMethodException,
+			IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+
+		Class<?> nGrinderStartClass = Class.forName("org.ngrinder.NGrinderStarter");
+		Method isValidCurrentDirectory = nGrinderStartClass
+				.getDeclaredMethod("isValidCurrentDirectory", new Class[] {});
+		isValidCurrentDirectory.setAccessible(true);
+		assertFalse((Boolean) isValidCurrentDirectory.invoke(nGrinderStartClass));
 	}
 }
 

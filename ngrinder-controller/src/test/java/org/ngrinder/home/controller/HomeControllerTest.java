@@ -61,8 +61,8 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testHealthcheck() {
 		MockHttpServletResponse resq = new MockHttpServletResponse();
-		String viewName = homeController.healthcheck(resq);
-		homeController.healthcheckSlowly(500, resq);
+		homeController.healthcheck(resq);
+		String viewName = homeController.healthcheckSlowly(500, resq);
 		assertTrue(viewName.startsWith(regionService.getCurrentRegion()));
 	}
 
