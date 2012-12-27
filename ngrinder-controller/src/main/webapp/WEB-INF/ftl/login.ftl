@@ -6,6 +6,7 @@
 		<#include "common/common.ftl">
 		<#include "common/select2.ftl">
 		<script src="${req.getContextPath()}/js/detect_timezone.js?${nGrinderVersion}"></script>
+		<script type="text/javascript" src="${req.getContextPath()}/js/jquery.placeholder.min.js?${nGrinderVersion}"></script>
 		<style>
 			body { overflow-y:hidden; background-color:white }
 			.content { height:635px; margin-top:30px; padding-top:30px; background-color:#f5f4f2 }
@@ -70,6 +71,7 @@
 
 	<script language="javascript">
 		$(document).ready(function() {
+			$('input[placeholder]').placeholder();
 			$.ajaxSetup({ cache: false });
 			
 			var language=getCookie("org.springframework.web.servlet.i18n.CookieLocaleResolver.LOCALE");

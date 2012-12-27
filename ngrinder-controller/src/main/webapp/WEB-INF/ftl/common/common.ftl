@@ -9,7 +9,7 @@
 <script type="text/javascript" src="${req.getContextPath()}/js/bootbox.min.js"></script>
 <script type="text/javascript" src="${req.getContextPath()}/js/utils.js?${nGrinderVersion}"></script>
 <script type="text/javascript" src="${req.getContextPath()}/js/jquery.validate.min.js"></script>
-<script type="text/javascript" src="${req.getContextPath()}/js/jquery.placeholder.min.js?${nGrinderVersion}"></script>
+
 <#import "spring.ftl" as spring/>
 <script type="text/javascript">
 	//common validation function and options. 
@@ -30,9 +30,7 @@
 		maxlength: $.validator.format("<@spring.message "common.message.validate.maxlength"/>"),
 		rangelength: $.validator.format("<@spring.message "common.message.validate.rangelength"/>")
 	});
-	$(document).ready(function() {
-		$('input[placeholder], textarea[placeholder]').placeholder();
-	});
+
 </script>  
 <input type="hidden" id="contextPath" value="${req.getContextPath()}">
 
