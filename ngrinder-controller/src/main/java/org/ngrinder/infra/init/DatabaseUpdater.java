@@ -85,7 +85,7 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 		TypeConverterFactory.getInstance().register(H2ExTypeConverter.class);
 		LiquibaseEx liquibase = new LiquibaseEx(getChangeLog(), new ClassLoaderResourceAccessor(getResourceLoader()
 						.getClassLoader()), getDatabase());
-		SqlGeneratorFactory.getInstance().unregister(new RenameColumnGenerator());
+		SqlGeneratorFactory.getInstance().unregister(RenameColumnGenerator.class);
 		SqlGeneratorFactory.getInstance().register(new NGrinderRenameColumnGenerator());
 		try {
 			liquibase.update(contexts);
