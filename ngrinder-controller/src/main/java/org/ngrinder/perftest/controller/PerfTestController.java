@@ -618,8 +618,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return "perftest/report"
 	 */
 	@RequestMapping(value = "/report")
-	public String getReport(User user, ModelMap model, @RequestParam long testId) {
-		model.addAttribute("test", getPerfTestWithPermissionCheck(user, testId, false));
+	public String getReport(ModelMap model, @RequestParam long testId) {
+		model.addAttribute("test", perfTestService.getPerfTest(testId));
 		return "perftest/report";
 	}
 
