@@ -624,8 +624,20 @@ function bindEvent() {
 		$(this).popover('show');
 	});
 	
-	$("#scriptName").change(function(selected) {
-		$("#showScript").val(selected);
+	$("#scriptName").change(function() {
+		var $this = $(this);
+		var $showScript = $("#showScript");
+		var $scriptRevision = $("#scriptRevision");
+		var oldRevision = $scriptRevision.attr("oldRevision");
+		if ($this.val() == $this.attr("oldScript") && oldRevision != -1) {
+			$showScript.text("R " + oldRevision);
+			$scriptRevision.val(oldRevision);
+		} else {
+			$showScript.text("R HEAD");
+			$scriptRevision.val(-1);
+		}
+		$showScript.show();
+		
 		updateScriptResources(false);
 	});
 	

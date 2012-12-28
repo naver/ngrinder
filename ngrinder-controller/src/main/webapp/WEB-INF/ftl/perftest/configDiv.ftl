@@ -91,7 +91,7 @@
 							</colgroup>
 							<tr>
 							<td>
-								<select id="scriptName" class="required" name="scriptName" style="width:275px"> 
+								<select id="scriptName" class="required" name="scriptName" style="width:275px" oldScript="${(test.scriptName)!}"> 
 									<#if test?? && test.lastModifiedUser.userId != currentUser.userId>
 										<option value="${test.scriptName}" selected validated="${(scriptItem.properties.validated)!"0"}">${test.scriptName} - belong to ${test.lastModifiedUser.userId}</option>
 									<#else>
@@ -99,14 +99,14 @@
 									</#if>
 									<#if scriptList?? && scriptList?size &gt; 0> 
 										<#list scriptList as scriptItem> 
-											<option value="${scriptItem.path}" <#if  (test?? && scriptItem.path == test.scriptName) || (quickScript?? && quickScript == scriptItem.path)>selected</#if> validated="${(scriptItem.properties.validated)!"0"}">${scriptItem.path}</option> 
+											<option value="${scriptItem.path}" <#if  (test?? && scriptItem.path == test.scriptName) || (quickScript?? && quickScript == scriptItem.path)>selected<#assign scriptExist = true></#if> validated="${(scriptItem.properties.validated)!"0"}">${scriptItem.path}</option> 
 										</#list> 
 									</#if>
 								</select>
 							</td>
 							<td>
-								<input type="hidden" id="scriptRevision" name="scriptRevision" value="${(test.scriptRevision)!-1}">
-								<button class="btn btn-mini btn-info pull-right" type="button" id="showScript" style="margin-top:3px">
+								<input type="hidden" id="scriptRevision" name="scriptRevision" value="${(test.scriptRevision)!-1}" oldRevision="${(test.scriptRevision)!-1}">
+								<button class="btn btn-mini btn-info pull-right" type="button" id="showScript" style="margin-top:3px; <#if !(scriptExist??)>display:none;</#if>">
 								R
 								<#if test?? && test.scriptRevision != -1>
 									${test.scriptRevision}
