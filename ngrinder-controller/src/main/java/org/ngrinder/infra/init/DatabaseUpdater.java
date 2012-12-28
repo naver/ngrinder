@@ -82,11 +82,11 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 	@PostConstruct
 	public void init() throws Exception {
 		SqlGeneratorFactory.getInstance().register(new LockExDatabaseChangeLogGenerator());
-		SqlGeneratorFactory.getInstance().unregister(new RenameColumnGenerator());
-		SqlGeneratorFactory.getInstance().register(new NGrinderRenameColumnGenerator());
 		TypeConverterFactory.getInstance().register(H2ExTypeConverter.class);
 		LiquibaseEx liquibase = new LiquibaseEx(getChangeLog(), new ClassLoaderResourceAccessor(getResourceLoader()
 						.getClassLoader()), getDatabase());
+		SqlGeneratorFactory.getInstance().unregister(new RenameColumnGenerator());
+		SqlGeneratorFactory.getInstance().register(new NGrinderRenameColumnGenerator());
 		try {
 			liquibase.update(contexts);
 		} catch (LiquibaseException e) {
