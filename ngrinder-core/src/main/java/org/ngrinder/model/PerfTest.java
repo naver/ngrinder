@@ -179,7 +179,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "test_comment", length = MAX_STRING_SIZE)
 	private String testComment = "";
 
-	@Column(name = "script_revistion")
+	@Column(name = "script_revision")
 	private Long scriptRevision = -1L;
 
 	@Column(name = "stop_request", columnDefinition = "char(1)")

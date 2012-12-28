@@ -24,6 +24,8 @@ import liquibase.database.typeconversion.TypeConverterFactory;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
+import liquibase.sqlgenerator.core.NGrinderRenameColumnGenerator;
+import liquibase.sqlgenerator.core.RenameColumnGenerator;
 
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +82,8 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 	@PostConstruct
 	public void init() throws Exception {
 		SqlGeneratorFactory.getInstance().register(new LockExDatabaseChangeLogGenerator());
+		SqlGeneratorFactory.getInstance().unregister(new RenameColumnGenerator());
+		SqlGeneratorFactory.getInstance().register(new NGrinderRenameColumnGenerator());
 		TypeConverterFactory.getInstance().register(H2ExTypeConverter.class);
 		LiquibaseEx liquibase = new LiquibaseEx(getChangeLog(), new ClassLoaderResourceAccessor(getResourceLoader()
 						.getClassLoader()), getDatabase());
