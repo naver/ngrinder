@@ -15,6 +15,7 @@ package org.ngrinder.script.controller;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -273,17 +274,19 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return script/scriptList
 	 */
 	@RequestMapping(value = "/search/**")
-	public String searchFileEntity(User user, @RequestParam(required = true, value = "query") final String query,
+	public String searchFileEntity(User user, @RequestParam(required = true, value = "query") String query,
 					ModelMap model) {
+		final String lowcaseQuery = query.toLowerCase();
 		Collection<FileEntry> searchResult = Collections2.filter(fileEntryService.getAllFileEntries(user),
 						new Predicate<FileEntry>() {
 							@Override
 							public boolean apply(FileEntry input) {
-								return input.getPath().contains(query);
+								return new File(input.getPath()).getName().toLowerCase().contains(lowcaseQuery);
 							}
 						});
 		model.addAttribute("files", searchResult);
 		model.addAttribute("currentPath", "");
+		model.addAttribute("query", query);
 		return "script/scriptList";
 	}
 
