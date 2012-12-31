@@ -85,6 +85,7 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 		TypeConverterFactory.getInstance().register(H2ExTypeConverter.class);
 		LiquibaseEx liquibase = new LiquibaseEx(getChangeLog(), new ClassLoaderResourceAccessor(getResourceLoader()
 						.getClassLoader()), getDatabase());
+		//previous RenameColumnGenerator don't support Cubrid,so remove it and add new Generator
 		SqlGeneratorFactory.getInstance().unregister(RenameColumnGenerator.class);
 		SqlGeneratorFactory.getInstance().register(new NGrinderRenameColumnGenerator());
 		try {
