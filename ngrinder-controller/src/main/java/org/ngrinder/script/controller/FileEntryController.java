@@ -279,9 +279,10 @@ public class FileEntryController extends NGrinderBaseController {
 						new Predicate<FileEntry>() {
 							@Override
 							public boolean apply(FileEntry input) {
-								return input.getPath().contains(query);
+								return StringUtils.containsIgnoreCase(input.getPath(), query);
 							}
 						});
+		model.addAttribute("query", query);
 		model.addAttribute("files", searchResult);
 		model.addAttribute("currentPath", "");
 		return "script/scriptList";

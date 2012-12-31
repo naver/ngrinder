@@ -40,9 +40,9 @@ public abstract class UserSpecification {
 		return new Specification<User>() {
 			@Override
 			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb) {
-				String pattern = "%" + query + "%";
-				return cb.or(cb.like(root.get("userName").as(String.class), pattern), 
-						cb.like(root.get("userId").as(String.class), pattern));
+				String pattern = ("%" + query + "%").toLowerCase();
+				return cb.or(cb.like(cb.lower(root.get("userName").as(String.class)), pattern), 
+						cb.like(cb.lower(root.get("userId").as(String.class)), pattern));
 			}
 		};
 	}
@@ -56,8 +56,8 @@ public abstract class UserSpecification {
 		return new Specification<User>() {
 			@Override
 			public Predicate toPredicate(Root<User> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb) {
-				String pattern = "%" + query + "%";
-				return cb.like(root.get("email").as(String.class), pattern);
+				String pattern = ("%" + query + "%").toLowerCase();
+				return cb.like(cb.lower(root.get("email").as(String.class)), pattern);
 			}
 		};
 	}
