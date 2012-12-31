@@ -31,7 +31,10 @@ import liquibase.sqlgenerator.core.RenameColumnGenerator;
 import liquibase.statement.core.RenameColumnStatement;
 
 /**
- * Cubrid specific syntax for column renaming
+ * Cubrid specific syntax for column renaming.
+ * 
+ * @since 3.1
+ * @author Matt
  */
 public class RenameColumnExGenerator extends RenameColumnGenerator {
 
