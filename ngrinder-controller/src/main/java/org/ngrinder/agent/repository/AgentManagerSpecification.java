@@ -45,7 +45,7 @@ public abstract class AgentManagerSpecification {
 			@Override
 			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				Expression<String> regionField = root.get("region").as(String.class);
-				return cb.or(cb.like(regionField, region + "\\_%"), cb.equal(regionField, region));
+				return cb.or(cb.like(regionField, region + "_%"), cb.equal(regionField, region));
 			}
 		};
 	}
