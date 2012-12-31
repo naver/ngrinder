@@ -13,10 +13,11 @@
  */
 package org.ngrinder.common.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.channels.FileLock;
@@ -45,24 +46,31 @@ public abstract class FileUtil {
 	public static void writeObjectToFile(File file, Object obj) {
 		FileOutputStream fout = null;
 		ObjectOutputStream oout = null;
+		ByteArrayOutputStream bout = null;
 		FileLock lock = null;
 		try {
+			bout = new ByteArrayOutputStream();
+			oout = new ObjectOutputStream(bout);
+			oout.writeObject(obj);
+			oout.flush();
+
+			byte[] byteArray = bout.toByteArray();
 			fout = new FileOutputStream(file, false);
 			lock = fout.getChannel().lock();
-			oout = new ObjectOutputStream(fout);
-			oout.writeObject(obj);
+			fout.write(byteArray);
 
 		} catch (Exception e) {
-			LOGGER.error("IO error for file {}", file, e);
+			LOGGER.error("IO error for file {} : {}", file, e.getMessage());
+			LOGGER.debug("Details : ", e);
 		} finally {
 			if (lock != null) {
 				try {
 					lock.release();
-				} catch (IOException e) {
+				} catch (Exception e) {
 					LOGGER.error("unlocking is failed for file {}", file, e);
 				}
 			}
-
+			IOUtils.closeQuietly(bout);
 			IOUtils.closeQuietly(fout);
 			IOUtils.closeQuietly(oout);
 		}
@@ -84,25 +92,29 @@ public abstract class FileUtil {
 		}
 		FileInputStream fin = null;
 		ObjectInputStream oin = null;
+		ByteArrayInputStream bin = null;
 		FileLock lock = null;
 		try {
 			fin = new FileInputStream(file);
 			lock = fin.getChannel().lock(0, Long.MAX_VALUE, true);
-			oin = new ObjectInputStream(fin);
+			byte[] byteArray = IOUtils.toByteArray(fin);
+			bin = new ByteArrayInputStream(byteArray);
+			oin = new ObjectInputStream(bin);
 			Object readObject = oin.readObject();
 			return (readObject == null) ? defaultValue : (T) readObject;
 
 		} catch (Exception e) {
-			LOGGER.error("IO error for file {}", file, e);
+			LOGGER.error("IO error for file {} : {}", file, e.getMessage());
+			LOGGER.debug("Details : ", e);
 		} finally {
 			if (lock != null) {
 				try {
 					lock.release();
-				} catch (IOException e) {
+				} catch (Exception e) {
 					LOGGER.error("unlocking is failed for file {}", file, e);
 				}
 			}
-
+			IOUtils.closeQuietly(bin);
 			IOUtils.closeQuietly(fin);
 			IOUtils.closeQuietly(oin);
 		}
