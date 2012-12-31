@@ -24,7 +24,6 @@ import liquibase.database.typeconversion.TypeConverterFactory;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import liquibase.sqlgenerator.SqlGeneratorFactory;
-import liquibase.sqlgenerator.core.NGrinderRenameColumnGenerator;
 import liquibase.sqlgenerator.core.RenameColumnGenerator;
 
 import org.ngrinder.common.exception.NGrinderRuntimeException;

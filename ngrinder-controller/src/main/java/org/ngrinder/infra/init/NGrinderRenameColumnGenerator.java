@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package liquibase.sqlgenerator.core;
+package org.ngrinder.infra.init;
 
 import liquibase.database.Database;
 import liquibase.database.core.CUBRIDDatabase;
@@ -27,6 +27,7 @@ import liquibase.database.core.SybaseASADatabase;
 import liquibase.sql.Sql;
 import liquibase.sql.UnparsedSql;
 import liquibase.sqlgenerator.SqlGeneratorChain;
+import liquibase.sqlgenerator.core.RenameColumnGenerator;
 import liquibase.statement.core.RenameColumnStatement;
 
 /**
