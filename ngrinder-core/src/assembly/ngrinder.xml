@@ -46,6 +46,13 @@
         <include>native_lib/*.*</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/patch</directory>
+      <outputDirectory>/lib</outputDirectory>
+      <includes>
+        <include>*.*</include>
+      </includes>
+    </fileSet>
   </fileSets>
   <dependencySets>
   	<dependencySet>
