@@ -813,7 +813,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			lnr = new LineNumberReader(isr);
 			lnr.skip(targetFile.length());
 			lineNumber = lnr.getLineNumber() + 1;
-			interval = lineNumber / pointCount;
+			interval = Math.max((int)(lineNumber / pointCount), 1);
 		} catch (Exception e) {
 			LOGGER.error("Get report data for " + dataType + " failed:" + e.getMessage(), e);
 		} finally {
@@ -863,7 +863,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				}
 				data = br.readLine();
 			}
-
+			if (reportData.charAt(reportData.length()-1) == ',') {
+				reportData.deleteCharAt(reportData.length() - 1);
+			}
 			reportData.append("]");
 		} catch (IOException e) {
 			LOGGER.error("Get report data for {} failed: {}", dataType, e.getMessage());

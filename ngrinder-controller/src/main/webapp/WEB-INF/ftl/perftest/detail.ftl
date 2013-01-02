@@ -1004,7 +1004,6 @@ function getOption(cnt) {
 function openReportDiv(onFinishHook) {
 	$("#reportContent").load("${req.getContextPath()}/perftest/loadReportDiv?testId=" + $("#testId").val() + "&imgWidth=600",
 		function() {
-			drawChart('TPS', 'tpsDiv', $("#tpsData").val());
 			if (onFinishHook !== undefined) {
 				onFinishHook();
 			}

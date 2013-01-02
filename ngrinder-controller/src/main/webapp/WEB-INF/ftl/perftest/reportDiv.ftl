@@ -1,7 +1,9 @@
 <#import "../common/spring.ftl" as spring/>
 <div class="row">
 	<div class="span4">
-		<input type="hidden" id="tpsData" name="tpsData" value="${TPS!}">
+		<script type="text/javascript">
+			
+		</script>
 		<div class="page-header">
 			<h4><@spring.message "perfTest.report.summary"/></h4>
 		</div>
@@ -54,7 +56,7 @@
 		<div class="page-header">
 			<h4><@spring.message "perfTest.report.logs"/></h4>
 		</div>
-		<div style="margin-left: 10px">
+		<div style="mgin-left: 10px">
 			<#if logs?has_content> 
 				<#list logs as eachLog>
 					<div style="width:100%;" class="ellipsis">
@@ -80,6 +82,7 @@
 	</div>
 </div>
 <script>
+	drawChart('TPS', 'tpsDiv', ${TPS![]}, null,  ${chartInterval!1});
 	$("#leaveCommentButton").click(function(){
 		var comment = $("#testComment").val();
 		var tagString = buildTagString();
