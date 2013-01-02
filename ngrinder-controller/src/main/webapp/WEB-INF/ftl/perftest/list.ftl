@@ -372,11 +372,6 @@
 				if(!(perTestStatus == "FINISHED" || perTestStatus == "STOP_ON_ERROR" || perTestStatus == "CANCELED"))
 					return this.value;
 		  	}).get();
-			if (ids.length == 0) {
-				var springMessage =  "0 <@spring.message "perfTest.currentRunning.summary"/>";
-			    $("#currentRunning").text(springMessage);
-				return;
-			}
 		    $.ajax({
 			    url: '${req.getContextPath()}/perftest/updateStatus', 
 			    type: 'POST',

@@ -23,6 +23,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +75,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.google.common.collect.Lists;
 
 /**
  * Performance Test Controller.
@@ -365,7 +368,13 @@ public class PerfTestController extends NGrinderBaseController {
 		for (String each : numbers) {
 			id[i++] = NumberUtils.toLong(each, 0);
 		}
-		List<PerfTest> perfTests = perfTestService.getPerfTest(user, id);
+
+		List<PerfTest> perfTests = null;
+		if (StringUtils.isNotEmpty(ids)) {
+			perfTests = perfTestService.getPerfTest(user, id);
+		} else {
+			perfTests = Collections.emptyList();
+		}
 		List<Map<String, Object>> statusList = new ArrayList<Map<String, Object>>();
 		for (PerfTest each : perfTests) {
 			Map<String, Object> rtnMap = new HashMap<String, Object>(3);
