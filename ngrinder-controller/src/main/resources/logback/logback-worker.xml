@@ -22,8 +22,7 @@
 
 	</appender>
 
-
-
+	<appender name="data-file" class="ch.qos.logback.core.helpers.NOPAppender"/>
 
 	<logger name="worker" additivity="false">
 		<appender-ref ref="log-file" />

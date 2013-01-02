@@ -13,6 +13,12 @@ from net.grinder.plugin.http import HTTPRequest
 test1 = Test(1, "Test1")
 request1 = test1.wrap(HTTPRequest())
 
+# control = HTTPPluginControl.getConnectionDefaults()
+# if you want to follow the redirection, please modify the following option 1.
+# contorl.setFollowRedirects(0)
+# if you want to increase the timeout, please modify the following option.
+# control.setTimeout(3000)
+
 class TestRunner:
 	def __call__(self):
 		grinder.statistics.delayReports=True

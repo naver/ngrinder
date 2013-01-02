@@ -1,3 +1,20 @@
+3.1.0 (2013.01.XX)
+- Major release which supports followings. 
+  * Select one of multiple network regions to choose the agents depending on the test target.
+  * Share the user account to the other user by specifying followers.
+  * Support CUBRID HA to enhance the stabilizability.
+  * Be able to show announcement message to users.
+  * 
+
+
+
+3.0.4 (2012.12.04)
+- Hot fix for nGrinder 3.0
+- Managing files using SVN Clients is now working.
+
+Bug
+[NGRINDER-385] - Managing files using SVN client is not working
+
 3.0.3 (2012.11.XX)
 - Hot fix for nGrinder 3.0
 - Mostly fix the bug which happens if there are more than 1000 tests.
