@@ -525,11 +525,7 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-<<<<<<< OURS
 	 * Get ngrinder help URL.
-=======
-	 * Get ngrinder help url.
->>>>>>> THEIRS
 	 * 
 	 * @return help URL
 	 */
