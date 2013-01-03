@@ -36,7 +36,7 @@
       <directory>${project.basedir}/target</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>ngrinder*.jar</include>
+        <include>ngrinder-core-${project.version}.jar</include>
       </includes>
     </fileSet>
     <fileSet>
@@ -58,7 +58,7 @@
   	<dependencySet>
   		<outputDirectory>/lib</outputDirectory>
   		<includes>
-  			<include>*:*</include>
+  			<include>*</include>
   		</includes>
   		<useProjectArtifact>false</useProjectArtifact>
   		<directoryMode>664</directoryMode>
