@@ -23,7 +23,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import net.grinder.AgentControllerDaemon;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
@@ -33,7 +32,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
-import org.ngrinder.common.util.ReflectionUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.AgentMonitorServer;
@@ -59,20 +57,27 @@ public class NGrinderStarter {
 
 	private AgentControllerDaemon agentController;
 
+	private ReconfigurableURLClassLoader classLoader;
+
 	/**
 	 * Constructor.
 	 */
 	public NGrinderStarter() {
 		agentConfig = new AgentConfig();
 		agentConfig.init();
-
 		// Configure log.
 		Boolean verboseMode = agentConfig.getAgentProperties().getPropertyBoolean("verbose", false);
 		File logDirectory = agentConfig.getHome().getLogDirectory();
 		configureLogging(verboseMode, logDirectory);
-
+		addCustomClassLoader();
 		addClassPath();
 		addLibarayPath();
+	}
+
+	private void addCustomClassLoader() {
+		URL[] urLs = ((URLClassLoader) Thread.currentThread().getContextClassLoader()).getURLs();
+		this.classLoader = new ReconfigurableURLClassLoader(urLs);
+		Thread.currentThread().setContextClassLoader(this.classLoader);
 	}
 
 	/*
@@ -164,14 +169,6 @@ public class NGrinderStarter {
 	 * Add tools.jar classpath. This contains hack
 	 */
 	protected void addClassPath() {
-		URLClassLoader urlClassLoader = (URLClassLoader) ClassLoader.getSystemClassLoader();
-		// URL toolsJarPath = findToolsJarPath();
-		// LOG.info("tools.jar is found in {}",
-		// checkNotNull(toolsJarPath).toString());
-
-		// ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new
-		// Object[] { toolsJarPath });
-
 		ArrayList<String> libString = new ArrayList<String>();
 		File libFolder = new File(".", "lib").getAbsoluteFile();
 		if (!libFolder.exists()) {
@@ -183,14 +180,17 @@ public class NGrinderStarter {
 		// Add patch first
 		for (File each : libList) {
 			if (each.getName().contains("patch")) {
-				addClassPath(each, urlClassLoader, libString);
+				addClassPath(classLoader, each);
+				libString.add(each.getPath());
+
 			}
 		}
 
 		// Add rest of them
 		for (File each : libList) {
 			if (!each.getName().contains("patch")) {
-				addClassPath(each, urlClassLoader, libString);
+				addClassPath(classLoader, each);
+				libString.add(each.getPath());
 			}
 		}
 
@@ -201,13 +201,28 @@ public class NGrinderStarter {
 		}
 	}
 
-	private void addClassPath(File each, URLClassLoader urlClassLoader, ArrayList<String> libString) {
+	private void addClassPath(ReconfigurableURLClassLoader urlClassLoader, File jarFile) {
 		try {
-			URL jarFileUrl = checkNotNull(each.toURI().toURL());
-			ReflectionUtil.invokePrivateMethod(urlClassLoader, "addURL", new Object[] { jarFileUrl });
-			libString.add(each.getPath());
+			URL jarFileUrl = checkNotNull(jarFile.toURI().toURL());
+			urlClassLoader.addURL(jarFileUrl);
 		} catch (MalformedURLException e) {
 			LOG.error(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * 
+	 * @author JunHo Yoon
+	 */
+	static class ReconfigurableURLClassLoader extends URLClassLoader {
+
+		public ReconfigurableURLClassLoader(URL[] urls) {
+			super(urls);
+		}
+
+		@Override
+		public void addURL(URL url) {
+			super.addURL(url);
 		}
 	}
 
@@ -260,7 +275,6 @@ public class NGrinderStarter {
 		if (!isValidCurrentDirectory()) {
 			staticPrintHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
 		}
-
 		NGrinderStarter starter = new NGrinderStarter();
 		String startMode = System.getProperty("start.mode");
 		LOG.info("- Passing mode " + startMode);
