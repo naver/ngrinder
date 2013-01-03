@@ -35,6 +35,8 @@ import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.authentication.dao.SaltSource;
 import org.springframework.security.authentication.encoding.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -120,10 +122,21 @@ public class UserService implements IUserService {
 	 * @return found user list
 	 */
 	public List<User> getAllUserByRole(String roleName) {
+		return getAllUserByRole(roleName, new Sort(Direction.ASC, "userName"));
+	}
+
+	/**
+	 * get all users by role.
+	 * 
+	 * @param roleName
+	 *            role name
+	 * @return found user list
+	 */
+	public List<User> getAllUserByRole(String roleName, Sort sort) {
 		if (StringUtils.isBlank(roleName)) {
-			return userRepository.findAll();
+			return userRepository.findAll(sort);
 		} else {
-			return getUserListByRole(getRole(roleName));
+			return getUserListByRole(getRole(roleName), sort);
 		}
 	}
 
@@ -220,11 +233,25 @@ public class UserService implements IUserService {
 	 * 
 	 * @param role
 	 *            role
+	 * @param sort
+	 *            sort
+	 * @return found user list
+	 * @throws Exception
+	 */
+	public List<User> getUserListByRole(Role role, Sort sort) {
+		return userRepository.findAllByRole(role, sort);
+	}
+
+	/**
+	 * get the user list by the given role.
+	 * 
+	 * @param role
+	 *            role
 	 * @return found user list
 	 * @throws Exception
 	 */
 	public List<User> getUserListByRole(Role role) {
-		return userRepository.findAllByRole(role);
+		return getUserListByRole(role, new Sort(Direction.ASC, "userName"));
 	}
 
 	/**

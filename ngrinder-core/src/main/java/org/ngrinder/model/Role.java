@@ -23,7 +23,7 @@ public enum Role {
 	/**
 	 * General user role who can create performance test entry.
 	 */
-	USER("U", "General") {
+	USER("U", "General User") {
 	},
 	/**
 	 * Admin user role who can monitors tests.
@@ -60,7 +60,7 @@ public enum Role {
 	/**
 	 * Super user role who can set system settings and manage user account.
 	 */
-	SUPER_USER("S", "Super") {
+	SUPER_USER("S", "Super User") {
 
 		/**
 		 * Has super permission or not.
