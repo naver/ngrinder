@@ -182,7 +182,7 @@
 					$("#process_data").text(curRunningProcesses);
 					$("#thread_data").text(curRunningThreads);
 					$("#running_count").text(curRunningCount);
-					var agentStatusString = "";
+					var agentStatusString = "<ul>";
 					for ( var i = 0; i < curAgentPerfStates.length; i++) {
 						var eachAgent = curAgentPerfStates[i];
 						if (agentPerfStates[eachAgent.agent] === undefined) {
@@ -196,6 +196,7 @@
 								+ curAgentPerfStates[i].cpu + "%   MEM - "
 								+ curAgentPerfStates[i].mem + "%</li>";
 					}
+					agentStatusString += "</ul>"; 
 					$("#agent_status").html(agentStatusString);
 					peakTps = curPeakTps;
 					test_tps_data.enQueue(curTps);
