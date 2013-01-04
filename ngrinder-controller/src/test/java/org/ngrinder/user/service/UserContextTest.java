@@ -26,15 +26,12 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.model.User;
 import org.ngrinder.security.NGrinderUserDetailsService;
-import org.ngrinder.security.SecuredUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
