@@ -93,7 +93,7 @@
 							<td>
 								<select id="scriptName" class="required" name="scriptName" style="width:275px" oldScript="${(test.scriptName)!}"> 
 									<#if test?? && test.createdUser.userId != currentUser.factualUser.userId>
-										<option value="${test.scriptName}" selected validated="${(scriptItem.properties.validated)!"0"}">${test.scriptName} - <@spring.message "perfTest.configuration.script.belongTo" />${test.lastModifiedUser.userName}</option>
+										<option value="${test.scriptName}" selected validated="${(scriptItem.properties.validated)!"0"}">${test.scriptName} - <@spring.message "perfTest.configuration.script.belongTo" />${test.createdUser.userName}</option>
 									<#else>
 										<option value=""></option>
 										<#if scriptList?? && scriptList?size &gt; 0> 
