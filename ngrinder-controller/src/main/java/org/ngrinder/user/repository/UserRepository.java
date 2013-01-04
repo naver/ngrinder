@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -49,6 +50,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	 * @return found {@link User} list
 	 */
 	public List<User> findAllByRole(Role role);
+	
+	/**
+	 * Find all {@link User}s for the given role.
+	 * 
+	 * @param role
+	 *            role
+	 * @param sort sort
+	 * @return found {@link User} list
+	 */
+	public List<User> findAllByRole(Role role, Sort sort);
 
 	/**
 	 * Delete user which has the given userId.
@@ -77,5 +88,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	 * @return found {@link User}. null if not found.
 	 */
 	public User findOneByUserName(String userName);
+
 
 }

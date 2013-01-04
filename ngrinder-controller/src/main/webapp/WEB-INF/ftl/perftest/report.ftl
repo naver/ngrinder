@@ -10,7 +10,7 @@
 				padding-top: 0;
 			}	
 			.left { border-right: 1px solid #878988 }
-			div.chart { border: 1px solid #878988; height:250px; min-width:615px; margin-bottom:30px }
+			div.chart { border: 1px solid #878988; height:200px; min-width:615px; margin-bottom:30px }
 			td strong { color: #6DAFCF }
 			.jqplot-yaxis {
 			    margin-right: 10px;
@@ -143,6 +143,8 @@
 			    	<div class="chart" id="tpsDiv"></div>
 					<h6><@spring.message "perfTest.report.header.meantime"/>&nbsp;(ms)</h6>
     				<div class="chart" id="meanTimeDiv"></div>
+    				<h6><@spring.message "perfTest.report.header.meantimetofirstbyte"/>&nbsp;(ms)</h6>
+    				<div class="chart" id="minTimeFirstByte"></div>
 					<h6><@spring.message "perfTest.report.header.errors"/></h6>
     				<div class="chart" id="errorDiv"></div>
 				</div>
@@ -213,13 +215,14 @@
                 dataType:'json',
                 cache: true,
                 data: {'testId': $("#testId").val(),
-                       'dataType':'TPS,Errors,Mean_Test_Time_(ms)',
+                       'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte',
                        'imgWidth':700},
                 success: function(res) {
                     if (res.success) {
                     	var st = new Date($('#startTime').val());
                         drawChart('Transactions Per Second', 'tpsDiv', res.TPS, undefined, res.chartInterval);
                         drawChart('Mean Time', 'meanTimeDiv', res.Mean_Test_Time_ms, undefined, res.chartInterval);
+                        drawChart('Mean Time To First Byte', 'minTimeFirstByte', res.Mean_time_to_first_byte, undefined, res.chartInterval);
                         drawChart('Errors Per Second', 'errorDiv', res.Errors, undefined, res.chartInterval);
                         return true;
                     } else {

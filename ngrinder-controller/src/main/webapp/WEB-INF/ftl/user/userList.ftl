@@ -39,8 +39,8 @@
 		<table class="table table-striped table-bordered ellipsis" id="userTable">
 			<colgroup>
 				<col width="30">
-				<col width="100">
-				<col width="100">
+				<col width="120">
+				<col width="120">
 				<col width="160"> 
 				<col>
 				<col width="120">
@@ -65,7 +65,7 @@
 					<td class="center"><input type="checkbox" id="user_info_check"<#if user.userId == "admin">disabled</#if>
 						value="${user.userId}" uname="${user.userName}"/></td>
 					<td><a href="${req.getContextPath()}/user/detail?userId=${user.userId}">${user.userName}</a></td>
-					<td class="ellipsis" title="${user.role}">${user.role}</td>
+					<td class="ellipsis" title="${user.role.fullName}">${user.role.fullName}</td>
 					<td class="ellipsis">${user.email!""}</td>
 					<td class="ellipsis">${user.description!}</td>
 					<td><#if user.createdDate?has_content> ${user.createdDate?string("yyyy-MM-dd HH:mm")} </#if></td>

@@ -346,6 +346,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		singleConsole.addSamplingLifeCyleListener(new SamplingLifeCycleListener() {
 			private MontorClientManager monitorClientScheduler = null;
 			private ScheduledFuture<?> scheduleWithFixedDelay = null;
+			private int countOfLostAgent = 0;
 
 			@Override
 			public void onSamplingStarted() {
@@ -381,8 +382,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 			@Override
 			public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
 				if (singleConsole.getAllAttachedAgentsCount() == 0) {
-					perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING,
-									"All agents are unexpectively lost.");
+					if (countOfLostAgent++ > 10) {
+						perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING,
+										"All agents are unexpectively lost.");
+					} 
+				} else {
+					countOfLostAgent = 0;
 				}
 				monitorClientScheduler.saveData();
 				perfTestService.saveAgentsInfo(singleConsole, perfTest);

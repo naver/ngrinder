@@ -92,16 +92,17 @@
 							<tr>
 							<td>
 								<select id="scriptName" class="required" name="scriptName" style="width:275px" oldScript="${(test.scriptName)!}"> 
-									<#if test?? && test.lastModifiedUser.userId != currentUser.userId>
+									<#if test?? && test.createdUser.userId != currentUser.factualUser.userId>
 										<option value="${test.scriptName}" selected validated="${(scriptItem.properties.validated)!"0"}">${test.scriptName} - belong to ${test.lastModifiedUser.userId}</option>
 									<#else>
 										<option value=""></option>
+										<#if scriptList?? && scriptList?size &gt; 0> 
+											<#list scriptList as scriptItem> 
+												<option value="${scriptItem.path}" <#if  (test?? && scriptItem.path == test.scriptName) || (quickScript?? && quickScript == scriptItem.path)>selected<#assign scriptExist = true></#if> validated="${(scriptItem.properties.validated)!"0"}">${scriptItem.path}</option> 
+											</#list> 
+										</#if>
 									</#if>
-									<#if scriptList?? && scriptList?size &gt; 0> 
-										<#list scriptList as scriptItem> 
-											<option value="${scriptItem.path}" <#if  (test?? && scriptItem.path == test.scriptName) || (quickScript?? && quickScript == scriptItem.path)>selected<#assign scriptExist = true></#if> validated="${(scriptItem.properties.validated)!"0"}">${scriptItem.path}</option> 
-										</#list> 
-									</#if>
+									
 								</select>
 							</td>
 							<td>

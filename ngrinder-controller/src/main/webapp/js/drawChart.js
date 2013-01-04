@@ -53,7 +53,12 @@ function drawChart(title, containerId, data, formatYaxis, interval) {
 	if (data == undefined) {
 		return undefined;
 	}
-	var values = [ eval(data) ];
+	var values = [];
+	if ((data instanceof Array) == true) {
+		values = [ data ];
+	} else {
+		values = [ eval(data) ];
+	}
 	var dataCnt = values[0].length;
 	if (dataCnt == 0) {
 		return;
@@ -65,7 +70,7 @@ function drawChart(title, containerId, data, formatYaxis, interval) {
 	
 	ymax = parseInt((ymax / 5) + 0.5) * 6;
 	
-	if (formatYaxis === undefined) {
+	if (formatYaxis === undefined || formatYaxis == null) {
 		formatYaxis = function(format, value) {
 			return value.toFixed(0);
 		};

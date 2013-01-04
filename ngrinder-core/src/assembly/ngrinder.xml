@@ -36,7 +36,7 @@
       <directory>${project.basedir}/target</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
-        <include>ngrinder*.jar</include>
+        <include>ngrinder-core-${project.version}.jar</include>
       </includes>
     </fileSet>
     <fileSet>
@@ -46,12 +46,19 @@
         <include>native_lib/*.*</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/patch</directory>
+      <outputDirectory>/lib</outputDirectory>
+      <includes>
+        <include>*.*</include>
+      </includes>
+    </fileSet>
   </fileSets>
   <dependencySets>
   	<dependencySet>
   		<outputDirectory>/lib</outputDirectory>
   		<includes>
-  			<include>*:*</include>
+  			<include>*</include>
   		</includes>
   		<useProjectArtifact>false</useProjectArtifact>
   		<directoryMode>664</directoryMode>

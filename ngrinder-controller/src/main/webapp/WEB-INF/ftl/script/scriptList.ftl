@@ -40,34 +40,31 @@
 			     </tr>
 			     <tr>
 			     	<td>
-						<table  style="width:100%">
+						<table  style="width:100%; margin-top:5px">
 							<colgroup>
 								<col width="600px"/>
 								<col width="340px"/>
 							</colgroup>
 							<tr>
 								<td>
-						        	<div style="margin-top:5px">
-										<a class="btn btn-primary" href="#createScriptModal" id="createBtn" data-toggle="modal">
-											<i class="icon-file"></i>
-											<@spring.message "script.list.button.createScript"/>
-										</a>
-										<a class="btn" href="#createFolderModal" id="folderBtn" data-toggle="modal">
-											<i class=" icon-folder-open"></i>
-											<@spring.message "script.list.button.createFolder"/>
-										</a>
-										<a class="btn" href="#uploadScriptModal" id="uploadBtn" data-toggle="modal">
-											<i class="icon-upload"></i>
-											<@spring.message "script.list.label.upload"/>
-										</a>
+									<a class="btn btn-primary" href="#createScriptModal" id="createBtn" data-toggle="modal">
+										<i class="icon-file"></i>
+										<@spring.message "script.list.button.createScript"/>
+									</a>
+									<a class="btn" href="#createFolderModal" id="folderBtn" data-toggle="modal">
+										<i class=" icon-folder-open"></i>
+										<@spring.message "script.list.button.createFolder"/>
+									</a>
+									<a class="btn" href="#uploadScriptModal" id="uploadBtn" data-toggle="modal">
+										<i class="icon-upload"></i>
+										<@spring.message "script.list.label.upload"/>
+									</a>
 								</td>
 								<td>
-									<div style="margin-top:5px">
-										<a class="btn btn-danger pull-right" href="javascript:void(0);" id="deleteBtn">
-											<i class="icon-remove"></i>
-											<@spring.message "script.list.button.delete"/>
-										</a>
-									</div>
+									<a class="btn btn-danger pull-right" href="javascript:void(0);" id="deleteBtn">
+										<i class="icon-remove"></i>
+										<@spring.message "script.list.button.delete"/>
+									</a>
 								</td> 
 							</tr>
 						</table>

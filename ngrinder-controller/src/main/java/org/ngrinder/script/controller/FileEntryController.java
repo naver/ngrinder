@@ -274,19 +274,18 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return script/scriptList
 	 */
 	@RequestMapping(value = "/search/**")
-	public String searchFileEntity(User user, @RequestParam(required = true, value = "query") String query,
+	public String searchFileEntity(User user, @RequestParam(required = true, value = "query") final String query,
 					ModelMap model) {
-		final String lowcaseQuery = query.toLowerCase();
 		Collection<FileEntry> searchResult = Collections2.filter(fileEntryService.getAllFileEntries(user),
 						new Predicate<FileEntry>() {
 							@Override
 							public boolean apply(FileEntry input) {
-								return new File(input.getPath()).getName().toLowerCase().contains(lowcaseQuery);
+								return StringUtils.containsIgnoreCase(new File(input.getPath()).getName(), query.trim());
 							}
 						});
+		model.addAttribute("query", query);
 		model.addAttribute("files", searchResult);
 		model.addAttribute("currentPath", "");
-		model.addAttribute("query", query);
 		return "script/scriptList";
 	}
 

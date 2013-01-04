@@ -16,6 +16,9 @@ package org.ngrinder.agent.repository;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+
+import java.util.List;
+
 import net.grinder.message.console.AgentControllerState;
 
 import org.junit.Before;
@@ -40,14 +43,18 @@ public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 	@Before
 	public void before() {
 		agentRepository.deleteAll();
+		addAgent("hello", "world");
+
+	}
+
+	private void addAgent(String name, String region) {
 		agentInfo = new AgentInfo();
-		agentInfo.setName("hello");
+		agentInfo.setName(name);
 		agentInfo.setIp("127.0.0.1");
-		agentInfo.setRegion("world");
+		agentInfo.setRegion(region);
 		agentInfo.setStatus(AgentControllerState.BUSY);
 		agentInfo.setApproved(false);
 		agentRepository.save(agentInfo);
-
 	}
 
 	@Test
@@ -61,5 +68,14 @@ public class AgentRepositoryTest extends AbstractNGrinderTransactionalTest {
 		assertThat(findByIp, notNullValue());
 		assertThat(findByIp.getName(), is("hello"));
 		assertThat(findByIp.getRegion(), is("world"));
+	}
+
+	@Test
+	public void testGetByOwner() {
+		addAgent("hello2", "world_owned_hello");
+		addAgent("hello3", "worl2_owned_hello");
+		assertThat(agentRepository.findAll().size(), is(3));
+		List<AgentInfo> findAll = agentRepository.findAll(AgentManagerSpecification.startWithRegion("world"));
+		assertThat(findAll.size(), is(2));
 	}
 }
