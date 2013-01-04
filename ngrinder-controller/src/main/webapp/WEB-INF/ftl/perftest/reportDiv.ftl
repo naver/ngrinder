@@ -13,7 +13,7 @@
 				<div class="control-group">
 					<label for="agentInput" class="control-label control-label-1"><@spring.message "perfTest.report.tps"/></label>
 					<div class="controls">
-						<strong><#if test.tps??>${(test.tps)?string("0.#")}</#if></strong>
+						<strong><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></strong>
 					</div>
 				</div>
 				<div class="control-group">
@@ -55,6 +55,7 @@
 	<div class="span4">
 		<div class="page-header">
 			<h4><@spring.message "perfTest.report.logs"/></h4>
+			<span style="margin-top:-20px" class="pull-right" rel="popover" data-content='<@spring.message "perfTest.report.logs.help"/>' data-original-title='<@spring.message "perfTest.report.logs"/>' type="toggle" id="log_comment"><i class="icon-question-sign"></i></span>
 		</div>
 		<div style="mgin-left: 10px">
 			<#if logs?has_content> 
@@ -82,6 +83,7 @@
 	</div>
 </div>
 <script>
+	$("#log_comment").hover(popover, popunover);
 	drawChart('TPS', 'tpsDiv', ${TPS![]}, null,  ${chartInterval!1});
 	$("#leaveCommentButton").click(function(){
 		var comment = $("#testComment").val();
