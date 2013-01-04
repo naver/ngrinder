@@ -182,7 +182,7 @@
 					$("#process_data").text(curRunningProcesses);
 					$("#thread_data").text(curRunningThreads);
 					$("#running_count").text(curRunningCount);
-					var agentStatusString = "";
+					var agentStatusString = "<ul>";
 					for ( var i = 0; i < curAgentPerfStates.length; i++) {
 						var eachAgent = curAgentPerfStates[i];
 						if (agentPerfStates[eachAgent.agent] === undefined) {
@@ -191,10 +191,12 @@
 						agentPerfStates[eachAgent.agent].cpu = eachAgent.cpu;
 						agentPerfStates[eachAgent.agent].mem = eachAgent.mem;
 						// Use sparkle line...     
-						agentStatusString = curAgentPerfStates[i].agent + " CPU - "
-							+ curAgentPerfStates[i].cpu + "%   MEM - "
-							+ curAgentPerfStates[i].mem + "%";
+						agentStatusString = agentStatusString
+								+ "<li>" + curAgentPerfStates[i].agent + " CPU - "
+								+ curAgentPerfStates[i].cpu + "%   MEM - "
+								+ curAgentPerfStates[i].mem + "%</li>";
 					}
+					agentStatusString += "</ul>"; 
 					$("#agent_status").html(agentStatusString);
 					peakTps = curPeakTps;
 					test_tps_data.enQueue(curTps);

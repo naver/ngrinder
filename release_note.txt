@@ -2,9 +2,14 @@
 - Major release which supports followings. 
   * Select one of multiple network regions to choose the agents depending on the test target.
   * Share the user account to the other user by specifying followers.
-  * Support CUBRID HA to enhance the stabilizability.
+  * Support CUBRID HA to enhance the stabilization.
   * Be able to show announcement message to users.
-  * 
+  * Add system configuration page, and for most of the fields, that can work without restarting the server.
+
+- Other improvement
+  * Use super user role for checking all user's scripts and tests.
+  * Add a VM properties about "Xmx Xms" for test running process, to avoid the test running process using too
+  *    much memory, especially on 64 bit server.
 
 
 
