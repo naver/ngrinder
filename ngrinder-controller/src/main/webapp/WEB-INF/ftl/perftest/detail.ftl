@@ -833,7 +833,7 @@ function bindEvent() {
 		$("#processAndThreadPanel").toggle();
 	});
 	
-	$("#hSelect, #mSelect, sSelect").change(function() {
+	$("#hSelect, #mSelect, #sSelect").change(function() {
 		$("#durationRadio").click();
 	});
 	
