@@ -191,9 +191,10 @@
 						agentPerfStates[eachAgent.agent].cpu = eachAgent.cpu;
 						agentPerfStates[eachAgent.agent].mem = eachAgent.mem;
 						// Use sparkle line...     
-						agentStatusString = curAgentPerfStates[i].agent + " CPU - "
-							+ curAgentPerfStates[i].cpu + "%   MEM - "
-							+ curAgentPerfStates[i].mem + "%";
+						agentStatusString = agentStatusString
+								+ "<li>" + curAgentPerfStates[i].agent + " CPU - "
+								+ curAgentPerfStates[i].cpu + "%   MEM - "
+								+ curAgentPerfStates[i].mem + "%</li>";
 					}
 					$("#agent_status").html(agentStatusString);
 					peakTps = curPeakTps;
