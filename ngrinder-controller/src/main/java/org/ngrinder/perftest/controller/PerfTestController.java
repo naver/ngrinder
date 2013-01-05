@@ -488,9 +488,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/getReportData")
 	@ResponseBody
-	public String getReportData(User user, ModelMap model, @RequestParam long testId,
+	public String getReportData(ModelMap model, @RequestParam long testId,
 					@RequestParam(required = true, defaultValue = "") String dataType, @RequestParam int imgWidth) {
-		getPerfTestWithPermissionCheck(user, testId, false);
 		String[] dataTypes = StringUtils.split(dataType, ",");
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1 + dataTypes.length);
 		if (dataTypes.length <= 0) {
