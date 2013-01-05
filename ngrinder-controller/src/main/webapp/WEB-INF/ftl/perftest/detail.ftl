@@ -845,12 +845,11 @@ function bindEvent() {
 	var $regionSelect = $("#regionSelect");
 	$regionSelect.select2();
 	$regionSelect.change(function(){
-		var region = $(this).val();
-		changeAgentMaxCount(region);
+		changeAgentMaxCount($(this).val(), true);
 	});
-	changeAgentMaxCount($regionSelect.val());
+	changeAgentMaxCount($regionSelect.val(), false);
 <#else>
-	changeAgentMaxCount("NONE");
+	changeAgentMaxCount("NONE", false);
 </#if>	
 }
 var agentCountMap = {};
@@ -858,7 +857,7 @@ var agentCountMap = {};
 agentCountMap["${key}"] = ${regionAgentCountMap[key]};
 </#list>
 
-function changeAgentMaxCount(region) {
+function changeAgentMaxCount(region, isValid) {
 	var count = agentCountMap[region];
 	if (count === undefined) {
 		count = 0;
@@ -867,9 +866,12 @@ function changeAgentMaxCount(region) {
 
 	var $agentCountObj = $("#agentCount");
 	$agentCountObj.rules("add", {
-		max:count
+		max: count
 	});
-	$agentCountObj.valid();
+	
+	if (isValid) {
+		$agentCountObj.valid();
+	}
 }
 
 function validateForm() {
