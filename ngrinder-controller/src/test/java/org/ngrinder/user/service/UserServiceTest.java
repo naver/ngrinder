@@ -97,10 +97,10 @@ public class UserServiceTest extends AbstractNGrinderTransactionalTest {
 		Role role = userService.getRole("Administrator");
 		assertThat(role, is(Role.ADMIN));
 
-		role = userService.getRole("General");
+		role = userService.getRole("General User");
 		assertThat(role, is(Role.USER));
 
-		role = userService.getRole("Super");
+		role = userService.getRole("Super User");
 		assertThat(role, is(Role.SUPER_USER));
 
 		role = userService.getRole("System User");
