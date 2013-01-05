@@ -101,7 +101,7 @@
 						<th class="nothing"><@spring.message "common.label.status"/></th>
 						<th id="testName"><@spring.message "perfTest.table.testName"/></th>
 						<th id="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
-						<th class="nothing"><@spring.message "perfTest.table.modifier"/></th>
+						<th class="nothing"><#if isAdmin??><@spring.message "perfTest.table.owner"/><#else><@spring.message "perfTest.table.modifier"/></#if></th>
 						<#if clustered>
 						<th id="region"><@spring.message "agent.table.region"/></th>
 						</#if>
@@ -133,7 +133,6 @@
 										<img class="status" src="${req.getContextPath()}/img/ball/${test.status.iconName}"/> 
 									</div>
 								</td>
-
 								<td class="ellipsis ${test.dateString}" data-content="${(test.description!"")?replace('\n', '<br/>')?html} &lt;p&gt;${test.testComment?replace('\n', '<br/>')?html}&lt;/p&gt;  &lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;&lt;p&gt;<#if test.tagString?has_content><@spring.message "perfTest.configuration.tags"/> : ${test.tagString}&lt;/p&gt;</#if>"  
 										 data-original-title="${test.testName}">
 									<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
@@ -147,13 +146,18 @@
 										<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}">${test.scriptName}</a>
 									</#if>
 								</td>
-		            			<td class="ellipsis" data-original-title="<@spring.message "perfTest.table.modifier.oneline"/>" 
-		            				data-content="<@spring.message "perfTest.table.creator"/> : ${test.createdUser.userName}&lt;br&gt; <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName}">${test.lastModifiedUser.userName}
+		            			<td class="ellipsis" data-original-title="<@spring.message "perfTest.table.participants"/>" 
+		            				data-content="<@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName}&lt;br&gt; <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName}">
+		            				<#if isAdmin??>
+		            					${test.lastModifiedUser.userName}
+		            				<#else>
+		            					${test.createdUser.userName}
+		            				</#if>
 		            			</td>
-							<#if clustered>
+								<#if clustered>
 								<td class="ellipsis" title="<@spring.message "agent.table.region"/>" data-content='<#if test.region?has_content><@spring.message "${test.region}"/></#if>'> <#if test.region?has_content><@spring.message "${test.region}"/></#if> 
 								</td>
-							</#if>
+								</#if>
 								<td>
 									<#if test.startTime?exists>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if>
 								</td>
