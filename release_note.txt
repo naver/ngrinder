@@ -1,15 +1,31 @@
 3.1.0 (2013.01.07)
-- Major release supporting followings. 
-  * Select one of multiple network regions to choose the agents depending on the test target.
-  * Share the user account to the other user by specifying followers.
-  * Support CUBRID HA to enhance the stabilization.
-  * Be able to show announcement message to users.
-  * Add system configuration page, and for most of the fields, that can work without restarting the server.
 
-- Other improvement
-  * Use super user role for checking all user's scripts and tests.
-  * Add a VM properties about "Xmx Xms" for test running process, to avoid the test running process using too
-    much memory, especially on 64 bit server.
+We're proudly releasing nGrinder 3.1 targeting the large organization. 
+With some bug fix, the following improvements are for the effective operations of nGrinder.      
+
+- Main features and change:
+  * Support multiple region. User now can select one of multiple network regions to choose the agents depending on the test target location. 
+    All controllers in regions need to use a directory on network file system for controllers’ home directory.
+    - See http://www.cubrid.org/wiki_ngrinder/entry/controller-clustering-guide
+  * Share user accounts. Now a user can share his permission to other users. Then the other user can start/check test with his rights.
+    - http://www.cubrid.org/wiki_ngrinder/entry/user-permission
+  * Modified monitoring function to not to use DB to save monitor data. Now the monitor data will be saved in a data file of the test directory.
+  * Enable the super user role. Super user can check all user's tests and scripts without the permission for system configuration.
+  * Enhance the default process and thread count calculation.  process count is configured in the much better way.
+    - See http://www.cubrid.org/wiki_ngrinder/entry/advanced-controller-configuration
+  * Add dynamic system configuration. You don't need to restart the server for the most of configuration changes.
+    - See http://www.cubrid.org/wiki_ngrinder/entry/advanced-controller-configuration
+  * Make agent much stable by providing the appropriate memory size (Reducing OOM)
+	- See http://www.cubrid.org/wiki_ngrinder/entry/agent-configuration-guide
+  * Change the license from BDS to Apache 2.0 
+  
+- Minor improvement
+  * Support CUBRID HA to remove the single of point failure. Make it stable as much as possible.
+    - See http://www.cubrid.org/wiki_ngrinder/entry/advanced-controller-configuration
+  * Support SHA256 password encoding depending on the configuration. Enjoy the better security. 
+    - See http://www.cubrid.org/wiki_ngrinder/entry/advanced-controller-configuration
+  * Support the custom help site. Make your own site to help people.
+    - See http://www.cubrid.org/wiki_ngrinder/entry/advanced-controller-configuration
 
 
 3.0.4 (2012.12.04)
