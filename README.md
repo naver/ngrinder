@@ -44,7 +44,7 @@ Features
 Download
 --------
 
-You can download the lastest nGrinder in the following link. 
+You can download the latest nGrinder in the following link. 
 * http://sourceforge.net/projects/ngrinder/files/
 
 Documentation
