@@ -17,12 +17,13 @@ With some bug fix, the following improvements are for the effective operations o
     - See http://www.cubrid.org/wiki_ngrinder/entry/advanced-controller-configuration
   * Make agent much stable by providing the appropriate memory size (Reducing OOM)
 	- See http://www.cubrid.org/wiki_ngrinder/entry/agent-configuration-guide
+  * Add "Mean time to first byte" chart in the detailed report. 
   * Change the license from BDS to Apache 2.0 
   
 - Minor improvement
   * Support CUBRID HA to remove the single of point failure. Make it stable as much as possible.
     - See http://www.cubrid.org/wiki_ngrinder/entry/advanced-controller-configuration
-  * Support SHA256 password encoding depending on the configuration. Enjoy the better security. 
+  * Support SHA256 password encoding depending on the configuration. Secure your account with the better password encoding. 
     - See http://www.cubrid.org/wiki_ngrinder/entry/advanced-controller-configuration
   * Support the custom help site. Make your own site to help people.
     - See http://www.cubrid.org/wiki_ngrinder/entry/advanced-controller-configuration

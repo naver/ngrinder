@@ -143,7 +143,7 @@
 			    	<div class="chart" id="tpsDiv"></div>
 					<h6><@spring.message "perfTest.report.header.meantime"/>&nbsp;(ms)</h6>
     				<div class="chart" id="meanTimeDiv"></div>
-    				<h6><@spring.message "perfTest.report.header.meantimetofirstbyte"/>&nbsp;(ms)</h6>
+    				<h6 id="minTimeFirstByteHeader"><@spring.message "perfTest.report.header.meantimetofirstbyte"/>&nbsp;(ms)</h6>
     				<div class="chart" id="minTimeFirstByte"></div>
 					<h6><@spring.message "perfTest.report.header.errors"/></h6>
     				<div class="chart" id="errorDiv"></div>
@@ -222,7 +222,13 @@
                     	var st = new Date($('#startTime').val());
                         drawChart('Transactions Per Second', 'tpsDiv', res.TPS, undefined, res.chartInterval);
                         drawChart('Mean Time', 'meanTimeDiv', res.Mean_Test_Time_ms, undefined, res.chartInterval);
-                        drawChart('Mean Time To First Byte', 'minTimeFirstByte', res.Mean_time_to_first_byte, undefined, res.chartInterval);
+                        if (res.Mean_time_to_first_byte !== undefined && 
+                        		res.Mean_time_to_first_byte !== '[ ]') {
+                        	drawChart('Mean Time To First Byte', 'minTimeFirstByte', res.Mean_time_to_first_byte, undefined, res.chartInterval);
+                        } else {
+                        	$("#minTimeFirstByte").hide();	
+                        	$("#minTimeFirstByteHeader").hide();
+                        }
                         drawChart('Errors Per Second', 'errorDiv', res.Errors, undefined, res.chartInterval);
                         return true;
                     } else {
