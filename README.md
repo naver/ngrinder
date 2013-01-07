@@ -44,8 +44,8 @@ Features
 Download
 --------
 
-nGrinder 3.0 Official version is available for download. It's stable enought to use.
-* https://github.com/nhnopensource/ngrinder/downloads
+You can download the lastest nGrinder in the following link. 
+* http://sourceforge.net/projects/ngrinder/files/
 
 Documentation
 -------------
