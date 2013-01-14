@@ -41,7 +41,7 @@ public enum FileType {
 	/** Jar. */
 	JAR("jar", "jar", FileCategory.LIBRARY, true, false),
 	/** Unknown. */
-	UNKNOWN("unknown", "", FileCategory.ETC, false, false),
+	UNKNOWN("unknown", "", FileCategory.ETC, false, true),
 	/** Dir. */
 	DIR("dir", "", FileCategory.ETC, false, false);
 	private String description;
