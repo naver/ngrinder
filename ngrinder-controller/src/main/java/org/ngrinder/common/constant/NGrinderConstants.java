@@ -79,7 +79,7 @@ public interface NGrinderConstants {
 	/**
 	 * Performance test execution frequency in milliseconds.
 	 */
-	public static final int PERFTEST_RUN_FREQUENCY_MILLISECONDS = 5000;
+	public static final int PERFTEST_RUN_FREQUENCY_MILLISECONDS = 2000;
 
 	/**
 	 * Max trial count to run performance test.

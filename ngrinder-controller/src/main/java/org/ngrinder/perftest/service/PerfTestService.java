@@ -635,8 +635,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			// Copy grinder properties
 			File userGrinderPropertiesPath = new File(getPerfTestDistributionPath(perfTest),
 							DEFAULT_GRINDER_PROPERTIES_PATH);
-			FileUtils.copyFile(config.getHome().getDefaultGrinderProperties(), userGrinderPropertiesPath);
-			GrinderProperties grinderProperties = new GrinderProperties(userGrinderPropertiesPath);
+			// FileUtils.copyFile(config.getHome().getDefaultGrinderProperties(),
+			// userGrinderPropertiesPath);
+			GrinderProperties grinderProperties = new GrinderProperties(config.getHome().getDefaultGrinderProperties());
 
 			User user = perfTest.getCreatedUser();
 
@@ -644,11 +645,11 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			FileEntry userDefinedGrinderProperties = fileEntryService.getFileEntry(user, FilenameUtils.concat(
 							FilenameUtils.getPath(perfTest.getScriptName()), DEFAULT_GRINDER_PROPERTIES_PATH), perfTest
 							.getScriptRevision());
-			if (userDefinedGrinderProperties != null) {
+			if (!config.isSecurityEnabled() && userDefinedGrinderProperties != null) {
+				// Make the property overridden by user property.
 				GrinderProperties userProperties = new GrinderProperties();
-				grinderProperties.load(new StringReader(userDefinedGrinderProperties.getContent()));
-				userProperties.putAll(grinderProperties);
-				grinderProperties = userProperties;
+				userProperties.load(new StringReader(userDefinedGrinderProperties.getContent()));
+				grinderProperties.putAll(userProperties);
 			}
 			grinderProperties.setAssociatedFile(new File(userGrinderPropertiesPath.getName()));
 			grinderProperties.setProperty(GrinderProperties.SCRIPT,
@@ -681,8 +682,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			grinderProperties.setProperty(GRINDER_PROP_JVM_CLASSPATH, getCustomClassPath(perfTest));
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, perfTest.getIgnoreSampleCount());
 			grinderProperties.setBoolean(GRINDER_PROP_SECURITY, config.isSecurityEnabled());
-			fileWriter = new FileWriter(userGrinderPropertiesPath);
-			grinderProperties.store(fileWriter, perfTest.getTestIdentifier());
+			// fileWriter = new FileWriter(userGrinderPropertiesPath);
+			// grinderProperties.store(fileWriter, perfTest.getTestIdentifier());
 			LOGGER.info("Grinder Properties : {} ", grinderProperties);
 			return grinderProperties;
 		} catch (Exception e) {
@@ -813,7 +814,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			lnr = new LineNumberReader(isr);
 			lnr.skip(targetFile.length());
 			lineNumber = lnr.getLineNumber() + 1;
-			interval = Math.max((int)(lineNumber / pointCount), 1);
+			interval = Math.max((int) (lineNumber / pointCount), 1);
 		} catch (Exception e) {
 			LOGGER.error("Get report data for " + dataType + " failed:" + e.getMessage(), e);
 		} finally {
@@ -863,7 +864,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				}
 				data = br.readLine();
 			}
-			if (reportData.charAt(reportData.length()-1) == ',') {
+			if (reportData.charAt(reportData.length() - 1) == ',') {
 				reportData.deleteCharAt(reportData.length() - 1);
 			}
 			reportData.append("]");
