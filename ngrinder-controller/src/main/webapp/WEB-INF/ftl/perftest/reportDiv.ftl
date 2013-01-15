@@ -54,8 +54,7 @@
 <div class="row" >
 	<div class="span4">
 		<div class="page-header">
-			<h4><@spring.message "perfTest.report.logs"/></h4>
-			<span style="margin-top:-20px" class="pull-right" rel="popover" data-content='<@spring.message "perfTest.report.logs.help"/>' data-original-title='<@spring.message "perfTest.report.logs"/>' type="toggle" id="log_comment"><i class="icon-question-sign"></i></span>
+			<h4><@spring.message "perfTest.report.logs"/><span style="margin-top:10px;margin-left:10px" rel="popover" data-content='<@spring.message "perfTest.report.logs.help"/>' data-original-title='<@spring.message "perfTest.report.logs"/>' type="toggle" id="log_comment"><i class="icon-question-sign"></i></span></h4>
 		</div>
 		<div style="mgin-left: 10px">
 			<#if logs?has_content> 
