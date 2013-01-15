@@ -25,6 +25,7 @@ import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.EncodingUtil;
+import org.ngrinder.common.util.NoOp;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 
@@ -231,7 +232,9 @@ public class Home implements NGrinderConstants {
 	 * @return {@link PerfTest} sub directory.
 	 */
 	private File getPerfTestSubDirectory(PerfTest perfTest, String subPath) {
-		return new File(getPerfTestDirectory(perfTest), subPath);
+		File file = new File(getPerfTestDirectory(perfTest), subPath);
+		file.mkdirs();
+		return file;
 	}
 
 	/**
@@ -252,12 +255,31 @@ public class Home implements NGrinderConstants {
 	/**
 	 * Get the sub directory directory for base perftest directory.
 	 * 
-	 * @param subPath
-	 *            subPath
+	 * @param id
+	 *            id
 	 * @return {@link PerfTest} sub directory.
 	 */
-	public File getPerfTestDirectory(String subPath) {
-		return new File(getPerfTestDirectory(), subPath);
+	public File getPerfTestDirectory(String id) {
+		File file = new File(getPerfTestDirectory(), id);
+		// For backward compatibility
+		if (!file.exists()) {
+			file = getDistributedFolderName(id);
+		}
+		file.mkdirs();
+		return file;
+	}
+
+	File getDistributedFolderName(String id) {
+		File file;
+		int numericId = 0;
+		try {
+			numericId = (Integer.parseInt(id) / 1000) * 1000;
+		} catch (NumberFormatException e) {
+			NoOp.noOp();
+		}
+		String folderName = String.format("%d_%d%s%s", numericId, numericId + 999, File.separator, id);
+		file = new File(getPerfTestDirectory(), folderName);
+		return file;
 	}
 
 	/**
