@@ -90,20 +90,6 @@ public class AgentHome {
 	}
 
 	/**
-	 * Create sub path on the agent home directory.
-	 * 
-	 * @param subPathName
-	 *            sub path name
-	 */
-	// not used
-	// public void makeSubPath(String subPathName) {
-	// File subFile = new File(directory, subPathName);
-	// if (!subFile.exists()) {
-	// subFile.mkdir();
-	// }
-	// }
-
-	/**
 	 * Get properties from path.
 	 * 
 	 * @param path

@@ -167,7 +167,7 @@ public class NGrinderStarter {
 	}
 
 	/**
-	 * Add tools.jar classpath. This contains hack
+	 * AddClass path
 	 */
 	protected void addClassPath() {
 		ArrayList<String> libString = new ArrayList<String>();
