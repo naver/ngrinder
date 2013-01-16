@@ -90,7 +90,8 @@ public class LocalScriptTestDriveService {
 			GrinderProperties properties = new GrinderProperties();
 			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), libPath, securityEnabled,
 							hostString, NetworkUtil.getLocalHostName());
-
+			properties.setInt("grinder.processes", 1);
+			properties.setInt("grinder.threads", 1);
 			properties.setProperty("grinder.jvm.classpath", builder.buildCustomClassPath(true));
 
 			AgentIdentityImplementation agentIndentity = new AgentIdentityImplementation("validation");
