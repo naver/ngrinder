@@ -22,6 +22,10 @@ To get started,
 You can find out what nGrinder looks like with screenshot.
  * http://www.cubrid.org/wiki_ngrinder/entry/screen-shot
 
+Do you really want to use nGrinder? Check out our demo instance.
+ * http://ngrinder-demo.nhnopensource.org
+ * Login with id : user / password : user
+ * 
 nGrinder consists of two major components. 
 
 nGrinder controller
