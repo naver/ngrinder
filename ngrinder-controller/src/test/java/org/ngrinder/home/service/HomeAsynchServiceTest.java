@@ -33,7 +33,7 @@ public class HomeAsynchServiceTest extends AbstractNGrinderTransactionalTest {
 
 	@Autowired
 	private HomeAsyncService homeAsynchService;
-	
+
 	@Test
 	public void testGetEntries() throws IOException {
 		homeAsynchService.getLeftPanelEntries();
@@ -42,7 +42,8 @@ public class HomeAsynchServiceTest extends AbstractNGrinderTransactionalTest {
 		assertThat(leftPanelEntries.size(), lessThanOrEqualTo(8));
 
 		homeAsynchService.getRightPanelEntries();
-		List<PanelEntry> rightPanel = homeService.getRightPanelEntries();
+		List<PanelEntry> rightPanel = homeService
+						.getRightPanelEntries("http://ngrinder.642.n7.nabble.com/ngrinder-user-en-f50.xml");
 		assertThat(rightPanel.size(), greaterThanOrEqualTo(2));
 		assertThat(rightPanel.size(), lessThanOrEqualTo(8));
 

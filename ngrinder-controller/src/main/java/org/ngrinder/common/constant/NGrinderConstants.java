@@ -179,6 +179,8 @@ public interface NGrinderConstants {
 	public static final String NGRINDER_PROP_DEFAULT_LANGUAGE = "ngrinder.langauge.default";
 	public static final String NGRINDER_PROP_FRONT_PAGE_RSS = "ngrinder.frontpage.rss";
 	public static final String NGRINDER_NEWS_RSS_URL = "http://www.cubrid.org/wiki_ngrinder/rss";
+	public static final String NGRINDER_PROP_QNA_PAGE_RSS = "ngrinder.frontpage.qna.rss";
+	public static final String NGRINDER_QNA_RSS_URL_KEY = "home.qa.rss";
 	public static final String NGRINDER_PROP_REGION = "ngrinder.cluster.region";
 	public static final String NGRINDER_PROP_REGION_HIDE = "ngrinder.cluster.region.hide";
 	public static final int MAX_RUN_HOUR = 8;

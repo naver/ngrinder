@@ -16,16 +16,12 @@ package org.ngrinder.home.service;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.IOUtils;
-import org.eclipse.egit.github.core.Issue;
-import org.eclipse.egit.github.core.RepositoryId;
-import org.eclipse.egit.github.core.service.IssueService;
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.home.model.PanelEntry;
 import org.ngrinder.infra.config.Config;
@@ -52,18 +48,11 @@ public class HomeService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HomeService.class);
 
-	private Map<String, String> openIssueQuery = new HashMap<String, String>(1);
-	private Map<String, String> closeIssueQuery = new HashMap<String, String>(1);
-
 	/**
 	 * Initialize.
 	 */
 	@PostConstruct
 	public void init() {
-		openIssueQuery.put("state", "open");
-		openIssueQuery.put("labels", "announcement");
-		closeIssueQuery.put("state", "close");
-		closeIssueQuery.put("labels", "announcement");
 	}
 
 	@Autowired
@@ -108,40 +97,44 @@ public class HomeService {
 	}
 
 	/**
-	 * Get right panel entries. which has ngrinder cubrid wiki contents as defaults.
+	 * Get right panel entries. which has nabble contents as defaults.
+	 * 
 	 * @return {@link PanelEntry} list
 	 */
+	@SuppressWarnings("unchecked")
 	@Cacheable(value = "right_panel_entries")
-	public List<PanelEntry> getRightPanelEntries() {
-
-		IssueService service = new IssueService();
-		RepositoryId repo = new RepositoryId("nhnopensource", "ngrinder");
+	public List<PanelEntry> getRightPanelEntries(String urlString) {
+		SyndFeedInput input = new SyndFeedInput();
+		XmlReader reader = null;
 		try {
-
 			List<PanelEntry> panelEntries = new ArrayList<PanelEntry>();
-			List<Issue> issues = service.getIssues(repo, openIssueQuery);
-			issues = issues.subList(0, Math.min(issues.size(), PANEL_ENTRY_SIZE));
-			for (Issue each : issues) {
-				PanelEntry entry = new PanelEntry();
-				entry.setAuthor(each.getUser().getName());
-				entry.setLastUpdatedDate(each.getUpdatedAt() == null ? each.getCreatedAt() : each.getUpdatedAt());
-				entry.setTitle(each.getTitle());
-				entry.setLink(each.getHtmlUrl());
-				panelEntries.add(entry);
-			}
-			issues = service.getIssues(repo, closeIssueQuery);
-			for (Issue each : issues) {
-				PanelEntry entry = new PanelEntry();
-				entry.setAuthor(each.getUser().getName());
-				entry.setLastUpdatedDate(each.getUpdatedAt() == null ? each.getCreatedAt() : each.getUpdatedAt());
-				entry.setTitle(each.getTitle());
-				entry.setLink(each.getHtmlUrl());
-				panelEntries.add(entry);
+			URL url = new URL(urlString);
+			reader = new XmlReader(url);
+			SyndFeed feed = input.build(reader);
+			int count = 0;
+			for (Object eachObj : (feed.getEntries())) {
+				SyndEntryImpl each = (SyndEntryImpl)eachObj;
+				if (!StringUtils.startsWithIgnoreCase(each.getTitle(), "Re: ")) {
+					if (count++ > PANEL_ENTRY_SIZE) {
+						break;
+					}
+					PanelEntry entry = new PanelEntry();
+					entry.setAuthor(each.getAuthor());
+					entry.setLastUpdatedDate(each.getUpdatedDate() == null ? each.getPublishedDate() : each
+									.getUpdatedDate());
+					entry.setTitle(each.getTitle());
+					entry.setLink(each.getLink());
+					
+					panelEntries.add(entry);
+				}
 			}
 			Collections.sort(panelEntries);
 			return panelEntries;
+
 		} catch (Exception e) {
 			LOG.error("Error while patching ngriner rss", e);
+		} finally {
+			IOUtils.closeQuietly(reader);
 		}
 		return Collections.emptyList();
 	}

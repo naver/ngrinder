@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
@@ -42,9 +43,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.LocaleEditor;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -69,7 +72,6 @@ public class HomeController extends NGrinderBaseController {
 	@Autowired
 	private RegionService regionService;
 
-	
 	@Autowired
 	private Config config;
 
@@ -120,6 +122,7 @@ public class HomeController extends NGrinderBaseController {
 					ModelMap model, HttpServletResponse response, HttpServletRequest request) {
 		try {
 			Role role = null;
+			String lang = null;
 			try {
 				// set local language
 				setLanguage(getCurrentUser().getUserLanguage(), response, request);
@@ -129,8 +132,20 @@ public class HomeController extends NGrinderBaseController {
 				CoreLogger.LOGGER.info("Login Failure", e);
 				return "login";
 			}
-			model.addAttribute("right_panel_entries", homeService.getRightPanelEntries());
+			String rssUrl = getMessages(NGrinderConstants.NGRINDER_QNA_RSS_URL_KEY);
+			rssUrl = config.getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_QNA_PAGE_RSS, rssUrl);
+			model.addAttribute("right_panel_entries", homeService.getRightPanelEntries(rssUrl));
 			model.addAttribute("left_panel_entries", homeService.getLeftPanelEntries());
+
+			model.addAttribute(
+							"ask_question_url",
+							config.getSystemProperties().getProperty("ngrinder.ask.question.url",
+											getMessages("home.ask.question.url")));
+			model.addAttribute(
+							"see_more_question_url",
+							config.getSystemProperties().getProperty("ngrinder.more.question.url",
+											getMessages("home.qa.rss.all")));
+			
 			if (StringUtils.isNotBlank(exception)) {
 				model.addAttribute("exception", exception);
 			}
@@ -202,9 +217,20 @@ public class HomeController extends NGrinderBaseController {
 		LocaleResolver localeResolver = checkNotNull(RequestContextUtils.getLocaleResolver(request),
 						"No LocaleResolver found!");
 		LocaleEditor localeEditor = new LocaleEditor();
-		localeEditor.setAsText(StringUtils.defaultIfBlank(lan,
-						config.getSystemProperties().getProperty(NGRINDER_PROP_DEFAULT_LANGUAGE, "en")));
+		String language = StringUtils.defaultIfBlank(lan,
+						config.getSystemProperties().getProperty(NGRINDER_PROP_DEFAULT_LANGUAGE, "en"));
+		localeEditor.setAsText(language);
 		localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
+	}
+
+	/**
+	 * Provide help URL as a model attributes.
+	 * 
+	 * @return help URL
+	 */
+	@ModelAttribute("helpUrl")
+	public String helpUrl() {
+		return config.getHelpUrl();
 	}
 
 	/**

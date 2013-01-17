@@ -58,7 +58,7 @@
 				  			<tr>
 				  				<td>
 				  					<img src="${req.getContextPath()}/img/asksupport.gif"/> 
-				  					<a href="http://github.com/nhnopensource/ngrinder/issues/new?labels=question">
+				  					<a href="${ask_question_url}">
 				  						<@spring.message "home.button.ask"/>
 				  					</a>&nbsp;&nbsp;&nbsp; 
 				  					<img src="${req.getContextPath()}/img/bug_icon.gif"/>
@@ -66,7 +66,7 @@
 				  						<@spring.message "home.button.bug"/>
 				  					</a>	
 				  				</td>
-				  				<td><a href="http://github.com/nhnopensource/ngrinder/issues" target="_blank"><i class="icon-share-alt"></i>&nbsp;<@spring.message "home.button.more"/></a></td>
+				  				<td><a href="${see_more_question_url}" target="_blank"><i class="icon-share-alt"></i>&nbsp;<@spring.message "home.button.more"/></a></td>
 				  			</tr>
 				  			</div>
 		  				</table>

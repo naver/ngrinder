@@ -13,7 +13,11 @@
  */
 package org.ngrinder.home.service;
 
+import java.util.Locale;
+
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -30,12 +34,17 @@ public class HomeAsyncService {
 	@Autowired
 	private HomeService homeService;
 
+	@Autowired
+	private MessageSource messageSource;
+
 	/**
 	 * Get the right panel entries with async way.
 	 */
 	@Async
 	public void getRightPanelEntries() {
-		homeService.getRightPanelEntries();
+		String message = messageSource.getMessage(NGrinderConstants.NGRINDER_QNA_RSS_URL_KEY, null,
+						new Locale("en"));
+		homeService.getRightPanelEntries(message);
 	}
 
 	/**
