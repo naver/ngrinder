@@ -41,6 +41,7 @@ Following variables are available.
 - fileEntryService	(org.ngrinder.script.service.FileEntryService)
 - config (org.ngrinder.infra.config.Config)
 - pluginManager (org.ngrinder.infra.plugin.PluginManager)
+- cacheManager (org.springframework.cache.CacheManager)
 
 Please type following and click the Submit button as a example
 

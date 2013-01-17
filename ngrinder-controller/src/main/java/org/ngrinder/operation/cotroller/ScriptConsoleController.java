@@ -37,6 +37,7 @@ import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.user.service.UserService;
 import org.python.util.PythonInterpreter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -89,6 +90,9 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	@Autowired
 	private TagService tagService;
 
+	@Autowired
+	private CacheManager cacheManager;
+	
 	private PythonInterpreter interp;
 
 	/**
@@ -128,6 +132,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 		interp.set("fileEntryService", this.fileEntryService);
 		interp.set("config", getConfig());
 		interp.set("pluginManager", this.pluginManager);
+		interp.set("cacheManager", this.cacheManager);
 	}
 
 	/**
