@@ -98,10 +98,11 @@ Found a bug? Got an idea for an enhancement? Please create an issue here on GitH
 Our official bug tracker is at the following link. Check here to monitor our development status.
 * http://jira.cubrid.org/browse/NGRINDER
 
-You can join our mailing list as well
+You can join our forum as well
 * Dev : http://ngrinder.642.n7.nabble.com/ngrinder-dev-f1.html 
-* User : http://ngrinder.642.n7.nabble.com/ngrinder-user-f50.html
-
+* User Forum : http://ngrinder.642.n7.nabble.com/ngrinder-user-f50.html
+* 中文论坛 (Chinese) http://ngrinder.642.n7.nabble.com/ngrinder-user-cn-f114.html
+* 한국어 유저 포럼 (Korean) http://ngrinder.642.n7.nabble.com/ngrinder-user-kr-f113.html
 
 
 Copyright and license
