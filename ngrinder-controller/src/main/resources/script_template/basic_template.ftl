@@ -9,24 +9,25 @@
 from net.grinder.script.Grinder import grinder
 from net.grinder.script import Test
 from net.grinder.plugin.http import HTTPRequest
+from net.grinder.plugin.http import HTTPPluginControl
 
 test1 = Test(1, "Test1")
+control = HTTPPluginControl.getConnectionDefaults()
 request1 = test1.wrap(HTTPRequest())
 
-# control = HTTPPluginControl.getConnectionDefaults()
-# if you want to follow the redirection, please modify the following option 1.
-# contorl.setFollowRedirects(0)
-# and add the import statement at the beginning
-# from net.grinder.plugin.http import HTTPPluginControl 
+# if you don't want that HTTPRequest follows the redirection, please modify the following option 0.
+control.followRedirects = 1;
 # if you want to increase the timeout, please modify the following option.
-# control.setTimeout(3000)
+control.timeout = 3000
 
 class TestRunner:
-	def __call__(self):
+	def __init__(self):
 		grinder.statistics.delayReports=True
+		# initlialize threads 
+		pass
 		
+	def __call__(self):
 		result = request1.GET("${url}")
-
 		# result is a HTTPClient.HTTPResult. 
 		# We get the message body using the getText() method.
 		# if result.getText().find("HELLO WORLD") != -1 :

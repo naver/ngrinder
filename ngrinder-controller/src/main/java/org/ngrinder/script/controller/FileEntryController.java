@@ -175,7 +175,7 @@ public class FileEntryController extends NGrinderBaseController {
 					ModelMap model) {
 		fileName = StringUtils.trimToEmpty(fileName);
 		if (StringUtils.isBlank(testUrl)) {
-			testUrl = "http://sample.com";
+			testUrl = "http://please_modify_this.com";
 		}
 		model.addAttribute("createLibAndResource", createLibAndResources);
 		if (fileEntryService.hasFileEntry(user, path + "/" + fileName)) {
