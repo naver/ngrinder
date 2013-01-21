@@ -116,6 +116,12 @@
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/python.js"></script>
     <#include "../common/datatables.ftl">
     <script>
+    	changed = false;
+    	$(window).on('beforeunload', function() {
+    		if (changed == true) {
+    			return "<@spring.message "script.editor.message.exitwithoutsave"/>";
+    		}
+    	});
     	$(document).ready(function() {
 			var editor = CodeMirror.fromTextArea(document.getElementById("codemirrorContent"), {
 			   mode: "python",
@@ -138,6 +144,9 @@
 			   onCursorActivity: function() {
 			     editor.setLineClass(hlLine, null, null);
 			     hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
+			   },
+			   onChange : function() {
+				   changed = true;
 			   }
 			});
 			var hlLine = editor.setLineClass(0, "activeline");
@@ -148,6 +157,7 @@
 					$("#validatedHd").val("0");
 				}
 				$('#contentHd').val(newContent);
+				changed = false;
 				document.forms.contentForm.action = "${req.getContextPath()}/script/save";
 				document.forms.contentForm.submit();
 			});
@@ -182,6 +192,8 @@
 			  	});
 			});
 		});
+    	
+    
 		</script>
 	</body>
 </html>
