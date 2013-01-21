@@ -210,7 +210,7 @@ public class FileEntryController extends NGrinderBaseController {
 		}
 		model.addAttribute("file", script);
 		model.addAttribute("ownerId", user.getUserId());
-		
+
 		return "script/scriptEditor";
 	}
 
@@ -276,11 +276,12 @@ public class FileEntryController extends NGrinderBaseController {
 	@RequestMapping(value = "/search/**")
 	public String searchFileEntity(User user, @RequestParam(required = true, value = "query") final String query,
 					ModelMap model) {
+		final String trimedQuery = StringUtils.trimToEmpty(query);
 		Collection<FileEntry> searchResult = Collections2.filter(fileEntryService.getAllFileEntries(user),
 						new Predicate<FileEntry>() {
 							@Override
 							public boolean apply(FileEntry input) {
-								return StringUtils.containsIgnoreCase(new File(input.getPath()).getName(), query.trim());
+								return StringUtils.containsIgnoreCase(new File(input.getPath()).getName(), trimedQuery);
 							}
 						});
 		model.addAttribute("query", query);
@@ -303,17 +304,15 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @param createLibAndResource
 	 *            true if lib and resources should be created as well.
 	 * @param validated
-	 * 			  validated the script or not, 1 is validated, 0 is not.
+	 *            validated the script or not, 1 is validated, 0 is not.
 	 * @param model
 	 *            model
 	 * @return script/scriptList
 	 */
 	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
 	public String saveFileEntry(User user, @RemainedPath String path, FileEntry fileEntry,
-					@RequestParam String targetHosts,
-					@RequestParam(defaultValue = "0") String validated,
-					@RequestParam(defaultValue = "false") boolean createLibAndResource,
-					ModelMap model) {
+					@RequestParam String targetHosts, @RequestParam(defaultValue = "0") String validated,
+					@RequestParam(defaultValue = "false") boolean createLibAndResource, ModelMap model) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("validated", validated);
 		if (StringUtils.isNotBlank(targetHosts)) {

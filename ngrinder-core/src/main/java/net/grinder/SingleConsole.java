@@ -21,8 +21,6 @@ import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,6 +63,7 @@ import net.grinder.util.FileContents;
 import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
+import net.grinder.util.NetworkUtil;
 import net.grinder.util.thread.Condition;
 
 import org.apache.commons.collections.MapUtils;
@@ -224,12 +223,11 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @return console host
 	 */
 	public String getConsoleHost() {
-		try {
-			return StringUtils.defaultIfBlank(this.getConsoleProperties().getConsoleHost(), InetAddress.getLocalHost()
-							.getHostAddress());
-		} catch (UnknownHostException e) {
-			return "127.0.0.1";
+		String consoleHost = this.getConsoleProperties().getConsoleHost();
+		if (StringUtils.isEmpty(consoleHost)) {
+			consoleHost = NetworkUtil.getLocalHostAddress();
 		}
+		return consoleHost;
 	}
 
 	/**
@@ -256,8 +254,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			}, "SingleConsole on port " + getConsolePort());
 			consoleFoundationThread.setDaemon(true);
 			consoleFoundationThread.start();
-			// 10 second is too big?
-			eventSyncCondition.waitNoInterrruptException(10000);
+			eventSyncCondition.waitNoInterrruptException(5000);
 		}
 	}
 

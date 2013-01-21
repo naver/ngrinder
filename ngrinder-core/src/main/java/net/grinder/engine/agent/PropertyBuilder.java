@@ -85,7 +85,7 @@ public class PropertyBuilder {
 	public String buildJVMArgument() {
 		return addMemorySettings(new StringBuilder(buildJVMArgumentWithoutMemory())).toString();
 	}
-	
+
 	/**
 	 * Build JVM Arguments.
 	 * 
@@ -105,9 +105,9 @@ public class PropertyBuilder {
 		return jvmArguments.toString();
 	}
 
-	protected final static long DEFAULT_XMX_SIZE = 500 * 1024 * 1024;
-	protected final static long DEFAULT_MIN_XMX_SIZE = 200 * 1024 * 1024;
-	protected final static long DEFAULT_MAX_XMX_SIZE = 1024 * 1024 * 1024;
+	protected static final long DEFAULT_XMX_SIZE = 500 * 1024 * 1024;
+	protected static final long DEFAULT_MIN_XMX_SIZE = 200 * 1024 * 1024;
+	protected static final long DEFAULT_MAX_XMX_SIZE = 1024 * 1024 * 1024;
 
 	protected StringBuilder addMemorySettings(StringBuilder jvmArguments) {
 		String processCountStr = properties.getProperty("grinder.processes", "1");

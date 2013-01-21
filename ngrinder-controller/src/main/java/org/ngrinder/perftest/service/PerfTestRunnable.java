@@ -39,6 +39,7 @@ import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
+import net.grinder.plugin.http.HTTPRequest;
 import net.grinder.statistics.StatisticsSet;
 
 import org.apache.commons.lang.time.DateUtils;
@@ -415,7 +416,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 				LOG.error("Abnormal test {} by {}", perfTest.getId(), stopReason.name());
 			}
 		});
-
 		singleConsole.startSampling(grinderProperties.getInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, 0));
 		long startTime = singleConsole.startTest(grinderProperties);
 		perfTest.setStartTime(new Date(startTime));

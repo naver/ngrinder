@@ -130,6 +130,8 @@ public class UserService implements IUserService {
 	 * 
 	 * @param roleName
 	 *            role name
+	 * @param sort
+	 *            sort method
 	 * @return found user list
 	 */
 	public List<User> getAllUserByRole(String roleName, Sort sort) {

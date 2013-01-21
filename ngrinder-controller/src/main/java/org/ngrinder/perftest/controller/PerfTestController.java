@@ -366,7 +366,7 @@ public class PerfTestController extends NGrinderBaseController {
 		for (String each : numbers) {
 			id[i++] = NumberUtils.toLong(each, 0);
 		}
-		
+
 		List<PerfTest> perfTests = null;
 		if (StringUtils.isNotEmpty(ids)) {
 			perfTests = perfTestService.getPerfTest(user, id);
@@ -474,8 +474,6 @@ public class PerfTestController extends NGrinderBaseController {
 	 * Get the detailed report graph data for the given perftest id.<br/>
 	 * This method returns the appropriate points based on the given imgWidth.
 	 * 
-	 * @param user
-	 *            user
 	 * @param model
 	 *            model
 	 * @param testId
@@ -615,8 +613,6 @@ public class PerfTestController extends NGrinderBaseController {
 	/**
 	 * Get perftest report.
 	 * 
-	 * @param user
-	 *            user
 	 * @param model
 	 *            model
 	 * @param testId

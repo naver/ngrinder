@@ -31,15 +31,18 @@ import liquibase.sqlgenerator.core.RenameColumnGenerator;
 import liquibase.statement.core.RenameColumnStatement;
 
 /**
- * Cubrid specific syntax for column renaming.
+ * Rename Column sql generator. Modified to support Cubrid.
  * 
  * @since 3.1
  * @author Matt
  */
 public class RenameColumnExGenerator extends RenameColumnGenerator {
 
-	/**
-	 * override this method that could support cubrid syntax
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see liquibase.sqlgenerator.core.RenameColumnGenerator#generateSql(liquibase.statement.core.
+	 * RenameColumnStatement, liquibase.database.Database, liquibase.sqlgenerator.SqlGeneratorChain)
 	 */
 	@Override
 	public Sql[] generateSql(RenameColumnStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {

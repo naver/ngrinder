@@ -199,12 +199,19 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 						&& agentInfo.getStatus() == agentManager.getAgentState(agentIdentity);
 	}
 
-	public File getAgentPath(String key) {
+	/**
+	 * Agent monitor data share path.
+	 * 
+	 * @param subPath
+	 *            sub path
+	 * @return agent monitor data sub path.
+	 */
+	public File getAgentMonitoringDataPath(String subPath) {
 		File file = new File(config.getHome().getControllerShareDirectory(), "agents");
 		if (!file.exists()) {
 			file.mkdirs();
 		}
-		return new File(file, key);
+		return new File(file, subPath);
 	}
 
 	/**
@@ -218,9 +225,13 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		for (String each : keysWithExpiryCheck) {
 			ValueWrapper value = agentMonioringTargetsCache.get(each);
 			if (value != null && value.get() != null) {
-				writeObjectToFile(getAgentPath(each), getAgentManager().getSystemDataModel((AgentIdentity) value.get()));
+				writeObjectToFile(getAgentMonitoringDataPath(each), getSystemDataModel((AgentIdentity) value.get()));
 			}
 		}
+	}
+
+	private SystemDataModel getSystemDataModel(AgentIdentity agetIdentity) {
+		return getAgentManager().getSystemDataModel(agetIdentity);
 	}
 
 	/**
@@ -372,7 +383,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 	@Override
 	public SystemDataModel getAgentSystemDataModel(String ip, String name) {
-		return readObjectFromFile(getAgentPath(createAgentKey(ip, name)), new SystemDataModel());
+		return readObjectFromFile(getAgentMonitoringDataPath(createAgentKey(ip, name)), new SystemDataModel());
 	}
 
 	/**

@@ -54,7 +54,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	private static String errorJson;
 
-	protected static Gson gson = new Gson();
+	private static Gson gson = new Gson();
 
 	@Autowired
 	private MessageSource messageSource;
@@ -131,6 +131,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	public String helpUrl() {
 		return config.getHelpUrl();
 	}
+
 	/**
 	 * Provide announcement hide cookie as a model attributes.
 	 * 
@@ -221,20 +222,32 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
+	 * Convert the given object into json message.
+	 * 
+	 * @param obj
+	 *            object
+	 * @return json message
+	 */
+	public String toJson(Object obj) {
+		return gson.toJson(obj);
+	}
+
+	/**
 	 * Convert the given map into json message.
 	 * 
 	 * @param map
 	 *            map
 	 * @return json message
 	 */
-	public String toJson(Map<String, Object> map) {
+	public String toJson(Map<Object, Object> map) {
 		return gson.toJson(map);
 	}
 
 	/**
 	 * Handle exception.
 	 * 
-	 * @param e exception
+	 * @param e
+	 *            exception
 	 * 
 	 * @return modal and view
 	 */

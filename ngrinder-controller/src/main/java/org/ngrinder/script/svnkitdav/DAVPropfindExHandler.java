@@ -99,15 +99,15 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 
 	/**
 	 * Constructor.
+	 * 
 	 * @param connector
-	 * 			repository manager
+	 *            repository manager
 	 * @param request
-	 * 			servlet request
+	 *            servlet request
 	 * @param response
-	 * 			servlet response
+	 *            servlet response
 	 */
-	public DAVPropfindExHandler(
-			DAVRepositoryManager connector, HttpServletRequest request, HttpServletResponse response) {
+	public DAVPropfindExHandler(DAVRepositoryManager connector, HttpServletRequest request, HttpServletResponse response) {
 		super(connector, request, response);
 	}
 
@@ -124,7 +124,7 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 	 * Execute.
 	 * 
 	 * @throws SVNException
-	 * 			SVN exception
+	 *             SVN exception
 	 */
 	public void execute() throws SVNException {
 		DAVResource resource = getRequestedDAVResource(true, false);
@@ -183,14 +183,11 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 		try {
 			myLocksProvider = DAVLockInfoProvider.createLockInfoProvider(this, false);
 		} catch (SVNException svne) {
-			throw DAVException
-							.convertError(svne.getErrorMessage(),
-											HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-											"The lock database could not be opened, "
+			throw DAVException.convertError(svne.getErrorMessage(), HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+							"The lock database could not be opened, "
 											+ "preventing access to the various lock properties for the PROPFIND.",
-											null);
+							null);
 		}
-		
 
 		myResponseBuffer = new StringBuffer();
 		DAVXMLUtil.beginMultiStatus(getHttpServletResponse(), SC_MULTISTATUS, getNamespaces(), myResponseBuffer);
@@ -212,10 +209,11 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 
 		SVNXMLUtil.closeXMLTag(SVNXMLUtil.DAV_NAMESPACE_PREFIX, DAVElement.MULTISTATUS.getName(), myResponseBuffer);
 		String responseBody = myResponseBuffer.toString();
-		
-		//ServletDAVHandler.DEFAULT_XML_CONTENT_TYPE is  "text/xml; charset=\"utf-8\"";
-		//charset value is ""utf-8"", and it will throw java.io.UnsupportedEncodingException: "utf-8"
-		//so set "text/html;charset=utf-8"  
+
+		// ServletDAVHandler.DEFAULT_XML_CONTENT_TYPE is "text/xml; charset=\"utf-8\"";
+		// charset value is ""utf-8"", and it will throw java.io.UnsupportedEncodingException:
+		// "utf-8"
+		// so set "text/html;charset=utf-8"
 		HttpServletResponse myResponse = getHttpServletResponse();
 		myResponse.setContentType("text/html;charset=utf-8");
 		try {
@@ -236,24 +234,24 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 	 * Handle resource.
 	 * 
 	 * @param lockInfoProvider
-	 * 			lock info provider
+	 *            lock info provider
 	 * @param response
-	 * 			DAV response
+	 *            DAV response
 	 * @param resource
-	 * 			DAV resource
+	 *            DAV resource
 	 * @param ifHeaders
-	 * 			header or not
+	 *            header or not
 	 * @param flags
-	 * 			flags
+	 *            flags
 	 * @param callType
-	 * 			call type
+	 *            call type
 	 * @param lockScope
-	 * 			lock scope
+	 *            lock scope
 	 * 
 	 * @return DAV response
 	 * 
 	 * @throws DAVException
-	 * 			DAV exception
+	 *             DAV exception
 	 */
 	public DAVResponse handleResource(DAVResponse response, DAVResource resource, DAVLockInfoProvider lockInfoProvider,
 					LinkedList ifHeaders, int flags, DAVLockScope lockScope, CallType callType) throws DAVException {
@@ -535,10 +533,9 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 				try {
 					lock = myLocksProvider.getLock(resource);
 				} catch (DAVException dave) {
-					throw new DAVException(
-									"DAV:lockdiscovery could not be determined due to"
-									+ " a problem fetching the locks for this resource.",
-									dave.getResponseCode(), dave, 0);
+					throw new DAVException("DAV:lockdiscovery could not be determined due to"
+									+ " a problem fetching the locks for this resource.", dave.getResponseCode(), dave,
+									0);
 				}
 
 				if (lock == null) {
@@ -562,13 +559,13 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 		if (value != null) {
 			if (propAction == DAVInsertPropAction.INSERT_SUPPORTED) {
 				SVNXMLUtil.openXMLTag(SVNXMLUtil.DAV_NAMESPACE_PREFIX, DAVElement.SUPPORTED_LIVE_PROPERTY.getName(),
-						SVNXMLUtil.XML_STYLE_NORMAL, "D:name", livePropElement.getName(), buffer);
+								SVNXMLUtil.XML_STYLE_NORMAL, "D:name", livePropElement.getName(), buffer);
 			} else if (propAction == DAVInsertPropAction.INSERT_VALUE && value.length() != 0) {
 				SVNXMLUtil.openCDataTag(SVNXMLUtil.DAV_NAMESPACE_PREFIX, livePropElement.getName(), value, null, false,
-						false, buffer);
+								false, buffer);
 			} else {
 				SVNXMLUtil.openXMLTag(SVNXMLUtil.DAV_NAMESPACE_PREFIX, livePropElement.getName(),
-						SVNXMLUtil.XML_STYLE_SELF_CLOSING, null, buffer);
+								SVNXMLUtil.XML_STYLE_SELF_CLOSING, null, buffer);
 			}
 			inserted = propAction;
 		}
@@ -762,8 +759,7 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 			if (!resource.isCollection()
 							&& !resource.isBaseLined()
 							&& (resource.getType() == DAVResourceType.REGULAR
-											|| resource.getType() == DAVResourceType.VERSION 
-											|| resource.getType() == DAVResourceType.WORKING)) {
+											|| resource.getType() == DAVResourceType.VERSION || resource.getType() == DAVResourceType.WORKING)) {
 				try {
 					value = resource.getMD5Checksum(null);
 					if (value == null) {
@@ -871,8 +867,7 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 	}
 
 	private void streamResponse(DAVResource resource, int status, DAVPropsResult propStats) {
-		DAVResponse response = new DAVResponse(
-				null, resource.getResourceURI().getRequestURI(), null, propStats, status);
+		DAVResponse response = new DAVResponse(null, resource.getResourceURI().getRequestURI(), null, propStats, status);
 		DAVXMLUtil.sendOneResponse(response, myResponseBuffer);
 	}
 
@@ -890,8 +885,7 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 		List childrenElements = elem.getChildren();
 		for (Iterator childrenIter = childrenElements.iterator(); childrenIter.hasNext();) {
 			DAVElementProperty childElement = (DAVElementProperty) childrenIter.next();
-			DAVXMLUtil.addEmptyElement(
-					DAVPropfindExHandler.this.getNamespaces(), childElement.getName(), myPropStat404);
+			DAVXMLUtil.addEmptyElement(DAVPropfindExHandler.this.getNamespaces(), childElement.getName(), myPropStat404);
 		}
 
 		SVNXMLUtil.closeXMLTag(SVNXMLUtil.DAV_NAMESPACE_PREFIX, DAVElement.PROP.getName(), myPropStat404);
