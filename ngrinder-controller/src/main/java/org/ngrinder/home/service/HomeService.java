@@ -13,6 +13,8 @@
  */
 package org.ngrinder.home.service;
 
+import static org.ngrinder.common.util.TypeConvertUtil.convert;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -97,11 +99,12 @@ public class HomeService {
 	}
 
 	/**
-	 * Get right panel entries. which has nabble contents as defaults.
+	 * Get right panel entries. which has the nabble contents as defaults.
 	 * 
+	 * @param urlString
+	 *            rss url message
 	 * @return {@link PanelEntry} list
 	 */
-	@SuppressWarnings("unchecked")
 	@Cacheable(value = "right_panel_entries")
 	public List<PanelEntry> getRightPanelEntries(String urlString) {
 		SyndFeedInput input = new SyndFeedInput();
@@ -113,7 +116,7 @@ public class HomeService {
 			SyndFeed feed = input.build(reader);
 			int count = 0;
 			for (Object eachObj : (feed.getEntries())) {
-				SyndEntryImpl each = (SyndEntryImpl)eachObj;
+				SyndEntryImpl each = convert(eachObj);
 				if (!StringUtils.startsWithIgnoreCase(each.getTitle(), "Re: ")) {
 					if (count++ > PANEL_ENTRY_SIZE) {
 						break;
@@ -124,7 +127,7 @@ public class HomeService {
 									.getUpdatedDate());
 					entry.setTitle(each.getTitle());
 					entry.setLink(each.getLink());
-					
+
 					panelEntries.add(entry);
 				}
 			}

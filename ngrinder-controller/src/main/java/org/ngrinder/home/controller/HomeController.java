@@ -43,7 +43,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.LocaleEditor;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -122,7 +121,6 @@ public class HomeController extends NGrinderBaseController {
 					ModelMap model, HttpServletResponse response, HttpServletRequest request) {
 		try {
 			Role role = null;
-			String lang = null;
 			try {
 				// set local language
 				setLanguage(getCurrentUser().getUserLanguage(), response, request);
@@ -145,7 +143,7 @@ public class HomeController extends NGrinderBaseController {
 							"see_more_question_url",
 							config.getSystemProperties().getProperty("ngrinder.more.question.url",
 											getMessages("home.qa.rss.all")));
-			
+
 			if (StringUtils.isNotBlank(exception)) {
 				model.addAttribute("exception", exception);
 			}
@@ -183,7 +181,7 @@ public class HomeController extends NGrinderBaseController {
 		}
 		StringBuilder builder = new StringBuilder();
 		builder.append(regionService.getCurrentRegion()).append("\n");
-		return gson.toJson(regionService.getRegions());
+		return toJson(regionService.getRegions());
 	}
 
 	/**
