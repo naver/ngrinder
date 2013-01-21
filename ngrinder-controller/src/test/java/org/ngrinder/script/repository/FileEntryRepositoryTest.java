@@ -25,10 +25,10 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.infra.init.DBInit;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
-import org.ngrinder.script.util.CompressionUtil;
 import org.ngrinder.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -52,11 +52,10 @@ public class FileEntryRepositoryTest extends AbstractNGrinderTransactionalTest {
 	 */
 	@Before
 	public void before() throws IOException {
-		CompressionUtil compressUtil = new CompressionUtil();
 
 		File file = new File(System.getProperty("java.io.tmpdir"), "repo");
 		FileUtils.deleteQuietly(file);
-		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), file);
+		CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), file);
 		repo.setUserRepository(new File(file, getTestUser().getUserId()));
 	}
 

@@ -42,6 +42,7 @@ import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -365,7 +366,7 @@ public class AgentManager implements NGrinderConstants {
 		final Set<AgentIdentity> neccessaryAgents = selectAgent(user, allFreeAgents, agentCount);
 		LOGGER.info("{} agents are starting for user {}", agentCount, user.getUserId());
 		for (AgentIdentity each : neccessaryAgents) {
-			LOGGER.info("- Agent {}", each.getName());	
+			LOGGER.info("- Agent {}", each.getName());
 		}
 		ExecutorService execService = null;
 		try {
@@ -450,6 +451,23 @@ public class AgentManager implements NGrinderConstants {
 							&& agentControllerServerDaemon.getAgentState(each) == AgentControllerState.BUSY) {
 				agentControllerServerDaemon.stopAgent(each);
 			}
+		}
+	}
+
+	/**
+	 * Send agent update message.
+	 * 
+	 * @param fileName
+	 *            file name
+	 * @param version
+	 *            updating version
+	 * @param downloadUrl
+	 *            download URL
+	 */
+	public void sendAgentUpdateMessage(String fileName, String version, String downloadUrl) {
+		for (AgentIdentity each : agentControllerServerDaemon.getAllAvailableAgents()) {
+			agentControllerServerDaemon.updateAgent(each, fileName, version, downloadUrl);
+			ThreadUtil.sleep(1000);
 		}
 	}
 }

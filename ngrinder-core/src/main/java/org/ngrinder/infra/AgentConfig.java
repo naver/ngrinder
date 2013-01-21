@@ -234,4 +234,8 @@ public class AgentConfig {
 		return internalProperties.getProperty(key, defaultValue);
 	}
 
+	public File getCurrentDirectory() {
+		return new File(System.getProperty("user.dir"));
+	}
+
 }

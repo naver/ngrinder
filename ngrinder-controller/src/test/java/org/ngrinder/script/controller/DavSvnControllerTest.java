@@ -22,9 +22,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.script.repository.MockFileEntityRepsotory;
 import org.ngrinder.script.svnkitdav.DAVHandlerExFactory;
-import org.ngrinder.script.util.CompressionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -48,15 +48,13 @@ public class DavSvnControllerTest extends AbstractNGrinderTransactionalTest {
 
 	private void prepareSVN() {
 		try {
-			CompressionUtil compressUtil = new CompressionUtil();
-
 			File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
 			fileEntityRepository.setUserRepository(new File(tempRepo, getTestUser().getUserId()));
 			tempRepo.deleteOnExit();
 			File testUserRoot = fileEntityRepository.getUserRepoDirectory(getTestUser()).getParentFile();
 			FileUtils.deleteQuietly(testUserRoot);
 			testUserRoot.mkdirs();
-			compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
+			CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
 			testUserRoot.deleteOnExit();
 
 		} catch (IOException e) {

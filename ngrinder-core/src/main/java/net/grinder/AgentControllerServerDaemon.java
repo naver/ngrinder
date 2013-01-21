@@ -25,6 +25,7 @@ import net.grinder.console.communication.AgentProcessControlImplementation;
 import net.grinder.console.communication.ConsoleCommunication;
 import net.grinder.console.communication.LogArrivedListener;
 import net.grinder.console.model.ConsoleProperties;
+import net.grinder.engine.communication.UpdateAgentGrinderMessage;
 import net.grinder.message.console.AgentControllerState;
 import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.agent.StopGrinderMessage;
@@ -85,8 +86,7 @@ public class AgentControllerServerDaemon {
 			this.agentControllerServer = new AgentControllerServer(RESOURCES, LOGGER, consoleProperties,
 							m_eventSyncCondition);
 		} catch (GrinderException e) {
-			throw new NGrinderRuntimeException(
-							"Exception occurs while initiating AgentControllerServerDaemon", e);
+			throw new NGrinderRuntimeException("Exception occurs while initiating AgentControllerServerDaemon", e);
 		}
 	}
 
@@ -143,16 +143,15 @@ public class AgentControllerServerDaemon {
 				thread.interrupt();
 			}
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException(
-							"Exception occurs while shutting down AgentControllerServerDaemon", e);
+			throw new NGrinderRuntimeException("Exception occurs while shutting down AgentControllerServerDaemon", e);
 		} finally {
 			thread = null;
 		}
 	}
 
 	public int getAllAttachedAgentsCount() {
-		return ((AgentProcessControl) agentControllerServer
-						.getComponent(AgentProcessControlImplementation.class)).getNumberOfLiveAgents();
+		return ((AgentProcessControl) agentControllerServer.getComponent(AgentProcessControlImplementation.class))
+						.getNumberOfLiveAgents();
 	}
 
 	/**
@@ -166,27 +165,32 @@ public class AgentControllerServerDaemon {
 	}
 
 	/**
-	 * Get the console port which the given controller's agent is using. 
-	 * @param agentIdentity agent identity
+	 * Get the console port which the given controller's agent is using.
+	 * 
+	 * @param agentIdentity
+	 *            agent identity
 	 * @return port
 	 */
 	public int getAgentConnectingPort(AgentIdentity agentIdentity) {
-		return agentControllerServer.getComponent(AgentProcessControlImplementation.class)
-						.getAgentConnectingPort(agentIdentity);
+		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgentConnectingPort(
+						agentIdentity);
 	}
 
 	/**
-	 * Get the agent status of the given agent controller.  
-	 * @param agentIdentity agent identity
+	 * Get the agent status of the given agent controller.
+	 * 
+	 * @param agentIdentity
+	 *            agent identity
 	 * @return agent controller status
 	 */
 	public AgentControllerState getAgentState(AgentIdentity agentIdentity) {
-		return agentControllerServer.getComponent(AgentProcessControlImplementation.class)
-						.getAgentControllerState(agentIdentity);
+		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgentControllerState(
+						agentIdentity);
 	}
 
 	/**
 	 * Get all free agents which is not used yet.
+	 * 
 	 * @return free agent list
 	 */
 	public Set<AgentIdentity> getAllFreeAgents() {
@@ -196,16 +200,19 @@ public class AgentControllerServerDaemon {
 
 	/**
 	 * Get {@link SystemDataModel} of the given agent.
-	 * @param agentIdentity agent identity
+	 * 
+	 * @param agentIdentity
+	 *            agent identity
 	 * @return {@link SystemDataModel} instance.
 	 */
 	public SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {
-		return agentControllerServer.getComponent(AgentProcessControlImplementation.class)
-						.getSystemDataModel(agentIdentity);
+		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getSystemDataModel(
+						agentIdentity);
 	}
 
 	/**
 	 * Get all available agents.
+	 * 
 	 * @return agent set
 	 */
 	public Set<AgentIdentity> getAllAvailableAgents() {
@@ -251,4 +258,20 @@ public class AgentControllerServerDaemon {
 						new StopGrinderMessage());
 	}
 
+	/**
+	 * Update agent to the given version.
+	 * 
+	 * @param agentIdentity
+	 *            agentIndentity
+	 * @param fileName
+	 *            name of the file to be updated
+	 * @param version
+	 *            version
+	 * @param url
+	 *            downloadUrl
+	 */
+	public void updateAgent(AgentIdentity agentIdentity, String fileName, String version, String url) {
+		getComponent(ConsoleCommunication.class).sendToAddressedAgents(new AgentAddress(agentIdentity),
+						new UpdateAgentGrinderMessage(fileName, version, url));
+	}
 }

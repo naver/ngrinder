@@ -1,11 +1,19 @@
 #!/bin/sh
 curpath=`dirname $0`
 cd ${curpath}
-controllerIp=""
-if [ $1 ]
-then
-  controllerIp="-Dcontroller=$1"
-fi
-LD_LIBRARY_PATH="${curpath}/native_lib/:${LD_LIBRARY_PATH}"
-export LD_LIBRARY_PATH
-java -Dstart.mode=agent ${controllerIp} -jar ngrinder-core-${ngrinder.version}.jar -server
+while:
+do
+	if [ -f ./update_package ]
+	then
+		echo UPDATE TO NEWER VERSION
+		# update package and run
+		rm -rf .\*.jar
+		cp -rf ./update_package/* .
+		rm -rf ./update_package
+	fi
+	./run_agent_internal.sh $1
+	if [ ! -f ./update_package ]
+	then
+		break
+	fi
+done

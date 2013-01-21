@@ -29,7 +29,7 @@ import org.ngrinder.AbstractNGrinderTransactionalTest;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.repository.MockFileEntityRepsotory;
-import org.ngrinder.script.util.CompressionUtil;
+import org.ngrinder.common.util.CompressionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockMultipartFile;
@@ -55,15 +55,13 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 
 	@Before
 	public void before() throws IOException {
-		CompressionUtil compressUtil = new CompressionUtil();
-
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
 		fileEntityRepository.setUserRepository(new File(tempRepo, getTestUser().getUserId()));
 		tempRepo.deleteOnExit();
 		File testUserRoot = fileEntityRepository.getUserRepoDirectory(getTestUser()).getParentFile();
 		FileUtils.deleteQuietly(testUserRoot);
 		testUserRoot.mkdirs();
-		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
+		CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
 		testUserRoot.deleteOnExit();
 
 		config.getSystemProperties().addProperty("http.url", "http://127.0.0.1:80");

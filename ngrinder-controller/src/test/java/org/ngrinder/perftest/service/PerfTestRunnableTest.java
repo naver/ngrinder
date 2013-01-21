@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
@@ -42,7 +43,6 @@ import org.ngrinder.monitor.service.MonitorService;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.repository.MockFileEntityRepsotory;
-import org.ngrinder.script.util.CompressionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
@@ -64,7 +64,6 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	public PerfTest currentTest;
 
-	
 	@Before
 	public void before() throws IOException {
 		ClassPathResource classPathResource = new ClassPathResource("native_lib/.sigar_shellrc");
@@ -72,14 +71,13 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		System.setProperty("java.library.path",
 						nativeLib + File.pathSeparator + System.getProperty("java.library.path"));
 		System.out.println("Java Lib Path : " + System.getProperty("java.library.path"));
-		CompressionUtil compressUtil = new CompressionUtil();
 
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
 		fileEntityRepository.setUserRepository(new File(tempRepo, getTestUser().getUserId()));
 		File testUserRoot = fileEntityRepository.getUserRepoDirectory(getTestUser()).getParentFile();
 
 		testUserRoot.mkdirs();
-		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
+		CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
 		testUserRoot.deleteOnExit();
 
 		prepareUserRepo();
@@ -91,7 +89,6 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 		allPerfTest.get(0).setScriptName("/hello/world.py");
 		allPerfTest.get(0).setDuration(30000L);
 		perfTestService.savePerfTest(testUser, allPerfTest.get(0));
-		
 
 		int agentCount = 0;
 		int checkLoop = 0;
@@ -109,10 +106,9 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 			agentService.approve(each.getId(), true);
 		}
 
-		//agentList = agentService.getLocalAgents();
+		// agentList = agentService.getLocalAgents();
 		assertThat(agentCount, is(1));
 	}
-
 
 	@Test
 	public void testDoTest() throws IOException {
@@ -188,10 +184,9 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	}
 
 	private void prepareUserRepo() throws IOException {
-		CompressionUtil compressUtil = new CompressionUtil();
 		File userRepoDirectory = fileEntityRepository.getUserRepoDirectory(null);
 		FileUtils.deleteQuietly(userRepoDirectory);
-		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), userRepoDirectory.getParentFile());
+		CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), userRepoDirectory.getParentFile());
 		FileEntry fileEntryDir = new FileEntry();
 		fileEntryDir.setPath("/hello");
 		fileEntryDir.setFileType(FileType.DIR);

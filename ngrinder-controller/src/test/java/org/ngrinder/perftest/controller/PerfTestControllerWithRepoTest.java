@@ -22,9 +22,9 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
 import org.ngrinder.script.repository.MockFileEntityRepsotory;
-import org.ngrinder.script.util.CompressionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.ui.ModelMap;
@@ -51,11 +51,9 @@ public class PerfTestControllerWithRepoTest extends AbstractPerfTestTransactiona
 	 */
 	@Before
 	public void before() throws IOException {
-		CompressionUtil compressUtil = new CompressionUtil();
-
 		File file = new File(System.getProperty("java.io.tmpdir"), "repo");
 		FileUtils.deleteQuietly(file);
-		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), file);
+		CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), file);
 		repo.setUserRepository(new File(file, getTestUser().getUserId()));
 	}
 

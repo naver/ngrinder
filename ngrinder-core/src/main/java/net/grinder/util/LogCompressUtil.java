@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -97,6 +98,39 @@ public abstract class LogCompressUtil {
 			byte[] buffer = new byte[COMPRESS_BUFFER_SIZE];
 			int count = 0;
 			checkNotNull(zipInputStream.getNextEntry(), "In zip, it should have at least one entry");
+			while ((count = zipInputStream.read(buffer, 0, COMPRESS_BUFFER_SIZE)) != -1) {
+				fos.write(buffer, 0, count);
+			}
+			fos.flush();
+		} catch (IOException e) {
+			LOGGER.error("Error occurs while uncompress {}", toFile.getAbsolutePath());
+			LOGGER.error("Details", e);
+			return;
+		} finally {
+			IOUtils.closeQuietly(fos);
+			IOUtils.closeQuietly(bio);
+			IOUtils.closeQuietly(zipInputStream);
+		}
+	}
+
+	/**
+	 * Uncompress the given array into the given file.
+	 * 
+	 * @param zipEntry
+	 *            byte array of compressed file
+	 * @param toFile
+	 *            file to be written
+	 */
+	public static void unCompressGzip(byte[] zipEntry, File toFile) {
+		FileOutputStream fos = null;
+		GZIPInputStream zipInputStream = null;
+		ByteArrayInputStream bio = null;
+		try {
+			bio = new ByteArrayInputStream(zipEntry);
+			zipInputStream = new GZIPInputStream(bio);
+			fos = new FileOutputStream(toFile);
+			byte[] buffer = new byte[COMPRESS_BUFFER_SIZE];
+			int count = 0;
 			while ((count = zipInputStream.read(buffer, 0, COMPRESS_BUFFER_SIZE)) != -1) {
 				fos.write(buffer, 0, count);
 			}

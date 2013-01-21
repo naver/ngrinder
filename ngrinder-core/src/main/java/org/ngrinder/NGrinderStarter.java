@@ -167,7 +167,7 @@ public class NGrinderStarter {
 	}
 
 	/**
-	 * AddClass path
+	 * Add class path.
 	 */
 	protected void addClassPath() {
 		ArrayList<String> libString = new ArrayList<String>();

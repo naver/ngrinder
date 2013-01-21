@@ -27,12 +27,12 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.perftest.controller.PerfTestController;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.repository.MockFileEntityRepsotory;
-import org.ngrinder.script.util.CompressionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.ui.ModelMap;
@@ -55,13 +55,12 @@ public class PerfTestCancellationTest extends AbstractPerfTestTransactionalTest 
 
 	@Before
 	public void before() throws IOException {
-		CompressionUtil compressUtil = new CompressionUtil();
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
 		fileEntityRepository.setUserRepository(new File(tempRepo, getTestUser().getUserId()));
 		File testUserRoot = fileEntityRepository.getUserRepoDirectory(getTestUser()).getParentFile();
 
 		testUserRoot.mkdirs();
-		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
+		CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), testUserRoot);
 		testUserRoot.deleteOnExit();
 
 		FileEntry fileEntry = new FileEntry();

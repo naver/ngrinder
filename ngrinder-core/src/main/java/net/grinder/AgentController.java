@@ -38,7 +38,6 @@ import net.grinder.engine.agent.Agent;
 import net.grinder.engine.common.AgentControllerConnectorFactory;
 import net.grinder.engine.communication.AgentControllerServerListener;
 import net.grinder.engine.communication.LogReportGrinderMessage;
-import net.grinder.engine.communication.UpdateAgentGrinderMessage;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerProcessReportMessage;
 import net.grinder.message.console.AgentControllerState;
@@ -85,6 +84,8 @@ public class AgentController implements Agent {
 	private int m_connectionPort = 0;
 
 	private static SystemDataModel emptySystemDataModel = new SystemDataModel();
+
+	private AgentUpdateHandler agentUpdateHandler;
 
 	/**
 	 * Constructor.
@@ -227,7 +228,8 @@ public class AgentController implements Agent {
 					m_connectionPort = 0;
 					m_state = AgentControllerState.BUSY;
 					sendCurrentState(consoleCommunication);
-					updateAgent(m_agentControllerServerListener.getLastUpdateAgentGrinderMessage());
+					agentUpdateHandler = new AgentUpdateHandler(agentConfig);
+					agentUpdateHandler.updateAgent(m_agentControllerServerListener.getLastUpdateAgentGrinderMessage());
 				} else if (m_agentControllerServerListener.received(AgentControllerServerListener.LOG_REPORT)) {
 					startMessage = null;
 					m_state = AgentControllerState.BUSY;
@@ -247,10 +249,6 @@ public class AgentController implements Agent {
 			shutdownConsoleCommunication(consoleCommunication);
 			m_timer.cancel();
 		}
-	}
-
-	private void updateAgent(UpdateAgentGrinderMessage lastUpdateAgentGrinderMessage) {
-		// FIXME
 	}
 
 	private void sendLog(ConsoleCommunication consoleCommunication, String testId) {

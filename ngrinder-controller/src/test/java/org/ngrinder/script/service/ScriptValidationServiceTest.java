@@ -32,11 +32,11 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
+import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.infra.init.ClassPathInit;
 import org.ngrinder.infra.init.DBInit;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.repository.MockFileEntityRepsotory;
-import org.ngrinder.script.util.CompressionUtil;
 import org.ngrinder.service.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,11 +85,9 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 	 */
 	@Before
 	public void before() throws IOException {
-		CompressionUtil compressUtil = new CompressionUtil();
-
 		File file = new File(System.getProperty("java.io.tmpdir"), "repo");
 		FileUtils.deleteQuietly(file);
-		compressUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), file);
+		CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), file);
 		repo.setUserRepository(new File(file, getTestUser().getUserId()));
 
 	}

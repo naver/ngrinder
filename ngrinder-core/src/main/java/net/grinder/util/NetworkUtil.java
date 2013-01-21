@@ -13,6 +13,10 @@
  */
 package net.grinder.util;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -21,10 +25,13 @@ import java.net.NetworkInterface;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
 import org.apache.commons.io.IOUtils;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,12 +65,12 @@ public abstract class NetworkUtil {
 
 	/**
 	 * Get local address by connecting to a server.
+	 * 
 	 * @param byConnecting
-	 * 				the server address to conenct.
+	 *            the server address to conenct.
 	 * @param port
-	 * 				the port to connect
-	 * @return IP address
-	 * 				local IP address
+	 *            the port to connect
+	 * @return IP address local IP address
 	 */
 	public static String getLocalHostAddress(String byConnecting, int port) {
 		InetAddress addr = getLocalInetAddress(byConnecting, port);
@@ -76,12 +83,12 @@ public abstract class NetworkUtil {
 
 	/**
 	 * Get local host name by connecting to a server.
+	 * 
 	 * @param byConnecting
-	 * 				the server address to conenct.
+	 *            the server address to conenct.
 	 * @param port
-	 * 				the port to connect
-	 * @return host name
-	 * 				local host name
+	 *            the port to connect
+	 * @return host name local host name
 	 */
 	public static String getLocalHostName(String byConnecting, int port) {
 		InetAddress addr = getLocalInetAddress(byConnecting, port);
@@ -93,7 +100,6 @@ public abstract class NetworkUtil {
 	}
 
 	private static InetAddress getLocalInetAddress(String byConnecting, int port) {
-
 		InetAddress addr = getAddressWithSocket(byConnecting, port);
 		if (addr == null) {
 			addr = getAddressWithSocket("www.nhnopensource.org", 80);
@@ -152,9 +158,9 @@ public abstract class NetworkUtil {
 	}
 
 	/**
-	 * Get local host name.
-	 * On some platform, InetAddress.getLocalHost().getHostName() will return "localhost". If the /etc/hosts file is not set properly, it will return
-	 * "localhost" or throw exception. So, at this circumstance, we will get the address by connecting a network address.
+	 * Get local host name. On some platform, InetAddress.getLocalHost().getHostName() will return
+	 * "localhost". If the /etc/hosts file is not set properly, it will return "localhost" or throw
+	 * exception. So, at this circumstance, we will get the address by connecting a network address.
 	 * 
 	 * @return local host name
 	 */
@@ -169,7 +175,7 @@ public abstract class NetworkUtil {
 			return hostName;
 		}
 		return getLocalHostName("www.google.com", 80);
-		
+
 	}
 
 	/**
@@ -187,4 +193,37 @@ public abstract class NetworkUtil {
 		}
 	}
 
+	/**
+	 * Download a file from the given URL string.
+	 * 
+	 * @param urlString
+	 *            URL string
+	 * @param toFile
+	 *            file to be saved.
+	 */
+	public static void downloadFile(String urlString, File toFile) {
+		FileOutputStream os = null;
+		InputStream in = null;
+		URLConnection connection = null;
+		try {
+			URL url = new URL(urlString);
+			connection = url.openConnection();
+			connection.connect();
+			byte[] buffer = new byte[4 * 1024];
+			int read;
+			os = new FileOutputStream(toFile);
+			in = connection.getInputStream();
+			while ((read = in.read(buffer)) > 0) {
+				os.write(buffer, 0, read);
+			}
+		} catch (Exception e) {
+			LOGGER.error("download file from {} was failed", urlString, e);
+			throw new NGrinderRuntimeException("Error while download " + urlString, e);
+		} finally {
+			((HttpURLConnection) connection).disconnect();
+			IOUtils.closeQuietly(os);
+			IOUtils.closeQuietly(in);
+		}
+		return;
+	}
 }
