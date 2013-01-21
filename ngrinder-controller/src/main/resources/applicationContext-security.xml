@@ -53,8 +53,7 @@
 	<http pattern="/css/**" security="none" />
 	<http pattern="/img/**" security="none" />
 	<http pattern="/js/**" security="none" />
-	<http pattern="/chart/**" security="none" />
-	<http pattern="/editarea/**" security="none" />
+	<http pattern="/plugins/**" security="none" />
 	<http pattern="/login" security="none" />
 	<!-- used for shared test report page -->
 	<http pattern="/perftest/report/**" security="none" />

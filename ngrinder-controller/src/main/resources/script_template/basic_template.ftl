@@ -15,7 +15,7 @@ request1 = test1.wrap(HTTPRequest())
 
 # control = HTTPPluginControl.getConnectionDefaults()
 # if you want to follow the redirection, please modify the following option 1.
-# contorl.setFollowRedirects(0)
+# control.setFollowRedirects(0)
 # and add the import statement at the beginning
 # from net.grinder.plugin.http import HTTPPluginControl 
 # if you want to increase the timeout, please modify the following option.
