@@ -1132,6 +1132,16 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	/**
+	 * Check the test is performed at least once.
+	 * 
+	 * @return true if performed.
+	 * @since 3.1.1
+	 */
+	public boolean hasNoPerformedTest() {
+		return (getCurrentExecutionCount() == 0);
+	}
+
+	/**
 	 * Check this singleConsole is canceled.
 	 * 
 	 * @return true if yes.

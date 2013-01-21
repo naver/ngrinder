@@ -147,7 +147,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		if (config.hasNoMoreTestLock()) {
 			return;
 		}
-		// Block if the count of testing exceed the limit  
+		// Block if the count of testing exceed the limit
 		if (!perfTestService.canExecuteTestMore()) {
 			// LOG MORE
 			List<PerfTest> currentlyRunningTests = perfTestService.getCurrentlyRunningTest();
@@ -386,7 +386,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 					if (countOfLostAgent++ > 10) {
 						perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING,
 										"All agents are unexpectively lost.");
-					} 
+					}
 				} else {
 					countOfLostAgent = 0;
 				}
@@ -575,6 +575,9 @@ public class PerfTestRunnable implements NGrinderConstants {
 			if (singleConsoleInUse.hasTooManyError()) {
 				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR,
 								"The test is finished. but contains a lot of errors");
+			} else if (singleConsoleInUse.hasNoPerformedTest()) {
+				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR,
+								"The test is finished. but has no TPS");
 			} else {
 				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.FINISHED,
 								"The test is finished successfully");
