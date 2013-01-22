@@ -19,8 +19,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
@@ -114,14 +116,16 @@ public class HomeController extends NGrinderBaseController {
 	 *            response
 	 * @param request
 	 *            request
-	 * @return index if loggined. login if not.
+	 * @return "index" if already logged in. Otherwise "login".
 	 */
 	@RequestMapping(value = { "/home", "/" })
 	public String home(User user, @RequestParam(value = "exception", defaultValue = "") String exception,
-					ModelMap model, HttpServletResponse response, HttpServletRequest request) {
+					@RequestParam(value = "region", defaultValue = "") String region, ModelMap model,
+					HttpServletResponse response, HttpServletRequest request) {
 		try {
 			Role role = null;
 			try {
+				logReferer(region);
 				// set local language
 				setLanguage(getCurrentUser().getUserLanguage(), response, request);
 				setLoginPageDate(model);
@@ -138,7 +142,7 @@ public class HomeController extends NGrinderBaseController {
 			model.addAttribute(
 							"ask_question_url",
 							config.getSystemProperties().getProperty("ngrinder.ask.question.url",
-											getMessages("home.ask.question.url")));
+											getMessages("home.qa.question.url")));
 			model.addAttribute(
 							"see_more_question_url",
 							config.getSystemProperties().getProperty("ngrinder.more.question.url",
@@ -157,6 +161,12 @@ public class HomeController extends NGrinderBaseController {
 			// Make the home reliable...
 			model.addAttribute("exception", e.getMessage());
 			return "index";
+		}
+	}
+
+	private void logReferer(String region) {
+		if (StringUtils.isNotEmpty(region)) {
+			CoreLogger.LOGGER.info("Accessed from {}", region);
 		}
 	}
 
@@ -179,9 +189,10 @@ public class HomeController extends NGrinderBaseController {
 				LOG.error("Details : ", e);
 			}
 		}
-		StringBuilder builder = new StringBuilder();
-		builder.append(regionService.getCurrentRegion()).append("\n");
-		return toJson(regionService.getRegions());
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("current", regionService.getCurrentRegion());
+		map.put("regions", regionService.getRegions());
+		return toJson(map);
 	}
 
 	/**
@@ -199,16 +210,7 @@ public class HomeController extends NGrinderBaseController {
 	public String healthcheckSlowly(@RequestParam(value = "delay", defaultValue = "1000") int sleep,
 					HttpServletResponse response) {
 		ThreadUtil.sleep(sleep);
-		if (config.hasShutdownLock()) {
-			try {
-				response.sendError(503, "the ngrinder is about to down");
-			} catch (IOException e) {
-				LOG.error("While running healthcheck() in HomeController, the error occurs.");
-				LOG.error("Details : ", e);
-			}
-		}
-		return regionService.getCurrentRegion() + ":" + StringUtils.join(regionService.getRegions().keySet(), "|");
-
+		return healthcheck(response);
 	}
 
 	private void setLanguage(String lan, HttpServletResponse response, HttpServletRequest request) {
@@ -314,7 +316,7 @@ public class HomeController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/doError")
 	public String second(User user, ModelMap model, HttpServletResponse response, HttpServletRequest request) {
-		return home(user, null, model, response, request);
+		return home(user, null, null, model, response, request);
 	}
 
 }

@@ -48,12 +48,12 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 		User testUser2 = getTestUser();
 		testUser2.setUserLanguage("EN");
 		ModelMap model = new ModelMap();
-		String viewName = homeController.home(testUser2, null, model, res, req);
+		String viewName = homeController.home(testUser2, null, null, model, res, req);
 		assertThat(viewName, is("index"));
 
 		User testUserError = Mockito.spy(testUser2);
 		Mockito.when(testUserError.getRole()).thenReturn(Role.SYSTEM_USER);
-		viewName = homeController.home(testUserError, "Test Error message!", model, res, req);
+		viewName = homeController.home(testUserError, "Test Error message!", null, model, res, req);
 		assertThat(viewName, is("login"));
 
 	}
@@ -78,19 +78,19 @@ public class HomeControllerTest extends AbstractNGrinderTransactionalTest {
 		ModelMap model = new ModelMap();
 		String viewName = homeController.getAllTimeZone(model);
 		assertThat(viewName, is("allTimeZone"));
-		
+
 		homeController.changeTimeZone(getTestUser(), "Asia/Shanghai");
 	}
 
 	@Test
 	public void testErrorPage() {
-		RedirectAttributesModelMap  model = new RedirectAttributesModelMap ();
+		RedirectAttributesModelMap model = new RedirectAttributesModelMap();
 		String viewName = homeController.error404(model);
 		assertThat(viewName, is("redirect:/doError"));
 
 		MockHttpServletResponse res = new MockHttpServletResponse();
 		MockHttpServletRequest req = new MockHttpServletRequest();
-		viewName= homeController.second(getTestUser(), model, res, req);
+		viewName = homeController.second(getTestUser(), model, res, req);
 		assertThat(viewName, is("index"));
 	}
 
