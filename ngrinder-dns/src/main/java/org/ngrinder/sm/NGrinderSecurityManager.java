@@ -36,6 +36,8 @@ public class NGrinderSecurityManager extends SecurityManager {
 	private String javaHomeDirectory = System.getenv("JAVA_HOME");
 	private String jreHomeDirectory = null;
 	private String javaExtDirectory = System.getProperty("java.ext.dirs");
+	private String pythonPath = System.getProperty("python.path");
+	private String pythonHome = System.getProperty("python.home");
 	private String etcHosts = System.getProperty("ngrinder.etc.hosts", "");
 	private String consoleIP = System.getProperty("ngrinder.console.ip", "127.0.0.1");
 	private List<String> allowedHost = new ArrayList<String>();
@@ -74,6 +76,12 @@ public class NGrinderSecurityManager extends SecurityManager {
 		readAllowedDirectory.add(agentExecDirectory);
 		readAllowedDirectory.add(javaHomeDirectory);
 		readAllowedDirectory.add(jreHomeDirectory);
+		if (isNotEmpty(pythonHome)) {
+			readAllowedDirectory.add(pythonHome);
+		}
+		if (isNotEmpty(pythonPath)) {
+			readAllowedDirectory.add(pythonPath);
+		}
 		readAllowedDirectory.add(getTempDirectoryPath());
 		readAllowedDirectory.add("/dev/");
 		String[] jed = javaExtDirectory.split(";");
@@ -81,13 +89,20 @@ public class NGrinderSecurityManager extends SecurityManager {
 			je = normalize(new File(je).getAbsolutePath(), null);
 			readAllowedDirectory.add(je);
 		}
-
+		if (isNotEmpty(pythonHome)) {
+			writeAllowedDirectory.add(pythonHome);
+		}
+		if (isNotEmpty(pythonPath)) {
+			writeAllowedDirectory.add(pythonPath);
+		}
 		writeAllowedDirectory.add(workDirectory);
 		writeAllowedDirectory.add(logDirectory);
 		writeAllowedDirectory.add(getTempDirectoryPath());
 		deleteAllowedDirectory.add(workDirectory);
 	}
-
+	private static boolean isNotEmpty(String str) {
+		return str != null && str.length() != 0;
+	}
 	// -----------------------------------------------------------------------
 	/**
 	 * Returns the path to the system temporary directory.
@@ -176,7 +191,6 @@ public class NGrinderSecurityManager extends SecurityManager {
 	@Override
 	public void checkWrite(String file) {
 		this.fileAccessWriteAllowed(file);
-
 	}
 
 	@Override
@@ -188,8 +202,6 @@ public class NGrinderSecurityManager extends SecurityManager {
 	public void checkExec(String cmd) {
 		throw new SecurityException("Cmd execution of " + cmd + " is not allowed.");
 	}
-
-
 
 	/**
 	 * File read access is allowed on <br>

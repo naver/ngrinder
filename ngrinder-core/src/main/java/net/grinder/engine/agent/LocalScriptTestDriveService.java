@@ -92,20 +92,21 @@ public class LocalScriptTestDriveService {
 							hostString, NetworkUtil.getLocalHostName());
 			properties.setInt("grinder.processes", 1);
 			properties.setInt("grinder.threads", 1);
-			properties.setProperty("grinder.jvm.classpath",
-							GrinderClassPathUtils.buildForemostClasspathBasedOnCurrentClassLoader(LOGGER)
-											+ File.pathSeparator + builder.buildCustomClassPath(true));
-
+			String grinderJVMClassPath = GrinderClassPathUtils.buildForemostClasspathBasedOnCurrentClassLoader(LOGGER)
+							+ File.pathSeparator + builder.buildCustomClassPath(true);
+			properties.setProperty("grinder.jvm.classpath", grinderJVMClassPath);
+			LOGGER.info("grinder.jvm.classpath  : {} ", grinderJVMClassPath);
 			AgentIdentityImplementation agentIndentity = new AgentIdentityImplementation("validation");
 
 			String newClassPath = GrinderClassPathUtils.buildClasspathBasedOnCurrentClassLoader(LOGGER);
 			LOGGER.debug("Validation Class Path " + newClassPath);
-
 			Properties systemProperties = new Properties();
 			systemProperties.put("java.class.path", base.getAbsolutePath() + File.pathSeparator + newClassPath);
 			Directory workingDirectory = new Directory(base);
+			String buildJVMArgumentWithoutMemory = builder.buildJVMArgumentWithoutMemory();
+			LOGGER.info("JVM Args : {} ", buildJVMArgumentWithoutMemory);
 			final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
-							systemProperties, builder.buildJVMArgumentWithoutMemory(), workingDirectory);
+							systemProperties, buildJVMArgumentWithoutMemory, workingDirectory);
 
 			ScriptLocation scriptLocation = new ScriptLocation(workingDirectory, script);
 			ProcessWorkerFactory workerFactory = new ProcessWorkerFactory(workerCommandLine, agentIndentity,

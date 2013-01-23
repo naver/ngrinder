@@ -218,7 +218,7 @@ public class PropertyBuilder {
 	}
 
 	private StringBuilder addCurrentAgentPath(StringBuilder jvmArguments) {
-		return jvmArguments.append(" -Dngrinder.exec.path=").append(classPathBase.getAbsolutePath()).append(" ");
+		return jvmArguments.append(" -Dngrinder.exec.path=").append(baseDirectory.getFile()).append(" ");
 	}
 
 	private StringBuilder addConsoleIP(StringBuilder jvmArguments) {
