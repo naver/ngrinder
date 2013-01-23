@@ -36,9 +36,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Common utility for network env.
+ * Common network utility. This contains very careful implementation to detect current machine's ip.
+ * There are the following cases which block to get the appropriate ip.
+ * 
+ * <ul>
+ * <li>If there are VM in the same machine</li>
+ * <li>If /etc/hosts are not very well specified</li>
+ * </ul>
  * 
  * @author JunHo Yoon
+ * @author Mavlarn
+ * 
  * @since 3.0
  * 
  */
@@ -51,14 +59,14 @@ public abstract class NetworkUtil {
 	 * @return ip form of host address
 	 */
 	public static String getLocalHostAddress() {
-		String addr = null;
+		InetAddress localHost = null;
 		try {
-			addr = InetAddress.getLocalHost().getHostAddress();
+			localHost = InetAddress.getLocalHost();
 		} catch (Exception e) {
 			LOGGER.error("Error while get localhost address", e);
 		}
-		if (addr != null && !"127.0.0.1".equals(addr)) {
-			return addr;
+		if (localHost != null && !localHost.isLoopbackAddress()) {
+			return localHost.getHostAddress();
 		}
 		return getLocalHostAddress("www.google.com", 80);
 	}
@@ -67,7 +75,7 @@ public abstract class NetworkUtil {
 	 * Get local address by connecting to a server.
 	 * 
 	 * @param byConnecting
-	 *            the server address to conenct.
+	 *            the server address to connect.
 	 * @param port
 	 *            the port to connect
 	 * @return IP address local IP address
@@ -77,6 +85,7 @@ public abstract class NetworkUtil {
 		if (addr != null) {
 			return addr.getHostAddress();
 		} else {
+			// It's final...
 			return "127.0.0.1";
 		}
 	}
@@ -85,10 +94,10 @@ public abstract class NetworkUtil {
 	 * Get local host name by connecting to a server.
 	 * 
 	 * @param byConnecting
-	 *            the server address to conenct.
+	 *            the server address to connect.
 	 * @param port
 	 *            the port to connect
-	 * @return host name local host name
+	 * @return localhost name. if fails, return "localhost"
 	 */
 	public static String getLocalHostName(String byConnecting, int port) {
 		InetAddress addr = getLocalInetAddress(byConnecting, port);
@@ -102,7 +111,7 @@ public abstract class NetworkUtil {
 	private static InetAddress getLocalInetAddress(String byConnecting, int port) {
 		InetAddress addr = getAddressWithSocket(byConnecting, port);
 		if (addr == null) {
-			addr = getAddressWithSocket("www.nhnopensource.org", 80);
+			addr = getAddressWithSocket("www.baidu.com", 80);
 		}
 		if (addr == null) {
 			try {
@@ -119,7 +128,7 @@ public abstract class NetworkUtil {
 		try {
 			s = new Socket();
 			SocketAddress addr = new InetSocketAddress(byConnecting, port);
-			s.connect(addr, 1000); // 1 seconds timeout
+			s.connect(addr, 2000); // 2 seconds timeout
 			return s.getLocalAddress();
 		} catch (Exception e) {
 			return null;
@@ -189,6 +198,7 @@ public abstract class NetworkUtil {
 		try {
 			return InetAddress.getAllByName(host);
 		} catch (UnknownHostException e) {
+			LOGGER.error("Error while get localhost name for {}", host, e);
 			return new InetAddress[] {};
 		}
 	}
