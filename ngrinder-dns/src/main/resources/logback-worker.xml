@@ -1,0 +1,35 @@
+<configuration>
+
+	<property name="PREFIX" value="${LOG_DIRECTORY}/${WORKER_NAME}" />
+
+	<appender name="log-file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${PREFIX}.log</file>
+ 
+		<encoder>
+			<pattern>%d %-5level %message%n</pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<fileNamePattern>${PREFIX}.log%i</fileNamePattern>
+			<minIndex>1</minIndex>
+			<maxIndex>1</maxIndex>
+		</rollingPolicy>
+		
+		<triggeringPolicy class="net.grinder.util.logback.RollOnStartUp" />
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<maxFileSize>1MB</maxFileSize>
+		</triggeringPolicy>
+
+	</appender>
+
+	<appender name="data-file" class="ch.qos.logback.core.helpers.NOPAppender"/>
+
+	<logger name="worker" additivity="false">
+		<appender-ref ref="log-file" />
+	</logger>
+
+	<logger name="data" additivity="false" level="ERROR">
+		<appender-ref ref="data-file" />
+	</logger>
+
+</configuration>

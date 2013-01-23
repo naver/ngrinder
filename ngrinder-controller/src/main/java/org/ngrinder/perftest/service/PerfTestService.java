@@ -719,19 +719,20 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		perfTestDirectory.mkdirs();
 
 		String basePath = FilenameUtils.getPath(scriptEntry.getPath());
-
-		// To minimize log..
-		InputStream io = null;
-		FileOutputStream fos = null;
-		try {
-			io = new ClassPathResource("/logback/logback-worker.xml").getInputStream();
-			fos = new FileOutputStream(new File(perfTestDirectory, "logback-worker.xml"));
-			IOUtils.copy(io, fos);
-		} catch (IOException e) {
-			LOGGER.error("error while writing logback-worker", e);
-		} finally {
-			IOUtils.closeQuietly(io);
-			IOUtils.closeQuietly(fos);
+		if (config.getSystemProperties().getPropertyBoolean("ngrinder.dist.logback", true)) {
+			// To minimize log..
+			InputStream io = null;
+			FileOutputStream fos = null;
+			try {
+				io = new ClassPathResource("/logback/logback-worker.xml").getInputStream();
+				fos = new FileOutputStream(new File(perfTestDirectory, "logback-worker.xml"));
+				IOUtils.copy(io, fos);
+			} catch (IOException e) {
+				LOGGER.error("error while writing logback-worker", e);
+			} finally {
+				IOUtils.closeQuietly(io);
+				IOUtils.closeQuietly(fos);
+			}
 		}
 		// Distribute each files in that folder.
 		for (FileEntry each : fileEntries) {

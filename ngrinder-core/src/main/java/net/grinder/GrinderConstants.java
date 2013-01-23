@@ -28,7 +28,7 @@ public abstract class GrinderConstants {
 	public static final long AGENT_RETRY_INTERVAL = 1000;
 
 	/** Agent controller HeartBeat interval. */
-	public static final long AGENT_CONTROLLER_HEARTBEAT_INTERVAL = 300;
+	public static final long AGENT_CONTROLLER_HEARTBEAT_INTERVAL = 700;
 
 	/**
 	 * Agent controller daemon retry interval.
@@ -37,7 +37,7 @@ public abstract class GrinderConstants {
 
 	public static final int AGENT_CONTROLLER_FANOUT_STREAM_THREAD_COUNT = 3;
 	public static final int AGENT_FANOUT_STREAM_THREAD_COUNT = 3;
-	public static final int AGENT_HEARTBEAT_INTERVAL = 300;
-	public static final int AGENT_HEARTBEAT_DELAY = 300;
+	public static final int AGENT_HEARTBEAT_INTERVAL = 700;
+	public static final int AGENT_HEARTBEAT_DELAY = 700;
 
 }
