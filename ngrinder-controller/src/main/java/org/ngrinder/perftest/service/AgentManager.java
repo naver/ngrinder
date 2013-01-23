@@ -463,11 +463,19 @@ public class AgentManager implements NGrinderConstants {
 	 *            updating version
 	 * @param downloadUrl
 	 *            download URL
+	 * @return messge
 	 */
-	public void sendAgentUpdateMessage(String fileName, String version, String downloadUrl) {
+	public String sendAgentUpdateMessage(String fileName, String version, String downloadUrl) {
+		StringBuilder progress = new StringBuilder();
 		for (AgentIdentity each : agentControllerServerDaemon.getAllAvailableAgents()) {
 			agentControllerServerDaemon.updateAgent(each, fileName, version, downloadUrl);
 			ThreadUtil.sleep(1000);
+			progress.append("Update agent ").append(each).append(" to ").append(version).append("\n");
 		}
+		return progress.toString();
+	}
+
+	public void updateAgent(String fileName, String version, String downloadUrl) {
+		sendAgentUpdateMessage(fileName, version, downloadUrl);
 	}
 }

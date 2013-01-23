@@ -32,6 +32,8 @@ public enum AgentControllerState {
 	INACTIVE,
 	/** When agent is attached wrong region. */
 	WRONG_REGION,
+	/** When agent is updating. */
+	UPDATING,
 	/** Unknown. */
 	UNKNOWN
 }
