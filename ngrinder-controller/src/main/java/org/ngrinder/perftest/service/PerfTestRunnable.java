@@ -39,7 +39,6 @@ import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
-import net.grinder.plugin.http.HTTPRequest;
 import net.grinder.statistics.StatisticsSet;
 
 import org.apache.commons.lang.time.DateUtils;
@@ -467,7 +466,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
 	public void finishTest() {
-
 		for (PerfTest each : perfTestService.getAbnoramlTestingPerfTest()) {
 			LOG.error("Terminate {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());

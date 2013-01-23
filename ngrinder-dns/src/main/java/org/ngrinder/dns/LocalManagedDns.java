@@ -13,11 +13,9 @@
  */
 package org.ngrinder.dns;
 
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-// CHECKSTYLE:OFF
 import sun.net.spi.nameservice.NameService;
 
 /**
@@ -64,7 +62,7 @@ public class LocalManagedDns implements NameService {
 
 		String ipAddress = NameStore.getInstance().get(name);
 		if (DnsUtil.isNotEmpty(ipAddress)) {
-			InetAddress address = Inet4Address.getByAddress(DnsUtil.textToNumericFormat(ipAddress));
+			InetAddress address = InetAddress.getByAddress(DnsUtil.textToNumericFormat(ipAddress));
 			return new InetAddress[] { address };
 		} else {
 			return defaultDnsImpl.lookupAllHostAddr(name);

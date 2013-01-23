@@ -13,7 +13,7 @@
 			</div>
 			<#include "regionSelector.ftl">
 			<div class="well searchBar">
-				<button type="submit" class="btn" id="stopAgenButton"><i class="icon-stop"></i> <@spring.message "common.button.stop"/></button>
+				<button class="btn" id="stopAgentButton"><i class="icon-stop"></i> <@spring.message "common.button.stop"/></button>
 				<input type="text" style="visibility:hidden; margin:0">
 				<div class="input-prepend pull-right">
 					<span class="add-on" style="cursor:default">Agent Download
@@ -132,7 +132,7 @@
 				});
 				</#if>
 				
-				$("#stopAgenButton").click(function() {
+				$("#stopAgentButton").click(function() {
 					var ids = "";
 					var list = $("td input:checked");
 					if(list.length == 0) {
@@ -149,6 +149,7 @@
 					});
 					$confirm.children(".modal-body").addClass("errorColor");
 				});
+				
             });
 			
 			function stopAgents(ids) {
@@ -173,6 +174,7 @@
 			    	}
 			  	});
 			}
+			
 	     </script>
 	</body>
 </html>
