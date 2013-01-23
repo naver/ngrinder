@@ -95,17 +95,19 @@ public class ScriptValidationService {
 			scriptDirectory.mkdirs();
 
 			// Copy logback... first
-			InputStream io = null;
-			FileOutputStream fos = null;
-			try {
-				io = new ClassPathResource("/logback/logback-worker.xml").getInputStream();
-				fos = new FileOutputStream(new File(scriptDirectory, "logback-worker.xml"));
-				IOUtils.copy(io, fos);
-			} catch (IOException e) {
-				LOG.error("error while writing logback-worker", e);
-			} finally {
-				IOUtils.closeQuietly(io);
-				IOUtils.closeQuietly(fos);
+			if (config.getSystemProperties().getPropertyBoolean("ngrinder.dist.logback", true)) {
+				InputStream io = null;
+				FileOutputStream fos = null;
+				try {
+					io = new ClassPathResource("/logback/logback-worker.xml").getInputStream();
+					fos = new FileOutputStream(new File(scriptDirectory, "logback-worker.xml"));
+					IOUtils.copy(io, fos);
+				} catch (IOException e) {
+					LOG.error("error while writing logback-worker", e);
+				} finally {
+					IOUtils.closeQuietly(io);
+					IOUtils.closeQuietly(fos);
+				}
 			}
 
 			String basePath = FilenameUtils.getPath(scriptEntry.getPath());
