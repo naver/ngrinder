@@ -59,7 +59,7 @@ public interface NGrinderConstants {
 	/**
 	 * Initial Max vuser per agent.
 	 */
-	public static final int MAX_VUSER_PER_AGENT = 100;
+	public static final int MAX_VUSER_PER_AGENT = 300;
 
 	/**
 	 * Initial Max run count.
