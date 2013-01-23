@@ -223,10 +223,10 @@ public class AgentController implements Agent {
 					m_connectionPort = 0;
 					break;
 				} else if (m_agentControllerServerListener.received(AgentControllerServerListener.UPDATE_AGENT)) {
-					// Do update agent itself.
+					// Do update agent by downloading new version.
 					startMessage = null;
 					m_connectionPort = 0;
-					m_state = AgentControllerState.BUSY;
+					m_state = AgentControllerState.UPDATING;
 					sendCurrentState(consoleCommunication);
 					agentUpdateHandler = new AgentUpdateHandler(agentConfig);
 					agentUpdateHandler.updateAgent(m_agentControllerServerListener.getLastUpdateAgentGrinderMessage());

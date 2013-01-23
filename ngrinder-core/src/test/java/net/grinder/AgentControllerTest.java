@@ -159,7 +159,6 @@ public class AgentControllerTest extends AbstractMuliGrinderTestBase {
 		assertThat(allAvailableAgents.size(), is(2));
 		SingleConsole console1 = new SingleConsole(6372);
 		console1.start();
-
 		GrinderProperties grinderProperties = new GrinderProperties();
 		grinderProperties.setInt(GrinderProperties.CONSOLE_PORT, console1.getConsolePort());
 
