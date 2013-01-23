@@ -189,10 +189,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 		throw new SecurityException("Cmd execution of " + cmd + " is not allowed.");
 	}
 
-	@Override
-	public void checkLink(String lib) {
-		throw new SecurityException("link to lib to " + lib + " is not allowed.");
-	}
+
 
 	/**
 	 * File read access is allowed on <br>
