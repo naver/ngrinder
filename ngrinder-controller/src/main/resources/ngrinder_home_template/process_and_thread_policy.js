@@ -2,18 +2,20 @@ function getProcessCount(total) {
 	if (total < 2) {
 		return 1;
 	}
+	
+	var processCount = 2;
+
 	if (total > 80) {
-	    return parseInt(total / 30);
+		processCount = parseInt(total / 40) + 1;
 	}
-	return 2;
+	
+	if (processCount > 20) {
+		processCount = 20;
+	}
+	return processCount;
 }
 
 function getThreadCount(total) {
-	if (total < 2) {
-		return 1;
-	}
-        if (total > 80) {
-	    return parseInt(total / (parseInt(total / 30)));
-        }
-	return parseInt(total / 2 + 0.5);
+	var processCount = getProcessCount(total);
+	return parseInt(total / processCount);
 }
