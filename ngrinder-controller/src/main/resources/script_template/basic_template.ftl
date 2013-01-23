@@ -45,7 +45,7 @@ class TestRunner:
 		if result.getStatusCode() == 200 :
 			grinder.statistics.forLastTest.success = 1
 		elif result.getStatusCode() in (301, 302) :
-			grinder.logger.error("SUCCESS. However the response may not be correct. The response code was %d." %  result.getStatusCode()) 
+			grinder.logger.warn("SUCCESS. However the response may not be correct. The response code was %d." %  result.getStatusCode()) 
 			grinder.statistics.forLastTest.success = 1
 		else :
 			grinder.statistics.forLastTest.success = 0
