@@ -14,7 +14,7 @@ from net.grinder.plugin.http import HTTPPluginControl
 test1 = Test(1, "Test1")
 control = HTTPPluginControl.getConnectionDefaults()
 # if you don't want that HTTPRequest follows the redirection, please modify the following option 0.
-control.followRedirects = 1;
+# control.followRedirects = 1
 # if you want to increase the timeout, please modify the following option.
 control.timeout = 6000
 
@@ -41,7 +41,11 @@ class TestRunner:
 		# instead use following.
 		# grinder.logger.info("Hello World")
 		
+
 		if result.getStatusCode() == 200 :
+			grinder.statistics.forLastTest.success = 1
+		elif result.getStatusCode() in (301, 302) :
+			grinder.logger.error("SUCCESS. However the response may not be correct. The response code was %d." %  result.getStatusCode()) 
 			grinder.statistics.forLastTest.success = 1
 		else :
 			grinder.statistics.forLastTest.success = 0
