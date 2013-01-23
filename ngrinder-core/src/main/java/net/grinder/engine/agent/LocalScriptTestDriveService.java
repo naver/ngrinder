@@ -92,7 +92,9 @@ public class LocalScriptTestDriveService {
 							hostString, NetworkUtil.getLocalHostName());
 			properties.setInt("grinder.processes", 1);
 			properties.setInt("grinder.threads", 1);
-			properties.setProperty("grinder.jvm.classpath", builder.buildCustomClassPath(true));
+			properties.setProperty("grinder.jvm.classpath",
+							GrinderClassPathUtils.buildForemostClasspathBasedOnCurrentClassLoader(LOGGER)
+											+ File.pathSeparator + builder.buildCustomClassPath(true));
 
 			AgentIdentityImplementation agentIndentity = new AgentIdentityImplementation("validation");
 
@@ -172,6 +174,20 @@ public class LocalScriptTestDriveService {
 			appendingMessageOn(file, "Validation should be performed within 10sec. Stop it forcely");
 		}
 		return file;
+	}
+
+	/**
+	 * Get classpath which should be located in the head of classpath.
+	 * 
+	 * @param properties
+	 *            system properties
+	 * @param logger
+	 *            logger
+	 * @return foremost classpath
+	 */
+	private static String getForeMostClassPath(Properties properties, Logger logger) {
+		String property = properties.getProperty("java.class.path", "");
+		return GrinderClassPathUtils.filterForeMostClassPath(property, logger);
 	}
 
 	private void appendingMessageOn(File file, String msg) {

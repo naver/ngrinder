@@ -185,6 +185,7 @@ public class AgentImplementationEx implements Agent {
 					}
 
 					if (startMessage != null) {
+
 						final GrinderProperties messageProperties = startMessage.getProperties();
 						final Directory fileStoreDirectory = m_fileStore.getDirectory();
 
@@ -224,8 +225,11 @@ public class AgentImplementationEx implements Agent {
 									new File("").getAbsoluteFile(), properties.getBoolean("grinder.security", false),
 									properties.getProperty("ngrinder.etc.hosts"), NetworkUtil.getLocalHostName());
 					String jvmArguments = builder.buildJVMArgument();
-					properties.setProperty("grinder.jvm.classpath",
-									builder.rebaseCustomClassPath(properties.getProperty("grinder.jvm.classpath", "")));
+					String rebaseCustomClassPath = getForeMostClassPath(System.getProperties(), m_logger)
+									+ File.pathSeparator
+									+ builder.rebaseCustomClassPath(properties.getProperty("grinder.jvm.classpath", ""));
+					properties.setProperty("grinder.jvm.classpath", rebaseCustomClassPath);
+
 					m_logger.info("grinder properties {}", properties);
 					m_logger.info("jvm arguments {}", jvmArguments);
 					final WorkerFactory workerFactory;
@@ -296,7 +300,6 @@ public class AgentImplementationEx implements Agent {
 								// from starting.
 								workerLauncher.destroyAllWorkers();
 							}
-
 							m_eventSynchronisation.waitNoInterrruptException(maximumShutdownTime);
 						}
 						m_logger.info("all workers are finished");
@@ -347,6 +350,20 @@ public class AgentImplementationEx implements Agent {
 			m_consoleListener.shutdown();
 			m_logger.info("finished");
 		}
+	}
+
+	/**
+	 * Get classpath which should  be located in the head of classpath.
+	 * 
+	 * @param properties
+	 *            system properties
+	 * @param logger
+	 *            logger
+	 * @return foremost classpath
+	 */
+	private static String getForeMostClassPath(Properties properties, Logger logger) {
+		String property = properties.getProperty("java.class.path", "");
+		return GrinderClassPathUtils.filterForeMostClassPath(property, logger);
 	}
 
 	/**
