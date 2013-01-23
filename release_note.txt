@@ -1,3 +1,30 @@
+3.1.1 (2013.01.24)
+- Hot fix for nGrinder 3.1.
+- This release includes several improvements as well.
+
+Bug
+[NGRINDER-482] - Add grinder.processes and grinder.threads as properties during script validation
+[NGRINDER-488] - Add a error message when there are no sampling was performed.
+[NGRINDER-496] - Make user not to be able to change the underlying SecurityManager 
+[NGRINDER-497] - Make the current pc IP resolution more stable
+
+Improvement
+[NGRINDER-478] - Distribute the un-predefined resources (e.g image) 
+[NGRINDER-479] - Speed up nGrinder performance reducing distribution cost (2~3sec)
+               - add json.org library as default lib as well.
+[NGRINDER-480] - Make each perftest folder distributed in several folders
+[NGRINDER-481] - Move the question mark in logs to just right of log title
+[NGRINDER-483] - Make nabble as a QnA Site
+[NGRINDER-484] - Resolve locale cookie conflict issue 
+[NGRINDER-485] - Add cacheManager be accessible  from the script console 
+[NGRINDER-489] - Add control.followRedirects and to control.timeout in the basic template script
+[NGRINDER-490] - Make all external links opened in the separate window
+[NGRINDER-491] - Make the minimum Xms smaller to support more processes.
+[NGRINDER-492] - Make sure the script is saved when user leave the script editor without save.
+[NGRINDER-494] - Increase the default vuser count to 300
+[NGRINDER-495] - Modify the process and thread policy to support 1000 vusers
+
+
 3.1.0 (2013.01.07)
 
 We're proudly releasing nGrinder 3.1 targeting the large organization. 
