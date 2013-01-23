@@ -108,7 +108,7 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	protected void resolveLocalIp() {
-		currentIP = NetworkUtil.getLocalHostAddress();
+		currentIP = getSystemProperties().getProperty("ngrinder.controller.ipaddress", NetworkUtil.getLocalHostAddress());
 	}
 
 	/**
