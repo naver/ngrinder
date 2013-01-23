@@ -43,10 +43,14 @@
 		   		<div class="well">
 			  		<br/>
 				  	<#if right_panel_entries?has_content>
-					  	<table class="table table-striped">
+					  	<table class="table table-striped ellipsis">
+					  		<colgroup>
+							 	<col width="350px"/>
+							 	<col />
+							</colgroup>
 					  		<#list right_panel_entries as each_right_entry>
 					  			<tr>
-					  				<td>
+					  				<td class="ellipsis">
 					  					<#if each_right_entry.isNew()><span class="label label-info">new</span></#if>
 					  					<a href="${each_right_entry.link }" target="_blank">${each_right_entry.title}
 					  					</a> 
@@ -83,10 +87,14 @@
 		   		<div class="well">
 			  		<br/>
 				  	<#if left_panel_entries?has_content>
-					  	<table class="table table-striped">
+					  	<table class="table table-striped ellipsis">
+					  		<colgroup>
+							 	<col width="350px"/> 
+							 	<col />
+							</colgroup>
 					  		<#list left_panel_entries as each_left_entry>
 					  			<tr>
-					  				<td> 
+					  				<td class="ellipsis"> 
 					  					<#if each_left_entry.isNew()><span class="label label-info">new</span></#if>
 					  					<a href="${each_left_entry.link }" target="_blank">${each_left_entry.title}</a>
 					  				</td>
