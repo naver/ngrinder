@@ -56,8 +56,6 @@ public class LocalScriptTestDriveService {
 	 *            working directory
 	 * @param script
 	 *            script file
-	 * @param libPath
-	 *            library base path
 	 * @param eventSynchronisation
 	 *            condition for event synchronization
 	 * @param securityEnabled
@@ -66,8 +64,8 @@ public class LocalScriptTestDriveService {
 	 *            hostString
 	 * @return File which stores validation result.
 	 */
-	public File doValidate(File base, File script, File libPath, Condition eventSynchronisation,
-					boolean securityEnabled, String hostString) {
+	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled,
+					String hostString) {
 		FanOutStreamSender fanOutStreamSender = null;
 		ErrorStreamRedirectWorkerLauncher workerLauncher = null;
 		boolean stopByTooMuchExecution = false;
@@ -88,8 +86,8 @@ public class LocalScriptTestDriveService {
 			});
 
 			GrinderProperties properties = new GrinderProperties();
-			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), libPath, securityEnabled,
-							hostString, NetworkUtil.getLocalHostName());
+			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), securityEnabled, hostString,
+							NetworkUtil.getLocalHostName());
 			properties.setInt("grinder.processes", 1);
 			properties.setInt("grinder.threads", 1);
 			String grinderJVMClassPath = GrinderClassPathUtils.buildForemostClasspathBasedOnCurrentClassLoader(LOGGER)
@@ -172,23 +170,9 @@ public class LocalScriptTestDriveService {
 			appendingMessageOn(file, errorValidationResult);
 		}
 		if (stopByTooMuchExecution) {
-			appendingMessageOn(file, "Validation should be performed within 10sec. Stop it forcely");
+			appendingMessageOn(file, "Validation should be performed within 100 sec. Stop it forcely");
 		}
 		return file;
-	}
-
-	/**
-	 * Get classpath which should be located in the head of classpath.
-	 * 
-	 * @param properties
-	 *            system properties
-	 * @param logger
-	 *            logger
-	 * @return foremost classpath
-	 */
-	private static String getForeMostClassPath(Properties properties, Logger logger) {
-		String property = properties.getProperty("java.class.path", "");
-		return GrinderClassPathUtils.filterForeMostClassPath(property, logger);
 	}
 
 	private void appendingMessageOn(File file, String msg) {

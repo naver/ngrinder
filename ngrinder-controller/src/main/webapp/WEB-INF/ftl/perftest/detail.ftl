@@ -1060,7 +1060,7 @@ var testId = $('#testId').val();
 			}
 		},
 		complete : function() {
-			setTimeout(refreshContent, 5000);
+			setTimeout(refreshContent, 3000);
 		}
 	});
 })();
@@ -1076,7 +1076,8 @@ function displayCfgAndTestRunning() {
 	$("#runningContent_tab a").tab('show');
 	$("#runningContent").show();
 	$("#reportContent_tab").hide();
-	objTimer = window.setInterval("refreshData()", 1000);
+	// Considering network latency, set it 900 msec.
+	objTimer = window.setInterval("refreshData()", 900);
 }
 
 function displayCfgAndTestReport() {

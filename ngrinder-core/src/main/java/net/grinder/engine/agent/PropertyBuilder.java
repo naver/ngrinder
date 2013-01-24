@@ -25,6 +25,7 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.util.Directory;
 import net.grinder.util.NetworkUtil;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -47,7 +48,6 @@ public class PropertyBuilder {
 	private final GrinderProperties properties;
 	private final Directory baseDirectory;
 	private final String hostName;
-	private final File classPathBase;
 	private final boolean securityEnabled;
 	private final String hostString;
 
@@ -67,11 +67,10 @@ public class PropertyBuilder {
 	 * @param hostName
 	 *            current host name
 	 */
-	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, File nGrinderExecClassPathBase,
-					boolean securityEnabled, String hostString, String hostName) {
+	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
+					String hostString, String hostName) {
 		this.properties = checkNotNull(properties);
 		this.baseDirectory = checkNotNull(baseDirectory);
-		this.classPathBase = checkNotNull(nGrinderExecClassPathBase);
 		this.securityEnabled = securityEnabled;
 		this.hostString = hostString;
 		this.hostName = checkNotEmpty(hostName);
@@ -207,13 +206,14 @@ public class PropertyBuilder {
 			jvmArguments.append(File.pathSeparator).append(pythonPath);
 		}
 		String pythonHome = System.getenv().get("PYTHONHOME");
-		jvmArguments.append(" -Dpython.home=");
 		if (pythonHome != null) {
+			jvmArguments.append(" -Dpython.home=");
 			jvmArguments.append(pythonHome);
-		} else {
-			jvmArguments.append(baseDirectory.getFile().getAbsolutePath());
 		}
 		jvmArguments.append(" ");
+		File jythonCache = new File(FileUtils.getTempDirectory(), "jython");
+		jythonCache.mkdirs();
+		jvmArguments.append(" -Dpython.cachedir=").append(jythonCache.getAbsolutePath()).append(" ");
 		return jvmArguments;
 	}
 

@@ -38,6 +38,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 	private String javaExtDirectory = System.getProperty("java.ext.dirs");
 	private String pythonPath = System.getProperty("python.path");
 	private String pythonHome = System.getProperty("python.home");
+	private String pythonCache = System.getProperty("python.cachedir");
 	private String etcHosts = System.getProperty("ngrinder.etc.hosts", "");
 	private String consoleIP = System.getProperty("ngrinder.console.ip", "127.0.0.1");
 	private List<String> allowedHost = new ArrayList<String>();
@@ -82,6 +83,9 @@ public class NGrinderSecurityManager extends SecurityManager {
 		if (isNotEmpty(pythonPath)) {
 			readAllowedDirectory.add(pythonPath);
 		}
+		if (isNotEmpty(pythonCache)) {
+			writeAllowedDirectory.add(pythonCache);
+		}
 		readAllowedDirectory.add(getTempDirectoryPath());
 		readAllowedDirectory.add("/dev/");
 		String[] jed = javaExtDirectory.split(";");
@@ -94,6 +98,9 @@ public class NGrinderSecurityManager extends SecurityManager {
 		}
 		if (isNotEmpty(pythonPath)) {
 			writeAllowedDirectory.add(pythonPath);
+		}
+		if (isNotEmpty(pythonCache)) {
+			writeAllowedDirectory.add(pythonCache);
 		}
 		writeAllowedDirectory.add(workDirectory);
 		writeAllowedDirectory.add(logDirectory);

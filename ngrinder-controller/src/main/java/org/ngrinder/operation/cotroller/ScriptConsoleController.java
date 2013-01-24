@@ -14,6 +14,7 @@
 package org.ngrinder.operation.cotroller;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
@@ -109,7 +110,9 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 
 			}
 		}
-		System.setProperty("python.cachedir", FileUtils.getTempDirectory().getAbsolutePath());
+		File jythonCache = new File(FileUtils.getTempDirectory(), "jython");
+		jythonCache.mkdirs();
+		System.setProperty("python.cachedir", jythonCache.getAbsolutePath());
 		if (usage != null && isPermGenMemoryEnough(usage)) {
 			interp = new PythonInterpreter();
 			intVars(interp);

@@ -47,7 +47,6 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 	@Autowired
 	private Config config;
 
-
 	@Test
 	public void testSaveGetDeleteAgent() {
 		AgentInfo agent = saveAgent("save");
@@ -112,7 +111,7 @@ public class AgentManagerServiceTest extends AbstractNGrinderTransactionalTest {
 		assertThat(agentInDB.getName(), is(agentInfo.getName()));
 		assertThat(agentInDB.getStatus(), is(AgentControllerState.INACTIVE));
 	}
-	
+
 	@Test
 	public void testOther() {
 		agentManagerService.getLocalAgents();

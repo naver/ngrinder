@@ -180,6 +180,19 @@
 							value="${(test.ignoreSampleCount)!0}">
 					</div>
 				</div>
+				<div class="control-group">
+					<label for="safeDistribution" class="control-label"> <@spring.message "perfTest.configuration.safeDistribution"/> </label>
+					<div class="controls">
+						<input type="checkbox" id="safeDistributionCheckBox" name="safeDistribution"
+							<#if test?? && test.safeDistribution?default(false) == true>checked</#if> 
+						/>
+						<span style="margin-top:10px;margin-left:10px" rel="popover" 
+							data-content="<@spring.message "perfTest.configuration.safeDistribution.help"/>" 
+							data-original-title="<@spring.message "perfTest.configuration.safeDistribution"/>" type="toggle" id="dist_comment">
+							<i class="icon-question-sign" style="margin-top:5px"></i>
+						</span> 
+					</div>
+				</div>
 			</fieldset>
 		</div>
 	</div>

@@ -96,7 +96,7 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 	public void testValidation() throws EngineException, DirectoryException, IOException {
 		File file = new ClassPathResource("/validation/script.py").getFile();
 		Condition m_eventSync = new Condition();
-		File log = validationService.doValidate(file.getParentFile(), file, getLibPath(), m_eventSync, true, "");
+		File log = validationService.doValidate(file.getParentFile(), file, m_eventSync, true, "");
 		assertThat(log.length(), notNullValue());
 	}
 

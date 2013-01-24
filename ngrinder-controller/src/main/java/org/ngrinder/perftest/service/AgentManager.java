@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -41,7 +40,6 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
@@ -64,7 +62,6 @@ public class AgentManager implements NGrinderConstants {
 	public static final Logger LOGGER = LoggerFactory.getLogger(AgentManager.class);
 	private AgentControllerServerDaemon agentControllerServerDaemon;
 	private static final int NUMBER_OF_THREAD = 3;
-	private static final int AGENT_RUN_TIMEOUT_SECOND = 10;
 
 	@Autowired
 	private Config config;
@@ -382,9 +379,6 @@ public class AgentManager implements NGrinderConstants {
 					}
 				});
 			}
-			execService.awaitTermination(AGENT_RUN_TIMEOUT_SECOND, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			throw new NGrinderRuntimeException("Error while running agent. Starting agent is interrupted.", e);
 		} finally {
 			if (execService != null) {
 				execService.shutdown();
@@ -475,6 +469,16 @@ public class AgentManager implements NGrinderConstants {
 		return progress.toString();
 	}
 
+	/**
+	 * Update agent.
+	 * 
+	 * @param fileName
+	 *            file name
+	 * @param version
+	 *            current version
+	 * @param downloadUrl
+	 *            download url
+	 */
 	public void updateAgent(String fileName, String version, String downloadUrl) {
 		sendAgentUpdateMessage(fileName, version, downloadUrl);
 	}

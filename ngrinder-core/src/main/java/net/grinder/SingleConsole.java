@@ -397,14 +397,51 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 *            the distribution files
 	 */
 	public void distributeFiles(File filePath) {
+		distributeFiles(filePath, null, true);
+	}
+
+	/**
+	 * Distribute files on given filePath to attached agents.
+	 * 
+	 * @param filePath
+	 *            the distribution files
+	 * @param listener
+	 *            listener
+	 */
+	public void distributeFiles(File filePath, ListenerSupport<FileDistributionListener> listener, boolean safe) {
 		setDistributionDirectory(filePath);
-		distributFiles();
+		distributFiles(listener, safe);
+	}
+
+	/**
+	 * File distribution even listener.
+	 * 
+	 * @author JunHo Yoon
+	 */
+	public static abstract class FileDistributionListener {
+		/**
+		 * Notify the given file is distributed.
+		 * 
+		 * @param fileName
+		 *            file name
+		 */
+		public abstract void distributed(String fileName);
 	}
 
 	/**
 	 * Distribute files on agents.
 	 */
 	public void distributFiles() {
+		distributFiles(null, true);
+	}
+
+	/**
+	 * Distribute files on agents.
+	 * 
+	 * @param listener
+	 *            listener
+	 */
+	public void distributFiles(ListenerSupport<FileDistributionListener> listener, boolean safe) {
 		final FileDistribution fileDistribution = (FileDistribution) getConsoleComponent(FileDistribution.class);
 		final AgentCacheState agentCacheState = fileDistribution.getAgentCacheState();
 		final Condition cacheStateCondition = new Condition();
@@ -423,17 +460,35 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				if (result == null) {
 					break;
 				}
+				if (listener != null) {
+					listener.apply(new Informer<FileDistributionListener>() {
+						@Override
+						public void inform(FileDistributionListener listener) {
+							listener.distributed(result.getFileName());
+						}
+					});
+				}
 
+				if (safe) {
+					checkSafetyWithCacheState(fileDistribution, cacheStateCondition);
+
+				}
 			} catch (FileContents.FileContentsException e) {
 				throw new NGrinderRuntimeException("Error while distribute files for " + getConsolePort());
 			}
-			// The cache status is updated asynchronously by agent reports.
-			// If we have a listener, we wait for up to five seconds for all
-			// agents to indicate that they are up to date.
-			synchronized (cacheStateCondition) {
-				for (int i = 0; i < 5 && shouldEnable(fileDistribution); ++i) {
-					cacheStateCondition.waitNoInterrruptException(1000);
-				}
+		}
+		// The cache status is updated asynchronously by agent reports.
+		// If we have a listener, we wait for up to five seconds for all
+		// agents to indicate that they are up to date.
+		if (!safe) {
+			checkSafetyWithCacheState(fileDistribution, cacheStateCondition);
+		}
+	}
+
+	private void checkSafetyWithCacheState(final FileDistribution fileDistribution, final Condition cacheStateCondition) {
+		synchronized (cacheStateCondition) {
+			for (int i = 0; i < 10 && shouldEnable(fileDistribution); ++i) {
+				cacheStateCondition.waitNoInterrruptException(500);
 			}
 		}
 	}

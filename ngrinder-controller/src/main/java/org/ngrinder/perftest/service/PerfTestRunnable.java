@@ -40,6 +40,7 @@ import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.statistics.StatisticsSet;
+import net.grinder.util.ListenerSupport;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.agent.model.AgentInfo;
@@ -295,12 +296,20 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * @param singleConsole
 	 *            console to be used.
 	 */
-	void distributeFileOn(PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
+	void distributeFileOn(final PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		// Distribute files
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES, "All necessary files are distributing.");
+		ListenerSupport<SingleConsole.FileDistributionListener> listener = new ListenerSupport<SingleConsole.FileDistributionListener>();
+		listener.add(new SingleConsole.FileDistributionListener() {
+			@Override
+			public void distributed(String fileName) {
+				perfTestService.markProgress(perfTest, " - " + fileName);
+			}
 
+		});
 		// the files have prepared before
-		singleConsole.distributeFiles(perfTestService.getPerfTestDistributionPath(perfTest));
+		singleConsole.distributeFiles(perfTestService.getPerfTestDistributionPath(perfTest), listener,
+						perfTest.getSafeDistribution());
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES_FINISHED,
 						"All necessary files are distributed.");
 	}

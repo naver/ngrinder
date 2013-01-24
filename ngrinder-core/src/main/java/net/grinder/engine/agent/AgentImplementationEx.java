@@ -222,7 +222,7 @@ public class AgentImplementationEx implements Agent {
 
 				if (script != null) {
 					PropertyBuilder builder = new PropertyBuilder(properties, script.getDirectory(),
-									new File("").getAbsoluteFile(), properties.getBoolean("grinder.security", false),
+									properties.getBoolean("grinder.security", false),
 									properties.getProperty("ngrinder.etc.hosts"), NetworkUtil.getLocalHostName());
 					String jvmArguments = builder.buildJVMArgument();
 					String rebaseCustomClassPath = getForeMostClassPath(System.getProperties(), m_logger)

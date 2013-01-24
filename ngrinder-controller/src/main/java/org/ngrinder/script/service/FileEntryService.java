@@ -16,7 +16,7 @@ package org.ngrinder.script.service;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
+import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
 import java.io.File;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -439,6 +439,11 @@ public class FileEntryService {
 		List<FileEntry> fileList = new ArrayList<FileEntry>();
 		List<FileEntry> fileEntries = getFileEntries(user, path + "lib/", revision);
 		for (FileEntry eachFileEntry : fileEntries) {
+			// Skip jython 2.5... it's already included.
+			if (startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-2.5.")
+							|| startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-standalone-2.5.")) {
+				continue;
+			}
 			FileType fileType = eachFileEntry.getFileType();
 			if (fileType.isLibDistribtable()) {
 				fileList.add(eachFileEntry);
@@ -446,6 +451,7 @@ public class FileEntryService {
 		}
 		fileEntries = getFileEntries(user, path + "resources/", revision);
 		for (FileEntry eachFileEntry : fileEntries) {
+
 			FileType fileType = eachFileEntry.getFileType();
 			if (fileType.isResourceDistributable()) {
 				fileList.add(eachFileEntry);

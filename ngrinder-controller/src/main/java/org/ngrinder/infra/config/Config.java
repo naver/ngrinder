@@ -108,7 +108,8 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	protected void resolveLocalIp() {
-		currentIP = getSystemProperties().getProperty("ngrinder.controller.ipaddress", NetworkUtil.getLocalHostAddress());
+		currentIP = getSystemProperties().getProperty("ngrinder.controller.ipaddress",
+						NetworkUtil.getLocalHostAddress());
 	}
 
 	/**
@@ -435,10 +436,10 @@ public class Config implements IConfig, NGrinderConstants {
 	/**
 	 * Get nGrinder version number.
 	 * 
-	 * @return nGrinder version number. If not set, return "UNKNOWN"
+	 * @return nGrinder version number. If not set, return "0.0.1"
 	 */
 	public String getVesion() {
-		return getInternalProperties().getProperty("ngrinder.version", "UNKNOWN");
+		return getInternalProperties().getProperty("ngrinder.version", "0.0.1");
 	}
 
 	/**

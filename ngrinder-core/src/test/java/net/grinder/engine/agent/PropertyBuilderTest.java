@@ -57,6 +57,6 @@ public class PropertyBuilderTest {
 		Directory directory = new Directory(new File("."));
 		GrinderProperties property = new GrinderProperties();
 
-		return new PropertyBuilder(property, directory, new File("."), true, hostString, NetworkUtil.getLocalHostName());
+		return new PropertyBuilder(property, directory, true, hostString, NetworkUtil.getLocalHostName());
 	}
 }

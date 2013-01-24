@@ -189,6 +189,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "region")
 	private String region;
 
+	@Column(name = "safe_distribution", columnDefinition = "char(1)")
+	@Type(type = "true_false")
+	private Boolean safeDistribution = false;
+
 	@Transient
 	private String dateString;
 
@@ -196,9 +200,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private GrinderProperties grinderProperties;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-	@JoinTable(
-			name = "PERF_TEST_TAG", joinColumns = @JoinColumn(name = "perf_test_id"), 
-			inverseJoinColumns = @JoinColumn(name = "tag_id"))
+	@JoinTable(name = "PERF_TEST_TAG", joinColumns = @JoinColumn(name = "perf_test_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
 	@Sort(comparator = Tag.class, type = SortType.COMPARATOR)
 	private SortedSet<Tag> tags;
 
@@ -627,5 +629,13 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setRegion(String region) {
 		this.region = region;
+	}
+
+	public Boolean getSafeDistribution() {
+		return safeDistribution == null ? false : safeDistribution;
+	}
+
+	public void setSafeDistribution(Boolean safeDistribution) {
+		this.safeDistribution = safeDistribution;
 	}
 }
