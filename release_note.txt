@@ -25,6 +25,8 @@ Improvement
 [NGRINDER-494] - Increase the default vuser count to 300
 [NGRINDER-495] - Modify the process and thread policy to support 1000 vusers
 [NGRINDER-499] - Include jython-2.5.3.jar as default lib
+[NGRINDER-500] - Modify test termination condition as half of test failures for last 10 sec
+
 
 3.1.0 (2013.01.07)
 
