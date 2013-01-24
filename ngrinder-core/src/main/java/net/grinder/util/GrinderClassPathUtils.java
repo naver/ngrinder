@@ -88,7 +88,8 @@ public abstract class GrinderClassPathUtils {
 		USEFUL_JAR_LIST.add("dnsjava");
 		USEFUL_JAR_LIST.add("asm");
 		USEFUL_JAR_LIST.add("picocontainer");
-		USEFUL_JAR_LIST.add("jython");
+		USEFUL_JAR_LIST.add("jython-2.5");
+		USEFUL_JAR_LIST.add("jython-standalone-2.5");
 		USEFUL_JAR_LIST.add("slf4j-api");
 		USEFUL_JAR_LIST.add("json");
 		USEFUL_JAR_LIST.add("logback");
@@ -96,6 +97,7 @@ public abstract class GrinderClassPathUtils {
 		USEFUL_JAR_LIST.add("xmlbeans");
 		USEFUL_JAR_LIST.add("stax-api");
 
+		USELESS_JAR_LIST.add("jython-2.2");
 		USELESS_JAR_LIST.add("ngrinder-core");
 		USELESS_JAR_LIST.add("ngrinder-controller");
 		USELESS_JAR_LIST.add("spring");

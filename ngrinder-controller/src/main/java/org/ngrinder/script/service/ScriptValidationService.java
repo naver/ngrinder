@@ -33,6 +33,8 @@ import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
+import org.python.core.CompileMode;
+import org.python.core.CompilerFlags;
 import org.python.core.PySyntaxError;
 import org.python.core.PyTuple;
 import org.slf4j.Logger;
@@ -136,8 +138,8 @@ public class ScriptValidationService {
 				FileUtils.writeStringToFile(scriptFile, scriptEntry.getContent(),
 								StringUtils.defaultIfBlank(scriptEntry.getEncoding(), "UTF-8"));
 			}
-			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, getLibPath(),
-							new Condition(), config.isSecurityEnabled(), hostString);
+			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, new Condition(),
+							config.isSecurityEnabled(), hostString);
 			List<String> readLines = FileUtils.readLines(doValidate);
 			StringBuffer output = new StringBuffer();
 			String path = config.getHome().getDirectory().getAbsolutePath();
@@ -155,17 +157,6 @@ public class ScriptValidationService {
 		return StringUtils.EMPTY;
 	}
 
-	private File getLibPath() {
-		String path = this.getClass().getResource("/").getPath();
-		String str = "classes";
-		int i = path.indexOf(str);
-		if (i > 0) {
-			path = path.substring(0, i);
-			path += "lib/";
-		}
-		return new File(path).getAbsoluteFile();
-	}
-
 	/**
 	 * Run jython parser to find out the syntax error..
 	 * 
@@ -175,7 +166,10 @@ public class ScriptValidationService {
 	 */
 	public String checkSyntaxErrors(String script) {
 		try {
-			org.python.core.parser.parse(script, "exec");
+			org.python.core.ParserFacade.parse(script, CompileMode.exec, "unnamed", new CompilerFlags(
+							CompilerFlags.PyCF_DONT_IMPLY_DEDENT | CompilerFlags.PyCF_ONLY_AST
+											));
+
 		} catch (PySyntaxError e) {
 			try {
 				PyTuple pyTuple = (PyTuple) ((PyTuple) e.value).get(1);
@@ -184,13 +178,12 @@ public class ScriptValidationService {
 				String lineString = (String) pyTuple.get(3);
 				StringBuilder buf = new StringBuilder(lineString);
 				if (lineString.length() >= column) {
-					buf.insert(column - 1, "^");
+					buf.insert(column , "^");
 				}
 				return "Error occured\n" + " - Invalid Syntax Error on line " + line + " / column " + column + "\n"
 								+ buf.toString();
-			} catch (Exception ex) {
-				LOG.error("Error occured while evludation PySyntaxError", ex);
-				return "Error occured while evludation PySyntaxError";
+			} catch (Exception ex) {  
+				return "Error occured while evalation PySyntaxError";
 			}
 		}
 		return null;
