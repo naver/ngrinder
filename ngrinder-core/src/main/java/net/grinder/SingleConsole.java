@@ -790,9 +790,9 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 */
 	private void checkTooManyError(StatisticsSet cumulativeStatistics) {
 		StatisticsIndexMap statisticsIndexMap = getStatisticsIndexMap();
-		long tpsSum = cumulativeStatistics.getCount(statisticsIndexMap.getLongSampleIndex("timedTests"));
+		long testSum = cumulativeStatistics.getCount(statisticsIndexMap.getLongSampleIndex("timedTests"));
 		long errors = cumulativeStatistics.getValue(statisticsIndexMap.getLongIndex("errors"));
-		if (((double) tpsSum / 2) < errors) {
+		if (((double) (testSum + errors)) / 2 < errors) {
 			if (lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue == null) {
 				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = new Date();
 			} else if (isOverLowTpsThreshhold()) {

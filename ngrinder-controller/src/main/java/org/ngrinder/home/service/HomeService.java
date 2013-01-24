@@ -61,7 +61,7 @@ public class HomeService {
 	private Config config;
 
 	/**
-	 * Get let panel entries. which has ngrinder github issue contents as defaults.
+	 * Get let panel entries. which has ngrinder nabble contents as defaults.
 	 * 
 	 * @return the list of {@link PanelEntry}
 	 */
