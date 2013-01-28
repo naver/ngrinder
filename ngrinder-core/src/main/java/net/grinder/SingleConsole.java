@@ -52,7 +52,6 @@ import net.grinder.console.model.SampleListener;
 import net.grinder.console.model.SampleModel;
 import net.grinder.console.model.SampleModelImplementationEx;
 import net.grinder.console.model.SampleModelViews;
-import net.grinder.script.Grinder;
 import net.grinder.statistics.ExpressionView;
 import net.grinder.statistics.StatisticsIndexMap;
 import net.grinder.statistics.StatisticsServicesImplementation;
@@ -71,6 +70,7 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.mutable.MutableBoolean;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.ReflectionUtil;
@@ -420,6 +420,17 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @author JunHo Yoon
 	 */
 	public static abstract class FileDistributionListener {
+
+		/**
+		 * Notify the distribute starting event and the returns the safe mode (if you want to enable
+		 * safe mode in force depending on the file. It should return true.
+		 * 
+		 * @param dir
+		 *            distirbution dir dir
+		 * @param safe
+		 */
+		public abstract boolean start(File dir, boolean safe);
+
 		/**
 		 * Notify the given file is distributed.
 		 * 
@@ -442,7 +453,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @param listener
 	 *            listener
 	 */
-	public void distributFiles(ListenerSupport<FileDistributionListener> listener, boolean safe) {
+	public void distributFiles(ListenerSupport<FileDistributionListener> listener, final boolean safe) {
 		final FileDistribution fileDistribution = (FileDistribution) getConsoleComponent(FileDistribution.class);
 		final AgentCacheState agentCacheState = fileDistribution.getAgentCacheState();
 		final Condition cacheStateCondition = new Condition();
@@ -453,11 +464,24 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				}
 			}
 		});
+		final MutableBoolean mutableBoolean = new MutableBoolean(safe);
+		ConsoleProperties consoleComponent = getConsoleComponent(ConsoleProperties.class);
+		final File file = consoleComponent.getDistributionDirectory().getFile();
+		if (listener != null) {
+			listener.apply(new Informer<FileDistributionListener>() {
+				@Override
+				public void inform(FileDistributionListener listener) {
+					mutableBoolean.setValue(listener.start(file, safe));
+				}
+			});
+		}
 		final FileDistributionHandler distributionHandler = fileDistribution.getHandler();
 		// When cancel is called.. stop processing.
+		int fileCount = 0;
 		while (!cancel) {
 			try {
 				final FileDistributionHandler.Result result = distributionHandler.sendNextFile();
+				fileCount++;
 				if (result == null) {
 					break;
 				}
@@ -470,9 +494,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 					});
 				}
 
-				if (safe) {
-					checkSafetyWithCacheState(fileDistribution, cacheStateCondition);
-
+				if (mutableBoolean.isTrue()) {
+					checkSafetyWithCacheState(fileDistribution, cacheStateCondition, 1);
 				}
 			} catch (FileContents.FileContentsException e) {
 				throw new NGrinderRuntimeException("Error while distribute files for " + getConsolePort());
@@ -481,14 +504,15 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		// The cache status is updated asynchronously by agent reports.
 		// If we have a listener, we wait for up to five seconds for all
 		// agents to indicate that they are up to date.
-		if (!safe) {
-			checkSafetyWithCacheState(fileDistribution, cacheStateCondition);
+		if (mutableBoolean.isFalse()) {
+			checkSafetyWithCacheState(fileDistribution, cacheStateCondition, fileCount);
 		}
 	}
 
-	private void checkSafetyWithCacheState(final FileDistribution fileDistribution, final Condition cacheStateCondition) {
+	private void checkSafetyWithCacheState(final FileDistribution fileDistribution,
+					final Condition cacheStateCondition, int fileCount) {
 		synchronized (cacheStateCondition) {
-			for (int i = 0; i < 10 && shouldEnable(fileDistribution); ++i) {
+			for (int i = 0; i < (10 * fileCount) && shouldEnable(fileDistribution); ++i) {
 				cacheStateCondition.waitNoInterrruptException(500);
 			}
 		}

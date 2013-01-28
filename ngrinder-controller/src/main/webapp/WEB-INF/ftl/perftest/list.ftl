@@ -398,7 +398,7 @@
 			    		}
 			    		updateStatus(data[i].id, data[i].name, data[i].icon, data[i].stoppable, data[i].deletable, data[i].message);
 			    	}
-			    	setTimeout(refreshContent, 5000);
+			    	setTimeout(refreshContent, 2000);
 			    }
 		    });
 	  })();

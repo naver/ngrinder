@@ -388,7 +388,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		checkNotNull(perfTest.getId(), "perfTest should save Id");
 		perfTest.setLastProgressMessage(message);
 		LOGGER.debug("Progress : Test - {} : {}", perfTest.getId(), message);
-		return perfTestRepository.save(perfTest);
+		return perfTestRepository.saveAndFlush(perfTest);
 	}
 
 	/**
@@ -1274,6 +1274,16 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 	public void setConfig(Config config) {
 		this.config = config;
+	}
+
+	/**
+	 * Delete the distribution folder for the give perf test.
+	 * 
+	 * @param perfTest
+	 *            perf test
+	 */
+	public void cleanUpDistFolder(PerfTest perfTest) {
+		FileUtils.deleteQuietly(getPerfTestDistributionPath(perfTest));
 	}
 
 }

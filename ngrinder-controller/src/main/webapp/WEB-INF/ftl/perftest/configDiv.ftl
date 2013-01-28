@@ -184,7 +184,11 @@
 					<label for="safeDistribution" class="control-label"> <@spring.message "perfTest.configuration.safeDistribution"/> </label>
 					<div class="controls">
 						<input type="checkbox" id="safeDistributionCheckBox" name="safeDistribution"
-							<#if test?? && test.safeDistribution?default(false) == true>checked</#if> 
+							<#if test?? && test.safeDistribution?default(false) == true>
+								checked
+							<#else>
+								<#if safeFileDistribution?default(false) == true>checked</#if>	
+							</#if> 
 						/>
 						<span style="margin-top:10px;margin-left:10px" rel="popover" 
 							data-content="<@spring.message "perfTest.configuration.safeDistribution.help"/>" 

@@ -42,6 +42,7 @@ import net.grinder.console.model.ConsoleProperties;
 import net.grinder.statistics.StatisticsSet;
 import net.grinder.util.ListenerSupport;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -306,6 +307,21 @@ public class PerfTestRunnable implements NGrinderConstants {
 				perfTestService.markProgress(perfTest, " - " + fileName);
 			}
 
+			@Override
+			public boolean start(File dir, boolean safe) {
+				if (safe) {
+					perfTestService.markProgress(perfTest, "Safe distribution is enabled.");
+					return safe;
+				}
+				long sizeOfDirectory = FileUtils.sizeOfDirectory(dir);
+				if (sizeOfDirectory > 1000000) {
+					perfTestService.markProgress(perfTest,
+									"The total file size to be distributed is over 1MB. Enable safe file distribution in force.");
+					return true;
+				}
+				return safe;
+			}
+
 		});
 		// the files have prepared before
 		singleConsole.distributeFiles(perfTestService.getPerfTestDistributionPath(perfTest), listener,
@@ -479,6 +495,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			LOG.error("Terminate {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			doTerminate(each, consoleUsingPort);
+			cleanUp(each);
 			notifyFinsish(each, StopReason.TOO_MANY_ERRORS);
 		}
 
@@ -486,6 +503,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			LOG.error("Stop test {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			doCancel(each, consoleUsingPort);
+			cleanUp(each);
 			notifyFinsish(each, StopReason.CANCEL_BY_USER);
 		}
 
@@ -493,9 +511,20 @@ public class PerfTestRunnable implements NGrinderConstants {
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			if (isTestFinishCandidate(each, consoleUsingPort)) {
 				doFinish(each, consoleUsingPort);
+				cleanUp(each);
 				notifyFinsish(each, StopReason.NORMAL);
 			}
 		}
+	}
+
+	/**
+	 * Clean up distribution directory for the given perfTest,
+	 * 
+	 * @param perfTest
+	 *            perfTest
+	 */
+	private void cleanUp(PerfTest perfTest) {
+		perfTestService.cleanUpDistFolder(perfTest);
 	}
 
 	/**
