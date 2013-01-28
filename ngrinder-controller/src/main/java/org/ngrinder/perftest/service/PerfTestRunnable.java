@@ -43,6 +43,7 @@ import net.grinder.statistics.StatisticsSet;
 import net.grinder.util.ListenerSupport;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -301,7 +302,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// Distribute files
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES, "All necessary files are distributing.");
 		ListenerSupport<SingleConsole.FileDistributionListener> listener = new ListenerSupport<SingleConsole.FileDistributionListener>();
-		final int safeThreadHold = config.getSystemProperties().getPropertyInt(NGRINDER_PROP_DIST_SAFE_THRESHHOLD, 1000000);
+		final int safeThreadHold = config.getSystemProperties().getPropertyInt(NGRINDER_PROP_DIST_SAFE_THRESHHOLD,
+						1000000);
 		listener.add(new SingleConsole.FileDistributionListener() {
 			@Override
 			public void distributed(String fileName) {
@@ -324,11 +326,27 @@ public class PerfTestRunnable implements NGrinderConstants {
 			}
 
 		});
+
 		// the files have prepared before
 		singleConsole.distributeFiles(perfTestService.getPerfTestDistributionPath(perfTest), listener,
-						perfTest.getSafeDistribution());
+						isSafeDistPerfTest(perfTest));
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES_FINISHED,
 						"All necessary files are distributed.");
+	}
+
+	private boolean isSafeDistPerfTest(final PerfTest perfTest) {
+		boolean safeDist = perfTest.getSafeDistribution();
+		if (config.isCluster()) {
+			String distSafeRegion = config.getSystemProperties().getProperty(NGRINDER_PROP_DIST_SAFE_REGION,
+							StringUtils.EMPTY);
+			for (String each : StringUtils.split(distSafeRegion, ",")) {
+				if (StringUtils.equals(perfTest.getRegion(), StringUtils.trim(each))) {
+					safeDist = true;
+					break;
+				}
+			}
+		}
+		return safeDist;
 	}
 
 	/**

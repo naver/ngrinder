@@ -1026,9 +1026,7 @@ function updateStatus(id, status_type, status_name, icon, deletable, stoppable, 
 	if ($("#testStatusType").val() == status_type) {
 		return;
 	}
-
 	$("#teststatus_pop_over").attr("data-original-title", status_name);
-	$("#teststatus_pop_over").attr("data-content", message);
 	$("#testStatusType").val(status_type);
 
 	var ballImg = $("#testStatus_img_id");
