@@ -301,6 +301,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// Distribute files
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES, "All necessary files are distributing.");
 		ListenerSupport<SingleConsole.FileDistributionListener> listener = new ListenerSupport<SingleConsole.FileDistributionListener>();
+		final int safeThreadHold = config.getSystemProperties().getPropertyInt(NGRINDER_PROP_DIST_SAFE_THRESHHOLD, 1000000);
 		listener.add(new SingleConsole.FileDistributionListener() {
 			@Override
 			public void distributed(String fileName) {
@@ -314,7 +315,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 					return safe;
 				}
 				long sizeOfDirectory = FileUtils.sizeOfDirectory(dir);
-				if (sizeOfDirectory > 1000000) {
+				if (sizeOfDirectory > safeThreadHold) {
 					perfTestService.markProgress(perfTest,
 									"The total file size to be distributed is over 1MB. Enable safe file distribution in force.");
 					return true;

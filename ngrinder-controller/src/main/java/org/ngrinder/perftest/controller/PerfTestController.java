@@ -235,7 +235,7 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute(PARAM_SECURITY_MODE, getConfig().isSecurityEnabled());
 		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
 		model.addAttribute(PARAM_SAFE_FILE_DISTRIBUTION,
-						getConfig().getSystemProperties().getPropertyBoolean("ngrinder.dist.safe", false));
+						getConfig().getSystemProperties().getPropertyBoolean(NGRINDER_PROP_DIST_SAFE, false));
 	}
 
 	/**

@@ -172,6 +172,8 @@ public interface NGrinderConstants {
 	public static final String GRINDER_PROP_SECURITY = "grinder.security";
 
 	// ngrinder setting.
+	public static final String NGRINDER_PROP_DIST_SAFE_THRESHHOLD = "ngrinder.dist.safe.threashhold";
+	public static final String NGRINDER_PROP_DIST_SAFE = "ngrinder.dist.safe";
 	public static final String NGRINDER_PROP_ETC_HOSTS = "ngrinder.etc.hosts";
 	public static final String NGRINDER_PROP_CONSOLE_PORT_BASE = "ngrinder.console.portbase";
 	public static final int NGRINDER_PROP_CONSOLE_PORT_BASE_VALUE = 12000;
