@@ -392,8 +392,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 			@Override
 			public void onSamplingEnded() {
 				LOG.info("remove monitors on {} for perftest {}", agents, perfTest.getId());
-				scheduleWithFixedDelay.cancel(false);
-				monitorClientScheduler.destroy();
+				if (scheduleWithFixedDelay != null) {
+					scheduleWithFixedDelay.cancel(false);
+				}
+				if (monitorClientScheduler != null) {
+					monitorClientScheduler.destroy();
+				}
 				for (OnTestSamplingRunnable each : testSamplingRunnables) {
 					try {
 						each.endSampling(singleConsole, perfTest, perfTestService);
