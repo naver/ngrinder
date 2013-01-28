@@ -1014,10 +1014,9 @@ function openReportDiv(onFinishHook) {
 }
 
 function updateStatus(id, status_type, status_name, icon, deletable, stoppable, message) {
-	if ($("#testStatusType").val() == status_type) {
+	if ($("#teststatus_pop_over").attr("data-content") == message) {
 		return;
 	}
-
 	$("#teststatus_pop_over").attr("data-original-title", status_name);
 	$("#teststatus_pop_over").attr("data-content", message);
 	$("#testStatusType").val(status_type);
