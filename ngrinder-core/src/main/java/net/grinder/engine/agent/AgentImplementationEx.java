@@ -46,6 +46,7 @@ import net.grinder.util.GrinderClassPathUtils;
 import net.grinder.util.NetworkUtil;
 import net.grinder.util.thread.Condition;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.util.NoOp;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
@@ -158,7 +159,8 @@ public class AgentImplementationEx implements Agent {
 
 					if (consoleCommunication == null && connector != null) {
 						try {
-							consoleCommunication = new ConsoleCommunication(connector);
+							consoleCommunication = new ConsoleCommunication(connector, grinderProperties.getProperty(
+											"grinder.user", "_default"));
 							consoleCommunication.start();
 							m_logger.info("connected to console at {}", connector.getEndpointAsString());
 						} catch (CommunicationException e) {
@@ -353,7 +355,7 @@ public class AgentImplementationEx implements Agent {
 	}
 
 	/**
-	 * Get classpath which should  be located in the head of classpath.
+	 * Get classpath which should be located in the head of classpath.
 	 * 
 	 * @param properties
 	 *            system properties
@@ -456,7 +458,8 @@ public class AgentImplementationEx implements Agent {
 		private final TimerTask m_reportRunningTask;
 		private final MessagePump m_messagePump;
 
-		public ConsoleCommunication(Connector connector) throws CommunicationException, FileStore.FileStoreException {
+		public ConsoleCommunication(Connector connector, String user) throws CommunicationException,
+						FileStore.FileStoreException {
 
 			final ClientReceiver receiver = ClientReceiver.connect(connector, new AgentAddress(m_agentIdentity));
 			m_sender = ClientSender.connect(receiver);
@@ -464,7 +467,9 @@ public class AgentImplementationEx implements Agent {
 
 			if (m_fileStore == null) {
 				// Only create the file store if we connected.
-				m_fileStore = new FileStore(new File(m_agentConfig.getHome().getDirectory(), "file-store"), m_logger);
+				File base = m_agentConfig.getHome().getDirectory();
+				File directory = new File(new File(base, "file-store"), user);
+				m_fileStore = new FileStore(directory, m_logger);
 			}
 
 			m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_STARTED, m_fileStore

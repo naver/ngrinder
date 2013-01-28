@@ -170,7 +170,7 @@ public interface NGrinderConstants {
 	public static final String GRINDER_PROP_TEST_ID = "grinder.test.id";
 	public static final String GRINDER_PROP_IGNORE_SAMPLE_COUNT = "grinder.ignoreSampleCount";
 	public static final String GRINDER_PROP_SECURITY = "grinder.security";
-
+	public static final String GRINDER_PROP_USER = "grinder.user";
 	// ngrinder setting.
 	public static final String NGRINDER_PROP_DIST_SAFE_THRESHHOLD = "ngrinder.dist.safe.threashhold";
 	public static final String NGRINDER_PROP_DIST_SAFE = "ngrinder.dist.safe";

@@ -120,6 +120,7 @@ public class AgentDaemon implements Agent {
 		if (consolePort > 0) {
 			getGrinderProperties().setInt(GrinderProperties.CONSOLE_PORT, consolePort);
 		}
+		
 		thread = new Thread(new AgentThreadRunnable(), "Agent conntected to port : "
 						+ getGrinderProperties().getInt(GrinderProperties.CONSOLE_PORT, 0));
 		thread.setDaemon(true);

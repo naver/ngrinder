@@ -1014,9 +1014,19 @@ function openReportDiv(onFinishHook) {
 }
 
 function updateStatus(id, status_type, status_name, icon, deletable, stoppable, message) {
-	if ($("#teststatus_pop_over").attr("data-content") == message) {
+	if ($("#teststatus_pop_over").attr("data-content") != message) {
+		
+		$("#teststatus_pop_over").attr("data-content", message);
+		var popover = $("#teststatus_pop_over").data("popover")
+		if (popover !== undefined && popover.tip().is(':visible')) {
+			popover.show(); 
+		}
+	}
+	
+	if ($("#testStatusType").val() == status_type) {
 		return;
 	}
+
 	$("#teststatus_pop_over").attr("data-original-title", status_name);
 	$("#teststatus_pop_over").attr("data-content", message);
 	$("#testStatusType").val(status_type);
