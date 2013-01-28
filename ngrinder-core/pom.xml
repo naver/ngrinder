@@ -52,6 +52,10 @@
 					<artifactId>clojure</artifactId>
 					<groupId>org.clojure</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>jython</artifactId>
+					<groupId>org.python</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
