@@ -61,7 +61,7 @@ public class MonitorCollectorListener implements SamplingLifeCycleListener {
 	public void onSamplingStarted() {
 		monitorClientTask = applicationContext.getBean(MontorClientManager.class);
 		monitorClientTask.add(agents, reportPath);
-		timer.scheduleAtFixedRate(monitorClientTask, 600, 600);
+		timer.schedule(monitorClientTask, 800, 800);
 	}
 
 	@Override

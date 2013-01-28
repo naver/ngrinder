@@ -332,7 +332,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @param user
 	 *            user
 	 * @param testComment
-	 *            trest comment
+	 *            test comment
 	 * @param testId
 	 *            testId
 	 * @param tagString

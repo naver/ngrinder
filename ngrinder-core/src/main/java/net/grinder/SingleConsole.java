@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
 
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
@@ -73,6 +74,7 @@ import org.apache.commons.lang.mutable.MutableBoolean;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.ReflectionUtil;
+import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.service.ISingleConsole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -500,16 +502,17 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				}
 
 				if (mutableBoolean.isTrue()) {
+					// The cache status is updated asynchronously by agent reports.
+					// If we have a listener, we wait for up to five seconds for all
+					// agents to indicate that they are up to date.
 					checkSafetyWithCacheState(fileDistribution, cacheStateCondition, 1);
 				}
 			} catch (FileContents.FileContentsException e) {
 				throw new NGrinderRuntimeException("Error while distribute files for " + getConsolePort());
 			}
 		}
-		// The cache status is updated asynchronously by agent reports.
-		// If we have a listener, we wait for up to five seconds for all
-		// agents to indicate that they are up to date.
 		if (mutableBoolean.isFalse()) {
+			ThreadUtil.sleep(1000);
 			checkSafetyWithCacheState(fileDistribution, cacheStateCondition, fileCount);
 		}
 	}
