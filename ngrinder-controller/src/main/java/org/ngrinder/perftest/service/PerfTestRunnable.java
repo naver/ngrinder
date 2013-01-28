@@ -29,17 +29,15 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
 
 import javax.annotation.PostConstruct;
 
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.ConsoleShutdownListener;
-import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
 import net.grinder.console.model.ConsoleProperties;
-import net.grinder.statistics.StatisticsSet;
+import net.grinder.util.ListenerHelper;
 import net.grinder.util.ListenerSupport;
 
 import org.apache.commons.io.FileUtils;
@@ -55,12 +53,11 @@ import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.monitor.MonitorConstants;
-import org.ngrinder.monitor.service.MontorClientManager;
+import org.ngrinder.perftest.model.NullSingleConsole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.atlassian.plugin.event.PluginEventListener;
@@ -101,9 +98,6 @@ public class PerfTestRunnable implements NGrinderConstants {
 
 	@Autowired
 	private ApplicationContext applicationContext;
-
-	@Autowired
-	private TaskScheduler scheduler;
 
 	/**
 	 * Initialize plugin manager to register plugin update event.
@@ -301,7 +295,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	void distributeFileOn(final PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		// Distribute files
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES, "All necessary files are distributing.");
-		ListenerSupport<SingleConsole.FileDistributionListener> listener = new ListenerSupport<SingleConsole.FileDistributionListener>();
+		ListenerSupport<SingleConsole.FileDistributionListener> listener = ListenerHelper.create();
 		final int safeThreadHold = config.getSystemProperties().getPropertyInt(NGRINDER_PROP_DIST_SAFE_THRESHHOLD,
 						1000000);
 		listener.add(new SingleConsole.FileDistributionListener() {
@@ -318,8 +312,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 				}
 				long sizeOfDirectory = FileUtils.sizeOfDirectory(dir);
 				if (sizeOfDirectory > safeThreadHold) {
-					perfTestService.markProgress(perfTest,
-									"The total file size to be distributed is over 1MB. Enable safe file distribution in force.");
+					perfTestService.markProgress(perfTest, "The total file size to be distributed is over "
+									+ safeThreadHold + "Byte. Enable safe file distribution in force.");
 					return true;
 				}
 				return safe;
@@ -385,73 +379,13 @@ public class PerfTestRunnable implements NGrinderConstants {
 			run.start(perfTest, perfTestService, config.getVesion());
 		}
 
+		singleConsole.addSamplingLifeCyleListener(new PerfTestSamplingCollectorListener(singleConsole, perfTest,
+						perfTestService));
 		// Add monitors when sampling is started.
-		final Set<AgentInfo> agents = createMonitorTargets(perfTest);
-		singleConsole.addSamplingLifeCyleListener(new SamplingLifeCycleListener() {
-			private MontorClientManager monitorClientScheduler = null;
-			private ScheduledFuture<?> scheduleWithFixedDelay = null;
-			private int countOfLostAgent = 0;
-
-			@Override
-			public void onSamplingStarted() {
-				LOG.info("add monitors on {} for perftest {}", agents, perfTest.getId());
-				monitorClientScheduler = applicationContext.getBean(MontorClientManager.class);
-				monitorClientScheduler.add(agents, singleConsole.getReportPath());
-				scheduleWithFixedDelay = scheduler.scheduleWithFixedDelay(monitorClientScheduler, 600);
-				for (OnTestSamplingRunnable each : testSamplingRunnables) {
-					try {
-						each.startSampling(singleConsole, perfTest, perfTestService);
-					} catch (Exception e) {
-						LOG.error("While running plugins, the error occurs.");
-						LOG.error("Details : ", e);
-					}
-				}
-			}
-
-			@Override
-			public void onSamplingEnded() {
-				LOG.info("remove monitors on {} for perftest {}", agents, perfTest.getId());
-				if (scheduleWithFixedDelay != null) {
-					scheduleWithFixedDelay.cancel(false);
-				}
-				if (monitorClientScheduler != null) {
-					monitorClientScheduler.destroy();
-				}
-				for (OnTestSamplingRunnable each : testSamplingRunnables) {
-					try {
-						each.endSampling(singleConsole, perfTest, perfTestService);
-					} catch (Exception e) {
-						LOG.error("While running plugin the following error occurs.");
-						LOG.error("Details : ", e);
-					}
-				}
-			}
-
-			@Override
-			public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-				if (singleConsole.getAllAttachedAgentsCount() == 0) {
-					if (countOfLostAgent++ > 10) {
-						perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING,
-										"All agents are unexpectively lost.");
-					}
-				} else {
-					countOfLostAgent = 0;
-				}
-				monitorClientScheduler.saveData();
-				perfTestService.saveAgentsInfo(singleConsole, perfTest);
-				perfTestService.saveStatistics(singleConsole, perfTest);
-
-				for (OnTestSamplingRunnable each : testSamplingRunnables) {
-					try {
-						each.sampling(singleConsole, perfTest, perfTestService, intervalStatistics,
-										cumulativeStatistics);
-					} catch (Exception e) {
-						LOG.error("While running plugin the following error occurs");
-						LOG.error("Details : ", e);
-					}
-				}
-			}
-		});
+		singleConsole.addSamplingLifeCyleListener(new MonitorCollectorListener(this.applicationContext,
+						createMonitorTargets(perfTest), singleConsole.getReportPath()));
+		singleConsole.addSamplingLifeCyleListener(new PluginRunListener(this.testSamplingRunnables, singleConsole,
+						perfTest, perfTestService));
 
 		// Run test
 		perfTestService.markStatusAndProgress(perfTest, START_TESTING, "Now the test is ready to start.");
@@ -541,7 +475,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	/**
-	 * Clean up distribution directory for the given perfTest,
+	 * Clean up distribution directory for the given perfTest.
 	 * 
 	 * @param perfTest
 	 *            perfTest
@@ -569,6 +503,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 			return true;
 		} else if (perfTest.isThreshholdRunCount()
 						&& singleConsoleInUse.getCurrentExecutionCount() >= perfTest.getTotalRunCount()) {
+			LOG.debug("Test {} is ready to Finish. Current : {}, Planned : {}",
+							new Object[] { perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentExecutionCount(),
+									perfTest.getTotalRunCount() });
+			return true;
+		} else if (singleConsoleInUse instanceof NullSingleConsole) {
 			LOG.debug("Test {} is ready to Finish. Current : {}, Planned : {}",
 							new Object[] { perfTest.getTestIdentifier(), singleConsoleInUse.getCurrentExecutionCount(),
 									perfTest.getTotalRunCount() });
@@ -642,6 +581,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 								"The test is finished successfully");
 			}
 		} catch (Exception e) {
+			perfTestService.markStatusAndProgress(perfTest, Status.STOP_ON_ERROR, e.getMessage());
 			LOG.error("Error while finishing {}", perfTest.getTestIdentifier());
 			LOG.error("Details : ", e);
 		}

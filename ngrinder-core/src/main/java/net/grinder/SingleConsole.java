@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
@@ -408,6 +407,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 *            the distribution files
 	 * @param listener
 	 *            listener
+	 * @param safe
+	 *            safe file transition
 	 */
 	public void distributeFiles(File filePath, ListenerSupport<FileDistributionListener> listener, boolean safe) {
 		setDistributionDirectory(filePath);
@@ -419,15 +420,17 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * 
 	 * @author JunHo Yoon
 	 */
-	public static abstract class FileDistributionListener {
+	public abstract static class FileDistributionListener {
 
 		/**
 		 * Notify the distribute starting event and the returns the safe mode (if you want to enable
 		 * safe mode in force depending on the file. It should return true.
 		 * 
 		 * @param dir
-		 *            distirbution dir dir
+		 *            Distribution dir
 		 * @param safe
+		 *            safe file transition
+		 * @return true if safe
 		 */
 		public abstract boolean start(File dir, boolean safe);
 
@@ -452,6 +455,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * 
 	 * @param listener
 	 *            listener
+	 * @param safe
+	 *            safe
 	 */
 	public void distributFiles(ListenerSupport<FileDistributionListener> listener, final boolean safe) {
 		final FileDistribution fileDistribution = (FileDistribution) getConsoleComponent(FileDistribution.class);
@@ -852,7 +857,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * To update statistics data while test is running.
 	 */
 	protected void updateStatistics() {
-		Map<String, Object> result = new ConcurrentHashMap<String, Object>();
+		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("test_time", getCurrentRunningTime() / 1000);
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
@@ -940,7 +945,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @author JunHo Yoon
 	 * @since 3.0
 	 */
-	public interface SamplingLifeCycleListener {
+	public static interface SamplingLifeCycleListener {
 		/**
 		 * Called when the sampling is started.
 		 */
@@ -1120,7 +1125,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	private Map<String, Object> getNullStatictisData() {
-		Map<String, Object> result = new ConcurrentHashMap<String, Object>(1);
+		Map<String, Object> result = new HashMap<String, Object>(1);
 		result.put("test_time", getCurrentRunningTime() / 1000);
 		return result;
 	}

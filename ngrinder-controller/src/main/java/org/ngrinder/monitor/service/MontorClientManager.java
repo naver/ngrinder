@@ -17,6 +17,7 @@ import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TimerTask;
 
 import org.ngrinder.agent.model.AgentInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ import com.google.common.collect.Maps;
  */
 @Service
 @Scope(value = "prototype")
-public class MontorClientManager implements Runnable {
+public class MontorClientManager extends TimerTask {
 	private Map<String, MonitorClientSerivce> monitorClientsMap = Maps.newConcurrentMap();
 
 	@Autowired
@@ -77,7 +78,6 @@ public class MontorClientManager implements Runnable {
 	private String createTargetKey(AgentInfo target) {
 		return target.getIp();
 	}
-
 
 	/**
 	 * Save the {@link org.ngrinder.monitor.share.domain.SystemInfo} into the report path.

@@ -33,8 +33,6 @@ import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletResponse;
 
-import net.grinder.common.processidentity.AgentIdentity;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
@@ -52,7 +50,6 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
@@ -587,27 +584,33 @@ public class PerfTestController extends NGrinderBaseController {
 		PerfTest test = checkNotNull(getPerfTestWithPermissionCheck(user, testId, false),
 						"given test should be exist : " + testId);
 		if (test.getStatus().equals(Status.TESTING)) {
-			model.addAttribute(PARAM_RESULT_AGENT_PERF, getAgentPerfString(perfTestService.getAgentInfo(test)));
 			model.addAttribute(PARAM_RESULT_SUB, perfTestService.getStatistics(test));
+			model.addAttribute(PARAM_RESULT_AGENT_PERF, getAgentPerfString(perfTestService.getAgentInfo(test)));
 		}
 		return "perftest/refreshContent";
 	}
 
-	private String getAgentPerfString(Map<AgentIdentity, SystemDataModel> agentPerfMap) {
+	@SuppressWarnings("rawtypes")
+	private String getAgentPerfString(Map<String, HashMap> agentPerfMap) {
+		if (agentPerfMap == null)
+			return StringUtils.EMPTY;
 		List<String> perfStringList = new ArrayList<String>();
-		for (Entry<AgentIdentity, SystemDataModel> each : agentPerfMap.entrySet()) {
-			SystemDataModel value = each.getValue();
+		for (Entry<String, HashMap> each : agentPerfMap.entrySet()) {
+			HashMap value = each.getValue();
 			if (value == null) {
 				continue;
 			}
-			Long totalMemory = value.getTotalMemory();
 
-			float usage = 0;
+			double totalMemory = Double.parseDouble(value.get("totalMemory").toString());
+			double freeMemory = Double.parseDouble(value.get("freeMemory").toString());
+			Float cpuUsedPercentage = Float.parseFloat(value.get("cpuUsedPercentage").toString());
+
+			double usage = 0;
 			if (totalMemory != 0) {
-				usage = (((float) (totalMemory - value.getFreeMemory())) / totalMemory) * 100;
+				usage = (((double) (totalMemory - freeMemory)) / totalMemory) * 100;
 			}
 			perfStringList.add(String.format(" {'agent' : '%s', 'cpu' : %3.02f, 'mem' : %3.02f }",
-							StringUtils.abbreviate(each.getKey().getName(), 25), value.getCpuUsedPercentage(), usage));
+							StringUtils.abbreviate(each.getKey(), 25), cpuUsedPercentage, usage));
 		}
 		return StringUtils.join(perfStringList, ",");
 	}

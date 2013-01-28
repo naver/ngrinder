@@ -204,6 +204,12 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Sort(comparator = Tag.class, type = SortType.COMPARATOR)
 	private SortedSet<Tag> tags;
 
+	@Column(name = "running_sample", length = 10000)
+	private String runningSample;
+
+	@Column(name = "agent_stat", length = 2000)
+	private String agentStatus;
+
 	public String getTestIdentifier() {
 		return "perftest_" + getId() + "_" + getLastModifiedUser().getUserId();
 	}
@@ -637,5 +643,21 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setSafeDistribution(Boolean safeDistribution) {
 		this.safeDistribution = safeDistribution;
+	}
+
+	public String getRunningSample() {
+		return runningSample;
+	}
+
+	public void setRunningSample(String runningSample) {
+		this.runningSample = runningSample;
+	}
+
+	public String getAgentStatus() {
+		return agentStatus;
+	}
+
+	public void setAgentStatus(String agentStatus) {
+		this.agentStatus = agentStatus;
 	}
 }
