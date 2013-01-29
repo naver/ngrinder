@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="nGrinder : 企业级性能测试解决方案" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-36328271-1']);
+        _gaq.push(['_trackPageview']);
+  
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+	
+    </script>
+    <title>nGrinder</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/nhnopensource/ngrinder">View on GitHub</a>
+          <img src="images/logo_ngrinder_a_header_inv.png" style="width:176px;border:0px;padding:0px;margin-top:-50px;box-shadow:0 0 0px;-webkit-box-shadow:0 0 0px"/>
+          <h3 id="project_tagline">基于Grinder的企业级性能测试解决方案</h3>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+    <img src="images/bg_perftest_banner.png" style="border:0px;padding:0px;margin-top:-40px;box-shadow:0 0 0px;-webkit-box-shadow:0 0 0px"/>
+
+<ul>
+<li>nGrinder3.1现在已经发布。请查看 <a href="http://www.cubrid.org/wiki_ngrinder/entry/ngrinder-3-1-release-note" target="blank">这里。</a></li>
+</ul>
+<p>nGrinder是一个压力测试平台，你可以创建脚本，执行测试，监控资源并且同时将测试结果生成报告。开源的nGrinder提供了简单易行的运行压力测试的办法，并提供了整体环境。</p>
+<ul>
+<li>想知道nGrinder对于原Grinder平台做了哪些改变？<p/>请看 <a href="http://www.cubrid.org/wiki_ngrinder/entry/architecture">http://www.cubrid.org/wiki_ngrinder/entry/architecture</a>!</li>
+<li>开始测试, <p/>请看 <a href="http://www.cubrid.org/wiki_ngrinder/entry/user-guide">http://www.cubrid.org/wiki_ngrinder/entry/user-guide</a>!</li>
+</ul>
+<p>nGrinder 包括2个主要组件： </p>
+<ul>
+<li>nGrinder controller
+	<blockquote>
+    一个网页应用，用于执行性能测试人员创建测试脚本和配置测试参数。
+    </blockquote>
+</li>    
+<li>nGrinder agent 
+   	<blockquote>
+   	 一个虚拟用户生成器，用于产生负载。 
+   	 </blockquote>
+</li>
+</ul>
+<ul>
+</ul>
+<h2>主要功能</h2>
+<ul>
+	<li>在多个agent上的JVM使用Jython脚本来创建测试场景和产生压力. </li>
+	<li>配合用户库（jar，py）来扩展测试，为测试执行带来无限的可能.</li>
+        <li>提供基于网络接口，实现项目管理，资源监控，结果管理和报告管理。</li>
+	<li>多测试并发运行。最大限度的分配预先安装好的agent以实现充分利用。</li>
+	<li>在多个网络区域内部署agent,在各个网络位置执行测试。</li>
+        <li>内嵌版本控制用于脚本管理。</li>
+	<li>允许监控生成负载的agent和接受负载的目标机器的资源状态。</li>
+	<li>用于测试拥有超过一亿用户的庞大系统的验证方案。</li>
+        <li>想了解nGrinder么？请查看我们的示例系统：
+		<ul>
+			<li><a href="http://ngrinder-demo.nhnopensource.org" target="blank">http://ngrinder-demo.nhnopensource.org</a></li>
+			<li>登陆账号id : user / password : user</li>
+		</ul>
+	</li>
+</ul>
+
+<h2>下载</h2>
+<p>你通过下面的链接下载最新版本：</p>
+<ul>
+<li><a href="http://sourceforge.net/projects/ngrinder/files">http://sourceforge.net/projects/ngrinder/files</a></li>
+</ul>
+<h2>文档</h2>
+<p>你可以从下面的链接找到安装手册：</p>
+<ul>
+<li><a href="http://www.cubrid.org/wiki_ngrinder/entry/installation-guide">http://www.cubrid.org/wiki_ngrinder/entry/installation-guide</a></li>
+</ul>
+<p>你可以从下面的链接找到用户指南：</p>
+<ul>
+<li><a href="http://www.cubrid.org/wiki_ngrinder/entry/user-guide">http://www.cubrid.org/wiki_ngrinder/entry/user-guide</a></li>
+</ul>
+<h2>Road Map</h2>
+nGrinder的Road Map明确标识了它已经成为一个最有快速和有效的性能测试工具。 <p/>
+请看我们的Road Map : <ul><li><a href="http://www.cubrid.org/wiki_ngrinder/entry/road-map">http://www.cubrid.org/wiki_ngrinder/entry/road-map</a></li></ul>
+
+<h2>贡献?</h2>
+<p>nGrinder欢迎所有的用户成为贡献者。请将所有的pull请求对应于master分支. 
+<ul>
+	<li>克隆这个REPO: 'git clone git://github.com/nhnopensource/ngrinder.git'</li>
+</ul>
+你将发现通用开发文档的链接：</p>
+<ul><li><a href="http://www.cubrid.org/wiki_ngrinder/entry/dev-document">http://www.cubrid.org/wiki_ngrinder/entry/dev-document</a></li></ul>
+<h2>版本控制</h2>
+<p>为了使我们发布周期的透明和可见,也为了努力保持向后兼容性, nGrinder将尽可能的根据Semantic版本控制指南来维护。</p>
+<p>发布将按下面的格式进行进行数字化命名:</p>
+<p><code>&lt;major&gt;.&lt;minor&gt;.&lt;patch&gt;</code></p>
+<p>发布将按下面的指南规则进行构造:</p>
+<ul>
+<li>打破向后兼容性将产生major（并重置minor和patch)</li>
+<li>新增加但并不打破向后兼容性将产生minor（并重置patch)</li>
+<li>Bug修复和微小修改将发布patch</li>
+</ul><h2>Q/A 和Bug跟踪</h2>
+<p>发现了bug？有了增强改进的想法？请在GitHub创建1个issue来通知我们! </p>
+<ul>
+<li><a href="https://github.com/nhnopensource/ngrinder/issues">https://github.com/nhnopensource/ngrinder/issues</a>
+</li>
+</ul>
+<p>我们的官方bug跟踪可以查看下面这个链接，并在这里注意我们的开发状态：</p>
+<ul>
+<li>
+<a href="http://jira.cubrid.org/browse/NGRINDER">http://jira.cubrid.org/browse/NGRINDER</a>
+</li>
+</ul>
+</ul>
+<p>你可以加入我们的邮件列表：</p>
+<ul>
+<li>
+<a href="http://ngrinder.642.n7.nabble.com/ngrinder-dev-f1.html">nGrinder开发邮件列表</a>
+</li>
+<ul>
+<li>
+<a href="http://ngrinder.642.n7.nabble.com/ngrinder-user-f50.html">nGrinder user forum </a>
+</li>
+<li>
+<a href="http://ngrinder.642.n7.nabble.com/ngrinder-user-cn-f114.html">nGrinder 中文论坛 (Chinese)</a>
+</li>
+<li>
+<a href="http://ngrinder.642.n7.nabble.com/ngrinder-user-kr-f113.html">nGrinder 한국어 유저 포럼 (Korean)</a>
+</li>
+</ul>
+</ul>
+<h2>版权和许可</h2>
+<pre><code>
+nGrinder (http://www.nhnopensource.org/ngrinder)
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License. 
+</code></pre>
+
+<p>nGrinder包括下面的软件和库。
+可以在LICENCE文件夹中查看每一个许可和版权的细节。</p>
+<ul>
+<li><a href="https://github.com/nhnopensource/ngrinder/tree/master/license">https://github.com/nhnopensource/ngrinder/tree/master/license</a></li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">nGrinder维护者是 <a href="https://github.com/nhnopensource">nhnopensource</a></p>
+        <p>发表在<a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
+
+
