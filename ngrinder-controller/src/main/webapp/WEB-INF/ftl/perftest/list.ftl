@@ -7,13 +7,13 @@
 		<style>
 			td.today {
 				background-image: url('${req.getContextPath()}/img/icon_today.png');
-				background-repeat:no-repeat; 
-				background-position:left top; 
+				background-repeat:no-repeat;
+				background-position:left top;
 			}
 			td.yesterday {
 				background-image: url('${req.getContextPath()}/img/icon_yesterday.png');
-				background-repeat:no-repeat; 
-				background-position:left top;  
+				background-repeat:no-repeat;
+				background-position:left top;
 			}
 		</style>
 	</head>
@@ -56,11 +56,11 @@
 						<td>
 							<span class="pull-right">
 								<a class="btn btn-primary" href="${req.getContextPath()}/perftest/detail" id="createBtn">
-									<i class="icon-file"></i> 
+									<i class="icon-file icon-white"></i> 
 									<@spring.message "perfTest.formInline.createTest"/>
 								</a>
 								<a class="btn btn-danger" href="javascript:void(0);" id="deleteBtn">
-									<i class="icon-remove"></i>
+									<i class="icon-remove icon-white"></i>
 									<@spring.message "perfTest.formInline.deletetSelectedTest"/>
 								</a>
 							</span>

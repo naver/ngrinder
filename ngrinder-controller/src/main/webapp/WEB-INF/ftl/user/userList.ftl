@@ -31,7 +31,7 @@
 						<i class="icon-user"></i> <@spring.message "user.list.button.create"/>
 					</a>
 					<a href="javascript:deleteCheckedUsers()" class="btn btn-danger">
-						<i class="icon-remove"></i> <@spring.message "user.list.button.delete"/>
+						<i class="icon-remove icon-white"></i> <@spring.message "user.list.button.delete"/>
 					</a>
 				</span>
 			</div>

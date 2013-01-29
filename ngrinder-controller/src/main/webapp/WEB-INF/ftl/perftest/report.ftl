@@ -138,7 +138,7 @@
 			    	<div class="page-header pageHeader">
 			    		<h4>Performance</h4>
 					</div>
-	                <button class="btn btn-middle btn-primary pull-right" id="downloadReportData" style="margin-top:-55px"><i class="icon-download-alt"></i><strong><@spring.message "perfTest.report.downloadCSV"/></strong></button>
+	                <button class="btn btn-middle btn-primary pull-right" id="downloadReportData" style="margin-top:-55px"><i class="icon-download-alt icon-white"></i> <strong><@spring.message "perfTest.report.downloadCSV"/></strong></button>
 					<h6>TPS</h6>
 			    	<div class="chart" id="tpsDiv"></div>
 					<h6><@spring.message "perfTest.report.header.meantime"/>&nbsp;(ms)</h6>

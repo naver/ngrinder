@@ -48,7 +48,7 @@
 							<tr>
 								<td>
 									<a class="btn btn-primary" href="#createScriptModal" id="createBtn" data-toggle="modal">
-										<i class="icon-file"></i>
+										<i class="icon-file icon-white"></i>
 										<@spring.message "script.list.button.createScript"/>
 									</a>
 									<a class="btn" href="#createFolderModal" id="folderBtn" data-toggle="modal">
@@ -62,7 +62,7 @@
 								</td>
 								<td>
 									<a class="btn btn-danger pull-right" href="javascript:void(0);" id="deleteBtn">
-										<i class="icon-remove"></i>
+										<i class="icon-remove icon-white"></i>
 										<@spring.message "script.list.button.delete"/>
 									</a>
 								</td> 
