@@ -1093,13 +1093,20 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return Math.round(doubleValue * 100D) / 100D;
 	}
 
+	/**
+	 * Check if the given perfTest has too many errors. (20%)
+	 * 
+	 * @param perfTest
+	 *            perftes t
+	 * @return true if too many errors.
+	 */
 	@SuppressWarnings("unchecked")
 	public boolean hasTooManError(PerfTest perfTest) {
 		Map<String, Object> result = getStatistics(perfTest);
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
 		long tests = MapUtils.getDouble(totalStatistics, "Tests", 0D).longValue();
 		long errors = MapUtils.getDouble(totalStatistics, "Errors", 0D).longValue();
-		return (((double)errors / (tests + errors)) > 0.2d);
+		return ((((double) errors) / (tests + errors)) > 0.2d);
 	}
 
 	/**

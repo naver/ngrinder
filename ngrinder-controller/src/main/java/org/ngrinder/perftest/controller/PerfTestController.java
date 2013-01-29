@@ -592,8 +592,9 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@SuppressWarnings("rawtypes")
 	private String getAgentPerfString(Map<String, HashMap> agentPerfMap) {
-		if (agentPerfMap == null)
+		if (agentPerfMap == null) {
 			return StringUtils.EMPTY;
+		}
 		List<String> perfStringList = new ArrayList<String>();
 		for (Entry<String, HashMap> each : agentPerfMap.entrySet()) {
 			HashMap value = each.getValue();

@@ -1,3 +1,16 @@
+/* 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
+ */
 package org.ngrinder.infra.init;
 
 import liquibase.database.Database;
@@ -23,8 +36,20 @@ import liquibase.sqlgenerator.SqlGeneratorChain;
 import liquibase.sqlgenerator.core.AbstractSqlGenerator;
 import liquibase.statement.core.ModifyDataTypeStatement;
 
+/**
+ * Modify Column type sql generator. Modified to support Cubrid.
+ * 
+ * @since 3.1.1
+ * @author JunHo Yoon
+ */
 public class ModifyDataTypeExGenerator extends AbstractSqlGenerator<ModifyDataTypeStatement> {
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see liquibase.sqlgenerator.core.AbstractSqlGenerator#warn(liquibase.statement.SqlStatement,
+	 * liquibase.database.Database, liquibase.sqlgenerator.SqlGeneratorChain)
+	 */
 	@Override
 	public Warnings warn(ModifyDataTypeStatement modifyDataTypeStatement, Database database,
 					SqlGeneratorChain sqlGeneratorChain) {
@@ -32,12 +57,20 @@ public class ModifyDataTypeExGenerator extends AbstractSqlGenerator<ModifyDataTy
 
 		if (database instanceof MySQLDatabase
 						&& !modifyDataTypeStatement.getNewDataType().toLowerCase().contains("varchar")) {
-			warnings.addWarning("modifyDataType will lose primary key/autoincrement/not null settings for mysql.  Use <sql> and re-specify all configuration if this is the case");
+			warnings.addWarning("modifyDataType will lose primary key/autoincrement/not null settings for mysql."
+							+ "  Use <sql> and re-specify all configuration if this is the case");
 		}
 
 		return warnings;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see liquibase.sqlgenerator.SqlGenerator#validate(liquibase.statement.SqlStatement,
+	 * liquibase.database.Database, liquibase.sqlgenerator.SqlGeneratorChain)
+	 */
+	@Override
 	public ValidationErrors validate(ModifyDataTypeStatement statement, Database database,
 					SqlGeneratorChain sqlGeneratorChain) {
 		ValidationErrors validationErrors = new ValidationErrors();
@@ -48,7 +81,14 @@ public class ModifyDataTypeExGenerator extends AbstractSqlGenerator<ModifyDataTy
 		return validationErrors;
 	}
 
-	public Sql[] generateSql(ModifyDataTypeStatement statement, Database database, SqlGeneratorChain sqlGeneratorChain) {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see liquibase.sqlgenerator.SqlGenerator#generateSql(liquibase.statement.SqlStatement,
+	 * liquibase.database.Database, liquibase.sqlgenerator.SqlGeneratorChain)
+	 */
+	@Override
+	public Sql[] generateSql(ModifyDataTypeStatement statement, Database database, SqlGeneratorChain chain) {
 		String alterTable = "ALTER TABLE "
 						+ database.escapeTableName(statement.getSchemaName(), statement.getTableName());
 
@@ -68,9 +108,6 @@ public class ModifyDataTypeExGenerator extends AbstractSqlGenerator<ModifyDataTy
 		return new Sql[] { new UnparsedSql(alterTable) };
 	}
 
-	/**
-	 * @return either "MODIFY" or "ALTER COLUMN" depending on the current db
-	 */
 	private String getModifyString(Database database) {
 		if (database instanceof CUBRIDDatabase || database instanceof SybaseASADatabase
 						|| database instanceof SybaseDatabase || database instanceof MySQLDatabase
@@ -82,10 +119,6 @@ public class ModifyDataTypeExGenerator extends AbstractSqlGenerator<ModifyDataTy
 		}
 	}
 
-	/**
-	 * @return the string that comes before the column type definition (like 'set data type' for
-	 *         derby or an open parentheses for Oracle)
-	 */
 	private String getPreDataTypeString(Database database) {
 		if (database instanceof DerbyDatabase || database instanceof DB2Database) {
 			return " SET DATA TYPE ";
