@@ -225,7 +225,6 @@ public class ConsoleManager {
 			return;
 		}
 		try {
-			console.unregisterSampling();
 			console.sendStopMessageToAgents();
 		} catch (Exception e) {
 			LOG.error("Exception is occured while shuttdowning console in returnback process for test {}.",

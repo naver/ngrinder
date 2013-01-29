@@ -527,6 +527,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	public void doCancel(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		LOG.error("Cacel the perftest {} by user request.", perfTest.getTestIdentifier());
+		singleConsoleInUse.unregisterSampling();
 		try {
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED,
 							"Stop requested by user");
@@ -546,6 +547,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            {@link SingleConsole} which is being used for the given {@link PerfTest}
 	 */
 	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
+		singleConsoleInUse.unregisterSampling();
 		try {
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR,
 							"Stoped by error");
@@ -568,11 +570,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// FIXME... it should found abnormal test status..
 		LOG.debug("PerfTest {} status - currentRunningTime {} ", perfTest.getId(),
 						singleConsoleInUse.getCurrentRunningTime());
+		singleConsoleInUse.unregisterSampling();
 		try {
 			// stop target host monitor
-			if (singleConsoleInUse.hasTooManyError()) {
+			if (perfTestService.hasTooManError(perfTest)) {
 				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR,
-								"The test is finished. but contains a lot of errors");
+								"The test is finished. but contains a lot of errors over 20% of total runs");
 			} else if (singleConsoleInUse.hasNoPerformedTest()) {
 				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR,
 								"The test is finished. but has no TPS");
