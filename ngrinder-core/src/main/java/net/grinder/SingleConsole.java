@@ -1196,7 +1196,11 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
 			@Override
 			public void inform(SamplingLifeCycleListener listener) {
-				listener.onSamplingStarted();
+				try {
+					listener.onSamplingStarted();
+				} catch (Exception e) {
+					LOGGER.error("Error occurs while test sampling end listener", e);
+				}
 			}
 		});
 	}
@@ -1205,7 +1209,11 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
 			@Override
 			public void inform(SamplingLifeCycleListener listener) {
-				listener.onSamplingEnded();
+				try {
+					listener.onSamplingEnded();
+				} catch (Exception e) {
+					LOGGER.error("Error occurs while test sampling end listener", e);
+				}
 			}
 		});
 	}

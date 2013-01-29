@@ -1093,6 +1093,15 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return Math.round(doubleValue * 100D) / 100D;
 	}
 
+	@SuppressWarnings("unchecked")
+	public boolean hasTooManError(PerfTest perfTest) {
+		Map<String, Object> result = getStatistics(perfTest);
+		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
+		long tests = MapUtils.getDouble(totalStatistics, "Tests", 0D).longValue();
+		long errors = MapUtils.getDouble(totalStatistics, "Errors", 0D).longValue();
+		return (((double)errors / (tests + errors)) > 0.2d);
+	}
+
 	/**
 	 * Update the given {@link PerfTest} properties after test finished.
 	 * 
@@ -1108,8 +1117,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		perfTest.setTps(parseDoubleWithSafety(totalStatistics, "TPS", 0D));
 		perfTest.setMeanTestTime(parseDoubleWithSafety(totalStatistics, "Mean_Test_Time_(ms)", 0D));
 		perfTest.setPeakTps(parseDoubleWithSafety(totalStatistics, "Peak_TPS", 0D));
-		perfTest.setTests(MapUtils.getDouble(totalStatistics, "Tests", 0D).intValue());
-		perfTest.setErrors(MapUtils.getDouble(totalStatistics, "Errors", 0D).intValue());
+		perfTest.setTests(MapUtils.getDouble(totalStatistics, "Tests", 0D).longValue());
+		perfTest.setErrors(MapUtils.getDouble(totalStatistics, "Errors", 0D).longValue());
 
 	}
 

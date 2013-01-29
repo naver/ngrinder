@@ -141,10 +141,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	// followings are test result members
 	@Column(name = "tests")
-	private Integer tests;
+	private Long tests;
 
 	@Column(name = "errors")
-	private Integer errors;
+	private Long errors;
 
 	@Column(name = "mean_test_time")
 	private Double meanTestTime;
@@ -429,19 +429,19 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.threads = threads;
 	}
 
-	public Integer getTests() {
+	public Long getTests() {
 		return tests;
 	}
 
-	public void setTests(Integer tests) {
+	public void setTests(Long tests) {
 		this.tests = tests;
 	}
 
-	public Integer getErrors() {
+	public Long getErrors() {
 		return errors;
 	}
 
-	public void setErrors(Integer errors) {
+	public void setErrors(Long errors) {
 		this.errors = errors;
 	}
 
