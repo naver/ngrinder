@@ -13,6 +13,28 @@
 	  			${result_agent_perf}
 	  		];
 	</script>
+	<#function bytesFormatter bytes>
+		<#local kilo=1024 />
+		<#local mega=kilo*kilo />
+		<#local giga=mega*kilo />
+		<#local tera=giga*kilo />
+		<#if bytes == 0>
+			<#return "None">
+		</#if>
+		<#if (bytes / tera > 1)>
+			<#return (bytes/tera)?string("0.#")+"TB">
+		</#if>
+		<#if (bytes / giga > 1)>
+			<#return (bytes/giga)?string("0.#")+"GB">
+		</#if>
+		<#if (bytes / mega > 1)>
+			<#return (bytes/mega)?string("0.#")+"MB">
+		</#if>
+		<#if (bytes / kilo > 1)>
+			<#return (bytes/kilo)?string("0.#")+"KB">
+		</#if>
+		<#return bytes?string.number+"B">
+	</#function>
 	<table >
 		<tbody>	 
 		    <#list resultsub?keys as mKey>
@@ -26,8 +48,8 @@
 							<td>${statistics.Errors!'&nbsp;'}</td>
 							<td>${(statistics['Mean_Test_Time_(ms)']!0)?string("0.##")}</td>
 							<td>${statistics.TPS!'0'}</td>
-							<td>-</td>
-							<td>${(statistics['Test_Time_Standard_Deviation_(ms)']!0)?string("0.##")}</td>
+							<td>${bytesFormatter(((statistics['Response_bytes_per_second']!0)?c)?number)}</td>
+							<td>${(statistics['Mean_time_to_first_byte']!0)?string("0.##")}</td>
 						</tr>
 						</#list>
 				</#if>

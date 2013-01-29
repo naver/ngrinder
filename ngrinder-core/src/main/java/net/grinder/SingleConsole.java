@@ -851,6 +851,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			add("Tests");
 			add("Errors");
 			add("TPS");
+			add("Response bytes per second");
+			add("Mean time to first byte");
 			add("Peak TPS");
 			add("Mean Test Time (ms)");
 		}

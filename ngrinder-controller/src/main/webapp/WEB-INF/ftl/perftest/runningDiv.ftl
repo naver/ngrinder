@@ -116,8 +116,8 @@
 								<th class="noClick"><@spring.message "perfTest.table.errors"/></th>
 								<th class="noClick" title="<@spring.message "perfTest.table.meantime"/>">MTT</th>
 								<th class="noClick"><@spring.message "perfTest.table.tps"/></th>
-								<th class="noClick"><@spring.message "perfTest.detail.peakTPS"/></th>
-								<th class="noClick"><@spring.message "perfTest.testRunning.mtsd"/></th>
+								<th class="noClick"><@spring.message "perfTest.testRunning.responseBytePerSecond"/></th>
+								<th class="noClick" title='<@spring.message "perfTest.testRunning.meanTimeToFirstByte"/>'>MTFB</th>
 							</tr>
 						</thead>
 						<tbody>
