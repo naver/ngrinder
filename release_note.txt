@@ -1,17 +1,30 @@
-3.1.1 (2013.01.24)
-- Hot fix for nGrinder 3.1.
-- This release includes several improvements as well.
+3.1.1 (2013.01.31)
 
+We're proudly releasing nGrinder 3.1.1 to speed up the test and enhance the usability.
+With some bug fix, the following improvements are for the effective operations of nGrinder.
+       
+- New features and changes:
+  * Speed up the test execution. Now all tests will take 5 seconds to execute a test.
+  * Embed jython 2.5.3 and json.jar in the default libraries.
+  * Make the agent takes less memory. now agent process need 50mb at minimum
+  * Shows the response byte per second and mean time to first byte in the test running panel.
+  * Change the default QnA site into nabble not github.
+  * Change Process and Thread calculation logic more stable to support more than 300 users. Please delete the previous ${NGRINDER_HOME}/process_and_thread_policy.js in advance.
+
+- Details
+  
 Bug
 [NGRINDER-482] - Add grinder.processes and grinder.threads as properties during script validation
 [NGRINDER-488] - Add a error message when there are no sampling was performed.
 [NGRINDER-496] - Make user not to be able to change the underlying SecurityManager 
 [NGRINDER-497] - Make the current pc IP resolution more stable
 [NGRINDER-498] - Make security mode work
+[NGRINDER-504] - Show script initialize error in log
+[NGRINDER-505] - Test Comment should not be cloned
 
 Improvement
-[NGRINDER-478] - Distribute the un-predefined resources (e.g image) 
-[NGRINDER-479] - Speed up nGrinder performance reducing distribution cost (2~3sec)
+[NGRINDER-478] - Distribute the un-predefined resources (e.g images) 
+[NGRINDER-479] - Speed up nGrinder performance reducing distribution cost (4~6sec)
                - add json.org library as default lib as well.
 [NGRINDER-480] - Make each perftest folder distributed in several folders
 [NGRINDER-481] - Move the question mark in logs to just right of log title
@@ -26,14 +39,15 @@ Improvement
 [NGRINDER-495] - Modify the process and thread policy to support 1000 vusers
 [NGRINDER-499] - Include jython-2.5.3.jar as default lib
 [NGRINDER-500] - Modify test termination condition as half of test failures for last 10 sec
-
+[NGRINDER-502] - Add the mean time to first byte and response byte per second.
+[NGRINDER-503] - Make ngrinder supports more than 2 billion test
 
 3.1.0 (2013.01.07)
 
 We're proudly releasing nGrinder 3.1 targeting the large organization. 
 With some bug fix, the following improvements are for the effective operations of nGrinder.      
 
-- Main features and change:
+- New features and changes:
   * Support multiple region. User now can select one of multiple network regions to choose the agents depending on the test target location. 
     All controllers in regions need to use a directory on network file system for controllers’ home directory.
     - See http://www.cubrid.org/wiki_ngrinder/entry/controller-clustering-guide
