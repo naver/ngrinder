@@ -59,9 +59,7 @@
 	}
 	
 	function showProgressBar(msg) {
-		if (navigator.appName.indexOf("Microsoft") != -1) {
-			$("#progressBarDiv").children("div").text(msg);
-		}
+		$("#progressBarDiv div").text(msg);
 		$("#progressBarDiv").fadeIn(500);
 	}
 	

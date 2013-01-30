@@ -162,7 +162,12 @@
 				document.forms.contentForm.submit();
 			});
 
+			var validating = false;
 			$("#validateBtn").click(function() {
+				if (validating) {
+					return;
+				}
+				validating = true;
 				var scriptPath = $("#scriptNameInput").val();
 				var hostString = $("#targetHosts").val();
 				$('#validateRsPre').hide();
@@ -180,6 +185,7 @@
 						</@security.authorize>
 					'hostString': hostString},
 			    	success: function(res) {
+			    		validating = false;
 						$('#validateRsPre').text(res);
 						$('#validateRsPre').show();
 						$('#validatedHd').val("1");//should control the validation success or not later.
@@ -187,6 +193,7 @@
 						hideProgressBar();
 			    	},
 			    	error: function() {
+			    		validating = false;
 			    		showErrorMsg("<@spring.message "script.editor.error.validate"/>");
 			    	}
 			  	});
