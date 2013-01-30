@@ -317,6 +317,7 @@ public class PerfTestController extends NGrinderBaseController {
 			test.setCreatedDate(null);
 			test.setLastModifiedDate(null);
 			test.setLastModifiedUser(null);
+			test.setTestComment(null);
 		}
 		if (StringUtils.isBlank(test.getRegion())) {
 			test.setRegion(Config.NONE_REGION);
