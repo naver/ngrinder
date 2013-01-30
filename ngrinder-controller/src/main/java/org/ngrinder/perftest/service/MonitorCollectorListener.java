@@ -53,7 +53,7 @@ public class MonitorCollectorListener implements SamplingLifeCycleListener {
 	public MonitorCollectorListener(ApplicationContext applicationContext, Set<AgentInfo> agents, File reportPath) {
 		this.applicationContext = applicationContext;
 		this.agents = agents;
-		this.timer = new Timer();
+		this.timer = new Timer(true);
 		this.reportPath = reportPath;
 	}
 
