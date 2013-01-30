@@ -21,6 +21,7 @@ Bug
 [NGRINDER-498] - Make security mode work
 [NGRINDER-504] - Show script initialize error in log
 [NGRINDER-505] - Test Comment should not be cloned
+[NGRINDER-506] - Block duplicated validation
 
 Improvement
 [NGRINDER-478] - Distribute the un-predefined resources (e.g images) 
