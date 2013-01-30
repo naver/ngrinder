@@ -1318,4 +1318,16 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		FileUtils.deleteQuietly(getPerfTestDistributionPath(perfTest));
 	}
 
+	/**
+	 * Clean up the data which is used in runtime only.
+	 * 
+	 * @param perfTest
+	 *            perfTest
+	 */
+	public void cleanUpRuntimeOnlyData(PerfTest perfTest) {
+		perfTest.setRunningSample(null);
+		perfTest.setAgentStatus(null);
+		savePerfTest(perfTest);
+	}
+
 }

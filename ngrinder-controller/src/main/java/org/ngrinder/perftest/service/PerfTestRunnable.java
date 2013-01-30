@@ -482,6 +482,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	private void cleanUp(PerfTest perfTest) {
 		perfTestService.cleanUpDistFolder(perfTest);
+		perfTestService.cleanUpRuntimeOnlyData(perfTest);
 	}
 
 	/**
