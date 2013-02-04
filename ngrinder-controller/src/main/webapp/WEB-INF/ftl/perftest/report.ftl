@@ -20,9 +20,6 @@
        			margin-top: 5px; 
 			}
 			.compactpadding th { padding:8px 5px; vertical-align:middle; }
-			li a { color:#005580 }
-			li a:hover { color:#0088CC; text-decoration:underline; }
-			li a.active { color:#0088CC }
 		</style>
 	</head>
 
@@ -104,16 +101,23 @@
                        <td>${test.errors!""}</td> 
                    </tr>
 			   </table>
-			   <ul class="unstyled">
-                 <li><i class="icon-tag"></i> <a id="testPerformance" href="javascript:void(0);" class="active"><@spring.message "perfTest.report.performanceReport"/></a></li>
-               </ul>
-               <#if test.targetHostIP?exists>	
-				   <ul class="unstyled"><i class="icon-tags"></i> <@spring.message "perfTest.report.targetHost"/>
-                 		<#list test.targetHostIP as targetIp>
-                     		<li><i class="icon-chevron-right"></i><a class="targetMontor" href="javascript:void(0);" ip="${targetIp}">${targetIp}</a></li>
-                     	</#list> 
-                   </ul> 
-               </#if>
+			   <ul class="nav nav-list">
+					<li class="active">
+						<a id="testPerformance" href="javascript:void(0);">
+							<i class="icon-tag icon-white"></i> <@spring.message "perfTest.report.performanceReport"/>
+						</a>
+					</li>
+					<li><a><i class="icon-tags"></i> <@spring.message "perfTest.report.targetHost"/></a></li>
+					<#if test.targetHostIP?exists>
+					<li>
+						<ul class="nav nav-list">
+							<#list test.targetHostIP as targetIp>
+							<li><a class="targetMontor" href="javascript:void(0);" ip="${targetIp}"><i class="icon-chevron-right"></i> ${targetIp}</a></li>
+							</#list>
+						</ul>
+					</li>
+					</#if>
+			   </ul>
 			</div>
 			<div class="span9">
 			    <table class="table table-bordered" style="margin-bottom:35px">
@@ -201,8 +205,10 @@
 		});
 		
 		function changActiveLink(obj) {
-			$("li > a.active").removeClass("active");
-			obj.addClass("active");
+			$("li").removeClass("active");
+			$("ul.nav-list i.icon-white").removeClass("icon-white");
+			obj.parent("li").addClass("active");
+			obj.children("i").addClass("icon-white");
 		}
 		
 		function getPerformanceData(){
