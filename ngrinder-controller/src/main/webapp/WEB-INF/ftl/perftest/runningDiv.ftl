@@ -20,7 +20,7 @@
 					<label class="control-label"><@spring.message "perfTest.testRunning.agents"/></label>
 					<div class="controls">
 						<span>${(test.agentCount)!}</span>
-						<!--<a class="btn btn-mini btn-info" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>-->
+						<a class="btn btn-mini btn-info hidden" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
 					</div>
 				</div>
 				<div class="control-group">

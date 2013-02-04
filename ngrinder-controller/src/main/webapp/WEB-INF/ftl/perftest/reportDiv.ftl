@@ -45,7 +45,7 @@
 	<div class="span8">
 		<div class="page-header">
 			<h4><@spring.message "perfTest.report.tpsgraph"/></h4>
-			<a id="reportDetail" class="btn pull-right btn-small btn-primary" style="margin-top: -25px;margin-right:10px">
+			<a id="reportDetail" class="btn pull-right btn-primary" style="margin-top: -25px;margin-right:10px">
 				<@spring.message "perfTest.report.reportDetail"/></a>
 		</div>
 		<div id="tpsDiv" class="chart" style="width: 610px; height: 300px"></div> 
@@ -74,7 +74,7 @@
 			<h4><@spring.message "perfTest.report.longtestcomment"/></h4>
 		</div>
 		<div class="control-group">
-			<button class="btn btn-small btn-primary pull-right" type="button"
+			<button class="btn btn-primary pull-right" type="button"
 				 style="margin-top:-60px;margin-right:10px" id="leaveCommentButton"><@spring.message "perfTest.report.leaveComment"/></button>
 			<textarea class="span8" id="testComment" rows="3" name="testComment"
 				style="resize: none"> ${(test.testComment)!} </textarea>
