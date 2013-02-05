@@ -46,7 +46,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Scope(value = "prototype")
 public class MonitorClientSerivce {
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(MonitorClientSerivce.class);
 
 	private MBeanClient mbeanClient;
@@ -149,9 +148,13 @@ public class MonitorClientSerivce {
 
 	/**
 	 * Put the monitor data into Cache.
+	 * 
+	 * @return saved Data
 	 */
-	public void saveDataCache() {
-		cache.put(ip, getMonitorData());
+	public SystemInfo saveDataCache() {
+		SystemInfo monitorData = getMonitorData();
+		cache.put(ip, monitorData);
+		return monitorData;
 	}
 
 	/**
@@ -160,7 +163,7 @@ public class MonitorClientSerivce {
 	public void record() {
 		ValueWrapper valueWrapper = cache.get(ip);
 		SystemInfo systemInfo = (valueWrapper == null || valueWrapper.get() == null) ? new SystemInfo()
-				: (SystemInfo) convert(valueWrapper.get());
+						: (SystemInfo) convert(valueWrapper.get());
 		try {
 			bw.write(systemInfo.getRecordString() + "\n");
 		} catch (IOException e) {

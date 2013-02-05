@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -75,6 +76,7 @@ import org.hibernate.Hibernate;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Permission;
 import org.ngrinder.model.Role;
@@ -82,6 +84,7 @@ import org.ngrinder.model.Status;
 import org.ngrinder.model.Tag;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.ngrinder.perftest.model.PerfTestStatistics;
 import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.repository.PerfTestRepository;
@@ -89,6 +92,7 @@ import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.service.IPerfTestService;
+import org.python.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -677,9 +681,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			} else {
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, 0);
 			}
-
 			grinderProperties.setProperty(GRINDER_PROP_USER, perfTest.getCreatedUser().getUserId());
-			// grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, "-Xms256m -Xmx512m");
 			grinderProperties.setProperty(GRINDER_PROP_JVM_CLASSPATH, getCustomClassPath(perfTest));
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, perfTest.getIgnoreSampleCount());
 			grinderProperties.setBoolean(GRINDER_PROP_SECURITY, config.isSecurityEnabled());
@@ -984,14 +986,30 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * 
 	 * @param singleConsole
 	 *            console signle console.
-	 * @param perfTest
-	 *            perfTest
+	 * @param perfTestId
+	 *            perfTest Id
 	 * @return statistics
 	 */
-	public Map<String, Object> saveStatistics(SingleConsole singleConsole, PerfTest perfTest) {
+	@Transactional
+	public Map<String, Object> saveStatistics(SingleConsole singleConsole, Long perfTestId) {
 		Map<String, Object> statictisData = singleConsole.getStatictisData();
+		List<AgentIdentity> allAttachedAgents = singleConsole.getAllAttachedAgents();
+		Map<String, SystemDataModel> agentStatusMap = Maps.newHashMap();
+		Set<AgentIdentity> allControllerAgents = agentManager.getAllAttachedAgents();
+		// It can be very slow here...
+		for (AgentIdentity eachAgent : allAttachedAgents) {
+			for (AgentIdentity eachControllerAgent : allControllerAgents) {
+				if (eachControllerAgent.getName().equals(eachAgent.getName())) {
+					agentStatusMap.put(eachControllerAgent.getName(),
+									agentManager.getSystemDataModel(eachControllerAgent));
+				}
+			}
+		}
+		PerfTest perfTest = getPerfTest(perfTestId);
 		perfTest.setRunningSample(gson.toJson(statictisData));
+		perfTest.setAgentStatus(gson.toJson(agentStatusMap));
 		savePerfTest(perfTest);
+		CoreLogger.LOGGER.debug("Data is {}", statictisData);
 		return statictisData;
 	}
 
@@ -1034,17 +1052,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            perfTest
 	 */
 	public void saveAgentsInfo(SingleConsole singleConsole, PerfTest perfTest) {
-		List<AgentIdentity> allAttachedAgents = singleConsole.getAllAttachedAgents();
-		Map<String, SystemDataModel> result = new HashMap<String, SystemDataModel>();
-		Set<AgentIdentity> allControllerAgents = agentManager.getAllAttachedAgents();
-		for (AgentIdentity eachAgent : allAttachedAgents) {
-			for (AgentIdentity eachControllerAgent : allControllerAgents) {
-				if (eachControllerAgent.getName().equals(eachAgent.getName())) {
-					result.put(eachControllerAgent.getName(), agentManager.getSystemDataModel(eachControllerAgent));
-				}
-			}
-		}
-		perfTest.setAgentStatus(gson.toJson(result));
+
 		savePerfTest(perfTest);
 	}
 
@@ -1056,7 +1064,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return agent info map
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Map<String, HashMap> getAgentInfo(PerfTest perfTest) {
+	public Map<String, HashMap> getAgentStat(PerfTest perfTest) {
 		return gson.fromJson(perfTest.getAgentStatus(), HashMap.class);
 	}
 
@@ -1328,6 +1336,30 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		perfTest.setRunningSample(null);
 		perfTest.setAgentStatus(null);
 		savePerfTest(perfTest);
+	}
+
+	@Transactional
+	public void updateMonitorStat(Long perfTestId, Map<String, SystemInfo> systemInfos) {
+		String json = gson.toJson(systemInfos);
+		if (json.length() >= 2000) {
+			Map<String, SystemInfo> systemInfosNew = Maps.newHashMap();
+			int i = 0;
+			for (Entry<String, SystemInfo> each : systemInfos.entrySet()) {
+				if (i++ > 3) {
+					break;
+				}
+				systemInfosNew.put(each.getKey(), each.getValue());
+			}
+			json = gson.toJson(systemInfosNew);
+		}
+		PerfTest perfTest = perfTestRepository.findOne(checkNotNull(perfTestId));
+		perfTest.setMonitorStatus(json);
+		perfTestRepository.save(perfTest);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Map<String, HashMap> getMonitorStat(PerfTest perfTest) {
+		return gson.fromJson(perfTest.getMonitorStatus(), HashMap.class);
 	}
 
 }

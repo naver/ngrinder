@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ngrinder.perftest.service;
+package org.ngrinder.perftest.service.samplinglistener;
 
 import java.io.File;
 import java.util.List;
@@ -22,6 +22,7 @@ import net.grinder.statistics.StatisticsSet;
 
 import org.ngrinder.extension.OnTestSamplingRunnable;
 import org.ngrinder.model.PerfTest;
+import org.ngrinder.perftest.service.PerfTestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

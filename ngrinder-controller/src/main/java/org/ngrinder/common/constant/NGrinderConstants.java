@@ -81,6 +81,12 @@ public interface NGrinderConstants {
 	 */
 	public static final int PERFTEST_RUN_FREQUENCY_MILLISECONDS = 1000;
 
+	
+	/**
+	 * Performance test termination frequency in milliseconds.
+	 */
+	public static final int PERFTEST_TERMINATION_FREQUENCY_MILLISECONDS = 3000;
+
 	/**
 	 * Max trial count to run performance test.
 	 */
@@ -131,7 +137,9 @@ public interface NGrinderConstants {
 	public static final String PARAM_MAX_AGENT_COUNT = "maxAgentCount";
 	public static final String PARAM_SCRIPT_LIST = "scriptList";
 	public static final String PARAM_QUICK_SCRIPT = "quickScript";
+	public static final String PARAM_QUICK_SCRIPT_REVISION = "quickScriptRevision";
 	public static final String PARAM_TARGET_HOST = "targetHostString";
+	public static final String PARAM_TEST_NAME = "testName";
 	public static final String PARAM_PROCESSTHREAD_POLICY_SCRIPT = "processthread_policy_script";
 
 	public static final String PARAM_CURRENT_FREE_AGENTS_COUNT = "currentFreeAgentsCount";
@@ -143,7 +151,8 @@ public interface NGrinderConstants {
 	
 	public static final String PARAM_SECURITY_MODE = "securityMode";
 	public static final String PARAM_RESULT_SUB = "resultsub";
-	public static final String PARAM_RESULT_AGENT_PERF = "result_agent_perf";
+	public static final String PARAM_RESULT_AGENT_PERF = "agentStat";
+	public static final String PARAM_RESULT_MONITOR_PERF = "monitorStat";
 
 	public static final String PARAM_AGENTS = "agents";
 

@@ -11,18 +11,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ngrinder.perftest.service;
+package org.ngrinder.perftest.service.samplinglistener;
 
 import java.io.File;
-import java.util.Map;
 
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.statistics.StatisticsSet;
 
 import org.ngrinder.infra.logger.CoreLogger;
-import org.ngrinder.model.PerfTest;
-import org.ngrinder.model.Status;
+import org.ngrinder.perftest.service.PerfTestService;
 
 /**
  * PerfTest Sampling collection class.
@@ -31,25 +29,24 @@ import org.ngrinder.model.Status;
  * @since 3.1.1
  */
 public class PerfTestSamplingCollectorListener implements SamplingLifeCycleListener {
-	private final PerfTest perfTest;
+	private final Long perfTestId;
 	private final SingleConsole singleConsole;
 	private final PerfTestService perfTestService;
-	private int countOfLostAgent;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param singleConsole
 	 *            singleConsole to monitor
-	 * @param perfTest
-	 *            perfTest which this sampling start
+	 * @param perfTestId
+	 *            perfTest id which this sampling start
 	 * @param perfTestService
 	 *            service
 	 */
-	public PerfTestSamplingCollectorListener(SingleConsole singleConsole, PerfTest perfTest,
+	public PerfTestSamplingCollectorListener(SingleConsole singleConsole, Long perfTestId,
 					PerfTestService perfTestService) {
 		this.singleConsole = singleConsole;
-		this.perfTest = perfTest;
+		this.perfTestId = perfTestId;
 		this.perfTestService = perfTestService;
 	}
 
@@ -60,17 +57,7 @@ public class PerfTestSamplingCollectorListener implements SamplingLifeCycleListe
 	@Override
 	public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
 		CoreLogger.LOGGER.debug("Sampling is performed");
-		perfTestService.saveAgentsInfo(singleConsole, perfTest);
-		Map<String, Object> saveStatistics = perfTestService.saveStatistics(singleConsole, perfTest);
-		CoreLogger.LOGGER.debug("Data is {}", saveStatistics);
-		if (singleConsole.getAllAttachedAgentsCount() == 0) {
-			if (countOfLostAgent++ > 10) {
-				perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING,
-								"All agents are unexpectively lost.");
-			}
-		} else {
-			countOfLostAgent = 0;
-		}
+		perfTestService.saveStatistics(singleConsole, perfTestId);
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public class MontorClientManagerTest extends AbstractPerfTestTransactionalTest {
 		monitorAgt.setPort(MonitorConstants.DEFAULT_MONITOR_PORT);
 		Set<AgentInfo> agents = new HashSet<AgentInfo>(2);
 		agents.add(monitorAgt);
-		MontorClientManager monitorMngr = applicationContext.getBean(MontorClientManager.class);
+		MonitorTask monitorMngr = applicationContext.getBean(MonitorTask.class);
 		monitorMngr.add(agents, tempRepo);
 		new Thread(monitorMngr).start();
 		monitorMngr.saveData();
@@ -69,7 +69,7 @@ public class MontorClientManagerTest extends AbstractPerfTestTransactionalTest {
 		Set<AgentInfo> agents = new HashSet<AgentInfo>(2);
 		agents.add(monitorAgt);
 		agents.add(monitorAgt2);
-		MontorClientManager monitorMngr = applicationContext.getBean(MontorClientManager.class);
+		MonitorTask monitorMngr = applicationContext.getBean(MonitorTask.class);
 		monitorMngr.add(agents, tempRepo);
 		new Thread(monitorMngr).start();
 		monitorMngr.saveData();

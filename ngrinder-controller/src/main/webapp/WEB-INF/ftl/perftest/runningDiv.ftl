@@ -5,12 +5,7 @@
 		</div>
 		<div class="form-horizontal form-horizontal-3" style="margin-top: 10px;">
 			<fieldset>
-				<div class="control-group">
-					<label class="control-label"><@spring.message "perfTest.testRunning.scriptName"/></label>
-					<div class="controls" title="${(test.scriptName)!}">${(test.scriptNameInShort)!}</div> 
-				</div>
-				<hr>
-				<div class="control-group">
+				<div class="control-group"> 
 					<label class="control-label"><@spring.message "perfTest.testRunning.vusers"/></label>
 					<div class="controls">
 						<strong>${(test.vuserPerAgent)!}</strong>
@@ -66,9 +61,10 @@
 					</#if>
 				</div>
 				<div class="control-group">
-					<label class="control-label"><@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
-					<div class="controls">
-						<span>${(test.ignoreSampleCount)!0}</span> 
+					<label class="control-label">Monitor Status</label>
+				</div>
+				<div class="control-group">
+					<div id="monitor_status">
 					</div>
 				</div>
 				<div class="control-group">
@@ -183,21 +179,25 @@
 					$("#thread_data").text(curRunningThreads);
 					$("#running_count").text(curRunningCount);
 					var agentStatusString = "<ul>";
-					for ( var i = 0; i < curAgentPerfStates.length; i++) {
-						var eachAgent = curAgentPerfStates[i];
-						if (agentPerfStates[eachAgent.agent] === undefined) {
-							agentPerfStates[eachAgent.agent] = {"cpu" : {}, "mem" : {}};
-						}
-						agentPerfStates[eachAgent.agent].cpu = eachAgent.cpu;
-						agentPerfStates[eachAgent.agent].mem = eachAgent.mem;
-						// Use sparkle line...     
+					for ( var i = 0; i < curAgentStat.length; i++) {
+						var eachAgent = curAgentStat[i];
 						agentStatusString = agentStatusString
-								+ "<li>" + curAgentPerfStates[i].agent + " CPU - "
-								+ curAgentPerfStates[i].cpu + "%   MEM - "
-								+ curAgentPerfStates[i].mem + "%</li>";
+								+ "<li>" + eachAgent.agent + " CPU - "
+								+ eachAgent.cpu + "%   MEM - "
+								+ eachAgent.mem + "%</li>";
 					}
 					agentStatusString += "</ul>"; 
 					$("#agent_status").html(agentStatusString);
+					var monitorStatusString = "<ul>";
+					for ( var i = 0; i < curMonitorStat.length; i++) {
+						var eachMontor = curMonitorStat[i];
+						monitorStatusString = monitorStatusString
+								+ "<li>" + eachMontor.agent + " CPU - "
+								+ eachMontor.cpu + "%   MEM - "
+								+ eachMontor.mem + "%</li>";
+					}
+					monitorStatusString += "</ul>"; 
+					$("#monitor_status").html(monitorStatusString);
 					peakTps = curPeakTps;
 					test_tps_data.enQueue(curTps);
 				} else {

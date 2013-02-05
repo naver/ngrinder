@@ -11,7 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ngrinder.perftest.service;
+package org.ngrinder.perftest.service.samplinglistener;
+
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.util.Set;
@@ -21,7 +23,7 @@ import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.statistics.StatisticsSet;
 
 import org.ngrinder.agent.model.AgentInfo;
-import org.ngrinder.monitor.service.MontorClientManager;
+import org.ngrinder.monitor.service.MonitorTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -36,22 +38,27 @@ public class MonitorCollectorListener implements SamplingLifeCycleListener {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MonitorCollectorListener.class);
 	private final ApplicationContext applicationContext;
 	private final Set<AgentInfo> agents;
-	private MontorClientManager monitorClientTask;
+	private MonitorTask monitorTask;
 	private final File reportPath;
 	private final Timer timer;
+	private final Long perfTestId;
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param applicationContext
 	 *            application context
+	 * @param perfTestId
+	 *            perftest id
 	 * @param agents
 	 *            set of monitors to be collected
 	 * @param reportPath
 	 *            where does it report.
 	 */
-	public MonitorCollectorListener(ApplicationContext applicationContext, Set<AgentInfo> agents, File reportPath) {
+	public MonitorCollectorListener(ApplicationContext applicationContext, Long perfTestId, Set<AgentInfo> agents,
+					File reportPath) {
 		this.applicationContext = applicationContext;
+		this.perfTestId = checkNotNull(perfTestId);
 		this.agents = agents;
 		this.timer = new Timer(true);
 		this.reportPath = reportPath;
@@ -59,15 +66,16 @@ public class MonitorCollectorListener implements SamplingLifeCycleListener {
 
 	@Override
 	public void onSamplingStarted() {
-		monitorClientTask = applicationContext.getBean(MontorClientManager.class);
-		monitorClientTask.add(agents, reportPath);
-		timer.schedule(monitorClientTask, 800, 800);
+		monitorTask = applicationContext.getBean(MonitorTask.class);
+		monitorTask.setCorrespondingPerfTestId(perfTestId);
+		monitorTask.add(agents, reportPath);
+		timer.schedule(monitorTask, 800, 800);
 	}
 
 	@Override
 	public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-		if (monitorClientTask != null) {
-			monitorClientTask.saveData();
+		if (monitorTask != null) {
+			monitorTask.saveData();
 		}
 	}
 
@@ -77,8 +85,8 @@ public class MonitorCollectorListener implements SamplingLifeCycleListener {
 		if (timer != null) {
 			timer.cancel();
 		}
-		if (monitorClientTask != null) {
-			monitorClientTask.destroy();
+		if (monitorTask != null) {
+			monitorTask.destroy();
 		}
 	}
 }

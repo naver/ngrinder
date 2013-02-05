@@ -9,8 +9,11 @@
 	  		<#if resultsub.totalStatistics?exists>
 	  		curRunningCount = ${((resultsub.totalStatistics.Tests!0)+(resultsub.totalStatistics.Errors!0))?c};
 	  		</#if>
-	  		curAgentPerfStates = [
-	  			${result_agent_perf}
+	  		curAgentStat = [
+	  			${agentStat}
+	  		];
+	  		curMonitorStat = [
+	  		    ${monitorStat}
 	  		];
 	</script>
 	<#function bytesFormatter bytes>

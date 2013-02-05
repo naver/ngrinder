@@ -20,6 +20,8 @@ import java.util.Set;
 import java.util.TimerTask;
 
 import org.ngrinder.agent.model.AgentInfo;
+import org.ngrinder.monitor.share.domain.SystemInfo;
+import org.ngrinder.perftest.service.PerfTestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.ApplicationContext;
@@ -37,7 +39,7 @@ import com.google.common.collect.Maps;
  */
 @Service
 @Scope(value = "prototype")
-public class MontorClientManager extends TimerTask {
+public class MonitorTask extends TimerTask {
 	private Map<String, MonitorClientSerivce> monitorClientsMap = Maps.newConcurrentMap();
 
 	@Autowired
@@ -46,11 +48,16 @@ public class MontorClientManager extends TimerTask {
 	@Autowired
 	private CacheManager cacheManager;
 
+	@Autowired
+	private PerfTestService perfTestService;
+
+	private Long perfTestId;
+
 	/**
 	 * Add MBean Monitors on given monitorTargets.
 	 * 
 	 * @param monitorTargets
-	 *            monitor taget set
+	 *            a set of monitor targets
 	 * @param reportPath
 	 *            report path
 	 */
@@ -91,10 +98,20 @@ public class MontorClientManager extends TimerTask {
 
 	@Override
 	public void run() {
+		Map<String, SystemInfo> systemInfoMap = Maps.newHashMap();
 		for (Entry<String, MonitorClientSerivce> target : monitorClientsMap.entrySet()) {
 			MonitorClientSerivce monitorClientSerivce = target.getValue();
-			monitorClientSerivce.saveDataCache();
+			systemInfoMap.put(target.getKey(), monitorClientSerivce.saveDataCache());
 		}
+		perfTestService.updateMonitorStat(perfTestId, systemInfoMap);
+	}
+
+	public void setPerfTestService(PerfTestService perfTestService) {
+		this.perfTestService = perfTestService;
+	}
+
+	public void setCorrespondingPerfTestId(Long perfTestId) {
+		this.perfTestId = perfTestId;
 	}
 
 }

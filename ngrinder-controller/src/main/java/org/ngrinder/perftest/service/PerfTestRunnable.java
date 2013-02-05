@@ -26,7 +26,6 @@ import static org.ngrinder.model.Status.TESTING;
 import java.io.File;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -54,6 +53,11 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.perftest.model.NullSingleConsole;
+import org.ngrinder.perftest.service.samplinglistener.AgentLostDetectionListener;
+import org.ngrinder.perftest.service.samplinglistener.MonitorCollectorListener;
+import org.ngrinder.perftest.service.samplinglistener.PerfTestSamplingCollectorListener;
+import org.ngrinder.perftest.service.samplinglistener.PluginRunListener;
+import org.python.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -379,16 +383,10 @@ public class PerfTestRunnable implements NGrinderConstants {
 			run.start(perfTest, perfTestService, config.getVesion());
 		}
 
-		singleConsole.addSamplingLifeCyleListener(new PerfTestSamplingCollectorListener(singleConsole, perfTest,
-						perfTestService));
-		// Add monitors when sampling is started.
-		singleConsole.addSamplingLifeCyleListener(new MonitorCollectorListener(this.applicationContext,
-						createMonitorTargets(perfTest), singleConsole.getReportPath()));
-		singleConsole.addSamplingLifeCyleListener(new PluginRunListener(this.testSamplingRunnables, singleConsole,
-						perfTest, perfTestService));
+		addSamplingListeners(perfTest, singleConsole);
 
 		// Run test
-		perfTestService.markStatusAndProgress(perfTest, START_TESTING, "Now the test is ready to start.");
+		perfTestService.markStatusAndProgress(perfTest, START_TESTING, "The test is ready to start.");
 		// Add listener to detect abnormal condition and mark the perfTest
 		singleConsole.addListener(new ConsoleShutdownListener() {
 			@Override
@@ -403,9 +401,21 @@ public class PerfTestRunnable implements NGrinderConstants {
 		perfTestService.markStatusAndProgress(perfTest, TESTING, "The test is started.");
 	}
 
+	private void addSamplingListeners(final PerfTest perfTest, final SingleConsole singleConsole) {
+		singleConsole.addSamplingLifeCyleListener(new PerfTestSamplingCollectorListener(singleConsole,
+						perfTest.getId(), perfTestService));
+		// Add monitors when sampling is started.
+		singleConsole.addSamplingLifeCyleListener(new MonitorCollectorListener(this.applicationContext, perfTest
+						.getId(), createMonitorTargets(perfTest), singleConsole.getReportPath()));
+		singleConsole.addSamplingLifeCyleListener(new AgentLostDetectionListener(singleConsole, perfTest,
+						perfTestService));
+		singleConsole.addSamplingLifeCyleListener(new PluginRunListener(this.testSamplingRunnables, singleConsole,
+						perfTest, perfTestService));
+	}
+
 	private Set<AgentInfo> createMonitorTargets(final PerfTest perfTest) {
-		final Set<AgentInfo> agents = new HashSet<AgentInfo>();
-		Set<String> ipSet = new HashSet<String>();
+		final Set<AgentInfo> agents = Sets.newHashSet();
+		Set<String> ipSet = Sets.newHashSet();
 		List<String> targetIPList = perfTest.getTargetHostIP();
 		for (String targetIP : targetIPList) {
 			if (ipSet.contains(targetIP)) {
@@ -446,7 +456,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 * <li>Normal test finish : when test goes over the planned duration and run count.</li>
 	 * </ul>
 	 */
-	@Scheduled(fixedDelay = PERFTEST_RUN_FREQUENCY_MILLISECONDS)
+	@Scheduled(fixedDelay = PERFTEST_TERMINATION_FREQUENCY_MILLISECONDS)
 	public void finishTest() {
 		for (PerfTest each : perfTestService.getAbnoramlTestingPerfTest()) {
 			LOG.error("Terminate {}", each.getId());
@@ -472,6 +482,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 				notifyFinsish(each, StopReason.NORMAL);
 			}
 		}
+
 	}
 
 	/**
