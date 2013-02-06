@@ -16,7 +16,7 @@
 				<button type="submit" class="btn" id="stopAgenButton"><i class="icon-stop"></i> <@spring.message "common.button.stop"/></button>
 				<input type="text" style="visibility:hidden; margin:0">
 				<div class="input-prepend pull-right">
-					<span class="add-on" style="cursor:default">Agent Download
+					<span class="add-on" style="cursor:default"><@spring.message "agent.management.agentDownload"/>
 					</span><span class="input-xlarge uneditable-input span6" style="cursor:text">
 						<#if downloadLinks?has_content>
 							<#list downloadLinks as each>  
@@ -110,7 +110,7 @@
 				  			"approve": "true"
 				  		},
 				  		function() {
-				  			showSuccessMsg("Agent is approved");
+				  			showSuccessMsg("<@spring.message "agent.management.toBeApproved"/>");
 				  			window.location.reload();
 				  		}
 				     );
@@ -125,7 +125,7 @@
 				  			"approve": "false"
 				  		},
 				  		function() {
-				  			showSuccessMsg("Agent is unapproved");
+				  			showSuccessMsg("<@spring.message "agent.management.toBeUnapproved"/>");
 				  			window.location.reload();
 				  		}
 				     );					
