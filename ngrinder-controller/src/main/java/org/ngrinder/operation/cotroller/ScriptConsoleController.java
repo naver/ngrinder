@@ -21,6 +21,7 @@ import java.lang.management.MemoryUsage;
 import java.util.Iterator;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -84,7 +85,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 
 	@Autowired
 	private RegionService regionService;
-	
+
 	@Autowired
 	private PluginManager pluginManager;
 
@@ -93,7 +94,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 
 	@Autowired
 	private CacheManager cacheManager;
-	
+
 	private PythonInterpreter interp;
 
 	/**
@@ -116,6 +117,13 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 		if (usage != null && isPermGenMemoryEnough(usage)) {
 			interp = new PythonInterpreter();
 			intVars(interp);
+		}
+	}
+
+	@PreDestroy
+	public void destroy() {
+		if (interp != null) {
+			interp.cleanup();
 		}
 	}
 
