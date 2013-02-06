@@ -114,8 +114,8 @@ public class AgentHome {
 	 * Get properties from path.
 	 * 
 	 * @param path
-	 *            property file
-	 * @return {@link Properties} instance. empy property if it has problem.
+	 *            property file path
+	 * @return {@link Properties} instance. return empty property if it has problem.
 	 */
 	public Properties getProperties(String path) {
 		Properties properties = new Properties();
@@ -131,6 +131,17 @@ public class AgentHome {
 		}
 		return properties;
 
+	}
+
+	/**
+	 * Get file from path.
+	 * 
+	 * @param path
+	 *            path
+	 * @return {@link File} instance.
+	 */
+	public File getFile(String path) {
+		return new File(getDirectory(), path);
 	}
 
 	/**

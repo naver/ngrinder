@@ -30,6 +30,7 @@ import net.grinder.util.NetworkUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.hyperic.sigar.ProcState;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
 import org.ngrinder.infra.AgentConfig;
@@ -321,6 +322,7 @@ public class NGrinderStarter {
 			if (StringUtils.isNotBlank(pid)) {
 				new Sigar().kill(pid, 15);
 			}
+			agentConfig.removeAgentPidProperties();
 		} catch (SigarException e) {
 			printHelpAndExit(String.format("Error occurs while terminating %s process."
 							+ "It can be already stopped or you may not have the permission.\n"
@@ -339,9 +341,13 @@ public class NGrinderStarter {
 		String existingPid = this.agentConfig.getAgentPidProperties(startMode);
 		if (StringUtils.isNotEmpty(existingPid)) {
 			try {
-				sigar.getProcState(existingPid);
-				printHelpAndExit("Currently " + startMode + " is running on pid " + existingPid
-								+ ". Please stop it before run");
+				ProcState procState = sigar.getProcState(existingPid);
+				if (procState.getState() == ProcState.RUN || procState.getState() == ProcState.RUN
+								|| procState.getState() == ProcState.SLEEP) {
+					printHelpAndExit("Currently " + startMode + " is running on pid " + existingPid
+									+ ". Please stop it before run");
+				}
+				agentConfig.removeAgentPidProperties();
 			} catch (SigarException e) {
 				noOp();
 			}

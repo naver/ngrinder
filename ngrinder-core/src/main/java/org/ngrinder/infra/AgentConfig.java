@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -138,6 +139,15 @@ public class AgentConfig {
 		} else {
 			return (String) properties.get("monitor.pid");
 		}
+	}
+
+	/**
+	 * Remove agent pid properties.
+	 */
+	public void removeAgentPidProperties() {
+		checkNotNull(home);
+		File file = home.getFile("pid");
+		FileUtils.deleteQuietly(file);
 	}
 
 	/**
