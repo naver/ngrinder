@@ -4,9 +4,9 @@
 		<script type="text/javascript">
 			
 		</script>
-		<div class="page-header">
-			<h4><@spring.message "perfTest.report.summary"/></h4>
-		</div>
+		<legend>
+			<@spring.message "perfTest.report.summary"/>
+		</legend>
 		<div class="form-horizontal form-horizontal-3"
 			style="margin-left: 10px">
 			<fieldset>
@@ -43,20 +43,21 @@
 		</div>
 	</div>
 	<div class="span8">
-		<div class="page-header">
-			<h4><@spring.message "perfTest.report.tpsgraph"/></h4>
-			<a id="reportDetail" class="btn pull-right btn-primary" style="margin-top: -25px;margin-right:10px">
-				<@spring.message "perfTest.report.reportDetail"/></a>
-		</div>
+		<legend>
+			<@spring.message "perfTest.report.tpsgraph"/>
+			<a id="reportDetail" class="btn btn-primary pull-right">
+				<@spring.message "perfTest.report.reportDetail"/>
+			</a>
+		</legend>
 		<div id="tpsDiv" class="chart" style="width: 610px; height: 300px"></div> 
 	</div>
 </div>
 <div class="row" >
 	<div class="span4">
-		<div class="page-header">
-			<h4><@spring.message "perfTest.report.logs"/></h4>
-			<span style="margin-top:-20px" class="pull-right" rel="popover" data-content='<@spring.message "perfTest.report.logs.help"/>' data-original-title='<@spring.message "perfTest.report.logs"/>' type="toggle" id="log_comment"><i class="icon-question-sign"></i></span>
-		</div>
+		<legend>
+			<@spring.message "perfTest.report.logs"/>
+			<span class="pull-right" rel="popover" data-content='<@spring.message "perfTest.report.logs.help"/>' data-original-title='<@spring.message "perfTest.report.logs"/>' type="toggle" id="log_comment"><i class="icon-question-sign"></i></span>
+		</legend>
 		<div style="mgin-left: 10px">
 			<#if logs?has_content> 
 				<#list logs as eachLog>
@@ -70,16 +71,14 @@
 		</div>
 	</div>
 	<div class="span8">
-		<div class="page-header">
-			<h4><@spring.message "perfTest.report.longtestcomment"/></h4>
-		</div>
-		<div class="control-group">
-			<button class="btn btn-primary pull-right" type="button"
-				 style="margin-top:-60px;margin-right:10px" id="leaveCommentButton"><@spring.message "perfTest.report.leaveComment"/></button>
-			<textarea class="span8" id="testComment" rows="3" name="testComment"
-				style="resize: none"> ${(test.testComment)!} </textarea>
-			
-		</div>
+		<legend>
+			<@spring.message "perfTest.report.longtestcomment"/>
+			<a id="leaveCommentButton" class="btn btn-primary pull-right">
+				<@spring.message "perfTest.report.leaveComment"/>
+			</a>
+		</legend>
+		<textarea class="span8" id="testComment" rows="3" name="testComment"
+			style="resize: none"> ${(test.testComment)!} </textarea>
 	</div>
 </div>
 <script>

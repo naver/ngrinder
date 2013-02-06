@@ -1,9 +1,9 @@
 <div class="row">
 	<div class="span5">
-		<div class="page-header">
-			<h4><@spring.message "perfTest.testRunning.summary"/></h4>
-		</div>
-		<div class="form-horizontal form-horizontal-3" style="margin-top: 10px;">
+		<legend>
+			<@spring.message "perfTest.testRunning.summary"/>
+		</legend>
+		<div class="form-horizontal form-horizontal-3" style="margin-top:10px;">
 			<fieldset>
 				<div class="control-group">
 					<label class="control-label"><@spring.message "perfTest.testRunning.scriptName"/></label>
@@ -85,10 +85,15 @@
 	<!-- end ruuning content left -->
 	
 	<div class="span7">
-		<div class="page-header">
-			<h4><@spring.message "perfTest.testRunning.tpsStatistics"/> <span class="badge badge-success"><@spring.message "perfTest.testRunning.runTime"/> <span id="running_time"></span></span></h4>
-			<a class="btn  btn-danger pull-right" id="stopTestButton" style="margin-top:-25px;margin-right:10px" sid="${(test.id)!}"><@spring.message "common.button.stop"/></a>			
-		</div> 
+		<legend>
+			<@spring.message "perfTest.testRunning.tpsStatistics"/> 
+			<span class="badge badge-success" style="vertical-align:middle;">
+				<@spring.message "perfTest.testRunning.runTime"/> <span id="running_time"></span>
+			</span>
+			<a id="stopTestButton" class="btn btn-danger pull-right" sid="${(test.id)!}">
+				<@spring.message "common.button.stop"/>
+			</a>		
+		</legend> 
 		<div id="runningTps" class="chart" style="width: 530px; height: 300px"></div>
 		<div class="tabbable">
 			<ul class="nav nav-pills" style="" id="tableTab">

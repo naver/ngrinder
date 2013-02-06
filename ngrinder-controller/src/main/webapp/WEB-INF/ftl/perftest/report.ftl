@@ -139,10 +139,12 @@
                    </tr>  
                </table>
 			    <div id="performanceDiv">
-			    	<div class="page-header pageHeader">
-			    		<h4>Performance</h4>
-					</div>
-	                <button class="btn btn-primary pull-right" id="downloadReportData" style="margin-top:-55px"><i class="icon-download-alt icon-white"></i> <@spring.message "perfTest.report.downloadCSV"/></button>
+					<legend>
+						Performance
+		                <button id="downloadReportData" class="btn btn-primary pull-right">
+		                	<i class="icon-download-alt icon-white"></i> <@spring.message "perfTest.report.downloadCSV"/>
+		                </button>
+					</legend>
 					<h6>TPS</h6>
 			    	<div class="chart" id="tpsDiv"></div>
 					<h6><@spring.message "perfTest.report.header.meantime"/>&nbsp;(ms)</h6>

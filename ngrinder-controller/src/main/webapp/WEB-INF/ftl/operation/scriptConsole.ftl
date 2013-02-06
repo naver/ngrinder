@@ -15,14 +15,14 @@
 	<div class="container">
 		<div class="row">
 			<div class="span12">
-				<div class="page-header pageHeader">
-					<h3><@spring.message "navigator.dropdown.scriptConsole"/></h3>
-				</div> 
-				<form action="${req.getContextPath()}/operation/scriptConsole" name="scriptForm" method="POST"
-					style="margin-bottom: 0;">
-					<button type="submit" class="btn btn-success pull-right" id="runBtn" style="margin-top:-55px;">Run Script</button>			
+				<form action="${req.getContextPath()}/operation/scriptConsole" name="scriptForm" method="POST">
+					<legend class="header">
+						<@spring.message "navigator.dropdown.scriptConsole"/>
+						<button class="btn btn-success pull-right" id="runBtn">
+							<@spring.message "script.view.button.runScript"/>
+						</button>
+					</legend> 
 					<textarea class="span12"  id="scriptEditor" name="scriptEditor" style="resize: none">${(script)!}</textarea>
-					 
 					<input type="hidden" id="script" name="script" value=""/>
 				</form>
 				<pre style="height:150px; margin-top:5px;" class="prettyprint pre-scrollable" id="validateRsPre"><#if result??>${(result)!}<#else>

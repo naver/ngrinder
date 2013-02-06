@@ -140,7 +140,7 @@
 		color: #666666; 
 		font-family: Tahoma,applegothic,sans-serif; 
 		font-size: 12px; 
-		font-weight: bold;
+		font-weight: 700;
 	}
 	</style>
 </head>

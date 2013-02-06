@@ -1,8 +1,8 @@
 <div class="row">
 	<div class="span6">
-		<div class="page-header">
-			<h4><@spring.message "perfTest.configuration.basicConfiguration"/></h4>
-		</div>
+		<legend>
+			<@spring.message "perfTest.configuration.basicConfiguration"/>
+		</legend>
 		<div class="form-horizontal form-horizontal-2">
 			<fieldset>
 				<div class="control-group">
@@ -186,16 +186,11 @@
 	<!-- end test content left -->
 	
 	<div class="span6">
-		<div class="page-header">
-			<label class="checkbox" style="margin-bottom: 0"> 
-				<input type="checkbox" id="rampupCheckbox" name="useRampUp"
-					<#if test?? && test.useRampUp?default(false) == true>checked</#if> 
-				/>
-				<h4>
-					<@spring.message "perfTest.configuration.rampEnable"/>
-				</h4>
-			</label>
-		</div>
+		<legend>
+			<input type="checkbox" id="rampupCheckbox" name="useRampUp" style="vertical-align:text-top"
+				<#if test?? && test.useRampUp?default(false) == true>checked</#if>/>
+			<@spring.message "perfTest.configuration.rampEnable"/>
+		</legend>
 		<table>
 			<tr>
 				<td style="width: 50%">
@@ -244,9 +239,9 @@
 				</td>
 			</tr>
 		</table>
-		<div class="page-header center" style="padding-bottom:10px;">
-			<strong><@spring.message "perfTest.configuration.rampUpDes"/></strong>
-		</div>
+		<legend class="center">
+			<@spring.message "perfTest.configuration.rampUpDes"/>
+		</legend>
 		<div id="rampChart" class="rampChart" style="margin-left:20px"></div>
 	</div>
 	<!-- end test content right -->

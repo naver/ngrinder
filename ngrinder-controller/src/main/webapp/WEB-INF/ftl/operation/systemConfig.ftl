@@ -9,12 +9,14 @@
 	<div class="container">
 		<div class="row">
 			<div class="span12">
-				<div class="page-header pageHeader">
-					<h3><@spring.message "navigator.dropdown.systemConfig"/></h3>
-				</div>
 				<form id="sysConfigForm" method="post">
-				<button id="saveBtn" class="btn btn-success pull-right" style="margin-top:-55px;"><@spring.message "common.button.save"/></button>
-				<textarea id="sysFileContent" name="content">${content!}</textarea>
+					<legend class="header">
+						<@spring.message "navigator.dropdown.systemConfig"/>
+						<button id="saveBtn" class="btn btn-success pull-right">
+							<@spring.message "common.button.save"/>
+						</button>
+					</legend>
+					<textarea id="sysFileContent" name="content">${content!}</textarea>
 				</form>
 			</div>
 		</div>

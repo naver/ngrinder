@@ -15,10 +15,12 @@
     <body>
         <#include "../common/navigator.ftl">
         <div class="container">
-            <div class="page-header pageHeader" style="margin-bottom: 10px">
-				<h3><@spring.message "agent.info.head"/></h3>
-			</div>
-			<button onClick="window.history.back();" class="btn pull-right" style="margin-top:-45px;"><@spring.message "common.button.return"/></button>
+            <legend class="header">
+				<@spring.message "agent.info.head"/>
+				<button class="btn pull-right" onClick="window.history.back();">
+					<@spring.message "common.button.return"/>
+				</button>
+			</legend>
             <div class="row">
                 <div class="span3">
                     <table class="table table-bordered table-striped" style="border-top:#cccccc solid 1px;margin-top:14px">

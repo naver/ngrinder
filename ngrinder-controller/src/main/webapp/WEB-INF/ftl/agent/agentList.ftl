@@ -8,9 +8,9 @@
 	<body>
 		<#include "../common/navigator.ftl">
 		<div class="container">
-			<div class="page-header pageHeader">
-				<h3><@spring.message "agent.management.title"/></h3>
-			</div>
+			<legend class="header">
+				<@spring.message "agent.management.title"/>
+			</legend>
 			<#include "regionSelector.ftl">
 			<div class="well searchBar">
 				<button type="submit" class="btn" id="stopAgenButton"><i class="icon-stop"></i> <@spring.message "common.button.stop"/></button>
