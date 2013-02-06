@@ -333,6 +333,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	private int getSafeTransitionThreadHold() {
+		// For backward compatibility
 		int safeThreadHold = config.getSystemProperties().getPropertyInt(NGRINDER_PROP_DIST_SAFE_THRESHHOLD_OLD, 0);
 		if (safeThreadHold == 0) {
 			safeThreadHold = config.getSystemProperties().getPropertyInt(NGRINDER_PROP_DIST_SAFE_THRESHHOLD,
