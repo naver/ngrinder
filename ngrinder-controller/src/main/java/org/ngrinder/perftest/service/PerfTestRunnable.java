@@ -300,8 +300,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 		// Distribute files
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES, "All necessary files are distributing.");
 		ListenerSupport<SingleConsole.FileDistributionListener> listener = ListenerHelper.create();
-		final int safeThreadHold = config.getSystemProperties().getPropertyInt(NGRINDER_PROP_DIST_SAFE_THRESHHOLD,
-						1000000);
+		final int safeThreadHold = getSafeTransitionThreadHold();
+
 		listener.add(new SingleConsole.FileDistributionListener() {
 			@Override
 			public void distributed(String fileName) {
@@ -330,6 +330,15 @@ public class PerfTestRunnable implements NGrinderConstants {
 						isSafeDistPerfTest(perfTest));
 		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES_FINISHED,
 						"All necessary files are distributed.");
+	}
+
+	private int getSafeTransitionThreadHold() {
+		int safeThreadHold = config.getSystemProperties().getPropertyInt(NGRINDER_PROP_DIST_SAFE_THRESHHOLD_OLD, 0);
+		if (safeThreadHold == 0) {
+			safeThreadHold = config.getSystemProperties().getPropertyInt(NGRINDER_PROP_DIST_SAFE_THRESHHOLD,
+							1 * 1024 * 1024);
+		}
+		return safeThreadHold;
 	}
 
 	private boolean isSafeDistPerfTest(final PerfTest perfTest) {
