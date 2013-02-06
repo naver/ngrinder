@@ -74,7 +74,7 @@ public class PropertiesWrapper {
 	 * @return property value
 	 */
 	public String getProperty(String key, String defaultValue) {
-		return getProperty(key, defaultValue, DEFAULT_ERROR_MESSGAE);
+		return StringUtils.trim(getProperty(key, defaultValue, DEFAULT_ERROR_MESSGAE));
 	}
 
 	/**

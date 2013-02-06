@@ -50,6 +50,7 @@ public class PropertyBuilder {
 	private final String hostName;
 	private final boolean securityEnabled;
 	private final String hostString;
+	private final boolean server;
 
 	/**
 	 * Constructor.
@@ -58,8 +59,32 @@ public class PropertyBuilder {
 	 *            {@link GrinderProperties}
 	 * @param baseDirectory
 	 *            base directory which the script executes.
-	 * @param nGrinderExecClassPathBase
-	 *            class path base path.
+	 * @param securityEnabled
+	 *            true if security enable mode
+	 * @param hostString
+	 *            hostString
+	 * @param hostName
+	 *            current host name
+	 * @param server
+	 *            server mode
+	 */
+	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
+					String hostString, String hostName, boolean server) {
+		this.properties = checkNotNull(properties);
+		this.baseDirectory = checkNotNull(baseDirectory);
+		this.securityEnabled = securityEnabled;
+		this.hostString = hostString;
+		this.hostName = checkNotEmpty(hostName);
+		this.server = server;
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param properties
+	 *            {@link GrinderProperties}
+	 * @param baseDirectory
+	 *            base directory which the script executes.
 	 * @param securityEnabled
 	 *            true if security enable mode
 	 * @param hostString
@@ -69,11 +94,7 @@ public class PropertyBuilder {
 	 */
 	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
 					String hostString, String hostName) {
-		this.properties = checkNotNull(properties);
-		this.baseDirectory = checkNotNull(baseDirectory);
-		this.securityEnabled = securityEnabled;
-		this.hostString = hostString;
-		this.hostName = checkNotEmpty(hostName);
+		this(properties, baseDirectory, securityEnabled, hostString, hostName, false);
 	}
 
 	/**
@@ -100,7 +121,9 @@ public class PropertyBuilder {
 		}
 		jvmArguments = addPythonPathJvmArgument(jvmArguments);
 		jvmArguments = addCustomDns(jvmArguments);
-		jvmArguments = addServerMode(jvmArguments);
+		if (server) {
+			jvmArguments = addServerMode(jvmArguments);
+		}
 		return jvmArguments.toString();
 	}
 
