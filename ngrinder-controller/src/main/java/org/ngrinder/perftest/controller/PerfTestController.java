@@ -50,12 +50,14 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
+import org.python.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -68,6 +70,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -159,6 +162,20 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
+	 * Get perftest creation form.
+	 * 
+	 * @param user
+	 *            user
+	 * @param model
+	 *            model
+	 * @return "perftest/detail"
+	 */
+	@RequestMapping("/new")
+	public String getPerfTestDetail(User user, ModelMap model) {
+		return getPerfTestDetail(user, null, model);
+	}
+
+	/**
 	 * Get performance test detail on give perf test id.
 	 * 
 	 * @param user
@@ -169,8 +186,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            performance test id
 	 * @return "perftest/detail"
 	 */
-	@RequestMapping("/detail")
-	public String getPerfTestDetail(User user, @RequestParam(required = false) Long id, ModelMap model) {
+	@RequestMapping("/{id}")
+	public String getPerfTestDetail(User user, @PathVariable("id") Long id, ModelMap model) {
 		PerfTest test = null;
 		if (id != null) {
 			test = getPerfTestWithPermissionCheck(user, id, true);
@@ -254,7 +271,8 @@ public class PerfTestController extends NGrinderBaseController {
 		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString);
 		scriptList.add(checkNotNull(newEntry, "Create quick test script ERROR!"));
 		model.addAttribute(PARAM_QUICK_SCRIPT, newEntry.getPath());
-		model.addAttribute("testName", "Test for " + url.getHost());
+		model.addAttribute(PARAM_QUICK_SCRIPT_REVISION, newEntry.getRevision());
+		model.addAttribute(PARAM_TEST_NAME, "Test for " + url.getHost());
 		model.addAttribute(PARAM_TARGET_HOST, url.getHost());
 		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentManagerService.getUserAvailableAgentCountMap(user));
@@ -334,19 +352,33 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            user
 	 * @param testComment
 	 *            test comment
-	 * @param testId
+	 * @param id
 	 *            testId
 	 * @param tagString
 	 *            tagString
 	 * @return JSON
 	 */
-	@RequestMapping(value = "/leaveComment", method = RequestMethod.POST)
+	@RequestMapping(value = "{id}/leaveComment", method = RequestMethod.POST)
 	@ResponseBody
 	public String leaveComment(User user, @RequestParam("testComment") String testComment,
-					@RequestParam(value = "tagString", required = false) String tagString,
-					@RequestParam("testId") Long testId) {
-		perfTestService.addCommentOn(user, testId, testComment, tagString);
+					@RequestParam(value = "tagString", required = false) String tagString, 
+					@PathVariable("id") Long id) {
+		perfTestService.addCommentOn(user, id, testComment, tagString);
 		return returnSuccess();
+	}
+
+	/**
+	 * Get status of perftests.
+	 * 
+	 * @param user
+	 *            user
+	 * @param ids
+	 *            comma separated perftest list
+	 * @return json string which contains perftest status
+	 */
+	@RequestMapping(value = "updateStatus")
+	public HttpEntity<String> updateStatuses(User user, @RequestParam("ids") String ids) {
+		return updateStatus(user, ids);
 	}
 
 	/**
@@ -354,13 +386,13 @@ public class PerfTestController extends NGrinderBaseController {
 	 * 
 	 * @param user
 	 *            user
-	 * @param ids
-	 *            comma seperated perftest list
+	 * @param idString
+	 *            comma separated perftest list
 	 * @return json string which contains perftest status
 	 */
-	@RequestMapping(value = "/updateStatus")
-	public HttpEntity<String> updateStatus(User user, @RequestParam(defaultValue = "") String ids) {
-		String[] numbers = StringUtils.split(ids, ",");
+	@RequestMapping(value = "{id}/updateStatus")
+	public HttpEntity<String> updateStatus(User user, @PathVariable("id") String idString) {
+		String[] numbers = StringUtils.split(idString, ",");
 		Long[] id = new Long[numbers.length];
 		int i = 0;
 		for (String each : numbers) {
@@ -368,7 +400,7 @@ public class PerfTestController extends NGrinderBaseController {
 		}
 
 		List<PerfTest> perfTests = null;
-		if (StringUtils.isNotEmpty(ids)) {
+		if (StringUtils.isNotEmpty(idString)) {
 			perfTests = perfTestService.getPerfTest(user, id);
 		} else {
 			perfTests = Collections.emptyList();
@@ -476,7 +508,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 * 
 	 * @param model
 	 *            model
-	 * @param testId
+	 * @param id
 	 *            test id
 	 * @param dataType
 	 *            which data
@@ -484,9 +516,9 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            imageWidth
 	 * @return json string.
 	 */
-	@RequestMapping(value = "/getReportData")
+	@RequestMapping(value = "{id}/graph")
 	@ResponseBody
-	public String getReportData(ModelMap model, @RequestParam long testId,
+	public String getReportData(ModelMap model, @PathVariable("id") long id,
 					@RequestParam(required = true, defaultValue = "") String dataType, @RequestParam int imgWidth) {
 		String[] dataTypes = StringUtils.split(dataType, ",");
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1 + dataTypes.length);
@@ -494,9 +526,9 @@ public class PerfTestController extends NGrinderBaseController {
 			return returnError();
 		}
 		rtnMap.put(JSON_SUCCESS, true);
-		int interval = perfTestService.getReportDataInterval(testId, dataTypes[0], imgWidth);
+		int interval = perfTestService.getReportDataInterval(id, dataTypes[0], imgWidth);
 		for (String dt : dataTypes) {
-			String reportData = perfTestService.getReportDataAsString(testId, dt, interval);
+			String reportData = perfTestService.getReportDataAsString(id, dt, interval);
 			String rtnType = dt.replace("(", "").replace(")", "");
 			rtnMap.put(rtnType, reportData);
 		}
@@ -513,18 +545,18 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            user
 	 * @param model
 	 *            model
-	 * @param testId
+	 * @param id
 	 *            test id
 	 * @param imgWidth
 	 *            image width
 	 * @return "perftest/reportDiv"
 	 */
-	@RequestMapping(value = "/loadReportDiv")
-	public String getReportDiv(User user, ModelMap model, @RequestParam long testId, @RequestParam int imgWidth) {
-		PerfTest test = getPerfTestWithPermissionCheck(user, testId, false);
-		int interval = perfTestService.getReportDataInterval(testId, "TPS", imgWidth);
-		String reportData = perfTestService.getReportDataAsString(testId, "TPS", interval);
-		model.addAttribute(PARAM_LOG_LIST, perfTestService.getLogFiles(testId));
+	@RequestMapping(value = "{id}/loadReportDiv")
+	public String getReportDiv(User user, ModelMap model, @PathVariable long id, @RequestParam int imgWidth) {
+		PerfTest test = getPerfTestWithPermissionCheck(user, id, false);
+		int interval = perfTestService.getReportDataInterval(id, "TPS", imgWidth);
+		String reportData = perfTestService.getReportDataAsString(id, "TPS", interval);
+		model.addAttribute(PARAM_LOG_LIST, perfTestService.getLogFiles(id));
 		model.addAttribute(PARAM_TEST_CHART_INTERVAL, interval);
 		model.addAttribute(PARAM_TEST, test);
 		model.addAttribute(PARAM_TPS, reportData);
@@ -538,12 +570,12 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            user
 	 * @param response
 	 *            response
-	 * @param testId
+	 * @param id
 	 *            test id
 	 */
-	@RequestMapping(value = "/downloadReportData")
-	public void downloadReportData(User user, HttpServletResponse response, @RequestParam long testId) {
-		PerfTest test = getPerfTestWithPermissionCheck(user, testId, false);
+	@RequestMapping(value = "{id}/downloadReportData")
+	public void downloadReportData(User user, HttpServletResponse response, @PathVariable("id") long id) {
+		PerfTest test = getPerfTestWithPermissionCheck(user, id, false);
 		File targetFile = perfTestService.getReportFile(test);
 		checkState(targetFile.exists(), "File %s doesn't exist!", targetFile.getName());
 		FileDownloadUtil.downloadFile(response, targetFile);
@@ -556,16 +588,16 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            user
 	 * @param path
 	 *            path in the log folder
-	 * @param testId
+	 * @param id
 	 *            test id
 	 * @param response
 	 *            repsonse
 	 */
-	@RequestMapping(value = "/downloadLog/**")
-	public void downloadLogData(User user, @RemainedPath String path, @RequestParam long testId,
+	@RequestMapping(value = "{id}/downloadLog/**")
+	public void downloadLogData(User user, @RemainedPath String path, @PathVariable("id") long id,
 					HttpServletResponse response) {
-		getPerfTestWithPermissionCheck(user, testId, false);
-		File targetFile = perfTestService.getLogFile(testId, path);
+		getPerfTestWithPermissionCheck(user, id, false);
+		File targetFile = perfTestService.getLogFile(id, path);
 		FileDownloadUtil.downloadFile(response, targetFile);
 	}
 
@@ -576,37 +608,36 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            user
 	 * @param model
 	 *            model
-	 * @param testId
+	 * @param id
 	 *            test id
 	 * @return "perftest/refreshContent"
 	 */
-	@RequestMapping(value = "/running/refresh")
-	public String refreshTestRunning(User user, ModelMap model, @RequestParam long testId) {
-		PerfTest test = checkNotNull(getPerfTestWithPermissionCheck(user, testId, false),
-						"given test should be exist : " + testId);
+	@RequestMapping(value = "{id}/running/refresh")
+	public String refreshTestRunning(User user, ModelMap model, @PathVariable("id") long id) {
+		PerfTest test = checkNotNull(getPerfTestWithPermissionCheck(user, id, false), "given test should be exist : "
+						+ id);
 		if (test.getStatus().equals(Status.TESTING)) {
 			model.addAttribute(PARAM_RESULT_SUB, perfTestService.getStatistics(test));
-			model.addAttribute(PARAM_RESULT_AGENT_PERF, getAgentPerfString(perfTestService.getAgentInfo(test)));
+			model.addAttribute(PARAM_RESULT_AGENT_PERF, getStatString(perfTestService.getAgentStat(test)));
+			model.addAttribute(PARAM_RESULT_MONITOR_PERF, getStatString(perfTestService.getMonitorStat(test)));
 		}
 		return "perftest/refreshContent";
 	}
 
 	@SuppressWarnings("rawtypes")
-	private String getAgentPerfString(Map<String, HashMap> agentPerfMap) {
-		if (agentPerfMap == null) {
+	private String getStatString(Map<String, HashMap> statMap) {
+		if (statMap == null) {
 			return StringUtils.EMPTY;
 		}
 		List<String> perfStringList = new ArrayList<String>();
-		for (Entry<String, HashMap> each : agentPerfMap.entrySet()) {
+		for (Entry<String, HashMap> each : statMap.entrySet()) {
 			HashMap value = each.getValue();
 			if (value == null) {
 				continue;
 			}
-
 			double totalMemory = Double.parseDouble(value.get("totalMemory").toString());
 			double freeMemory = Double.parseDouble(value.get("freeMemory").toString());
 			Float cpuUsedPercentage = Float.parseFloat(value.get("cpuUsedPercentage").toString());
-
 			double usage = 0;
 			if (totalMemory != 0) {
 				usage = (((double) (totalMemory - freeMemory)) / totalMemory) * 100;
@@ -618,7 +649,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get perftest report.
+	 * Get perftest report. This is kept for the compatibility.
 	 * 
 	 * @param model
 	 *            model
@@ -627,8 +658,22 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @return "perftest/report"
 	 */
 	@RequestMapping(value = "/report")
-	public String getReport(ModelMap model, @RequestParam long testId) {
-		model.addAttribute("test", perfTestService.getPerfTest(testId));
+	public String getReportRaw(ModelMap model, @RequestParam long testId) {
+		return getReport(model, testId);
+	}
+
+	/**
+	 * Get perftest report.
+	 * 
+	 * @param model
+	 *            model
+	 * @param id
+	 *            test id
+	 * @return "perftest/report"
+	 */
+	@RequestMapping(value = "{id}/report")
+	public String getReport(ModelMap model, @PathVariable("id") long id) {
+		model.addAttribute("test", perfTestService.getPerfTest(id));
 		return "perftest/report";
 	}
 
@@ -641,6 +686,61 @@ public class PerfTestController extends NGrinderBaseController {
 			throw new NGrinderRuntimeException("User " + user.getUserId() + " has no right on PerfTest ");
 		}
 		return perfTest;
+	}
+
+	/**
+	 * Get monitor data of agents.
+	 * 
+	 * @param model
+	 *            model
+	 * @param id
+	 *            test Id
+	 * @param monitorIP
+	 *            monitorIP
+	 * @param imgWidth
+	 *            image width
+	 * @return json message
+	 */
+	@RequestMapping("{id}/monitor")
+	@ResponseBody
+	public String getMonitorData(ModelMap model, @PathVariable("id") long id,
+					@RequestParam("monitorIP") String monitorIP, @RequestParam int imgWidth) {
+		Map<String, Object> rtnMap = Maps.newHashMap();
+		rtnMap.put("SystemData", this.getMonitorDataSystem(id, monitorIP, imgWidth));
+		rtnMap.put(JSON_SUCCESS, true);
+		return toJson(rtnMap);
+	}
+
+	private Map<String, Object> getMonitorDataSystem(long id, String monitorIP, int imgWidth) {
+		Map<String, Object> rtnMap = Maps.newHashMap();
+		List<SystemDataModel> systemMonitorData = perfTestService.getSystemMonitorData(id, monitorIP);
+		if (imgWidth < 100) {
+			imgWidth = 100;
+		}
+		if (null != systemMonitorData && !systemMonitorData.isEmpty()) {
+			int dataAmount = systemMonitorData.size();
+			int pointCount = imgWidth;
+			int interval = dataAmount / pointCount;
+			if (interval == 0) {
+				pointCount = dataAmount;
+				interval = 1;
+			}
+			List<Object> cpuData = new ArrayList<Object>(pointCount);
+			List<Object> memoryData = new ArrayList<Object>(pointCount);
+
+			SystemDataModel sdm;
+			for (int i = 0; i < dataAmount; i += interval) {
+				sdm = systemMonitorData.get(i);
+				cpuData.add(sdm.getCpuUsedPercentage());
+				memoryData.add(sdm.getTotalMemory() - sdm.getFreeMemory());
+			}
+
+			rtnMap.put("cpu", cpuData);
+			rtnMap.put("memory", memoryData);
+			rtnMap.put("interval", interval);
+		}
+
+		return rtnMap;
 	}
 
 }

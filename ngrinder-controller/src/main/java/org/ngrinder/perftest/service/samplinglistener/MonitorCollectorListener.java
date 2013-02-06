@@ -23,7 +23,7 @@ import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.statistics.StatisticsSet;
 
 import org.ngrinder.agent.model.AgentInfo;
-import org.ngrinder.monitor.service.MonitorTask;
+import org.ngrinder.perftest.service.monitor.MonitorTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;

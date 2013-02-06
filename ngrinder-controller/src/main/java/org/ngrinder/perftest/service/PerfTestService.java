@@ -29,6 +29,7 @@ import static org.ngrinder.perftest.repository.PerfTestSpecification.statusSetEq
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -92,6 +93,7 @@ import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.service.IPerfTestService;
+import org.python.google.common.collect.Lists;
 import org.python.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1360,6 +1362,51 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Map<String, HashMap> getMonitorStat(PerfTest perfTest) {
 		return gson.fromJson(perfTest.getMonitorStatus(), HashMap.class);
+	}
+
+	/**
+	 * Get all{@link SystemDataModel} from monitor data file of one test and target.
+	 * 
+	 * @param testId
+	 *            test id
+	 * @param monitorIP
+	 *            IP address of the monitor target
+	 * @return SystemDataModel list
+	 */
+	public List<SystemDataModel> getSystemMonitorData(long testId, String monitorIP) {
+		LOGGER.debug("Get SystemMonitorData of test:{} ip:{}", testId, monitorIP);
+		List<SystemDataModel> rtnList = Lists.newArrayList();
+		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
+						Config.MONITOR_FILE_PREFIX + monitorIP + ".data");
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new FileReader(monitorDataFile));
+			br.readLine(); // skip the header.
+			// header: "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage"
+			String line = br.readLine();
+			while (StringUtils.isNotBlank(line)) {
+				SystemDataModel model = new SystemDataModel();
+				String[] datalist = StringUtils.split(line, ",");
+				model.setIp(datalist[0]);
+				model.setSystem(datalist[1]);
+				model.setCollectTime(Long.valueOf(datalist[2]));
+				model.setFreeMemory(Long.valueOf(datalist[3]));
+				model.setTotalMemory(Long.valueOf(datalist[4]));
+				model.setCpuUsedPercentage(Float.valueOf(datalist[5]));
+				rtnList.add(model);
+				line = br.readLine();
+			}
+		} catch (FileNotFoundException e) {
+			LOGGER.error("Monitor data file not exist:{}", monitorDataFile);
+			LOGGER.error(e.getMessage(), e);
+		} catch (IOException e) {
+			LOGGER.error("Error while getting monitor:{} data file:{}", monitorIP, monitorDataFile);
+			LOGGER.error(e.getMessage(), e);
+		} finally {
+			IOUtils.closeQuietly(br);
+		}
+		LOGGER.debug("Finish getSystemMonitorData of test:{} ip:{}", testId, monitorIP);
+		return rtnList;
 	}
 
 }

@@ -60,7 +60,7 @@
 			<#if logs?has_content> 
 				<#list logs as eachLog>
 					<div style="width:100%;" class="ellipsis">
-						<a href="${req.getContextPath()}/perftest/downloadLog/${eachLog}?testId=${test.id?c}">${eachLog}</a>
+						<a href="${req.getContextPath()}/perftest/${test.id?c}/downloadLog/${eachLog}">${eachLog}</a>
 					</div>
 				</#list> 
 			<#else> 
@@ -88,8 +88,8 @@
 		var comment = $("#testComment").val();
 		var tagString = buildTagString();
 		$.post(
-			"${req.getContextPath()}/perftest/leaveComment",
-			{"testId": ${test.id?c}, "testComment": comment, "tagString":tagString},
+			"${req.getContextPath()}/perftest/${(test.id)?c}/leaveComment",
+			{"testComment": comment, "tagString":tagString},
 			function() {
 				showSuccessMsg("<@spring.message "perfTest.report.message.leaveComment"/>");
 			}
@@ -97,6 +97,6 @@
 	});
 
 	$("#reportDetail").click(function () {
-		window.open("${req.getContextPath()}/perftest/report?testId=" + $("#testId").val());
+		window.open("${req.getContextPath()}/perftest/${(test.id)?c}/report");
 	});
 </script>

@@ -112,7 +112,7 @@
 								<#if test?? && test.scriptRevision != -1>
 									${test.scriptRevision}
 								<#else>
-									HEAD
+									<#if quickScriptRevision??>${quickScriptRevision}<#else>HEAD</#if>
 								</#if>
 								</button>
 							</td>

@@ -39,7 +39,6 @@ import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
-import org.ngrinder.monitor.service.MonitorService;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.repository.MockFileEntityRepsotory;
@@ -57,7 +56,7 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 	private AgentManagerService agentService;
 
 	@Autowired
-	private MonitorService monitorService;
+	private PerfTestService monitorService;
 
 	@Autowired
 	public MockFileEntityRepsotory fileEntityRepository;

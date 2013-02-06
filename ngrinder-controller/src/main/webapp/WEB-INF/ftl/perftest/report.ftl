@@ -145,6 +145,8 @@
     				<div class="chart" id="meanTimeDiv"></div>
     				<h6 id="minTimeFirstByteHeader"><@spring.message "perfTest.report.header.meantimetofirstbyte"/>&nbsp;(ms)</h6>
     				<div class="chart" id="minTimeFirstByte"></div>
+    				<h6 id="userDefinedChartHeader"><@spring.message "perfTest.report.header.userDefinedChart"/></h6>
+    				<div class="chart" id="userDefinedChart"></div>
 					<h6><@spring.message "perfTest.report.header.errors"/></h6>
     				<div class="chart" id="errorDiv"></div>
 				</div>
@@ -193,7 +195,7 @@
 
             $("#downloadReportData").click(function() {
                 document.forms.downloadForm.action = 
-                	"${req.getContextPath()}/perftest/downloadReportData?testId=" + $("#testId").val();
+                	"${req.getContextPath()}/perftest/${(test.id)?c}/downloadReportData";
                 document.forms.downloadForm.submit();
             });
 			
@@ -211,11 +213,10 @@
 		    }
 		    performanceInit = true;
             $.ajax({
-                url: "${req.getContextPath()}/perftest/getReportData",
+                url: "${req.getContextPath()}/perftest/${(test.id)?c}/graph",
                 dataType:'json',
                 cache: true,
-                data: {'testId': $("#testId").val(),
-                       'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte',
+                data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined',
                        'imgWidth':700},
                 success: function(res) {
                     if (res.success) {
@@ -229,6 +230,13 @@
                         	$("#minTimeFirstByte").hide();	
                         	$("#minTimeFirstByteHeader").hide();
                         }
+                        if (res.User_defined !== undefined && 
+                        		res.User_defined !== '[ ]') {
+                        	drawChart('User Defined Chart', 'userDefinedChart', res.User_defined, undefined, res.chartInterval);
+                        } else {
+                        	$("#userDefinedChart").hide();	
+                        	$("#userDefinedChartHeader").hide();
+                        }
                         drawChart('Errors Per Second', 'errorDiv', res.Errors, undefined, res.chartInterval);
                         return true;
                     } else {
@@ -237,18 +245,17 @@
                     }
                 },
                 error: function() {
-                    showErrorMsg("Error!");
+                    showErrorMsg("Unknow Error occured!");
                     return false;
                 }
             });
         }
         function getMonitorData(ip){
             $.ajax({
-                url: "${req.getContextPath()}/monitor/getMonitorData",
+                url: "${req.getContextPath()}/perftest/${(test.id)?c}/monitor",
                 dataType:'json',
                 cache: true,
                 data: {'monitorIP': ip,
-                	   'testId': $("#testId").val(),
                        'imgWidth' : 700},
                 success: function(res) {
                     if (res.success) {

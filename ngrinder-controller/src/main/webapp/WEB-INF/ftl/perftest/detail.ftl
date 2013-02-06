@@ -1004,7 +1004,7 @@ function getOption(cnt) {
 }
 
 function openReportDiv(onFinishHook) {
-	$("#reportContent").load("${req.getContextPath()}/perftest/loadReportDiv?testId=" + $("#testId").val() + "&imgWidth=600",
+	$("#reportContent").load("${req.getContextPath()}/perftest/<#if test??>${(test.id)?c}<#else>0</#if>/loadReportDiv?imgWidth=600",
 		function() {
 			if (onFinishHook !== undefined) {
 				onFinishHook();
@@ -1037,8 +1037,9 @@ function updateStatus(id, status_type, status_name, icon, deletable, stoppable, 
 	if (status_type == "TESTING") {
 		displayCfgAndTestRunning();
 	} else if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR" || status_type == "CANCELED") {
-		isFinished = true;
-		displayCfgAndTestReport();
+		isFinished = true; 
+		// Wait and run because it takes time to transfer logs.
+		setTimeout('displayCfgAndTestReport()', 2000);
 	} else {
 		displayCfgOnly();
 	}
@@ -1054,11 +1055,8 @@ var testId = $('#testId').val();
 	}
 
 	$.ajax({
-		url : '${req.getContextPath()}/perftest/updateStatus',
+		url : '${req.getContextPath()}/perftest/<#if test??>${(test.id)?c}</#if>/updateStatus', 
 		type : 'GET',
-		data : {
-			"ids" : testId
-		},
 		success : function(perfTestData) {
 			perfTestData = eval(perfTestData);
 			data = perfTestData.statusList

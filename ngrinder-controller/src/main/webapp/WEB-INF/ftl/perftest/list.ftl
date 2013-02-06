@@ -55,7 +55,7 @@
 						</td>
 						<td>
 							<span class="pull-right">
-								<a class="btn btn-primary" href="${req.getContextPath()}/perftest/detail" id="createBtn">
+								<a class="btn btn-primary" href="${req.getContextPath()}/perftest/new" id="createBtn">
 									<i class="icon-file"></i> 
 									<@spring.message "perfTest.formInline.createTest"/>
 								</a>
@@ -135,7 +135,7 @@
 								</td>
 								<td class="ellipsis ${test.dateString}" data-content="${(test.description!"")?replace('\n', '<br/>')?html} &lt;p&gt;${test.testComment?replace('\n', '<br/>')?html}&lt;/p&gt;  &lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;&lt;p&gt;<#if test.tagString?has_content><@spring.message "perfTest.configuration.tags"/> : ${test.tagString}&lt;/p&gt;</#if>"  
 										 data-original-title="${test.testName}">
-									<a href="${req.getContextPath()}/perftest/detail?id=${test.id}" target="_self">${test.testName}</a>
+									<a href="${req.getContextPath()}/perftest/${test.id}" target="_self">${test.testName}</a>
 								</td>
 								<td class="ellipsis"
 									data-content="${test.scriptName} &lt;br&gt;&lt;br&gt; - <@spring.message "script.list.table.revision"/> : ${(test.scriptRevision)!'HEAD'}" 
