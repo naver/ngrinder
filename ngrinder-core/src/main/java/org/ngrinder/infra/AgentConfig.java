@@ -161,8 +161,16 @@ public class AgentConfig {
 		if (StringUtils.isEmpty(userHome)) {
 			userHome = System.getProperty("user.home") + File.separator + NGRINDER_DEFAULT_FOLDER;
 		}
-
+		LOGGER.info("Finally NGRINDER_AGENT_HOME is resolved as {}", userHome);
 		File homeDirectory = new File(userHome);
+		try {
+			homeDirectory.mkdirs();
+			if (!homeDirectory.canWrite()) {
+				throw new NGrinderRuntimeException("home directory " + userHome + " is not writable.");
+			}
+		} catch (Exception e) {
+			throw new NGrinderRuntimeException("Error while resolve the home directory.", e);
+		}
 		return new AgentHome(homeDirectory);
 	}
 
@@ -236,6 +244,20 @@ public class AgentConfig {
 
 	public File getCurrentDirectory() {
 		return new File(System.getProperty("user.dir"));
+	}
+
+	/**
+	 * Get property boolean.
+	 * 
+	 * @param key
+	 *            property key
+	 * @param defaultValue
+	 *            default value
+	 * 
+	 * @return boolean value for given key. If not available, return default value.
+	 */
+	public boolean getPropertyBoolean(String key, boolean defaultValue) {
+		return getAgentProperties().getPropertyBoolean(key, defaultValue);
 	}
 
 }

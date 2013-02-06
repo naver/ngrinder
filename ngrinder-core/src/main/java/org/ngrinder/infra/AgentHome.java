@@ -25,7 +25,7 @@ import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.ngrinder.common.exception.ConfigurationException;
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,11 +49,32 @@ public class AgentHome {
 	 *            agent home directory
 	 */
 	public AgentHome(File directory) {
-		checkNotNull(directory, "The directory should not be null.").mkdirs();
-		if (!directory.canWrite()) {
-			String message = String.format("nGrinder home directory %s is not writable.", directory);
-			throw new ConfigurationException(message, null);
+		checkNotNull(directory, "The directory should not be null.");
+		if (StringUtils.contains(directory.getAbsolutePath().trim(), " ")) {
+			throw new NGrinderRuntimeException(String.format(
+							"nGrinder agent home directory \"%s\" should not contain space."
+											+ "Please set NGRINDER_AGENT_HOME env var in the different location",
+							directory.getAbsolutePath()));
 		}
+
+		if (!directory.exists() && !directory.mkdirs()) {
+			throw new NGrinderRuntimeException(String.format(
+							"nGrinder agent home directory %s is not created. Please check the permission",
+							directory.getAbsolutePath()));
+		}
+
+		if (!directory.isDirectory()) {
+			throw new NGrinderRuntimeException(String.format(
+							"nGrinder home directory %s is not directory. Please delete this file in advance",
+							directory.getAbsolutePath()));
+		}
+
+		if (!directory.canWrite()) {
+			throw new NGrinderRuntimeException(String.format(
+							"nGrinder home directory %s is not writable. Please adjust permission on this folder",
+							directory));
+		}
+
 		this.directory = directory;
 	}
 

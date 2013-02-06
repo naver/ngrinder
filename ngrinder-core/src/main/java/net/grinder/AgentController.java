@@ -154,8 +154,7 @@ public class AgentController implements Agent {
 							consoleCommunication.start();
 							LOGGER.info("connected to agent controller server at {}", connector.getEndpointAsString());
 						} catch (CommunicationException e) {
-							LOGGER.error("Error while connecting to {} : {}", connector.getEndpointAsString(),
-											e.getMessage());
+							LOGGER.error("Error while connecting to controller {}", connector.getEndpointAsString());
 							LOGGER.debug(e.getMessage(), e);
 							return;
 						}

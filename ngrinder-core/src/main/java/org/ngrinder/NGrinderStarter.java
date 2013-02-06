@@ -66,7 +66,7 @@ public class NGrinderStarter {
 		agentConfig = new AgentConfig();
 		agentConfig.init();
 		// Configure log.
-		Boolean verboseMode = agentConfig.getAgentProperties().getPropertyBoolean("verbose", false);
+		Boolean verboseMode = agentConfig.getPropertyBoolean("verbose", false);
 		File logDirectory = agentConfig.getHome().getLogDirectory();
 		configureLogging(verboseMode, logDirectory);
 		addCustomClassLoader();
@@ -131,17 +131,23 @@ public class NGrinderStarter {
 	 *            controllerIp;
 	 */
 	public void startAgent(String controllerIp) {
-		LOG.info("*************************");
-		LOG.info("Start nGrinder Agent ...");
+		LOG.info("***************************************************");
+		LOG.info(" Start nGrinder Agent ...");
 		String consoleIP = StringUtils.isNotEmpty(controllerIp) ? controllerIp : agentConfig.getAgentProperties()
 						.getProperty("agent.console.ip", "127.0.0.1");
 		int consolePort = agentConfig.getAgentProperties().getPropertyInt("agent.console.port",
 						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
 		LOG.info("with console: {}:{}", consoleIP, consolePort);
+		boolean serverMode = agentConfig.getPropertyBoolean("ngrinder.servermode", false);
+		if (!serverMode) {
+			LOG.info("JVM server mode is disabled. If you turnon ngrinder.servermode in agent.conf. It will provide better agent performance.");
+		}
+
 		try {
-			System.setProperty("java.rmi.server.hostname", NetworkUtil.getLocalHostAddress());
-			agentController = new AgentControllerDaemon(NetworkUtil.getLocalHostAddress());
+			String localHostAddress = NetworkUtil.getLocalHostAddress();
+			System.setProperty("java.rmi.server.hostname", localHostAddress);
+			agentController = new AgentControllerDaemon(localHostAddress);
 			agentController.setRegion(region);
 			agentController.setAgentConfig(agentConfig);
 			agentController.run(consoleIP, consolePort);
