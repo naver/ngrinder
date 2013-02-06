@@ -11,33 +11,37 @@ from net.grinder.script import Test
 from net.grinder.plugin.http import HTTPRequest
 from net.grinder.plugin.http import HTTPPluginControl
 
-test1 = Test(1, "Test1")
+
 control = HTTPPluginControl.getConnectionDefaults()
 # if you don't want that HTTPRequest follows the redirection, please modify the following option 0.
 # control.followRedirects = 1
 # if you want to increase the timeout, please modify the following option.
 control.timeout = 6000
 
+test1 = Test(1, "Test1")
+request1 = HTTPRequest()
 
-request1 = test1.wrap(HTTPRequest())
+# Make any method call on request1 increase TPS
+test1.record(request1)
 
 class TestRunner:
+	# initlialize a thread 
 	def __init__(self):
 		grinder.statistics.delayReports=True
-		# initlialize threads 
 		pass
-		
+
+	# test method		
 	def __call__(self):
 		result = request1.GET("${url}")
-		# result is a HTTPClient.HTTPResult. 
-		# We get the message body using the getText() method.
+		
+		# You get the message body using the getText() method.
 		# if result.getText().find("HELLO WORLD") != -1 :
 		#    grinder.statistics.forLastTest.success = 1
 		# else :
 		#	 grinder.statistics.forLastTest.success = 0
 			
 		# if you want to print out log.. 
-		# Don't use print keyword. This will make the output lost.
+		# Don't use print keyword. 
 		# instead use following.
 		# grinder.logger.info("Hello World")
 		
@@ -45,7 +49,7 @@ class TestRunner:
 		if result.getStatusCode() == 200 :
 			grinder.statistics.forLastTest.success = 1
 		elif result.getStatusCode() in (301, 302) :
-			grinder.logger.warn("SUCCESS. However the response may not be correct. The response code was %d." %  result.getStatusCode()) 
+			grinder.logger.warn("Warning. The response may not be correct. The response code was %d." %  result.getStatusCode()) 
 			grinder.statistics.forLastTest.success = 1
 		else :
 			grinder.statistics.forLastTest.success = 0
