@@ -60,7 +60,7 @@
 			<#if logs?has_content> 
 				<#list logs as eachLog>
 					<div style="width:100%;" class="ellipsis">
-						<a href="${req.getContextPath()}/perftest/${test.id?c}/downloadLog/${eachLog}">${eachLog}</a>
+						<a href="${req.getContextPath()}/perftest/${test.id?c}/showLog/${eachLog}" target="log" title="open the log in the new window"><img src="${req.getContextPath()}/img/open_external.png" style="margin-top:-3px"></a>  <a href="${req.getContextPath()}/perftest/${test.id?c}/downloadLog/${eachLog}">${eachLog}</a>
 					</div>
 				</#list> 
 			<#else> 

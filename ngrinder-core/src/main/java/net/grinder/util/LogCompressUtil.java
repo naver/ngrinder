@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
@@ -89,19 +91,10 @@ public abstract class LogCompressUtil {
 	 */
 	public static void unCompress(byte[] zipEntry, File toFile) {
 		FileOutputStream fos = null;
-		ZipInputStream zipInputStream = null;
-		ByteArrayInputStream bio = null;
+		ByteArrayInputStream bio = new ByteArrayInputStream(zipEntry);
 		try {
-			bio = new ByteArrayInputStream(zipEntry);
-			zipInputStream = new ZipInputStream(bio);
 			fos = new FileOutputStream(toFile);
-			byte[] buffer = new byte[COMPRESS_BUFFER_SIZE];
-			int count = 0;
-			checkNotNull(zipInputStream.getNextEntry(), "In zip, it should have at least one entry");
-			while ((count = zipInputStream.read(buffer, 0, COMPRESS_BUFFER_SIZE)) != -1) {
-				fos.write(buffer, 0, count);
-			}
-			fos.flush();
+			unCompress(bio, fos, Long.MAX_VALUE);
 		} catch (IOException e) {
 			LOGGER.error("Error occurs while uncompress {}", toFile.getAbsolutePath());
 			LOGGER.error("Details", e);
@@ -109,6 +102,40 @@ public abstract class LogCompressUtil {
 		} finally {
 			IOUtils.closeQuietly(fos);
 			IOUtils.closeQuietly(bio);
+		}
+	}
+
+	/**
+	 * Uncompress the given array into the given file.
+	 * 
+	 * @param zipEntry
+	 *            byte array of compressed file
+	 * @param toFile
+	 *            file to be written
+	 * @param limit
+	 *            the limit of the output
+	 */
+	public static void unCompress(InputStream inputStream, OutputStream outputStream, long limit) {
+		ZipInputStream zipInputStream = null;
+		try {
+			zipInputStream = new ZipInputStream(inputStream);
+			byte[] buffer = new byte[COMPRESS_BUFFER_SIZE];
+			int count = 0;
+			long total = 0;
+			checkNotNull(zipInputStream.getNextEntry(), "In zip, it should have at least one entry");
+			while ((count = zipInputStream.read(buffer, 0, COMPRESS_BUFFER_SIZE)) != -1) {
+				total += count;
+				if (total >= limit) {
+					break;
+				}
+				outputStream.write(buffer, 0, count);
+			}
+			outputStream.flush();
+		} catch (IOException e) {
+			LOGGER.error("Error occurs while uncompress");
+			LOGGER.error("Details", e);
+			return;
+		} finally {
 			IOUtils.closeQuietly(zipInputStream);
 		}
 	}

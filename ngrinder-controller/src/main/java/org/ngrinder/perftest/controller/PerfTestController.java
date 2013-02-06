@@ -20,6 +20,7 @@ import static org.ngrinder.common.util.Preconditions.checkState;
 import static org.ngrinder.common.util.Preconditions.checkValidURL;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,8 +34,11 @@ import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.grinder.util.LogCompressUtil;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.mutable.MutableInt;
@@ -361,7 +365,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = "{id}/leaveComment", method = RequestMethod.POST)
 	@ResponseBody
 	public String leaveComment(User user, @RequestParam("testComment") String testComment,
-					@RequestParam(value = "tagString", required = false) String tagString, 
+					@RequestParam(value = "tagString", required = false) String tagString, // Optional
 					@PathVariable("id") Long id) {
 		perfTestService.addCommentOn(user, id, testComment, tagString);
 		return returnSuccess();
@@ -599,6 +603,37 @@ public class PerfTestController extends NGrinderBaseController {
 		getPerfTestWithPermissionCheck(user, id, false);
 		File targetFile = perfTestService.getLogFile(id, path);
 		FileDownloadUtil.downloadFile(response, targetFile);
+	}
+
+	/**
+	 * Download logs for the given id.
+	 * 
+	 * @param user
+	 *            user
+	 * @param id
+	 *            test id
+	 * @param path
+	 *            path in the log folder
+	 * @param response
+	 *            response
+	 */
+	@RequestMapping(value = "{id}/showLog/**")
+	public void showLogData(User user, @PathVariable("id") long id, @RemainedPath String path,
+					HttpServletResponse response) {
+		getPerfTestWithPermissionCheck(user, id, false);
+		File targetFile = perfTestService.getLogFile(id, path);
+		response.reset();
+		response.setContentType("text/plain");
+		FileInputStream fileInputStream = null;
+		try {
+			fileInputStream = new FileInputStream(targetFile);
+			// Limit log view to 1MB
+			LogCompressUtil.unCompress(fileInputStream, response.getOutputStream(), 1 * 1024 * 1204);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			IOUtils.closeQuietly(fileInputStream);
+		}
 	}
 
 	/**
