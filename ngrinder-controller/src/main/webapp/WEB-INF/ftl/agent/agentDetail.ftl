@@ -88,7 +88,7 @@
                     history.back();
                 });
                 
-                getMonitorData();
+                getStatus();
                 
                 $("#rinterval").keyup(function() {
                     var number = $(this).val();
@@ -102,7 +102,7 @@
                         interval = 1;
                     }
                     cleanChartData();
-                    timer=window.setInterval("getMonitorData()",interval * 1000);
+                    timer=window.setInterval("getStatus()",interval * 1000);
                 }).blur();
             });
             
@@ -119,14 +119,13 @@
             	return currentMax;
             }
             
-            function getMonitorData(){
+            function getStatus(){
                 $.ajax({
-                    url: "${req.getContextPath()}/agent/systemDataModel",
+                    url: "${req.getContextPath()}/agent/${agent.id}/status",
                     async: false,
 					cache: false,
                     dataType:'json',
-                    data: {'id': '${(agent.id)!}',
-                    	   'ip': '${(agent.ip)!}',
+                    data: {'ip': '${(agent.ip)!}',
                     	   'name': '${(agent.hostName)!}',
                            'imgWidth':700},
                     success: function(res) {

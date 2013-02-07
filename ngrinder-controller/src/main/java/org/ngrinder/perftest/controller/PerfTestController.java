@@ -122,7 +122,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            page
 	 * @return perftest/list
 	 */
-	@RequestMapping({ "/list", "/" })
+	@RequestMapping({ "/list", "/", "" })
 	public String getPerfTestList(User user, @RequestParam(required = false) String query,
 					@RequestParam(required = false) String tag, @RequestParam(required = false) String queryFilter,
 					@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable, ModelMap model) {
@@ -352,21 +352,20 @@ public class PerfTestController extends NGrinderBaseController {
 	/**
 	 * Leave comment on the perftest.
 	 * 
+	 * @param id
+	 *            testId
 	 * @param user
 	 *            user
 	 * @param testComment
 	 *            test comment
-	 * @param id
-	 *            testId
 	 * @param tagString
 	 *            tagString
 	 * @return JSON
 	 */
 	@RequestMapping(value = "{id}/leaveComment", method = RequestMethod.POST)
 	@ResponseBody
-	public String leaveComment(User user, @RequestParam("testComment") String testComment,
-					@RequestParam(value = "tagString", required = false) String tagString, // Optional
-					@PathVariable("id") Long id) {
+	public String leaveComment(User user, @PathVariable("id") Long id, @RequestParam("testComment") String testComment,
+					@RequestParam(value = "tagString", required = false) String tagString) {
 		perfTestService.addCommentOn(user, id, testComment, tagString);
 		return returnSuccess();
 	}

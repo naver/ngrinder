@@ -7,8 +7,8 @@
 			<a class="brand" href="${req.getContextPath()}/home"><img src="${req.getContextPath()}/img/logo_ngrinder_a_header_inv.png" alt="nGrinder"></img></a>
 			<div>
 				<ul class="nav">
-				  <li id="nav_test"><a href="${req.getContextPath()}/perftest/list"><@spring.message "navigator.perfTest"/></a></li>
-				  <li id="nav_script"><a href="${req.getContextPath()}/script/list"><@spring.message "navigator.script"/></a></li>
+				  <li id="nav_test"><a href="${req.getContextPath()}/perftest/"><@spring.message "navigator.perfTest"/></a></li>
+				  <li id="nav_script"><a href="${req.getContextPath()}/script/"><@spring.message "navigator.script"/></a></li>
 				</ul>
 				
 				<ul class="nav pull-right">
@@ -28,8 +28,8 @@
 		                	 
 			            	<@security.authorize ifAnyGranted="A">
 			            		<li class="divider"/> 
-		               			<li><a href="${req.getContextPath()}/user/list"><@spring.message "navigator.dropdown.userManagement"/></a></li>
-				                <li><a href="${req.getContextPath()}/agent/list"><@spring.message "navigator.dropdown.agentManagement"/></a></li>
+		               			<li><a href="${req.getContextPath()}/user/"><@spring.message "navigator.dropdown.userManagement"/></a></li>
+				                <li><a href="${req.getContextPath()}/agent/"><@spring.message "navigator.dropdown.agentManagement"/></a></li>
 							<#if clustered == false>
 				            	<li><a href="${req.getContextPath()}/operation/log"><@spring.message "navigator.dropdown.logMonitoring"/></a></li>
 				            </#if>

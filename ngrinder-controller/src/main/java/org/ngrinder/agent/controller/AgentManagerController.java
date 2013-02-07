@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,7 +50,6 @@ import com.google.common.collect.Collections2;
 @RequestMapping("/agent")
 @PreAuthorize("hasAnyRole('A', 'S')")
 public class AgentManagerController extends NGrinderBaseController {
-
 
 	@Autowired
 	private AgentManagerService agentManagerService;
@@ -118,8 +118,8 @@ public class AgentManagerController extends NGrinderBaseController {
 	 *            approve or not
 	 * @return agent/agentList
 	 */
-	@RequestMapping(value = "approve", method = RequestMethod.POST)
-	public String approveAgent(@RequestParam("id") Long id,
+	@RequestMapping(value = "/{id}/approve", method = RequestMethod.POST)
+	public String approveAgent(@PathVariable("id") Long id,
 					@RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve) {
 		agentManagerService.approve(id, approve);
 		return "agent/agentList";
@@ -151,8 +151,8 @@ public class AgentManagerController extends NGrinderBaseController {
 	 *            agent id
 	 * @return agent/agentDetail
 	 */
-	@RequestMapping("/detail")
-	public String getAgent(ModelMap model, @RequestParam(required = false) Long id) {
+	@RequestMapping("/{id}")
+	public String getAgent(ModelMap model, @PathVariable Long id) {
 		AgentInfo agent = agentManagerService.getAgent(id, false);
 		model.addAttribute("agent", agent);
 		return "agent/agentDetail";
@@ -171,9 +171,9 @@ public class AgentManagerController extends NGrinderBaseController {
 	 *            agent name
 	 * @return json message
 	 */
-	@RequestMapping("/systemDataModel")
+	@RequestMapping("/{id}/status")
 	@ResponseBody
-	public String getCurrentMonitorData(ModelMap model, @RequestParam Long id, @RequestParam String ip,
+	public String getCurrentMonitorData(ModelMap model, @PathVariable Long id, @RequestParam String ip,
 					@RequestParam String name) {
 		Map<String, Object> returnMap = new HashMap<String, Object>(3);
 		agentManagerService.requestShareAgentSystemDataModel(id);

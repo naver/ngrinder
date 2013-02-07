@@ -54,7 +54,7 @@
 					<tr>
 						<td class="center"><input type="checkbox" value="${agent.id}"></td>
 						<td>
-							<a href="${req.getContextPath()}/agent/detail?id=${agent.id}" target="_self">${agent.ip}</a>
+							<a href="${req.getContextPath()}/agent/${agent.id}" target="_self">${agent.ip}</a>
 						</td>
 						<td>${(agent.port)!}</td>
 						<td class="ellipsis" title="${(agent.hostName)!}">${(agent.hostName)!}</td>
@@ -104,9 +104,8 @@
 				$(".approved").live("click", function() {
 					var sid = $(this).attr("sid");
 					$.post(
-				  		"${req.getContextPath()}/agent/approve",
+					  	"${req.getContextPath()}/agent/" + sid + "/approve",
 				  		{ 
-				  			"id": sid,
 				  			"approve": "true"
 				  		},
 				  		function() {
@@ -119,9 +118,8 @@
 				$(".unapproved").live("click", function() {
 					var sid = $(this).attr("sid");
 					$.post(
-				  		"${req.getContextPath()}/agent/approve",
+				  		"${req.getContextPath()}/agent/" + sid + "/approve",
 				  		{ 
-				  			"id": sid,
 				  			"approve": "false"
 				  		},
 				  		function() {

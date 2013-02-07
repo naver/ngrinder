@@ -19,7 +19,7 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$("#search_user").click(function() {
-				document.location.href = "${req.getContextPath()}/user/list?keywords=" + $("#searchText").val() ;
+				document.location.href = "${req.getContextPath()}/user/?keywords=" + $("#searchText").val() ;
 			});
 		});
 	</script>

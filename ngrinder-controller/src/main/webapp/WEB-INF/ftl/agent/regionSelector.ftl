@@ -8,7 +8,7 @@
 	<script>
 		$("#regions").change(function() {
 			var selectedValue = $(this).val();
-			var destUrl = "${req.getContextPath()}/agent/list";
+			var destUrl = "${req.getContextPath()}/agent/";
 			if (selectedValue != "all") {
 				destUrl = destUrl + "?region=" + selectedValue;
 			}

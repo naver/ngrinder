@@ -37,6 +37,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -70,7 +71,7 @@ public class UserController extends NGrinderBaseController {
 	 * @return user/userList
 	 */
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping("/list")
+	@RequestMapping({ "", "/" })
 	public String getUserList(ModelMap model, @RequestParam(required = false) String roleName,
 					@RequestParam(required = false) String keywords) {
 
@@ -91,6 +92,24 @@ public class UserController extends NGrinderBaseController {
 	}
 
 	/**
+	 * Get user creation form page.
+	 * 
+	 * @param user
+	 *            current user
+	 * @param model
+	 *            mode
+	 * @param userId
+	 *            user to get
+	 * @return "user/userDetail"
+	 */
+	@RequestMapping("/new")
+	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
+	public String getUserDetail(User user, final ModelMap model) {
+		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
+		return "user/userDetail";
+	}
+
+	/**
 	 * Get user detail page.
 	 * 
 	 * @param user
@@ -101,9 +120,9 @@ public class UserController extends NGrinderBaseController {
 	 *            user to get
 	 * @return "user/userDetail"
 	 */
-	@RequestMapping("/detail")
+	@RequestMapping("/{userId}")
 	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
-	public String getUserDetail(User user, final ModelMap model, @RequestParam(required = false) final String userId) {
+	public String getUserDetail(User user, final ModelMap model, @PathVariable final String userId) {
 		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
 		User userFromDB = userService.getUserByIdWithoutCache(userId);
 		model.addAttribute("user", userFromDB);
@@ -148,7 +167,7 @@ public class UserController extends NGrinderBaseController {
 		if (user.getId().equals(updatedUser.getId())) {
 			return "redirect:/";
 		} else {
-			return "redirect:/user/list";
+			return "redirect:/user/";
 		}
 	}
 
@@ -181,9 +200,9 @@ public class UserController extends NGrinderBaseController {
 	 * @return success json if true.
 	 */
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping("/checkUserId")
+	@RequestMapping("/{userId}/checkUserId")
 	@ResponseBody
-	public String checkUserId(ModelMap model, @RequestParam String userId) {
+	public String checkUserId(ModelMap model, @PathVariable String userId) {
 		User user = userService.getUserById(userId);
 		return (user == null) ? returnSuccess() : returnError();
 	}
