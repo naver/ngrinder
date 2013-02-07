@@ -132,7 +132,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		assertThat(preId, not(cloneTest.getId()));
 
 		// test leave comment
-		controller.leaveComment(getTestUser(), "TestComment", "", cloneTest.getId());
+		controller.leaveComment(getTestUser(), cloneTest.getId(), "TestComment", "");
 		model.clear();
 		controller.getPerfTestDetail(getTestUser(), cloneTest.getId(), model);
 		PerfTest testInDB = (PerfTest) model.get(PARAM_TEST);
