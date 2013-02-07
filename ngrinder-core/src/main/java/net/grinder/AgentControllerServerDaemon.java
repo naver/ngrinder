@@ -118,6 +118,7 @@ public class AgentControllerServerDaemon {
 				startSync();
 			}
 		});
+		thread.setName("Agent controller server thread");
 		thread.setDaemon(true);
 		thread.start();
 		synchronized (m_eventSyncCondition) {

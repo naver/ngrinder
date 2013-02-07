@@ -100,6 +100,7 @@ public class DynamicCacheConfig {
 			CacheManager mgr = CacheManager.create(cacheManagerConfig);
 			setCacheManager(mgr);
 			cacheManager.setCacheManager(mgr);
+			
 		} catch (IOException e) {
 			CoreLogger.LOGGER.error("Error while setting up cache", e);
 		} finally {

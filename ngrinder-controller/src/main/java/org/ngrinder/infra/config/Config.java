@@ -21,16 +21,17 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import net.grinder.util.NetworkUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.helpers.FileWatchdog;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.model.Home;
+import org.ngrinder.common.util.FileWatchdog;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.service.IConfig;
@@ -110,6 +111,13 @@ public class Config implements IConfig, NGrinderConstants {
 	protected void resolveLocalIp() {
 		currentIP = getSystemProperties().getProperty("ngrinder.controller.ipaddress",
 						NetworkUtil.getLocalHostAddress());
+	}
+
+	@PreDestroy
+	public void destroy() {
+		announcementWatchDog.interrupt();
+		systemConfWatchDog.interrupt();
+		policyJsWatchDog.interrupt();
 	}
 
 	/**
@@ -335,6 +343,7 @@ public class Config implements IConfig, NGrinderConstants {
 				loadAnnouncement();
 			}
 		};
+		announcementWatchDog.setName("WatchDog - annoucenment.conf");
 		announcementWatchDog.setDelay(2000);
 		announcementWatchDog.start();
 		this.systemConfWatchDog = new FileWatchdog(getHome().getSubFile("system.conf").getAbsolutePath()) {
@@ -344,8 +353,10 @@ public class Config implements IConfig, NGrinderConstants {
 				loadSystemProperties();
 			}
 		};
+		systemConfWatchDog.setName("WatchDoc - system.conf");
 		systemConfWatchDog.setDelay(2000);
 		systemConfWatchDog.start();
+
 		String absolutePath = getHome().getSubFile("process_and_thread_policy.js").getAbsolutePath();
 		this.policyJsWatchDog = new FileWatchdog(absolutePath) {
 			@Override
@@ -354,6 +365,7 @@ public class Config implements IConfig, NGrinderConstants {
 				policyScript = "";
 			}
 		};
+		policyJsWatchDog.setName("WatchDoc - process_and_thread_policy.js");
 		policyJsWatchDog.setDelay(2000);
 		policyJsWatchDog.start();
 	}

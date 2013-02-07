@@ -123,12 +123,28 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	@PreDestroy
 	public void destroy() {
 		if (interp != null) {
+			clearVar(interp);
 			interp.cleanup();
 		}
 	}
 
 	private boolean isPermGenMemoryEnough(MemoryUsage usage) {
 		return (usage.getMax() - usage.getUsed()) > 50000000;
+	}
+
+	protected void clearVar(PythonInterpreter interp) {
+		interp.set("applicationContext", null);
+		interp.set("agentManager", null);
+		interp.set("agentManagerService", null);
+		interp.set("regionService", null);
+		interp.set("consoleManager", null);
+		interp.set("userService", null);
+		interp.set("perfTestService", null);
+		interp.set("tagService", null);
+		interp.set("fileEntryService", null);
+		interp.set("config", null);
+		interp.set("pluginManager", null);
+		interp.set("cacheManager", null);
 	}
 
 	protected void intVars(PythonInterpreter interp) {
