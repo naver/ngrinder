@@ -59,7 +59,7 @@ import javax.script.ScriptException;
 import net.grinder.SingleConsole;
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
-import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 import net.grinder.console.model.ConsoleProperties;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.Directory;
@@ -346,6 +346,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            stop reason
 	 * @return perftest with updated data
 	 */
+	@Transactional
 	public PerfTest markAbromalTermination(PerfTest perfTest, StopReason reason) {
 		return markAbromalTermination(perfTest, reason.name());
 	}
@@ -359,6 +360,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            stop reason
 	 * @return perftest with updated data
 	 */
+	@Transactional
 	public PerfTest markAbromalTermination(PerfTest perfTest, String reason) {
 		// Leave last status as test error cause
 		perfTest.setTestErrorCause(perfTest.getStatus());
@@ -995,17 +997,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	@Transactional
 	public Map<String, Object> saveStatistics(SingleConsole singleConsole, Long perfTestId) {
 		Map<String, Object> statictisData = singleConsole.getStatictisData();
-		List<AgentIdentity> allAttachedAgents = singleConsole.getAllAttachedAgents();
 		Map<String, SystemDataModel> agentStatusMap = Maps.newHashMap();
-		Set<AgentIdentity> allControllerAgents = agentManager.getAllAttachedAgents();
-		// It can be very slow here...
-		for (AgentIdentity eachAgent : allAttachedAgents) {
-			for (AgentIdentity eachControllerAgent : allControllerAgents) {
-				if (eachControllerAgent.getName().equals(eachAgent.getName())) {
-					agentStatusMap.put(eachControllerAgent.getName(),
-									agentManager.getSystemDataModel(eachControllerAgent));
-				}
-			}
+		final int singleConsolePort = singleConsole.getConsolePort();
+		for (AgentStatus each : agentManager.getAgentStatusSetConnectingToPort(singleConsolePort)) {
+			agentStatusMap.put(each.getAgentName(), each.getSystemDataModel());
 		}
 		PerfTest perfTest = getPerfTest(perfTestId);
 		perfTest.setRunningSample(gson.toJson(statictisData));
@@ -1337,6 +1332,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public void cleanUpRuntimeOnlyData(PerfTest perfTest) {
 		perfTest.setRunningSample(null);
 		perfTest.setAgentStatus(null);
+		perfTest.setMonitorStatus(null);
 		savePerfTest(perfTest);
 	}
 

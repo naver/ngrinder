@@ -13,70 +13,64 @@
  */
 package org.ngrinder.monitor.controller.model;
 
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.Index;
-import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.model.BaseEntity;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
 /**
  * 
  * System data model class, to store the system monitor data.
- *
+ * 
  * @author Mavlarn
+ * @author JunHo Yoon
  * @since 2.0
  */
-@Entity
-@Table(name = "system_monitor")
 public class SystemDataModel extends BaseEntity<SystemDataModel> {
 
 	private static final long serialVersionUID = 790334226137464982L;
 
-	@Column(name = "monitor_key")
-	@Index(name = "monitor_key_index")
 	private String key;
-	
-	@Index(name = "ip_index")
+
 	private String ip;
-	
+
 	private int port;
-	
+
 	private String system;
-	
-	@Column(name = "collect_time")
-	@Index(name = "collect_time_index")
+
 	private long collectTime;
-	
-	@Column(name = "free_memory")
+
 	private long freeMemory;
-	
-	@Column(name = "total_memory")
+
 	private long totalMemory;
-	
-	@Column(name = "cpu_used_percentage")
+
 	private float cpuUsedPercentage;
-	
+
+	private long recievedPerSec;
+
+	private long sentPerSec;
+
+	private String version;
+
 	/**
 	 * Default constructor to create empty SystemDataModel.
 	 */
 	public SystemDataModel() {
 	}
-	
+
 	/**
 	 * Constructor to create SystemDataModel with SystemInfo.
-	 * @param systemInfo is the data collected by monitor
+	 * 
+	 * @param systemInfo
+	 *            is the data collected by monitor
 	 */
-	public SystemDataModel(SystemInfo systemInfo) {
-		system = String.valueOf(systemInfo.getSystem());
-		collectTime = DateUtil.getCollectTimeInLong(new Date(systemInfo.getCollectTime()));
-		freeMemory = systemInfo.getFreeMemory();
-		totalMemory = systemInfo.getTotalMemory();
-		cpuUsedPercentage = systemInfo.getCPUUsedPercentage();
+	public SystemDataModel(SystemInfo systemInfo, String verion) {
+		this.system = String.valueOf(systemInfo.getSystem());
+		this.collectTime = systemInfo.getCollectTime();
+		this.freeMemory = systemInfo.getFreeMemory();
+		this.totalMemory = systemInfo.getTotalMemory();
+		this.cpuUsedPercentage = systemInfo.getCPUUsedPercentage();
+		this.recievedPerSec = systemInfo.getBandWidth().getRecivedPerSec();
+		this.sentPerSec = systemInfo.getBandWidth().getSentPerSec();
+		this.version = verion;
 	}
 
 	public String getKey() {
@@ -142,4 +136,29 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	public void setCpuUsedPercentage(float cpuUsedPercentage) {
 		this.cpuUsedPercentage = cpuUsedPercentage;
 	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public long getRecievedPerSec() {
+		return recievedPerSec;
+	}
+
+	public void setRecievedPerSec(long recievedPerSec) {
+		this.recievedPerSec = recievedPerSec;
+	}
+
+	public long getSentPerSec() {
+		return sentPerSec;
+	}
+
+	public void setSentPerSec(long sentPerSec) {
+		this.sentPerSec = sentPerSec;
+	}
+
 }

@@ -38,6 +38,8 @@ import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 
 import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.python.google.common.base.Predicate;
+import org.python.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -251,7 +253,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		}
 	}
 
-	private final class AgentStatus implements Purgable {
+	public final class AgentStatus implements Purgable {
 		private volatile AgentReference m_agentReference;
 
 		/**
@@ -275,6 +277,9 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		 * @return {@link AgentControllerState} member
 		 */
 		public AgentControllerState getAgentControllerState() {
+			if (m_agentReference == null) {
+				return AgentControllerState.UNKNOWN;
+			}
 			AgentControllerProcessReportMessage agentProcessReport = m_agentReference.m_agentProcessReportMessage;
 			return agentProcessReport == null ? AgentControllerState.UNKNOWN : agentProcessReport.getState();
 		}
@@ -291,6 +296,15 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 
 		public int getConnectingPort() {
 			return m_agentReference == null ? 0 : m_agentReference.m_agentProcessReportMessage.getConnectingPort();
+		}
+
+		public AgentIdentity getAgentIdentity() {
+			return m_agentReference == null ? null : m_agentReference.m_agentProcessReportMessage.getAgentIdentity();
+		}
+
+		public String getAgentName() {
+			return m_agentReference == null ? "" : m_agentReference.m_agentProcessReportMessage.getAgentIdentity()
+							.getName();
 		}
 	}
 
@@ -423,6 +437,24 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	@Override
 	public int getAgentConnectingPort(AgentIdentity agentIdentity) {
 		return getAgentStatus(agentIdentity).getConnectingPort();
+	}
+
+	/**
+	 * Get agent identities and status map matching the given predicate.
+	 * 
+	 * @param predicate
+	 *            predicate
+	 * @return {@link AgentIdentity} {@link AgentStatus} map
+	 * @since 3.1.2
+	 */
+	public Set<AgentStatus> getAgentStatusSet(Predicate<AgentStatus> predicate) {
+		Set<AgentStatus> statusSet = Sets.newLinkedHashSet();
+		for (Entry<AgentIdentity, AgentStatus> each : m_agentMap.entrySet()) {
+			if (predicate.apply(each.getValue())) {
+				statusSet.add(each.getValue());
+			}
+		}
+		return statusSet;
 	}
 
 }

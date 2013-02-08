@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Timer;
 
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;

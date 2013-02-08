@@ -13,11 +13,15 @@
  */
 package org.ngrinder.monitor.agent.collector;
 
-
+import org.hyperic.sigar.Cpu;
+import org.hyperic.sigar.Mem;
+import org.hyperic.sigar.NetInterfaceStat;
 import org.hyperic.sigar.OperatingSystem;
 import org.hyperic.sigar.Sigar;
+import org.hyperic.sigar.SigarException;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.mxbean.SystemMonitoringData;
+import org.ngrinder.monitor.share.domain.BandWidth;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,57 +29,80 @@ import org.slf4j.LoggerFactory;
 /**
  * 
  * System data collector class.
- *
+ * 
  * @author Mavlarn
  * @since 2.0
  */
 public class AgentSystemDataCollector extends AgentDataCollector {
-	private static final Logger LOG = LoggerFactory.getLogger(AgentSystemDataCollector.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AgentSystemDataCollector.class);
 
 	private Sigar sigar = null;
 
+	private SystemInfo prev = null;
+
+	private String[] netInterfaces = new String[] {};
+
 	@Override
 	public synchronized void refresh() {
+		initSigar();
+
+	}
+
+	private void initSigar() {
 		if (sigar == null) {
 			sigar = new Sigar();
+		}
+		try {
+			netInterfaces = sigar.getNetInterfaceList();
+			prev = new SystemInfo();
+			prev.setBandWidth(getNetworkUsage());
+		} catch (SigarException e) {
+			LOGGER.error("Network usage data retrieval failed.", e);
 		}
 	}
 
-
 	@Override
 	public void run() {
-		if (sigar == null) {
-			sigar = new Sigar();
-		}
+		initSigar();
 		SystemMonitoringData systemMonitoringData = (SystemMonitoringData) getMXBean(MonitorConstants.SYSTEM);
-		SystemInfo systemInfo = execute();
-		//systemMonitoringData.addNotification(systemInfo);
-		systemMonitoringData.setSystemInfo(systemInfo);
+		systemMonitoringData.setSystemInfo(execute());
 	}
 
 	/**
 	 * Execute the collector to get the system info model.
+	 * 
 	 * @return SystemInfo in current time
 	 */
 	public synchronized SystemInfo execute() {
 		SystemInfo systemInfo = new SystemInfo();
-		try {
-			systemInfo.setCPUUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
-			systemInfo.setTotalCpuValue(sigar.getCpu().getTotal());
-			systemInfo.setIdleCpuValue(sigar.getCpu().getIdle());
-			systemInfo.setTotalMemory(sigar.getMem().getTotal() / 1024L);
-			systemInfo.setFreeMemory(sigar.getMem().getFree() / 1024L);
-			if (OperatingSystem.IS_WIN32) {
-				systemInfo.setSystem(SystemInfo.System.WINDOW);
-			} else {
-				systemInfo.setLoadAvgs(sigar.getLoadAverage());
-				systemInfo.setSystem(SystemInfo.System.LINUX);
-			}
-		} catch (Throwable e) {
-			LOG.error("Error while getting system perf data:{}", e.getMessage());
-			LOG.debug("Error trace is ", e);
-		}
 		systemInfo.setCollectTime(System.currentTimeMillis());
+		try {
+			BandWidth bandWidth = getNetworkUsage().adjust(prev.getBandWidth());
+			systemInfo.setBandWidth(bandWidth);
+			systemInfo.setCPUUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
+			Cpu cpu = sigar.getCpu();
+			systemInfo.setTotalCpuValue(cpu.getTotal());
+			systemInfo.setIdleCpuValue(cpu.getIdle());
+			Mem mem = sigar.getMem();
+			systemInfo.setTotalMemory(mem.getTotal() / 1024L);
+			systemInfo.setFreeMemory(mem.getFree() / 1024L);
+			systemInfo.setSystem(OperatingSystem.IS_WIN32 ? SystemInfo.System.WINDOW : SystemInfo.System.LINUX);
+		} catch (Throwable e) {
+			LOGGER.error("Error while getting system perf data:{}", e.getMessage());
+			LOGGER.debug("Error trace is ", e);
+		}
+		prev = systemInfo;
 		return systemInfo;
 	}
+
+	public BandWidth getNetworkUsage() throws SigarException {
+		BandWidth bandWidth = new BandWidth(System.currentTimeMillis());
+		for (String each : netInterfaces) {
+			NetInterfaceStat netInterfaceStat = sigar.getNetInterfaceStat(each);
+			bandWidth.setRecieved(bandWidth.getRecieved() + netInterfaceStat.getRxBytes());
+			bandWidth.setSent(bandWidth.getSent() + netInterfaceStat.getTxBytes());
+		}
+		return bandWidth;
+	}
+
 }

@@ -23,7 +23,7 @@ import org.ngrinder.common.util.DateUtil;
 
 /**
  * 
- * System info object to save date collected bu monitor.
+ * System info object to save date collected by monitor.
  * 
  * @author Mavlarn
  * @since 2.0
@@ -43,11 +43,11 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 
 	private System system;
 
+	private BandWidth bandWidth;
+
 	private long totalCpuValue;
 
 	private long idleCpuValue;
-
-	private double[] loadAvgs = new double[3];
 
 	private long freeMemory;
 
@@ -69,8 +69,6 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		this.freeMemory = getLong(cd, "freeMemory");
 		this.totalMemory = getLong(cd, "totalMemory");
 		this.cpuUsedPercentage = getFloat(cd, "CPUUsedPercentage");
-		this.setLoadAvgs((double[]) cd.get("loadAvgs"));
-
 	}
 
 	public String getIp() {
@@ -107,14 +105,6 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 
 	public long getTotalCpuValue() {
 		return totalCpuValue;
-	}
-
-	public void setLoadAvgs(double[] loadAvgs) {
-		this.loadAvgs = loadAvgs;
-	}
-
-	public double[] getLoadAvgs() {
-		return loadAvgs;
 	}
 
 	public long getFreeMemory() {
@@ -157,6 +147,14 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		sb.append(DateUtil.getCollectTimeInLong(new Date(getCollectTime()))).append(",").append(freeMemory).append(",");
 		sb.append(totalMemory).append(",").append(cpuUsedPercentage);
 		return sb.toString();
-
 	}
+
+	public BandWidth getBandWidth() {
+		return bandWidth;
+	}
+
+	public void setBandWidth(BandWidth bandWidth) {
+		this.bandWidth = bandWidth;
+	}
+
 }

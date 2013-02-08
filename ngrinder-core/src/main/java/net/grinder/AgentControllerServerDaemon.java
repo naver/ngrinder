@@ -22,6 +22,7 @@ import net.grinder.console.common.Resources;
 import net.grinder.console.common.ResourcesImplementation;
 import net.grinder.console.communication.AgentProcessControl;
 import net.grinder.console.communication.AgentProcessControlImplementation;
+import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 import net.grinder.console.communication.ConsoleCommunication;
 import net.grinder.console.communication.LogArrivedListener;
 import net.grinder.console.model.ConsoleProperties;
@@ -35,6 +36,7 @@ import net.grinder.util.thread.Condition;
 
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.python.google.common.base.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,6 +177,18 @@ public class AgentControllerServerDaemon {
 	public int getAgentConnectingPort(AgentIdentity agentIdentity) {
 		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgentConnectingPort(
 						agentIdentity);
+	}
+
+	/**
+	 * Get agent status set matching the given predicate.
+	 * 
+	 * @param predicate
+	 *            predicate
+	 * @return {@link AgentStatus} set
+	 * @since 3.1.2
+	 */
+	public Set<AgentStatus> getAgentStatusSet(Predicate<AgentStatus> predicate) {
+		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgentStatusSet(predicate);
 	}
 
 	/**

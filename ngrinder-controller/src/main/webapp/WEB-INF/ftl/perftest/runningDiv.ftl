@@ -64,14 +64,14 @@
 					<label class="control-label">Monitor Status</label>
 				</div>
 				<div class="control-group">
-					<div id="monitor_status">
+					<div id="monitor_status" style="font-size:12px;margin-left:-20px">
 					</div>
 				</div>
 				<div class="control-group">
 					<label class="control-label">Agent Status</label>
 				</div>
 				<div class="control-group">
-					<div id="agent_status">
+					<div id="agent_status" style="font-size:12px;margin-left:-20px">  
 					</div>
 				</div>
 
@@ -182,9 +182,9 @@
 					for ( var i = 0; i < curAgentStat.length; i++) {
 						var eachAgent = curAgentStat[i];
 						agentStatusString = agentStatusString
-								+ "<li>" + eachAgent.agent + " CPU - "
-								+ eachAgent.cpu + "%   MEM - "
-								+ eachAgent.mem + "%</li>";
+								+ "<li><b>" + eachAgent.agent + "</b> CPU-"
+								+ eachAgent.cpu + "%   MEM-" 
+								+ eachAgent.mem + "%   / RX-"+ eachAgent.recievedPerSec + " TX-" +eachAgent.sentPerSec + "</li>";
 					}
 					agentStatusString += "</ul>"; 
 					$("#agent_status").html(agentStatusString);
@@ -192,8 +192,8 @@
 					for ( var i = 0; i < curMonitorStat.length; i++) {
 						var eachMontor = curMonitorStat[i];
 						monitorStatusString = monitorStatusString
-								+ "<li>" + eachMontor.agent + " CPU - "
-								+ eachMontor.cpu + "%   MEM - "
+								+ "<li><b>" + eachMontor.agent + "</b> CPU-"
+								+ eachMontor.cpu + "% MEM-"
 								+ eachMontor.mem + "%</li>";
 					}
 					monitorStatusString += "</ul>"; 

@@ -28,6 +28,8 @@ import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
+import net.grinder.console.communication.AgentProcessControlImplementation;
+import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 import net.grinder.console.communication.LogArrivedListener;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
@@ -44,6 +46,7 @@ import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.python.google.common.base.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,6 +119,35 @@ public class AgentManager implements NGrinderConstants {
 	 */
 	public int getAgentConnectingPort(AgentIdentity agentIdentity) {
 		return agentControllerServerDaemon.getAgentConnectingPort(agentIdentity);
+	}
+
+	/**
+	 * Get agent identities and status map matching the given predicate.
+	 * 
+	 * @param predicate
+	 *            predicate
+	 * @return {@link AgentIdentity} {@link AgentStatus} map
+	 * @since 3.1.2
+	 */
+	public Set<AgentStatus> getAllAgentStatusSet() {
+		return agentControllerServerDaemon.getAgentStatusSet(new Predicate<AgentStatus>() {
+			@Override
+			public boolean apply(AgentStatus arg0) {
+				return true;
+			}
+		});
+	}
+
+	/**
+	 * Get agent identities and status map matching the given predicate.
+	 * 
+	 * @param predicate
+	 *            predicate
+	 * @return {@link AgentIdentity} {@link AgentStatus} map
+	 * @since 3.1.2
+	 */
+	public Set<AgentStatus> getAgentStatusSet(Predicate<AgentStatus> predicate) {
+		return agentControllerServerDaemon.getAgentStatusSet(predicate);
 	}
 
 	/**
@@ -326,7 +358,6 @@ public class AgentManager implements NGrinderConstants {
 		Set<AgentIdentity> userAgent = new HashSet<AgentIdentity>();
 		for (AgentIdentity each : agents) {
 			String region = ((AgentControllerIdentityImplementation) each).getRegion();
-
 			if (StringUtils.endsWith(region, "owned_" + userId) || !StringUtils.contains(region, "owned_")) {
 				userAgent.add(each);
 			}
@@ -439,11 +470,10 @@ public class AgentManager implements NGrinderConstants {
 	 *            console port.
 	 */
 	public void stopAgent(int consolePort) {
-		for (AgentIdentity each : agentControllerServerDaemon.getAllAvailableAgents()) {
-			int agentConnectingPort = agentControllerServerDaemon.getAgentConnectingPort(each);
-			if (agentConnectingPort == consolePort
-							&& agentControllerServerDaemon.getAgentState(each) == AgentControllerState.BUSY) {
-				agentControllerServerDaemon.stopAgent(each);
+		Set<AgentStatus> agentStatusSetConnectingToPort = getAgentStatusSetConnectingToPort(consolePort);
+		for (AgentStatus each : agentStatusSetConnectingToPort) {
+			if (each.getAgentControllerState() == AgentControllerState.BUSY) {
+				agentControllerServerDaemon.stopAgent(each.getAgentIdentity());
 			}
 		}
 	}
@@ -481,5 +511,14 @@ public class AgentManager implements NGrinderConstants {
 	 */
 	public void updateAgent(String fileName, String version, String downloadUrl) {
 		sendAgentUpdateMessage(fileName, version, downloadUrl);
+	}
+
+	public Set<AgentStatus> getAgentStatusSetConnectingToPort(final int singleConsolePort) {
+		return getAgentStatusSet(new Predicate<AgentProcessControlImplementation.AgentStatus>() {
+			@Override
+			public boolean apply(AgentStatus status) {
+				return status.getConnectingPort() == singleConsolePort;
+			}
+		});
 	}
 }

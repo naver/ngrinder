@@ -26,17 +26,25 @@ import java.util.Map;
 import java.util.Set;
 
 import net.grinder.common.processidentity.AgentIdentity;
+import net.grinder.console.communication.AgentProcessControlImplementation;
+import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentManagerRepository;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.model.PerfTest;
+import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
+import org.ngrinder.perftest.service.PerfTestService;
+import org.python.google.common.base.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +73,9 @@ public class AgentManagerService {
 
 	@Autowired
 	private Config config;
+
+	@Autowired
+	private PerfTestService perfTestService;
 
 	/**
 	 * Run a scheduled task to check the agent status.
@@ -136,6 +147,48 @@ public class AgentManagerService {
 		// step3. update into DB
 		getAgentRepository().save(changeAgents);
 		getAgentRepository().delete(agentsToBeDeleted);
+
+	}
+
+	/**
+	 * Run a scheduled task to check the agent status.
+	 * 
+	 * This method has some
+	 * 
+	 * @since 3.1
+	 */
+	@Scheduled(fixedDelay = 2000)
+	@Transactional
+	public void checkTotalNetworkOverflow() {
+		int totalRecieved = 0;
+		int totalSent = 0;
+		Set<AgentStatus> workingAgent = agentManager
+						.getAgentStatusSet(new Predicate<AgentProcessControlImplementation.AgentStatus>() {
+							@Override
+							public boolean apply(AgentStatus agentStatus) {
+								return agentStatus.getConnectingPort() != 0;
+							}
+						});
+		for (AgentStatus each : workingAgent) {
+			totalRecieved += each.getSystemDataModel().getRecievedPerSec();
+			totalSent += each.getSystemDataModel().getSentPerSec();
+		}
+		int limit = config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_TOTAL_BANDWIDTH_LIMIT,
+						NGrinderConstants.NGRINDER_PROP_TOTAL_BANDWIDTH_LIMIT_DEFAULT_VALUE);
+		if (totalRecieved > limit || totalSent > limit) {
+			LOGGER.debug("LIMIT : {}, RX : {}, TX : {}", new Object[] { limit, totalRecieved, totalSent });
+			for (PerfTest perfTest : perfTestService.getTestingPerfTest()) {
+				if (perfTest.getStatus() != Status.ABNORMAL_TESTING) {
+					perfTestService.markAbromalTermination(
+									perfTest,
+									String.format("TOO MUCH TRAFFIC on this region. STOP IN FORCE.\n"
+													+ "- LIMIT/s: %s\n" + "- RX/s: %s / TX/s: %s",
+													FileUtils.byteCountToDisplaySize(limit),
+													FileUtils.byteCountToDisplaySize(totalRecieved),
+													FileUtils.byteCountToDisplaySize(totalSent)));
+				}
+			}
+		}
 	}
 
 	/**
@@ -215,7 +268,8 @@ public class AgentManagerService {
 	/**
 	 * Create agent key.
 	 * 
-	 * @param agentInfo agent information
+	 * @param agentInfo
+	 *            agent information
 	 * 
 	 * @return agent key
 	 */
@@ -226,7 +280,8 @@ public class AgentManagerService {
 	/**
 	 * Create agent key.
 	 * 
-	 * @param agentIdentity agent identity
+	 * @param agentIdentity
+	 *            agent identity
 	 * 
 	 * @return agent key
 	 */

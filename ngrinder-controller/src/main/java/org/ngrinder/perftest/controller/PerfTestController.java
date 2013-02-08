@@ -22,6 +22,7 @@ import static org.ngrinder.common.util.Preconditions.checkValidURL;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -32,11 +33,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import net.grinder.util.LogCompressUtil;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -48,6 +51,7 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.FileDownloadUtil;
+import org.ngrinder.common.util.UnitUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.PerfTest;
@@ -61,6 +65,7 @@ import org.ngrinder.perftest.service.TagService;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
+import org.python.google.common.collect.Lists;
 import org.python.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -627,7 +632,9 @@ public class PerfTestController extends NGrinderBaseController {
 		try {
 			fileInputStream = new FileInputStream(targetFile);
 			// Limit log view to 1MB
-			LogCompressUtil.unCompress(fileInputStream, response.getOutputStream(), 1 * 1024 * 1204);
+			ServletOutputStream outputStream = response.getOutputStream();
+			outputStream.println("Only 1MB part of logs shows because of the browser performance\n");
+			LogCompressUtil.unCompress(fileInputStream, outputStream, 1 * 1024 * 1204);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -663,21 +670,35 @@ public class PerfTestController extends NGrinderBaseController {
 		if (statMap == null) {
 			return StringUtils.EMPTY;
 		}
-		List<String> perfStringList = new ArrayList<String>();
+		List<String> perfStringList = Lists.newArrayList();
 		for (Entry<String, HashMap> each : statMap.entrySet()) {
 			HashMap value = each.getValue();
 			if (value == null) {
 				continue;
 			}
-			double totalMemory = Double.parseDouble(value.get("totalMemory").toString());
-			double freeMemory = Double.parseDouble(value.get("freeMemory").toString());
-			Float cpuUsedPercentage = Float.parseFloat(value.get("cpuUsedPercentage").toString());
-			double usage = 0;
+			double totalMemory = MapUtils.getLong(value, "totalMemory", 0L);
+			double freeMemory = MapUtils.getLong(value, "freeMemory", 0L);
+			Float cpuUsedPercentage = MapUtils.getFloat(value, "cpuUsedPercentage", 0f);
+			long sentPerSec = MapUtils.getLong(value, "sentPerSec", 0L);
+			long recievedPerSec = MapUtils.getLong(value, "recievedPerSec", 0L);
+
+			double memUsage = 0;
 			if (totalMemory != 0) {
-				usage = (((double) (totalMemory - freeMemory)) / totalMemory) * 100;
+				memUsage = (((double) (totalMemory - freeMemory)) / totalMemory) * 100;
 			}
-			perfStringList.add(String.format(" {'agent' : '%s', 'cpu' : %3.02f, 'mem' : %3.02f }",
-							StringUtils.abbreviate(each.getKey(), 25), cpuUsedPercentage, usage));
+			DecimalFormat format = new DecimalFormat("#00.0");
+			if (cpuUsedPercentage > 99.9f) {
+				cpuUsedPercentage = 99.9f;
+			}
+			if (memUsage > 99.9f) {
+				memUsage = 99.9f;
+			}
+			perfStringList.add(String
+							.format(" {'agent' : '%s', 'cpu' : '%s', 'mem' : '%s', 'sentPerSec' : '%s', 'recievedPerSec' : '%s'}",
+											StringUtils.abbreviate(each.getKey(), 20),
+											format.format(cpuUsedPercentage), format.format(memUsage),
+											UnitUtil.byteCountToDisplaySize(sentPerSec),
+											UnitUtil.byteCountToDisplaySize(recievedPerSec)));
 		}
 		return StringUtils.join(perfStringList, ",");
 	}

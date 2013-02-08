@@ -19,7 +19,7 @@ import org.ngrinder.monitor.agent.mxbean.core.MXBean;
 /**
  * 
  * Abstract class for data collector.
- *
+ * 
  * @author Mavlarn
  * @since 2.0
  */

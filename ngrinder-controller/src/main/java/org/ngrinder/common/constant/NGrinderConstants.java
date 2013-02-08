@@ -81,7 +81,6 @@ public interface NGrinderConstants {
 	 */
 	public static final int PERFTEST_RUN_FREQUENCY_MILLISECONDS = 1000;
 
-	
 	/**
 	 * Performance test termination frequency in milliseconds.
 	 */
@@ -148,7 +147,7 @@ public interface NGrinderConstants {
 	public static final String PARAM_MAX_RUN_COUNT = "maxRunCount";
 	public static final String PARAM_MAX_RUN_HOUR = "maxRunHour";
 	public static final String PARAM_SAFE_FILE_DISTRIBUTION = "safeFileDistribution";
-	
+
 	public static final String PARAM_SECURITY_MODE = "securityMode";
 	public static final String PARAM_RESULT_SUB = "resultsub";
 	public static final String PARAM_RESULT_AGENT_PERF = "agentStat";
@@ -183,7 +182,7 @@ public interface NGrinderConstants {
 	// ngrinder setting.
 	public static final String NGRINDER_PROP_DIST_SAFE_THRESHHOLD_OLD = "ngrinder.dist.safe.threashhold";
 	public static final String NGRINDER_PROP_DIST_SAFE_THRESHHOLD = "ngrinder.dist.safe.threshold";
-	
+
 	public static final String NGRINDER_PROP_DIST_SAFE = "ngrinder.dist.safe";
 	public static final String NGRINDER_PROP_DIST_SAFE_REGION = "ngrinder.dist.safe.region";
 	public static final String NGRINDER_PROP_ETC_HOSTS = "ngrinder.etc.hosts";
@@ -194,6 +193,8 @@ public interface NGrinderConstants {
 	public static final int MAX_STACKTRACE_STRING_SIZE = 2048;
 	public static final String NGRINDER_PROP_DEFAULT_LANGUAGE = "ngrinder.langauge.default";
 	public static final String NGRINDER_PROP_FRONT_PAGE_RSS = "ngrinder.frontpage.rss";
+	public static final String NGRINDER_PROP_TOTAL_BANDWIDTH_LIMIT = "ngrinder.total.bandwidth.limit";
+	public static final int NGRINDER_PROP_TOTAL_BANDWIDTH_LIMIT_DEFAULT_VALUE = 1024 * 1024 * 300;
 	public static final String NGRINDER_NEWS_RSS_URL = "http://www.cubrid.org/wiki_ngrinder/rss";
 	public static final String NGRINDER_PROP_QNA_PAGE_RSS = "ngrinder.frontpage.qna.rss";
 	public static final String NGRINDER_QNA_RSS_URL_KEY = "home.qa.rss";
