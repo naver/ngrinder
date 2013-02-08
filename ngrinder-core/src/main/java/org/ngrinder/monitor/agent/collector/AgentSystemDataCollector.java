@@ -77,7 +77,10 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 		SystemInfo systemInfo = new SystemInfo();
 		systemInfo.setCollectTime(System.currentTimeMillis());
 		try {
-			BandWidth bandWidth = getNetworkUsage().adjust(prev.getBandWidth());
+			BandWidth networkUsage = getNetworkUsage();
+			LOGGER.debug("BandWidth: {} ", networkUsage);
+			BandWidth bandWidth = networkUsage.adjust(prev.getBandWidth());
+			LOGGER.debug("Adjusted Usage : {} ", bandWidth);
 			systemInfo.setBandWidth(bandWidth);
 			systemInfo.setCPUUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
 			Cpu cpu = sigar.getCpu();

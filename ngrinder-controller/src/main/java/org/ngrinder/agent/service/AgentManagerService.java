@@ -31,12 +31,12 @@ import net.grinder.console.communication.AgentProcessControlImplementation.Agent
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.util.UnitUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
@@ -80,7 +80,7 @@ public class AgentManagerService {
 	/**
 	 * Run a scheduled task to check the agent status.
 	 * 
-	 * This method has some
+	 * This method update the agent status in DB.
 	 * 
 	 * @since 3.1
 	 */
@@ -151,25 +151,24 @@ public class AgentManagerService {
 	}
 
 	/**
-	 * Run a scheduled task to check the agent status.
+	 * Run a scheduled task to check agent network usage. If it goes up the given limit, make all
+	 * tests in the region stop.
 	 * 
-	 * This method has some
-	 * 
-	 * @since 3.1
+	 * @since 3.1.2
 	 */
 	@Scheduled(fixedDelay = 2000)
 	@Transactional
 	public void checkTotalNetworkOverflow() {
 		int totalRecieved = 0;
 		int totalSent = 0;
-		Set<AgentStatus> workingAgent = agentManager
+		Set<AgentStatus> workingAgents = agentManager
 						.getAgentStatusSet(new Predicate<AgentProcessControlImplementation.AgentStatus>() {
 							@Override
 							public boolean apply(AgentStatus agentStatus) {
 								return agentStatus.getConnectingPort() != 0;
 							}
 						});
-		for (AgentStatus each : workingAgent) {
+		for (AgentStatus each : workingAgents) {
 			totalRecieved += each.getSystemDataModel().getRecievedPerSec();
 			totalSent += each.getSystemDataModel().getSentPerSec();
 		}
@@ -183,9 +182,9 @@ public class AgentManagerService {
 									perfTest,
 									String.format("TOO MUCH TRAFFIC on this region. STOP IN FORCE.\n"
 													+ "- LIMIT/s: %s\n" + "- RX/s: %s / TX/s: %s",
-													FileUtils.byteCountToDisplaySize(limit),
-													FileUtils.byteCountToDisplaySize(totalRecieved),
-													FileUtils.byteCountToDisplaySize(totalSent)));
+													UnitUtil.byteCountToDisplaySize(limit),
+													UnitUtil.byteCountToDisplaySize(totalRecieved),
+													UnitUtil.byteCountToDisplaySize(totalSent)));
 				}
 			}
 		}

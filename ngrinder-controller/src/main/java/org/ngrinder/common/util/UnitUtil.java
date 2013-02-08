@@ -13,6 +13,8 @@
  */
 package org.ngrinder.common.util;
 
+import java.text.DecimalFormat;
+
 /**
  * Unit Conversion Utility.
  * 
@@ -29,20 +31,21 @@ public abstract class UnitUtil {
 	/**
 	 * The number of bytes in a megabyte.
 	 */
-	public static final long ONE_MB = ONE_KB * ONE_KB;/**
+	public static final long ONE_MB = ONE_KB * ONE_KB;
+	/**
 	 * The number of bytes in a gigabyte.
 	 */
 	public static final long ONE_GB = ONE_KB * ONE_MB;
 
 	public static String byteCountToDisplaySize(long size) {
 		String displaySize;
-
+		DecimalFormat format = new DecimalFormat("###0.0");
 		if (size / ONE_GB > 0) {
-			displaySize = String.valueOf(size / ONE_GB) + "GB";
+			displaySize = format.format((double) size / ONE_GB) + "GB";
 		} else if (size / ONE_MB > 0) {
-			displaySize = String.valueOf(size / ONE_MB) + "MB";
+			displaySize = format.format((double) size / ONE_MB) + "MB";
 		} else if (size / ONE_KB > 0) {
-			displaySize = String.valueOf(size / ONE_KB) + "KB";
+			displaySize = format.format((double) size / ONE_KB) + "KB";
 		} else {
 			displaySize = String.valueOf(size) + "B";
 		}
