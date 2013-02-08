@@ -80,7 +80,7 @@
 		<intercept-url pattern="/user/**" access="A,S,U" />
 		<custom-filter ref="pluggablePreAuthFilter" position="PRE_AUTH_FILTER"/>
 		<custom-filter ref="customFilter" position="FORM_LOGIN_FILTER" />
-
+		<http-basic />
 		<!-- logout to home, and then it will redirect to login. otherwise, there will be some ajax problem. -->
 		<logout logout-success-url="/" logout-url="/logout" delete-cookies="JSESSIONID,switchUser"  invalidate-session="true" />
 
