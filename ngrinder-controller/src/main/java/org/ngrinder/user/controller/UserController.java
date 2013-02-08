@@ -187,7 +187,7 @@ public class UserController extends NGrinderBaseController {
 		ArrayList<String> aListNumbers = new ArrayList<String>(Arrays.asList(ids));
 		userService.deleteUsers(aListNumbers);
 		model.clear();
-		return "redirect:/user/list";
+		return "redirect:/user/";
 	}
 
 	/**
@@ -277,7 +277,7 @@ public class UserController extends NGrinderBaseController {
 		response.addCookie(cookie);
 
 		model.clear();
-		return "redirect:/perftest/list";
+		return "redirect:/perftest/";
 	}
 
 	/**

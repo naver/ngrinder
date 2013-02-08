@@ -87,6 +87,8 @@ public class AgentController implements Agent {
 
 	private AgentUpdateHandler agentUpdateHandler;
 
+	private String version;
+
 	/**
 	 * Constructor.
 	 * 
@@ -313,7 +315,7 @@ public class AgentController implements Agent {
 	public SystemDataModel getSystemDataModel() {
 		try {
 			SystemInfo systemInfo = agentSystemDataCollector.execute();
-			return new SystemDataModel(systemInfo);
+			return new SystemDataModel(systemInfo, this.version);
 		} catch (Exception e) {
 			LOGGER.error("Error while get system perf data model : {} ", e.getMessage());
 			LOGGER.debug("Error Trace is ", e);
@@ -327,6 +329,7 @@ public class AgentController implements Agent {
 
 	public void setAgentConfig(AgentConfig agentConfig) {
 		this.agentConfig = agentConfig;
+		this.version = agentConfig.getInternalProperty("ngrinder.version", "3.1.2");
 	}
 
 	private final class ConsoleCommunication {
