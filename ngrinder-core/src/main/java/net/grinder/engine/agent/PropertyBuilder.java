@@ -51,6 +51,36 @@ public class PropertyBuilder {
 	private final boolean securityEnabled;
 	private final String hostString;
 	private final boolean server;
+	private final boolean useXmxLimit;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param properties
+	 *            {@link GrinderProperties}
+	 * @param baseDirectory
+	 *            base directory which the script executes.
+	 * @param securityEnabled
+	 *            true if security enable mode
+	 * @param hostString
+	 *            hostString
+	 * @param hostName
+	 *            current host name
+	 * @param server
+	 *            server mode
+	 * @param useMaxMemory
+	 *            true if 1G limit should be enabled
+	 */
+	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
+					String hostString, String hostName, boolean server, boolean useXmxLimit) {
+		this.useXmxLimit = useXmxLimit;
+		this.properties = checkNotNull(properties);
+		this.baseDirectory = checkNotNull(baseDirectory);
+		this.securityEnabled = securityEnabled;
+		this.hostString = hostString;
+		this.hostName = checkNotEmpty(hostName);
+		this.server = server;
+	}
 
 	/**
 	 * Constructor.
@@ -70,12 +100,7 @@ public class PropertyBuilder {
 	 */
 	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
 					String hostString, String hostName, boolean server) {
-		this.properties = checkNotNull(properties);
-		this.baseDirectory = checkNotNull(baseDirectory);
-		this.securityEnabled = securityEnabled;
-		this.hostString = hostString;
-		this.hostName = checkNotEmpty(hostName);
-		this.server = server;
+		this(properties, baseDirectory, securityEnabled, hostString, hostName, server, true);
 	}
 
 	/**
@@ -144,7 +169,7 @@ public class PropertyBuilder {
 			if (desirableXmx < (DEFAULT_MIN_XMX_SIZE)) {
 				LOGGER.error("There is very few memory availble {}. It's not enough to run test", actualFree);
 				desirableXmx = DEFAULT_MIN_XMX_SIZE;
-			} else if (desirableXmx > DEFAULT_MAX_XMX_SIZE) {
+			} else if (this.useXmxLimit && desirableXmx > DEFAULT_MAX_XMX_SIZE) {
 				desirableXmx = DEFAULT_MAX_XMX_SIZE;
 			}
 		} catch (SigarException e) {
