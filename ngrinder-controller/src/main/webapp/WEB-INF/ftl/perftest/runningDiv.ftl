@@ -178,26 +178,8 @@
 					$("#process_data").text(curRunningProcesses);
 					$("#thread_data").text(curRunningThreads);
 					$("#running_count").text(curRunningCount);
-					var agentStatusString = "<ul>";
-					for ( var i = 0; i < curAgentStat.length; i++) {
-						var eachAgent = curAgentStat[i];
-						agentStatusString = agentStatusString
-								+ "<li><b>" + eachAgent.agent + "</b> CPU-"
-								+ eachAgent.cpu + "%   MEM-" 
-								+ eachAgent.mem + "%   / RX-"+ eachAgent.recievedPerSec + " TX-" +eachAgent.sentPerSec + "</li>";
-					}
-					agentStatusString += "</ul>"; 
-					$("#agent_status").html(agentStatusString);
-					var monitorStatusString = "<ul>";
-					for ( var i = 0; i < curMonitorStat.length; i++) {
-						var eachMontor = curMonitorStat[i];
-						monitorStatusString = monitorStatusString
-								+ "<li><b>" + eachMontor.agent + "</b> CPU-"
-								+ eachMontor.cpu + "% MEM-"
-								+ eachMontor.mem + "%</li>";
-					}
-					monitorStatusString += "</ul>"; 
-					$("#monitor_status").html(monitorStatusString);
+					$("#agent_status").html(createMonitoringStatusString(curAgentStat));
+					$("#monitor_status").html(createMonitoringStatusString(curMonitorStat));
 					peakTps = curPeakTps;
 					test_tps_data.enQueue(curTps);
 				} else {
@@ -216,6 +198,22 @@
 				showChart('runningTps', test_tps_data.aElement, peakTps);
 			}
 		);
+	}
+	
+	function createMonitoringStatusString(status) {
+		var monitorStatusString = "<ul>";
+		for ( var i = 0; i < status.length; i++) {
+			var each = status[i];
+			monitorStatusString = monitorStatusString + "<li><div style='wdith:100%;' class='ellipsis'><b>" + each.agent + "</b> CPU-"
+				+ each.cpu + "% MEM-" 
+				+ each.mem + "% ";
+			if (each.recievedPerSec != "0B" || each.sentPerSec != "0B") { 
+				monitorStatusString = monitorStatusString + "/ RX-"+ each.recievedPerSec + " TX-" + each.sentPerSec + "</dv></li>"	
+				
+			};
+		}
+		monitorStatusString += "</ul>"; 
+		return monitorStatusString;
 	}
 	
 	function showRunTime(s) {

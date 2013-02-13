@@ -20,22 +20,20 @@ import org.ngrinder.monitor.agent.collector.AgentDataCollector;
 /**
  * 
  * Abstract MXBean class for data monitoring.
- *
+ * 
  * @author Mavlarn
  * @since 2.0
  */
 public abstract class MXBean implements Serializable {
 	private static final long serialVersionUID = 1L;
-	//protected MonitorInfo monitorInfo;
+
+	// protected MonitorInfo monitorInfo;
 
 	/**
 	 * get {@link AgentDataCollector} which is provided by its implementation.
+	 * 
 	 * @return AgentDataCollector of this MXBean
 	 */
 	public abstract AgentDataCollector gainAgentDataCollector();
-
-//	public void addNotification(Object obj) {
-//		fireNotification(obj);
-//	}
 
 }

@@ -100,7 +100,6 @@ public class AgentController implements Agent {
 	 *             If an error occurs.
 	 */
 	public AgentController(Condition eventSyncCondition, String currentIp) throws GrinderException {
-
 		m_eventSyncCondition = eventSyncCondition;
 		m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, LOGGER);
 		m_agentIdentity = new AgentControllerIdentityImplementation(NetworkUtil.getLocalHostName(), currentIp);

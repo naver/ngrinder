@@ -14,6 +14,7 @@
 package org.ngrinder.monitor.controller.model;
 
 import org.ngrinder.model.BaseEntity;
+import org.ngrinder.monitor.share.domain.BandWidth;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
 /**
@@ -62,14 +63,29 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	 * @param systemInfo
 	 *            is the data collected by monitor
 	 */
+	public SystemDataModel(SystemInfo systemInfo) {
+		this(systemInfo, null);
+	}
+
+	/**
+	 * Constructor to create SystemDataModel with SystemInfo.
+	 * 
+	 * @param systemInfo
+	 *            is the data collected by monitor
+	 * @param version
+	 *            version of model.
+	 */
 	public SystemDataModel(SystemInfo systemInfo, String verion) {
 		this.system = String.valueOf(systemInfo.getSystem());
 		this.collectTime = systemInfo.getCollectTime();
 		this.freeMemory = systemInfo.getFreeMemory();
 		this.totalMemory = systemInfo.getTotalMemory();
 		this.cpuUsedPercentage = systemInfo.getCPUUsedPercentage();
-		this.recievedPerSec = systemInfo.getBandWidth().getRecivedPerSec();
-		this.sentPerSec = systemInfo.getBandWidth().getSentPerSec();
+		BandWidth bandWidth = systemInfo.getBandWidth();
+		if (bandWidth != null) {
+			this.recievedPerSec = bandWidth.getRecivedPerSec();
+			this.sentPerSec = bandWidth.getSentPerSec();
+		}
 		this.version = verion;
 	}
 

@@ -32,7 +32,7 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 
 	private static final long serialVersionUID = -2995334644975166549L;
 
-	public static final String HEADER = "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage";
+	public static final String HEADER = "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage,recivedPerSec,sentPerSec";
 
 	/**
 	 * Enum for the system type, linux or windows.
@@ -62,13 +62,28 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		if (cd == null) {
 			return;
 		}
-		setCollectTime(getLong(cd, "collectTime"));
-		this.system = System.valueOf(getString(cd, "system"));
-		this.totalCpuValue = getLong(cd, "totalCpuValue");
-		this.idleCpuValue = getLong(cd, "idlecpu");
-		this.freeMemory = getLong(cd, "freeMemory");
-		this.totalMemory = getLong(cd, "totalMemory");
-		this.cpuUsedPercentage = getFloat(cd, "CPUUsedPercentage");
+		try {
+			long collectTime = getLong(cd, "collectTime");
+			setCollectTime(collectTime);
+			String string = getString(cd, "system");
+			this.system = System.valueOf(string);
+			this.totalCpuValue = getLong(cd, "totalCpuValue");
+			this.idleCpuValue = getLong(cd, "idlecpu");
+			this.freeMemory = getLong(cd, "freeMemory");
+			this.totalMemory = getLong(cd, "totalMemory");
+			this.cpuUsedPercentage = getFloat(cd, "CPUUsedPercentage");
+
+			if (containsKey(cd, "bandWidth")) {
+				CompositeData bandWidth = (CompositeData) getObject(cd, "bandWidth");
+				this.bandWidth = new BandWidth(collectTime);
+				long recivedPerSec = getLong(bandWidth, "recivedPerSec");
+				long sentPerSec = getLong(bandWidth, "sentPerSec");
+				this.bandWidth.setRecivedPerSec(recivedPerSec);
+				this.bandWidth.setSentPerSec(sentPerSec);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public String getIp() {
@@ -146,6 +161,9 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		sb.append(ip).append(",").append(system).append(",");
 		sb.append(DateUtil.getCollectTimeInLong(new Date(getCollectTime()))).append(",").append(freeMemory).append(",");
 		sb.append(totalMemory).append(",").append(cpuUsedPercentage);
+		if (bandWidth != null) {
+			sb.append(",").append(bandWidth.getRecivedPerSec()).append(",").append(bandWidth.getSentPerSec());
+		}
 		return sb.toString();
 	}
 

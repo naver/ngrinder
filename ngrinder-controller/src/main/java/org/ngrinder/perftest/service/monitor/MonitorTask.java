@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.TimerTask;
 
 import org.ngrinder.agent.model.AgentInfo;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,10 +99,13 @@ public class MonitorTask extends TimerTask {
 
 	@Override
 	public void run() {
-		Map<String, SystemInfo> systemInfoMap = Maps.newHashMap();
+		Map<String, SystemDataModel> systemInfoMap = Maps.newHashMap();
 		for (Entry<String, MonitorClientSerivce> target : monitorClientsMap.entrySet()) {
 			MonitorClientSerivce monitorClientSerivce = target.getValue();
-			systemInfoMap.put(target.getKey(), monitorClientSerivce.saveDataCache());
+			SystemInfo saveDataCache = monitorClientSerivce.saveDataCache();
+			if (saveDataCache != null) {
+				systemInfoMap.put(target.getKey(), new SystemDataModel(saveDataCache, "UNKNOWN"));
+			}
 		}
 		perfTestService.updateMonitorStat(perfTestId, systemInfoMap);
 	}

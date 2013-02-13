@@ -85,7 +85,6 @@ import org.ngrinder.model.Status;
 import org.ngrinder.model.Tag;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
-import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.ngrinder.perftest.model.PerfTestStatistics;
 import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.repository.PerfTestRepository;
@@ -1337,12 +1336,12 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	@Transactional
-	public void updateMonitorStat(Long perfTestId, Map<String, SystemInfo> systemInfos) {
+	public void updateMonitorStat(Long perfTestId, Map<String, SystemDataModel> systemInfos) {
 		String json = gson.toJson(systemInfos);
 		if (json.length() >= 2000) {
-			Map<String, SystemInfo> systemInfosNew = Maps.newHashMap();
+			Map<String, SystemDataModel> systemInfosNew = Maps.newHashMap();
 			int i = 0;
-			for (Entry<String, SystemInfo> each : systemInfos.entrySet()) {
+			for (Entry<String, SystemDataModel> each : systemInfos.entrySet()) {
 				if (i++ > 3) {
 					break;
 				}

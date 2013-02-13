@@ -13,6 +13,8 @@
  */
 package org.ngrinder.monitor.share.domain;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
@@ -21,8 +23,17 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @author JunHo Yoon
  * 
  */
-public class BandWidth {
-	private final long time;
+public class BandWidth implements Serializable {
+
+	/**
+	 * UUID
+	 */
+	private static final long serialVersionUID = 7655104078722834344L;
+
+	private long time;
+
+	public BandWidth() {
+	}
 
 	public BandWidth(long time) {
 		this.time = time;

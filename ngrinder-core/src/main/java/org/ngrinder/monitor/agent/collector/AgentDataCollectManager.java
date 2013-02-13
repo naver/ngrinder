@@ -63,7 +63,7 @@ public final class AgentDataCollectManager {
 		if (!isRunning()) {
 			Collection<MXBean> mxBeans = AgentMXBeanStorage.getInstance().getMXBeans();
 			for (MXBean mxBean : mxBeans) {
-				scheduler.scheduleAtFixedRate(mxBean.gainAgentDataCollector(), 0L, getInterval(), TimeUnit.SECONDS);
+				scheduler.scheduleWithFixedDelay(mxBean.gainAgentDataCollector(), 0L, getInterval(), TimeUnit.SECONDS);
 				LOG.info("Agent collector: {} started.", mxBean.gainAgentDataCollector().getClass().getSimpleName());
 			}
 			LOG.info("Agent collector start (interval :{} s).", getInterval());

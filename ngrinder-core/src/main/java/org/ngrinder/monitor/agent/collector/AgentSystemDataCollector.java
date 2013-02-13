@@ -45,19 +45,18 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 	@Override
 	public synchronized void refresh() {
 		initSigar();
-
 	}
 
 	private void initSigar() {
 		if (sigar == null) {
 			sigar = new Sigar();
-		}
-		try {
-			netInterfaces = sigar.getNetInterfaceList();
-			prev = new SystemInfo();
-			prev.setBandWidth(getNetworkUsage());
-		} catch (SigarException e) {
-			LOGGER.error("Network usage data retrieval failed.", e);
+			try {
+				netInterfaces = sigar.getNetInterfaceList();
+				prev = new SystemInfo();
+				prev.setBandWidth(getNetworkUsage());
+			} catch (SigarException e) {
+				LOGGER.error("Network usage data retrieval failed.", e);
+			}
 		}
 	}
 

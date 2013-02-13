@@ -21,7 +21,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 /**
  * 
  * Abstract class for monitor info.
- *
+ * 
  * @author Mavlarn
  * @since 2.0
  */
@@ -33,15 +33,16 @@ public abstract class MonitorInfo {
 	}
 
 	private long collectTime;
-	
+
 	/**
 	 * get monitor data from CompositeData.
 	 * 
-	 * @param cd is CompositeData got from remote JMX server
+	 * @param cd
+	 *            is CompositeData got from remote JMX server
 	 */
 	public abstract void parse(CompositeData cd);
 
-	private static Object getObject(CompositeData cd, String itemName) {
+	protected static Object getObject(CompositeData cd, String itemName) {
 		return cd.get(itemName);
 	}
 
@@ -59,6 +60,10 @@ public abstract class MonitorInfo {
 
 	protected static float getFloat(CompositeData cd, String itemName) {
 		return (Float) getObject(cd, itemName);
+	}
+
+	public static boolean containsKey(CompositeData cd, String itemName) {
+		return cd.containsKey(itemName);
 	}
 
 	public long getCollectTime() {
