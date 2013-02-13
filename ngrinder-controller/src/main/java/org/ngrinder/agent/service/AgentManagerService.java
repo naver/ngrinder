@@ -168,12 +168,17 @@ public class AgentManagerService {
 								return agentStatus.getConnectingPort() != 0;
 							}
 						});
+		if (workingAgents.isEmpty()) {
+			return;
+		}
 		for (AgentStatus each : workingAgents) {
 			totalRecieved += each.getSystemDataModel().getRecievedPerSec();
 			totalSent += each.getSystemDataModel().getSentPerSec();
 		}
-		int limit = config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_PROP_TOTAL_BANDWIDTH_LIMIT,
-						NGrinderConstants.NGRINDER_PROP_TOTAL_BANDWIDTH_LIMIT_DEFAULT_VALUE);
+
+		int limit = config.getSystemProperties().getPropertyInt(
+						NGrinderConstants.NGRINDER_PROP_BANDWIDTH_LIMIT_MEGABYTE,
+						NGrinderConstants.NGRINDER_PROP_BANDWIDTH_LIMIT_MEGABYTE_DEFAULT_VALUE) * 1024 * 1024;
 		if (totalRecieved > limit || totalSent > limit) {
 			LOGGER.debug("LIMIT : {}, RX : {}, TX : {}", new Object[] { limit, totalRecieved, totalSent });
 			for (PerfTest perfTest : perfTestService.getTestingPerfTest()) {
