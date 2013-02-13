@@ -140,7 +140,7 @@ public class NGrinderStarter {
 						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
 		LOG.info("with console: {}:{}", consoleIP, consolePort);
-		boolean serverMode = agentConfig.getPropertyBoolean("ngrinder.servermode", false);
+		boolean serverMode = agentConfig.getPropertyBoolean("agent.servermode", false);
 		if (!serverMode) {
 			LOG.info("JVM server mode is disabled. If you turnon ngrinder.servermode in agent.conf. It will provide better agent performance.");
 		}
