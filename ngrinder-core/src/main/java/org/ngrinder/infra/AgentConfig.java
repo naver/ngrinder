@@ -42,6 +42,7 @@ public class AgentConfig {
 	public static final String AGENT_CONTROLER_SERVER_PORT = "agent.controller.server.port";
 	public static final String AGENT_REGION = "agent.region";
 	public static final String AGENT_HOSTID = "agent.hostid";
+	public static final String AGENT_USE_SAME_CONSOLE = "agent.same.console.host";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentConfig.class);
 

@@ -144,6 +144,12 @@ public class AgentImplementationEx implements Agent {
 				do {
 					properties = createAndMergeProperties(grinderProperties,
 									startMessage != null ? startMessage.getProperties() : null);
+					if (m_agentConfig.getPropertyBoolean(AgentConfig.AGENT_USE_SAME_CONSOLE, true)) {
+						properties.setProperty(
+										GrinderProperties.CONSOLE_HOST,
+										m_agentConfig.getProperty(AgentConfig.AGENT_CONTROLER_SERVER_HOST,
+														properties.getProperty(GrinderProperties.CONSOLE_HOST)));
+					}
 
 					m_agentIdentity.setName(properties.getProperty("grinder.hostID", NetworkUtil.getLocalHostName()));
 
@@ -168,29 +174,8 @@ public class AgentImplementationEx implements Agent {
 								m_logger.warn("{}, proceeding without the console; set "
 												+ "grinder.useConsole=false to disable this warning.", e.getMessage());
 							} else {
-								// If it fails to connect the console... try again with user
-								// provided controller ip.
-								ConsoleCommunication temporalCommunication = null;
-								try {
-									GrinderProperties temporal = new GrinderProperties();
-									temporal.setProperty(GrinderProperties.CONSOLE_HOST, m_agentConfig.getProperty(
-													AgentConfig.AGENT_CONTROLER_SERVER_HOST,
-													grinderProperties.getProperty(GrinderProperties.CONSOLE_HOST)));
-									temporal.setInt(GrinderProperties.CONSOLE_PORT, properties.getInt(
-													GrinderProperties.CONSOLE_PORT, CommunicationDefaults.CONSOLE_PORT));
-									final Connector temporalConnector = m_connectorFactory.create(temporal);
-									temporalCommunication = new ConsoleCommunication(temporalConnector,
-													grinderProperties.getProperty("grinder.user", "_default"));
-									temporalCommunication.start();
-									m_logger.info("connected to console at {}", temporalConnector.getEndpointAsString());
-								} catch (CommunicationException ex) {
-									m_logger.error(ex.getMessage());
-									return;
-								} finally {
-									// So that it can be shutdowned in the out most exception loop.
-									consoleCommunication = temporalCommunication;
-								}
-
+								m_logger.error(e.getMessage());
+								return;
 							}
 						}
 					}
