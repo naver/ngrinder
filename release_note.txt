@@ -32,7 +32,8 @@ Improvement
 [NGRINDER-521] - Make ngrinder loginable from HTTP BasicAuth
 [NGRINDER-523] - Add an option to enable agent processes to use more than 1G memory
 [NGRINDER-522] - Make network usage status available in agent monitor
-
+[NGRINDER-524] - Make the resource / lib folder feature more explicit
+[NGRINDER-526] - Make agent connect to console with controller ip when it fails to connect to console
 
 3.1.1 (2013.01.31)
 
