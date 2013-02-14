@@ -678,7 +678,7 @@ function bindEvent() {
 		}
 		
 		if ($("#scriptName option:selected").attr("validated") == "0") {
-			$("small.errorColor").text("<@spring.message "perfTest.detail.message.validatedScript"/>");
+			$("small.errorColor").text("<@spring.message "perfTest.detail.message.notValidatedScript"/>");
 		} else {
 			$("small.errorColor").text("");
 		}

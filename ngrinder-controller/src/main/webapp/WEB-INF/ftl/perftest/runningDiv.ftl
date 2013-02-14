@@ -61,14 +61,14 @@
 					</#if>
 				</div>
 				<div class="control-group">
-					<label class="control-label">Monitor Status</label>
+					<label class="control-label"><@spring.message "perfTest.testRunning.targetStatus"/></label>
 				</div>
 				<div class="control-group">
 					<div id="monitor_status" style="font-size:12px;margin-left:-20px">
 					</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label">Agent Status</label>
+					<label class="control-label"><@spring.message "perfTest.testRunning.agentStatus"/></label>
 				</div>
 				<div class="control-group">
 					<div id="agent_status" style="font-size:12px;margin-left:-20px">  
@@ -146,7 +146,7 @@
 								<th class="noClick" title="<@spring.message "perfTest.table.meantime"/>">MTT</th>
 								<th class="noClick"><@spring.message "perfTest.table.tps"/></th>
 								<th class="noClick"><@spring.message "perfTest.detail.peakTPS"/></th>
-								<th class="noClick"><@spring.message "perfTest.testRunning.mtsd"/></th>
+								<th class="noClick" title="<@spring.message "perfTest.testRunning.mtsd.help"/>">MTSD</th>
 							</tr>
 						</thead>
 						<tbody>
