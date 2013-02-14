@@ -25,9 +25,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import net.grinder.common.GrinderException;
@@ -52,6 +52,7 @@ import net.grinder.console.model.SampleModel;
 import net.grinder.console.model.SampleModelImplementationEx;
 import net.grinder.console.model.SampleModelViews;
 import net.grinder.statistics.ExpressionView;
+import net.grinder.statistics.StatisticExpression;
 import net.grinder.statistics.StatisticsIndexMap;
 import net.grinder.statistics.StatisticsServicesImplementation;
 import net.grinder.statistics.StatisticsSet;
@@ -75,6 +76,9 @@ import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.ReflectionUtil;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.service.ISingleConsole;
+import org.python.google.common.collect.Lists;
+import org.python.google.common.collect.Maps;
+import org.python.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,8 +111,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	private SampleModel sampleModel;
 	private SampleModelViews modelView;
 	private long startTime = 0;
-	private Date momentWhenTpsBeganToHaveVerySmall;
-	private Date lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue;
+	private long momentWhenTpsBeganToHaveVerySmall;
+	private long lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue;
 	private final ListenerSupport<ConsoleShutdownListener> showdownListner = ListenerHelper.create();
 	private final ListenerSupport<SamplingLifeCycleListener> samplingLifeCycleListener = ListenerHelper.create();
 
@@ -232,16 +236,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	/**
-	 * Check whether the single console is proper initialized.
-	 * 
-	 * @return true if it is initialized.
-	 */
-	public boolean isValid() {
-		return consoleFoundation != null;
-	}
-
-	/**
-	 * Start console and wait until it's ready to get agent message.
+	 * Start {@link SingleConsole} and wait until it's ready to get agent messages.
 	 */
 	public void start() {
 		if (consoleFoundation == null) {
@@ -267,7 +262,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	/**
-	 * Shutdown console and wait until underlying console logic is stop to run.
+	 * Shutdown this {@link SingleConsole} and wait until the underlying console logic is stopped.
 	 */
 	public void shutdown() {
 		try {
@@ -307,10 +302,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @return agent list
 	 */
 	public List<AgentIdentity> getAllAttachedAgents() {
-		final List<AgentIdentity> agentIdentities = new ArrayList<AgentIdentity>();
-		if (!isValid()) {
-			return agentIdentities;
-		}
+		final List<AgentIdentity> agentIdentities = Lists.newArrayList();
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(ReflectionUtil.getFieldValue(
 						(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
 						"m_agentNumberMap"),
@@ -583,7 +575,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			// Mostly running thread count is ok to determine it's finished.
 			if (this.runningThread == 0) {
 				return true;
-				// However sometimes runningThread is over 0 but all processs is
+				// However sometimes runningThread is over 0 but all process is
 				// marked as
 				// FINISHED.. It can be treated as finished status as well.
 			} else if (this.currentNotFinishedProcessCount == 0) {
@@ -619,7 +611,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 */
 	@Override
 	public long getCurrentRunningTime() {
-		return new Date().getTime() - startTime;
+		return System.currentTimeMillis() - startTime;
 	}
 
 	protected Map<String, Object> getStatisticData() {
@@ -636,6 +628,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		return StatisticsServicesImplementation.getInstance().getStatisticsIndexMap();
 	}
 
+	private ExpressionView[] expressionViews = null;
+
 	/**
 	 * Get all expression views.
 	 * 
@@ -643,18 +637,36 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @since 3.0.2
 	 */
 	public ExpressionView[] getExpressionView() {
-		return modelView.getCumulativeStatisticsView().getExpressionViews();
+		if (this.expressionViews == null) {
+			this.expressionViews = modelView.getCumulativeStatisticsView().getExpressionViews();
+		}
+		return this.expressionViews;
+	}
+
+	private Set<Entry<String, StatisticExpression>> statisticExpressionMap;
+
+	/**
+	 * Get all expression entry set (display name and {@link StatisticExpression} pair.
+	 * 
+	 * @return entry set of display name and {@link StatisticExpression} pair
+	 * @since 3.1.2
+	 */
+	public Set<Entry<String, StatisticExpression>> getExpressionEntrySet() {
+		if (this.statisticExpressionMap == null) {
+			Map<String, StatisticExpression> expressionMap = Maps.newLinkedHashMap();
+			for (ExpressionView each : getExpressionView()) {
+				expressionMap.put(each.getDisplayName().replaceAll("\\s+", "_"), each.getExpression());
+			}
+			this.statisticExpressionMap = expressionMap.entrySet();
+		}
+		return this.statisticExpressionMap;
+
 	}
 
 	/**
-	 * Get detailed expression view.
-	 * 
-	 * @return {@link ExpressionView} array
-	 * @since 3.0.2
+	 * The last timestamp when the sampling is ran.
 	 */
-	public ExpressionView[] getDetailedExpressionView() {
-		return StatisticsServicesImplementation.getInstance().getDetailStatisticsView().getExpressionViews();
-	}
+	private long lastSamplingTimeStamp = 0;
 
 	/*
 	 * (non-Javadoc)
@@ -672,6 +684,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		}
 		if (firstSampling) {
 			firstSampling = false;
+			lastSamplingTimeStamp = System.currentTimeMillis() - 1000;
 			informTestSamplingStart();
 		}
 		try {
@@ -679,16 +692,23 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			final StatisticsSet cumulatedStatisticsSnapshot = cumulativeStatistics.snapshot();
 			setTpsValue(sampleModel.getTPSExpression().getDoubleValue(intervalStatisticsSnapshot));
 			checkTooLowTps(getTpsValues());
-			updateStatistics();
-			writeIntervalSummaryData(intervalStatisticsSnapshot);
 			ModelTestIndex modelIndex = ((SampleModelImplementationEx) sampleModel).getModelTestIndex();
-			writeIntervalCsvData(intervalStatisticsSnapshot, modelIndex);
-			samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
-				@Override
-				public void inform(SamplingLifeCycleListener listener) {
-					listener.onSampling(getReportPath(), intervalStatisticsSnapshot, cumulatedStatisticsSnapshot);
-				}
-			});
+			updateStatistics(modelIndex, intervalStatisticsSnapshot, cumulatedStatisticsSnapshot);
+			// Adjust sampling delay.. run write data multiple times... when it takes longer than 1
+			// sec.
+			long currentSamplingTimeStamp = System.currentTimeMillis();
+			int gap = (int) ((currentSamplingTimeStamp / 1000) - (lastSamplingTimeStamp / 1000));
+			for (int i = 0; i < gap; i++) {
+				writeIntervalSummaryData(intervalStatisticsSnapshot);
+				writeIntervalCsvData(intervalStatisticsSnapshot, modelIndex);
+				samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
+					@Override
+					public void inform(SamplingLifeCycleListener listener) {
+						listener.onSampling(getReportPath(), intervalStatisticsSnapshot, cumulatedStatisticsSnapshot);
+					}
+				});
+			}
+			lastSamplingTimeStamp = currentSamplingTimeStamp;
 			checkTooManyError(cumulativeStatistics);
 
 		} catch (RuntimeException e) {
@@ -698,31 +718,26 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	}
 
-	private String createKeyFromExpression(ExpressionView expressionView) {
-		return expressionView.getDisplayName().replaceAll("\\s+", "_");
-	}
-
 	/**
-	 * Write total test interval data into file.
+	 * Write total test interval statistic data into file.
 	 * 
 	 * @param intervalStatistics
 	 *            interval statistics
 	 */
 	public void writeIntervalSummaryData(StatisticsSet intervalStatistics) {
-		for (ExpressionView eachView : getExpressionView()) {
-			double doubleValue = eachView.getExpression().getDoubleValue(intervalStatistics);
-			writeReportData(createKeyFromExpression(eachView) + REPORT_DATA,
-							formatValue(getRealDoubleValue(doubleValue)));
+		for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
+			double doubleValue = each.getValue().getDoubleValue(intervalStatistics);
+			writeReportData(each.getKey() + REPORT_DATA, formatValue(getRealDoubleValue(doubleValue)));
 		}
 	}
 
 	/**
-	 * Write each test interval data into CSV.
+	 * Write each interval statistic data into CSV.
 	 * 
 	 * @param intervalStatistics
 	 *            interval statistics
 	 * @param modelTestIndex
-	 *            model containning all tests
+	 *            model containing all tests
 	 */
 	public void writeIntervalCsvData(StatisticsSet intervalStatistics, ModelTestIndex modelTestIndex) {
 		if (modelTestIndex == null) {
@@ -730,63 +745,65 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		}
 		StringBuilder csvLine = new StringBuilder();
 		csvLine.append(DateUtil.dateToString(new Date()));
-		ExpressionView[] expressionView = getExpressionView();
-		for (ExpressionView eachView : expressionView) {
-			if (!eachView.getDisplayName().equals("Peak TPS")) {
-				double doubleValue = eachView.getExpression().getDoubleValue(intervalStatistics);
-				csvLine.append(",").append(formatValue(getRealDoubleValue(doubleValue)));
-			}
-		}
-
-		for (int i = 0; i < modelTestIndex.getNumberOfTests(); i++) {
-			StatisticsSet lastSampleStatistics = modelTestIndex.getLastSampleStatistics(i);
-
-			// get the key list from lastStatistic map, use list to keep the order
-			Test test = modelTestIndex.getTest(i);
-			String description = test.getDescription();
-			csvLine.append(",").append(description);
-			for (ExpressionView eachView : expressionView) {
-				if (!eachView.getDisplayName().equals("Peak TPS")) {
-					csvLine.append(",").append(
-									formatValue(getRealDoubleValue(eachView.getExpression().getDoubleValue(
-													lastSampleStatistics))));
-				}
-			}
-
-		}
 
 		// add header into csv file.
+		int numberOfTests = modelTestIndex.getNumberOfTests();
 		if (!headerAdded) {
 			StringBuilder csvHeader = new StringBuilder();
 			csvHeader.append("DateTime");
 
 			// get the key list from lastStatistic map, use list to keep the order
-			for (ExpressionView each : expressionView) {
-				if (!each.getDisplayName().equals("Peak TPS")) {
-					csvHeader.append(",").append(createKeyFromExpression(each));
+			for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
+				if (!each.getKey().equals("Peak_TPS")) {
+					csvHeader.append(",").append(each.getKey());
 				}
 			}
-
-			for (int i = 0; i < modelTestIndex.getNumberOfTests(); i++) {
-				csvHeader.append(",").append("Description");
-				// get the key list from lastStatistic map, use list to keep the order
-				for (ExpressionView each : expressionView) {
-					if (!each.getDisplayName().equals("Peak TPS")) {
-						csvHeader.append(",").append(createKeyFromExpression(each)).append("-").append(i);
+			if (numberOfTests != 1) {
+				for (int i = 0; i < numberOfTests; i++) {
+					csvHeader.append(",").append("Description");
+					// get the key list from lastStatistic map, use list to keep the order
+					for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
+						if (!each.getKey().equals("Peak_TPS")) {
+							csvHeader.append(",").append(each.getKey()).append("-").append(i);
+						}
 					}
-				}
 
+				}
 			}
 			writeCSVDataLine(csvHeader.toString());
 			headerAdded = true;
 		}
+
+		for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
+			if (!each.getKey().equals("Peak_TPS")) {
+				double doubleValue = each.getValue().getDoubleValue(intervalStatistics);
+				csvLine.append(",").append(formatValue(getRealDoubleValue(doubleValue)));
+			}
+		}
+		if (numberOfTests != 1) {
+			for (int i = 0; i < numberOfTests; i++) {
+				StatisticsSet lastSampleStatistics = modelTestIndex.getLastSampleStatistics(i);
+
+				// get the key list from lastStatistic map, use list to keep the order
+				Test test = modelTestIndex.getTest(i);
+				String description = test.getDescription();
+				csvLine.append(",").append(description);
+				for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
+					if (!each.getKey().equals("Peak_TPS")) {
+						csvLine.append(",").append(
+										formatValue(getRealDoubleValue(each.getValue().getDoubleValue(
+														lastSampleStatistics))));
+					}
+				}
+			}
+		}
+
 		writeCSVDataLine(csvLine.toString());
 	}
 
-	// In case of error..
 	/**
-	 * Check if the TPS is too low. the TPS is lower than 0.001 for 2 minutes, It notifies it to the
-	 * {@link ConsoleShutdownListener}
+	 * Check if the TPS is too low. the TPS is lower than 0.001 for 2 minutes, It notifies a
+	 * shutdown event to the {@link ConsoleShutdownListener}
 	 * 
 	 * @param tps
 	 *            current TPS
@@ -794,9 +811,9 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	private void checkTooLowTps(double tps) {
 		// If the tps is low that it's can be the agents or scripts goes wrong.
 		if (tps < 0.001) {
-			if (momentWhenTpsBeganToHaveVerySmall == null) {
-				momentWhenTpsBeganToHaveVerySmall = new Date();
-			} else if (new Date().getTime() - momentWhenTpsBeganToHaveVerySmall.getTime() >= TOO_LOW_TPS_TIME) {
+			if (momentWhenTpsBeganToHaveVerySmall == 0) {
+				momentWhenTpsBeganToHaveVerySmall = System.currentTimeMillis();
+			} else if (new Date().getTime() - momentWhenTpsBeganToHaveVerySmall >= TOO_LOW_TPS_TIME) {
 				LOGGER.warn("Stop the test because its tps is less than 0.001 for more than {} minitue.",
 								TOO_LOW_TPS_TIME / 60000);
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
@@ -804,11 +821,11 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 						listener.readyToStop(StopReason.TOO_LOW_TPS);
 					}
 				});
-				momentWhenTpsBeganToHaveVerySmall = null;
+				momentWhenTpsBeganToHaveVerySmall = 0;
 
 			}
 		} else {
-			momentWhenTpsBeganToHaveVerySmall = null;
+			momentWhenTpsBeganToHaveVerySmall = 0;
 			// only if tps value is not too small ,It should be displayed
 		}
 	}
@@ -825,55 +842,51 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		long testSum = cumulativeStatistics.getCount(statisticsIndexMap.getLongSampleIndex("timedTests"));
 		long errors = cumulativeStatistics.getValue(statisticsIndexMap.getLongIndex("errors"));
 		if (((double) (testSum + errors)) / 2 < errors) {
-			if (lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue == null) {
-				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = new Date();
+			if (lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue == 0) {
+				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = System.currentTimeMillis();
 			} else if (isOverLowTpsThreshhold()) {
-				LOGGER.warn("Stop the test because test error is more than half of total tps for last {} seconds.",
-								TOO_MANY_ERROR_TIME / 1000);
+				LOGGER.warn("Stop the test because the count of test error is more than"
+								+ " half of total tps for last {} seconds.", TOO_MANY_ERROR_TIME / 1000);
 				getListeners().apply(new Informer<ConsoleShutdownListener>() {
 					public void inform(ConsoleShutdownListener listener) {
 						listener.readyToStop(StopReason.TOO_MANY_ERRORS);
 					}
 				});
-				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = null;
+				lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue = 0;
 			}
 		}
 	}
 
 	private boolean isOverLowTpsThreshhold() {
-		return new Date().getTime() - lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue.getTime() >= TOO_MANY_ERROR_TIME;
+		return (System.currentTimeMillis() - lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue) >= TOO_MANY_ERROR_TIME;
 	}
 
-	@SuppressWarnings("serial")
-	public static final Set<String> INTERESTING_STATISTICS = new HashSet<String>() {
-		{
-			add("Tests");
-			add("Errors");
-			add("TPS");
-			add("Response bytes per second");
-			add("Mean time to first byte");
-			add("Peak TPS");
-			add("Mean Test Time (ms)");
-			add("User defined");
-		}
-	};
+	public static final Set<String> INTERESTING_STATISTICS = Sets.newHashSet("Tests", "Errors", "TPS",
+					"Response_bytes_per_second", "Mean_time_to_first_byte", "Peak_TPS", "Mean_Test_Time_(ms)",
+					"User_defined");
 
 	/**
-	 * To update statistics data while test is running.
+	 * Build up statistic for current moment.
+	 * 
+	 * @param modelTestIndex
+	 *            modelTestIndex
+	 * @param cumulatedStatistics
+	 *            intervalStatistics
+	 * @param intervalStatistics
+	 *            cumulatedStatistics
 	 */
-	protected void updateStatistics() {
-		Map<String, Object> result = new HashMap<String, Object>();
+	protected void updateStatistics(ModelTestIndex modelTestIndex, StatisticsSet intervalStatistics,
+					StatisticsSet cumulatedStatistics) {
+		Map<String, Object> result = Maps.newHashMap();
 		result.put("test_time", getCurrentRunningTime() / 1000);
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
-		ExpressionView[] views = modelView.getCumulativeStatisticsView().getExpressionViews();
-		ModelTestIndex modelIndex = ((SampleModelImplementationEx) sampleModel).getModelTestIndex();
-
-		if (modelIndex != null) {
-			for (int i = 0; i < modelIndex.getNumberOfTests(); i++) {
-				Map<String, Object> statistics = new HashMap<String, Object>();
-				Map<String, Object> lastStatistics = new HashMap<String, Object>();
-				Test test = modelIndex.getTest(i);
+		if (modelTestIndex != null) {
+			int numberOfTests = modelTestIndex.getNumberOfTests();
+			for (int i = 0; i < numberOfTests; i++) {
+				Map<String, Object> statistics = Maps.newHashMap();
+				Map<String, Object> lastStatistics = Maps.newHashMap();
+				Test test = modelTestIndex.getTest(i);
 
 				statistics.put("testNumber", test.getNumber());
 				statistics.put("testDescription", test.getDescription());
@@ -883,30 +896,32 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				// file too.
 				lastStatistics.put("testNumber", test.getNumber());
 				lastStatistics.put("testDescription", test.getDescription());
-
-				StatisticsSet set = modelIndex.getCumulativeStatistics(i);
-				StatisticsSet lastSet = modelIndex.getLastSampleStatistics(i);
-				for (ExpressionView expressionView : views) {
-					if (INTERESTING_STATISTICS.contains(expressionView.getDisplayName())) {
-						statistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-										getRealDoubleValue(expressionView.getExpression().getDoubleValue(set)));
-						lastStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-										getRealDoubleValue(expressionView.getExpression().getDoubleValue(lastSet)));
+				// When only 1 test is running, it's better to use the parameterized snapshot.
+				StatisticsSet set = cumulatedStatistics;
+				StatisticsSet lastSet = intervalStatistics;
+				if (numberOfTests != 1) {
+					// If not, there are no way to get individual test statistics from the given
+					// parameter. Jut get it from model index
+					set = modelTestIndex.getCumulativeStatistics(i).snapshot();
+					lastSet = modelTestIndex.getLastSampleStatistics(i).snapshot();
+				}
+				for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
+					if (INTERESTING_STATISTICS.contains(each.getKey())) {
+						statistics.put(each.getKey(), getRealDoubleValue(each.getValue().getDoubleValue(set)));
+						lastStatistics.put(each.getKey(), getRealDoubleValue(each.getValue().getDoubleValue(lastSet)));
 					}
 				}
-
 				cumulativeStatistics.add(statistics);
 				lastSampleStatistics.add(lastStatistics);
 			}
 		}
 
-		StatisticsSet totalSet = sampleModel.getTotalCumulativeStatistics();
-		Map<String, Object> totalStatistics = new HashMap<String, Object>();
+		Map<String, Object> totalStatistics = Maps.newHashMap();
 
-		for (ExpressionView expressionView : views) {
-			if (INTERESTING_STATISTICS.contains(expressionView.getDisplayName())) {
-				totalStatistics.put(expressionView.getDisplayName().replaceAll("\\s+", "_"),
-								getRealDoubleValue(expressionView.getExpression().getDoubleValue(totalSet)));
+		for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
+			if (INTERESTING_STATISTICS.contains(each.getKey())) {
+				totalStatistics.put(each.getKey(),
+								getRealDoubleValue(each.getValue().getDoubleValue(cumulatedStatistics)));
 			}
 		}
 
@@ -983,7 +998,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 */
 	public interface ConsoleShutdownListener {
 		/**
-		 * Called when the console should be shutdowned.
+		 * Called when the console should be shutdown.
 		 * 
 		 * @param stopReason
 		 *            the reason of shutdown..
@@ -1121,7 +1136,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	/**
 	 * Get the statistics data. This method returns the map whose key is string and it's mapped to
-	 * specific value. Please refer {@link #updateStatistics()}
+	 * the various statistics. Please refer {@link #updateStatistics()}
 	 * 
 	 * @return map which contains statistics data
 	 */
@@ -1152,7 +1167,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 *            path in which report will be stored.
 	 */
 	public void setReportPath(File reportPath) {
-		checkNotNull(reportPath, "report folder should not be empty!").mkdirs();
+		checkNotNull(reportPath, "the report folder should not be empty!").mkdirs();
 		this.reportPath = reportPath;
 	}
 
@@ -1172,10 +1187,10 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	public void startSampling(int ignoreSampleCount) {
 		this.ignoreSampleCount = ignoreSampleCount;
 		this.sampling = true;
-		LOGGER.info("Sampling is started");
 		this.sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 		this.sampleModel.addTotalSampleListener(this);
 		this.sampleModel.start();
+		LOGGER.info("Sampling is started");
 
 	}
 
@@ -1199,7 +1214,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				try {
 					listener.onSamplingStarted();
 				} catch (Exception e) {
-					LOGGER.error("Error occurs while test sampling end listener", e);
+					LOGGER.error("Error occurs while running sampling start listener", e);
 				}
 			}
 		});
@@ -1212,7 +1227,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				try {
 					listener.onSamplingEnded();
 				} catch (Exception e) {
-					LOGGER.error("Error occurs while test sampling end listener", e);
+					LOGGER.error("Error occurs while running sampling end listener", e);
 				}
 			}
 		});

@@ -26,6 +26,7 @@ import java.util.Map;
 
 import net.grinder.common.processidentity.WorkerProcessReport;
 import net.grinder.console.communication.ProcessControl.ProcessReports;
+import net.grinder.console.model.ModelTestIndex;
 import net.grinder.console.model.SampleModelImplementationEx;
 import net.grinder.statistics.StatisticExpression;
 import net.grinder.statistics.StatisticsSet;
@@ -177,8 +178,8 @@ public class SingleConsoleTest {
 			}
 
 			@Override
-			protected void updateStatistics() {
-
+			protected void updateStatistics(ModelTestIndex modelIndex, StatisticsSet intervalStatisticsSnapshot,
+							StatisticsSet cumulatedStatisticsSnapshot) {
 			}
 
 			@Override

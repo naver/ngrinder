@@ -26,7 +26,6 @@ import net.grinder.common.GrinderProperties.PersistenceException;
 import net.grinder.common.processidentity.ProcessReport;
 import net.grinder.communication.ClientReceiver;
 import net.grinder.communication.ClientSender;
-import net.grinder.communication.CommunicationDefaults;
 import net.grinder.communication.CommunicationException;
 import net.grinder.communication.ConnectionType;
 import net.grinder.communication.Connector;
