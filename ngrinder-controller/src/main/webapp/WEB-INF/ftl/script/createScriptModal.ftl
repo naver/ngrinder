@@ -20,7 +20,7 @@
 							<div class="controls">
 								<input type="hidden" name="type" value="script"/>
 								<select id="languageSelect" name="scriptType">
-									<option value="py">Python</option>
+									<option value="py">Jython</option>
 								</select>
 							  <span class="help-inline"></span>
 							</div>
@@ -42,8 +42,10 @@
 							         name="createLibAndResource" data-original-title="<@spring.message "script.list.label.createResourceAndLib"/>" 
 							         data-content="<@spring.message "script.tip.libAndResource"/>"/> <@spring.message "script.list.label.createResourceAndLib"/>
 							  	</label>
-							  <span class="help-inline"></span>
-							</div>
+							  <span class="help-inline well"><@spring.message "script.list.label.createResourceAndLib.help"/>
+							  	 <a href="http://www.cubrid.org/wiki_ngrinder/entry/how-to-use-lib-and-resources" target="blank"><i class="icon-question-sign" style="margin-top:2px"></i></a>
+							  </span>
+							</div> 
 						</div>
 					</fieldset>
 				</form>
