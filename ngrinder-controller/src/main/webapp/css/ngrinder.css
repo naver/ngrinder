@@ -201,3 +201,17 @@ div.ellipsis {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+legend {
+	font-size: 15px;
+	font-weight: 700;
+	margin-top: 15px
+}
+
+legend.header {
+	font-size: 18px;
+}
+
+legend a {
+	font-weight: 400
+}

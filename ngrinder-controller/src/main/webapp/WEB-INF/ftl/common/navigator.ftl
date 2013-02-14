@@ -70,7 +70,6 @@
 	</div>
 </div>
 <div class="modal fade" id="userProfileModal">
-
 	<div class="modal-header">
 		<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
 		<h3><@spring.message "navigator.dropdown.profile.title"/></h3>

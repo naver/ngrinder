@@ -11,9 +11,9 @@
 	<div class="container">
 		<div class="row">
 			<div class="span12">
-				<div class="page-header pageHeader">
-					<h3><@spring.message "navigator.dropdown.logMonitoring"/></h3>
-				</div> 
+				<legend class="header">
+					<@spring.message "navigator.dropdown.logMonitoring"/>
+				</legend>
 				<table id="log_container">
 				</table>
 			</div>

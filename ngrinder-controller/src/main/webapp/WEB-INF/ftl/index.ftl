@@ -49,6 +49,7 @@
 							 	<col />
 							</colgroup>
 					  		<#list right_panel_entries as each_right_entry>
+					  			<#if each_right_entry_index lt 6>
 					  			<tr>
 					  				<td class="ellipsis">
 					  					<#if each_right_entry.isNew()><span class="label label-info">new</span></#if>
@@ -58,6 +59,7 @@
 					  				<td>${each_right_entry.lastUpdatedDate?string("yyyy-MM-dd")} 
 					  				</td>
 					  			</tr>
+					  			</#if>
 					  		</#list>
 				  			<tr>
 				  				<td>
@@ -82,7 +84,7 @@
 	 				 <h3><@spring.message "home.developerResources.title"/></h3> 
 				</div> 
 				<div class="alert alert-info">
-			  		<@spring.message "home.developerResources.message"/> 
+			  		<@spring.message "home.developerResources.message"/>
 			  	</div> 
 		   		<div class="well">
 			  		<br/>
@@ -93,6 +95,7 @@
 							 	<col />
 							</colgroup>
 					  		<#list left_panel_entries as each_left_entry>
+					  			<#if each_left_entry_index lt 6>
 					  			<tr>
 					  				<td class="ellipsis"> 
 					  					<#if each_left_entry.isNew()><span class="label label-info">new</span></#if>
@@ -100,6 +103,7 @@
 					  				</td>
 					  				<td>${each_left_entry.lastUpdatedDate?string("yyyy-MM-dd")}</td>
 					  			</tr>
+					  			</#if>
 					  		</#list>
 				  			<tr>
 				  				<td></td>

@@ -22,6 +22,10 @@ To get started,
 You can find out what nGrinder looks like with screenshot.
  * http://www.cubrid.org/wiki_ngrinder/entry/screen-shot
 
+Do you really want to use nGrinder? Check out our demo instance.
+ * http://ngrinder-demo.nhnopensource.org
+ * Login with id : user / password : user
+
 nGrinder consists of two major components. 
 
 nGrinder controller
@@ -34,11 +38,13 @@ Features
 --------
 
 * Use Jython script to create test scenario and generate stress in JVM using multiple agents.
+* Extend tests with custom libaries(jar, py). It's unlimited practically.
 * Provide web-based interface for project management, monitoring, result management and report management.
 * Run multiple tests concurrently. Assign the preinstalled multiple agents to maximize each agent's utilization.
+* Deploy agents on multiple network regions. Execute tests on various network locations
 * Embed Subversion to manage scripts.
 * Allow to monitor the state of agents generating stress and target machines receiving stress
-* Support Enable to monitor the state of agents generating stress and target machines receiving stress
+* Proven solution which is used to test huge systems having more than 100 million users in NHN.
 
 
 Download
@@ -94,10 +100,11 @@ Found a bug? Got an idea for an enhancement? Please create an issue here on GitH
 Our official bug tracker is at the following link. Check here to monitor our development status.
 * http://jira.cubrid.org/browse/NGRINDER
 
-You can join our mailing list as well
+You can join our forum as well
 * Dev : http://ngrinder.642.n7.nabble.com/ngrinder-dev-f1.html 
-* User : http://ngrinder.642.n7.nabble.com/ngrinder-user-f50.html
-
+* User Forum : http://ngrinder.642.n7.nabble.com/ngrinder-user-f50.html
+* 中文论坛 (Chinese) http://ngrinder.642.n7.nabble.com/ngrinder-user-cn-f114.html
+* 한국어 유저 포럼 (Korean) http://ngrinder.642.n7.nabble.com/ngrinder-user-kr-f113.html
 
 
 Copyright and license

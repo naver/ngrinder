@@ -9,15 +9,15 @@
 <body>
 	<#include "../common/navigator.ftl">
 	<div class="container">
-		<div class="page-header pageHeader">
-			<h3><@spring.message "navigator.dropdown.userManagement"/></h3>
-		</div>
-		<select id="roles" class="pull-right" style="margin-top:-55px" name="roles">
-			<option value="all" <#if listPage?exists && !roleName?exists>selected</#if>"><@spring.message "user.left.all"/></option>
-			<#list roleSet as role> 
-				<option value="${role.fullName}" <#if roleName?exists && role.fullName == roleName>selected</#if>>${role.fullName}</option>
-			</#list>
-		</select>
+		<legend class="header">
+			<@spring.message "navigator.dropdown.userManagement"/>
+			<select id="roles" class="pull-right" name="roles">
+				<option value="all" <#if listPage?exists && !roleName?exists>selected</#if>"><@spring.message "user.left.all"/></option>
+				<#list roleSet as role> 
+					<option value="${role.fullName}" <#if roleName?exists && role.fullName == roleName>selected</#if>>${role.fullName}</option>
+				</#list>
+			</select>
+		</legend>
 		<form id="userListForm" action="${req.getContextPath()}/user" method="POST">
 			<div class="well form-inline searchBar">
 			 
@@ -31,7 +31,7 @@
 						<i class="icon-user"></i> <@spring.message "user.list.button.create"/>
 					</a>
 					<a href="javascript:deleteCheckedUsers()" class="btn btn-danger">
-						<i class="icon-remove"></i> <@spring.message "user.list.button.delete"/>
+						<i class="icon-remove icon-white"></i> <@spring.message "user.list.button.delete"/>
 					</a>
 				</span>
 			</div>
