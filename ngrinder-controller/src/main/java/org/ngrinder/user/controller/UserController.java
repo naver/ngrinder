@@ -98,8 +98,6 @@ public class UserController extends NGrinderBaseController {
 	 *            current user
 	 * @param model
 	 *            mode
-	 * @param userId
-	 *            user to get
 	 * @return "user/userDetail"
 	 */
 	@RequestMapping("/new")

@@ -1,5 +1,3 @@
-package org.ngrinder.common.util;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -17,7 +15,7 @@ package org.ngrinder.common.util;
  * limitations under the License.
  */
 
-// Contributors:  Mathias Bogaert
+package org.ngrinder.common.util;
 
 import java.io.File;
 
@@ -36,21 +34,21 @@ public abstract class FileWatchdog extends Thread {
 	/**
 	 * The default delay between every file modification check, set to 60 seconds.
 	 */
-	static final public long DEFAULT_DELAY = 60000;
+	public static final long DEFAULT_DELAY = 60000;
 	/**
 	 * The name of the file to observe for changes.
 	 */
-	protected String filename;
+	private String filename;
 
 	/**
 	 * The delay to observe between every check. By default set {@link #DEFAULT_DELAY}.
 	 */
-	protected long delay = DEFAULT_DELAY;
+	private long delay = DEFAULT_DELAY;
 
-	File file;
-	long lastModif = 0;
-	boolean warnedAlready = false;
-	boolean interrupted = false;
+	private File file;
+	private long lastModif = 0;
+	private boolean warnedAlready = false;
+	private boolean interrupted = false;
 
 	protected FileWatchdog(String filename) {
 		this.filename = filename;
@@ -61,12 +59,18 @@ public abstract class FileWatchdog extends Thread {
 
 	/**
 	 * Set the delay to observe between each check of the file changes.
+	 * 
+	 * @param delay
+	 *            the frequency of file watch.
 	 */
 	public void setDelay(long delay) {
 		this.delay = delay;
 	}
 
-	abstract protected void doOnChange();
+	/**
+	 * abstract method to be run when the file is changed.
+	 */
+	protected abstract void doOnChange();
 
 	protected void checkAndConfigure() {
 		boolean fileExists;
@@ -93,11 +97,18 @@ public abstract class FileWatchdog extends Thread {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Thread#run()
+	 */
+	@Override
 	public void run() {
 		while (!interrupted && !isInterrupted()) {
 			try {
 				Thread.sleep(delay);
 			} catch (InterruptedException e) {
+				NoOp.noOp();
 			}
 			checkAndConfigure();
 		}

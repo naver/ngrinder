@@ -68,7 +68,7 @@ public class PropertyBuilder {
 	 *            current host name
 	 * @param server
 	 *            server mode
-	 * @param useMaxMemory
+	 * @param useXmxLimit
 	 *            true if 1G limit should be enabled
 	 */
 	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,

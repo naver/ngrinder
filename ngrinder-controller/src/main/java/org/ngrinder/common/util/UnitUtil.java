@@ -37,6 +37,13 @@ public abstract class UnitUtil {
 	 */
 	public static final long ONE_GB = ONE_KB * ONE_MB;
 
+	/**
+	 * Get the display of the given byte size.
+	 * 
+	 * @param size
+	 *            size
+	 * @return display version of the byte size
+	 */
 	public static String byteCountToDisplaySize(long size) {
 		String displaySize;
 		DecimalFormat format = new DecimalFormat("###0.0");

@@ -113,6 +113,9 @@ public class Config implements IConfig, NGrinderConstants {
 						NetworkUtil.getLocalHostAddress());
 	}
 
+	/**
+	 * Destroy bean.
+	 */
 	@PreDestroy
 	public void destroy() {
 		announcementWatchDog.interrupt();

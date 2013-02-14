@@ -46,7 +46,6 @@ import net.grinder.util.GrinderClassPathUtils;
 import net.grinder.util.NetworkUtil;
 import net.grinder.util.thread.Condition;
 
-import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.util.NoOp;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;

@@ -694,12 +694,12 @@ public class PerfTestController extends NGrinderBaseController {
 			if (memUsage > 99.9f) {
 				memUsage = 99.9f;
 			}
-			perfStringList.add(String
-							.format(" {'agent' : '%s', 'cpu' : '%s', 'mem' : '%s', 'sentPerSec' : '%s', 'recievedPerSec' : '%s'}",
-											StringUtils.abbreviate(each.getKey(), 20),
-											format.format(cpuUsedPercentage), format.format(memUsage),
-											UnitUtil.byteCountToDisplaySize(sentPerSec),
-											UnitUtil.byteCountToDisplaySize(recievedPerSec)));
+			String perfTString = String.format(" {'agent' : '%s', 'cpu' : '%s',"
+							+ " 'mem' : '%s', 'sentPerSec' : '%s', 'recievedPerSec' : '%s'}",
+							StringUtils.abbreviate(each.getKey(), 20), format.format(cpuUsedPercentage),
+							format.format(memUsage), UnitUtil.byteCountToDisplaySize(sentPerSec),
+							UnitUtil.byteCountToDisplaySize(recievedPerSec));
+			perfStringList.add(perfTString);
 		}
 		return StringUtils.join(perfStringList, ",");
 	}

@@ -97,6 +97,13 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 		return systemInfo;
 	}
 
+	/**
+	 * Get the current network usage.
+	 * 
+	 * @return BandWith
+	 * @throws SigarException
+	 *             occurs when the underlying lib is not linked
+	 */
 	public BandWidth getNetworkUsage() throws SigarException {
 		BandWidth bandWidth = new BandWidth(System.currentTimeMillis());
 		for (String each : netInterfaces) {

@@ -200,7 +200,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 	private GrinderProperties grinderProperties;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-	@JoinTable(name = "PERF_TEST_TAG", joinColumns = @JoinColumn(name = "perf_test_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
+	@JoinTable(name = "PERF_TEST_TAG", /** join column */
+	joinColumns = @JoinColumn(name = "perf_test_id"), /** inverse join column */
+	inverseJoinColumns = @JoinColumn(name = "tag_id"))
 	@Sort(comparator = Tag.class, type = SortType.COMPARATOR)
 	private SortedSet<Tag> tags;
 
@@ -671,6 +673,5 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public void setMonitorStatus(String monitorStatus) {
 		this.monitorStatus = monitorStatus;
 	}
-
 
 }

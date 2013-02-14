@@ -120,6 +120,9 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 		}
 	}
 
+	/**
+	 * Destroy bean.
+	 */
 	@PreDestroy
 	public void destroy() {
 		if (interp != null) {

@@ -26,15 +26,24 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 public class BandWidth implements Serializable {
 
 	/**
-	 * UUID
+	 * UUID.
 	 */
 	private static final long serialVersionUID = 7655104078722834344L;
 
 	private long time;
 
+	/**
+	 * Default constructor.
+	 */
 	public BandWidth() {
 	}
 
+	/**
+	 * Constructor with the timestamp.
+	 * 
+	 * @param time
+	 *            current timestamp.
+	 */
 	public BandWidth(long time) {
 		this.time = time;
 	}
@@ -49,6 +58,7 @@ public class BandWidth implements Serializable {
 	 * Calculate the bandWith by subtracting prev bandwidth.
 	 * 
 	 * @param bandWidth
+	 *            bandWidth adjusted against.
 	 * @return adjusted bandWidth.
 	 */
 	public BandWidth adjust(BandWidth bandWidth) {
@@ -94,6 +104,10 @@ public class BandWidth implements Serializable {
 		this.sent = sent;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
 	}

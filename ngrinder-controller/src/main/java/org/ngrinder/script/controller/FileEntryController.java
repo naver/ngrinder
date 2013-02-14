@@ -35,10 +35,12 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
+import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.script.service.ScriptValidationService;
+import org.python.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -313,13 +315,14 @@ public class FileEntryController extends NGrinderBaseController {
 	public String saveFileEntry(User user, @RemainedPath String path, FileEntry fileEntry,
 					@RequestParam String targetHosts, @RequestParam(defaultValue = "0") String validated,
 					@RequestParam(defaultValue = "false") boolean createLibAndResource, ModelMap model) {
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("validated", validated);
-		if (StringUtils.isNotBlank(targetHosts)) {
-			map.put("targetHosts", StringUtils.trim(targetHosts));
+		if (fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
+			Map<String, String> map = Maps.newHashMap();
+			map.put("validated", validated);
+			if (StringUtils.isNotBlank(targetHosts)) {
+				map.put("targetHosts", StringUtils.trim(targetHosts));
+			}
+			fileEntry.setProperties(map);
 		}
-		fileEntry.setProperties(map);
-
 		fileEntryService.save(user, fileEntry);
 
 		String basePath = FilenameUtils.getPath(fileEntry.getPath());

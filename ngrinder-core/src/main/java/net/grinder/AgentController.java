@@ -326,6 +326,12 @@ public class AgentController implements Agent {
 		return agentConfig;
 	}
 
+	/**
+	 * Set agent config.
+	 * 
+	 * @param agentConfig
+	 *            agent config
+	 */
 	public void setAgentConfig(AgentConfig agentConfig) {
 		this.agentConfig = agentConfig;
 		this.version = agentConfig.getInternalProperty("ngrinder.version", "3.1.2");

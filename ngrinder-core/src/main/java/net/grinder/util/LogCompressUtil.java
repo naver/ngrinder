@@ -106,11 +106,11 @@ public abstract class LogCompressUtil {
 	}
 
 	/**
-	 * Uncompress the given array into the given file.
+	 * Uncompress the given the {@link InputStream} into the given {@link OutputStream}.
 	 * 
-	 * @param zipEntry
-	 *            byte array of compressed file
-	 * @param toFile
+	 * @param inputStream
+	 *            input stream of the compressed file
+	 * @param outputStream
 	 *            file to be written
 	 * @param limit
 	 *            the limit of the output

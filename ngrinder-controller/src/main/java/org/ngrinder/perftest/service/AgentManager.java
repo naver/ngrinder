@@ -122,11 +122,9 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Get agent identities and status map matching the given predicate.
+	 * Get all agent status.
 	 * 
-	 * @param predicate
-	 *            predicate
-	 * @return {@link AgentIdentity} {@link AgentStatus} map
+	 * @return {@link AgentStatus} set
 	 * @since 3.1.2
 	 */
 	public Set<AgentStatus> getAllAgentStatusSet() {
@@ -139,11 +137,11 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Get agent identities and status map matching the given predicate.
+	 * Get agent status set matching the given predicate.
 	 * 
 	 * @param predicate
 	 *            predicate
-	 * @return {@link AgentIdentity} {@link AgentStatus} map
+	 * @return {@link AgentStatus} set
 	 * @since 3.1.2
 	 */
 	public Set<AgentStatus> getAgentStatusSet(Predicate<AgentStatus> predicate) {
@@ -513,6 +511,13 @@ public class AgentManager implements NGrinderConstants {
 		sendAgentUpdateMessage(fileName, version, downloadUrl);
 	}
 
+	/**
+	 * Get the set of {@link AgentStatus} from agents belong to the given single console port.
+	 * 
+	 * @param singleConsolePort
+	 *            port
+	 * @return {@link AgentStatus} set
+	 */
 	public Set<AgentStatus> getAgentStatusSetConnectingToPort(final int singleConsolePort) {
 		return getAgentStatusSet(new Predicate<AgentProcessControlImplementation.AgentStatus>() {
 			@Override

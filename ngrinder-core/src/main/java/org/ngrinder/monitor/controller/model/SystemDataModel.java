@@ -75,7 +75,7 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	 * @param version
 	 *            version of model.
 	 */
-	public SystemDataModel(SystemInfo systemInfo, String verion) {
+	public SystemDataModel(SystemInfo systemInfo, String version) {
 		this.system = String.valueOf(systemInfo.getSystem());
 		this.collectTime = systemInfo.getCollectTime();
 		this.freeMemory = systemInfo.getFreeMemory();
@@ -86,7 +86,7 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 			this.recievedPerSec = bandWidth.getRecivedPerSec();
 			this.sentPerSec = bandWidth.getSentPerSec();
 		}
-		this.version = verion;
+		this.version = version;
 	}
 
 	public String getKey() {

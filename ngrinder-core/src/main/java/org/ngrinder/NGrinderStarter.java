@@ -142,7 +142,8 @@ public class NGrinderStarter {
 		LOG.info("with console: {}:{}", consoleIP, consolePort);
 		boolean serverMode = agentConfig.getPropertyBoolean("agent.servermode", false);
 		if (!serverMode) {
-			LOG.info("JVM server mode is disabled. If you turnon ngrinder.servermode in agent.conf. It will provide better agent performance.");
+			LOG.info("JVM server mode is disabled. If you turn on ngrinder.servermode in agent.conf."
+							+ " It will provide the better agent performance.");
 		}
 
 		try {

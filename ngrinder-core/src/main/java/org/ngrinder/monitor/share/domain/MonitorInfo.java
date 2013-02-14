@@ -62,7 +62,7 @@ public abstract class MonitorInfo {
 		return (Float) getObject(cd, itemName);
 	}
 
-	public static boolean containsKey(CompositeData cd, String itemName) {
+	protected static boolean containsKey(CompositeData cd, String itemName) {
 		return cd.containsKey(itemName);
 	}
 

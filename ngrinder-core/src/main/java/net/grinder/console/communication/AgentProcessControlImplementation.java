@@ -253,6 +253,11 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 		}
 	}
 
+	/**
+	 * Agent Status.
+	 * 
+	 * @author JunHo Yoon
+	 */
 	public final class AgentStatus implements Purgable {
 		private volatile AgentReference m_agentReference;
 
@@ -284,9 +289,14 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 			return agentProcessReport == null ? AgentControllerState.UNKNOWN : agentProcessReport.getState();
 		}
 
+		/**
+		 * Set each agent process message on the agent status.
+		 * 
+		 * @param message
+		 *            Message
+		 */
 		public void setAgentProcessStatus(AgentControllerProcessReportMessage message) {
 			LOGGER.trace("agent perf status on {} is {}", message.getAgentIdentity(), message.getSystemDataModel());
-
 			m_agentReference = new AgentReference(message);
 		}
 

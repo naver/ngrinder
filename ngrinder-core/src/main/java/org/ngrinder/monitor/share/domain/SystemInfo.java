@@ -32,7 +32,11 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 
 	private static final long serialVersionUID = -2995334644975166549L;
 
-	public static final String HEADER = "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage,recivedPerSec,sentPerSec";
+	/**
+	 * Header field of monitor status fields.
+	 */
+	public static final String HEADER = "ip,system,collectTime,freeMemory,"
+					+ "totalMemory,cpuUsedPercentage,recivedPerSec,sentPerSec";
 
 	/**
 	 * Enum for the system type, linux or windows.

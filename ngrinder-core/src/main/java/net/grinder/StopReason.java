@@ -28,7 +28,7 @@ public enum StopReason {
 	ERROR_WHILE_PREPARE,
 	/** Error while first execution. */
 	SCRIPT_ERROR,
-	/** Error too overall traffic */
+	/** Error by too much overall traffic on the given region. */
 	TOO_MUCH_TRAFFIC_ON_REGION,
 	/** Normal Stop. */
 	NORMAL,

@@ -104,6 +104,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.qos.logback.core.util.SystemInfo;
+
 import com.google.gson.Gson;
 
 /**
@@ -1335,6 +1337,14 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		savePerfTest(perfTest);
 	}
 
+	/**
+	 * Put the given {@link SystemInfo} maps into the given perftest entity.
+	 * 
+	 * @param perfTestId
+	 *            id of perf test
+	 * @param systemInfos
+	 *            systemDataModel map
+	 */
 	@Transactional
 	public void updateMonitorStat(Long perfTestId, Map<String, SystemDataModel> systemInfos) {
 		String json = gson.toJson(systemInfos);
@@ -1354,6 +1364,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		perfTestRepository.save(perfTest);
 	}
 
+	/**
+	 * Get monitor status map for the given perfTest.
+	 * 
+	 * @param perfTest
+	 *            perf test
+	 * @return map of monitor name and monitor status.
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Map<String, HashMap> getMonitorStat(PerfTest perfTest) {
 		return gson.fromJson(perfTest.getMonitorStatus(), HashMap.class);
