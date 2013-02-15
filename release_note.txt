@@ -1,17 +1,18 @@
-3.1.2 (2013.02.13)
+3.1.2 (2013.02.16)
 
 We're proudly releasing nGrinder 3.1.2 which enhances the usability and visibility.
 With some bug fix, the following improvements are for the effective operations of nGrinder.
        
 - New features and changes:
-  * Enable RealTime target server monitoring. Now you can see how the target server reacts during tests.
-  * Monitor agent network usages and stop the tests when they go too high. By default 200MB/s per one region is the limitation.
-    - Previously the network usage of Grinder HTTP Plugin test is monitored by the network overflow plugin but now RX/TX traffic is monitored by nGrinder controller as default.
-  * Logs passed from Agents can be viewed in the browser directly.
+  * Enable realTime target server monitoring. Now you can see how the target server reacts during tests.
+  * Monitor agent network usages and be able to run the plugin to do something on the agents.
+  * See logs passed from agents  directly in the browser.
   * Provide an option which unlocks the agent memory XMX limitation (by default it was 1G). Add agent.useXmxLimit=false in ${NGRINDER_AGENT_HOME}/agent.conf
-  * Make the Tomcat stoppable by shutdown.sh command.
+  * Make the Tomcat stoppable by shutdown command.
   * Use record instead of wrap by default in the script.
-  * Let a user be able to define new statistics.
+  * Make a user be able to define new statistics.
+  * Provide several more useful plugin info.
+  
   
 - Details
   
