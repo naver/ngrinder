@@ -27,7 +27,7 @@
 			properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=true, replicateRemovals=true" />
 	</cache>
 
-	<cache name="regions" maxElementsInMemory="100" overflowToDisk="false" timeToLiveSeconds="20">
+	<cache name="regions" maxElementsInMemory="100" overflowToDisk="false" timeToLiveSeconds="30">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
 			properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=true, replicateRemovals=true" />
 	</cache>
@@ -39,7 +39,8 @@
 
 	<cache name="running_statistics" maxElementsInMemory="1000" overflowToDisk="false" timeToLiveSeconds="3" />
 
-	<!-- distributed caches -->
+	<!-- distributed caches end -->
+	
 	<cache name="agent_monitoring_targets" maxElementsInMemory="1000" overflowToDisk="false" timeToLiveSeconds="5" />
 	<cache name="monitor_data" maxElementsInMemory="1000"  overflowToDisk="false" timeToLiveSeconds="3" />
 	
