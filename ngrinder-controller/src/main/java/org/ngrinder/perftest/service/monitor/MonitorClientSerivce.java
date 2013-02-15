@@ -85,6 +85,8 @@ public class MonitorClientSerivce {
 		this.cache = cache;
 		try {
 			mbeanClient = new MBeanClient(ip, port);
+			mbeanClient.connect();
+		
 			String objNameStr = MonitorConstants.DEFAULT_MONITOR_DOMAIN + ":" + MonitorConstants.SYSTEM;
 			ObjectName systemName = new ObjectName(objNameStr);
 			sysInfoMBeanObj = new MonitorCollectionInfoDomain(systemName, "SystemInfo", SystemInfo.class);
@@ -108,9 +110,6 @@ public class MonitorClientSerivce {
 	 */
 	public SystemInfo getMonitorData() {
 		try {
-			if (!mbeanClient.isConnected()) {
-				mbeanClient.connect();
-			}
 			if (!mbeanClient.isConnected()) {
 				// if the monitor client can not be connected, just return, to avoid error.
 				return null;
