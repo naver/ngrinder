@@ -417,7 +417,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 		/**
 		 * Notify the distribute starting event and the returns the safe mode (if you want to enable
-		 * safe mode in force depending on the file. It should return true.
+		 * safe mode by force depending on the file. It should return true.
 		 * 
 		 * @param dir
 		 *            Distribution dir
