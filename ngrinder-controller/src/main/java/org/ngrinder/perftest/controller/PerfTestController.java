@@ -37,6 +37,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import net.grinder.util.LogCompressUtil;
+import net.grinder.util.UnitUtil;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -51,7 +52,6 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.FileDownloadUtil;
-import org.ngrinder.common.util.UnitUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.PerfTest;

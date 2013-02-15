@@ -124,7 +124,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	private boolean headerAdded = false;
 
-	private Map<String, BufferedWriter> fileWriterMap = new HashMap<String, BufferedWriter>();
+	private Map<String, BufferedWriter> fileWriterMap = Maps.newHashMap();
 	/** Current count of sampling. */
 	private long samplingCount = 0;
 	/** The count of ignoring sampling. */

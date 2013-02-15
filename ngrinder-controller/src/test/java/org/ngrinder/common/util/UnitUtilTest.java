@@ -3,6 +3,8 @@ package org.ngrinder.common.util;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import net.grinder.util.UnitUtil;
+
 import org.junit.Test;
 
 public class UnitUtilTest {
