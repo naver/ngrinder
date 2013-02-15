@@ -55,12 +55,15 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	private AgentIdentity agentIdentity;
 
 	/**
-	 * agent application name.
+	 * Host name of the agent machine.
 	 */
 	private String hostName = "";
 
 	@Enumerated(EnumType.STRING)
 	private AgentControllerState status;
+
+	@Column(name = "system_stat", length = 2000)
+	private String systemStat;
 
 	private String region;
 
@@ -200,5 +203,13 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
+	}
+
+	public String getSystemStat() {
+		return systemStat;
+	}
+
+	public void setSystemStat(String systemStat) {
+		this.systemStat = systemStat;
 	}
 }
