@@ -58,11 +58,10 @@ public class PeriodicWorkingAgentCheckService {
 								return agentStatus.getConnectingPort() != 0;
 							}
 						});
-		if (pluginManager != null) {
-			for (OnPeriodicWorkingAgentCheckRunnable runnable : pluginManager
-							.getEnabledModulesByClass(OnPeriodicWorkingAgentCheckRunnable.class)) {
-				runnable.checkAgentSet(workingAgents);
-			}
+		for (OnPeriodicWorkingAgentCheckRunnable runnable : pluginManager
+						.getEnabledModulesByClass(OnPeriodicWorkingAgentCheckRunnable.class)) {
+			runnable.checkWorkingAgent(workingAgents);
 		}
+
 	}
 }

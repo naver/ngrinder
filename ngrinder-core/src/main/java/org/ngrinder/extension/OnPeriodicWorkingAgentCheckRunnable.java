@@ -32,5 +32,5 @@ public interface OnPeriodicWorkingAgentCheckRunnable {
 	 * 
 	 * @param workingAgents
 	 */
-	public void checkAgentSet(Set<AgentStatus> workingAgents);
+	public void checkWorkingAgent(Set<AgentStatus> workingAgents);
 }
