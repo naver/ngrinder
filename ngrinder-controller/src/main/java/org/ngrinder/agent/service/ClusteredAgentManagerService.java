@@ -211,11 +211,11 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		List<AgentInfo> agentInfos = new ArrayList<AgentInfo>();
 		for (String each : keysWithExpiryCheck) {
 			ValueWrapper value = agentMonioringTargetsCache.get(each);
-			AgentControllerIdentityImplementation agentIndentity = convert(value.get());
-			if (value != null && agentIndentity != null) {
-				AgentInfo found = agentManagerRepository.findByIpAndHostName(agentIndentity.getIp(),
-								agentIndentity.getName());
-				found.setSystemStat(gson.toJson(getSystemDataModel(agentIndentity)));
+			AgentControllerIdentityImplementation agentIdentity = convert(value.get());
+			if (value != null && agentIdentity != null) {
+				AgentInfo found = agentManagerRepository.findByIpAndHostName(agentIdentity.getIp(),
+								agentIdentity.getName());
+				found.setSystemStat(gson.toJson(getSystemDataModel(agentIdentity)));
 				agentInfos.add(found);
 			}
 		}
