@@ -24,7 +24,7 @@ import liquibase.snapshot.DatabaseSnapshot;
 import liquibase.snapshot.jvm.JdbcDatabaseSnapshotGenerator;
 
 /**
- * Liquibase will not be modified,this is just made its support CUBRID DB.
+ * this is just made its support CUBRID DB.
  * 
  * @author Matt
  * @author JunHo Yoon

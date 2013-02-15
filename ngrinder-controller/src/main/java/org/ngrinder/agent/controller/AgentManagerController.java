@@ -41,7 +41,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
 /**
- * agent download controller.
+ * Controller which enable Admin manage agents.
  * 
  * @author JunHo Yoon
  * @since 3.1
@@ -110,10 +110,10 @@ public class AgentManagerController extends NGrinderBaseController {
 	}
 
 	/**
-	 * approve agent, so that it can accept test to run on.
+	 * Approve or Unapprove agents, so that it can be assigned when a test is executed..
 	 * 
 	 * @param id
-	 *            id of agent to be approved
+	 *            agent id to be approved
 	 * @param approve
 	 *            approve or not
 	 * @return agent/agentList
@@ -126,10 +126,10 @@ public class AgentManagerController extends NGrinderBaseController {
 	}
 
 	/**
-	 * stop agent, so that it can accept test to run on.
+	 * Stop agent.
 	 * 
 	 * @param ids
-	 *            comma separating id list
+	 *            comma separated id list
 	 * @return agent/agentList
 	 */
 	@RequestMapping(value = "stop", method = RequestMethod.POST)
@@ -143,7 +143,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get agent detail info.
+	 * Get a agent detail info for the given agent id.
 	 * 
 	 * @param model
 	 *            model
@@ -159,7 +159,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get the current system performance info for given ip.
+	 * Get the current system performance info by the given agent ip.
 	 * 
 	 * @param model
 	 *            model

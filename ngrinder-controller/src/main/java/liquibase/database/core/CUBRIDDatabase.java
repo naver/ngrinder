@@ -20,7 +20,7 @@ import liquibase.database.DatabaseConnection;
 import liquibase.exception.DatabaseException;
 
 /**
- * Liquibase will not be modified,this is just made its support CUBRID DB.
+ * Liquibase Cubrid Database Support.
  * 
  * @author Matt
  * @author JunHo Yoon
@@ -56,15 +56,21 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return PRIORITY_DEFAULT;
 	}
 
-	/* (non-Javadoc)
-	 * @see liquibase.database.Database#isCorrectDatabaseImplementation(liquibase.database.DatabaseConnection)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * liquibase.database.Database#isCorrectDatabaseImplementation(liquibase.database.DatabaseConnection
+	 * )
 	 */
 	@Override
 	public boolean isCorrectDatabaseImplementation(DatabaseConnection conn) throws DatabaseException {
 		return PRODUCT_NAME.equalsIgnoreCase(conn.getDatabaseProductName());
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.AbstractDatabase#supportsSequences()
 	 */
 	@Override
@@ -72,7 +78,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.Database#supportsInitiallyDeferrableColumns()
 	 */
 	@Override
@@ -80,7 +88,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.Database#getCurrentDateTimeFunction()
 	 */
 	@Override
@@ -92,7 +102,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return "NOW()";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.AbstractDatabase#getLineComment()
 	 */
 	@Override
@@ -100,7 +112,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return "-- ";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.AbstractDatabase#getAutoIncrementClause()
 	 */
 	@Override
@@ -108,7 +122,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return "AUTO_INCREMENT";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.AbstractDatabase#generateAutoIncrementBy(java.math.BigInteger)
 	 */
 	@Override
@@ -116,7 +132,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.AbstractDatabase#getAutoIncrementOpening()
 	 */
 	@Override
@@ -124,7 +142,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return "";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.AbstractDatabase#getAutoIncrementClosing()
 	 */
 	@Override
@@ -132,7 +152,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return "";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.AbstractDatabase#getAutoIncrementStartWithClause()
 	 */
 	@Override
@@ -140,7 +162,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return "=%d";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.AbstractDatabase#getConcatSql(java.lang.String[])
 	 */
 	@Override
@@ -154,7 +178,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return returnString.toString().replaceFirst(", $", ")");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.Database#supportsTablespaces()
 	 */
 	@Override
@@ -162,7 +188,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.AbstractDatabase#getDefaultDatabaseSchemaName()
 	 */
 	@Override
@@ -170,7 +198,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return getConnection().getCatalog();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.AbstractDatabase#convertRequestedSchemaToSchema(java.lang.String)
 	 */
 	@Override
@@ -181,7 +211,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return requestedSchema;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.AbstractDatabase#convertRequestedSchemaToCatalog(java.lang.String)
 	 */
 	@Override
@@ -189,7 +221,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return requestedSchema;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.AbstractDatabase#escapeDatabaseObject(java.lang.String)
 	 */
 	@Override
@@ -197,7 +231,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return "`" + objectName + "`";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.AbstractDatabase#escapeIndexName(java.lang.String, java.lang.String)
 	 */
 	@Override
@@ -205,7 +241,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return escapeDatabaseObject(indexName);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.AbstractDatabase#supportsForeignKeyDisable()
 	 */
 	@Override
@@ -213,7 +251,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.AbstractDatabase#disableForeignKeyChecks()
 	 */
 	@Override
@@ -221,14 +261,18 @@ public class CUBRIDDatabase extends AbstractDatabase {
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.AbstractDatabase#enableForeignKeyChecks()
 	 */
 	@Override
 	public void enableForeignKeyChecks() {
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see liquibase.database.Database#getTypeName()
 	 */
 	public String getTypeName() {

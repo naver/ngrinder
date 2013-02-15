@@ -1,5 +1,5 @@
 /**
- * ngrinder customized liquibase lockservice.
+ * nGrinder customized Liquibase lockservice.
  */
 package liquibase.lockservice;
 

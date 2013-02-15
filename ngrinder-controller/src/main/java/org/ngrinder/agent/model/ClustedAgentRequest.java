@@ -20,7 +20,7 @@ import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import org.ngrinder.agent.service.ClusteredAgentManagerService;
 
 /**
- * Agent control request b/w controllers.
+ * Agent control request b/w controllers in clustered nGrinder installation.
  * 
  * @author JunHo Yoon
  * @since 3.1

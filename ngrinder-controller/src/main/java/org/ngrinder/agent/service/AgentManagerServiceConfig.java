@@ -24,7 +24,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * Dynamic creation of {@link AgentManagerService} depending on the cluster enable or disable.
+ * Dynamically create a subclass of {@link AgentManagerService} depending on the cluster activation
+ * status.
  * 
  * @author JunHo Yoon
  * @since 3.1
@@ -40,7 +41,7 @@ public class AgentManagerServiceConfig implements ApplicationContextAware {
 	private ApplicationContext applicationContext;
 
 	/**
-	 * Create agent manager service depending on cluster mode.
+	 * Create a subclass of {@link AgentManagerService} depending on the cluster activation status.
 	 * 
 	 * @return {@link AgentManagerService}
 	 */

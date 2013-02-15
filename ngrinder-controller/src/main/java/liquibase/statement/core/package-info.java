@@ -1,5 +1,5 @@
 /**
- * nGrinder customized liquibase sql statements..
+ * nGrinder customized Liquibase statement generator.
  */
 package liquibase.statement.core;
 

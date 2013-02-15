@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * agent controller.
+ * Agent Download Controller.
  * 
  * @author Tobi
  * @since 3.0
@@ -45,7 +45,7 @@ public class AgentDownloadController extends NGrinderBaseController {
 	 *            file path of agent
 	 * @param response
 	 *            response.
-	 */ 
+	 */
 	@RequestMapping(value = "/download/{fileName:[a-zA-Z0-9\\.\\-]+}")
 	public void downloadAgent(@PathVariable String fileName, HttpServletResponse response) {
 		File ngrinderFile = new File(config.getHome().getDownloadDirectory(), fileName);

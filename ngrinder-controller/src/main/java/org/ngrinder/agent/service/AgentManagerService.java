@@ -69,7 +69,7 @@ public class AgentManagerService {
 	private AgentManager agentManager;
 
 	@Autowired
-	private AgentManagerRepository agentRepository;
+	private AgentManagerRepository agentManagerRepository;
 
 	@Autowired
 	private Config config;
@@ -78,9 +78,9 @@ public class AgentManagerService {
 	private PerfTestService perfTestService;
 
 	/**
-	 * Run a scheduled task to check the agent status.
+	 * Run a scheduled task to check the agent status periodically.
 	 * 
-	 * This method update the agent status in DB.
+	 * This method updates the agent statuses in DB.
 	 * 
 	 * @since 3.1
 	 */
@@ -151,8 +151,8 @@ public class AgentManagerService {
 	}
 
 	/**
-	 * Run a scheduled task to check agent network usage. If it goes up the given limit, make all
-	 * tests in the region stop.
+	 * Run a scheduled task to check the agent network usage.<br/>
+	 * If it goes up beyond the given limit, this method will make all tests in the region stop.
 	 * 
 	 * @since 3.1.2
 	 */
@@ -481,11 +481,11 @@ public class AgentManagerService {
 	}
 
 	AgentManagerRepository getAgentRepository() {
-		return agentRepository;
+		return agentManagerRepository;
 	}
 
 	void setAgentRepository(AgentManagerRepository agentRepository) {
-		this.agentRepository = agentRepository;
+		this.agentManagerRepository = agentRepository;
 	}
 
 	Config getConfig() {
@@ -496,4 +496,7 @@ public class AgentManagerService {
 		this.config = config;
 	}
 
+	protected AgentManagerRepository getAgentManagerRepository() {
+		return this.agentManagerRepository;
+	}
 }

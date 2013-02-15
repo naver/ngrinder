@@ -24,7 +24,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 /**
- * agent repository.
+ * Agent Repository. This is necessary due to lack of agent info in the Grinder. We need to keep the
+ * additional info for each agent in the DB not memory.
  * 
  * @author Tobi
  * @author JunHo Yoon
@@ -34,7 +35,7 @@ import org.springframework.stereotype.Repository;
 public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, JpaSpecificationExecutor<AgentInfo> {
 
 	/**
-	 * Find agent by ip and host name.
+	 * Find a {@link AgentInfo} by ip and host name.
 	 * 
 	 * @param ip
 	 *            ip
@@ -45,7 +46,7 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, 
 	AgentInfo findByIpAndHostName(String ip, String hostName);
 
 	/**
-	 * Find {@link AgentInfo} by ip.
+	 * Find a {@link AgentInfo} by ip.
 	 * 
 	 * @param ip
 	 *            ip of agent
@@ -63,10 +64,10 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, 
 	List<AgentInfo> findAllByIp(String ip);
 
 	/**
-	 * find all agents of the status and approved.
+	 * Find all agents which matches with the given the status and are approved .
 	 * 
 	 * @param status
-	 *            query status
+	 *            AgentControllerState
 	 * @param isApproved
 	 *            whether the agent is approved
 	 * @return agent list
@@ -74,7 +75,7 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, 
 	List<AgentInfo> findAllByStatusAndApproved(AgentControllerState status, boolean isApproved);
 
 	/**
-	 * get the count of the specification.
+	 * Get the count of {@link AgentInfo} matching the given specification.
 	 * 
 	 * @param spec
 	 *            Query specification

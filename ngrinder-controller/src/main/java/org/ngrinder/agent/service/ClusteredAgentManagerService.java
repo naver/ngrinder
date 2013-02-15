@@ -20,11 +20,8 @@ import static org.ngrinder.agent.model.ClustedAgentRequest.RequestType.STOP_AGEN
 import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithRegion;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
-import static org.ngrinder.common.util.FileUtil.readObjectFromFile;
-import static org.ngrinder.common.util.FileUtil.writeObjectToFile;
 import static org.ngrinder.common.util.TypeConvertUtil.convert;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +38,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.model.ClustedAgentRequest;
-import org.ngrinder.infra.config.Config;
+import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.schedule.ScheduledTask;
 import org.ngrinder.model.User;
@@ -59,6 +56,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 
 /**
  * Cluster enabled version of {@link AgentManagerService}.
@@ -81,9 +79,6 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 	@Autowired
 	private RegionService regionService;
-
-	@Autowired
-	private Config config;
 
 	/**
 	 * Initialize.
@@ -122,7 +117,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	}
 
 	/**
-	 * Run a scheduled task to check the agent status.
+	 * Run a scheduled task to check the agent statuses.
 	 * 
 	 * @since 3.1
 	 */
@@ -199,20 +194,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 						&& agentInfo.getStatus() == agentManager.getAgentState(agentIdentity);
 	}
 
-	/**
-	 * Agent monitor data share path.
-	 * 
-	 * @param subPath
-	 *            sub path
-	 * @return agent monitor data sub path.
-	 */
-	public File getAgentMonitoringDataPath(String subPath) {
-		File file = new File(config.getHome().getControllerShareDirectory(), "agents");
-		if (!file.exists()) {
-			file.mkdirs();
-		}
-		return new File(file, subPath);
-	}
+	private Gson gson = new Gson();
 
 	/**
 	 * Collect agent system data every second.
@@ -222,16 +204,26 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	public void collectAgentSystemData() {
 		Ehcache nativeCache = (Ehcache) agentMonioringTargetsCache.getNativeCache();
 		List<String> keysWithExpiryCheck = convert(nativeCache.getKeysWithExpiryCheck());
+		AgentManagerRepository agentManagerRepository = getAgentManagerRepository();
+		if (keysWithExpiryCheck.isEmpty()) {
+			return;
+		}
+		List<AgentInfo> agentInfos = new ArrayList<AgentInfo>();
 		for (String each : keysWithExpiryCheck) {
 			ValueWrapper value = agentMonioringTargetsCache.get(each);
-			if (value != null && value.get() != null) {
-				writeObjectToFile(getAgentMonitoringDataPath(each), getSystemDataModel((AgentIdentity) value.get()));
+			AgentControllerIdentityImplementation agentIndentity = convert(value.get());
+			if (value != null && agentIndentity != null) {
+				AgentInfo found = agentManagerRepository.findByIpAndHostName(agentIndentity.getIp(),
+								agentIndentity.getName());
+				found.setSystemStat(gson.toJson(getSystemDataModel(agentIndentity)));
+				agentInfos.add(found);
 			}
 		}
+		agentManagerRepository.save(agentInfos);
 	}
 
-	private SystemDataModel getSystemDataModel(AgentIdentity agetIdentity) {
-		return getAgentManager().getSystemDataModel(agetIdentity);
+	private SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {
+		return getAgentManager().getSystemDataModel(agentIdentity);
 	}
 
 	/**
@@ -383,7 +375,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	 */
 	@Override
 	public SystemDataModel getAgentSystemDataModel(String ip, String name) {
-		return readObjectFromFile(getAgentMonitoringDataPath(createAgentKey(ip, name)), new SystemDataModel());
+		AgentInfo found = getAgentRepository().findByIpAndHostName(ip, name);
+		return gson.fromJson(found.getSystemStat(), SystemDataModel.class);
 	}
 
 	/**

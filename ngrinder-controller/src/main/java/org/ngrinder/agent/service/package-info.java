@@ -1,5 +1,5 @@
 /**
- * Agent service  package.
+ * Agent service package.
  */
 package org.ngrinder.agent.service;
 
