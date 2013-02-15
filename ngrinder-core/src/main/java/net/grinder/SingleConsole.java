@@ -698,9 +698,9 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			// sec.
 			long currentSamplingTimeStamp = System.currentTimeMillis();
 			int gap = (int) ((currentSamplingTimeStamp / 1000) - (lastSamplingTimeStamp / 1000));
+			writeIntervalCsvData(intervalStatisticsSnapshot, modelIndex);
 			for (int i = 0; i < gap; i++) {
 				writeIntervalSummaryData(intervalStatisticsSnapshot);
-				writeIntervalCsvData(intervalStatisticsSnapshot, modelIndex);
 				samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
 					@Override
 					public void inform(SamplingLifeCycleListener listener) {
@@ -1109,8 +1109,6 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			throw new NGrinderRuntimeException(e.getMessage(), e);
-		} finally {
-			noOp();
 		}
 	}
 

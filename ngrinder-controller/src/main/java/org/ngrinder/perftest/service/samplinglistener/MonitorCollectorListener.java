@@ -69,7 +69,7 @@ public class MonitorCollectorListener implements SamplingLifeCycleListener {
 		monitorTask = applicationContext.getBean(MonitorTask.class);
 		monitorTask.setCorrespondingPerfTestId(perfTestId);
 		monitorTask.add(agents, reportPath);
-		timer.schedule(monitorTask, 800, 800);
+		timer.scheduleAtFixedRate(monitorTask, 800, 800);
 	}
 
 	@Override
