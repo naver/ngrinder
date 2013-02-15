@@ -12,6 +12,7 @@ With some bug fix, the following improvements are for the effective operations o
   * Use record instead of wrap by default in the script.
   * Make a user be able to define new statistics.
   * Provide several more useful plugin info.
+  * Fix the bugs in which the some sampling points are missing in the final result. 
   
   
 - Details
