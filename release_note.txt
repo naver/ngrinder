@@ -11,7 +11,7 @@ With some bug fix, the following improvements are for the effective operations o
   * Provide an option which unlocks the agent memory XMX limitation (by default it was 1G). Add agent.useXmxLimit=false in ${NGRINDER_AGENT_HOME}/agent.conf
   * Make the Tomcat stoppable by shutdown.sh command.
   * Use record instead of wrap by default in the script.
-  * Let user be able to define new statistics.
+  * Let a user be able to define new statistics.
   
 - Details
   
@@ -21,6 +21,8 @@ Bug
 [NGRINDER-516] - Fix typo errors
 [NGRINDER-517] - Make the tomcat stoppable
 [NGRINDER-519] - Delete pid when agent stop command run is succeeded
+[NGRINDER-527] - Make the sampling count accurate and speed up the updateStatistics
+[NGRINDER-528] - Make the agent monitor data is saved in DB
 
 Improvement
 [NGRINDER-509] - Make the monitor data visible in realtime
@@ -33,7 +35,11 @@ Improvement
 [NGRINDER-523] - Add an option to enable agent processes to use more than 1G memory
 [NGRINDER-522] - Make network usage status available in agent monitor
 [NGRINDER-524] - Make the resource / lib folder feature more explicit
-[NGRINDER-526] - Make agent connect to console with controller ip when it fails to connect to console
+[NGRINDER-526] - Make an agent connect to the console with controller ip
+[NGRINDER-529] - Make plugin be able to see the currently attaching agent info
+[NGRINDER-530] - Split physical network check to plugin
+[NGRINDER-531] - Delete copyright
+[NGRINDER-532] - Fix the missing region info in the bad network situation
 
 3.1.1 (2013.01.31)
 
