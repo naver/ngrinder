@@ -14,7 +14,9 @@
 package org.ngrinder.service;
 
 import java.io.File;
+import java.util.List;
 
+import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.statistics.StatisticsIndexMap;
 
 /**
@@ -77,4 +79,11 @@ public interface ISingleConsole {
 	 */
 	public abstract int getRunningProcess();
 
+	/**
+	 * Get the all agents attached in this processes.
+	 * 
+	 * @return {@link AgentIdentity} list
+	 * @since 3.1.2
+	 */
+	public abstract List<AgentIdentity> getAllAttachedAgents();
 }

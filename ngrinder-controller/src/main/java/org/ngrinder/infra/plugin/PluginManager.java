@@ -23,6 +23,7 @@ import javax.annotation.PreDestroy;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.extension.OnControllerLifeCycleRunnable;
@@ -30,6 +31,7 @@ import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.perftest.service.PerfTestService;
+import org.ngrinder.service.IAgentManagerService;
 import org.ngrinder.service.IConfig;
 import org.ngrinder.service.IPerfTestService;
 import org.ngrinder.service.IUserService;
@@ -79,6 +81,9 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 	private AuthenticationManager authenticationManager;
 
 	@Autowired
+	private AgentManagerService agentManagerService;
+
+	@Autowired
 	private PerfTestService perfTestService;
 
 	@Autowired
@@ -123,6 +128,7 @@ public class PluginManager implements ServletContextAware, NGrinderConstants {
 		HostComponentProvider host = new HostComponentProvider() {
 			public void provide(ComponentRegistrar reg) {
 				reg.register(AuthenticationManager.class).forInstance(authenticationManager);
+				reg.register(IAgentManagerService.class).forInstance(agentManagerService);
 				reg.register(IUserService.class).forInstance(userService);
 				reg.register(IPerfTestService.class).forInstance(perfTestService);
 				reg.register(IConfig.class).forInstance(config);

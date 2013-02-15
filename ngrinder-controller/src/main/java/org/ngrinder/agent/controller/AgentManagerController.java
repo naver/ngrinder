@@ -21,11 +21,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.model.AgentInfo;
 import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;

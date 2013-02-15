@@ -17,7 +17,7 @@ import java.util.List;
 
 import net.grinder.message.console.AgentControllerState;
 
-import org.ngrinder.agent.model.AgentInfo;
+import org.ngrinder.model.AgentInfo;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;

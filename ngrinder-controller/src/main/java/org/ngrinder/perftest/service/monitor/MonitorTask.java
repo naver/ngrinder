@@ -19,7 +19,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimerTask;
 
-import org.ngrinder.agent.model.AgentInfo;
+import org.ngrinder.model.AgentInfo;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.ngrinder.perftest.service.PerfTestService;

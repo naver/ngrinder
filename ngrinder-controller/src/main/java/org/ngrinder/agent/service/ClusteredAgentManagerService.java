@@ -36,11 +36,11 @@ import net.sf.ehcache.Ehcache;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
-import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.model.ClustedAgentRequest;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.infra.schedule.ScheduledTask;
+import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;

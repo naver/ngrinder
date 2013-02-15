@@ -22,7 +22,7 @@ import java.util.Timer;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.statistics.StatisticsSet;
 
-import org.ngrinder.agent.model.AgentInfo;
+import org.ngrinder.model.AgentInfo;
 import org.ngrinder.perftest.service.monitor.MonitorTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

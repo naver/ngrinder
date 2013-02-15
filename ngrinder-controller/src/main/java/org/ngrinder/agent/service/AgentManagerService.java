@@ -33,17 +33,18 @@ import net.grinder.message.console.AgentControllerState;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
-import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.util.UnitUtil;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
+import org.ngrinder.service.IAgentManagerService;
 import org.python.google.common.base.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ import com.google.common.collect.Multimap;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class AgentManagerService {
+public class AgentManagerService implements IAgentManagerService {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(AgentManagerService.class);
 
 	@Autowired
@@ -195,14 +196,14 @@ public class AgentManagerService {
 		}
 	}
 
-	/**
-	 * get the available agent count map in all regions of the user, including the free agents and
-	 * user specified agents.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param user
-	 *            current user
-	 * @return user available agent count map
+	 * @see
+	 * org.ngrinder.agent.service.IAgentManagerService#getUserAvailableAgentCountMap(org.ngrinder
+	 * .model.User)
 	 */
+	@Override
 	public Map<String, MutableInt> getUserAvailableAgentCountMap(User user) {
 		int availableShareAgents = 0;
 		int availableUserOwnAgent = 0;
@@ -242,13 +243,12 @@ public class AgentManagerService {
 		return getAgentManager().getMaxAgentSizePerConsole();
 	}
 
-	/**
-	 * Get all agent agents. agent list is obtained from DB and {@link AgentManager}
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * This includes not persisted agent as well.
-	 * 
-	 * @return agent list
+	 * @see org.ngrinder.agent.service.IAgentManagerService#getLocalAgents()
 	 */
+	@Override
 	@Transactional
 	public List<AgentInfo> getLocalAgents() {
 		Map<String, AgentInfo> agentInfoMap = createLocalAgentMapFromDB();
@@ -269,26 +269,26 @@ public class AgentManagerService {
 		return agentInfoMap;
 	}
 
-	/**
-	 * Create agent key.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param agentInfo
-	 *            agent information
-	 * 
-	 * @return agent key
+	 * @see
+	 * org.ngrinder.agent.service.IAgentManagerService#createAgentKey(org.ngrinder.agent.model.AgentInfo
+	 * )
 	 */
+	@Override
 	public String createAgentKey(AgentInfo agentInfo) {
 		return createAgentKey(agentInfo.getIp(), agentInfo.getName());
 	}
 
-	/**
-	 * Create agent key.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param agentIdentity
-	 *            agent identity
-	 * 
-	 * @return agent key
+	 * @see
+	 * org.ngrinder.agent.service.IAgentManagerService#createAgentKey(net.grinder.engine.controller
+	 * .AgentControllerIdentityImplementation)
 	 */
+	@Override
 	public String createAgentKey(AgentControllerIdentityImplementation agentIdentity) {
 		return createAgentKey(agentIdentity.getIp(), agentIdentity.getName());
 	}
@@ -297,15 +297,14 @@ public class AgentManagerService {
 		return ip + "_" + name;
 	}
 
-	/**
-	 * Get agent identity by ip and name.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param ip
-	 *            ip
-	 * @param name
-	 *            name
-	 * @return {@link AgentControllerIdentityImplementation} instance.
+	 * @see
+	 * org.ngrinder.agent.service.IAgentManagerService#getLocalAgentIdentityByIpAndName(java.lang
+	 * .String, java.lang.String)
 	 */
+	@Override
 	public AgentControllerIdentityImplementation getLocalAgentIdentityByIpAndName(String ip, String name) {
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
@@ -317,32 +316,32 @@ public class AgentManagerService {
 		return null;
 	}
 
-	/**
-	 * Get all agents attached of this region from DB.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * This method is cluster aware. If it's cluster mode it return all agents attached in this
-	 * region.
-	 * 
-	 * @return agent list
+	 * @see org.ngrinder.agent.service.IAgentManagerService#getLocalAgentListFromDB()
 	 */
+	@Override
 	public List<AgentInfo> getLocalAgentListFromDB() {
 		return getAgentRepository().findAll();
 	}
 
-	/**
-	 * Get all active agents from DB.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return agent list
+	 * @see org.ngrinder.agent.service.IAgentManagerService#getAllActiveAgentInfoFromDB()
 	 */
+	@Override
 	public List<AgentInfo> getAllActiveAgentInfoFromDB() {
 		return getAgentRepository().findAll(active());
 	}
 
-	/**
-	 * Get all visible agents from DB.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return agent list
+	 * @see org.ngrinder.agent.service.IAgentManagerService#getAllVisibleAgentInfoFromDB()
 	 */
+	@Override
 	public List<AgentInfo> getAllVisibleAgentInfoFromDB() {
 		return getAgentRepository().findAll(visible());
 	}
@@ -369,16 +368,12 @@ public class AgentManagerService {
 		return agentInfo;
 	}
 
-	/**
-	 * Get a agent on given id. If it's called from the other controller, only limited info
-	 * available in db will be return.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param id
-	 *            agent id
-	 * @param includeAgentIndentity
-	 *            include agent identity
-	 * @return agent
+	 * @see org.ngrinder.agent.service.IAgentManagerService#getAgent(long, boolean)
 	 */
+	@Override
 	public AgentInfo getAgent(long id, boolean includeAgentIndentity) {
 		AgentInfo findOne = getAgentRepository().findOne(id);
 		if (findOne == null) {
@@ -458,15 +453,14 @@ public class AgentManagerService {
 		noOp();
 	}
 
-	/**
-	 * Get agent system data model for the given ip. This method is cluster aware.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param ip
-	 *            agent ip.
-	 * @param name
-	 *            agent name
-	 * @return {@link SystemDataModel} instance.
+	 * @see
+	 * org.ngrinder.agent.service.IAgentManagerService#getAgentSystemDataModel(java.lang.String,
+	 * java.lang.String)
 	 */
+	@Override
 	public SystemDataModel getAgentSystemDataModel(String ip, String name) {
 		AgentControllerIdentityImplementation agentIdentity = getLocalAgentIdentityByIpAndName(ip, name);
 		return agentIdentity != null ? getAgentManager().getSystemDataModel(agentIdentity) : new SystemDataModel();

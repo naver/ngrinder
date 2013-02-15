@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ngrinder.agent.model;
+package org.ngrinder.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,7 +25,6 @@ import net.grinder.message.console.AgentControllerState;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
-import org.ngrinder.model.BaseEntity;
 
 /**
  * Agent model.

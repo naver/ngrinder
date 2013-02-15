@@ -104,8 +104,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.qos.logback.core.util.SystemInfo;
-
 import com.google.gson.Gson;
 
 /**
@@ -1338,7 +1336,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Put the given {@link SystemInfo} maps into the given perftest entity.
+	 * Put the given {@link org.ngrinder.monitor.share.domain.SystemInfo} maps into the given
+	 * perftest entity.
 	 * 
 	 * @param perfTestId
 	 *            id of perf test

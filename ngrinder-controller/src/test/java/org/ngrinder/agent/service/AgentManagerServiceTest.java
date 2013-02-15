@@ -25,9 +25,9 @@ import net.grinder.message.console.AgentControllerState;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.junit.Test;
 import org.ngrinder.AbstractNGrinderTransactionalTest;
-import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.model.AgentInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

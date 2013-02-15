@@ -19,8 +19,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
-import org.ngrinder.agent.model.AgentInfo;
 import org.ngrinder.common.util.ThreadUtil;
+import org.ngrinder.model.AgentInfo;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
 import org.ngrinder.perftest.service.monitor.MonitorTask;

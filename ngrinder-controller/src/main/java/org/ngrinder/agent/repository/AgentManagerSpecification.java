@@ -21,7 +21,7 @@ import javax.persistence.criteria.Root;
 
 import net.grinder.message.console.AgentControllerState;
 
-import org.ngrinder.agent.model.AgentInfo;
+import org.ngrinder.model.AgentInfo;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
