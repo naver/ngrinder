@@ -13,7 +13,6 @@
  */
 package net.grinder;
 
-import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.beans.PropertyChangeEvent;
@@ -129,7 +128,6 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	private long samplingCount = 0;
 	/** The count of ignoring sampling. */
 	private int ignoreSampleCount;
-	private boolean firstSampling = true;
 	/**
 	 * Currently running thread.
 	 */
@@ -667,6 +665,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * The last timestamp when the sampling is ran.
 	 */
 	private long lastSamplingTimeStamp = 0;
+	private boolean firstSampling = true;
 
 	/*
 	 * (non-Javadoc)
@@ -683,22 +682,22 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			return;
 		}
 		if (firstSampling) {
+			this.lastSamplingTimeStamp = System.currentTimeMillis() - 1000;
 			firstSampling = false;
-			lastSamplingTimeStamp = System.currentTimeMillis() - 1000;
-			informTestSamplingStart();
 		}
+		final StatisticsSet intervalStatisticsSnapshot = intervalStatistics.snapshot();
+		final StatisticsSet cumulatedStatisticsSnapshot = cumulativeStatistics.snapshot();
+		long currentSamplingTimeStamp = System.currentTimeMillis();
+
 		try {
-			final StatisticsSet intervalStatisticsSnapshot = intervalStatistics.snapshot();
-			final StatisticsSet cumulatedStatisticsSnapshot = cumulativeStatistics.snapshot();
 			setTpsValue(sampleModel.getTPSExpression().getDoubleValue(intervalStatisticsSnapshot));
 			checkTooLowTps(getTpsValues());
 			ModelTestIndex modelIndex = ((SampleModelImplementationEx) sampleModel).getModelTestIndex();
 			updateStatistics(modelIndex, intervalStatisticsSnapshot, cumulatedStatisticsSnapshot);
 			// Adjust sampling delay.. run write data multiple times... when it takes longer than 1
 			// sec.
-			long currentSamplingTimeStamp = System.currentTimeMillis();
-			int gap = (int) ((currentSamplingTimeStamp / 1000) - (lastSamplingTimeStamp / 1000));
 			writeIntervalCsvData(intervalStatisticsSnapshot, modelIndex);
+			int gap = (int) ((currentSamplingTimeStamp / 1000) - (lastSamplingTimeStamp / 1000));
 			for (int i = 0; i < gap; i++) {
 				writeIntervalSummaryData(intervalStatisticsSnapshot);
 				samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
@@ -708,6 +707,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 					}
 				});
 			}
+
 			lastSamplingTimeStamp = currentSamplingTimeStamp;
 			checkTooManyError(cumulativeStatistics);
 
@@ -1187,6 +1187,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		this.sampling = true;
 		this.sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 		this.sampleModel.addTotalSampleListener(this);
+		informTestSamplingStart();
+		this.firstSampling = true;
 		this.sampleModel.start();
 		LOGGER.info("Sampling is started");
 

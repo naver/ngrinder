@@ -317,8 +317,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 				}
 				long sizeOfDirectory = FileUtils.sizeOfDirectory(dir);
 				if (sizeOfDirectory > safeThreadHold) {
-					perfTestService.markProgress(perfTest, "The total distributed file size is over "
-									+ safeThreadHold + "B.\n -Safe file distribution mode is enabled by force.");
+					perfTestService.markProgress(perfTest, "The total distributed file size is over " + safeThreadHold
+									+ "B.\n -Safe file distribution mode is enabled by force.");
 					return true;
 				}
 				return safe;

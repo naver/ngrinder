@@ -40,7 +40,7 @@ public class MonitorCollectorListener implements SamplingLifeCycleListener {
 	private final Set<AgentInfo> agents;
 	private MonitorTask monitorTask;
 	private final File reportPath;
-	private final Timer timer;
+	private Timer timer;
 	private final Long perfTestId;
 
 	/**
@@ -60,7 +60,6 @@ public class MonitorCollectorListener implements SamplingLifeCycleListener {
 		this.applicationContext = applicationContext;
 		this.perfTestId = checkNotNull(perfTestId);
 		this.agents = agents;
-		this.timer = new Timer(true);
 		this.reportPath = reportPath;
 	}
 
@@ -69,7 +68,11 @@ public class MonitorCollectorListener implements SamplingLifeCycleListener {
 		monitorTask = applicationContext.getBean(MonitorTask.class);
 		monitorTask.setCorrespondingPerfTestId(perfTestId);
 		monitorTask.add(agents, reportPath);
-		timer.schedule(monitorTask, 800, 800);
+		if (this.timer != null) {
+			timer.cancel();
+		}
+		this.timer = new Timer(true);
+		this.timer.schedule(monitorTask, 1000, 1000);
 	}
 
 	@Override
