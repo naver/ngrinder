@@ -186,6 +186,9 @@
 					$("#agent_status").html(createMonitoringStatusString(curAgentStat));
 					$("#monitor_status").html(createMonitoringStatusString(curMonitorStat));
 					peakTps = curPeakTps;
+					if (curPeakTps < 10) {
+						preakTps = 10;
+					}
 					test_tps_data.enQueue(curTps);
 				} else {
 					if ($('#runningContent_tab:hidden')[0]) {
