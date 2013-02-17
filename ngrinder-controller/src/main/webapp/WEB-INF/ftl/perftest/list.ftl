@@ -22,7 +22,7 @@
     	<#include "../common/navigator.ftl">
 
 		<div class="container">
-			<img src="${req.getContextPath()}/img/bg_perftest_banner_<@spring.message "common.language"/>.png"/>
+			<img src="${req.getContextPath()}/img/bg_perftest_banner_en.png?${nGrinderVersion}"/>
 			
 			<form id="listForm" class="well form-inline searchBar" action=""${req.getContextPath()}/perftest/list" method="POST">
 				<input type="hidden" id="sortColumn" name="page.sort" value="${sortColumn!'lastModifiedDate'}">

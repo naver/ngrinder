@@ -9,7 +9,7 @@
 	<body>
     <#include "../common/navigator.ftl">
 	<div class="container">
-		<img src="${req.getContextPath()}/img/bg_script_banner_<@spring.message "common.language"/>.png"/>
+		<img src="${req.getContextPath()}/img/bg_script_banner_en.png?${nGrinderVersion}"/>
 		<div class="well form-inline searchBar">
 			<table style="width:100%">
 				<tr>
