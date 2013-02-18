@@ -25,6 +25,7 @@ Bug
 [NGRINDER-519] - Delete pid when agent stop command run is succeeded
 [NGRINDER-527] - Make the sampling count accurate and speed up the updateStatistics
 [NGRINDER-528] - Make the agent monitor data is saved in DB
+[NGRINDER-537] - Fix the bug which show then a test report panel in few seconds even when a user click test config panel
 
 Improvement
 [NGRINDER-509] - Make the monitor data visible in realtime
@@ -42,6 +43,8 @@ Improvement
 [NGRINDER-530] - Split physical network check to plugin
 [NGRINDER-531] - Delete copyright
 [NGRINDER-532] - Fix the missing region info in the bad network situation
+[NGRINDER-533] - Make chart Y value 10 at minimum
+[NGRINDER-534] - Modify Layout to show the main content bigger
 
 3.1.1 (2013.01.31)
 
