@@ -356,13 +356,35 @@ $(document).ready(function () {
 		<#if category == "TESTING"> 
   			displayCfgAndTestRunning(); 
 		<#elseif category == "FINISHED" || category == "STOP" || category == "ERROR"> 
-			displayCfgAndTestReport(); 
+			isFinished = true;
+			displayCfgAndTestReport();
 		<#else>
 			displayCfgOnly(); 
 		</#if>
 	<#else>
 		displayCfgOnly();
 	</#if>
+	(function refreshContent() {
+		var ids = [];
+		if (testId == "" || isFinished) {
+			return;
+		}
+
+		$.ajax({
+			url : '${req.getContextPath()}/perftest/<#if test??>${(test.id)?c}</#if>/updateStatus', 
+			type : 'GET',
+			success : function(perfTestData) {
+				perfTestData = eval(perfTestData);
+				data = perfTestData.statusList
+				for ( var i = 0; i < data.length; i++) {
+					updateStatus(data[i].id, data[i].status_type, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
+				}
+			},
+			complete : function() {
+				setTimeout(refreshContent, 3000);
+			}
+		});
+	})();
 });
 
 function formatTags(e) {
@@ -1039,7 +1061,7 @@ function updateStatus(id, status_type, status_name, icon, deletable, stoppable, 
 	} else if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR" || status_type == "CANCELED") {
 		isFinished = true; 
 		// Wait and run because it takes time to transfer logs.
-		setTimeout('displayCfgAndTestReport()', 2000);
+		setTimeout('displayCfgAndTestReport()', 3000);
 	} else {
 		displayCfgOnly();
 	}
@@ -1048,27 +1070,7 @@ function updateStatus(id, status_type, status_name, icon, deletable, stoppable, 
 var isFinished = false;
 var testId = $('#testId').val();
 // Wrap this function in a closure so we don't pollute the namespace
-(function refreshContent() {
-	var ids = [];
-	if (testId == "" || isFinished) {
-		return;
-	}
 
-	$.ajax({
-		url : '${req.getContextPath()}/perftest/<#if test??>${(test.id)?c}</#if>/updateStatus', 
-		type : 'GET',
-		success : function(perfTestData) {
-			perfTestData = eval(perfTestData);
-			data = perfTestData.statusList
-			for ( var i = 0; i < data.length; i++) {
-				updateStatus(data[i].id, data[i].status_type, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
-			}
-		},
-		complete : function() {
-			setTimeout(refreshContent, 3000);
-		}
-	});
-})();
 
 function displayCfgOnly() {
 	$("#testContent_tab a").tab('show');
