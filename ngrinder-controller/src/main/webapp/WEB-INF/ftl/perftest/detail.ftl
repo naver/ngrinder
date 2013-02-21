@@ -187,12 +187,9 @@
 										</td>
 										<td>
 											<#if test??> 
-												<span id="teststatus_pop_over"
-													rel="popover" 
-													data-content='${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}'  
-													data-original-title="<@spring.message "${test.status.springMessageKey}"/>" type="toggle" placement="bottom">
-													<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}" />
-												</span>
+												<img id="testStatus_img_id" src="${req.getContextPath()}/img/ball/${test.status.iconName}"
+												data-content='${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}'  
+												data-original-title="<@spring.message "${test.status.springMessageKey}"/>"/>
 											</#if>
 										</td>
 										<td>
@@ -352,6 +349,11 @@ $(document).ready(function () {
 	updateRampupChart();
 	
 	<#if test??>
+		$("#testStatus_img_id").popover({
+			placement: 'bottom',
+			trigger: 'hover',
+			html: true
+		});
 		<#assign category = test.status.category>
 		<#if category == "TESTING"> 
   			displayCfgAndTestRunning(); 
@@ -1014,19 +1016,15 @@ function openReportDiv(onFinishHook) {
 }
 
 function updateStatus(id, status_type, status_name, icon, deletable, stoppable, message) {
-	if ($("#teststatus_pop_over").attr("data-content") != message) {
-		
-		$("#teststatus_pop_over").attr("data-content", message);
-		var popover = $("#teststatus_pop_over").data("popover")
-		if (popover !== undefined && popover.tip().is(':visible')) {
-			popover.show(); 
-		}
+	if ($("#testStatus_img_id").attr("data-content") != message) {
+		$("#testStatus_img_id").attr("data-content", message);
 	}
 	
 	if ($("#testStatusType").val() == status_type) {
 		return;
 	}
-	$("#teststatus_pop_over").attr("data-original-title", status_name);
+	
+	$("#testStatus_img_id").attr("data-original-title", status_name);
 	$("#testStatusType").val(status_type);
 
 	var ballImg = $("#testStatus_img_id");

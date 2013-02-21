@@ -21,7 +21,7 @@
 							</colgroup>
 							<tr>
 								<td>
-									<input type="text" class="search-query search-query-without-radios" placeholder="Keywords" id="searchText" value="${query!}">
+									<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${query!}">
 									<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
 								</td>
 								<td>
@@ -110,7 +110,7 @@
 									<i class="icon-briefcase"></i>
 								</#if>
 							</td>
-							<td  class="ellipsis">
+							<td class="ellipsis">
 								<#if script.fileType.fileCategory.isEditable()>
 									<a href="${req.getContextPath()}/script/detail/${script.path}" target="_self" title="${script.path}">${script.fileName}</a>
 								<#elseif script.fileType == "dir">
