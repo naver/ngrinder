@@ -45,6 +45,7 @@ Improvement
 [NGRINDER-532] - Fix the missing region info in the bad network situation
 [NGRINDER-533] - Make chart Y value 10 at minimum
 [NGRINDER-534] - Modify Layout to show the main content bigger
+[NGRINDER-539] - Make console host name used in agent.conf
 
 3.1.1 (2013.01.31)
 
