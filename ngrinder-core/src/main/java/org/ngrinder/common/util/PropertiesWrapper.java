@@ -116,4 +116,8 @@ public class PropertiesWrapper {
 		String property = getProperty(key, String.valueOf(defaultValue), DEFAULT_ERROR_MESSGAE);
 		return BooleanUtils.toBoolean(property);
 	}
+
+	public void setProperty(String key, String value) {
+		this.properties.setProperty(key, value);
+	}
 }

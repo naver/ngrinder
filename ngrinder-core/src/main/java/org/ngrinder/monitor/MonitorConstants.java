@@ -48,9 +48,13 @@ public final class MonitorConstants {
 
 	/**
 	 * empty means all processes.
+	 * @deprecated
 	 */
 	public static final Set<Integer> DEFAULT_JVM_PID = new HashSet<Integer>();
 
+	/**
+	 * @deprecated
+	 */
 	public static final String P_COMMA = ",";
 
 	/**
@@ -60,7 +64,7 @@ public final class MonitorConstants {
 	 *            {@link AgentConfig} from which the property is loaded.
 	 */
 	public static void init(AgentConfig agentConfig) {
-		// TODO: in version 3.1, we will make the monitor listener port configurable.
+		// TODO: in version 3.2, we will make the monitor listener port configurable.
 		// PropertiesWrapper agentProperties = agentConfig.getAgentProperties();
 		// DEFAULT_MONITOR_PORT = agentProperties.getPropertyInt("monitor.listen.port",
 		// DEFAULT_MONITOR_PORT);
