@@ -1,4 +1,4 @@
-3.1.2 (2013.02.16)
+3.1.2 (2013.02.22)
 
 We're proudly releasing nGrinder 3.1.2 which enhances the usability and visibility.
 With some bug fix, the following improvements are for the effective operations of nGrinder.
