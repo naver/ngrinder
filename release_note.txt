@@ -7,11 +7,11 @@ With some bug fix, the following improvements are for the effective operations o
   * Enable realTime target server monitoring. Now you can see how the target server reacts during tests.
   * Monitor agent network usages and be able to run the plugin to do something on the agents.
   * See logs passed from agents  directly in the browser.
-  * Provide an option which unlocks the agent memory XMX limitation (by default it was 1G). Add agent.useXmxLimit=false in ${NGRINDER_AGENT_HOME}/agent.conf
+  * Provide an option which unlocks the agent memory XMX limitation (by default it was 1G). Add agent.useXmxLimit=false in ${NGRINDER_AGENT_HOME}/agent.conf to enable this
   * Make the Tomcat stoppable by shutdown command.
   * Use record instead of wrap by default in the script.
   * Make a user be able to define new statistics.
-  * Provide several more useful plugin info.
+  * Provide several more useful plugin interface.
   * Fix the bugs in which the some sampling points are missing in the final result. 
   
   
@@ -34,7 +34,6 @@ Improvement
 [NGRINDER-515] - Delete unnecessary packages.
 [NGRINDER-518] - Make logs viewable in browser
 [NGRINDER-520] - Collect network usage data from agent and make it stoppable when overflow
-[NGRINDER-521] - Make ngrinder loginable from HTTP BasicAuth
 [NGRINDER-523] - Add an option to enable agent processes to use more than 1G memory
 [NGRINDER-522] - Make network usage status available in agent monitor
 [NGRINDER-524] - Make the resource / lib folder feature more explicit
