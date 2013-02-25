@@ -58,6 +58,8 @@ public class MonitorClientSerivce {
 
 	private BufferedWriter bw;
 
+	private FileWriter fileWriter;
+
 	/**
 	 * default constructor, used to debug the non-singleton of this class.
 	 */
@@ -87,13 +89,12 @@ public class MonitorClientSerivce {
 			ObjectName systemName = new ObjectName(objNameStr);
 			sysInfoMBeanObj = new MonitorCollectionInfoDomain(systemName, "SystemInfo", SystemInfo.class);
 
-			bw = new BufferedWriter(new FileWriter(new File(reportPath, Config.MONITOR_FILE_PREFIX + ip + ".data"),
-							false));
+			fileWriter = new FileWriter(new File(reportPath, Config.MONITOR_FILE_PREFIX + ip + ".data"), false);
+			bw = new BufferedWriter(fileWriter);
 			// write header info
 			bw.write(SystemInfo.HEADER);
 			bw.newLine();
 			bw.flush();
-
 		} catch (Exception e) {
 			LOGGER.error("Init Error while {} and {} {}", new Object[] { ip, port, reportPath }, e);
 		}
@@ -132,18 +133,21 @@ public class MonitorClientSerivce {
 	 */
 	public void close() {
 		mbeanClient.disconnect();
-		flushAndClose(bw);
+		flushAndClose();
 
 	}
 
-	private void flushAndClose(BufferedWriter bw) {
+	private void flushAndClose() {
 		try {
-			bw.flush();
+			if (bw != null) {
+				bw.flush();
+			}
 		} catch (IOException e) {
 			LOGGER.error("While running flushAndClose() in MonitorClientSerivce, the error occurs.");
 			LOGGER.error("Details : ", e);
 		}
 		IOUtils.closeQuietly(bw);
+		IOUtils.closeQuietly(fileWriter);
 	}
 
 	/**

@@ -5,9 +5,9 @@
 		<title><@spring.message "home.title"/></title>
 		<style>
 			.hero-unit { 
-				background-image: url('${req.getContextPath()}/img/bg_main_banner_<@spring.message "common.language"/>.png');
+				background-image: url('${req.getContextPath()}/img/bg_main_banner_en.png?${nGrinderVersion}');
 				margin-bottom: 10px;
-				height: 200px;
+				height: 160px;
 				padding: 0
 			}    
 			.quickStart {
@@ -37,9 +37,6 @@
 				<div class="page-header">
 	 				 <h3><@spring.message "home.qa.title"/></h3>  
 				</div>
-				<div class="alert alert-info">
-			  	<@spring.message "home.qa.message"/>
-			  	</div> 
 		   		<div class="well">
 			  		<br/>
 				  	<#if right_panel_entries?has_content>
@@ -83,9 +80,6 @@
 				<div class="page-header">
 	 				 <h3><@spring.message "home.developerResources.title"/></h3> 
 				</div> 
-				<div class="alert alert-info">
-			  		<@spring.message "home.developerResources.message"/>
-			  	</div> 
 		   		<div class="well">
 			  		<br/>
 				  	<#if left_panel_entries?has_content>

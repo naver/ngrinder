@@ -29,6 +29,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -235,5 +237,15 @@ public abstract class NetworkUtil {
 			IOUtils.closeQuietly(in);
 		}
 		return;
+	}
+
+	private static final String PATTERN = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+					+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+					+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
+	private static final Pattern pattern = Pattern.compile(PATTERN);
+
+	public static boolean isValidIP(final String ip) {
+		Matcher matcher = pattern.matcher(ip);
+		return matcher.matches();
 	}
 }

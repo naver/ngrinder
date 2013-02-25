@@ -312,13 +312,13 @@ public class PerfTestRunnable implements NGrinderConstants {
 			@Override
 			public boolean start(File dir, boolean safe) {
 				if (safe) {
-					perfTestService.markProgress(perfTest, "Safe distribution is enabled.");
+					perfTestService.markProgress(perfTest, "Safe file distribution mode is enabled.");
 					return safe;
 				}
 				long sizeOfDirectory = FileUtils.sizeOfDirectory(dir);
 				if (sizeOfDirectory > safeThreadHold) {
-					perfTestService.markProgress(perfTest, "The total file size to be distributed is over "
-									+ safeThreadHold + "Byte. Enable safe file distribution in force.");
+					perfTestService.markProgress(perfTest, "The total distributed file size is over " + safeThreadHold
+									+ "B.\n -Safe file distribution mode is enabled by force.");
 					return true;
 				}
 				return safe;
@@ -549,7 +549,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            {@link SingleConsole} which is being used for the given {@link PerfTest}
 	 */
 	public void doCancel(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		LOG.error("Cacel the perftest {} by user request.", perfTest.getTestIdentifier());
+		LOG.error("Cancel {} by user request.", perfTest.getTestIdentifier());
 		singleConsoleInUse.unregisterSampling();
 		try {
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED,

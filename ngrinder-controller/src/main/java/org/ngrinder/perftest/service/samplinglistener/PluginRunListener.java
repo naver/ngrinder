@@ -74,7 +74,6 @@ public class PluginRunListener implements SamplingLifeCycleListener {
 
 	@Override
 	public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-
 		for (OnTestSamplingRunnable each : plugins) {
 			try {
 				each.sampling(singleConsole, perfTest, perfTestService, intervalStatistics, cumulativeStatistics);

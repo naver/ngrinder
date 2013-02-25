@@ -18,9 +18,11 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -110,6 +112,9 @@ public class NGrinderStarter {
 		MonitorConstants.init(agentConfig);
 
 		try {
+
+			String localHostAddress = NetworkUtil.getLocalHostAddress();
+			System.setProperty("java.rmi.server.hostname", localHostAddress);
 			AgentMonitorServer.getInstance().init();
 			AgentMonitorServer.getInstance().start();
 		} catch (Exception e) {
@@ -136,6 +141,23 @@ public class NGrinderStarter {
 		LOG.info(" Start nGrinder Agent ...");
 		String consoleIP = StringUtils.isNotEmpty(controllerIp) ? controllerIp : agentConfig.getAgentProperties()
 						.getProperty("agent.console.ip", "127.0.0.1");
+
+		if (!NetworkUtil.isValidIP(consoleIP)) {
+			LOG.error("Hey!! {} does not seems like IP. Try to resolve the ip by {}.", consoleIP, consoleIP);
+			InetAddress byName;
+			try {
+				byName = InetAddress.getByName(consoleIP);
+				consoleIP = byName.getHostAddress();
+				agentConfig.getAgentProperties().setProperty("agent.console.ip", consoleIP);
+				LOG.info("Console IP is resolved as  {}.", consoleIP);
+			} catch (UnknownHostException e) {
+				consoleIP = "127.0.0.1";
+				LOG.info("Console IP   resolution is failed. Use 127.0.0.1 instead.");
+			} finally {
+				agentConfig.getAgentProperties().setProperty("agent.console.ip", consoleIP);
+			}
+
+		}
 		int consolePort = agentConfig.getAgentProperties().getPropertyInt("agent.console.port",
 						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		String region = agentConfig.getAgentProperties().getProperty("agent.region", "");

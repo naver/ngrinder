@@ -376,7 +376,9 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	@Override
 	public SystemDataModel getAgentSystemDataModel(String ip, String name) {
 		AgentInfo found = getAgentRepository().findByIpAndHostName(ip, name);
-		return gson.fromJson(found.getSystemStat(), SystemDataModel.class);
+		String systemStat = found.getSystemStat();
+		return (StringUtils.isEmpty(systemStat)) ? new SystemDataModel() : gson.fromJson(systemStat,
+						SystemDataModel.class);
 	}
 
 	/**

@@ -22,7 +22,7 @@
 		<#local giga=mega*kilo />
 		<#local tera=giga*kilo />
 		<#if bytes == 0>
-			<#return "None">
+			<#return "-">
 		</#if>
 		<#if (bytes / tera > 1)>
 			<#return (bytes/tera)?string("0.#")+"TB">

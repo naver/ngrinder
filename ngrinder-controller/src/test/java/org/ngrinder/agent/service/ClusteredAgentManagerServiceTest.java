@@ -55,41 +55,40 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 	@Autowired
 	private Config config;
 
-	private CacheManager cacheManager ;
-	
+	private CacheManager cacheManager;
+
 	private Config spiedConfig;
-	
+
 	private boolean initialed = false;
 
 	@Before
-	public  void before() {
+	public void before() {
 		if (initialed) {
 			return;
 		}
 		spiedConfig = spy(config);
 		when(spiedConfig.isCluster()).thenReturn(true);
 		when(spiedConfig.getRegion()).thenReturn("TestRegion");
-		
+
 		AgentManagerServiceConfig servConfig = new AgentManagerServiceConfig();
 		ReflectionTestUtils.setField(servConfig, "config", spiedConfig);
 		servConfig.setApplicationContext(applicationContext);
-		agentManagerService = (ClusteredAgentManagerService)servConfig.agentManagerService();
+		agentManagerService = (ClusteredAgentManagerService) servConfig.agentManagerService();
 		agentManagerService.setConfig(spiedConfig);
-		
-		//set clustered cache manager.
+
+		// set clustered cache manager.
 		MockDynamicCacheConfig cacheConfig = new MockDynamicCacheConfig();
 		cacheConfig.setConfig(spiedConfig);
 		cacheManager = cacheConfig.dynamicCacheManager();
-		((EhCacheCacheManager)cacheManager).afterPropertiesSet(); //it will not be called if we create manually
+		((EhCacheCacheManager) cacheManager).afterPropertiesSet(); // it will not be called if we
+																	// create manually
 		ReflectionTestUtils.setField(agentManagerService, "cacheManager", cacheManager);
 		assertThat(cacheConfig.getConfig(), not(nullValue()));
 
 		agentManagerService.init();
 		initialed = true;
 	}
-	
 
-	
 	@Test
 	public void testOther() {
 		agentManagerService.getAllVisibleAgentInfoFromDB();
@@ -98,11 +97,11 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 		agentManagerService.requestShareAgentSystemDataModel(0L);
 		agentManagerService.getAgentSystemDataModel("127.0.0.1", "127.0.0.1");
 		AgentControllerIdentityImplementation monitor = new AgentControllerIdentityImplementation("testAgent",
-				"127.0.0.1");
+						"127.0.0.1");
 		monitor.setRegion(spiedConfig.getRegion());
 		agentManagerService.addAgentMonitoringTarget(monitor);
 		agentManagerService.stopAgent(new AgentControllerIdentityImplementation("testAgent", "127.0.0.1"));
-		
+
 		agentManagerService.collectAgentSystemData();
 	}
 

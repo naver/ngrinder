@@ -1,8 +1,8 @@
 <div class="row" id="footDiv" >
 	<div class="span12 center">
-		<hr>
+		<hr style="margin-bottom:0px">
 		<footer>
-			<p> nGrinder ver ${nGrinderVersion} &copy; 2013 <a href="http://www.nhncorp.com/nhn/index.nhn" target="_blank"><@spring.message "common.nhnCorp"/></a></p>
+			<p><a href="http://nhnopensource.org/ngrinder" target="_blank">nGrinder v${nGrinderVersion}</a></p>
 		</footer>
 	</div>
 </div>

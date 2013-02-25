@@ -26,26 +26,18 @@ import java.util.Map;
 import java.util.Set;
 
 import net.grinder.common.processidentity.AgentIdentity;
-import net.grinder.console.communication.AgentProcessControlImplementation;
-import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.ngrinder.agent.repository.AgentManagerRepository;
-import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.common.util.UnitUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
-import org.ngrinder.model.PerfTest;
-import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
-import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.service.IAgentManagerService;
-import org.python.google.common.base.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,10 +66,6 @@ public class AgentManagerService implements IAgentManagerService {
 
 	@Autowired
 	private Config config;
-
-	@Autowired
-	private PerfTestService perfTestService;
-
 	/**
 	 * Run a scheduled task to check the agent status periodically.
 	 * 
@@ -149,51 +137,6 @@ public class AgentManagerService implements IAgentManagerService {
 		getAgentRepository().save(changeAgents);
 		getAgentRepository().delete(agentsToBeDeleted);
 
-	}
-
-	/**
-	 * Run a scheduled task to check the agent network usage.<br/>
-	 * If it goes up beyond the given limit, this method will make all tests in the region stop.
-	 * 
-	 * @since 3.1.2
-	 */
-	@Scheduled(fixedDelay = 2000)
-	@Transactional
-	public void checkTotalNetworkOverflow() {
-		int totalRecieved = 0;
-		int totalSent = 0;
-		Set<AgentStatus> workingAgents = agentManager
-						.getAgentStatusSet(new Predicate<AgentProcessControlImplementation.AgentStatus>() {
-							@Override
-							public boolean apply(AgentStatus agentStatus) {
-								return agentStatus.getConnectingPort() != 0;
-							}
-						});
-		if (workingAgents.isEmpty()) {
-			return;
-		}
-		for (AgentStatus each : workingAgents) {
-			totalRecieved += each.getSystemDataModel().getRecievedPerSec();
-			totalSent += each.getSystemDataModel().getSentPerSec();
-		}
-
-		int limit = config.getSystemProperties().getPropertyInt(
-						NGrinderConstants.NGRINDER_PROP_BANDWIDTH_LIMIT_MEGABYTE,
-						NGrinderConstants.NGRINDER_PROP_BANDWIDTH_LIMIT_MEGABYTE_DEFAULT_VALUE) * 1024 * 1024;
-		if (totalRecieved > limit || totalSent > limit) {
-			LOGGER.debug("LIMIT : {}, RX : {}, TX : {}", new Object[] { limit, totalRecieved, totalSent });
-			for (PerfTest perfTest : perfTestService.getTestingPerfTest()) {
-				if (perfTest.getStatus() != Status.ABNORMAL_TESTING) {
-					perfTestService.markAbromalTermination(
-									perfTest,
-									String.format("TOO MUCH TRAFFIC on this region. STOP IN FORCE.\n"
-													+ "- LIMIT/s: %s\n" + "- RX/s: %s / TX/s: %s",
-													UnitUtil.byteCountToDisplaySize(limit),
-													UnitUtil.byteCountToDisplaySize(totalRecieved),
-													UnitUtil.byteCountToDisplaySize(totalSent)));
-				}
-			}
-		}
 	}
 
 	/*
@@ -482,15 +425,15 @@ public class AgentManagerService implements IAgentManagerService {
 		this.agentManagerRepository = agentRepository;
 	}
 
-	Config getConfig() {
+	protected AgentManagerRepository getAgentManagerRepository() {
+		return this.agentManagerRepository;
+	}
+
+	public Config getConfig() {
 		return config;
 	}
 
-	void setConfig(Config config) {
+	public void setConfig(Config config) {
 		this.config = config;
-	}
-
-	protected AgentManagerRepository getAgentManagerRepository() {
-		return this.agentManagerRepository;
 	}
 }

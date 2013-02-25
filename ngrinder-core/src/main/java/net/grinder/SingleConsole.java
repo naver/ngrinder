@@ -13,7 +13,6 @@
  */
 package net.grinder;
 
-import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.beans.PropertyChangeEvent;
@@ -124,12 +123,11 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	private boolean headerAdded = false;
 
-	private Map<String, BufferedWriter> fileWriterMap = new HashMap<String, BufferedWriter>();
+	private Map<String, BufferedWriter> fileWriterMap = Maps.newHashMap();
 	/** Current count of sampling. */
 	private long samplingCount = 0;
 	/** The count of ignoring sampling. */
 	private int ignoreSampleCount;
-	private boolean firstSampling = true;
 	/**
 	 * Currently running thread.
 	 */
@@ -417,7 +415,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 		/**
 		 * Notify the distribute starting event and the returns the safe mode (if you want to enable
-		 * safe mode in force depending on the file. It should return true.
+		 * safe mode by force depending on the file. It should return true.
 		 * 
 		 * @param dir
 		 *            Distribution dir
@@ -667,6 +665,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * The last timestamp when the sampling is ran.
 	 */
 	private long lastSamplingTimeStamp = 0;
+	private boolean firstSampling = true;
 
 	/*
 	 * (non-Javadoc)
@@ -683,24 +682,24 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			return;
 		}
 		if (firstSampling) {
+			this.lastSamplingTimeStamp = System.currentTimeMillis() - 1000;
 			firstSampling = false;
-			lastSamplingTimeStamp = System.currentTimeMillis() - 1000;
-			informTestSamplingStart();
 		}
+		final StatisticsSet intervalStatisticsSnapshot = intervalStatistics.snapshot();
+		final StatisticsSet cumulatedStatisticsSnapshot = cumulativeStatistics.snapshot();
+		long currentSamplingTimeStamp = System.currentTimeMillis();
+
 		try {
-			final StatisticsSet intervalStatisticsSnapshot = intervalStatistics.snapshot();
-			final StatisticsSet cumulatedStatisticsSnapshot = cumulativeStatistics.snapshot();
 			setTpsValue(sampleModel.getTPSExpression().getDoubleValue(intervalStatisticsSnapshot));
 			checkTooLowTps(getTpsValues());
 			ModelTestIndex modelIndex = ((SampleModelImplementationEx) sampleModel).getModelTestIndex();
 			updateStatistics(modelIndex, intervalStatisticsSnapshot, cumulatedStatisticsSnapshot);
 			// Adjust sampling delay.. run write data multiple times... when it takes longer than 1
 			// sec.
-			long currentSamplingTimeStamp = System.currentTimeMillis();
+			writeIntervalCsvData(intervalStatisticsSnapshot, modelIndex);
 			int gap = (int) ((currentSamplingTimeStamp / 1000) - (lastSamplingTimeStamp / 1000));
 			for (int i = 0; i < gap; i++) {
 				writeIntervalSummaryData(intervalStatisticsSnapshot);
-				writeIntervalCsvData(intervalStatisticsSnapshot, modelIndex);
 				samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
 					@Override
 					public void inform(SamplingLifeCycleListener listener) {
@@ -708,6 +707,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 					}
 				});
 			}
+
 			lastSamplingTimeStamp = currentSamplingTimeStamp;
 			checkTooManyError(cumulativeStatistics);
 
@@ -1109,8 +1109,6 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
 			throw new NGrinderRuntimeException(e.getMessage(), e);
-		} finally {
-			noOp();
 		}
 	}
 
@@ -1189,6 +1187,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		this.sampling = true;
 		this.sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 		this.sampleModel.addTotalSampleListener(this);
+		informTestSamplingStart();
+		this.firstSampling = true;
 		this.sampleModel.start();
 		LOGGER.info("Sampling is started");
 

@@ -186,6 +186,9 @@
 					$("#agent_status").html(createMonitoringStatusString(curAgentStat));
 					$("#monitor_status").html(createMonitoringStatusString(curMonitorStat));
 					peakTps = curPeakTps;
+					if (curPeakTps < 10) {
+						preakTps = 10;
+					}
 					test_tps_data.enQueue(curTps);
 				} else {
 					if ($('#runningContent_tab:hidden')[0]) {
@@ -209,12 +212,10 @@
 		var monitorStatusString = "<ul>";
 		for ( var i = 0; i < status.length; i++) {
 			var each = status[i];
-			monitorStatusString = monitorStatusString + "<li><div style='wdith:100%;' class='ellipsis'><b>" + each.agent + "</b> CPU-"
-				+ each.cpu + "% MEM-" 
-				+ each.mem + "% ";
+			monitorStatusString = monitorStatusString + "<li><div style='wdith:100%;' class='ellipsis'><span title='" + each.agentFull + "'><b>" + each.agent + "</b></span> CPU-"
+				+ each.cpu + "% MEM-" + each.mem + "% ";
 			if (each.recievedPerSec != "0B" || each.sentPerSec != "0B") { 
-				monitorStatusString = monitorStatusString + "/ RX-"+ each.recievedPerSec + " TX-" + each.sentPerSec + "</dv></li>"	
-				
+				monitorStatusString = monitorStatusString + "/ RX-"+ each.recievedPerSec + " TX-" + each.sentPerSec + "</dv></li>";
 			};
 		}
 		monitorStatusString += "</ul>"; 

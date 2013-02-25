@@ -86,4 +86,11 @@ public interface ISingleConsole {
 	 * @since 3.1.2
 	 */
 	public abstract List<AgentIdentity> getAllAttachedAgents();
+
+	/**
+	 * Return the assigned console port.
+	 * 
+	 * @return console port
+	 */
+	public abstract int getConsolePort();
 }

@@ -48,7 +48,7 @@ public class AgentManagerServiceTestForDist extends AbstractNGrinderTransactiona
 
 	Config config;
 
-	AgentManagerService agentManagerService;
+	ClusteredAgentManagerService agentManagerService;
 
 	@Before
 	public void before() {

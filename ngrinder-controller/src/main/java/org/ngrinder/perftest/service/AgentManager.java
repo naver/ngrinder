@@ -452,7 +452,7 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Stop agent in force.
+	 * Stop agent by force.
 	 * 
 	 * @param agentIdentity
 	 *            agent identity
@@ -462,7 +462,7 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Stop agents which uses the given console port in force.
+	 * Stop agents which uses the given console port by force.
 	 * 
 	 * @param consolePort
 	 *            console port.
