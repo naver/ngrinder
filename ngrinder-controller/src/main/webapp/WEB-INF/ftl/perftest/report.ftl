@@ -164,6 +164,10 @@
                     <div class="chart" id="cpuDiv"></div>
 					<h6>Used Memory</h6>
                     <div class="chart" id="memoryDiv"></div>
+					<h6>Received Per Second(KB)</h6>
+                    <div class="chart" id="receivedDiv"></div>
+					<h6>Sent Per Second(KB)</h6>
+                    <div class="chart" id="sentDiv"></div>
                 </div>
 			</div>
 		</div>
@@ -181,7 +185,15 @@
 	<#include "../common/messages.ftl">
 	<script>
 	    var performanceInit = false;
-	    var targetMonitorPlot = {};
+	    var targetMonitorPlot = {}; //save plot object
+	    var targetMonitorData = {}; //save monitor data
+
+	    //used to save the plot object. Then for every target, just use the new data to replot.
+    	var plotKeyCpu = "plotcpu";
+    	var plotKeyMem = "plotmem";
+    	var plotKeyReceived = "plotreceived";
+    	var plotKeySent = "plotsent";
+    	
 		$(document).ready(function() {
 		    // TODO need to add cache here
 		    $("#testPerformance").click(function() {
@@ -258,10 +270,29 @@
                 }
             });
         }
+		
+		function redrawPlot(ip) {
+        	var dataKeyCpu = ip + "-cpu";
+        	var dataKeyMem = ip + "-mem";
+        	var dataKeyReceived = ip + "-received";
+        	var dataKeySent = ip + "-sent";
+    		ymax = getMaxValue(targetMonitorData[dataKeyCpu]);
+    		replotChart(targetMonitorPlot[plotKeyCpu], targetMonitorData[dataKeyCpu], ymax);
+    		ymax = getMaxValue(targetMonitorData[dataKeyMem]);
+    		replotChart(targetMonitorPlot[plotKeyMem], targetMonitorData[dataKeyMem], ymax);
+    		ymax = getMaxValue(targetMonitorData[dataKeyReceived]);
+    		replotChart(targetMonitorPlot[plotKeyReceived], targetMonitorData[dataKeyReceived], ymax);
+    		ymax = getMaxValue(targetMonitorData[dataKeyCpu]);
+    		replotChart(targetMonitorPlot[plotKeySent], targetMonitorData[dataKeySent], ymax);
+		}
         function getMonitorData(ip){
 
-        	if (targetMonitorPlot[plotKeyCpu]) {
-        		targetMonitorPlot[plotKeyCpu].replot();
+        	var dataKeyCpu = ip + "-cpu";
+        	var dataKeyMem = ip + "-mem";
+        	var dataKeyReceived = ip + "-received";
+        	var dataKeySent = ip + "-sent";
+        	if (targetMonitorData[dataKeyCpu]) {
+        		redrawPlot(ip);
         		return;
         	}
             $.ajax({
@@ -272,8 +303,6 @@
                        'imgWidth' : 700},
                 success: function(res) {
                     if (res.success) {
-                    	var plotKeyCpu = ip + "-cpu";
-                    	var plotKeyMem = ip + "-mem";
                     	var ymax = 0;
                     	$("#ipMark").html("[" + ip + "]");
                     	var rs = true;
@@ -284,8 +313,22 @@
                     		res.SystemData.memory = [0];
                     		rs = false;
                     	}
-                    	targetMonitorPlot[plotKeyCpu] = drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, res.SystemData.interval);
-                   		targetMonitorPlot[plotKeyMem] = drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, res.SystemData.interval);
+                    	//save data to reuse.
+                    	targetMonitorData[dataKeyCpu] = res.SystemData.cpu;
+                    	targetMonitorData[dataKeyMem] = res.SystemData.memory;
+                    	targetMonitorData[dataKeyReceived] = res.SystemData.received;
+                    	targetMonitorData[dataKeySent] = res.SystemData.sent;
+                    	
+                    	var existedPlot = targetMonitorPlot[plotKeyCpu];
+                    	if (existedPlot) {
+                    		redrawPlot(ip);
+                    	} else {
+                    		//draw the plot and save the plot object to reuse.
+                    		targetMonitorPlot[plotKeyCpu] = drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, res.SystemData.interval);
+                    		targetMonitorPlot[plotKeyMem] = drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, res.SystemData.interval);
+                   			targetMonitorPlot[plotKeyReceived] = drawChart('Received Per Second(KB)', 'receivedDiv', res.SystemData.received, undefined, res.SystemData.interval);
+                    		targetMonitorPlot[plotKeySent] = drawChart('Sent Per Second(KB)', 'sentDiv', res.SystemData.sent, undefined, res.SystemData.interval);
+                   		}
                         return true;
                     } else {
                         showErrorMsg("Get monitor data failed.");
