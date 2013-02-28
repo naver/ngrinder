@@ -260,8 +260,8 @@
         }
         function getMonitorData(ip){
 
-        	if (targetMonitorPlot.plotKeyCpu) {
-        		targetMonitorPlot.plotKeyCpu.replot();
+        	if (targetMonitorPlot[plotKeyCpu]) {
+        		targetMonitorPlot[plotKeyCpu].replot();
         		return;
         	}
             $.ajax({
@@ -284,8 +284,8 @@
                     		res.SystemData.memory = [0];
                     		rs = false;
                     	}
-                    	targetMonitorPlot.plotKeyCpu = drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, res.SystemData.interval);
-                   		targetMonitorPlot.plotKeyMem = drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, res.SystemData.interval);
+                    	targetMonitorPlot[plotKeyCpu] = drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, res.SystemData.interval);
+                   		targetMonitorPlot[plotKeyMem] = drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, res.SystemData.interval);
                         return true;
                     } else {
                         showErrorMsg("Get monitor data failed.");
