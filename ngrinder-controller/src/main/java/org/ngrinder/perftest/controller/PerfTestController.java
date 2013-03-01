@@ -783,16 +783,23 @@ public class PerfTestController extends NGrinderBaseController {
 			}
 			List<Object> cpuData = new ArrayList<Object>(pointCount);
 			List<Object> memoryData = new ArrayList<Object>(pointCount);
+			List<Object> netReveived = new ArrayList<Object>(pointCount);
+			List<Object> netSent = new ArrayList<Object>(pointCount);
 
 			SystemDataModel sdm;
+			long kb_size = 1024;
 			for (int i = 0; i < dataAmount; i += interval) {
 				sdm = systemMonitorData.get(i);
 				cpuData.add(sdm.getCpuUsedPercentage());
 				memoryData.add(sdm.getTotalMemory() - sdm.getFreeMemory());
+				netReveived.add(sdm.getRecievedPerSec() / kb_size);
+				netSent.add(sdm.getSentPerSec() / kb_size);
 			}
 
 			rtnMap.put("cpu", cpuData);
 			rtnMap.put("memory", memoryData);
+			rtnMap.put("received", netReveived);
+			rtnMap.put("sent", netSent);
 			rtnMap.put("interval", interval);
 		}
 
