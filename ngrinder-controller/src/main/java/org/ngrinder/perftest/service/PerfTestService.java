@@ -1456,6 +1456,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				sbNetReceieved = new StringBuilder("[");
 				sbNetSent = new StringBuilder("[");
 			}
+			int kbSize  = 1024;
 			while (StringUtils.isNotBlank(line)) {
 				if (skipCount < dataInterval) {
 					skipCount++;
@@ -1463,7 +1464,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				} else {
 					skipCount = 1;
 					String[] datalist = StringUtils.split(line, ",");
-					long usedMem = Long.valueOf(datalist[4]) - Long.valueOf(datalist[3]);
+					long usedMem = (Long.valueOf(datalist[4]) - Long.valueOf(datalist[3]))/kbSize;
 					sbUsedMem.append(usedMem).append(",");
 					sbCPUUsed.append(Float.valueOf(datalist[5])).append(",");
 					
