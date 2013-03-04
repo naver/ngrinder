@@ -19,6 +19,7 @@ import org.hyperic.sigar.NetInterfaceStat;
 import org.hyperic.sigar.OperatingSystem;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
+import org.ngrinder.common.util.NoOp;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.mxbean.SystemMonitoringData;
 import org.ngrinder.monitor.share.domain.BandWidth;
@@ -107,9 +108,13 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 	public BandWidth getNetworkUsage() throws SigarException {
 		BandWidth bandWidth = new BandWidth(System.currentTimeMillis());
 		for (String each : netInterfaces) {
-			NetInterfaceStat netInterfaceStat = sigar.getNetInterfaceStat(each);
-			bandWidth.setRecieved(bandWidth.getRecieved() + netInterfaceStat.getRxBytes());
-			bandWidth.setSent(bandWidth.getSent() + netInterfaceStat.getTxBytes());
+			try {
+				NetInterfaceStat netInterfaceStat = sigar.getNetInterfaceStat(each);
+				bandWidth.setRecieved(bandWidth.getRecieved() + netInterfaceStat.getRxBytes());
+				bandWidth.setSent(bandWidth.getSent() + netInterfaceStat.getTxBytes());
+			} catch (Exception e) {
+				NoOp.noOp();
+			}
 		}
 		return bandWidth;
 	}

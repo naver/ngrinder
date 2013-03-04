@@ -326,8 +326,8 @@
                     		//draw the plot and save the plot object to reuse.
                     		targetMonitorPlot[plotKeyCpu] = drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, res.SystemData.interval);
                     		targetMonitorPlot[plotKeyMem] = drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, res.SystemData.interval);
-                   			targetMonitorPlot[plotKeyReceived] = drawChart('Received Per Second(KB)', 'receivedDiv', res.SystemData.received, undefined, res.SystemData.interval);
-                    		targetMonitorPlot[plotKeySent] = drawChart('Sent Per Second(KB)', 'sentDiv', res.SystemData.sent, undefined, res.SystemData.interval);
+                   			targetMonitorPlot[plotKeyReceived] = drawChart('Received Per Second', 'receivedDiv', res.SystemData.received, formatMemory, res.SystemData.interval);
+                    		targetMonitorPlot[plotKeySent] = drawChart('Sent Per Second', 'sentDiv', res.SystemData.sent, formatMemory, res.SystemData.interval);
                    		}
                         return true;
                     } else {

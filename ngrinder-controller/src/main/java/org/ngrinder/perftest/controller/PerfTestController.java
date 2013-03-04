@@ -58,7 +58,6 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
-import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
@@ -767,43 +766,12 @@ public class PerfTestController extends NGrinderBaseController {
 		return toJson(rtnMap);
 	}
 
-	private Map<String, Object> getMonitorDataSystem(long id, String monitorIP, int imgWidth) {
-		Map<String, Object> rtnMap = Maps.newHashMap();
-		List<SystemDataModel> systemMonitorData = perfTestService.getSystemMonitorData(id, monitorIP);
-		if (imgWidth < 100) {
-			imgWidth = 100;
-		}
-		if (null != systemMonitorData && !systemMonitorData.isEmpty()) {
-			int dataAmount = systemMonitorData.size();
-			int pointCount = imgWidth;
-			int interval = dataAmount / pointCount;
-			if (interval == 0) {
-				pointCount = dataAmount;
-				interval = 1;
-			}
-			List<Object> cpuData = new ArrayList<Object>(pointCount);
-			List<Object> memoryData = new ArrayList<Object>(pointCount);
-			List<Object> netReveived = new ArrayList<Object>(pointCount);
-			List<Object> netSent = new ArrayList<Object>(pointCount);
-
-			SystemDataModel sdm;
-			long kb_size = 1024;
-			for (int i = 0; i < dataAmount; i += interval) {
-				sdm = systemMonitorData.get(i);
-				cpuData.add(sdm.getCpuUsedPercentage());
-				memoryData.add(sdm.getTotalMemory() - sdm.getFreeMemory());
-				netReveived.add(sdm.getRecievedPerSec() / kb_size);
-				netSent.add(sdm.getSentPerSec() / kb_size);
-			}
-
-			rtnMap.put("cpu", cpuData);
-			rtnMap.put("memory", memoryData);
-			rtnMap.put("received", netReveived);
-			rtnMap.put("sent", netSent);
-			rtnMap.put("interval", interval);
-		}
-
-		return rtnMap;
+	private Map<String, String> getMonitorDataSystem(long id, String monitorIP, int imgWidth) {
+		
+		int interval = perfTestService.getSystemMonitorDataInterval(id, monitorIP, imgWidth);
+		Map<String, String> sysMonitorMap = perfTestService.getSystemMonitorDataAsString(id, monitorIP, interval);
+		sysMonitorMap.put("interval", String.valueOf(interval));
+		return sysMonitorMap;
 	}
 
 }
