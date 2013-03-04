@@ -56,8 +56,9 @@
 	<http pattern="/plugins/**" security="none" />
 	<http pattern="/login" security="none" />
 	<!-- used for shared test report page -->
-	<http pattern="/perftest/report/**" security="none" />
-	<http pattern="/perftest/getReportData/**" security="none" />
+	<http pattern="/perftest/**/report" security="none" />
+	<http pattern="/perftest/**/monitor" security="none" />
+	<http pattern="/perftest/**/graph" security="none" />
 	
 	<!-- accessible from no authorized users -->
 	<http pattern="/check/**" security="none" />
