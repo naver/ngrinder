@@ -134,9 +134,9 @@
                         if (res.success) {
                         	getChartData(res);
                     		maxCPU = getMax(maxCPU, sys_totalCpuValue.aElement);
-                    		showChart('CPU', 'cpuDiv', sys_totalCpuValue.aElement, 0, formatPercentage, maxCPU);
+                    		showChart('cpuDiv', sys_totalCpuValue.aElement, 0, formatPercentage, maxCPU);
                     		maxMemory = getMax(maxMemory, sys_usedMemory.aElement);
-                        	showChart('Used Memory', 'memoryDiv', sys_usedMemory.aElement, 1, formatMemory, maxMemory);
+                        	showChart('memoryDiv', sys_usedMemory.aElement, 1, formatMemory, maxMemory);
                             
                             return true;
                         } else {
@@ -152,12 +152,12 @@
                 });
             }
             
-            function showChart(title, id, data, index, formatYaxis, maxY) {
+            function showChart(containerId, data, index, formatYaxis, maxY) {
 				var pt = jqplots[index];
             	if (pt) {
             		replotChart(pt, data, maxY, $("#rinterval").val());
             	} else {
-	                jqplots[index] = drawChart(title, id, data, formatYaxis);
+	                jqplots[index] = drawChart(containerId, data, formatYaxis);
             	}
             }
             

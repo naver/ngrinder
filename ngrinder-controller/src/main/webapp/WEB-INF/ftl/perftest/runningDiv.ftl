@@ -240,7 +240,7 @@
 		if (jqplotObj) {
 			replotChart(jqplotObj, data, peakTps);
 		} else {
-			jqplotObj = drawChart('TPS', containerId, data);
+			jqplotObj = drawChart(containerId, data);
 		}
 	}
 	

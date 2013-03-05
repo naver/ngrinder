@@ -241,23 +241,23 @@
                 success: function(res) {
                     if (res.success) {
                     	var st = new Date($('#startTime').val());
-                        drawChart('Transactions Per Second', 'tpsDiv', res.TPS, undefined, res.chartInterval);
-                        drawChart('Mean Time', 'meanTimeDiv', res.Mean_Test_Time_ms, undefined, res.chartInterval);
+                        drawChart('tpsDiv', res.TPS, undefined, res.chartInterval);
+                        drawChart('meanTimeDiv', res.Mean_Test_Time_ms, undefined, res.chartInterval);
                         if (res.Mean_time_to_first_byte !== undefined && 
                         		res.Mean_time_to_first_byte !== '[ ]') {
-                        	drawChart('Mean Time To First Byte', 'minTimeFirstByte', res.Mean_time_to_first_byte, undefined, res.chartInterval);
+                        	drawChart('minTimeFirstByte', res.Mean_time_to_first_byte, undefined, res.chartInterval);
                         } else {
                         	$("#minTimeFirstByte").hide();	
                         	$("#minTimeFirstByteHeader").hide();
                         }
                         if (res.User_defined !== undefined && 
                         		res.User_defined !== '[ ]') {
-                        	drawChart('User Defined Chart', 'userDefinedChart', res.User_defined, undefined, res.chartInterval);
+                        	drawChart('userDefinedChart', res.User_defined, undefined, res.chartInterval);
                         } else {
                         	$("#userDefinedChart").hide();	
                         	$("#userDefinedChartHeader").hide();
                         }
-                        drawChart('Errors Per Second', 'errorDiv', res.Errors, undefined, res.chartInterval);
+                        drawChart('errorDiv', res.Errors, undefined, res.chartInterval);
                         return true;
                     } else {
                         showErrorMsg("Get report data failed.");
@@ -324,10 +324,10 @@
                     		redrawPlot(ip);
                     	} else {
                     		//draw the plot and save the plot object to reuse.
-                    		targetMonitorPlot[plotKeyCpu] = drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, res.SystemData.interval);
-                    		targetMonitorPlot[plotKeyMem] = drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, res.SystemData.interval);
-                   			targetMonitorPlot[plotKeyReceived] = drawChart('Received Per Second', 'receivedDiv', res.SystemData.received, formatMemory, res.SystemData.interval);
-                    		targetMonitorPlot[plotKeySent] = drawChart('Sent Per Second', 'sentDiv', res.SystemData.sent, formatMemory, res.SystemData.interval);
+                    		targetMonitorPlot[plotKeyCpu] = drawChart('cpuDiv', res.SystemData.cpu, formatPercentage, res.SystemData.interval);
+                    		targetMonitorPlot[plotKeyMem] = drawChart('memoryDiv', res.SystemData.memory, formatMemory, res.SystemData.interval);
+                   			targetMonitorPlot[plotKeyReceived] = drawChart('receivedDiv', res.SystemData.received, formatMemory, res.SystemData.interval);
+                    		targetMonitorPlot[plotKeySent] = drawChart('sentDiv', res.SystemData.sent, formatMemory, res.SystemData.interval);
                    		}
                         return true;
                     } else {
