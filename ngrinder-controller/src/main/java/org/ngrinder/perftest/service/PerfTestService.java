@@ -1440,46 +1440,60 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		try {
 			StringBuilder sbUsedMem = new StringBuilder("[");
 			StringBuilder sbCPUUsed = new StringBuilder("[");
-			StringBuilder sbNetReceieved = new StringBuilder("[");
-			StringBuilder sbNetSent = new StringBuilder("[");
+			StringBuilder sbNetReceieved = null;
+			StringBuilder sbNetSent = null;
 			
 			br = new BufferedReader(new FileReader(monitorDataFile));
 			br.readLine(); // skip the header.
 			// header: "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage,recivedPerSec,sentPerSec"
 			String line = br.readLine();
-			int skipCount = 0;
+			int skipCount = dataInterval;
+			
+			//to be compatible with previous version, check the length before adding
+			boolean isNetDataExist = false;
+			if (StringUtils.split(line, ",").length > 6) {
+				isNetDataExist = true;
+				sbNetReceieved = new StringBuilder("[");
+				sbNetSent = new StringBuilder("[");
+			}
+			int kbSize  = 1024;
 			while (StringUtils.isNotBlank(line)) {
 				if (skipCount < dataInterval) {
-					skipCount = 1;
+					skipCount++;
 					continue;
 				} else {
-					skipCount++;
+					skipCount = 1;
 					String[] datalist = StringUtils.split(line, ",");
-					long usedMem = Long.valueOf(datalist[4]) - Long.valueOf(datalist[3]);
+					long usedMem = (Long.valueOf(datalist[4]) - Long.valueOf(datalist[3]))/kbSize;
 					sbUsedMem.append(usedMem).append(",");
 					sbCPUUsed.append(Float.valueOf(datalist[5])).append(",");
-					sbNetReceieved.append(Long.valueOf(datalist[6])).append(",");
-					sbNetSent.append(Long.valueOf(datalist[7])).append(",");
 					
+					if (isNetDataExist) {
+						sbNetReceieved.append(Long.valueOf(datalist[6])).append(",");
+						sbNetSent.append(Long.valueOf(datalist[7])).append(",");
+					}
 					line = br.readLine();
 				}
 			}
 			int lastCharIndex = sbUsedMem.length()-1;
-			sbUsedMem.delete(lastCharIndex, lastCharIndex + 1);
+			sbUsedMem.delete(lastCharIndex, lastCharIndex + 1); //remove last ","
 			sbUsedMem.append("]");
 			lastCharIndex = sbCPUUsed.length()-1;
 			sbCPUUsed.delete(lastCharIndex, lastCharIndex + 1);
 			sbCPUUsed.append("]");
-			lastCharIndex = sbNetReceieved.length()-1;
-			sbNetReceieved.delete(lastCharIndex, lastCharIndex + 1);
-			sbNetReceieved.append("]");
-			lastCharIndex = sbNetSent.length()-1;
-			sbNetSent.delete(lastCharIndex, lastCharIndex + 1);
-			sbNetSent.append("]");
 			rtnMap.put("cpu", sbCPUUsed.toString());
 			rtnMap.put("memory", sbUsedMem.toString());
-			rtnMap.put("received", sbNetReceieved.toString());
-			rtnMap.put("sent", sbNetSent.toString());
+			
+			if (isNetDataExist) {
+				lastCharIndex = sbNetReceieved.length()-1;
+				sbNetReceieved.delete(lastCharIndex, lastCharIndex + 1);
+				sbNetReceieved.append("]");
+				lastCharIndex = sbNetSent.length()-1;
+				sbNetSent.delete(lastCharIndex, lastCharIndex + 1);
+				sbNetSent.append("]");
+				rtnMap.put("received", sbNetReceieved.toString());
+				rtnMap.put("sent", sbNetSent.toString());
+			}
 		} catch (FileNotFoundException e) {
 			LOGGER.error("Monitor data file not exist:{}", monitorDataFile);
 			LOGGER.error(e.getMessage(), e);
