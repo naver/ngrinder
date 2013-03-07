@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.Status;
@@ -54,6 +55,9 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
 	private MockPerfTestController controller;
+	
+	@Autowired
+	private Config config;
 
 	@Autowired
 	private IUserService userService;
@@ -73,7 +77,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 		assertThat(model.get(PARAM_TEST), nullValue());
 		model.clear();
-		long invalidId = 1234567890;
+		long invalidId = 123123123123L;
 		controller.getPerfTestDetail(getTestUser(), invalidId, model);
 		assertThat(model.get(PARAM_TEST), nullValue());
 
@@ -296,6 +300,19 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 		model.clear();
 		controller.getReportDiv(getTestUser(), model, test.getId(), 700);
+	}
+
+	@Test
+	public void testGetMonitorData() {
+		String testName = "test1";
+		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
+		ModelMap model = new ModelMap();
+
+		controller.getMonitorData(model, test.getId(), "127.0.0.1", 0);
+
+		model.clear();
+		long testId = 123456L;
+		controller.getMonitorData(model, testId, "127.0.0.1", 700);
 	}
 
 	@Test

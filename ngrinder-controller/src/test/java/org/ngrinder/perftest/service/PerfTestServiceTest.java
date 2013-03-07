@@ -17,10 +17,15 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
@@ -28,10 +33,13 @@ import net.grinder.console.model.ConsoleProperties;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.ngrinder.common.model.Home;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.perftest.repository.PerfTestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -144,5 +152,50 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		assertThat(consoleProperties, not(nullValue()));
 
 	}
+	
 
+	@Test
+	public void testGetReportDataWithExistData() throws IOException {
+		long testId = 123456L; //there is sample monitor data in test resources.
+
+		//test resource dir
+		File testHomeDir = new ClassPathResource("").getFile();
+		Home mockHome = new Home(testHomeDir);
+		LOG.debug("mock home dir is:{}", mockHome.getDirectory());
+		Config mockConfig = spy(config);
+		when(mockConfig.getHome()).thenReturn(mockHome);
+		PerfTestService mockService = spy(testService);
+		mockService.setConfig(mockConfig);
+		
+		//TPS,Errors,Mean_Test_Time_(ms)
+		int interval = mockService.getReportDataInterval(testId, "TPS", 700);
+		String reportDataCPU = mockService.getReportDataAsString(testId, "TPS", interval);
+		String reportDataMsT = mockService.getReportDataAsString(testId, "Mean_Test_Time_(ms)", interval);
+
+		assertTrue(reportDataCPU.length() > 100);
+		assertTrue(reportDataMsT.length() > 100);
+	}
+
+	@Test
+	public void testGetMonitorDataWithExistData() throws IOException {
+		long testId = 123456L; //there is sample monitor data in test resources.
+
+		//test resource dir
+		File testHomeDir = new ClassPathResource("").getFile();
+		Home mockHome = new Home(testHomeDir);
+		LOG.debug("mock home dir is:{}", mockHome.getDirectory());
+		Config mockConfig = spy(config);
+		when(mockConfig.getHome()).thenReturn(mockHome);
+		PerfTestService mockService = spy(testService);
+		mockService.setConfig(mockConfig);
+		
+		int interval = mockService.getSystemMonitorDataInterval(testId, "127.0.0.1", 700);
+		Map<String, String> reportDataMap = mockService.getSystemMonitorDataAsString(testId, "127.0.0.1", interval);
+		String cpuStr = reportDataMap.get("cpu");
+		LOG.debug("CPU monitor string is:{}", cpuStr);
+		assertTrue(cpuStr.length() > 300);
+		assertTrue(reportDataMap.get("memory").length() > 300);
+		assertTrue(reportDataMap.get("received").length() > 300);
+		assertTrue(reportDataMap.get("sent").length() > 300);
+	}
 }

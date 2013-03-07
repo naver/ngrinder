@@ -3,6 +3,11 @@
 	<head>
 		<#include "../common/common.ftl">
 		<#include "../common/jqplot.ftl">
+		
+		<!-- For jqplot legend -->
+		<link href="${req.getContextPath()}/plugins/jqplot/syntaxhighlighter/styles/shCoreDefault.min.css" rel="stylesheet"/>
+    	<link href="${req.getContextPath()}/plugins/jqplot/syntaxhighlighter/styles/shThemejqPlot.min.css" rel="stylesheet"/>
+    	
 		<title><@spring.message "perfTest.report.title"/></title>
 		
 		<style>
@@ -183,6 +188,12 @@
 		</div>
 	</div>
 	<#include "../common/messages.ftl">
+	
+	<!-- For jqplot legend -->
+	<script src="${req.getContextPath()}/plugins/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js"></script>
+	<script src="${req.getContextPath()}/plugins/jqplot/syntaxhighlighter/scripts/shCore.min.js"></script>
+	<script src="${req.getContextPath()}/plugins/jqplot/syntaxhighlighter/scripts/shBrushJScript.min.js"></script>
+	<script src="${req.getContextPath()}/plugins/jqplot/syntaxhighlighter/scripts/shBrushXml.min.js"></script>
 	<script>
 	    var performanceInit = false;
 	    var targetMonitorPlot = {}; //save plot object
@@ -241,23 +252,23 @@
                 success: function(res) {
                     if (res.success) {
                     	var st = new Date($('#startTime').val());
-                        drawChart('Transactions Per Second', 'tpsDiv', res.TPS, undefined, res.chartInterval);
-                        drawChart('Mean Time', 'meanTimeDiv', res.Mean_Test_Time_ms, undefined, res.chartInterval);
+                        drawChart('tpsDiv', res.TPS, undefined, res.chartInterval);
+                        drawChart('meanTimeDiv', res.Mean_Test_Time_ms, undefined, res.chartInterval);
                         if (res.Mean_time_to_first_byte !== undefined && 
                         		res.Mean_time_to_first_byte !== '[ ]') {
-                        	drawChart('Mean Time To First Byte', 'minTimeFirstByte', res.Mean_time_to_first_byte, undefined, res.chartInterval);
+                        	drawChart('minTimeFirstByte', res.Mean_time_to_first_byte, undefined, res.chartInterval);
                         } else {
                         	$("#minTimeFirstByte").hide();	
                         	$("#minTimeFirstByteHeader").hide();
                         }
                         if (res.User_defined !== undefined && 
                         		res.User_defined !== '[ ]') {
-                        	drawChart('User Defined Chart', 'userDefinedChart', res.User_defined, undefined, res.chartInterval);
+                        	drawChart('userDefinedChart', res.User_defined, undefined, res.chartInterval);
                         } else {
                         	$("#userDefinedChart").hide();	
                         	$("#userDefinedChartHeader").hide();
                         }
-                        drawChart('Errors Per Second', 'errorDiv', res.Errors, undefined, res.chartInterval);
+                        drawChart('errorDiv', res.Errors, undefined, res.chartInterval);
                         return true;
                     } else {
                         showErrorMsg("Get report data failed.");
@@ -285,8 +296,8 @@
     		ymax = getMaxValue(targetMonitorData[dataKeyCpu]);
     		replotChart(targetMonitorPlot[plotKeySent], targetMonitorData[dataKeySent], ymax);
 		}
+		
         function getMonitorData(ip){
-
         	var dataKeyCpu = ip + "-cpu";
         	var dataKeyMem = ip + "-mem";
         	var dataKeyReceived = ip + "-received";
@@ -324,10 +335,10 @@
                     		redrawPlot(ip);
                     	} else {
                     		//draw the plot and save the plot object to reuse.
-                    		targetMonitorPlot[plotKeyCpu] = drawChart('System CPU', 'cpuDiv', res.SystemData.cpu, formatPercentage, res.SystemData.interval);
-                    		targetMonitorPlot[plotKeyMem] = drawChart('System Used Memory', 'memoryDiv', res.SystemData.memory, formatMemory, res.SystemData.interval);
-                   			targetMonitorPlot[plotKeyReceived] = drawChart('Received Per Second(KB)', 'receivedDiv', res.SystemData.received, undefined, res.SystemData.interval);
-                    		targetMonitorPlot[plotKeySent] = drawChart('Sent Per Second(KB)', 'sentDiv', res.SystemData.sent, undefined, res.SystemData.interval);
+                    		targetMonitorPlot[plotKeyCpu] = drawChart('cpuDiv', res.SystemData.cpu, formatPercentage, res.SystemData.interval);
+                    		targetMonitorPlot[plotKeyMem] = drawChart('memoryDiv', res.SystemData.memory, formatMemory, res.SystemData.interval);
+                   			targetMonitorPlot[plotKeyReceived] = drawChart('receivedDiv', res.SystemData.received, formatMemory, res.SystemData.interval);
+                    		targetMonitorPlot[plotKeySent] = drawChart('sentDiv', res.SystemData.sent, formatMemory, res.SystemData.interval);
                    		}
                         return true;
                     } else {
@@ -341,6 +352,116 @@
                 }
             });
         }
+        
+        function getMultiPlotMaxValue(data) {
+			var ymax = 0;
+			for (var i = 0;  i < data.length; i++) {
+				for (var j = 0;  j < data[i].length; j++) {
+					if (data[i][j] > ymax) {
+						ymax = data[i][j]; 
+					}
+				}
+			}
+			return ymax;
+		}
+		
+		function drawMultiPlotChart(containerId, data, interval) {
+			if (data == undefined) {
+				return undefined;
+			}
+			
+			var values;
+			if ((data instanceof Array) && (data[0] instanceof Array)) {
+				values = data;
+			} else {
+				values = [ eval(data) ];
+			}
+			
+			var dataCnt = values[0][0].length;
+			if (dataCnt == 0) {
+				return;
+			}
+			
+			var ymax = getMultiPlotMaxValue(data);
+			if (ymax < 5) {
+				ymax = 5;
+			}
+			ymax = parseInt((ymax / 5) + 0.5) * 6;
+
+			if (interval == undefined || interval == 0 || !$.isNumeric(interval)) {
+				interval = 1;
+			}
+			
+			var labels = ["Test1", "Test2", "Test3"];//Example
+			
+			var plotObj = $.jqplot(containerId, values, {
+				seriesDefaults : {
+					markerRenderer : $.jqplot.MarkerRenderer,
+					markerOptions : {
+						size : 2.0,
+						color : '#555555'
+					},
+					lineWidth : 1.0
+				}, 
+				axes : {
+					xaxis : {
+						min : 0,
+						max : dataCnt,
+						pad : 0,
+						numberTicks : 10,
+						tickOptions : {
+							show : true,
+							formatter : function(format, value) {
+								return parseInt(value * interval);
+							}
+						}
+					},
+					yaxis : {
+						labelOptions : {
+							fontFamily : 'Helvetica',
+							fontSize : '10pt'
+						}, 
+						tickOptions : {
+							formatter : function(format, value) {
+								return value.toFixed(0);
+							};
+						},
+						max : ymax,
+						min : 0,
+						numberTicks : 7,
+						pad : 3,
+						show : true
+					}
+				},
+				highlighter : {
+					show : true,
+					sizeAdjust : 3,
+					tooltipAxes: 'y',
+					formatString: '<table class="jqplot-highlighter"><tr><td>%s</td></tr></table>'
+				},
+				cursor : {
+					showTooltip : false,
+					show : true,
+					zoom : true
+				},
+				legend:{
+					renderer: $.jqplot.EnhancedLegendRenderer,
+					show: true,
+					placement: "outsideGrid",
+					labels: labels,
+					location: "s",
+					rowSpacing: "2px",
+					rendererOptions: {
+						seriesToggle: 'normal',
+						seriesToggleReplot: {
+							resetAxes: true
+						}
+					}
+				}
+			});
+
+			return plotObj;
+		}
 	</script>
 	</body>
 </html>

@@ -46,7 +46,7 @@ function getMaxValue(data) {
 	return ymax;
 }
 
-function drawChart(title, containerId, data, formatYaxis, interval) {
+function drawChart(containerId, data, formatYaxis, interval) {
 	//title, containerId and data is necessary.
 	//formatYaxis is the formatter function for y-axis, can be set undefined means don't format.
 	//interval is second amount, interval is optional.
