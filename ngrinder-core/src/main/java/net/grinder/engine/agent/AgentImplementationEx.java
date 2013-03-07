@@ -228,25 +228,14 @@ public class AgentImplementationEx implements Agent {
 				} while (script == null);
 
 				if (script != null) {
-					PropertyBuilder builder = new PropertyBuilder(properties, script.getDirectory(),
-									properties.getBoolean("grinder.security", false),
-									properties.getProperty("ngrinder.etc.hosts"), NetworkUtil.getLocalHostName(),
-									m_agentConfig.getPropertyBoolean("agent.servermode", false),
-									m_agentConfig.getPropertyBoolean("agent.useXmxLimit", true));
-					String jvmArguments = builder.buildJVMArgument();
-					String rebaseCustomClassPath = getForeMostClassPath(System.getProperties(), m_logger)
-									+ File.pathSeparator
-									+ builder.rebaseCustomClassPath(properties.getProperty("grinder.jvm.classpath", ""));
-					properties.setProperty("grinder.jvm.classpath", rebaseCustomClassPath);
-
-					m_logger.info("grinder properties {}", properties);
-					m_logger.info("jvm arguments {}", jvmArguments);
-					final WorkerFactory workerFactory;
-
-					// To be safe...
-					if (properties.containsKey("grinder.duration") && !properties.containsKey("grinder.runs")) {
-						properties.setInt("grinder.runs", 0);
+					// Set up log directory.
+					if (!properties.containsKey(GrinderProperties.LOG_DIRECTORY)) {
+						properties.setFile(GrinderProperties.LOG_DIRECTORY, new File(m_agentConfig.getHome()
+										.getLogDirectory(), properties.getProperty(GRINDER_PROP_TEST_ID, "default")));
 					}
+
+					final WorkerFactory workerFactory;
+					String jvmArguments = buildTestRunProperties(script, properties);
 
 					if (!properties.getBoolean("grinder.debug.singleprocess", false)) {
 						// Fix to provide empty system classpath to speed up
@@ -361,6 +350,26 @@ public class AgentImplementationEx implements Agent {
 		}
 	}
 
+	private String buildTestRunProperties(ScriptLocation script, GrinderProperties properties) {
+		PropertyBuilder builder = new PropertyBuilder(properties, script.getDirectory(), properties.getBoolean(
+						"grinder.security", false), properties.getProperty("ngrinder.etc.hosts"),
+						NetworkUtil.getLocalHostName(), m_agentConfig.getPropertyBoolean("agent.servermode", false),
+						m_agentConfig.getPropertyBoolean("agent.useXmxLimit", true));
+		String jvmArguments = builder.buildJVMArgument();
+		String rebaseCustomClassPath = getForeMostClassPath(System.getProperties(), m_logger) + File.pathSeparator
+						+ builder.rebaseCustomClassPath(properties.getProperty("grinder.jvm.classpath", ""));
+		properties.setProperty("grinder.jvm.classpath", rebaseCustomClassPath);
+
+		m_logger.info("grinder properties {}", properties);
+		m_logger.info("jvm arguments {}", jvmArguments);
+
+		// To be safe...
+		if (properties.containsKey("grinder.duration") && !properties.containsKey("grinder.runs")) {
+			properties.setInt("grinder.runs", 0);
+		}
+		return jvmArguments;
+	}
+
 	/**
 	 * Get classpath which should be located in the head of classpath.
 	 * 
@@ -402,8 +411,6 @@ public class AgentImplementationEx implements Agent {
 		if (startMessageProperties != null) {
 			properties.putAll(startMessageProperties);
 		}
-		properties.setFile(GrinderProperties.LOG_DIRECTORY, new File(m_agentConfig.getHome().getLogDirectory(),
-						properties.getProperty(GRINDER_PROP_TEST_ID, "default")));
 		return properties;
 	}
 
