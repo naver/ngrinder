@@ -28,9 +28,9 @@ import net.grinder.console.communication.AgentProcessControlImplementation.Agent
 public interface OnPeriodicWorkingAgentCheckRunnable {
 
 	/**
-	 * Check currently working agent status
+	 * Check currently working agent status.
 	 * 
-	 * @param workingAgents
+	 * @param workingAgents working agent set
 	 */
 	public void checkWorkingAgent(Set<AgentStatus> workingAgents);
 }

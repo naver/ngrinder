@@ -13,15 +13,12 @@
  */
 package org.ngrinder.model;
 
-import org.apache.commons.io.monitor.FileEntry;
-
 /**
  * File Entry model interface.<br/>
  * It's little bit out of convention. However I separate this interface on model because of backward
  * compatibility.
  * 
  * @author JunHo Yoon
- * @see FileEntry
  */
 public interface IFileEntry {
 

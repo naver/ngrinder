@@ -1417,8 +1417,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * get system monitor data and wrap the data as a string value like "[22,11,12,34,....]", which
-	 * can be used directly in JS as a vector
+	 * Get system monitor data and wrap the data as a string value like "[22,11,12,34,....]", which
+	 * can be used directly in JS as a vector.
 	 * 
 	 * @param testId
 	 *            test id
