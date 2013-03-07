@@ -365,24 +365,28 @@
 			return ymax;
 		}
 		
-		function drawMultiPlotChart(containerId, data, interval) {
-			if (data == undefined) {
+		function drawMultiPlotChart(containerId, data, labels, interval) {
+			if (data == undefined || (data instanceof Array) || data.length == 0) {
 				return undefined;
 			}
 			
 			var values;
-			if ((data instanceof Array) && (data[0] instanceof Array)) {
+			if (data[0] instanceof Array) {
 				values = data;
 			} else {
-				values = [ eval(data) ];
+				var temp = [];
+				for (var i = 0; i < data.length; i++) {
+					temp.push(eval(data[i]));
+				}
+				values = temp;
 			}
 			
-			var dataCnt = values[0][0].length;
+			var dataCnt = values[0][values.length - 1].length;
 			if (dataCnt == 0) {
 				return;
 			}
 			
-			var ymax = getMultiPlotMaxValue(data);
+			var ymax = getMultiPlotMaxValue(values);
 			if (ymax < 5) {
 				ymax = 5;
 			}
@@ -391,8 +395,6 @@
 			if (interval == undefined || interval == 0 || !$.isNumeric(interval)) {
 				interval = 1;
 			}
-			
-			var labels = ["Test1", "Test2", "Test3"];//Example
 			
 			var plotObj = $.jqplot(containerId, values, {
 				seriesDefaults : {
@@ -412,7 +414,7 @@
 						tickOptions : {
 							show : true,
 							formatter : function(format, value) {
-								return parseInt(value * interval);
+								return formatTimeForXaxis(parseInt(value * interval));
 							}
 						}
 					},
