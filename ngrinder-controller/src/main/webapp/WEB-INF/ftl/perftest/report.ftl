@@ -424,7 +424,7 @@
 						tickOptions : {
 							formatter : function(format, value) {
 								return value.toFixed(0);
-							};
+							}
 						},
 						max : ymax,
 						min : 0,
