@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
-import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -47,8 +46,8 @@ public abstract class LogCompressUtil {
 	/**
 	 * Compress multiple Files.
 	 * 
-	 * @param logFile
-	 *            file to be compressed
+	 * @param logFiles
+	 *            files to be compressed
 	 * @return compressed file byte array
 	 */
 	public static byte[] compressFile(File[] logFiles) {

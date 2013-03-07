@@ -242,10 +242,18 @@ public abstract class NetworkUtil {
 	private static final String PATTERN = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
 					+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
 					+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
-	private static final Pattern pattern = Pattern.compile(PATTERN);
+	
+	private static final Pattern IP_PATTERN = Pattern.compile(PATTERN);
 
+	/**
+	 * Check if the given IP is well formed.
+	 * 
+	 * @param ip
+	 *            ip
+	 * @return true if valid
+	 */
 	public static boolean isValidIP(final String ip) {
-		Matcher matcher = pattern.matcher(ip);
+		Matcher matcher = IP_PATTERN.matcher(ip);
 		return matcher.matches();
 	}
 }

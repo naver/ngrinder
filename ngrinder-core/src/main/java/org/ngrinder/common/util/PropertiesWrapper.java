@@ -117,6 +117,14 @@ public class PropertiesWrapper {
 		return BooleanUtils.toBoolean(property);
 	}
 
+	/**
+	 * Set property.
+	 * 
+	 * @param key
+	 *            key
+	 * @param value
+	 *            value to be stored.
+	 */
 	public void setProperty(String key, String value) {
 		this.properties.setProperty(key, value);
 	}

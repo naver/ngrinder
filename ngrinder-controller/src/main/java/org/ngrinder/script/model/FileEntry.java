@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.ngrinder.model.BaseModel;
+import org.ngrinder.model.IFileEntry;
 
 /**
  * File entity which will be stored in SVN.
@@ -30,7 +31,7 @@ import org.ngrinder.model.BaseModel;
  * @author JunHo Yoon
  * @since 3.0
  */
-public class FileEntry extends BaseModel<FileEntry> {
+public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 
 	private static final long serialVersionUID = -2422243194192027508L;
 
@@ -69,6 +70,11 @@ public class FileEntry extends BaseModel<FileEntry> {
 
 	private long revision;
 
+	/**
+	 * Get path of entry.
+	 * 
+	 * @return path
+	 */
 	public String getPath() {
 		return path;
 	}
@@ -108,6 +114,12 @@ public class FileEntry extends BaseModel<FileEntry> {
 		this.contentBytes = contentBytes;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ngrinder.script.model.IFileEntry#getContent()
+	 */
+	@Override
 	public String getContent() {
 		return content;
 	}

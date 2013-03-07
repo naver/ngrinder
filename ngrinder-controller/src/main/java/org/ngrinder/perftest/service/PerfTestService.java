@@ -638,11 +638,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public GrinderProperties getGrinderProperties(PerfTest perfTest) {
 		FileWriter fileWriter = null;
 		try {
-			// Copy grinder properties
-			File userGrinderPropertiesPath = new File(getPerfTestDistributionPath(perfTest),
-							DEFAULT_GRINDER_PROPERTIES_PATH);
-			// FileUtils.copyFile(config.getHome().getDefaultGrinderProperties(),
-			// userGrinderPropertiesPath);
+			// Use default properties first
 			GrinderProperties grinderProperties = new GrinderProperties(config.getHome().getDefaultGrinderProperties());
 
 			User user = perfTest.getCreatedUser();
@@ -657,7 +653,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				userProperties.load(new StringReader(userDefinedGrinderProperties.getContent()));
 				grinderProperties.putAll(userProperties);
 			}
-			grinderProperties.setAssociatedFile(new File(userGrinderPropertiesPath.getName()));
+			grinderProperties.setAssociatedFile(new File(DEFAULT_GRINDER_PROPERTIES_PATH));
 			grinderProperties.setProperty(GrinderProperties.SCRIPT,
 							FilenameUtils.getName(checkNotEmpty(perfTest.getScriptName())));
 
@@ -1374,25 +1370,25 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public Map<String, HashMap> getMonitorStat(PerfTest perfTest) {
 		return gson.fromJson(perfTest.getMonitorStatus(), HashMap.class);
 	}
-	
+
 	/**
-	 * Get the monitor data interval value.
-	 * In the normal, the image width is 700, and if the data count is too big, there will be too many points
-	 * in the chart. So we will calculate the interval to get appropriate count of data to display.
-	 * For example, interval value "2" means, get one record for every "2" records.
+	 * Get the monitor data interval value. In the normal, the image width is 700, and if the data
+	 * count is too big, there will be too many points in the chart. So we will calculate the
+	 * interval to get appropriate count of data to display. For example, interval value "2" means,
+	 * get one record for every "2" records.
+	 * 
 	 * @param testId
-	 * 			test id
+	 *            test id
 	 * @param monitorIP
-	 * 			ip address of monitor target
+	 *            ip address of monitor target
 	 * @param imageWidth
-	 * 			image with of the chart.
-	 * @return
-	 * 			interval value.
+	 *            image with of the chart.
+	 * @return interval value.
 	 */
 	public int getSystemMonitorDataInterval(long testId, String monitorIP, int imageWidth) {
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
-				Config.MONITOR_FILE_PREFIX + monitorIP + ".data");
-		
+						Config.MONITOR_FILE_PREFIX + monitorIP + ".data");
+
 		int pointCount = Math.max(imageWidth, MAX_POINT_COUNT);
 		FileInputStream in = null;
 		InputStreamReader isr = null;
@@ -1419,18 +1415,19 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		}
 		return interval;
 	}
-	
+
 	/**
-	 * get system monitor data and wrap the data as a string value like "[22,11,12,34,....]", which can be used directly
-	 * in JS as a vector
+	 * Get system monitor data and wrap the data as a string value like "[22,11,12,34,....]", which
+	 * can be used directly in JS as a vector.
+	 * 
 	 * @param testId
-	 * 			test id
+	 *            test id
 	 * @param monitorIP
-	 * 			ip address of the monitor target
+	 *            ip address of the monitor target
 	 * @param dataInterval
-	 * 			interval value to get data. Interval value "2" means, get one record for every "2" records.
-	 * @return
-	 * 			return the data in map
+	 *            interval value to get data. Interval value "2" means, get one record for every "2"
+	 *            records.
+	 * @return return the data in map
 	 */
 	public Map<String, String> getSystemMonitorDataAsString(long testId, String monitorIP, int dataInterval) {
 		Map<String, String> rtnMap = new HashMap<String, String>();
@@ -1442,21 +1439,22 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			StringBuilder sbCPUUsed = new StringBuilder("[");
 			StringBuilder sbNetReceieved = null;
 			StringBuilder sbNetSent = null;
-			
+
 			br = new BufferedReader(new FileReader(monitorDataFile));
 			br.readLine(); // skip the header.
-			// header: "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage,recivedPerSec,sentPerSec"
+			// header:
+			// "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage,recivedPerSec,sentPerSec"
 			String line = br.readLine();
 			int skipCount = dataInterval;
-			
-			//to be compatible with previous version, check the length before adding
+
+			// to be compatible with previous version, check the length before adding
 			boolean isNetDataExist = false;
 			if (StringUtils.split(line, ",").length > 6) {
 				isNetDataExist = true;
 				sbNetReceieved = new StringBuilder("[");
 				sbNetSent = new StringBuilder("[");
 			}
-			int kbSize  = 1024;
+			int kbSize = 1024;
 			while (StringUtils.isNotBlank(line)) {
 				if (skipCount < dataInterval) {
 					skipCount++;
@@ -1464,10 +1462,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				} else {
 					skipCount = 1;
 					String[] datalist = StringUtils.split(line, ",");
-					long usedMem = (Long.valueOf(datalist[4]) - Long.valueOf(datalist[3]))/kbSize;
+					long usedMem = (Long.valueOf(datalist[4]) - Long.valueOf(datalist[3])) / kbSize;
 					sbUsedMem.append(usedMem).append(",");
 					sbCPUUsed.append(Float.valueOf(datalist[5])).append(",");
-					
+
 					if (isNetDataExist) {
 						sbNetReceieved.append(Long.valueOf(datalist[6])).append(",");
 						sbNetSent.append(Long.valueOf(datalist[7])).append(",");
@@ -1475,20 +1473,20 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 					line = br.readLine();
 				}
 			}
-			int lastCharIndex = sbUsedMem.length()-1;
-			sbUsedMem.delete(lastCharIndex, lastCharIndex + 1); //remove last ","
+			int lastCharIndex = sbUsedMem.length() - 1;
+			sbUsedMem.delete(lastCharIndex, lastCharIndex + 1); // remove last ","
 			sbUsedMem.append("]");
-			lastCharIndex = sbCPUUsed.length()-1;
+			lastCharIndex = sbCPUUsed.length() - 1;
 			sbCPUUsed.delete(lastCharIndex, lastCharIndex + 1);
 			sbCPUUsed.append("]");
 			rtnMap.put("cpu", sbCPUUsed.toString());
 			rtnMap.put("memory", sbUsedMem.toString());
-			
+
 			if (isNetDataExist) {
-				lastCharIndex = sbNetReceieved.length()-1;
+				lastCharIndex = sbNetReceieved.length() - 1;
 				sbNetReceieved.delete(lastCharIndex, lastCharIndex + 1);
 				sbNetReceieved.append("]");
-				lastCharIndex = sbNetSent.length()-1;
+				lastCharIndex = sbNetSent.length() - 1;
 				sbNetSent.delete(lastCharIndex, lastCharIndex + 1);
 				sbNetSent.append("]");
 				rtnMap.put("received", sbNetReceieved.toString());
@@ -1503,7 +1501,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		} finally {
 			IOUtils.closeQuietly(br);
 		}
-		
+
 		return rtnMap;
 	}
 

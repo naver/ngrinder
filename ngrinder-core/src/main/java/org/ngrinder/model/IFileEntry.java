@@ -11,26 +11,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package org.ngrinder.extension;
-
-import java.util.Set;
-
-import net.grinder.console.communication.AgentProcessControlImplementation.AgentStatus;
+package org.ngrinder.model;
 
 /**
- * Plugin extension point which is executable when the controller periodically check currently
- * working agent status.
- * 
+ * File Entry model interface.<br/>
+ * It's little bit out of convention. However I separate this interface on model because of backward
+ * compatibility.
  * 
  * @author JunHo Yoon
- * @since 3.1.2.
  */
-public interface OnPeriodicWorkingAgentCheckRunnable {
+public interface IFileEntry {
 
 	/**
-	 * Check currently working agent status.
+	 * Get the relative path of file.
 	 * 
-	 * @param workingAgents working agent set
+	 * @return relative path
 	 */
-	public void checkWorkingAgent(Set<AgentStatus> workingAgents);
+	public abstract String getPath();
+
+	/**
+	 * Get the content.
+	 * 
+	 * @return content string
+	 */
+	public abstract String getContent();
+
+	/**
+	 * Get the encoding of content.
+	 * 
+	 * @return encoding
+	 */
+	public abstract String getEncoding();
+
 }
