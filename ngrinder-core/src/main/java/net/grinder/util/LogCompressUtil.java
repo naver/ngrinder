@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -42,6 +43,54 @@ import org.slf4j.LoggerFactory;
 public abstract class LogCompressUtil {
 	private static final int COMPRESS_BUFFER_SIZE = 8096;
 	public static final Logger LOGGER = LoggerFactory.getLogger(LogCompressUtil.class);
+
+	/**
+	 * Compress multiple Files.
+	 * 
+	 * @param logFile
+	 *            file to be compressed
+	 * @return compressed file byte array
+	 */
+	public static byte[] compressFile(File[] logFiles) {
+		FileInputStream fio = null;
+		ByteArrayOutputStream out = null;
+		ZipOutputStream zos = null;
+		try {
+
+			out = new ByteArrayOutputStream();
+			zos = new ZipOutputStream(out);
+			for (File each : logFiles) {
+				try {
+					fio = new FileInputStream(each);
+					ZipEntry zipEntry = new ZipEntry(each.getName());
+					zipEntry.setTime(each.lastModified());
+					zos.putNextEntry(zipEntry);
+					byte[] buffer = new byte[COMPRESS_BUFFER_SIZE];
+					int count = 0;
+					while ((count = fio.read(buffer, 0, COMPRESS_BUFFER_SIZE)) != -1) {
+						zos.write(buffer, 0, count);
+					}
+					zos.closeEntry();
+				} catch (IOException e) {
+					LOGGER.error("Error occurs while compress {}", each.getAbsolutePath());
+					LOGGER.error("Details", e);
+				} finally {
+					IOUtils.closeQuietly(fio);
+				}
+			}
+			zos.finish();
+			zos.flush();
+			return out.toByteArray();
+		} catch (IOException e) {
+			LOGGER.info("Error occurs while compress log : {} ", e.getMessage());
+			LOGGER.debug("Details", e);
+			return null;
+		} finally {
+			IOUtils.closeQuietly(zos);
+			IOUtils.closeQuietly(fio);
+			IOUtils.closeQuietly(out);
+		}
+	}
 
 	/**
 	 * Compress the given file.

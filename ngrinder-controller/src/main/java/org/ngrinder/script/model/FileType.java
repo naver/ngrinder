@@ -27,7 +27,7 @@ public enum FileType {
 	/** Java Script. */
 	JAVA_SCRIPT("JavaScript", "js", FileCategory.SCRIPT, true, false),
 	/** Xml. */
-	XML("xml", "xml", FileCategory.DATA, false, true),
+	XML("xml", "xml", FileCategory.DATA, true, true),
 	/** Text. */
 	TXT("txt", "txt", FileCategory.DATA, false, true),
 	/** CSV. */

@@ -82,7 +82,7 @@ public abstract class GrinderClassPathUtils {
 	private static final List<String> USELESS_JAR_LIST = new ArrayList<String>();
 	static {
 		FOREMOST_JAR_LIST.add("ngrinder-dns");
-
+		
 		// TODO: If we have need another jar files, we should append it here.
 		USEFUL_JAR_LIST.add("grinder");
 		USEFUL_JAR_LIST.add("dnsjava");
@@ -96,7 +96,8 @@ public abstract class GrinderClassPathUtils {
 		USEFUL_JAR_LIST.add("jsr173");
 		USEFUL_JAR_LIST.add("xmlbeans");
 		USEFUL_JAR_LIST.add("stax-api");
-
+		USEFUL_JAR_LIST.add("ngrinder-patch");
+		
 		USELESS_JAR_LIST.add("jython-2.2");
 		USELESS_JAR_LIST.add("ngrinder-core");
 		USELESS_JAR_LIST.add("ngrinder-controller");

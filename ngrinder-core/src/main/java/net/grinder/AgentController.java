@@ -256,18 +256,24 @@ public class AgentController implements Agent {
 		if (!logFolder.exists()) {
 			return;
 		}
-		String[] list = logFolder.list(new FilenameFilter() {
+		File[] logFiles = logFolder.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
-				return (name.endsWith("-0.log"));
+				return (name.endsWith(".log"));
 			}
 		});
-		if (ArrayUtils.isEmpty(list)) {
+		if (ArrayUtils.isEmpty(logFiles)) {
 			LOGGER.error("No log exists under {}", logFolder.getAbsolutePath());
 			return;
 		}
-		consoleCommunication.sendMessage(new LogReportGrinderMessage(testId, LogCompressUtil.compressFile(new File(
-						logFolder, list[0])), new AgentAddress(m_agentIdentity)));
+
+		// Take only one file... if agent.send.all.logs are not set.
+		if (!agentConfig.getPropertyBoolean("agent.send.all.logs", false)) {
+			logFiles = new File[] { logFiles[0] };
+		}
+
+		consoleCommunication.sendMessage(new LogReportGrinderMessage(testId, LogCompressUtil.compressFile(logFiles),
+						new AgentAddress(m_agentIdentity)));
 		// Delete logs to clean up
 		FileUtils.deleteQuietly(logFolder);
 	}
