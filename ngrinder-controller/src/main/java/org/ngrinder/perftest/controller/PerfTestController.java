@@ -535,11 +535,16 @@ public class PerfTestController extends NGrinderBaseController {
 		rtnMap.put(JSON_SUCCESS, true);
 		int interval = perfTestService.getReportDataInterval(id, dataTypes[0], imgWidth);
 		for (String dt : dataTypes) {
-			String reportData = perfTestService.getReportDataAsString(id, dt, interval);
 			String rtnType = dt.replace("(", "").replace(")", "");
-			rtnMap.put(rtnType, reportData);
+			if ("TPS".equals(dt)) {
+				List<ArrayList<String>> tpsList = perfTestService.getTPSReportDataAsString(id, interval);
+				rtnMap.put("LABLES", tpsList.get(0));
+				rtnMap.put("TPS", tpsList.get(1));
+			} else {
+				String reportData = perfTestService.getReportDataAsString(id, dt, interval);
+				rtnMap.put(rtnType, reportData);
+			}
 		}
-
 		rtnMap.put(PARAM_TEST_CHART_INTERVAL, interval);
 		return toJson(rtnMap);
 	}

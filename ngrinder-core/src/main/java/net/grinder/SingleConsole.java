@@ -796,7 +796,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 					}
 					//multiple tests in a single script,saved those tests's TPS in their respective file
 					if (each.getKey().equals("TPS")) {
-						writeReportData("TPS-" + i + REPORT_DATA, formatValue(getRealDoubleValue(each.getValue()
+						writeReportData("TPS-" + description.replaceAll("\\s+", "_")+ REPORT_DATA, formatValue(getRealDoubleValue(each.getValue()
 								.getDoubleValue(lastSampleStatistics))));
 					}
 				}

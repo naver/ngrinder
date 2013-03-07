@@ -252,7 +252,7 @@
                 success: function(res) {
                     if (res.success) {
                     	var st = new Date($('#startTime').val());
-                        drawChart('tpsDiv', res.TPS, undefined, res.chartInterval);
+                        drawMultiPlotChart('tpsDiv', res.TPS, res.LABLES, res.chartInterval);
                         drawChart('meanTimeDiv', res.Mean_Test_Time_ms, undefined, res.chartInterval);
                         if (res.Mean_time_to_first_byte !== undefined && 
                         		res.Mean_time_to_first_byte !== '[ ]') {
@@ -366,7 +366,7 @@
 		}
 		
 		function drawMultiPlotChart(containerId, data, labels, interval) {
-			if (data == undefined || (data instanceof Array) || data.length == 0) {
+			if (data == undefined || !(data instanceof Array) || data.length == 0) {
 				return undefined;
 			}
 			
