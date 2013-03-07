@@ -30,9 +30,11 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.model.IFileEntry;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
+import org.ngrinder.service.IScriptValidationService;
 import org.python.core.CompileMode;
 import org.python.core.CompilerFlags;
 import org.python.core.PySyntaxError;
@@ -50,7 +52,7 @@ import org.springframework.stereotype.Component;
  * @since 3.0
  */
 @Component
-public class ScriptValidationService {
+public class ScriptValidationService implements IScriptValidationService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ScriptValidationService.class);
 	@Autowired
@@ -62,25 +64,15 @@ public class ScriptValidationService {
 	@Autowired
 	private Config config;
 
-	/**
-	 * Validate Script.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * It's quite complex.. to validate script, we need write jar files and script. Furthermore, to
-	 * make a small log.. We have to copy optimized logback_worker.xml
-	 * 
-	 * Finally this method returns the path of validating result file.
-	 * 
-	 * @param user
-	 *            user
-	 * @param scriptEntry
-	 *            scriptEntity.. at least path should be provided.
-	 * @param useScriptInSVN
-	 *            true if the script content in SVN is used. otherwise, false
-	 * @param hostString
-	 *            HOSTNAME:IP,... pairs for host manipulation
-	 * @return validation result.
+	 * @see
+	 * org.ngrinder.script.service.IScriptValidationService#validateScript(org.ngrinder.model.User,
+	 * org.ngrinder.model.IFileEntry, boolean, java.lang.String)
 	 */
-	public String validateScript(User user, FileEntry scriptEntry, boolean useScriptInSVN, String hostString) {
+	@Override
+	public String validateScript(User user, IFileEntry scriptEntry, boolean useScriptInSVN, String hostString) {
 		try {
 			checkNotNull(scriptEntry, "scriptEntity should be not null");
 			checkNotEmpty(scriptEntry.getPath(), "scriptEntity path should be provided");
@@ -157,18 +149,16 @@ public class ScriptValidationService {
 		return StringUtils.EMPTY;
 	}
 
-	/**
-	 * Run jython parser to find out the syntax error..
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param script
-	 *            script
-	 * @return script syntax error message. null otherwise.
+	 * @see org.ngrinder.script.service.IScriptValidationService#checkSyntaxErrors(java.lang.String)
 	 */
+	@Override
 	public String checkSyntaxErrors(String script) {
 		try {
 			org.python.core.ParserFacade.parse(script, CompileMode.exec, "unnamed", new CompilerFlags(
-							CompilerFlags.PyCF_DONT_IMPLY_DEDENT | CompilerFlags.PyCF_ONLY_AST
-											));
+							CompilerFlags.PyCF_DONT_IMPLY_DEDENT | CompilerFlags.PyCF_ONLY_AST));
 
 		} catch (PySyntaxError e) {
 			try {
@@ -178,11 +168,11 @@ public class ScriptValidationService {
 				String lineString = (String) pyTuple.get(3);
 				StringBuilder buf = new StringBuilder(lineString);
 				if (lineString.length() >= column) {
-					buf.insert(column , "^");
+					buf.insert(column, "^");
 				}
 				return "Error occured\n" + " - Invalid Syntax Error on line " + line + " / column " + column + "\n"
 								+ buf.toString();
-			} catch (Exception ex) {  
+			} catch (Exception ex) {
 				return "Error occured while evalation PySyntaxError";
 			}
 		}
