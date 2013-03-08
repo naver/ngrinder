@@ -4,12 +4,12 @@
 		<#include "../common/common.ftl">
 		<#include "../common/jqplot.ftl">
 		
+		<title><@spring.message "perfTest.report.title"/></title>
+		
 		<!-- For jqplot legend -->
 		<link href="${req.getContextPath()}/plugins/jqplot/syntaxhighlighter/styles/shCoreDefault.min.css" rel="stylesheet"/>
     	<link href="${req.getContextPath()}/plugins/jqplot/syntaxhighlighter/styles/shThemejqPlot.min.css" rel="stylesheet"/>
     	
-		<title><@spring.message "perfTest.report.title"/></title>
-		
 		<style> 
 			body {
 				padding-top: 0;
@@ -151,7 +151,7 @@
 		                </button>
 					</legend>
 					<h6>TPS</h6>
-			    	<div class="chart" id="tpsDiv"></div>
+			    	<div style="border:1px solid #878988; margin-bottom:30px; min-width:615px; padding:0 5px" id="tpsDiv"></div>
 					<h6><@spring.message "perfTest.report.header.meantime"/>&nbsp;(ms)</h6>
     				<div class="chart" id="meanTimeDiv"></div>
     				<h6 id="minTimeFirstByteHeader"><@spring.message "perfTest.report.header.meantimetofirstbyte"/>&nbsp;(ms)</h6>
@@ -237,7 +237,7 @@
 			obj.parent("li").addClass("active");
 			obj.children("i").addClass("icon-white");
 		}
-		
+
 		function getPerformanceData(){
 		    if(performanceInit){
 		        return;
@@ -381,7 +381,7 @@
 				values = temp;
 			}
 			
-			var dataCnt = values[0][values.length - 1].length;
+			var dataCnt = values[values.length - 1].length;
 			if (dataCnt == 0) {
 				return;
 			}
@@ -454,10 +454,7 @@
 					location: "s",
 					rowSpacing: "2px",
 					rendererOptions: {
-						seriesToggle: 'normal',
-						seriesToggleReplot: {
-							resetAxes: true
-						}
+						seriesToggle: 'normal'
 					}
 				}
 			});

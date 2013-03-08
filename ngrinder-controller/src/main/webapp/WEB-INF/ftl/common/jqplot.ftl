@@ -1,4 +1,4 @@
-<link hrf="${req.getContextPath()}/plugins/jqplot/css/jquery.jqplot.min.css" rel="stylesheet"/>
+<link href="${req.getContextPath()}/plugins/jqplot/css/jquery.jqplot.min.css" rel="stylesheet"/>
 
 <script src="${req.getContextPath()}/plugins/jqplot/js/jquery.jqplot.min.js"></script>
 <script src="${req.getContextPath()}/plugins/jqplot/js/excanvas.min.js"></script>
