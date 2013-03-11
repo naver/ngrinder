@@ -999,7 +999,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		}
 		PerfTest perfTest = getPerfTest(perfTestId);
 		perfTest.setRunningSample(gson.toJson(statictisData));
-		perfTest.setAgentStatus(gson.toJson(agentStatusMap));
+		String json = gson.toJson(agentStatusMap);
+		if (StringUtils.length(json) <= 9950) {
+			perfTest.setAgentStatus(json);
+		}
 		savePerfTest(perfTest);
 		CoreLogger.LOGGER.debug("Data is {}", statictisData);
 		return statictisData;

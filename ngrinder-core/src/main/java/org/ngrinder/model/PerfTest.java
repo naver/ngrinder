@@ -206,10 +206,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Sort(comparator = Tag.class, type = SortType.COMPARATOR)
 	private SortedSet<Tag> tags;
 
-	@Column(name = "running_sample", length = 10000)
+	@Column(name = "running_sample", length = 9990)
 	private String runningSample;
 
-	@Column(name = "agent_stat", length = 2000)
+	@Column(name = "agent_stat", length = 9990)
 	private String agentStatus;
 
 	@Column(name = "monitor_stat", length = 2000)
