@@ -4,13 +4,13 @@
 		<#include "../common/common.ftl">
 		<#include "../common/jqplot.ftl">
 		
+		<title><@spring.message "perfTest.report.title"/></title>
+		
 		<!-- For jqplot legend -->
 		<link href="${req.getContextPath()}/plugins/jqplot/syntaxhighlighter/styles/shCoreDefault.min.css" rel="stylesheet"/>
     	<link href="${req.getContextPath()}/plugins/jqplot/syntaxhighlighter/styles/shThemejqPlot.min.css" rel="stylesheet"/>
     	
-		<title><@spring.message "perfTest.report.title"/></title>
-		
-		<style>
+		<style> 
 			body {
 				padding-top: 0;
 			}	
@@ -151,7 +151,7 @@
 		                </button>
 					</legend>
 					<h6>TPS</h6>
-			    	<div class="chart" id="tpsDiv"></div>
+			    	<div style="border:1px solid #878988; margin-bottom:30px; min-width:615px; padding:0 5px" id="tpsDiv"></div>
 					<h6><@spring.message "perfTest.report.header.meantime"/>&nbsp;(ms)</h6>
     				<div class="chart" id="meanTimeDiv"></div>
     				<h6 id="minTimeFirstByteHeader"><@spring.message "perfTest.report.header.meantimetofirstbyte"/>&nbsp;(ms)</h6>
@@ -237,7 +237,7 @@
 			obj.parent("li").addClass("active");
 			obj.children("i").addClass("icon-white");
 		}
-		
+
 		function getPerformanceData(){
 		    if(performanceInit){
 		        return;
@@ -252,7 +252,7 @@
                 success: function(res) {
                     if (res.success) {
                     	var st = new Date($('#startTime').val());
-                        drawChart('tpsDiv', res.TPS, undefined, res.chartInterval);
+                        drawMultiPlotChart('tpsDiv', res.TPS, res.LABLES, res.chartInterval);
                         drawChart('meanTimeDiv', res.Mean_Test_Time_ms, undefined, res.chartInterval);
                         if (res.Mean_time_to_first_byte !== undefined && 
                         		res.Mean_time_to_first_byte !== '[ ]') {
@@ -365,24 +365,28 @@
 			return ymax;
 		}
 		
-		function drawMultiPlotChart(containerId, data, interval) {
-			if (data == undefined) {
+		function drawMultiPlotChart(containerId, data, labels, interval) {
+			if (data == undefined || !(data instanceof Array) || data.length == 0) {
 				return undefined;
 			}
 			
 			var values;
-			if ((data instanceof Array) && (data[0] instanceof Array)) {
+			if (data[0] instanceof Array) {
 				values = data;
 			} else {
-				values = [ eval(data) ];
+				var temp = [];
+				for (var i = 0; i < data.length; i++) {
+					temp.push(eval(data[i]));
+				}
+				values = temp;
 			}
 			
-			var dataCnt = values[0][0].length;
+			var dataCnt = values[values.length - 1].length;
 			if (dataCnt == 0) {
 				return;
 			}
 			
-			var ymax = getMultiPlotMaxValue(data);
+			var ymax = getMultiPlotMaxValue(values);
 			if (ymax < 5) {
 				ymax = 5;
 			}
@@ -391,8 +395,6 @@
 			if (interval == undefined || interval == 0 || !$.isNumeric(interval)) {
 				interval = 1;
 			}
-			
-			var labels = ["Test1", "Test2", "Test3"];//Example
 			
 			var plotObj = $.jqplot(containerId, values, {
 				seriesDefaults : {
@@ -412,7 +414,7 @@
 						tickOptions : {
 							show : true,
 							formatter : function(format, value) {
-								return parseInt(value * interval);
+								return formatTimeForXaxis(parseInt(value * interval));
 							}
 						}
 					},
@@ -452,10 +454,7 @@
 					location: "s",
 					rowSpacing: "2px",
 					rendererOptions: {
-						seriesToggle: 'normal',
-						seriesToggleReplot: {
-							resetAxes: true
-						}
+						seriesToggle: 'normal'
 					}
 				}
 			});

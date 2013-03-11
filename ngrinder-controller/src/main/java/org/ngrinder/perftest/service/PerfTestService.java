@@ -28,6 +28,7 @@ import static org.ngrinder.perftest.repository.PerfTestSpecification.statusSetEq
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -70,6 +71,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -842,43 +844,15 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return report data report data of that type
 	 */
 	public String getReportDataAsString(long testId, String dataType, int interval) {
-		StringBuilder reportData = new StringBuilder("[");
+		
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
 		File targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
 		if (!targetFile.exists()) {
 			LOGGER.error("Report data for {} in {} does not exisit.", testId, dataType);
 			return "[ ]";
 		}
-		FileReader reader = null;
-		BufferedReader br = null;
-		try {
-			reader = new FileReader(targetFile);
-			br = new BufferedReader(reader);
-			String data = br.readLine();
-			int current = 0;
-			while (StringUtils.isNotBlank(data)) {
-				if (0 == current) {
-					double number = NumberUtils.createDouble(StringUtils.defaultIfBlank(data, "0"));
-					reportData.append(number);
-					reportData.append(",");
-				}
-				if (++current >= interval) {
-					current = 0;
-				}
-				data = br.readLine();
-			}
-			if (reportData.charAt(reportData.length() - 1) == ',') {
-				reportData.deleteCharAt(reportData.length() - 1);
-			}
-			reportData.append("]");
-		} catch (IOException e) {
-			LOGGER.error("Get report data for {} failed: {}", dataType, e.getMessage());
-			LOGGER.debug("Trace is : ", e);
-		} finally {
-			IOUtils.closeQuietly(reader);
-			IOUtils.closeQuietly(br);
-		}
-		return reportData.toString();
+	
+		return getFileDataAsString(targetFile,interval);
 	}
 
 	/**
@@ -1551,6 +1525,83 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		}
 		LOGGER.debug("Finish getSystemMonitorData of test:{} ip:{}", testId, monitorIP);
 		return rtnList;
+	}
+
+	/**
+	 * Get list that contains test tps report data as a string
+	 * 
+	 * @param testId
+	 *            test id
+	 * @param interval
+	 *            interval to collect data
+	 * @return list contained lables list and tps value list
+	 */
+	public List<ArrayList<String>> getTPSReportDataAsString(long testId, int interval) {
+		List<File> TpsList = getTPSDataFiles(testId);
+		ArrayList<ArrayList<String>> resList = Lists.newArrayList();
+		resList.add(new ArrayList<String>());
+		resList.add(new ArrayList<String>());
+		for (File file : TpsList) {
+			resList.get(0).add(FilenameUtils.removeExtension(file.getName()));
+			resList.get(1).add(getFileDataAsString(file, interval));
+		}
+		return resList;
+	}
+	
+	/**
+	 * Get tps file respectively if there is multiple test in single script will be added
+	 * @param testId
+	 * 			test id
+	 * @return
+	 * 			return file list
+	 */
+	public List<File> getTPSDataFiles(long testId) {
+		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
+		FileFilter fileFilter = new WildcardFileFilter("TPS*.data");
+		File[] files = reportFolder.listFiles(fileFilter);
+		return Arrays.asList(files);
+	}
+	
+	/**
+	 * Get the test report data as a string.
+	 * 
+	 * @param file
+	 *            target file
+	 * @param interval
+	 *            interval to collect data
+	 */
+	private String getFileDataAsString(File targetFile,int interval){
+		StringBuilder reportData = new StringBuilder("[");
+		FileReader reader = null;
+		BufferedReader br = null;
+		try {
+			reader = new FileReader(targetFile);
+			br = new BufferedReader(reader);
+			String data = br.readLine();
+			int current = 0;
+			while (StringUtils.isNotBlank(data)) {
+				if (0 == current) {
+					double number = NumberUtils.createDouble(StringUtils.defaultIfBlank(data, "0"));
+					reportData.append(number);
+					reportData.append(",");
+				}
+				if (++current >= interval) {
+					current = 0;
+				}
+				data = br.readLine();
+			}
+			if (reportData.charAt(reportData.length() - 1) == ',') {
+				reportData.deleteCharAt(reportData.length() - 1);
+			}
+			reportData.append("]");
+		} catch (IOException e) {
+			LOGGER.error("Get report data  failed: {}",  e.getMessage());
+			LOGGER.debug("Trace is : ", e);
+		} finally {
+			IOUtils.closeQuietly(reader);
+			IOUtils.closeQuietly(br);
+		}
+		return reportData.toString();
 	}
 
 }
