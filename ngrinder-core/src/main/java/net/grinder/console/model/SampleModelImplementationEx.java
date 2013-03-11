@@ -305,7 +305,7 @@ public class SampleModelImplementationEx implements SampleModel {
 		return getInternalState().toExternalState();
 	}
 
-	private void zero() {
+	public void zero() {
 		synchronized (m_accumulators) {
 			for (SampleAccumulator sampleAccumulator : m_accumulators.values()) {
 				sampleAccumulator.zero();

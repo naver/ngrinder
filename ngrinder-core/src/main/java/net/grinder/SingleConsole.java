@@ -679,6 +679,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			return;
 		}
 		if (samplingCount++ < ignoreSampleCount) {
+			((SampleModelImplementationEx) this.sampleModel).zero();
 			return;
 		}
 		if (firstSampling) {
@@ -794,10 +795,11 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 										formatValue(getRealDoubleValue(each.getValue().getDoubleValue(
 														lastSampleStatistics))));
 					}
-					//multiple tests in a single script,saved those tests's TPS in their respective file
+					// multiple tests in a single script,saved those tests's TPS in their respective
+					// file
 					if (each.getKey().equals("TPS")) {
 						writeReportData("TPS-" + i + REPORT_DATA, formatValue(getRealDoubleValue(each.getValue()
-								.getDoubleValue(lastSampleStatistics))));
+										.getDoubleValue(lastSampleStatistics))));
 					}
 				}
 			}
@@ -1192,6 +1194,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		this.sampling = true;
 		this.sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 		this.sampleModel.addTotalSampleListener(this);
+		this.sampleModel.reset();
 		informTestSamplingStart();
 		this.firstSampling = true;
 		this.sampleModel.start();
