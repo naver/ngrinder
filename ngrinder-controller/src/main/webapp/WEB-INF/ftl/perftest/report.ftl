@@ -169,10 +169,20 @@
                     <div class="chart" id="cpuDiv"></div>
 					<h6>Used Memory</h6>
                     <div class="chart" id="memoryDiv"></div>
-					<h6>Received Per Second(KB)</h6>
+					<h6 id="receivedDivHeader">Received Per Second</h6>
                     <div class="chart" id="receivedDiv"></div>
-					<h6>Sent Per Second(KB)</h6>
+					<h6 id="sentDivHeader">Sent Per Second</h6>
                     <div class="chart" id="sentDiv"></div>
+					<h6 id="customMonitorData1Header">Customized Monitor Data1</h6>
+                    <div class="chart" id="customMonitorData1"></div>
+					<h6 id="customMonitorData2Header">Customized Monitor Data2</h6>
+                    <div class="chart" id="customMonitorData2"></div>
+					<h6 id="customMonitorData3Header">Customized Monitor Data3</h6>
+                    <div class="chart" id="customMonitorData3"></div>
+					<h6 id="customMonitorData4Header">Customized Monitor Data4</h6>
+                    <div class="chart" id="customMonitorData4"></div>
+					<h6 id="customMonitorData5Header">Customized Monitor Data5</h6>
+                    <div class="chart" id="customMonitorData5"></div>
                 </div>
 			</div>
 		</div>
@@ -282,27 +292,73 @@
             });
         }
 		
+		function clearPrePlot() {
+        	$("#cpuDiv").empty();
+        	$("#memoryDiv").empty();
+        	$("#receivedDiv").empty();
+        	$("#sentDiv").empty();
+        	$("#customMonitorData1").empty();
+        	$("#customMonitorData2").empty();
+        	$("#customMonitorData3").empty();
+        	$("#customMonitorData4").empty();
+        	$("#customMonitorData5").empty();
+		}
+		
 		function redrawPlot(ip) {
-        	var dataKeyCpu = ip + "-cpu";
-        	var dataKeyMem = ip + "-mem";
-        	var dataKeyReceived = ip + "-received";
-        	var dataKeySent = ip + "-sent";
-    		ymax = getMaxValue(targetMonitorData[dataKeyCpu]);
-    		replotChart(targetMonitorPlot[plotKeyCpu], targetMonitorData[dataKeyCpu], ymax);
-    		ymax = getMaxValue(targetMonitorData[dataKeyMem]);
-    		replotChart(targetMonitorPlot[plotKeyMem], targetMonitorData[dataKeyMem], ymax);
-    		ymax = getMaxValue(targetMonitorData[dataKeyReceived]);
-    		replotChart(targetMonitorPlot[plotKeyReceived], targetMonitorData[dataKeyReceived], ymax);
-    		ymax = getMaxValue(targetMonitorData[dataKeyCpu]);
-    		replotChart(targetMonitorPlot[plotKeySent], targetMonitorData[dataKeySent], ymax);
+			clearPrePlot();
+        	var currMonitorData = targetMonitorData[ip];
+       		drawChart('cpuDiv', currMonitorData.cpu, formatPercentage, currMonitorData.interval);
+       		drawChart('memoryDiv', currMonitorData.memory, formatMemory, currMonitorData.interval);
+       		drawExtMonitorData(currMonitorData);
+		}
+		
+		function drawExtMonitorData(systemData) {
+            if (systemData.received !== undefined && systemData.received !== '[]') {
+            	drawChart('receivedDiv', systemData.received, formatMemory, systemData.interval);
+            } else {
+            	$("#receivedDiv").hide();	
+            	$("#receivedDivHeader").hide();
+            }
+            if (systemData.sent !== undefined && systemData.sent !== '[]') {
+            	drawChart('sentDiv', systemData.sent, formatMemory, systemData.interval);
+            } else {
+            	$("#sentDiv").hide();	
+            	$("#sentDivHeader").hide();
+            }
+            if (systemData.customData1 !== undefined && systemData.customData1 !== '[]') {
+            	drawChart('customMonitorData1', systemData.customData1, undefined, systemData.interval);
+            } else {
+            	$("#customMonitorData1").hide();	
+            	$("#customMonitorData1Header").hide();
+            }
+            if (systemData.customData2 !== undefined && systemData.customData2 !== '[]') {
+            	drawChart('customMonitorData2', systemData.customData2, undefined, systemData.interval);
+            } else {
+            	$("#customMonitorData2").hide();	
+            	$("#customMonitorData2Header").hide();
+            }
+            if (systemData.customData3 !== undefined && systemData.customData3 !== '[]') {
+            	drawChart('customMonitorData3', systemData.customData3, undefined, systemData.interval);
+            } else {
+            	$("#customMonitorData3").hide();	
+            	$("#customMonitorData3Header").hide();
+            }
+            if (systemData.customData4 !== undefined && systemData.customData4 !== '[]') {
+            	drawChart('customMonitorData4', systemData.customData4, undefined, systemData.interval);
+            } else {
+            	$("#customMonitorData4").hide();	
+            	$("#customMonitorData4Header").hide();
+            }
+            if (systemData.customData5 !== undefined && systemData.customData5 !== '[]') {
+            	drawChart('customMonitorData5', systemData.customData5, undefined, systemData.interval);
+            } else {
+            	$("#customMonitorData5").hide();	
+            	$("#customMonitorData5Header").hide();
+            }
 		}
 		
         function getMonitorData(ip){
-        	var dataKeyCpu = ip + "-cpu";
-        	var dataKeyMem = ip + "-mem";
-        	var dataKeyReceived = ip + "-received";
-        	var dataKeySent = ip + "-sent";
-        	if (targetMonitorData[dataKeyCpu]) {
+        	if (targetMonitorData[ip]) {
         		redrawPlot(ip);
         		return;
         	}
@@ -325,21 +381,13 @@
                     		rs = false;
                     	}
                     	//save data to reuse.
-                    	targetMonitorData[dataKeyCpu] = res.SystemData.cpu;
-                    	targetMonitorData[dataKeyMem] = res.SystemData.memory;
-                    	targetMonitorData[dataKeyReceived] = res.SystemData.received;
-                    	targetMonitorData[dataKeySent] = res.SystemData.sent;
-                    	
-                    	var existedPlot = targetMonitorPlot[plotKeyCpu];
-                    	if (existedPlot) {
-                    		redrawPlot(ip);
-                    	} else {
-                    		//draw the plot and save the plot object to reuse.
-                    		targetMonitorPlot[plotKeyCpu] = drawChart('cpuDiv', res.SystemData.cpu, formatPercentage, res.SystemData.interval);
-                    		targetMonitorPlot[plotKeyMem] = drawChart('memoryDiv', res.SystemData.memory, formatMemory, res.SystemData.interval);
-                   			targetMonitorPlot[plotKeyReceived] = drawChart('receivedDiv', res.SystemData.received, formatMemory, res.SystemData.interval);
-                    		targetMonitorPlot[plotKeySent] = drawChart('sentDiv', res.SystemData.sent, formatMemory, res.SystemData.interval);
-                   		}
+                    	targetMonitorData[ip] = res.SystemData;
+
+                   		//draw the plot.
+                   		clearPrePlot();
+                   		drawChart('cpuDiv', res.SystemData.cpu, formatPercentage, res.SystemData.interval);
+                   		drawChart('memoryDiv', res.SystemData.memory, formatMemory, res.SystemData.interval);
+                   		drawExtMonitorData(res.SystemData);
                         return true;
                     } else {
                         showErrorMsg("Get monitor data failed.");
