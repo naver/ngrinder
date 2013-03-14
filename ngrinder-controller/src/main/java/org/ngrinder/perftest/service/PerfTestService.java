@@ -1416,6 +1416,11 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			StringBuilder sbCPUUsed = new StringBuilder("[");
 			StringBuilder sbNetReceieved = new StringBuilder("[");
 			StringBuilder sbNetSent = new StringBuilder("[");
+			StringBuilder customData1 = new StringBuilder("[");
+			StringBuilder customData2 = new StringBuilder("[");
+			StringBuilder customData3 = new StringBuilder("[");
+			StringBuilder customData4 = new StringBuilder("[");
+			StringBuilder customData5 = new StringBuilder("[");
 
 			br = new BufferedReader(new FileReader(monitorDataFile));
 			br.readLine(); // skip the header.
@@ -1425,9 +1430,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			int skipCount = dataInterval;
 
 			// to be compatible with previous version, check the length before adding
-			boolean isNetDataExist = false;
+			boolean isExtDataExist = false;
 			if (StringUtils.split(line, ",").length > 6) {
-				isNetDataExist = true;
+				isExtDataExist = true;
 			}
 			int kbSize = 1024;
 			while (StringUtils.isNotBlank(line)) {
@@ -1437,36 +1442,48 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				} else {
 					skipCount = 1;
 					String[] datalist = StringUtils.split(line, ",");
+					int columnSize = datalist.length;
 					long usedMem = Long.valueOf(datalist[4]) - Long.valueOf(datalist[3]);
 					sbUsedMem.append(usedMem).append(",");
 					sbCPUUsed.append(Float.valueOf(datalist[5])).append(",");
 
-					if (isNetDataExist) {
+					if (isExtDataExist) {
 						sbNetReceieved.append(Long.valueOf(datalist[6]) / kbSize).append(",");
 						sbNetSent.append(Long.valueOf(datalist[7]) / kbSize).append(",");
+						if (columnSize > 8) {
+							customData1.append(Float.valueOf(datalist[8])).append(",");
+						} else if (columnSize > 9) {
+							customData2.append(Float.valueOf(datalist[9])).append(",");
+						} else if (columnSize > 10) {
+							customData3.append(Float.valueOf(datalist[10])).append(",");
+						} else if (columnSize > 11) {
+							customData4.append(Float.valueOf(datalist[11])).append(",");
+						} else if (columnSize > 12) {
+							customData5.append(Float.valueOf(datalist[12])).append(",");
+						}
 					}
 					line = br.readLine();
 				}
 			}
-			int lastCharIndex = sbUsedMem.length() - 1;
-			sbUsedMem.delete(lastCharIndex, lastCharIndex + 1); // remove last ","
 			sbUsedMem.append("]");
-			lastCharIndex = sbCPUUsed.length() - 1;
-			sbCPUUsed.delete(lastCharIndex, lastCharIndex + 1);
 			sbCPUUsed.append("]");
 			rtnMap.put("cpu", sbCPUUsed.toString());
 			rtnMap.put("memory", sbUsedMem.toString());
+			sbNetReceieved.append("]");
+			sbNetSent.append("]");
+			rtnMap.put("received", sbNetReceieved.toString());
+			rtnMap.put("sent", sbNetSent.toString());
+			customData1.append("]");
+			customData2.append("]");
+			customData3.append("]");
+			customData4.append("]");
+			customData5.append("]");
+			rtnMap.put("customData1", customData1.toString());
+			rtnMap.put("customData2", customData2.toString());
+			rtnMap.put("customData3", customData3.toString());
+			rtnMap.put("customData4", customData4.toString());
+			rtnMap.put("customData5", customData5.toString());
 
-			if (isNetDataExist) {
-				lastCharIndex = sbNetReceieved.length() - 1;
-				sbNetReceieved.delete(lastCharIndex, lastCharIndex + 1);
-				sbNetReceieved.append("]");
-				lastCharIndex = sbNetSent.length() - 1;
-				sbNetSent.delete(lastCharIndex, lastCharIndex + 1);
-				sbNetSent.append("]");
-				rtnMap.put("received", sbNetReceieved.toString());
-				rtnMap.put("sent", sbNetSent.toString());
-			}
 		} catch (FileNotFoundException e) {
 			LOGGER.error("Monitor data file not exist:{}", monitorDataFile);
 			LOGGER.error(e.getMessage(), e);
