@@ -26,15 +26,21 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.jnlp.DownloadService2;
+import javax.jnlp.DownloadService2.ResourceSpec;
+import javax.jnlp.ServiceManager;
+
 import net.grinder.AgentControllerDaemon;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.util.NetworkUtil;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hyperic.sigar.ProcState;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
+import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.AgentMonitorServer;
@@ -61,6 +67,10 @@ public class NGrinderStarter {
 	private AgentControllerDaemon agentController;
 
 	private ReconfigurableURLClassLoader classLoader;
+	
+	private  String JNLP_LIB_PATH ;
+	
+	private final String LOCAL_NATIVE_PATH = "./native_lib";
 
 	/**
 	 * Constructor.
@@ -192,29 +202,62 @@ public class NGrinderStarter {
 
 	private void addLibarayPath() {
 		String property = StringUtils.trimToEmpty(System.getProperty("java.library.path"));
-		System.setProperty("java.library.path",
-						property + File.pathSeparator + new File("./native_lib").getAbsolutePath());
+		String nativePath = isWebStart() ? JNLP_LIB_PATH : LOCAL_NATIVE_PATH;
+		System.setProperty("java.library.path", property + File.pathSeparator + nativePath);
 		LOG.info("java.library.path : {} ", System.getProperty("java.library.path"));
 	}
+	
+	/**
+	 * Get jar file list
+	 */
+	protected Collection<File> getJarFileList() {
+		JNLP_LIB_PATH = agentConfig.getHome().getDirectory() + File.separator + "jnlp_res";
+		DownloadService2 service = null;
+		ArrayList<File> fileString = new ArrayList<File>();
+		if (isWebStart()) {
+			try {
+				service = (DownloadService2) ServiceManager.lookup("javax.jnlp.DownloadService2");
+				ResourceSpec alljars = new ResourceSpec("http://.*", null, DownloadService2.JAR);
+				ResourceSpec[] results = service.getCachedResources(alljars);
 
+				for (ResourceSpec r : results) {
+					String url = r.getUrl().toString();
+					String fileName = url.substring(url.lastIndexOf('/') + 1, url.length());
+					File jarFile = new File(JNLP_LIB_PATH, fileName);
+					FileUtils.copyURLToFile(new URL(url), jarFile);
+					if (fileName.equals("native.jar")) {
+						CompressionUtil.unjar(jarFile, JNLP_LIB_PATH);
+					}
+					fileString.add(jarFile);
+				}
+			} catch (Exception e) {
+				staticPrintHelpAndExit("Error occurs while getting Jar file from Service !");
+			}
+		} else {
+			File libFolder = new File(".", "lib").getAbsoluteFile();
+			if (!libFolder.exists()) {
+				printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + ") does not exist");
+			}
+			String[] exts = new String[] { "jar" };
+			fileString.addAll(FileUtils.listFiles(libFolder, exts, false));
+		}
+
+		return fileString;
+	}
+	
 	/**
 	 * Add class path.
 	 */
 	protected void addClassPath() {
+		
 		ArrayList<String> libString = new ArrayList<String>();
-		File libFolder = new File(".", "lib").getAbsoluteFile();
-		if (!libFolder.exists()) {
-			printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + ") does not exist");
-			return;
-		}
-		String[] exts = new String[] { "jar" };
-		Collection<File> libList = FileUtils.listFiles(libFolder, exts, false);
+		Collection<File> libList = getJarFileList();
+		
 		// Add patch first
 		for (File each : libList) {
 			if (each.getName().contains("patch")) {
 				addClassPath(classLoader, each);
 				libString.add(each.getPath());
-
 			}
 		}
 
@@ -307,7 +350,7 @@ public class NGrinderStarter {
 	 */
 	public static void main(String[] args) {
 
-		if (!isValidCurrentDirectory()) {
+		if (!isValidCurrentDirectory() && !isWebStart()) {
 			staticPrintHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
 		}
 		NGrinderStarter starter = new NGrinderStarter();
@@ -404,5 +447,14 @@ public class NGrinderStarter {
 	private static void staticPrintHelpAndExit(String message, Exception e) {
 		LOG.error(message);
 		System.exit(-1);
+	}
+	
+	/**
+	 * Check agent start mode
+	 * 
+	 * @return true if it's jnlp web start
+	 */
+	private static boolean isWebStart() {
+		return BooleanUtils.toBoolean(System.getProperty("start.webload", "false"));
 	}
 }
