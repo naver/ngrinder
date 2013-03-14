@@ -13,5 +13,7 @@ test("getMaxValue", function() {
 	equal(getMaxValue([1,109,109,9]), 109, "Passed!");
 	equal(getMaxValue([10,11,100,101]), 101, "Passed!");
 	equal(getMaxValue([10,111,100,101]), 111, "Passed!");
+
+	equal(getMaxValue([]), 0, "Passed!");
 	
 });

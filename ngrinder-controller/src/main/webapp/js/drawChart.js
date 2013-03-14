@@ -34,6 +34,9 @@ function formatTimeForXaxis(timeInSecond) {
 }
 
 function getMaxValue(data) {
+	if (data === undefined) {
+		return;
+	}
 	var values = [ eval(data) ];
 	var ymax = 0;
 	for (var i = 0;  i < values.length; i++) {
