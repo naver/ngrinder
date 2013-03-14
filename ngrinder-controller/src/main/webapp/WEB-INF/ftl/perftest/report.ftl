@@ -14,9 +14,20 @@
 			body {
 				padding-top: 0;
 			}	
-			.left { border-right: 1px solid #878988 }
-			div.chart { border: 1px solid #878988; height:200px; min-width:615px; margin-bottom:30px }
-			td strong { color: #6DAFCF }
+			.left {
+				border-right: 1px solid #878988
+			}
+			div.chart {
+				border: 1px solid #878988; 
+				height: 200px; 
+				min-width: 615px; 
+			}
+			h6 {
+				margin-top: 20px;
+			}
+			td strong {
+				color: #6DAFCF
+			}
 			.jqplot-yaxis {
 			    margin-right: 10px;
 			}
@@ -24,7 +35,37 @@
 			    margin-right: 5px;
        			margin-top: 5px; 
 			}
-			.compactpadding th { padding:8px 5px; vertical-align:middle; }
+			.compactpadding th {
+				padding: 8px 5px;
+				vertical-align: middle;
+			}
+			.jqplot-image-button {
+			    margin-top: 5px;
+			    margin-bottom: 5px;
+			}
+			div.jqplot-image-container {
+			    position: relative;
+			    z-index: 11;
+			    margin: auto;
+			    display: none;
+			    background-color: #ffffff;
+			    border: 1px solid #999;
+			    display: inline-block;
+			    min-width: 615px; 
+			}
+			div.jqplot-image-container-header {
+			    font-size: 1.0em;
+			    font-weight: bold;
+			    padding: 5px 15px;
+			    background-color: #eee;
+			}
+			div.jqplot-image-container-content {
+			    padding: 15px;
+			    background-color: #ffffff;
+			}
+			a.jqplot-image-container-close {
+			    float: right;
+			}
 		</style>
 	</head>
 
@@ -151,7 +192,7 @@
 		                </button>
 					</legend>
 					<h6>TPS</h6>
-			    	<div style="border:1px solid #878988; margin-bottom:30px; min-width:615px; padding:0 5px" id="tpsDiv"></div>
+			    	<div style="border:1px solid #878988; min-width:615px; padding:0 5px" id="tpsDiv"></div>
 					<h6><@spring.message "perfTest.report.header.meantime"/>&nbsp;(ms)</h6>
     				<div class="chart" id="meanTimeDiv"></div>
     				<h6 id="minTimeFirstByteHeader"><@spring.message "perfTest.report.header.meantimetofirstbyte"/>&nbsp;(ms)</h6>
@@ -194,10 +235,12 @@
 	<script src="${req.getContextPath()}/plugins/jqplot/syntaxhighlighter/scripts/shCore.min.js"></script>
 	<script src="${req.getContextPath()}/plugins/jqplot/syntaxhighlighter/scripts/shBrushJScript.min.js"></script>
 	<script src="${req.getContextPath()}/plugins/jqplot/syntaxhighlighter/scripts/shBrushXml.min.js"></script>
+	<script src="${req.getContextPath()}/js/generateImg.js"></script>
 	<script>
 	    var performanceInit = false;
-	    var targetMonitorPlot = {}; //save plot object
 	    var targetMonitorData = {}; //save monitor data
+	    var imgBtnLabel = "<@spring.message "perfTest.report.exportImg.button"/>";
+	    var imgWarningMsg = "<@spring.message "perfTest.report.exportImg.warning"/>"
 
 	    //used to save the plot object. Then for every target, just use the new data to replot.
     	var plotKeyCpu = "plotcpu";
@@ -208,6 +251,7 @@
 		$(document).ready(function() {
 		    // TODO need to add cache here
 		    $("#testPerformance").click(function() {
+		    	cleanImgElem();
 		        $("#performanceDiv").show();
 		        $("#monitorDiv").hide();
 		        getPerformanceData();
@@ -215,6 +259,7 @@
 		    });
 		    
 		    $("a.targetMontor").click(function() {
+		    	cleanImgElem();
                 $("#performanceDiv").hide();
                 $("#monitorDiv").show();
                 var $elem = $(this);
@@ -240,6 +285,7 @@
 
 		function getPerformanceData(){
 		    if(performanceInit){
+		    	generateImg(imgBtnLabel, imgWarningMsg);
 		        return;
 		    }
 		    performanceInit = true;
@@ -269,6 +315,7 @@
                         	$("#userDefinedChartHeader").hide();
                         }
                         drawChart('errorDiv', res.Errors, undefined, res.chartInterval);
+                        generateImg(imgBtnLabel, imgWarningMsg);
                         return true;
                     } else {
                         showErrorMsg("Get report data failed.");
@@ -282,64 +329,47 @@
             });
         }
 		
-		function redrawPlot(ip) {
-        	var dataKeyCpu = ip + "-cpu";
-        	var dataKeyMem = ip + "-mem";
-        	var dataKeyReceived = ip + "-received";
-        	var dataKeySent = ip + "-sent";
-    		ymax = getMaxValue(targetMonitorData[dataKeyCpu]);
-    		replotChart(targetMonitorPlot[plotKeyCpu], targetMonitorData[dataKeyCpu], ymax);
-    		ymax = getMaxValue(targetMonitorData[dataKeyMem]);
-    		replotChart(targetMonitorPlot[plotKeyMem], targetMonitorData[dataKeyMem], ymax);
-    		ymax = getMaxValue(targetMonitorData[dataKeyReceived]);
-    		replotChart(targetMonitorPlot[plotKeyReceived], targetMonitorData[dataKeyReceived], ymax);
-    		ymax = getMaxValue(targetMonitorData[dataKeyCpu]);
-    		replotChart(targetMonitorPlot[plotKeySent], targetMonitorData[dataKeySent], ymax);
+		function drawPlot(ip) {
+        	var interval = targetMonitorData[ip].interval;
+        	$("#cpuDiv").empty();
+        	$("#memoryDiv").empty();
+        	$("#receivedDiv").empty();
+        	$("#sentDiv").empty();
+     		drawChart('cpuDiv', targetMonitorData[ip].cpu, formatPercentage, interval);
+    		drawChart('memoryDiv', targetMonitorData[ip].memory, formatMemory, interval);
+   			drawChart('receivedDiv', targetMonitorData[ip].received, formatMemory, interval);
+    		drawChart('sentDiv', targetMonitorData[ip].sent, formatMemory, interval);
+    		
+    		generateImg(imgBtnLabel, imgWarningMsg);
 		}
 		
         function getMonitorData(ip){
-        	var dataKeyCpu = ip + "-cpu";
-        	var dataKeyMem = ip + "-mem";
-        	var dataKeyReceived = ip + "-received";
-        	var dataKeySent = ip + "-sent";
-        	if (targetMonitorData[dataKeyCpu]) {
-        		redrawPlot(ip);
+        	if (targetMonitorData[ip + "-cpu"]) {
+        		drawPlot(ip);
         		return;
         	}
+        	
             $.ajax({
                 url: "${req.getContextPath()}/perftest/${(test.id)?c}/monitor",
                 dataType:'json',
                 cache: true,
-                data: {'monitorIP': ip,
-                       'imgWidth' : 700},
+                data: {'monitorIP': ip, 'imgWidth': 700},
                 success: function(res) {
                     if (res.success) {
                     	var ymax = 0;
                     	$("#ipMark").html("[" + ip + "]");
-                    	var rs = true;
                     	
-                    	if (res.SystemData.cpu == undefined) {
+                    	if ($.isEmptyObject(res.SystemData)) {
                     		showErrorMsg("<@spring.message "perfTest.report.message.noMonitorData"/>");
                     		res.SystemData.cpu = [0];
                     		res.SystemData.memory = [0];
-                    		rs = false;
+                    		res.SystemData.received = [0];
+                    		res.SystemData.sent = [0];
                     	}
-                    	//save data to reuse.
-                    	targetMonitorData[dataKeyCpu] = res.SystemData.cpu;
-                    	targetMonitorData[dataKeyMem] = res.SystemData.memory;
-                    	targetMonitorData[dataKeyReceived] = res.SystemData.received;
-                    	targetMonitorData[dataKeySent] = res.SystemData.sent;
                     	
-                    	var existedPlot = targetMonitorPlot[plotKeyCpu];
-                    	if (existedPlot) {
-                    		redrawPlot(ip);
-                    	} else {
-                    		//draw the plot and save the plot object to reuse.
-                    		targetMonitorPlot[plotKeyCpu] = drawChart('cpuDiv', res.SystemData.cpu, formatPercentage, res.SystemData.interval);
-                    		targetMonitorPlot[plotKeyMem] = drawChart('memoryDiv', res.SystemData.memory, formatMemory, res.SystemData.interval);
-                   			targetMonitorPlot[plotKeyReceived] = drawChart('receivedDiv', res.SystemData.received, formatMemory, res.SystemData.interval);
-                    		targetMonitorPlot[plotKeySent] = drawChart('sentDiv', res.SystemData.sent, formatMemory, res.SystemData.interval);
-                   		}
+                    	targetMonitorData[ip] = res.SystemData;
+                    	drawPlot(ip);
+                    	
                         return true;
                     } else {
                         showErrorMsg("Get monitor data failed.");
@@ -352,7 +382,7 @@
                 }
             });
         }
-        
+              
         function getMultiPlotMaxValue(data) {
 			var ymax = 0;
 			for (var i = 0;  i < data.length; i++) {

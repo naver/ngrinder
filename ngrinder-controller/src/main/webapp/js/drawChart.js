@@ -34,7 +34,11 @@ function formatTimeForXaxis(timeInSecond) {
 }
 
 function getMaxValue(data) {
-	var values = [ eval(data) ];
+	if (data == undefined) {
+		return undefined;
+	}
+	
+	var values = preparedData(data);
 	var ymax = 0;
 	for (var i = 0;  i < values.length; i++) {
 		for (var j = 0;  j < values[i].length; j++) {
@@ -53,12 +57,7 @@ function drawChart(containerId, data, formatYaxis, interval) {
 	if (data == undefined) {
 		return undefined;
 	}
-	var values = [];
-	if ((data instanceof Array) == true) {
-		values = [ data ];
-	} else {
-		values = [ eval(data) ];
-	}
+	var values = preparedData(data);
 	var dataCnt = values[0].length;
 	if (dataCnt == 0) {
 		return;
@@ -182,4 +181,15 @@ function replotChart(plotObj, data, ymax, interval) {
 	};
 	
 	plotObj.replot();
+}
+
+function preparedData(data) {
+	var values = [];
+	if ((data instanceof Array) == true) {
+		values = [ data ];
+	} else {
+		values = [ eval(data) ];
+	}
+	
+	return values;
 }
