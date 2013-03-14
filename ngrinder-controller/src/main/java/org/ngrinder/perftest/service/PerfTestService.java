@@ -1437,13 +1437,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				} else {
 					skipCount = 1;
 					String[] datalist = StringUtils.split(line, ",");
-					long usedMem = (Long.valueOf(datalist[4]) - Long.valueOf(datalist[3])) / kbSize;
+					long usedMem = Long.valueOf(datalist[4]) - Long.valueOf(datalist[3]);
 					sbUsedMem.append(usedMem).append(",");
 					sbCPUUsed.append(Float.valueOf(datalist[5])).append(",");
 
 					if (isNetDataExist) {
-						sbNetReceieved.append(Long.valueOf(datalist[6])).append(",");
-						sbNetSent.append(Long.valueOf(datalist[7])).append(",");
+						sbNetReceieved.append(Long.valueOf(datalist[6]) / kbSize).append(",");
+						sbNetSent.append(Long.valueOf(datalist[7]) / kbSize).append(",");
 					}
 					line = br.readLine();
 				}
