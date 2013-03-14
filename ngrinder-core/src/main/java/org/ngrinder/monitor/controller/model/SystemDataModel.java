@@ -50,6 +50,8 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 	private long sentPerSec;
 
 	private String version;
+	
+	private String customValues;
 
 	/**
 	 * Default constructor to create empty SystemDataModel.
@@ -86,6 +88,7 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 			this.recievedPerSec = bandWidth.getRecivedPerSec();
 			this.sentPerSec = bandWidth.getSentPerSec();
 		}
+		this.customValues = systemInfo.getCustomValues();
 		this.version = version;
 	}
 
@@ -175,6 +178,14 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 
 	public void setSentPerSec(long sentPerSec) {
 		this.sentPerSec = sentPerSec;
+	}
+
+	public String getCustomValues() {
+		return customValues;
+	}
+
+	public void setCustomValues(String customValues) {
+		this.customValues = customValues;
 	}
 
 }

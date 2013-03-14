@@ -38,6 +38,8 @@ public final class AgentDataCollectManager {
 	private boolean isRunning = false;
 	private ScheduledExecutorService scheduler;
 	private static final AgentDataCollectManager INSTANCE = new AgentDataCollectManager();
+	
+	private String agentHome;
 
 	private AgentDataCollectManager() {
 	}
@@ -55,6 +57,15 @@ public final class AgentDataCollectManager {
 	}
 
 	/**
+	 * Initialize the manager. Need to set the agent home directory for the collector.
+	 * @param agentHome
+	 */
+	public void init(String agentHome) {
+		this.agentHome = agentHome;
+	}
+	
+
+	/**
 	 * start a scheduler for the data collector jobs.
 	 */
 	public void start() {
@@ -63,8 +74,9 @@ public final class AgentDataCollectManager {
 		if (!isRunning()) {
 			Collection<MXBean> mxBeans = AgentMXBeanStorage.getInstance().getMXBeans();
 			for (MXBean mxBean : mxBeans) {
-				scheduler.scheduleWithFixedDelay(mxBean.gainAgentDataCollector(), 0L, getInterval(), TimeUnit.SECONDS);
-				LOG.info("Agent collector: {} started.", mxBean.gainAgentDataCollector().getClass().getSimpleName());
+				AgentDataCollector collector = mxBean.gainAgentDataCollector(agentHome);
+				scheduler.scheduleWithFixedDelay(collector, 0L, getInterval(), TimeUnit.SECONDS);
+				LOG.info("Agent collector: {} started.", collector.getClass().getSimpleName());
 			}
 			LOG.info("Agent collector start (interval :{} s).", getInterval());
 

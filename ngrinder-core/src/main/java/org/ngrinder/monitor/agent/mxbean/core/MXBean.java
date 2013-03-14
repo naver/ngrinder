@@ -34,6 +34,6 @@ public abstract class MXBean implements Serializable {
 	 * 
 	 * @return AgentDataCollector of this MXBean
 	 */
-	public abstract AgentDataCollector gainAgentDataCollector();
+	public abstract AgentDataCollector gainAgentDataCollector(String agentHome);
 
 }

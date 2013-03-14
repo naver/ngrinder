@@ -36,7 +36,7 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 	 * Header field of monitor status fields.
 	 */
 	public static final String HEADER = "ip,system,collectTime,freeMemory,"
-					+ "totalMemory,cpuUsedPercentage,recivedPerSec,sentPerSec";
+					+ "totalMemory,cpuUsedPercentage,recivedPerSec,sentPerSec,customValues";
 
 	/**
 	 * Enum for the system type, linux or windows.
@@ -61,6 +61,8 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 
 	private String ip;
 
+	private String customValues;
+	
 	@Override
 	public void parse(CompositeData cd) {
 		if (cd == null) {
@@ -85,6 +87,10 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 				this.bandWidth.setRecivedPerSec(recivedPerSec);
 				this.bandWidth.setSentPerSec(sentPerSec);
 			}
+			if (containsKey(cd, "customValues")) {
+				this.setCustomValues(getString(cd, "customValues"));
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -149,6 +155,22 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 	public void setTotalMemory(long totalMemory) {
 		this.totalMemory = totalMemory;
 	}
+	
+	public BandWidth getBandWidth() {
+		return bandWidth;
+	}
+
+	public void setBandWidth(BandWidth bandWidth) {
+		this.bandWidth = bandWidth;
+	}
+
+	public String getCustomValues() {
+		return customValues;
+	}
+
+	public void setCustomValues(String customValues) {
+		this.customValues = customValues;
+	}
 
 	@Override
 	public String toString() {
@@ -168,15 +190,10 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		if (bandWidth != null) {
 			sb.append(",").append(bandWidth.getRecivedPerSec()).append(",").append(bandWidth.getSentPerSec());
 		}
+		if (customValues != null) {
+			sb.append(",").append(customValues);
+		}
 		return sb.toString();
-	}
-
-	public BandWidth getBandWidth() {
-		return bandWidth;
-	}
-
-	public void setBandWidth(BandWidth bandWidth) {
-		this.bandWidth = bandWidth;
 	}
 
 }

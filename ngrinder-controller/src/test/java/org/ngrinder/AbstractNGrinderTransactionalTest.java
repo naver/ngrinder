@@ -72,7 +72,8 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 		LOG.info("* Start nGrinder Monitor *");
 		try {
 			Set<String> collector = MonitorConstants.SYSTEM_DATA_COLLECTOR;
-			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_MONITOR_PORT, collector);
+			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_MONITOR_PORT, collector, 
+					agentConfig.getHome().getDirectory().getParent());
 			AgentMonitorServer.getInstance().start();
 		} catch (Exception e) {
 			LOG.error("ERROR: {}", e.getMessage());

@@ -34,8 +34,9 @@ public class SystemMonitoringData extends MXBean implements SystemMXBean {
 	private AgentSystemDataCollector agentSystemDataCollector = new AgentSystemDataCollector();
 
 	@Override
-	public AgentDataCollector gainAgentDataCollector() {
+	public AgentDataCollector gainAgentDataCollector(String agentHome) {
 		agentSystemDataCollector.refresh();
+		agentSystemDataCollector.setAgentHome(agentHome);
 		return agentSystemDataCollector;
 	}
 

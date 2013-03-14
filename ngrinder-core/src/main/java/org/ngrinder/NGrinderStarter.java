@@ -73,7 +73,7 @@ public class NGrinderStarter {
 		File logDirectory = agentConfig.getHome().getLogDirectory();
 		configureLogging(verboseMode, logDirectory);
 		addCustomClassLoader();
-		addClassPath();
+		//addClassPath();
 		addLibarayPath();
 	}
 
@@ -115,7 +115,7 @@ public class NGrinderStarter {
 
 			String localHostAddress = NetworkUtil.getLocalHostAddress();
 			System.setProperty("java.rmi.server.hostname", localHostAddress);
-			AgentMonitorServer.getInstance().init();
+			AgentMonitorServer.getInstance().init(agentConfig.getHome().getDirectory().getPath());
 			AgentMonitorServer.getInstance().start();
 		} catch (Exception e) {
 			LOG.error("ERROR: {}", e.getMessage());
@@ -172,6 +172,7 @@ public class NGrinderStarter {
 			String localHostAddress = NetworkUtil.getLocalHostAddress();
 			System.setProperty("java.rmi.server.hostname", localHostAddress);
 			agentController = new AgentControllerDaemon(localHostAddress);
+			agentController.getAgentController().setAgentConfig(agentConfig);
 			agentController.setRegion(region);
 			agentController.setAgentConfig(agentConfig);
 			agentController.run(consoleIP, consolePort);
@@ -307,7 +308,7 @@ public class NGrinderStarter {
 	public static void main(String[] args) {
 
 		if (!isValidCurrentDirectory()) {
-			staticPrintHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
+			//staticPrintHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
 		}
 		NGrinderStarter starter = new NGrinderStarter();
 		String startMode = System.getProperty("start.mode");
