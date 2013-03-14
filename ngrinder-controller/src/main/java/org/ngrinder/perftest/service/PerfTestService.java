@@ -1414,8 +1414,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		try {
 			StringBuilder sbUsedMem = new StringBuilder("[");
 			StringBuilder sbCPUUsed = new StringBuilder("[");
-			StringBuilder sbNetReceieved = null;
-			StringBuilder sbNetSent = null;
+			StringBuilder sbNetReceieved = new StringBuilder("[");
+			StringBuilder sbNetSent = new StringBuilder("[");
 
 			br = new BufferedReader(new FileReader(monitorDataFile));
 			br.readLine(); // skip the header.
@@ -1428,8 +1428,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			boolean isNetDataExist = false;
 			if (StringUtils.split(line, ",").length > 6) {
 				isNetDataExist = true;
-				sbNetReceieved = new StringBuilder("[");
-				sbNetSent = new StringBuilder("[");
 			}
 			int kbSize = 1024;
 			while (StringUtils.isNotBlank(line)) {
