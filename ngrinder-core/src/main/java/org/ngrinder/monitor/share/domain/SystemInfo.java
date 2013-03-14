@@ -182,7 +182,7 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 	 * 
 	 * @return record string
 	 */
-	public String getRecordString() {
+	public String toRecordString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(ip).append(",").append(system).append(",");
 		sb.append(DateUtil.getCollectTimeInLong(new Date(getCollectTime()))).append(",").append(freeMemory).append(",");

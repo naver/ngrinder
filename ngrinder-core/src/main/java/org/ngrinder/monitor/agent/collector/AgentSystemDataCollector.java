@@ -154,7 +154,8 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 				String line = customDataFileReader.readLine();//these data will be parsed at monitor client side.
 				return line;
 			} catch (IOException e) {
-				LOGGER.error("Error to read custom monitor data header:" + e.getMessage(), e);
+				LOGGER.error("Error to read custom monitor data:" + e.getMessage(), e);
+				prev.getCustomValues(); //if there is any error, return previous value, to avoid Null error.
 			} finally {
 				IOUtils.closeQuietly(customDataFileReader);
 			}
