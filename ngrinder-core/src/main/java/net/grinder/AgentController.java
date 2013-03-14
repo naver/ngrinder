@@ -103,6 +103,7 @@ public class AgentController implements Agent {
 		m_eventSyncCondition = eventSyncCondition;
 		m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, LOGGER);
 		m_agentIdentity = new AgentControllerIdentityImplementation(NetworkUtil.getLocalHostName(), currentIp);
+		agentSystemDataCollector = new AgentSystemDataCollector();
 		agentSystemDataCollector.refresh();
 	}
 
@@ -341,6 +342,7 @@ public class AgentController implements Agent {
 	public void setAgentConfig(AgentConfig agentConfig) {
 		this.agentConfig = agentConfig;
 		this.version = agentConfig.getInternalProperty("ngrinder.version", "3.1.2");
+		agentSystemDataCollector.setAgentHome(agentConfig.getHome().getDirectory().getPath());
 	}
 
 	private final class ConsoleCommunication {

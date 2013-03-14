@@ -48,6 +48,8 @@ public final class AgentMonitorServer {
 	private Registry rmiRegistry = null;
 	private boolean isRunning = false;
 	private int port = MonitorConstants.DEFAULT_MONITOR_PORT;
+	
+	private String agentHome;
 
 	private static final AgentMonitorServer INSTANCE = new AgentMonitorServer();
 
@@ -65,8 +67,9 @@ public final class AgentMonitorServer {
 	 * @throws IOException
 	 *             IO error
 	 */
-	public void init() throws IOException {
-		this.init(MonitorConstants.DEFAULT_MONITOR_PORT);
+	public void init(String agentHome) throws IOException {
+		this.init(MonitorConstants.DEFAULT_MONITOR_PORT, agentHome);
+		AgentDataCollectManager.getInstance().init(agentHome);
 	}
 
 	/**
@@ -78,8 +81,8 @@ public final class AgentMonitorServer {
 	 * @throws IOException
 	 *             IO error
 	 */
-	public void init(final int port) throws IOException {
-		this.init(port, MonitorConstants.DEFAULT_DATA_COLLECTOR);
+	public void init(final int port, String agentHome) throws IOException {
+		this.init(port, MonitorConstants.DEFAULT_DATA_COLLECTOR, agentHome);
 	}
 
 	/**
@@ -92,13 +95,14 @@ public final class AgentMonitorServer {
 	 * @throws IOException
 	 *             IO error
 	 */
-	public void init(final int port, final Set<String> dataCollector) throws IOException {
+	public void init(final int port, final Set<String> dataCollector, String agentHome) throws IOException {
 
 		MonitorContext.getInstance().setDataCollectors(dataCollector);
 
 		this.port = port;
 		this.rmiRegistry = LocateRegistry.createRegistry(port);
 		this.mBeanServer = ManagementFactory.getPlatformMBeanServer();
+		this.agentHome = agentHome;
 
 		final String hostname = NetworkUtil.getLocalHostAddress();
 		final String jmxUrlString = "service:jmx:rmi://" + hostname + ":" + port + "/jndi/rmi://" + hostname + ":"
@@ -136,6 +140,7 @@ public final class AgentMonitorServer {
 	public void start() throws IOException {
 		if (!isRunning()) {
 			jmxServer.start();
+			AgentDataCollectManager.getInstance().init(agentHome);
 			AgentDataCollectManager.getInstance().start();
 			isRunning = true;
 		}

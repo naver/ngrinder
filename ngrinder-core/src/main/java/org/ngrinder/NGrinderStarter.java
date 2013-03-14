@@ -115,7 +115,7 @@ public class NGrinderStarter {
 
 			String localHostAddress = NetworkUtil.getLocalHostAddress();
 			System.setProperty("java.rmi.server.hostname", localHostAddress);
-			AgentMonitorServer.getInstance().init();
+			AgentMonitorServer.getInstance().init(agentConfig.getHome().getDirectory().getPath());
 			AgentMonitorServer.getInstance().start();
 		} catch (Exception e) {
 			LOG.error("ERROR: {}", e.getMessage());
@@ -172,6 +172,7 @@ public class NGrinderStarter {
 			String localHostAddress = NetworkUtil.getLocalHostAddress();
 			System.setProperty("java.rmi.server.hostname", localHostAddress);
 			agentController = new AgentControllerDaemon(localHostAddress);
+			agentController.getAgentController().setAgentConfig(agentConfig);
 			agentController.setRegion(region);
 			agentController.setAgentConfig(agentConfig);
 			agentController.run(consoleIP, consolePort);

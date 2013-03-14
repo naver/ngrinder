@@ -13,6 +13,12 @@
  */
 package org.ngrinder.monitor.agent.collector;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
+import org.apache.commons.io.IOUtils;
 import org.hyperic.sigar.Cpu;
 import org.hyperic.sigar.Mem;
 import org.hyperic.sigar.NetInterfaceStat;
@@ -42,6 +48,15 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 	private SystemInfo prev = null;
 
 	private String[] netInterfaces = new String[] {};
+	
+	private String agentHomeDir = null;
+	private String customDataFileName = null;
+	private File customDataFile = null;
+	
+	public void setAgentHome(String agentHome) {
+		agentHomeDir = agentHome;
+		customDataFileName = agentHomeDir + File.separator + "monitor" + File.separator + "custom.data";
+	}
 
 	@Override
 	public synchronized void refresh() {
@@ -78,9 +93,7 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 		systemInfo.setCollectTime(System.currentTimeMillis());
 		try {
 			BandWidth networkUsage = getNetworkUsage();
-			LOGGER.debug("BandWidth: {} ", networkUsage);
 			BandWidth bandWidth = networkUsage.adjust(prev.getBandWidth());
-			LOGGER.debug("Adjusted Usage : {} ", bandWidth);
 			systemInfo.setBandWidth(bandWidth);
 			systemInfo.setCPUUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
 			Cpu cpu = sigar.getCpu();
@@ -90,6 +103,8 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 			systemInfo.setTotalMemory(mem.getTotal() / 1024L);
 			systemInfo.setFreeMemory(mem.getFree() / 1024L);
 			systemInfo.setSystem(OperatingSystem.IS_WIN32 ? SystemInfo.System.WINDOW : SystemInfo.System.LINUX);
+			
+			systemInfo.setCustomValues(getCustomizedMonitorData());
 		} catch (Throwable e) {
 			LOGGER.error("Error while getting system perf data:{}", e.getMessage());
 			LOGGER.debug("Error trace is ", e);
@@ -117,6 +132,34 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 			}
 		}
 		return bandWidth;
+	}
+	
+	
+	private void initCustomizedMonitor() {
+		// set data file for reuse.
+		customDataFile = new File(customDataFileName);
+		if (!customDataFile.exists()) {
+			customDataFile = null;
+		}
+	}
+	
+	private String getCustomizedMonitorData() {
+		if (customDataFile == null) {
+			initCustomizedMonitor();
+		}
+		if (customDataFile != null) {
+			BufferedReader customDataFileReader = null;
+			try {
+				customDataFileReader = new BufferedReader(new FileReader(customDataFile));
+				String line = customDataFileReader.readLine();//these data will be parsed at monitor client side.
+				return line;
+			} catch (IOException e) {
+				LOGGER.error("Error to read custom monitor data header:" + e.getMessage(), e);
+			} finally {
+				IOUtils.closeQuietly(customDataFileReader);
+			}
+		}
+		return null;
 	}
 
 }

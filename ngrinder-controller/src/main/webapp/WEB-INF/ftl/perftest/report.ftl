@@ -210,10 +210,20 @@
                     <div class="chart" id="cpuDiv"></div>
 					<h6>Used Memory</h6>
                     <div class="chart" id="memoryDiv"></div>
-					<h6>Received Per Second(KB)</h6>
+					<h6 id="receivedDivHeader">Received Per Second</h6>
                     <div class="chart" id="receivedDiv"></div>
-					<h6>Sent Per Second(KB)</h6>
+					<h6 id="sentDivHeader">Sent Per Second</h6>
                     <div class="chart" id="sentDiv"></div>
+					<h6 id="customMonitorData1Header">Customized Monitor Data1</h6>
+                    <div class="chart" id="customMonitorData1"></div>
+					<h6 id="customMonitorData2Header">Customized Monitor Data2</h6>
+                    <div class="chart" id="customMonitorData2"></div>
+					<h6 id="customMonitorData3Header">Customized Monitor Data3</h6>
+                    <div class="chart" id="customMonitorData3"></div>
+					<h6 id="customMonitorData4Header">Customized Monitor Data4</h6>
+                    <div class="chart" id="customMonitorData4"></div>
+					<h6 id="customMonitorData5Header">Customized Monitor Data5</h6>
+                    <div class="chart" id="customMonitorData5"></div>
                 </div>
 			</div>
 		</div>
@@ -329,24 +339,90 @@
             });
         }
 		
-		function drawPlot(ip) {
-        	var interval = targetMonitorData[ip].interval;
+		function clearPrePlot() {
         	$("#cpuDiv").empty();
         	$("#memoryDiv").empty();
         	$("#receivedDiv").empty();
         	$("#sentDiv").empty();
-     		drawChart('cpuDiv', targetMonitorData[ip].cpu, formatPercentage, interval);
-    		drawChart('memoryDiv', targetMonitorData[ip].memory, formatMemory, interval);
-   			drawChart('receivedDiv', targetMonitorData[ip].received, formatMemory, interval);
-    		drawChart('sentDiv', targetMonitorData[ip].sent, formatMemory, interval);
-    		
-    		generateImg(imgBtnLabel, imgWarningMsg);
+        	$("#customMonitorData1").empty();
+        	$("#customMonitorData2").empty();
+        	$("#customMonitorData3").empty();
+        	$("#customMonitorData4").empty();
+        	$("#customMonitorData5").empty();
+		}
+		
+		function drawPlot(ip) {
+			clearPrePlot();
+        	var currMonitorData = targetMonitorData[ip];
+       		drawChart('cpuDiv', currMonitorData.cpu, formatPercentage, currMonitorData.interval);
+       		drawChart('memoryDiv', currMonitorData.memory, formatMemory, currMonitorData.interval);
+       		drawExtMonitorData(currMonitorData);
+       		generateImg(imgBtnLabel, imgWarningMsg);
+		}
+		
+		function drawExtMonitorData(systemData) {
+            if (systemData.received !== undefined && systemData.received !== '[]') {
+            	$("#receivedDiv").show();	
+            	$("#receivedDivHeader").show();
+            	drawChart('receivedDiv', systemData.received, formatMemory, systemData.interval);
+            } else {
+            	$("#receivedDiv").hide();	
+            	$("#receivedDivHeader").hide();
+            }
+            if (systemData.sent !== undefined && systemData.sent !== '[]') {
+            	$("#sentDiv").show();	
+            	$("#sentDivHeader").show();
+            	drawChart('sentDiv', systemData.sent, formatMemory, systemData.interval);
+            } else {
+            	$("#sentDiv").hide();	
+            	$("#sentDivHeader").hide();
+            }
+            if (systemData.customData1 !== undefined && systemData.customData1 !== '[]') {
+            	$("#customMonitorData1").show();	
+            	$("#customMonitorData1Header").show();
+            	drawChart('customMonitorData1', systemData.customData1, undefined, systemData.interval);
+            } else {
+            	$("#customMonitorData1").hide();	
+            	$("#customMonitorData1Header").hide();
+            }
+            if (systemData.customData2 !== undefined && systemData.customData2 !== '[]') {
+            	$("#customMonitorData2").show();	
+            	$("#customMonitorData2Header").show();
+            	drawChart('customMonitorData2', systemData.customData2, undefined, systemData.interval);
+            } else {
+            	$("#customMonitorData2").hide();	
+            	$("#customMonitorData2Header").hide();
+            }
+            if (systemData.customData3 !== undefined && systemData.customData3 !== '[]') {
+            	$("#customMonitorData3").show();	
+            	$("#customMonitorData3Header").show();
+            	drawChart('customMonitorData3', systemData.customData3, undefined, systemData.interval);
+            } else {
+            	$("#customMonitorData3").hide();	
+            	$("#customMonitorData3Header").hide();
+            }
+            if (systemData.customData4 !== undefined && systemData.customData4 !== '[]') {
+            	$("#customMonitorData4").show();	
+            	$("#customMonitorData4Header").show();
+            	drawChart('customMonitorData4', systemData.customData4, undefined, systemData.interval);
+            } else {
+            	$("#customMonitorData4").hide();	
+            	$("#customMonitorData4Header").hide();
+            }
+            if (systemData.customData5 !== undefined && systemData.customData5 !== '[]') {
+            	$("#customMonitorData5").show();	
+            	$("#customMonitorData5Header").show();
+            	drawChart('customMonitorData5', systemData.customData5, undefined, systemData.interval);
+            } else {
+            	$("#customMonitorData5").hide();	
+            	$("#customMonitorData5Header").hide();
+            }
 		}
 		
         function getMonitorData(ip){
-        	if (targetMonitorData[ip + "-cpu"]) {
+        	if (targetMonitorData[ip]) {
         		drawPlot(ip);
-        		return;
+				return;
         	}
         	
             $.ajax({
