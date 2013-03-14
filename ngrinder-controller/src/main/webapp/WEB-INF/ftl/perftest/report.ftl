@@ -314,42 +314,56 @@
 		
 		function drawExtMonitorData(systemData) {
             if (systemData.received !== undefined && systemData.received !== '[]') {
+            	$("#receivedDiv").show();	
+            	$("#receivedDivHeader").show();
             	drawChart('receivedDiv', systemData.received, formatMemory, systemData.interval);
             } else {
             	$("#receivedDiv").hide();	
             	$("#receivedDivHeader").hide();
             }
             if (systemData.sent !== undefined && systemData.sent !== '[]') {
+            	$("#sentDiv").show();	
+            	$("#sentDivHeader").show();
             	drawChart('sentDiv', systemData.sent, formatMemory, systemData.interval);
             } else {
             	$("#sentDiv").hide();	
             	$("#sentDivHeader").hide();
             }
             if (systemData.customData1 !== undefined && systemData.customData1 !== '[]') {
+            	$("#customMonitorData1").show();	
+            	$("#customMonitorData1Header").show();
             	drawChart('customMonitorData1', systemData.customData1, undefined, systemData.interval);
             } else {
             	$("#customMonitorData1").hide();	
             	$("#customMonitorData1Header").hide();
             }
             if (systemData.customData2 !== undefined && systemData.customData2 !== '[]') {
+            	$("#customMonitorData2").show();	
+            	$("#customMonitorData2Header").show();
             	drawChart('customMonitorData2', systemData.customData2, undefined, systemData.interval);
             } else {
             	$("#customMonitorData2").hide();	
             	$("#customMonitorData2Header").hide();
             }
             if (systemData.customData3 !== undefined && systemData.customData3 !== '[]') {
+            	$("#customMonitorData3").show();	
+            	$("#customMonitorData3Header").show();
             	drawChart('customMonitorData3', systemData.customData3, undefined, systemData.interval);
             } else {
             	$("#customMonitorData3").hide();	
             	$("#customMonitorData3Header").hide();
             }
             if (systemData.customData4 !== undefined && systemData.customData4 !== '[]') {
+            	$("#customMonitorData4").show();	
+            	$("#customMonitorData4Header").show();
             	drawChart('customMonitorData4', systemData.customData4, undefined, systemData.interval);
             } else {
             	$("#customMonitorData4").hide();	
             	$("#customMonitorData4Header").hide();
             }
             if (systemData.customData5 !== undefined && systemData.customData5 !== '[]') {
+            	$("#customMonitorData5").show();	
+            	$("#customMonitorData5Header").show();
             	drawChart('customMonitorData5', systemData.customData5, undefined, systemData.interval);
             } else {
             	$("#customMonitorData5").hide();	
