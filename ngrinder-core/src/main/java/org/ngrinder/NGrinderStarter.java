@@ -73,7 +73,7 @@ public class NGrinderStarter {
 		File logDirectory = agentConfig.getHome().getLogDirectory();
 		configureLogging(verboseMode, logDirectory);
 		addCustomClassLoader();
-		//addClassPath();
+		addClassPath();
 		addLibarayPath();
 	}
 
@@ -308,7 +308,7 @@ public class NGrinderStarter {
 	public static void main(String[] args) {
 
 		if (!isValidCurrentDirectory()) {
-			//staticPrintHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
+			staticPrintHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
 		}
 		NGrinderStarter starter = new NGrinderStarter();
 		String startMode = System.getProperty("start.mode");
