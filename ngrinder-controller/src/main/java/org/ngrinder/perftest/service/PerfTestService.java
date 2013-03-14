@@ -1452,13 +1452,17 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 						sbNetSent.append(Long.valueOf(datalist[7]) / kbSize).append(",");
 						if (columnSize > 8) {
 							customData1.append(Float.valueOf(datalist[8])).append(",");
-						} else if (columnSize > 9) {
+						}
+						if (columnSize > 9) {
 							customData2.append(Float.valueOf(datalist[9])).append(",");
-						} else if (columnSize > 10) {
+						}
+						if (columnSize > 10) {
 							customData3.append(Float.valueOf(datalist[10])).append(",");
-						} else if (columnSize > 11) {
+						}
+						if (columnSize > 11) {
 							customData4.append(Float.valueOf(datalist[11])).append(",");
-						} else if (columnSize > 12) {
+						}
+						if (columnSize > 12) {
 							customData5.append(Float.valueOf(datalist[12])).append(",");
 						}
 					}
