@@ -169,7 +169,7 @@ public class MonitorClientSerivce {
 		SystemInfo systemInfo = (valueWrapper == null || valueWrapper.get() == null) ? new SystemInfo()
 						: (SystemInfo) convert(valueWrapper.get());
 		try {
-			bw.write(systemInfo.getRecordString() + "\n");
+			bw.write(systemInfo.toRecordString() + "\n");
 		} catch (IOException e) {
 			LOGGER.error("Error while MonitorExecutorWorker is recoding, e", e);
 		}
