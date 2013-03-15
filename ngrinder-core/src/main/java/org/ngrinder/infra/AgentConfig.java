@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -123,6 +124,24 @@ public class AgentConfig {
 			properties.put("monitor.pid", agentPid);
 		}
 		home.saveProperties("pid", properties);
+	}
+	
+	/**
+	 * Update agent pid file
+	 * 
+	 * @param startMode
+	 *            startMode
+	 */
+	public void updateAgentPidProperties(String startMode) {
+		checkNotNull(home);
+		Properties properties = home.getProperties("pid");
+		Set<String> names = properties.stringPropertyNames();
+		if (names.size() > 1) {
+			properties.remove(startMode + ".pid");
+			home.saveProperties("pid", properties);
+		} else if (names.contains(startMode + ".pid")) {
+			removeAgentPidProperties();
+		}
 	}
 
 	/**

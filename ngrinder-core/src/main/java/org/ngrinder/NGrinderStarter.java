@@ -316,7 +316,6 @@ public class NGrinderStarter {
 		} catch (JoranException e) {
 			staticPrintHelpAndExit("Can not configure logger on " + logDirectory.getAbsolutePath()
 							+ ".\n Please check if it's writable.");
-
 		}
 	}
 
@@ -389,7 +388,7 @@ public class NGrinderStarter {
 			if (StringUtils.isNotBlank(pid)) {
 				new Sigar().kill(pid, 15);
 			}
-			agentConfig.removeAgentPidProperties();
+			agentConfig.updateAgentPidProperties(mode);
 		} catch (SigarException e) {
 			printHelpAndExit(String.format("Error occurs while terminating %s process."
 							+ "It can be already stopped or you may not have the permission.\n"
@@ -409,12 +408,12 @@ public class NGrinderStarter {
 		if (StringUtils.isNotEmpty(existingPid)) {
 			try {
 				ProcState procState = sigar.getProcState(existingPid);
-				if (procState.getState() == ProcState.RUN || procState.getState() == ProcState.RUN
+				if (procState.getState() == ProcState.RUN || procState.getState() == ProcState.IDLE
 								|| procState.getState() == ProcState.SLEEP) {
 					printHelpAndExit("Currently " + startMode + " is running on pid " + existingPid
 									+ ". Please stop it before run");
 				}
-				agentConfig.removeAgentPidProperties();
+				agentConfig.updateAgentPidProperties(startMode);
 			} catch (SigarException e) {
 				noOp();
 			}
