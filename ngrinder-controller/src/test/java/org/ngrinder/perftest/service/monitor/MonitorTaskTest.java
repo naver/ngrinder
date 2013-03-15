@@ -31,7 +31,7 @@ import org.ngrinder.perftest.service.monitor.MonitorTask;
  * @author Mavlarn
  * @since
  */
-public class MontorClientManagerTest extends AbstractPerfTestTransactionalTest {
+public class MonitorTaskTest extends AbstractPerfTestTransactionalTest {
 
 	@Test
 	public void testAddMonitor() throws IOException {

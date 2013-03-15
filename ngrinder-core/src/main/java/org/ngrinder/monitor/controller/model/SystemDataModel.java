@@ -17,6 +17,8 @@ import org.ngrinder.model.BaseEntity;
 import org.ngrinder.monitor.share.domain.BandWidth;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * 
  * System data model class, to store the system monitor data.
@@ -39,18 +41,23 @@ public class SystemDataModel extends BaseEntity<SystemDataModel> {
 
 	private long collectTime;
 
+	@Expose
 	private long freeMemory;
 
+	@Expose
 	private long totalMemory;
 
+	@Expose
 	private float cpuUsedPercentage;
 
+	@Expose
 	private long recievedPerSec;
 
+	@Expose
 	private long sentPerSec;
 
 	private String version;
-	
+
 	private String customValues;
 
 	/**
