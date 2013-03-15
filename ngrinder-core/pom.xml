@@ -45,7 +45,11 @@
 			<artifactId>sigar</artifactId>
 			<version>1.6.4</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20090211</version>
+		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
