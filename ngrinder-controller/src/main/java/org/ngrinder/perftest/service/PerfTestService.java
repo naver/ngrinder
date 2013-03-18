@@ -107,6 +107,7 @@ import org.springframework.data.jpa.domain.Specifications;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * {@link PerfTest} Service Class.
@@ -1009,7 +1010,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return perfTest.getRunningSample();
 	}
 
-	private Gson gson = new Gson();
+	private Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
 	/**
 	 * Save system monitor data of all agents connected to one console. If the console is not
@@ -1021,7 +1022,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            perfTest
 	 */
 	public void saveAgentsInfo(SingleConsole singleConsole, PerfTest perfTest) {
-
 		savePerfTest(perfTest);
 	}
 
