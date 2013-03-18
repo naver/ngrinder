@@ -204,7 +204,7 @@
 				</div>
 				<div id="monitorDiv" style="display:none">
 	    			<div class="page-header pageHeader">
-						<h4>System Data <i id="ipMark"></i></h4>
+						<h4>System Data</h4>
 					</div>
 				    <h6>CPU</h6>
                     <div class="chart" id="cpuDiv"></div>
@@ -340,6 +340,9 @@
         }
 		
 		function clearPrePlot() {
+			$("#monitorDiv div.jqplot-target").each(function() {
+				$(this).removeClass("jqplot-target");
+			});
         	$("#cpuDiv").empty();
         	$("#memoryDiv").empty();
         	$("#receivedDiv").empty();
@@ -433,7 +436,6 @@
                 success: function(res) {
                     if (res.success) {
                     	var ymax = 0;
-                    	$("#ipMark").html("[" + ip + "]");
                     	
                     	if ($.isEmptyObject(res.SystemData)) {
                     		showErrorMsg("<@spring.message "perfTest.report.message.noMonitorData"/>");
