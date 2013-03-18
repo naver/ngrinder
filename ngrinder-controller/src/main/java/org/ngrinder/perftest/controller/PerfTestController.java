@@ -677,7 +677,7 @@ public class PerfTestController extends NGrinderBaseController {
 		}
 		List<String> perfStringList = Lists.newArrayList();
 		for (Entry<String, HashMap> each : statMap.entrySet()) {
-			HashMap value = each.getValue();
+			Map value = each.getValue();
 			if (value == null) {
 				continue;
 			}
