@@ -114,7 +114,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	File getLogFile() {
 		String logFileName = "ngrinder.log";
 
-		return new File(getConfig().getHome().getGlobalLogFile(), logFileName);
+		return new File(getConfig().getExHome().getGlobalLogFile(), logFileName);
 	}
 
 	/**
