@@ -24,8 +24,10 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import net.grinder.StopReason;
 import net.grinder.common.GrinderProperties;
@@ -34,10 +36,14 @@ import net.grinder.console.model.ConsoleProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.common.model.Home;
+import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
+import org.ngrinder.monitor.controller.model.SystemDataModel;
+import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.ngrinder.perftest.repository.PerfTestRepository;
+import org.ngrinder.perftest.service.monitor.MonitorClientSerivce;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
@@ -197,5 +203,31 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		assertTrue(reportDataMap.get("memory").length() > 300);
 		assertTrue(reportDataMap.get("received").length() > 300);
 		assertTrue(reportDataMap.get("sent").length() > 300);
+	}
+	
+	@Test
+	public void testGetProperSizedStatusString() {
+		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "test-repo");
+		tempRepo.mkdir();
+		tempRepo.deleteOnExit();
+		MonitorClientSerivce client = new MonitorClientSerivce();
+		client.init("127.0.0.1", 13243, tempRepo, null);
+		
+		Map<String, SystemDataModel> rtnMap = new HashMap<String, SystemDataModel>();
+
+		Random random = new Random();
+		for (int i = 0; i < 80; i++) {
+			SystemInfo info = client.getMonitorData();
+			if (info == null) {
+				return;
+			}
+			info.setCustomValues(random.nextInt() + "," + random.nextInt());
+			SystemDataModel data1 = new SystemDataModel(info, "3.1.2");
+			rtnMap.put("test-" + random.nextInt(), data1);
+			ThreadUtil.sleep(100);
+		}
+		String statusString = perfTestService.getProperSizedStatusString(rtnMap);
+		System.out.println("Status string size is:" + statusString.length());
+		assertTrue(statusString.length() < 9950);
 	}
 }

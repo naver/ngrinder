@@ -30,6 +30,7 @@ public class MonitorCollectorTest {
 
 	private Type getTypeToken() {
 		return new TypeToken<ArrayList<SystemDataModel>>() {
+			private static final long serialVersionUID = 1L;
 		}.getType();
 	}
 }

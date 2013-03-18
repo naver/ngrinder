@@ -45,6 +45,9 @@ public class MonitorClientSerivceTest {
 		
 		Map<String, SystemDataModel> rtnMap = new HashMap<String, SystemDataModel>();
 		SystemInfo info1 = client.getMonitorData();
+		if (info1 == null) {
+			return;
+		}
 		info1.setCustomValues("111,222");
 		SystemDataModel data1 = new SystemDataModel(info1, "3.1.2");
 		rtnMap.put("test1", data1);
