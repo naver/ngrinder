@@ -974,13 +974,34 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		}
 		PerfTest perfTest = getPerfTest(perfTestId);
 		perfTest.setRunningSample(gson.toJson(statictisData));
-		String json = gson.toJson(agentStatusMap);
-		if (StringUtils.length(json) <= 9950) {
-			perfTest.setAgentStatus(json);
-		}
+		String json = getProperSizedStatusString(agentStatusMap);
+		perfTest.setAgentStatus(json);
 		savePerfTest(perfTest);
 		CoreLogger.LOGGER.debug("Data is {}", statictisData);
 		return statictisData;
+	}
+	
+	public String getProperSizedStatusString(Map<String, SystemDataModel> agentStatusMap) {
+		String json = gson.toJson(agentStatusMap);
+		int statusLength = StringUtils.length(json);
+		if (statusLength > 9950) { //max column size is 10,000
+			LOGGER.info("Agent status string length: {}, too long to save into table.", statusLength);
+			double ratio = 9900.0 / statusLength;
+			int pickSize = (int)(agentStatusMap.size() * ratio);
+			Map<String, SystemDataModel> pickAgentStatusMap = Maps.newHashMap();
+			
+			int pickIndex = 0;
+			for (Entry<String, SystemDataModel> each : agentStatusMap.entrySet()) {
+				if (pickIndex < pickSize) {
+					pickAgentStatusMap.put(each.getKey(), each.getValue());
+					pickIndex++;
+				}
+			}
+			json = gson.toJson(pickAgentStatusMap);
+			LOGGER.info("Agent status string get:{} of:{} agents, new size is: {}.",
+					new Object[]{pickSize, agentStatusMap.size(), json.length()});
+		}
+		return json;
 	}
 
 	/**
