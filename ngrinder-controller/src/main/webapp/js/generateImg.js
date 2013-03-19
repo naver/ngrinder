@@ -4,7 +4,7 @@ function generateImg(btnLabel, warningMsg) {
     		btnLabel = "View Plot Image";
     	}
     	if (warningMsg == undefined) {
-    		warningMsg = "Right Click to Save Image As...";
+    		warningMsg = "Right cick to save thie image as...";
     	}
     	
         $('div.jqplot-target').each(function(){
@@ -35,20 +35,22 @@ function generateImg(btnLabel, warningMsg) {
 
             outerDiv = header = div = close = null;
             if ($("#" + $(this).attr("id") + "ImgBtn")[0] == undefined) {
-                var btn = $(document.createElement('button'));
-                btn.text(btnLabel);
-                btn.attr("id", $(this).attr("id") + "ImgBtn");
-                btn.addClass('jqplot-image-button');
-                btn.bind('click', {chart: $(this)}, function(evt) {
-                    var imgelem = evt.data.chart.jqplotToImageElem();
+                var btn = $("<i class='icon-download' title='" + btnLabel + "' style='cursor:pointer;margin-top:-20px;margin-left:680px'></i></div>");
+                btn.attr("id", $(this).attr("id") + "ImgBtn"); 
+                btn.bind('click', {chart: $(this)}, function(evt) {   
+                    var imgelem = evt.data.chart.jqplotToImageElem(); 
                     var div = $(this).nextAll('div.jqplot-image-container').first();
-                    div.children('div.jqplot-image-container-content').empty();
-                    div.children('div.jqplot-image-container-content').append(imgelem);
-                    div.show(500);
+                    if ($(div).is(":visible")) {
+                    	div.hide(500);
+                    } else {
+                    	div.children('div.jqplot-image-container-content').empty();
+                        div.children('div.jqplot-image-container-content').append(imgelem);
+                        div.show(500);
+                    }
+                    
                     div = null;
                 });
-
-                $(this).after(btn);
+                $(this).before(btn); 
                 btn = null;
             }
         });

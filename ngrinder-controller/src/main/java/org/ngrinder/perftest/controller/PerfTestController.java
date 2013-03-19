@@ -538,7 +538,7 @@ public class PerfTestController extends NGrinderBaseController {
 			String rtnType = dt.replace("(", "").replace(")", "");
 			if ("TPS".equals(dt)) {
 				List<ArrayList<String>> tpsList = perfTestService.getTPSReportDataAsString(id, interval);
-				rtnMap.put("LABLES", tpsList.get(0));
+				rtnMap.put("lables", tpsList.get(0));
 				rtnMap.put("TPS", tpsList.get(1));
 			} else {
 				String reportData = perfTestService.getReportDataAsString(id, dt, interval);
@@ -772,7 +772,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	private Map<String, String> getMonitorDataSystem(long id, String monitorIP, int imgWidth) {
-		
+
 		int interval = perfTestService.getSystemMonitorDataInterval(id, monitorIP, imgWidth);
 		Map<String, String> sysMonitorMap = perfTestService.getSystemMonitorDataAsString(id, monitorIP, interval);
 		sysMonitorMap.put("interval", String.valueOf(interval));

@@ -22,6 +22,11 @@
 				height: 200px; 
 				min-width: 615px; 
 			}
+			div.bigchart {
+				border: 1px solid #878988; 
+				height: 300px; 
+				min-width: 615px; 
+			}
 			h6 {
 				margin-top: 20px;
 			}
@@ -51,7 +56,7 @@
 			    background-color: #ffffff;
 			    border: 1px solid #999;
 			    display: inline-block;
-			    min-width: 615px; 
+			    min-width: 698px;   
 			}
 			div.jqplot-image-container-header {
 			    font-size: 1.0em;
@@ -60,7 +65,6 @@
 			    background-color: #eee;
 			}
 			div.jqplot-image-container-content {
-			    padding: 15px;
 			    background-color: #ffffff;
 			}
 			a.jqplot-image-container-close {
@@ -192,7 +196,7 @@
 		                </button>
 					</legend>
 					<h6>TPS</h6>
-			    	<div style="border:1px solid #878988; min-width:615px; padding:0 5px" id="tpsDiv"></div>
+			    	<div class="bigchart" id="tpsDiv"></div>
 					<h6><@spring.message "perfTest.report.header.meantime"/>&nbsp;(ms)</h6>
     				<div class="chart" id="meanTimeDiv"></div>
     				<h6 id="minTimeFirstByteHeader"><@spring.message "perfTest.report.header.meantimetofirstbyte"/>&nbsp;(ms)</h6>
@@ -259,7 +263,6 @@
     	var plotKeySent = "plotsent";
     	
 		$(document).ready(function() {
-		    // TODO need to add cache here
 		    $("#testPerformance").click(function() {
 		    	cleanImgElem();
 		        $("#performanceDiv").show();
@@ -307,8 +310,7 @@
                        'imgWidth':700},
                 success: function(res) {
                     if (res.success) {
-                    	var st = new Date($('#startTime').val());
-                        drawMultiPlotChart('tpsDiv', res.TPS, res.LABLES, res.chartInterval);
+                        drawMultiPlotChart('tpsDiv', res.TPS, res.lables, res.chartInterval);
                         drawChart('meanTimeDiv', res.Mean_Test_Time_ms, undefined, res.chartInterval);
                         if (res.Mean_time_to_first_byte !== undefined && 
                         		res.Mean_time_to_first_byte !== '[ ]') {
@@ -325,7 +327,7 @@
                         	$("#userDefinedChartHeader").hide();
                         }
                         drawChart('errorDiv', res.Errors, undefined, res.chartInterval);
-                        generateImg(imgBtnLabel, imgWarningMsg);
+                        generateImg(imgBtnLabel, imgWarningMsg); 
                         return true;
                     } else {
                         showErrorMsg("Get report data failed.");
@@ -336,7 +338,7 @@
                     showErrorMsg("Unknow Error occured!");
                     return false;
                 }
-            });
+            }); 
         }
 		
 		function clearPrePlot() {
@@ -461,114 +463,7 @@
             });
         }
               
-        function getMultiPlotMaxValue(data) {
-			var ymax = 0;
-			for (var i = 0;  i < data.length; i++) {
-				for (var j = 0;  j < data[i].length; j++) {
-					if (data[i][j] > ymax) {
-						ymax = data[i][j]; 
-					}
-				}
-			}
-			return ymax;
-		}
-		
-		function drawMultiPlotChart(containerId, data, labels, interval) {
-			if (data == undefined || !(data instanceof Array) || data.length == 0) {
-				return undefined;
-			}
-			
-			var values;
-			if (data[0] instanceof Array) {
-				values = data;
-			} else {
-				var temp = [];
-				for (var i = 0; i < data.length; i++) {
-					temp.push(eval(data[i]));
-				}
-				values = temp;
-			}
-			
-			var dataCnt = values[values.length - 1].length;
-			if (dataCnt == 0) {
-				return;
-			}
-			
-			var ymax = getMultiPlotMaxValue(values);
-			if (ymax < 5) {
-				ymax = 5;
-			}
-			ymax = parseInt((ymax / 5) + 0.5) * 6;
 
-			if (interval == undefined || interval == 0 || !$.isNumeric(interval)) {
-				interval = 1;
-			}
-			
-			var plotObj = $.jqplot(containerId, values, {
-				seriesDefaults : {
-					markerRenderer : $.jqplot.MarkerRenderer,
-					markerOptions : {
-						size : 2.0,
-						color : '#555555'
-					},
-					lineWidth : 1.0
-				}, 
-				axes : {
-					xaxis : {
-						min : 0,
-						max : dataCnt,
-						pad : 0,
-						numberTicks : 10,
-						tickOptions : {
-							show : true,
-							formatter : function(format, value) {
-								return formatTimeForXaxis(parseInt(value * interval));
-							}
-						}
-					},
-					yaxis : {
-						labelOptions : {
-							fontFamily : 'Helvetica',
-							fontSize : '10pt'
-						}, 
-						tickOptions : {
-							formatter : function(format, value) {
-								return value.toFixed(0);
-							}
-						},
-						max : ymax,
-						min : 0,
-						numberTicks : 7,
-						pad : 3,
-						show : true
-					}
-				},
-				highlighter : {
-					show : true,
-					sizeAdjust : 3,
-					tooltipAxes: 'y',
-					formatString: '<table class="jqplot-highlighter"><tr><td>%s</td></tr></table>'
-				},
-				cursor : {
-					showTooltip : false,
-					show : true,
-					zoom : true
-				},
-				legend:{
-					renderer: $.jqplot.EnhancedLegendRenderer,
-					show: true,
-					placement: "outsideGrid",
-					labels: labels,
-					location: "s",
-					rowSpacing: "2px",
-					rendererOptions: {
-						seriesToggle: 'normal'
-					}
-				}
-			});
-
-			return plotObj;
-		}
 	</script>
 	</body>
 </html>

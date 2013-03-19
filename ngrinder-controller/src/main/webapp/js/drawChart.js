@@ -193,3 +193,114 @@ function preparedData(data) {
 	
 	return values;
 }
+
+function getMultiPlotMaxValue(data) {
+	var ymax = 0;
+	for (var i = 0;  i < data.length; i++) {
+		for (var j = 0;  j < data[i].length; j++) {
+			if (data[i][j] > ymax) {
+				ymax = data[i][j]; 
+			}
+		}
+	}
+	return ymax;
+}
+
+function drawMultiPlotChart(containerId, data, labels, interval) {
+	if (data == undefined || !(data instanceof Array) || data.length == 0) {
+		return undefined;
+	}
+	
+	var values;
+	if (data[0] instanceof Array) {
+		values = data;
+	} else {
+		var temp = [];
+		for (var i = 0; i < data.length; i++) {
+			temp.push(eval(data[i]));
+		}
+		values = temp;
+	}
+	
+	var dataCnt = values[values.length - 1].length;
+	if (dataCnt == 0) {
+		return;
+	}
+	
+	var ymax = getMultiPlotMaxValue(values);
+	if (ymax < 5) {
+		ymax = 5;
+	}
+	ymax = parseInt((ymax / 5) + 0.5) * 6;
+
+	if (interval == undefined || interval == 0 || !$.isNumeric(interval)) {
+		interval = 1;
+	}
+	
+	var plotObj = $.jqplot(containerId, values, {
+
+        gridPadding : {top:20, right:20, bottom:35, left:60}, 
+		seriesDefaults : {
+			markerRenderer : $.jqplot.MarkerRenderer,
+			markerOptions : {
+				size : 2.0,
+				color : '#555555'
+			},
+			lineWidth : 1.0
+		}, 
+		axes : {
+			xaxis : {
+				min : 0,
+				max : dataCnt,
+				pad : 0,
+				numberTicks : 10,
+				tickOptions : {
+					show : true,
+					formatter : function(format, value) {
+						return formatTimeForXaxis(parseInt(value * interval));
+					}
+				}
+			},
+			yaxis : {
+				labelOptions : {
+					fontFamily : 'Helvetica',
+					fontSize : '10pt'
+				}, 
+				tickOptions : {
+					formatter : function(format, value) {
+						return value.toFixed(0);
+					}
+				},
+				max : ymax,
+				min : 0,
+				numberTicks : 7,
+				pad : 3,
+				show : true
+			}
+		},
+		highlighter : {
+			show : true,
+			sizeAdjust : 3,
+			tooltipAxes: 'y',
+			formatString: '<table class="jqplot-highlighter"><tr><td>%s</td></tr></table>'
+		},
+		cursor : {
+			showTooltip : false,
+			show : true,
+			zoom : true
+		},
+		legend:{
+			renderer: $.jqplot.EnhancedLegendRenderer,
+			show: true,
+			placement: "insideGrid",
+			labels: labels,
+			location: "ne",
+			rowSpacing: "2px",
+			rendererOptions: {
+				seriesToggle: 'normal'
+			}
+		}
+	});
+
+	return plotObj;
+}

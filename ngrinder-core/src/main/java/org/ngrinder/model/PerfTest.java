@@ -654,6 +654,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return runningSample;
 	}
 
+	@ForceMergable
 	public void setRunningSample(String runningSample) {
 		this.runningSample = runningSample;
 	}
@@ -662,6 +663,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return agentStatus;
 	}
 
+	@ForceMergable
 	public void setAgentStatus(String agentStatus) {
 		this.agentStatus = agentStatus;
 	}
@@ -670,6 +672,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return monitorStatus;
 	}
 
+	@ForceMergable
 	public void setMonitorStatus(String monitorStatus) {
 		this.monitorStatus = monitorStatus;
 	}
