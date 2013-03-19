@@ -127,7 +127,7 @@ public class AgentConfig {
 	}
 	
 	/**
-	 * Update agent pid file
+	 * Update agent pid file.
 	 * 
 	 * @param startMode
 	 *            startMode

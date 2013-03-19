@@ -13,6 +13,7 @@
  */
 package org.ngrinder.monitor.agent;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.rmi.registry.LocateRegistry;
@@ -48,8 +49,8 @@ public final class AgentMonitorServer {
 	private Registry rmiRegistry = null;
 	private boolean isRunning = false;
 	private int port = MonitorConstants.DEFAULT_MONITOR_PORT;
-	
-	private String agentHome;
+
+	private File agentHome;
 
 	private static final AgentMonitorServer INSTANCE = new AgentMonitorServer();
 
@@ -64,10 +65,12 @@ public final class AgentMonitorServer {
 	 * Initialize the monitor server with default port and collector. Default port is 12343, and
 	 * default collector is system data collector.
 	 * 
+	 * @param agentHome
+	 *            agentHome
 	 * @throws IOException
 	 *             IO error
 	 */
-	public void init(String agentHome) throws IOException {
+	public void init(File agentHome) throws IOException {
 		this.init(MonitorConstants.DEFAULT_MONITOR_PORT, agentHome);
 		AgentDataCollectManager.getInstance().init(agentHome);
 	}
@@ -78,10 +81,12 @@ public final class AgentMonitorServer {
 	 * 
 	 * @param port
 	 *            monitor listener port
+	 * @param agentHome
+	 *            agentHome
 	 * @throws IOException
 	 *             IO error
 	 */
-	public void init(final int port, String agentHome) throws IOException {
+	public void init(final int port, File agentHome) throws IOException {
 		this.init(port, MonitorConstants.DEFAULT_DATA_COLLECTOR, agentHome);
 	}
 
@@ -92,10 +97,12 @@ public final class AgentMonitorServer {
 	 *            monitor listener port
 	 * @param dataCollector
 	 *            a list of collector, for java or system data
+	 * @param agentHome
+	 *            agentHome
 	 * @throws IOException
 	 *             IO error
 	 */
-	public void init(final int port, final Set<String> dataCollector, String agentHome) throws IOException {
+	public void init(final int port, final Set<String> dataCollector, File agentHome) throws IOException {
 
 		MonitorContext.getInstance().setDataCollectors(dataCollector);
 

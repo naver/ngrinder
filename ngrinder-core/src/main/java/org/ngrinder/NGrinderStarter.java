@@ -67,10 +67,10 @@ public class NGrinderStarter {
 	private AgentControllerDaemon agentController;
 
 	private ReconfigurableURLClassLoader classLoader;
-	
-	private  String JNLP_LIB_PATH ;
-	
-	private final String LOCAL_NATIVE_PATH = "./native_lib";
+
+	private String jnlpLibPath;
+
+	private static final String LOCAL_NATIVE_PATH = "./native_lib";
 
 	/**
 	 * Constructor.
@@ -125,7 +125,7 @@ public class NGrinderStarter {
 
 			String localHostAddress = NetworkUtil.getLocalHostAddress();
 			System.setProperty("java.rmi.server.hostname", localHostAddress);
-			AgentMonitorServer.getInstance().init(agentConfig.getHome().getDirectory().getPath());
+			AgentMonitorServer.getInstance().init(agentConfig.getHome().getDirectory());
 			AgentMonitorServer.getInstance().start();
 		} catch (Exception e) {
 			LOG.error("ERROR: {}", e.getMessage());
@@ -202,31 +202,32 @@ public class NGrinderStarter {
 
 	private void addLibarayPath() {
 		String property = StringUtils.trimToEmpty(System.getProperty("java.library.path"));
-		String nativePath = isWebStart() ? JNLP_LIB_PATH : LOCAL_NATIVE_PATH;
+		String nativePath = isWebStart() ? jnlpLibPath : LOCAL_NATIVE_PATH;
 		System.setProperty("java.library.path", property + File.pathSeparator + nativePath);
 		LOG.info("java.library.path : {} ", System.getProperty("java.library.path"));
 	}
-	
+
 	/**
-	 * Get jar file list
+	 * Get jar file list.
+	 * 
+	 * @return jar file collection
 	 */
 	protected Collection<File> getJarFileList() {
-		JNLP_LIB_PATH = agentConfig.getHome().getDirectory() + File.separator + "jnlp_res";
-		DownloadService2 service = null;
+		jnlpLibPath = agentConfig.getHome().getDirectory() + File.separator + "jnlp_res";
 		ArrayList<File> fileString = new ArrayList<File>();
 		if (isWebStart()) {
 			try {
-				service = (DownloadService2) ServiceManager.lookup("javax.jnlp.DownloadService2");
+				DownloadService2 service = (DownloadService2) ServiceManager.lookup("javax.jnlp.DownloadService2");
 				ResourceSpec alljars = new ResourceSpec("http://.*", null, DownloadService2.JAR);
 				ResourceSpec[] results = service.getCachedResources(alljars);
 
 				for (ResourceSpec r : results) {
 					String url = r.getUrl().toString();
 					String fileName = url.substring(url.lastIndexOf('/') + 1, url.length());
-					File jarFile = new File(JNLP_LIB_PATH, fileName);
+					File jarFile = new File(jnlpLibPath, fileName);
 					FileUtils.copyURLToFile(new URL(url), jarFile);
 					if (fileName.equals("native.jar")) {
-						CompressionUtil.unjar(jarFile, JNLP_LIB_PATH);
+						CompressionUtil.unjar(jarFile, jnlpLibPath);
 					}
 					fileString.add(jarFile);
 				}
@@ -244,15 +245,15 @@ public class NGrinderStarter {
 
 		return fileString;
 	}
-	
+
 	/**
 	 * Add class path.
 	 */
 	protected void addClassPath() {
-		
+
 		ArrayList<String> libString = new ArrayList<String>();
 		Collection<File> libList = getJarFileList();
-		
+
 		// Add patch first
 		for (File each : libList) {
 			if (each.getName().contains("patch")) {
@@ -447,13 +448,13 @@ public class NGrinderStarter {
 		LOG.error(message);
 		System.exit(-1);
 	}
-	
+
 	/**
-	 * Check agent start mode
+	 * Check agent start mode.
 	 * 
 	 * @return true if it's jnlp web start
 	 */
 	private static boolean isWebStart() {
-		return BooleanUtils.toBoolean(System.getProperty("start.webload", "false"));
+		return BooleanUtils.toBoolean(System.getProperty("start.webstart", "false"));
 	}
 }

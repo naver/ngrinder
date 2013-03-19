@@ -13,6 +13,7 @@
  */
 package org.ngrinder.monitor.agent.collector;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -38,8 +39,8 @@ public final class AgentDataCollectManager {
 	private boolean isRunning = false;
 	private ScheduledExecutorService scheduler;
 	private static final AgentDataCollectManager INSTANCE = new AgentDataCollectManager();
-	
-	private String agentHome;
+
+	private File agentHome;
 
 	private AgentDataCollectManager() {
 	}
@@ -58,12 +59,13 @@ public final class AgentDataCollectManager {
 
 	/**
 	 * Initialize the manager. Need to set the agent home directory for the collector.
+	 * 
 	 * @param agentHome
+	 *            agentHome
 	 */
-	public void init(String agentHome) {
+	public void init(File agentHome) {
 		this.agentHome = agentHome;
 	}
-	
 
 	/**
 	 * start a scheduler for the data collector jobs.

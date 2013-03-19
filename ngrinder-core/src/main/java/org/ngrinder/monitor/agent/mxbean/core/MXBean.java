@@ -13,6 +13,7 @@
  */
 package org.ngrinder.monitor.agent.mxbean.core;
 
+import java.io.File;
 import java.io.Serializable;
 
 import org.ngrinder.monitor.agent.collector.AgentDataCollector;
@@ -30,10 +31,12 @@ public abstract class MXBean implements Serializable {
 	// protected MonitorInfo monitorInfo;
 
 	/**
-	 * get {@link AgentDataCollector} which is provided by its implementation.
+	 * Get {@link AgentDataCollector} which is provided by its implementation.
 	 * 
+	 * @param agentHome
+	 *            agentHome
 	 * @return AgentDataCollector of this MXBean
 	 */
-	public abstract AgentDataCollector gainAgentDataCollector(String agentHome);
+	public abstract AgentDataCollector gainAgentDataCollector(File agentHome);
 
 }
