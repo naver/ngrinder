@@ -845,15 +845,15 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return report data report data of that type
 	 */
 	public String getReportDataAsString(long testId, String dataType, int interval) {
-		
+
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
 		File targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
 		if (!targetFile.exists()) {
 			LOGGER.error("Report data for {} in {} does not exisit.", testId, dataType);
 			return "[ ]";
 		}
-	
-		return getFileDataAsString(targetFile,interval);
+
+		return getFileDataAsString(targetFile, interval);
 	}
 
 	/**
@@ -980,16 +980,16 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		CoreLogger.LOGGER.debug("Data is {}", statictisData);
 		return statictisData;
 	}
-	
+
 	public String getProperSizedStatusString(Map<String, SystemDataModel> agentStatusMap) {
 		String json = gson.toJson(agentStatusMap);
 		int statusLength = StringUtils.length(json);
-		if (statusLength > 9950) { //max column size is 10,000
+		if (statusLength > 9950) { // max column size is 10,000
 			LOGGER.info("Agent status string length: {}, too long to save into table.", statusLength);
 			double ratio = 9900.0 / statusLength;
-			int pickSize = (int)(agentStatusMap.size() * ratio);
+			int pickSize = (int) (agentStatusMap.size() * ratio);
 			Map<String, SystemDataModel> pickAgentStatusMap = Maps.newHashMap();
-			
+
 			int pickIndex = 0;
 			for (Entry<String, SystemDataModel> each : agentStatusMap.entrySet()) {
 				if (pickIndex < pickSize) {
@@ -998,8 +998,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				}
 			}
 			json = gson.toJson(pickAgentStatusMap);
-			LOGGER.info("Agent status string get:{} of:{} agents, new size is: {}.",
-					new Object[]{pickSize, agentStatusMap.size(), json.length()});
+			LOGGER.info("Agent status string get:{} of:{} agents, new size is: {}.", new Object[] { pickSize,
+					agentStatusMap.size(), json.length() });
 		}
 		return json;
 	}
@@ -1582,18 +1582,26 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		resList.add(new ArrayList<String>());
 		resList.add(new ArrayList<String>());
 		for (File file : TpsList) {
-			resList.get(0).add(FilenameUtils.removeExtension(file.getName()));
+			resList.get(0).add(buildReportName(file));
 			resList.get(1).add(getFileDataAsString(file, interval));
 		}
 		return resList;
 	}
-	
+
+	private String buildReportName(File file) {
+		String reportName = FilenameUtils.removeExtension(file.getName());
+		if (reportName.startsWith("TPS-")) {
+			reportName = reportName.substring(4);
+		}
+		return reportName;
+	}
+
 	/**
 	 * Get tps file respectively if there is multiple test in single script will be added
+	 * 
 	 * @param testId
-	 * 			test id
-	 * @return
-	 * 			return file list
+	 *            test id
+	 * @return return file list
 	 */
 	public List<File> getTPSDataFiles(long testId) {
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
@@ -1601,7 +1609,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		File[] files = reportFolder.listFiles(fileFilter);
 		return Arrays.asList(files);
 	}
-	
+
 	/**
 	 * Get the test report data as a string.
 	 * 
@@ -1610,7 +1618,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @param interval
 	 *            interval to collect data
 	 */
-	private String getFileDataAsString(File targetFile,int interval){
+	private String getFileDataAsString(File targetFile, int interval) {
 		StringBuilder reportData = new StringBuilder("[");
 		FileReader reader = null;
 		BufferedReader br = null;
@@ -1635,7 +1643,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			}
 			reportData.append("]");
 		} catch (IOException e) {
-			LOGGER.error("Get report data  failed: {}",  e.getMessage());
+			LOGGER.error("Get report data  failed: {}", e.getMessage());
 			LOGGER.debug("Trace is : ", e);
 		} finally {
 			IOUtils.closeQuietly(reader);
