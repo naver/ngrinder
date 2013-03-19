@@ -336,7 +336,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		} else {
 			perfTest.clearMessages();
 		}
-		return perfTestRepository.save(perfTest);
+		return perfTestRepository.saveAndFlush(perfTest);
 	}
 
 	/**
