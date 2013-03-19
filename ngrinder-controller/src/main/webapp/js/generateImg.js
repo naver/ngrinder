@@ -1,10 +1,10 @@
-function generateImg(btnLabel, warningMsg) {
+function generateImg(btnLabel, title) {
     if (!$.jqplot.use_excanvas) {
     	if (btnLabel == undefined) {
     		btnLabel = "View Plot Image";
     	}
-    	if (warningMsg == undefined) {
-    		warningMsg = "Right cick to save thie image as...";
+    	if (title == undefined) {
+    		title = "Image";
     	}
     	
         $('div.jqplot-target').each(function(){
@@ -19,7 +19,7 @@ function generateImg(btnLabel, warningMsg) {
             header.addClass('jqplot-image-container-header');
             div.addClass('jqplot-image-container-content');
 
-            header.html(warningMsg);
+            header.html(title);
 
             var close = $(document.createElement('a'));
             close.addClass('jqplot-image-container-close');
@@ -35,7 +35,7 @@ function generateImg(btnLabel, warningMsg) {
 
             outerDiv = header = div = close = null;
             if ($("#" + $(this).attr("id") + "ImgBtn")[0] == undefined) {
-                var btn = $("<i class='icon-download' title='" + btnLabel + "' style='cursor:pointer;margin-top:-20px;margin-left:680px'></i></div>");
+                var btn = $("<a href='#' title='" + btnLabel + "'><i class='icon-download'  style='cursor:pointer;margin-top:-20px;margin-left:680px'></i></a>");
                 btn.attr("id", $(this).attr("id") + "ImgBtn"); 
                 btn.bind('click', {chart: $(this)}, function(evt) {   
                     var imgelem = evt.data.chart.jqplotToImageElem(); 
