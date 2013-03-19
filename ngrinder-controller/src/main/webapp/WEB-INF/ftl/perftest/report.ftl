@@ -56,7 +56,7 @@
 			    background-color: #ffffff;
 			    border: 1px solid #999;
 			    display: inline-block;
-			    min-width: 615px; 
+			    min-width: 698px;   
 			}
 			div.jqplot-image-container-header {
 			    font-size: 1.0em;
@@ -65,7 +65,6 @@
 			    background-color: #eee;
 			}
 			div.jqplot-image-container-content {
-			    padding: 15px;
 			    background-color: #ffffff;
 			}
 			a.jqplot-image-container-close {
