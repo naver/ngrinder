@@ -964,7 +964,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            perfTest Id
 	 * @return statistics
 	 */
-	@Transactional
 	public Map<String, Object> saveStatistics(SingleConsole singleConsole, Long perfTestId) {
 		Map<String, Object> statictisData = singleConsole.getStatictisData();
 		Map<String, SystemDataModel> agentStatusMap = Maps.newHashMap();
