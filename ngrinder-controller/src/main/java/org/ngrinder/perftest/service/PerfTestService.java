@@ -853,7 +853,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			return "[ ]";
 		}
 
-		return getFileDataAsString(targetFile, interval);
+		return getFileDataAsJson(targetFile, interval);
 	}
 
 	/**
@@ -981,6 +981,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return statictisData;
 	}
 
+	/**
+	 * Get the limited size of agent status json string.
+	 * 
+	 * @param agentStatusMap
+	 *            agentStatusMap
+	 * @return converted json
+	 */
 	public String getProperSizedStatusString(Map<String, SystemDataModel> agentStatusMap) {
 		String json = gson.toJson(agentStatusMap);
 		int statusLength = StringUtils.length(json);
@@ -1568,7 +1575,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Get list that contains test tps report data as a string
+	 * Get list that contains test tps report data as a string.
 	 * 
 	 * @param testId
 	 *            test id
@@ -1577,13 +1584,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return list contained lables list and tps value list
 	 */
 	public List<ArrayList<String>> getTPSReportDataAsString(long testId, int interval) {
-		List<File> TpsList = getTPSDataFiles(testId);
+		List<File> tpsList = getTPSDataFiles(testId);
 		ArrayList<ArrayList<String>> resList = Lists.newArrayList();
 		resList.add(new ArrayList<String>());
 		resList.add(new ArrayList<String>());
-		for (File file : TpsList) {
+		for (File file : tpsList) {
 			resList.get(0).add(buildReportName(file));
-			resList.get(1).add(getFileDataAsString(file, interval));
+			resList.get(1).add(getFileDataAsJson(file, interval));
 		}
 		return resList;
 	}
@@ -1597,7 +1604,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Get tps file respectively if there is multiple test in single script will be added
+	 * Get TPS files respectively if there are multiple tests.
 	 * 
 	 * @param testId
 	 *            test id
@@ -1611,14 +1618,15 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Get the test report data as a string.
+	 * Get the test report data as a json string.
 	 * 
-	 * @param file
+	 * @param targetFile
 	 *            target file
 	 * @param interval
 	 *            interval to collect data
+	 * @return json string
 	 */
-	private String getFileDataAsString(File targetFile, int interval) {
+	private String getFileDataAsJson(File targetFile, int interval) {
 		StringBuilder reportData = new StringBuilder("[");
 		FileReader reader = null;
 		BufferedReader br = null;
