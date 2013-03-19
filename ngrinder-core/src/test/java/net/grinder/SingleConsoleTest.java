@@ -178,7 +178,7 @@ public class SingleConsoleTest {
 			}
 
 			@Override
-			protected void updateStatistics(ModelTestIndex modelIndex, StatisticsSet intervalStatisticsSnapshot,
+			protected void updateStatistics(StatisticsSet intervalStatisticsSnapshot,
 							StatisticsSet cumulatedStatisticsSnapshot) {
 			}
 
