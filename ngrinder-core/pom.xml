@@ -9,7 +9,6 @@
 	<artifactId>ngrinder-core</artifactId>
 	<name>ngrinder-core</name>
 	<packaging>jar</packaging>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -76,13 +75,16 @@
 			<artifactId>commons-compress</artifactId>
 			<version>1.4.1</version>
 		</dependency>
+		
 		<dependency>
-		      <groupId>javax.jnlp</groupId>
-		      <artifactId>jnlp-api</artifactId>
-		      <version>6.0</version>
-		      <scope>system</scope>
-		      <systemPath>${project.basedir}/patch/jnlp.jar</systemPath>
+	      <groupId>jre</groupId>
+	      <artifactId>javaws</artifactId>
+	      <version>6.0</version>
+	      <type>jar</type>
+	      <scope>system</scope>
+	      <systemPath>${java.home}/lib/javaws.jar</systemPath>
     	</dependency>
+			
 	</dependencies>
 	<build>
 		<resources>
@@ -131,6 +133,7 @@
 					</additionalBuildcommands>
 				</configuration>
 			</plugin>
+			
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
