@@ -535,14 +535,16 @@ public class PerfTestController extends NGrinderBaseController {
 		rtnMap.put(JSON_SUCCESS, true);
 		PerfTest perfTest = perfTestService.getPerfTest(id);
 		int interval = perfTestService.getReportDataInterval(id, dataTypes[0], imgWidth);
-		for (String dt : dataTypes) {
-			String rtnType = dt.replace("(", "").replace(")", "");
-			if ("TPS".equals(dt)) {
-				List<ArrayList<String>> tpsList = perfTestService.getTPSReportDataAsString(id, interval);
+		for (String each : dataTypes) {
+			String rtnType = each.replace("(", "").replace(")", "");
+			if ("TPS".equals(each)) {
+				// Per Test TPS is only available when sampling interval is more than 2.
+				List<ArrayList<String>> tpsList = perfTestService.getTPSReportDataAsString(id, interval,
+								perfTest.getSamplingInterval() > 2);
 				rtnMap.put("lables", tpsList.get(0));
 				rtnMap.put("TPS", tpsList.get(1));
 			} else {
-				String reportData = perfTestService.getReportDataAsString(id, dt, interval);
+				String reportData = perfTestService.getReportDataAsString(id, each, interval);
 				rtnMap.put(rtnType, reportData);
 			}
 		}

@@ -1592,18 +1592,19 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            test id
 	 * @param interval
 	 *            interval to collect data
+	 * @param onlyTPS
+	 *            true if only total tps is retrieved
 	 * @return list contained lables list and tps value list
 	 */
-	public List<ArrayList<String>> getTPSReportDataAsString(long testId, int interval) {
-		List<File> tpsList = getTPSDataFiles(testId);
-		ArrayList<ArrayList<String>> resList = Lists.newArrayList();
-		resList.add(new ArrayList<String>());
-		resList.add(new ArrayList<String>());
-		for (File file : tpsList) {
-			resList.get(0).add(buildReportName(file));
-			resList.get(1).add(getFileDataAsJson(file, interval));
+	public List<ArrayList<String>> getTPSReportDataAsString(long testId, int interval, boolean onlyTPS) {
+		ArrayList<ArrayList<String>> combinedTPSReportDataList = Lists.newArrayList();
+		combinedTPSReportDataList.add(new ArrayList<String>());
+		combinedTPSReportDataList.add(new ArrayList<String>());
+		for (File file : getTPSDataFiles(testId, onlyTPS)) {
+			combinedTPSReportDataList.get(0).add(buildReportName(file));
+			combinedTPSReportDataList.get(1).add(getFileDataAsJson(file, interval));
 		}
-		return resList;
+		return combinedTPSReportDataList;
 	}
 
 	private String buildReportName(File file) {
@@ -1619,12 +1620,15 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * 
 	 * @param testId
 	 *            test id
+	 * @param onlyTPS
+	 *            true if only total tps is retrieved
 	 * @return return file list
 	 */
-	public List<File> getTPSDataFiles(long testId) {
+	public List<File> getTPSDataFiles(long testId, boolean onlyTPS) {
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
-		FileFilter fileFilter = new WildcardFileFilter("TPS*.data");
+		FileFilter fileFilter = onlyTPS ? new WildcardFileFilter("TPS.data") : new WildcardFileFilter("TPS*.data");
 		File[] files = reportFolder.listFiles(fileFilter);
+		Arrays.sort(files);
 		return Arrays.asList(files);
 	}
 
