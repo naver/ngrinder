@@ -380,7 +380,8 @@ public class AgentImplementationEx implements Agent {
 	 */
 	private static String getForeMostClassPath(Properties properties, Logger logger) {
 		String property = properties.getProperty("java.class.path", "");
-		return GrinderClassPathUtils.filterForeMostClassPath(property, logger);
+		return GrinderClassPathUtils.filterForeMostClassPath(property, logger) + File.pathSeparator
+						+ GrinderClassPathUtils.filterPatchClassPath(property, logger);
 	}
 
 	/**

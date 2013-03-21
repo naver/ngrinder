@@ -76,13 +76,47 @@ public abstract class GrinderClassPathUtils {
 		}
 		return StringUtils.join(classPathList, File.pathSeparator);
 	}
+	
+	/**
+	 * Construct the classpath of ngrinder which is very important and located in the head of
+	 * classpath.
+	 * 
+	 * @param classPath
+	 *            classpath string
+	 * @param logger
+	 *            logger
+	 * @return classpath optimized for grinder.
+	 */
+	public static String filterPatchClassPath(String classPath, Logger logger) {
+		List<String> classPathList = new ArrayList<String>();
+		for (String eachClassPath : checkNotNull(classPath).split(File.pathSeparator)) {
+			String filename = FilenameUtils.getName(eachClassPath);
+			if (isPatchJar(filename)) {
+				logger.trace("classpath :" + eachClassPath);
+				classPathList.add(eachClassPath);
+			}
+		}
+		return StringUtils.join(classPathList, File.pathSeparator);
+	}
+
+	private static boolean isPatchJar(String jarFilename) {
+		if ("jar".equals(FilenameUtils.getExtension(jarFilename))) {
+			for (String jarName : PATCH_JAR_LIST) {
+				if (jarFilename.contains(jarName)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	private static final List<String> FOREMOST_JAR_LIST = new ArrayList<String>();
+	private static final List<String> PATCH_JAR_LIST = new ArrayList<String>();
 	private static final List<String> USEFUL_JAR_LIST = new ArrayList<String>();
 	private static final List<String> USELESS_JAR_LIST = new ArrayList<String>();
 	static {
 		FOREMOST_JAR_LIST.add("ngrinder-dns");
-		
+		PATCH_JAR_LIST.add("patch.jar");
 		// TODO: If we have need another jar files, we should append it here.
 		USEFUL_JAR_LIST.add("grinder");
 		USEFUL_JAR_LIST.add("dnsjava");
