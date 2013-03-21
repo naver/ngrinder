@@ -246,9 +246,6 @@
 	
 	<!-- For jqplot legend -->
 	<script src="${req.getContextPath()}/plugins/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js"></script>
-	<script src="${req.getContextPath()}/plugins/jqplot/syntaxhighlighter/scripts/shCore.min.js"></script>
-	<script src="${req.getContextPath()}/plugins/jqplot/syntaxhighlighter/scripts/shBrushJScript.min.js"></script>
-	<script src="${req.getContextPath()}/plugins/jqplot/syntaxhighlighter/scripts/shBrushXml.min.js"></script>
 	<script src="${req.getContextPath()}/js/generateImg.js"></script>
 	<script>
 	    var performanceInit = false;

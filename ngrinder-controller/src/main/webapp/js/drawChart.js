@@ -17,6 +17,9 @@ var formatPercentage = function(format, value) {
 };
 
 function formatTimeForXaxis(timeInSecond) {
+	if (timeInSecond < 0) {
+		timeInSecond = 0;
+	}
 	var hour = parseInt((timeInSecond % (60 * 60 * 24)) / 3600);
     var min = parseInt((timeInSecond % 3600) / 60);
 	var sec = parseInt(timeInSecond % 60);
