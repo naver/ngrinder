@@ -117,7 +117,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	private final ListenerSupport<ConsoleShutdownListener> showdownListner = ListenerHelper.create();
 	private final ListenerSupport<SamplingLifeCycleListener> samplingLifeCycleListener = ListenerHelper.create();
 	private final ListenerSupport<SamplingLifeCycleFollowUpListener> samplingFollowupLifeCycleListener = ListenerHelper.create();
-	public static final int MIN_SAMPLING_INTERVAL_TO_ACTIVATE_TPS_PER_TEST = 5;
+	public static final int MIN_SAMPLING_INTERVAL_TO_ACTIVATE_TPS_PER_TEST = 5000;
 	private boolean capture = false;
 	private File reportPath;
 	// private NumberFormat simpleFormatter = new DecimalFormat("###");
@@ -708,7 +708,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			});
 			for (int i = 0; i < gap; i++) {
 				writeIntervalSummaryData(intervalStatisticsSnapshot);
-				if (interval > MIN_SAMPLING_INTERVAL_TO_ACTIVATE_TPS_PER_TEST) {
+				if (interval >= (MIN_SAMPLING_INTERVAL_TO_ACTIVATE_TPS_PER_TEST)) {
 					writeIntervalSummaryDataPerTest(intervalStatisticMapPerTest);
 				}
 				final boolean firstCall = (i == 0);
