@@ -6,10 +6,6 @@
 		
 		<title><@spring.message "perfTest.report.title"/></title>
 		
-		<!-- For jqplot legend -->
-		<link href="${req.getContextPath()}/plugins/jqplot/syntaxhighlighter/styles/shCoreDefault.min.css" rel="stylesheet"/>
-    	<link href="${req.getContextPath()}/plugins/jqplot/syntaxhighlighter/styles/shThemejqPlot.min.css" rel="stylesheet"/>
-    	
 		<style> 
 			body {
 				padding-top: 0;
@@ -376,7 +372,7 @@
 			if (data !== undefined && data !== '[]') {
             	$("#" + area).show();	
             	$("#" + titleArea).show();
-            	drawChart(area, data, undefined, interval);
+            	drawChart(area, data, formatMemory, interval);
             } else {
             	$("#" + area).hide();	
             	$("#" + titleArea).hide();
