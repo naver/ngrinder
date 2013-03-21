@@ -208,7 +208,7 @@
 				</div>
 				<div id="monitorDiv" style="display:none">
 	    			<div class="page-header pageHeader">
-						<h4>System Data</h4>
+						<h4>System Monitoring</h4> 
 					</div>
 				    <h6>CPU</h6>
                     <div class="chart" id="cpuDiv"></div>
@@ -218,15 +218,15 @@
                     <div class="chart" id="receivedDiv"></div>
 					<h6 id="sentDivHeader">Sent Per Second</h6>
                     <div class="chart" id="sentDiv"></div>
-					<h6 id="customMonitorData1Header">Customized Monitor Data1</h6>
+					<h6 id="customMonitorData1Header">Custom Monitor Data 1</h6>
                     <div class="chart" id="customMonitorData1"></div>
-					<h6 id="customMonitorData2Header">Customized Monitor Data2</h6>
+					<h6 id="customMonitorData2Header">Custom Monitor Data 2</h6>
                     <div class="chart" id="customMonitorData2"></div>
-					<h6 id="customMonitorData3Header">Customized Monitor Data3</h6>
+					<h6 id="customMonitorData3Header">Custom Monitor Data 3</h6>
                     <div class="chart" id="customMonitorData3"></div>
-					<h6 id="customMonitorData4Header">Customized Monitor Data4</h6>
+					<h6 id="customMonitorData4Header">Custom Monitor Data 4</h6>
                     <div class="chart" id="customMonitorData4"></div>
-					<h6 id="customMonitorData5Header">Customized Monitor Data5</h6>
+					<h6 id="customMonitorData5Header">Custom Monitor Data 5</h6>
                     <div class="chart" id="customMonitorData5"></div>
                 </div>
 			</div>
@@ -254,7 +254,7 @@
 	    var performanceInit = false;
 	    var targetMonitorData = {}; //save monitor data
 	    var imgBtnLabel = "<@spring.message "perfTest.report.exportImg.button"/>";
-	    var imgWarningMsg = "<@spring.message "perfTest.report.exportImg.warning"/>"
+	    var imgTitle = "<@spring.message "perfTest.report.exportImg.title"/>"
 
 	    //used to save the plot object. Then for every target, just use the new data to replot.
     	var plotKeyCpu = "plotcpu";
@@ -298,7 +298,7 @@
 
 		function getPerformanceData(){
 		    if(performanceInit){
-		    	generateImg(imgBtnLabel, imgWarningMsg);
+		    	generateImg(imgBtnLabel, imgTitle);
 		        return;
 		    }
 		    performanceInit = true;
@@ -327,7 +327,7 @@
                         	$("#userDefinedChartHeader").hide();
                         }
                         drawChart('errorDiv', res.Errors, undefined, res.chartInterval);
-                        generateImg(imgBtnLabel, imgWarningMsg); 
+                        generateImg(imgBtnLabel, imgTitle); 
                         return true;
                     } else {
                         showErrorMsg("Get report data failed.");
@@ -362,65 +362,27 @@
        		drawChart('cpuDiv', currMonitorData.cpu, formatPercentage, currMonitorData.interval);
        		drawChart('memoryDiv', currMonitorData.memory, formatMemory, currMonitorData.interval);
        		drawExtMonitorData(currMonitorData);
-       		generateImg(imgBtnLabel, imgWarningMsg);
+       		generateImg(imgBtnLabel, imgTitle);
 		}
 		
 		function drawExtMonitorData(systemData) {
-            if (systemData.received !== undefined && systemData.received !== '[]') {
-            	$("#receivedDiv").show();	
-            	$("#receivedDivHeader").show();
-            	drawChart('receivedDiv', systemData.received, formatMemory, systemData.interval);
+            drawChartForMonitor(systemData.received, "receivedDiv", "receivedDivHeader", systemData.interval);
+            drawChartForMonitor(systemData.sent, "sentDiv", "sentDivHeader", systemData.interval);
+            drawChartForMonitor(systemData.customData1, "customMonitorData1", "customMonitorData1Header", systemData.interval);
+            drawChartForMonitor(systemData.customData2, "customMonitorData2", "customMonitorData2Header", systemData.interval);
+            drawChartForMonitor(systemData.customData3, "customMonitorData3", "customMonitorData3Header", systemData.interval);
+            drawChartForMonitor(systemData.customData4, "customMonitorData4", "customMonitorData4Header", systemData.interval);
+            drawChartForMonitor(systemData.customData5, "customMonitorData5", "customMonitorData5Header", systemData.interval);
+		}
+		
+		function drawChartForMonitor(data, area, titleArea, interval) {
+			if (data !== undefined && data !== '[]') {
+            	$("#" + area).show();	
+            	$("#" + titleArea).show();
+            	drawChart(area, data, undefined, interval);
             } else {
-            	$("#receivedDiv").hide();	
-            	$("#receivedDivHeader").hide();
-            }
-            if (systemData.sent !== undefined && systemData.sent !== '[]') {
-            	$("#sentDiv").show();	
-            	$("#sentDivHeader").show();
-            	drawChart('sentDiv', systemData.sent, formatMemory, systemData.interval);
-            } else {
-            	$("#sentDiv").hide();	
-            	$("#sentDivHeader").hide();
-            }
-            if (systemData.customData1 !== undefined && systemData.customData1 !== '[]') {
-            	$("#customMonitorData1").show();	
-            	$("#customMonitorData1Header").show();
-            	drawChart('customMonitorData1', systemData.customData1, undefined, systemData.interval);
-            } else {
-            	$("#customMonitorData1").hide();	
-            	$("#customMonitorData1Header").hide();
-            }
-            if (systemData.customData2 !== undefined && systemData.customData2 !== '[]') {
-            	$("#customMonitorData2").show();	
-            	$("#customMonitorData2Header").show();
-            	drawChart('customMonitorData2', systemData.customData2, undefined, systemData.interval);
-            } else {
-            	$("#customMonitorData2").hide();	
-            	$("#customMonitorData2Header").hide();
-            }
-            if (systemData.customData3 !== undefined && systemData.customData3 !== '[]') {
-            	$("#customMonitorData3").show();	
-            	$("#customMonitorData3Header").show();
-            	drawChart('customMonitorData3', systemData.customData3, undefined, systemData.interval);
-            } else {
-            	$("#customMonitorData3").hide();	
-            	$("#customMonitorData3Header").hide();
-            }
-            if (systemData.customData4 !== undefined && systemData.customData4 !== '[]') {
-            	$("#customMonitorData4").show();	
-            	$("#customMonitorData4Header").show();
-            	drawChart('customMonitorData4', systemData.customData4, undefined, systemData.interval);
-            } else {
-            	$("#customMonitorData4").hide();	
-            	$("#customMonitorData4Header").hide();
-            }
-            if (systemData.customData5 !== undefined && systemData.customData5 !== '[]') {
-            	$("#customMonitorData5").show();	
-            	$("#customMonitorData5Header").show();
-            	drawChart('customMonitorData5', systemData.customData5, undefined, systemData.interval);
-            } else {
-            	$("#customMonitorData5").hide();	
-            	$("#customMonitorData5Header").hide();
+            	$("#" + area).hide();	
+            	$("#" + titleArea).hide();
             }
 		}
 		
@@ -437,8 +399,6 @@
                 data: {'monitorIP': ip, 'imgWidth': 700},
                 success: function(res) {
                     if (res.success) {
-                    	var ymax = 0;
-                    	
                     	if ($.isEmptyObject(res.SystemData)) {
                     		showErrorMsg("<@spring.message "perfTest.report.message.noMonitorData"/>");
                     		res.SystemData.cpu = [0];
@@ -446,10 +406,8 @@
                     		res.SystemData.received = [0];
                     		res.SystemData.sent = [0];
                     	}
-                    	
                     	targetMonitorData[ip] = res.SystemData;
                     	drawPlot(ip);
-                    	
                         return true;
                     } else {
                         showErrorMsg("Get monitor data failed.");
