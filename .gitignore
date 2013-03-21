@@ -14,3 +14,4 @@ target/
 /ngrinder-core-3.*
 .DS_Store
 /ngrinder_cloud_deploy.bat
+/ngrinder_staging_deploy.bat
