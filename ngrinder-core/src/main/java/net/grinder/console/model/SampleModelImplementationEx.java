@@ -305,13 +305,15 @@ public class SampleModelImplementationEx implements SampleModel {
 		return getInternalState().toExternalState();
 	}
 
+	/**
+	 * Zero the accumulators.
+	 */
 	public void zero() {
 		synchronized (m_accumulators) {
 			for (SampleAccumulator sampleAccumulator : m_accumulators.values()) {
 				sampleAccumulator.zero();
 			}
 		}
-
 		m_totalSampleAccumulator.zero();
 	}
 
@@ -478,9 +480,7 @@ public class SampleModelImplementationEx implements SampleModel {
 						sampleAccumulator.fireSample(sampleInterval, period);
 					}
 				}
-
 				m_totalSampleAccumulator.fireSample(sampleInterval, period);
-
 				++msampleCount;
 
 				// I'm ignoring a minor race here: the model could have been

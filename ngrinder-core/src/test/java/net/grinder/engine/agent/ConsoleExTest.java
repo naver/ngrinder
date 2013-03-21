@@ -55,7 +55,7 @@ public class ConsoleExTest extends AbstractMuliGrinderTestBase {
 		console2.shutdown();
 		agentThread1.shutdown();
 		agentThread2.shutdown();
-		agentThread3.shutdown();
+		agentThread3.shutdown();  
 		sleep(5000);
 		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
 		for (Thread each : threadSet) {

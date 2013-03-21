@@ -48,14 +48,19 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 	private SystemInfo prev = null;
 
 	private String[] netInterfaces = new String[] {};
-	
-	private String agentHomeDir = null;
-	private String customDataFileName = null;
+
 	private File customDataFile = null;
-	
-	public void setAgentHome(String agentHome) {
-		agentHomeDir = agentHome;
-		customDataFileName = agentHomeDir + File.separator + "monitor" + File.separator + "custom.data";
+
+	/**
+	 * Set Agent Home.
+	 * 
+	 * @param agentHomeFile
+	 *            agentHomeFile
+	 */
+	public void setAgentHome(File agentHomeFile) {
+		if (customDataFile == null) {
+			customDataFile = new File(agentHomeFile, "monitor" + File.separator + "custom.data");
+		}
 	}
 
 	@Override
@@ -103,8 +108,7 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 			systemInfo.setTotalMemory(mem.getTotal() / 1024L);
 			systemInfo.setFreeMemory(mem.getFree() / 1024L);
 			systemInfo.setSystem(OperatingSystem.IS_WIN32 ? SystemInfo.System.WINDOW : SystemInfo.System.LINUX);
-			
-			systemInfo.setCustomValues(getCustomizedMonitorData());
+			systemInfo.setCustomValues(getCustomMonitorData());
 		} catch (Throwable e) {
 			LOGGER.error("Error while getting system perf data:{}", e.getMessage());
 			LOGGER.debug("Error trace is ", e);
@@ -133,34 +137,22 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 		}
 		return bandWidth;
 	}
-	
-	
-	private void initCustomizedMonitor() {
-		// set data file for reuse.
-		customDataFile = new File(customDataFileName);
-		if (!customDataFile.exists()) {
-			customDataFile = null;
-		}
-	}
-	
-	private String getCustomizedMonitorData() {
-		if (customDataFile == null) {
-			initCustomizedMonitor();
-		}
-		if (customDataFile != null) {
+
+	private String getCustomMonitorData() {
+		if (customDataFile != null && customDataFile.exists()) {
 			BufferedReader customDataFileReader = null;
 			try {
 				customDataFileReader = new BufferedReader(new FileReader(customDataFile));
-				String line = customDataFileReader.readLine();//these data will be parsed at monitor client side.
-				return line;
+				return customDataFileReader.readLine(); // these data will be parsed at
+														// monitor client side.
 			} catch (IOException e) {
-				LOGGER.error("Error to read custom monitor data:" + e.getMessage(), e);
-				prev.getCustomValues(); //if there is any error, return previous value, to avoid Null error.
+				// Error here is very natural
+				LOGGER.debug("Error to read custom monitor data", e);
 			} finally {
 				IOUtils.closeQuietly(customDataFileReader);
 			}
 		}
-		return null;
+		return prev.getCustomValues();
 	}
 
 }

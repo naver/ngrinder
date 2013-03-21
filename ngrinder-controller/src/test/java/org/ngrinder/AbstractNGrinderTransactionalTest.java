@@ -13,7 +13,6 @@
  */
 package org.ngrinder;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Set;
@@ -60,7 +59,7 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 	protected UserRepository userRepository;
 
 	protected User testUser = null;
-	
+
 	static {
 		setupSigar();
 		LOG.info("* Start nGrinder Agent *");
@@ -68,19 +67,19 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 		AgentControllerDaemon agentControllerDaemon = new AgentControllerDaemon("127.0.0.1");
 		agentControllerDaemon.setAgentConfig(agentConfig);
 		agentControllerDaemon.run(AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
-		
+
 		LOG.info("* Start nGrinder Monitor *");
 		try {
 			Set<String> collector = MonitorConstants.SYSTEM_DATA_COLLECTOR;
-			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_MONITOR_PORT, collector, 
-					agentConfig.getHome().getDirectory().getParent());
+			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_MONITOR_PORT, collector,
+							agentConfig.getHome().getDirectory());
 			AgentMonitorServer.getInstance().start();
 		} catch (Exception e) {
 			LOG.error("ERROR: {}", e.getMessage());
 			LOG.debug("Error while starting Monitor", e);
 		}
 	}
-	
+
 	private static void setupSigar() {
 		try {
 			ClassPathResource classPathResource = new ClassPathResource("native_lib/.sigar_shellrc");
@@ -94,7 +93,6 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 			e.printStackTrace();
 		}
 	}
-
 
 	@Before
 	public void beforeSetSecurity() {

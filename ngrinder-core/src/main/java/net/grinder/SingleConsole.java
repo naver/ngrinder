@@ -693,11 +693,10 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		try {
 			setTpsValue(sampleModel.getTPSExpression().getDoubleValue(intervalStatisticsSnapshot));
 			checkTooLowTps(getTpsValues());
-			ModelTestIndex modelIndex = ((SampleModelImplementationEx) sampleModel).getModelTestIndex();
-			updateStatistics(modelIndex, intervalStatisticsSnapshot, cumulatedStatisticsSnapshot);
+			updateStatistics(intervalStatisticsSnapshot, cumulatedStatisticsSnapshot);
 			// Adjust sampling delay.. run write data multiple times... when it takes longer than 1
 			// sec.
-			writeIntervalCsvData(intervalStatisticsSnapshot, modelIndex);
+			writeIntervalCsvData(intervalStatisticsSnapshot);
 			int gap = (int) ((currentSamplingTimeStamp / 1000) - (lastSamplingTimeStamp / 1000));
 			for (int i = 0; i < gap; i++) {
 				writeIntervalSummaryData(intervalStatisticsSnapshot);
@@ -740,15 +739,12 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @param modelTestIndex
 	 *            model containing all tests
 	 */
-	public void writeIntervalCsvData(StatisticsSet intervalStatistics, ModelTestIndex modelTestIndex) {
-		if (modelTestIndex == null) {
-			return;
-		}
+	public void writeIntervalCsvData(StatisticsSet intervalStatistics) {
+
 		StringBuilder csvLine = new StringBuilder();
 		csvLine.append(DateUtil.dateToString(new Date()));
 
 		// add header into csv file.
-		int numberOfTests = modelTestIndex.getNumberOfTests();
 		if (!headerAdded) {
 			StringBuilder csvHeader = new StringBuilder();
 			csvHeader.append("DateTime");
@@ -759,8 +755,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 					csvHeader.append(",").append(each.getKey());
 				}
 			}
-			if (numberOfTests != 1) {
-				for (int i = 0; i < numberOfTests; i++) {
+			if (intervalStatisticMapPerTest.size() != 1) {
+				for (int i = 1; i <= intervalStatisticMapPerTest.size(); i++) {
 					csvHeader.append(",").append("Description");
 					// get the key list from lastStatistic map, use list to keep the order
 					for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
@@ -781,26 +777,22 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				csvLine.append(",").append(formatValue(getRealDoubleValue(doubleValue)));
 			}
 		}
-		if (numberOfTests != 1) {
-			for (int i = 0; i < numberOfTests; i++) {
-				StatisticsSet lastSampleStatistics = modelTestIndex.getLastSampleStatistics(i);
-
-				// get the key list from lastStatistic map, use list to keep the order
-				Test test = modelTestIndex.getTest(i);
-				String description = test.getDescription();
+		if (intervalStatisticMapPerTest.size() != 1) {
+			for (Entry<Test, StatisticsSet> eachPair : intervalStatisticMapPerTest.entrySet()) {
+				String description = eachPair.getKey().getDescription();
 				csvLine.append(",").append(description);
 				for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
 					if (!each.getKey().equals("Peak_TPS")) {
 						csvLine.append(",").append(
 										formatValue(getRealDoubleValue(each.getValue().getDoubleValue(
-														lastSampleStatistics))));
+														eachPair.getValue()))));
 					}
 					// multiple tests in a single script,saved those tests's TPS in their respective
 					// file
 					if (each.getKey().equals("TPS")) {
 						writeReportData("TPS-" + description.replaceAll("\\s+", "_") + REPORT_DATA,
 										formatValue(getRealDoubleValue(each.getValue().getDoubleValue(
-														lastSampleStatistics))));
+														eachPair.getValue()))));
 					}
 				}
 			}
@@ -876,52 +868,40 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	/**
 	 * Build up statistic for current moment.
 	 * 
-	 * @param modelTestIndex
-	 *            modelTestIndex
-	 * @param cumulatedStatistics
+	 * @param accumulatedStatistics
 	 *            intervalStatistics
 	 * @param intervalStatistics
 	 *            cumulatedStatistics
 	 */
-	protected void updateStatistics(ModelTestIndex modelTestIndex, StatisticsSet intervalStatistics,
-					StatisticsSet cumulatedStatistics) {
+	protected void updateStatistics(StatisticsSet intervalStatistics, StatisticsSet accumulatedStatistics) {
 		Map<String, Object> result = Maps.newHashMap();
 		result.put("test_time", getCurrentRunningTime() / 1000);
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
-		if (modelTestIndex != null) {
-			int numberOfTests = modelTestIndex.getNumberOfTests();
-			for (int i = 0; i < numberOfTests; i++) {
-				Map<String, Object> statistics = Maps.newHashMap();
-				Map<String, Object> lastStatistics = Maps.newHashMap();
-				Test test = modelTestIndex.getTest(i);
+		for (Test test : accumulatedStatisticMapPerTest.keySet()) {
+			Map<String, Object> accumulatedStatisticMap = Maps.newHashMap();
+			Map<String, Object> intervalStatisticsMap = Maps.newHashMap();
+			StatisticsSet accumulatedSet = this.accumulatedStatisticMapPerTest.get(test);
+			StatisticsSet intervalSet = this.intervalStatisticMapPerTest.get(test);
 
-				statistics.put("testNumber", test.getNumber());
-				statistics.put("testDescription", test.getDescription());
-				// remove description from statistic, otherwise, it will be
-				// saved in report data.
-				// and the character like ',' in this field will affect the csv
-				// file too.
-				lastStatistics.put("testNumber", test.getNumber());
-				lastStatistics.put("testDescription", test.getDescription());
-				// When only 1 test is running, it's better to use the parameterized snapshot.
-				StatisticsSet set = cumulatedStatistics;
-				StatisticsSet lastSet = intervalStatistics;
-				if (numberOfTests != 1) {
-					// If not, there are no way to get individual test statistics from the given
-					// parameter. Jut get it from model index
-					set = modelTestIndex.getCumulativeStatistics(i).snapshot();
-					lastSet = modelTestIndex.getLastSampleStatistics(i).snapshot();
+			accumulatedStatisticMap.put("testNumber", test.getNumber());
+			accumulatedStatisticMap.put("testDescription", test.getDescription());
+			// remove description from statistic, otherwise, it will be
+			// saved in report data. and the character like ',' in this field will affect the csv
+			// file too.
+			intervalStatisticsMap.put("testNumber", test.getNumber());
+			intervalStatisticsMap.put("testDescription", test.getDescription());
+			// When only 1 test is running, it's better to use the parameterized snapshot.
+			for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
+				if (INTERESTING_STATISTICS.contains(each.getKey())) {
+					accumulatedStatisticMap.put(each.getKey(),
+									getRealDoubleValue(each.getValue().getDoubleValue(accumulatedSet)));
+					intervalStatisticsMap.put(each.getKey(),
+									getRealDoubleValue(each.getValue().getDoubleValue(intervalSet)));
 				}
-				for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
-					if (INTERESTING_STATISTICS.contains(each.getKey())) {
-						statistics.put(each.getKey(), getRealDoubleValue(each.getValue().getDoubleValue(set)));
-						lastStatistics.put(each.getKey(), getRealDoubleValue(each.getValue().getDoubleValue(lastSet)));
-					}
-				}
-				cumulativeStatistics.add(statistics);
-				lastSampleStatistics.add(lastStatistics);
 			}
+			cumulativeStatistics.add(accumulatedStatisticMap);
+			lastSampleStatistics.add(intervalStatisticsMap);
 		}
 
 		Map<String, Object> totalStatistics = Maps.newHashMap();
@@ -929,7 +909,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
 			if (INTERESTING_STATISTICS.contains(each.getKey())) {
 				totalStatistics.put(each.getKey(),
-								getRealDoubleValue(each.getValue().getDoubleValue(cumulatedStatistics)));
+								getRealDoubleValue(each.getValue().getDoubleValue(accumulatedStatistics)));
 			}
 		}
 
@@ -1184,6 +1164,9 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		getConsoleComponent(ProcessControl.class).stopAgentAndWorkerProcesses();
 	}
 
+	public Map<Test, StatisticsSet> intervalStatisticMapPerTest = Maps.newConcurrentMap();
+	public Map<Test, StatisticsSet> accumulatedStatisticMapPerTest = Maps.newConcurrentMap();
+
 	/**
 	 * Start sampling with ignore count.
 	 * 
@@ -1195,6 +1178,32 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		this.sampling = true;
 		this.sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 		this.sampleModel.addTotalSampleListener(this);
+		this.sampleModel.addModelListener(new SampleModel.Listener() {
+			@Override
+			public void stateChanged() {
+			}
+
+			@Override
+			public void resetTests() {
+			}
+
+			@Override
+			public void newTests(Set<Test> newTests, ModelTestIndex modelTestIndex) {
+				for (final Test each : newTests) {
+					SingleConsole.this.sampleModel.addSampleListener(each, new SampleListener() {
+						@Override
+						public void update(StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
+							intervalStatisticMapPerTest.put(each, intervalStatistics.snapshot());
+							accumulatedStatisticMapPerTest.put(each, cumulativeStatistics.snapshot());
+						}
+					});
+				}
+			}
+
+			@Override
+			public void newSample() {
+			}
+		});
 		this.sampleModel.reset();
 		informTestSamplingStart();
 		this.firstSampling = true;

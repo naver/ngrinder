@@ -434,12 +434,16 @@ public abstract class CompressionUtil {
 		}
 		return outFile;
 	}
-	
+
 	/**
 	 * Unpack the given jar file.
 	 * 
-	 * @param src
-	 * @param dest
+	 * @param jarFile
+	 *            file to be uncompressed
+	 * @param destDir
+	 *            destination directory
+	 * @throws IOException
+	 *             occurs when IO has a problem.
 	 */
 	public static void unjar(File jarFile, String destDir) throws IOException {
 		File dest = new File(destDir);
@@ -494,7 +498,7 @@ public abstract class CompressionUtil {
 		if (mf != null) {
 			File file = new File(dest, "META-INF/MANIFEST.MF");
 			File parent = file.getParentFile();
-			if (parent.exists() == false) {
+			if (!parent.exists()) {
 				parent.mkdirs();
 			}
 			OutputStream out = new FileOutputStream(file);

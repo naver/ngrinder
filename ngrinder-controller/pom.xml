@@ -118,6 +118,12 @@
 			<artifactId>spring-web</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
+		
+		<dependency>
+				<groupId>org.codehaus.mojo.webstart</groupId>
+				<artifactId>webstart-jnlp-servlet</artifactId>
+				<version>1.0-6.0.02_ea_b02.2</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>

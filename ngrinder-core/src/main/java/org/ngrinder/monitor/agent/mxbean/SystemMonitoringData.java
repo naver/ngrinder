@@ -13,6 +13,8 @@
  */
 package org.ngrinder.monitor.agent.mxbean;
 
+import java.io.File;
+
 import org.ngrinder.monitor.agent.collector.AgentDataCollector;
 import org.ngrinder.monitor.agent.collector.AgentSystemDataCollector;
 import org.ngrinder.monitor.agent.mxbean.core.MXBean;
@@ -22,7 +24,7 @@ import org.ngrinder.monitor.share.domain.SystemInfo;
 /**
  * 
  * MXBean implementation for monitoring system data.
- *
+ * 
  * @author Mavlarn
  * @since 2.0
  */
@@ -34,7 +36,7 @@ public class SystemMonitoringData extends MXBean implements SystemMXBean {
 	private AgentSystemDataCollector agentSystemDataCollector = new AgentSystemDataCollector();
 
 	@Override
-	public AgentDataCollector gainAgentDataCollector(String agentHome) {
+	public AgentDataCollector gainAgentDataCollector(File agentHome) {
 		agentSystemDataCollector.refresh();
 		agentSystemDataCollector.setAgentHome(agentHome);
 		return agentSystemDataCollector;

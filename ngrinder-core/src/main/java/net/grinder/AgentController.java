@@ -342,7 +342,7 @@ public class AgentController implements Agent {
 	public void setAgentConfig(AgentConfig agentConfig) {
 		this.agentConfig = agentConfig;
 		this.version = agentConfig.getInternalProperty("ngrinder.version", "3.1.3");
-		agentSystemDataCollector.setAgentHome(agentConfig.getHome().getDirectory().getPath());
+		this.agentSystemDataCollector.setAgentHome(agentConfig.getHome().getDirectory());
 	}
 
 	private final class ConsoleCommunication {
