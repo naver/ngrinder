@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.Timer;
 
 import net.grinder.SingleConsole.SamplingLifeCycleFollowUpListener;
-import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.statistics.StatisticsSet;
 
 import org.ngrinder.model.AgentInfo;
@@ -77,7 +76,7 @@ public class MonitorCollectorListener implements SamplingLifeCycleFollowUpListen
 
 	@Override
 	public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics, boolean firstCall) {
-		if (monitorTask != null) {
+		if (monitorTask != null && firstCall) {
 			monitorTask.saveData();
 		}
 	}

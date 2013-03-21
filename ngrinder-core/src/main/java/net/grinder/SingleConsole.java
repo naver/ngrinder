@@ -116,7 +116,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	private long lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue;
 	private final ListenerSupport<ConsoleShutdownListener> showdownListner = ListenerHelper.create();
 	private final ListenerSupport<SamplingLifeCycleListener> samplingLifeCycleListener = ListenerHelper.create();
-	private final ListenerSupport<SamplingLifeCycleFollowUpListener> samplingFollowupLifeCycleListener = ListenerHelper.create();
+	private final ListenerSupport<SamplingLifeCycleFollowUpListener> samplingLifeCycleFollowupListener = ListenerHelper.create();
 	public static final int MIN_SAMPLING_INTERVAL_TO_ACTIVATE_TPS_PER_TEST = 5000;
 	private boolean capture = false;
 	private File reportPath;
@@ -712,7 +712,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 					writeIntervalSummaryDataPerTest(intervalStatisticMapPerTest);
 				}
 				final boolean firstCall = (i == 0);
-				samplingFollowupLifeCycleListener.apply(new Informer<SamplingLifeCycleFollowUpListener>() {
+				samplingLifeCycleFollowupListener.apply(new Informer<SamplingLifeCycleFollowUpListener>() {
 					@Override
 					public void inform(SamplingLifeCycleFollowUpListener listener) {
 						listener.onSampling(getReportPath(), intervalStatisticsSnapshot, cumulatedStatisticsSnapshot, firstCall);
@@ -1266,7 +1266,6 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 */
 	public void unregisterSampling() {
 		this.currentNotFinishedProcessCount = 0;
-		this.sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 		this.sampleModel.reset();
 		this.sampleModel.stop();
 		LOGGER.info("Sampling is stopped");
@@ -1284,12 +1283,33 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				}
 			}
 		});
+		samplingLifeCycleFollowupListener.apply(new Informer<SamplingLifeCycleFollowUpListener>() {
+			@Override
+			public void inform(SamplingLifeCycleFollowUpListener listener) {
+				try {
+					listener.onSamplingStarted();
+				} catch (Exception e) {
+					LOGGER.error("Error occurs while running sampling start listener", e);
+				}
+			}
+		});
 	}
 
 	private void informTestSamplingEnd() {
 		samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
 			@Override
 			public void inform(SamplingLifeCycleListener listener) {
+				try {
+					listener.onSamplingEnded();
+				} catch (Exception e) {
+					LOGGER.error("Error occurs while running sampling end listener", e);
+				}
+			}
+		});
+		
+		samplingLifeCycleFollowupListener.apply(new Informer<SamplingLifeCycleFollowUpListener>() {
+			@Override
+			public void inform(SamplingLifeCycleFollowUpListener listener) {
 				try {
 					listener.onSamplingEnded();
 				} catch (Exception e) {
@@ -1392,6 +1412,6 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @since 3.1.3
 	 */
 	public void addSamplingLifeCycleFollowUpCycleListener(SamplingLifeCycleFollowUpListener listener) {
-		samplingFollowupLifeCycleListener.add(listener);
+		samplingLifeCycleFollowupListener.add(listener);
 	}
 }
