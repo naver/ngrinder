@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.Set;
 import java.util.Timer;
 
+import net.grinder.SingleConsole.SamplingLifeCycleFollowUpListener;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
 import net.grinder.statistics.StatisticsSet;
 
@@ -34,7 +35,7 @@ import org.springframework.context.ApplicationContext;
  * @author JunHo Yoon
  * @since 3.1.1
  */
-public class MonitorCollectorListener implements SamplingLifeCycleListener {
+public class MonitorCollectorListener implements SamplingLifeCycleFollowUpListener {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MonitorCollectorListener.class);
 	private final ApplicationContext applicationContext;
 	private final Set<AgentInfo> agents;
@@ -55,8 +56,7 @@ public class MonitorCollectorListener implements SamplingLifeCycleListener {
 	 * @param reportPath
 	 *            where does it report.
 	 */
-	public MonitorCollectorListener(ApplicationContext applicationContext, Long perfTestId, Set<AgentInfo> agents,
-					File reportPath) {
+	public MonitorCollectorListener(ApplicationContext applicationContext, Long perfTestId, Set<AgentInfo> agents, File reportPath) {
 		this.applicationContext = applicationContext;
 		this.perfTestId = checkNotNull(perfTestId);
 		this.agents = agents;
@@ -76,7 +76,7 @@ public class MonitorCollectorListener implements SamplingLifeCycleListener {
 	}
 
 	@Override
-	public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
+	public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics, boolean firstCall) {
 		if (monitorTask != null) {
 			monitorTask.saveData();
 		}

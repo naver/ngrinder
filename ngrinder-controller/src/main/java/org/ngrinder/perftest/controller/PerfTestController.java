@@ -36,6 +36,7 @@ import java.util.TimeZone;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
+import net.grinder.SingleConsole;
 import net.grinder.util.LogCompressUtil;
 import net.grinder.util.UnitUtil;
 
@@ -540,7 +541,7 @@ public class PerfTestController extends NGrinderBaseController {
 			if ("TPS".equals(each)) {
 				// Only main TPS is available when sampling interval is less than 3.
 				List<ArrayList<String>> tpsList = perfTestService.getTPSReportDataAsString(id, interval,
-								perfTest.getSamplingInterval() < 3);
+								(perfTest.getSamplingInterval() * 1000) < SingleConsole.MIN_SAMPLING_INTERVAL_TO_ACTIVATE_TPS_PER_TEST);
 				rtnMap.put("lables", tpsList.get(0));
 				rtnMap.put("TPS", tpsList.get(1));
 			} else {
