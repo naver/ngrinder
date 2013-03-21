@@ -35,7 +35,7 @@ function generateImg(btnLabel, title) {
 
             outerDiv = header = div = close = null;
             if ($("#" + $(this).attr("id") + "ImgBtn")[0] == undefined) {
-                var btn = $("<a href='#' title='" + btnLabel + "'><i class='icon-download'  style='cursor:pointer;margin-top:-20px;margin-left:680px'></i></a>");
+                var btn = $("<a href='javascript:void(0)' title='" + btnLabel + "'><i class='icon-download'  style='cursor:pointer;margin-top:-20px;margin-left:680px'></i></a>");
                 btn.attr("id", $(this).attr("id") + "ImgBtn"); 
                 btn.bind('click', {chart: $(this)}, function(evt) {   
                     var imgelem = evt.data.chart.jqplotToImageElem(); 
