@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1628,7 +1629,12 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
 		FileFilter fileFilter = onlyTPS ? new WildcardFileFilter("TPS.data") : new WildcardFileFilter("TPS*.data");
 		File[] files = reportFolder.listFiles(fileFilter);
-		Arrays.sort(files);
+		Arrays.sort(files, new Comparator<File>() {
+			@Override
+			public int compare(File o1, File o2) {
+				return FilenameUtils.getBaseName(o1.getName()).compareTo(FilenameUtils.getBaseName(o2.getName()));
+			} 
+		});
 		return Arrays.asList(files);
 	}
 

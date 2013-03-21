@@ -538,9 +538,9 @@ public class PerfTestController extends NGrinderBaseController {
 		for (String each : dataTypes) {
 			String rtnType = each.replace("(", "").replace(")", "");
 			if ("TPS".equals(each)) {
-				// Per Test TPS is only available when sampling interval is more than 2.
+				// Only main TPS is available when sampling interval is less than 3.
 				List<ArrayList<String>> tpsList = perfTestService.getTPSReportDataAsString(id, interval,
-								perfTest.getSamplingInterval() > 2);
+								perfTest.getSamplingInterval() < 3);
 				rtnMap.put("lables", tpsList.get(0));
 				rtnMap.put("TPS", tpsList.get(1));
 			} else {
