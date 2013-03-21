@@ -300,7 +300,18 @@
 		<dependency>
 			<groupId>cubrid</groupId>
 			<artifactId>cubrid-jdbc</artifactId>
-			<version>8.4.1.3024</version>
+			<version>8.4.1.2032</version>
+			<!-- this version is disappeared... little bit hack -->
+			<scope>system</scope>
+			<systemPath>${project.basedir}/patch/cubrid-jdbc-8.4.1.2032.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>grinder</groupId>
+			<artifactId>grinder-patch</artifactId>
+			<version>3.9.1</version>
+			<!-- this version is disappeared... little bit hack -->
+			<scope>system</scope>
+			<systemPath>${project.basedir}/patch/grinder-3.9.1-patch.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -362,8 +373,20 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.1.1</version>
+				<configuration>
+					<webResources>
+					
+						<resource>
+							<directory>patch</directory>
+							<targetPath>WEB-INF/lib</targetPath>
+							<includes>
+								<include>**/*.jar</include>
+							</includes>
+						</resource>
+					</webResources>
+				</configuration>
 			</plugin>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
