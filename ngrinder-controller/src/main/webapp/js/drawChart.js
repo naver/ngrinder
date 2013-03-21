@@ -93,14 +93,14 @@ function drawChart(containerId, data, formatYaxis, interval) {
 		}, 
 		axes : {
 			xaxis : {
-				min : 0,
+				min : 1,
 				max : dataCnt,
-				pad : 0,
+				pad : 2,
 				numberTicks : 10,
 				tickOptions : {
 					show : true,
 					formatter : function(format, value) {
-						return formatTimeForXaxis(parseInt(value * interval));
+						return formatTimeForXaxis(parseInt((value-1) * interval));
 					}
 				}
 			},
@@ -115,7 +115,7 @@ function drawChart(containerId, data, formatYaxis, interval) {
 				max : ymax,
 				min : 0,
 				numberTicks : 7,
-				pad : 3,
+				pad : 0, 
 				show : true
 			}
 		},
@@ -150,7 +150,7 @@ function replotChart(plotObj, data, ymax, interval) {
 	var xFormatter;
 	if (interval) {
 		xFormatter = function(format, value) {
-			return formatTimeForXaxis(parseInt(value * interval));
+			return formatTimeForXaxis(parseInt((value-1) * interval));
 		};
 	} else {
 		xFormatter = plotObj.axes.xaxis.tickOptions.formatter;
@@ -250,14 +250,14 @@ function drawMultiPlotChart(containerId, data, labels, interval) {
 		}, 
 		axes : {
 			xaxis : {
-				min : 0,
+				min : 1,
 				max : dataCnt,
 				pad : 0,
 				numberTicks : 10,
 				tickOptions : {
 					show : true,
 					formatter : function(format, value) {
-						return formatTimeForXaxis(parseInt(value * interval));
+						return formatTimeForXaxis(parseInt((value-1) * interval));
 					}
 				}
 			},
