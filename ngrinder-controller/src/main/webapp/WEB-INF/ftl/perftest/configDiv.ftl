@@ -25,8 +25,8 @@
 									</td>
 									<td>
 										<#if clustered == true>											
-											<label for="regionSelect" class="region" ><@spring.message "perfTest.configuration.region"/><span rel="popover" data-content='<@spring.message "perfTest.configuration.region.help"/>' data-original-title='<@spring.message "perfTest.configuration.region"/>' type="toggle"><i class="icon-question-sign" style="vertical-align:middle;"></i></span></label>
-								 			<select id="regionSelect" name="region" class="pull-right" style="width:120px" >
+											<label for="regionSelect" class="region" ><@spring.message "perfTest.configuration.region"/><span rel="popover" data-content='<@spring.message "perfTest.configuration.region.help"/>' data-original-title='<@spring.message "perfTest.configuration.region"/>' type="toggle"> <i class="icon-question-sign" style="vertical-align:middle;"></i></span></label>
+								 			<select id="regionSelect" name="region" class="pull-right" style="width:110px" >
 												<#list regionAgentCountMap?keys as eachRegion>
 													<option value="${eachRegion}" <#if (test?? && test.region?? && test.region == eachRegion)>selected </#if> > <@spring.message "${eachRegion}"/></option>
 												</#list> 
