@@ -325,6 +325,18 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @see org.ngrinder.perftest.service.IPerfTestService#savePerfTest(org.ngrinder
 	 * .perftest.model.PerfTest )
 	 */
+	@Transactional
+	public void updateRuntimeStatistics(Long id, String runningSample, String agentStatistics) {
+		perfTestRepository.updateRuntimeStatistics(id, runningSample, agentStatistics);
+		perfTestRepository.flush();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ngrinder.perftest.service.IPerfTestService#savePerfTest(org.ngrinder
+	 * .perftest.model.PerfTest )
+	 */
 	@Override
 	@Transactional
 	public PerfTest savePerfTest(PerfTest perfTest) {
@@ -683,6 +695,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			} else {
 				grinderProperties.setInt(GRINDER_PROP_PROCESS_INCREMENT, 0);
 			}
+			grinderProperties.setInt(GRINDER_PROP_REPORT_TO_CONSOLE, 500);
 			grinderProperties.setProperty(GRINDER_PROP_USER, perfTest.getCreatedUser().getUserId());
 			grinderProperties.setProperty(GRINDER_PROP_JVM_CLASSPATH, getCustomClassPath(perfTest));
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, perfTest.getIgnoreSampleCount());
@@ -833,7 +846,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * get the test report data as a string. Use interval to control the data point count. interval
+	 * Get the test report data as a string. Use interval to control the data point count. interval
 	 * is 1, mean get all data point.
 	 * 
 	 * @param testId
@@ -845,7 +858,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return report data report data of that type
 	 */
 	public String getReportDataAsString(long testId, String dataType, int interval) {
-
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
 		File targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
 		if (!targetFile.exists()) {
@@ -964,6 +976,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            perfTest Id
 	 * @return statistics
 	 */
+	@Transactional
 	public Map<String, Object> saveStatistics(SingleConsole singleConsole, Long perfTestId) {
 		Map<String, Object> statictisData = singleConsole.getStatictisData();
 		Map<String, SystemDataModel> agentStatusMap = Maps.newHashMap();
@@ -971,11 +984,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		for (AgentStatus each : agentManager.getAgentStatusSetConnectingToPort(singleConsolePort)) {
 			agentStatusMap.put(each.getAgentName(), each.getSystemDataModel());
 		}
-		PerfTest perfTest = getPerfTest(perfTestId);
-		perfTest.setRunningSample(gson.toJson(statictisData));
-		String json = getProperSizedStatusString(agentStatusMap);
-		perfTest.setAgentStatus(json);
-		savePerfTest(perfTest);
+		String runningSample = gson.toJson(statictisData);
+		String agentStatus = getProperSizedStatusString(agentStatusMap);
+		updateRuntimeStatistics(perfTestId, runningSample, agentStatus);
+
 		CoreLogger.LOGGER.debug("Data is {}", statictisData);
 		return statictisData;
 	}
@@ -1086,6 +1098,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		try {
 			consoleProperties.setAndSaveDistributionDirectory(new Directory(getPerfTestDistributionPath(perfTest)));
 			consoleProperties.setConsoleHost(config.getCurrentIP());
+			consoleProperties.setIgnoreSampleCount(perfTest.getIgnoreSampleCount());
+			consoleProperties.setSampleInterval(1000 * perfTest.getSamplingInterval());
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException("Error while setting console properties", e);
 		}
@@ -1358,9 +1372,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			}
 			json = gson.toJson(systemInfosNew);
 		}
-		PerfTest perfTest = perfTestRepository.findOne(checkNotNull(perfTestId));
-		perfTest.setMonitorStatus(json);
-		perfTestRepository.save(perfTest);
+		perfTestRepository.updatetMonitorStatus(perfTestId, json);
 	}
 
 	/**

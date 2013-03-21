@@ -215,6 +215,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "monitor_stat", length = 2000)
 	private String monitorStatus;
 
+	@Column(name = "sampling_interval")
+	private Integer samplingInterval;
+
 	public String getTestIdentifier() {
 		return "perftest_" + getId() + "_" + getLastModifiedUser().getUserId();
 	}
@@ -675,6 +678,14 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@ForceMergable
 	public void setMonitorStatus(String monitorStatus) {
 		this.monitorStatus = monitorStatus;
+	}
+
+	public Integer getSamplingInterval() {
+		return samplingInterval;
+	}
+
+	public void setSamplingInterval(Integer samplingInterval) {
+		this.samplingInterval = samplingInterval;
 	}
 
 }

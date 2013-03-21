@@ -22,8 +22,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -114,20 +116,18 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	private long lastMomentWhenErrorsMoreThanHalfOfTotalTPSValue;
 	private final ListenerSupport<ConsoleShutdownListener> showdownListner = ListenerHelper.create();
 	private final ListenerSupport<SamplingLifeCycleListener> samplingLifeCycleListener = ListenerHelper.create();
-
+	private boolean capture = false;
 	private File reportPath;
 	// private NumberFormat simpleFormatter = new DecimalFormat("###");
 
 	private Map<String, Object> statisticData;
-	private boolean sampling = false;
 
 	private boolean headerAdded = false;
 
 	private Map<String, BufferedWriter> fileWriterMap = Maps.newHashMap();
 	/** Current count of sampling. */
 	private long samplingCount = 0;
-	/** The count of ignoring sampling. */
-	private int ignoreSampleCount;
+
 	/**
 	 * Currently running thread.
 	 */
@@ -664,8 +664,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	/**
 	 * The last timestamp when the sampling is ran.
 	 */
-	private long lastSamplingTimeStamp = 0;
-	private boolean firstSampling = true;
+	private long lastSamplingPeriod = 0;
 
 	/*
 	 * (non-Javadoc)
@@ -675,31 +674,25 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 */
 	@Override
 	public void update(StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
-		if (!sampling) {
-			return;
-		}
-		if (samplingCount++ < ignoreSampleCount) {
-			((SampleModelImplementationEx) this.sampleModel).zero();
-			return;
-		}
-		if (firstSampling) {
-			this.lastSamplingTimeStamp = System.currentTimeMillis() - 1000;
-			firstSampling = false;
-		}
-		final StatisticsSet intervalStatisticsSnapshot = intervalStatistics.snapshot();
-		final StatisticsSet cumulatedStatisticsSnapshot = cumulativeStatistics.snapshot();
-		long currentSamplingTimeStamp = System.currentTimeMillis();
-
 		try {
+			if (!capture) {
+				return;
+			}
+			final StatisticsSet intervalStatisticsSnapshot = intervalStatistics.snapshot();
+			final StatisticsSet cumulatedStatisticsSnapshot = cumulativeStatistics.snapshot();
+			long currentPeriod = cumulatedStatisticsSnapshot.getValue(getSampleModel().getPeriodIndex());
 			setTpsValue(sampleModel.getTPSExpression().getDoubleValue(intervalStatisticsSnapshot));
 			checkTooLowTps(getTpsValues());
 			updateStatistics(intervalStatisticsSnapshot, cumulatedStatisticsSnapshot);
+
+			writeIntervalCsvData(intervalStatisticsSnapshot);
 			// Adjust sampling delay.. run write data multiple times... when it takes longer than 1
 			// sec.
-			writeIntervalCsvData(intervalStatisticsSnapshot);
-			int gap = (int) ((currentSamplingTimeStamp / 1000) - (lastSamplingTimeStamp / 1000));
+			int interval = getSampleModel().getSampleInterval();
+			long gap = (lastSamplingPeriod == 0) ? 1 : ((currentPeriod - lastSamplingPeriod) / interval);
 			for (int i = 0; i < gap; i++) {
 				writeIntervalSummaryData(intervalStatisticsSnapshot);
+				writeIntervalSummaryDataPerTest(intervalStatisticMapPerTest);
 				samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
 					@Override
 					public void inform(SamplingLifeCycleListener listener) {
@@ -707,15 +700,21 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 					}
 				});
 			}
-
-			lastSamplingTimeStamp = currentSamplingTimeStamp;
 			checkTooManyError(cumulativeStatistics);
-
+			this.lastSamplingPeriod = currentPeriod;
 		} catch (RuntimeException e) {
 			LOGGER.error("Error occurs while update statistics " + e.getMessage(), e);
 			throw e;
 		}
+	}
 
+	private void writeIntervalSummaryDataPerTest(Map<Test, StatisticsSet> intervalStatisticMapPerTest) {
+		StatisticExpression tpsExpression = sampleModel.getTPSExpression();
+		for (Entry<Test, StatisticsSet> entry : intervalStatisticMapPerTest.entrySet()) {
+			StatisticsSet value = entry.getValue();
+			writeReportData("TPS-" + entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA,
+							formatValue(getRealDoubleValue(tpsExpression.getDoubleValue(value))));
+		}
 	}
 
 	/**
@@ -784,13 +783,6 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
 					if (!each.getKey().equals("Peak_TPS")) {
 						csvLine.append(",").append(
-										formatValue(getRealDoubleValue(each.getValue().getDoubleValue(
-														eachPair.getValue()))));
-					}
-					// multiple tests in a single script,saved those tests's TPS in their respective
-					// file
-					if (each.getKey().equals("TPS")) {
-						writeReportData("TPS-" + description.replaceAll("\\s+", "_") + REPORT_DATA,
 										formatValue(getRealDoubleValue(each.getValue().getDoubleValue(
 														eachPair.getValue()))));
 					}
@@ -1164,8 +1156,10 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		getConsoleComponent(ProcessControl.class).stopAgentAndWorkerProcesses();
 	}
 
-	public Map<Test, StatisticsSet> intervalStatisticMapPerTest = Maps.newConcurrentMap();
-	public Map<Test, StatisticsSet> accumulatedStatisticMapPerTest = Maps.newConcurrentMap();
+	public Map<Test, StatisticsSet> intervalStatisticMapPerTest = Collections
+					.synchronizedMap(new LinkedHashMap<Test, StatisticsSet>());
+	public Map<Test, StatisticsSet> accumulatedStatisticMapPerTest = Collections
+					.synchronizedMap(new LinkedHashMap<Test, StatisticsSet>());
 
 	/**
 	 * Start sampling with ignore count.
@@ -1174,17 +1168,18 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 *            the count how many sample will be ignored.
 	 */
 	public void startSampling(int ignoreSampleCount) {
-		this.ignoreSampleCount = ignoreSampleCount;
-		this.sampling = true;
 		this.sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 		this.sampleModel.addTotalSampleListener(this);
 		this.sampleModel.addModelListener(new SampleModel.Listener() {
 			@Override
 			public void stateChanged() {
+				capture = SingleConsole.this.sampleModel.getState().isCapturing();
 			}
 
 			@Override
 			public void resetTests() {
+				intervalStatisticMapPerTest.clear();
+				accumulatedStatisticMapPerTest.clear();
 			}
 
 			@Override
@@ -1204,9 +1199,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			public void newSample() {
 			}
 		});
-		this.sampleModel.reset();
 		informTestSamplingStart();
-		this.firstSampling = true;
 		this.sampleModel.start();
 		LOGGER.info("Sampling is started");
 
@@ -1217,7 +1210,6 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 */
 	public void unregisterSampling() {
 		this.currentNotFinishedProcessCount = 0;
-		this.sampling = false;
 		this.sampleModel = getConsoleComponent(SampleModelImplementationEx.class);
 		this.sampleModel.reset();
 		this.sampleModel.stop();
@@ -1302,8 +1294,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		return peakTpsForGraph;
 	}
 
-	public SampleModel getSampleModel() {
-		return sampleModel;
+	public SampleModelImplementationEx getSampleModel() {
+		return (SampleModelImplementationEx) sampleModel;
 	}
 
 	/**

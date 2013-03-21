@@ -337,7 +337,6 @@ $(document).ready(function () {
 	});
 	initTags();
 	initDuration();
-	initChartData();
 	initScheduleDate();
 	$("#tableTab a:first").tab('show');
 	$("#testContent_tab a").tab('show');
@@ -928,8 +927,8 @@ function updateVuserTotal() {
 	$("#vuserTotal").text($("#agentCount").val() * $("#vuserPerAgent").val());
 }
 
-function initChartData() {
-	for ( var i = 0; i < 60; i++) {
+function initChartData(size) {
+	for ( var i = 0; i < size; i++) {
 		test_tps_data.enQueue(0);
 	}
 }
@@ -1076,13 +1075,16 @@ function displayCfgOnly() {
 	$("#reportContent_tab").hide();
 }
 
+var samplingInterval = 1;
+
 function displayCfgAndTestRunning() {
 	$("#runningContent_tab").show();
 	$("#runningContent_tab a").tab('show');
 	$("#runningContent").show();
 	$("#reportContent_tab").hide();
-	// Considering network latency, set it 900 msec.
-	objTimer = window.setInterval("refreshData()", 900);
+	samplingInterval = $("#samplingInterval").val();
+	initChartData(60 / samplingInterval);
+	objTimer = window.setInterval("refreshData()", 1000 * samplingInterval);
 }
 
 function displayCfgAndTestReport() {

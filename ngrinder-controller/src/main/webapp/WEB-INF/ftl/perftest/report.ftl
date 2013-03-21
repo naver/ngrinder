@@ -195,7 +195,7 @@
 		                	<i class="icon-download-alt icon-white"></i> <@spring.message "perfTest.report.downloadCSV"/>
 		                </button>
 					</legend>
-					<h6>TPS</h6>
+					<h6>TPS <span rel="popover" data-content='<@spring.message "perfTest.report.tps.help"/>' data-original-title='<@spring.message "perfTest.report.tps"/>' type="toggle"><i class="icon-question-sign" style="vertical-align:middle;"></i></span></h6>
 			    	<div class="bigchart" id="tpsDiv"></div>
 					<h6><@spring.message "perfTest.report.header.meantime"/>&nbsp;(ms)</h6>
     				<div class="chart" id="meanTimeDiv"></div>

@@ -136,7 +136,6 @@ public class AgentImplementationEx implements Agent {
 		try {
 			while (true) {
 				m_logger.info(GrinderBuild.getName());
-
 				ScriptLocation script = null;
 				GrinderProperties properties;
 

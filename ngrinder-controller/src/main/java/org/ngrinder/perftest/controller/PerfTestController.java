@@ -533,6 +533,7 @@ public class PerfTestController extends NGrinderBaseController {
 			return returnError();
 		}
 		rtnMap.put(JSON_SUCCESS, true);
+		PerfTest perfTest = perfTestService.getPerfTest(id);
 		int interval = perfTestService.getReportDataInterval(id, dataTypes[0], imgWidth);
 		for (String dt : dataTypes) {
 			String rtnType = dt.replace("(", "").replace(")", "");
@@ -545,7 +546,7 @@ public class PerfTestController extends NGrinderBaseController {
 				rtnMap.put(rtnType, reportData);
 			}
 		}
-		rtnMap.put(PARAM_TEST_CHART_INTERVAL, interval);
+		rtnMap.put(PARAM_TEST_CHART_INTERVAL, interval * perfTest.getSamplingInterval());
 		return toJson(rtnMap);
 	}
 
@@ -569,7 +570,7 @@ public class PerfTestController extends NGrinderBaseController {
 		int interval = perfTestService.getReportDataInterval(id, "TPS", imgWidth);
 		String reportData = perfTestService.getReportDataAsString(id, "TPS", interval);
 		model.addAttribute(PARAM_LOG_LIST, perfTestService.getLogFiles(id));
-		model.addAttribute(PARAM_TEST_CHART_INTERVAL, interval);
+		model.addAttribute(PARAM_TEST_CHART_INTERVAL, interval * test.getSamplingInterval());
 		model.addAttribute(PARAM_TEST, test);
 		model.addAttribute(PARAM_TPS, reportData);
 		return "perftest/reportDiv";
@@ -772,10 +773,10 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	private Map<String, String> getMonitorDataSystem(long id, String monitorIP, int imgWidth) {
-
 		int interval = perfTestService.getSystemMonitorDataInterval(id, monitorIP, imgWidth);
 		Map<String, String> sysMonitorMap = perfTestService.getSystemMonitorDataAsString(id, monitorIP, interval);
-		sysMonitorMap.put("interval", String.valueOf(interval));
+		PerfTest perfTest = perfTestService.getPerfTest(id);
+		sysMonitorMap.put("interval", String.valueOf(interval * perfTest.getSamplingInterval()));
 		return sysMonitorMap;
 	}
 

@@ -170,14 +170,49 @@
 					</div>
 				</div>
 				<div class="control-group">
-					<label for="ignoreSampleCount" class="control-label"> <@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
+					<label for="samplingInterval" class="control-label"> <@spring.message "perfTest.configuration.samplingInterval"/> </label>
 					<div class="controls">
-						<input type="text" class="input input-mini" 
-							data-original-title="<@spring.message "perfTest.configuration.ignoreSampleCount"/>"
-							data-content='<@spring.message "perfTest.configuration.ignoreSampleCount.help"/>'
-							rel="popover"												
-							id="ignoreSampleCount" name="ignoreSampleCount"
-							value="${(test.ignoreSampleCount)!0}">
+						<table width="100%">
+							<colgroup>
+								<col width="100px">
+								<col>
+							</colgroup>
+							<tbody>
+								<tr>
+									<td>
+										<#assign samplingIntervalArray = [1,2,3,4,5]>
+										<select class="select-item" id="samplingInterval" name="samplingInterval">
+											<#list samplingIntervalArray as eachInterval>
+												<option value="${eachInterval}" 
+													<#if test?? && test.samplingInterval != 0>
+														<#if eachInterval == test.samplingInterval>
+															selected="selected"
+														</#if>
+													<#else>
+														<#if eachInterval == 2>
+															selected="selected"
+														</#if>
+													</#if>
+													>${eachInterval}</option>
+											</#list>
+										</select>
+									</td>
+									<td>
+										<label for="ignoreSampleCount" class="control-label" style="width:150px"> <@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
+										<div class="controls">
+											<input type="text" class="input input-mini" 
+												data-original-title="<@spring.message "perfTest.configuration.ignoreSampleCount"/>"
+												data-content='<@spring.message "perfTest.configuration.ignoreSampleCount.help"/>'
+												rel="popover"												
+												id="ignoreSampleCount" name="ignoreSampleCount"
+												value="${(test.ignoreSampleCount)!0}">
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						
+					
 					</div>
 				</div>
 				<div class="control-group">

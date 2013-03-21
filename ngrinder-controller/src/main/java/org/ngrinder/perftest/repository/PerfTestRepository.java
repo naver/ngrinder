@@ -23,6 +23,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  * {@link PerfTest} Repository.
@@ -66,7 +68,8 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	List<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status);
 
 	/**
-	 * Find all {@link PerfTest} based on {@PerfTest#status} ordered by CreatedDate.
+	 * Find all {@link PerfTest} based on {@PerfTest#status} ordered by
+	 * CreatedDate.
 	 * 
 	 * @param status
 	 *            status
@@ -77,7 +80,8 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	Page<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status, Pageable pageable);
 
 	/**
-	 * Find all {@link PerfTest} based on {@PerfTest#status} ordered by scheduledTime ascending.
+	 * Find all {@link PerfTest} based on {@PerfTest#status} ordered by
+	 * scheduledTime ascending.
 	 * 
 	 * @param status
 	 *            status
@@ -88,23 +92,32 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	Page<PerfTest> findAllByStatusOrderByScheduledTimeAsc(Status status, Pageable pageable);
 
 	/**
-	 * Find all {@link PerfTest} based on {@PerfTest#status} ordered by scheduledTime ascending.
+	 * Find all {@link PerfTest} based on {@PerfTest#status} ordered by
+	 * scheduledTime ascending.
 	 * 
 	 * @param status
 	 *            status
 	 * @return {@link PerfTest} list
 	 */
 	List<PerfTest> findAllByStatusOrderByScheduledTimeAsc(Status status);
-	
+
 	/**
-	 * Find all {@link PerfTest} based on {@PerfTest#status} and {@PerfTest#region} ordered by
-	 * scheduledTime ascending.
+	 * Find all {@link PerfTest} based on {@PerfTest#status} and
+	 * {@PerfTest#region} ordered by scheduledTime ascending.
 	 * 
 	 * @param status
-	 * 			perf test status to search
+	 *            perf test status to search
 	 * @param region
-	 * 			region where the test belong to
+	 *            region where the test belong to
 	 * @return perf test list
 	 */
 	List<PerfTest> findAllByStatusAndRegionOrderByScheduledTimeAsc(Status status, String region);
+
+	@Modifying
+	@Query("update PerfTest p set p.runningSample=?2, p.agentStatus=?3 where p.id=?1")
+	int updateRuntimeStatistics(Long id, String runningSample, String agentStatus);
+
+	@Modifying
+	@Query("update PerfTest p set p.monitorStatus=?2 where p.id=?1")
+	int updatetMonitorStatus(Long id, String monitorStatus);
 }

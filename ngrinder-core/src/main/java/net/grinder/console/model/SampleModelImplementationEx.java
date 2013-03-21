@@ -583,4 +583,12 @@ public class SampleModelImplementationEx implements SampleModel {
 	public ModelTestIndex getModelTestIndex() {
 		return modelTestIndex;
 	}
+
+	public StatisticsIndexMap.LongIndex getPeriodIndex() {
+		return m_periodIndex;
+	}
+
+	public int getSampleInterval() {
+		return m_properties.getSampleInterval();
+	}
 }
