@@ -413,11 +413,12 @@ public class PerfTestRunnable implements NGrinderConstants {
 	}
 
 	private void addSamplingListeners(final PerfTest perfTest, final SingleConsole singleConsole) {
+		// Add the sampling lifecycle 
+		singleConsole.addSamplingLifeCycleFollowUpCycleListener(new MonitorCollectorListener(this.applicationContext, perfTest
+				.getId(), createMonitorTargets(perfTest), singleConsole.getReportPath()));
+
 		singleConsole.addSamplingLifeCyleListener(new PerfTestSamplingCollectorListener(singleConsole,
 						perfTest.getId(), perfTestService));
-		// Add monitors when sampling is started.
-		singleConsole.addSamplingLifeCyleListener(new MonitorCollectorListener(this.applicationContext, perfTest
-						.getId(), createMonitorTargets(perfTest), singleConsole.getReportPath()));
 		singleConsole.addSamplingLifeCyleListener(new AgentLostDetectionListener(singleConsole, perfTest,
 						perfTestService));
 		singleConsole.addSamplingLifeCyleListener(new PluginRunListener(this.testSamplingRunnables, singleConsole,

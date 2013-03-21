@@ -118,11 +118,11 @@
 			<artifactId>spring-web</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-		
+
 		<dependency>
-				<groupId>org.codehaus.mojo.webstart</groupId>
-				<artifactId>webstart-jnlp-servlet</artifactId>
-				<version>1.0-6.0.02_ea_b02.2</version>
+			<groupId>org.codehaus.mojo.webstart</groupId>
+			<artifactId>webstart-jnlp-servlet</artifactId>
+			<version>1.0-6.0.02_ea_b02.2</version>
 		</dependency>
 
 		<dependency>
@@ -300,7 +300,7 @@
 		<dependency>
 			<groupId>cubrid</groupId>
 			<artifactId>cubrid-jdbc</artifactId>
-			<version>8.4.1.2032</version>
+			<version>8.4.1.3024</version>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
