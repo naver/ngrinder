@@ -1,3 +1,42 @@
+3.1.3 (2013.03.29)
+
+We're proudly releasing nGrinder 3.1.3 which fixes bugs and visibility. 
+This is the last version 3.1.X series, we'll work on 3.2 as a next release.
+       
+- New features and changes:
+  * Now test report can be viewed without login.
+  * A user can specify the sampling interval to make the graph not to be fluctuated.
+  * A user can see the per test TPS chart when the sampling interval is greater than 2.
+  * A user can upload and use native libs (so, dll) to reuse existing assets. This is enabled only if the security mode is disabled.
+  * A user can provide the any kind of custom value for monitor by regularly outputting the GC count and JVM memory usages.
+      
+Bug
+[NGRINDER-560] - Make test report visible without login
+[NGRINDER-564] - Ignore Sigar Exception while collecting network usage.
+[NGRINDER-569] - Make agent status string longer
+[NGRINDER-570] - Make ignore sampling option affect to the total statistics
+[NGRINDER-571] - Fix DB errors occurred during running test because agent_status field is not long enough
+[NGRINDER-572] - Fix inconsistency b/w total and per test statistics by timing difference
+[NGRINDER-573] - Make cookie parsing impl work with secure=1 entry
+[NGRINDER-575] - Make graph start from 0 on x axis
+[NGRINDER-576] - Make nGrinder compilable with missing jars
+
+Improvement
+[NGRINDER-243] - Provide an export image button for each chart
+[NGRINDER-554] - Provide user defined monitoring feature
+[NGRINDER-555] - Provide network usage graph in report page
+[NGRINDER-556] - Save memory for monitoring graph display
+[NGRINDER-557] - Provide the custom monitoring guide
+[NGRINDER-559] - Improve monitor chart performance
+[NGRINDER-562] - Provide per-test TPS graph in the detail report page
+[NGRINDER-563] - Update jqPlot to new version.
+[NGRINDER-565] - Provide the customizable agent log
+[NGRINDER-566] - Make validation service accessible from plugin
+[NGRINDER-574] - Introduce the sampling interval
+[NGRINDER-577] - Provide the way to reserve the agent memory for native libraries.
+
+
+
 3.1.2 (2013.02.22)
 
 We're proudly releasing nGrinder 3.1.2 which enhances the usability and visibility.
