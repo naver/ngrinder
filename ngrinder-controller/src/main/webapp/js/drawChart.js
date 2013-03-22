@@ -8,6 +8,16 @@ var formatMemory = function(format, value) {
 	}
 };
 
+var formatNetwork = function(format, value) {
+	if (value < 1024) {
+		return value.toFixed(1) + "B ";
+	} else if (value < 1048576) { //1024 * 1024
+		return (value/1024).toFixed(1) + "K ";
+	} else {
+		return (value/1048576).toFixed(2) + "M ";
+	}
+};
+
 var formatPercentage = function(format, value) {
 	if (value < 10) {
 		return value.toFixed(1) + "% ";

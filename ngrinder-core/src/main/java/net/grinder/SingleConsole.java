@@ -713,7 +713,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				}
 			});
 			for (int i = 0; i < (gap + 1); i++) {
-				final boolean lastCall = (i == gap);
+				final boolean lastCall = (i == gap) || (samplingCount == 1);
 				writeIntervalSummaryData(intervalStatistics, lastCall);
 				if (interval >= (MIN_SAMPLING_INTERVAL_TO_ACTIVATE_TPS_PER_TEST)) {
 					writeIntervalSummaryDataPerTest(intervalStatisticMapPerTest, lastCall);
@@ -741,7 +741,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				writeReportData("TPS-" + entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA,
 								formatValue(getRealDoubleValue(tpsExpression.getDoubleValue(value))));
 			} else {
-				writeReportData("TPS-" + entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA, "-1");
+				writeReportData("TPS-" + entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA,
+								"undefined");
 			}
 
 		}
@@ -760,7 +761,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				double doubleValue = each.getValue().getDoubleValue(intervalStatistics);
 				writeReportData(each.getKey() + REPORT_DATA, formatValue(getRealDoubleValue(doubleValue)));
 			} else {
-				writeReportData(each.getKey() + REPORT_DATA, "-1");
+				writeReportData(each.getKey() + REPORT_DATA, "undefined");
 			}
 		}
 	}

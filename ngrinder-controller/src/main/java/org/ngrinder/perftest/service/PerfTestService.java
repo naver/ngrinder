@@ -1449,11 +1449,12 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return return the data in map
 	 */
 	public Map<String, String> getSystemMonitorDataAsString(long testId, String monitorIP, int dataInterval) {
-		Map<String, String> rtnMap = new HashMap<String, String>();
+		Map<String, String> returnMap = Maps.newHashMap();
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
 						Config.MONITOR_FILE_PREFIX + monitorIP + ".data");
 		BufferedReader br = null;
 		try {
+
 			StringBuilder sbUsedMem = new StringBuilder("[");
 			StringBuilder sbCPUUsed = new StringBuilder("[");
 			StringBuilder sbNetReceieved = new StringBuilder("[");
@@ -1466,17 +1467,11 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 			br = new BufferedReader(new FileReader(monitorDataFile));
 			br.readLine(); // skip the header.
-			// header:
 			// "ip,system,collectTime,freeMemory,totalMemory,cpuUsedPercentage,recivedPerSec,sentPerSec"
 			String line = br.readLine();
 			int skipCount = dataInterval;
 
 			// to be compatible with previous version, check the length before adding
-			boolean isExtDataExist = false;
-			if (StringUtils.split(line, ",").length > 6) {
-				isExtDataExist = true;
-			}
-			int kbSize = 1024;
 			while (StringUtils.isNotBlank(line)) {
 				if (skipCount < dataInterval) {
 					skipCount++;
@@ -1484,63 +1479,44 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				} else {
 					skipCount = 1;
 					String[] datalist = StringUtils.split(line, ",");
-					int columnSize = datalist.length;
-					long usedMem = Long.valueOf(datalist[4]) - Long.valueOf(datalist[3]);
-					sbUsedMem.append(usedMem).append(",");
-					sbCPUUsed.append(Float.valueOf(datalist[5])).append(",");
-
-					if (isExtDataExist) {
-						sbNetReceieved.append(Long.valueOf(datalist[6]) / kbSize).append(",");
-						sbNetSent.append(Long.valueOf(datalist[7]) / kbSize).append(",");
-						if (columnSize > 8) {
-							customData1.append(Float.valueOf(datalist[8])).append(",");
-						}
-						if (columnSize > 9) {
-							customData2.append(Float.valueOf(datalist[9])).append(",");
-						}
-						if (columnSize > 10) {
-							customData3.append(Float.valueOf(datalist[10])).append(",");
-						}
-						if (columnSize > 11) {
-							customData4.append(Float.valueOf(datalist[11])).append(",");
-						}
-						if (columnSize > 12) {
-							customData5.append(Float.valueOf(datalist[12])).append(",");
-						}
+					if ("undefined".equals(datalist[4])) {
+						sbUsedMem.append("undefined").append(",");
+					} else {
+						sbUsedMem.append(Long.valueOf(datalist[4]) - Long.valueOf(datalist[3])).append(",");
 					}
+					addCustomData(sbCPUUsed, 5, datalist);
+					addCustomData(sbNetReceieved, 6, datalist);
+					addCustomData(sbNetSent, 7, datalist);
+					addCustomData(customData1, 8, datalist);
+					addCustomData(customData2, 9, datalist);
+					addCustomData(customData3, 10, datalist);
+					addCustomData(customData4, 11, datalist);
+					addCustomData(customData5, 12, datalist);
 					line = br.readLine();
 				}
 			}
-			sbUsedMem.append("]");
-			sbCPUUsed.append("]");
-			rtnMap.put("cpu", sbCPUUsed.toString());
-			rtnMap.put("memory", sbUsedMem.toString());
-			sbNetReceieved.append("]");
-			sbNetSent.append("]");
-			rtnMap.put("received", sbNetReceieved.toString());
-			rtnMap.put("sent", sbNetSent.toString());
-			customData1.append("]");
-			customData2.append("]");
-			customData3.append("]");
-			customData4.append("]");
-			customData5.append("]");
-			rtnMap.put("customData1", customData1.toString());
-			rtnMap.put("customData2", customData2.toString());
-			rtnMap.put("customData3", customData3.toString());
-			rtnMap.put("customData4", customData4.toString());
-			rtnMap.put("customData5", customData5.toString());
-
-		} catch (FileNotFoundException e) {
-			LOGGER.error("Monitor data file not exist:{}", monitorDataFile);
-			LOGGER.error(e.getMessage(), e);
+			returnMap.put("cpu", sbCPUUsed.append("]").toString());
+			returnMap.put("memory", sbUsedMem.append("]").toString());
+			returnMap.put("received", sbNetReceieved.append("]").toString());
+			returnMap.put("sent", sbNetSent.append("]").toString());
+			returnMap.put("customData1", customData1.append("]").toString());
+			returnMap.put("customData2", customData2.append("]").toString());
+			returnMap.put("customData3", customData3.append("]").toString());
+			returnMap.put("customData4", customData4.append("]").toString());
+			returnMap.put("customData5", customData5.append("]").toString());
 		} catch (IOException e) {
 			LOGGER.error("Error while getting monitor:{} data file:{}", monitorIP, monitorDataFile);
 			LOGGER.error(e.getMessage(), e);
 		} finally {
 			IOUtils.closeQuietly(br);
 		}
+		return returnMap;
+	}
 
-		return rtnMap;
+	private void addCustomData(StringBuilder customData, int index, String[] data) {
+		if (data.length > index) {
+			customData.append(data[index]).append(",");
+		}
 	}
 
 	/**

@@ -406,10 +406,11 @@ public class PerfTestRunnable implements NGrinderConstants {
 				LOG.error("Abnormal test {} by {}", perfTest.getId(), stopReason.name());
 			}
 		});
-		singleConsole.startSampling(grinderProperties.getInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, 0));
 		long startTime = singleConsole.startTest(grinderProperties);
 		perfTest.setStartTime(new Date(startTime));
 		perfTestService.markStatusAndProgress(perfTest, TESTING, "The test is started.");
+		singleConsole.startSampling(grinderProperties.getInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, 0));
+
 	}
 
 	private void addSamplingListeners(final PerfTest perfTest, final SingleConsole singleConsole) {

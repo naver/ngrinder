@@ -359,20 +359,20 @@
 		}
 		
 		function drawExtMonitorData(systemData) {
-            drawChartForMonitor(systemData.received, "receivedDiv", "receivedDivHeader", systemData.interval);
-            drawChartForMonitor(systemData.sent, "sentDiv", "sentDivHeader", systemData.interval);
-            drawChartForMonitor(systemData.customData1, "customMonitorData1", "customMonitorData1Header", systemData.interval);
-            drawChartForMonitor(systemData.customData2, "customMonitorData2", "customMonitorData2Header", systemData.interval);
-            drawChartForMonitor(systemData.customData3, "customMonitorData3", "customMonitorData3Header", systemData.interval);
-            drawChartForMonitor(systemData.customData4, "customMonitorData4", "customMonitorData4Header", systemData.interval);
-            drawChartForMonitor(systemData.customData5, "customMonitorData5", "customMonitorData5Header", systemData.interval);
+            drawChartForMonitor(systemData.received, "receivedDiv", "receivedDivHeader", systemData.interval, formatNetwork);
+            drawChartForMonitor(systemData.sent, "sentDiv", "sentDivHeader", systemData.interval, formatNetwork);
+            drawChartForMonitor(systemData.customData1, "customMonitorData1", "customMonitorData1Header", systemData.interval, formatNetwork);
+            drawChartForMonitor(systemData.customData2, "customMonitorData2", "customMonitorData2Header", systemData.interval, formatNetwork);
+            drawChartForMonitor(systemData.customData3, "customMonitorData3", "customMonitorData3Header", systemData.interval, formatNetwork);
+            drawChartForMonitor(systemData.customData4, "customMonitorData4", "customMonitorData4Header", systemData.interval, formatNetwork);
+            drawChartForMonitor(systemData.customData5, "customMonitorData5", "customMonitorData5Header", systemData.interval, formatNetwork);
 		}
 		
-		function drawChartForMonitor(data, area, titleArea, interval) {
+		function drawChartForMonitor(data, area, titleArea, interval, format) {
 			if (data !== undefined && data !== '[]') {
             	$("#" + area).show();	
             	$("#" + titleArea).show();
-            	drawChart(area, data, formatMemory, interval);
+            	drawChart(area, data, format, interval);
             } else {
             	$("#" + area).hide();	
             	$("#" + titleArea).hide();
