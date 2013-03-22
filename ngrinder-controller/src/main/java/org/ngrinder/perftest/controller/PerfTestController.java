@@ -537,21 +537,23 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	private Map<String, Object> getGraphDataString(PerfTest perfTest, String[] dataTypes, int interval) {
-		Map<String, Object> rtnMap = Maps.newHashMap();
+		Map<String, Object> resultMap = Maps.newHashMap();
+		resultMap.put(JSON_SUCCESS, true);
 		for (String each : dataTypes) {
 			String rtnType = each.replace("(", "").replace(")", "");
 			if ("TPS".equals(each)) {
 				// Only main TPS is available when sampling interval is less than 5.
 				List<ArrayList<String>> tpsList = perfTestService.getTPSReportDataAsString(perfTest.getId(), interval,
 								isMainTPSOnly(perfTest));
-				rtnMap.put("lables", tpsList.get(0));
-				rtnMap.put("TPS", tpsList.get(1));
+				resultMap.put("lables", tpsList.get(0));
+				resultMap.put("TPS", tpsList.get(1));
 			} else {
-				rtnMap.put(rtnType, perfTestService.getReportDataAsString(perfTest.getId(), each, interval));
+				String reportData = perfTestService.getReportDataAsString(perfTest.getId(), each, interval);
+				resultMap.put(rtnType, reportData);
 			}
 		}
-		rtnMap.put(PARAM_TEST_CHART_INTERVAL, interval * perfTest.getSamplingInterval());
-		return rtnMap;
+		resultMap.put(PARAM_TEST_CHART_INTERVAL, interval * perfTest.getSamplingInterval());
+		return resultMap;
 	}
 
 	private boolean isMainTPSOnly(PerfTest perfTest) {
