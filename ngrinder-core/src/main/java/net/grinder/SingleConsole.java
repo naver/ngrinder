@@ -713,8 +713,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				}
 			});
 			for (int i = 0; i < (gap + 1); i++) {
-				final boolean lastCall = (i == gap) || (samplingCount == 1);
-				writeIntervalSummaryData(intervalStatistics, lastCall);
+				final boolean lastCall = (samplingCount == 1 && i == 0) || (samplingCount != 1 && i == gap);
 				if (interval >= (MIN_SAMPLING_INTERVAL_TO_ACTIVATE_TPS_PER_TEST)) {
 					writeIntervalSummaryDataPerTest(intervalStatisticMapPerTest, lastCall);
 				}
