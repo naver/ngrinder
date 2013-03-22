@@ -77,9 +77,13 @@ public class MonitorCollectorListener implements SamplingLifeCycleFollowUpListen
 
 	@Override
 	public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics,
-					boolean firstCall) {
-		if (monitorTask != null && firstCall) {
-			monitorTask.saveData();
+					boolean lastCall) {
+		if (monitorTask != null) {
+			if (lastCall) {
+				monitorTask.saveData();
+			} else {
+				monitorTask.saveData(true);
+			}
 		}
 	}
 

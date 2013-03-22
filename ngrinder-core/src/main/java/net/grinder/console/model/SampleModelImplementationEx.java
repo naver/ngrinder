@@ -481,7 +481,7 @@ public class SampleModelImplementationEx implements SampleModel {
 						sampleAccumulator.fireSample(sampleInterval, period);
 					}
 					totalSampleAcculatorSnapshot = new SampleAccumulatorEx(m_totalSampleAccumulator);
-					m_totalSampleAccumulator.refreshIntervalStatistics();
+					m_totalSampleAccumulator.refreshIntervalStatistics(sampleInterval, period);
 				}
 				totalSampleAcculatorSnapshot.fireSample(sampleInterval, period);
 				++msampleCount;

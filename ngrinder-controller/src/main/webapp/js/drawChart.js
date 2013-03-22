@@ -191,7 +191,7 @@ function preparedData(data) {
 	if ((data instanceof Array) == true) {
 		values = [ data ];
 	} else {
-		values = [ eval(data) ];
+		values = [ eval(data) ]; 
 	}
 	
 	return values;

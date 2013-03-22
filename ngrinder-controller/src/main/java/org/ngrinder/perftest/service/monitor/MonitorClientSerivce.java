@@ -165,11 +165,26 @@ public class MonitorClientSerivce {
 	 * Record the data into file.
 	 */
 	public void record() {
+		record(false);
+	}
+
+	/**
+	 * Record the data into file.
+	 * 
+	 * @param empty
+	 *            true if want to write empty string
+	 */
+	public void record(boolean empty) {
 		ValueWrapper valueWrapper = cache.get(ip);
 		SystemInfo systemInfo = (valueWrapper == null || valueWrapper.get() == null) ? new SystemInfo()
 						: (SystemInfo) convert(valueWrapper.get());
 		try {
-			bw.write(systemInfo.toRecordString() + "\n");
+			if (empty) {
+				bw.write(systemInfo.toEmptyRecordString());
+			} else {
+				bw.write(systemInfo.toRecordString());
+			}
+			bw.write("\n");
 		} catch (IOException e) {
 			LOGGER.error("Error while MonitorExecutorWorker is recoding, e", e);
 		}

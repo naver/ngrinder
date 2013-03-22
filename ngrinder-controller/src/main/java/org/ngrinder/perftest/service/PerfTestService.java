@@ -75,7 +75,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.hibernate.Hibernate;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -1661,8 +1660,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			int current = 0;
 			while (StringUtils.isNotBlank(data)) {
 				if (0 == current) {
-					double number = NumberUtils.createDouble(StringUtils.defaultIfBlank(data, "0"));
-					reportData.append(number);
+					if (data.isEmpty()) {
+						data = "undefined";
+					}
+					reportData.append(data);
 					reportData.append(",");
 				}
 				if (++current >= interval) {

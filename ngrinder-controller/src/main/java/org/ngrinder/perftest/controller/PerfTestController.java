@@ -529,31 +529,29 @@ public class PerfTestController extends NGrinderBaseController {
 	public String getReportData(ModelMap model, @PathVariable("id") long id,
 					@RequestParam(required = true, defaultValue = "") String dataType, @RequestParam int imgWidth) {
 		String[] dataTypes = StringUtils.split(dataType, ",");
-		Map<String, Object> rtnMap = new HashMap<String, Object>(1 + dataTypes.length);
 		if (dataTypes.length <= 0) {
 			return returnError();
 		}
-		rtnMap.put(JSON_SUCCESS, true);
-		PerfTest perfTest = perfTestService.getPerfTest(id);
 		int interval = perfTestService.getReportDataInterval(id, dataTypes[0], imgWidth);
+		return toJson(getGraphDataString(perfTestService.getPerfTest(id), dataTypes, interval));
+	}
+
+	private Map<String, Object> getGraphDataString(PerfTest perfTest, String[] dataTypes, int interval) {
+		Map<String, Object> rtnMap = Maps.newHashMap();
 		for (String each : dataTypes) {
 			String rtnType = each.replace("(", "").replace(")", "");
 			if ("TPS".equals(each)) {
 				// Only main TPS is available when sampling interval is less than 5.
-				List<ArrayList<String>> tpsList = perfTestService
-								.getTPSReportDataAsString(
-												id,
-												interval,
-												isMainTPSOnly(perfTest));
+				List<ArrayList<String>> tpsList = perfTestService.getTPSReportDataAsString(perfTest.getId(), interval,
+								isMainTPSOnly(perfTest));
 				rtnMap.put("lables", tpsList.get(0));
 				rtnMap.put("TPS", tpsList.get(1));
 			} else {
-				String reportData = perfTestService.getReportDataAsString(id, each, interval);
-				rtnMap.put(rtnType, reportData);
+				rtnMap.put(rtnType, perfTestService.getReportDataAsString(perfTest.getId(), each, interval));
 			}
 		}
 		rtnMap.put(PARAM_TEST_CHART_INTERVAL, interval * perfTest.getSamplingInterval());
-		return toJson(rtnMap);
+		return rtnMap;
 	}
 
 	private boolean isMainTPSOnly(PerfTest perfTest) {

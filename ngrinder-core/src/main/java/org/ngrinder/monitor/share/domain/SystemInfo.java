@@ -18,6 +18,7 @@ import java.util.Date;
 
 import javax.management.openmbean.CompositeData;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.ngrinder.common.util.DateUtil;
 
@@ -62,7 +63,7 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 	private String ip;
 
 	private String customValues;
-	
+
 	@Override
 	public void parse(CompositeData cd) {
 		if (cd == null) {
@@ -155,7 +156,7 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 	public void setTotalMemory(long totalMemory) {
 		this.totalMemory = totalMemory;
 	}
-	
+
 	public BandWidth getBandWidth() {
 		return bandWidth;
 	}
@@ -196,4 +197,20 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		return sb.toString();
 	}
 
+	public String toEmptyRecordString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("undefined").append(",").append("undefined").append(",");
+		sb.append("undefined").append(",").append("undefined").append(",");
+		sb.append("undefined").append(",").append("undefined");
+		if (bandWidth != null) {
+			sb.append(",").append("undefined").append(",").append("undefined");
+		}
+		if (customValues != null) {
+			int valueCount = StringUtils.countMatches(customValues, ",") + 1;
+			for (int i = 0; i < valueCount; i++) {
+				sb.append(",").append("undefined");
+			}
+		}
+		return sb.toString();
+	}
 }

@@ -124,18 +124,13 @@ public class SampleAccumulatorEx implements Cloneable {
 	 *            period
 	 */
 	public void fireSample(long sampleInterval, long period) {
-
 		m_intervalStatistics.setValue(m_periodIndex, sampleInterval);
 		m_cumulativeStatistics.setValue(m_periodIndex, period);
-
-		m_peakTPSExpression.update(m_intervalStatistics, m_cumulativeStatistics);
-
 		m_listeners.apply(new ListenerSupport.Informer<SampleListener>() {
 			public void inform(SampleListener l) {
 				l.update(m_intervalStatistics, m_cumulativeStatistics);
 			}
 		});
-
 		m_lastSampleStatistics = m_intervalStatistics;
 
 		// We create new statistics each time to ensure that
@@ -145,7 +140,10 @@ public class SampleAccumulatorEx implements Cloneable {
 	/**
 	 * Start new interval statistics.
 	 */
-	public void refreshIntervalStatistics() {
+	public void refreshIntervalStatistics(long sampleInterval, long period) {
+		m_intervalStatistics.setValue(m_periodIndex, sampleInterval);
+		m_cumulativeStatistics.setValue(m_periodIndex, period);
+		m_peakTPSExpression.update(m_intervalStatistics, m_cumulativeStatistics);
 		m_intervalStatistics = m_statisticsSetFactory.create();
 	}
 

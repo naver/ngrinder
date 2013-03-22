@@ -91,9 +91,19 @@ public class MonitorTask extends TimerTask {
 	 * Save the {@link org.ngrinder.monitor.share.domain.SystemInfo} into the report path.
 	 */
 	public void saveData() {
+		saveData(false);
+	}
+
+	/**
+	 * Save the {@link org.ngrinder.monitor.share.domain.SystemInfo} into the report path.
+	 * 
+	 * @param empty
+	 *            true if empty data should be saved.
+	 */
+	public void saveData(boolean empty) {
 		for (Entry<String, MonitorClientSerivce> target : monitorClientsMap.entrySet()) {
 			MonitorClientSerivce monitorClientSerivce = target.getValue();
-			monitorClientSerivce.record();
+			monitorClientSerivce.record(empty);
 		}
 	}
 

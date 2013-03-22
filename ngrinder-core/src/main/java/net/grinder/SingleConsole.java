@@ -694,44 +694,56 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			updateStatistics(intervalStatistics, cumulativeStatistics);
 
 			writeIntervalCsvData(intervalStatistics);
+			int interval = getSampleModel().getSampleInterval();
+			long gap = 1;
+			if (samplingCount == 1) {
+				lastSamplingPeriod = currentPeriod;
+			} else {
+				lastSamplingPeriod = lastSamplingPeriod + interval;
+				gap = ((currentPeriod - lastSamplingPeriod) / interval);
+			}
 			// Adjust sampling delay.. run write data multiple times... when it
 			// takes longer than 1
 			// sec.
-			int interval = getSampleModel().getSampleInterval();
-			long gap = (lastSamplingPeriod == 0) ? 1 : ((currentPeriod - lastSamplingPeriod) / interval);
+
 			samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
 				@Override
 				public void inform(SamplingLifeCycleListener listener) {
 					listener.onSampling(getReportPath(), intervalStatistics, cumulativeStatistics);
 				}
 			});
-			for (int i = 0; i < gap; i++) {
-				writeIntervalSummaryData(intervalStatistics);
+			for (int i = 0; i < (gap + 1); i++) {
+				final boolean lastCall = (i == gap);
+				writeIntervalSummaryData(intervalStatistics, lastCall);
 				if (interval >= (MIN_SAMPLING_INTERVAL_TO_ACTIVATE_TPS_PER_TEST)) {
-					writeIntervalSummaryDataPerTest(intervalStatisticMapPerTest);
+					writeIntervalSummaryDataPerTest(intervalStatisticMapPerTest, lastCall);
 				}
-				final boolean firstCall = (i == 0);
 				samplingLifeCycleFollowupListener.apply(new Informer<SamplingLifeCycleFollowUpListener>() {
 					@Override
 					public void inform(SamplingLifeCycleFollowUpListener listener) {
-						listener.onSampling(getReportPath(), intervalStatistics, cumulativeStatistics, firstCall);
+						listener.onSampling(getReportPath(), intervalStatistics, cumulativeStatistics, lastCall);
 					}
 				});
 			}
 			checkTooManyError(cumulativeStatistics);
-			this.lastSamplingPeriod = currentPeriod;
+			lastSamplingPeriod = lastSamplingPeriod + (interval * gap);
 		} catch (RuntimeException e) {
 			LOGGER.error("Error occurs while update statistics " + e.getMessage(), e);
 			throw e;
 		}
 	}
 
-	private void writeIntervalSummaryDataPerTest(Map<Test, StatisticsSet> intervalStatisticMapPerTest) {
+	private void writeIntervalSummaryDataPerTest(Map<Test, StatisticsSet> intervalStatisticMapPerTest, boolean lastCall) {
 		StatisticExpression tpsExpression = sampleModel.getTPSExpression();
 		for (Entry<Test, StatisticsSet> entry : intervalStatisticMapPerTest.entrySet()) {
-			StatisticsSet value = entry.getValue();
-			writeReportData("TPS-" + entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA,
-							formatValue(getRealDoubleValue(tpsExpression.getDoubleValue(value))));
+			if (lastCall) {
+				StatisticsSet value = entry.getValue();
+				writeReportData("TPS-" + entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA,
+								formatValue(getRealDoubleValue(tpsExpression.getDoubleValue(value))));
+			} else {
+				writeReportData("TPS-" + entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA, "-1");
+			}
+
 		}
 	}
 
@@ -740,11 +752,16 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * 
 	 * @param intervalStatistics
 	 *            interval statistics
+	 * @param firstCall
 	 */
-	public void writeIntervalSummaryData(StatisticsSet intervalStatistics) {
+	public void writeIntervalSummaryData(StatisticsSet intervalStatistics, boolean firstCall) {
 		for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
-			double doubleValue = each.getValue().getDoubleValue(intervalStatistics);
-			writeReportData(each.getKey() + REPORT_DATA, formatValue(getRealDoubleValue(doubleValue)));
+			if (firstCall) {
+				double doubleValue = each.getValue().getDoubleValue(intervalStatistics);
+				writeReportData(each.getKey() + REPORT_DATA, formatValue(getRealDoubleValue(doubleValue)));
+			} else {
+				writeReportData(each.getKey() + REPORT_DATA, "-1");
+			}
 		}
 	}
 
@@ -1014,12 +1031,12 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		 *            interval statistics snapshot
 		 * @param cumulativeStatistics
 		 *            cumulative statistics snapshot
-		 * @param firstCall
-		 *            true if it's the first call in the sampling
-		 * @since 3.0.2
+		 * @param lastCall
+		 *            true if it's the last call in the consequent following up samplings
+		 * @since 3.0.3
 		 */
 		void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics,
-						boolean firstCall);
+						boolean lastCall);
 
 		/**
 		 * Called when the sampling is started.
