@@ -74,7 +74,7 @@ public class SampleModelImplementationEx implements SampleModel {
 	private final StatisticExpression m_tpsExpression;
 	private final PeakStatisticExpression m_peakTPSExpression;
 
-	private final SampleAccumulator m_totalSampleAccumulator;
+	private final SampleAccumulatorEx m_totalSampleAccumulator;
 
 	private ModelTestIndex modelTestIndex;
 
@@ -130,7 +130,7 @@ public class SampleModelImplementationEx implements SampleModel {
 		m_peakTPSExpression = statisticExpressionFactory
 						.createPeak(indexMap.getDoubleIndex("peakTPS"), m_tpsExpression);
 
-		m_totalSampleAccumulator = new SampleAccumulator(m_peakTPSExpression, m_periodIndex,
+		m_totalSampleAccumulator = new SampleAccumulatorEx(m_peakTPSExpression, m_periodIndex,
 						m_statisticsServices.getStatisticsSetFactory());
 
 		setInternalState(new WaitingForTriggerState());
@@ -424,21 +424,22 @@ public class SampleModelImplementationEx implements SampleModel {
 			(testStatisticsMap.new ForEach() {
 				public void next(Test test, StatisticsSet statistics) {
 					final SampleAccumulator sampleAccumulator = m_accumulators.get(test);
-
-					if (sampleAccumulator == null) {
-						m_errorHandler.handleInformationMessage(m_unknownTestString + " " + test);
-					} else {
-						sampleAccumulator.addIntervalStatistics(statistics);
-
-						if (shouldAccumulateSamples()) {
-							sampleAccumulator.addCumulativeStaticstics(statistics);
-						}
-
-						if (!statistics.isComposite()) {
-							m_totalSampleAccumulator.addIntervalStatistics(statistics);
+					synchronized (m_accumulators) {
+						if (sampleAccumulator == null) {
+							m_errorHandler.handleInformationMessage(m_unknownTestString + " " + test);
+						} else {
+							sampleAccumulator.addIntervalStatistics(statistics);
 
 							if (shouldAccumulateSamples()) {
-								m_totalSampleAccumulator.addCumulativeStaticstics(statistics);
+								sampleAccumulator.addCumulativeStaticstics(statistics);
+							}
+
+							if (!statistics.isComposite()) {
+								m_totalSampleAccumulator.addIntervalStatistics(statistics);
+
+								if (shouldAccumulateSamples()) {
+									m_totalSampleAccumulator.addCumulativeStaticstics(statistics);
+								}
 							}
 						}
 					}
@@ -474,13 +475,15 @@ public class SampleModelImplementationEx implements SampleModel {
 				}
 
 				final long sampleInterval = m_properties.getSampleInterval();
-
+				SampleAccumulatorEx totalSampleAcculatorSnapshot;
 				synchronized (m_accumulators) {
 					for (SampleAccumulator sampleAccumulator : m_accumulators.values()) {
 						sampleAccumulator.fireSample(sampleInterval, period);
 					}
+					totalSampleAcculatorSnapshot = new SampleAccumulatorEx(m_totalSampleAccumulator);
+					m_totalSampleAccumulator.refreshIntervalStatistics();
 				}
-				m_totalSampleAccumulator.fireSample(sampleInterval, period);
+				totalSampleAcculatorSnapshot.fireSample(sampleInterval, period);
 				++msampleCount;
 
 				// I'm ignoring a minor race here: the model could have been

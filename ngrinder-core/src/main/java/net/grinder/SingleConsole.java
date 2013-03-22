@@ -117,7 +117,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	private final ListenerSupport<ConsoleShutdownListener> showdownListner = ListenerHelper.create();
 	private final ListenerSupport<SamplingLifeCycleListener> samplingLifeCycleListener = ListenerHelper.create();
 	private final ListenerSupport<SamplingLifeCycleFollowUpListener> samplingLifeCycleFollowupListener = ListenerHelper.create();
-	public static final int MIN_SAMPLING_INTERVAL_TO_ACTIVATE_TPS_PER_TEST = 5000;
+	public static final int MIN_SAMPLING_INTERVAL_TO_ACTIVATE_TPS_PER_TEST = 3000;
 	private boolean capture = false;
 	private File reportPath;
 	// private NumberFormat simpleFormatter = new DecimalFormat("###");
@@ -682,19 +682,18 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * .StatisticsSet, net.grinder.statistics.StatisticsSet)
 	 */
 	@Override
-	public void update(StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
+	public void update(final StatisticsSet intervalStatistics, final  StatisticsSet cumulativeStatistics) {
 		try {
 			if (!capture) {
 				return;
 			}
-			final StatisticsSet intervalStatisticsSnapshot = intervalStatistics.snapshot();
-			final StatisticsSet cumulatedStatisticsSnapshot = cumulativeStatistics.snapshot();
-			long currentPeriod = cumulatedStatisticsSnapshot.getValue(getSampleModel().getPeriodIndex());
-			setTpsValue(sampleModel.getTPSExpression().getDoubleValue(intervalStatisticsSnapshot));
+			samplingCount++;
+			long currentPeriod = cumulativeStatistics.getValue(getSampleModel().getPeriodIndex());
+			setTpsValue(sampleModel.getTPSExpression().getDoubleValue(intervalStatistics));
 			checkTooLowTps(getTpsValues());
-			updateStatistics(intervalStatisticsSnapshot, cumulatedStatisticsSnapshot);
+			updateStatistics(intervalStatistics, cumulativeStatistics);
 
-			writeIntervalCsvData(intervalStatisticsSnapshot);
+			writeIntervalCsvData(intervalStatistics);
 			// Adjust sampling delay.. run write data multiple times... when it
 			// takes longer than 1
 			// sec.
@@ -703,11 +702,11 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			samplingLifeCycleListener.apply(new Informer<SamplingLifeCycleListener>() {
 				@Override
 				public void inform(SamplingLifeCycleListener listener) {
-					listener.onSampling(getReportPath(), intervalStatisticsSnapshot, cumulatedStatisticsSnapshot);
+					listener.onSampling(getReportPath(), intervalStatistics, cumulativeStatistics);
 				}
 			});
 			for (int i = 0; i < gap; i++) {
-				writeIntervalSummaryData(intervalStatisticsSnapshot);
+				writeIntervalSummaryData(intervalStatistics);
 				if (interval >= (MIN_SAMPLING_INTERVAL_TO_ACTIVATE_TPS_PER_TEST)) {
 					writeIntervalSummaryDataPerTest(intervalStatisticMapPerTest);
 				}
@@ -715,7 +714,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				samplingLifeCycleFollowupListener.apply(new Informer<SamplingLifeCycleFollowUpListener>() {
 					@Override
 					public void inform(SamplingLifeCycleFollowUpListener listener) {
-						listener.onSampling(getReportPath(), intervalStatisticsSnapshot, cumulatedStatisticsSnapshot, firstCall);
+						listener.onSampling(getReportPath(), intervalStatistics, cumulativeStatistics, firstCall);
 					}
 				});
 			}
