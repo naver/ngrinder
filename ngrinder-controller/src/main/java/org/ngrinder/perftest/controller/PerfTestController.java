@@ -540,8 +540,11 @@ public class PerfTestController extends NGrinderBaseController {
 			String rtnType = each.replace("(", "").replace(")", "");
 			if ("TPS".equals(each)) {
 				// Only main TPS is available when sampling interval is less than 5.
-				List<ArrayList<String>> tpsList = perfTestService.getTPSReportDataAsString(id, interval,
-								(perfTest.getSamplingInterval() * 1000) < SingleConsole.MIN_SAMPLING_INTERVAL_TO_ACTIVATE_TPS_PER_TEST);
+				List<ArrayList<String>> tpsList = perfTestService
+								.getTPSReportDataAsString(
+												id,
+												interval,
+												isMainTPSOnly(perfTest));
 				rtnMap.put("lables", tpsList.get(0));
 				rtnMap.put("TPS", tpsList.get(1));
 			} else {
@@ -551,6 +554,10 @@ public class PerfTestController extends NGrinderBaseController {
 		}
 		rtnMap.put(PARAM_TEST_CHART_INTERVAL, interval * perfTest.getSamplingInterval());
 		return toJson(rtnMap);
+	}
+
+	private boolean isMainTPSOnly(PerfTest perfTest) {
+		return (perfTest.getSamplingInterval() * 1000) < SingleConsole.MIN_SAMPLING_INTERVAL_TO_ACTIVATE_TPS_PER_TEST;
 	}
 
 	/**

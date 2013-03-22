@@ -113,10 +113,30 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	 */
 	List<PerfTest> findAllByStatusAndRegionOrderByScheduledTimeAsc(Status status, String region);
 
+	/**
+	 * Update the runtime statistics on the given {@link PerfTest} id.
+	 * 
+	 * @param id
+	 *            {@link PerfTest} id
+	 * @param runningSample
+	 *            runningSample json string
+	 * @param agentStatus
+	 *            agentStatus json string
+	 * @return the count of updated row
+	 */
 	@Modifying
 	@Query("update PerfTest p set p.runningSample=?2, p.agentStatus=?3 where p.id=?1")
 	int updateRuntimeStatistics(Long id, String runningSample, String agentStatus);
 
+	/**
+	 * Update the monitor statistics on the given {@link PerfTest} id.
+	 * 
+	 * @param id
+	 *            {@link PerfTest} id
+	 * @param monitorStatus
+	 *            monitor status json string
+	 * @return the count of updated row
+	 */
 	@Modifying
 	@Query("update PerfTest p set p.monitorStatus=?2 where p.id=?1")
 	int updatetMonitorStatus(Long id, String monitorStatus);

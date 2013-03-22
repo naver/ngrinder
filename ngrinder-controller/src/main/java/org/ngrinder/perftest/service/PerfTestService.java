@@ -320,15 +320,19 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return StringUtils.join(tagStringResult, ",");
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Update runtime statistics on {@link PerfTest} having the given id.
 	 * 
-	 * @see org.ngrinder.perftest.service.IPerfTestService#savePerfTest(org.ngrinder
-	 * .perftest.model.PerfTest )
+	 * @param id
+	 *            id of {@link PerfTest}
+	 * @param runningSample
+	 *            runningSample json string
+	 * @param agentStatus
+	 *            agentStatus json string
 	 */
 	@Transactional
-	public void updateRuntimeStatistics(Long id, String runningSample, String agentStatistics) {
-		perfTestRepository.updateRuntimeStatistics(id, runningSample, agentStatistics);
+	public void updateRuntimeStatistics(Long id, String runningSample, String agentStatus) {
+		perfTestRepository.updateRuntimeStatistics(id, runningSample, agentStatus);
 		perfTestRepository.flush();
 	}
 
@@ -1633,7 +1637,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			@Override
 			public int compare(File o1, File o2) {
 				return FilenameUtils.getBaseName(o1.getName()).compareTo(FilenameUtils.getBaseName(o2.getName()));
-			} 
+			}
 		});
 		return Arrays.asList(files);
 	}
