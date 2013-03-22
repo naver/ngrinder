@@ -158,11 +158,12 @@ public class PropertyBuilder {
 
 	protected StringBuilder addMemorySettings(StringBuilder jvmArguments) {
 		String processCountStr = properties.getProperty("grinder.processes", "1");
+		int reservedMemory = properties.getInt("grinder.reserved.memory", 100) * 1024 * 1024;
 		int processCount = NumberUtils.toInt(processCountStr, 1);
 		long desirableXmx = DEFAULT_XMX_SIZE; // make 500M as default.
 		try {
-			// Make a room with 100MB.
-			long actualFree = new Sigar().getMem().getActualFree() - (100 * 1024 * 1024);
+			// Make a free memory room size of reservedMemory.
+			long actualFree = new Sigar().getMem().getActualFree() - reservedMemory;
 			// If memory enough..
 			desirableXmx = actualFree / processCount;
 

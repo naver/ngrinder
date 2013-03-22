@@ -41,6 +41,11 @@ public enum FileType {
 	CLASS("Java Class", "class", FileCategory.LIBRARY, true, false),
 	/** Jar. */
 	JAR("jar", "jar", FileCategory.LIBRARY, true, false),
+	/** Dll for windows. */
+	DLL("dll", "dll", FileCategory.LIBRARY, true, false),
+	/** SO for linux. */
+	SO("so", "so", FileCategory.LIBRARY, true, false),
+
 	/** Unknown. */
 	UNKNOWN("unknown", "", FileCategory.ETC, false, true),
 	/** Dir. */
