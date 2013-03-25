@@ -1479,8 +1479,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				} else {
 					skipCount = 1;
 					String[] datalist = StringUtils.split(line, ",");
-					if ("undefined".equals(datalist[4])) {
-						sbUsedMem.append("undefined").append(",");
+					if ("null".equals(datalist[4])) {
+						sbUsedMem.append("null").append(",");
 					} else {
 						sbUsedMem.append(Long.valueOf(datalist[4]) - Long.valueOf(datalist[3])).append(",");
 					}
@@ -1495,15 +1495,15 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 					line = br.readLine();
 				}
 			}
-			returnMap.put("cpu", sbCPUUsed.append("]").toString());
-			returnMap.put("memory", sbUsedMem.append("]").toString());
-			returnMap.put("received", sbNetReceieved.append("]").toString());
-			returnMap.put("sent", sbNetSent.append("]").toString());
-			returnMap.put("customData1", customData1.append("]").toString());
-			returnMap.put("customData2", customData2.append("]").toString());
-			returnMap.put("customData3", customData3.append("]").toString());
-			returnMap.put("customData4", customData4.append("]").toString());
-			returnMap.put("customData5", customData5.append("]").toString());
+			completeCustomData(returnMap, "cpu", sbCPUUsed);
+			completeCustomData(returnMap, "memory", sbUsedMem);
+			completeCustomData(returnMap, "received", sbNetReceieved);
+			completeCustomData(returnMap, "sent", sbNetSent);
+			completeCustomData(returnMap, "customData1", customData1);
+			completeCustomData(returnMap, "customData2", customData2);
+			completeCustomData(returnMap, "customData3", customData3);
+			completeCustomData(returnMap, "customData4", customData4);
+			completeCustomData(returnMap, "customData5", customData5);
 		} catch (IOException e) {
 			LOGGER.error("Error while getting monitor:{} data file:{}", monitorIP, monitorDataFile);
 			LOGGER.error(e.getMessage(), e);
@@ -1517,6 +1517,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		if (data.length > index) {
 			customData.append(data[index]).append(",");
 		}
+	}
+
+	private void completeCustomData(Map<String, String> returnMap, String key, StringBuilder customData) {
+		if (customData.charAt(customData.length() - 1) == ',') {
+			customData.deleteCharAt(customData.length() - 1);
+		}
+		returnMap.put(key, customData.append("]").toString());
 	}
 
 	/**
@@ -1636,9 +1643,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			int current = 0;
 			while (StringUtils.isNotBlank(data)) {
 				if (0 == current) {
-					if (data.isEmpty()) {
-						data = "undefined";
-					}
 					reportData.append(data);
 					reportData.append(",");
 				}

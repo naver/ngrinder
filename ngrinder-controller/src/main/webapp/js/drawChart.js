@@ -1,5 +1,7 @@
 var formatMemory = function(format, value) {
-	if (value < 1024) {
+	if (value === null) {
+		return "";
+	} else if (value < 1024) {
 		return value.toFixed(1) + "K ";
 	} else if (value < 1048576) { //1024 * 1024
 		return (value/1024).toFixed(1) + "M ";
@@ -9,7 +11,9 @@ var formatMemory = function(format, value) {
 };
 
 var formatNetwork = function(format, value) {
-	if (value < 1024) {
+	if (value === null) {
+		return "";
+	} else if (value < 1024) {
 		return value.toFixed(1) + "B ";
 	} else if (value < 1048576) { //1024 * 1024
 		return (value/1024).toFixed(1) + "K ";
@@ -19,7 +23,9 @@ var formatNetwork = function(format, value) {
 };
 
 var formatPercentage = function(format, value) {
-	if (value < 10) {
+	if (value === null) {
+		return "";
+	} else if (value < 10) {
 		return value.toFixed(1) + "% ";
 	} else {
 		return value.toFixed(0) + "% ";
@@ -55,7 +61,7 @@ function getMaxValue(data) {
 	var ymax = 0;
 	for (var i = 0;  i < values.length; i++) {
 		for (var j = 0;  j < values[i].length; j++) {
-			if (values[i][j] > ymax) {
+			if (values[i][j] !== null && values[i][j] > ymax) {
 				ymax = values[i][j]; 
 			}
 		}

@@ -742,7 +742,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 								formatValue(getRealDoubleValue(tpsExpression.getDoubleValue(value))));
 			} else {
 				writeReportData("TPS-" + entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA,
-								"undefined");
+								"null");
 			}
 
 		}
@@ -761,7 +761,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				double doubleValue = each.getValue().getDoubleValue(intervalStatistics);
 				writeReportData(each.getKey() + REPORT_DATA, formatValue(getRealDoubleValue(doubleValue)));
 			} else {
-				writeReportData(each.getKey() + REPORT_DATA, "undefined");
+				writeReportData(each.getKey() + REPORT_DATA, "null");
 			}
 		}
 	}

@@ -199,16 +199,16 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 
 	public String toEmptyRecordString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("undefined").append(",").append("undefined").append(",");
-		sb.append("undefined").append(",").append("undefined").append(",");
-		sb.append("undefined").append(",").append("undefined");
+		sb.append("null").append(",").append("null").append(",");
+		sb.append("null").append(",").append("null").append(",");
+		sb.append("null").append(",").append("null");
 		if (bandWidth != null) {
-			sb.append(",").append("undefined").append(",").append("undefined");
+			sb.append(",").append("null").append(",").append("null");
 		}
 		if (customValues != null) {
 			int valueCount = StringUtils.countMatches(customValues, ",") + 1;
 			for (int i = 0; i < valueCount; i++) {
-				sb.append(",").append("undefined");
+				sb.append(",").append("null");
 			}
 		}
 		return sb.toString();

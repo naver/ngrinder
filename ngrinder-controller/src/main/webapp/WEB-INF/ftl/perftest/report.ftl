@@ -303,18 +303,18 @@
                        'imgWidth':700},
                 success: function(res) {
                     if (res.success) {
-                        drawMultiPlotChart('tpsDiv', res.TPS, res.lables, res.chartInterval);
-                        drawChart('meanTimeDiv', res.Mean_Test_Time_ms, undefined, res.chartInterval);
+                        drawMultiPlotChart('tpsDiv', res.TPS, res.lables, res.chartInterval).replot();
+                        drawChart('meanTimeDiv', res.Mean_Test_Time_ms, undefined, res.chartInterval).replot();
                         if (res.Mean_time_to_first_byte !== undefined && 
                         		res.Mean_time_to_first_byte !== '[ ]') {
-                        	drawChart('minTimeFirstByte', res.Mean_time_to_first_byte, undefined, res.chartInterval);
+                        	drawChart('minTimeFirstByte', res.Mean_time_to_first_byte, undefined, res.chartInterval).replot();
                         } else {
                         	$("#minTimeFirstByte").hide();	
                         	$("#minTimeFirstByteHeader").hide();
                         }
                         if (res.User_defined !== undefined && 
                         		res.User_defined !== '[ ]') {
-                        	drawChart('userDefinedChart', res.User_defined, undefined, res.chartInterval);
+                        	drawChart('userDefinedChart', res.User_defined, undefined, res.chartInterval).replot();
                         } else {
                         	$("#userDefinedChart").hide();	
                         	$("#userDefinedChartHeader").hide();
@@ -352,8 +352,8 @@
 		function drawPlot(ip) {
 			clearPrePlot();
         	var currMonitorData = targetMonitorData[ip];
-       		drawChart('cpuDiv', currMonitorData.cpu, formatPercentage, currMonitorData.interval);
-       		drawChart('memoryDiv', currMonitorData.memory, formatMemory, currMonitorData.interval);
+       		drawChart('cpuDiv', currMonitorData.cpu, formatPercentage, currMonitorData.interval).replot();
+       		drawChart('memoryDiv', currMonitorData.memory, formatMemory, currMonitorData.interval).replot();
        		drawExtMonitorData(currMonitorData);
        		generateImg(imgBtnLabel, imgTitle);
 		}
@@ -372,7 +372,8 @@
 			if (data !== undefined && data !== '[]') {
             	$("#" + area).show();	
             	$("#" + titleArea).show();
-            	drawChart(area, data, format, interval);
+            	plot = drawChart(area, data, format, interval);
+            	plot.replot();
             } else {
             	$("#" + area).hide();	
             	$("#" + titleArea).hide();
