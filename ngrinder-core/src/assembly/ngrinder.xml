@@ -53,6 +53,14 @@
         <include>*.*</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>${java.home}/lib</directory>
+      <outputDirectory>/lib</outputDirectory>
+      <includes>
+        <include>deploy.jar</include>
+        <include>javaws.jar</include>
+      </includes>
+    </fileSet>
   </fileSets>
   <dependencySets>
   	<dependencySet>

@@ -25,17 +25,14 @@ import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import javax.jnlp.DownloadService2;
-import javax.jnlp.DownloadService2.ResourceSpec;
-import javax.jnlp.ServiceManager;
+import java.util.jar.JarFile;
 
 import net.grinder.AgentControllerDaemon;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.util.NetworkUtil;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hyperic.sigar.ProcState;
 import org.hyperic.sigar.Sigar;
@@ -50,6 +47,8 @@ import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.Context;
 import ch.qos.logback.core.joran.spi.JoranException;
+
+import com.sun.jnlp.JNLPClassLoader;
 
 /**
  * Main class to start agent or monitor.
@@ -68,21 +67,29 @@ public class NGrinderStarter {
 
 	private ReconfigurableURLClassLoader classLoader;
 
-	private String jnlpLibPath;
+	private File jnlpLibPath;
 
 	private static final String LOCAL_NATIVE_PATH = "./native_lib";
+	
+	private boolean isWebStart = false;
 
 	/**
 	 * Constructor.
 	 */
 	public NGrinderStarter() {
+
+		// Check agent start mode
+		isWebStart = (Thread.currentThread().getContextClassLoader() instanceof JNLPClassLoader);
+		
+		if (!isValidCurrentDirectory() && !isWebStart) {
+			staticPrintHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
+		}
 		agentConfig = new AgentConfig();
 		agentConfig.init();
 		// Configure log.
 		Boolean verboseMode = agentConfig.getPropertyBoolean("verbose", false);
 		File logDirectory = agentConfig.getHome().getLogDirectory();
 		configureLogging(verboseMode, logDirectory);
-		addCustomClassLoader();
 		addClassPath();
 		addLibarayPath();
 	}
@@ -202,7 +209,7 @@ public class NGrinderStarter {
 
 	private void addLibarayPath() {
 		String property = StringUtils.trimToEmpty(System.getProperty("java.library.path"));
-		String nativePath = isWebStart() ? jnlpLibPath : LOCAL_NATIVE_PATH;
+		String nativePath = isWebStart ? jnlpLibPath.getAbsolutePath() : LOCAL_NATIVE_PATH;
 		System.setProperty("java.library.path", property + File.pathSeparator + nativePath);
 		LOG.info("java.library.path : {} ", System.getProperty("java.library.path"));
 	}
@@ -213,23 +220,33 @@ public class NGrinderStarter {
 	 * @return jar file collection
 	 */
 	protected Collection<File> getJarFileList() {
-		jnlpLibPath = agentConfig.getHome().getDirectory() + File.separator + "jnlp_res";
-		ArrayList<File> fileString = new ArrayList<File>();
-		if (isWebStart()) {
-			try {
-				DownloadService2 service = (DownloadService2) ServiceManager.lookup("javax.jnlp.DownloadService2");
-				ResourceSpec alljars = new ResourceSpec("http://.*", null, DownloadService2.JAR);
-				ResourceSpec[] results = service.getCachedResources(alljars);
 
-				for (ResourceSpec r : results) {
-					String url = r.getUrl().toString();
-					String fileName = url.substring(url.lastIndexOf('/') + 1, url.length());
-					File jarFile = new File(jnlpLibPath, fileName);
-					FileUtils.copyURLToFile(new URL(url), jarFile);
-					if (fileName.equals("native.jar")) {
-						CompressionUtil.unjar(jarFile, jnlpLibPath);
+		ArrayList<File> fileString = new ArrayList<File>();
+		if (isWebStart) {
+			try {
+				jnlpLibPath = new File(agentConfig.getHome().getDirectory(), "jnlp_res");
+
+				ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+				if (classLoader instanceof JNLPClassLoader) {
+					JNLPClassLoader jnlpClassLoader = (JNLPClassLoader) classLoader;
+					URL[] urls = jnlpClassLoader.getURLs();
+
+					for (URL each : urls) {
+						String jarName = FilenameUtils.getName(each.toString());
+						JarFile jar = jnlpClassLoader.getJarFile(each);
+						String jarLocalPath = jar.getName();
+						File srcFile = new File(jarLocalPath);
+						long srcFIleStamp = FileUtils.checksumCRC32(srcFile);
+						File desFile = new File(jnlpLibPath, jarName);
+						if (!desFile.exists() || (FileUtils.checksumCRC32(desFile) != srcFIleStamp)) {
+							FileUtils.copyFile(srcFile, desFile);
+						}
+						if (jarName.equals("native.jar")) {
+							CompressionUtil.unjar(desFile, jnlpLibPath.getAbsolutePath());
+						}
+						fileString.add(desFile);
 					}
-					fileString.add(jarFile);
 				}
 			} catch (Exception e) {
 				staticPrintHelpAndExit("Error occurs while getting Jar file from Service !");
@@ -253,7 +270,8 @@ public class NGrinderStarter {
 
 		ArrayList<String> libString = new ArrayList<String>();
 		Collection<File> libList = getJarFileList();
-
+		addCustomClassLoader();
+		
 		// Add patch first
 		for (File each : libList) {
 			if (each.getName().contains("patch")) {
@@ -269,7 +287,6 @@ public class NGrinderStarter {
 				libString.add(each.getPath());
 			}
 		}
-
 		if (!libString.isEmpty()) {
 			String base = System.getProperties().getProperty("java.class.path");
 			String classpath = base + File.pathSeparator + StringUtils.join(libString, File.pathSeparator);
@@ -285,7 +302,7 @@ public class NGrinderStarter {
 			LOG.error(e.getMessage(), e);
 		}
 	}
-
+	
 	/**
 	 * {@link URLClassLoader} which exposes addURL method.
 	 * 
@@ -302,6 +319,7 @@ public class NGrinderStarter {
 		public void addURL(URL url) {
 			super.addURL(url);
 		}
+		
 	}
 
 	private void configureLogging(boolean verbose, File logDirectory) {
@@ -349,10 +367,7 @@ public class NGrinderStarter {
 	 *            arguments
 	 */
 	public static void main(String[] args) {
-
-		if (!isValidCurrentDirectory() && !isWebStart()) {
-			staticPrintHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
-		}
+		
 		NGrinderStarter starter = new NGrinderStarter();
 		String startMode = System.getProperty("start.mode");
 		LOG.info("- Passing mode " + startMode);
@@ -429,7 +444,7 @@ public class NGrinderStarter {
 	 * 
 	 * @return true if it's valid
 	 */
-	private static boolean isValidCurrentDirectory() {
+	private  boolean isValidCurrentDirectory() {
 		File currentFolder = new File(System.getProperty("user.dir"));
 		String[] list = currentFolder.list(new FilenameFilter() {
 			@Override
@@ -449,12 +464,4 @@ public class NGrinderStarter {
 		System.exit(-1);
 	}
 
-	/**
-	 * Check agent start mode.
-	 * 
-	 * @return true if it's jnlp web start
-	 */
-	private static boolean isWebStart() {
-		return BooleanUtils.toBoolean(System.getProperty("start.webstart", "false"));
-	}
 }
