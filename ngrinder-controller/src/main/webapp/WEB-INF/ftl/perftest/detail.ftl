@@ -1084,6 +1084,7 @@ function displayCfgAndTestRunning() {
 	$("#reportContent_tab").hide();
 	samplingInterval = $("#samplingInterval").val();
 	initChartData(60 / samplingInterval);
+	refreshData();
 	objTimer = window.setInterval("refreshData()", 1000 * samplingInterval);
 }
 
