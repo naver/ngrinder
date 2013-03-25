@@ -14,8 +14,6 @@
 package org.ngrinder.operation.cotroller;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -24,7 +22,6 @@ import org.apache.commons.io.input.Tailer;
 import org.apache.commons.io.input.TailerListenerAdapter;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -34,9 +31,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * Log monitor controller.
  * 
- * This class runs with {@link Tailer} implementation. Whenever the underlying log file is changed.
- * this class gets the changes. and keep them(max 10000 byte) in the memory. Whenever user requests
- * the log, it returns latest changes with the index of the log.
+ * This class runs with {@link Tailer} implementation. Whenever the underlying
+ * log file is changed. this class gets the changes. and keep them(max 10000
+ * byte) in the memory. Whenever user requests the log, it returns latest
+ * changes with the index of the log.
  * 
  * This is only available in the non-clustered instance.
  * 
@@ -55,7 +53,6 @@ public class LogMonitorController extends NGrinderBaseController {
 	 */
 	private volatile StringBuffer stringBuffer = new StringBuffer(LOGGER_BUFFER_SIZE);
 
-	private HttpHeaders commonResponseHeaders;
 	private Tailer tailer;
 
 	private long count = 0;
@@ -69,9 +66,6 @@ public class LogMonitorController extends NGrinderBaseController {
 		if (!clustered()) {
 			initTailer();
 		}
-		commonResponseHeaders = new HttpHeaders();
-		commonResponseHeaders.set("content-type", "application/json; charset=UTF-8");
-		commonResponseHeaders.setPragma("no-cache");
 	}
 
 	/**
@@ -147,11 +141,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/last")
 	public HttpEntity<String> getLastLog() {
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("index", count);
-		map.put("modification", modification);
-		map.put("log", stringBuffer);
-		return new HttpEntity<String>(toJson(map), commonResponseHeaders);
+		return toJsonHttpEntity(buildMap("index", count, "modification", modification, "log", stringBuffer));
 	}
 
 	/**
@@ -165,9 +155,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	public HttpEntity<String> enableVerbose(@RequestParam(value = "verbose", defaultValue = "false") Boolean verbose) {
 		getConfig().initLogger(verbose);
 		initTailer();
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("success", true);
-		return new HttpEntity<String>(toJson(map), commonResponseHeaders);
+		return toJsonHttpEntity(buildMap("success", true));
 	}
 
 }

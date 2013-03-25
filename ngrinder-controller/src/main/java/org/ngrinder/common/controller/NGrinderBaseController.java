@@ -15,6 +15,7 @@ package org.ngrinder.common.controller;
 
 import static org.ngrinder.common.util.NoOp.noOp;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -29,7 +30,10 @@ import org.ngrinder.operation.service.AnnouncementService;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -87,7 +91,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Provide current login user as a model attributes. If it's not found, return empty user.
+	 * Provide current login user as a model attributes. If it's not found,
+	 * return empty user.
 	 * 
 	 * @return login user
 	 */
@@ -140,8 +145,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	 * @return announcement content
 	 */
 	@ModelAttribute("announcement_hide")
-	public boolean announcement(
-					@CookieValue(value = "announcement_hide", defaultValue = "false") boolean annoucnementHide) {
+	public boolean announcement(@CookieValue(value = "announcement_hide", defaultValue = "false") boolean annoucnementHide) {
 		return annoucnementHide;
 	}
 
@@ -232,6 +236,51 @@ public class NGrinderBaseController implements NGrinderConstants {
 		return gson.toJson(obj);
 	}
 
+	/**
+	 * Convert the given object into json message.
+	 * 
+	 * @param obj
+	 *            object
+	 * @return json message
+	 */
+	public <T> HttpEntity<T> toHttpEntity(T content, MultiValueMap<String, String> header) {
+		return new HttpEntity<T>(content, header);
+	}
+
+	/**
+	 * Convert the given object into json message.
+	 * 
+	 * @param obj
+	 *            object
+	 * @return json message
+	 */
+	public HttpEntity<String> toJsonHttpEntity(Object content) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set("content-type", "application/json; charset=UTF-8");
+		responseHeaders.setPragma("no-cache");
+		return toHttpEntity(toJson(content), responseHeaders);
+	}
+
+	public Map<String, Object> buildMap(String key1, Object value1) {
+		Map<String, Object> map = new HashMap<String, Object>(1);
+		map.put(key1, value1);
+		return map;
+	}
+
+	public Map<String, Object> buildMap(String key1, Object value1, String key2, Object value2) {
+		Map<String, Object> map = new HashMap<String, Object>(2);
+		map.put(key1, value1);
+		map.put(key2, value2);
+		return map;
+	}
+
+	public Map<String, Object> buildMap(String key1, Object value1, String key2, Object value2, String key3, Object value3) {
+		Map<String, Object> map = new HashMap<String, Object>(2);
+		map.put(key1, value1);
+		map.put(key2, value2);
+		map.put(key3, value3);
+		return map;
+	}
 	/**
 	 * Convert the given map into json message.
 	 * 

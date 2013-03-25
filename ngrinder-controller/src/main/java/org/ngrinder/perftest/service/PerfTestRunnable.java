@@ -151,10 +151,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		if (!perfTestService.canExecuteTestMore()) {
 			// LOG MORE
 			List<PerfTest> currentlyRunningTests = perfTestService.getCurrentlyRunningTest();
-			LOG.debug("current running test is {}. so no tests start to run", currentlyRunningTests.size());
-			for (PerfTest perfTest : currentlyRunningTests) {
-				LOG.trace("Current Running Test - {} ", perfTest);
-			}
+			LOG.debug("Currently Running test is {}. so no tests start to run", currentlyRunningTests.size());
 			return;
 		}
 		// Find out next ready perftest
