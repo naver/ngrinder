@@ -1479,7 +1479,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				} else {
 					skipCount = 1;
 					String[] datalist = StringUtils.split(line, ",");
-					if ("null".equals(datalist[4])) {
+					if ("null".equals(datalist[4]) || "undefined".equals(datalist[4])) {
 						sbUsedMem.append("null").append(",");
 					} else {
 						sbUsedMem.append(Long.valueOf(datalist[4]) - Long.valueOf(datalist[3])).append(",");
