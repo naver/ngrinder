@@ -212,7 +212,7 @@
 		var monitorStatusString = "<ul>";
 		for ( var i = 0; i < status.length; i++) {
 			var each = status[i];
-			monitorStatusString = monitorStatusString + "<li><div style='wdith:100%;' class='ellipsis'><span title='" + each.agentFull + "'><b>" + each.agent + "</b></span> CPU-"
+			monitorStatusString = monitorStatusString + "<li class='monitor_status'><div style='wdith:100%;' class='ellipsis'><span title='" + each.agentFull + "'><b>" + each.agent + "</b></span> CPU-"
 				+ each.cpu + "% MEM-" + each.mem + "% ";
 			if (each.recievedPerSec != "0B" || each.sentPerSec != "0B") { 
 				monitorStatusString = monitorStatusString + "/ RX-"+ each.recievedPerSec + " TX-" + each.sentPerSec + "</dv></li>";

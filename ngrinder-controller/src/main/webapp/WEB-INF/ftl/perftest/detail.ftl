@@ -142,6 +142,10 @@
 		font-size: 12px; 
 		font-weight: 700;
 	}
+	
+	.monitor_status {
+		line-height:12px;
+	}
 	</style>
 </head>
 
