@@ -143,13 +143,21 @@ public class PropertyBuilder {
 			jvmArguments = addCurrentAgentPath(jvmArguments);
 			jvmArguments = addConsoleIP(jvmArguments);
 			jvmArguments = addDNSIP(jvmArguments);
+		} else {
+			jvmArguments = addNativeLibraryPath(jvmArguments);
 		}
 		jvmArguments = addPythonPathJvmArgument(jvmArguments);
 		jvmArguments = addCustomDns(jvmArguments);
+
 		if (server) {
 			jvmArguments = addServerMode(jvmArguments);
 		}
 		return jvmArguments.toString();
+	}
+
+	private StringBuilder addNativeLibraryPath(StringBuilder jvmArguments) {
+		return jvmArguments.append(" -Djna.library.path=").append(new File(baseDirectory.getFile(), "/lib"))
+						.append(" ");
 	}
 
 	protected static final long DEFAULT_XMX_SIZE = 500 * 1024 * 1024;

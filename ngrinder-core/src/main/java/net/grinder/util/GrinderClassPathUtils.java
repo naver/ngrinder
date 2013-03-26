@@ -127,6 +127,7 @@ public abstract class GrinderClassPathUtils {
 		USEFUL_JAR_LIST.add("slf4j-api");
 		USEFUL_JAR_LIST.add("json");
 		USEFUL_JAR_LIST.add("logback");
+		USEFUL_JAR_LIST.add("jna");
 		USEFUL_JAR_LIST.add("jsr173");
 		USEFUL_JAR_LIST.add("xmlbeans");
 		USEFUL_JAR_LIST.add("stax-api");
