@@ -36,6 +36,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hyperic.sigar.ProcState;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
+import org.ngrinder.common.util.ReflectionUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.jnlp.JNLPLoader;
 import org.ngrinder.monitor.MonitorConstants;
@@ -67,20 +68,19 @@ public class NGrinderStarter {
 	private File jnlpLibPath;
 
 	private static final String LOCAL_NATIVE_PATH = "./native_lib";
-	
+
 	private boolean isWebStart = false;
 
 	private JNLPLoader jnlpLoader;
-	
+
 	/**
 	 * Constructor.
 	 */
 	public NGrinderStarter() {
-	
-		// Check agent start mode
-		isWebStart =  BooleanUtils.toBoolean(System.getProperty("start.webstart", "false"));
 
-		
+		// Check agent start mode
+		isWebStart = BooleanUtils.toBoolean(System.getProperty("start.webstart", "false"));
+
 		if (!isValidCurrentDirectory() && !isWebStart) {
 			staticPrintHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
 		}
@@ -224,13 +224,11 @@ public class NGrinderStarter {
 		ArrayList<File> fileString = new ArrayList<File>();
 		if (isWebStart) {
 			jnlpLibPath = new File(agentConfig.getHome().getDirectory(), "jnlp_res");
-
 			try {
-				Class<?> loader = Class.forName("org.ngrinder.jnlp.impl.JNLPLoaderImpl");
-				jnlpLoader = (JNLPLoader) loader.newInstance();
+				jnlpLoader = ReflectionUtil.newInstanceByName("org.ngrinder.jnlp.impl.JNLPLoaderImpl");
 				if (!jnlpLoader.isWebStartPossible())
 					staticPrintHelpAndExit("Sorry, nGrinder agent can not run on your JDK, "
-							+ "\n Please install Oracle JDK! ");
+									+ "\n Please install Oracle JDK! ");
 
 				fileString.addAll(jnlpLoader.resolveRemoteJars(jnlpLibPath));
 			} catch (Exception e) {
@@ -257,7 +255,7 @@ public class NGrinderStarter {
 		ArrayList<String> libString = new ArrayList<String>();
 		Collection<File> libList = getJarFileList();
 		addCustomClassLoader();
-		
+
 		// Add patch first
 		for (File each : libList) {
 			if (each.getName().contains("patch")) {
@@ -288,7 +286,7 @@ public class NGrinderStarter {
 			LOG.error(e.getMessage(), e);
 		}
 	}
-	
+
 	/**
 	 * {@link URLClassLoader} which exposes addURL method.
 	 * 
@@ -300,11 +298,12 @@ public class NGrinderStarter {
 		public ReconfigurableURLClassLoader(URL[] urls) {
 			super(urls);
 		}
+
 		@Override
 		public void addURL(URL url) {
 			super.addURL(url);
 		}
-		
+
 	}
 
 	private void configureLogging(boolean verbose, File logDirectory) {
@@ -352,7 +351,7 @@ public class NGrinderStarter {
 	 *            arguments
 	 */
 	public static void main(String[] args) {
-		
+
 		NGrinderStarter starter = new NGrinderStarter();
 		String startMode = System.getProperty("start.mode");
 		LOG.info("- Passing mode " + startMode);
@@ -429,7 +428,7 @@ public class NGrinderStarter {
 	 * 
 	 * @return true if it's valid
 	 */
-	private  boolean isValidCurrentDirectory() {
+	private boolean isValidCurrentDirectory() {
 		File currentFolder = new File(System.getProperty("user.dir"));
 		String[] list = currentFolder.list(new FilenameFilter() {
 			@Override
