@@ -25,20 +25,19 @@ import java.net.URLClassLoader;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.jar.JarFile;
 
 import net.grinder.AgentControllerDaemon;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.util.NetworkUtil;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hyperic.sigar.ProcState;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
-import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.infra.AgentConfig;
+import org.ngrinder.jnlp.JNLPLoader;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.AgentMonitorServer;
 import org.slf4j.Logger;
@@ -47,8 +46,6 @@ import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.Context;
 import ch.qos.logback.core.joran.spi.JoranException;
-
-import com.sun.jnlp.JNLPClassLoader;
 
 /**
  * Main class to start agent or monitor.
@@ -73,13 +70,16 @@ public class NGrinderStarter {
 	
 	private boolean isWebStart = false;
 
+	private JNLPLoader jnlpLoader;
+	
 	/**
 	 * Constructor.
 	 */
 	public NGrinderStarter() {
-
+	
 		// Check agent start mode
-		isWebStart = (Thread.currentThread().getContextClassLoader() instanceof JNLPClassLoader);
+		isWebStart =  BooleanUtils.toBoolean(System.getProperty("start.webstart", "false"));
+
 		
 		if (!isValidCurrentDirectory() && !isWebStart) {
 			staticPrintHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
@@ -223,34 +223,20 @@ public class NGrinderStarter {
 
 		ArrayList<File> fileString = new ArrayList<File>();
 		if (isWebStart) {
+			jnlpLibPath = new File(agentConfig.getHome().getDirectory(), "jnlp_res");
+
 			try {
-				jnlpLibPath = new File(agentConfig.getHome().getDirectory(), "jnlp_res");
+				Class<?> loader = Class.forName("org.ngrinder.jnlp.impl.JNLPLoaderImpl");
+				jnlpLoader = (JNLPLoader) loader.newInstance();
+				if (!jnlpLoader.isWebStartPossible())
+					staticPrintHelpAndExit("Sorry,Your JDK is not met nGrinder Agent request, "
+							+ "\n Please secure yours is Sun/Oracle JDK! ");
 
-				ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
-				if (classLoader instanceof JNLPClassLoader) {
-					JNLPClassLoader jnlpClassLoader = (JNLPClassLoader) classLoader;
-					URL[] urls = jnlpClassLoader.getURLs();
-
-					for (URL each : urls) {
-						String jarName = FilenameUtils.getName(each.toString());
-						JarFile jar = jnlpClassLoader.getJarFile(each);
-						String jarLocalPath = jar.getName();
-						File srcFile = new File(jarLocalPath);
-						long srcFIleStamp = FileUtils.checksumCRC32(srcFile);
-						File desFile = new File(jnlpLibPath, jarName);
-						if (!desFile.exists() || (FileUtils.checksumCRC32(desFile) != srcFIleStamp)) {
-							FileUtils.copyFile(srcFile, desFile);
-						}
-						if (jarName.equals("native.jar")) {
-							CompressionUtil.unjar(desFile, jnlpLibPath.getAbsolutePath());
-						}
-						fileString.add(desFile);
-					}
-				}
+				fileString.addAll(jnlpLoader.resolveRemoteJars(jnlpLibPath));
 			} catch (Exception e) {
-				staticPrintHelpAndExit("Error occurs while getting Jar file from Service !");
+				staticPrintHelpAndExit("Error occurs while getting Jar file from Service !", e);
 			}
+
 		} else {
 			File libFolder = new File(".", "lib").getAbsoluteFile();
 			if (!libFolder.exists()) {
@@ -314,7 +300,6 @@ public class NGrinderStarter {
 		public ReconfigurableURLClassLoader(URL[] urls) {
 			super(urls);
 		}
-
 		@Override
 		public void addURL(URL url) {
 			super.addURL(url);

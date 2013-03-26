@@ -82,14 +82,17 @@
 	      <version>6.0</version>
 	      <type>jar</type>
 	      <scope>system</scope>
+	      <optional>true</optional>
 	      <systemPath>${java.home}/lib/javaws.jar</systemPath>
     	</dependency>
+    	
     	<dependency>
 	      <groupId>jre</groupId>
 	      <artifactId>deploy</artifactId>
 	      <version>6.0</version>
 	      <type>jar</type>
 	      <scope>system</scope>
+	      <optional>true</optional>
 	      <systemPath>${java.home}/lib/deploy.jar</systemPath>
     	</dependency>
 			
@@ -121,12 +124,6 @@
 							<classpathPrefix>lib/</classpathPrefix>
 							<mainClass>org.ngrinder.NGrinderStarter</mainClass>
 						</manifest>
-						<manifestEntries>
-							<Class-Path>
-								lib/javaws.jar
-								lib/deploy.jar
-							</Class-Path>
-						</manifestEntries>
 					</archive>
 				</configuration>
 			</plugin>
