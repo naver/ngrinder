@@ -9,7 +9,8 @@ This is the last version 3.1.X series, we'll work on 3.2 as a next release.
   * A user can see the per test TPS chart when the sampling interval is greater than 2.
   * A user can upload and use native libs (so, dll) to reuse existing assets. This is enabled only if the security mode is disabled.
   * A user can provide the any kind of custom value for monitor by regularly outputting the GC count and JVM memory usages.
-      
+  * A user can upload dll or so to run test using native libs. SecurityMode should be disabled and JNA should be imported for natvie lib access.
+        
 Bug
 [NGRINDER-560] - Make test report visible without login
 [NGRINDER-564] - Ignore Sigar Exception while collecting network usage.
@@ -20,6 +21,7 @@ Bug
 [NGRINDER-573] - Make cookie parsing impl work with secure=1 entry
 [NGRINDER-575] - Make graph start from 0 on x axis
 [NGRINDER-576] - Make nGrinder compilable with missing jars
+[NGRINDER-578] - Make smooth sampling values for consequent calls for catching up the time
 
 Improvement
 [NGRINDER-243] - Provide an export image button for each chart
@@ -34,7 +36,7 @@ Improvement
 [NGRINDER-566] - Make validation service accessible from plugin
 [NGRINDER-574] - Introduce the sampling interval
 [NGRINDER-577] - Provide the way to reserve the agent memory for native libraries.
-
+[NGRINDER-579] - Add jna support
 
 
 3.1.2 (2013.02.22)
