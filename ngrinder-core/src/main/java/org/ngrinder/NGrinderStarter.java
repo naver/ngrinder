@@ -229,8 +229,8 @@ public class NGrinderStarter {
 				Class<?> loader = Class.forName("org.ngrinder.jnlp.impl.JNLPLoaderImpl");
 				jnlpLoader = (JNLPLoader) loader.newInstance();
 				if (!jnlpLoader.isWebStartPossible())
-					staticPrintHelpAndExit("Sorry,Your JDK is not met nGrinder Agent request, "
-							+ "\n Please secure yours is Sun/Oracle JDK! ");
+					staticPrintHelpAndExit("Sorry, nGrinder agent can not run on your JDK, "
+							+ "\n Please install Oracle JDK! ");
 
 				fileString.addAll(jnlpLoader.resolveRemoteJars(jnlpLibPath));
 			} catch (Exception e) {
