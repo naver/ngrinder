@@ -1,8 +1,10 @@
 <div class="row">
 	<div class="span5">
-		<legend>
-			<@spring.message "perfTest.testRunning.summary"/>
-		</legend>
+		<fieldSet>
+			<legend>
+				<@spring.message "perfTest.testRunning.summary"/>
+			</legend>
+		</fieldSet>
 		<div class="form-horizontal form-horizontal-3" style="margin-top:10px;">
 			<fieldset>
 				<div class="control-group"> 
@@ -81,15 +83,17 @@
 	<!-- end ruuning content left -->
 	
 	<div class="span7">
-		<legend>
-			<@spring.message "perfTest.testRunning.tpsStatistics"/> 
-			<span class="badge badge-success" style="vertical-align:middle;">
-				<@spring.message "perfTest.testRunning.runTime"/> <span id="running_time"></span>
-			</span>
-			<a id="stopTestButton" class="btn btn-danger pull-right" sid="${(test.id)!}">
-				<@spring.message "common.button.stop"/>
-			</a>		
-		</legend> 
+		<fieldSet>
+			<legend>
+				<@spring.message "perfTest.testRunning.tpsStatistics"/> 
+				<span class="badge badge-success" style="vertical-align:middle;">
+					<@spring.message "perfTest.testRunning.runTime"/> <span id="running_time"></span>
+				</span>
+				<a id="stopTestButton" class="btn btn-danger pull-right" sid="${(test.id)!}">
+					<@spring.message "common.button.stop"/>
+				</a>		
+			</legend> 
+		</fieldSet>
 		<div id="runningTps" class="chart" style="width: 530px; height: 300px"></div>
 		<div class="tabbable">
 			<ul class="nav nav-pills" style="" id="tableTab">

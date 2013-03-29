@@ -204,11 +204,13 @@ div.ellipsis {
 legend {
 	font-size: 13px;
 	font-weight: 700;
-	margin-top: 15px
+	margin-top: 15px;
+	padding-top: 10px;
 }
 
 legend.header {
 	font-size: 18px;
+	margin-bottom: 10px;
 }
 
 legend a {

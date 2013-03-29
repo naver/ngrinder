@@ -82,7 +82,7 @@
 	<div class="modal-header" style="border: none;">
 		<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
 	</div>
-	<div class="modal-body" style="height:47px;">
+	<div class="modal-body" style="max-height:60px; height:60px;">
 		<div class="form-horizontal" style="margin-left:20px">
 			<fieldset>
 				<div class="control-group">

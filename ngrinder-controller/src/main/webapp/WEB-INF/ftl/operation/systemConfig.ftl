@@ -10,13 +10,15 @@
 		<div class="row">
 			<div class="span12">
 				<form id="sysConfigForm" method="post">
-					<legend class="header">
-						<@spring.message "navigator.dropdown.systemConfig"/>
-						<button id="saveBtn" class="btn btn-success pull-right">
-							<@spring.message "common.button.save"/>
-						</button>
-					</legend>
-					<textarea id="sysFileContent" name="content">${content!}</textarea>
+					<fieldset>
+						<legend class="header">
+							<@spring.message "navigator.dropdown.systemConfig"/>
+							<button id="saveBtn" class="btn btn-success pull-right">
+								<@spring.message "common.button.save"/>
+							</button>
+						</legend>
+						<textarea id="sysFileContent" name="content">${content!}</textarea>
+					</fieldset>
 				</form>
 			</div>
 		</div>

@@ -144,11 +144,11 @@
 	}
 	
 	.monitor_status {
-		line-height:12px;
+		line-height:12px \0/IE8+9;
 	}
 	</style>
 </head>
-
+  
 <body>
 	<#include "../common/navigator.ftl">
 	<div class="container">

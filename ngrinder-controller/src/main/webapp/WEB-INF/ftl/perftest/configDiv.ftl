@@ -1,10 +1,8 @@
 <div class="row">
 	<div class="span6">
-		<legend>
-			<@spring.message "perfTest.configuration.basicConfiguration"/>
-		</legend>
 		<div class="form-horizontal form-horizontal-2">
 			<fieldset>
+				<legend><@spring.message "perfTest.configuration.basicConfiguration"/></legend>
 				<div class="control-group">
 					<label for="agentCount" class="control-label"><@spring.message "perfTest.configuration.agent"/></label>
 					<div class="controls">
@@ -238,11 +236,13 @@
 	<!-- end test content left -->
 	
 	<div class="span6">
-		<legend>
-			<input type="checkbox" id="rampupCheckbox" name="useRampUp" style="vertical-align:middle"
-				<#if test?? && test.useRampUp?default(false) == true>checked</#if>/>
-			<@spring.message "perfTest.configuration.rampEnable"/>
-		</legend>
+		<fieldset>
+			<legend>
+				<input type="checkbox" id="rampupCheckbox" name="useRampUp" style="vertical-align:middle"
+					<#if test?? && test.useRampUp?default(false) == true>checked</#if>/>
+				<@spring.message "perfTest.configuration.rampEnable"/>
+			</legend>
+		</fieldset>
 		<table>
 			<tr>
 				<td style="width: 50%">

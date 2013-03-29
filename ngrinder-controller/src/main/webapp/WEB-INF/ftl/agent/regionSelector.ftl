@@ -1,5 +1,5 @@
 <#if clustered == true>
-	<select id="regions" class="pull-right" style="margin-top:-55px" name="regions">
+	<select id="regions" class="pull-right" style="margin-top:-45px" name="regions">
 		<option value="all"/>All</option>
 		<#list regions as eachRegion> 
 			<option value="${eachRegion}" <#if region?exists && eachRegion == region>selected</#if>><@spring.message "${eachRegion}"/></option>

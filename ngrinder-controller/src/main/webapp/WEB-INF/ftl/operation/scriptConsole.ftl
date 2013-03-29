@@ -16,14 +16,17 @@
 		<div class="row">
 			<div class="span12">
 				<form action="${req.getContextPath()}/operation/scriptConsole" name="scriptForm" method="POST">
-					<legend class="header">
-						<@spring.message "navigator.dropdown.scriptConsole"/>
-						<button class="btn btn-success pull-right" id="runBtn">
-							<@spring.message "script.view.button.runScript"/>
-						</button>
-					</legend> 
-					<textarea class="span12"  id="scriptEditor" name="scriptEditor" style="resize: none">${(script)!}</textarea>
-					<input type="hidden" id="script" name="script" value=""/>
+					<fieldset>
+						<legend class="header">
+							<@spring.message "navigator.dropdown.scriptConsole"/>
+							<button class="btn btn-success pull-right" id="runBtn">
+								<@spring.message "script.view.button.runScript"/>
+							</button>
+						</legend> 
+						
+						<textarea class="span12"  id="scriptEditor" name="scriptEditor" style="resize: none">${(script)!}</textarea>
+						<input type="hidden" id="script" name="script" value=""/>
+					</fieldset>
 				</form>
 				<pre style="height:150px; margin-top:5px;" class="prettyprint pre-scrollable" id="validateRsPre"><#if result??>${(result)!}<#else>
 You can write python code to monitor ngrinder internal status.

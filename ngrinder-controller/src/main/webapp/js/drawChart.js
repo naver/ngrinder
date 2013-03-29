@@ -86,7 +86,7 @@ function drawChart(containerId, data, formatYaxis, interval) {
 		ymax = 5;
 	}
 	
-	ymax = parseInt((ymax / 5) + 0.5) * 6;
+	ymax = parseInt((ymax / 5) + 1) * 6;
 	
 	if (formatYaxis === undefined || formatYaxis == null) {
 		formatYaxis = function(format, value) {
@@ -181,7 +181,7 @@ function replotChart(plotObj, data, ymax, interval) {
 		ymax = 5;
 	}
 	
-	ymax = parseInt((ymax / 5) + 0.5) * 6;
+	ymax = parseInt((ymax / 5) + 1) * 6;
 	
 	plotObj.axes.yaxis.min = 0; 
 	plotObj.axes.yaxis.max = ymax;
@@ -250,7 +250,7 @@ function drawMultiPlotChart(containerId, data, labels, interval) {
 	if (ymax < 5) {
 		ymax = 5;
 	}
-	ymax = parseInt((ymax / 5) + 0.5) * 6;
+	ymax = parseInt((ymax / 5) + 1) * 6;
 
 	if (interval == undefined || interval == 0 || !$.isNumeric(interval)) {
 		interval = 1;

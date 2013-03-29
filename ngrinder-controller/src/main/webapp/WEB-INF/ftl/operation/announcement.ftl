@@ -10,16 +10,18 @@
 		<div class="row">
 			<div class="span12">
 				<form id="annountcementForm" method="POST">
-					<legend class="header">
-						<@spring.message "navigator.dropdown.announcement"/>&nbsp;&nbsp;<small><@spring.message "announcement.view.message"/></small>
-						<a id="testBtn" class="btn btn-primary pull-right" href="javascript:void(0);">
-							<@spring.message "common.button.test"/>
-						</a>
-						<button id="saveBtn" class="btn btn-success pull-right" style="margin-right:5px">
-							<@spring.message "common.button.save"/>
-						</button>
-					</legend>
-					<textarea id="announcementTT" name="content">${content!}</textarea>
+					<fieldset>
+						<legend class="header">
+							<@spring.message "navigator.dropdown.announcement"/>&nbsp;&nbsp;<small><@spring.message "announcement.view.message"/></small>
+							<a id="testBtn" class="btn btn-primary pull-right" href="javascript:void(0);">
+								<@spring.message "common.button.test"/>
+							</a>
+							<button id="saveBtn" class="btn btn-success pull-right" style="margin-right:5px">
+								<@spring.message "common.button.save"/>
+							</button>
+						</legend>
+						<textarea id="announcementTT" name="content">${content!}</textarea>
+					</fieldset>
 				</form>
 			</div>
 		</div>

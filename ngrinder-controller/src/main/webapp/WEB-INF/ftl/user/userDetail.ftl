@@ -9,12 +9,14 @@
 	<#include "../common/navigator.ftl">
 	<div class="container">
 		<div class="page-header pageHeader">
-		<legend class="header">
-			<@spring.message "user.detail.header"/>
-			<button class="btn pull-right" onClick="window.history.back();">
-				<@spring.message "common.button.return"/>
-			</button>
-		</legend>
+		<fieldSet>
+			<legend class="header">
+				<@spring.message "user.detail.header"/>
+				<button class="btn pull-right" onClick="window.history.back();">
+					<@spring.message "common.button.return"/>
+				</button>
+			</legend>
+		</fieldSet>
 		<#include "userInfo.ftl"> 
 		<#include "../common/copyright.ftl">
 	</div>

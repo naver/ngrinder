@@ -9,15 +9,17 @@
 <body>
 	<#include "../common/navigator.ftl">
 	<div class="container">
-		<legend class="header">
-			<@spring.message "navigator.dropdown.userManagement"/>
-			<select id="roles" class="pull-right" name="roles">
-				<option value="all" <#if listPage?exists && !roleName?exists>selected</#if>"><@spring.message "user.left.all"/></option>
-				<#list roleSet as role> 
-					<option value="${role.fullName}" <#if roleName?exists && role.fullName == roleName>selected</#if>>${role.fullName}</option>
-				</#list>
-			</select>
-		</legend>
+		<fieldSet>
+			<legend class="header">
+				<@spring.message "navigator.dropdown.userManagement"/>
+				<select id="roles" class="pull-right" name="roles">
+					<option value="all" <#if listPage?exists && !roleName?exists>selected</#if>"><@spring.message "user.left.all"/></option>
+					<#list roleSet as role> 
+						<option value="${role.fullName}" <#if roleName?exists && role.fullName == roleName>selected</#if>>${role.fullName}</option>
+					</#list>
+				</select>
+			</legend> 
+		</fieldSet>
 		<form id="userListForm" action="${req.getContextPath()}/user" method="POST">
 			<div class="well form-inline searchBar">
 			 
