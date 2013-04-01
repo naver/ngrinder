@@ -14,6 +14,8 @@
 package org.ngrinder.perftest.service.samplinglistener;
 
 import java.io.File;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import net.grinder.SingleConsole;
 import net.grinder.SingleConsole.SamplingLifeCycleListener;
@@ -29,9 +31,9 @@ import org.ngrinder.perftest.service.PerfTestService;
  * @since 3.1.1
  */
 public class PerfTestSamplingCollectorListener implements SamplingLifeCycleListener {
-	private final Long perfTestId;
-	private final SingleConsole singleConsole;
 	private final PerfTestService perfTestService;
+	private ExecutorService newSingleThreadExecutor;
+	private PerfTestCollectionRunnable perfTestCollectionRunnable;
 
 	/**
 	 * Constructor.
@@ -45,9 +47,25 @@ public class PerfTestSamplingCollectorListener implements SamplingLifeCycleListe
 	 */
 	public PerfTestSamplingCollectorListener(SingleConsole singleConsole, Long perfTestId,
 					PerfTestService perfTestService) {
-		this.singleConsole = singleConsole;
-		this.perfTestId = perfTestId;
 		this.perfTestService = perfTestService;
+		this.newSingleThreadExecutor = Executors.newSingleThreadExecutor();
+		this.perfTestCollectionRunnable = new PerfTestCollectionRunnable(singleConsole, perfTestId);
+	}
+
+	class PerfTestCollectionRunnable implements Runnable {
+		private final SingleConsole singleConsole;
+		private final Long perfTestId;
+
+		PerfTestCollectionRunnable(SingleConsole singleConsole, Long perfTestId) {
+			this.singleConsole = singleConsole;
+			this.perfTestId = perfTestId;
+		}
+
+		@Override
+		public void run() {
+			perfTestService.saveStatistics(singleConsole, perfTestId);
+		}
+
 	}
 
 	@Override
@@ -57,11 +75,12 @@ public class PerfTestSamplingCollectorListener implements SamplingLifeCycleListe
 	@Override
 	public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
 		CoreLogger.LOGGER.debug("Sampling is performed");
-		perfTestService.saveStatistics(singleConsole, perfTestId);
+		newSingleThreadExecutor.execute(this.perfTestCollectionRunnable);
 	}
 
 	@Override
 	public void onSamplingEnded() {
+		newSingleThreadExecutor.shutdown();
 	}
 
 }
