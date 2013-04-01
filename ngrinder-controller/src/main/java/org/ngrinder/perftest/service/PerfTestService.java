@@ -1147,7 +1147,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	public void updatePerfTestAfterTestFinish(PerfTest perfTest) {
 		checkNotNull(perfTest);
-		Map<String, Object> result = getStatistics(perfTest);
+		Map<String, Object> result = consoleManager.getConsoleUsingPort(perfTest.getPort()).getStatictisData();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
 		LOGGER.info("Total Statistics for test {}  is {}", perfTest.getId(), totalStatistics);
