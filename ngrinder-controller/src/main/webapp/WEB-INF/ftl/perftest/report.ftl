@@ -338,6 +338,7 @@
 			$("#monitorDiv div.jqplot-target").each(function() {
 				$(this).removeClass("jqplot-target");
 			});
+			
         	$("#cpuDiv").empty();
         	$("#memoryDiv").empty();
         	$("#receivedDiv").empty();
@@ -369,14 +370,16 @@
 		}
 		
 		function drawChartForMonitor(data, area, titleArea, interval, format) {
-			if (data !== undefined && data !== '[]') {
+			if (data !== '[]') {
             	$("#" + area).show();	
             	$("#" + titleArea).show();
+            	$("#" + area + "ImgBtn").show();
             	plot = drawChart(area, data, format, interval);
             	plot.replot();
             } else {
             	$("#" + area).hide();	
             	$("#" + titleArea).hide();
+				$("#" + area + "ImgBtn").hide();
             }
 		}
 		
