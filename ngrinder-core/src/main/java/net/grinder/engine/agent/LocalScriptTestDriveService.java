@@ -94,8 +94,8 @@ public class LocalScriptTestDriveService {
 							+ File.pathSeparator + builder.buildCustomClassPath(true);
 			properties.setProperty("grinder.jvm.classpath", grinderJVMClassPath);
 			LOGGER.info("grinder.jvm.classpath  : {} ", grinderJVMClassPath);
-			AgentIdentityImplementation agentIndentity = new AgentIdentityImplementation("validation");
-
+			AgentIdentityImplementation agentIdentity = new AgentIdentityImplementation("validation");
+			agentIdentity.setNumber(0);
 			String newClassPath = GrinderClassPathUtils.buildClasspathBasedOnCurrentClassLoader(LOGGER);
 			LOGGER.debug("Validation Class Path " + newClassPath);
 			Properties systemProperties = new Properties();
@@ -107,7 +107,7 @@ public class LocalScriptTestDriveService {
 							systemProperties, buildJVMArgumentWithoutMemory, workingDirectory);
 
 			ScriptLocation scriptLocation = new ScriptLocation(workingDirectory, script);
-			ProcessWorkerFactory workerFactory = new ProcessWorkerFactory(workerCommandLine, agentIndentity,
+			ProcessWorkerFactory workerFactory = new ProcessWorkerFactory(workerCommandLine, agentIdentity,
 							fanOutStreamSender, false, scriptLocation, properties);
 
 			workerLauncher = new ErrorStreamRedirectWorkerLauncher(1, workerFactory, eventSynchronisation, LOGGER,

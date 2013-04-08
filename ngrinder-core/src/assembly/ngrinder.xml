@@ -15,6 +15,7 @@
       </includes>
       <fileMode>711</fileMode>
       <lineEnding>unix</lineEnding>
+      
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/target/classes/shell</directory>
