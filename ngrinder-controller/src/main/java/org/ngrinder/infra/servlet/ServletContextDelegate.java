@@ -73,13 +73,20 @@ public class ServletContextDelegate implements ServletContext {
 
 	@Override
 	public URL getResource(String path) throws MalformedURLException {
-		return new File(base, path).toURI().toURL();
+		return new File(base, hackXBean(path)).toURI().toURL();
+	}
+
+	private String hackXBean(String path) {
+		if (path.contains("xbean-1.0.jar")) {
+			path = path.replace("-1.0", "");
+		}
+		return path;
 	}
 
 	@Override
 	public InputStream getResourceAsStream(String path) {
 		try {
-			return new FileInputStream(new File(base, path));
+			return new FileInputStream(new File(base, hackXBean(path)));
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
@@ -97,7 +104,7 @@ public class ServletContextDelegate implements ServletContext {
 
 	@Override
 	public String getRealPath(String path) {
-		return new File(base, path).getAbsolutePath();
+		return new File(base, hackXBean(path)).getAbsolutePath();
 	}
 
 	@Override
