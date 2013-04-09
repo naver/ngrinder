@@ -299,8 +299,7 @@ public class HomeController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/error_404")
 	public String error404(RedirectAttributesModelMap model) {
-		model.addFlashAttribute("exception", new NGrinderRuntimeException("Requested URL does not exist"));
-		return "redirect:/doError";
+		return "redirect:/doError?type=404";
 	}
 
 	/**
@@ -318,6 +317,10 @@ public class HomeController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/doError")
 	public String second(User user, ModelMap model, HttpServletResponse response, HttpServletRequest request) {
+		String parameter = request.getParameter("type");
+		if ("404".equals(parameter)) {
+			model.addAttribute("exception", new NGrinderRuntimeException("Requested URL does not exist"));
+		}
 		return home(user, null, null, model, response, request);
 	}
 

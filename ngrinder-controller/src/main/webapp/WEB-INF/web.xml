@@ -25,6 +25,11 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
+	<error-page>
+		<error-code>404</error-code>
+		<location>/error_404</location>
+	</error-page>
+
 	<servlet-mapping>
 		<servlet-name>appServlet</servlet-name>
 		<url-pattern>/*</url-pattern>
