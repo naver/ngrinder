@@ -63,6 +63,7 @@
 	<!-- accessible from no authorized users -->
 	<http pattern="/check/**" security="none" />
 	<http pattern="/agent/download/**" security="none" />
+	<http pattern="/jnlp/**" security="none" />
 
 	<!-- used for svn access -->
 	<http realm="svn" pattern="/svn/**" access-decision-manager-ref="accessDecisionManager">
