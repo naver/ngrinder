@@ -40,8 +40,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Script validation service.
  * 
- * It works on local instead of remote agent. The reason I located this class in ngrinder-core is...
- * some grinder core class doesn't have public access..
+ * It works on local instead of remote agent. The reason this class is located in ngrinder-core
+ * is... some The Grinder core class doesn't have public access..
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -74,16 +74,7 @@ public class LocalScriptTestDriveService {
 		try {
 
 			fanOutStreamSender = new FanOutStreamSender(1);
-			base.listFiles(new FileFilter() {
-				@Override
-				public boolean accept(File pathname) {
-					String extension = FilenameUtils.getExtension(pathname.getName());
-					if (extension.startsWith("log")) {
-						pathname.delete();
-					}
-					return true;
-				}
-			});
+			deleteLogs(base);
 
 			GrinderProperties properties = new GrinderProperties();
 			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), securityEnabled, hostString,
@@ -173,6 +164,19 @@ public class LocalScriptTestDriveService {
 			appendingMessageOn(file, "Validation should be performed within 100 sec. Stop it forcely");
 		}
 		return file;
+	}
+
+	private void deleteLogs(File base) {
+		base.listFiles(new FileFilter() {
+			@Override
+			public boolean accept(File pathname) {
+				String extension = FilenameUtils.getExtension(pathname.getName());
+				if (extension.startsWith("log")) {
+					pathname.delete();
+				}
+				return true;
+			}
+		});
 	}
 
 	private void appendingMessageOn(File file, String msg) {
