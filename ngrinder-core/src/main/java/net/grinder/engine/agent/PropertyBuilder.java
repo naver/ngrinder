@@ -181,6 +181,9 @@ public class PropertyBuilder {
 			} else if (this.useXmxLimit && desirableXmx > DEFAULT_MAX_XMX_SIZE) {
 				desirableXmx = DEFAULT_MAX_XMX_SIZE;
 			}
+		} catch (UnsatisfiedLinkError e) {
+			LOGGER.error("Sigar lib link error:", e);
+			desirableXmx = DEFAULT_XMX_SIZE;
 		} catch (SigarException e) {
 			LOGGER.error("Error occurs while calculating memory size", e);
 			desirableXmx = DEFAULT_XMX_SIZE;
