@@ -77,8 +77,8 @@ public class ServletContextDelegate implements ServletContext {
 	}
 
 	private String hackXBean(String path) {
-		if (path.contains("xbean-1.0.jar")) {
-			path = path.replace("-1.0", "");
+		if (path.contains("xbean.jar")) {
+			path = path.replace("xbean.jar", "xbean-1.0.jar");
 		}
 		return path;
 	}

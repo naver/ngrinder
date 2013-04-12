@@ -112,7 +112,6 @@
 				  		},
 				  		function() {
 				  			showSuccessMsg("<@spring.message "agent.management.toBeApproved"/>");
-				  			window.location.reload();
 				  		}
 				     );
 				});
@@ -126,7 +125,6 @@
 				  		},
 				  		function() {
 				  			showSuccessMsg("<@spring.message "agent.management.toBeUnapproved"/>");
-				  			window.location.reload();
 				  		}
 				     );					
 				});

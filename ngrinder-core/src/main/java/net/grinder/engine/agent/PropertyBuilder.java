@@ -166,7 +166,13 @@ public class PropertyBuilder {
 
 	protected StringBuilder addMemorySettings(StringBuilder jvmArguments) {
 		String processCountStr = properties.getProperty("grinder.processes", "1");
-		int reservedMemory = properties.getInt("grinder.reserved.memory", 100) * 1024 * 1024;
+		// For compatibility, try both.
+		int reservedMemoryUnit = properties.getInt("grinder.reserved.memory", 0);
+		if (reservedMemoryUnit == 0) {
+			reservedMemoryUnit = properties.getInt("grinder.memory.reserved", 100);
+		}
+
+		int reservedMemory = Math.max(reservedMemoryUnit, 0) * 1024 * 1024;
 		int processCount = NumberUtils.toInt(processCountStr, 1);
 		long desirableXmx = DEFAULT_XMX_SIZE; // make 500M as default.
 		try {
@@ -188,8 +194,18 @@ public class PropertyBuilder {
 			LOGGER.error("Error occurs while calculating memory size", e);
 			desirableXmx = DEFAULT_XMX_SIZE;
 		}
-		return jvmArguments.append(" -Xms" + getMemorySizeStr(desirableXmx / 2) + "M -Xmx"
-						+ getMemorySizeStr(desirableXmx) + "M ");
+
+		jvmArguments.append(" -Xms" + getMemorySizeStr(desirableXmx / 2) + "m -Xmx" + getMemorySizeStr(desirableXmx)
+						+ "m ");
+		int permSize = properties.getInt("grinder.memory.permsize", 0);
+		if (permSize != 0) {
+			jvmArguments.append(" -XX:PermSize=").append(permSize).append("m ");
+		}
+		int maxPermSize = properties.getInt("grinder.memory.maxpermsize", 0);
+		if (maxPermSize != 0) {
+			jvmArguments.append(" -XX:MaxPermSize=").append(maxPermSize).append("m ");
+		}
+		return jvmArguments;
 	}
 
 	private String getMemorySizeStr(long desirableXmx) {

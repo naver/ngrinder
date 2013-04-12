@@ -107,7 +107,8 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 	 * @param response
 	 *            servlet response
 	 */
-	public DAVPropfindExHandler(DAVRepositoryManager connector, HttpServletRequest request, HttpServletResponse response) {
+	public DAVPropfindExHandler(DAVRepositoryManager connector, // LS
+					HttpServletRequest request, HttpServletResponse response) {
 		super(connector, request, response);
 	}
 
@@ -572,8 +573,9 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 		return inserted;
 	}
 
-	private DAVInsertPropAction insertLiveProp(DAVResource resource, LivePropertySpecification livePropSpec,
-					DAVInsertPropAction propAction, StringBuffer buffer) throws DAVException {
+	private DAVInsertPropAction insertLiveProp(DAVResource resource, //
+					LivePropertySpecification livePropSpec, DAVInsertPropAction propAction, StringBuffer buffer)
+					throws DAVException {
 		if (!livePropSpec.isSVNSupported()) {
 			// this is a core WebDAV live prop
 			return insertCoreLiveProperty(resource, propAction, livePropSpec, buffer);
@@ -756,10 +758,7 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 			}
 			value = SVNEncodingUtil.xmlEncodeCDATA(DAVPathUtil.dropLeadingSlash(uri.getPath()), true);
 		} else if (livePropElement == DAVElement.MD5_CHECKSUM) {
-			if (!resource.isCollection()
-							&& !resource.isBaseLined()
-							&& (resource.getType() == DAVResourceType.REGULAR
-											|| resource.getType() == DAVResourceType.VERSION || resource.getType() == DAVResourceType.WORKING)) {
+			if (!resource.isCollection() && !resource.isBaseLined() && isResourceMD5Checkable(resource)) {
 				try {
 					value = resource.getMD5Checksum(null);
 					if (value == null) {
@@ -849,6 +848,11 @@ public class DAVPropfindExHandler extends ServletDAVHandler implements IDAVResou
 		}
 
 		return propAction;
+	}
+
+	private boolean isResourceMD5Checkable(DAVResource resource) {
+		return resource.getType() == DAVResourceType.REGULAR || resource.getType() == DAVResourceType.VERSION
+						|| resource.getType() == DAVResourceType.WORKING;
 	}
 
 	private Date getLastModifiedTime2(DAVResource resource) throws SVNException {
