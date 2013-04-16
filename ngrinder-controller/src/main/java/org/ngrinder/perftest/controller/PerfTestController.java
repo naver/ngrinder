@@ -488,7 +488,7 @@ public class PerfTestController extends NGrinderBaseController {
 	public HttpEntity<String> getResourcesOnScriptFolder(User user, @RequestParam String scriptPath,
 			@RequestParam(value = "r", required = false) Long revision) {
 		FileEntry fileEntry = fileEntryService.getFileEntry(user, scriptPath);
-		String targetHosts = (fileEntry == null) ? "" : fileEntry.getProperties().get("targetHosts");
+		String targetHosts = (fileEntry == null) ? "" : filterHostString(fileEntry.getProperties().get("targetHosts"));
 
 		List<String> fileStringList = new ArrayList<String>();
 
@@ -498,6 +498,23 @@ public class PerfTestController extends NGrinderBaseController {
 		}
 
 		return toJsonHttpEntity(buildMap("targetHosts", trimToEmpty(targetHosts), "resources", fileStringList));
+	}
+
+	/**
+	 * Filter out please_modify_this.com from hosts string.
+	 * 
+	 * @param originalString
+	 *            original string
+	 * @return filtered string
+	 */
+	private String filterHostString(String originalString) {
+		List<String> hosts = Lists.newArrayList();
+		for (String each : StringUtils.split(StringUtils.trimToEmpty(originalString), ",")) {
+			if (!each.contains("please_modify_this.com")) {
+				hosts.add(each);
+			}
+		}
+		return StringUtils.join(hosts, ",");
 	}
 
 	/**
