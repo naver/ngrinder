@@ -44,6 +44,7 @@ public class AgentConfig {
 	public static final String AGENT_REGION = "agent.region";
 	public static final String AGENT_HOSTID = "agent.hostid";
 	public static final String AGENT_USE_SAME_CONSOLE = "agent.same.console.host";
+	public static final String MONITOR_LISTEN_PORT = "monitor.listen.port";
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AgentConfig.class);
 
@@ -210,11 +211,7 @@ public class AgentConfig {
 	 * @return true is test mode
 	 */
 	public boolean isTestMode() {
-		return BooleanUtils.toBoolean(getAgentProperty("testmode", "false"));
-	}
-
-	String getAgentProperty(String key, String defaultValue) {
-		return getAgentProperties().getProperty(key, defaultValue);
+		return BooleanUtils.toBoolean(getProperty("testmode", "false"));
 	}
 
 	public AgentHome getHome() {

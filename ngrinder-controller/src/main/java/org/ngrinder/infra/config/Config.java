@@ -33,7 +33,9 @@ import org.ngrinder.common.exception.ConfigurationException;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.FileWatchdog;
 import org.ngrinder.common.util.PropertiesWrapper;
+import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.infra.logger.CoreLogger;
+import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.service.IConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -171,6 +173,15 @@ public class Config implements IConfig, NGrinderConstants {
 	 */
 	public String getRegion() {
 		return isCluster() ? getSystemProperties().getProperty(NGRINDER_PROP_REGION, NONE_REGION) : NONE_REGION;
+	}
+
+	/**
+	 * Get the monitor listener port in configuration.
+	 * 
+	 * @return monitor port
+	 */
+	public int getMonitorPort() {
+		return getSystemProperties().getPropertyInt(AgentConfig.MONITOR_LISTEN_PORT, MonitorConstants.DEFAULT_MONITOR_PORT);
 	}
 
 	/**

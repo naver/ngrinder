@@ -51,7 +51,6 @@ import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
-import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.perftest.model.NullSingleConsole;
 import org.ngrinder.perftest.service.samplinglistener.AgentLostDetectionListener;
 import org.ngrinder.perftest.service.samplinglistener.MonitorCollectorListener;
@@ -434,7 +433,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			}
 			AgentInfo targetServer = new AgentInfo();
 			targetServer.setIp(targetIP);
-			targetServer.setPort(MonitorConstants.DEFAULT_MONITOR_PORT);
+			targetServer.setPort(config.getMonitorPort());
 			agents.add(targetServer);
 			ipSet.add(targetIP);
 		}

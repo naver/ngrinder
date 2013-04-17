@@ -46,6 +46,12 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGri
 		assertThat(home.getDirectory(), is(ngrinderHomeUnderUserHome));
 		assertThat(home.getPluginsDirectory(), is(new File(ngrinderHomeUnderUserHome, "plugins")));
 	}
+	
+	@Test
+	public void testGetMonitorPort() {
+		int port = config.getMonitorPort();
+		assertThat(port, not(0));
+	}
 
 	@Test
 	public void testTestMode() {
