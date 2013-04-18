@@ -39,6 +39,13 @@ rel="popover" placement="bottom"></div>
 	</div>
 </div>
 
+<div class="modal hide fade" id="targetInfoModal">
+		<div class="modal-header" style="border: none;">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		</div>
+		<div class="modal-body" id="targetInfo_modal" style="max-height:1200px; padding-left:45px"></div>	
+</div>
+
 <script>
 	function validateHost(arr) {
 		  var success;
@@ -94,6 +101,26 @@ rel="popover" placement="bottom"></div>
 	      	deleteHost($(this));
 	      });
 	      
+	      $(".icon-remove-circle").live("click", function() {
+	      	deleteHost($(this));
+	      });
+	      
+	      $(".div-host p a[id='hostID']").live("click", function() {
+	      	var url = "${req.getContextPath()}/monitor/info?ip="+$.trim($(this).text());
+	      	
+	      	$("#targetInfo_modal").load(url, function(){
+				$('#targetInfoModal').modal('show');
+			});
+			
+	      });
+	      
+	      $('#targetInfoModal').on('hidden', function () {
+    			if(timer){
+                   window.clearInterval(timer);
+                }
+                $.get("${req.getContextPath()}/monitor/close?ip="+$("#monitorIp").val());
+    	  });
+	          
 	      initHosts();
 	  });
 
@@ -106,7 +133,7 @@ rel="popover" placement="bottom"></div>
       }
 
       function hostItem(content) {
-          return "<p class='host'>" + content + "  <a href='javascript:void(0);'><i class='icon-remove-circle'></i></a></p><br style='line-height:0px'/>"
+          return "<p class='host'><a id='hostID' href='#targetInfoModal' data-toggle='modal'> " + content + " </a> <a href='javascript:void(0);'><i class='icon-remove-circle'></i></a></p><br style='line-height:0px'/>"
       }
 
       function initHosts(newHosts) {

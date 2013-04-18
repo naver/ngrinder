@@ -98,7 +98,27 @@ public class MonitorClientSerivce {
 		} catch (Exception e) {
 			LOGGER.error("Init Error while {} and {} {}", new Object[] { ip, port, reportPath }, e);
 		}
-
+	}
+	
+	/**
+	 * Initialize the mbeanClient connection.
+	 * 
+	 * @param ip
+	 *            IP address of the monitor target
+	 * @param port
+	 *            port of the monitor target
+	 */
+	public void init(String ip, int port) {
+		LOGGER.debug("Init MonitorClientSerivce for {}:{}", ip, port);
+		this.ip = ip;
+		try {
+			mbeanClient = new MBeanClient(ip, port);
+			String objNameStr = MonitorConstants.DEFAULT_MONITOR_DOMAIN + ":" + MonitorConstants.SYSTEM;
+			ObjectName systemName = new ObjectName(objNameStr);
+			sysInfoMBeanObj = new MonitorCollectionInfoDomain(systemName, "SystemInfo", SystemInfo.class);
+		} catch (Exception e) {
+			LOGGER.error("Init Error while {} and {}.", new Object[] { ip, port }, e);
+		}
 	}
 
 	/**
@@ -108,6 +128,7 @@ public class MonitorClientSerivce {
 	 */
 	public SystemInfo getMonitorData() {
 		try {
+			
 			if (!mbeanClient.isConnected()) {
 				mbeanClient.connect();
 			}
@@ -127,14 +148,20 @@ public class MonitorClientSerivce {
 			return null;
 		}
 	}
-
+	
 	/**
 	 * close the MBClient.
 	 */
 	public void close() {
 		mbeanClient.disconnect();
 		flushAndClose();
-
+	}
+	
+	/**
+	 * Only close the MBClient.
+	 */
+	public void closeMBClient() {
+		mbeanClient.disconnect();
 	}
 
 	private void flushAndClose() {

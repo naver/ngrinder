@@ -2,6 +2,7 @@
 <html>
 	<head>	
 		<#include "../common/common.ftl">
+		<#include "../common/jqplot.ftl">
 		<title><@spring.message "script.editor.title"/></title>
 		<style>
 			div.div-host {
