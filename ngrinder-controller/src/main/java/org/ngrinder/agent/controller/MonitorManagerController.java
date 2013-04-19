@@ -14,6 +14,7 @@
 package org.ngrinder.agent.controller;
 
 import java.util.Map;
+import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
@@ -73,9 +74,12 @@ public class MonitorManagerController extends NGrinderBaseController {
 	public String getRealTimeMonitorData(ModelMap model, @RequestParam String ip) {
 		Map<String, Object> systemInfoMap = Maps.newHashMap();
 		systemInfoMap.put(JSON_SUCCESS, true);
-		systemInfoMap.put("systemData",
-				new SystemDataModel(monitorInfoStore.getSystemInfo(ip, getConfig().getMonitorPort()), "UNKNOWN"));
+		systemInfoMap.put(
+				"systemData",
+				new SystemDataModel(checkNotNull(monitorInfoStore.getSystemInfo(ip, getConfig().getMonitorPort()),
+						"Get systemInfo error from [%s]", ip), "UNKNOWN"));
 		String jsonStr = toJson(systemInfoMap);
+
 		return jsonStr;
 	}
 	

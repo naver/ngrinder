@@ -28,10 +28,9 @@
 			            return -380;
 			        }
     			});
-            	
             	initChartData();
-            	getStatus();
-                timer=window.setInterval("getStatus()",interval * 1000);
+            	if(getStatus())
+                	timer=window.setInterval("getStatus()",interval * 1000);
             });
             
             function getMax(prev, current) {
@@ -48,6 +47,7 @@
             }
             
             function getStatus(){
+            	var result = true;
                 $.ajax({
                     url: "${req.getContextPath()}/monitor/status",
                     async: false,
@@ -61,19 +61,15 @@
                     		showChart('cpuDiv', sys_totalCpuValue.aElement, 0, formatPercentage, maxCPU);
                     		maxMemory = getMax(maxMemory, sys_usedMemory.aElement);
                         	showChart('memoryDiv', sys_usedMemory.aElement, 1, formatMemory, maxMemory);
-                            
-                            return true;
-                        } else {
-                            showErrorMsg("Get monitor data failed.");
-                            return false;
-                        }
+                            result = true;
+                        } 
                     },
                     error: function() {
-                        showErrorMsg("Error!");
-                        
-                        return false;
+                        showErrorMsg("Get monitor data failed.");
+                        result = false;
                     }
                 });
+                return result;
             }
             
             function showChart(containerId, data, index, formatYaxis, maxY) {
