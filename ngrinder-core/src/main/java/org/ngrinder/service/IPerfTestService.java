@@ -14,6 +14,7 @@
 package org.ngrinder.service;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 import org.ngrinder.model.PerfTest;
@@ -27,7 +28,7 @@ import org.ngrinder.model.User;
  * @since 3.0
  */
 public interface IPerfTestService {
-
+	
 	/**
 	 * get test detail.
 	 * 
@@ -40,7 +41,18 @@ public interface IPerfTestService {
 	public abstract PerfTest getPerfTest(User user, Long id);
 
 	/**
-	 * get {@link PerfTest} list of some IDs.
+	 * Get test count based on given time region.
+	 * 
+	 * @param start
+	 *            start time.
+	 * @param end
+	 *            end  time.
+	 * @return perftestList test list started between given times
+	 */
+	public abstract List<PerfTest> getPerfTestList(Date start, Date end);
+
+	/**
+	 * Get {@link PerfTest} list of some IDs.
 	 * 
 	 * @param user
 	 *            current operation user

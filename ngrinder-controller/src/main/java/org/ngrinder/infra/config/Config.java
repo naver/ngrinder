@@ -183,6 +183,16 @@ public class Config implements IConfig, NGrinderConstants {
 	public int getMonitorPort() {
 		return getSystemProperties().getPropertyInt(AgentConfig.MONITOR_LISTEN_PORT, MonitorConstants.DEFAULT_MONITOR_PORT);
 	}
+	
+	/**
+	 * Check if using collect data functions  
+	 * 
+	 * @return true 
+	 */
+	public boolean enabledCollectDataToGA() {
+		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINER_USAGE_REPORT, true);
+	}
+	
 
 	/**
 	 * Initialize Logger.

@@ -295,7 +295,6 @@
 			<version>1.6.12</version>
 		</dependency>
 
-
 		<!-- database driver -->
 		<dependency>
 			<groupId>cubrid</groupId>
@@ -312,6 +311,18 @@
 			<!-- this version is disappeared... little bit hack -->
 			<scope>system</scope>
 			<systemPath>${project.basedir}/patch/grinder-3.9.1-patch.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.ngrinder</groupId>
+			<artifactId>universal-analytics-java</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/patch/universal-analytics-java-0.0.1-SNAPSHOT.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>

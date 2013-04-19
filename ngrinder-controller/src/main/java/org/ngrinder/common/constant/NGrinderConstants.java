@@ -193,6 +193,7 @@ public interface NGrinderConstants {
 	public static final int MAX_STACKTRACE_STRING_SIZE = 2048;
 	public static final String NGRINDER_PROP_DEFAULT_LANGUAGE = "ngrinder.langauge.default";
 	public static final String NGRINDER_PROP_FRONT_PAGE_RSS = "ngrinder.frontpage.rss";
+	public static final String NGRINER_USAGE_REPORT = "ngrinder.usage.report";
 	
 	public static final String NGRINDER_NEWS_RSS_URL = "http://www.cubrid.org/wiki_ngrinder/rss";
 	public static final String NGRINDER_PROP_QNA_PAGE_RSS = "ngrinder.frontpage.qna.rss";

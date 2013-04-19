@@ -13,6 +13,7 @@
  */
 package org.ngrinder.perftest.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.ngrinder.model.PerfTest;
@@ -140,4 +141,15 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	@Modifying
 	@Query("update PerfTest p set p.monitorStatus=?2 where p.id=?1")
 	int updatetMonitorStatus(Long id, String monitorStatus);
+	
+	/**
+	 * Find all {@link PerfTest} based on given start and end times
+	 * 
+	 * @param start time  
+	 * @param end  time  
+	 *              
+	 * @return {@link PerfTest} list
+	 */
+	@Query("select p from PerfTest  p where p.startTime between ?1 and ?2")
+	List<PerfTest> findAllByGivenTimeRegion(Date start, Date end);
 }

@@ -1681,4 +1681,18 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return reportData.toString();
 	}
 
+	/**
+	 * Get test count based on given time region.
+	 * 
+	 * @param start
+	 *            start time.
+	 * @param end
+	 *            end time.
+	 * @return found {@link PerfTest} list
+	 */
+	@Override
+	public List<PerfTest> getPerfTestList(Date start, Date end) {
+		return perfTestRepository.findAllByGivenTimeRegion(start, end);
+	}
+
 }
