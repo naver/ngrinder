@@ -13,6 +13,9 @@
  */
 package net.grinder;
 
+import static net.grinder.util.CollectionUtils.newArrayList;
+import static net.grinder.util.CollectionUtils.newHashMap;
+import static net.grinder.util.CollectionUtils.newLinkedHashMap;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.beans.PropertyChangeEvent;
@@ -77,8 +80,6 @@ import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.ReflectionUtil;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.service.ISingleConsole;
-import org.python.google.common.collect.Lists;
-import org.python.google.common.collect.Maps;
 import org.python.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,7 +128,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 
 	private boolean headerAdded = false;
 
-	private Map<String, BufferedWriter> fileWriterMap = Maps.newHashMap();
+	private Map<String, BufferedWriter> fileWriterMap = newHashMap();
 	/** Current count of sampling. */
 	private long samplingCount = 0;
 
@@ -307,7 +308,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @return agent list
 	 */
 	public List<AgentIdentity> getAllAttachedAgents() {
-		final List<AgentIdentity> agentIdentities = Lists.newArrayList();
+		final List<AgentIdentity> agentIdentities = newArrayList();
 		AllocateLowestNumber agentIdentity = (AllocateLowestNumber) checkNotNull(ReflectionUtil.getFieldValue(
 						(ProcessControlImplementation) consoleFoundation.getComponent(ProcessControl.class),
 						"m_agentNumberMap"),
@@ -660,7 +661,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 */
 	public Set<Entry<String, StatisticExpression>> getExpressionEntrySet() {
 		if (this.statisticExpressionMap == null) {
-			Map<String, StatisticExpression> expressionMap = Maps.newLinkedHashMap();
+			Map<String, StatisticExpression> expressionMap = newLinkedHashMap();
 			for (ExpressionView each : getExpressionView()) {
 				expressionMap.put(each.getDisplayName().replaceAll("\\s+", "_"), each.getExpression());
 			}
@@ -741,8 +742,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				writeReportData("TPS-" + entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA,
 								formatValue(getRealDoubleValue(tpsExpression.getDoubleValue(value))));
 			} else {
-				writeReportData("TPS-" + entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA,
-								"null");
+				writeReportData("TPS-" + entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA, "null");
 			}
 
 		}
@@ -902,13 +902,13 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 *            cumulatedStatistics
 	 */
 	protected void updateStatistics(StatisticsSet intervalStatistics, StatisticsSet accumulatedStatistics) {
-		Map<String, Object> result = Maps.newHashMap();
+		Map<String, Object> result = newHashMap();
 		result.put("test_time", getCurrentRunningTime() / 1000);
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
 		for (Test test : accumulatedStatisticMapPerTest.keySet()) {
-			Map<String, Object> accumulatedStatisticMap = Maps.newHashMap();
-			Map<String, Object> intervalStatisticsMap = Maps.newHashMap();
+			Map<String, Object> accumulatedStatisticMap = newHashMap();
+			Map<String, Object> intervalStatisticsMap = newHashMap();
 			StatisticsSet accumulatedSet = this.accumulatedStatisticMapPerTest.get(test);
 			StatisticsSet intervalSet = this.intervalStatisticMapPerTest.get(test);
 
@@ -934,7 +934,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			lastSampleStatistics.add(intervalStatisticsMap);
 		}
 
-		Map<String, Object> totalStatistics = Maps.newHashMap();
+		Map<String, Object> totalStatistics = newHashMap();
 
 		for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
 			if (INTERESTING_STATISTICS.contains(each.getKey())) {

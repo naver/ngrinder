@@ -10,6 +10,7 @@
 		<module>ngrinder-controller</module>
 		<module>ngrinder-core</module>
 		<module>ngrinder-dns</module>
+		<module>ngrinder-groovy</module>
 	</modules>
 
 	<repositories>
