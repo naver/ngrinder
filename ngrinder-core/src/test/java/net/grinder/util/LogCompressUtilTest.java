@@ -27,7 +27,9 @@ public class LogCompressUtilTest {
 	public void testLogCompressUnCompress() throws IOException {
 		File file = new File(LogCompressUtilTest.class.getResource("/grinder1.properties").getFile());
 		byte[] zipedContent = LogCompressUtil.compressFile(file);
-		FileUtils.writeByteArrayToFile(new File("c:/Project/a.zip"), zipedContent);
+		File createTempFile2 = File.createTempFile("a22", "zip");
+		createTempFile2.deleteOnExit();
+		FileUtils.writeByteArrayToFile(createTempFile2, zipedContent);
 		File createTempFile = File.createTempFile("a22", "tmp");
 		LogCompressUtil.unCompress(zipedContent, createTempFile);
 		assertThat(createTempFile.exists(), is(true));

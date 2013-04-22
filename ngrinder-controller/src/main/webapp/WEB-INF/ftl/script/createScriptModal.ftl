@@ -20,7 +20,9 @@
 							<div class="controls">
 								<input type="hidden" name="type" value="script"/>
 								<select id="languageSelect" name="scriptType">
-									<option value="py">Jython</option>
+									<#list langs as lang>
+									<option value="${lang.extension}">${lang.title}</option>
+									</#list>
 								</select>
 							  <span class="help-inline"></span>
 							</div>

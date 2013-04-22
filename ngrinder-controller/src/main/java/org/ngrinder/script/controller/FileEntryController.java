@@ -28,6 +28,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import net.grinder.lang.Lang;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -119,6 +121,7 @@ public class FileEntryController extends NGrinderBaseController {
 		model.addAttribute("files", files);
 		model.addAttribute("currentPath", path);
 		model.addAttribute("svnUrl", fileEntryService.getSvnUrl(user, path));
+		model.addAttribute("langs", Lang.values());
 		return "script/scriptList";
 	}
 

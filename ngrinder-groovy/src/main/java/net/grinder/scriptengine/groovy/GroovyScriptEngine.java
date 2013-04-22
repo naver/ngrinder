@@ -120,7 +120,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 		@Override
 		public void run() throws ScriptExecutionException {
 			if (m_shutdowned) {
-				ThreadUtils.sleep(500);
+				ThreadUtils.sleep(100);
 				return;
 			}
 			try {

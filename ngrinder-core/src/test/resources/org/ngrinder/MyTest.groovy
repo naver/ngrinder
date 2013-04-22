@@ -43,6 +43,7 @@ class MyTest {
 	public void beforeThread() {
 		grinder.statistics.delayReports=true;
 		grinder.getLogger().info("before thread in MyTest.");
+		
 	}
 
 	@Test

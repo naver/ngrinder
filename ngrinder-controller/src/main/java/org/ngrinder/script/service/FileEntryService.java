@@ -28,6 +28,8 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import net.grinder.lang.Lang;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
@@ -321,7 +323,7 @@ public class FileEntryService {
 			filePath = fileName;
 		}
 		fileEntry.setPath(filePath);
-		fileEntry.setContent(loadFreeMarkerTemplate(user, url));
+		fileEntry.setContent(loadFreeMarkerTemplate(user, Lang.getByFileName(fileName), url));
 		addHostProperties(fileEntry, url);
 		return fileEntry;
 	}
@@ -369,14 +371,14 @@ public class FileEntryService {
 	 *            url
 	 * @return generated test script
 	 */
-	public String loadFreeMarkerTemplate(User user, String url) {
+	public String loadFreeMarkerTemplate(User user, Lang lang, String url) {
 
 		try {
 			Configuration freemarkerConfig = new Configuration();
 			ClassPathResource cpr = new ClassPathResource("script_template");
 			freemarkerConfig.setDirectoryForTemplateLoading(cpr.getFile());
 			freemarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
-			Template template = freemarkerConfig.getTemplate("basic_template.ftl");
+			Template template = freemarkerConfig.getTemplate("basic_template_" + lang.getExtension() + ".ftl");
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("url", url);
 			map.put("user", user);

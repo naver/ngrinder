@@ -23,6 +23,7 @@ import net.grinder.AgentDaemon.AgentShutDownListener;
 import net.grinder.SingleConsole;
 import net.grinder.common.GrinderProperties;
 import net.grinder.common.GrinderProperties.PersistenceException;
+import net.grinder.util.GrinderClassPathInitializer;
 import net.grinder.util.thread.Condition;
 
 import org.junit.After;
@@ -41,6 +42,7 @@ public class GroovyScriptInAgentTest {
 
 	@Before
 	public void before() {
+		GrinderClassPathInitializer.initJUnitContext();
 		agentConfig = new MockAgentConfigInAgentSide().init();
 		consolePort = getFreePort();
 		console1 = new SingleConsole(consolePort);
