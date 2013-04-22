@@ -315,9 +315,9 @@
 		<dependency>
 			<groupId>org.ngrinder</groupId>
 			<artifactId>universal-analytics-java</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/patch/universal-analytics-java-0.0.1-SNAPSHOT.jar</systemPath>
+			<systemPath>${project.basedir}/patch/universal-analytics-java-1.0.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>commons-httpclient</groupId>
