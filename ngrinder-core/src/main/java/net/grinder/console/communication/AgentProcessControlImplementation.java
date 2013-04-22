@@ -13,6 +13,8 @@
  */
 package net.grinder.console.communication;
 
+import static net.grinder.util.CollectionUtils.newLinkedHashSet;
+
 import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Map;
@@ -39,7 +41,6 @@ import net.grinder.util.ListenerSupport.Informer;
 
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.python.google.common.base.Predicate;
-import org.python.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -458,7 +459,7 @@ public class AgentProcessControlImplementation implements AgentProcessControl {
 	 * @since 3.1.2
 	 */
 	public Set<AgentStatus> getAgentStatusSet(Predicate<AgentStatus> predicate) {
-		Set<AgentStatus> statusSet = Sets.newLinkedHashSet();
+		Set<AgentStatus> statusSet = newLinkedHashSet();
 		for (Entry<AgentIdentity, AgentStatus> each : m_agentMap.entrySet()) {
 			if (predicate.apply(each.getValue())) {
 				statusSet.add(each.getValue());
