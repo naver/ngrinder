@@ -26,7 +26,7 @@ import org.ngrinder.common.util.ThreadUtil;
 
 public class NGrinderStarterTest {
 
-	private NGrinderStarter starter = new TmpNGrinderStarter();
+	private NGrinderStarter starter = new MockNGrinderStarter();
 
 	@Test
 	public void testNGrinderStarterJarResolution() {
@@ -71,7 +71,7 @@ public class NGrinderStarterTest {
 	}
 }
 
-class TmpNGrinderStarter extends NGrinderStarter {
+class MockNGrinderStarter extends NGrinderStarter {
 	@Override
 	protected void printHelpAndExit(String message) {
 	}

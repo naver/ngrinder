@@ -143,10 +143,11 @@ public class AgentImplementationEx implements Agent {
 					properties = createAndMergeProperties(grinderProperties,
 									startMessage != null ? startMessage.getProperties() : null);
 					if (m_agentConfig.getPropertyBoolean(AgentConfig.AGENT_USE_SAME_CONSOLE, true)) {
-						properties.setProperty(
-										GrinderProperties.CONSOLE_HOST,
-										m_agentConfig.getProperty(AgentConfig.AGENT_CONTROLER_SERVER_HOST,
-														properties.getProperty(GrinderProperties.CONSOLE_HOST)));
+						String connectingHostName = m_agentConfig.getProperty(AgentConfig.AGENT_CONTROLER_SERVER_HOST,
+										properties.getProperty(GrinderProperties.CONSOLE_HOST));
+						if (connectingHostName != null) {
+							properties.setProperty(GrinderProperties.CONSOLE_HOST, connectingHostName);
+						}
 					}
 
 					m_agentIdentity.setName(properties.getProperty("grinder.hostID", NetworkUtil.getLocalHostName()));
