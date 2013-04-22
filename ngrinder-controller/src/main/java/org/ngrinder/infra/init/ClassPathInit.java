@@ -18,12 +18,8 @@ import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 
-import net.grinder.util.GrinderClassPathUtils;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -39,7 +35,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ClassPathInit {
-	private static final Logger LOG = LoggerFactory.getLogger(ClassPathInit.class);
 
 	/**
 	 * Clean up grinder-dcr-agent javadoc and source.
@@ -60,8 +55,5 @@ public class ClassPathInit {
 				}
 			}
 		}
-		LOG.info("===========================================================================");
-		LOG.info("Total Class Path for validation is {}",
-						GrinderClassPathUtils.buildClasspathBasedOnCurrentClassLoader(LOG));
 	}
 }

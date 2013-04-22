@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.grinder.lang.Lang;
+
 import org.apache.commons.io.FilenameUtils;
 import org.ngrinder.model.BaseModel;
 import org.ngrinder.model.IFileEntry;
@@ -211,4 +213,7 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 		this.properties = properties;
 	}
 
+	public String getSyntaxHighligher() {
+		return Lang.getByFileName(getFileName()).getCodemirror();
+	}
 }

@@ -38,11 +38,12 @@ import net.grinder.engine.common.ConnectorFactory;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
 import net.grinder.engine.communication.ConsoleListener;
+import net.grinder.lang.Lang;
 import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.messages.console.AgentProcessReportMessage;
 import net.grinder.util.Directory;
-import net.grinder.util.GrinderClassPathUtils;
+import net.grinder.util.GrinderClassPathProcessor;
 import net.grinder.util.NetworkUtil;
 import net.grinder.util.thread.Condition;
 
@@ -233,14 +234,14 @@ public class AgentImplementationEx implements Agent {
 						properties.setFile(GrinderProperties.LOG_DIRECTORY, new File(m_agentConfig.getHome()
 										.getLogDirectory(), properties.getProperty(GRINDER_PROP_TEST_ID, "default")));
 					}
-
+					Lang lang = Lang.getByFileName(script.getFile());
 					final WorkerFactory workerFactory;
-					String jvmArguments = buildTestRunProperties(script, properties);
+					String jvmArguments = buildTestRunProperties(script, lang, properties);
 
 					if (!properties.getBoolean("grinder.debug.singleprocess", false)) {
 						// Fix to provide empty system classpath to speed up
 						final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
-										filterSystemClassPath(System.getProperties(), m_logger), jvmArguments,
+										filterSystemClassPath(System.getProperties(), lang, m_logger), jvmArguments,
 										script.getDirectory());
 
 						m_logger.info("Worker process command line: {}", workerCommandLine);
@@ -350,13 +351,14 @@ public class AgentImplementationEx implements Agent {
 		}
 	}
 
-	private String buildTestRunProperties(ScriptLocation script, GrinderProperties properties) {
+	private String buildTestRunProperties(ScriptLocation script, Lang lang, GrinderProperties properties) {
 		PropertyBuilder builder = new PropertyBuilder(properties, script.getDirectory(), properties.getBoolean(
 						"grinder.security", false), properties.getProperty("ngrinder.etc.hosts"),
 						NetworkUtil.getLocalHostName(), m_agentConfig.getPropertyBoolean("agent.servermode", false),
 						m_agentConfig.getPropertyBoolean("agent.useXmxLimit", true));
 		String jvmArguments = builder.buildJVMArgument();
-		String rebaseCustomClassPath = getForeMostClassPath(System.getProperties(), m_logger) + File.pathSeparator
+		String rebaseCustomClassPath = getForeMostClassPath(System.getProperties(), lang, m_logger)
+						+ File.pathSeparator
 						+ builder.rebaseCustomClassPath(properties.getProperty("grinder.jvm.classpath", ""));
 		properties.setProperty("grinder.jvm.classpath", rebaseCustomClassPath);
 
@@ -379,10 +381,11 @@ public class AgentImplementationEx implements Agent {
 	 *            logger
 	 * @return foremost classpath
 	 */
-	private static String getForeMostClassPath(Properties properties, Logger logger) {
+	private String getForeMostClassPath(Properties properties, Lang lang, Logger logger) {
 		String property = properties.getProperty("java.class.path", "");
-		return GrinderClassPathUtils.filterForeMostClassPath(property, logger) + File.pathSeparator
-						+ GrinderClassPathUtils.filterPatchClassPath(property, logger);
+		GrinderClassPathProcessor classpathUtil = lang.getGrinderClassPathProcessor();
+		return classpathUtil.filterForeMostClassPath(property, logger) + File.pathSeparator
+						+ classpathUtil.filterPatchClassPath(property, logger);
 	}
 
 	/**
@@ -394,10 +397,11 @@ public class AgentImplementationEx implements Agent {
 	 *            logger
 	 * @return filtered properties
 	 */
-	private static Properties filterSystemClassPath(Properties properties, Logger logger) {
+	private Properties filterSystemClassPath(Properties properties, Lang lang, Logger logger) {
 		String property = properties.getProperty("java.class.path", "");
 		logger.debug("Total System Class Path in total is " + property);
-		String newClassPath = GrinderClassPathUtils.filterClassPath(property, logger);
+
+		String newClassPath = lang.getGrinderClassPathProcessor().filterClassPath(property, logger);
 
 		properties.setProperty("java.class.path", newClassPath);
 		logger.debug("Filtered System Class Path is " + newClassPath);

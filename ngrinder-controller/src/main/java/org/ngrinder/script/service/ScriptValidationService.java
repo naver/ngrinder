@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import net.grinder.engine.agent.LocalScriptTestDriveService;
+import net.grinder.lang.Lang;
 import net.grinder.util.thread.Condition;
 
 import org.apache.commons.io.FileUtils;
@@ -35,10 +36,6 @@ import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.service.IScriptValidationService;
-import org.python.core.CompileMode;
-import org.python.core.CompilerFlags;
-import org.python.core.PySyntaxError;
-import org.python.core.PyTuple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +77,10 @@ public class ScriptValidationService implements IScriptValidationService {
 				checkNotEmpty(scriptEntry.getContent(), "scriptEntity content should be provided");
 			}
 			checkNotNull(user, "user should be provided");
-			String result = checkSyntaxErrors(scriptEntry.getContent());
+			// String result = checkSyntaxErrors(scriptEntry.getContent());
+
+			Lang lang = Lang.getByFileName(scriptEntry.getPath());
+			String result = lang.checkSyntaxErrors(scriptEntry.getContent());
 			if (result != null) {
 				return result;
 			}
@@ -149,35 +149,10 @@ public class ScriptValidationService implements IScriptValidationService {
 		return StringUtils.EMPTY;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.ngrinder.script.service.IScriptValidationService#checkSyntaxErrors(java.lang.String)
-	 */
 	@Override
 	public String checkSyntaxErrors(String script) {
-		try {
-			org.python.core.ParserFacade.parse(script, CompileMode.exec, "unnamed", new CompilerFlags(
-							CompilerFlags.PyCF_DONT_IMPLY_DEDENT | CompilerFlags.PyCF_ONLY_AST));
 
-		} catch (PySyntaxError e) {
-			try {
-				PyTuple pyTuple = (PyTuple) ((PyTuple) e.value).get(1);
-				Integer line = (Integer) pyTuple.get(1);
-				Integer column = (Integer) pyTuple.get(2);
-				String lineString = (String) pyTuple.get(3);
-				StringBuilder buf = new StringBuilder(lineString);
-				if (lineString.length() >= column) {
-					buf.insert(column, "^");
-				}
-				return "Error occured\n" + " - Invalid Syntax Error on line " + line + " / column " + column + "\n"
-								+ buf.toString();
-			} catch (Exception ex) {
-				return "Error occured while evalation PySyntaxError";
-			}
-		}
 		return null;
-
 	}
 
 }
