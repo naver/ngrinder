@@ -38,7 +38,11 @@
 			<artifactId>ngrinder-dns</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.ngrinder</groupId>
+			<artifactId>ngrinder-groovy</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.fusesource</groupId>
 			<artifactId>sigar</artifactId>
@@ -81,24 +85,24 @@
 		</dependency>
 
 		<dependency>
-	      <groupId>jre</groupId>
-	      <artifactId>javaws</artifactId>
-	      <version>6.0</version>
-	      <type>jar</type>
-	      <scope>system</scope>
-	      <optional>true</optional>
-	      <systemPath>${java.home}/lib/javaws.jar</systemPath>
-    	</dependency>
-    	
-    	<dependency>
-	      <groupId>jre</groupId>
-	      <artifactId>deploy</artifactId>
-	      <version>6.0</version>
-	      <type>jar</type>
-	      <scope>system</scope>
-	      <optional>true</optional>
-	      <systemPath>${java.home}/lib/deploy.jar</systemPath>
-    	</dependency>
+			<groupId>jre</groupId>
+			<artifactId>javaws</artifactId>
+			<version>6.0</version>
+			<type>jar</type>
+			<scope>system</scope>
+			<optional>true</optional>
+			<systemPath>${java.home}/lib/javaws.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>jre</groupId>
+			<artifactId>deploy</artifactId>
+			<version>6.0</version>
+			<type>jar</type>
+			<scope>system</scope>
+			<optional>true</optional>
+			<systemPath>${java.home}/lib/deploy.jar</systemPath>
+		</dependency>
 	</dependencies>
 	<build>
 		<resources>
