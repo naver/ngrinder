@@ -16,6 +16,10 @@ package org.ngrinder.script.controller;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Test;
@@ -40,5 +44,48 @@ public class MyHttpServletRequestWrapperTest {
 		};
 		String path = wrapper.getPathInfo();
 		assertThat(path, is("/admin/%ED%95%9C%EA%B8%80"));
+	}
+
+	@Test
+	public void testHandleRequest3() {
+		String testURI = "/hello/svnadmin/admin/한글";
+		try {
+			testURI = URLEncoder.encode(testURI, "UTF-8");
+			System.out.println(testURI);
+			String testURI2 = URLDecoder.decode(testURI, "UTF-8");
+			System.out.println(testURI2);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		HttpServletRequest req = new MockHttpServletRequest("GET", testURI);
+		wrapper = new MyHttpServletRequestWrapper(req) {
+			public String getRequestURI() {
+				return "/hello/svn/admin/한글";
+			}
+
+			@Override
+			public String getContextPath() {
+				return "/hello";
+			}
+		};
+		String path = wrapper.getPathInfo();
+		assertThat(path, is("/admin/%ED%95%9C%EA%B8%80"));
+	}
+
+	@Test
+	public void testHandleRequest2() {
+		HttpServletRequest req = new MockHttpServletRequest("GET", "http://127.0.0.1:80/hello/svnadmin/admin");
+		wrapper = new MyHttpServletRequestWrapper(req) {
+			public String getRequestURI() {
+				return "/hello/svnadmin/admin";
+			}
+
+			@Override
+			public String getContextPath() {
+				return "/hello";
+			}
+		};
+		String path = wrapper.getPathInfo();
+		assertThat(path, is("/admin"));
 	}
 }

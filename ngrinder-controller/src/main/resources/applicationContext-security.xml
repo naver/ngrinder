@@ -24,6 +24,18 @@
 			</beans:list>
 		</beans:constructor-arg>
 	</beans:bean>
+	
+	
+	<!-- used for svn access -->
+	<beans:bean id="svnRealmFilter" class="org.ngrinder.script.security.SVNRealmFilter">
+	</beans:bean>
+
+	<http realm="svn" pattern="/svn/**" access-decision-manager-ref="accessDecisionManager" >
+		<http-basic />
+		<custom-filter after="LAST" ref="svnRealmFilter"/>
+		<intercept-url pattern="/svn/**" access="A, U, S" />
+	</http>
+	
 
 	<!-- custom-filter extends UsernamePasswordAuthenticationFilter -->
 	<beans:bean id="customFilter" class="org.ngrinder.security.NgrinderUsernamePasswordAuthenticationFilter">
@@ -45,6 +57,7 @@
 	<beans:bean id="simpleUrlAuthenticationFailureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
 		<beans:property name="defaultFailureUrl" value="/login" />
 	</beans:bean>
+	
 	<beans:bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
 		<beans:constructor-arg name="loginFormUrl" value="/login" />
 	</beans:bean>
@@ -64,12 +77,6 @@
 	<http pattern="/check/**" security="none" />
 	<http pattern="/agent/download/**" security="none" />
 	<http pattern="/jnlp/**" security="none" />
-
-	<!-- used for svn access -->
-	<http realm="svn" pattern="/svn/**" access-decision-manager-ref="accessDecisionManager">
-		<http-basic />
-		<intercept-url pattern="/svn/**" access="A, U, S" />
-	</http>
 
 	<http entry-point-ref="authenticationProcessingFilterEntryPoint" access-decision-manager-ref="accessDecisionManager">
 		<intercept-url pattern="/" access="A,S,U" />
@@ -105,10 +112,9 @@
 	    <beans:property name="userService" ref="userService"/>
 	</beans:bean> 
 
-
 	<authentication-manager alias="authenticationManager">
 		<authentication-provider ref="ngrinderPreAuthProvider"/>
 		<authentication-provider ref="ngrinderAuthenticationProvider" />
 	</authentication-manager>
-
+	
 </beans:beans>

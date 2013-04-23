@@ -135,11 +135,12 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 			logRequest(request);
 		}
 		try {
-			final String head = DAVPathUtil.head(request.getPathInfo());
+			String pathInfo = request.getPathInfo();
+			final String head = DAVPathUtil.head(pathInfo);
 			final User currentUser = userContext.getCurrentUser();
-			// check the security. If the other user tries to the other user's
-			// repo, deny it.
+			// check the security. If the other user tries to the other user's repo, deny it.
 			if (!StringUtils.equals(currentUser.getUserId(), head)) {
+				LOGGER.warn("SVN access error: svn path:{}, user:{}", head, currentUser.getUserId());
 				SecurityContextHolder.getContext().setAuthentication(null);
 				response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
 								head + " is not accessible by " + currentUser.getUserId());
@@ -188,7 +189,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 			response.flushBuffer();
 		}
 	}
-
+	
 	private void logRequest(HttpServletRequest request) {
 		StringBuilder logBuffer = new StringBuilder();
 		logBuffer.append('\n');

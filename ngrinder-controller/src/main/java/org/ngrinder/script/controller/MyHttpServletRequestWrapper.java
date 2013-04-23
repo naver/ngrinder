@@ -30,6 +30,9 @@ import org.tmatesoft.svn.core.internal.util.SVNEncodingUtil;
  * @author JunHo Yoon
  */
 public class MyHttpServletRequestWrapper extends HttpServletRequestWrapper {
+
+	private String pathInfo = null;
+
 	/**
 	 * Constructor.
 	 * 
@@ -42,13 +45,14 @@ public class MyHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
 	@Override
 	public String getPathInfo() {
-		// FIXME this function will be called many times just in one request.
-		// it is better to handle the url outside.
+		if (pathInfo != null) {
+			return pathInfo;
+		}
 		try {
-			return SVNEncodingUtil.uriEncode(URLDecoder
-							.decode(getRequestURI()
-											.substring(PathUtil.removeDuplicatedPrependedSlash(
-															getContextPath() + "/svn").length()), "UTF-8"));
+			String svnFileUrl = getRequestURI().substring(
+					PathUtil.removeDuplicatedPrependedSlash(getContextPath() + "/svn").length());
+			pathInfo = SVNEncodingUtil.uriEncode(URLDecoder.decode(svnFileUrl, "UTF-8"));
+			return pathInfo;
 		} catch (UnsupportedEncodingException e) {
 			return null;
 		}
