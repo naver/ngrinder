@@ -24,9 +24,11 @@ import net.sf.ehcache.Ehcache;
 
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.infra.config.Config;
+import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
+import org.springframework.cache.Cache.ValueWrapper;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.stereotype.Component;
 
 /**
@@ -42,8 +44,11 @@ public class VerifyClusterStartResolver {
 	private Config config;
 
 	@Autowired
-	private CacheManager cacheManager;
+	private EhCacheCacheManager cacheManager;
 
+	@Autowired
+	private RegionService regionService;
+	
 	private Cache cache;
 
 	/**
@@ -68,10 +73,13 @@ public class VerifyClusterStartResolver {
 		String homeFIleStamp = String.valueOf(FileUtils.checksumCRC32(new File(home, "system.conf")));
 		cache = cacheManager.getCache("controller_home");
 		for (Object eachKey : ((Ehcache) (cache.getNativeCache())).getKeys()) {
-			checkState(homeFIleStamp.equals(eachKey),
-					"Controller's {NGRINDER_HOME} is conflict with other controller,Please check this !");
+			ValueWrapper valueWrapper = cache.get(eachKey);
+			if (valueWrapper != null && valueWrapper.get() != null) {
+				checkState(homeFIleStamp.equals(valueWrapper.get()),
+						"Controller's {NGRINDER_HOME} is conflict with other controller,Please check this !");
+			}
 		}
-		cache.put(homeFIleStamp, homeFIleStamp);
+		cache.put(regionService.getCurrentRegion(), homeFIleStamp);
 	}
 
 }
