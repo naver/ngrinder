@@ -31,6 +31,11 @@
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
 			properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=true, replicateRemovals=true" />
 	</cache>
+	
+	<cache name="controller_home" maxElementsInMemory="100" overflowToDisk="false" timeToLiveSeconds="30">
+		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+			properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=true, replicateRemovals=true" />
+	</cache>
 
 	<cache name="agent_request" maxElementsInMemory="100" overflowToDisk="false" timeToLiveSeconds="10">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"

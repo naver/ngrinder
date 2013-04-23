@@ -102,8 +102,7 @@ public class Config implements IConfig, NGrinderConstants {
 			initLogger(isTestMode());
 			resolveLocalIp();
 			loadDatabaseProperties();
-			// check cluster, get cluster configuration for ehcache
-			verifyClusterConfig();
+			setRMIHostName();
 			versionString = getVesion();
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while init nGrinder", e);
@@ -126,11 +125,11 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Verify clustering is set up well.
+	 * Set rmi server host name
 	 * 
 	 * @since 3.1
 	 */
-	protected void verifyClusterConfig() {
+	protected void setRMIHostName() {
 		if (isCluster()) {
 			if (getRegion().equals(NONE_REGION)) {
 				LOG.error("Region is not set in cluster mode. Please set ngrinder.region properly.");
@@ -145,7 +144,7 @@ public class Config implements IConfig, NGrinderConstants {
 			}
 		}
 	}
-
+	
 	/**
 	 * Check whether the cache cluster is set.
 	 * 

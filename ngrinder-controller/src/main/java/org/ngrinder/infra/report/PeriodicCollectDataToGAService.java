@@ -48,10 +48,10 @@ public class PeriodicCollectDataToGAService {
 	/**
 	 * Collect the number of executed test
 	 */
-	@Scheduled(cron = "* 15 * * * ?")
+	@Scheduled(cron = "0 1 1 * * ?")
 	@Transactional
 	public void collectExetedTest() throws UnknownHostException {
-		GoogleAnalytic googleAnalytic = new GoogleAnalytic("AppName", config.getVesion(), "UA-40264348-1");
+		GoogleAnalytic googleAnalytic = new GoogleAnalytic("AppName", config.getVesion(), "UA-40325625-1");
 
 		if (config.enabledCollectDataToGA()) {
 			String localhost = InetAddress.getLocalHost().getHostAddress();

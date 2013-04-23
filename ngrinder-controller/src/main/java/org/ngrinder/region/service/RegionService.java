@@ -23,6 +23,7 @@ import javax.annotation.PreDestroy;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.util.thread.InterruptibleRunnable;
 import net.sf.ehcache.Ehcache;
+import static org.ngrinder.common.util.Preconditions.checkState;
 
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.infra.config.Config;
@@ -66,6 +67,7 @@ public class RegionService {
 	public void initRegion() {
 		if (config.isCluster()) {
 			cache = cacheManager.getCache("regions");
+			verifyDuplicateRegion();
 			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
 				@Override
 				public void interruptibleRun() {
@@ -74,6 +76,18 @@ public class RegionService {
 
 			});
 		}
+	}
+	
+	/**
+	 * Verify duplicate region when starting with cluster mode
+	 * 
+	 * @since 3.2
+	 */
+	private void verifyDuplicateRegion() {
+		Map<String, RegionInfo> regions = getRegions();
+		String localRegion = getCurrentRegion();
+		checkState(!regions.containsKey(localRegion), "The region name{" + localRegion
+				+ "} is used by other controller,Please set the region with different one!");
 	}
 
 	@Autowired
