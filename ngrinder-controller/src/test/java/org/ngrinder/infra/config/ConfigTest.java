@@ -109,7 +109,7 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGri
 	@Test
 	public void testLoadClusterConfig() {
 		config.cluster = true;
-		config.verifyClusterConfig();
+		config.setRMIHostName();
 	}
 
 	@Test

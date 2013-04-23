@@ -134,7 +134,8 @@ public class AgentControllerDaemon implements Agent {
 						});
 						count++;
 					} catch (Exception e) {
-						LOGGER.info("agent controller daemon : crashed.", e);
+						LOGGER.info("agent controller daemon : crashed. {}", e.getMessage());
+						LOGGER.debug("Detailes : ", e);
 					}
 					if (isForceToshutdown()) {
 						setForceToshutdown(false);

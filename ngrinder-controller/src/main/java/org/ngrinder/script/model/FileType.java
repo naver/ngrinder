@@ -25,8 +25,9 @@ public enum FileType {
 	/** Python/Jython. */
 	PYTHON_SCRIPT("Jython Script", "py", FileCategory.SCRIPT, true, false),
 	
-	/** Java Script. */
-	JAVA_SCRIPT("JavaScript", "js", FileCategory.SCRIPT, true, false),
+	/** Groovy Script. */
+	GROOVY_SCRIPT("Groovy Script", "groovy", FileCategory.SCRIPT, true, false),
+	
 	/** Xml. */
 	XML("xml", "xml", FileCategory.DATA, true, true),
 	/** Text. */

@@ -28,6 +28,18 @@
 	</cache>
 
 	<cache name="regions" maxElementsInMemory="100" overflowToDisk="false" timeToLiveSeconds="30">
+		<bootstrapCacheLoaderFactory  
+        class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"  
+        properties="bootstrapAsynchronously=false"/> 
+		
+		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+			properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=true, replicateRemovals=true" />
+	</cache>
+	
+	<cache name="controller_home" maxElementsInMemory="100" overflowToDisk="false" timeToLiveSeconds="30">
+		<bootstrapCacheLoaderFactory  
+        class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"  
+        properties="bootstrapAsynchronously=false"/> 
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
 			properties="replicateAsynchronously=true, replicatePuts=true, replicateUpdates=true, replicateUpdatesViaCopy=true, replicateRemovals=true" />
 	</cache>

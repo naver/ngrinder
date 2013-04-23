@@ -2,3 +2,6 @@
 /deploy.bat
 /tmp_agent_home
 /*.data
+testdrive
+/.grinder
+/grinder_logs

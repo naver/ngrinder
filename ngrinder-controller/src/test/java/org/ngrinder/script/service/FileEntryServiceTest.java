@@ -17,6 +17,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import net.grinder.lang.Lang;
+
 import org.junit.Test;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.model.User;
@@ -29,7 +31,7 @@ public class FileEntryServiceTest {
 	public void testFileTemplate() {
 		User user = new User();
 		user.setUserName("JunHo Yoon");
-		String content = fileEntryService.loadFreeMarkerTemplate(user, "http://helloworld/myname/is");
+		String content = fileEntryService.loadFreeMarkerTemplate(user, Lang.Jython, "http://helloworld/myname/is");
 		assertThat(content, containsString("JunHo Yoon"));
 		assertThat(content, containsString("http://helloworld/myname/is"));
 	}
@@ -37,10 +39,8 @@ public class FileEntryServiceTest {
 	@Test
 	public void testFileNameFromUrl() {
 		assertThat(fileEntryService.getTestNameFromUrl("http://helloworld"), is("helloworld"));
-		assertThat(fileEntryService.getTestNameFromUrl("http://helloworld.com"),
-						is("helloworld.com"));
-		assertThat(fileEntryService.getTestNameFromUrl("http://helloworld.com/wewe.nhn"),
-						is("helloworld.com/wewe.nhn"));
+		assertThat(fileEntryService.getTestNameFromUrl("http://helloworld.com"), is("helloworld.com"));
+		assertThat(fileEntryService.getTestNameFromUrl("http://helloworld.com/wewe.nhn"), is("helloworld.com/wewe.nhn"));
 		assertThat(fileEntryService.getTestNameFromUrl("http://helloworld.com/wewe.nhn?wow=%dd"),
 						is("helloworld.com/wewe.nhn"));
 	}

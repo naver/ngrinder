@@ -27,6 +27,7 @@ import net.grinder.scriptengine.groovy.junit.annotation.RepeatInDevContext;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.internal.runners.model.EachTestNotifier;
 import org.junit.internal.runners.model.MultipleFailureException;
@@ -155,7 +156,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 
 	private Statement withRules(FrameworkMethod method, Object target, Statement statement) {
 		Statement result = statement;
-		for (MethodRule each : rules(target))
+		for (MethodRule each : getTestClass().getAnnotatedFieldValues(target, Rule.class, MethodRule.class))
 			result = each.apply(result, method, target);
 		return result;
 	}

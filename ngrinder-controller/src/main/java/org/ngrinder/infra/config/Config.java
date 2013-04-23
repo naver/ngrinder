@@ -102,8 +102,7 @@ public class Config implements IConfig, NGrinderConstants {
 			initLogger(isTestMode());
 			resolveLocalIp();
 			loadDatabaseProperties();
-			// check cluster, get cluster configuration for ehcache
-			verifyClusterConfig();
+			setRMIHostName();
 			versionString = getVesion();
 		} catch (IOException e) {
 			throw new ConfigurationException("Error while init nGrinder", e);
@@ -126,11 +125,11 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Verify clustering is set up well.
+	 * Set rmi server host name
 	 * 
 	 * @since 3.1
 	 */
-	protected void verifyClusterConfig() {
+	protected void setRMIHostName() {
 		if (isCluster()) {
 			if (getRegion().equals(NONE_REGION)) {
 				LOG.error("Region is not set in cluster mode. Please set ngrinder.region properly.");
@@ -145,7 +144,7 @@ public class Config implements IConfig, NGrinderConstants {
 			}
 		}
 	}
-
+	
 	/**
 	 * Check whether the cache cluster is set.
 	 * 
@@ -217,15 +216,12 @@ public class Config implements IConfig, NGrinderConstants {
 		configurator.setContext(context);
 		context.reset();
 		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
-		if (exHome.exists()) {
+		if (exHome.exists() && isCluster()) {
 			context.putProperty("LOG_DIRECTORY", exHome.getGlobalLogFile().getAbsolutePath());
-		} else {
-			context.putProperty("LOG_DIRECTORY", home.getGlobalLogFile().getAbsolutePath());
-		}
-		if (!exHome.exists() && isCluster()) {
 			context.putProperty("SUFFIX", "_" + getRegion());
 		} else {
 			context.putProperty("SUFFIX", "");
+			context.putProperty("LOG_DIRECTORY", home.getGlobalLogFile().getAbsolutePath());
 		}
 		try {
 			configurator.doConfigure(new ClassPathResource("/logback/logback-ngrinder.xml").getFile());

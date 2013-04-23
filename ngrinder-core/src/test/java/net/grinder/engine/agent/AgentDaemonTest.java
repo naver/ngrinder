@@ -24,6 +24,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.AbstractMuliGrinderTestBase;
 
+/**
+ * @author JunHo Yoon
+ */
 public class AgentDaemonTest extends AbstractMuliGrinderTestBase {
 
 	private SingleConsole console1;
@@ -43,7 +46,7 @@ public class AgentDaemonTest extends AbstractMuliGrinderTestBase {
 	}
 
 	@Test
-	public void testDifferentPort() throws InterruptedException {
+	public void testConnection() throws InterruptedException {
 		// Try to connect any port
 		AgentDaemon agent = new AgentDaemon(agentConfig1);
 		agent.run(getFreePort());
