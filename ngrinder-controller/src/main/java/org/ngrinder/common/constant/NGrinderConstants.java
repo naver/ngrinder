@@ -50,6 +50,10 @@ public interface NGrinderConstants {
 
 	public static final String NGRINDER_DEFAULT_PACKAGE = "org.ngrinder";
 	public static final int PLUGIN_UPDATE_FREQUENCY = 10;
+	
+	//Google Analytics application name and Tracking ID
+	public static final String GOOGLEANALYTICS_APPNAME = "AppName";
+	public static final String GOOGLEANALYTICS_TRACKINGID = "UA-40325625-1";
 
 	/**
 	 * Initial Max assignable agent size per console.

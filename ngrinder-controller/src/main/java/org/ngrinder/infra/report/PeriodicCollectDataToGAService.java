@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.analytics.GoogleAnalytic;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.perftest.service.PerfTestService;
@@ -51,7 +52,8 @@ public class PeriodicCollectDataToGAService {
 	@Scheduled(cron = "0 1 1 * * ?")
 	@Transactional
 	public void collectExetedTest() throws UnknownHostException {
-		GoogleAnalytic googleAnalytic = new GoogleAnalytic("AppName", config.getVesion(), "UA-40325625-1");
+		GoogleAnalytic googleAnalytic = new GoogleAnalytic(NGrinderConstants.GOOGLEANALYTICS_APPNAME,
+				config.getVesion(), NGrinderConstants.GOOGLEANALYTICS_TRACKINGID);
 
 		if (config.enabledCollectDataToGA()) {
 			String localhost = InetAddress.getLocalHost().getHostAddress();

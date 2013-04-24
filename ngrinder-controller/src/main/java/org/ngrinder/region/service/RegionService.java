@@ -86,8 +86,9 @@ public class RegionService {
 	private void verifyDuplicateRegion() {
 		Map<String, RegionInfo> regions = getRegions();
 		String localRegion = getCurrentRegion();
-		checkState(!regions.containsKey(localRegion), "The region name{" + localRegion
-				+ "} is used by other controller,Please set the region with different one!");
+		checkState(!regions.containsKey(localRegion),
+				"The region name {%s} is used by other controller,Please set the region with different one!",
+				localRegion);
 	}
 
 	@Autowired
