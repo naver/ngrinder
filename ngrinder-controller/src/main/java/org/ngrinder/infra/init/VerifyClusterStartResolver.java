@@ -60,6 +60,7 @@ public class VerifyClusterStartResolver {
 	public void verifyCluster() throws IOException {
 		if (config.isCluster()) {
 			checkExHome();
+			checkUsedDB();
 		}
 	}
 
@@ -80,6 +81,16 @@ public class VerifyClusterStartResolver {
 			}
 		}
 		cache.put(regionService.getCurrentRegion(), homeFIleStamp);
+	}
+	
+	/**
+	 * check if they use CUBRID in cluster mode
+	 * 
+	 */
+	private void checkUsedDB() {
+		String db = config.getDatabaseProperties().getProperty("database","NONE").toLowerCase();
+		checkState("cubrid".equals(db),
+				db+" is unable to be used in cluster mode and please using CUBRID !");
 	}
 
 }
