@@ -87,11 +87,10 @@ public class ClusterConfigurationVerifier {
 
 	/**
 	 * check if they use CUBRID in cluster mode
-	 * 
 	 */
 	private void checkUsedDB() {
 		String db = config.getDatabaseProperties().getProperty("database", "NONE").toLowerCase();
-		checkState("cubrid".equals(db), "%s is unable to be used in cluster mode and please using CUBRID !", db);
+		checkState("cubrid".equals(db), "%s is unable to be used in cluster mode and Please use CUBRID !", db);
 	}
 
 }
