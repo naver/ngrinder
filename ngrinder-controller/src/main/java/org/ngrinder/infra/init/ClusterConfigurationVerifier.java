@@ -14,7 +14,7 @@
 package org.ngrinder.infra.init;
 
 import static org.ngrinder.common.util.Preconditions.checkState;
-
+import static org.ngrinder.common.util.Preconditions.checkArgument;
 import java.io.File;
 import java.io.IOException;
 
@@ -38,7 +38,7 @@ import org.springframework.stereotype.Component;
  * @since3.2
  */
 @Component
-public class VerifyClusterStartResolver {
+public class ClusterConfigurationVerifier {
 
 	@Autowired
 	private Config config;
@@ -48,7 +48,7 @@ public class VerifyClusterStartResolver {
 
 	@Autowired
 	private RegionService regionService;
-	
+
 	private Cache cache;
 
 	/**
@@ -70,27 +70,28 @@ public class VerifyClusterStartResolver {
 	 * @throws IOException
 	 */
 	private void checkExHome() throws IOException {
-		File home = config.getHome().getDirectory();
-		String homeFIleStamp = String.valueOf(FileUtils.checksumCRC32(new File(home, "system.conf")));
+		File system = config.getHome().getSubFile("system.conf");
+		checkArgument(system.exists(), "File does not exist: %s", system);
+		String homeFileStamp = String.valueOf(FileUtils.checksumCRC32(system));
 		cache = cacheManager.getCache("controller_home");
 		for (Object eachKey : ((Ehcache) (cache.getNativeCache())).getKeys()) {
 			ValueWrapper valueWrapper = cache.get(eachKey);
 			if (valueWrapper != null && valueWrapper.get() != null) {
-				checkState(homeFIleStamp.equals(valueWrapper.get()),
-						"Controller's {NGRINDER_HOME} is conflict with other controller,Please check this !");
+				checkState(
+						homeFileStamp.equals(valueWrapper.get()),
+						"Controller's {NGRINDER_HOME} conflict with other controller,Please check if you use same ngrinder home folder for each clustered controller !");
 			}
 		}
-		cache.put(regionService.getCurrentRegion(), homeFIleStamp);
+		cache.put(regionService.getCurrentRegion(), homeFileStamp);
 	}
-	
+
 	/**
 	 * check if they use CUBRID in cluster mode
 	 * 
 	 */
 	private void checkUsedDB() {
-		String db = config.getDatabaseProperties().getProperty("database","NONE").toLowerCase();
-		checkState("cubrid".equals(db),
-				db+" is unable to be used in cluster mode and please using CUBRID !");
+		String db = config.getDatabaseProperties().getProperty("database", "NONE").toLowerCase();
+		checkState("cubrid".equals(db), "%s is unable to be used in cluster mode and please using CUBRID !", db);
 	}
 
 }
