@@ -24,27 +24,32 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
- * Used to save JMX connect for every request that want to observe monitor real-time system 
- * information
+ * Used to save JMX connect for every request that want to observe monitor real-time system
+ * information.
  */
 @Service
 @Scope(value = "singleton")
 public class MonitorInfoStore {
-	
+
 	@Autowired
 	private ApplicationContext applicationContext;
-	
-	private Map<String,MonitorClientSerivce> monitorInfoMap = Collections.synchronizedMap(new HashMap<String,MonitorClientSerivce>());
-	
+
+	private Map<String, MonitorClientSerivce> monitorInfoMap = Collections
+					.synchronizedMap(new HashMap<String, MonitorClientSerivce>());
+
 	private void add(String ip, MonitorClientSerivce monitorClient) {
 		synchronized (this) {
 			monitorInfoMap.put(ip, monitorClient);
 		}
 	}
-	
+
 	/**
-	 * Get monitor data from MBClient 
+	 * Get monitor data from MBClient.
 	 * 
+	 * @param ip
+	 *            ip
+	 * @param port
+	 *            port
 	 * @return {@link SystemInfo}
 	 */
 	public SystemInfo getSystemInfo(String ip, int port) {
@@ -56,19 +61,22 @@ public class MonitorInfoStore {
 		}
 		return monitorClient.getMonitorData();
 	}
-	
+
 	/**
-	 * Used to close MBClient connect
+	 * Used to close MBClient connect.
 	 * 
+	 * @param ip
+	 *            ip
 	 */
 	public void remove(String ip) {
 		synchronized (this) {
 			MonitorClientSerivce monitorClient = monitorInfoMap.get(ip);
-			if (monitorClient == null)
+			if (monitorClient == null) {
 				return;
+			}
 			monitorClient.closeMBClient();
 			monitorInfoMap.remove(ip);
 		}
 	}
-	
+
 }

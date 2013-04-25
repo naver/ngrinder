@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Used to collect the number of executed test .<br/>
  * It executes only once each day at midnight
- *
+ * 
  * @author maoyb
  * @since3.2
  */
@@ -47,15 +47,18 @@ public class PeriodicCollectDataToGAService {
 	private PerfTestService perfTestService;
 
 	/**
-	 * Collect the number of executed test
+	 * Collect the number of executed test.
+	 * 
+	 * @throws UnknownHostException
+	 *             exception
 	 */
 	@Scheduled(cron = "0 1 1 * * ?")
 	@Transactional
 	public void collectExetedTest() throws UnknownHostException {
 		GoogleAnalytic googleAnalytic = new GoogleAnalytic(NGrinderConstants.GOOGLEANALYTICS_APPNAME,
-				config.getVesion(), NGrinderConstants.GOOGLEANALYTICS_TRACKINGID);
+						config.getVesion(), NGrinderConstants.GOOGLEANALYTICS_TRACKINGID);
 
-		if (config.enabledCollectDataToGA()) {
+		if (config.isUsageReportEnabled()) {
 			String localhost = InetAddress.getLocalHost().getHostAddress();
 			Date yesterday = DateUtils.addDays(new Date(), -1);
 			Date start = DateUtils.truncate(yesterday, Calendar.DATE);

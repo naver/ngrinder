@@ -37,15 +37,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ThreadContext initializer.
+ * ThreadContext initializer in JUnit context.
  * 
- * This class is responsible to setup the Grinder thread context.
+ * This class is responsible to setup the Grinder thread context when it's not executed in the
+ * Grinder agent.
  * 
  * @author JunHo Yoon
- * @since 1.0
+ * @since 3.2
  */
 public class JUnitThreadContextInitializer {
-	private static Logger LOGGER = LoggerFactory.getLogger(JUnitThreadContextInitializer.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JUnitThreadContextInitializer.class);
 	private ThreadContexts m_threadContexts = new ThreadContexts();
 	private StatisticsServices m_statisticsServices;
 	private TestStatisticsHelperImplementation m_testStatisticsHelper;
@@ -92,7 +93,7 @@ public class JUnitThreadContextInitializer {
 						new NullSender());
 
 		final InternalScriptContext scriptContext = new ScriptContextImplementation(new SimpleWorkerIdentity(
-						"unittest", 1), new SimpleWorkerIdentity("unittest", 1), m_threadContexts, null,
+						"unittest", 0), new SimpleWorkerIdentity("unittest", 0), m_threadContexts, null,
 						externalLogger, m_sleeper, new SSLControlImplementation(m_threadContexts), scriptStatistics,
 						m_testRegistryImplementation, null, null, null, null);
 		Grinder.grinder = scriptContext;
@@ -109,6 +110,8 @@ public class JUnitThreadContextInitializer {
 		try {
 			if (m_threadContexts.get() == null) {
 				GrinderProperties properties = new GrinderProperties();
+				properties.setInt("grinder.processes", 1);
+				properties.setInt("grinder.threads", 1);
 				properties.setBoolean("grinder.logData", false);
 				final ThreadContextImplementation threadContext = new ThreadContextImplementation(properties,
 								m_statisticsServices, 0, LOGGER);
@@ -130,8 +133,14 @@ public class JUnitThreadContextInitializer {
 		}
 	};
 
+	/**
+	 * Detach the worker thread context.
+	 */
 	public void detachWorkerThreadContext() {
-		//m_threadContexts.get().fireEndThreadEvent();
-		m_threadContexts.threadStarted(null);
+		ThreadContext threadContext = m_threadContexts.get();
+		if (threadContext != null) {
+			threadContext.fireEndThreadEvent();
+			m_threadContexts.threadStarted(null);
+		}
 	}
 }

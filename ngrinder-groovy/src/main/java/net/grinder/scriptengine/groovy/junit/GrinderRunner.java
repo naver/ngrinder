@@ -13,17 +13,17 @@
  */
 package net.grinder.scriptengine.groovy.junit;
 
-import static net.grinder.scriptengine.groovy.GroovyExceptionUtils.filterException1;
-
 import java.lang.annotation.Annotation;
 import java.util.List;
 
 import net.grinder.engine.process.JUnitThreadContextInitializer;
+import net.grinder.scriptengine.exception.AbstractExceptionProcessor;
+import net.grinder.scriptengine.groovy.GroovyExceptionProcessor;
 import net.grinder.scriptengine.groovy.junit.annotation.AfterProcess;
 import net.grinder.scriptengine.groovy.junit.annotation.AfterThread;
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess;
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread;
-import net.grinder.scriptengine.groovy.junit.annotation.RepeatInDevContext;
+import net.grinder.scriptengine.groovy.junit.annotation.Repeat;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -36,6 +36,7 @@ import org.junit.internal.runners.statements.RunBefores;
 import org.junit.rules.MethodRule;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
+import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
@@ -47,22 +48,48 @@ import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestClass;
 
 /**
- * Grinder JUnit Runner.
+ * Grinder JUnit Runner. Grinder JUnit Runner is the custom {@link Runner} which lets the user can
+ * run the Grinder script in the JUnit context.
+ * 
+ * This runner has a little bit different characteristic from conventional JUnit test.
+ * <ul>
+ * <li>All Test annotated tests are executed with a single instance.</li>
+ * <li>{@link BeforeProcess} and {@link AfterProcess} annotated methods are executed per each
+ * process.</li>
+ * <li>{@link BeforeThread} and {@link AfterThread} annotated methods are executed per each thread.</li>
+ * <li>{@link Repeat} annotated
+ * </ul>
+ * 
+ * In addition, it contains a little different behavior from generic grinder test script.
+ * <ul>
+ * <li>It only initiates only 1 process and 1 thread.</li>
+ * <li>Each <code>&#064;test</code> annotated method are independent to run. So one failure from one
+ * method doesn't block the other methods' runs</li>
+ * </ul>
  * 
  * @author JunHo Yoon
+ * @author Mavlarn
  * @since 1.0
+ * @see BeforeProcess
+ * @see BeforeThread
+ * @see AfterThread
+ * @see AfterProcess
+ * @see Repeat
+ * 
  */
 public class GrinderRunner extends BlockJUnit4ClassRunner {
 	private JUnitThreadContextInitializer threadContextInitializer;
 	private TestObjectFactory testTargetFactory;
-	private PerThreadStatement defaultPerThreadStat;
+	private PerThreadStatement finalPerThreadStatement;
+	private AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param klass
 	 *            klass
 	 * @throws InitializationError
+	 *             class initialization error.
 	 */
 	public GrinderRunner(Class<?> klass) throws InitializationError {
 		super(klass);
@@ -78,13 +105,13 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 			}
 		};
 
-		initialize();
+		initializeGrinderContext();
 	}
 
-	protected void initialize() {
+	protected void initializeGrinderContext() {
 		this.threadContextInitializer = new JUnitThreadContextInitializer();
 		this.threadContextInitializer.initialize();
-		this.defaultPerThreadStat = new PerThreadStatement() {
+		this.finalPerThreadStatement = new PerThreadStatement() {
 			@Override
 			void before() {
 				attachWorker();
@@ -135,8 +162,8 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 		Annotation[] annotations = getTestClass().getAnnotations();
 		int repeatation = 1;
 		for (Annotation each : annotations) {
-			if (each.annotationType().equals(RepeatInDevContext.class)) {
-				repeatation = ((RepeatInDevContext) each).value();
+			if (each.annotationType().equals(Repeat.class)) {
+				repeatation = ((Repeat) each).value();
 			}
 		}
 		return repeatation == 1 ? statement : new RepetitionStatment(statement, repeatation);
@@ -156,8 +183,9 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 
 	private Statement withRules(FrameworkMethod method, Object target, Statement statement) {
 		Statement result = statement;
-		for (MethodRule each : getTestClass().getAnnotatedFieldValues(target, Rule.class, MethodRule.class))
+		for (MethodRule each : getTestClass().getAnnotatedFieldValues(target, Rule.class, MethodRule.class)) {
 			result = each.apply(result, method, target);
+		}
 		return result;
 	}
 
@@ -165,6 +193,10 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	 * Returns a {@link Statement}: run all non-overridden {@code @BeforeClass} methods on this
 	 * class and superclasses before executing {@code statement}; if any throws an Exception, stop
 	 * execution and pass the exception on.
+	 * 
+	 * @param statement
+	 *            statement
+	 * @return wrapped statement
 	 */
 	protected Statement withBeforeProcess(Statement statement) {
 		TestClass testClass = getTestClass();
@@ -178,6 +210,11 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	 * and superclasses before executing {@code statement}; all AfterClass methods are always
 	 * executed: exceptions thrown by previous steps are combined, if necessary, with exceptions
 	 * from AfterClass methods into a {@link MultipleFailureException}.
+	 * 
+	 * 
+	 * @param statement
+	 *            statement
+	 * @return wrapped statement
 	 */
 	protected Statement withAfterProcess(Statement statement) {
 		TestClass testClass = getTestClass();
@@ -188,12 +225,12 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 
 	protected Statement withAfterThread(Statement statement) {
 		List<FrameworkMethod> afterThreads = getTestClass().getAnnotatedMethods(AfterThread.class);
-		return new RunAfterThreads(statement, afterThreads, testTargetFactory, defaultPerThreadStat);
+		return new RunAfterThreads(statement, afterThreads, testTargetFactory, finalPerThreadStatement);
 	}
 
 	protected Statement withBeforeThread(Statement statement) {
 		List<FrameworkMethod> beforeThreads = getTestClass().getAnnotatedMethods(BeforeThread.class);
-		return new RunBeforeThreads(statement, beforeThreads, testTargetFactory, defaultPerThreadStat);
+		return new RunBeforeThreads(statement, beforeThreads, testTargetFactory, finalPerThreadStatement);
 	}
 
 	protected void registerRunNotifierListener(RunNotifier notifier) {
@@ -216,7 +253,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 			@Override
 			public void testFailure(Failure failure) throws Exception {
 				Throwable exception = failure.getException();
-				Throwable filtered = filterException1(exception);
+				Throwable filtered = exceptionProcessor.filterException(exception);
 				if (exception != filtered) {
 					exception.initCause(filtered);
 				}

@@ -139,6 +139,11 @@ public class SampleAccumulatorEx implements Cloneable {
 
 	/**
 	 * Start new interval statistics.
+	 * 
+	 * @param sampleInterval
+	 *            sampleInterval
+	 * @param period
+	 *            period
 	 */
 	public void refreshIntervalStatistics(long sampleInterval, long period) {
 		m_intervalStatistics.setValue(m_periodIndex, sampleInterval);

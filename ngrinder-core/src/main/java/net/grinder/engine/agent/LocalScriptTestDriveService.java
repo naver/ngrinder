@@ -25,9 +25,10 @@ import java.util.Properties;
 import net.grinder.common.GrinderProperties;
 import net.grinder.communication.FanOutStreamSender;
 import net.grinder.engine.common.ScriptLocation;
+import net.grinder.lang.AbstractLanguageHandler;
 import net.grinder.lang.Lang;
 import net.grinder.util.Directory;
-import net.grinder.util.GrinderClassPathProcessor;
+import net.grinder.util.AbstractGrinderClassPathProcessor;
 import net.grinder.util.NetworkUtil;
 import net.grinder.util.thread.Condition;
 
@@ -77,20 +78,20 @@ public class LocalScriptTestDriveService {
 			fanOutStreamSender = new FanOutStreamSender(1);
 			deleteLogs(base);
 
-			Lang lang = Lang.getByFileName(script);
-			GrinderClassPathProcessor classpathUtil = lang.getGrinderClassPathProcessor();
+			AbstractLanguageHandler handler = Lang.getByFileName(script).getHandler();
+			AbstractGrinderClassPathProcessor classPathProcessor = handler.getClassPathProcesssor();
 			GrinderProperties properties = new GrinderProperties();
 			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), securityEnabled, hostString,
 							NetworkUtil.getLocalHostName());
 			properties.setInt("grinder.processes", 1);
 			properties.setInt("grinder.threads", 1);
-			String grinderJVMClassPath = classpathUtil.buildForemostClasspathBasedOnCurrentClassLoader(LOGGER)
+			String grinderJVMClassPath = classPathProcessor.buildForemostClasspathBasedOnCurrentClassLoader(LOGGER)
 							+ File.pathSeparator + builder.buildCustomClassPath(true);
 			properties.setProperty("grinder.jvm.classpath", grinderJVMClassPath);
 			LOGGER.info("grinder.jvm.classpath  : {} ", grinderJVMClassPath);
 			AgentIdentityImplementation agentIdentity = new AgentIdentityImplementation("validation");
 			agentIdentity.setNumber(0);
-			String newClassPath = classpathUtil.buildClasspathBasedOnCurrentClassLoader(LOGGER);
+			String newClassPath = classPathProcessor.buildClasspathBasedOnCurrentClassLoader(LOGGER);
 			LOGGER.debug("Validation Class Path " + newClassPath);
 			Properties systemProperties = new Properties();
 			systemProperties.put("java.class.path", base.getAbsolutePath() + File.pathSeparator + newClassPath);

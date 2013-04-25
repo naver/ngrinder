@@ -17,11 +17,10 @@ import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.common.processidentity.WorkerIdentity;
 
 /**
- * Simplified {@link WorkerIdentity}y implementation which will be ignored in
- * the unit test context.
+ * Simplified {@link WorkerIdentity}y implementation which will be ignored in the unit test context.
  * 
  * @author JunHo Yoon
- * @since 1.0
+ * @since 3.2
  */
 public class SimpleWorkerIdentity implements WorkerIdentity {
 
@@ -29,6 +28,14 @@ public class SimpleWorkerIdentity implements WorkerIdentity {
 	private int m_number;
 	private SimpleAgentIdentity simpleAgentIdentity;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param name
+	 *            worker name
+	 * @param number
+	 *            worker number
+	 */
 	public SimpleWorkerIdentity(String name, int number) {
 		m_number = number;
 		simpleAgentIdentity = new SimpleAgentIdentity(name, number);
@@ -43,6 +50,9 @@ public class SimpleWorkerIdentity implements WorkerIdentity {
 		return "junit_runner";
 	}
 
+	/* (non-Javadoc)
+	 * @see net.grinder.common.processidentity.WorkerIdentity#getAgentIdentity()
+	 */
 	@Override
 	public AgentIdentity getAgentIdentity() {
 		return simpleAgentIdentity;

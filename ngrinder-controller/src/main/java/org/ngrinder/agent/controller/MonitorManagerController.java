@@ -42,7 +42,7 @@ public class MonitorManagerController extends NGrinderBaseController {
 	private MonitorInfoStore monitorInfoStore;
 
 	/**
-	 * Get a monitor  info for the given ip.
+	 * Get a monitor info for the given ip.
 	 * 
 	 * @param model
 	 *            model
@@ -75,21 +75,23 @@ public class MonitorManagerController extends NGrinderBaseController {
 		Map<String, Object> systemInfoMap = Maps.newHashMap();
 		systemInfoMap.put(JSON_SUCCESS, true);
 		systemInfoMap.put(
-				"systemData",
-				new SystemDataModel(checkNotNull(monitorInfoStore.getSystemInfo(ip, getConfig().getMonitorPort()),
-						"Get systemInfo error from [%s]", ip), "UNKNOWN"));
+						"systemData",
+						new SystemDataModel(checkNotNull(
+										monitorInfoStore.getSystemInfo(ip, getConfig().getMonitorPort()),
+										"Get systemInfo error from [%s]", ip), "UNKNOWN"));
 		String jsonStr = toJson(systemInfoMap);
 
 		return jsonStr;
 	}
-	
+
 	/**
-	 * Used to  close monitor JXM connect and remove from monitorInfoStore
+	 * Used to close monitor JXM connect and remove from monitorInfoStore.
 	 * 
 	 * @param model
 	 *            model
 	 * @param ip
 	 *            target host IP
+	 * @return success if succeeded.
 	 */
 	@RequestMapping("/close")
 	@ResponseBody
@@ -97,5 +99,5 @@ public class MonitorManagerController extends NGrinderBaseController {
 		monitorInfoStore.remove(ip);
 		return returnSuccess();
 	}
-	
+
 }

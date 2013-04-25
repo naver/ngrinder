@@ -34,18 +34,20 @@ import org.tmatesoft.svn.core.internal.server.dav.DAVPathUtil;
 
 /**
  * Class description.
- *
+ * 
  * @author Mavlarn
  * @since 3.2
  */
 public class SVNRealmFilter implements Filter {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(SVNRealmFilter.class);
 
 	@Autowired
 	private UserContext userContext;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see javax.servlet.Filter#destroy()
 	 */
 	@Override
@@ -53,14 +55,18 @@ public class SVNRealmFilter implements Filter {
 		// Do nothing
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
+	 * javax.servlet.ServletResponse, javax.servlet.FilterChain)
 	 */
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-			ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+					throws IOException,
+					ServletException {
 		LOGGER.debug("In SVNRealmFilter.doFilter()");
-		HttpServletRequest httpReq = (HttpServletRequest)request;
+		HttpServletRequest httpReq = (HttpServletRequest) request;
 		String pathInfo = httpReq.getPathInfo();
 		final String head = DAVPathUtil.head(pathInfo);
 		final User currentUser = userContext.getCurrentUser();
@@ -68,19 +74,19 @@ public class SVNRealmFilter implements Filter {
 		// repo, deny it.
 		if (!StringUtils.equals(currentUser.getUserId(), head)) {
 			throw new BadCredentialsException("User " + currentUser.getUserId() + " cannot access repository of "
-					+ head);
+							+ head);
 		}
 		chain.doFilter(request, response);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
 	 */
 	@Override
 	public void init(FilterConfig arg0) throws ServletException {
 		// Do nothing
 	}
-	
-
 
 }

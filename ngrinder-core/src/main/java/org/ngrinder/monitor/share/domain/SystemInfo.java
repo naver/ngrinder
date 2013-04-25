@@ -197,6 +197,12 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		return sb.toString();
 	}
 
+	/**
+	 * Return the empty record string.
+	 * 
+	 * @return null filled record string.
+	 * @see #toRecordString()
+	 */
 	public String toEmptyRecordString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("null").append(",").append("null").append(",");

@@ -13,6 +13,8 @@
  */
 package org.ngrinder.operation.cotroller;
 
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
+
 import java.io.File;
 
 import javax.annotation.PostConstruct;
@@ -31,10 +33,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * Log monitor controller.
  * 
- * This class runs with {@link Tailer} implementation. Whenever the underlying
- * log file is changed. this class gets the changes. and keep them(max 10000
- * byte) in the memory. Whenever user requests the log, it returns latest
- * changes with the index of the log.
+ * This class runs with {@link Tailer} implementation. Whenever the underlying log file is changed.
+ * this class gets the changes. and keep them(max 10000 byte) in the memory. Whenever user requests
+ * the log, it returns latest changes with the index of the log.
  * 
  * This is only available in the non-clustered instance.
  * 

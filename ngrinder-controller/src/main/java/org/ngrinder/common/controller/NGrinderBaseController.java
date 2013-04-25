@@ -15,7 +15,6 @@ package org.ngrinder.common.controller;
 
 import static org.ngrinder.common.util.NoOp.noOp;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -91,8 +90,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Provide current login user as a model attributes. If it's not found,
-	 * return empty user.
+	 * Provide current login user as a model attributes. If it's not found, return empty user.
 	 * 
 	 * @return login user
 	 */
@@ -145,7 +143,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 	 * @return announcement content
 	 */
 	@ModelAttribute("announcement_hide")
-	public boolean announcement(@CookieValue(value = "announcement_hide", defaultValue = "false") boolean annoucnementHide) {
+	public boolean announcement(
+					@CookieValue(value = "announcement_hide", defaultValue = "false") boolean annoucnementHide) {
 		return annoucnementHide;
 	}
 
@@ -239,8 +238,12 @@ public class NGrinderBaseController implements NGrinderConstants {
 	/**
 	 * Convert the given object into json message.
 	 * 
-	 * @param obj
-	 *            object
+	 * @param <T>
+	 *            content type
+	 * @param content
+	 *            content
+	 * @param header
+	 *            header value map
 	 * @return json message
 	 */
 	public <T> HttpEntity<T> toHttpEntity(T content, MultiValueMap<String, String> header) {
@@ -250,8 +253,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 	/**
 	 * Convert the given object into json message.
 	 * 
-	 * @param obj
-	 *            object
+	 * @param content
+	 *            content
 	 * @return json message
 	 */
 	public HttpEntity<String> toJsonHttpEntity(Object content) {
@@ -261,26 +264,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 		return toHttpEntity(toJson(content), responseHeaders);
 	}
 
-	public Map<String, Object> buildMap(String key1, Object value1) {
-		Map<String, Object> map = new HashMap<String, Object>(1);
-		map.put(key1, value1);
-		return map;
-	}
 
-	public Map<String, Object> buildMap(String key1, Object value1, String key2, Object value2) {
-		Map<String, Object> map = new HashMap<String, Object>(2);
-		map.put(key1, value1);
-		map.put(key2, value2);
-		return map;
-	}
-
-	public Map<String, Object> buildMap(String key1, Object value1, String key2, Object value2, String key3, Object value3) {
-		Map<String, Object> map = new HashMap<String, Object>(2);
-		map.put(key1, value1);
-		map.put(key2, value2);
-		map.put(key3, value3);
-		return map;
-	}
 	/**
 	 * Convert the given map into json message.
 	 * 

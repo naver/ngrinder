@@ -16,20 +16,25 @@ package net.grinder.engine.process;
 import net.grinder.common.processidentity.AgentIdentity;
 
 /**
- * Simplified Agent Identity implementation which will be ignored in the unit
- * test context.
+ * Simplified Agent Identity implementation which will be ignored in the unit test context.
  * 
  * @author JunHo Yoon
- * @since 1.0
+ * @since 3.2
  */
 public class SimpleAgentIdentity implements AgentIdentity {
-	/**
-	 * UUID
-	 */
+	/** UUID. */
 	private static final long serialVersionUID = 2674072961464183737L;
 	private String name;
 	private int number;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param name
+	 *            agent identity name
+	 * @param number
+	 *            agent number.
+	 */
 	public SimpleAgentIdentity(String name, int number) {
 		super();
 		this.name = name;

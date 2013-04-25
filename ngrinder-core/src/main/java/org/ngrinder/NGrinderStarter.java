@@ -133,7 +133,7 @@ public class NGrinderStarter {
 			String localHostAddress = NetworkUtil.getLocalHostAddress();
 			System.setProperty("java.rmi.server.hostname", localHostAddress);
 			int monitorPort = agentConfig.getPropertyInt(AgentConfig.MONITOR_LISTEN_PORT,
-					MonitorConstants.DEFAULT_MONITOR_PORT);
+							MonitorConstants.DEFAULT_MONITOR_PORT);
 			AgentMonitorServer.getInstance().init(monitorPort, agentConfig.getHome().getDirectory());
 			AgentMonitorServer.getInstance().start();
 		} catch (Exception e) {
@@ -228,9 +228,10 @@ public class NGrinderStarter {
 			jnlpLibPath = new File(agentConfig.getHome().getDirectory(), "jnlp_res");
 			try {
 				jnlpLoader = ReflectionUtil.newInstanceByName("org.ngrinder.jnlp.impl.JNLPLoaderImpl");
-				if (!jnlpLoader.isWebStartPossible())
-					staticPrintHelpAndExit("Sorry, nGrinder agent can not run on your JDK, "
-									+ "\n Please install Oracle JDK! ");
+				if (!jnlpLoader.isWebStartPossible()) {
+					staticPrintHelpAndExit("Sorry, nGrinder agent can not run on your JDK,\n"
+									+ "Please install Oracle JDK! ");
+				}
 
 				fileString.addAll(jnlpLoader.resolveRemoteJars(jnlpLibPath));
 			} catch (Exception e) {

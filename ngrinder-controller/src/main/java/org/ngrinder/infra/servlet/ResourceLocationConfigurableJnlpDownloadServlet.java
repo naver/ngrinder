@@ -47,7 +47,7 @@ import org.springframework.web.context.ServletContextAware;
 public class ResourceLocationConfigurableJnlpDownloadServlet extends JnlpDownloadServlet implements HttpRequestHandler,
 				ServletConfig, ServletContextAware {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ResourceLocationConfigurableJnlpDownloadServlet.class);
-	/** UID */
+	/** UID. */
 	private static final long serialVersionUID = 2703216836987727946L;
 
 	@Autowired
@@ -79,6 +79,7 @@ public class ResourceLocationConfigurableJnlpDownloadServlet extends JnlpDownloa
 	 * This method name should not be init. If it's init, there will be recursion calls.
 	 * 
 	 * @throws ServletException
+	 *             exception
 	 */
 	@PostConstruct
 	public void initialize() throws ServletException {
@@ -112,7 +113,9 @@ public class ResourceLocationConfigurableJnlpDownloadServlet extends JnlpDownloa
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see javax.servlet.GenericServlet#getInitParameter(java.lang.String)
 	 */
 	@Override
@@ -120,7 +123,9 @@ public class ResourceLocationConfigurableJnlpDownloadServlet extends JnlpDownloa
 		return initParam.get(name);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see javax.servlet.GenericServlet#getServletName()
 	 */
 	@Override
@@ -128,7 +133,9 @@ public class ResourceLocationConfigurableJnlpDownloadServlet extends JnlpDownloa
 		return "jnlpDownloadServlet";
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see javax.servlet.GenericServlet#getServletContext()
 	 */
 	@Override
@@ -138,7 +145,9 @@ public class ResourceLocationConfigurableJnlpDownloadServlet extends JnlpDownloa
 
 	private Map<String, String> initParam = Maps.newHashMap();
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see javax.servlet.GenericServlet#getInitParameterNames()
 	 */
 	@Override

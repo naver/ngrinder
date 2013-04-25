@@ -214,6 +214,6 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	}
 
 	public String getSyntaxHighligher() {
-		return Lang.getByFileName(getFileName()).getCodemirror();
+		return Lang.getHandlerByFileName(getFileName()).getCodemirrorKey();
 	}
 }

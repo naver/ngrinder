@@ -30,7 +30,7 @@ import net.grinder.script.NonInstrumentableTypeException;
 import net.grinder.scriptengine.groovy.junit.GrinderRunner;
 import net.grinder.scriptengine.groovy.junit.annotation.AfterThread;
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread;
-import net.grinder.scriptengine.groovy.junit.annotation.RepeatInDevContext;
+import net.grinder.scriptengine.groovy.junit.annotation.Repeat;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,11 +43,11 @@ import org.slf4j.LoggerFactory;
 import HTTPClient.HTTPResponse;
 
 /**
- * Class description.
+ * Grinder Runner Test
  * 
  * @author Mavlarn
  * @author JunHo Yoon
- * @since
+ * @since 3.2
  */
 public class GrinderRunnerTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GrinderRunnerTest.class);
@@ -64,7 +64,7 @@ public class GrinderRunnerTest {
 		});
 	}
 
-	@RepeatInDevContext(3)
+	@Repeat(3)
 	@RunWith(GrinderRunner.class)
 	public static class TestSample {
 		private static HTTPRequest request = null;
@@ -89,6 +89,7 @@ public class GrinderRunnerTest {
 		@Test
 		public void doTest() throws Exception {
 			HTTPResponse result = request.GET("http://www.google.com");
+
 			if (result.getStatusCode() != 200) {
 				grinder.getStatistics().getForLastTest().setSuccess(false);
 			} else {

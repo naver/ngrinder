@@ -57,15 +57,16 @@ public class GroovyScriptEngineService implements ScriptEngineService {
 	 * @param scriptLocation
 	 *            Script location.
 	 */
-	public GroovyScriptEngineService(GrinderProperties properties, DCRContext dcrContext, ScriptLocation scriptLocation) {
+	public GroovyScriptEngineService(GrinderProperties properties, //
+					DCRContext dcrContext, ScriptLocation scriptLocation) {
 
 		// This property name is poor, since it really means "If DCR
 		// instrumentation is available, avoid the traditional Jython
 		// instrumenter". I'm not renaming it, since I expect it only to last
 		// a few releases, until DCR becomes the default.
-		m_forceDCRInstrumentation = properties.getBoolean("grinder.dcrinstrumentation", false) ||
+		m_forceDCRInstrumentation = properties.getBoolean("grinder.dcrinstrumentation", false)
 		// Hack: force DCR instrumentation for non-Jython scripts.
-				!m_groovyFileMatcher.accept(scriptLocation.getFile());
+						|| !m_groovyFileMatcher.accept(scriptLocation.getFile());
 
 		m_dcrContext = dcrContext;
 	}
@@ -88,7 +89,7 @@ public class GroovyScriptEngineService implements ScriptEngineService {
 
 		if (!m_forceDCRInstrumentation) {
 			System.out.println("m_forceDCRInstrumentation is false.");
-			//must using Instrumentation
+			// must using Instrumentation
 		}
 
 		if (m_dcrContext != null) {

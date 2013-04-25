@@ -125,7 +125,7 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Set rmi server host name
+	 * Set rmi server host name.
 	 * 
 	 * @since 3.1
 	 */
@@ -144,7 +144,7 @@ public class Config implements IConfig, NGrinderConstants {
 			}
 		}
 	}
-	
+
 	/**
 	 * Check whether the cache cluster is set.
 	 * 
@@ -180,18 +180,18 @@ public class Config implements IConfig, NGrinderConstants {
 	 * @return monitor port
 	 */
 	public int getMonitorPort() {
-		return getSystemProperties().getPropertyInt(AgentConfig.MONITOR_LISTEN_PORT, MonitorConstants.DEFAULT_MONITOR_PORT);
+		return getSystemProperties().getPropertyInt(AgentConfig.MONITOR_LISTEN_PORT,
+						MonitorConstants.DEFAULT_MONITOR_PORT);
 	}
-	
+
 	/**
-	 * Check if using collect data functions  
+	 * Check if using usage report functions.
 	 * 
-	 * @return true 
+	 * @return true if enabled.
 	 */
-	public boolean enabledCollectDataToGA() {
+	public boolean isUsageReportEnabled() {
 		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINER_USAGE_REPORT, true);
 	}
-	
 
 	/**
 	 * Initialize Logger.

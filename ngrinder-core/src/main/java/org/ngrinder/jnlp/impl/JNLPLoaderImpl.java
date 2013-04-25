@@ -22,12 +22,14 @@
  */
 package org.ngrinder.jnlp.impl;
 
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.ngrinder.common.util.CompressionUtil;
@@ -43,11 +45,14 @@ import com.sun.jnlp.JNLPClassLoader;
  * @author maoyb
  */
 public class JNLPLoaderImpl implements JNLPLoader {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(JNLPLoaderImpl.class);
 
 	private ClassLoader localClassLoader;
 
+	/**
+	 * Constructor.
+	 */
 	public JNLPLoaderImpl() {
 		localClassLoader = Thread.currentThread().getContextClassLoader();
 	}
@@ -70,7 +75,7 @@ public class JNLPLoaderImpl implements JNLPLoader {
 	@Override
 	public List<File> resolveRemoteJars(File jnlpLibPath) {
 
-		List<File> fileString = new ArrayList<File>();
+		List<File> fileString = newArrayList();
 
 		JNLPClassLoader jnlpClassLoader = (JNLPClassLoader) localClassLoader;
 		try {

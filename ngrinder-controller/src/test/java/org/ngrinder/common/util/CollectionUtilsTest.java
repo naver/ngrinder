@@ -31,14 +31,14 @@ import org.junit.Test;
 public class CollectionUtilsTest {
 
 	/**
-	 * Test method for {@link org.ngrinder.common.util.CollectionUtils#selectSome(java.util.Set, int)}.
+	 * Test method for {@link org.org.ngrinder.common.util.CollectionUtils#selectSome(java.util.Set, int)}.
 	 */
 	@Test
 	public void testSelectSome() {
 		Set<Integer> intSet = new HashSet<Integer>();
 		intSet.add(1);
 		intSet.add(2);
-		intSet.add(3);
+		intSet.add(3);  
 		intSet.add(4);
 		intSet.add(5);
 		intSet.add(6);

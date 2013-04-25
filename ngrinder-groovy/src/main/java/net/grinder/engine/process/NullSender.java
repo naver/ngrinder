@@ -21,7 +21,7 @@ import net.grinder.communication.Sender;
  * NullSender to be ignored in its use.
  * 
  * @author JunHo Yoon
- * @since 1.0
+ * @since 3.2
  */
 public class NullSender implements Sender {
 

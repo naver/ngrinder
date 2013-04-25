@@ -23,33 +23,54 @@ import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
 /**
- * Grinder JUnit Runner.
+ * JUnit styled script runner in the Grinder context.
+ * 
+ * This class is to let the its user call the pre/post methods by himself.
+ * 
+ * This runner is *NOT* intended to run in the JUnit.
  * 
  * @author JunHo Yoon
- * @since 1.0
+ * @since 3.2
  */
-public class GrinderConextRunner extends GrinderRunner {
+public class GrinderConextExecutor extends GrinderRunner {
 	/**
-	 * Constructor
+	 * Constructor.
 	 * 
 	 * @param klass
-	 *            klass
+	 *            class to be tested.
 	 * @throws InitializationError
+	 *             initialization exception
 	 */
-	public GrinderConextRunner(Class<?> klass) throws InitializationError {
+	public GrinderConextExecutor(Class<?> klass) throws InitializationError {
 		super(klass);
 	}
 
+	/**
+	 * Do nothing on grinder context initialization.
+	 * 
+	 */
 	@Override
-	protected void initialize() {
+	protected void initializeGrinderContext() {
 		noOp();
 	}
 
+	/**
+	 * Do nothing.
+	 * 
+	 * @param notifier
+	 *            notifier
+	 */
 	@Override
 	protected void registerRunNotifierListener(RunNotifier notifier) {
 		noOp();
 	}
 
+	/**
+	 * Run {@link net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess} annotated methods.
+	 * 
+	 * @throws GroovyScriptExecutionException
+	 *             script exception
+	 */
 	public void runBeforeProcess() throws GroovyScriptExecutionException {
 		try {
 			Statement withBeforeProcess = withBeforeProcess(NullStatement.getInstance());
@@ -59,6 +80,12 @@ public class GrinderConextRunner extends GrinderRunner {
 		}
 	}
 
+	/**
+	 * Run {@link net.grinder.scriptengine.groovy.junit.annotation.AfterProcess} annotated methods.
+	 * 
+	 * @throws GroovyScriptExecutionException
+	 *             script exception
+	 */
 	public void runAfterProcess() throws GroovyScriptExecutionException {
 		try {
 			Statement withAfterProcess = withAfterProcess(NullStatement.getInstance());
@@ -68,6 +95,12 @@ public class GrinderConextRunner extends GrinderRunner {
 		}
 	}
 
+	/**
+	 * Run {@link net.grinder.scriptengine.groovy.junit.annotation.BeforeThread} annotated methods.
+	 * 
+	 * @throws GroovyScriptExecutionException
+	 *             script exception.
+	 */
 	public void runBeforeThread() throws GroovyScriptExecutionException {
 		try {
 			Statement withBeforeThread = withBeforeThread(NullStatement.getInstance());
@@ -77,6 +110,12 @@ public class GrinderConextRunner extends GrinderRunner {
 		}
 	}
 
+	/**
+	 * Run {@link net.grinder.scriptengine.groovy.junit.annotation.AfterThread} annotated methods.
+	 * 
+	 * @throws GroovyScriptExecutionException
+	 *             script error.
+	 */
 	public void runAfterThread() throws GroovyScriptExecutionException {
 		try {
 			Statement withAfterThread = withAfterThread(NullStatement.getInstance());
@@ -86,6 +125,13 @@ public class GrinderConextRunner extends GrinderRunner {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * net.grinder.scriptengine.groovy.junit.GrinderRunner#classBlock(org.junit.runner.notification
+	 * .RunNotifier)
+	 */
 	@Override
 	protected Statement classBlock(RunNotifier notifier) {
 		Statement statement = childrenInvoker(notifier);
@@ -94,6 +140,10 @@ public class GrinderConextRunner extends GrinderRunner {
 
 	/**
 	 * No support for repetition in grinder context.
+	 * 
+	 * @param statement
+	 *            statement.
+	 * @return pass the given statement without modification
 	 */
 	@Override
 	protected Statement withRepeat(Statement statement) {

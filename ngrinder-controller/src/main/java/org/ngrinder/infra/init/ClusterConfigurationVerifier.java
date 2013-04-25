@@ -32,8 +32,8 @@ import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.stereotype.Component;
 
 /**
- * Verify clustering is set up well. such as check the region is not duplicated.
- * check if they use same home.
+ * Verify clustering is set up well. such as check the region is not duplicated. check if they use
+ * same home.
  * 
  * @since3.2
  */
@@ -52,9 +52,10 @@ public class ClusterConfigurationVerifier {
 	private Cache cache;
 
 	/**
-	 * Check cluster starting
+	 * Check cluster starting.
 	 * 
 	 * @throws IOException
+	 *             exception
 	 */
 	@PostConstruct
 	public void verifyCluster() throws IOException {
@@ -68,6 +69,7 @@ public class ClusterConfigurationVerifier {
 	 * check if they use same home.
 	 * 
 	 * @throws IOException
+	 *             exception
 	 */
 	private void checkExHome() throws IOException {
 		File system = config.getHome().getSubFile("system.conf");
@@ -77,16 +79,17 @@ public class ClusterConfigurationVerifier {
 		for (Object eachKey : ((Ehcache) (cache.getNativeCache())).getKeys()) {
 			ValueWrapper valueWrapper = cache.get(eachKey);
 			if (valueWrapper != null && valueWrapper.get() != null) {
-				checkState(
-						homeFileStamp.equals(valueWrapper.get()),
-						"Controller's {NGRINDER_HOME} conflict with other controller,Please check if you use same ngrinder home folder for each clustered controller !");
+				checkState(homeFileStamp.equals(valueWrapper.get()),
+								"Controller's {NGRINDER_HOME} conflict with other controller, "
+												+ "Please check if you use same ngrinder home folder"
+												+ " for each clustered controller !");
 			}
 		}
 		cache.put(regionService.getCurrentRegion(), homeFileStamp);
 	}
 
 	/**
-	 * check if they use CUBRID in cluster mode
+	 * check if they use CUBRID in cluster mode.
 	 */
 	private void checkUsedDB() {
 		String db = config.getDatabaseProperties().getProperty("database", "NONE").toLowerCase();

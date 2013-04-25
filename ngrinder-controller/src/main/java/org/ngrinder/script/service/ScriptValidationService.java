@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import net.grinder.engine.agent.LocalScriptTestDriveService;
+import net.grinder.lang.AbstractLanguageHandler;
 import net.grinder.lang.Lang;
 import net.grinder.util.thread.Condition;
 
@@ -79,8 +80,8 @@ public class ScriptValidationService implements IScriptValidationService {
 			checkNotNull(user, "user should be provided");
 			// String result = checkSyntaxErrors(scriptEntry.getContent());
 
-			Lang lang = Lang.getByFileName(scriptEntry.getPath());
-			String result = lang.checkSyntaxErrors(scriptEntry.getContent());
+			AbstractLanguageHandler handler = Lang.getHandlerByFileName(scriptEntry.getPath());
+			String result = handler.checkSyntaxErrors(scriptEntry.getContent());
 			if (result != null) {
 				return result;
 			}

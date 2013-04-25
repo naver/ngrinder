@@ -77,9 +77,9 @@ public class RegionService {
 			});
 		}
 	}
-	
+
 	/**
-	 * Verify duplicate region when starting with cluster mode
+	 * Verify duplicate region when starting with cluster mode.
 	 * 
 	 * @since 3.2
 	 */
@@ -87,8 +87,8 @@ public class RegionService {
 		Map<String, RegionInfo> regions = getRegions();
 		String localRegion = getCurrentRegion();
 		checkState(!regions.containsKey(localRegion),
-				"The region name {%s} is used by other controller,Please set the region with different one!",
-				localRegion);
+						"The region name {%s} is used by other controller,Please set the region with different one!",
+						localRegion);
 	}
 
 	@Autowired

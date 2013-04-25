@@ -13,9 +13,6 @@
  */
 package net.grinder.scriptengine.groovy;
 
-import static net.grinder.scriptengine.groovy.GroovyExceptionUtils.filterException;
-import static net.grinder.scriptengine.groovy.GroovyExceptionUtils.getRootCause;
-import static net.grinder.scriptengine.groovy.GroovyExceptionUtils.isGenericShutdown;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovySystem;
 
@@ -28,6 +25,7 @@ import net.grinder.script.Statistics.StatisticsForTest;
 import net.grinder.scriptengine.ScriptEngineService;
 import net.grinder.scriptengine.ScriptEngineService.ScriptEngine;
 import net.grinder.scriptengine.ScriptExecutionException;
+import net.grinder.scriptengine.exception.AbstractExceptionProcessor;
 import net.grinder.scriptengine.groovy.junit.GrinderRunner;
 import net.grinder.util.ThreadUtils;
 
@@ -43,7 +41,8 @@ import org.junit.runners.model.InitializationError;
  * @author JunHo Yoon (modified by)
  */
 public class GroovyScriptEngine implements ScriptEngine {
-	private GrinderConextRunner grinderRunner;
+	private GrinderConextExecutor grinderRunner;
+	private AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
 
 	/**
 	 * Construct a GroovyScriptEngine that will use the supplied ScriptLocation.
@@ -60,7 +59,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 		final GroovyClassLoader loader = new GroovyClassLoader(parent);
 		try {
 			Class<?> m_groovyClass = loader.parseClass(script.getFile());
-			grinderRunner = new GrinderConextRunner(m_groovyClass);
+			grinderRunner = new GrinderConextExecutor(m_groovyClass);
 			grinderRunner.runBeforeProcess();
 			assert grinderRunner.testCount() > 0;
 		} catch (IOException io) {
@@ -93,18 +92,18 @@ public class GroovyScriptEngine implements ScriptEngine {
 	 */
 	public final class GroovyWorkerRunnable implements ScriptEngineService.WorkerRunnable {
 		private boolean m_shutdowned = false;
-		private final GrinderConextRunner m_groovyRunner;
+		private final GrinderConextExecutor m_groovyRunner;
 		private RunNotifier notifier = new RunNotifier();
 
-		private GroovyWorkerRunnable(GrinderConextRunner groovyRunner) throws EngineException {
+		private GroovyWorkerRunnable(GrinderConextExecutor groovyRunner) throws EngineException {
 			this.m_groovyRunner = groovyRunner;
 			this.m_groovyRunner.runBeforeThread();
 			this.notifier.addListener(new RunListener() {
 				@Override
 				public void testFailure(Failure failure) throws Exception {
 					// Skip Generic Shutdown... It's not failure.
-					Throwable rootCause = getRootCause(failure.getException());
-					if (isGenericShutdown(rootCause)) {
+					Throwable rootCause = exceptionProcessor.getRootCause(failure.getException());
+					if (exceptionProcessor.isGenericShutdown(rootCause)) {
 						return;
 					}
 					// In case of exception, set test failed.
@@ -112,7 +111,8 @@ public class GroovyScriptEngine implements ScriptEngine {
 					if (forLastTest != null) {
 						forLastTest.setSuccess(false);
 					}
-					Grinder.grinder.getLogger().error(failure.getMessage(), filterException(failure.getException()));
+					Grinder.grinder.getLogger().error(failure.getMessage(),
+									exceptionProcessor.filterExceptionAwaringGenericShutdown(failure.getException()));
 				}
 			});
 		}
@@ -126,7 +126,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 			try {
 				this.m_groovyRunner.run(notifier);
 			} catch (RuntimeException e) {
-				throw filterException(e);
+				throw exceptionProcessor.filterExceptionAwaringGenericShutdown(e);
 			}
 		}
 
@@ -164,7 +164,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 	 */
 	public static final class GroovyScriptExecutionException extends ScriptExecutionException {
 
-		/** UUID */
+		/** UUID. */
 		private static final long serialVersionUID = -1789749790500700831L;
 
 		/**

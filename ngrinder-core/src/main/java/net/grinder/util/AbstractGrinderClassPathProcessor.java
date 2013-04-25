@@ -13,6 +13,7 @@
  */
 package net.grinder.util;
 
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
@@ -31,8 +32,17 @@ import org.slf4j.Logger;
  * @author JunHo Yoon
  * @since 3.0
  */
-public abstract class GrinderClassPathProcessor {
-	public GrinderClassPathProcessor() {
+public abstract class AbstractGrinderClassPathProcessor {
+
+	private final List<String> foreMostJarList = newArrayList();
+	private final List<String> patchJarList = newArrayList();
+	private final List<String> usefulJarList = newArrayList();
+	private final List<String> uselessJarList = newArrayList();
+
+	/**
+	 * Constructor.
+	 */
+	public AbstractGrinderClassPathProcessor() {
 		init();
 		initMore();
 	}
@@ -121,7 +131,7 @@ public abstract class GrinderClassPathProcessor {
 
 	private boolean isPatchJar(String jarFilename) {
 		if ("jar".equals(FilenameUtils.getExtension(jarFilename))) {
-			for (String jarName : PATCH_JAR_LIST) {
+			for (String jarName : patchJarList) {
 				if (jarFilename.contains(jarName)) {
 					return true;
 				}
@@ -130,42 +140,40 @@ public abstract class GrinderClassPathProcessor {
 		return false;
 	}
 
-	protected final List<String> FOREMOST_JAR_LIST = new ArrayList<String>();
-	protected final List<String> PATCH_JAR_LIST = new ArrayList<String>();
-	protected final List<String> USEFUL_JAR_LIST = new ArrayList<String>();
-	protected final List<String> USELESS_JAR_LIST = new ArrayList<String>();
-
+	/**
+	 * Initialize.
+	 */
 	public void init() {
-		FOREMOST_JAR_LIST.add("ngrinder-dns");
-		PATCH_JAR_LIST.add("patch.jar");
+		foreMostJarList.add("ngrinder-dns");
+		patchJarList.add("patch.jar");
 		// TODO: If we have need another jar files, we should append it here.
-		USEFUL_JAR_LIST.add("grinder");
-		USEFUL_JAR_LIST.add("dnsjava");
-		USEFUL_JAR_LIST.add("asm");
-		USEFUL_JAR_LIST.add("picocontainer");
-		USEFUL_JAR_LIST.add("slf4j-api");
-		USEFUL_JAR_LIST.add("json");
-		USEFUL_JAR_LIST.add("logback");
-		USEFUL_JAR_LIST.add("jna");
-		USEFUL_JAR_LIST.add("jsr173");
-		USEFUL_JAR_LIST.add("xmlbeans");
-		USEFUL_JAR_LIST.add("stax-api");
-		USEFUL_JAR_LIST.add("ngrinder-patch");
-		USEFUL_JAR_LIST.add("junit");
-		USEFUL_JAR_LIST.add("hamcrest");
-		USEFUL_JAR_LIST.add("groovy");
+		usefulJarList.add("grinder");
+		usefulJarList.add("dnsjava");
+		usefulJarList.add("asm");
+		usefulJarList.add("picocontainer");
+		usefulJarList.add("slf4j-api");
+		usefulJarList.add("json");
+		usefulJarList.add("logback");
+		usefulJarList.add("jna");
+		usefulJarList.add("jsr173");
+		usefulJarList.add("xmlbeans");
+		usefulJarList.add("stax-api");
+		usefulJarList.add("ngrinder-patch");
+		usefulJarList.add("junit");
+		usefulJarList.add("hamcrest");
+		usefulJarList.add("groovy");
 
-		USELESS_JAR_LIST.add("jython-2.2");
-		USELESS_JAR_LIST.add("ngrinder-core");
-		USELESS_JAR_LIST.add("ngrinder-controller");
-		USELESS_JAR_LIST.add("spring");
+		uselessJarList.add("jython-2.2");
+		uselessJarList.add("ngrinder-core");
+		uselessJarList.add("ngrinder-controller");
+		uselessJarList.add("spring");
 	}
 
 	protected abstract void initMore();
 
 	private boolean isForeMostJar(String jarFilename) {
 		if ("jar".equals(FilenameUtils.getExtension(jarFilename))) {
-			for (String jarName : FOREMOST_JAR_LIST) {
+			for (String jarName : foreMostJarList) {
 				if (jarFilename.contains(jarName)) {
 					return true;
 				}
@@ -179,13 +187,13 @@ public abstract class GrinderClassPathProcessor {
 			return false;
 		}
 
-		for (String jarName : USEFUL_JAR_LIST) {
+		for (String jarName : usefulJarList) {
 			if (jarFilename.contains(jarName)) {
 				return true;
 			}
 		}
 
-		for (String jarName : USELESS_JAR_LIST) {
+		for (String jarName : uselessJarList) {
 			if (jarFilename.contains(jarName)) {
 				return false;
 			}
@@ -201,7 +209,7 @@ public abstract class GrinderClassPathProcessor {
 	 * @return classpath optimized for grinder.
 	 */
 	public String buildForemostClasspathBasedOnCurrentClassLoader(Logger logger) {
-		URL[] urLs = ((URLClassLoader) GrinderClassPathProcessor.class.getClassLoader()).getURLs();
+		URL[] urLs = ((URLClassLoader) AbstractGrinderClassPathProcessor.class.getClassLoader()).getURLs();
 		StringBuilder builder = new StringBuilder();
 		for (URL each : urLs) {
 			builder.append(each.getFile()).append(File.pathSeparator);
@@ -217,11 +225,28 @@ public abstract class GrinderClassPathProcessor {
 	 * @return classpath optimized for grinder.
 	 */
 	public String buildClasspathBasedOnCurrentClassLoader(Logger logger) {
-		URL[] urLs = ((URLClassLoader) GrinderClassPathProcessor.class.getClassLoader()).getURLs();
+		URL[] urLs = ((URLClassLoader) AbstractGrinderClassPathProcessor.class.getClassLoader()).getURLs();
 		StringBuilder builder = new StringBuilder();
 		for (URL each : urLs) {
 			builder.append(each.getFile()).append(File.pathSeparator);
 		}
 		return filterClassPath(builder.toString(), logger);
 	}
+
+	public List<String> getForeMostJarList() {
+		return foreMostJarList;
+	}
+
+	public List<String> getPatchJarList() {
+		return patchJarList;
+	}
+
+	public List<String> getUsefulJarList() {
+		return usefulJarList;
+	}
+
+	public List<String> getUselessJarList() {
+		return uselessJarList;
+	}
+
 }

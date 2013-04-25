@@ -13,7 +13,7 @@
  */
 package net.grinder.console.communication;
 
-import static net.grinder.util.CollectionUtils.newLinkedHashSet;
+import static org.ngrinder.common.util.CollectionUtils.newLinkedHashSet;
 
 import java.util.EventListener;
 import java.util.HashSet;

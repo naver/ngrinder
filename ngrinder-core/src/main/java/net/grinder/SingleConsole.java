@@ -13,9 +13,9 @@
  */
 package net.grinder;
 
-import static net.grinder.util.CollectionUtils.newArrayList;
-import static net.grinder.util.CollectionUtils.newHashMap;
-import static net.grinder.util.CollectionUtils.newLinkedHashMap;
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+import static org.ngrinder.common.util.CollectionUtils.newLinkedHashMap;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.beans.PropertyChangeEvent;
@@ -734,7 +734,16 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 		}
 	}
 
-	private void writeIntervalSummaryDataPerTest(Map<Test, StatisticsSet> intervalStatisticMapPerTest, boolean lastCall) {
+	/**
+	 * Writer interval summary data per each test.
+	 * 
+	 * @param intervalStatisticMapPerTest
+	 *            statistics map
+	 * @param lastCall
+	 *            true if it's the last call of consequent call in a single sampling
+	 */
+	private void writeIntervalSummaryDataPerTest(Map<Test, StatisticsSet> intervalStatisticMapPerTest, //
+					boolean lastCall) {
 		StatisticExpression tpsExpression = sampleModel.getTPSExpression();
 		for (Entry<Test, StatisticsSet> entry : intervalStatisticMapPerTest.entrySet()) {
 			if (lastCall) {
@@ -754,6 +763,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @param intervalStatistics
 	 *            interval statistics
 	 * @param firstCall
+	 *            true if it's the last call of consequent call in a single sampling
 	 */
 	public void writeIntervalSummaryData(StatisticsSet intervalStatistics, boolean firstCall) {
 		for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {

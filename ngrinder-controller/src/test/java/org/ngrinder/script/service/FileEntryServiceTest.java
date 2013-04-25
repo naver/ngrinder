@@ -31,7 +31,8 @@ public class FileEntryServiceTest {
 	public void testFileTemplate() {
 		User user = new User();
 		user.setUserName("JunHo Yoon");
-		String content = fileEntryService.loadFreeMarkerTemplate(user, Lang.Jython, "http://helloworld/myname/is");
+		String content = fileEntryService.loadFreeMarkerTemplate(user, Lang.Jython.getHandler(),
+						"http://helloworld/myname/is");
 		assertThat(content, containsString("JunHo Yoon"));
 		assertThat(content, containsString("http://helloworld/myname/is"));
 	}

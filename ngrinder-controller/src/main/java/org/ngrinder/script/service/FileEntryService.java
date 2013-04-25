@@ -28,6 +28,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import net.grinder.lang.AbstractLanguageHandler;
 import net.grinder.lang.Lang;
 
 import org.apache.commons.io.FilenameUtils;
@@ -323,7 +324,7 @@ public class FileEntryService {
 			filePath = fileName;
 		}
 		fileEntry.setPath(filePath);
-		fileEntry.setContent(loadFreeMarkerTemplate(user, Lang.getByFileName(fileName), url));
+		fileEntry.setContent(loadFreeMarkerTemplate(user, Lang.getHandlerByFileName(fileName), url));
 		addHostProperties(fileEntry, url);
 		return fileEntry;
 	}
@@ -367,18 +368,20 @@ public class FileEntryService {
 	 * 
 	 * @param user
 	 *            user
+	 * @param handler
+	 *            handler
 	 * @param url
 	 *            url
 	 * @return generated test script
 	 */
-	public String loadFreeMarkerTemplate(User user, Lang lang, String url) {
+	public String loadFreeMarkerTemplate(User user, AbstractLanguageHandler handler, String url) {
 
 		try {
 			Configuration freemarkerConfig = new Configuration();
 			ClassPathResource cpr = new ClassPathResource("script_template");
 			freemarkerConfig.setDirectoryForTemplateLoading(cpr.getFile());
 			freemarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
-			Template template = freemarkerConfig.getTemplate("basic_template_" + lang.getExtension() + ".ftl");
+			Template template = freemarkerConfig.getTemplate("basic_template_" + handler.getExtension() + ".ftl");
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("url", url);
 			map.put("user", user);

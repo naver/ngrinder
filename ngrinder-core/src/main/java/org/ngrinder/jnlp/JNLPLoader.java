@@ -26,25 +26,27 @@ import java.io.File;
 import java.util.List;
 
 /**
- *Interface  that can deal with resolving jar files when
- * agent mode is web starting.
- *
+ * Interface that can deal with resolving jar files when agent mode is web starting.
+ * 
  * @author maoyb
+ * @since 3.2
  */
 public interface JNLPLoader {
-	
-	  /**
-	   * Method that check system  whether or not support
-	   *  web start mode 
-	   * @return boolean 
-	   */
-	 public boolean isWebStartPossible();
-	 
-	  /**
-	   * Method that find jar files to copy to local host 
-	   *  and set class path
-	   * @return boolean 
-	   */
-	 public List<File> resolveRemoteJars(File jnlpLibPath) ;
+
+	/**
+	 * Method that check system whether or not support web start mode.
+	 * 
+	 * @return true if it's web start enabled.
+	 */
+	public boolean isWebStartPossible();
+
+	/**
+	 * Method that find jar files to copy to local host and set class path.
+	 * 
+	 * @param jnlpLibPath
+	 *            jnlp library path
+	 * @return list of files.
+	 */
+	public List<File> resolveRemoteJars(File jnlpLibPath);
 
 }

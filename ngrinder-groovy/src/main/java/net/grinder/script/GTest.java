@@ -14,20 +14,19 @@
 package net.grinder.script;
 
 /**
- * {@link Test} extension to be distinguishable from {@link org.junit.Test} in
- * JUnit4 tests.
+ * {@link Test} extension to be distinguishable from {@link org.junit.Test} in JUnit4 tests.
  * 
- * <code>
+ * <pre>
  * request = new HTTPRequest();
- * GTest(1, "Test").record(request);
- * </code>
+ * GTest(1, &quot;Test&quot;).record(request);
+ * </pre>
  * 
  * @author JunHo Yoon
- * @since 1.0
+ * @since 3.2
  */
 public class GTest extends Test {
 
-	/** UID */
+	/** UID. */
 	private static final long serialVersionUID = 8370116882992463352L;
 
 	/**
