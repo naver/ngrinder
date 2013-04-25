@@ -2,6 +2,8 @@ package org.ngrinder;
 
 import static net.grinder.script.Grinder.grinder
 import static org.junit.Assert.*
+import net.grinder.engine.process.GrinderProcess.ThreadContexts;
+import net.grinder.engine.process.ShutdownException
 import net.grinder.plugin.http.HTTPRequest
 import net.grinder.script.GTest
 import net.grinder.script.Grinder

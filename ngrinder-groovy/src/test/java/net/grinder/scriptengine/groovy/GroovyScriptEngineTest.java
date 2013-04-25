@@ -47,8 +47,7 @@ public class GroovyScriptEngineTest {
 		GroovyScriptEngine engine = new GroovyScriptEngine(new ScriptLocation(scriptFile));
 		init.attachWorkerThreadContext();
 		GroovyScriptEngine.GroovyWorkerRunnable worker = (GroovyScriptEngine.GroovyWorkerRunnable) engine
-				.createWorkerRunnable();
+						.createWorkerRunnable();
 		worker.run();
-		worker.shutdown();
 	}
 }

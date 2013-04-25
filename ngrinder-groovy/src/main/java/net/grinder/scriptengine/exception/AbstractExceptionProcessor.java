@@ -16,10 +16,7 @@ package net.grinder.scriptengine.exception;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.grinder.scriptengine.groovy.GroovyScriptEngine.GroovyScriptExecutionException;
 import net.grinder.util.Sleeper;
-
-import org.codehaus.groovy.runtime.StackTraceUtils;
 
 /**
  * Exception filtering processor.
@@ -34,27 +31,10 @@ public abstract class AbstractExceptionProcessor {
 	 * 
 	 * @param throwable
 	 *            throwable
-	 * @return GroovyScriptExecutionException wrapped exception
-	 */
-	public GroovyScriptExecutionException filterExceptionAwaringGenericShutdown(Throwable throwable) {
-		Throwable t = getRootCause(throwable);
-		if (isGenericShutdown(t)) {
-			return new GroovyScriptExecutionException("ShutDown", t);
-		}
-		return new GroovyScriptExecutionException(t.getMessage(), t);
-	}
-
-	/**
-	 * Filter exception.
-	 * 
-	 * @param throwable
-	 *            throwable
 	 * @return filtered {@link Throwable}
 	 */
 	public Throwable filterException(Throwable throwable) {
-		Throwable t = getRootCause(throwable);
-		t.setStackTrace(sanitize(t).getStackTrace());
-		return t;
+		return sanitize(getRootCause(throwable));
 	}
 
 	/**
@@ -88,8 +68,14 @@ public abstract class AbstractExceptionProcessor {
 	 * @return true if generic shutdown
 	 */
 	public boolean isGenericShutdown(Throwable cause) {
-		return (cause.getClass().getName().equals("net.grinder.engine.process.ShutdownException"))
-						|| (cause instanceof Sleeper.ShutdownException);
+		while (cause != null) {
+			if ((cause.getClass().getName().equals("net.grinder.engine.process.ShutdownException"))
+							|| (cause instanceof Sleeper.ShutdownException)) {
+				return true;
+			}
+			cause = cause.getCause();
+		}
+		return false;
 	}
 
 	/**
@@ -100,18 +86,21 @@ public abstract class AbstractExceptionProcessor {
 	 * @return {@link Throwable} instance with interested stacktrace elements.
 	 */
 	public Throwable sanitize(Throwable throwable) {
-		throwable = StackTraceUtils.sanitize(throwable);
-		// Note that this getBoolean access may well be synced...
-		StackTraceElement[] trace = throwable.getStackTrace();
-		List<StackTraceElement> newTrace = new ArrayList<StackTraceElement>();
-		for (StackTraceElement stackTraceElement : trace) {
-			if (isApplicationClass(stackTraceElement.getClassName())) {
-				newTrace.add(stackTraceElement);
+		Throwable t = throwable;
+		while (t != null) {
+			// Note that this getBoolean access may well be synced...
+			StackTraceElement[] trace = t.getStackTrace();
+			List<StackTraceElement> newTrace = new ArrayList<StackTraceElement>();
+			for (StackTraceElement stackTraceElement : trace) {
+				if (isApplicationClass(stackTraceElement.getClassName())) {
+					newTrace.add(stackTraceElement);
+				}
 			}
+			StackTraceElement[] clean = new StackTraceElement[newTrace.size()];
+			newTrace.toArray(clean);
+			t.setStackTrace(clean);
+			t = t.getCause();
 		}
-		StackTraceElement[] clean = new StackTraceElement[newTrace.size()];
-		newTrace.toArray(clean);
-		throwable.setStackTrace(clean);
 		return throwable;
 	}
 

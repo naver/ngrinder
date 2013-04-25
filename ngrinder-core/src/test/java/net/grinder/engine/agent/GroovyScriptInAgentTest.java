@@ -38,7 +38,7 @@ public class GroovyScriptInAgentTest {
 	private SingleConsole console1;
 	private Integer consolePort;
 	private AgentConfig agentConfig;
-	Condition condition = new Condition();
+	private Condition condition = new Condition();
 
 	@Before
 	public void before() {

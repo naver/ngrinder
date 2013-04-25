@@ -32,7 +32,7 @@ import org.junit.runners.model.Statement;
  * @author JunHo Yoon
  * @since 3.2
  */
-public class GrinderConextExecutor extends GrinderRunner {
+public class GrinderContextExecutor extends GrinderRunner {
 	/**
 	 * Constructor.
 	 * 
@@ -41,7 +41,7 @@ public class GrinderConextExecutor extends GrinderRunner {
 	 * @throws InitializationError
 	 *             initialization exception
 	 */
-	public GrinderConextExecutor(Class<?> klass) throws InitializationError {
+	public GrinderContextExecutor(Class<?> klass) throws InitializationError {
 		super(klass);
 	}
 

@@ -27,7 +27,6 @@ import net.grinder.scriptengine.ScriptEngineService.ScriptEngine;
 import net.grinder.scriptengine.ScriptExecutionException;
 import net.grinder.scriptengine.exception.AbstractExceptionProcessor;
 import net.grinder.scriptengine.groovy.junit.GrinderRunner;
-import net.grinder.util.ThreadUtils;
 
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
@@ -41,7 +40,7 @@ import org.junit.runners.model.InitializationError;
  * @author JunHo Yoon (modified by)
  */
 public class GroovyScriptEngine implements ScriptEngine {
-	private GrinderConextExecutor grinderRunner;
+	private GrinderContextExecutor grinderRunner;
 	private AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
 
 	/**
@@ -59,7 +58,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 		final GroovyClassLoader loader = new GroovyClassLoader(parent);
 		try {
 			Class<?> m_groovyClass = loader.parseClass(script.getFile());
-			grinderRunner = new GrinderConextExecutor(m_groovyClass);
+			grinderRunner = new GrinderContextExecutor(m_groovyClass);
 			grinderRunner.runBeforeProcess();
 			assert grinderRunner.testCount() > 0;
 		} catch (IOException io) {
@@ -91,11 +90,21 @@ public class GroovyScriptEngine implements ScriptEngine {
 	 * Wrapper for groovy's testRunner closure.
 	 */
 	public final class GroovyWorkerRunnable implements ScriptEngineService.WorkerRunnable {
-		private boolean m_shutdowned = false;
-		private final GrinderConextExecutor m_groovyRunner;
-		private RunNotifier notifier = new RunNotifier();
+		private final GrinderContextExecutor m_groovyRunner;
+		private RunNotifier notifier = new RunNotifier() {
+			public void fireTestFailure(Failure failure) {
+				if (exceptionProcessor.isGenericShutdown(failure.getException())) {
+					if (failure.getException() instanceof RuntimeException) {
+						throw (RuntimeException) failure.getException();
+					} else {
+						throw new RuntimeException("Wrapped", failure.getException());
+					}
+				}
+				super.fireTestFailure(failure);
+			};
+		};
 
-		private GroovyWorkerRunnable(GrinderConextExecutor groovyRunner) throws EngineException {
+		private GroovyWorkerRunnable(GrinderContextExecutor groovyRunner) throws EngineException {
 			this.m_groovyRunner = groovyRunner;
 			this.m_groovyRunner.runBeforeThread();
 			this.notifier.addListener(new RunListener() {
@@ -112,27 +121,25 @@ public class GroovyScriptEngine implements ScriptEngine {
 						forLastTest.setSuccess(false);
 					}
 					Grinder.grinder.getLogger().error(failure.getMessage(),
-									exceptionProcessor.filterExceptionAwaringGenericShutdown(failure.getException()));
+									exceptionProcessor.filterException(rootCause));
 				}
 			});
 		}
 
 		@Override
 		public void run() throws ScriptExecutionException {
-			if (m_shutdowned) {
-				ThreadUtils.sleep(100);
-				return;
-			}
 			try {
 				this.m_groovyRunner.run(notifier);
 			} catch (RuntimeException e) {
-				throw exceptionProcessor.filterExceptionAwaringGenericShutdown(e);
+				if (exceptionProcessor.isGenericShutdown(e)) {
+					throw new GroovyScriptExecutionException("Shutdown",
+									e.getMessage().equals("Wrapped") ? e.getCause() : e);
+				}
 			}
 		}
 
 		@Override
 		public void shutdown() throws ScriptExecutionException {
-			m_shutdowned = true;
 			notifier.pleaseStop();
 			this.m_groovyRunner.runAfterThread();
 		}

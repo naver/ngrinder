@@ -2,13 +2,12 @@ package org.ngrinder;
 
 import static net.grinder.script.Grinder.grinder
 import static org.junit.Assert.*
+import net.grinder.engine.process.ShutdownException
 import net.grinder.plugin.http.HTTPRequest
 import net.grinder.script.GTest
 import net.grinder.script.Grinder
-import net.grinder.scriptengine.groovy.junit.GrinderRunner;
-import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess;
-import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread;
-import net.grinder.scriptengine.groovy.junit.annotation.RepeatInDevContext;
+import net.grinder.scriptengine.groovy.junit.GrinderRunner
+import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread
 
 import org.junit.Before
 import org.junit.BeforeClass

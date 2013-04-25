@@ -22,10 +22,12 @@ import net.grinder.scriptengine.exception.AbstractExceptionProcessor;
  * @since 3.2
  */
 public class GroovyExceptionProcessor extends AbstractExceptionProcessor {
-	private static final String[] NGRINDER_GROOVY_PACKAGE = System.getProperty(
-					"groovy.sanitized.stacktraces",
-					"groovy.," + "org.codehaus.groovy.," + "java.," + "javax.," + "sun.," + "gjdk.groovy.,"
-									+ "org.junit.,").split("(\\s|,)+");
+	private static final String[] NGRINDER_GROOVY_PACKAGE = System
+					.getProperty("groovy.sanitized.stacktraces",
+									"groovy.," + "org.codehaus.groovy.," + "java.," + "javax.," + "sun.,"
+													+ "gjdk.groovy.," + "org.junit.,"
+													+ "net.grinder.scriptengine.exception.AbstractExceptionProcessor.,")
+					.split("(\\s|,)+");
 
 	@Override
 	protected String[] getInterestingPackages() {

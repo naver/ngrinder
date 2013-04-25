@@ -32,8 +32,9 @@ public enum Lang {
 	/** Groovy. */
 	Groovy(new GroovyHandler()),
 	/** Jython. */
-	Jython(new JythonHandler());
-
+	Jython(new JythonHandler()),
+	/** Unknown */
+	Unknown(new UnknownHandler());
 	private final AbstractLanguageHandler handler;
 
 	Lang(AbstractLanguageHandler handler) {
@@ -65,7 +66,18 @@ public enum Lang {
 				return each;
 			}
 		}
-		return Jython;
+		return Unknown;
+	}
+
+	/**
+	 * Check if the filename can be script
+	 * 
+	 * @param filename
+	 *            filename
+	 * @return true if it's script.
+	 */
+	public static boolean isHandlableFileType(String filename) {
+		return (getByFileName(filename) != Unknown);
 	}
 
 	/**

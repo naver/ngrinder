@@ -44,6 +44,7 @@ public class GroovyScriptEngineService implements ScriptEngineService {
 
 	private final FileExtensionMatcher m_groovyFileMatcher = new FileExtensionMatcher(".groovy");
 
+	@SuppressWarnings("unused")
 	private final boolean m_forceDCRInstrumentation;
 	private final DCRContext m_dcrContext;
 
@@ -66,7 +67,7 @@ public class GroovyScriptEngineService implements ScriptEngineService {
 		// a few releases, until DCR becomes the default.
 		m_forceDCRInstrumentation = properties.getBoolean("grinder.dcrinstrumentation", false)
 		// Hack: force DCR instrumentation for non-Jython scripts.
-						|| !m_groovyFileMatcher.accept(scriptLocation.getFile());
+						|| m_groovyFileMatcher.accept(scriptLocation.getFile());
 
 		m_dcrContext = dcrContext;
 	}
@@ -87,11 +88,11 @@ public class GroovyScriptEngineService implements ScriptEngineService {
 
 		final List<Instrumenter> instrumenters = new ArrayList<Instrumenter>();
 
-		if (!m_forceDCRInstrumentation) {
-			System.out.println("m_forceDCRInstrumentation is false.");
-			// must using Instrumentation
-		}
-
+		/*
+		 * if (!m_forceDCRInstrumentation) {
+		 * System.out.println("m_forceDCRInstrumentation is false."); // must using Instrumentation
+		 * }
+		 */
 		if (m_dcrContext != null) {
 			if (instrumenters.size() == 0) {
 				instrumenters.add(new JavaDCRInstrumenteEx(m_dcrContext));

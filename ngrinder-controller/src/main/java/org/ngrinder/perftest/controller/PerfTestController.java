@@ -66,8 +66,8 @@ import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
+import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
-import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
 import org.python.google.common.collect.Lists;
 import org.python.google.common.collect.Maps;
@@ -207,10 +207,11 @@ public class PerfTestController extends NGrinderBaseController {
 
 		model.addAttribute(PARAM_TEST, test);
 		List<FileEntry> allFileEntries = fileEntryService.getAllFileEntries(user);
+
 		CollectionUtils.filter(allFileEntries, new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
-				return ((FileEntry) object).getFileType() == FileType.PYTHON_SCRIPT;
+				return ((FileEntry) object).getFileType().getFileCategory() == FileCategory.SCRIPT;
 			}
 		});
 
