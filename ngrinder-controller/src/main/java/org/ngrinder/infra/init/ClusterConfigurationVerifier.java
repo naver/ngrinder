@@ -58,7 +58,7 @@ public class ClusterConfigurationVerifier {
 	 */
 	@PostConstruct
 	public void verifyCluster() throws IOException {
-		if (config.isCluster()) {
+		if (config.isCluster() && !config.isTestMode()) {
 			checkExHome();
 			checkUsedDB();
 		}
