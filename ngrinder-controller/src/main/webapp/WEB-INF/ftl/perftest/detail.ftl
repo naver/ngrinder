@@ -443,23 +443,6 @@ function initTags() {
 		}
 	}).change(formatTags);
 	
-	$('#scriptName option').text(function(i,v){
-		var selectedVal = this.value;
-		if(selectedVal.length >= 40&&(selectedVal.indexOf("/") != -1)){
-			var arr=selectedVal.split("/");
-			for(i = 0; i< arr.length; i++){
-				if(i==0)
-					selectedVal=arr[i]+"/.../";
-				if(i==(arr.length-1))
-					selectedVal +=arr[i];
-			}
-		}
-		<#if test?? && test.createdUser.userId != currentUser.factualUser.userId>
- 			selectedVal +=" - <@spring.message "perfTest.configuration.script.belongTo" /> ${test.createdUser.userName}";					
-		</#if>
-		return selectedVal;
-	});
-	
 	$("#scriptName").select2({
 		placeholder: '<@spring.message "perfTest.configuration.scriptInput"/>'
 	});

@@ -22,6 +22,7 @@ import java.util.Map;
 import net.grinder.lang.Lang;
 
 import org.apache.commons.io.FilenameUtils;
+import org.ngrinder.common.util.PathUtil;
 import org.ngrinder.model.BaseModel;
 import org.ngrinder.model.IFileEntry;
 
@@ -79,6 +80,10 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	 */
 	public String getPath() {
 		return path;
+	}
+	
+	public String getPathInShort() {
+		return PathUtil.getShortPath(path.toString());
 	}
 
 	public String getFileName() {

@@ -39,6 +39,7 @@ import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Type;
 import org.ngrinder.common.util.DateUtil;
+import org.ngrinder.common.util.PathUtil;
 
 /**
  * Performance Test Entity. <br/>
@@ -49,8 +50,6 @@ import org.ngrinder.common.util.DateUtil;
 public class PerfTest extends BaseModel<PerfTest> {
 
 	private static final int MARGIN_FOR_ABBREVIATATION = 8;
-
-	private static final int MAX_SHORT_STRING_SIZE = 30;
 
 	private static final int MAX_LONG_STRING_SIZE = 2048;
 
@@ -297,7 +296,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	public String getScriptNameInShort() {
-		return StringUtils.abbreviate(getScriptName(), MAX_SHORT_STRING_SIZE);
+		return PathUtil.getShortPath(scriptName);
 	}
 
 	public String getDescription() {

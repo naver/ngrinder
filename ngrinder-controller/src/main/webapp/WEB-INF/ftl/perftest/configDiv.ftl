@@ -92,12 +92,12 @@
 								<select id="scriptName" class="required" name="scriptName" style="width:275px" oldScript="${(test.scriptName)!}"> 
 									<#if test?? && test.createdUser.userId != currentUser.factualUser.userId>
 										<#assign showScriptVisible = true>
-										<option value="${test.scriptName}" selected validated="${(scriptItem.properties.validated)!"0"}"></option>
+										<option value="${test.scriptName}" selected validated="${(scriptItem.properties.validated)!"0"}">${test.scriptNameInShort} - <@spring.message "perfTest.configuration.script.belongTo" /> ${test.createdUser.userName}</option>
 									<#else>
 										<option value=""></option>
 										<#if scriptList?? && scriptList?size &gt; 0> 
 											<#list scriptList as scriptItem> 
-												<option value="${scriptItem.path}" <#if  (test?? && scriptItem.path == test.scriptName) || (quickScript?? && quickScript == scriptItem.path)>selected<#assign showScriptVisible = true></#if> validated="${(scriptItem.properties.validated)!"0"}"></option> 
+												<option value="${scriptItem.path}" <#if  (test?? && scriptItem.path == test.scriptName) || (quickScript?? && quickScript == scriptItem.path)>selected<#assign showScriptVisible = true></#if> validated="${(scriptItem.properties.validated)!"0"}">${scriptItem.pathInShort}</option> 
 											</#list> 
 										</#if>
 									</#if>
