@@ -15,15 +15,12 @@ package org.ngrinder.common.util;
 
 /**
  * No operation class to remove checkstyle's fall-through try/catch block.
+ * 
  * @author JunHo Yoon
  * @since 3.0
  */
-public final class NoOp {
-	/**
-	 * Private Constructor not to make the instance.
-	 */
-	private NoOp() {
-	}
+public abstract class NoOp {
+
 	/**
 	 * No operation.
 	 */
