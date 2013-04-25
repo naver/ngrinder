@@ -13,6 +13,8 @@
  */
 package org.ngrinder.common.util;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Utility class for path manipulation.
  * 
@@ -21,7 +23,9 @@ package org.ngrinder.common.util;
  * 
  */
 public abstract class PathUtil {
-	
+
+	public static final int MAX_PATH_LENGTH = 40;
+
 	/**
 	 * Remove prepending / on path.
 	 * 
@@ -35,7 +39,7 @@ public abstract class PathUtil {
 		}
 		return path;
 	}
-	
+
 	/**
 	 * Remove prepending / on path.
 	 * 
@@ -48,5 +52,21 @@ public abstract class PathUtil {
 			return path.substring(1);
 		}
 		return path;
+	}
+
+	/**
+	 * Get short path because actual path is too long to display it totally
+	 * 
+	 * @param path
+	 * 
+	 * @return shortPath
+	 */
+	public static String getShortPath(String path) {
+		if (path.length() >= MAX_PATH_LENGTH && StringUtils.contains(path, "/")) {
+			String start = path.substring(0, path.indexOf("/") + 1);
+			String end = path.substring(path.lastIndexOf("/"), path.length());
+			return start + "..." + end;
+		} else
+			return path;
 	}
 }
