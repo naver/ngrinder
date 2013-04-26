@@ -205,7 +205,13 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
+		<!-- Aethor -->
+		<dependency>
+			<groupId>org.sonatype.aether</groupId>
+			<artifactId>aether-impl</artifactId>
+			<version>1.13.1</version>
+		</dependency>
+		
 		<!-- Spring Data -->
 		<dependency>
 			<groupId>org.springframework.data</groupId>
