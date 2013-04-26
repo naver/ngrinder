@@ -15,32 +15,28 @@ package org.ngrinder.script.service;
 
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
+import static org.ngrinder.common.util.TypeConvertUtil.convert;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import net.grinder.engine.agent.LocalScriptTestDriveService;
-import net.grinder.lang.AbstractLanguageHandler;
-import net.grinder.lang.Lang;
 import net.grinder.util.thread.Condition;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.IFileEntry;
 import org.ngrinder.model.User;
+import org.ngrinder.script.handler.ScriptHandler;
+import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileEntry;
-import org.ngrinder.script.model.FileType;
 import org.ngrinder.service.IScriptValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 /**
@@ -62,6 +58,9 @@ public class ScriptValidationService implements IScriptValidationService {
 	@Autowired
 	private Config config;
 
+	@Autowired
+	private ScriptHandlerFactory scriptHandlerFactory;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -70,7 +69,8 @@ public class ScriptValidationService implements IScriptValidationService {
 	 * org.ngrinder.model.IFileEntry, boolean, java.lang.String)
 	 */
 	@Override
-	public String validateScript(User user, IFileEntry scriptEntry, boolean useScriptInSVN, String hostString) {
+	public String validateScript(User user, IFileEntry scriptIEntry, boolean useScriptInSVN, String hostString) {
+		FileEntry scriptEntry = convert(scriptIEntry);
 		try {
 			checkNotNull(scriptEntry, "scriptEntity should be not null");
 			checkNotEmpty(scriptEntry.getPath(), "scriptEntity path should be provided");
@@ -80,7 +80,7 @@ public class ScriptValidationService implements IScriptValidationService {
 			checkNotNull(user, "user should be provided");
 			// String result = checkSyntaxErrors(scriptEntry.getContent());
 
-			AbstractLanguageHandler handler = Lang.getHandlerByFileName(scriptEntry.getPath());
+			ScriptHandler handler = scriptHandlerFactory.getHandler(scriptEntry);
 			String result = handler.checkSyntaxErrors(scriptEntry.getContent());
 			if (result != null) {
 				return result;
@@ -88,40 +88,7 @@ public class ScriptValidationService implements IScriptValidationService {
 			File scriptDirectory = config.getHome().getScriptDirectory(user);
 			FileUtils.deleteDirectory(scriptDirectory);
 			scriptDirectory.mkdirs();
-
-			// Copy logback... first
-			if (config.getSystemProperties().getPropertyBoolean("ngrinder.dist.logback", true)) {
-				InputStream io = null;
-				FileOutputStream fos = null;
-				try {
-					io = new ClassPathResource("/logback/logback-worker.xml").getInputStream();
-					fos = new FileOutputStream(new File(scriptDirectory, "logback-worker.xml"));
-					IOUtils.copy(io, fos);
-				} catch (IOException e) {
-					LOG.error("error while writing logback-worker", e);
-				} finally {
-					IOUtils.closeQuietly(io);
-					IOUtils.closeQuietly(fos);
-				}
-			}
-
-			String basePath = FilenameUtils.getPath(scriptEntry.getPath());
-
-			// Get all lib and resources in the script path
-			List<FileEntry> fileEntries = fileEntryService.getLibAndResourcesEntries(user,
-							checkNotEmpty(scriptEntry.getPath()), null);
-
-			// Distribute each files in that folder.
-			for (FileEntry each : fileEntries) {
-				// Directory is not subject to be distributed.
-				if (each.getFileType() == FileType.DIR) {
-					continue;
-				}
-				String path = FilenameUtils.getPath(each.getPath());
-				path = path.substring(basePath.length());
-				File toDir = new File(scriptDirectory, path);
-				fileEntryService.writeContentTo(user, each.getPath(), toDir);
-			}
+			handler.prepareDist("script validation", user, scriptEntry, scriptDirectory, config.getSystemProperties());
 
 			File scriptFile = new File(scriptDirectory, FilenameUtils.getName(scriptEntry.getPath()));
 

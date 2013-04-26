@@ -13,6 +13,8 @@
  */
 package org.ngrinder.model;
 
+import org.ngrinder.script.model.FileType;
+
 /**
  * File Entry model interface.<br/>
  * It's little bit out of convention. However I separate this interface on model because of backward
@@ -42,5 +44,21 @@ public interface IFileEntry {
 	 * @return encoding
 	 */
 	public abstract String getEncoding();
+
+	/**
+	 * Get the create user.
+	 * 
+	 * @return user
+	 * @since 3.2
+	 */
+	public abstract User getCreatedUser();
+
+	/**
+	 * Get the revision of the file entity.
+	 * 
+	 * @return revision
+	 * @since 3.2
+	 */
+	public abstract long getRevision();
 
 }

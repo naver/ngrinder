@@ -182,6 +182,9 @@ public class FileEntryController extends NGrinderBaseController {
 		if (StringUtils.isBlank(testUrl)) {
 			testUrl = "http://please_modify_this.com";
 		}
+		FileEntry entry = new FileEntry();
+		entry.setPath(fileName);
+		model.addAttribute("scriptHandler", fileEntryService.getScriptHandler(entry));
 		model.addAttribute("createLibAndResource", createLibAndResources);
 		if (fileEntryService.hasFileEntry(user, path + "/" + fileName)) {
 			model.addAttribute("file", fileEntryService.getFileEntry(user, path + "/" + fileName));
@@ -214,6 +217,7 @@ public class FileEntryController extends NGrinderBaseController {
 			return "redirect:/script/list";
 		}
 		model.addAttribute("file", script);
+		model.addAttribute("scriptHandler", fileEntryService.getScriptHandler(script));
 		model.addAttribute("ownerId", user.getUserId());
 
 		return "script/scriptEditor";

@@ -115,7 +115,7 @@
 	
 	<#include "../common/codemirror.ftl">
 	
-	<script src="${req.getContextPath()}/plugins/codemirror/lang/${file.syntaxHighligher}.js"></script>
+	<script src="${req.getContextPath()}/plugins/codemirror/lang/${scriptHandler.codemirrorKey}.js"></script>
     <#include "../common/datatables.ftl">
     <script>
     	changed = false;
@@ -126,7 +126,7 @@
     	});
     	$(document).ready(function() {
 			var editor = CodeMirror.fromTextArea(document.getElementById("codemirrorContent"), {
-			   mode: "${file.syntaxHighligher}",
+			   mode: "${scriptHandler.codemirrorKey}",
 			   theme: "eclipse",
 			   lineNumbers: true,
 			   lineWrapping: true,

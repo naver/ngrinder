@@ -31,12 +31,10 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.StringReader;
@@ -91,8 +89,9 @@ import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.model.PerfTestStatistics;
 import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.repository.PerfTestRepository;
+import org.ngrinder.script.handler.ScriptHandler;
+import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileEntry;
-import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.service.FileEntryService;
 import org.ngrinder.service.IPerfTestService;
 import org.python.google.common.collect.Lists;
@@ -101,7 +100,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specifications;
@@ -145,6 +143,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 
 	@Autowired
 	private TagService tagSerivce;
+
+	@Autowired
+	private ScriptHandlerFactory scriptHandlerFactory;
 
 	/**
 	 * Get {@link PerfTest} list on the user.
@@ -727,53 +728,18 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return File location in which the perftest should have.
 	 */
 	public File prepareDistribution(PerfTest perfTest) {
-		checkNotNull(perfTest.getId(), "perfTest should have id");
-		String scriptName = checkNotEmpty(perfTest.getScriptName(), "perfTest should have script name");
+		File perfTestDistDirectory = getPerfTestDistributionPath(perfTest);
+		perfTestDistDirectory.mkdirs();
 		User user = perfTest.getCreatedUser();
-
+		FileEntry scriptEntry = checkNotNull(fileEntryService.getFileEntry(user,
+						checkNotEmpty(perfTest.getScriptName(), "perfTest should have script name"),
+						perfTest.getScriptRevision()), "script should exist");
 		// Get all files in the script path
-		FileEntry scriptEntry = checkNotNull(
-						fileEntryService.getFileEntry(user, perfTest.getScriptName(), perfTest.getScriptRevision()),
-						"script should exist");
-
-		List<FileEntry> fileEntries = fileEntryService.getLibAndResourcesEntries(user, checkNotEmpty(scriptName),
-						perfTest.getScriptRevision());
-		fileEntries.add(scriptEntry);
-
-		File perfTestDirectory = getPerfTestDistributionPath(perfTest);
-		perfTestDirectory.mkdirs();
-
-		String basePath = FilenameUtils.getPath(scriptEntry.getPath());
-		if (config.getSystemProperties().getPropertyBoolean("ngrinder.dist.logback", true)) {
-			// To minimize log..
-			InputStream io = null;
-			FileOutputStream fos = null;
-			try {
-				io = new ClassPathResource("/logback/logback-worker.xml").getInputStream();
-				fos = new FileOutputStream(new File(perfTestDirectory, "logback-worker.xml"));
-				IOUtils.copy(io, fos);
-			} catch (IOException e) {
-				LOGGER.error("error while writing logback-worker", e);
-			} finally {
-				IOUtils.closeQuietly(io);
-				IOUtils.closeQuietly(fos);
-			}
-		}
-		// Distribute each files in that folder.
-		for (FileEntry each : fileEntries) {
-			// Directory is not subject to be distributed.
-			if (each.getFileType() == FileType.DIR) {
-				continue;
-			}
-			String path = FilenameUtils.getPath(each.getPath());
-			path = path.substring(basePath.length());
-			File toDir = new File(perfTestDirectory, path);
-			LOGGER.info("{} is being written in {} for test {}",
-							new Object[] { each.getPath(), toDir, perfTest.getTestIdentifier() });
-			fileEntryService.writeContentTo(user, each.getPath(), toDir);
-		}
-		LOGGER.info("File write is completed in {}", perfTestDirectory);
-		return perfTestDirectory;
+		ScriptHandler handler = scriptHandlerFactory.getHandler(scriptEntry);
+		handler.prepareDist(perfTest.getTestIdentifier(), user, scriptEntry, perfTestDistDirectory,
+						config.getSystemProperties());
+		LOGGER.info("File write is completed in {}", perfTestDistDirectory);
+		return perfTestDistDirectory;
 	}
 
 	/**

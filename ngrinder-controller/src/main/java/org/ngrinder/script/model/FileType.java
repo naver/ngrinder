@@ -28,6 +28,9 @@ public enum FileType {
 	/** Groovy Script. */
 	GROOVY_SCRIPT("Groovy Script", "groovy", FileCategory.SCRIPT, true, false),
 	
+	/** Groovy Maven project. */
+	GROOVY_MAVEN_PROJECT("Groovy maven project", "pom", FileCategory.PROJECT, true, false),
+	
 	/** Xml. */
 	XML("xml", "xml", FileCategory.DATA, true, true),
 	/** Text. */

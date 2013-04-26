@@ -15,6 +15,7 @@ package org.ngrinder.perftest.controller;
 
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.Preconditions.checkArgument;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -87,6 +88,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.tmatesoft.svn.core.wc.SVNRevision;
 
 /**
  * Performance Test Controller.
@@ -492,9 +494,9 @@ public class PerfTestController extends NGrinderBaseController {
 		FileEntry fileEntry = fileEntryService.getFileEntry(user, scriptPath);
 		String targetHosts = (fileEntry == null) ? "" : filterHostString(fileEntry.getProperties().get("targetHosts"));
 
-		List<String> fileStringList = new ArrayList<String>();
-
-		List<FileEntry> fileList = fileEntryService.getLibAndResourcesEntries(user, scriptPath, revision);
+		List<String> fileStringList = newArrayList();
+		List<FileEntry> fileList = fileEntryService.getScriptHandler(fileEntry).getLibAndResourceEntries(user,
+						fileEntry, SVNRevision.HEAD.getNumber());
 		for (FileEntry each : fileList) {
 			fileStringList.add(each.getPath());
 		}

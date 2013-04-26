@@ -17,11 +17,10 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import net.grinder.lang.Lang;
-
 import org.junit.Test;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.model.User;
+import org.ngrinder.script.handler.JythonScriptHandler;
 
 public class FileEntryServiceTest {
 
@@ -31,7 +30,7 @@ public class FileEntryServiceTest {
 	public void testFileTemplate() {
 		User user = new User();
 		user.setUserName("JunHo Yoon");
-		String content = fileEntryService.loadFreeMarkerTemplate(user, Lang.Jython.getHandler(),
+		String content = fileEntryService.loadTemplate(user, new JythonScriptHandler(),
 						"http://helloworld/myname/is");
 		assertThat(content, containsString("JunHo Yoon"));
 		assertThat(content, containsString("http://helloworld/myname/is"));

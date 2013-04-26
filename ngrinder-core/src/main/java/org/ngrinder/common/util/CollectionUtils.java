@@ -156,4 +156,23 @@ public abstract class CollectionUtils {
 		return new HashMap<K, V>(base.size());
 	}
 
+	/**
+	 * Get the value from the map for the given key. It the value does not exist, return the given
+	 * defaultValue.
+	 * 
+	 * @param map
+	 *            map
+	 * @param key
+	 *            key
+	 * @param defaultValue
+	 *            default value if the value is null.
+	 * @return value
+	 */
+	public static <K, V> V getValue(Map<K, V> map, K key, V defaultValue) {
+		V v = map.get(key);
+		if (v == null) {
+			return defaultValue;
+		}
+		return v;
+	}
 }

@@ -13,9 +13,4 @@ public class UnknownHandler extends AbstractLanguageHandler {
 		return null;
 	}
 
-	@Override
-	public String checkSyntaxErrors(String script) {
-		return null;
-	}
-
 }

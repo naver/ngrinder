@@ -18,6 +18,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.channels.FileLock;
@@ -25,6 +27,7 @@ import java.nio.channels.FileLock;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
 
 /**
  * File utilities.
@@ -122,5 +125,30 @@ public abstract class FileUtil {
 			IOUtils.closeQuietly(oin);
 		}
 		return defaultValue;
+	}
+
+	/**
+	 * Copy the given resource to the given file.
+	 * 
+	 * @param resourcePath
+	 *            resource path
+	 * @param to
+	 *            destination file
+	 * @since 3.2
+	 */
+	public static void copyResourceToFile(String resourcePath, File to) {
+		InputStream io = null;
+		FileOutputStream fos = null;
+		try {
+			io = new ClassPathResource("/logback/logback-worker.xml").getInputStream();
+			fos = new FileOutputStream(to);
+			IOUtils.copy(io, fos);
+		} catch (IOException e) {
+			LOGGER.error("error while writing logback-worker", e);
+		} finally {
+			IOUtils.closeQuietly(io);
+			IOUtils.closeQuietly(fos);
+		}
+
 	}
 }

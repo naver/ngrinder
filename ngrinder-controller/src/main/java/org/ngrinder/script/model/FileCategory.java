@@ -22,7 +22,7 @@ package org.ngrinder.script.model;
  * @since 3.1
  */
 public enum FileCategory {
-	SCRIPT(true), DATA(true), LIBRARY(false), ETC(false);
+	SCRIPT(true), DATA(true), LIBRARY(false), ETC(false), PROJECT(true);
 	private final boolean isEditable;
 
 	private FileCategory(boolean isEditable) {

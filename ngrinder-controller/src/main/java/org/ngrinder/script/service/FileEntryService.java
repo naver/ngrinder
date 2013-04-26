@@ -13,12 +13,12 @@
  */
 package org.ngrinder.script.service;
 
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
-import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
+
 import java.io.File;
-import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,15 +28,13 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import net.grinder.lang.AbstractLanguageHandler;
-import net.grinder.lang.Lang;
-
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
+import org.ngrinder.script.handler.ScriptHandler;
+import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.repository.FileEntryRepository;
@@ -46,7 +44,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.tmatesoft.svn.core.SVNException;
@@ -56,10 +53,6 @@ import org.tmatesoft.svn.core.internal.io.fs.FSHookEvent;
 import org.tmatesoft.svn.core.internal.io.fs.FSHooks;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNRevision;
-
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
 
 /**
  * File entry service class.<br/>
@@ -89,6 +82,9 @@ public class FileEntryService {
 
 	@Autowired
 	private FileEntryRepository fileEntityRepository;
+
+	@Autowired
+	private ScriptHandlerFactory scriptHandlerFactory;
 
 	/**
 	 * Initialize {@link FileEntryService}.
@@ -324,7 +320,8 @@ public class FileEntryService {
 			filePath = fileName;
 		}
 		fileEntry.setPath(filePath);
-		fileEntry.setContent(loadFreeMarkerTemplate(user, Lang.getHandlerByFileName(fileName), url));
+		String content = loadTemplate(user, scriptHandlerFactory.getHandler(fileEntry), url);
+		fileEntry.setContent(content);
 		addHostProperties(fileEntry, url);
 		return fileEntry;
 	}
@@ -374,24 +371,8 @@ public class FileEntryService {
 	 *            url
 	 * @return generated test script
 	 */
-	public String loadFreeMarkerTemplate(User user, AbstractLanguageHandler handler, String url) {
-
-		try {
-			Configuration freemarkerConfig = new Configuration();
-			ClassPathResource cpr = new ClassPathResource("script_template");
-			freemarkerConfig.setDirectoryForTemplateLoading(cpr.getFile());
-			freemarkerConfig.setObjectWrapper(new DefaultObjectWrapper());
-			Template template = freemarkerConfig.getTemplate("basic_template_" + handler.getExtension() + ".ftl");
-			Map<String, Object> map = new HashMap<String, Object>();
-			map.put("url", url);
-			map.put("user", user);
-			StringWriter writer = new StringWriter();
-			template.process(map, writer);
-			return writer.toString();
-		} catch (Exception e) {
-			LOG.error("Error while fetching template for quick start", e);
-		}
-		return "";
+	public String loadTemplate(User user, ScriptHandler handler, String url) {
+		return handler.getInitialScript(buildMap("url", url, "user", user));
 	}
 
 	/**
@@ -428,40 +409,13 @@ public class FileEntryService {
 	}
 
 	/**
-	 * Get Lib and Resources. This method will collect the files of lib and resources folder on the
-	 * same folder whre script is located.
+	 * Get the appropriate {@link ScriptHandler} subclass for for the given {@link FileEntry}.
 	 * 
-	 * @param user
-	 *            user
-	 * @param scriptPath
-	 *            path of script
-	 * @param revision
-	 *            revision number. If head, it should be -1.
-	 * @return {@link FileEntry} list
+	 * @param scriptEntry
+	 *            script entry
+	 * @return scriptHandler
 	 */
-	public List<FileEntry> getLibAndResourcesEntries(User user, String scriptPath, Long revision) {
-		String path = FilenameUtils.getPath(scriptPath);
-		List<FileEntry> fileList = new ArrayList<FileEntry>();
-		List<FileEntry> fileEntries = getFileEntries(user, path + "lib/", revision);
-		for (FileEntry eachFileEntry : fileEntries) {
-			// Skip jython 2.5... it's already included.
-			if (startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-2.5.")
-							|| startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-standalone-2.5.")) {
-				continue;
-			}
-			FileType fileType = eachFileEntry.getFileType();
-			if (fileType.isLibDistribtable()) {
-				fileList.add(eachFileEntry);
-			}
-		}
-		fileEntries = getFileEntries(user, path + "resources/", revision);
-		for (FileEntry eachFileEntry : fileEntries) {
-
-			FileType fileType = eachFileEntry.getFileType();
-			if (fileType.isResourceDistributable()) {
-				fileList.add(eachFileEntry);
-			}
-		}
-		return fileList;
+	public ScriptHandler getScriptHandler(FileEntry scriptEntry) {
+		return scriptHandlerFactory.getHandler(scriptEntry);
 	}
 }

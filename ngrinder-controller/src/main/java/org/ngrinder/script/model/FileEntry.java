@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.grinder.lang.Lang;
-
 import org.apache.commons.io.FilenameUtils;
 import org.ngrinder.common.util.PathUtil;
 import org.ngrinder.model.BaseModel;
@@ -81,7 +79,7 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	public String getPath() {
 		return path;
 	}
-	
+
 	public String getPathInShort() {
 		return PathUtil.getShortPath(path.toString());
 	}
@@ -218,7 +216,4 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 		this.properties = properties;
 	}
 
-	public String getSyntaxHighligher() {
-		return Lang.getHandlerByFileName(getFileName()).getCodemirrorKey();
-	}
 }

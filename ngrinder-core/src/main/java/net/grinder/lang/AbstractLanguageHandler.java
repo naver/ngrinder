@@ -18,7 +18,7 @@ import net.grinder.util.AbstractGrinderClassPathProcessor;
 /**
  * Scripting Language Handler.
  * 
- * Define common logic for the each scripting language.
+ * Define common logic for the each scripting language. This handler is for ngrinder-core.
  * 
  * @author JunHo Yoon
  * @since 3.2
@@ -52,10 +52,6 @@ public abstract class AbstractLanguageHandler {
 		return title;
 	}
 
-	public String getCodemirrorKey() {
-		return codemirrorKey;
-	}
-
 	/**
 	 * Get class path processor.
 	 * 
@@ -63,12 +59,4 @@ public abstract class AbstractLanguageHandler {
 	 */
 	public abstract AbstractGrinderClassPathProcessor getClassPathProcesssor();
 
-	/**
-	 * Perform syntax checking on the given script.
-	 * 
-	 * @param script
-	 *            script
-	 * @return error message
-	 */
-	public abstract String checkSyntaxErrors(String script);
 }

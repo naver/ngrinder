@@ -13,7 +13,6 @@
  */
 package net.grinder.lang.groovy;
 
-import groovy.lang.GroovyClassLoader;
 import net.grinder.lang.AbstractLanguageHandler;
 import net.grinder.util.AbstractGrinderClassPathProcessor;
 
@@ -36,17 +35,6 @@ public class GroovyHandler extends AbstractLanguageHandler {
 	@Override
 	public AbstractGrinderClassPathProcessor getClassPathProcesssor() {
 		return classPathProcessor;
-	}
-
-	@Override
-	public String checkSyntaxErrors(String script) {
-		GroovyClassLoader loader = new GroovyClassLoader();
-		try {
-			loader.parseClass(script);
-		} catch (Exception e) {
-			return e.getMessage();
-		}
-		return null;
 	}
 
 }

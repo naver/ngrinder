@@ -152,6 +152,57 @@ public class FileEntryRepository {
 		}
 		return fileEntries;
 	}
+	
+	/**
+	 * Return all {@link FileEntry}s under the given path.
+	 * 
+	 * @param user
+	 *            user
+	 * @param path
+	 *            path under which files are searched.
+	 * @param revision
+	 *            . null if head.
+	 * @return found {@link FileEntry}s
+	 */
+	public List<FileEntry> findAllUp(User user, final String path, Long revision) {
+		SVNRevision svnRevision = SVNRevision.HEAD;
+		if (revision != null && -1L != revision) {
+			svnRevision = SVNRevision.create(revision);
+		}
+		final List<FileEntry> fileEntries = new ArrayList<FileEntry>();
+		SVNClientManager svnClientManager = SVNClientManager.newInstance();
+		try {
+			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepoDirectory(user)).appendPath(path, true),
+							svnRevision, svnRevision, true, false, new ISVNDirEntryHandler() {
+								@Override
+								public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
+									FileEntry script = new FileEntry();
+									// Exclude base path "/"
+									if (StringUtils.isBlank(dirEntry.getRelativePath())) {
+										return;
+									}
+									script.setPath(FilenameUtils.normalize(path + "/" + dirEntry.getRelativePath(),
+													true));
+									script.setCreatedDate(dirEntry.getDate());
+									script.setLastModifiedDate(dirEntry.getDate());
+									script.setDescription(dirEntry.getCommitMessage());
+									script.setRevision(dirEntry.getRevision());
+									script.setLastModifiedUser(userRepository.findOneByUserId(dirEntry.getAuthor()));
+									if (dirEntry.getKind() == SVNNodeKind.DIR) {
+										script.setFileType(FileType.DIR);
+									} else {
+										script.setFileSize(dirEntry.getSize());
+									}
+									fileEntries.add(script);
+								}
+							});
+		} catch (Exception e) {
+			LOG.debug("findAll() to the not existing folder {}", path);
+		} finally {
+			closeSVNClientManagerQuietly(svnClientManager);
+		}
+		return fileEntries;
+	}
 
 	/**
 	 * Return all {@link FileEntry}s which user have. It excludes {@link FileType#DIR} entries.
