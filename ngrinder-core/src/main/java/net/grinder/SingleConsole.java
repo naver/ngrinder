@@ -1404,7 +1404,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 * @param sampleModel
 	 *            sample model
 	 */
-	void setSampleModel(SampleModel sampleModel) {
+	public void setSampleModel(SampleModel sampleModel) {
 		this.sampleModel = sampleModel;
 	}
 

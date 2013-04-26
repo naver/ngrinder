@@ -16,12 +16,14 @@ package org.ngrinder.perftest.service;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import net.grinder.SingleConsole;
+import net.grinder.console.model.SampleModelImplementationEx;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -97,6 +99,8 @@ public class PerfTestCancellationTest extends AbstractPerfTestTransactionalTest 
 			@Override
 			public void run() {
 				SingleConsole singleConsole = consoleManager.getConsoleInUse().get(0);
+				SampleModelImplementationEx sampleModelMock = mock(SampleModelImplementationEx.class);
+				singleConsole.setSampleModel(sampleModelMock);
 				assertThat(singleConsole, notNullValue());
 				perfTestController.stopPerfTests(getTestUser(), new ModelMap(), String.valueOf(perfTest.getId()));
 			}
