@@ -247,8 +247,12 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.scheduledTime = scheduledTime;
 	}
 
+	/**
+	 * Test is canceled When starting test is in initial period, avoid startTime
+	 * is Null .
+	 */
 	public Date getStartTime() {
-		return startTime;
+		return startTime != null ? startTime : new Date();
 	}
 
 	public void setStartTime(Date startTime) {
