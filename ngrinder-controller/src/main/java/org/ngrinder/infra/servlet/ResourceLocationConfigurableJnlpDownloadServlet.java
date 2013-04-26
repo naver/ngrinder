@@ -28,12 +28,12 @@ import jnlp.sample.servlet.JnlpDownloadServlet;
 
 import org.apache.commons.collections.iterators.IteratorEnumeration;
 import org.ngrinder.common.util.NoOp;
+import org.ngrinder.infra.annotation.RuntimeOnlyController;
 import org.ngrinder.infra.config.Config;
 import org.python.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.context.ServletContextAware;
 
@@ -43,7 +43,7 @@ import org.springframework.web.context.ServletContextAware;
  * 
  * @author JunHo Yoon
  */
-@Controller("jnlpDownloadServlet")
+@RuntimeOnlyController("jnlpDownloadServlet")
 public class ResourceLocationConfigurableJnlpDownloadServlet extends JnlpDownloadServlet implements HttpRequestHandler,
 				ServletConfig, ServletContextAware {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ResourceLocationConfigurableJnlpDownloadServlet.class);
