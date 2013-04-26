@@ -13,7 +13,6 @@
  */
 package org.ngrinder.model;
 
-import org.ngrinder.script.model.FileType;
 
 /**
  * File Entry model interface.<br/>
