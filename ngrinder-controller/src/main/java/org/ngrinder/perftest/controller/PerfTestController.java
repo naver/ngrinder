@@ -53,6 +53,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.agent.service.AgentManagerService;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
@@ -791,7 +792,11 @@ public class PerfTestController extends NGrinderBaseController {
 		int interval = perfTestService.getSystemMonitorDataInterval(id, monitorIP, imgWidth);
 		Map<String, String> sysMonitorMap = perfTestService.getSystemMonitorDataAsString(id, monitorIP, interval);
 		PerfTest perfTest = perfTestService.getPerfTest(id);
-		sysMonitorMap.put("interval", String.valueOf(interval * perfTest.getSamplingInterval()));
+		sysMonitorMap.put(
+				"interval",
+				String.valueOf(interval
+						* (perfTest != null ? perfTest.getSamplingInterval()
+								: NGrinderConstants.SAMPLINGINTERVAL_DEFAULT_VALUE)));
 		return sysMonitorMap;
 	}
 }

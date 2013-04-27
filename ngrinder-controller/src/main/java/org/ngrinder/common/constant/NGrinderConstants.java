@@ -210,6 +210,9 @@ public interface NGrinderConstants {
 	public static final String NGRINDER_PROP_CLUSTER_URIS = "ngrinder.cluster.uris";
 	public static final String NGRINDER_PROP_CLUSTER_LISTENER_PORT = "ngrinder.cluster.listener.port";
 
+	// perfTest default value 
+	public static final int SAMPLINGINTERVAL_DEFAULT_VALUE=1;
+	
 	// key names for distributed map of EhCache
 	public static final String CACHE_NAME_DISTRIBUTED_MAP = "distributed_map";
 	public static final String CACHE_NAME_REGION_LIST = "region_list";
