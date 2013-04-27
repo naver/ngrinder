@@ -66,12 +66,6 @@
 			<version>1.4.1</version>
 			<scope>test</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-core</artifactId>
-			<version>1.1</version>
-		</dependency>
 		<!-- Servlet -->
 		<dependency>
 			<groupId>javax.servlet</groupId>

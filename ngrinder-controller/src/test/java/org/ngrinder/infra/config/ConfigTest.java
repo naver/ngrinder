@@ -41,7 +41,6 @@ public class ConfigTest extends AbstractJUnit4SpringContextTests implements NGri
 	@Test
 	public void testDefaultHome() {
 		Home home = config.getHome();
-		System.out.println(home);
 		File ngrinderHomeUnderUserHome = new File(System.getProperty("user.home"), ".ngrinder");
 		assertThat(home.getDirectory(), is(ngrinderHomeUnderUserHome));
 		assertThat(home.getPluginsDirectory(), is(new File(ngrinderHomeUnderUserHome, "plugins")));
