@@ -21,22 +21,28 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.CompressionUtil;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.Status;
 import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.AbstractPerfTestTransactionalTest;
+import org.ngrinder.script.repository.MockFileEntityRepsotory;
 import org.ngrinder.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -61,9 +67,12 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
 	private IUserService userService;
+	
+	@Autowired
+	public MockFileEntityRepsotory repo;
 
 	@Before
-	public void beforeCleanUp() {
+	public void beforeCleanUp() throws IOException {
 		clearAllPerfTest();
 	}
 
@@ -89,8 +98,12 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 	}
 
 	@Test
-	public void testGetResourcesOnScriptFolder() {
-		controller.getResourcesOnScriptFolder(getTestUser(), "", null);
+	public void testGetResourcesOnScriptFolder() throws IOException {
+		File file = new File(System.getProperty("java.io.tmpdir"), "repo");
+		FileUtils.deleteQuietly(file);
+		CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), file);
+		repo.setUserRepository(new File(file, getTestUser().getUserId()));
+		controller.getResourcesOnScriptFolder(getTestUser(), "filefilter.txt", null);
 	}
 
 	@Test

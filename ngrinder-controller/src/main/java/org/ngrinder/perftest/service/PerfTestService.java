@@ -73,6 +73,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
 import org.ngrinder.common.constant.NGrinderConstants;
@@ -1522,10 +1523,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				String[] datalist = StringUtils.split(line, ",");
 				model.setIp(datalist[0]);
 				model.setSystem(datalist[1]);
-				model.setCollectTime(Long.valueOf(datalist[2]));
-				model.setFreeMemory(Long.valueOf(datalist[3]));
-				model.setTotalMemory(Long.valueOf(datalist[4]));
-				model.setCpuUsedPercentage(Float.valueOf(datalist[5]));
+				model.setCollectTime(NumberUtils.toLong(datalist[2]));
+				model.setFreeMemory(NumberUtils.toLong(datalist[3]));
+				model.setTotalMemory(NumberUtils.toLong(datalist[4]));
+				model.setCpuUsedPercentage(NumberUtils.toFloat(datalist[5]));
 				rtnList.add(model);
 				line = br.readLine();
 			}

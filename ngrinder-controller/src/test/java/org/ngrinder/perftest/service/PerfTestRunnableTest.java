@@ -65,11 +65,6 @@ public class PerfTestRunnableTest extends AbstractPerfTestTransactionalTest impl
 
 	@Before
 	public void before() throws IOException {
-		ClassPathResource classPathResource = new ClassPathResource("native_lib/.sigar_shellrc");
-		String nativeLib = classPathResource.getFile().getParentFile().getAbsolutePath();
-		System.setProperty("java.library.path",
-						nativeLib + File.pathSeparator + System.getProperty("java.library.path"));
-		System.out.println("Java Lib Path : " + System.getProperty("java.library.path"));
 
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "repo");
 		fileEntityRepository.setUserRepository(new File(tempRepo, getTestUser().getUserId()));

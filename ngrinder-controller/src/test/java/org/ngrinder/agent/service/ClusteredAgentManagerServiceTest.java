@@ -26,6 +26,7 @@ import java.util.Map;
 import junit.framework.Assert;
 import net.grinder.engine.controller.AgentControllerIdentityImplementation;
 import net.grinder.message.console.AgentControllerState;
+import net.grinder.util.NetworkUtil;
 
 import org.apache.commons.lang.mutable.MutableInt;
 import org.junit.Before;
@@ -91,17 +92,18 @@ public class ClusteredAgentManagerServiceTest extends AbstractNGrinderTransactio
 
 	@Test
 	public void testOther() {
+		String agentHostName = NetworkUtil.getLocalHostName();
 		agentManagerService.getAllVisibleAgentInfoFromDB();
 		agentManagerService.getAllActiveAgentInfoFromDB();
 		agentManagerService.stopAgent(0L);
 		agentManagerService.requestShareAgentSystemDataModel(0L);
 		agentManagerService.getAgentSystemDataModel("127.0.0.1", "127.0.0.1");
-		AgentControllerIdentityImplementation monitor = new AgentControllerIdentityImplementation("testAgent",
+		AgentControllerIdentityImplementation monitor = new AgentControllerIdentityImplementation(agentHostName,
 						"127.0.0.1");
 		monitor.setRegion(spiedConfig.getRegion());
 		agentManagerService.addAgentMonitoringTarget(monitor);
-		agentManagerService.stopAgent(new AgentControllerIdentityImplementation("testAgent", "127.0.0.1"));
-
+		agentManagerService.stopAgent(new AgentControllerIdentityImplementation(agentHostName, "127.0.0.1"));
+		
 		agentManagerService.collectAgentSystemData();
 	}
 
