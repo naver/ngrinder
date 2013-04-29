@@ -13,12 +13,12 @@
  */
 package org.ngrinder.agent.controller;
 
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.agent.service.AgentManagerService;
@@ -106,7 +106,7 @@ public class AgentManagerController extends NGrinderBaseController {
 			}
 		});
 		model.addAttribute("downloadLinks", downloads);
-		return "agent/agentList";
+		return "agent/list";
 	}
 
 	/**
@@ -120,9 +120,12 @@ public class AgentManagerController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/{id}/approve", method = RequestMethod.POST)
 	public String approveAgent(@PathVariable("id") Long id,
-					@RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve) {
+					@RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve,
+					@RequestParam(value = "region", required = false) final String region, ModelMap model) {
 		agentManagerService.approve(id, approve);
-		return "agent/agentList";
+		model.addAttribute("region", region);
+		model.addAttribute("regions", regionService.getRegions().keySet());
+		return "agent/list";
 	}
 
 	/**
@@ -152,10 +155,9 @@ public class AgentManagerController extends NGrinderBaseController {
 	 * @return agent/agentDetail
 	 */
 	@RequestMapping("/{id}")
-	public String getAgent(ModelMap model, @PathVariable Long id) {
-		AgentInfo agent = agentManagerService.getAgent(id, false);
-		model.addAttribute("agent", agent);
-		return "agent/agentDetail";
+	public String getAgent(@PathVariable Long id, ModelMap model) {
+		model.addAttribute("agent", agentManagerService.getAgent(id, false));
+		return "agent/detail";
 	}
 
 	/**
@@ -173,12 +175,9 @@ public class AgentManagerController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/{id}/status")
 	@ResponseBody
-	public String getCurrentMonitorData(ModelMap model, @PathVariable Long id, @RequestParam String ip,
-					@RequestParam String name) {
-		Map<String, Object> returnMap = new HashMap<String, Object>(3);
+	public String getCurrentMonitorData(@PathVariable Long id, @RequestParam String ip, @RequestParam String name,
+					ModelMap model) {
 		agentManagerService.requestShareAgentSystemDataModel(id);
-		returnMap.put(JSON_SUCCESS, true);
-		returnMap.put("systemData", agentManagerService.getAgentSystemDataModel(ip, name));
-		return toJson(returnMap);
+		return toJson(buildMap(JSON_SUCCESS, true, "systemData", agentManagerService.getAgentSystemDataModel(ip, name)));
 	}
 }

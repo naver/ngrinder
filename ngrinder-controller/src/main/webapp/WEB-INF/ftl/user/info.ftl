@@ -73,7 +73,7 @@
 			<label class="control-label"><@spring.message "user.share.title"/></label>
 			<div class="controls">
 				<select id="userListSelect" name="followersStr" style="width:300px" multiple>
-					<#include "userOptionGroup.ftl">
+					<#include "switchOptions.ftl">
 				</select>
 			</div>
 		</div>

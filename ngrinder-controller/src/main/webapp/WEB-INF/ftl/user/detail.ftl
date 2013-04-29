@@ -17,7 +17,7 @@
 				</button>
 			</legend>
 		</fieldSet>
-		<#include "userInfo.ftl"> 
+		<#include "info.ftl"> 
 		<#include "../common/copyright.ftl">
 	</div>
 	

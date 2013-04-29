@@ -88,7 +88,7 @@ public class UserController extends NGrinderBaseController {
 		model.addAttribute("roleSet", roleSet);
 		model.addAttribute("roleName", roleName);
 
-		return "user/userList";
+		return "user/list";
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class UserController extends NGrinderBaseController {
 	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
 	public String getUserDetail(User user, final ModelMap model) {
 		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
-		return "user/userDetail";
+		return "user/detail";
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class UserController extends NGrinderBaseController {
 		User userFromDB = userService.getUserByIdWithoutCache(userId);
 		model.addAttribute("user", userFromDB);
 		getUserShareList(userFromDB, model);
-		return "user/userDetail";
+		return "user/detail";
 	}
 
 	/**
@@ -222,7 +222,7 @@ public class UserController extends NGrinderBaseController {
 		getUserShareList(currentUser, model);
 		model.addAttribute("action", "profile");
 
-		return "user/userInfo";
+		return "user/info";
 	}
 
 	/**
@@ -232,7 +232,7 @@ public class UserController extends NGrinderBaseController {
 	 *            current user
 	 * @param model
 	 *            model
-	 * @return "user/userOptionGroup"
+	 * @return "user/switchOptions"
 	 */
 	@RequestMapping("/switchUserList")
 	public String switchUserList(User user, ModelMap model) {
@@ -243,7 +243,7 @@ public class UserController extends NGrinderBaseController {
 			User currUser = userService.getUserByIdWithoutCache(user.getUserId());
 			model.addAttribute("shareUserList", currUser.getOwners());
 		}
-		return "user/userOptionGroup";
+		return "user/switchOptions";
 	}
 
 	/**
