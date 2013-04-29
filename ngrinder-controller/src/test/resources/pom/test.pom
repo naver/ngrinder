@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>www</groupId>
+	<artifactId>ngrinder-controller</artifactId>
+	<name>ngrinder-controller</name>
+	<version>1.0</version>
+	<packaging>war</packaging>
+	<properties>
+		<!-- BDS Deploy Path -->
+		<webappdir>${project.basedir}/src/main/webapp</webappdir>
+		<m2eclipse.wtp.contextRoot>/ngrinder-controller</m2eclipse.wtp.contextRoot>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>cubrid.release.repository</id>
+			<url>http://maven.cubrid.org</url>
+		</repository>
+		<repository>
+			<id>atlassian.maven.repo</id>
+			<name>atlassian.maven.repo</name>
+			<url>http://repository.atlassian.com/maven2/</url>
+		</repository>
+		<repository>
+			<id>scm-manager.repo</id>
+			<name>scm-manager.repo</name>
+			<url>http://maven.scm-manager.org/nexus/content/repositories/releases</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>rome</groupId>
+			<artifactId>rome</artifactId>
+			<version>1.0</version>
+		</dependency>
+	</dependencies>
+</project>

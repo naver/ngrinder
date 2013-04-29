@@ -26,26 +26,39 @@ import freemarker.template.Template;
 
 public abstract class ScriptHandler {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(JythonScriptHandler.class);
-	
+	private final String codemirrorKey;
+	private final String title;
+	private final String extension;
+
+	public ScriptHandler(String extension, String title, String codemirrorKey) {
+		this.extension = extension;
+		this.title = title;
+		this.codemirrorKey = codemirrorKey;
+	}
+
 	/** This is package protected scope due to unit test */
 	@Autowired
 	FileEntryRepository fileEntryRepository;
 
-	public abstract String getCodemirrorKey();
+	public String getCodemirrorKey() {
+		return codemirrorKey;
+	}
 
 	public boolean canHandle(FileEntry fileEntry) {
 		return FilenameUtils.isExtension(fileEntry.getPath(), getExtension());
 	}
 
-	public abstract String getExtension();
+	public String getExtension() {
+		return extension;
+	}
 
 	protected abstract Integer order();
 
 	public void prepareDist(String identifier, User user, FileEntry script, File distDir, PropertiesWrapper properties) {
+		prepareDefaultFile(distDir, properties);
 		List<FileEntry> fileEntries = getLibAndResourceEntries(user, script, -1);
 		fileEntries.add(script);
 		String basePath = getBasePath(script);
-		prepareDefaultFile(distDir, properties);
 		// Distribute each files in that folder.
 		for (FileEntry each : fileEntries) {
 			// Directory is not subject to be distributed.
@@ -59,12 +72,11 @@ public abstract class ScriptHandler {
 		prepareDistMore(identifier, user, script, distDir, properties);
 	}
 
-	protected void prepareDistMore(String identifier, User user, FileEntry script, File distDir,
-					PropertiesWrapper properties) {
+	protected void prepareDistMore(String identifier, User user, FileEntry script, File distDir, PropertiesWrapper properties) {
 
 	}
 
-	private String calcDistSubPath(String basePath, FileEntry each) {
+	protected String calcDistSubPath(String basePath, FileEntry each) {
 		String path = FilenameUtils.getPath(each.getPath());
 		path = path.substring(basePath.length());
 		return path;
@@ -76,7 +88,7 @@ public abstract class ScriptHandler {
 		for (FileEntry eachFileEntry : fileEntryRepository.findAll(user, path + "lib/", revision)) {
 			// Skip jython 2.5... it's already included.
 			if (startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-2.5.")
-							|| startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-standalone-2.5.")) {
+					|| startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-standalone-2.5.")) {
 				continue;
 			}
 			FileType fileType = eachFileEntry.getFileType();
@@ -106,6 +118,10 @@ public abstract class ScriptHandler {
 
 	public abstract String checkSyntaxErrors(String content);
 
+	public void prepareScriptCreation(User user, String path) {
+
+	}
+
 	public String getInitialScript(Map<String, Object> map) {
 		try {
 			Configuration freemarkerConfig = new Configuration();
@@ -120,5 +136,9 @@ public abstract class ScriptHandler {
 			LOGGER.error("Error while fetching template for quick start", e);
 		}
 		return "";
+	}
+
+	public String getTitle() {
+		return title;
 	}
 }

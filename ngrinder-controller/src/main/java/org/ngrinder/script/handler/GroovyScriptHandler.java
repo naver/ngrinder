@@ -7,6 +7,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class GroovyScriptHandler extends ScriptHandler {
 
+	public GroovyScriptHandler() {
+		super("groovy", "Groovy Single Script", "groovy");
+	}
+
+	public GroovyScriptHandler(String title) {
+		super("groovy", title, "groovy");
+	}
+
 	@Override
 	protected Integer order() {
 		return 300;
@@ -22,15 +30,4 @@ public class GroovyScriptHandler extends ScriptHandler {
 		}
 		return null;
 	}
-
-	@Override
-	public String getExtension() {
-		return "groovy";
-	}
-
-	@Override
-	public String getCodemirrorKey() {
-		return "groovy";
-	}
-
 }

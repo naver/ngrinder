@@ -9,6 +9,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class JythonScriptHandler extends ScriptHandler {
 
+	public JythonScriptHandler() {
+		super("py", "Jython", "python");
+	}
+
 	@Override
 	protected Integer order() {
 		return 100;
@@ -17,8 +21,8 @@ public class JythonScriptHandler extends ScriptHandler {
 	@Override
 	public String checkSyntaxErrors(String script) {
 		try {
-			org.python.core.ParserFacade.parse(script, CompileMode.exec, "unnamed", new CompilerFlags(
-							CompilerFlags.PyCF_DONT_IMPLY_DEDENT | CompilerFlags.PyCF_ONLY_AST));
+			org.python.core.ParserFacade.parse(script, CompileMode.exec, "unnamed", new CompilerFlags(CompilerFlags.PyCF_DONT_IMPLY_DEDENT
+					| CompilerFlags.PyCF_ONLY_AST));
 
 		} catch (PySyntaxError e) {
 			try {
@@ -30,22 +34,11 @@ public class JythonScriptHandler extends ScriptHandler {
 				if (lineString.length() >= column) {
 					buf.insert(column, "^");
 				}
-				return "Error occured\n" + " - Invalid Syntax Error on line " + line + " / column " + column + "\n"
-								+ buf.toString();
+				return "Error occured\n" + " - Invalid Syntax Error on line " + line + " / column " + column + "\n" + buf.toString();
 			} catch (Exception ex) {
 				return "Error occured while evalation PySyntaxError";
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public String getExtension() {
-		return "py";
-	}
-
-	@Override
-	public String getCodemirrorKey() {
-		return "python";
 	}
 }

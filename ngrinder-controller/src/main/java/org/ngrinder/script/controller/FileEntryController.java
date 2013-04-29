@@ -28,8 +28,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import net.grinder.lang.Lang;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -37,6 +35,7 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
+import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
@@ -75,6 +74,9 @@ public class FileEntryController extends NGrinderBaseController {
 	@Autowired
 	private ScriptValidationService scriptValidationService;
 
+	@Autowired
+	private ScriptHandlerFactory handlerFactory;
+
 	/**
 	 * Validate the script.
 	 * 
@@ -88,8 +90,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/validate", method = RequestMethod.POST)
 	@ResponseBody
-	public String validate(User user, FileEntry fileEntry,
-					@RequestParam(value = "hostString", required = false) String hostString) {
+	public String validate(User user, FileEntry fileEntry, @RequestParam(value = "hostString", required = false) String hostString) {
 		return scriptValidationService.validateScript(user, fileEntry, false, hostString);
 	}
 
@@ -121,7 +122,7 @@ public class FileEntryController extends NGrinderBaseController {
 		model.addAttribute("files", files);
 		model.addAttribute("currentPath", path);
 		model.addAttribute("svnUrl", fileEntryService.getSvnUrl(user, path));
-		model.addAttribute("langs", Lang.values());
+		model.addAttribute("handlers", handlerFactory.getVisibleHandlers());
 		return "script/scriptList";
 	}
 
@@ -139,8 +140,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return redirect:/script/list/${path}
 	 */
 	@RequestMapping(value = "/create/**", params = "type=folder", method = RequestMethod.POST)
-	public String addFolder(User user, @RemainedPath String path, @RequestParam("folderName") String folderName,
-					ModelMap model) { // "fileName"
+	public String addFolder(User user, @RemainedPath String path, @RequestParam("folderName") String folderName, ModelMap model) { // "fileName"
 		try {
 			fileEntryService.addFolder(user, path, StringUtils.trimToEmpty(folderName), "");
 		} catch (Exception e) {
@@ -170,14 +170,9 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return redirect:/script/list/${path}
 	 */
 	@RequestMapping(value = "/create/**", params = "type=script", method = RequestMethod.POST)
-	public String getCreateForm(
-					User user,
-					@RemainedPath String path,
-					@RequestParam(value = "testUrl", required = false) String testUrl,
-					@RequestParam("fileName") String fileName,
-					@RequestParam(value = "scriptType", required = false) String scriptType,
-					@RequestParam(value = "createLibAndResource", defaultValue = "false") boolean createLibAndResources,
-					ModelMap model) {
+	public String getCreateForm(User user, @RemainedPath String path, @RequestParam(value = "testUrl", required = false) String testUrl,
+			@RequestParam("fileName") String fileName, @RequestParam(value = "scriptType", required = false) String scriptType,
+			@RequestParam(value = "createLibAndResource", defaultValue = "false") boolean createLibAndResources, ModelMap model) {
 		fileName = StringUtils.trimToEmpty(fileName);
 		if (StringUtils.isBlank(testUrl)) {
 			testUrl = "http://please_modify_this.com";
@@ -208,8 +203,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return script/scriptEditor
 	 */
 	@RequestMapping("/detail/**")
-	public String getDetail(User user, @RemainedPath String path,
-					@RequestParam(value = "r", required = false) Long revision, ModelMap model) {
+	public String getDetail(User user, @RemainedPath String path, @RequestParam(value = "r", required = false) Long revision, ModelMap model) {
 		FileEntry script = fileEntryService.getFileEntry(user, path, revision);
 		if (script == null || !script.getFileType().isEditable()) {
 			LOG.error("Error while getting file detail on {}. the file does not exist or not editable", path);
@@ -242,11 +236,8 @@ public class FileEntryController extends NGrinderBaseController {
 		}
 		response.reset();
 		try {
-			response.addHeader(
-							"Content-Disposition",
-							"attachment;filename="
-											+ java.net.URLEncoder.encode(FilenameUtils.getName(fileEntry.getPath()),
-															"utf8"));
+			response.addHeader("Content-Disposition",
+					"attachment;filename=" + java.net.URLEncoder.encode(FilenameUtils.getName(fileEntry.getPath()), "utf8"));
 		} catch (UnsupportedEncodingException e1) {
 			LOG.error(e1.getMessage(), e1);
 		}
@@ -283,16 +274,14 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return script/scriptList
 	 */
 	@RequestMapping(value = "/search/**")
-	public String searchFileEntity(User user, @RequestParam(required = true, value = "query") final String query,
-					ModelMap model) {
+	public String searchFileEntity(User user, @RequestParam(required = true, value = "query") final String query, ModelMap model) {
 		final String trimedQuery = StringUtils.trimToEmpty(query);
-		Collection<FileEntry> searchResult = Collections2.filter(fileEntryService.getAllFileEntries(user),
-						new Predicate<FileEntry>() {
-							@Override
-							public boolean apply(FileEntry input) {
-								return StringUtils.containsIgnoreCase(new File(input.getPath()).getName(), trimedQuery);
-							}
-						});
+		Collection<FileEntry> searchResult = Collections2.filter(fileEntryService.getAllFileEntries(user), new Predicate<FileEntry>() {
+			@Override
+			public boolean apply(FileEntry input) {
+				return StringUtils.containsIgnoreCase(new File(input.getPath()).getName(), trimedQuery);
+			}
+		});
 		model.addAttribute("query", query);
 		model.addAttribute("files", searchResult);
 		model.addAttribute("currentPath", "");
@@ -319,9 +308,9 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return script/scriptList
 	 */
 	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
-	public String saveFileEntry(User user, @RemainedPath String path, FileEntry fileEntry,
-					@RequestParam String targetHosts, @RequestParam(defaultValue = "0") String validated,
-					@RequestParam(defaultValue = "false") boolean createLibAndResource, ModelMap model) {
+	public String saveFileEntry(User user, @RemainedPath String path, FileEntry fileEntry, @RequestParam String targetHosts,
+			@RequestParam(defaultValue = "0") String validated, @RequestParam(defaultValue = "false") boolean createLibAndResource,
+			ModelMap model) {
 		if (fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
 			Map<String, String> map = Maps.newHashMap();
 			map.put("validated", validated);
@@ -358,7 +347,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/upload/**", method = RequestMethod.POST)
 	public String uploadFiles(User user, @RemainedPath String path, @RequestParam("description") String description,
-					@RequestParam("uploadFile") MultipartFile file, ModelMap model) {
+			@RequestParam("uploadFile") MultipartFile file, ModelMap model) {
 		try {
 			FileEntry fileEntry = new FileEntry();
 			if (fileEntry.getFileType().isEditable()) {
@@ -391,8 +380,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/delete/**", method = RequestMethod.POST)
 	@ResponseBody
-	public String delete(User user, @RemainedPath String path, @RequestParam("filesString") String filesString,
-					ModelMap model) {
+	public String delete(User user, @RemainedPath String path, @RequestParam("filesString") String filesString, ModelMap model) {
 		String[] files = filesString.split(",");
 		fileEntryService.delete(user, path, files);
 		Map<String, Object> rtnMap = new HashMap<String, Object>(1);

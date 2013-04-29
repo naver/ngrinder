@@ -20,8 +20,8 @@
 							<div class="controls">
 								<input type="hidden" name="type" value="script"/>
 								<select id="languageSelect" name="scriptType">
-									<#list langs as lang>
-									<option value="${lang.handler.extension}">${lang.handler.title}</option>
+									<#list handlers as handler>
+									<option value="${handler.extension}">${handler.title}</option>
 									</#list>
 								</select>
 							  <span class="help-inline"></span>

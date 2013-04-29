@@ -10,6 +10,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class NullScriptHandler extends ScriptHandler {
 
+	public NullScriptHandler() {
+		super("", null, "plain");
+	}
+
 	@Override
 	public Integer order() {
 		return 500;
@@ -17,7 +21,6 @@ public class NullScriptHandler extends ScriptHandler {
 
 	@Override
 	public void prepareDist(String identifier, User user, FileEntry script, File distDir, PropertiesWrapper properties) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -30,15 +33,4 @@ public class NullScriptHandler extends ScriptHandler {
 	public String checkSyntaxErrors(String content) {
 		return null;
 	}
-
-	@Override
-	public String getExtension() {
-		return "";
-	}
-
-	@Override
-	public String getCodemirrorKey() {
-		return "plain";
-	}
-
 }

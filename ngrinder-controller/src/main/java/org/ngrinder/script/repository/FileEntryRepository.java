@@ -551,10 +551,10 @@ public class FileEntryRepository {
 	 *            user
 	 * @param path
 	 *            path of {@link FileEntry}
-	 * @param toPath
+	 * @param toPathDir
 	 *            file dir path to write.
 	 */
-	public void writeContentTo(User user, String path, File toPath) {
+	public void writeContentTo(User user, String path, File toPathDir) {
 		SVNClientManager svnClientManager = null;
 		FileOutputStream fileOutputStream = null;
 		try {
@@ -567,8 +567,8 @@ public class FileEntryRepository {
 			if (nodeKind == SVNNodeKind.NONE || nodeKind == SVNNodeKind.DIR) {
 				throw new NGrinderRuntimeException("It's not pssible write directory. nodeKind is " + nodeKind);
 			}
-			toPath.mkdirs();
-			File destFile = new File(toPath, FilenameUtils.getName(path));
+			toPathDir.mkdirs();
+			File destFile = new File(toPathDir, FilenameUtils.getName(path));
 			// Prepare parent folders
 			fileOutputStream = new FileOutputStream(destFile);
 			SVNProperties fileProperty = new SVNProperties();
