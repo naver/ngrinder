@@ -78,6 +78,7 @@
 			</div>
 		</div>
 		</#if>
+		<#if !(demo!false)>
   		<div class="control-group">
               <div class="accordion-heading"> 
                 <a class="accordion-toggle" data-toggle="collapse" href="#user_password_head" id="user_pw_head" style="padding: 8px 0"> 
@@ -109,6 +110,7 @@
 	              </div> 
 		 	  </div>
 		</div>
+		</#if>
 		<div class="control-group">
 			<label class="control-label pull-right">
 				<button type="submit" class="btn btn-success"><@spring.message "user.info.form.button.saveUser"/></button>

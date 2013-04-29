@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.Permission;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
@@ -58,6 +59,9 @@ public class UserController extends NGrinderBaseController {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private Config config;
 
 	/**
 	 * Get user list on the given role.
@@ -217,8 +221,10 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping("/profile")
 	public String userProfile(User user, ModelMap model) {
 		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
+
 		User currentUser = userService.getUserByIdWithoutCache(user.getUserId());
 		model.addAttribute("user", currentUser);
+		model.addAttribute("demo", config.isDemo());
 		getUserShareList(currentUser, model);
 		model.addAttribute("action", "profile");
 

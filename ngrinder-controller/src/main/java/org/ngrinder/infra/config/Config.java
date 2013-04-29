@@ -419,6 +419,15 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
+	 * Check if it is demo mode.
+	 * 
+	 * @return true if demo mode is enabled.
+	 */
+	public boolean isDemo() {
+		return getSystemProperties().getPropertyBoolean("demo", false);
+	}
+
+	/**
 	 * Check if plugin support is enabled. The reason why we need this configuration is that it
 	 * takes time to initialize plugin system in unit test context.
 	 * 
