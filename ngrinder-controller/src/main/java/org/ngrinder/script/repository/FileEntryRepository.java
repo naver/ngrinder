@@ -13,6 +13,7 @@
  */
 package org.ngrinder.script.repository;
 
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.NoOp.noOp;
 
 import java.io.ByteArrayInputStream;
@@ -113,46 +114,9 @@ public class FileEntryRepository {
 	 * @return found {@link FileEntry}s
 	 */
 	public List<FileEntry> findAll(User user, final String path, Long revision) {
-		SVNRevision svnRevision = SVNRevision.HEAD;
-		if (revision != null && -1L != revision) {
-			svnRevision = SVNRevision.create(revision);
-		}
-		final List<FileEntry> fileEntries = new ArrayList<FileEntry>();
-		SVNClientManager svnClientManager = SVNClientManager.newInstance();
-		try {
-			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepoDirectory(user)).appendPath(path, true),
-							svnRevision, svnRevision, true, false, new ISVNDirEntryHandler() {
-								@Override
-								public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
-
-									FileEntry script = new FileEntry();
-									// Exclude base path "/"
-									if (StringUtils.isBlank(dirEntry.getRelativePath())) {
-										return;
-									}
-									script.setPath(FilenameUtils.normalize(path + "/" + dirEntry.getRelativePath(),
-													true));
-									script.setCreatedDate(dirEntry.getDate());
-									script.setLastModifiedDate(dirEntry.getDate());
-									script.setDescription(dirEntry.getCommitMessage());
-									script.setRevision(dirEntry.getRevision());
-									script.setLastModifiedUser(userRepository.findOneByUserId(dirEntry.getAuthor()));
-									if (dirEntry.getKind() == SVNNodeKind.DIR) {
-										script.setFileType(FileType.DIR);
-									} else {
-										script.setFileSize(dirEntry.getSize());
-									}
-									fileEntries.add(script);
-								}
-							});
-		} catch (Exception e) {
-			LOG.debug("findAll() to the not existing folder {}", path);
-		} finally {
-			closeSVNClientManagerQuietly(svnClientManager);
-		}
-		return fileEntries;
+		return findAll(user, path, revision, false);
 	}
-	
+
 	/**
 	 * Return all {@link FileEntry}s under the given path.
 	 * 
@@ -161,21 +125,24 @@ public class FileEntryRepository {
 	 * @param path
 	 *            path under which files are searched.
 	 * @param revision
-	 *            . null if head.
+	 *            null if head.
+	 * @param recursive
+	 *            true if recursive finding
 	 * @return found {@link FileEntry}s
 	 */
-	public List<FileEntry> findAllUp(User user, final String path, Long revision) {
+	public List<FileEntry> findAll(User user, final String path, Long revision, boolean recursive) {
 		SVNRevision svnRevision = SVNRevision.HEAD;
 		if (revision != null && -1L != revision) {
 			svnRevision = SVNRevision.create(revision);
 		}
-		final List<FileEntry> fileEntries = new ArrayList<FileEntry>();
+		final List<FileEntry> fileEntries = newArrayList();
 		SVNClientManager svnClientManager = SVNClientManager.newInstance();
 		try {
 			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepoDirectory(user)).appendPath(path, true),
-							svnRevision, svnRevision, true, false, new ISVNDirEntryHandler() {
+							svnRevision, svnRevision, true, recursive, new ISVNDirEntryHandler() {
 								@Override
 								public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
+
 									FileEntry script = new FileEntry();
 									// Exclude base path "/"
 									if (StringUtils.isBlank(dirEntry.getRelativePath())) {
@@ -315,6 +282,7 @@ public class FileEntryRepository {
 			}
 			script.setDescription(info.getCommitMessage());
 			script.setRevision(lastRevision);
+			script.setCreatedUser(user);
 		} catch (Exception e) {
 			LOG.error("Error while fetching a file from SVN {}", user.getUserId() + "_" + path, e);
 			return null;
@@ -397,7 +365,7 @@ public class FileEntryRepository {
 
 				// Calc diff
 				final SVNDeltaGenerator deltaGenerator = new SVNDeltaGenerator();
-				if (fileEntry.getFileType().isEditable()) {
+				if (fileEntry.getContentBytes() == null && fileEntry.getFileType().isEditable()) {
 					bais = new ByteArrayInputStream(fileEntry.getContent().getBytes(
 									encoding == null ? "UTF-8" : encoding));
 				} else {

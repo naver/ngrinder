@@ -68,6 +68,7 @@ import org.ngrinder.model.User;
 import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 import org.ngrinder.perftest.service.TagService;
+import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.service.FileEntryService;
@@ -115,6 +116,9 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@Autowired
 	private TagService tagService;
+
+	@Autowired
+	private ScriptHandlerFactory scriptHandlerFactory;
 
 	/**
 	 * Get Performance test lists.
@@ -281,8 +285,9 @@ public class PerfTestController extends NGrinderBaseController {
 	public String getQuickStart(User user, @RequestParam(value = "url", required = true) String urlString,
 					ModelMap model) {
 		URL url = checkValidURL(urlString);
-		List<FileEntry> scriptList = new ArrayList<FileEntry>();
-		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString);
+		List<FileEntry> scriptList = newArrayList();
+		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString,
+						scriptHandlerFactory.getHandler("jython"));
 		scriptList.add(checkNotNull(newEntry, "Create quick test script ERROR!"));
 		model.addAttribute(PARAM_QUICK_SCRIPT, newEntry.getPath());
 		model.addAttribute(PARAM_QUICK_SCRIPT_REVISION, newEntry.getRevision());
@@ -793,10 +798,10 @@ public class PerfTestController extends NGrinderBaseController {
 		Map<String, String> sysMonitorMap = perfTestService.getSystemMonitorDataAsString(id, monitorIP, interval);
 		PerfTest perfTest = perfTestService.getPerfTest(id);
 		sysMonitorMap.put(
-				"interval",
-				String.valueOf(interval
-						* (perfTest != null ? perfTest.getSamplingInterval()
-								: NGrinderConstants.SAMPLINGINTERVAL_DEFAULT_VALUE)));
+						"interval",
+						String.valueOf(interval
+										* (perfTest != null ? perfTest.getSamplingInterval()
+														: NGrinderConstants.SAMPLINGINTERVAL_DEFAULT_VALUE)));
 		return sysMonitorMap;
 	}
 }

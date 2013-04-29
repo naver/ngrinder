@@ -794,7 +794,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		int interval = 0;
 		File targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
 		if (!targetFile.exists()) {
-			LOGGER.error("Report data for {} in {} does not exisit.", testId, dataType);
+			LOGGER.error("Report data for {} in {} does not exist.", dataType, testId);
 			return 0;
 		}
 		LineNumberReader lnr = null;
@@ -809,7 +809,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			lineNumber = lnr.getLineNumber() + 1;
 			interval = Math.max((int) (lineNumber / pointCount), 1);
 		} catch (Exception e) {
-			LOGGER.error("Get report data for " + dataType + " failed:" + e.getMessage(), e);
+			LOGGER.error("Failed to get report data for {}", dataType, e);
 		} finally {
 			IOUtils.closeQuietly(lnr);
 			IOUtils.closeQuietly(isr);
@@ -835,7 +835,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
 		File targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
 		if (!targetFile.exists()) {
-			LOGGER.error("Report data for {} in {} does not exisit.", testId, dataType);
+			LOGGER.error("Report data for {} in {} does not exist.", dataType, testId);
 			return "[ ]";
 		}
 

@@ -120,7 +120,7 @@ public class LocalScriptTestDriveService {
 						break;
 					}
 					if (waitingCount++ > maximumWaitingCount) {
-						LOGGER.error("Validation should be performed within {}. Stop it forcely", sleeptime
+						LOGGER.error("Validation should be performed within {}. Stop it by force", sleeptime
 										* waitingCount);
 						workerLauncher.destroyAllWorkers();
 						stopByTooMuchExecution = true;
@@ -130,7 +130,7 @@ public class LocalScriptTestDriveService {
 				}
 			}
 		} catch (Exception e) {
-			LOGGER.error("Error while executing {}, because:{}", script, e.getMessage());
+			LOGGER.error("Error while executing {} because {}", script, e.getMessage());
 			LOGGER.info("Error Trace", e);
 			appendingMessageOn(file, ExceptionUtils.getFullStackTrace(e));
 		} finally {
@@ -165,7 +165,7 @@ public class LocalScriptTestDriveService {
 			appendingMessageOn(file, errorValidationResult);
 		}
 		if (stopByTooMuchExecution) {
-			appendingMessageOn(file, "Validation should be performed within 100 sec. Stop it forcely");
+			appendingMessageOn(file, "Validation should be performed within 100 sec. Stop it by force");
 		}
 		return file;
 	}
@@ -189,7 +189,7 @@ public class LocalScriptTestDriveService {
 			fileWriter = new FileWriter(file, true);
 			fileWriter.append("\n\n" + msg);
 		} catch (IOException e) {
-			LOGGER.error("error during appending validation message", e);
+			LOGGER.error("Error during appending validation messages", e);
 		} finally {
 			IOUtils.closeQuietly(fileWriter);
 		}

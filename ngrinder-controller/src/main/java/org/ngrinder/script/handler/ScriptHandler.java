@@ -73,6 +73,13 @@ public abstract class ScriptHandler {
 	@Autowired
 	private FileEntryRepository fileEntryRepository;
 
+	/**
+	 * Get the display order of {@link ScriptHandler}s.
+	 * 
+	 * @return order
+	 */
+	public abstract Integer displayOrder();
+
 	public String getCodemirrorKey() {
 		return codemirrorKey;
 	}
@@ -100,6 +107,10 @@ public abstract class ScriptHandler {
 	 * @return the order of handler resolution
 	 */
 	protected abstract Integer order();
+
+	public boolean isValidatable() {
+		return true;
+	}
 
 	/**
 	 * Prepare the distribution.
@@ -141,11 +152,13 @@ public abstract class ScriptHandler {
 	 * 
 	 * @param user
 	 *            user
-	 * @param scriptEntry
-	 *            script entry to be distributed
+	 * @param path
+	 *            the path where the env preparation is required.
+	 * @return true if process more.
+	 * @throws IOException
 	 */
-	public void prepareScriptCreation(User user, FileEntry scriptEntry) {
-
+	public boolean prepareScriptEnv(User user, String path) {
+		return true;
 	}
 
 	/**

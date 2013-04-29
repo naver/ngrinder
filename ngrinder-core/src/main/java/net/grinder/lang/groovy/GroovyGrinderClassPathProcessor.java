@@ -40,6 +40,9 @@ public class GroovyGrinderClassPathProcessor extends AbstractGrinderClassPathPro
 		usefulJarList.add("jython-standalone-2.5");
 		usefulJarList.add("ngrinder-groovy");
 		usefulJarList.add("groovy");
+		usefulJarList.add("hamcrest");
+		usefulJarList.add("junit");
+		
 	}
 
 }

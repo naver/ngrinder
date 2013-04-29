@@ -309,9 +309,11 @@ public class FileEntryService {
 	 *            fileName
 	 * @param url
 	 *            url
-	 * @return created file entry
+	 * @param scriptHandler
+	 *            script handler
+	 * @return created file entry. null if it's the project creation.
 	 */
-	public FileEntry prepareNewEntry(User user, String path, String fileName, String url) {
+	public FileEntry prepareNewEntry(User user, String path, String fileName, String url, ScriptHandler scriptHandler) {
 		FileEntry fileEntry = new FileEntry();
 		String filePath;
 		if (!StringUtils.isBlank(path)) {
@@ -320,8 +322,11 @@ public class FileEntryService {
 			filePath = fileName;
 		}
 		fileEntry.setPath(filePath);
-		ScriptHandler handler = scriptHandlerFactory.getHandler(fileEntry);
-		String content = loadTemplate(user, handler, url);
+		boolean proceed = scriptHandler.prepareScriptEnv(user, path + "/" + fileName);
+		if (!proceed) {
+			return null;
+		}
+		String content = loadTemplate(user, scriptHandler, url);
 		fileEntry.setContent(content);
 		addHostProperties(fileEntry, url);
 		return fileEntry;
@@ -347,15 +352,17 @@ public class FileEntryService {
 	 *            user
 	 * @param urlString
 	 *            url to be tested.
+	 * @param scriptHandler
+	 *            scriptHandler
 	 * @return created new {@link FileEntry}
 	 */
-	public FileEntry prepareNewEntryForQuickTest(User user, String urlString) {
+	public FileEntry prepareNewEntryForQuickTest(User user, String urlString, ScriptHandler scriptHandler) {
 		String testNameFromUrl = getTestNameFromUrl(urlString);
 		// addFolder(user, "", testNameFromUrl);
 		// There might be race condition here... What if a user changes the SVN
 		// repo while saving
 		// newEntry??
-		FileEntry newEntry = prepareNewEntry(user, testNameFromUrl, "script.py", urlString);
+		FileEntry newEntry = prepareNewEntry(user, testNameFromUrl, "script.py", urlString, scriptHandler);
 		newEntry.setDescription("Quick test for " + urlString);
 		save(user, newEntry);
 		return getFileEntry(user, testNameFromUrl + "/" + "script.py");
@@ -410,7 +417,7 @@ public class FileEntryService {
 	}
 
 	/**
-	 * Get the appropriate {@link ScriptHandler} subclass for for the given {@link FileEntry}.
+	 * Get the appropriate {@link ScriptHandler} subclass for the given {@link FileEntry}.
 	 * 
 	 * @param scriptEntry
 	 *            script entry
@@ -418,5 +425,16 @@ public class FileEntryService {
 	 */
 	public ScriptHandler getScriptHandler(FileEntry scriptEntry) {
 		return scriptHandlerFactory.getHandler(scriptEntry);
+	}
+
+	/**
+	 * Get the appropriate {@link ScriptHandler} subclass for the given ScriptHandler key.
+	 * 
+	 * @param key
+	 *            script entry
+	 * @return scriptHandler
+	 */
+	public ScriptHandler getScriptHandler(String key) {
+		return scriptHandlerFactory.getHandler(key);
 	}
 }

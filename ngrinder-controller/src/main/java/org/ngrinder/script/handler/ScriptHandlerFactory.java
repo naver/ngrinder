@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.script.model.FileEntry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ public class ScriptHandlerFactory {
 	@Autowired
 	private List<ScriptHandler> scriptHandlers;
 
+	private List<ScriptHandler> visibleHandlers;
+
 	/**
 	 * Initialize the {@link ScriptHandler}s.
 	 */
@@ -37,6 +40,22 @@ public class ScriptHandlerFactory {
 				return o1.order().compareTo(o2.order());
 			}
 		});
+
+		// Sort by the order of scriptHandlers..
+
+		visibleHandlers = newArrayList();
+		for (ScriptHandler each : this.scriptHandlers) {
+			if (!(each instanceof NullScriptHandler)) {
+				visibleHandlers.add(each);
+			}
+		}
+		Collections.sort(visibleHandlers, new Comparator<ScriptHandler>() {
+			@Override
+			public int compare(ScriptHandler o1, ScriptHandler o2) {
+				return o1.displayOrder().compareTo(o2.displayOrder());
+			}
+		});
+
 	}
 
 	/**
@@ -45,13 +64,7 @@ public class ScriptHandlerFactory {
 	 * @return all handlers but NullScriptHandler
 	 */
 	public List<ScriptHandler> getVisibleHandlers() {
-		List<ScriptHandler> handlers = newArrayList();
-		for (ScriptHandler each : this.scriptHandlers) {
-			if (!(each instanceof NullScriptHandler)) {
-				handlers.add(each);
-			}
-		}
-		return handlers;
+		return visibleHandlers;
 	}
 
 	/**
@@ -69,6 +82,23 @@ public class ScriptHandlerFactory {
 		}
 		// Actually nothing is reach here.
 		throw new NGrinderRuntimeException("no matching handler for " + fileEntry.getPath());
+	}
+
+	/**
+	 * Get the appropriate {@link ScriptHandler} for the given key.
+	 * 
+	 * @param key
+	 *            ScriptHandler key
+	 * @return {@link ScriptHandler}. {@link NullScriptHandler} if none is available.
+	 */
+	public ScriptHandler getHandler(String key) {
+		for (ScriptHandler handler : scriptHandlers) {
+			if (StringUtils.equals(handler.getKey(), key)) {
+				return handler;
+			}
+		}
+		// Actually nothing is reach here.
+		throw new NGrinderRuntimeException("no matching handler for " + key);
 	}
 
 }

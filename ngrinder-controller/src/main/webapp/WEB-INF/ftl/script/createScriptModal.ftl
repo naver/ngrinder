@@ -21,9 +21,9 @@
 								<input type="hidden" name="type" value="script"/>
 								<select id="languageSelect" name="scriptType">
 									<#list handlers as handler>
-									<option value="${handler.key}">${handler.title}</option>
+									<option value="${handler.key}" extension="${handler.extension}">${handler.title}</option>
 									</#list>
-								</select>
+								</select> 
 							  <span class="help-inline"></span>
 							</div>
 						</div>
@@ -75,25 +75,25 @@
 					}
 					
 					var name = $name.val();
-					var extension = "." + $("#languageSelect").val().toLowerCase();
-					var idx = name.toLowerCase().indexOf(extension);
-					if (name.length < 3 || idx == -1 || idx < name.length - 3) {
-						$name.val(name + extension);
-					}
-					
-					var urlValue = $("#urlInput");
-					if (urlValue.val() == "Type URL...") {
-						$("#urlInput").val("");
-					}
-					if (!checkEmptyByObj(urlValue)) {
-						if (!urlValue.valid()) {
-							markInput(urlValue, false, "<@spring.message "common.form.validate.format"/>");
-							return;
+					var extension = $("#languageSelect option:selected").attr("extension").toLowerCase();
+					if (extension != "") {
+						extension = "." + extension;
+						var idx = name.toLowerCase().lastIndexOf(extension);
+						if (idx == -1) {
+							$name.val(name + extension);
 						}
-						
-						markInput(urlValue, true);
+						var urlValue = $("#urlInput");
+						if (urlValue.val() == "Type URL...") {
+							$("#urlInput").val("");
+						}
+						if (!checkEmptyByObj(urlValue)) {
+							if (!urlValue.valid()) {
+								markInput(urlValue, false, "<@spring.message "common.form.validate.format"/>");
+								return;
+							}
+							markInput(urlValue, true);
+						}
 					}
-					
 					document.forms.createForm.submit();
 				});
 			});

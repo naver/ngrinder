@@ -13,8 +13,6 @@
  */
 package org.ngrinder.script.handler;
 
-import groovy.lang.GroovyClassLoader;
-
 import org.springframework.stereotype.Component;
 
 /**
@@ -30,19 +28,23 @@ public class GroovyScriptHandler extends ScriptHandler {
 	 * Constructor.
 	 */
 	public GroovyScriptHandler() {
-		super("groovy", "groovy", "Groovy Single Script", "groovy");
+		this("groovy", "groovy", "Groovy", "groovy");
 	}
 
 	/**
-	 * Constructor replacing the key and title.
+	 * Constructor.
 	 * 
 	 * @param key
 	 *            key
+	 * @param extension
+	 *            extension
 	 * @param title
 	 *            title
+	 * @param codemirrorKey
+	 *            code mirror key
 	 */
-	public GroovyScriptHandler(String key, String title) {
-		super(key, "groovy", title, "groovy");
+	public GroovyScriptHandler(String key, String extension, String title, String codemirrorKey) {
+		super(key, extension, title, codemirrorKey);
 	}
 
 	@Override
@@ -52,12 +54,12 @@ public class GroovyScriptHandler extends ScriptHandler {
 
 	@Override
 	public String checkSyntaxErrors(String script) {
-		GroovyClassLoader loader = new GroovyClassLoader();
-		try {
-			loader.parseClass(script);
-		} catch (Exception e) {
-			return e.getMessage();
-		}
+
 		return null;
+	}
+
+	@Override
+	public Integer displayOrder() {
+		return 200;
 	}
 }

@@ -13,11 +13,16 @@
  */
 package org.ngrinder.script.handler;
 
+import static org.ngrinder.common.util.CollectionUtils.getValue;
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+
 import java.io.File;
+import java.util.Map;
 
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
+import org.ngrinder.script.model.FileType;
 import org.springframework.stereotype.Component;
 
 /**
@@ -29,22 +34,42 @@ import org.springframework.stereotype.Component;
 @Component
 public class NullScriptHandler extends ScriptHandler {
 
+	private Map<FileType, String> codeMirrorKey = newHashMap();
+
 	/**
 	 * Constructor.
 	 */
 	public NullScriptHandler() {
-		super("", "", null, "plain");
+		super("", "", null, null);
+		codeMirrorKey.put(FileType.PROPERTIES, "properties");
+		codeMirrorKey.put(FileType.XML, "xml");
 	}
 
 	@Override
 	public Integer order() {
-		return 500;
+		return 1000;
 	}
 
 	@Override
 	public void prepareDist(String identifier, User user, FileEntry script, //
 					File distDir, PropertiesWrapper properties) {
 
+	}
+
+	@Override
+	public boolean isValidatable() {
+		return false;
+	}
+
+	/**
+	 * Alternative access to code mirror key.
+	 * 
+	 * @param fileType
+	 *            file type
+	 * @return appropriate code mirror key. if nothing, return shell
+	 */
+	public String getCodemirrorKey(FileType fileType) {
+		return getValue(codeMirrorKey, fileType, "shell");
 	}
 
 	@Override
@@ -55,5 +80,10 @@ public class NullScriptHandler extends ScriptHandler {
 	@Override
 	public String checkSyntaxErrors(String content) {
 		return null;
+	}
+
+	@Override
+	public Integer displayOrder() {
+		return -1;
 	}
 }

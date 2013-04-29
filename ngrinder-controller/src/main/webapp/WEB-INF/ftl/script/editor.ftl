@@ -52,8 +52,12 @@
 												<input type="text" id="scriptNameInput" class="span6" name="path" value="${(file.path)!}" readonly/>
 											</td>
 											<td>
+											<#if scriptHandler.isValidatable()>
 												<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:73px; width:40px;"><@spring.message "common.button.save"/></a>
 												<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:90px;"><@spring.message "script.editor.button.validate"/></a>
+											<#else>
+												<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:190px; width:40px;"><@spring.message "common.button.save"/></a>
+											</#if>
 											</td>
 										</tr> 
 									</table>
@@ -114,8 +118,7 @@
 	</div>
 	
 	<#include "../common/codemirror.ftl">
-	
-	<script src="${req.getContextPath()}/plugins/codemirror/lang/${scriptHandler.codemirrorKey}.js"></script>
+	<script src="${req.getContextPath()}/plugins/codemirror/lang/${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}.js"></script>
     <#include "../common/datatables.ftl">
     <script>
     	changed = false;
@@ -126,7 +129,7 @@
     	});
     	$(document).ready(function() {
 			var editor = CodeMirror.fromTextArea(document.getElementById("codemirrorContent"), {
-			   mode: "${scriptHandler.codemirrorKey}",
+			   mode: "${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}",
 			   theme: "eclipse",
 			   lineNumbers: true,
 			   lineWrapping: true,
