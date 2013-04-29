@@ -24,6 +24,13 @@ import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 
+/**
+ * Script per language handler. This is the superclass for all sub {@link ScriptHandler}s which
+ * implements the specific processing of each language.
+ * 
+ * @author JunHo Yoon
+ * @since 3.2
+ */
 public abstract class ScriptHandler {
 	protected static final Logger LOGGER = LoggerFactory.getLogger(JythonScriptHandler.class);
 	private final String codemirrorKey;
@@ -36,7 +43,6 @@ public abstract class ScriptHandler {
 		this.codemirrorKey = codemirrorKey;
 	}
 
-	/** This is package protected scope due to unit test */
 	@Autowired
 	FileEntryRepository fileEntryRepository;
 
@@ -44,6 +50,11 @@ public abstract class ScriptHandler {
 		return codemirrorKey;
 	}
 
+	/**
+	 * 
+	 * @param fileEntry
+	 * @return
+	 */
 	public boolean canHandle(FileEntry fileEntry) {
 		return FilenameUtils.isExtension(fileEntry.getPath(), getExtension());
 	}
