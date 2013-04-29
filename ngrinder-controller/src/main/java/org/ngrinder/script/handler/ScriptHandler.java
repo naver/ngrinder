@@ -1,3 +1,16 @@
+/* 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License. 
+ */
 package org.ngrinder.script.handler;
 
 import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
@@ -36,24 +49,40 @@ public abstract class ScriptHandler {
 	private final String codemirrorKey;
 	private final String title;
 	private final String extension;
+	private final String key;
 
-	public ScriptHandler(String extension, String title, String codemirrorKey) {
+	/**
+	 * Constructor.
+	 * 
+	 * @param key
+	 *            key of the script handler
+	 * @param extension
+	 *            extension
+	 * @param title
+	 *            title of the handler
+	 * @param codemirrorKey
+	 *            code minrror key
+	 */
+	public ScriptHandler(String key, String extension, String title, String codemirrorKey) {
+		this.key = key;
 		this.extension = extension;
 		this.title = title;
 		this.codemirrorKey = codemirrorKey;
 	}
 
 	@Autowired
-	FileEntryRepository fileEntryRepository;
+	private FileEntryRepository fileEntryRepository;
 
 	public String getCodemirrorKey() {
 		return codemirrorKey;
 	}
 
 	/**
+	 * Check if the given fileEntry can be handled by this handler.
 	 * 
 	 * @param fileEntry
-	 * @return
+	 *            fileEntry to be checked
+	 * @return true if handleable
 	 */
 	public boolean canHandle(FileEntry fileEntry) {
 		return FilenameUtils.isExtension(fileEntry.getPath(), getExtension());
@@ -63,13 +92,35 @@ public abstract class ScriptHandler {
 		return extension;
 	}
 
+	/**
+	 * Get the handler resolution order.
+	 * 
+	 * Less is more prioritized.
+	 * 
+	 * @return the order of handler resolution
+	 */
 	protected abstract Integer order();
 
-	public void prepareDist(String identifier, User user, FileEntry script, File distDir, PropertiesWrapper properties) {
+	/**
+	 * Prepare the distribution.
+	 * 
+	 * @param testcaseId
+	 *            id of the test case. This is for the log identification.
+	 * @param user
+	 *            user who will distribute the script.
+	 * @param scriptEntry
+	 *            script to be distributed.
+	 * @param distDir
+	 *            distribution target dir
+	 * @param properties
+	 *            properties set which is used for detailed distribution control
+	 */
+	public void prepareDist(String testcaseId, User user, //
+					FileEntry scriptEntry, File distDir, PropertiesWrapper properties) {
 		prepareDefaultFile(distDir, properties);
-		List<FileEntry> fileEntries = getLibAndResourceEntries(user, script, -1);
-		fileEntries.add(script);
-		String basePath = getBasePath(script);
+		List<FileEntry> fileEntries = getLibAndResourceEntries(user, scriptEntry, -1);
+		fileEntries.add(scriptEntry);
+		String basePath = getBasePath(scriptEntry);
 		// Distribute each files in that folder.
 		for (FileEntry each : fileEntries) {
 			// Directory is not subject to be distributed.
@@ -77,29 +128,78 @@ public abstract class ScriptHandler {
 				continue;
 			}
 			File toDir = new File(distDir, calcDistSubPath(basePath, each));
-			LOGGER.info("{} is being written in {} for test {}", new Object[] { each.getPath(), toDir, identifier });
-			fileEntryRepository.writeContentTo(user, each.getPath(), toDir);
+			LOGGER.info("{} is being written in {} for test {}", new Object[] { each.getPath(), toDir, testcaseId });
+			getFileEntryRepository().writeContentTo(user, each.getPath(), toDir);
 		}
-		prepareDistMore(identifier, user, script, distDir, properties);
+		prepareDistMore(testcaseId, user, scriptEntry, distDir, properties);
 	}
 
-	protected void prepareDistMore(String identifier, User user, FileEntry script, File distDir, PropertiesWrapper properties) {
+	/**
+	 * Prepare script creation. This method is subject to be extended by the subclasses.
+	 * 
+	 * This method is the perfect place if it's necessary to include additional files.
+	 * 
+	 * @param user
+	 *            user
+	 * @param scriptEntry
+	 *            script entry to be distributed
+	 */
+	public void prepareScriptCreation(User user, FileEntry scriptEntry) {
 
 	}
 
-	protected String calcDistSubPath(String basePath, FileEntry each) {
-		String path = FilenameUtils.getPath(each.getPath());
+	/**
+	 * Prepare the distribution more. This method is subject to be extended by the subclass.
+	 * 
+	 * @param testcaseId
+	 *            testcase id. This is for the log identification.
+	 * @param user
+	 *            user
+	 * @param script
+	 *            script entry to be distributed.
+	 * @param distDir
+	 *            distribution directory
+	 * @param properties
+	 *            properties.
+	 */
+	protected void prepareDistMore(String testcaseId, User user, FileEntry script, File distDir,
+					PropertiesWrapper properties) {
+
+	}
+
+	/**
+	 * Get the appropriated distribution path for the given file entry.
+	 * 
+	 * @param basePath
+	 *            distribution base path
+	 * @param fileEntry
+	 *            fileEntry to be distributed
+	 * @return the resolved destination path.
+	 */
+	protected String calcDistSubPath(String basePath, FileEntry fileEntry) {
+		String path = FilenameUtils.getPath(fileEntry.getPath());
 		path = path.substring(basePath.length());
 		return path;
 	}
 
+	/**
+	 * Get all resources and lib entries belonging to the given user and scriptEntry.
+	 * 
+	 * @param user
+	 *            user
+	 * @param scriptEntry
+	 *            script entry
+	 * @param revision
+	 *            revision of the script entry.
+	 * @return file entry list
+	 */
 	public List<FileEntry> getLibAndResourceEntries(User user, FileEntry scriptEntry, long revision) {
 		String path = FilenameUtils.getPath(scriptEntry.getPath());
 		List<FileEntry> fileList = newArrayList();
-		for (FileEntry eachFileEntry : fileEntryRepository.findAll(user, path + "lib/", revision)) {
+		for (FileEntry eachFileEntry : getFileEntryRepository().findAll(user, path + "lib/", revision)) {
 			// Skip jython 2.5... it's already included.
 			if (startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-2.5.")
-					|| startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-standalone-2.5.")) {
+							|| startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-standalone-2.5.")) {
 				continue;
 			}
 			FileType fileType = eachFileEntry.getFileType();
@@ -107,14 +207,13 @@ public abstract class ScriptHandler {
 				fileList.add(eachFileEntry);
 			}
 		}
-		for (FileEntry eachFileEntry : fileEntryRepository.findAll(user, path + "resources/", revision)) {
+		for (FileEntry eachFileEntry : getFileEntryRepository().findAll(user, path + "resources/", revision)) {
 			FileType fileType = eachFileEntry.getFileType();
 			if (fileType.isResourceDistributable()) {
 				fileList.add(eachFileEntry);
 			}
 		}
 		return fileList;
-
 	}
 
 	protected void prepareDefaultFile(File distDir, PropertiesWrapper properties) {
@@ -127,12 +226,22 @@ public abstract class ScriptHandler {
 		return FilenameUtils.getPath(script.getPath());
 	}
 
+	/**
+	 * Check syntax errors for the given content.
+	 * 
+	 * @param content
+	 *            content
+	 * @return syntax error messages. null if none.
+	 */
 	public abstract String checkSyntaxErrors(String content);
 
-	public void prepareScriptCreation(User user, String path) {
-
-	}
-
+	/**
+	 * Get the initial script with the given value map.
+	 * 
+	 * @param map
+	 *            map of initial script referencing values.
+	 * @return generated string
+	 */
 	public String getInitialScript(Map<String, Object> map) {
 		try {
 			Configuration freemarkerConfig = new Configuration();
@@ -151,5 +260,17 @@ public abstract class ScriptHandler {
 
 	public String getTitle() {
 		return title;
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	FileEntryRepository getFileEntryRepository() {
+		return fileEntryRepository;
+	}
+
+	void setFileEntryRepository(FileEntryRepository fileEntryRepository) {
+		this.fileEntryRepository = fileEntryRepository;
 	}
 }

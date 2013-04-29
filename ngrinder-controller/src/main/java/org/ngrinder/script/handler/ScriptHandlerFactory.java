@@ -14,8 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * ScriptHanderFactory which returns appropriate hander for the given
- * {@link FileEntry}.
+ * ScriptHanderFactory which returns appropriate hander for the given {@link FileEntry}.
  * 
  * @author JunHo Yoon
  * @since 3.2
@@ -26,6 +25,9 @@ public class ScriptHandlerFactory {
 	@Autowired
 	private List<ScriptHandler> scriptHandlers;
 
+	/**
+	 * Initialize the {@link ScriptHandler}s.
+	 */
 	@PostConstruct
 	public void init() {
 		// Sort by the order of scriptHandlers..
@@ -57,8 +59,7 @@ public class ScriptHandlerFactory {
 	 * 
 	 * @param fileEntry
 	 *            fileEntry to be handled
-	 * @return {@link ScriptHandler}. {@link NullScriptHandler} if none is
-	 *         available.
+	 * @return {@link ScriptHandler}. {@link NullScriptHandler} if none is available.
 	 */
 	public ScriptHandler getHandler(FileEntry fileEntry) {
 		for (ScriptHandler handler : scriptHandlers) {

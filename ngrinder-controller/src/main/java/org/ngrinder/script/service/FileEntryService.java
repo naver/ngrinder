@@ -320,7 +320,8 @@ public class FileEntryService {
 			filePath = fileName;
 		}
 		fileEntry.setPath(filePath);
-		String content = loadTemplate(user, scriptHandlerFactory.getHandler(fileEntry), url);
+		ScriptHandler handler = scriptHandlerFactory.getHandler(fileEntry);
+		String content = loadTemplate(user, handler, url);
 		fileEntry.setContent(content);
 		addHostProperties(fileEntry, url);
 		return fileEntry;

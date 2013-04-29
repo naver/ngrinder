@@ -19,7 +19,7 @@ public class GroovyMavenProjectScriptHandlerTest {
 		User user = new User("my", "my", "password", Role.ADMIN);
 		FileEntryRepository serviceMock = mock(FileEntryRepository.class);
 		when(serviceMock.hasFileEntry(user, "/hello/world/pom.xml")).thenReturn(true);
-		handler.fileEntryRepository = serviceMock;
+		handler.setFileEntryRepository(serviceMock);
 
 		FileEntry entry = new FileEntry();
 		entry.setPath("/hello/world/src/main/java/wow/Global.groovy");

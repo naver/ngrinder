@@ -21,7 +21,7 @@
 								<input type="hidden" name="type" value="script"/>
 								<select id="languageSelect" name="scriptType">
 									<#list handlers as handler>
-									<option value="${handler.extension}">${handler.title}</option>
+									<option value="${handler.key}">${handler.title}</option>
 									</#list>
 								</select>
 							  <span class="help-inline"></span>
