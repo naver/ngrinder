@@ -41,7 +41,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
  * @since 3.2
  */
 @Component
-public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler {
+public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler implements ProjectHandler {
 	/**
 	 * Constructor.
 	 */

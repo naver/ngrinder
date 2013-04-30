@@ -21,7 +21,7 @@
 								<input type="hidden" name="type" value="script"/>
 								<select id="languageSelect" name="scriptType">
 									<#list handlers as handler>
-									<option value="${handler.key}" extension="${handler.extension}">${handler.title}</option>
+									<option value="${handler.key}" extension="${handler.extension}" projectHandler="${handler.isProjectHandler()?string}">${handler.title}</option>
 									</#list>
 								</select> 
 							  <span class="help-inline"></span>
@@ -60,6 +60,8 @@
 		</div>
 		<script>
 			$(document).ready(function() {
+				$("#scriptNameInput").val("");
+				$("#urlInput").val("");
 				$("#createBtn2").on('click', function() {
 					var $name = $("#scriptNameInput");
 					if (checkEmptyByObj($name)) {
@@ -75,8 +77,10 @@
 					}
 					
 					var name = $name.val();
-					var extension = $("#languageSelect option:selected").attr("extension").toLowerCase();
-					if (extension != "") {
+					var selectedElement = $("#languageSelect option:selected")
+					var extension = selectedElement.attr("extension").toLowerCase();
+					var projectHandler = selectedElement.attr("projectHandler");
+					if (projectHandler != "true") {
 						extension = "." + extension;
 						var idx = name.toLowerCase().lastIndexOf(extension);
 						if (idx == -1) {

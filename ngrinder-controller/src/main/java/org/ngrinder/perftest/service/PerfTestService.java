@@ -13,6 +13,8 @@
  */
 package org.ngrinder.perftest.service;
 
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+import static org.ngrinder.common.util.CollectionUtils.newHashSet;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.model.Status.getProcessingOrTestingTestStatus;
@@ -45,7 +47,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -73,13 +74,12 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.hibernate.Hibernate;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Permission;
 import org.ngrinder.model.Role;
@@ -529,7 +529,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	protected List<PerfTest> filterCurrentlyRunningTestUsersTest(List<PerfTest> perfTestLists) {
 		List<PerfTest> currentlyRunningTests = getCurrentlyRunningTest();
-		final Set<User> currentlyRunningTestOwners = new HashSet<User>();
+		final Set<User> currentlyRunningTestOwners = newHashSet();
 		for (PerfTest each : currentlyRunningTests) {
 			currentlyRunningTestOwners.add(each.getCreatedUser());
 		}
@@ -950,30 +950,53 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            perfTest Id
 	 * @return statistics
 	 */
+	/**
+	 * To save statistics data when test is running and put into cache after that. If the console is
+	 * not available, it returns null.
+	 * 
+	 * @param singleConsole
+	 *            console signle console.
+	 * @param perfTestId
+	 *            perfTest Id
+	 * @return statistics
+	 */
 	@Transactional
-	public Map<String, Object> saveStatistics(SingleConsole singleConsole, Long perfTestId) {
-		Map<String, Object> statictisData = singleConsole.getStatictisData();
-		Map<String, SystemDataModel> agentStatusMap = Maps.newHashMap();
-		final int singleConsolePort = singleConsole.getConsolePort();
-		for (AgentStatus each : agentManager.getAgentStatusSetConnectingToPort(singleConsolePort)) {
-			agentStatusMap.put(each.getAgentName(), each.getSystemDataModel());
-		}
-		String runningSample = gson.toJson(statictisData);
-		String agentStatus = getProperSizedStatusString(agentStatusMap);
+	public void saveStatistics(SingleConsole singleConsole, Long perfTestId) {
+		String runningSample = getProperSizeRunningSample(singleConsole);
+		String agentStatus = getProperSizedStatusString(singleConsole);
 		updateRuntimeStatistics(perfTestId, runningSample, agentStatus);
+	}
 
-		CoreLogger.LOGGER.debug("Data is {}", statictisData);
-		return statictisData;
+	private String getProperSizeRunningSample(SingleConsole singleConsole) {
+		Map<String, Object> statisticData = singleConsole.getStatictisData();
+		String runningSample = gson.toJson(statisticData);
+		if (runningSample.length() > 9950) { // max column size is 10,000
+			Map<String, Object> tempData = newHashMap(3);
+			tempData.put("totalStatistics", statisticData.get("totalStatistics"));
+			tempData.put("tpsChartData", statisticData.get("tpsChartData"));
+			tempData.put("peakTpsForGraph", statisticData.get("peakTpsForGraph"));
+			runningSample = gson.toJson(tempData);
+		}
+		return runningSample;
 	}
 
 	/**
 	 * Get the limited size of agent status json string.
 	 * 
-	 * @param agentStatusMap
-	 *            agentStatusMap
+	 * @param singleConsole
+	 *            console which is connecting agents
 	 * @return converted json
 	 */
-	public String getProperSizedStatusString(Map<String, SystemDataModel> agentStatusMap) {
+	public String getProperSizedStatusString(SingleConsole singleConsole) {
+		Map<String, SystemDataModel> agentStatusMap = Maps.newHashMap();
+		final int singleConsolePort = singleConsole.getConsolePort();
+		for (AgentStatus each : agentManager.getAgentStatusSetConnectingToPort(singleConsolePort)) {
+			agentStatusMap.put(each.getAgentName(), each.getSystemDataModel());
+		}
+		return getProperSizedStatusString(agentStatusMap);
+	}
+
+	String getProperSizedStatusString(Map<String, SystemDataModel> agentStatusMap) {
 		String json = gson.toJson(agentStatusMap);
 		int statusLength = StringUtils.length(json);
 		if (statusLength > 9950) { // max column size is 10,000
@@ -990,7 +1013,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				}
 			}
 			json = gson.toJson(pickAgentStatusMap);
-			LOGGER.info("Agent status string get:{} of:{} agents, new size is: {}.", new Object[] { pickSize,
+			LOGGER.debug("Agent status string get:{} of:{} agents, new size is: {}.", new Object[] { pickSize,
 					agentStatusMap.size(), json.length() });
 		}
 		return json;
@@ -1226,7 +1249,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	@Cacheable("current_perftest_statistics")
 	@Transactional
 	public Collection<PerfTestStatistics> getCurrentPerfTestStatistics() {
-		Map<User, PerfTestStatistics> perfTestPerUser = new HashMap<User, PerfTestStatistics>();
+		Map<User, PerfTestStatistics> perfTestPerUser = newHashMap();
 		for (PerfTest each : getPerfTest(null, getProcessingOrTestingTestStatus())) {
 			User lastModifiedUser = each.getCreatedUser().getUserBaseInfo();
 			PerfTestStatistics perfTestStatistics = perfTestPerUser.get(lastModifiedUser);
