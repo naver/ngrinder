@@ -91,7 +91,7 @@ public class AgentManagerController extends NGrinderBaseController {
 		model.addAttribute("region", region);
 		model.addAttribute("regions", regionService.getRegions().keySet());
 		File directory = config.getHome().getDownloadDirectory();
-		final String contextPath = httpContainerContext.getCurrentRequestUrlFromUserRequest();
+		final String contextPath = httpContainerContext.getCurrentContextUrlFromUserRequest();
 		final List<String> downloads = new ArrayList<String>();
 		directory.list(new FilenameFilter() {
 			@Override
