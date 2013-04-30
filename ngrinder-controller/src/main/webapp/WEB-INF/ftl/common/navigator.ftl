@@ -134,7 +134,7 @@
 			document.location.href = "${req.getContextPath()}/user/switchUser?switchUser=" + $(this).val();
 		});
 		
-		var url = "${req.getContextPath()}/user/switchUserList";
+		var url = "${req.getContextPath()}/user/switchOptions";
 		$("#switch_user_id").click(function() {
 			$("#switchUserSelect").load(url, function(){
 				$(this).prepend($("<option value=''></option>"));

@@ -99,7 +99,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		if (!agents.isEmpty()) {
 			AgentInfo testAgt = agents.iterator().next();
 			model.clear();
-			agentController.getAgent(model, testAgt.getId());
+			agentController.getAgent(testAgt.getId(), model);
 			AgentInfo agentInDB = (AgentInfo) model.get("agent");
 			assertThat(agentInDB.getId(), is(testAgt.getId()));
 			assertThat(agentInDB.getIp(), is(testAgt.getIp()));
@@ -107,8 +107,6 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 
 		}
 	}
-
-
 
 	@Test
 	public void testApproveAgent() {
@@ -121,7 +119,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 
 		ModelMap model = new ModelMap();
 		// test get agent
-		agentController.getAgent(model, agent.getId());
+		agentController.getAgent(agent.getId(), model);
 		AgentInfo agentinDB = (AgentInfo) model.get("agent");
 		assertThat(agentinDB.getName(), is(agent.getName()));
 		assertThat(agentinDB.getIp(), is(agent.getIp()));
@@ -129,28 +127,28 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 
 		// test approve agent
 		model.clear();
-		agentController.approveAgent(agentinDB.getId(), true);
-		agentController.getAgent(model, agent.getId());
+		agentController.approveAgent(agentinDB.getId(), true, "", model);
+		agentController.getAgent(agent.getId(), model);
 		agentinDB = (AgentInfo) model.get("agent");
 		assertThat(agentinDB.isApproved(), is(true));
 
 		// test un-approve
 		model.clear();
-		agentController.approveAgent(agentinDB.getId(), false);
-		agentController.getAgent(model, agent.getId());
+		agentController.approveAgent(agentinDB.getId(), false, "", model);
+		agentController.getAgent(agent.getId(), model);
 		agentinDB = (AgentInfo) model.get("agent");
 		assertThat(agentinDB.isApproved(), is(false));
 	}
-	
+
 	@Test
 	public void testStopAgent() {
 		agentController.stopAgent("0");
 	}
-	
+
 	@Test
 	public void testGetCurrentMonitorData() {
 		ModelMap model = new ModelMap();
-		String rtnStr = agentController.getCurrentMonitorData(model, 0L, "127.0.0.1", "127.0.0.1");
+		String rtnStr = agentController.getCurrentMonitorData(0L, "127.0.0.1", "127.0.0.1", model);
 		assertTrue(rtnStr.contains("systemData"));
 	}
 

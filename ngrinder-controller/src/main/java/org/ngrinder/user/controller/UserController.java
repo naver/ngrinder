@@ -240,8 +240,8 @@ public class UserController extends NGrinderBaseController {
 	 *            model
 	 * @return "user/switchOptions"
 	 */
-	@RequestMapping("/switchUserList")
-	public String switchUserList(User user, ModelMap model) {
+	@RequestMapping("/switchOptions")
+	public String switchOptions(User user, ModelMap model) {
 		if (user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
 			List<User> allUserByRole = userService.getAllUserByRole(Role.USER.getFullName());
 			model.addAttribute("shareUserList", allUserByRole);
