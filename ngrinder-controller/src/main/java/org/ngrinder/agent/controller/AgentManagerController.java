@@ -116,6 +116,10 @@ public class AgentManagerController extends NGrinderBaseController {
 	 *            agent id to be approved
 	 * @param approve
 	 *            approve or not
+	 * @param region
+	 *            current region
+	 * @param model
+	 *            model
 	 * @return agent/agentList
 	 */
 	@RequestMapping(value = "/{id}/approve", method = RequestMethod.POST)
@@ -178,6 +182,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	public String getCurrentMonitorData(@PathVariable Long id, @RequestParam String ip, @RequestParam String name,
 					ModelMap model) {
 		agentManagerService.requestShareAgentSystemDataModel(id);
-		return toJson(buildMap(JSON_SUCCESS, true, "systemData", agentManagerService.getAgentSystemDataModel(ip, name)));
+		return toJson(buildMap(JSON_SUCCESS, true, //
+						"systemData", agentManagerService.getAgentSystemDataModel(ip, name)));
 	}
 }
