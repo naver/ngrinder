@@ -30,15 +30,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.iterators.IteratorEnumeration;
-import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
-import org.ngrinder.model.User;
 import org.ngrinder.script.svnkitdav.DAVHandlerExFactory;
-import org.ngrinder.user.service.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.context.ServletContextAware;
@@ -48,7 +44,6 @@ import org.tmatesoft.svn.core.internal.io.dav.DAVElement;
 import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
 import org.tmatesoft.svn.core.internal.server.dav.DAVConfig;
 import org.tmatesoft.svn.core.internal.server.dav.DAVException;
-import org.tmatesoft.svn.core.internal.server.dav.DAVPathUtil;
 import org.tmatesoft.svn.core.internal.server.dav.DAVRepositoryManager;
 import org.tmatesoft.svn.core.internal.server.dav.DAVXMLUtil;
 import org.tmatesoft.svn.core.internal.server.dav.handlers.DAVResponse;
@@ -111,9 +106,6 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 		return this;
 	}
 
-	@Autowired
-	private UserContext userContext;
-
 	/**
 	 * Request Handler.
 	 * 
@@ -135,17 +127,6 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 			logRequest(request);
 		}
 		try {
-			String pathInfo = request.getPathInfo();
-			final String head = DAVPathUtil.head(pathInfo);
-			final User currentUser = userContext.getCurrentUser();
-			// check the security. If the other user tries to the other user's repo, deny it.
-			if (!StringUtils.equals(currentUser.getUserId(), head)) {
-				LOGGER.warn("SVN access error: svn path:{}, user:{}", head, currentUser.getUserId());
-				SecurityContextHolder.getContext().setAuthentication(null);
-				response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
-								head + " is not accessible by " + currentUser.getUserId());
-				return;
-			}
 			// To make it understand Asian Language..
 			request = new MyHttpServletRequestWrapper(request);
 			DAVRepositoryManager repositoryManager = new DAVRepositoryManager(getDAVConfig(), request);
@@ -189,7 +170,7 @@ public class DavSvnController implements HttpRequestHandler, ServletConfig, Serv
 			response.flushBuffer();
 		}
 	}
-	
+
 	private void logRequest(HttpServletRequest request) {
 		StringBuilder logBuffer = new StringBuilder();
 		logBuffer.append('\n');
