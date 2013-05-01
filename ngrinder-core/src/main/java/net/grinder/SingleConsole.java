@@ -913,7 +913,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 */
 	protected void updateStatistics(StatisticsSet intervalStatistics, StatisticsSet accumulatedStatistics) {
 		Map<String, Object> result = newHashMap();
-		result.put("test_time", getCurrentRunningTime() / 1000);
+		result.put("testTime", getCurrentRunningTime() / 1000);
 		List<Map<String, Object>> cumulativeStatistics = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> lastSampleStatistics = new ArrayList<Map<String, Object>>();
 		for (Test test : accumulatedStatisticMapPerTest.keySet()) {

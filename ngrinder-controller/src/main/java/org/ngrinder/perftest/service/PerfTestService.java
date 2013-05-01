@@ -955,10 +955,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * not available, it returns null.
 	 * 
 	 * @param singleConsole
-	 *            console signle console.
+	 *            single console.
 	 * @param perfTestId
 	 *            perfTest Id
-	 * @return statistics
 	 */
 	@Transactional
 	public void saveStatistics(SingleConsole singleConsole, Long perfTestId) {
@@ -970,11 +969,17 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	private String getProperSizeRunningSample(SingleConsole singleConsole) {
 		Map<String, Object> statisticData = singleConsole.getStatictisData();
 		String runningSample = gson.toJson(statisticData);
+
 		if (runningSample.length() > 9950) { // max column size is 10,000
-			Map<String, Object> tempData = newHashMap(3);
-			tempData.put("totalStatistics", statisticData.get("totalStatistics"));
-			tempData.put("tpsChartData", statisticData.get("tpsChartData"));
-			tempData.put("peakTpsForGraph", statisticData.get("peakTpsForGraph"));
+			Map<String, Object> tempData = newHashMap();
+			for (Entry<String, Object> each : statisticData.entrySet()) {
+				String key = each.getKey();
+				if (key.equals("totalStatistics") || key.equals("cumulativeStatistics")
+								|| key.equals("lastSampleStatistics")) {
+					continue;
+				}
+				tempData.put(key, each.getValue());
+			}
 			runningSample = gson.toJson(tempData);
 		}
 		return runningSample;

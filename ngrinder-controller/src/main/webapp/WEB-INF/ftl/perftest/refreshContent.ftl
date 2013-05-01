@@ -2,7 +2,7 @@
 	<script>
 			curPeakTps = ${(resultsub.peakTpsForGraph!0)?c};
 	  		curTps = ${(resultsub.tpsChartData!0)?c};
-	  		curRunningTime = ${(resultsub.test_time!0)?c};
+	  		curRunningTime = ${(resultsub.testTime!0)?c};
 	  		curRunningProcesses = ${(resultsub.process!0)?c};
 	  		curRunningThreads = ${(resultsub.thread!0)?c};
 	  		curStatus = <#if resultsub.success?? && resultsub.success>true<#else>false</#if>
