@@ -35,6 +35,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
 /**
  * Class description.
@@ -74,7 +75,8 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		String path = "test1-path";
 		scriptController.addFolder(getTestUser(), "", path, model);
 		// create
-		scriptController.getCreateForm(getTestUser(), path, "test.com", "new_file.py", null, false, model);
+		scriptController.getCreateForm(getTestUser(), path, "test.com", "new_file.py", null, false,
+						new RedirectAttributesModelMap(), model);
 
 		FileEntry script = (FileEntry) model.get("file");
 		script.setContent(script.getContent() + "#test comment");
@@ -109,7 +111,8 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		// add folder
 		scriptController.addFolder(getTestUser(), "", path, model);
 		// create
-		scriptController.getCreateForm(getTestUser(), path, "test.com", "file-for-search.py", null, false, model);
+		scriptController.getCreateForm(getTestUser(), path, "test.com", "file-for-search.py", null, false,
+						new RedirectAttributesModelMap(), model);
 		FileEntry script = (FileEntry) model.get("file");
 		scriptController.saveFileEntry(getTestUser(), path, script, null, "", false, model);
 
@@ -157,13 +160,14 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		String path = "download-path";
 		String fileName = "download_file.py";
 		scriptController.addFolder(getTestUser(), "", path, model);
-		scriptController.getCreateForm(getTestUser(), path, "test.com", fileName, null, false, model);
+		RedirectAttributesModelMap attrMap = new RedirectAttributesModelMap();
+		scriptController.getCreateForm(getTestUser(), path, "test.com", fileName, null, false, attrMap, model);
 
 		FileEntry script = (FileEntry) model.get("file");
 		script.setContent(script.getContent() + "#test comment");
 		scriptController.saveFileEntry(getTestUser(), path, script, null, "", false, model);
 
-		scriptController.getCreateForm(getTestUser(), path, "", fileName, null, false, model);
+		scriptController.getCreateForm(getTestUser(), path, "", fileName, null, false, attrMap, model);
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		path = path + "/" + fileName;

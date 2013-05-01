@@ -45,7 +45,7 @@ public class HttpContainerContext {
 	 * 
 	 * @return ngrinder context base path on http request.
 	 */
-	public String getCurrentRequestUrlFromUserRequest() {
+	public String getCurrentContextUrlFromUserRequest() {
 		String httpUrl = config.getSystemProperties().getProperty("http.url", "");
 		// if provided
 		if (StringUtils.isNotBlank(httpUrl)) {

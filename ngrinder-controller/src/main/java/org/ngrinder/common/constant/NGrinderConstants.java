@@ -38,9 +38,6 @@ public interface NGrinderConstants {
 
 	public static final String ENCODE_UTF8 = "UTF-8";
 
-	public static final String PY_EXTENTION = ".py";
-	public static final String JS_EXTENTION = ".js";
-
 	public static final String GRINDER_PROPERTIES = "grinder.properties";
 
 	public static final String REPORT_CSV = "output.csv";
@@ -50,8 +47,8 @@ public interface NGrinderConstants {
 
 	public static final String NGRINDER_DEFAULT_PACKAGE = "org.ngrinder";
 	public static final int PLUGIN_UPDATE_FREQUENCY = 10;
-	
-	//Google Analytics application name and Tracking ID
+
+	// Google Analytics application name and Tracking ID
 	public static final String GOOGLEANALYTICS_APPNAME = "AppName";
 	public static final String GOOGLEANALYTICS_TRACKINGID = "UA-40325625-1";
 
@@ -198,7 +195,7 @@ public interface NGrinderConstants {
 	public static final String NGRINDER_PROP_DEFAULT_LANGUAGE = "ngrinder.langauge.default";
 	public static final String NGRINDER_PROP_FRONT_PAGE_RSS = "ngrinder.frontpage.rss";
 	public static final String NGRINER_USAGE_REPORT = "ngrinder.usage.report";
-	
+
 	public static final String NGRINDER_NEWS_RSS_URL = "http://www.cubrid.org/wiki_ngrinder/rss";
 	public static final String NGRINDER_PROP_QNA_PAGE_RSS = "ngrinder.frontpage.qna.rss";
 	public static final String NGRINDER_QNA_RSS_URL_KEY = "home.qa.rss";
@@ -210,9 +207,9 @@ public interface NGrinderConstants {
 	public static final String NGRINDER_PROP_CLUSTER_URIS = "ngrinder.cluster.uris";
 	public static final String NGRINDER_PROP_CLUSTER_LISTENER_PORT = "ngrinder.cluster.listener.port";
 
-	// perfTest default value 
-	public static final int SAMPLINGINTERVAL_DEFAULT_VALUE=1;
-	
+	// perfTest default value
+	public static final int SAMPLINGINTERVAL_DEFAULT_VALUE = 1;
+
 	// key names for distributed map of EhCache
 	public static final String CACHE_NAME_DISTRIBUTED_MAP = "distributed_map";
 	public static final String CACHE_NAME_REGION_LIST = "region_list";

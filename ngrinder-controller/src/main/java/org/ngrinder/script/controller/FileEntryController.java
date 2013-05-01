@@ -36,6 +36,7 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.PathUtil;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
+import org.ngrinder.script.handler.ProjectHandler;
 import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileCategory;
@@ -54,6 +55,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
@@ -125,11 +127,36 @@ public class FileEntryController extends NGrinderBaseController {
 		for (FileEntry each : files) {
 			each.setPath(PathUtil.removePrependedSlash(each.getPath()));
 		}
+
 		model.addAttribute("files", files);
 		model.addAttribute("currentPath", path);
-		model.addAttribute("svnUrl", fileEntryService.getSvnUrl(user, path));
+		model.addAttribute("svnUrl", getSvnUrlBreadcrumbs(user, path));
 		model.addAttribute("handlers", handlerFactory.getVisibleHandlers());
 		return "script/list";
+	}
+
+	/**
+	 * Get the SVN url breadcrumbs HTML string.
+	 * 
+	 * @param user
+	 *            user
+	 * @param path
+	 *            path
+	 * @return constructured HTML
+	 */
+	public String getSvnUrlBreadcrumbs(User user, String path) {
+		String contextPath = fileEntryService.getCurrentContextPathFromUserRequest();
+		String[] parts = StringUtils.split(path, '/');
+		StringBuilder accumulatedPart = new StringBuilder(contextPath).append("/script/list");
+		StringBuilder retrunHtml = new StringBuilder().append("<a href='").append(accumulatedPart).append("'>")
+						.append(contextPath).append("/svn/").append(user.getUserId()).append("</a>");
+		for (String each : parts) {
+			retrunHtml.append("/");
+			accumulatedPart.append("/").append(each);
+			retrunHtml.append("<a href='").append(accumulatedPart).append("'>").append(each).append("</a>");
+		}
+		String result = retrunHtml.toString();
+		return result;
 	}
 
 	/**
@@ -184,24 +211,28 @@ public class FileEntryController extends NGrinderBaseController {
 					@RequestParam("fileName") String fileName,
 					@RequestParam(value = "scriptType", required = false) String scriptType,
 					@RequestParam(value = "createLibAndResource", defaultValue = "false") boolean createLibAndResources,
-					ModelMap model) {
+					RedirectAttributes redirectAttributes, ModelMap model) {
 		fileName = StringUtils.trimToEmpty(fileName);
-		if (StringUtils.isBlank(testUrl)) {
-			testUrl = "http://please_modify_this.com";
-		}
+		testUrl = StringUtils.defaultIfBlank(testUrl, "http://please_modify_this.com");
 		ScriptHandler scriptHandler = fileEntryService.getScriptHandler(scriptType);
 		FileEntry entry = new FileEntry();
 		entry.setPath(fileName);
-
-		if (fileEntryService.hasFileEntry(user, path + "/" + fileName)) {
-			model.addAttribute("file", fileEntryService.getFileEntry(user, path + "/" + fileName));
-		} else {
-			FileEntry prepareNewEntry = fileEntryService.prepareNewEntry(user, path, fileName, testUrl, scriptHandler);
-			// If it's just a project structure creation?
-			if (prepareNewEntry == null) {
-				return "redirect:/script/list/" + path;
+		String expectedFullPath = path + "/" + fileName;
+		if (scriptHandler instanceof ProjectHandler) {
+			if (!fileEntryService.hasFileEntry(user, expectedFullPath)) {
+				fileEntryService.prepareNewEntry(user, path, fileName, testUrl, scriptHandler);
+			} else {
+				redirectAttributes.addFlashAttribute("exception", fileName
+								+ " is already existng. Please choose the different name");
 			}
-			model.addAttribute("file", prepareNewEntry);
+			return "redirect:/script/list/" + path;
+		} else {
+			if (fileEntryService.hasFileEntry(user, expectedFullPath)) {
+				model.addAttribute("file", fileEntryService.getFileEntry(user, expectedFullPath));
+			} else {
+				model.addAttribute("file",
+								fileEntryService.prepareNewEntry(user, path, fileName, testUrl, scriptHandler));
+			}
 		}
 		model.addAttribute("scriptHandler", scriptHandler);
 		model.addAttribute("createLibAndResource", createLibAndResources);
@@ -413,4 +444,13 @@ public class FileEntryController extends NGrinderBaseController {
 		return toJson(rtnMap);
 	}
 
+	/**
+	 * Only for unit test
+	 * 
+	 * @param fileEntryService
+	 *            fileEntryService
+	 */
+	void setFileEntryService(FileEntryService fileEntryService) {
+		this.fileEntryService = fileEntryService;
+	}
 }

@@ -57,7 +57,7 @@ public class HttpContainerContextTest extends AbstractNGrinderTransactionalTest 
 
 	@Test
 	public void testGetCurrentRequestUrlFromUserRequest() {
-		String requestUrl = httpContainerContext.getCurrentRequestUrlFromUserRequest();
+		String requestUrl = httpContainerContext.getCurrentContextUrlFromUserRequest();
 		assertTrue(requestUrl.startsWith("http://"));
 
 		String httpUrl = config.getSystemProperties().getProperty("http.url", "");
@@ -66,7 +66,7 @@ public class HttpContainerContextTest extends AbstractNGrinderTransactionalTest 
 		} else {
 			config.getSystemProperties().addProperty("http.url", "http://aa.com");
 		}
-		requestUrl = httpContainerContext.getCurrentRequestUrlFromUserRequest();
+		requestUrl = httpContainerContext.getCurrentContextUrlFromUserRequest();
 		assertTrue(requestUrl.startsWith("http://"));
 
 		//reset the system properties.

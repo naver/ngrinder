@@ -77,26 +77,59 @@ public abstract class CollectionUtils {
 	}
 
 	/**
+	 * Build Map with 1 pair.
+	 * 
 	 * @param key1
+	 *            key
 	 * @param value1
-	 * @return
+	 *            value
+	 * @return created map
 	 */
-	public static Map<String, Object> buildMap(String key1, Object value1) {
-		Map<String, Object> map = new HashMap<String, Object>(1);
+	public static <K, V> Map<K, V> buildMap(K key1, V value1) {
+		Map<K, V> map = new HashMap<K, V>(1);
 		map.put(key1, value1);
 		return map;
 	}
 
-	public static Map<String, Object> buildMap(String key1, Object value1, String key2, Object value2) {
-		Map<String, Object> map = new HashMap<String, Object>(2);
+	/**
+	 * Build Map with 2 pairs.
+	 * 
+	 * @param key1
+	 *            key
+	 * @param value1
+	 *            value
+	 * @param key2
+	 *            key
+	 * @param value2
+	 *            value
+	 * @return create map
+	 */
+	public static <K, V> Map<K, V> buildMap(K key1, V value1, K key2, V value2) {
+		Map<K, V> map = new HashMap<K, V>(2);
 		map.put(key1, value1);
 		map.put(key2, value2);
 		return map;
 	}
 
-	public static Map<String, Object> buildMap(String key1, Object value1, String key2, Object value2, String key3,
-					Object value3) {
-		Map<String, Object> map = new HashMap<String, Object>(2);
+	/**
+	 * Build Map with 3 pairs.
+	 * 
+	 * @param key1
+	 *            key
+	 * @param value1
+	 *            value
+	 * @param key2
+	 *            key
+	 * @param value2
+	 *            value
+	 * @param key3
+	 *            key
+	 * @param value3
+	 *            value
+	 * @return create map
+	 */
+	public static <K, V> Map<K, V> buildMap(K key1, V value1, K key2, V value2, K key3, V value3) {
+		Map<K, V> map = new HashMap<K, V>(3);
 		map.put(key1, value1);
 		map.put(key2, value2);
 		map.put(key3, value3);

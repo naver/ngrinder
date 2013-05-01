@@ -14,7 +14,7 @@
 package org.ngrinder.script.service;
 
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
-import static org.ngrinder.common.util.NoOp.noOp;
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
@@ -22,7 +22,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +30,8 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.HttpContainerContext;
+import org.ngrinder.common.util.PathUtil;
+import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
 import org.ngrinder.script.handler.ScriptHandler;
@@ -286,13 +287,10 @@ public class FileEntryService {
 	}
 
 	String getTestNameFromUrl(String urlString) {
-		URL url;
 		try {
-
-			url = new URL(urlString);
+			URL url = new URL(urlString);
 			String urlPath = "/".equals(url.getPath()) ? "" : url.getPath();
 			return (url.getHost() + urlPath).replaceAll("[\\&\\?\\%\\-]", "_");
-
 		} catch (MalformedURLException e) {
 			throw new NGrinderRuntimeException("Error while translating " + urlString, e);
 		}
@@ -315,34 +313,16 @@ public class FileEntryService {
 	 */
 	public FileEntry prepareNewEntry(User user, String path, String fileName, String url, ScriptHandler scriptHandler) {
 		FileEntry fileEntry = new FileEntry();
-		String filePath;
-		if (!StringUtils.isBlank(path)) {
-			filePath = path + "/" + fileName;
-		} else {
-			filePath = fileName;
-		}
-		fileEntry.setPath(filePath);
-		boolean proceed = scriptHandler.prepareScriptEnv(user, path + "/" + fileName);
+		String targetPath = PathUtil.removePrependedSlash(path + "/" + fileName);
+		fileEntry.setPath(targetPath);
+		boolean proceed = scriptHandler.prepareScriptEnv(user, targetPath);
 		if (!proceed) {
 			return null;
 		}
 		String content = loadTemplate(user, scriptHandler, url);
 		fileEntry.setContent(content);
-		addHostProperties(fileEntry, url);
+		fileEntry.setProperties(buildMap("targetHosts", UrlUtils.getHost(url)));
 		return fileEntry;
-	}
-
-	private void addHostProperties(FileEntry fileEntry, String url) {
-		Map<String, String> map = new HashMap<String, String>();
-		String host;
-		try {
-			host = new URL(url).getHost();
-			map.put("targetHosts", StringUtils.trim(host));
-			fileEntry.setProperties(map);
-		} catch (MalformedURLException e) {
-			// FALL THROUGH
-			noOp();
-		}
 	}
 
 	/**
@@ -358,10 +338,6 @@ public class FileEntryService {
 	 */
 	public FileEntry prepareNewEntryForQuickTest(User user, String urlString, ScriptHandler scriptHandler) {
 		String testNameFromUrl = getTestNameFromUrl(urlString);
-		// addFolder(user, "", testNameFromUrl);
-		// There might be race condition here... What if a user changes the SVN
-		// repo while saving
-		// newEntry??
 		FileEntry newEntry = prepareNewEntry(user, testNameFromUrl, "script.py", urlString, scriptHandler);
 		newEntry.setDescription("Quick test for " + urlString);
 		save(user, newEntry);
@@ -380,11 +356,15 @@ public class FileEntryService {
 	 * @return generated test script
 	 */
 	public String loadTemplate(User user, ScriptHandler handler, String url) {
-		return handler.getInitialScript(buildMap("url", url, "user", user));
+		Map<String, Object> map = newHashMap();
+		map.put("url", url);
+		map.put("user", user);
+		return handler.getScriptTemplate(map);
 	}
 
 	/**
-	 * Get SVN URL for the given user and the given subpath.
+	 * Get SVN URL for the given user and the given subpath. Base path and the subpath is separated
+	 * by ####.
 	 * 
 	 * @param user
 	 *            user
@@ -393,13 +373,23 @@ public class FileEntryService {
 	 * @return SVN URL
 	 */
 	public String getSvnUrl(User user, String path) {
-		String contextPath = httpContainerContext.getCurrentRequestUrlFromUserRequest();
-		StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url", contextPath));
+		String contextPath = getCurrentContextPathFromUserRequest();
+		StringBuilder url = new StringBuilder(contextPath);
 		url.append("/svn/").append(user.getUserId());
 		if (StringUtils.isNotEmpty(path)) {
 			url.append("/").append(path.trim());
 		}
 		return url.toString();
+	}
+
+	/**
+	 * Get current context path url by user request.
+	 * 
+	 * @return context path
+	 */
+	public String getCurrentContextPathFromUserRequest() {
+		return config.getSystemProperties().getProperty("http.url",
+						httpContainerContext.getCurrentContextUrlFromUserRequest());
 	}
 
 	/**

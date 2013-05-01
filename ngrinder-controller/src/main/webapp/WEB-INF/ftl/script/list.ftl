@@ -16,12 +16,12 @@
 					<td>
 						<table style="width:100%">
 							<colgroup>
-								<col width="400px"/>
+								<col width="300px"/>
 								<col width="540px"/>
 							</colgroup>
 							<tr>
 								<td>
-									<input type="text" class="search-query" placeholder="Keywords" id="searchText" value="${query!}">
+									<input type="text" class="search-query span3" placeholder="Keywords" id="searchText" value="${query!}">
 									<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
 								</td>
 								<td>
@@ -29,7 +29,7 @@
 									<div class="input-prepend pull-right" rel="popover" 
 						               		data-content="<@spring.message "script.list.message.svn"/>"
 						               		 data-original-title="Subversion" placement="bottom"> 
-						               <span class="add-on" style="cursor:default">SVN</span><span class="input-xlarge uneditable-input span6" style="cursor:text">${svnUrl}</span>
+						               <span class="add-on" style="cursor:default">SVN</span><span class="input-xlarge uneditable-input span7" style="cursor:text">${svnUrl}</span>
 						        	</div>  
 					        	</#if>
 				        		</td>
