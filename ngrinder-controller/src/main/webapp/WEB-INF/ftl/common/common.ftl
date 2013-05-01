@@ -1,6 +1,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="chrome=1">
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta http-equiv="Cache-Control" content="no-cache">
 <link rel="shortcut icon" type="image/png" href="${req.getContextPath()}/img/favicon.png" />
 <link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet">
