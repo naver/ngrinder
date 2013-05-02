@@ -13,12 +13,32 @@
 	</repositories>
 
 	<dependencies>
+		<!--  Following dependency is mandatory -->
 		<dependency>
 			<groupId>org.ngrinder</groupId>
 			<artifactId>ngrinder-groovy</artifactId>
-			<version>3.2</version>
+			<version>3.2-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- Add the dependencies -->
+		<!-- 
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.0.1</version>
+		</dependency>
+		 -->
+		<!-- Put your private library like this -->
+		<!-- 
+		<dependency>
+			<groupId>your_lib</groupId>
+			<artifactId>your_lib</artifactId>
+			<version>your_lib_version</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/hello.jar</systemPath>
+		</dependency>
+		 -->
 	</dependencies>
 
 	<build>
