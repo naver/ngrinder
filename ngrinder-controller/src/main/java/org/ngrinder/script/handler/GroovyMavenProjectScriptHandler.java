@@ -15,10 +15,8 @@ package org.ngrinder.script.handler;
 
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -42,6 +40,7 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
  */
 @Component
 public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler implements ProjectHandler {
+
 	/**
 	 * Constructor.
 	 */
@@ -119,19 +118,27 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	}
 
 	@Override
-	protected void prepareDistMore(String identifier, User user, FileEntry script, File distDir,
-					PropertiesWrapper properties) {
+	protected void prepareDistMore(Long testId, User user, FileEntry script, File distDir,
+					PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
 		String pomPathInSVN = getBasePath(script) + "pom.xml";
 		MavenCli cli = new MavenCli();
-		ByteArrayOutputStream writer = new ByteArrayOutputStream();
-		cli.doMain(new String[] { // goal specification
-		"dependency:copy-dependencies", // run dependency goal
-				"-DoutputDirectory=./lib", // to the lib folder
-				"-DexcludeScope=provided" // but exclude the provided library
-		}, distDir.getAbsolutePath(), new PrintStream(writer), new PrintStream(writer));
-		LOGGER.info("Files in {} is copied into {}/lib folder", pomPathInSVN, distDir.getAbsolutePath());
-		LOGGER.info(writer.toString());
+		processingResult.println("\nCopy dependencies by running 'mvn dependency:cop-dependencies -DoutputDirectory=./lib -DexcludeScope=provided'");
+		int result = cli.doMain(new String[] { // goal specification
+						"dependency:copy-dependencies", // run dependency goal
+								"-DoutputDirectory=./lib", // to the lib folder
+								"-DexcludeScope=provided" // but exclude the provided library
+						}, distDir.getAbsolutePath(), processingResult, processingResult);
+		boolean success = (result == 0);
+		if (success) {
+			processingResult.printf("\nDependencies in %s was copied.\n", pomPathInSVN);
+			LOGGER.info("Dependencies in {} is copied into {}/lib folder", pomPathInSVN, distDir.getAbsolutePath());
+		} else {
+			processingResult.printf("\nDependencies copy in %s is failed.\n", pomPathInSVN);
+			LOGGER.info("Dependencies copy in {} is failed.", pomPathInSVN);
+		}
+		// Then it's not necessary to include pom.xml anymore.
 		FileUtils.deleteQuietly(new File(distDir, "pom.xml"));
+		processingResult.setSuccess(result == 0);
 	}
 
 	@Override

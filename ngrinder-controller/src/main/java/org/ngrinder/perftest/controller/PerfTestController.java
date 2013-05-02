@@ -47,6 +47,7 @@ import net.grinder.util.UnitUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.Predicate;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -660,11 +661,15 @@ public class PerfTestController extends NGrinderBaseController {
 		FileInputStream fileInputStream = null;
 		try {
 			fileInputStream = new FileInputStream(targetFile);
-			// Limit log view to 1MB
 			ServletOutputStream outputStream = response.getOutputStream();
-			outputStream.println("Only the last 1MB of a log shows.\n");
-			outputStream.println("================================\n\n");
-			LogCompressUtil.unCompress(fileInputStream, outputStream, 1 * 1024 * 1204);
+			if (FilenameUtils.isExtension(targetFile.getName(), "zip")) {
+				// Limit log view to 1MB
+				outputStream.println("Only the last 1MB of a log shows.\n");
+				outputStream.println("================================\n\n");
+				LogCompressUtil.unCompress(fileInputStream, outputStream, 1 * 1024 * 1204);
+			} else {
+				IOUtils.copy(fileInputStream, outputStream);
+			}
 		} catch (Exception e) {
 			CoreLogger.LOGGER.error("Error while uncompress log. {}", targetFile, e);
 		} finally {

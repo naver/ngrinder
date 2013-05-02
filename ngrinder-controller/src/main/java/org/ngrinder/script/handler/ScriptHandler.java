@@ -136,9 +136,11 @@ public abstract class ScriptHandler {
 	 *            distribution target dir
 	 * @param properties
 	 *            properties set which is used for detailed distribution control
+	 * @param processingResult
+	 *            processging result holder.
 	 */
-	public void prepareDist(String testcaseId, User user, //
-					FileEntry scriptEntry, File distDir, PropertiesWrapper properties) {
+	public void prepareDist(Long testcaseId, User user, //
+					FileEntry scriptEntry, File distDir, PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
 		prepareDefaultFile(distDir, properties);
 		List<FileEntry> fileEntries = getLibAndResourceEntries(user, scriptEntry, -1);
 		fileEntries.add(scriptEntry);
@@ -150,10 +152,11 @@ public abstract class ScriptHandler {
 				continue;
 			}
 			File toDir = new File(distDir, calcDistSubPath(basePath, each));
+			processingResult.printf("%s is being written.\n", each.getPath());
 			LOGGER.info("{} is being written in {} for test {}", new Object[] { each.getPath(), toDir, testcaseId });
 			getFileEntryRepository().writeContentTo(user, each.getPath(), toDir);
 		}
-		prepareDistMore(testcaseId, user, scriptEntry, distDir, properties);
+		prepareDistMore(testcaseId, user, scriptEntry, distDir, properties, processingResult);
 	}
 
 	/**
@@ -185,10 +188,11 @@ public abstract class ScriptHandler {
 	 *            distribution directory
 	 * @param properties
 	 *            properties.
+	 * @param processingResult
+	 *            processing result holder
 	 */
-	protected void prepareDistMore(String testcaseId, User user, FileEntry script, File distDir,
-					PropertiesWrapper properties) {
-
+	protected void prepareDistMore(Long testcaseId, User user, FileEntry script, File distDir,
+					PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
 	}
 
 	/**

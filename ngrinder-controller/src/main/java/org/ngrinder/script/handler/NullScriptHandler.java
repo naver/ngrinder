@@ -51,8 +51,8 @@ public class NullScriptHandler extends ScriptHandler {
 	}
 
 	@Override
-	public void prepareDist(String identifier, User user, FileEntry script, //
-					File distDir, PropertiesWrapper properties) {
+	public void prepareDist(Long testId, User user, FileEntry script, //
+					File distDir, PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
 
 	}
 

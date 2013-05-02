@@ -26,10 +26,12 @@ import net.grinder.util.thread.Condition;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.IFileEntry;
 import org.ngrinder.model.User;
+import org.ngrinder.script.handler.ProcessingResultPrintStream;
 import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileEntry;
@@ -88,8 +90,11 @@ public class ScriptValidationService implements IScriptValidationService {
 			File scriptDirectory = config.getHome().getScriptDirectory(user);
 			FileUtils.deleteDirectory(scriptDirectory);
 			scriptDirectory.mkdirs();
-			handler.prepareDist("script validation", user, scriptEntry, scriptDirectory, config.getSystemProperties());
-
+			ProcessingResultPrintStream processingResult = new ProcessingResultPrintStream(new ByteArrayOutputStream());
+			handler.prepareDist(0L, user, scriptEntry, scriptDirectory, config.getSystemProperties(), processingResult);
+			if (!processingResult.isSuccess()) {
+				return new String(processingResult.getLogByteArray());
+			}
 			File scriptFile = new File(scriptDirectory, FilenameUtils.getName(scriptEntry.getPath()));
 
 			if (useScriptInSVN) {

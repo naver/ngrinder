@@ -1290,8 +1290,10 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 */
 	public void unregisterSampling() {
 		this.currentNotFinishedProcessCount = 0;
-		this.sampleModel.reset();
-		this.sampleModel.stop();
+		if (sampleModel != null) {
+			this.sampleModel.reset();
+			this.sampleModel.stop();
+		}
 		LOGGER.info("Sampling is stopped");
 		informTestSamplingEnd();
 	}

@@ -15,6 +15,7 @@ package org.ngrinder.perftest.service;
 
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashSet;
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import static org.ngrinder.model.Status.getProcessingOrTestingTestStatus;
@@ -73,6 +74,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
@@ -90,6 +92,7 @@ import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.model.PerfTestStatistics;
 import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.repository.PerfTestRepository;
+import org.ngrinder.script.handler.ProcessingResultPrintStream;
 import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileEntry;
@@ -726,7 +729,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * 
 	 * @param perfTest
 	 *            perfTest
-	 * @return File location in which the perftest should have.
+	 * @return File location in which the perftest script and resources are distributed.
 	 */
 	public File prepareDistribution(PerfTest perfTest) {
 		File perfTestDistDirectory = getPerfTestDistributionPath(perfTest);
@@ -737,9 +740,20 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 						perfTest.getScriptRevision()), "script should exist");
 		// Get all files in the script path
 		ScriptHandler handler = scriptHandlerFactory.getHandler(scriptEntry);
-		handler.prepareDist(perfTest.getTestIdentifier(), user, scriptEntry, perfTestDistDirectory,
-						config.getSystemProperties());
+
+		ProcessingResultPrintStream processingResult = new ProcessingResultPrintStream(new ByteArrayOutputStream());
+		handler.prepareDist(perfTest.getId(), user, scriptEntry, perfTestDistDirectory, config.getSystemProperties(),
+						processingResult);
 		LOGGER.info("File write is completed in {}", perfTestDistDirectory);
+		if (!processingResult.isSuccess()) {
+			File logDir = new File(getLogFileDirectory(perfTest), "distribution_log.txt");
+			try {
+				FileUtils.writeByteArrayToFile(logDir, processingResult.getLogByteArray());
+			} catch (IOException e) {
+				noOp();
+			}
+			throw new NGrinderRuntimeException("Error while file distirbution is prepared.");
+		}
 		return perfTestDistDirectory;
 	}
 
