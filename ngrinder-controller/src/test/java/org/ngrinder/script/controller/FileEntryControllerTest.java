@@ -75,7 +75,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		String path = "test1-path";
 		scriptController.addFolder(getTestUser(), "", path, model);
 		// create
-		scriptController.getCreateForm(getTestUser(), path, "test.com", "new_file.py", null, false,
+		scriptController.getCreateForm(getTestUser(), path, "test.com", "new_file.py", "jython", false,
 						new RedirectAttributesModelMap(), model);
 
 		FileEntry script = (FileEntry) model.get("file");
@@ -111,7 +111,7 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		// add folder
 		scriptController.addFolder(getTestUser(), "", path, model);
 		// create
-		scriptController.getCreateForm(getTestUser(), path, "test.com", "file-for-search.py", null, false,
+		scriptController.getCreateForm(getTestUser(), path, "test.com", "file-for-search.py", "jython", false,
 						new RedirectAttributesModelMap(), model);
 		FileEntry script = (FileEntry) model.get("file");
 		scriptController.saveFileEntry(getTestUser(), path, script, null, "", false, model);
@@ -161,13 +161,13 @@ public class FileEntryControllerTest extends AbstractNGrinderTransactionalTest {
 		String fileName = "download_file.py";
 		scriptController.addFolder(getTestUser(), "", path, model);
 		RedirectAttributesModelMap attrMap = new RedirectAttributesModelMap();
-		scriptController.getCreateForm(getTestUser(), path, "test.com", fileName, null, false, attrMap, model);
+		scriptController.getCreateForm(getTestUser(), path, "test.com", fileName, "jython", false, attrMap, model);
 
 		FileEntry script = (FileEntry) model.get("file");
 		script.setContent(script.getContent() + "#test comment");
 		scriptController.saveFileEntry(getTestUser(), path, script, null, "", false, model);
 
-		scriptController.getCreateForm(getTestUser(), path, "", fileName, null, false, attrMap, model);
+		scriptController.getCreateForm(getTestUser(), path, "", fileName, "", false, attrMap, model);
 
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		path = path + "/" + fileName;

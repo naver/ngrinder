@@ -37,7 +37,7 @@
 		<jdk-version>1.6</jdk-version>
 		<source-encoding>UTF-8</source-encoding>
 		<ngrinder.version>${project.version}</ngrinder.version>
-		<altDeploymentRepository>ngrinder::default::file:../nhnopensource.maven.repo/snapshots</altDeploymentRepository>
+		<altDeploymentRepository>ngrinder::default::file:../nhnopensource.maven.repo/releases</altDeploymentRepository>
 	</properties>
 
 	<dependencies>
