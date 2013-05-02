@@ -41,8 +41,9 @@ public class GroovyGrinderClassPathProcessor extends AbstractGrinderClassPathPro
 		usefulJarList.add("ngrinder-groovy");
 		usefulJarList.add("groovy");
 		usefulJarList.add("hamcrest");
+		usefulJarList.add("fest");
 		usefulJarList.add("junit");
-		
+
 	}
 
 }
