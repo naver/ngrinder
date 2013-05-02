@@ -160,6 +160,7 @@ public abstract class CompressionUtil {
 		} catch (Exception e) {
 			throw new NGrinderRuntimeException(e.getMessage(), e);
 		} finally {
+			IOUtils.closeQuietly(is);
 			IOUtils.closeQuietly(zis);
 		}
 	}
@@ -355,9 +356,11 @@ public abstract class CompressionUtil {
 	 */
 	public static List<File> untar(final File inFile, final File outputDir) {
 		final List<File> untaredFiles = new LinkedList<File>();
+		InputStream is = null;
+		TarArchiveInputStream debInputStream = null;
 		try {
-			final InputStream is = new FileInputStream(inFile);
-			final TarArchiveInputStream debInputStream = (TarArchiveInputStream) new ArchiveStreamFactory()
+			is = new FileInputStream(inFile);
+			debInputStream = (TarArchiveInputStream) new ArchiveStreamFactory()
 							.createArchiveInputStream("tar", is);
 			TarArchiveEntry entry = null;
 			while ((entry = (TarArchiveEntry) debInputStream.getNextEntry()) != null) {
@@ -391,6 +394,9 @@ public abstract class CompressionUtil {
 			LOGGER.error("Error while untar {} file by {}", inFile, e.getMessage());
 			LOGGER.debug("Trace is : ", e);
 			throw new NGrinderRuntimeException("Error while untar file", e);
+		} finally {
+			IOUtils.closeQuietly(is);
+			IOUtils.closeQuietly(debInputStream);
 		}
 		return untaredFiles;
 	}
