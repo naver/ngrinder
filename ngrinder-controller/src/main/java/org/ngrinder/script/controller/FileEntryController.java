@@ -109,7 +109,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 *            path looking for.
 	 * @param model
 	 *            model.
-	 * @return script/scriptList
+	 * @return script/list
 	 */
 	@RequestMapping({ "/list/**", "" })
 	public String get(User user, @RemainedPath String path, ModelMap model) { // "fileName"
@@ -327,7 +327,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @param model
 	 *            model
 	 * 
-	 * @return script/scriptList
+	 * @return script/list
 	 */
 	@RequestMapping(value = "/search/**")
 	public String searchFileEntity(User user, @RequestParam(required = true, value = "query") final String query,
@@ -363,7 +363,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 *            validated the script or not, 1 is validated, 0 is not.
 	 * @param model
 	 *            model
-	 * @return script/scriptList
+	 * @return script/list
 	 */
 	@RequestMapping(value = "/save/**", method = RequestMethod.POST)
 	public String saveFileEntry(User user, @RemainedPath String path, FileEntry fileEntry,
@@ -401,7 +401,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 *            multipart file
 	 * @param model
 	 *            model
-	 * @return script/scriptList
+	 * @return script/list
 	 */
 	@RequestMapping(value = "/upload/**", method = RequestMethod.POST)
 	public String uploadFiles(User user, @RemainedPath String path, @RequestParam("description") String description,
