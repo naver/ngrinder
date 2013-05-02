@@ -30,7 +30,7 @@ public class JythonHandler extends AbstractLanguageHandler {
 	 * JythonHandler constructor.
 	 */
 	public JythonHandler() {
-		super("py", "Jython", "python");
+		super("py", "Jython");
 	}
 
 	@Override

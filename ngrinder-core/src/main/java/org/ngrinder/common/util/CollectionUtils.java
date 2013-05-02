@@ -79,6 +79,10 @@ public abstract class CollectionUtils {
 	/**
 	 * Build Map with 1 pair.
 	 * 
+	 * @param <K>
+	 *            key type
+	 * @param <V>
+	 *            value type
 	 * @param key1
 	 *            key
 	 * @param value1
@@ -94,6 +98,10 @@ public abstract class CollectionUtils {
 	/**
 	 * Build Map with 2 pairs.
 	 * 
+	 * @param <K>
+	 *            key type
+	 * @param <V>
+	 *            value type
 	 * @param key1
 	 *            key
 	 * @param value1
@@ -113,6 +121,11 @@ public abstract class CollectionUtils {
 
 	/**
 	 * Build Map with 3 pairs.
+	 * 
+	 * @param <K>
+	 *            key type
+	 * @param <V>
+	 *            value type
 	 * 
 	 * @param key1
 	 *            key
@@ -192,6 +205,11 @@ public abstract class CollectionUtils {
 	/**
 	 * Get the value from the map for the given key. It the value does not exist, return the given
 	 * defaultValue.
+	 * 
+	 * @param <K>
+	 *            key type
+	 * @param <V>
+	 *            value type
 	 * 
 	 * @param map
 	 *            map

@@ -33,7 +33,7 @@ public enum Lang {
 	Groovy(new GroovyHandler()),
 	/** Jython. */
 	Jython(new JythonHandler()),
-	/** Unknown */
+	/** Unknown. */
 	Unknown(new UnknownHandler());
 	private final AbstractLanguageHandler handler;
 
@@ -70,7 +70,7 @@ public enum Lang {
 	}
 
 	/**
-	 * Check if the filename can be script
+	 * Check if the filename can be script.
 	 * 
 	 * @param filename
 	 *            filename

@@ -26,7 +26,6 @@ import net.grinder.util.AbstractGrinderClassPathProcessor;
 public abstract class AbstractLanguageHandler {
 	private final String extension;
 	private final String title;
-	private final String codemirrorKey;
 
 	/**
 	 * Constructor.
@@ -35,13 +34,10 @@ public abstract class AbstractLanguageHandler {
 	 *            file extension
 	 * @param title
 	 *            title
-	 * @param codemirrorKey
-	 *            code mirror syntax highlighter key
 	 */
-	public AbstractLanguageHandler(String extension, String title, String codemirrorKey) {
+	public AbstractLanguageHandler(String extension, String title) {
 		this.extension = extension;
 		this.title = title;
-		this.codemirrorKey = codemirrorKey;
 	}
 
 	public String getExtension() {

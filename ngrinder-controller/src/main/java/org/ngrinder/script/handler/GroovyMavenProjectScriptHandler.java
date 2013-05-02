@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.maven.cli.MavenCli;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.PropertiesWrapper;
@@ -123,7 +122,8 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 					PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
 		String pomPathInSVN = getBasePath(script) + "pom.xml";
 		MavenCli cli = new MavenCli();
-		processingResult.println("\nCopy dependencies by running 'mvn dependency:cop-dependencies -DoutputDirectory=./lib -DexcludeScope=provided'");
+		processingResult.println("\nCopy dependencies by running 'mvn dependency:cop-dependencies"
+						+ " -DoutputDirectory=./lib -DexcludeScope=provided'");
 		int result = cli.doMain(new String[] { // goal specification
 						"dependency:copy-dependencies", // run dependency goal
 								"-DoutputDirectory=./lib", // to the lib folder

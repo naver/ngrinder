@@ -17,7 +17,6 @@ import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;

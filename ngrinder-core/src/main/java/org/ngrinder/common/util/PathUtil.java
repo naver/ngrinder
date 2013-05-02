@@ -55,9 +55,10 @@ public abstract class PathUtil {
 	}
 
 	/**
-	 * Get short path because actual path is too long to display it totally
+	 * Get short path because actual path is too long to display it totally.
 	 * 
 	 * @param path
+	 *            path
 	 * 
 	 * @return shortPath
 	 */
@@ -66,7 +67,8 @@ public abstract class PathUtil {
 			String start = path.substring(0, path.indexOf("/") + 1);
 			String end = path.substring(path.lastIndexOf("/"), path.length());
 			return start + "..." + end;
-		} else
+		} else {
 			return path;
+		}
 	}
 }

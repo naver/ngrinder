@@ -29,7 +29,7 @@ public class GroovyHandler extends AbstractLanguageHandler {
 	 * Constructor.
 	 */
 	public GroovyHandler() {
-		super("groovy", "Groovy", "groovy");
+		super("groovy", "Groovy");
 	}
 
 	@Override
