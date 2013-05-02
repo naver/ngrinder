@@ -192,13 +192,13 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @param path
 	 *            path in which a file will be added
 	 * @param testUrl
-	 *            url the script may uses
+	 *            url which the script may use
 	 * @param fileName
 	 *            fileName
 	 * @param scriptType
 	 *            Type of script. optional
 	 * @param createLibAndResources
-	 *            true if lib and resoruces should be created as well.
+	 *            true if libs and resources should be created as well.
 	 * @param redirectAttributes
 	 *            redirect attributes storage
 	 * @param model
@@ -223,8 +223,7 @@ public class FileEntryController extends NGrinderBaseController {
 		if (scriptHandler instanceof ProjectHandler) {
 			if (!fileEntryService.hasFileEntry(user, expectedFullPath)) {
 				fileEntryService.prepareNewEntry(user, path, fileName, testUrl, scriptHandler);
-				redirectAttributes.addFlashAttribute("message", fileName
-								+ " project is created.");
+				redirectAttributes.addFlashAttribute("message", fileName + " project is created.");
 			} else {
 				redirectAttributes.addFlashAttribute("exception", fileName
 								+ " is already existng. Please choose the different name");
@@ -449,7 +448,7 @@ public class FileEntryController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Only for unit test
+	 * Only for unit test.
 	 * 
 	 * @param fileEntryService
 	 *            fileEntryService
