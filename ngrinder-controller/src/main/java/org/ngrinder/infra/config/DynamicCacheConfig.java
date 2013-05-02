@@ -13,7 +13,7 @@
  */
 package org.ngrinder.infra.config;
 
-import static org.ngrinder.common.util.TypeConvertUtil.convert;
+import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -162,7 +162,7 @@ public class DynamicCacheConfig {
 		Map<String, CacheConfiguration> cacheConfigurations = cacheManagerConfig.getCacheConfigurations();
 		List<String> replicatedCacheNames = new ArrayList<String>();
 		for (Map.Entry<String, CacheConfiguration> eachConfig : cacheConfigurations.entrySet()) {
-			List<CacheEventListenerFactoryConfiguration> list = convert(eachConfig.getValue()
+			List<CacheEventListenerFactoryConfiguration> list = cast(eachConfig.getValue()
 							.getCacheEventListenerConfigurations());
 			for (CacheEventListenerFactoryConfiguration each : list) {
 				if (each.getFullyQualifiedClassPath().equals("net.sf.ehcache.distribution.RMICacheReplicatorFactory")) {

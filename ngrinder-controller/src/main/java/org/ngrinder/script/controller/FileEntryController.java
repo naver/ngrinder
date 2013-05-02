@@ -199,6 +199,8 @@ public class FileEntryController extends NGrinderBaseController {
 	 *            Type of script. optional
 	 * @param createLibAndResources
 	 *            true if lib and resoruces should be created as well.
+	 * @param redirectAttributes
+	 *            redirect attributes storage
 	 * @param model
 	 *            model.
 	 * @return script/scriptEditor"
@@ -221,6 +223,8 @@ public class FileEntryController extends NGrinderBaseController {
 		if (scriptHandler instanceof ProjectHandler) {
 			if (!fileEntryService.hasFileEntry(user, expectedFullPath)) {
 				fileEntryService.prepareNewEntry(user, path, fileName, testUrl, scriptHandler);
+				redirectAttributes.addFlashAttribute("message", fileName
+								+ " project is created.");
 			} else {
 				redirectAttributes.addFlashAttribute("exception", fileName
 								+ " is already existng. Please choose the different name");

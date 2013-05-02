@@ -20,7 +20,7 @@ import static org.ngrinder.agent.model.ClustedAgentRequest.RequestType.STOP_AGEN
 import static org.ngrinder.agent.repository.AgentManagerSpecification.startWithRegion;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
-import static org.ngrinder.common.util.TypeConvertUtil.convert;
+import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,13 +91,13 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			scheduledTask.addScheduledTaskEvery3Sec(new InterruptibleRunnable() {
 				@Override
 				public void interruptibleRun() {
-					List<String> keysWithExpiryCheck = convert(((Ehcache) agentRequestCache.getNativeCache())
+					List<String> keysWithExpiryCheck = cast(((Ehcache) agentRequestCache.getNativeCache())
 									.getKeysWithExpiryCheck());
 					String region = getConfig().getRegion() + "|";
 					for (String each : keysWithExpiryCheck) {
 						try {
 							if (each.startsWith(region) && agentRequestCache.get(each) != null) {
-								ClustedAgentRequest agentRequest = convert(agentRequestCache.get(each).get());
+								ClustedAgentRequest agentRequest = cast(agentRequestCache.get(each).get());
 								AgentControllerIdentityImplementation agentIdentity = getLocalAgentIdentityByIpAndName(
 												agentRequest.getAgentIp(), agentRequest.getAgentName());
 								if (agentIdentity != null) {
@@ -128,7 +128,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = newHashMap(allAttachedAgents);
 		for (AgentIdentity agentIdentity : allAttachedAgents) {
-			AgentControllerIdentityImplementation existingAgent = convert(agentIdentity);
+			AgentControllerIdentityImplementation existingAgent = cast(agentIdentity);
 			attachedAgentMap.put(createAgentKey(existingAgent), existingAgent);
 		}
 
@@ -203,7 +203,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	@Scheduled(fixedDelay = 1000)
 	public void collectAgentSystemData() {
 		Ehcache nativeCache = (Ehcache) agentMonioringTargetsCache.getNativeCache();
-		List<String> keysWithExpiryCheck = convert(nativeCache.getKeysWithExpiryCheck());
+		List<String> keysWithExpiryCheck = cast(nativeCache.getKeysWithExpiryCheck());
 		AgentManagerRepository agentManagerRepository = getAgentManagerRepository();
 		if (keysWithExpiryCheck.isEmpty()) {
 			return;
@@ -211,7 +211,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		List<AgentInfo> agentInfos = new ArrayList<AgentInfo>();
 		for (String each : keysWithExpiryCheck) {
 			ValueWrapper value = agentMonioringTargetsCache.get(each);
-			AgentControllerIdentityImplementation agentIdentity = convert(value.get());
+			AgentControllerIdentityImplementation agentIdentity = cast(value.get());
 			if (value != null && agentIdentity != null) {
 				AgentInfo found = agentManagerRepository.findByIpAndHostName(agentIdentity.getIp(),
 								agentIdentity.getName());

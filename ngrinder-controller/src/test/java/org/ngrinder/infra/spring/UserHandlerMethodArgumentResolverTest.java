@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.ngrinder.common.util.TypeConvertUtil.convert;
+import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 import javax.servlet.http.Cookie;
 
@@ -104,7 +104,7 @@ public class UserHandlerMethodArgumentResolverTest extends AbstractNGrinderTrans
 		ServletWebRequest webRequest3 = mock(ServletWebRequest.class);
 		switchUser = "TEST2_USER";
 		resolver.setUserContext(mockUserContext);
-		User resolveArgument3 = convert(resolver.resolveArgument(parameter, null, webRequest3, null));
+		User resolveArgument3 = cast(resolver.resolveArgument(parameter, null, webRequest3, null));
 		assertThat(((User) resolveArgument3).getUserId(), is("TEST_USER"));
 		// current user's owner is "TEST2_USER"
 		// assertThat(resolveArgument3.getOwnerUser().getUserId(), is("TEST2_USER"));

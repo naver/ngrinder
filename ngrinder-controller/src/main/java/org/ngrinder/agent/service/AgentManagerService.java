@@ -16,7 +16,7 @@ package org.ngrinder.agent.service;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.active;
 import static org.ngrinder.agent.repository.AgentManagerSpecification.visible;
 import static org.ngrinder.common.util.NoOp.noOp;
-import static org.ngrinder.common.util.TypeConvertUtil.convert;
+import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -84,7 +84,7 @@ public class AgentManagerService implements IAgentManagerService {
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		Map<String, AgentControllerIdentityImplementation> attachedAgentMap = Maps.newHashMap();
 		for (AgentIdentity agentIdentity : allAttachedAgents) {
-			AgentControllerIdentityImplementation agentControllerIdentity = convert(agentIdentity);
+			AgentControllerIdentityImplementation agentControllerIdentity = cast(agentIdentity);
 			attachedAgentMap.put(createAgentKey(agentControllerIdentity), agentControllerIdentity);
 		}
 
@@ -198,7 +198,7 @@ public class AgentManagerService implements IAgentManagerService {
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		List<AgentInfo> agentList = new ArrayList<AgentInfo>(allAttachedAgents.size());
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
-			AgentControllerIdentityImplementation agentControllerIdentity = convert(eachAgentIdentity);
+			AgentControllerIdentityImplementation agentControllerIdentity = cast(eachAgentIdentity);
 			agentList.add(creatAgentInfo(agentControllerIdentity, agentInfoMap));
 		}
 		return agentList;
@@ -251,7 +251,7 @@ public class AgentManagerService implements IAgentManagerService {
 	public AgentControllerIdentityImplementation getLocalAgentIdentityByIpAndName(String ip, String name) {
 		Set<AgentIdentity> allAttachedAgents = getAgentManager().getAllAttachedAgents();
 		for (AgentIdentity eachAgentIdentity : allAttachedAgents) {
-			AgentControllerIdentityImplementation agentIdentity = convert(eachAgentIdentity);
+			AgentControllerIdentityImplementation agentIdentity = cast(eachAgentIdentity);
 			if (StringUtils.equals(ip, agentIdentity.getIp()) && StringUtils.equals(name, agentIdentity.getName())) {
 				return agentIdentity;
 			}

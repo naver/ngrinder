@@ -13,7 +13,7 @@
  */
 package org.ngrinder.security;
 
-import static org.ngrinder.common.util.TypeConvertUtil.convert;
+import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 import java.util.Collection;
 import java.util.List;
@@ -54,7 +54,7 @@ public class UserSwitchPermissionVoter implements AccessDecisionVoter<FilterInvo
 		if (!(authentication.getPrincipal() instanceof SecuredUser)) {
 			return ACCESS_DENIED;
 		}
-		SecuredUser secureUser = convert(authentication.getPrincipal());
+		SecuredUser secureUser = cast(authentication.getPrincipal());
 		User user = secureUser.getUser();
 		if (user.getRole() == Role.ADMIN) {
 			return ACCESS_GRANTED;

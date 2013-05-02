@@ -13,7 +13,7 @@
  */
 package org.ngrinder.perftest.service.monitor;
 
-import static org.ngrinder.common.util.TypeConvertUtil.convert;
+import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -204,7 +204,7 @@ public class MonitorClientSerivce {
 	public void record(boolean empty) {
 		ValueWrapper valueWrapper = cache.get(ip);
 		SystemInfo systemInfo = (valueWrapper == null || valueWrapper.get() == null) ? new SystemInfo()
-						: (SystemInfo) convert(valueWrapper.get());
+						: (SystemInfo) cast(valueWrapper.get());
 		try {
 			if (empty) {
 				bw.write(systemInfo.toEmptyRecordString());

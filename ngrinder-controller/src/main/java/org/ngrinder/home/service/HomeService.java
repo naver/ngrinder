@@ -13,7 +13,7 @@
  */
 package org.ngrinder.home.service;
 
-import static org.ngrinder.common.util.TypeConvertUtil.convert;
+import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -116,7 +116,7 @@ public class HomeService {
 			SyndFeed feed = input.build(reader);
 			int count = 0;
 			for (Object eachObj : (feed.getEntries())) {
-				SyndEntryImpl each = convert(eachObj);
+				SyndEntryImpl each = cast(eachObj);
 				if (!StringUtils.startsWithIgnoreCase(each.getTitle(), "Re: ")) {
 					if (count++ > PANEL_ENTRY_SIZE) {
 						break;

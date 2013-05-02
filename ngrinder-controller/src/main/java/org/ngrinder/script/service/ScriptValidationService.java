@@ -15,7 +15,7 @@ package org.ngrinder.script.service;
 
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
-import static org.ngrinder.common.util.TypeConvertUtil.convert;
+import static org.ngrinder.common.util.TypeConvertUtil.cast;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,7 +72,7 @@ public class ScriptValidationService implements IScriptValidationService {
 	 */
 	@Override
 	public String validateScript(User user, IFileEntry scriptIEntry, boolean useScriptInSVN, String hostString) {
-		FileEntry scriptEntry = convert(scriptIEntry);
+		FileEntry scriptEntry = cast(scriptIEntry);
 		try {
 			checkNotNull(scriptEntry, "scriptEntity should be not null");
 			checkNotEmpty(scriptEntry.getPath(), "scriptEntity path should be provided");

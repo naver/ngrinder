@@ -32,7 +32,7 @@ public abstract class TypeConvertUtil {
 	 * @return converted object.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T convert(Object object) {
+	public static <T> T cast(Object object) {
 		return (T) object;
 	}
 }
