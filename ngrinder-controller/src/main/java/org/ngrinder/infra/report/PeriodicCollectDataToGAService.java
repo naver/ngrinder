@@ -13,15 +13,16 @@
  */
 package org.ngrinder.infra.report;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import net.grinder.util.NetworkUtil;
+
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.analytics.GoogleAnalytic;
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.http.MeasureProtocolRequest;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.perftest.service.PerfTestService;
@@ -47,24 +48,38 @@ public class PeriodicCollectDataToGAService {
 	private PerfTestService perfTestService;
 
 	/**
-	 * Collect the number of executed test.
+	 * Send the number of executed test.
 	 * 
-	 * @throws UnknownHostException
-	 *             exception
 	 */
 	@Scheduled(cron = "0 1 1 * * ?")
 	@Transactional
-	public void collectExetedTest() throws UnknownHostException {
-		GoogleAnalytic googleAnalytic = new GoogleAnalytic(NGrinderConstants.GOOGLEANALYTICS_APPNAME,
-						config.getVesion(), NGrinderConstants.GOOGLEANALYTICS_TRACKINGID);
-
+	public void reportUsage() {
 		if (config.isUsageReportEnabled()) {
-			String localhost = InetAddress.getLocalHost().getHostAddress();
+			GoogleAnalytic googleAnalytic = new GoogleAnalytic(NGrinderConstants.GOOGLEANALYTICS_APPNAME,
+							config.getVesion(), NGrinderConstants.GOOGLEANALYTICS_TRACKINGID);
+			MeasureProtocolRequest measureProtocolRequest = googleAnalytic.getMeasureProtocolRequest();
+			measureProtocolRequest.setEventCategory("usage");
+			measureProtocolRequest.setEventAction("executions");
+			String currentAddress = NetworkUtil.getLocalHostAddress();
 			Date yesterday = DateUtils.addDays(new Date(), -1);
 			Date start = DateUtils.truncate(yesterday, Calendar.DATE);
 			Date end = DateUtils.addMilliseconds(DateUtils.ceiling(yesterday, Calendar.DATE), -1);
-			List<PerfTest> list = perfTestService.getPerfTestList(start, end);
-			googleAnalytic.sendStaticDataToUA(localhost, String.valueOf(list.size()));
+			System.out.println(googleAnalytic.sendStaticDataToUA(currentAddress, String.valueOf(getUsage(start, end))));;
 		}
+	}
+
+	protected int getUsage(Date start, Date end) {
+		List<PerfTest> list = perfTestService.getPerfTestList(start, end);
+		return list.size();
+	}
+
+	/**
+	 * For unit test.
+	 * 
+	 * @param config
+	 *            config
+	 */
+	void setConfig(Config config) {
+		this.config = config;
 	}
 }
