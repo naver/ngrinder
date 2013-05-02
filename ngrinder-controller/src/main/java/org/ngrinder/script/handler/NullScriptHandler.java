@@ -78,12 +78,13 @@ public class NullScriptHandler extends ScriptHandler {
 	}
 
 	@Override
-	public String checkSyntaxErrors(String content) {
-		return null;
+	public Integer displayOrder() {
+		return -1;
 	}
 
 	@Override
-	public Integer displayOrder() {
-		return -1;
+	public String checkSyntaxErrors(String path, String content) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

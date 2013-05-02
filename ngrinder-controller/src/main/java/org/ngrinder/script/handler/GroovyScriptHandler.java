@@ -13,6 +13,16 @@
  */
 package org.ngrinder.script.handler;
 
+import static org.ngrinder.common.util.NoOp.noOp;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.CodeSource;
+
+import org.codehaus.groovy.control.CompilationFailedException;
+import org.codehaus.groovy.control.CompilationUnit;
+import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.Phases;
 import org.springframework.stereotype.Component;
 
 /**
@@ -53,8 +63,19 @@ public class GroovyScriptHandler extends ScriptHandler {
 	}
 
 	@Override
-	public String checkSyntaxErrors(String script) {
-
+	public String checkSyntaxErrors(String path, String script) {
+		URL url;
+		try {
+			url = new URL("file", "", path);
+			final CompilationUnit unit = new CompilationUnit(CompilerConfiguration.DEFAULT, new CodeSource(url,
+							(java.security.cert.Certificate[]) null), null);
+			unit.addSource(path, script);
+			unit.compile(Phases.CONVERSION);
+		} catch (MalformedURLException e) {
+			noOp();
+		} catch (CompilationFailedException ce) {
+			return ce.getMessage();
+		}
 		return null;
 	}
 

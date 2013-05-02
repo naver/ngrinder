@@ -41,9 +41,9 @@ public class JythonScriptHandler extends ScriptHandler {
 	}
 
 	@Override
-	public String checkSyntaxErrors(String script) {
+	public String checkSyntaxErrors(String path, String script) {
 		try {
-			org.python.core.ParserFacade.parse(script, CompileMode.exec, "unnamed", new CompilerFlags(
+			org.python.core.ParserFacade.parse(script, CompileMode.exec, path, new CompilerFlags(
 							CompilerFlags.PyCF_DONT_IMPLY_DEDENT | CompilerFlags.PyCF_ONLY_AST));
 
 		} catch (PySyntaxError e) {
@@ -64,7 +64,7 @@ public class JythonScriptHandler extends ScriptHandler {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public Integer displayOrder() {
 		return 100;

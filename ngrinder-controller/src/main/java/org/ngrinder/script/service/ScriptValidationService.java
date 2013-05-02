@@ -83,7 +83,7 @@ public class ScriptValidationService implements IScriptValidationService {
 			// String result = checkSyntaxErrors(scriptEntry.getContent());
 
 			ScriptHandler handler = scriptHandlerFactory.getHandler(scriptEntry);
-			String result = handler.checkSyntaxErrors(scriptEntry.getContent());
+			String result = handler.checkSyntaxErrors(scriptEntry.getPath(), scriptEntry.getContent());
 			if (result != null) {
 				return result;
 			}

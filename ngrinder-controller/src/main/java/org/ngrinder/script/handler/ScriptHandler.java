@@ -263,11 +263,13 @@ public abstract class ScriptHandler {
 	/**
 	 * Check syntax errors for the given content.
 	 * 
+	 * @param path
+	 *            path
 	 * @param content
 	 *            content
 	 * @return syntax error messages. null if none.
 	 */
-	public abstract String checkSyntaxErrors(String content);
+	public abstract String checkSyntaxErrors(String path, String content);
 
 	/**
 	 * Get the initial script with the given value map.
