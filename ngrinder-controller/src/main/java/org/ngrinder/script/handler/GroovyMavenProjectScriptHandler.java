@@ -143,7 +143,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	}
 
 	@Override
-	public boolean prepareScriptEnv(User user, String path, String filename, String url) {
+	public boolean prepareScriptEnv(User user, String path, String filename, String url, boolean createLib) {
 		File scriptTemplateDir;
 		FileEntryRepository fileEntryRepository = getFileEntryRepository();
 		try {
@@ -157,10 +157,20 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 					FileEntry fileEntry = new FileEntry();
 					fileEntry.setContent(fileContent);
 					fileEntry.setPath(FilenameUtils.normalize(path + substring, true));
+					fileEntry.setDescription("create groovy maven project");
+
 					fileEntryRepository.save(user, fileEntry, "UTF8");
 				} catch (IOException e) {
 					throw new NGrinderRuntimeException("Error while saving " + each.getName(), e);
 				}
+			}
+
+			if (createLib) {
+				FileEntry fileEntry = new FileEntry();
+				fileEntry.setPath(path + "/lib");
+				fileEntry.setFileType(FileType.DIR);
+				fileEntry.setDescription("put private libraries here");
+				fileEntryRepository.save(user, fileEntry, null);
 			}
 		} catch (IOException e) {
 			throw new NGrinderRuntimeException("Error while patching script_template", e);

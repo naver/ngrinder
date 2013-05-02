@@ -206,7 +206,7 @@ public class FileEntryController extends NGrinderBaseController {
 	 * @return script/scriptEditor"
 	 */
 	@RequestMapping(value = "/create/**", params = "type=script", method = RequestMethod.POST)
-	public String getCreateForm(
+	public String createForm(
 					User user,
 					@RemainedPath String path,
 					@RequestParam(value = "testUrl", required = false) String testUrl,
@@ -222,7 +222,7 @@ public class FileEntryController extends NGrinderBaseController {
 		String expectedFullPath = path + "/" + fileName;
 		if (scriptHandler instanceof ProjectHandler) {
 			if (!fileEntryService.hasFileEntry(user, expectedFullPath)) {
-				fileEntryService.prepareNewEntry(user, path, fileName, testUrl, scriptHandler);
+				fileEntryService.prepareNewEntry(user, path, fileName, testUrl, scriptHandler, createLibAndResources);
 				redirectAttributes.addFlashAttribute("message", fileName + " project is created.");
 			} else {
 				redirectAttributes.addFlashAttribute("exception", fileName
@@ -234,7 +234,7 @@ public class FileEntryController extends NGrinderBaseController {
 				model.addAttribute("file", fileEntryService.getFileEntry(user, expectedFullPath));
 			} else {
 				model.addAttribute("file",
-								fileEntryService.prepareNewEntry(user, path, fileName, testUrl, scriptHandler));
+								fileEntryService.prepareNewEntry(user, path, fileName, testUrl, scriptHandler, createLibAndResources));
 			}
 		}
 		model.addAttribute("scriptHandler", scriptHandler);

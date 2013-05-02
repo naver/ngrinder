@@ -309,13 +309,16 @@ public class FileEntryService {
 	 *            url
 	 * @param scriptHandler
 	 *            script handler
+	 * @param createLibAndResources
+	 *            true if lib and resources should be created
 	 * @return created file entry. null if it's the project creation.
 	 */
-	public FileEntry prepareNewEntry(User user, String path, String fileName, String url, ScriptHandler scriptHandler) {
+	public FileEntry prepareNewEntry(User user, String path, String fileName, String url, ScriptHandler scriptHandler,
+					boolean createLibAndResources) {
 		FileEntry fileEntry = new FileEntry();
 		String targetPath = PathUtil.removePrependedSlash(path + "/" + fileName);
 		fileEntry.setPath(targetPath);
-		boolean proceed = scriptHandler.prepareScriptEnv(user, targetPath, fileName, url);
+		boolean proceed = scriptHandler.prepareScriptEnv(user, targetPath, fileName, url, createLibAndResources);
 		if (!proceed) {
 			return null;
 		}
@@ -338,7 +341,7 @@ public class FileEntryService {
 	 */
 	public FileEntry prepareNewEntryForQuickTest(User user, String urlString, ScriptHandler scriptHandler) {
 		String testNameFromUrl = getTestNameFromUrl(urlString);
-		FileEntry newEntry = prepareNewEntry(user, testNameFromUrl, "script.py", urlString, scriptHandler);
+		FileEntry newEntry = prepareNewEntry(user, testNameFromUrl, "script.py", urlString, scriptHandler, false);
 		newEntry.setDescription("Quick test for " + urlString);
 		save(user, newEntry);
 		return getFileEntry(user, testNameFromUrl + "/" + "script.py");

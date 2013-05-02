@@ -174,10 +174,13 @@ public abstract class ScriptHandler {
 	 *            fileName
 	 * @param url
 	 *            url
+	 * @param createLibAndResources
+	 *            true if lib and resources should be created
+	 * 
 	 * @return true if process more.
 	 * @throws IOException
 	 */
-	public boolean prepareScriptEnv(User user, String path, String fileName, String url) {
+	public boolean prepareScriptEnv(User user, String path, String fileName, String url, boolean createLibAndResources) {
 		return true;
 	}
 
