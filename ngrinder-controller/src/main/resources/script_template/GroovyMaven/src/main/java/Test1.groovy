@@ -6,6 +6,7 @@ import net.grinder.script.GTest
 import net.grinder.script.Grinder
 import net.grinder.scriptengine.groovy.junit.GrinderRunner
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread
+import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess
 
 import org.junit.BeforeClass
 import org.junit.Test
@@ -19,7 +20,7 @@ class Test1 {
 	public static GTest test;
 	public static HTTPRequest request;
 
-	@BeforeClass
+	@BeforeProcess
 	public static void beforeClass() {
 		test = new GTest(1, "${project_name}");
 		request = new HTTPRequest();
@@ -35,6 +36,10 @@ class Test1 {
 	@Test
 	public void test(){
 		HTTPResponse result = request.GET("${url}");
-		assertThat(result.statusCode, is(200));
+		if (result.statusCode == 301 || result.statusCode == 302) {
+			grinder.logger.warn("Warning. The response may not be correct. The response code was {}.", result.statusCode);
+		} else {
+			assertThat(result.statusCode, is(200));
+		}
 	}
 }
