@@ -32,8 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Used to collect the number of executed test .<br/>
- * It executes only once each day at midnight
+ * Send the ngrinder usage data to GA. It executes only once each day at midnight
  * 
  * @author maoyb
  * @since3.2
@@ -64,7 +63,7 @@ public class PeriodicCollectDataToGAService {
 			Date yesterday = DateUtils.addDays(new Date(), -1);
 			Date start = DateUtils.truncate(yesterday, Calendar.DATE);
 			Date end = DateUtils.addMilliseconds(DateUtils.ceiling(yesterday, Calendar.DATE), -1);
-			System.out.println(googleAnalytic.sendStaticDataToUA(currentAddress, String.valueOf(getUsage(start, end))));;
+			System.out.println(googleAnalytic.sendStaticDataToUA(currentAddress, String.valueOf(getUsage(start, end))));
 		}
 	}
 
