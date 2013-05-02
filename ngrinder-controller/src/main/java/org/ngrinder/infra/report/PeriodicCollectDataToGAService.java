@@ -16,12 +16,14 @@ package org.ngrinder.infra.report;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import net.grinder.util.NetworkUtil;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.analytics.GoogleAnalytic;
 import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.http.MeasureProtocolRequest;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
@@ -54,6 +56,7 @@ public class PeriodicCollectDataToGAService {
 	@Transactional
 	public void reportUsage() {
 		if (config.isUsageReportEnabled()) {
+			doRandomDelay();
 			GoogleAnalytic googleAnalytic = new GoogleAnalytic(NGrinderConstants.GOOGLEANALYTICS_APPNAME,
 							config.getVesion(), NGrinderConstants.GOOGLEANALYTICS_TRACKINGID);
 			MeasureProtocolRequest measureProtocolRequest = googleAnalytic.getMeasureProtocolRequest();
@@ -63,8 +66,15 @@ public class PeriodicCollectDataToGAService {
 			Date yesterday = DateUtils.addDays(new Date(), -1);
 			Date start = DateUtils.truncate(yesterday, Calendar.DATE);
 			Date end = DateUtils.addMilliseconds(DateUtils.ceiling(yesterday, Calendar.DATE), -1);
-			System.out.println(googleAnalytic.sendStaticDataToUA(currentAddress, String.valueOf(getUsage(start, end))));
+			googleAnalytic.sendStaticDataToUA(currentAddress, String.valueOf(getUsage(start, end)));
 		}
+	}
+
+	/**
+	 * delay with random manner. Not to report from multiple machines at a same time.
+	 */
+	protected void doRandomDelay() {
+		ThreadUtil.sleep(new Random().nextInt(100) * 1000);
 	}
 
 	protected int getUsage(Date start, Date end) {

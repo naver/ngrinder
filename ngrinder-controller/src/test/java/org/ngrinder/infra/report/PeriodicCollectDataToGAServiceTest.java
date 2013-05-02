@@ -11,7 +11,7 @@ import org.ngrinder.infra.config.Config;
 public class PeriodicCollectDataToGAServiceTest {
 
 	@Test
-	public void test() {
+	public void testReport() {
 		Config configMock = mock(Config.class);
 		when(configMock.isUsageReportEnabled()).thenReturn(true);
 		when(configMock.getVesion()).thenReturn("test-0.0.1");
@@ -21,6 +21,9 @@ public class PeriodicCollectDataToGAServiceTest {
 				return 10;
 			}
 
+			protected void doRandomDelay() {
+				// No delay for unit test.
+			};
 		};
 		gaService.setConfig(configMock);
 		gaService.reportUsage();
