@@ -118,6 +118,7 @@
 		myProfile();
 		switchUser();
 		showExceptionMsg();
+		showInitialMsg();
 	}
 	
 	function myProfile(){
@@ -151,6 +152,12 @@
 		<#if exception??>
 			showErrorMsg("${(exception)}");
 		</#if> 
+	}
+	
+	function showInitialMsg() {
+		<#if message??>
+			showSuccessMsg("${(message)}");
+		</#if>
 	}
 	
 	if(document.loaded) {
