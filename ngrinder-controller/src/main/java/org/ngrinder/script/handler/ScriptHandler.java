@@ -139,8 +139,10 @@ public abstract class ScriptHandler {
 	 * @param processingResult
 	 *            processging result holder.
 	 */
-	public void prepareDist(Long testcaseId, User user, //
-					FileEntry scriptEntry, File distDir, PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
+	public void prepareDist(Long testcaseId,
+					User user, //
+					FileEntry scriptEntry, File distDir, PropertiesWrapper properties,
+					ProcessingResultPrintStream processingResult) {
 		prepareDefaultFile(distDir, properties);
 		List<FileEntry> fileEntries = getLibAndResourceEntries(user, scriptEntry, -1);
 		fileEntries.add(scriptEntry);
@@ -156,6 +158,7 @@ public abstract class ScriptHandler {
 			LOGGER.info("{} is being written in {} for test {}", new Object[] { each.getPath(), toDir, testcaseId });
 			getFileEntryRepository().writeContentTo(user, each.getPath(), toDir);
 		}
+		processingResult.setSuccess(true);
 		prepareDistMore(testcaseId, user, scriptEntry, distDir, properties, processingResult);
 	}
 
@@ -168,10 +171,14 @@ public abstract class ScriptHandler {
 	 *            user
 	 * @param path
 	 *            the path where the env preparation is required.
+	 * @param fileName
+	 *            fileName
+	 * @param url
+	 *            url
 	 * @return true if process more.
 	 * @throws IOException
 	 */
-	public boolean prepareScriptEnv(User user, String path) {
+	public boolean prepareScriptEnv(User user, String path, String fileName, String url) {
 		return true;
 	}
 

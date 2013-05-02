@@ -9,6 +9,7 @@ import net.grinder.script.Grinder
 import net.grinder.scriptengine.groovy.junit.GrinderRunner
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread
 
+import org.hamcrest.Matchers;
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
@@ -31,6 +32,7 @@ class MyTest {
 
 	@BeforeThread
 	public void beforeThread() {
+		Matchers.
 		grinder.statistics.delayReports=true
 		grinder.getLogger().info("before thread in MyTest.");
 	}

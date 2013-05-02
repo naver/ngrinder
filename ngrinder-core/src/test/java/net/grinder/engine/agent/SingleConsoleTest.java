@@ -14,7 +14,6 @@
 package net.grinder.engine.agent;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.junit.Assert.assertThat;
 import net.grinder.AgentDaemon;
 import net.grinder.SingleConsole;
@@ -68,7 +67,7 @@ public class SingleConsoleTest extends AbstractMuliGrinderTestBase {
 		// Wait until all agents are started. They will connect main console.
 		sleep(4000);
 
-		assertThat("There must be 2 agents connecting console1", console1.getAllAttachedAgents(), hasSize(2));
+		assertThat("There must be 2 agents connecting console1", console1.getAllAttachedAgents().size(), is(2));
 
 		// if we shut down one agent.
 		agentThread2.addListener(new AgentShutDownSynchronizeListener(condition));
@@ -76,13 +75,13 @@ public class SingleConsoleTest extends AbstractMuliGrinderTestBase {
 		sleep(5000);
 		waitOnCondition(condition, 5000);
 
-		assertThat("There must be 1 agents connecting console1", console1.getAllAttachedAgents(), hasSize(1));
+		assertThat("There must be 1 agents connecting console1", console1.getAllAttachedAgents().size(), is(1));
 
 		// If we connect console1 again
 		agentThread2.run(console1.getConsolePort());
 		sleep(4000);
 
-		assertThat("There must be 2 agents connecting console1", console1.getAllAttachedAgents(), hasSize(2));
+		assertThat("There must be 2 agents connecting console1", console1.getAllAttachedAgents().size(), is(2));
 
 		// enable one agent more.
 		agentThread3 = new AgentDaemon(agentConfig3);
@@ -91,10 +90,10 @@ public class SingleConsoleTest extends AbstractMuliGrinderTestBase {
 		Thread.sleep(4000);
 
 		// Now it should be 2 agents
-		assertThat("There must be 2 agents connecting console1", console1.getAllAttachedAgents(), hasSize(2));
+		assertThat("There must be 2 agents connecting console1", console1.getAllAttachedAgents().size(), is(2));
 
 		// Now it should be 1 agents on console2
-		assertThat("There must be 1 agents connecting console2", console2.getAllAttachedAgents(), hasSize(1));
+		assertThat("There must be 1 agents connecting console2", console2.getAllAttachedAgents().size(), is(1));
 
 		console1.shutdown();
 		console1 = new SingleConsole(getFreePort());

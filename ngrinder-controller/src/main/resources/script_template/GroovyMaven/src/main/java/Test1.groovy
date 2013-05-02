@@ -1,5 +1,6 @@
 import static net.grinder.script.Grinder.grinder
 import static org.junit.Assert.*
+import static org.hamcrest.Matchers.*
 import net.grinder.plugin.http.HTTPRequest
 import net.grinder.script.GTest
 import net.grinder.script.Grinder
@@ -20,7 +21,7 @@ class Test1 {
 
 	@BeforeClass
 	public static void beforeClass() {
-		test = new GTest(1, "Test1");
+		test = new GTest(1, "${project_name}");
 		request = new HTTPRequest();
 		test.record(request);
 	}
@@ -33,11 +34,7 @@ class Test1 {
 
 	@Test
 	public void test(){
-		HTTPResponse result = request.GET("http://www.google.com");
-		if (result.getStatusCode() != 200) {
-			grinder.statistics.forLastTest.success = 0
-		} else {
-			grinder.statistics.forLastTest.success = 1
-		}
+		HTTPResponse result = request.GET("${url}");
+		assertThat(result.statusCode, is(200));
 	}
 }

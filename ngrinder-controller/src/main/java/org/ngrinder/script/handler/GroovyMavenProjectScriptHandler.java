@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.cli.MavenCli;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.PropertiesWrapper;
@@ -142,20 +143,21 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	}
 
 	@Override
-	public boolean prepareScriptEnv(User user, String path) {
+	public boolean prepareScriptEnv(User user, String path, String filename, String url) {
 		File scriptTemplateDir;
 		FileEntryRepository fileEntryRepository = getFileEntryRepository();
 		try {
 			scriptTemplateDir = new ClassPathResource("/script_template/" + getKey()).getFile();
-
 			for (File each : FileUtils.listFiles(scriptTemplateDir, null, true)) {
 				try {
 					String substring = each.getPath().substring(scriptTemplateDir.getPath().length());
-					byte[] bytes = FileUtils.readFileToByteArray(each);
+					String fileContent = FileUtils.readFileToString(each, "UTF8");
+					fileContent = fileContent.replace("${project_name}", filename);
+					fileContent = fileContent.replace("${url}", url);
 					FileEntry fileEntry = new FileEntry();
-					fileEntry.setContentBytes(bytes);
+					fileEntry.setContent(fileContent);
 					fileEntry.setPath(FilenameUtils.normalize(path + substring, true));
-					fileEntryRepository.save(user, fileEntry, null);
+					fileEntryRepository.save(user, fileEntry, "UTF8");
 				} catch (IOException e) {
 					throw new NGrinderRuntimeException("Error while saving " + each.getName(), e);
 				}

@@ -13,7 +13,6 @@
  */
 package org.ngrinder.perftest.service;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
@@ -41,8 +40,8 @@ public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 	@Test
 	public void testConsoleManager() {
 		int initialSize = manager.getAvailableConsoleSize();
-		SingleConsole availableConsole = manager.getAvailableConsole("test", ConsolePropertiesFactory
-				.createEmptyConsoleProperties());
+		SingleConsole availableConsole = manager.getAvailableConsole("test",
+						ConsolePropertiesFactory.createEmptyConsoleProperties());
 		assertThat(manager.getAvailableConsoleSize(), is(initialSize - 1));
 		manager.returnBackConsole("test", availableConsole);
 		sleep(1000);
@@ -56,7 +55,8 @@ public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 		int initialSize = manager.getAvailableConsoleSize();
 		SingleConsole availableConsole = null;
 		for (int i = 1; i <= initialSize; i++) {
-			availableConsole = manager.getAvailableConsole("test", ConsolePropertiesFactory.createEmptyConsoleProperties());
+			availableConsole = manager.getAvailableConsole("test",
+							ConsolePropertiesFactory.createEmptyConsoleProperties());
 		}
 		final SingleConsole lastConsole = availableConsole;
 		assertThat(manager.getAvailableConsoleSize(), is(0));
@@ -87,8 +87,8 @@ public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 		thread.start();
 		// Try to get more console, it will return console just after console is
 		// returned back
-		SingleConsole anotherConsole = manager.getAvailableConsole("test", ConsolePropertiesFactory
-				.createEmptyConsoleProperties());
+		SingleConsole anotherConsole = manager.getAvailableConsole("test",
+						ConsolePropertiesFactory.createEmptyConsoleProperties());
 		elapseTime.stop();
 		assertThat(elapseTime.getTotalTimeSeconds(), lessThan(3000D));
 		assertThat(manager.getAvailableConsoleSize(), is(0));
@@ -112,7 +112,7 @@ public class ConsoleManagerTest extends AbstractNGrinderTransactionalTest {
 			// It should be excluded in available ports
 			List<Integer> availablePorts = manager.getAvailablePorts(20, 10110);
 			assertThat(availablePorts.contains(localPort), not(true));
-			assertThat(availablePorts, hasSize(20));
+			assertThat(availablePorts.size(), is(20));
 		} finally {
 			if (serverSocket != null) {
 				serverSocket.close();

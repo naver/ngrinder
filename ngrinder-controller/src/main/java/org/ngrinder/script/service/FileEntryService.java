@@ -315,7 +315,7 @@ public class FileEntryService {
 		FileEntry fileEntry = new FileEntry();
 		String targetPath = PathUtil.removePrependedSlash(path + "/" + fileName);
 		fileEntry.setPath(targetPath);
-		boolean proceed = scriptHandler.prepareScriptEnv(user, targetPath);
+		boolean proceed = scriptHandler.prepareScriptEnv(user, targetPath, fileName, url);
 		if (!proceed) {
 			return null;
 		}

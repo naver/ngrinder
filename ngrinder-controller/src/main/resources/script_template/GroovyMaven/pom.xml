@@ -2,20 +2,21 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ngrinder</groupId>
-	<artifactId>test-sample</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<artifactId>${project_name}</artifactId>
+	<version>0.0.1</version>
+
+	<repositories>
+		<repository>
+			<id>nhnopensource.maver.repo</id>
+			<url>https://github.com/nhnopensource/nhnopensource.maven.repo/raw/master/releases</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.0.1</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.ngrinder</groupId>
 			<artifactId>ngrinder-groovy</artifactId>
-			<version>3.2-SNAPSHOT</version>
+			<version>3.2</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
@@ -25,6 +26,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.9</version>
 				<configuration>
 					<additionalProjectnatures>
 						<projectnature>
