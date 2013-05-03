@@ -112,9 +112,12 @@
 			    ><code>Tip</code></div> 
 			</div>
 		</div>
-		<pre style="height:100px; margin:5px 0 10px; display:none;" class="prettyprint pre-scrollable" id="validateRsPre">
-		</pre>
-		<#include "../common/copyright.ftl">
+		<div id="validationPanel" style="display:none;">
+			<pre style="height:100px; margin:5px 0 10px; " class="prettyprint pre-scrollable" id="validateRsPre">
+			</pre>
+			<div class="pull-right" rel="popover" style="position:float;margin-top:-30px;margin-right:-16px;"><a href="javascript:void(0)" id="expandBtn"><code>+</code></a></div>
+		</div>		 
+		<#include "../common/copyright.ftl"> 
 	</div>
 	
 	<#include "../common/codemirror.ftl">
@@ -175,7 +178,7 @@
 				validating = true;
 				var scriptPath = $("#scriptNameInput").val();
 				var hostString = $("#targetHosts").val();
-				$('#validateRsPre').hide();
+				$('#validationPanel').hide();
 				var newContent = editor.getValue();
 				showProgressBar("<@spring.message "script.editor.message.validate"/>");
 				$.ajax({
@@ -192,7 +195,7 @@
 			    	success: function(res) {
 			    		validating = false;
 						$('#validateRsPre').text(res);
-						$('#validateRsPre').show();
+						$('#validationPanel').show();
 						$('#validatedHd').val("1");//should control the validation success or not later.
 						$("#oldContent").val(newContent);
 						hideProgressBar();
@@ -202,6 +205,15 @@
 			    		showErrorMsg("<@spring.message "script.editor.error.validate"/>");
 			    	}
 			  	});
+			});
+			
+			$("#expandBtn").click(function() {
+				var heightStr = $("#validateRsPre").css("height");
+				if (heightStr == "100px") {
+					$("#validateRsPre").css("height", "300px");
+				} else {
+					$("#validateRsPre").css("height", "100px");
+				}
 			});
 		});
     	
