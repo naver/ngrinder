@@ -501,6 +501,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            script path
 	 * @param revision
 	 *            revision
+	 * @param ownerId
+	 *            ownerId
 	 * @return json string representing resources and libs.
 	 */
 	@RequestMapping(value = "/getResourcesOnScriptFolder")

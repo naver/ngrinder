@@ -209,6 +209,11 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 		this.revision = revision;
 	}
 
+	/**
+	 * Get properties.
+	 * 
+	 * @return properties, empty map if null.
+	 */
 	public Map<String, String> getProperties() {
 		if (this.properties == null) {
 			return newHashMap();

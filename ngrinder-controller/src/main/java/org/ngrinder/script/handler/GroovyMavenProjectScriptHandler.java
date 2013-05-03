@@ -146,51 +146,60 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	}
 
 	@Override
-	public boolean prepareScriptEnv(User user, String path, String fileName, String name, String url, boolean createLib) {
-		File scriptTemplateDir;
-		FileEntryRepository fileEntryRepository = getFileEntryRepository();
+	public boolean prepareScriptEnv(User user, String path, String fileName, String name, // LF
+					String url, boolean createLib) {
 		path = PathUtil.join(path, fileName);
 		try {
 			// Create Dir entry
-			{
-				FileEntry dirEntry = new FileEntry();
-				dirEntry.setPath(path);
-				// Make it eclipse default folder ignored.
-				dirEntry.setProperties(buildMap("svn:ignore", ".project\n.classpath\n.settings\ntarget"));
-				dirEntry.setFileType(FileType.DIR);
-				dirEntry.setDescription("create groovy maven project");
-				fileEntryRepository.save(user, dirEntry, null);
-			}
+			createBaseDirectory(user, path);
 			// Create each template entries
-			scriptTemplateDir = new ClassPathResource("/script_template/" + getKey()).getFile();
-			for (File each : FileUtils.listFiles(scriptTemplateDir, null, true)) {
-				try {
-					String subpath = each.getPath().substring(scriptTemplateDir.getPath().length());
-					String fileContent = FileUtils.readFileToString(each, "UTF8");
-					fileContent = fileContent.replace("${usernName}", user.getUserName());
-					fileContent = fileContent.replace("${name}", name);
-					fileContent = fileContent.replace("${url}", url);
-					FileEntry fileEntry = new FileEntry();
-					fileEntry.setContent(fileContent);
-					fileEntry.setPath(FilenameUtils.normalize(PathUtil.join(path, subpath), true));
-					fileEntry.setDescription("create groovy maven project");
-					fileEntryRepository.save(user, fileEntry, "UTF8");
-				} catch (IOException e) {
-					throw new NGrinderRuntimeException("Error while saving " + each.getName(), e);
-				}
-			}
-
+			createFileEntries(user, path, name, url);
 			if (createLib) {
-				FileEntry fileEntry = new FileEntry();
-				fileEntry.setPath(path + "/lib");
-				fileEntry.setFileType(FileType.DIR);
-				fileEntry.setDescription("put private libraries here");
-				fileEntryRepository.save(user, fileEntry, null);
+				createLibraryDirectory(user, path);
 			}
 		} catch (IOException e) {
 			throw new NGrinderRuntimeException("Error while patching script_template", e);
 		}
 		return false;
+	}
+
+	private void createLibraryDirectory(User user, String path) {
+		FileEntry fileEntry = new FileEntry();
+		fileEntry.setPath(path + "/lib");
+		fileEntry.setFileType(FileType.DIR);
+		fileEntry.setDescription("put private libraries here");
+		getFileEntryRepository().save(user, fileEntry, null);
+	}
+
+	private void createFileEntries(User user, String path, String name, String url) throws IOException {
+		File scriptTemplateDir;
+		scriptTemplateDir = new ClassPathResource("/script_template/" + getKey()).getFile();
+		for (File each : FileUtils.listFiles(scriptTemplateDir, null, true)) {
+			try {
+				String subpath = each.getPath().substring(scriptTemplateDir.getPath().length());
+				String fileContent = FileUtils.readFileToString(each, "UTF8");
+				fileContent = fileContent.replace("${usernName}", user.getUserName());
+				fileContent = fileContent.replace("${name}", name);
+				fileContent = fileContent.replace("${url}", url);
+				FileEntry fileEntry = new FileEntry();
+				fileEntry.setContent(fileContent);
+				fileEntry.setPath(FilenameUtils.normalize(PathUtil.join(path, subpath), true));
+				fileEntry.setDescription("create groovy maven project");
+				getFileEntryRepository().save(user, fileEntry, "UTF8");
+			} catch (IOException e) {
+				throw new NGrinderRuntimeException("Error while saving " + each.getName(), e);
+			}
+		}
+	}
+
+	private void createBaseDirectory(User user, String path) {
+		FileEntry dirEntry = new FileEntry();
+		dirEntry.setPath(path);
+		// Make it eclipse default folder ignored.
+		dirEntry.setProperties(buildMap("svn:ignore", ".project\n.classpath\n.settings\ntarget"));
+		dirEntry.setFileType(FileType.DIR);
+		dirEntry.setDescription("create groovy maven project");
+		getFileEntryRepository().save(user, dirEntry, null);
 	}
 
 	@Override
@@ -200,7 +209,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	}
 
 	@Override
-	public FileEntry getDefaultQuickTestFile(User user, String path) {
+	public FileEntry getDefaultQuickTestFilePath(String path) {
 		FileEntry fileEntry = new FileEntry();
 		fileEntry.setPath(path + "/src/main/java/Test1.groovy");
 		return fileEntry;

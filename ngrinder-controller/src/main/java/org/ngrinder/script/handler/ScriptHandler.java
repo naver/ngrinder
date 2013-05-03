@@ -182,7 +182,6 @@ public abstract class ScriptHandler {
 	 *            true if lib and resources should be created
 	 * 
 	 * @return true if process more.
-	 * @throws IOException
 	 */
 	public boolean prepareScriptEnv(User user, String path, String fileName, String name, String url,
 					boolean createLibAndResources) {
@@ -317,9 +316,16 @@ public abstract class ScriptHandler {
 		this.fileEntryRepository = fileEntryRepository;
 	}
 
-	public FileEntry getDefaultQuickTestFile(User user, String path) {
+	/**
+	 * Get the default quick test file.
+	 * 
+	 * @param basePath
+	 *            base path
+	 * @return quick test file
+	 */
+	public FileEntry getDefaultQuickTestFilePath(String basePath) {
 		FileEntry fileEntry = new FileEntry();
-		fileEntry.setPath(path + "/script." + getExtension());
+		fileEntry.setPath(basePath + "/script." + getExtension());
 		return fileEntry;
 	}
 }

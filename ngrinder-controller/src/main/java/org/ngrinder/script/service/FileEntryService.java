@@ -358,17 +358,17 @@ public class FileEntryService {
 	public FileEntry prepareNewEntryForQuickTest(User user, String url, ScriptHandler scriptHandler) {
 		String path = getPathFromUrl(url);
 		String host = UrlUtils.getHost(url);
-		FileEntry defaultQuickTestFile = scriptHandler.getDefaultQuickTestFile(user, path);
+		FileEntry quickTestFile = scriptHandler.getDefaultQuickTestFilePath(path);
 		if (scriptHandler instanceof ProjectHandler) {
 			String[] pathPart = dividePathAndFile(path);
 			prepareNewEntry(user, pathPart[0], pathPart[1], host, url, scriptHandler, false);
 		} else {
-			FileEntry fileEntry = prepareNewEntry(user, path, defaultQuickTestFile.getFileName(), host, url,
-							scriptHandler, false);
+			FileEntry fileEntry = prepareNewEntry(user, path, quickTestFile.getFileName(), host, url, scriptHandler,
+							false);
 			fileEntry.setDescription("Quick test for " + url);
 			save(user, fileEntry);
 		}
-		return defaultQuickTestFile;
+		return quickTestFile;
 	}
 
 	/**
@@ -380,8 +380,8 @@ public class FileEntryService {
 	 *            handler
 	 * @param url
 	 *            url
-	 * @param projectName
-	 *            projectName
+	 * @param name
+	 *            name
 	 * @return generated test script
 	 */
 	public String loadTemplate(User user, ScriptHandler handler, String url, String name) {
