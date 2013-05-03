@@ -98,7 +98,7 @@
 				<thead>
 					<tr>
 						<th class="nothing"><input id="chkboxAll" type="checkbox" class="checkbox" value=""></th>
-						<th class="nothing"><@spring.message "common.label.status"/></th>
+						<th class="nothing" style="padding-left:3px"><@spring.message "common.label.status"/></th>
 						<th id="testName"><@spring.message "perfTest.table.testName"/></th>
 						<th id="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
 						<th class="nothing"><#if isAdmin??><@spring.message "perfTest.table.owner"/><#else><@spring.message "perfTest.table.modifier"/></#if></th>
@@ -133,7 +133,8 @@
 										<img class="status" src="${req.getContextPath()}/img/ball/${test.status.iconName}"/> 
 									</div>
 								</td>
-								<td class="ellipsis ${test.dateString}" data-content="${(test.description!"")?replace('\n', '<br/>')?html} &lt;p&gt;${test.testComment?replace('\n', '<br/>')?html}&lt;/p&gt;  &lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;&lt;p&gt;<#if test.tagString?has_content><@spring.message "perfTest.configuration.tags"/> : ${test.tagString}&lt;/p&gt;</#if>"  
+								<td class="ellipsis ${test.dateString}" 
+										 data-content="${(test.description!"")?replace('\n', '<br/>')?html} &lt;p&gt;${test.testComment?replace('\n', '<br/>')?html}&lt;/p&gt;  &lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;&lt;p&gt;<#if test.tagString?has_content><@spring.message "perfTest.configuration.tags"/> : ${test.tagString}&lt;/p&gt;</#if><@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})&lt;br&gt; <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})"  
 										 data-original-title="${test.testName}">
 									<a href="${req.getContextPath()}/perftest/${test.id}" target="_self">${test.testName}</a>
 								</td>
@@ -147,7 +148,7 @@
 									</#if>
 								</td>
 		            			<td class="ellipsis" data-original-title="<@spring.message "perfTest.table.participants"/>" 
-		            				data-content="<@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName}&lt;br&gt; <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName}">
+		            				data-content="<@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})&lt;br&gt; <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})">
 		            				<#if isAdmin??>
 		            					${test.lastModifiedUser.userName}
 		            				<#else>
