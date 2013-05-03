@@ -278,23 +278,27 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            user
 	 * @param urlString
 	 *            url string to be tested.
+	 * @param scriptType
+	 *            scriptType
 	 * @param model
 	 *            model
 	 * @return "perftest/detail"
 	 */
 	@RequestMapping("/quickStart")
-	public String getQuickStart(User user, @RequestParam(value = "url", required = true) String urlString,
+	public String getQuickStart(User user, //
+					@RequestParam(value = "url", required = true) String urlString, // LF
+					@RequestParam(value = "scriptType", required = true) String scriptType, // LF
 					ModelMap model) {
 		URL url = checkValidURL(urlString);
-		List<FileEntry> scriptList = newArrayList();
+		List<FileEntry> scripts = newArrayList();
 		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString,
-						scriptHandlerFactory.getHandler("jython"));
-		scriptList.add(checkNotNull(newEntry, "Create quick test script ERROR!"));
+						scriptHandlerFactory.getHandler(scriptType));
+		scripts.add(checkNotNull(newEntry, "Create quick test script ERROR!"));
 		model.addAttribute(PARAM_QUICK_SCRIPT, newEntry.getPath());
 		model.addAttribute(PARAM_QUICK_SCRIPT_REVISION, newEntry.getRevision());
 		model.addAttribute(PARAM_TEST_NAME, "Test for " + url.getHost());
 		model.addAttribute(PARAM_TARGET_HOST, url.getHost());
-		model.addAttribute(PARAM_SCRIPT_LIST, scriptList);
+		model.addAttribute(PARAM_SCRIPT_LIST, scripts);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentManagerService.getUserAvailableAgentCountMap(user));
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		addDefaultAttributeOnModel(model);

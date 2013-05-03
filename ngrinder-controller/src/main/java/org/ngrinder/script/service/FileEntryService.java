@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.HttpContainerContext;
@@ -34,6 +35,7 @@ import org.ngrinder.common.util.PathUtil;
 import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
+import org.ngrinder.script.handler.ProjectHandler;
 import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileEntry;
@@ -232,7 +234,7 @@ public class FileEntryService {
 	 */
 	public void addFolder(User user, String path, String folderName, String comment) {
 		FileEntry entry = new FileEntry();
-		entry.setPath(path + "/" + folderName);
+		entry.setPath(PathUtil.join(path, folderName));
 		entry.setFileType(FileType.DIR);
 		entry.setDescription(comment);
 		fileEntityRepository.save(user, entry, null);
@@ -302,49 +304,57 @@ public class FileEntryService {
 	 * @param user
 	 *            user
 	 * @param path
-	 *            path
-	 * @param fileName
-	 *            fileName
+	 *            base path path
+	 * @param name
+	 *            name
 	 * @param url
 	 *            url
 	 * @param scriptHandler
 	 *            script handler
-	 * @param createLibAndResources
+	 * @param libAndResource
 	 *            true if lib and resources should be created
-	 * @return created file entry. null if it's the project creation.
+	 * @return created file entry. main test file if it's the project creation.
 	 */
-	public FileEntry prepareNewEntry(User user, String path, String fileName, String url, ScriptHandler scriptHandler,
-					boolean createLibAndResources) {
-		FileEntry fileEntry = new FileEntry();
-		String targetPath = PathUtil.removePrependedSlash(path + "/" + fileName);
-		fileEntry.setPath(targetPath);
-		boolean proceed = scriptHandler.prepareScriptEnv(user, targetPath, fileName, url, createLibAndResources);
-		if (!proceed) {
+	public FileEntry prepareNewEntry(User user, String path, String fileName, String name, String url,
+					ScriptHandler scriptHandler, boolean libAndResource) {
+		if (scriptHandler instanceof ProjectHandler) {
+			scriptHandler.prepareScriptEnv(user, path, name, url, libAndResource);
 			return null;
 		}
-		String content = loadTemplate(user, scriptHandler, url, fileName);
-		fileEntry.setContent(content);
-		fileEntry.setProperties(buildMap("targetHosts", UrlUtils.getHost(url)));
+		path = PathUtil.join(path, fileName);
+		FileEntry fileEntry = new FileEntry();
+		fileEntry.setPath(path);
+		fileEntry.setContent(loadTemplate(user, scriptHandler, url, name));
+		if (!"http://please_modify_this.com".equals(url)) {
+			fileEntry.setProperties(buildMap("targetHosts", UrlUtils.getHost(url)));
+		}
 		return fileEntry;
 	}
 
 	/**
-	 * Create new FileEntry for the url.
+	 * Create new FileEntry for the given URL.
 	 * 
 	 * @param user
 	 *            user
-	 * @param urlString
-	 *            url to be tested.
+	 * @param url
+	 *            URL to be tested.
 	 * @param scriptHandler
 	 *            scriptHandler
 	 * @return created new {@link FileEntry}
 	 */
-	public FileEntry prepareNewEntryForQuickTest(User user, String urlString, ScriptHandler scriptHandler) {
-		String testNameFromUrl = getTestNameFromUrl(urlString);
-		FileEntry newEntry = prepareNewEntry(user, testNameFromUrl, "script.py", urlString, scriptHandler, false);
-		newEntry.setDescription("Quick test for " + urlString);
-		save(user, newEntry);
-		return getFileEntry(user, testNameFromUrl + "/" + "script.py");
+	public FileEntry prepareNewEntryForQuickTest(User user, String url, ScriptHandler scriptHandler) {
+		String path = getTestNameFromUrl(url);
+		String host = UrlUtils.getHost(url);
+		FileEntry defaultQuickTestFile = scriptHandler.getDefaultQuickTestFile(user, path);
+		if (scriptHandler instanceof ProjectHandler) {
+			prepareNewEntry(user, path, "", host, url, scriptHandler, false);
+		} else {
+			FileEntry fileEntry = prepareNewEntry(user, path, FilenameUtils.getName(defaultQuickTestFile.getPath()),
+							host, url, scriptHandler, false);
+			fileEntry.setDescription("Quick test for " + url);
+			save(user, fileEntry);
+		}
+		return defaultQuickTestFile;
 	}
 
 	/**

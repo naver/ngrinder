@@ -41,6 +41,25 @@ public abstract class PathUtil {
 	}
 
 	/**
+	 * Join two path.
+	 * 
+	 * @param path1
+	 *            path1
+	 * @param path2
+	 *            path2
+	 * 
+	 * @return / removed path
+	 */
+	public static String join(String path1, String path2) {
+		String path = (path1 + "/" + path2);
+		if (path.startsWith("/")) {
+			return path.substring(1);
+		} else {
+			return path;
+		}
+	}
+
+	/**
 	 * Remove prepending / on path.
 	 * 
 	 * @param path

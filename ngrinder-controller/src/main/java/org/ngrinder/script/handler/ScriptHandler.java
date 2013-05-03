@@ -136,7 +136,7 @@ public abstract class ScriptHandler {
 	 * @param properties
 	 *            properties set which is used for detailed distribution control
 	 * @param processingResult
-	 *            processging result holder.
+	 *            processing result holder.
 	 */
 	public void prepareDist(Long testcaseId,
 					User user, //
@@ -144,7 +144,9 @@ public abstract class ScriptHandler {
 					ProcessingResultPrintStream processingResult) {
 		prepareDefaultFile(distDir, properties);
 		List<FileEntry> fileEntries = getLibAndResourceEntries(user, scriptEntry, -1);
-		fileEntries.add(scriptEntry);
+		if (scriptEntry.getRevision() != 0) {
+			fileEntries.add(scriptEntry);
+		}
 		String basePath = getBasePath(scriptEntry);
 		// Distribute each files in that folder.
 		for (FileEntry each : fileEntries) {
@@ -310,5 +312,11 @@ public abstract class ScriptHandler {
 
 	void setFileEntryRepository(FileEntryRepository fileEntryRepository) {
 		this.fileEntryRepository = fileEntryRepository;
+	}
+
+	public FileEntry getDefaultQuickTestFile(User user, String path) {
+		FileEntry fileEntry = new FileEntry();
+		fileEntry.setPath(path + "/script." + getExtension());
+		return fileEntry;
 	}
 }

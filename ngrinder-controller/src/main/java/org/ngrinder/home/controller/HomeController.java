@@ -41,6 +41,7 @@ import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.region.service.RegionService;
+import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +76,9 @@ public class HomeController extends NGrinderBaseController {
 
 	@Autowired
 	private Config config;
+	
+	@Autowired
+	private ScriptHandlerFactory scriptHandlerFactory;
 
 	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|"
 					+ "Australia|Europe|Indian|Pacific)/.*";
@@ -149,9 +153,10 @@ public class HomeController extends NGrinderBaseController {
 							"see_more_question_url",
 							config.getSystemProperties().getProperty("ngrinder.more.question.url",
 											getMessages("home.qa.rss.all")));
+			model.addAttribute("handlers", scriptHandlerFactory.getVisibleHandlers());
 
 			if (StringUtils.isNotBlank(exception)) {
-				model.addAttribute("exception", exception);
+				model.addAttribute("exception", exception); 
 			}
 			if (role == Role.ADMIN || role == Role.SUPER_USER || role == Role.USER) {
 				return "index";

@@ -27,9 +27,14 @@
 		<div class="hero-unit"/>	
 			<form class="form-inline" name="quickStart" id="quickStart" action="${req.getContextPath()}/perftest/quickStart" method="POST">
 				<div class="quickStart" data-original-title="<@spring.message "home.tip.url.title"/>" data-content="<@spring.message "home.tip.url.content"/>" data-placement="bottom" rel="popover">
-					<input type="text" name="url" id="url" class="span7 url_ex required" placeholder="<@spring.message "home.placeholder.url"/>"/> 
+					<input type="text" name="url" id="url" class="span6 url_ex required" placeholder="<@spring.message "home.placeholder.url"/>"/> 
+					<select class="select-item span2" id="scriptType" name="scriptType">
+						<#list handlers as handler>
+							<option value="${handler.key}">${handler.title}</option>
+						</#list>
+					</select>
 					<button id="startTestBtn" class="btn btn-primary" ><@spring.message "home.button.startTest"/></button>
-				</div>
+				</div> 
 			</form>
 		</div>
 		<div class="row">

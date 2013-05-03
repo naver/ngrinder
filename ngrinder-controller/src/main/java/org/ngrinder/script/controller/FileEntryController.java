@@ -34,6 +34,7 @@ import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.PathUtil;
+import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.spring.RemainedPath;
 import org.ngrinder.model.User;
 import org.ngrinder.script.handler.ProjectHandler;
@@ -215,19 +216,25 @@ public class FileEntryController extends NGrinderBaseController {
 					@RequestParam(value = "createLibAndResource", defaultValue = "false") boolean createLibAndResources,
 					RedirectAttributes redirectAttributes, ModelMap model) {
 		fileName = StringUtils.trimToEmpty(fileName);
-		testUrl = StringUtils.defaultIfBlank(testUrl, "http://please_modify_this.com");
+		String name = "Test1";
+		if (StringUtils.isEmpty(testUrl)) {
+			testUrl = StringUtils.defaultIfBlank(testUrl, "http://please_modify_this.com");
+		} else {
+			name = UrlUtils.getHost(testUrl);
+		}
 		ScriptHandler scriptHandler = fileEntryService.getScriptHandler(scriptType);
 		FileEntry entry = new FileEntry();
 		entry.setPath(fileName);
 		String expectedFullPath = path + "/" + fileName;
 		if (scriptHandler instanceof ProjectHandler) {
 			if (!fileEntryService.hasFileEntry(user, expectedFullPath)) {
-				fileEntryService.prepareNewEntry(user, path, fileName, testUrl, scriptHandler, createLibAndResources);
+				fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl, scriptHandler,
+								createLibAndResources);
 				redirectAttributes.addFlashAttribute("message", fileName + " project is created.");
 				return "redirect:/script/list/" + path + "/" + fileName;
 			} else {
 				redirectAttributes.addFlashAttribute("exception", fileName
-								+ " is already existng. Please choose the different name");
+								+ " is already existing. Please choose the different name");
 				return "redirect:/script/list/" + path + "/";
 			}
 
@@ -235,7 +242,7 @@ public class FileEntryController extends NGrinderBaseController {
 			if (fileEntryService.hasFileEntry(user, expectedFullPath)) {
 				model.addAttribute("file", fileEntryService.getFileEntry(user, expectedFullPath));
 			} else {
-				model.addAttribute("file", fileEntryService.prepareNewEntry(user, path, fileName, testUrl,
+				model.addAttribute("file", fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl,
 								scriptHandler, createLibAndResources));
 			}
 		}

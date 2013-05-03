@@ -531,7 +531,7 @@ public class FileEntryRepository {
 			SVNNodeKind nodeKind = repo.checkPath(path, -1);
 			// If it's DIR, it does not work.
 			if (nodeKind == SVNNodeKind.NONE || nodeKind == SVNNodeKind.DIR) {
-				throw new NGrinderRuntimeException("It's not pssible write directory. nodeKind is " + nodeKind);
+				throw new NGrinderRuntimeException("It's not possible to write directory. nodeKind is " + nodeKind);
 			}
 			toPathDir.mkdirs();
 			File destFile = new File(toPathDir, FilenameUtils.getName(path));

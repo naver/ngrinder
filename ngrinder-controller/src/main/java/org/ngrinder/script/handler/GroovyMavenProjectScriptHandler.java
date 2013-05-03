@@ -144,7 +144,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	}
 
 	@Override
-	public boolean prepareScriptEnv(User user, String path, String filename, String url, boolean createLib) {
+	public boolean prepareScriptEnv(User user, String path, String name, String url, boolean createLib) {
 		File scriptTemplateDir;
 		FileEntryRepository fileEntryRepository = getFileEntryRepository();
 		try {
@@ -165,7 +165,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 					String substring = each.getPath().substring(scriptTemplateDir.getPath().length());
 					String fileContent = FileUtils.readFileToString(each, "UTF8");
 					fileContent = fileContent.replace("${usernName}", user.getUserName());
-					fileContent = fileContent.replace("${name}", filename);
+					fileContent = fileContent.replace("${name}", name);
 					fileContent = fileContent.replace("${url}", url);
 					FileEntry fileEntry = new FileEntry();
 					fileEntry.setContent(fileContent);
@@ -195,6 +195,13 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	protected String getBasePath(FileEntry script) {
 		String path = script.getPath();
 		return path.substring(0, path.lastIndexOf(JAVA));
+	}
+
+	@Override
+	public FileEntry getDefaultQuickTestFile(User user, String path) {
+		FileEntry fileEntry = new FileEntry();
+		fileEntry.setPath(path + "/src/main/java/Test1.groovy");
+		return fileEntry;
 	}
 
 }
