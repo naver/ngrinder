@@ -61,13 +61,13 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 
 	@Autowired
 	private MockPerfTestController controller;
-	
+
 	@Autowired
 	private Config config;
 
 	@Autowired
 	private IUserService userService;
-	
+
 	@Autowired
 	public MockFileEntityRepsotory repo;
 
@@ -103,7 +103,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		FileUtils.deleteQuietly(file);
 		CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), file);
 		repo.setUserRepository(new File(file, getTestUser().getUserId()));
-		controller.getResourcesOnScriptFolder(getTestUser(), "filefilter.txt", null);
+		controller.getResourcesOnScriptFolder(getTestUser(), "filefilter.txt", null, null);
 	}
 
 	@Test

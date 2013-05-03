@@ -73,6 +73,7 @@ import org.ngrinder.script.handler.ScriptHandlerFactory;
 import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.service.FileEntryService;
+import org.ngrinder.user.service.UserService;
 import org.python.google.common.collect.Lists;
 import org.python.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,6 +121,9 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@Autowired
 	private ScriptHandlerFactory scriptHandlerFactory;
+
+	@Autowired
+	private UserService userService;
 
 	/**
 	 * Get Performance test lists.
@@ -501,7 +505,11 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/getResourcesOnScriptFolder")
 	public HttpEntity<String> getResourcesOnScriptFolder(User user, @RequestParam String scriptPath,
-					@RequestParam(value = "r", required = false) Long revision) {
+					@RequestParam(value = "r", required = false) Long revision,
+					@RequestParam(required = false) String ownerId) {
+		if (user.getRole() == Role.ADMIN && StringUtils.isNotBlank(ownerId)) {
+			user = userService.getUserById(ownerId);
+		}
 		FileEntry fileEntry = fileEntryService.getFileEntry(user, scriptPath);
 		String targetHosts = (fileEntry == null) ? "" : filterHostString(fileEntry.getProperties().get("targetHosts"));
 
