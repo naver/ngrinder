@@ -86,6 +86,6 @@ public class MyHttpServletRequestWrapperTest {
 			}
 		};
 		String path = wrapper.getPathInfo();
-		assertThat(path, is("/admin"));
+		assertThat(path, is("admin/admin"));
 	}
 }
