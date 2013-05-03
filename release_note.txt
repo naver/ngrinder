@@ -4,16 +4,16 @@ We're almost approaching the ultimate performance testing solution.
 We believe nGrinder 3.2 version is the most developer friendly performance testing tool ever.
 
 - New feature and change
-  * We support not only Groovy as a script language but also maven structure and junit styled test case in 3.2. 
-    It is the amazing approach which you can reuse the existing junit and maven project structure in your IDE like eclipse.
+  * We support not only Jython as a script language but also Groovy + maven and JUnit styled test cases in 3.2. 
+    It is the amazing approach which you can test and debug the test using your IDE such as eclipse.
     Check out TBD
-  * IE 10 is supported. We added IE9 compatibility view option to show nGrinder correctly in IE10.
+  * IE 10 is supported. We added IE9 compatibility view option to show nGrinder correctly.
   * Graph fluctuation by nGrinder internal processing is reduced. Now you can see the more stabled graph.
   * The nGrinder usage is reported to our Google analytics. We only collect the controller IP and the count of performance test.
-    If you don't like it, please set TBD false in system.conf
+    If you don't like it, please set ngrinder.usage.report=false in system.conf
   * A User can specify the more detailed memory option by providing grinder.properties file as same folder of script.
   * SVN user can enjoy the user switching feature as well.
-
+  * And.. several minor UI enhancements.
 
 
 3.1.3 (2013.03.29)
@@ -25,7 +25,7 @@ This is the last version 3.1.X series, we'll work on 3.2 as a next release.
   * Now test report can be viewed without login.
   * A user can specify the sampling interval to make the graph not to be fluctuated.
   * A user can see the per test TPS chart when the sampling interval is greater than 2.
-  * A user can upload and use native libs (so, dll) to reuse existing assets. This is enabled only if the security mode is disabled.
+  * A user can upload and use native libs (so, dll) t o reuse existing assets. This is enabled only if the security mode is disabled.
   * A user can provide the any kind of custom value for monitor by regularly outputting the GC count and JVM memory usages.
   * A user can upload dll or so to run test using native libs. SecurityMode should be disabled and JNA should be imported for natvie lib access.
         
