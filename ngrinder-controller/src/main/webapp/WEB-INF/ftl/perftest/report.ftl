@@ -118,6 +118,10 @@
 	                       <td><span>${test.runCount}</td>
 	                   </tr>
                    </#if>
+                   <tr> 
+	                   <th><@spring.message "perfTest.configuration.runtime"/></th>
+	                   <td><span>${test.runtimeStr}</span> <code>HH:MM:SS</code></td>
+	               </tr>
                    <tr>
                        <th><@spring.message "perfTest.configuration.ignoreSampleCount"/></th>
                        <td><span>${test.ignoreSampleCount}</span></td> 

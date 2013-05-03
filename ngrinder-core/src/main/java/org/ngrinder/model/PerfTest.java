@@ -513,12 +513,18 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.distributionPath = distributionPath;
 	}
 
+	/**
+	 * Get Duration time in HH:MM:SS style.
+	 * 
+	 * @return formatted duration string
+	 */
 	public String getDurationStr() {
 		return DateUtil.ms2Time(this.duration);
 	}
 
+
 	/**
-	 * Get Runtime in HH:MM:SS style.
+	 * Get Running time in HH:MM:SS style.
 	 * 
 	 * @return formatted runtime string
 	 */

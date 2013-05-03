@@ -957,6 +957,9 @@ function updateScriptResources(first) {
 		data : {
 			'scriptPath' : scriptName,
 			'r' : $("#scriptRevision").val()
+			<@security.authorize ifAnyGranted="A, S">
+			<#if test??>,'ownerId' : '${test.createdUser.userId}'</#if> 
+			</@security.authorize>
 		},
 		success : function(res) {
 			var html = "";

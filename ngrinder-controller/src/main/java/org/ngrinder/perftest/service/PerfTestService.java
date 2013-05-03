@@ -454,8 +454,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	@Transactional
 	public PerfTest markProgressAndStatusAndFinishTimeAndStatistics(PerfTest perfTest, Status status, String message) {
 		perfTest.setFinishTime(new Date());
-		long duration = perfTest.getFinishTime().getTime() - perfTest.getStartTime().getTime();
-		perfTest.setDuration(duration);
 		updatePerfTestAfterTestFinish(perfTest);
 		return markProgressAndStatus(perfTest, status, message);
 	}
