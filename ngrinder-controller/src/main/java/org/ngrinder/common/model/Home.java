@@ -411,5 +411,4 @@ public class Home implements NGrinderConstants {
 	public File getMessagesDirectory() {
 		return getSubFile("messages");
 	}
-
 }

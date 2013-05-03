@@ -199,6 +199,11 @@
 			<artifactId>maven-embedder</artifactId>
 			<version>3.0.5</version>
 		</dependency>
+		<dependency>
+			<groupId>org.sonatype.aether</groupId>
+			<artifactId>aether-connector-asynchttpclient</artifactId>
+			<version>1.13.1</version>
+		</dependency>
 
 		<!-- Spring Data -->
 		<dependency>
