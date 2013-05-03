@@ -24,6 +24,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.maven.cli.MavenCli;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
+import org.ngrinder.common.util.PathUtil;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.model.User;
 import org.ngrinder.script.model.FileEntry;
@@ -121,9 +122,9 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	@Override
 	protected void prepareDistMore(Long testId, User user, FileEntry script, File distDir,
 					PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
-		String pomPathInSVN = getBasePath(script) + "pom.xml";
+		String pomPathInSVN = PathUtil.join(getBasePath(script), "pom.xml");
 		MavenCli cli = new MavenCli();
-		processingResult.println("\nCopy dependencies by running 'mvn dependency:cop-dependencies"
+		processingResult.println("\nCopy dependencies by running 'mvn dependency:copy-dependencies"
 						+ " -DoutputDirectory=./lib -DexcludeScope=provided'");
 		int result = cli.doMain(new String[] { // goal specification
 						"dependency:copy-dependencies", // run dependency goal
