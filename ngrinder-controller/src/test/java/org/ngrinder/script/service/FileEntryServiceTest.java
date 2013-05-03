@@ -30,23 +30,37 @@ public class FileEntryServiceTest {
 	public void testFileTemplate() {
 		User user = new User();
 		user.setUserName("JunHo Yoon");
-		String content = fileEntryService.loadTemplate(user, new JythonScriptHandler(), "http://helloworld/myname/is", "hello");
+		String content = fileEntryService.loadTemplate(user, new JythonScriptHandler(), "http://helloworld/myname/is",
+						"hello");
 		assertThat(content, containsString("JunHo Yoon"));
 		assertThat(content, containsString("http://helloworld/myname/is"));
 	}
 
 	@Test
 	public void testFileNameFromUrl() {
-		assertThat(fileEntryService.getTestNameFromUrl("http://helloworld"), is("helloworld"));
-		assertThat(fileEntryService.getTestNameFromUrl("http://helloworld.com"), is("helloworld.com"));
-		assertThat(fileEntryService.getTestNameFromUrl("http://helloworld.com/wewe.nhn"), is("helloworld.com/wewe.nhn"));
-		assertThat(fileEntryService.getTestNameFromUrl("http://helloworld.com/wewe.nhn?wow=%dd"),
+		assertThat(fileEntryService.getPathFromUrl("http://helloworld"), is("helloworld"));
+		assertThat(fileEntryService.getPathFromUrl("http://helloworld.com"), is("helloworld.com"));
+		assertThat(fileEntryService.getPathFromUrl("http://helloworld.com/wewe.nhn"), is("helloworld.com/wewe.nhn"));
+		assertThat(fileEntryService.getPathFromUrl("http://helloworld.com/wewe.nhn?wow=%dd"),
 						is("helloworld.com/wewe.nhn"));
+
+	}
+
+	@Test
+	public void testPathDivide() {
+		String[] dividePathAndFile = fileEntryService.dividePathAndFile("helloworld.com/hello");
+		assertThat(dividePathAndFile[0], is("helloworld.com"));
+		assertThat(dividePathAndFile[1], is("hello"));
+
+		dividePathAndFile = fileEntryService.dividePathAndFile("helloworld.com");
+		assertThat(dividePathAndFile[0], is(""));
+		assertThat(dividePathAndFile[1], is("helloworld.com"));
+
 	}
 
 	@Test(expected = NGrinderRuntimeException.class)
 	public void testFileNameFromInvalidUrl() {
-		fileEntryService.getTestNameFromUrl("htt22p://helloworld22");
+		fileEntryService.getPathFromUrl("htt22p://helloworld22");
 	}
 
 }

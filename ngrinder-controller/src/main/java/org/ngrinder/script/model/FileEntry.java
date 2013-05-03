@@ -13,6 +13,7 @@
  */
 package org.ngrinder.script.model;
 
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 
 import java.util.HashMap;
@@ -209,6 +210,9 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	}
 
 	public Map<String, String> getProperties() {
+		if (this.properties == null) {
+			return newHashMap();
+		}
 		return this.properties;
 	}
 

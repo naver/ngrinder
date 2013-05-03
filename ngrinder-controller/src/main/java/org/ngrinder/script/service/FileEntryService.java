@@ -22,12 +22,12 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.HttpContainerContext;
@@ -288,13 +288,22 @@ public class FileEntryService {
 		fileEntityRepository.delete(user, fileList.toArray(new String[] {}));
 	}
 
-	String getTestNameFromUrl(String urlString) {
+	String getPathFromUrl(String urlString) {
 		try {
 			URL url = new URL(urlString);
 			String urlPath = "/".equals(url.getPath()) ? "" : url.getPath();
 			return (url.getHost() + urlPath).replaceAll("[\\&\\?\\%\\-]", "_");
 		} catch (MalformedURLException e) {
 			throw new NGrinderRuntimeException("Error while translating " + urlString, e);
+		}
+	}
+
+	String[] dividePathAndFile(String path) {
+		int lastIndexOf = path.lastIndexOf("/");
+		if (lastIndexOf == -1) {
+			return new String[] { path, "" };
+		} else {
+			return new String[] { path.substring(0, lastIndexOf), path.substring(lastIndexOf + 1) };
 		}
 	}
 
@@ -305,6 +314,8 @@ public class FileEntryService {
 	 *            user
 	 * @param path
 	 *            base path path
+	 * @param fileName
+	 *            fileName
 	 * @param name
 	 *            name
 	 * @param url
@@ -318,7 +329,7 @@ public class FileEntryService {
 	public FileEntry prepareNewEntry(User user, String path, String fileName, String name, String url,
 					ScriptHandler scriptHandler, boolean libAndResource) {
 		if (scriptHandler instanceof ProjectHandler) {
-			scriptHandler.prepareScriptEnv(user, path, name, url, libAndResource);
+			scriptHandler.prepareScriptEnv(user, path, fileName, name, url, libAndResource);
 			return null;
 		}
 		path = PathUtil.join(path, fileName);
@@ -327,6 +338,8 @@ public class FileEntryService {
 		fileEntry.setContent(loadTemplate(user, scriptHandler, url, name));
 		if (!"http://please_modify_this.com".equals(url)) {
 			fileEntry.setProperties(buildMap("targetHosts", UrlUtils.getHost(url)));
+		} else {
+			fileEntry.setProperties(new HashMap<String, String>());
 		}
 		return fileEntry;
 	}
@@ -343,14 +356,15 @@ public class FileEntryService {
 	 * @return created new {@link FileEntry}
 	 */
 	public FileEntry prepareNewEntryForQuickTest(User user, String url, ScriptHandler scriptHandler) {
-		String path = getTestNameFromUrl(url);
+		String path = getPathFromUrl(url);
 		String host = UrlUtils.getHost(url);
 		FileEntry defaultQuickTestFile = scriptHandler.getDefaultQuickTestFile(user, path);
 		if (scriptHandler instanceof ProjectHandler) {
-			prepareNewEntry(user, path, "", host, url, scriptHandler, false);
+			String[] pathPart = dividePathAndFile(path);
+			prepareNewEntry(user, pathPart[0], pathPart[1], host, url, scriptHandler, false);
 		} else {
-			FileEntry fileEntry = prepareNewEntry(user, path, FilenameUtils.getName(defaultQuickTestFile.getPath()),
-							host, url, scriptHandler, false);
+			FileEntry fileEntry = prepareNewEntry(user, path, defaultQuickTestFile.getFileName(), host, url,
+							scriptHandler, false);
 			fileEntry.setDescription("Quick test for " + url);
 			save(user, fileEntry);
 		}

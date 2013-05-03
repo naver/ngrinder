@@ -225,9 +225,8 @@ public class FileEntryController extends NGrinderBaseController {
 		ScriptHandler scriptHandler = fileEntryService.getScriptHandler(scriptType);
 		FileEntry entry = new FileEntry();
 		entry.setPath(fileName);
-		String expectedFullPath = path + "/" + fileName;
 		if (scriptHandler instanceof ProjectHandler) {
-			if (!fileEntryService.hasFileEntry(user, expectedFullPath)) {
+			if (!fileEntryService.hasFileEntry(user, PathUtil.join(path, fileName))) {
 				fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl, scriptHandler,
 								createLibAndResources);
 				redirectAttributes.addFlashAttribute("message", fileName + " project is created.");
@@ -239,8 +238,9 @@ public class FileEntryController extends NGrinderBaseController {
 			}
 
 		} else {
-			if (fileEntryService.hasFileEntry(user, expectedFullPath)) {
-				model.addAttribute("file", fileEntryService.getFileEntry(user, expectedFullPath));
+			String fullPath = PathUtil.join(path, fileName);
+			if (fileEntryService.hasFileEntry(user, fullPath)) {
+				model.addAttribute("file", fileEntryService.getFileEntry(user, fullPath));
 			} else {
 				model.addAttribute("file", fileEntryService.prepareNewEntry(user, path, fileName, name, testUrl,
 								scriptHandler, createLibAndResources));

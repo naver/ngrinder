@@ -34,6 +34,9 @@ public abstract class UrlUtils {
 	 */
 	public static String getHost(String url) {
 		try {
+			if (!url.startsWith("http")) {
+				url = "http://" + url;
+			}
 			return StringUtils.trim(new URL(url).getHost());
 		} catch (MalformedURLException e) {
 			return "";

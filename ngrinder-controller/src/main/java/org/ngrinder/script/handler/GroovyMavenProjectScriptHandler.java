@@ -146,9 +146,10 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	}
 
 	@Override
-	public boolean prepareScriptEnv(User user, String path, String name, String url, boolean createLib) {
+	public boolean prepareScriptEnv(User user, String path, String fileName, String name, String url, boolean createLib) {
 		File scriptTemplateDir;
 		FileEntryRepository fileEntryRepository = getFileEntryRepository();
+		path = PathUtil.join(path, fileName);
 		try {
 			// Create Dir entry
 			{
@@ -164,16 +165,15 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 			scriptTemplateDir = new ClassPathResource("/script_template/" + getKey()).getFile();
 			for (File each : FileUtils.listFiles(scriptTemplateDir, null, true)) {
 				try {
-					String substring = each.getPath().substring(scriptTemplateDir.getPath().length());
+					String subpath = each.getPath().substring(scriptTemplateDir.getPath().length());
 					String fileContent = FileUtils.readFileToString(each, "UTF8");
 					fileContent = fileContent.replace("${usernName}", user.getUserName());
 					fileContent = fileContent.replace("${name}", name);
 					fileContent = fileContent.replace("${url}", url);
 					FileEntry fileEntry = new FileEntry();
 					fileEntry.setContent(fileContent);
-					fileEntry.setPath(FilenameUtils.normalize(path + substring, true));
+					fileEntry.setPath(FilenameUtils.normalize(PathUtil.join(path, subpath), true));
 					fileEntry.setDescription("create groovy maven project");
-
 					fileEntryRepository.save(user, fileEntry, "UTF8");
 				} catch (IOException e) {
 					throw new NGrinderRuntimeException("Error while saving " + each.getName(), e);
