@@ -322,7 +322,7 @@ public class FileEntryService {
 		if (!proceed) {
 			return null;
 		}
-		String content = loadTemplate(user, scriptHandler, url);
+		String content = loadTemplate(user, scriptHandler, url, fileName);
 		fileEntry.setContent(content);
 		fileEntry.setProperties(buildMap("targetHosts", UrlUtils.getHost(url)));
 		return fileEntry;
@@ -356,12 +356,15 @@ public class FileEntryService {
 	 *            handler
 	 * @param url
 	 *            url
+	 * @param projectName
+	 *            projectName
 	 * @return generated test script
 	 */
-	public String loadTemplate(User user, ScriptHandler handler, String url) {
+	public String loadTemplate(User user, ScriptHandler handler, String url, String name) {
 		Map<String, Object> map = newHashMap();
 		map.put("url", url);
-		map.put("user", user);
+		map.put("userName", user.getUserName());
+		map.put("name", name);
 		return handler.getScriptTemplate(map);
 	}
 

@@ -297,10 +297,8 @@ public class FileEntryRepository {
 		if (fileEntry.getFileType() == FileType.PYTHON_SCRIPT) {
 			editor.changeFileProperty(fileEntry.getPath(), "targetHosts", SVNPropertyValue.create(""));
 		}
-		if (fileEntry.getFileType() != FileType.DIR) {
-			for (Entry<String, String> each : fileEntry.getProperties().entrySet()) {
-				editor.changeFileProperty(fileEntry.getPath(), each.getKey(), SVNPropertyValue.create(each.getValue()));
-			}
+		for (Entry<String, String> each : fileEntry.getProperties().entrySet()) {
+			editor.changeFileProperty(fileEntry.getPath(), each.getKey(), SVNPropertyValue.create(each.getValue()));
 		}
 	}
 
@@ -326,7 +324,7 @@ public class FileEntryRepository {
 			SVNRepository repo = svnClientManager.createRepository(SVNURL.fromFile(getUserRepoDirectory(user)), true);
 			SVNDirEntry dirEntry = repo.info(fileEntry.getPath(), -1);
 
-			// Add base pathes
+			// Add base paths
 			String fullPath = "";
 			// Check.. first
 			for (String each : getPathFragment(fileEntry.getPath())) {

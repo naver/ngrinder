@@ -136,13 +136,13 @@ public class FileEntryController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get the SVN url breadcrumbs HTML string.
+	 * Get the SVN url BreadCrumbs HTML string.
 	 * 
 	 * @param user
 	 *            user
 	 * @param path
 	 *            path
-	 * @return constructured HTML
+	 * @return generated HTML
 	 */
 	public String getSvnUrlBreadcrumbs(User user, String path) {
 		String contextPath = fileEntryService.getCurrentContextPathFromUserRequest();
@@ -224,17 +224,19 @@ public class FileEntryController extends NGrinderBaseController {
 			if (!fileEntryService.hasFileEntry(user, expectedFullPath)) {
 				fileEntryService.prepareNewEntry(user, path, fileName, testUrl, scriptHandler, createLibAndResources);
 				redirectAttributes.addFlashAttribute("message", fileName + " project is created.");
+				return "redirect:/script/list/" + path + "/" + fileName;
 			} else {
 				redirectAttributes.addFlashAttribute("exception", fileName
 								+ " is already existng. Please choose the different name");
+				return "redirect:/script/list/" + path + "/";
 			}
-			return "redirect:/script/list/" + path;
+
 		} else {
 			if (fileEntryService.hasFileEntry(user, expectedFullPath)) {
 				model.addAttribute("file", fileEntryService.getFileEntry(user, expectedFullPath));
 			} else {
-				model.addAttribute("file",
-								fileEntryService.prepareNewEntry(user, path, fileName, testUrl, scriptHandler, createLibAndResources));
+				model.addAttribute("file", fileEntryService.prepareNewEntry(user, path, fileName, testUrl,
+								scriptHandler, createLibAndResources));
 			}
 		}
 		model.addAttribute("scriptHandler", scriptHandler);

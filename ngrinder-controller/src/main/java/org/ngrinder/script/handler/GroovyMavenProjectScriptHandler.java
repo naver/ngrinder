@@ -13,6 +13,7 @@
  */
 package org.ngrinder.script.handler;
 
+import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 
 import java.io.File;
@@ -147,12 +148,24 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 		File scriptTemplateDir;
 		FileEntryRepository fileEntryRepository = getFileEntryRepository();
 		try {
+			// Create Dir entry
+			{
+				FileEntry dirEntry = new FileEntry();
+				dirEntry.setPath(path);
+				// Make it eclipse default folder ignored.
+				dirEntry.setProperties(buildMap("svn:ignore", ".project\n.classpath\n.settings\ntarget"));
+				dirEntry.setFileType(FileType.DIR);
+				dirEntry.setDescription("create groovy maven project");
+				fileEntryRepository.save(user, dirEntry, null);
+			}
+			// Create each template entries
 			scriptTemplateDir = new ClassPathResource("/script_template/" + getKey()).getFile();
 			for (File each : FileUtils.listFiles(scriptTemplateDir, null, true)) {
 				try {
 					String substring = each.getPath().substring(scriptTemplateDir.getPath().length());
 					String fileContent = FileUtils.readFileToString(each, "UTF8");
-					fileContent = fileContent.replace("${project_name}", filename);
+					fileContent = fileContent.replace("${usernName}", user.getUserName());
+					fileContent = fileContent.replace("${name}", filename);
 					fileContent = fileContent.replace("${url}", url);
 					FileEntry fileEntry = new FileEntry();
 					fileEntry.setContent(fileContent);
