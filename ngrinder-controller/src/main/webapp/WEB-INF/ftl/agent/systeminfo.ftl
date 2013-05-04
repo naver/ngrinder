@@ -20,7 +20,7 @@
 			var jqplots = [];
 			var maxCPU = 0;
             var maxMemory = 0;
-            
+            var errorCount = 0;
             $(document).ready(function() {
             
             	$('#targetInfoModal').css({
@@ -29,8 +29,9 @@
 			        }
     			});
             	initChartData();
-            	if(getStatus())
-                	timer=window.setInterval("getStatus()",interval * 1000);
+            	if (getStatus()) {
+                	timer = window.setInterval("getStatus()",interval * 1000);
+            	}
             });
             
             function getMax(prev, current) {
@@ -62,11 +63,24 @@
                     		maxMemory = getMax(maxMemory, sys_usedMemory.aElement);
                         	showChart('memoryDiv', sys_usedMemory.aElement, 1, formatMemory, maxMemory);
                             result = true;
-                        } 
+                            errorCount = 0;
+                        } else {
+                        	errorCount = errorCount + 1;
+                        	if (errorCount > 3) {
+                                showErrorMsg("Get monitor data failed.");
+                                result = false;
+                                if (timer) {
+                            		window.clearInterval(timer);
+                            	}                        		
+                        	}
+                        }
                     },
                     error: function() {
                         showErrorMsg("Get monitor data failed.");
                         result = false;
+                        if (timer) {
+                    		window.clearInterval(timer);
+                    	}
                     }
                 });
                 return result;

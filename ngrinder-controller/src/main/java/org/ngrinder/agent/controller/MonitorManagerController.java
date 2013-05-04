@@ -20,6 +20,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
@@ -74,27 +75,28 @@ public class MonitorManagerController extends NGrinderBaseController {
 	 * @param ip
 	 *            target host IP
 	 * @return json message
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	@RequestMapping("/status")
 	@ResponseBody
 	public String getRealTimeMonitorData(ModelMap model, @RequestParam final String ip) throws Exception {
 		final Map<String, Object> systemInfoMap = Maps.newHashMap();
 		systemInfoMap.put(JSON_SUCCESS, true);
-
-		Future<SystemInfo> submit = Executors.newCachedThreadPool().submit(new Callable<SystemInfo>() {
-			@Override
-			public SystemInfo call() {
-				return monitorInfoStore.getSystemInfo(ip, getConfig().getMonitorPort());
-			}
-		});
-		systemInfoMap
-				.put("systemData",
-						new SystemDataModel(checkNotNull(submit.get(3, TimeUnit.SECONDS),
-								"Get systemInfo error from [%s]", ip), "UNKNOWN"));
-		String jsonStr = toJson(systemInfoMap);
-
-		return jsonStr;
+		try {
+			Future<SystemInfo> submit = Executors.newCachedThreadPool().submit(new Callable<SystemInfo>() {
+				@Override
+				public SystemInfo call() {
+					return monitorInfoStore.getSystemInfo(ip, getConfig().getMonitorPort());
+				}
+			});
+			systemInfoMap.put(
+							"systemData",
+							new SystemDataModel(checkNotNull(submit.get(2, TimeUnit.SECONDS),
+											"Get systemInfo error from [%s]", ip), "UNKNOWN"));
+		} catch (TimeoutException e) {
+			systemInfoMap.put(JSON_SUCCESS, false);
+		}
+		return toJson(systemInfoMap);
 	}
 
 	/**

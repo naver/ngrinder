@@ -16,11 +16,13 @@ package org.ngrinder.perftest.service.monitor;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**
@@ -37,12 +39,6 @@ public class MonitorInfoStore {
 	private Map<String, MonitorClientSerivce> monitorInfoMap = Collections
 					.synchronizedMap(new HashMap<String, MonitorClientSerivce>());
 
-	private void add(String ip, MonitorClientSerivce monitorClient) {
-		synchronized (this) {
-			monitorInfoMap.put(ip, monitorClient);
-		}
-	}
-
 	/**
 	 * Get monitor data from MBClient.
 	 * 
@@ -57,9 +53,26 @@ public class MonitorInfoStore {
 		if (monitorClient == null) {
 			monitorClient = applicationContext.getBean(MonitorClientSerivce.class);
 			monitorClient.init(ip, port);
+			monitorClient.setLastAccessedTime(System.currentTimeMillis());
 			add(ip, monitorClient);
 		}
+		monitorClient.setLastAccessedTime(System.currentTimeMillis());
 		return monitorClient.getMonitorData();
+	}
+
+	private void add(String ip, MonitorClientSerivce monitorClient) {
+		synchronized (this) {
+			monitorInfoMap.put(ip, monitorClient);
+		}
+	}
+
+	@Scheduled(fixedDelay = 30000)
+	public void deleteUnusedMonitorClient() {
+		for (Entry<String, MonitorClientSerivce> each : monitorInfoMap.entrySet()) {
+			if ((System.currentTimeMillis() - each.getValue().getLastAccessedTime()) > 30000) {
+				remove(each.getKey());
+			}
+		}
 	}
 
 	/**

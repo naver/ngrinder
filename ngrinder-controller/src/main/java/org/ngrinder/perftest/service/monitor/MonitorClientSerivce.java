@@ -60,6 +60,7 @@ public class MonitorClientSerivce {
 
 	private FileWriter fileWriter;
 
+	private long lastAccessedTime = 0;
 	/**
 	 * default constructor, used to debug the non-singleton of this class.
 	 */
@@ -215,5 +216,13 @@ public class MonitorClientSerivce {
 		} catch (IOException e) {
 			LOGGER.error("Error while MonitorExecutorWorker is recoding, e", e);
 		}
+	}
+
+	public long getLastAccessedTime() {
+		return lastAccessedTime;
+	}
+
+	public void setLastAccessedTime(long lastAccessedTime) {
+		this.lastAccessedTime = lastAccessedTime;
 	}
 }
