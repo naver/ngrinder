@@ -39,11 +39,11 @@ rel="popover" placement="bottom"></div>
 	</div>
 </div>
 
-<div class="modal hide fade" id="targetInfoModal">
+<div class="modal hide fade" id="targetInfoModal" style="width:580px">
 		<div class="modal-header" style="border: none;">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 		</div>
-		<div class="modal-body" id="targetInfo_modal" style="max-height:1200px; padding-left:45px"></div>	
+		<div class="modal-body" id="targetInfoModalContainer" style="max-height:1200px; padding-left:30px"></div>	
 </div>
 
 <script>
@@ -108,7 +108,7 @@ rel="popover" placement="bottom"></div>
 	      $(".div-host p a[id='hostID']").live("click", function() {
 	      	var url = "${req.getContextPath()}/monitor/info?ip="+$.trim($(this).text());
 	      	
-	      	$("#targetInfo_modal").load(url, function(){
+	      	$("#targetInfoModalContainer").load(url, function(){
 				$('#targetInfoModal').modal('show');
 			});
 			
