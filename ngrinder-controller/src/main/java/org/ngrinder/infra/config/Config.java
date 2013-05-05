@@ -190,7 +190,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 * @return true if enabled.
 	 */
 	public boolean isUsageReportEnabled() {
-		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINER_USAGE_REPORT, true);
+		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINER_PROP_USAGE_REPORT, true);
 	}
 
 	/**
@@ -409,6 +409,15 @@ public class Config implements IConfig, NGrinderConstants {
 		return getSystemProperties().getPropertyBoolean("testmode", false);
 	}
 
+	/**
+	 * Check if it's the user security enabled mode.
+	 * 
+	 * @return true if user security is enabled.
+	 */
+	public boolean isUserSecurityEnabled() {
+		return getSystemProperties().getPropertyBoolean("user.security", true);
+	}
+	
 	/**
 	 * Check if it's the security enabled mode.
 	 * 
