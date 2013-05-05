@@ -128,6 +128,7 @@ public class UserController extends NGrinderBaseController {
 		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
 		User userFromDB = userService.getUserByIdWithoutCache(userId);
 		model.addAttribute("user", userFromDB);
+		model.addAttribute("userSecurity", config.isUserSecurityEnabled());
 		getUserShareList(userFromDB, model);
 		return "user/detail";
 	}
@@ -221,13 +222,12 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping("/profile")
 	public String userProfile(User user, ModelMap model) {
 		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
-
 		User currentUser = userService.getUserByIdWithoutCache(user.getUserId());
 		model.addAttribute("user", currentUser);
 		model.addAttribute("demo", config.isDemo());
 		getUserShareList(currentUser, model);
 		model.addAttribute("action", "profile");
-
+		model.addAttribute("userSecurity", config.isUserSecurityEnabled());
 		return "user/info";
 	}
 

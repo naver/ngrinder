@@ -182,6 +182,7 @@
 	    			required: true,
 	    			maxlength: 20
 	    		},
+	    		<#if userSecurity?? && userSecurity==true>
 	    		mobilePhone: {
 	    			userPhoneNumber: true
 	    		},
@@ -189,6 +190,7 @@
 	    			required: true,
 	    			email: true
 	    		},
+	    		</#if>
 	    		password: {
 	    			<#if !(user?has_content)>
 	    			required: true,

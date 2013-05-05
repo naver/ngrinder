@@ -85,15 +85,11 @@ public class User extends BaseModel<User> {
 	private User ownerUser;
 
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(
-			name = "SHARED_USER", joinColumns = @JoinColumn(name = "owner_id"), 
-			inverseJoinColumns = @JoinColumn(name = "follow_id"))
+	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "owner_id"), inverseJoinColumns = @JoinColumn(name = "follow_id"))
 	private List<User> followers;
 
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(
-			name = "SHARED_USER", joinColumns = @JoinColumn(name = "follow_id"), 
-			inverseJoinColumns = @JoinColumn(name = "owner_id"))
+	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "follow_id"), inverseJoinColumns = @JoinColumn(name = "owner_id"))
 	private List<User> owners;
 
 	/**
@@ -189,6 +185,7 @@ public class User extends BaseModel<User> {
 		return mobilePhone;
 	}
 
+	@ForceMergable
 	public void setMobilePhone(String mobilePhone) {
 		this.mobilePhone = mobilePhone;
 	}
@@ -245,6 +242,7 @@ public class User extends BaseModel<User> {
 		return email;
 	}
 
+	@ForceMergable
 	public void setEmail(String email) {
 		this.email = email.toLowerCase();
 	}
@@ -330,7 +328,7 @@ public class User extends BaseModel<User> {
 		userInfo.setUserId(this.getUserId());
 		userInfo.setUserName(this.getUserName());
 		userInfo.setEmail(this.getEmail());
-		
+
 		return userInfo;
 	}
 
