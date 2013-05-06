@@ -34,6 +34,46 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>net.sf.grinder</groupId>
+			<artifactId>grinder</artifactId>
+			<version>3.9.1</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jython</artifactId>
+					<groupId>org.python</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>clojure</artifactId>
+					<groupId>org.clojure</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jedit-syntax</artifactId>
+					<groupId>net.sf.jedit-syntax</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>grinder-xmlbeans</artifactId>
+					<groupId>net.sf.grinder</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit-dep</artifactId>
+			<version>4.8.2</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>hamcrest-core</artifactId>
+					<groupId>org.hamcrest</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-all</artifactId>
+			<version>1.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -41,43 +41,7 @@
 	</properties>
 
 	<dependencies>
-		<!-- For UnitTest -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit-dep</artifactId>
-			<version>4.8.2</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>hamcrest-core</artifactId>
-					<groupId>org.hamcrest</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 
-		<dependency>
-			<groupId>org.easytesting</groupId>
-			<artifactId>fest-assert</artifactId>
-			<version>1.4</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-all</artifactId>
-			<version>1.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>1.8.5</version>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.hamcrest</groupId>
-					<artifactId>hamcrest-core</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
 
 		<!-- For Log -->
 		<dependency>
@@ -97,22 +61,28 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.6.4</version>
 		</dependency>
-
 		<dependency>
 			<groupId>net.sf.grinder</groupId>
 			<artifactId>grinder</artifactId>
 			<version>3.9.1</version>
 			<exclusions>
 				<exclusion>
+					<artifactId>clojure</artifactId>
+					<groupId>org.clojure</groupId>
+				</exclusion>
+				<exclusion>
 					<artifactId>jython</artifactId>
 					<groupId>org.python</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>grinder-xmlbeans</artifactId>
+					<groupId>net.sf.grinder</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>jedit-syntax</artifactId>
+					<groupId>net.sf.jedit-syntax</groupId>
+				</exclusion>
 			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.python</groupId>
-			<artifactId>jython-standalone</artifactId>
-			<version>2.5.3</version>
 		</dependency>
 
 		<!-- Commons -->
@@ -198,7 +168,7 @@
 					<target>${jdk-version}</target>
 					<encoding>${source-encoding}</encoding>
 				</configuration>
-		</plugin>
+			</plugin>
 			<plugin>
 				<groupId>com.atlassian.maven.plugins</groupId>
 				<artifactId>maven-clover2-plugin</artifactId>
