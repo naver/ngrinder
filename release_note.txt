@@ -5,15 +5,48 @@ We believe nGrinder 3.2 version is the most developer friendly performance testi
 
 - New feature and change
   * We support not only Jython as a script language but also Groovy + maven and JUnit styled test cases in 3.2. 
-    It is the amazing approach which you can test and debug the test using your IDE such as eclipse.
-    Check out TBD
+    It is the amazing approach in which you can easily pre-test and debug the test using your IDE such as eclipse
+    connecting to nGrinder subversion repository.
+    Check out http://www.cubrid.org/wiki_ngrinder/entry/groovy-script
   * IE 10 is supported. We added IE9 compatibility view option to show nGrinder correctly.
-  * Graph fluctuation by nGrinder internal processing is reduced. Now you can see the more stabled graph.
-  * The nGrinder usage is reported to our Google analytics. We only collect the controller IP and the count of performance test.
-    If you don't like it, please set ngrinder.usage.report=false in system.conf
-  * A User can specify the more detailed memory option by providing grinder.properties file as same folder of script.
-  * SVN user can enjoy the user switching feature as well.
+  * Graph fluctuation by nGrinder internal processing overhead is reduced. Now you can see the more stable graph.
+  * The nGrinder usage is reported to our Google analytics. We only collect the controller IP and the count of performance test run the last day.
+    If you don't like it, please set usage.report=false in system.conf
+  * A User can run agent with the more detailed memory options 
+    by providing grinder.memory.permsize=Value and grinder.memory.maxpermsize=Value in mega unit in grinder.properties file as same folder of script.
+  * SVN user can enjoy the user switching feature as well just like you do in the browser.
   * And.. several minor UI enhancements.
+
+Bug
+[NGRINDER-414] - Fix access error to the shared user's repo by SVN
+[NGRINDER-449] - Fix script display when 2 admin users have a script with same name
+[NGRINDER-580] - Fix the graph fluctuation
+[NGRINDER-584] - Make agent number as 0 in script validation phase
+[NGRINDER-587] - Fix PermGen error when running a big script
+[NGRINDER-589] - Exclude please_modify_this.com in the target host string
+[NGRINDER-599] - Fix column size overflow for very many tests
+[NGRINDER-600] - Fix IE10 compatibility in which modal dialog box is not shown
+
+Improvement
+[NGRINDER-85] - Make target monitor port is configurable.
+[NGRINDER-431] - Make cluster mode configuration more stable
+[NGRINDER-582] - Make duration updated after the test is finished
+[NGRINDER-585] - Fix to return active page when agent is approved or disapprove.
+[NGRINDER-586] - Forward nohub log to /tmp directory
+[NGRINDER-590] - Report the ngrinder usage to google analytics
+[NGRINDER-593] - Make long script path visible
+[NGRINDER-597] - Make the user password unchangeable in demo mode
+[NGRINDER-598] - Add svn URL breadcrumb
+[NGRINDER-601] - Make the validation result panel expandable
+[NGRINDER-602] - Show the user id in perftest list
+[NGRINDER-603] - Make admin see the lib and resources of other users.
+[NGRINDER-604] - Make mobile phone number and email fields in user profile not mandatory
+
+New Feature
+[NGRINDER-476] - Add realtime monitor review page
+[NGRINDER-561] - Add generic JNLP download feature for recorder and agent
+[NGRINDER-591] - Add groovy support
+[NGRINDER-594] - Add groovy maven project
 
 
 3.1.3 (2013.03.29)
