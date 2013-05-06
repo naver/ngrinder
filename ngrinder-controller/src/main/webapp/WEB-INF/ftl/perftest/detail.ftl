@@ -46,7 +46,11 @@
 	
 	
     div.modal-body div.chart {
-		border:1px solid #878988; height:250px; min-width:500px; margin-bottom:12px; padding:5px 
+		border:1px solid #878988; 
+		height:250px; 
+		min-width:500px; 
+		margin-bottom:12px; 
+		padding:5px 
     }
 	
 	.table thead th {
