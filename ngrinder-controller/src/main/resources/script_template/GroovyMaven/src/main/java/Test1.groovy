@@ -29,7 +29,7 @@ class Test1 {
 	public static HTTPRequest request;
 
 	@BeforeProcess
-	public static void beforeClass() {
+	public static void beforeProcess() {
 		test = new GTest(1, "${name}");
 		request = new HTTPRequest();
 		test.record(request);
