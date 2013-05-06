@@ -64,7 +64,7 @@
 						<td>${(agent.status)!}</td>
 						<td>
 							<div class="btn-group" data-toggle="buttons-radio">
-								<button type="button" class="btn btn-mini btn-primary unapproved <#if agent.isApproved() == false>active</#if>" sid="${agent.id}"><@spring.message "agent.table.unapproved"/> </button>
+								<button type="button" class="btn btn-mini btn-primary disapproved <#if agent.isApproved() == false>active</#if>" sid="${agent.id}"><@spring.message "agent.table.disapproved"/> </button>
 								<button type="button" class="btn btn-mini btn-primary approved <#if agent.isApproved() == true>active</#if>" sid="${agent.id}"><@spring.message "agent.table.approved"/> </button>
 							</div>
 						</td> 
@@ -116,7 +116,7 @@
 				     );
 				});
 				
-				$(".unapproved").live("click", function() {
+				$(".disapproved").live("click", function() {
 					var sid = $(this).attr("sid");
 					$.post(
 				  		"${req.getContextPath()}/agent/" + sid + "/approve",
@@ -124,7 +124,7 @@
 				  			"approve": "false"
 				  		},
 				  		function() {
-				  			showSuccessMsg("<@spring.message "agent.management.toBeUnapproved"/>");
+				  			showSuccessMsg("<@spring.message "agent.management.toBeDisapproved"/>");
 				  		}
 				     );					
 				});
