@@ -43,7 +43,8 @@ public class GroovyGrinderClassPathProcessor extends AbstractGrinderClassPathPro
 		usefulJarList.add("hamcrest");
 		usefulJarList.add("fest");
 		usefulJarList.add("junit");
-
+		usefulJarList.add("commons-io");
+		usefulJarList.add("commons-lang");
 	}
 
 }

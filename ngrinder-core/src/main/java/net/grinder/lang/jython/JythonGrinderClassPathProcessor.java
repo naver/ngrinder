@@ -13,6 +13,8 @@
  */
 package net.grinder.lang.jython;
 
+import java.util.List;
+
 import net.grinder.util.AbstractGrinderClassPathProcessor;
 
 /**
@@ -32,8 +34,11 @@ public class JythonGrinderClassPathProcessor extends AbstractGrinderClassPathPro
 
 	@Override
 	protected void initMore() {
-		getUsefulJarList().add("jython-2.5");
-		getUsefulJarList().add("jython-standalone-2.5");
+		List<String> usefulJarList = getUsefulJarList();
+		usefulJarList.add("jython-2.5");
+		usefulJarList.add("jython-standalone-2.5");
+		usefulJarList.add("commons-io");
+		usefulJarList.add("commons-lang");
 	}
 
 }
