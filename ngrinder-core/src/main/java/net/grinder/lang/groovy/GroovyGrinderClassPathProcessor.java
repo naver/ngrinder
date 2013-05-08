@@ -36,12 +36,9 @@ public class GroovyGrinderClassPathProcessor extends AbstractGrinderClassPathPro
 	protected void initMore() {
 		// jython is also necessary due to some initialization code.
 		List<String> usefulJarList = getUsefulJarList();
-		usefulJarList.add("jython-2.5");
-		usefulJarList.add("jython-standalone-2.5");
 		usefulJarList.add("ngrinder-groovy");
 		usefulJarList.add("groovy");
 		usefulJarList.add("hamcrest");
-		usefulJarList.add("fest");
 		usefulJarList.add("junit");
 		usefulJarList.add("commons-io");
 		usefulJarList.add("commons-lang");

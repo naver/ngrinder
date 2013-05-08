@@ -45,7 +45,7 @@ class Test1 {
 	}
 
 	@Test
-	public void testHello(){
+	public void test(){
 		HTTPResponse result = request.GET("${url}");
 
 		if (result.statusCode == 301 || result.statusCode == 302) {

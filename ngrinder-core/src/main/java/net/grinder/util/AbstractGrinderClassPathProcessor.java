@@ -66,7 +66,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 		List<String> classPathList = new ArrayList<String>();
 		for (String eachClassPath : checkNotNull(classPath).split(File.pathSeparator)) {
 			String filename = FilenameUtils.getName(eachClassPath);
-			if (isUselessJar(filename) || isUsefulReferenceProject(eachClassPath)) {
+			if (isUsefulJar(filename) || isUsefulReferenceProject(eachClassPath)) {
 				logger.trace("classpath :" + eachClassPath);
 				classPathList.add(eachClassPath);
 			}
@@ -161,7 +161,6 @@ public abstract class AbstractGrinderClassPathProcessor {
 		usefulJarList.add("ngrinder-patch");
 		usefulJarList.add("junit");
 		usefulJarList.add("hamcrest");
-		usefulJarList.add("groovy");
 
 		uselessJarList.add("jython-2.2");
 		uselessJarList.add("ngrinder-core");
@@ -182,9 +181,19 @@ public abstract class AbstractGrinderClassPathProcessor {
 		return false;
 	}
 
-	private boolean isUselessJar(String jarFilename) {
+	private boolean isUsefulJar(String jarFilename) {
+		if (isPatchJar(jarFilename)) {
+			return false;
+		}
+		
 		if (!"jar".equals(FilenameUtils.getExtension(jarFilename))) {
 			return false;
+		}
+
+		for (String jarName : uselessJarList) {
+			if (jarFilename.contains(jarName)) {
+				return false;
+			}
 		}
 
 		for (String jarName : usefulJarList) {
@@ -193,11 +202,6 @@ public abstract class AbstractGrinderClassPathProcessor {
 			}
 		}
 
-		for (String jarName : uselessJarList) {
-			if (jarFilename.contains(jarName)) {
-				return false;
-			}
-		}
 		return false;
 	}
 

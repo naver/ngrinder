@@ -161,7 +161,6 @@ public class PropertyBuilder {
 	}
 
 	protected static final long DEFAULT_XMX_SIZE = 500 * 1024 * 1024;
-	protected static final long DEFAULT_MIN_XMX_SIZE = 50 * 1024 * 1024;
 	protected static final long DEFAULT_MAX_XMX_SIZE = 1024 * 1024 * 1024;
 
 	protected StringBuilder addMemorySettings(StringBuilder jvmArguments) {
@@ -169,23 +168,22 @@ public class PropertyBuilder {
 		// For compatibility, try both.
 		int reservedMemoryUnit = properties.getInt("grinder.reserved.memory", 0);
 		if (reservedMemoryUnit == 0) {
-			reservedMemoryUnit = properties.getInt("grinder.memory.reserved", 100);
+			reservedMemoryUnit = properties.getInt("grinder.memory.reserved", 300);
 		}
 
 		int reservedMemory = Math.max(reservedMemoryUnit, 0) * 1024 * 1024;
 		int processCount = NumberUtils.toInt(processCountStr, 1);
 		long desirableXmx = DEFAULT_XMX_SIZE; // make 500M as default.
+		long permGen = 32 * 1024 * 1024;
 		try {
 			// Make a free memory room size of reservedMemory.
-			long actualFree = new Sigar().getMem().getActualFree() - reservedMemory;
+			long free = new Sigar().getMem().getFree() - reservedMemory;
 			// If memory enough..
-			desirableXmx = actualFree / processCount;
-
-			if (desirableXmx < (DEFAULT_MIN_XMX_SIZE)) {
-				LOGGER.error("There is very few memory availble {}. It's not enough to run test", actualFree);
-				desirableXmx = DEFAULT_MIN_XMX_SIZE;
-			} else if (this.useXmxLimit && desirableXmx > DEFAULT_MAX_XMX_SIZE) {
-				desirableXmx = DEFAULT_MAX_XMX_SIZE;
+			long perProcessTotalMemory = free / processCount;
+			desirableXmx = (long) (perProcessTotalMemory * 0.5);
+			permGen = Math.min((long) (perProcessTotalMemory * 0.2), 128 * 1024 * 1024);
+			if (this.useXmxLimit) {
+				desirableXmx = Math.min(DEFAULT_MAX_XMX_SIZE, desirableXmx);
 			}
 		} catch (UnsatisfiedLinkError e) {
 			LOGGER.error("Sigar lib link error: {}", e.getMessage());
@@ -195,21 +193,16 @@ public class PropertyBuilder {
 			desirableXmx = DEFAULT_XMX_SIZE;
 		}
 
-		jvmArguments.append(" -Xms" + getMemorySizeStr(desirableXmx / 2) + "m -Xmx" + getMemorySizeStr(desirableXmx)
-						+ "m ");
-		int permSize = properties.getInt("grinder.memory.permsize", 0);
-		if (permSize != 0) {
-			jvmArguments.append(" -XX:PermSize=").append(permSize).append("m ");
-		}
-		int maxPermSize = properties.getInt("grinder.memory.maxpermsize", 0);
-		if (maxPermSize != 0) {
-			jvmArguments.append(" -XX:MaxPermSize=").append(maxPermSize).append("m ");
-		}
+		jvmArguments.append(" -Xms" + getMemorySize(desirableXmx) + "m -Xmx" + getMemorySize(desirableXmx) + "m ");
+		jvmArguments.append(" -XX:PermSize=")
+						.append(properties.getInt("grinder.memory.permsize", getMemorySize(permGen))).append("m ");
+		jvmArguments.append(" -XX:MaxPermSize=")
+						.append(properties.getInt("grinder.memory.maxpermsize", getMemorySize(permGen))).append("m ");
 		return jvmArguments;
 	}
 
-	private String getMemorySizeStr(long desirableXmx) {
-		return String.valueOf(desirableXmx / (1024 * 1024));
+	private int getMemorySize(long memoryInByte) {
+		return (int) (memoryInByte / (1024 * 1024));
 	}
 
 	protected StringBuilder addServerMode(StringBuilder jvmArguments) {
