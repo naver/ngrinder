@@ -52,6 +52,7 @@ import org.ngrinder.model.AgentInfo;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Status;
 import org.ngrinder.perftest.model.NullSingleConsole;
+import org.ngrinder.perftest.service.samplinglistener.AgentDieHardListener;
 import org.ngrinder.perftest.service.samplinglistener.AgentLostDetectionListener;
 import org.ngrinder.perftest.service.samplinglistener.MonitorCollectorListener;
 import org.ngrinder.perftest.service.samplinglistener.PerfTestSamplingCollectorListener;
@@ -421,6 +422,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 						perfTestService));
 		singleConsole.addSamplingLifeCyleListener(new PluginRunListener(this.testSamplingRunnables, singleConsole,
 						perfTest, perfTestService));
+		singleConsole.addSamplingLifeCyleListener(new AgentDieHardListener(singleConsole, perfTest, perfTestService,
+						agentManager));
 	}
 
 	private Set<AgentInfo> createMonitorTargets(final PerfTest perfTest) {
