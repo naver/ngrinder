@@ -1,6 +1,7 @@
 import static net.grinder.script.Grinder.grinder
 import static org.junit.Assert.*
 import static org.hamcrest.Matchers.*
+import net.grinder.plugin.http.HTTPPluginControl;
 import net.grinder.plugin.http.HTTPRequest
 import net.grinder.script.GTest
 import net.grinder.script.Grinder
@@ -30,6 +31,7 @@ class Test1 {
 
 	@BeforeProcess
 	public static void beforeProcess() {
+		HTTPPluginControl.getConnectionDefaults().timeout = 6000;
 		test = new GTest(1, "${name}");
 		request = new HTTPRequest();
 		test.record(request);
