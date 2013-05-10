@@ -9,8 +9,8 @@ function getProcessCount(total) {
 		processCount = parseInt(total / 40) + 1;
 	}
 	
-	if (processCount > 20) {
-		processCount = 20;
+	if (processCount > 10) {
+		processCount = 10;
 	}
 	return processCount;
 }

@@ -43,8 +43,8 @@ import net.grinder.lang.Lang;
 import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.messages.console.AgentProcessReportMessage;
-import net.grinder.util.Directory;
 import net.grinder.util.AbstractGrinderClassPathProcessor;
+import net.grinder.util.Directory;
 import net.grinder.util.NetworkUtil;
 import net.grinder.util.thread.Condition;
 
@@ -379,6 +379,8 @@ public class AgentImplementationEx implements Agent {
 	 * 
 	 * @param properties
 	 *            system properties
+	 * @param handler
+	 *            language specific handler
 	 * @param logger
 	 *            logger
 	 * @return foremost classpath
@@ -395,17 +397,19 @@ public class AgentImplementationEx implements Agent {
 	 * 
 	 * @param properties
 	 *            system properties
+	 * @param handler
+	 *            Language specific handler
 	 * @param logger
 	 *            logger
-	 * @return filtered properties
+	 * @return new filtered properties
 	 */
 	private Properties filterSystemClassPath(Properties properties, AbstractLanguageHandler handler, Logger logger) {
 		String property = properties.getProperty("java.class.path", "");
 		logger.debug("Total System Class Path in total is " + property);
 
 		String newClassPath = handler.getClassPathProcesssor().filterClassPath(property, logger);
-
-		properties.setProperty("java.class.path", newClassPath);
+		Properties returnProperties = new Properties(properties);
+		returnProperties.setProperty("java.class.path", newClassPath);
 		logger.debug("Filtered System Class Path is " + newClassPath);
 		return properties;
 	}

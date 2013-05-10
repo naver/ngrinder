@@ -86,6 +86,8 @@ public class LocalScriptTestDriveService {
 			properties.setInt("grinder.processes", 1);
 			properties.setInt("grinder.threads", 1);
 			String grinderJVMClassPath = classPathProcessor.buildForemostClasspathBasedOnCurrentClassLoader(LOGGER)
+							+ File.pathSeparator
+							+ classPathProcessor.buildPatchClasspathBasedOnCurrentClassLoader(LOGGER)
 							+ File.pathSeparator + builder.buildCustomClassPath(true);
 			properties.setProperty("grinder.jvm.classpath", grinderJVMClassPath);
 			LOGGER.info("grinder.jvm.classpath  : {} ", grinderJVMClassPath);

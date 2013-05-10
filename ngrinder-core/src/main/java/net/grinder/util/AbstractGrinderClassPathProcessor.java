@@ -185,7 +185,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 		if (isPatchJar(jarFilename)) {
 			return false;
 		}
-		
+
 		if (!"jar".equals(FilenameUtils.getExtension(jarFilename))) {
 			return false;
 		}
@@ -219,6 +219,22 @@ public abstract class AbstractGrinderClassPathProcessor {
 			builder.append(each.getFile()).append(File.pathSeparator);
 		}
 		return filterForeMostClassPath(builder.toString(), logger);
+	}
+
+	/**
+	 * Construct the patch classPath from current classLoader.
+	 * 
+	 * @param logger
+	 *            logger
+	 * @return classpath optimized for grinder.
+	 */
+	public String buildPatchClasspathBasedOnCurrentClassLoader(Logger logger) {
+		URL[] urLs = ((URLClassLoader) AbstractGrinderClassPathProcessor.class.getClassLoader()).getURLs();
+		StringBuilder builder = new StringBuilder();
+		for (URL each : urLs) {
+			builder.append(each.getFile()).append(File.pathSeparator);
+		}
+		return filterPatchClassPath(builder.toString(), logger);
 	}
 
 	/**
