@@ -70,7 +70,7 @@ public class AgentDieHardListener implements SamplingLifeCycleListener {
 				perfTestService.markStatusAndProgress(
 								perfTest,
 								Status.ABNORMAL_TESTING,
-								String.format("DANGER!! %s agent is about to die due to lack of free memory.\nShutdown PerfTest %s by force for safety ",
+								String.format("DANGER!! %s agent is about to die due to lack of free memory.\nShutdown PerfTest %s by force for safety\nPlease decrease the vuser count.",
 												agentStates.getAgentName(), perfTest.getId()));
 			}
 		}
