@@ -269,7 +269,7 @@ public class AgentController implements Agent {
 		}
 
 		// Take only one file... if agent.send.all.logs are not set.
-		if (!agentConfig.getPropertyBoolean("agent.send.all.logs", false)) {
+		if (agentConfig.getPropertyBoolean("agent.send.all.logs", true)) {
 			logFiles = new File[] { logFiles[0] };
 		}
 
