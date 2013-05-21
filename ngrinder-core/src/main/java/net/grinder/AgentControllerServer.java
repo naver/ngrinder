@@ -81,7 +81,7 @@ public class AgentControllerServer {
 	 */
 	public void run() {
 		if (m_shutdown) {
-			throw new NGrinderRuntimeException("The console can not run because it's already shutdowned");
+			throw new NGrinderRuntimeException("The console can not be run because it's already shutdowned");
 		}
 		m_container.start();
 		m_container.getComponent(AgentProcessControlImplementation.class);

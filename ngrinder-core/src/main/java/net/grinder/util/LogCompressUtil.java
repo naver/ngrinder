@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Log compress utility. This class mainly provide the compress a singl log file.
+ * Log compress utility. This class mainly provide the compress a single log file.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -71,8 +71,8 @@ public abstract class LogCompressUtil {
 					}
 					zos.closeEntry();
 				} catch (IOException e) {
-					LOGGER.error("Error occurs while compress {}", each.getAbsolutePath());
-					LOGGER.error("Details", e);
+					LOGGER.error("Error occurs while compressing {}", each.getAbsolutePath());
+					LOGGER.error("The error detail is ", e);
 				} finally {
 					IOUtils.closeQuietly(fio);
 				}
@@ -81,8 +81,8 @@ public abstract class LogCompressUtil {
 			zos.flush();
 			return out.toByteArray();
 		} catch (IOException e) {
-			LOGGER.info("Error occurs while compress log : {} ", e.getMessage());
-			LOGGER.debug("Details", e);
+			LOGGER.error("Error occurs while compressing log : {} ", e.getMessage());
+			LOGGER.error("The error detail is ", e);
 			return null;
 		} finally {
 			IOUtils.closeQuietly(zos);
@@ -120,7 +120,7 @@ public abstract class LogCompressUtil {
 			return out.toByteArray();
 		} catch (IOException e) {
 			LOGGER.error("Error occurs while compress {}", logFile.getAbsolutePath());
-			LOGGER.error("Details", e);
+			LOGGER.error("The error detail is ", e);
 			return null;
 		} finally {
 			IOUtils.closeQuietly(zos);
@@ -137,15 +137,15 @@ public abstract class LogCompressUtil {
 	 * @param toFile
 	 *            file to be written
 	 */
-	public static void unCompress(byte[] zipEntry, File toFile) {
+	public static void decompress(byte[] zipEntry, File toFile) {
 		FileOutputStream fos = null;
 		ByteArrayInputStream bio = new ByteArrayInputStream(zipEntry);
 		try {
 			fos = new FileOutputStream(toFile);
-			unCompress(bio, fos, Long.MAX_VALUE);
+			decompress(bio, fos, Long.MAX_VALUE);
 		} catch (IOException e) {
 			LOGGER.error("Error occurs while uncompress {}", toFile.getAbsolutePath());
-			LOGGER.error("Details", e);
+			LOGGER.error("The error detail is ", e);
 			return;
 		} finally {
 			IOUtils.closeQuietly(fos);
@@ -154,7 +154,7 @@ public abstract class LogCompressUtil {
 	}
 
 	/**
-	 * Uncompress the given the {@link InputStream} into the given {@link OutputStream}.
+	 * Decompress the given the {@link InputStream} into the given {@link OutputStream}.
 	 * 
 	 * @param inputStream
 	 *            input stream of the compressed file
@@ -163,7 +163,7 @@ public abstract class LogCompressUtil {
 	 * @param limit
 	 *            the limit of the output
 	 */
-	public static void unCompress(InputStream inputStream, OutputStream outputStream, long limit) {
+	public static void decompress(InputStream inputStream, OutputStream outputStream, long limit) {
 		ZipInputStream zipInputStream = null;
 		try {
 			zipInputStream = new ZipInputStream(inputStream);
@@ -180,8 +180,8 @@ public abstract class LogCompressUtil {
 			}
 			outputStream.flush();
 		} catch (IOException e) {
-			LOGGER.error("Error occurs while uncompress");
-			LOGGER.error("Details", e);
+			LOGGER.error("Error occurs while decompressing {}", e.getMessage());
+			LOGGER.error("The error detail is ", e);
 			return;
 		} finally {
 			IOUtils.closeQuietly(zipInputStream);
@@ -196,7 +196,7 @@ public abstract class LogCompressUtil {
 	 * @param toFile
 	 *            file to be written
 	 */
-	public static void unCompressGzip(byte[] zipEntry, File toFile) {
+	public static void decompressGzip(byte[] zipEntry, File toFile) {
 		FileOutputStream fos = null;
 		GZIPInputStream zipInputStream = null;
 		ByteArrayInputStream bio = null;
@@ -211,8 +211,8 @@ public abstract class LogCompressUtil {
 			}
 			fos.flush();
 		} catch (IOException e) {
-			LOGGER.error("Error occurs while uncompress {}", toFile.getAbsolutePath());
-			LOGGER.error("Details", e);
+			LOGGER.error("Error occurs while decompressing {}", toFile.getAbsolutePath());
+			LOGGER.error("The error detail is ", e);
 			return;
 		} finally {
 			IOUtils.closeQuietly(fos);

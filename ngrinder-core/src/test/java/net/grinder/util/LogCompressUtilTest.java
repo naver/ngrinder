@@ -31,7 +31,7 @@ public class LogCompressUtilTest {
 		createTempFile2.deleteOnExit();
 		FileUtils.writeByteArrayToFile(createTempFile2, zipedContent);
 		File createTempFile = File.createTempFile("a22", "tmp");
-		LogCompressUtil.unCompress(zipedContent, createTempFile);
+		LogCompressUtil.decompress(zipedContent, createTempFile);
 		assertThat(createTempFile.exists(), is(true));
 		byte[] unzipedContent = FileUtils.readFileToByteArray(createTempFile);
 		assertThat(FileUtils.readFileToByteArray(file), is(unzipedContent));

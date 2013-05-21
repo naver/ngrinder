@@ -123,8 +123,8 @@ public class AgentControllerDaemon implements Agent {
 							LOGGER.info("The agent controller daemon is started.");
 						}
 						getAgentController().setAgentConfig(
-										checkNotNull(agentConfig,
-														"the agent config should be provided before the controller starts"));
+										checkNotNull(agentConfig, "the agent config should be provided "
+														+ "before the controller is started"));
 						getAgentController().run(grinderProperties, count);
 
 						getListeners().apply(new Informer<AgentControllerShutDownListener>() {
@@ -135,7 +135,7 @@ public class AgentControllerDaemon implements Agent {
 						count++;
 					} catch (Exception e) {
 						LOGGER.info("Agent controller daemon is crashed. {}", e.getMessage());
-						LOGGER.debug("Detailes : ", e);
+						LOGGER.debug("The error detail is  ", e);
 					}
 					if (isForceToshutdown()) {
 						setForceToshutdown(false);

@@ -29,9 +29,8 @@ import net.grinder.console.model.ConsoleProperties;
  */
 public abstract class ConsolePropertiesFactory {
 	/**
-	 * Create empty {@link ConsoleProperties}. the created
-	 * {@link ConsoleProperties} instance links with temp/temp_console
-	 * directory.
+	 * Create empty {@link ConsoleProperties}. the created {@link ConsoleProperties} instance links
+	 * with temp/temp_console directory.
 	 * 
 	 * @return empty {@link ConsoleProperties} instance
 	 * 
@@ -44,7 +43,7 @@ public abstract class ConsolePropertiesFactory {
 
 			return consoleProperties;
 		} catch (Exception e) {
-			String message = "Exception occurs while merging entities while creating empty console";
+			String message = "Exception occurs while creating empty console property";
 			throw new NGrinderRuntimeException(message, e);
 		} finally {
 			FileUtils.deleteQuietly(tmpFile);

@@ -680,7 +680,7 @@ public class PerfTestController extends NGrinderBaseController {
 				// Limit log view to 1MB
 				outputStream.println("Only the last 1MB of a log shows.\n");
 				outputStream.println("================================\n\n");
-				LogCompressUtil.unCompress(fileInputStream, outputStream, 1 * 1024 * 1204);
+				LogCompressUtil.decompress(fileInputStream, outputStream, 1 * 1024 * 1204);
 			} else {
 				IOUtils.copy(fileInputStream, outputStream);
 			}

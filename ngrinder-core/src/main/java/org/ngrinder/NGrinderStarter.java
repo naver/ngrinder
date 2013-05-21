@@ -82,7 +82,7 @@ public class NGrinderStarter {
 		isWebStart = BooleanUtils.toBoolean(System.getProperty("start.webstart", "false"));
 
 		if (!isValidCurrentDirectory() && !isWebStart) {
-			staticPrintHelpAndExit("nGrinder agent should start in the folder which nGrinder agent exists.");
+			staticPrintHelpAndExit("nGrinder agent should start in the folder where nGrinder agent binary exists.");
 		}
 		agentConfig = new AgentConfig();
 		agentConfig.init();
@@ -162,16 +162,16 @@ public class NGrinderStarter {
 						.getProperty("agent.console.ip", "127.0.0.1");
 
 		if (!NetworkUtil.isValidIP(consoleIP)) {
-			LOG.error("Hey!! {} does not seems like IP. Try to resolve the ip by {}.", consoleIP, consoleIP);
+			LOG.error("Hey!! {} does not seems like IP. Try to resolve the ip with {}.", consoleIP, consoleIP);
 			InetAddress byName;
 			try {
 				byName = InetAddress.getByName(consoleIP);
 				consoleIP = byName.getHostAddress();
 				agentConfig.getAgentProperties().setProperty("agent.console.ip", consoleIP);
-				LOG.info("Console IP is resolved as  {}.", consoleIP);
+				LOG.info("Console IP is resolved as {}.", consoleIP);
 			} catch (UnknownHostException e) {
 				consoleIP = "127.0.0.1";
-				LOG.info("Console IP   resolution is failed. Use 127.0.0.1 instead.");
+				LOG.info("Console IP resolution is failed. Use 127.0.0.1 instead.");
 			} finally {
 				agentConfig.getAgentProperties().setProperty("agent.console.ip", consoleIP);
 			}
@@ -413,7 +413,7 @@ public class NGrinderStarter {
 				ProcState procState = sigar.getProcState(existingPid);
 				if (procState.getState() == ProcState.RUN || procState.getState() == ProcState.IDLE
 								|| procState.getState() == ProcState.SLEEP) {
-					printHelpAndExit("Currently " + startMode + " is running on pid " + existingPid
+					printHelpAndExit("Currently " + startMode + " is running with pid " + existingPid
 									+ ". Please stop it before run");
 				}
 				agentConfig.updateAgentPidProperties(startMode);
@@ -426,7 +426,8 @@ public class NGrinderStarter {
 	}
 
 	/**
-	 * Check the current directory is valid or not.<br/>
+	 * Check the current directory is valid or not.
+	 * 
 	 * ngrinder agent should run in the folder agent exists.
 	 * 
 	 * @return true if it's valid
