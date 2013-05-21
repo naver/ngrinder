@@ -61,7 +61,7 @@ public class LocalScriptTestDriveService {
 	 * @param eventSynchronisation
 	 *            condition for event synchronization
 	 * @param securityEnabled
-	 *            if security is set ot not.
+	 *            if security is set or not.
 	 * @param hostString
 	 *            hostString
 	 * @return File which stores validation result.
@@ -133,7 +133,7 @@ public class LocalScriptTestDriveService {
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error while executing {} because {}", script, e.getMessage());
-			LOGGER.info("Error Trace", e);
+			LOGGER.info("The error detail is ", e);
 			appendingMessageOn(file, ExceptionUtils.getFullStackTrace(e));
 		} finally {
 			if (workerLauncher != null) {

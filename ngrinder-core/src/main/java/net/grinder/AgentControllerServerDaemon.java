@@ -62,9 +62,9 @@ public class AgentControllerServerDaemon {
 	 * Agent controller daemon constructor with default {@link ConsoleProperties}.
 	 * 
 	 * @param ip
-	 *            used IP
+	 *            IP
 	 * @param port
-	 *            used port
+	 *            port
 	 */
 	public AgentControllerServerDaemon(String ip, int port) {
 		this(ip, port, ConsolePropertiesFactory.createEmptyConsoleProperties());
@@ -74,9 +74,9 @@ public class AgentControllerServerDaemon {
 	 * Agent controller daemon constructor.
 	 * 
 	 * @param ip
-	 *            used IP
+	 *            IP
 	 * @param port
-	 *            used port
+	 *            port
 	 * @param consoleProperties
 	 *            default property.
 	 */
@@ -88,7 +88,8 @@ public class AgentControllerServerDaemon {
 			this.agentControllerServer = new AgentControllerServer(RESOURCES, LOGGER, consoleProperties,
 							m_eventSyncCondition);
 		} catch (GrinderException e) {
-			throw new NGrinderRuntimeException("Exception occurs while initiating AgentControllerServerDaemon", e);
+			throw new NGrinderRuntimeException("Exception occurs while initiating the agent controller server daemon",
+							e);
 		}
 	}
 
@@ -146,7 +147,7 @@ public class AgentControllerServerDaemon {
 				thread.interrupt();
 			}
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("Exception occurs while shutting down AgentControllerServerDaemon", e);
+			throw new NGrinderRuntimeException("Exception occurs during AgentControllerServerDaemon shutdown", e);
 		} finally {
 			thread = null;
 		}
@@ -256,7 +257,7 @@ public class AgentControllerServerDaemon {
 	 *            agent controller identity
 	 */
 	public void startAgent(GrinderProperties grinderProperties, AgentIdentity agentIdentity) {
-		LOGGER.info("start agent of {}", agentIdentity);
+		LOGGER.info("{} agent is started.", agentIdentity);
 		getComponent(ConsoleCommunication.class).sendToAddressedAgents(new AgentAddress(agentIdentity),
 						new StartGrinderMessage(grinderProperties, agentIdentity.getNumber()));
 	}
@@ -268,7 +269,7 @@ public class AgentControllerServerDaemon {
 	 *            agent controller identity
 	 */
 	public void stopAgent(AgentIdentity agentIdentity) {
-		LOGGER.info("start agent of {}", agentIdentity);
+		LOGGER.info("{} agent is stopped.", agentIdentity);
 		getComponent(ConsoleCommunication.class).sendToAddressedAgents(new AgentAddress(agentIdentity),
 						new StopGrinderMessage());
 	}

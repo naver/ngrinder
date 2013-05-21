@@ -250,7 +250,7 @@ public final class AgentControllerServerListener {
 			}
 
 			if (shutdown) {
-				m_logger.info("agent controller communication shut down");
+				m_logger.info("agent controller communication is shutdowned");
 				setReceived(SHUTDOWN);
 			}
 		}

@@ -120,11 +120,11 @@ public class AgentControllerDaemon implements Agent {
 				do {
 					try {
 						if (count % LOG_FREQUENCY == 0) {
-							LOGGER.info("agent controller daemon : started.");
+							LOGGER.info("The agent controller daemon is started.");
 						}
 						getAgentController().setAgentConfig(
 										checkNotNull(agentConfig,
-														"agent config should be provided before controller start"));
+														"the agent config should be provided before the controller starts"));
 						getAgentController().run(grinderProperties, count);
 
 						getListeners().apply(new Informer<AgentControllerShutDownListener>() {
@@ -134,7 +134,7 @@ public class AgentControllerDaemon implements Agent {
 						});
 						count++;
 					} catch (Exception e) {
-						LOGGER.info("agent controller daemon : crashed. {}", e.getMessage());
+						LOGGER.info("Agent controller daemon is crashed. {}", e.getMessage());
 						LOGGER.debug("Detailes : ", e);
 					}
 					if (isForceToshutdown()) {
@@ -182,7 +182,7 @@ public class AgentControllerDaemon implements Agent {
 			setForceToshutdown(true);
 			agentController.shutdown();
 			if (thread != null) {
-				ThreadUtil.stopQuetly(thread, "Agent Controller  Thread is not stopped. Force to Stop");
+				ThreadUtil.stopQuetly(thread, "Agent controller thread was not stopped. Stop by force.");
 				thread = null;
 			}
 		} catch (Exception e) {

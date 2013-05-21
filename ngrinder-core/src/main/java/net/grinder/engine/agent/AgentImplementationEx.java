@@ -74,7 +74,6 @@ public class AgentImplementationEx implements Agent {
 	 * We use an most one file store throughout an agent's life, but can't Initialize it until we've
 	 * read the properties and connected to the console.
 	 */
-
 	private volatile FileStore m_fileStore;
 
 	private final AgentConfig m_agentConfig;
@@ -221,7 +220,7 @@ public class AgentImplementationEx implements Agent {
 										GrinderProperties.SCRIPT, GrinderProperties.DEFAULT_SCRIPT));
 						script = new ScriptLocation(scriptFile);
 					}
-					m_logger.debug("Script Location : {}", script.getFile().getAbsolutePath());
+					m_logger.debug("The script location is {}", script.getFile().getAbsolutePath());
 					if (!script.getFile().canRead()) {
 						m_logger.error("The script file '" + script + "' does not exist or is not readable.");
 						script = null;
@@ -250,7 +249,7 @@ public class AgentImplementationEx implements Agent {
 						workerFactory = new ProcessWorkerFactory(workerCommandLine, m_agentIdentity,
 										m_fanOutStreamSender, consoleCommunication != null, script, properties);
 					} else {
-						m_logger.info("DEBUG MODE: Spawning threads rather than processes");
+						m_logger.info("DEBUG MODE. Spawning threads rather than processes");
 						m_logger.warn("grinder.jvm.arguments ({}) ignored in single process mode", jvmArguments);
 
 						workerFactory = new DebugThreadWorkerFactory(m_agentIdentity, m_fanOutStreamSender,
@@ -294,7 +293,7 @@ public class AgentImplementationEx implements Agent {
 							if (consoleSignalTime >= 0
 											&& System.currentTimeMillis() - consoleSignalTime > maximumShutdownTime) {
 
-								m_logger.info("forcibly terminating unresponsive processes");
+								m_logger.info("Terminating unresponsive processes by force");
 
 								// destroyAllWorkers() prevents further workers
 								// from starting.
@@ -326,7 +325,7 @@ public class AgentImplementationEx implements Agent {
 						startMessage = m_consoleListener.getLastStartGrinderMessage();
 
 					} else if (m_consoleListener.received(ConsoleListener.STOP | ConsoleListener.SHUTDOWN)) {
-						m_logger.debug("get shutdown message");
+						m_logger.debug("got shutdown message");
 						break;
 					} else {
 						m_logger.debug("natural death");
@@ -405,12 +404,12 @@ public class AgentImplementationEx implements Agent {
 	 */
 	private Properties filterSystemClassPath(Properties properties, AbstractLanguageHandler handler, Logger logger) {
 		String property = properties.getProperty("java.class.path", "");
-		logger.debug("Total System Class Path in total is " + property);
+		logger.debug("Total system class lath in total is " + property);
 
 		String newClassPath = handler.getClassPathProcesssor().filterClassPath(property, logger);
 		Properties returnProperties = new Properties(properties);
 		returnProperties.setProperty("java.class.path", newClassPath);
-		logger.debug("Filtered System Class Path is " + newClassPath);
+		logger.debug("Filtered system class path is " + newClassPath);
 		return properties;
 	}
 
@@ -521,7 +520,7 @@ public class AgentImplementationEx implements Agent {
 					} catch (CommunicationException e) {
 						cancel();
 						m_logger.error("Error while pumping up the AgentPrcessReportMessage", e.getMessage());
-						m_logger.debug("Stack trace is : ", e);
+						m_logger.debug("The error detail is ", e);
 					}
 
 				}

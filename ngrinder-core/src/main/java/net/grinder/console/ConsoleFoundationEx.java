@@ -77,9 +77,9 @@ public class ConsoleFoundationEx {
 	 * @param properties
 	 *            The properties.
 	 * @param eventSyncCondition
-	 *            event synchonization condition.
+	 *            event synchronization condition.
 	 * @exception GrinderException
-	 *                If an error occurs.
+	 *                occurs If an error occurs.
 	 */
 	public ConsoleFoundationEx(Resources resources, Logger logger, ConsoleProperties properties,
 					Condition eventSyncCondition) throws GrinderException {
@@ -152,12 +152,13 @@ public class ConsoleFoundationEx {
 	}
 
 	/**
-	 * Console message event loop. Dispatches communication messages appropriately. Blocks until we
-	 * are {@link #shutdown()}.
+	 * Console message event loop.
+	 * 
+	 * Dispatches communication messages appropriately. Blocks until we are {@link #shutdown()}.
 	 */
 	public void run() {
 		if (m_shutdown) {
-			throw new NGrinderRuntimeException("console can not run becaz it's shutdowned");
+			throw new NGrinderRuntimeException("console can not run because it's shutdowned");
 		}
 		m_container.start();
 		ConsoleCommunication communication = m_container.getComponent(ConsoleCommunication.class);

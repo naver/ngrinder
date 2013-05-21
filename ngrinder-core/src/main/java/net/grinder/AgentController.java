@@ -208,7 +208,7 @@ public class AgentController implements Agent {
 
 				if (!m_agentControllerServerListener.received(AgentControllerServerListener.ANY)) {
 					// We've got here naturally, without a console signal.
-					LOGGER.info("agent started. waiting for agent controller signal");
+					LOGGER.info("agent is started. waiting for agent controller signal");
 					m_agentControllerServerListener.waitForMessage();
 				}
 
@@ -268,7 +268,7 @@ public class AgentController implements Agent {
 			return;
 		}
 
-		// Take only one file... if agent.send.all.logs are not set.
+		// Take only one file... if agent.send.all.logs is not set.
 		if (!agentConfig.getPropertyBoolean("agent.send.all.logs", false)) {
 			logFiles = new File[] { logFiles[0] };
 		}
@@ -293,8 +293,8 @@ public class AgentController implements Agent {
 			try {
 				consoleCommunication.sendCurrentState();
 			} catch (CommunicationException e) {
-				LOGGER.error("Error while sending current state {}.", e.getMessage());
-				LOGGER.debug("Error is ", e);
+				LOGGER.error("Error while sending current state : {}.", e.getMessage());
+				LOGGER.debug("The error detail is ", e);
 			}
 		}
 	}
@@ -323,8 +323,8 @@ public class AgentController implements Agent {
 			SystemInfo systemInfo = agentSystemDataCollector.execute();
 			return new SystemDataModel(systemInfo, this.version);
 		} catch (Exception e) {
-			LOGGER.error("Error while get system perf data model : {} ", e.getMessage());
-			LOGGER.debug("Error Trace is ", e);
+			LOGGER.error("Error while getting system perf data model : {} ", e.getMessage());
+			LOGGER.debug("The error detail is ", e);
 			return emptySystemDataModel;
 		}
 	}
@@ -368,7 +368,7 @@ public class AgentController implements Agent {
 					} catch (CommunicationException e) {
 						cancel();
 						LOGGER.error("Error while sending current state:" + e.getMessage());
-						LOGGER.debug("The error is", e);
+						LOGGER.debug("The error detail is", e);
 					}
 				}
 			};
