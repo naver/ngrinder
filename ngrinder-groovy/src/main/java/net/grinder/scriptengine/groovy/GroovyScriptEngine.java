@@ -13,6 +13,7 @@
  */
 package net.grinder.scriptengine.groovy;
 
+import static net.grinder.util.NoOp.noOp;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovySystem;
 
@@ -119,12 +120,13 @@ public class GroovyScriptEngine implements ScriptEngine {
 					Grinder.grinder.getLogger().error(failure.getMessage(),
 									exceptionProcessor.filterException(rootCause));
 					// In case of exception, set test failed.
-					Statistics statistics = Grinder.grinder.getStatistics();
-					if (statistics != null) {
-						StatisticsForTest forLastTest = statistics.getForLastTest();
+					try {
+						StatisticsForTest forLastTest = Grinder.grinder.getStatistics().getForLastTest();
 						if (forLastTest != null) {
 							forLastTest.setSuccess(false);
 						}
+					} catch (Throwable t) {
+						noOp();
 					}
 				}
 			});
