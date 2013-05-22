@@ -4,16 +4,21 @@ We're almost approaching the ultimate performance testing solution.
 We believe nGrinder 3.2 version is the most developer friendly performance testing tool ever.
 
 - New feature and change
-  * We support not only Jython as a script language but also Groovy + maven and JUnit styled test cases in 3.2. 
-    It is the amazing approach in which you can easily pre-test and debug the test using your IDE such as eclipse
+  * We support not only Jython as a script language but also JUnit styled Groovy and Groovy Maven Project from 3.2. 
+    It is the amazing approach in which you can easily pre-run and debug the test in your IDE such as eclipse
     connecting to nGrinder subversion repository.
     Check out http://www.cubrid.org/wiki_ngrinder/entry/groovy-script
-  * IE 10 is supported. We added IE9 compatibility view option to show nGrinder correctly.
+  * Now agent machines are not hardly crashed by memory swapping. nGrinder controller stops the test which uses more than 97% memory of agents by force.  
+  * IE10 is now partially supported. We added IE9 compatibility mode option to show nGrinder correctly in IE10.
+    We will continue to completely fix this bhy 3.2.1 
+  * We support more vusers per agent by calibrating agent's JVM options. 
+    nGrinder 3.2 supports 4000 vuser(8 times more than before) per agent when you use Groovy and 4GRam agents.
   * Graph fluctuation by nGrinder internal processing overhead is reduced. Now you can see the more stable graph.
-  * The nGrinder usage is reported to our Google analytics. We only collect the controller IP and the count of performance test run the last day.
-    If you don't like it, please set usage.report=false in system.conf
-  * A User can run agent with the more detailed memory options 
-    by providing grinder.memory.permsize=Value and grinder.memory.maxpermsize=Value in mega unit in grinder.properties file as same folder of script.
+  * The nGrinder usage is reported to our Google analytics everyday. We only collect the controller IP and the count of performance test run the last day.
+    If you don't like it, please turn it off by setting usage.report=false in system.conf
+  * A user can run agents with the more detailed memory options 
+    by providing grinder.memory.permsize=Value and grinder.memory.maxpermsize=Value in the unit of mega 
+    in grinder.properties file as same folder of the selected script.
   * SVN user can enjoy the user switching feature as well just like you do in the browser.
   * And.. several minor UI enhancements.
 
@@ -32,7 +37,7 @@ Improvement
 [NGRINDER-431] - Make cluster mode configuration more stable
 [NGRINDER-582] - Make duration updated after the test is finished
 [NGRINDER-585] - Fix to return active page when agent is approved or disapprove.
-[NGRINDER-586] - Forward nohub log to /tmp directory
+[NGRINDER-586] - Forward nohub log to /dev/null
 [NGRINDER-590] - Report the ngrinder usage to google analytics
 [NGRINDER-593] - Make long script path visible
 [NGRINDER-597] - Make the user password unchangeable in demo mode
@@ -41,6 +46,8 @@ Improvement
 [NGRINDER-602] - Show the user id in perftest list
 [NGRINDER-603] - Make admin see the lib and resources of other users.
 [NGRINDER-604] - Make mobile phone number and email fields in user profile not mandatory
+[NGRINDER-605] - Increase vuser limit
+[NGRINDER-606] - Make agent machine never hang or die
 
 New Feature
 [NGRINDER-476] - Add realtime monitor review page
@@ -60,7 +67,7 @@ This is the last version 3.1.X series, we'll work on 3.2 as a next release.
   * A user can see the per test TPS chart when the sampling interval is greater than 2.
   * A user can upload and use native libs (so, dll) t o reuse existing assets. This is enabled only if the security mode is disabled.
   * A user can provide the any kind of custom value for monitor by regularly outputting the GC count and JVM memory usages.
-  * A user can upload dll or so to run test using native libs. SecurityMode should be disabled and JNA should be imported for natvie lib access.
+  * A user can upload dll or so to run test using native libs. SecurityMode should be disabled and JNA should be imported for native lib access.
         
 Bug
 [NGRINDER-560] - Make test report visible without login

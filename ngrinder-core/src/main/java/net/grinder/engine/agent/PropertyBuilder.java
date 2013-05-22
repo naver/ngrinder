@@ -296,7 +296,6 @@ public class PropertyBuilder {
 	}
 
 	private StringBuilder addDNSIP(StringBuilder jvmArguments) {
-		@SuppressWarnings("restriction")
 		List<?> nameservers = sun.net.dns.ResolverConfiguration.open().nameservers();
 		return jvmArguments.append(" -Dngrinder.dns.ip=").append(StringUtils.join(nameservers, ",")).append(" ");
 	}
