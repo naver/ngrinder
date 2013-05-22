@@ -32,7 +32,6 @@ class MyTest {
 
 	@BeforeThread
 	public void beforeThread() {
-		Matchers.
 		grinder.statistics.delayReports=true
 		grinder.getLogger().info("before thread in MyTest.");
 	}

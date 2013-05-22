@@ -21,6 +21,7 @@ import java.io.IOException;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
 import net.grinder.script.Grinder;
+import net.grinder.script.Statistics;
 import net.grinder.script.Statistics.StatisticsForTest;
 import net.grinder.scriptengine.ScriptEngineService;
 import net.grinder.scriptengine.ScriptEngineService.ScriptEngine;
@@ -115,13 +116,16 @@ public class GroovyScriptEngine implements ScriptEngine {
 					if (exceptionProcessor.isGenericShutdown(rootCause)) {
 						return;
 					}
-					// In case of exception, set test failed.
-					StatisticsForTest forLastTest = Grinder.grinder.getStatistics().getForLastTest();
-					if (forLastTest != null) {
-						forLastTest.setSuccess(false);
-					}
 					Grinder.grinder.getLogger().error(failure.getMessage(),
 									exceptionProcessor.filterException(rootCause));
+					// In case of exception, set test failed.
+					Statistics statistics = Grinder.grinder.getStatistics();
+					if (statistics != null) {
+						StatisticsForTest forLastTest = statistics.getForLastTest();
+						if (forLastTest != null) {
+							forLastTest.setSuccess(false);
+						}
+					}
 				}
 			});
 		}
