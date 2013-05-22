@@ -178,7 +178,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 			try {
 				String subpath = each.getPath().substring(scriptTemplateDir.getPath().length());
 				String fileContent = FileUtils.readFileToString(each, "UTF8");
-				fileContent = fileContent.replace("${usernName}", user.getUserName());
+				fileContent = fileContent.replace("${userName}", user.getUserName());
 				fileContent = fileContent.replace("${name}", name);
 				fileContent = fileContent.replace("${url}", url);
 				FileEntry fileEntry = new FileEntry();
