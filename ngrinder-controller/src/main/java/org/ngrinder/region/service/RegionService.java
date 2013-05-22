@@ -23,9 +23,10 @@ import javax.annotation.PreDestroy;
 import net.grinder.common.processidentity.AgentIdentity;
 import net.grinder.util.thread.InterruptibleRunnable;
 import net.sf.ehcache.Ehcache;
-import static org.ngrinder.common.util.Preconditions.checkState;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.schedule.ScheduledTask;
 import org.ngrinder.perftest.service.AgentManager;
@@ -86,9 +87,12 @@ public class RegionService {
 	private void verifyDuplicateRegion() {
 		Map<String, RegionInfo> regions = getRegions();
 		String localRegion = getCurrentRegion();
-		checkState(!regions.containsKey(localRegion),
-						"The region name {%s} is used by other controller,Please set the region with different one!",
-						localRegion);
+		RegionInfo regionInfo = regions.get(localRegion);
+		if (regionInfo != null && !StringUtils.equals(regionInfo.getIp(), config.getCurrentIP())) {
+			throw new NGrinderRuntimeException("The region name, " + localRegion
+							+ ", is already used by other controller " + regionInfo.getIp()
+							+ ". Please set the different region name in this controller.");
+		}
 	}
 
 	@Autowired

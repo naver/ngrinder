@@ -13,8 +13,12 @@
  */
 package org.ngrinder.infra.init;
 
-import static org.ngrinder.common.util.Preconditions.checkState;
+import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkArgument;
+import static org.ngrinder.common.util.Preconditions.checkState;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -25,6 +29,8 @@ import net.sf.ehcache.Ehcache;
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.region.service.RegionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
@@ -40,6 +46,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ClusterConfigurationVerifier {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(ClusterConfigurationVerifier.class);
+
 	@Autowired
 	private Config config;
 
@@ -51,17 +59,27 @@ public class ClusterConfigurationVerifier {
 
 	private Cache cache;
 
+	private File systemConfFile;
+
 	/**
-	 * Check cluster starting.
+	 * Check cluster configurations.
 	 * 
 	 * @throws IOException
 	 *             exception
 	 */
 	@PostConstruct
-	public void verifyCluster() throws IOException {
+	public void init() throws IOException {
+		systemConfFile = config.getHome().getSubFile("system.conf");
+		cache = cacheManager.getCache("controller_home");
+		config.addSystemConfListener(new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				updateSystemConfFingerPrintToCache(systemConfFile);
+			}
+		});
 		if (config.isCluster() && !config.isTestMode()) {
-			checkExHome();
-			checkUsedDB();
+			checkHome();
+			checkDB();
 		}
 	}
 
@@ -71,29 +89,40 @@ public class ClusterConfigurationVerifier {
 	 * @throws IOException
 	 *             exception
 	 */
-	private void checkExHome() throws IOException {
-		File system = config.getHome().getSubFile("system.conf");
-		checkArgument(system.exists(), "File does not exist: %s", system);
-		String homeFileStamp = String.valueOf(FileUtils.checksumCRC32(system));
-		cache = cacheManager.getCache("controller_home");
+	private void checkHome() throws IOException {
+		checkArgument(systemConfFile.exists(), "File does not exist: %s", systemConfFile);
+		String systemConfFingerPrint = String.valueOf(FileUtils.checksumCRC32(systemConfFile));
 		for (Object eachKey : ((Ehcache) (cache.getNativeCache())).getKeys()) {
-			ValueWrapper valueWrapper = cache.get(eachKey);
-			if (valueWrapper != null && valueWrapper.get() != null) {
-				checkState(homeFileStamp.equals(valueWrapper.get()),
-								"Controller's {NGRINDER_HOME} conflict with other controller, "
-												+ "Please check if you use same ngrinder home folder"
-												+ " for each clustered controller !");
+			try {
+				ValueWrapper valueWrapper = cache.get(eachKey);
+				if (valueWrapper != null && valueWrapper.get() != null) {
+					checkState(systemConfFingerPrint.equals(valueWrapper.get()),
+									"Thie controller's ${NGRINDER_HOME} conflicts with other controller(" + eachKey
+													+ "), Please check if each controller"
+													+ " shares same ngrinder home folder.");
+				}
+			} catch (Exception e) {
+				noOp();
 			}
+
 		}
-		cache.put(regionService.getCurrentRegion(), homeFileStamp);
+		updateSystemConfFingerPrintToCache(systemConfFile);
 	}
 
 	/**
 	 * check if they use CUBRID in cluster mode.
 	 */
-	private void checkUsedDB() {
+	private void checkDB() {
 		String db = config.getDatabaseProperties().getProperty("database", "NONE").toLowerCase();
 		checkState("cubrid".equals(db), "%s is unable to be used in cluster mode and Please use CUBRID !", db);
 	}
 
+	private void updateSystemConfFingerPrintToCache(File systemConfFile) {
+		try {
+			String systemConfFingerPrint = String.valueOf(FileUtils.checksumCRC32(systemConfFile));
+			cache.put(regionService.getCurrentRegion(), systemConfFingerPrint);
+		} catch (IOException e) {
+			LOGGER.error("Error while updating system.conf fingerprint into cache.", e);
+		}
+	}
 }

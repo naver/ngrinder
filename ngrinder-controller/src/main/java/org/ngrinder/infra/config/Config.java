@@ -15,6 +15,7 @@ package org.ngrinder.infra.config;
 
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,6 +24,8 @@ import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import net.grinder.util.ListenerSupport;
+import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.NetworkUtil;
 
 import org.apache.commons.io.FileUtils;
@@ -74,11 +77,22 @@ public class Config implements IConfig, NGrinderConstants {
 
 	public static final String NONE_REGION = "NONE";
 	private boolean cluster;
+	private ListenerSupport<PropertyChangeListener> systemConfListeners = new ListenerSupport<PropertyChangeListener>();
 
 	/**
 	 * Make it singleton.
 	 */
 	Config() {
+	}
+
+	/**
+	 * Add the system configuration change listener.
+	 * 
+	 * @param listener
+	 *            listener to be added
+	 */
+	public void addSystemConfListener(PropertyChangeListener listener) {
+		systemConfListeners.add(listener);
 	}
 
 	/**
@@ -366,19 +380,26 @@ public class Config implements IConfig, NGrinderConstants {
 		announcementWatchDog.setName("WatchDog - annoucenment.conf");
 		announcementWatchDog.setDelay(2000);
 		announcementWatchDog.start();
-		this.systemConfWatchDog = new FileWatchdog(getHome().getSubFile("system.conf").getAbsolutePath()) {
+		final File systemConfFile = getHome().getSubFile("system.conf");
+		this.systemConfWatchDog = new FileWatchdog(systemConfFile.getAbsolutePath()) {
 			@Override
 			protected void doOnChange() {
 				CoreLogger.LOGGER.info("System conf file changed.");
 				loadSystemProperties();
+				systemConfListeners.apply(new Informer<PropertyChangeListener>() {
+					@Override
+					public void inform(PropertyChangeListener listener) {
+						listener.propertyChange(null);
+					}
+				});
 			}
 		};
 		systemConfWatchDog.setName("WatchDoc - system.conf");
 		systemConfWatchDog.setDelay(2000);
 		systemConfWatchDog.start();
 
-		String absolutePath = getHome().getSubFile("process_and_thread_policy.js").getAbsolutePath();
-		this.policyJsWatchDog = new FileWatchdog(absolutePath) {
+		String processThreadPolicyPath = getHome().getSubFile("process_and_thread_policy.js").getAbsolutePath();
+		this.policyJsWatchDog = new FileWatchdog(processThreadPolicyPath) {
 			@Override
 			protected void doOnChange() {
 				CoreLogger.LOGGER.info("process_and_thread_policy file changed.");
@@ -417,7 +438,7 @@ public class Config implements IConfig, NGrinderConstants {
 	public boolean isUserSecurityEnabled() {
 		return getSystemProperties().getPropertyBoolean("user.security", true);
 	}
-	
+
 	/**
 	 * Check if it's the security enabled mode.
 	 * 
@@ -509,11 +530,9 @@ public class Config implements IConfig, NGrinderConstants {
 				return policyScript;
 			} catch (IOException e) {
 				LOG.error("Error while load process_and_thread_policy.js", e);
-				return "";
 			}
-		} else {
-			return policyScript;
 		}
+		return policyScript;
 	}
 
 	/**
