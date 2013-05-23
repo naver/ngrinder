@@ -368,6 +368,10 @@ public class PerfTestController extends NGrinderBaseController {
 		if (StringUtils.isBlank(test.getRegion())) {
 			test.setRegion(Config.NONE_REGION);
 		}
+		// In case of run count scheme, Sampling ignore count is not applied.
+		if (test.isThreshholdRunCount()) {
+			test.setIgnoreSampleCount(0);
+		}
 		perfTestService.savePerfTest(user, test);
 		model.clear();
 		return "redirect:/perftest/list";

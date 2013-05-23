@@ -1666,15 +1666,14 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			if (reportData.charAt(reportData.length() - 1) == ',') {
 				reportData.deleteCharAt(reportData.length() - 1);
 			}
-			reportData.append("]");
 		} catch (IOException e) {
-			LOGGER.error("Get report data  failed: {}", e.getMessage());
+			LOGGER.error("Report data retrival is failed: {}", e.getMessage());
 			LOGGER.debug("Trace is : ", e);
 		} finally {
 			IOUtils.closeQuietly(reader);
 			IOUtils.closeQuietly(br);
 		}
-		return reportData.toString();
+		return reportData.append("]").toString();
 	}
 
 	/**
