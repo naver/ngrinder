@@ -1,7 +1,7 @@
 3.2 (2013.05.10)
 
-We're almost approaching the ultimate performance testing solution. 
-We believe nGrinder 3.2 version is the most developer friendly performance testing tool ever.
+nGrinder is almost approaching to the ultimate performance testing solution. 
+We believe nGrinder 3.2 is the most developer friendly performance testing tool ever.
 
 - New feature and change
   * We support not only Jython as a script language but also JUnit styled Groovy and Groovy Maven Project from 3.2. 
