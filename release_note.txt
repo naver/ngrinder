@@ -8,11 +8,12 @@ We believe nGrinder 3.2 version is the most developer friendly performance testi
     It is the amazing approach in which you can easily pre-run and debug the test in your IDE such as eclipse
     connecting to nGrinder subversion repository.
     Check out http://www.cubrid.org/wiki_ngrinder/entry/groovy-script
-  * Now agent machines are not hardly crashed by memory swapping. nGrinder controller stops the test which uses more than 97% memory of agents by force.  
-  * IE10 is now partially supported. We added IE9 compatibility mode option to show nGrinder correctly in IE10.
-    We will continue to completely fix this bhy 3.2.1 
   * We support more vusers per agent by calibrating agent's JVM options. 
     nGrinder 3.2 supports 4000 vuser(8 times more than before) per agent when you use Groovy and 4GRam agents.
+    Delete ${NGRINDER_HOME}/process_and_thread_policy.js to apply new process and thread policy in prior to ngrinder 3.2 installation. 
+  * Now agent machines are rarely crashed by memory swapping. nGrinder controller stops the test which uses more than 97% memory of agents by force.  
+  * IE10 is now partially supported. We added IE9 compatibility mode option to show nGrinder correctly in IE10.
+    We will continue to completely fix this bhy 3.2.1 
   * Graph fluctuation by nGrinder internal processing overhead is reduced. Now you can see the more stable graph.
   * The nGrinder usage is reported to our Google analytics everyday. We only collect the controller IP and the count of performance test run the last day.
     If you don't like it, please turn it off by setting usage.report=false in system.conf
