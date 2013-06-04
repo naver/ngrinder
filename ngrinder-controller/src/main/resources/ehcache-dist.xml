@@ -17,7 +17,7 @@
 	</cache>
 
 	<cache name="file_entry_search_cache" maxElementsInMemory="100" eternal="false" overflowToDisk="false"
-		timeToIdleSeconds="60" timeToLiveSeconds="60">
+		timeToIdleSeconds="120" timeToLiveSeconds="120">
 		<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
 			properties="replicateAsynchronously=true, replicatePuts=false, replicateUpdates=false, replicateUpdatesViaCopy=false, replicateRemovals=true" />
 	</cache>
