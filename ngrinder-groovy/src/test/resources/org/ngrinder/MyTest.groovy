@@ -19,24 +19,14 @@ import HTTPClient.HTTPResponse
 class MyTest {
 
 	public static GTest test;
-	public static GTest test2;
 	public static HTTPRequest request;
-	public static HTTPRequest request2;
 
 	@BeforeClass
 	public static void beforeClass() {
 		grinder.getLogger().info("before");
 		test = new GTest(1, "Hello");
-		test2 = new GTest(2, "Hello");
 		request = new HTTPRequest();
-		request2 = new HTTPRequest();
 		test.record(request);
-		test2.record(request2);
-	}
-
-	@Before
-	public void before() {
-		grinder.statistics.delayReports=true;
 	}
 
 	@BeforeThread
@@ -48,20 +38,9 @@ class MyTest {
 	@Test
 	public void testHello(){
 		HTTPResponse result = request.GET("http://www.google.com");
-		if (new Random().nextInt(5) == 1) {
-			throw new Exception("Exception test");
-		}
+		assertThat(result.statusCode, is(200))
 		grinder.statistics.forLastTest.success = 1
 	}
-
-	@Test
-	public void testHello2() {
-		def result = request2.GET("http://www.naver.com/");
-		grinder.getLogger().info("code: {}", result.statusCode);
-		if (result.getStatusCode() != 200) {
-			grinder.statistics.forLastTest.success = 0
-		} else {
-			grinder.statistics.forLastTest.success = 1
-		}
-	}
 }
+
+

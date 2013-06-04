@@ -8,10 +8,10 @@ import net.grinder.plugin.http.HTTPRequest
 import net.grinder.script.GTest
 import net.grinder.script.Grinder
 import net.grinder.scriptengine.groovy.junit.GrinderRunner
+import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess;
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread
 
 import org.junit.Before
-import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -25,8 +25,8 @@ class MyTest {
 	public static HTTPRequest request;
 	public static HTTPRequest request2;
 
-	@BeforeClass
-	public static void beforeClass() {
+	@BeforeProcess
+	public static void beforeProcess() {
 		grinder.getLogger().info("before");
 		test = new GTest(1, "Hello");
 		test2 = new GTest(2, "Hello");
@@ -45,7 +45,6 @@ class MyTest {
 	public void beforeThread() {
 		grinder.statistics.delayReports=true;
 		grinder.getLogger().info("before thread in MyTest.");
-		
 	}
 
 	@Test
