@@ -355,7 +355,7 @@ $(document).ready(function () {
 	
 	addValidation();
 	bindEvent();
-	updateScriptResources(true);
+	updateScript();
 	updateVuserTotal();
 	updateRampupChart();
 	
@@ -673,7 +673,6 @@ function bindEvent() {
 			$scriptRevision.val(-1);
 		}
 		$showScript.show();
-		
 		updateScriptResources(false);
 	});
 	
@@ -944,6 +943,33 @@ function initChartData(size) {
 	for ( var i = 0; i < size; i++) {
 		test_tps_data.enQueue(0);
 	}
+}
+
+function updateScript() {
+	$.ajax({
+		url : "${req.getContextPath()}/perftest/script",
+		dataType : 'json',
+		data : {
+			<@security.authorize ifAnyGranted="A, S">
+			<#if test??>'ownerId' : '${test.createdUser.userId}'</#if> 
+			</@security.authorize>
+		},
+		success : function(res) {
+			$scriptSelection = $("#scriptName");
+			var selectedScript = $scriptSelection.attr("oldScript");
+			for (var i = 0; i < res.length; i++) {
+				$newOption = $("<option value='" + res[i].path + "' revision='" + res[i].revision + "' validated='" + res[i].validated + "'>" + res[i].pathInShort + "</option>")
+				$scriptSelection.append($newOption);	
+			}
+			$scriptSelection.select2("val", selectedScript);
+			$scriptSelection.change();
+			updateScriptResources(true);
+		},
+		error : function() {
+			showErrorMsg("<@spring.message "common.error.error"/>");
+			return false;
+		}
+	});
 }
 
 function updateScriptResources(first) {

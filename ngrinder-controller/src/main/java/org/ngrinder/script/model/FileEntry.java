@@ -16,14 +16,22 @@ package org.ngrinder.script.model;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.ngrinder.common.util.PathUtil;
 import org.ngrinder.model.BaseModel;
 import org.ngrinder.model.IFileEntry;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 /**
  * File entity which will be stored in SVN.
@@ -225,4 +233,16 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 		this.properties = properties;
 	}
 
+	public static class FileEntrySerializer implements JsonSerializer<FileEntry> {
+		@Override
+		public JsonElement serialize(FileEntry fileEntry, Type typeOfSrc, JsonSerializationContext context) {
+			JsonObject root = new JsonObject();
+			root.addProperty("path", FilenameUtils.separatorsToUnix(fileEntry.getPath()));
+			root.addProperty("pathInShort", FilenameUtils.separatorsToUnix(fileEntry.getPathInShort()));
+			root.addProperty("revision", fileEntry.getRevision());
+			root.addProperty("validated",
+							NumberUtils.createInteger(MapUtils.getString(fileEntry.getProperties(), "validated", "0")));
+			return root;
+		}
+	}
 }

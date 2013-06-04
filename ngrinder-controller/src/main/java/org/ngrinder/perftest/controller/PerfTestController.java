@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimeZone;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
@@ -94,6 +95,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
  * Performance Test Controller.
  * 
@@ -124,6 +128,15 @@ public class PerfTestController extends NGrinderBaseController {
 
 	@Autowired
 	private UserService userService;
+
+	private Gson fileEntryGson;
+
+	@PostConstruct
+	public void init() {
+		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(FileEntry.class, new FileEntry.FileEntrySerializer());
+		fileEntryGson = gsonBuilder.create();
+	}
 
 	/**
 	 * Get Performance test lists.
@@ -218,16 +231,6 @@ public class PerfTestController extends NGrinderBaseController {
 		}
 
 		model.addAttribute(PARAM_TEST, test);
-		List<FileEntry> allFileEntries = fileEntryService.getAllFileEntries(user);
-
-		CollectionUtils.filter(allFileEntries, new Predicate() {
-			@Override
-			public boolean evaluate(Object object) {
-				return ((FileEntry) object).getFileType().getFileCategory() == FileCategory.SCRIPT;
-			}
-		});
-
-		model.addAttribute(PARAM_SCRIPT_LIST, allFileEntries);
 		// Retrieve the agent count map based on create user, if the test is
 		// created by the others.
 		if (test != null) {
@@ -235,11 +238,34 @@ public class PerfTestController extends NGrinderBaseController {
 		}
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
-
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
-
 		addDefaultAttributeOnModel(model);
 		return "perftest/detail";
+	}
+
+	/**
+	 * Get the all available script list in json format for the given user's factual user.
+	 * 
+	 * @param user
+	 *            user
+	 * @param model
+	 *            model
+	 * @return json containing script's list.
+	 */
+	@RequestMapping("/script")
+	public HttpEntity<String> getScripts(User user, @RequestParam(value = "ownerId", required = false) String ownerId,
+					ModelMap model) {
+		if (StringUtils.isNotEmpty(ownerId)) {
+			user = userService.getUserById(ownerId);
+		}
+		List<FileEntry> allFileEntries = fileEntryService.getAllFileEntries(user);
+		CollectionUtils.filter(allFileEntries, new Predicate() {
+			@Override
+			public boolean evaluate(Object object) {
+				return ((FileEntry) object).getFileType().getFileCategory() == FileCategory.SCRIPT;
+			}
+		});
+		return toJsonHttpEntity(fileEntryGson.toJson(allFileEntries));
 	}
 
 	/**

@@ -263,6 +263,21 @@ public class NGrinderBaseController implements NGrinderConstants {
 		responseHeaders.setPragma("no-cache");
 		return toHttpEntity(toJson(content), responseHeaders);
 	}
+	
+	/**
+	 * Convert the given string into json message.
+	 * 
+	 * @param content
+	 *            content
+	 * @return json message
+	 */
+	public HttpEntity<String> toJsonHttpEntity(String content) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set("content-type", "application/json; charset=UTF-8");
+		responseHeaders.setPragma("no-cache");
+		return toHttpEntity(content, responseHeaders);
+	}
+
 
 
 	/**
