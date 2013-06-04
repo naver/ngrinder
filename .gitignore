@@ -16,3 +16,5 @@ target/
 /ngrinder_cloud_deploy.bat
 /ngrinder_staging_deploy.bat
 /deploy-core.bat
+/complexity_result.html
+/loc_result.html
