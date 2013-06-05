@@ -1,19 +1,23 @@
 <div class="div-host" 
-data-original-title="<@spring.message "perfTest.configuration.targetHost"/>"
-data-content='<@spring.message "perfTest.configuration.targetHost.help"/>'
-rel="popover" placement="bottom"></div>
+	rel='popover' 
+	title='<@spring.message "perfTest.configuration.targetHost"/>'
+	data-html='true'
+	data-content='<@spring.message "perfTest.configuration.targetHost.help"/>'
+	data-placement='bottom'
+	>
+</div>
 <input type="hidden" name="targetHosts" id="targetHosts" value="${(targetHosts)!}"> 
 <a class="btn pull-right btn-mini addhostbtn" data-toggle="modal" href="#addHostModal">   
 	<@spring.message "perfTest.configuration.add"/>
 </a>
 
 <!-- modal dialog -->
-<div class="modal fade" id="addHostModal">
+<div class="modal hide fade" id="addHostModal" tabindex="-1" role="dialog"  aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-header">
-		<a class="close" data-dismiss="modal">&times;</a>
-		<h3>
+    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+		<h4>
 			<@spring.message "perfTest.configuration.addHost"/> <small><@spring.message "perfTest.configuration.pleaseInputOneOptionAtLeast"/></small>
-		</h3>
+		</h4>
 	</div>
 	<div class="modal-body">
 		<div class="form-horizontal">
@@ -34,8 +38,8 @@ rel="popover" placement="bottom"></div>
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a class="btn btn-primary" id="addHostBtn"><@spring.message "perfTest.configuration.add"/></a>
-		<a href="#addHostModal" class="btn" data-toggle="modal"><@spring.message "common.button.cancel"/></a>
+		<button class="btn btn-primary" id="addHostBtn"><@spring.message "perfTest.configuration.add"/></button>
+		<button class="btn" data-dismiss="modal"><@spring.message "common.button.cancel"/></button>
 	</div>
 </div>
 

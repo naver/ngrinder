@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @since 3.1
  */
 @Controller
-@RequestMapping("/operation/systemConfig")
+@RequestMapping("/operation/system_config")
 @PreAuthorize("hasAnyRole('A')")
 public class SystemConfigController extends NGrinderBaseController {
 
@@ -41,12 +41,12 @@ public class SystemConfigController extends NGrinderBaseController {
 	 * 
 	 * @param model
 	 *            model.
-	 * @return operation/systemConfig
+	 * @return operation/system_config
 	 */
 	@RequestMapping("")
 	public String openSystemConfiguration(Model model) {
 		model.addAttribute("content", systemConfigService.getSystemConfigFile());
-		return "operation/systemConfig";
+		return "operation/system_config";
 	}
 
 	/**
@@ -56,7 +56,7 @@ public class SystemConfigController extends NGrinderBaseController {
 	 *            model.
 	 * @param content
 	 *            file content.
-	 * @return operation/systemConfig
+	 * @return operation/system_config
 	 */
 	@RequestMapping("/save")
 	public String saveSystemConfiguration(Model model, @RequestParam final String content) {

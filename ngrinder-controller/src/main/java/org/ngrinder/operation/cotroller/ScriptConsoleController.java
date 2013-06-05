@@ -58,7 +58,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @since 3.0
  */
 @RuntimeOnlyController
-@RequestMapping("/operation/scriptConsole")
+@RequestMapping("/operation/script_console")
 @PreAuthorize("hasAnyRole('A')")
 public class ScriptConsoleController extends NGrinderBaseController implements ApplicationContextAware {
 	private static final int SCRIPT_CONSOLE_PYTHON_EXPIRE_TIMEOUT = 30000;
@@ -172,7 +172,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	 *            script
 	 * @param model
 	 *            model
-	 * @return "operation/scriptConsole"
+	 * @return "operation/script_console"
 	 */
 	@RequestMapping("")
 	public String runScript(@RequestParam(value = "script", required = false) String script, Model model) {
@@ -185,7 +185,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 			model.addAttribute("script", script);
 			model.addAttribute("result", result);
 		}
-		return "operation/scriptConsole";
+		return "operation/script_console";
 	}
 
 	/**

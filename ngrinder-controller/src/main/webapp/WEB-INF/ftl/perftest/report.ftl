@@ -70,11 +70,9 @@
 	</head>
 
 	<body>
-		<ul class="breadcrumb" style="width:912px; margin-left:auto; margin-right:auto; margin-bottom:0">
-			<li>
-				<h3><@spring.message "perfTest.report.reportPage"/> ${test.testName}</h3>
-			</li>
-		</ul>
+		<div class="navbar-inner" style="width:912px; margin-left:auto; margin-right:auto; margin-bottom:0">
+			<h3><@spring.message "perfTest.report.reportPage"/> ${test.testName}</h3>
+		</div>
 	<div class="container">
 	   <input type="hidden" id="startTime" name="startTime" value="${(test.startTime)!}">
 	   <input type="hidden" id="finishTime" name="finishTime" value="${(test.finishTime)!}">

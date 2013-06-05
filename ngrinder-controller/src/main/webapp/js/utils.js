@@ -202,29 +202,7 @@ function getValueByID(id) {
 	return $.trim($("#" + id).val());
 }
 
-function popover() { 
-	var el = $(this);
-	var placementStr = el.attr("placement");
-	if (placementStr == "") {
-		placementStr = "right";
-	}  
-	
-	el.popover({
-		placement:placementStr,
-		trigger:"manual",
-  	    template: '<div class="popover" ><div class="arrow"></div><div class="popover-inner myclass" style="width:400px"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'	});
-	if (el.attr("type") == "toggle") {
-		el.popover('toggle');
-	} else {
-		el.popover('show');
-	}
-}
 
-
-function popunover() { 
-	var el = $(this);
-	el.popover('hide');
-}
 
 function deleteSelection() {
     if (window.getSelection) {
@@ -258,9 +236,11 @@ function markInput(obj, success, message) {
     }
 }
 
+
 $(document).ready(function() {
-	$("div[rel=popover], span[rel=popover]").hover(popover, popunover);
+	$("[rel='popover']").popover({trigger: 'hover', container:'body'});
 });
+
 
 function cookie(name,value,expiredays){
   var today = new Date();

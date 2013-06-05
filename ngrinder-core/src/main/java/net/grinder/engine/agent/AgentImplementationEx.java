@@ -112,6 +112,16 @@ public class AgentImplementationEx implements Agent {
 	}
 
 	/**
+	 * Constructor with connection to console.
+	 * 
+	 * @param agentConfig
+	 *            agent configuration
+	 */
+	public AgentImplementationEx(AgentConfig agentConfig) {
+		this(null, agentConfig, false);
+	}
+
+	/**
 	 * Run grinder with empty {@link GrinderProperties}.
 	 * 
 	 * @throws GrinderException

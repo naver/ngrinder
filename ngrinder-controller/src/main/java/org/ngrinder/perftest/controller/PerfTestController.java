@@ -632,17 +632,17 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            test id
 	 * @param imgWidth
 	 *            image width
-	 * @return "perftest/reportDiv"
+	 * @return "perftest/detail_report"
 	 */
-	@RequestMapping(value = "{id}/loadReportDiv")
-	public String getReportDiv(User user, ModelMap model, @PathVariable long id, @RequestParam int imgWidth) {
+	@RequestMapping(value = "{id}/detail_report")
+	public String getReportSection(User user, ModelMap model, @PathVariable long id, @RequestParam int imgWidth) {
 		PerfTest test = getPerfTestWithPermissionCheck(user, id, false);
 		int interval = perfTestService.getReportDataInterval(id, "TPS", imgWidth);
 		model.addAttribute(PARAM_LOG_LIST, perfTestService.getLogFiles(id));
 		model.addAttribute(PARAM_TEST_CHART_INTERVAL, interval * test.getSamplingInterval());
 		model.addAttribute(PARAM_TEST, test);
 		model.addAttribute(PARAM_TPS, perfTestService.getReportDataAsString(id, "TPS", interval));
-		return "perftest/reportDiv";
+		return "perftest/detail_report";
 	}
 
 	/**
@@ -730,9 +730,9 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            model
 	 * @param id
 	 *            test id
-	 * @return "perftest/refreshContent"
+	 * @return "perftest/sample"
 	 */
-	@RequestMapping(value = "{id}/running/refresh")
+	@RequestMapping(value = "{id}/running/sample")
 	public String refreshTestRunning(User user, ModelMap model, @PathVariable("id") long id) {
 		PerfTest test = checkNotNull(getPerfTestWithPermissionCheck(user, id, false), "given test should be exist : "
 						+ id);
@@ -741,7 +741,7 @@ public class PerfTestController extends NGrinderBaseController {
 			model.addAttribute(PARAM_RESULT_AGENT_PERF, getStatString(perfTestService.getAgentStat(test)));
 			model.addAttribute(PARAM_RESULT_MONITOR_PERF, getStatString(perfTestService.getMonitorStat(test)));
 		}
-		return "perftest/refreshContent";
+		return "perftest/sample";
 	}
 
 	@SuppressWarnings("rawtypes")

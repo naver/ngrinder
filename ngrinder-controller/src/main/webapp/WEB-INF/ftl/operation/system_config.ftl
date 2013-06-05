@@ -55,7 +55,7 @@
 			
 			$("#saveBtn").click(function() {
 				$('#sysFileContent').text(editor.getValue());
-				document.forms.sysConfigForm.action = "${req.getContextPath()}/operation/systemConfig/save";
+				document.forms.sysConfigForm.action = "${req.getContextPath()}/operation/system_config/save";
 				document.forms.sysConfigForm.submit();
 			});
 			

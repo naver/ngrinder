@@ -70,7 +70,6 @@
 				<INPUT type="hidden" id="pageNumber" name="page.page" value="${page.pageNumber + 1}">
 				<INPUT type="hidden" id="pageSize" name="page.size" value="${page.pageSize}">
 			</form>
-			
 			<div class="pull-right"> 
 				<code id="currentRunning" style="width:300px"></code>
 			</div>
@@ -97,7 +96,7 @@
 				</colgroup>
 				<thead>
 					<tr>
-						<th class="nothing"><input id="chkboxAll" type="checkbox" class="checkbox" value=""></th>
+						<th class="nothing"><input id="chkboxAll" type="checkbox"  value=""></th>
 						<th class="nothing" style="padding-left:3px"><@spring.message "common.label.status"/></th>
 						<th id="testName"><@spring.message "perfTest.table.testName"/></th>
 						<th id="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
@@ -123,40 +122,54 @@
 							<#assign stoppable = !(test.status.stoppable) />
 							<tr id="tr${test.id}">
 								<td class="center">
-									<input id="check_${test.id}" type="checkbox" class="checkbox perf_test" value="${test.id}" status="${test.status}" <#if deletable>disabled</#if>>
+									<input id="check_${test.id}" type="checkbox" class="perf_test" value="${test.id}" status="${test.status}" <#if deletable>disabled</#if>>
 								</td>
 								<td class="center"  id="row_${test.id}">
 									<div class="ball" id="ball_${test.id}" 
-													rel="popover"
+													data-html="true"
 													data-content='${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}'  
-													data-original-title="<@spring.message "${test.status.springMessageKey}"/>" type="toggle"> 
-										<img class="status" src="${req.getContextPath()}/img/ball/${test.status.iconName}"/> 
+													title="<@spring.message "${test.status.springMessageKey}"/>" 
+													rel="popover"> 
+										<img class="status" src="${req.getContextPath()}/img/ball/${test.status.iconName}"  /> 
 									</div>
 								</td>
-								<td class="ellipsis ${test.dateString}" 
+								<td class="ellipsis ${test.dateString}">
+									<div
+										 rel="popover"
+										 data-html="true" 
 										 data-content="${(test.description!"")?replace('\n', '<br/>')?html} &lt;p&gt;${test.testComment?replace('\n', '<br/>')?html}&lt;/p&gt;  &lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;&lt;p&gt;<#if test.tagString?has_content><@spring.message "perfTest.configuration.tags"/> : ${test.tagString}&lt;/p&gt;</#if><@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})&lt;br&gt; <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})"  
-										 data-original-title="${test.testName}">
-									<a href="${req.getContextPath()}/perftest/${test.id}" target="_self">${test.testName}</a>
+										 data-title="${test.testName}">
+										<a href="${req.getContextPath()}/perftest/${test.id}" target="_self">${test.testName}</a>
+									</div>
 								</td>
-								<td class="ellipsis"
-									data-content="${test.scriptName} &lt;br&gt;&lt;br&gt; - <@spring.message "script.list.table.revision"/> : ${(test.scriptRevision)!'HEAD'}" 
-									data-original-title="<@spring.message "perfTest.table.scriptName"/>">			
-									<#if isAdmin??>
-										<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}&ownerId=${(test.createdUser.userId)!}">${test.scriptName}</a>
-									<#else>
-										<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}">${test.scriptName}</a>
-									</#if>
+								<td class="ellipsis">
+									<div class="ellipsis"
+										rel="popover"
+										data-html="true"
+										data-content="${test.scriptName} &lt;br&gt;&lt;br&gt; - <@spring.message "script.list.table.revision"/> : ${(test.scriptRevision)!'HEAD'}" 
+										title="<@spring.message "perfTest.table.scriptName"/>">			
+										<#if isAdmin??>
+											<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}&ownerId=${(test.createdUser.userId)!}">${test.scriptName}</a>
+										<#else>
+											<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}">${test.scriptName}</a>
+										</#if>
+									</div>
 								</td>
-		            			<td class="ellipsis" data-original-title="<@spring.message "perfTest.table.participants"/>" 
-		            				data-content="<@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})&lt;br&gt; <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})">
+		            			<td>
+		            				<div class="ellipsis" 
+										rel="popover"
+		            					title="<@spring.message "perfTest.table.participants"/>"
+		            					data-html="true" 
+		            					data-content="<@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})&lt;br&gt; <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})">
 		            				<#if isAdmin??>
 		            					${test.lastModifiedUser.userName}
 		            				<#else>
 		            					${test.createdUser.userName}
 		            				</#if>
+		            				</div>
 		            			</td>
 								<#if clustered>
-								<td class="ellipsis" title="<@spring.message "agent.table.region"/>" data-content='<#if test.region?has_content><@spring.message "${test.region}"/></#if>'> <#if test.region?has_content><@spring.message "${test.region}"/></#if> 
+								<td class="ellipsis" title="<@spring.message "agent.table.region"/>" data-html="true" data-content='<#if test.region?has_content><@spring.message "${test.region}"/></#if>'> <#if test.region?has_content><@spring.message "${test.region}"/></#if> 
 								</td>
 								</#if>
 								<td>
@@ -206,9 +219,6 @@
 				document.forms.listForm.submit();
 			});
 			
-			$('td.ellipsis').hover(function () {
-	          $(this).popover('show');
-	      	});
 	      	
 			$("#nav_test").addClass("active");
 			
@@ -356,7 +366,7 @@
 				ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
 				$(".icon-remove[sid=" + id + "]").remove();
 			}
-			$("#ball_" + id).attr("data-original-title", status);
+			$("#ball_" + id).attr("data-title", status);
 			$("#ball_" + id).attr("data-content", message);
 			if (stoppable == true) {
 				$("#stop_" + id).parent().show();
@@ -371,7 +381,7 @@
 			}
 		}
 		// Wrap this function in a closure so we don't pollute the namespace
-		(function refreshContent() {
+		(function updateStatuses() {
 			var ids = $('input.perf_test').map(function() {
 		    	var perTestStatus = $(this).attr("status")
 				if(!(perTestStatus == "FINISHED" || perTestStatus == "STOP_ON_ERROR" || perTestStatus == "CANCELED"))
@@ -399,7 +409,7 @@
 			    		}
 			    		updateStatus(data[i].id, data[i].name, data[i].icon, data[i].stoppable, data[i].deletable, data[i].message);
 			    	}
-			    	setTimeout(refreshContent, 2000);
+			    	setTimeout(updateStatuses, 2000);
 			    }
 		    });
 	  })();

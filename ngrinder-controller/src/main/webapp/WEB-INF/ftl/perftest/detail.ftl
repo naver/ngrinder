@@ -27,7 +27,7 @@
 	}
 	
 	.select-item {
-		width: 50px;
+		width: 60px;
 	}
 	
 	.control-label input {
@@ -119,6 +119,10 @@
 		width: 100px;
 	}
 	
+	.form-horizontal .control-group {
+		margin-bottom:15px;
+	}
+	
 	.controls .span3 {
 		margin-left: 0;
 	}
@@ -160,7 +164,8 @@
 <body>
 	<#include "../common/navigator.ftl">
 	<div class="container">
-		<form id="testContentForm" name="testContentForm" action="${req.getContextPath()}/perftest/create" method="POST">
+		<form id="testContentForm" name="testContentForm" action="${req.getContextPath()}/perftest/create" method="POST" 
+    		style="margin-bottom: 0px">
 			<div class="well">
 				<input type="hidden" id="testId" name="id" value="${(test.id)!}"> 
 
@@ -279,14 +284,14 @@
 				</ul>
 				<div class="tab-content">
 					<div class="tab-pane" id="testContent">
-						<#include "configDiv.ftl">
+						<#include "detail_config.ftl">
 					</div>
 					
 					<div class="tab-pane" id="reportContent">
 					</div>
 					
 					<div class="tab-pane" id="runningContent">
-						<#include "runningDiv.ftl">
+						<#include "detail_running.ftl">
 					</div>
 				</div>
 				<!-- end tab content -->
@@ -360,11 +365,6 @@ $(document).ready(function () {
 	updateRampupChart();
 	
 	<#if test??>
-		$("#testStatus_img_id").popover({
-			placement: 'bottom',
-			trigger: 'hover',
-			html: true
-		});
 		<#assign category = test.status.category>
 		<#if category == "TESTING"> 
   			displayCfgAndTestRunning(); 
@@ -656,10 +656,7 @@ function addValidation() {
 }
 
 function bindEvent() {
-	$('#testContentForm input').hover(function() {
-		$(this).popover('show');
-	});
-	
+
 	$("#scriptName").change(function() {
 		var $this = $(this);
 		var $showScript = $("#showScript");
@@ -1069,7 +1066,7 @@ function getOption(cnt) {
 }
 
 function openReportDiv(onFinishHook) {
-	$("#reportContent").load("${req.getContextPath()}/perftest/<#if test??>${(test.id)?c}<#else>0</#if>/loadReportDiv?imgWidth=600",
+	$("#reportContent").load("${req.getContextPath()}/perftest/<#if test??>${(test.id)?c}<#else>0</#if>/detail_report?imgWidth=600",
 		function() {
 			if (onFinishHook !== undefined) {
 				onFinishHook();

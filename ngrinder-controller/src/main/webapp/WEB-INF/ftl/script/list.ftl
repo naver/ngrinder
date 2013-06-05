@@ -16,8 +16,8 @@
 					<td>
 						<table style="width:100%">
 							<colgroup>
-								<col width="300px"/>
-								<col width="540px"/>
+								<col width="400px"/>
+								<col width="*"/>
 							</colgroup>
 							<tr>
 								<td>
@@ -46,21 +46,21 @@
 							</colgroup>
 							<tr>
 								<td>
-									<a class="btn btn-primary" href="#createScriptModal" id="createBtn" data-toggle="modal">
+									<a class="btn btn-primary" href="#create_script_modal" data-toggle="modal">
 										<i class="icon-file icon-white"></i>
 										<@spring.message "script.list.button.createScript"/>
 									</a>
-									<a class="btn" href="#createFolderModal" id="folderBtn" data-toggle="modal">
+									<a class="btn" href="#create_folder_modal" data-toggle="modal">
 										<i class=" icon-folder-open"></i>
 										<@spring.message "script.list.button.createFolder"/>
 									</a>
-									<a class="btn" href="#uploadScriptModal" id="uploadBtn" data-toggle="modal">
+									<a class="btn" href="#upload_file_modal" data-toggle="modal">
 										<i class="icon-upload"></i>
 										<@spring.message "script.list.label.upload"/>
 									</a>
 								</td>
 								<td>
-									<a class="btn btn-danger pull-right" href="javascript:void(0);" id="deleteBtn">
+									<a class="btn btn-danger pull-right" href="javascript:void(0);" id="delete_script_button">
 										<i class="icon-remove icon-white"></i>
 										<@spring.message "script.list.button.delete"/>
 									</a>
@@ -149,18 +149,13 @@
 		</div>
 	</div>
 
-	<#include "createScriptModal.ftl">
-	<#include "createFolderModal.ftl">
-	<#include "uploadFileModal.ftl">
+	<#include "create_script_modal.ftl">
+	<#include "create_folder_modal.ftl">
+	<#include "upload_file_modal.ftl">
 	<script>
 		$(document).ready(function() {
 			$("#nav_script").addClass("active");
-			
-			$('form input').hover(function () { // for input element in modals.
-	        	$(this).popover('show');
-	      	});
-						
-			$("#deleteBtn").click(function() {
+			$("#delete_script_button").click(function() {
 				var list = $("td input:checked");
 				if(list.length == 0) {
 					bootbox.alert("<@spring.message "script.list.alert.delete"/>", "<@spring.message "common.button.ok"/>");

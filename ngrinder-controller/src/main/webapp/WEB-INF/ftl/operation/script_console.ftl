@@ -15,7 +15,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="span12">
-				<form action="${req.getContextPath()}/operation/scriptConsole" name="scriptForm" method="POST">
+				<form action="${req.getContextPath()}/operation/script_console" name="scriptForm" method="POST">
 					<fieldset>
 						<legend class="header">
 							<@spring.message "navigator.dropdown.scriptConsole"/>

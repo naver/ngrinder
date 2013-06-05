@@ -1,6 +1,7 @@
 @charset "utf-8";
 body {
-	padding-top: 40px
+	padding-top: 40px;
+	font-family: Arial, sansserif
 }
 
 body > .container {
@@ -83,11 +84,11 @@ h1, h2, h3, h4  {
 }
 
 .form-horizontal-4 .control-label {
-	width: 175px
+	width: 130px
 }
 
 .form-horizontal-4 .controls {
-	margin-left: 190px
+	margin-left: 140px
 }
 
 .form-horizontal-left .control-label {

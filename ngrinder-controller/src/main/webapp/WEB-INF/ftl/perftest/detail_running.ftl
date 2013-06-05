@@ -176,7 +176,7 @@
 		var refreshDiv = $("<div></div>");
 		var peakTps = 50;
 		refreshDiv.load(
-			"${req.getContextPath()}/perftest/<#if test??>${(test.id)?c}<#else>0</#if>/running/refresh",
+			"${req.getContextPath()}/perftest/<#if test??>${(test.id)?c}<#else>0</#if>/running/sample",
 			{},
 			function() {
 				$("#running_time").text(showRunTime(curRunningTime));

@@ -135,7 +135,7 @@ public class AgentDaemon implements Agent {
 	class AgentThreadRunnable implements Runnable {
 		public void run() {
 			try {
-				setAgent(new AgentImplementationEx(LOGGER, m_agentConfig)).run(getGrinderProperties());
+				setAgent(new AgentImplementationEx(m_agentConfig)).run(getGrinderProperties());
 			} catch (Exception e) {
 				LOGGER.error("while running agent thread, error occurs", e);
 			}

@@ -1,8 +1,10 @@
 <div class="row">
 	<div class="span6">
-		<div class="form-horizontal form-horizontal-2">
-			<fieldset>
+	<fieldset>
 				<legend><@spring.message "perfTest.configuration.basicConfiguration"/></legend>
+		</fieldset>
+		<div class="form-horizontal form-horizontal-2">
+			
 				<div class="control-group">
 					<label for="agentCount" class="control-label"><@spring.message "perfTest.configuration.agent"/></label>
 					<div class="controls">
@@ -17,13 +19,22 @@
 										<div class="input-append">
 											<input type="text" class="input input-mini" rel="popover"
 												id="agentCount" name="agentCount" value="${(test.agentCount)!0}" 
+												data-html="true"
 												data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
-												data-original-title="<@spring.message "perfTest.configuration.agent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/><span id="maxAgentCount"></span></span>
+												title="<@spring.message "perfTest.configuration.agent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/><span id="maxAgentCount"></span></span>
 										</div>
 									</td>
 									<td>
 										<#if clustered == true>											
-											<label for="regionSelect" class="region" ><@spring.message "perfTest.configuration.region"/><span rel="popover" data-content='<@spring.message "perfTest.configuration.region.help"/>' data-original-title='<@spring.message "perfTest.configuration.region"/>' type="toggle"> <i class="icon-question-sign" style="vertical-align:middle;"></i></span></label>
+											<label for="regionSelect" class="region" ><@spring.message "perfTest.configuration.region"/>
+												<span 
+													rel="popover" 
+													data-html="true" 
+													data-content='<@spring.message "perfTest.configuration.region.help"/>' 
+													data-placement='top'
+													title='<@spring.message "perfTest.configuration.region"/>' type="toggle"> 
+													<i class="icon-question-sign" style="vertical-align:middle;"></i></span>
+											</label>
 								 			<select id="regionSelect" name="region" class="pull-right" style="width:110px" >
 												<#list regionAgentCountMap?keys as eachRegion>
 													<option value="${eachRegion}" <#if (test?? && test.region?? && test.region == eachRegion)>selected </#if> > <@spring.message "${eachRegion}"/></option>
@@ -47,10 +58,11 @@
 							<tr>
 								<td>
 									<div class="input-append">
-										<input type="text" class="input input-mini" rel="popover"
-											id="vuserPerAgent" name="vuserPerAgent"	value="${(test.vuserPerAgent)!1}" rel="popover"	
+										<input type="text" class="input input-mini" 
+											id="vuserPerAgent" name="vuserPerAgent"	value="${(test.vuserPerAgent)!1}" rel="popover"
+											data-html="true"	
 											data-content='<@spring.message "perfTest.configuration.vuserPerAgent.help"/>'
-											data-original-title="<@spring.message "perfTest.configuration.vuserPerAgent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxVuserPerAgent)}</span>
+											title="<@spring.message "perfTest.configuration.vuserPerAgent"/>"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxVuserPerAgent)}</span>
 									</div>
 									<a href="javascript:void(0)"><i class="expand" id="expandAndCollapse"></i></a>	
 								</td> 
@@ -142,15 +154,17 @@
 					</div>
 				</div>
 				<div class="control-group">
-					<label for="runCount" class="control-label"> <input type="radio" id="runCountRadio" name="threshold" value="R" <#if test?? && test.threshold == "R" >checked</#if>> 
+					<label for="runCount" class="control-label">
+						<input type="radio" id="runCountRadio" name="threshold" value="R" <#if test?? && test.threshold == "R" >checked</#if>> 
 						<@spring.message "perfTest.configuration.runCount"/>
 					</label>
 					<div class="controls">
 						<div class="input-append">
-							<input type="text" 
-								data-original-title="<@spring.message "perfTest.configuration.runCount"/>"
-								data-content="<@spring.message "perfTest.configuration.runCount.help"/>"	
-								rel="popover"												
+							<input type='text' 
+								title='<@spring.message "perfTest.configuration.runCount"/>'
+								data-content='<@spring.message "perfTest.configuration.runCount.help"/>'	
+								rel='popover'
+								data-html='true'												
 								id="runCount" class="input input-mini" number_limit="${(maxRunCount)}" name="runCount"
 								value="${(test.runCount)!0}"><span class="add-on"><@spring.message "perfTest.configuration.max"/>${(maxRunCount)}</span>
 						</div>
@@ -188,9 +202,11 @@
 										<label for="ignoreSampleCount" class="control-label" style="width:150px"> <@spring.message "perfTest.configuration.ignoreSampleCount"/> </label>
 										<div class="controls">
 											<input type="text" class="input input-mini" 
-												data-original-title="<@spring.message "perfTest.configuration.ignoreSampleCount"/>"
+												rel='popover'
+												title='<@spring.message "perfTest.configuration.ignoreSampleCount"/>'
+												data-html='true'												
 												data-content='<@spring.message "perfTest.configuration.ignoreSampleCount.help"/>'
-												rel="popover"												
+												data-placement='top'
 												id="ignoreSampleCount" name="ignoreSampleCount"
 												value="${(test.ignoreSampleCount)!0}">
 										</div>
@@ -212,14 +228,15 @@
 								<#if safeFileDistribution?default(false) == true>checked</#if>	
 							</#if> 
 						/>
-						<span style="margin-top:10px;margin-left:10px" rel="popover" 
+						<span style="margin-top:10px;margin-left:10px" 
+							rel='popover'
+							data-html='true'	 
 							data-content="<@spring.message "perfTest.configuration.safeDistribution.help"/>" 
-							data-original-title="<@spring.message "perfTest.configuration.safeDistribution"/>" type="toggle" id="dist_comment">
+							title="<@spring.message "perfTest.configuration.safeDistribution"/>" type="toggle" id="dist_comment">
 							<i class="icon-question-sign" style="margin-top:5px"></i>
 						</span> 
 					</div>
 				</div>
-			</fieldset>
 		</div>
 	</div>
 	<!-- end test content left -->

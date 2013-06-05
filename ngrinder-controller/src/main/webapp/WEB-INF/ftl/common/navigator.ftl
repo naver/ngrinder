@@ -1,7 +1,7 @@
 <#import "spring.ftl" as spring/>
 <#include "select2.ftl"/>
 <#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
-<div class="navbar navbar-fixed-top">
+<div class="navbar navbar-inverse navbar-fixed-top">
 	<div class="navbar-inner">
 		<div class="container">
 			<a class="brand" href="${req.getContextPath()}/home"><img src="${req.getContextPath()}/img/logo_ngrinder_a_header_inv.png" alt="nGrinder"></img></a>
@@ -33,8 +33,8 @@
 							<#if clustered == false>
 				            	<li><a href="${req.getContextPath()}/operation/log"><@spring.message "navigator.dropdown.logMonitoring"/></a></li>
 				            </#if>
-				                <li><a href="${req.getContextPath()}/operation/scriptConsole"><@spring.message "navigator.dropdown.scriptConsole"/></a></li>  
-			                	<li><a href="${req.getContextPath()}/operation/systemConfig"><@spring.message "navigator.dropdown.systemConfig"/></a></li>
+				                <li><a href="${req.getContextPath()}/operation/script_console"><@spring.message "navigator.dropdown.scriptConsole"/></a></li>  
+			                	<li><a href="${req.getContextPath()}/operation/system_config"><@spring.message "navigator.dropdown.systemConfig"/></a></li>
 			            	</@security.authorize>
 			            	<@security.authorize ifAnyGranted="S, A">
 			            		<li class="divider"/> 
@@ -52,9 +52,9 @@
 	</div>
 </div>
 <div class="container <#if announcement?has_content><#else>hidden</#if>" style="margin:0 auto" id="announcementDiv">
-	<div class="alert alert-block" style="padding:10px 20px; margin-bottom:-20px">
+	<div class="alert alert-block" style="padding:5px 20px; margin-bottom:-20px">  
 		<div class="page-header" style="margin:0; padding-bottom:2px">
-			<span><h4><@spring.message "announcement.alert.title"/></h4> <a href="#" id="hide_announcement">
+			<span><h5 style="margin-top:0px; margin-bottom:0px"><@spring.message "announcement.alert.title"/></h5> <a href="#" id="hide_announcement">
 				<i class="<#if announcement_hide?has_content && announcement_hide == true>icon-plus<#else>icon-minus</#if> pull-right" id="announcement_icon" style="margin-top:-20px"></i>
 			</a></span>
 		</div>
@@ -69,16 +69,16 @@
 		</div>
 	</div>
 </div>
-<div class="modal fade" id="userProfileModal">
-	<div class="modal-header">
+<div class="modal hide fade" id="userProfileModal">
+	<div class="modal-header"> 
 		<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
-		<h3><@spring.message "navigator.dropdown.profile.title"/></h3>
+		<h4><@spring.message "navigator.dropdown.profile.title"/></h4> 
 	</div>
 	<div class="modal-body" id="user_profile_modal" style="max-height:540px; padding-left:45px"> 
 	</div>	
 </div>
 
-<div class="modal fade" id="userSwitchModal">
+<div class="modal hide fade" id="userSwitchModal">
 	<div class="modal-header" style="border: none;">
 		<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
 	</div>
@@ -135,7 +135,7 @@
 			document.location.href = "${req.getContextPath()}/user/switchUser?switchUser=" + $(this).val();
 		});
 		
-		var url = "${req.getContextPath()}/user/switchOptions";
+		var url = "${req.getContextPath()}/user/switch_options";
 		$("#switch_user_id").click(function() {
 			$("#switchUserSelect").load(url, function(){
 				$(this).prepend($("<option value=''></option>"));

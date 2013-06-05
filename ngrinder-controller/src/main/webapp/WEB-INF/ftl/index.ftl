@@ -40,7 +40,7 @@
 		<div class="row">
 			<div class="span6">
 				<div class="page-header">
-	 				 <h3><@spring.message "home.qa.title"/></h3>  
+	 				 <h4><@spring.message "home.qa.title"/></h4>  
 				</div>
 		   		<div class="well">
 			  		<br/>
@@ -83,7 +83,7 @@
 			</div>
 			<div class="span6">
 				<div class="page-header">
-	 				 <h3><@spring.message "home.developerResources.title"/></h3> 
+	 				 <h4><@spring.message "home.developerResources.title"/></h4> 
 				</div> 
 		   		<div class="well">
 			  		<br/>

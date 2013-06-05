@@ -6,10 +6,11 @@
 		<div class="control-group">
 			<label class="control-label"><@spring.message "user.info.form.userId"/></label>
 			<div class="controls">
-				<input type="text" class="span4" id="userId" name="userId"
-				    rel="popover" value="${(user.userId)!}"
-					data-content="<@spring.message "user.info.warning.userId.intro"/> <@spring.message "common.form.rule.userId"/>"
-					data-original-title="<@spring.message "user.info.form.userId"/>"
+				<input type="text" class="span4" id="userId" name="userId" value="${(user.userId)!}"
+				    rel="popover" 
+					data-content='<@spring.message "user.info.warning.userId.intro"/> <@spring.message "common.form.rule.userId"/>'
+					data-placement='bottom'
+					title='<@spring.message "user.info.form.userId"/>'
 					<#if user?? && user.userId??>readonly</#if> >
 				<span id="userIdError_span_id" class="help-inline"> </span>
 				<input type="hidden" id="id" name="id" value="${(user.id)!}">
@@ -21,8 +22,9 @@
 			<div class="controls">
 				<input type="text" class="span4" id="userName"
 					name="userName" rel="popover" value="${(user.userName)!}"
-					data-content="<@spring.message "user.info.warning.userName"/>"
-					data-original-title="<@spring.message "user.option.name"/>">
+					data-content='<@spring.message "user.info.warning.userName"/>'
+					data-placement='top'
+					title="<@spring.message "user.option.name"/>">
 			</div>
 		</div>
 
@@ -43,9 +45,11 @@
 			<label class="control-label"><@spring.message "user.info.form.email"/></label>
 			<div class="controls">
 				<input type="text" class="span4" id="email" maxlength="30"
-					name="email" rel="popover" value="${(user.email)!}"
-					data-content="<@spring.message "user.info.warning.email.required"/>"
-					data-original-title="<@spring.message "user.info.form.email"/>">
+					name="email" value="${(user.email)!}"
+					rel="popover" 
+					data-content='<@spring.message "user.info.warning.email.required"/>'
+					data-placement='top'
+					title="<@spring.message "user.info.form.email"/>">
 			</div>
 		</div>
 
@@ -53,7 +57,7 @@
 			<label class="control-label"><@spring.message "common.label.description"/></label>
 			<div class="controls">
 				<textarea cols="30" id="description" name="description"
-					rows="3" title="Description" class="tx_area span4" rel="popover"
+					rows="3" title="Description" class="tx_area span4" 
 					style="resize: none;">${(user.description)!}</textarea>
 			</div>
 		</div>
@@ -64,8 +68,9 @@
 				<input type="text" class="span4" id="mobilePhone"  
 					name="mobilePhone" rel="popover"
 					value="${(user.mobilePhone)!}"
-					data-content="<@spring.message "common.form.rule.phoneNumber"/>"
-					data-original-title="<@spring.message "user.info.form.phone"/>">
+					data-content='<@spring.message "common.form.rule.phoneNumber"/>'
+					data-placement='top'
+					title="<@spring.message "user.info.form.phone"/>">
 			</div>
 		</div>
 		<#if user?exists>
@@ -73,7 +78,7 @@
 			<label class="control-label"><@spring.message "user.share.title"/></label>
 			<div class="controls">
 				<select id="userListSelect" name="followersStr" style="width:300px" multiple>
-					<#include "switchOptions.ftl">
+					<#include "switch_options.ftl">
 				</select>
 			</div>
 		</div>
@@ -93,8 +98,9 @@
 								<div class="controls">
 									<input type="password" class="span4" id="password"
 										name="password" rel="popover" value="${(user.psw)!}"
-										data-content="<@spring.message "user.info.warning.pwd.rangeLength"/>"
-										data-original-title="<@spring.message "user.info.form.pwd"/>">
+										data-content='<@spring.message "user.info.warning.pwd.rangeLength"/>'
+										data-placement='top'
+										title="<@spring.message "user.info.form.pwd"/>">
 								</div>
 						</div>
 						
@@ -103,8 +109,9 @@
 								<div class="controls">
 									<input type="password" class="span4" id="cpwd"
 										name="cpwd" rel="popover" value="${(user.psw)!}"
-										data-content="<@spring.message "user.info.warning.cpwd.equalTo"/>"
-										data-original-title="<@spring.message "user.info.form.cpwd"/>">
+										data-content='<@spring.message "user.info.warning.cpwd.equalTo"/>'
+										data-placement='top'
+										title="<@spring.message "user.info.form.cpwd"/>">
 								</div>
 						</div>
 	              </div> 
@@ -249,9 +256,7 @@
   			$("#cpwd").attr("equalTo","#password");
 		});
 		
-		$('#registerUserForm input').hover(function() {
-	        $(this).popover('show')
-	    });
+		$('#registerUserForm input').popover({trigger: 'hover', container:'#userProfileModal'});
 	    
 	    var switchedUsers = [];
 	    <#if followers?has_content>

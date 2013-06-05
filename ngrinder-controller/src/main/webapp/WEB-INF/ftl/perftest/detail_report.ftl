@@ -87,8 +87,11 @@
 	</div>
 </div>
 <script>
-	$("#log_comment").hover(popover, popunover);
-	drawChart('tpsDiv', ${TPS![]}, null,  ${chartInterval!1}).replot(); 
+	$("#log_comment").popover({trigger: 'hover', container:'body'});
+	var chart = drawChart('tpsDiv', ${TPS![]}, null,  ${chartInterval!1});
+	if (chart !== undefined) {
+		chart.replot(); 
+	}
 	$("#leaveCommentButton").click(function(){
 		var comment = $("#testComment").val();
 		var tagString = buildTagString();
