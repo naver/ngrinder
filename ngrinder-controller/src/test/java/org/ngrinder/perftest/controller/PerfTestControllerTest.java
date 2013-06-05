@@ -312,7 +312,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		controller.getReportData(model, test.getId(), "TPS,mean_time(ms)", 0);
 
 		model.clear();
-		controller.getReportDiv(getTestUser(), model, test.getId(), 700);
+		controller.getReportSection(getTestUser(), model, test.getId(), 700);
 	}
 
 	@Test
