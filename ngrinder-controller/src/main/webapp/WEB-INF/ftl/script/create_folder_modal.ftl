@@ -31,7 +31,7 @@
 	</div>
 	
 	<div class="modal-footer">
-		<button class="btn btn-primary" id="create_folder_button"><@spring.message "common.button.create"/></>
+		<button class="btn btn-primary" id="create_folder_button"><@spring.message "common.button.create"/></button>
 		<button class="btn"  data-dismiss="modal"><@spring.message "common.button.cancel"/></button>
 	</div>
 </div>

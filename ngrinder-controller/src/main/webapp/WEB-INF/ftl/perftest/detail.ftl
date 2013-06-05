@@ -86,7 +86,7 @@
 		margin-bottom: 2px;
 	}
 	
-	.addhostbtn {
+	.add-host-btn {
 		margin-right:20px;
 		margin-top:-32px;
 	}
@@ -232,7 +232,7 @@
 													</#if> 
 												</button>
 												
-												<button class="btn btn-primary" style="width:116px" data-toggle="modal" href="#scheduleModal" id="saveScheduleBtn" ${disabled!}>
+												<button class="btn btn-primary" style="width:116px" data-toggle="modal" href="#schedule_modal" id="saveScheduleBtn" ${disabled!}>
 													<#if isClone><@spring.message "perfTest.detail.clone"/><#else><@spring.message "common.button.save"/></#if>&nbsp;<@spring.message "perfTest.detail.andStart"/>
 												</button>
 										</td>
@@ -309,7 +309,7 @@
 	</div>
 	<!--end container-->
 
-	<div class="modal fade" id="scheduleModal">
+	<div class="modal hide fade" id="schedule_modal">
 		<div class="modal-header">
 			<a class="close" data-dismiss="modal">&times;</a>
 			<h3>
@@ -331,7 +331,7 @@
 			</div>
 		</div>
 		<div class="modal-footer">
-			<a class="btn btn-primary" id="runNowBtn"><@spring.message "perfTest.testRunning.runNow"/></a> <a class="btn btn-primary" id="addScheduleBtn"><@spring.message "perfTest.testRunning.schedule"/></a>
+			<a class="btn btn-primary" id="run_now_btn"><@spring.message "perfTest.testRunning.runNow"/></a> <a class="btn btn-primary" id="addScheduleBtn"><@spring.message "perfTest.testRunning.schedule"/></a>
 		</div>
 	</div>
 
@@ -655,11 +655,9 @@ function addValidation() {
 	$("#testContentForm").validate(validationOptions);
 }
 
-function bindEvent() {
-
-	$("#scriptName").change(function() {
-		var $this = $(this);
-		var $showScript = $("#showScript");
+function bindNewScript(target, first) {
+		var $this = target;
+		var $showScript = $("#show_script_btn");
 		var $scriptRevision = $("#scriptRevision");
 		var oldRevision = $scriptRevision.attr("oldRevision");
 		if ($this.val() == $this.attr("oldScript") && oldRevision != -1) {
@@ -670,7 +668,12 @@ function bindEvent() {
 			$scriptRevision.val(-1);
 		}
 		$showScript.show();
-		updateScriptResources(false);
+		updateScriptResources(first);
+}
+
+function bindEvent() {
+	$("#scriptName").change(function() {
+		bindNewScript($(this), false);
 	});
 	
 	$("#hiddenDurationInput").bind("slide", function(e) {
@@ -736,9 +739,9 @@ function bindEvent() {
 		return true;
 	});
 	
-	$("#runNowBtn").click(function() {
-		$("#scheduleModal").modal("hide");
-		$("#scheduleModal small").html("");
+	$("#run_now_btn").click(function() {
+		$("#schedule_modal").modal("hide");
+		$("#schedule_modal small").html("");
 		$("#scheduleInput").attr('name', '');
 		$("#testStatus").val("READY");
 		document.testContentForm.submit();
@@ -746,19 +749,19 @@ function bindEvent() {
 
 	$("#addScheduleBtn").click(function() {
 		if (checkEmptyByID("sDateInput")) {
-			$("#scheduleModal small").html("<@spring.message "perfTest.detail.message.setScheduleDate"/>");
+			$("#schedule_modal small").html("<@spring.message "perfTest.detail.message.setScheduleDate"/>");
 			return;
 		}
 	
 		var timeStr = $("#sDateInput").val() + " " + $("#shSelect").val() + ":" + $("#smSelect").val() + ":0";
 		var scheduledTime = new Date(timeStr.replace(/-/g, "/"));
 		if (new Date() > scheduledTime) {
-			$("#scheduleModal small").html("<@spring.message "perfTest.detail.message.errScheduleDate"/>");
+			$("#schedule_modal small").html("<@spring.message "perfTest.detail.message.errScheduleDate"/>");
 			return;
 		}
 		$("#scheduleInput").val(scheduledTime);
-		$("#scheduleModal").modal("hide");
-		$("#scheduleModal small").html("");
+		$("#schedule_modal").modal("hide");
+		$("#schedule_modal small").html("");
 		$("#testStatus").val("READY");
 		document.testContentForm.submit();
 	});
@@ -845,7 +848,7 @@ function bindEvent() {
 		$(this).tab('show');
 	});
 
-	$("#showScript").click(function() {
+	$("#show_script_btn").click(function() {
 		var currentScript = $("#scriptName").val();
 		if (currentScript != "") {
 			var ownerId = ""; 
@@ -959,8 +962,7 @@ function updateScript() {
 				$scriptSelection.append($newOption);	
 			}
 			$scriptSelection.select2("val", selectedScript);
-			$scriptSelection.change();
-			updateScriptResources(true);
+			bindNewScript($scriptSelection, true);
 		},
 		error : function() {
 			showErrorMsg("<@spring.message "common.error.error"/>");
@@ -1094,7 +1096,7 @@ function updateStatus(id, status_type, status_name, icon, deletable, stoppable, 
 
 	if (status_type == "TESTING") {
 		displayCfgAndTestRunning();
-	} else if (status_type == "FINISHED" || status_type == "STOP_ON_ERROR" || status_type == "CANCELED") {
+	} else if (status_type == "FINISHED" || status_type == "STOP_BY_ERROR"|| status_type == "STOP_ON_ERROR" || status_type == "CANCELED") {
 		isFinished = true; 
 		// Wait and run because it takes time to transfer logs.
 		setTimeout('displayCfgAndTestReport()', 3000);

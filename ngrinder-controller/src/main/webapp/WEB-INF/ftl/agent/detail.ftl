@@ -85,11 +85,7 @@
             
             $(document).ready(function() {
             	initChartData();
-            	
-                $("#returnBtn").on('click', function() {
-                    history.back();
-                });
-                
+          
                 getStatus();
                 
                 $("#rinterval").keyup(function() {
@@ -145,8 +141,7 @@
                         }
                     },
                     error: function() {
-                        showErrorMsg("Error!");
-                        
+                        showErrorMsg("Error!");                        
                         return false;
                     }
                 });

@@ -384,7 +384,7 @@
 		(function updateStatuses() {
 			var ids = $('input.perf_test').map(function() {
 		    	var perTestStatus = $(this).attr("status")
-				if(!(perTestStatus == "FINISHED" || perTestStatus == "STOP_ON_ERROR" || perTestStatus == "CANCELED"))
+				if(!(perTestStatus == "FINISHED" || perTestStatus == "STOP_BY_ERROR"|| perTestStatus == "STOP_ON_ERROR" || perTestStatus == "CANCELED"))
 					return this.value;
 		  	}).get();
 		    $.ajax({
@@ -404,7 +404,7 @@
 			    		testStatus = data[i].status_id;
 			    	    $("#check_" + data[i].id).attr("status", testStatus);
 			    	    
-			    		if(testStatus == "FINISHED" || testStatus == "STOP_ON_ERROR" || testStatus == "CANCELED"){
+			    		if(testStatus == "FINISHED" || testStatus == "STOP_BY_ERROR" || testStatus == "STOP_ON_ERROR" || testStatus == "CANCELED"){
 			    			location.reload();
 			    		}
 			    		updateStatus(data[i].id, data[i].name, data[i].icon, data[i].stoppable, data[i].deletable, data[i].message);
