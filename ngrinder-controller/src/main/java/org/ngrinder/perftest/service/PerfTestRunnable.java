@@ -224,7 +224,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	/**
 	 * Run the given test.
 	 * 
-	 * If fails, it marks STOP_ON_ERROR in the given {@link PerfTest} status
+	 * If fails, it marks STOP_BY_ERROR in the given {@link PerfTest} status
 	 * 
 	 * @param perfTest
 	 *            perftest instance;
@@ -296,7 +296,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 */
 	void distributeFileOn(final PerfTest perfTest, GrinderProperties grinderProperties, SingleConsole singleConsole) {
 		// Distribute files
-		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES, "All necessary files are distributing.");
+		perfTestService.markStatusAndProgress(perfTest, DISTRIBUTE_FILES, "All necessary files are being distributed.");
 		ListenerSupport<SingleConsole.FileDistributionListener> listener = ListenerHelper.create();
 		final int safeThreadHold = getSafeTransitionThreadHold();
 
@@ -574,7 +574,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	public void doTerminate(PerfTest perfTest, SingleConsole singleConsoleInUse) {
 		singleConsoleInUse.unregisterSampling();
 		try {
-			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR,
+			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
 							"Stoped by error");
 		} catch (Exception e) {
 			LOG.error("Error while terminating {}", perfTest.getTestIdentifier());
@@ -599,17 +599,17 @@ public class PerfTestRunnable implements NGrinderConstants {
 		try {
 			// stop target host monitor
 			if (perfTestService.hasTooManError(perfTest)) {
-				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR,
+				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
 								"The test is finished. but contains a lot of errors over 20% of total runs");
 			} else if (singleConsoleInUse.hasNoPerformedTest()) {
-				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_ON_ERROR,
+				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
 								"The test is finished. but has no TPS");
 			} else {
 				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.FINISHED,
 								"The test is finished successfully");
 			}
 		} catch (Exception e) {
-			perfTestService.markStatusAndProgress(perfTest, Status.STOP_ON_ERROR, e.getMessage());
+			perfTestService.markStatusAndProgress(perfTest, Status.STOP_BY_ERROR, e.getMessage());
 			LOG.error("Error while finishing {}", perfTest.getTestIdentifier());
 			LOG.error("Details : ", e);
 		}

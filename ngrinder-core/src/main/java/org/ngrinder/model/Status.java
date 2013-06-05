@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Performance Test Status. This enum describes all necessary step and status
- * which {@link PerfTest} can be in.
+ * Performance Test Status. This enum describes all necessary step and status which {@link PerfTest}
+ * can be in.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -50,7 +50,14 @@ public enum Status {
 	ABNORMAL_TESTING(StatusCategory.TESTING),
 	/** Test finished. */
 	FINISHED(StatusCategory.FINISHED),
+
 	/** Test finished. but contains lots of error */
+	STOP_BY_ERROR(StatusCategory.ERROR),
+	/**
+	 * Test finished. but contains lots of error.
+	 * 
+	 * @deprecated deprecated by typo error. use {@link #STOP_BY_ERROR}.
+	 */
 	STOP_ON_ERROR(StatusCategory.ERROR),
 	/** Test cancel. */
 	CANCELED(StatusCategory.STOP),
