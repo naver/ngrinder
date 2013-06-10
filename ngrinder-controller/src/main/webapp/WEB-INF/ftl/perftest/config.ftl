@@ -274,7 +274,7 @@
 	<div class="span6">
 		<fieldset>
 			<legend>
-				<input type="checkbox" id="use_ramp_up" name="useRampUp" style="vertical-align: middle"
+				<input type="checkbox" id="use_ramp_up" name="useRampUp" style="vertical-align: middle; margin-bottom:7px"
 					<#if test?? && test.useRampUp?default(false) == true>checked</#if> /> 
 				<@spring.message "perfTest.configuration.rampEnable"/>
 			</legend>
