@@ -1092,7 +1092,7 @@ function updateStatus(id, statusType, statusName, icon, deletable, stoppable, me
 	$("#test_status_img").attr("title", statusName);
 	$("#test_status_type").val(statusType);
 
-	var ballImg = $("#ttest_status_img");
+	var ballImg = $("#test_status_img");
 	if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
 		ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
 	}
