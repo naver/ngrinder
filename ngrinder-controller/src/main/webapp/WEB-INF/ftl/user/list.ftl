@@ -54,14 +54,14 @@
 			</colgroup>
 			<thead>
 				<tr>
-					<th class="noClick"><input type="checkbox" class="checkbox" value=""></th>
+					<th class="no-click"><input type="checkbox" class="checkbox" value=""></th>
 					<th><@spring.message "user.option.name"/></th>
 					<th><@spring.message "user.option.role"/></th>
 					<th><@spring.message "user.option.email"/></th>
-					<th class="noClick"><@spring.message "common.label.description"/></th>
+					<th class="no-click"><@spring.message "common.label.description"/></th>
 					<th><@spring.message "user.list.table.date"/></th>
-					<th class="noClick"><@spring.message "user.list.table.edit"/></th>
-					<th class="noClick"><@spring.message "user.list.table.delete"/></th>
+					<th class="no-click"><@spring.message "user.list.table.edit"/></th>
+					<th class="no-click"><@spring.message "user.list.table.delete"/></th>
 				</tr>
 			</thead>
 			<tbody>

@@ -46,18 +46,20 @@
 							</colgroup>
 							<tr>
 								<td>
-									<a class="btn btn-primary" href="#create_script_modal" data-toggle="modal">
-										<i class="icon-file icon-white"></i>
-										<@spring.message "script.list.button.createScript"/>
-									</a>
-									<a class="btn" href="#create_folder_modal" data-toggle="modal">
-										<i class=" icon-folder-open"></i>
-										<@spring.message "script.list.button.createFolder"/>
-									</a>
-									<a class="btn" href="#upload_file_modal" data-toggle="modal">
-										<i class="icon-upload"></i>
-										<@spring.message "script.list.label.upload"/>
-									</a>
+									<#if !(query??)>
+										<a class="btn btn-primary" href="#create_script_modal" data-toggle="modal">
+											<i class="icon-file icon-white"></i>
+											<@spring.message "script.list.button.createScript"/>
+										</a>
+										<a class="btn" href="#create_folder_modal" data-toggle="modal">
+											<i class=" icon-folder-open"></i>
+											<@spring.message "script.list.button.createFolder"/>
+										</a>
+										<a class="btn" href="#upload_file_modal" data-toggle="modal">
+											<i class="icon-upload"></i>
+											<@spring.message "script.list.label.upload"/>
+										</a>
+									</#if>
 								</td>
 								<td>
 									<a class="btn btn-danger pull-right" href="javascript:void(0);" id="delete_script_button">
@@ -86,14 +88,14 @@
 			<thead>
 				<tr>
 					<th><input type="checkbox" class="checkbox" value=""></th>
-					<th class="noClick"><a href="${req.getContextPath()}/script/list/${currentPath}/../" target="_self"><img src="${req.getContextPath()}/img/up_folder.png"/></a> 
+					<th class="no-click"><a href="${req.getContextPath()}/script/list/${currentPath}/../" target="_self"><img src="${req.getContextPath()}/img/up_folder.png"/></a> 
 					</th>
 					<th><@spring.message "script.list.table.name"/></th>
-					<th class="noClick"><@spring.message "script.option.commit"/></th>
+					<th class="no-click"><@spring.message "script.option.commit"/></th>
 					<th><@spring.message "script.list.table.lastDate"/></th>
 					<th><@spring.message "script.list.table.revision"/></th>
 					<th><@spring.message "script.list.table.size"/></th>
-					<th class="noClick"><@spring.message "script.list.table.download"/></th>
+					<th class="no-click"><@spring.message "script.list.table.download"/></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -148,10 +150,11 @@
 			</div>
 		</div>
 	</div>
-
+	<#if !(query??)>
 	<#include "create_script_modal.ftl">
 	<#include "create_folder_modal.ftl">
 	<#include "upload_file_modal.ftl">
+	</#if>
 	<script>
 		$(document).ready(function() {
 			$("#nav_script").addClass("active");
@@ -208,7 +211,7 @@
 						}
 					}
 				});
-				$(".noClick").off('click');
+				$(".no-click").off('click');
 			</#if>
 		});
 		

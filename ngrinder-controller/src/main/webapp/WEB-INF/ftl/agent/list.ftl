@@ -41,13 +41,13 @@
 			</colgroup>
 			<thead>
 				<tr>
-					<th class="noClick"><input type="checkbox" class="checkbox" value=""></th>
+					<th class="no-click"><input type="checkbox" class="checkbox" value=""></th>
 					<th><@spring.message "agent.table.IPAndDns"/></th>
-					<th class="noClick"><@spring.message "agent.table.port"/></th>
+					<th class="no-click"><@spring.message "agent.table.port"/></th>
 					<th class="ellipsis"><@spring.message "agent.table.name"/></th>
 					<th><@spring.message "agent.table.region"/></th>
 					<th><@spring.message "common.label.status"/></th>
-					<th class="noClick"><@spring.message "agent.table.approve"/></th>
+					<th class="no-click"><@spring.message "agent.table.approve"/></th>
 				</tr>
 			</thead>
 			<tbody>

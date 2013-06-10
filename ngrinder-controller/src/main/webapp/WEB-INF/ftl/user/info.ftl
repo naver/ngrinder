@@ -131,7 +131,7 @@
 </form>
 <script type="text/javascript">	
 	$(document).ready(function(){
-		$('#user_form input').popover( { trigger: 'hover', container:'#user_form' } );
+		$('#user_form input[rel="popover"]').popover( { trigger: 'hover', container:'#user_form' } );
 		<#if !(user?has_content)>
 
 			$.validator.addMethod("userIdFmt", function(userId, element ) {

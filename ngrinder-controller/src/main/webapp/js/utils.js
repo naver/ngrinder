@@ -195,7 +195,7 @@ function enableChkboxSelectAll(containerId) {
 }
 
 function removeClick() {
-	$(".noClick").off('click');
+	$(".no-click").off('click');
 }
 
 function getValueByID(id) {

@@ -114,14 +114,14 @@
 						</colgroup>
 						<thead>
 							<tr>
-								<th class="noClick"><@spring.message "perfTest.testRunning.testID"/></th>
-								<th class="noClick"><@spring.message "perfTest.table.testName"/></th>
-								<th class="noClick"><@spring.message "perfTest.testRunning.successfulTest"/></th>
-								<th class="noClick"><@spring.message "perfTest.table.errors"/></th>
-								<th class="noClick" title="<@spring.message "perfTest.table.meantime"/>">MTT</th>
-								<th class="noClick"><@spring.message "perfTest.table.tps"/></th>
-								<th class="noClick"><@spring.message "perfTest.testRunning.responseBytePerSecond"/></th>
-								<th class="noClick" title='<@spring.message "perfTest.testRunning.meanTimeToFirstByte"/>'>MTFB</th>
+								<th class="no-click"><@spring.message "perfTest.testRunning.testID"/></th>
+								<th class="no-click"><@spring.message "perfTest.table.testName"/></th>
+								<th class="no-click"><@spring.message "perfTest.testRunning.successfulTest"/></th>
+								<th class="no-click"><@spring.message "perfTest.table.errors"/></th>
+								<th class="no-click" title="<@spring.message "perfTest.table.meantime"/>">MTT</th>
+								<th class="no-click"><@spring.message "perfTest.table.tps"/></th>
+								<th class="no-click"><@spring.message "perfTest.testRunning.responseBytePerSecond"/></th>
+								<th class="no-click" title='<@spring.message "perfTest.testRunning.meanTimeToFirstByte"/>'>MTFB</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -142,14 +142,14 @@
 						</colgroup>
 						<thead>
 							<tr>
-								<th class="noClick"><@spring.message "perfTest.testRunning.testID"/></th>
-								<th class="noClick"><@spring.message "perfTest.table.testName"/></th>
-								<th class="noClick"><@spring.message "perfTest.testRunning.successfulTest"/></th>
-								<th class="noClick"><@spring.message "perfTest.table.errors"/></th>
-								<th class="noClick" title="<@spring.message "perfTest.table.meantime"/>">MTT</th>
-								<th class="noClick"><@spring.message "perfTest.table.tps"/></th>
-								<th class="noClick"><@spring.message "perfTest.detail.peakTPS"/></th>
-								<th class="noClick" title="<@spring.message "perfTest.testRunning.mtsd.help"/>">MTSD</th>
+								<th class="no-click"><@spring.message "perfTest.testRunning.testID"/></th>
+								<th class="no-click"><@spring.message "perfTest.table.testName"/></th>
+								<th class="no-click"><@spring.message "perfTest.testRunning.successfulTest"/></th>
+								<th class="no-click"><@spring.message "perfTest.table.errors"/></th>
+								<th class="no-click" title="<@spring.message "perfTest.table.meantime"/>">MTT</th>
+								<th class="no-click"><@spring.message "perfTest.table.tps"/></th>
+								<th class="no-click"><@spring.message "perfTest.detail.peakTPS"/></th>
+								<th class="no-click" title="<@spring.message "perfTest.testRunning.mtsd.help"/>">MTSD</th>
 							</tr>
 						</thead>
 						<tbody>
