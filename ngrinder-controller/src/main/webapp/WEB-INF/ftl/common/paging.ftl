@@ -44,7 +44,6 @@
 					<li><a href="javascript:doSubmit('${i}')">${i}</a></li>
 				</#if>
 			</#list>
-			</span>
 			<li <#if pageNo == totalPage> class="disabled"</#if>>
 				<a href="javascript:<#if pageNo == totalPage>void(0)<#else>doSubmit('${pageNo + 1}')</#if>"><@spring.message "common.paging.next"/> &rarr;</a>
 			</li>

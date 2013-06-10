@@ -24,15 +24,15 @@
 		<div class="container">
 			<img src="${req.getContextPath()}/img/bg_perftest_banner_en.png?${nGrinderVersion}"/>
 			
-			<form id="test_list_form" class="well form-inline search-bar" action=""${req.getContextPath()}/perftest/list" method="POST">
+			<form id="test_list_form" class="well form-inline search-bar" action="${req.getContextPath()}/perftest/list" method="POST">
 				<input type="hidden" id="sort_column" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
 				<input type="hidden" id="sort_direction" name="page.sort.dir" value="${sortDirection!'desc'}">
 		
 				<table style="width:100%">
-					<colspan>
+					<colgroup>
 						<col width="*"/>
 						<col width="300px"/> 
-					</colspan>
+					</colgroup>
 					<tr>
 						<td>
 							<select id="tag" name="tag" style="width:150px"> 
@@ -182,7 +182,7 @@
 								<td><#if test.errors??>${test.errors}</#if></td>
 								<td>${totalVuser}</td>
 								<td class="center">
-									<a href="javascript:void(0)" style="<#if deletable>display: none;</#if>"><i title="<@spring.message "common.button.delete"/>"id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>
+									<a href="javascript:void(0)" style="<#if deletable>display: none;</#if>"><i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>
 									<a href="javascript:void(0)" style="<#if stoppable>display: none;</#if>"><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" class="icon-stop test-stop" sid="${test.id}"></i></a>
 								</td>  
 							</tr>  
@@ -207,9 +207,6 @@
 			</#if>
 			<#include "../common/copyright.ftl">
 		</div>
-		<!--container-->
-	</div>
-</div>
 	<script>
 		$(document).ready(function() {
 			$("#tag").select2({

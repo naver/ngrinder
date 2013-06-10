@@ -286,8 +286,11 @@
                 data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700},
                 success: function(res) {
                     if (res.success) {
-                        drawMultiPlotChart('tps_chart', res.TPS, res.lables, res.chartInterval).replot();
-                        drawChart('mean_time_chart', res.Mean_Test_Time_ms, undefined, res.chartInterval).replot();
+                        var result = drawMultiPlotChart('tps_chart', res.TPS, res.lables, res.chartInterval);
+                        if (result !== undefined){ result.replot(); }
+                        result = drawChart('mean_time_chart', res.Mean_Test_Time_ms, undefined, res.chartInterval);
+                        if (result !== undefined){ result.replot(); }
+
                         if (res.Mean_time_to_first_byte !== undefined && 
                         		res.Mean_time_to_first_byte !== '[ ]') {
                         	drawChart('min_time_first_byte_chart', res.Mean_time_to_first_byte, undefined, res.chartInterval).replot();

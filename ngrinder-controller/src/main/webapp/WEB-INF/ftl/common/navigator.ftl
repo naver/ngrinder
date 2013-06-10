@@ -1,10 +1,9 @@
 <#import "spring.ftl" as spring/>
-<#include "select2.ftl"/>
 <#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
 <div class="navbar navbar-inverse navbar-fixed-top">
 	<div class="navbar-inner">
 		<div class="container">
-			<a class="brand" href="${req.getContextPath()}/home"><img src="${req.getContextPath()}/img/logo_ngrinder_a_header_inv.png" alt="nGrinder"></img></a>
+			<a class="brand" href="${req.getContextPath()}/home"><img src="${req.getContextPath()}/img/logo_ngrinder_a_header_inv.png" alt="nGrinder"/></a>
 			<div>
 				<ul class="nav">
 				  <li id="nav_test"><a href="${req.getContextPath()}/perftest/"><@spring.message "navigator.perfTest"/></a></li>
@@ -37,10 +36,10 @@
 			                	<li><a href="${req.getContextPath()}/operation/system_config"><@spring.message "navigator.dropdown.systemConfig"/></a></li>
 			            	</@security.authorize>
 			            	<@security.authorize ifAnyGranted="S, A">
-			            		<li class="divider"/> 
+			            		<li class="divider"></li>  
 			            		<li><a href="${req.getContextPath()}/operation/announcement"><@spring.message "navigator.dropdown.announcement"/></a></li>
 			            	</@security.authorize>
-		                	<li class="divider"/> 
+		                	<li class="divider"></li> 
 			          		<li><a href="${req.getContextPath()}/logout"><@spring.message "navigator.dropdown.signout"/></a></li>
 		            	</ul>
 		            </li>

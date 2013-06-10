@@ -121,8 +121,8 @@
 								<#else>	
 									<a href="${req.getContextPath()}/script/download/${script.path}" target="_blank" title="${script.path}">${script.fileName}</a>
 								</#if> 
-							</td>
-							<td class="ellipsis" title="${(script.description)!}">${(script.description)!}</td>
+							</td> 
+							<td class="ellipsis" title="${(script.description)!?html}">${(script.description)!}</td>
 							<td><#if script.lastModifiedDate?exists>${script.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if></td>
 							<td>${script.revision}</td>
 							<td>
@@ -149,8 +149,6 @@
 				</table>
 				<#include "../common/copyright.ftl">
 			</div>
-		</div>
-	</div>
 	<#if !(query??)>
 	<#include "create_script_modal.ftl">
 	<#include "create_folder_modal.ftl">

@@ -29,7 +29,7 @@
 		</form>
 	</div>
 	<div class="modal-footer">
-		<button class="btn btn-primary" id="upload_file_button"><@spring.message "script.list.button.upload"/></a>
+		<button class="btn btn-primary" id="upload_file_button"><@spring.message "script.list.button.upload"/></button>
 		<button class="btn" data-dismiss="modal"><@spring.message "common.button.cancel"/></button>
 	</div>
 </div>

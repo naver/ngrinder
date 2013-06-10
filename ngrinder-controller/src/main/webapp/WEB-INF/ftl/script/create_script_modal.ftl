@@ -15,7 +15,7 @@
 					  	<input type="text" id="script_name_input" name="fileName"
 					  		rel="create_script_modal_popover"
 					  		data-html="true"
-					  		data-content='${sample_name_message?js_string}'
+					  		data-content="${sample_name_message?html}"
 							title="<@spring.message "script.option.name"/>">
 							
 					  <span class="help-inline"></span>
