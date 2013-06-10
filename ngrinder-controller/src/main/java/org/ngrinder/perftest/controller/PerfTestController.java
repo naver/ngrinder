@@ -416,7 +416,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            tagString
 	 * @return JSON
 	 */
-	@RequestMapping(value = "{id}/leaveComment", method = RequestMethod.POST)
+	@RequestMapping(value = "{id}/leave_comment", method = RequestMethod.POST)
 	@ResponseBody
 	public String leaveComment(User user, @PathVariable("id") Long id, @RequestParam("testComment") String testComment,
 					@RequestParam(value = "tagString", required = false) String tagString) {
@@ -543,13 +543,15 @@ public class PerfTestController extends NGrinderBaseController {
 			user = userService.getUserById(ownerId);
 		}
 		FileEntry fileEntry = fileEntryService.getFileEntry(user, scriptPath);
-		String targetHosts = (fileEntry == null) ? "" : filterHostString(fileEntry.getProperties().get("targetHosts"));
-
+		String targetHosts = "";
 		List<String> fileStringList = newArrayList();
-		List<FileEntry> fileList = fileEntryService.getScriptHandler(fileEntry).getLibAndResourceEntries(user,
-						fileEntry, SVNRevision.HEAD.getNumber());
-		for (FileEntry each : fileList) {
-			fileStringList.add(each.getPath());
+		if (fileEntry != null) {
+			List<FileEntry> fileList = fileEntryService.getScriptHandler(fileEntry).getLibAndResourceEntries(user,
+							fileEntry, SVNRevision.HEAD.getNumber());
+			for (FileEntry each : fileList) {
+				fileStringList.add(each.getPath());
+			}
+			targetHosts = filterHostString(fileEntry.getProperties().get("targetHosts"));
 		}
 
 		return toJsonHttpEntity(buildMap("targetHosts", trimToEmpty(targetHosts), "resources", fileStringList));
@@ -804,7 +806,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            test id
 	 * @return "perftest/detail_report"
 	 */
-	@RequestMapping(value = {"{id}/detail_report", "{id}/report"})
+	@RequestMapping(value = { "{id}/detail_report", "{id}/report" })
 	public String getReport(ModelMap model, @PathVariable("id") long id) {
 		model.addAttribute("test", perfTestService.getPerfTest(id));
 		return "perftest/detail_report";

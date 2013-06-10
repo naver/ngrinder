@@ -99,7 +99,7 @@
 		var comment = $("#test_comment").val();
 		var tagString = buildTagString();
 		$.post(
-			"${req.getContextPath()}/perftest/${(test.id)?c}/leaveComment",
+			"${req.getContextPath()}/perftest/${(test.id)?c}/leave_comment",
 			{"testComment": comment, "tagString":tagString},
 			function() {
 				showSuccessMsg("<@spring.message "perfTest.report.message.leaveComment"/>");

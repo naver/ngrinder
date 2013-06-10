@@ -958,12 +958,13 @@ function updateScript() {
 		},
 		success : function(res) {
 			$scriptSelection = $("#script_name");
-			var selectedScript = $scriptSelection.attr("oldScript");
+			var selectedScript = $scriptSelection.attr("old_script");
 			for (var i = 0; i < res.length; i++) {
 				$newOption = $("<option value='" + res[i].path + "' revision='" + res[i].revision + "' validated='" + res[i].validated + "'>" + res[i].pathInShort + "</option>")
 				$scriptSelection.append($newOption);	
 			}
 			$scriptSelection.select2("val", selectedScript);
+			
 			bindNewScript($scriptSelection, true);
 		},
 		error : function() {
@@ -1079,26 +1080,26 @@ function openReportDiv(onFinishHook) {
 	);
 }
 
-function updateStatus(id, status_type, status_name, icon, deletable, stoppable, message) {
+function updateStatus(id, statusType, statusName, icon, deletable, stoppable, message) {
 	if ($("#test_status_img").attr("data-content") != message) {
 		$("#test_status_img").attr("data-content", message);
 	}
 	
-	if ($("#test_status_type").val() == status_type) {
+	if ($("#test_status_type").val() == statusType) {
 		return;
 	}
 	
-	$("#test_status_img").attr("data-original-title", status_name);
-	$("#test_status_type").val(status_type);
+	$("#test_status_img").attr("title", statusName);
+	$("#test_status_type").val(statusType);
 
 	var ballImg = $("#ttest_status_img");
 	if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
 		ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
 	}
 
-	if (status_type == "TESTING") {
+	if (statusType == "TESTING") {
 		displayCfgAndTestRunning();
-	} else if (status_type == "FINISHED" || status_type == "STOP_BY_ERROR"|| status_type == "STOP_ON_ERROR" || status_type == "CANCELED") {
+	} else if (statusType == "FINISHED" || statusType == "STOP_BY_ERROR"|| statusType == "STOP_ON_ERROR" || statusType == "CANCELED") {
 		finished = true; 
 		// Wait and run because it takes time to transfer logs.
 		setTimeout('displayCfgAndTestReport()', 3000);
@@ -1125,7 +1126,7 @@ function displayCfgAndTestRunning() {
 	$("#running_section_tab a").tab('show');
 	$("#running_section").show();
 	$("#report_section_tab").hide();
-	samplingInterval = $("#samplingInterval").val();
+	samplingInterval = $("#sampling_interval").val();
 	initChartData(60 / samplingInterval);
 	refreshData();
 	objTimer = window.setInterval("refreshData()", 1000 * samplingInterval);

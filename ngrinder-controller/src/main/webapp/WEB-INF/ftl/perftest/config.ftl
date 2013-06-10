@@ -106,7 +106,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td class="vuser_per_agent processes threads"></td>
+							<td class="vuser-per-agent processes threads"></td>
 						</tr>
 					</table>
 				</div>
@@ -123,7 +123,10 @@
 						</colgroup>
 						<tr>
 							<td>
-								<select id="script_name" class="required" name="scriptName" style="width: 275px" oldScript="${(test.scriptName)!}">
+								<select id="script_name" class="required" name="scriptName" style="width: 275px" old_script="${(test.scriptName)!}">
+									<#if test?? && test.scriptName??>
+										<option value="${test.scriptName}" selected></option>
+									</#if>
 								</select>
 							</td>
 							<td>
@@ -133,9 +136,12 @@
 									old_revision="${(test.scriptRevision)!-1}"/>
 								<button class="btn btn-mini btn-info pull-right" type="button" 
 									id="show_script_btn"
-									style="margin-top: 3px; &lt;# if !(showScriptVisible??)&gt;display: none;">R <#if test?? &&
-									test.scriptRevision != -1> ${test.scriptRevision} <#else> <#if
-									quickScriptRevision??>${quickScriptRevision}<#else>HEAD</#if> </#if>
+									style="margin-top: 3px; &lt;# if !(showScriptVisible??)&gt;display: none;">R 
+									<#if test?? && test.scriptRevision != -1> 
+										${test.scriptRevision} 
+									<#else> 
+										<#if quickScriptRevision??>${quickScriptRevision}<#else>HEAD</#if> 
+									</#if>
 								</button>
 							</td>
 						</tr>
@@ -199,7 +205,7 @@
 				</div>
 			</div>
 			<div class="control-group">
-				<label for="samplingInterval" class="control-label">
+				<label for="sampling_interval" class="control-label">
 					<@spring.message "perfTest.configuration.samplingInterval"/>
 				</label>
 				<div class="controls">
@@ -212,7 +218,7 @@
 							<tr>
 								<td>
 									<#assign samplingIntervalArray = [1,2,3,4,5]> 
-									<select class="select-item" id="samplingInterval" name="samplingInterval"> 
+									<select class="select-item" id="sampling_interval" name="samplingInterval"> 
 										<#list samplingIntervalArray as eachInterval>
 											<option value="${eachInterval}"
 												<#if test?? && test.samplingInterval != 0> 
@@ -253,7 +259,7 @@
 					<@spring.message "perfTest.configuration.safeDistribution"/>
 				</label>
 				<div class="controls">
-					<input type="checkbox" id="safeDistributionCheckBox" name="safeDistribution"
+					<input type="checkbox" id="safe_distribution_checkbox" name="safeDistribution"
 					<#if test?? && test.safeDistribution?default(false) == true>checked<#else><#if safeFileDistribution?default(false)==true>checked</#if> </#if> /> 
 					<span style="margin-top: 10px; margin-left: 10px" 
 						rel='popover' data-html='true'
