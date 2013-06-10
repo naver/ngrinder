@@ -21,8 +21,7 @@
 			</legend> 
 		</fieldSet>
 		<form id="user_list_form" action="${req.getContextPath()}/user" method="POST">
-			<div class="well form-inline search-bar">
-			 
+			<div class="well form-inline search-bar">			 
 				<input type="text" class="search-query search-query-without-radios" placeholder="Keywords" id="searchText" name="keywords"
 					value="${keywords!}">
 				<a class="btn" id="search_user">
@@ -37,8 +36,11 @@
 					</a>
 				</span>
 			</div>
-			<INPUT type="hidden" id="page_number" name="page.page" value="${page.pageNumber + 1}">
-			<INPUT type="hidden" id="page_size" name="page.size" value="${page.pageSize}">
+			<input type="hidden" id="page_number" name="page.page" value="${page.pageNumber + 1}"/>
+			<input type="hidden" id="page_size" name="page.size" value="${page.pageSize}"/>
+			<input type="hidden" id="sort_column" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
+			<input type="hidden" id="sort_direction" name="page.sort.dir" value="${sortDirection!'desc'}">
+		
 		</form>
 		<table class="table table-striped table-bordered ellipsis" id="user_table">
 			<#assign userList = userPage.content/>
@@ -54,14 +56,14 @@
 			</colgroup>
 			<thead>
 				<tr>
-					<th class="no-click"><input type="checkbox" class="checkbox" value=""></th>
-					<th><@spring.message "user.option.name"/></th>
-					<th><@spring.message "user.option.role"/></th>
-					<th><@spring.message "user.option.email"/></th>
-					<th class="no-click"><@spring.message "common.label.description"/></th>
-					<th><@spring.message "user.list.table.date"/></th>
-					<th class="no-click"><@spring.message "user.list.table.edit"/></th>
-					<th class="no-click"><@spring.message "user.list.table.delete"/></th>
+					<th class="no-click nothing"><input type="checkbox" class="checkbox" value=""></th>
+					<th name="userName"><@spring.message "user.option.name"/></th>
+					<th class="no-click nothing"><@spring.message "user.option.role"/></th>
+					<th name="email"><@spring.message "user.option.email"/></th>
+					<th class="no-click nothing"><@spring.message "common.label.description"/></th>
+					<th name="createdDate"><@spring.message "user.list.table.date"/></th>
+					<th class="no-click nothing"><@spring.message "user.list.table.edit"/></th>
+					<th class="no-click nothing"><@spring.message "user.list.table.delete"/></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -124,6 +126,24 @@
 			});
 			removeClick();
 			enableChkboxSelectAll("user_table");
+			var sortColumn = $("#sort_column").val();
+			var sortDir = $("#sort_direction").val().toLowerCase();
+			
+			$("th[name='" + sortColumn + "']").addClass("sorting_" + sortDir);
+
+			$("th.sorting").click(function() {
+				var $currObj = $(this);
+				var sortDirection = "ASC";
+				if ($currObj.hasClass("sorting_asc")) {
+					sortDirection = "DESC";
+				}
+				
+				$("#sort_column").val($currObj.attr('name'));
+				$("#sort_direction").val(sortDirection);
+				
+				getList(1);
+			});
+
 		});
 	
 		function deleteCheckedUsers() {

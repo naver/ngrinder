@@ -27,8 +27,9 @@
 								<td>
 								<#if svnUrl?has_content>
 									<div class="input-prepend pull-right" rel="popover" 
-						               		data-content="<@spring.message "script.list.message.svn"/>"
-						               		 data-original-title="Subversion" placement="bottom"> 
+						               		title="Subversion" placement="bottom"
+						               		data-content='<@spring.message "script.list.message.svn"/>'
+						               		data-html="true"> 
 						               <span class="add-on" style="cursor:default">SVN</span><span class="input-xlarge uneditable-input span7" style="cursor:text">${svnUrl}</span>
 						        	</div>  
 					        	</#if>
@@ -102,7 +103,7 @@
 				<#if files?has_content>	
 					<#list files as script>
 						<tr>
-							<td><#if script.fileName != ".."><input type="checkbox" value="${script.fileName}"></#if></td>
+							<td><#if script.fileName != ".."><input type="checkbox" class="checkbox"  value="${script.fileName}"></#if></td>
 							<td>
 								<#if script.fileType.fileCategory.isEditable()>
 									<i class="icon-file"></i>
