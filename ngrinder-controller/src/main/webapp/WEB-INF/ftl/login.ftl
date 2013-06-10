@@ -58,7 +58,7 @@
 					</div> 
 				</fieldset>
 			</form>
-				<div class="row" id="footDiv" >
+				<div class="row" id="foot_div" >
 					<div class="center">
 						<hr>
 						<footer>

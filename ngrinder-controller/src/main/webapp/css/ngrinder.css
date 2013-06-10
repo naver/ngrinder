@@ -117,7 +117,7 @@ table.ellipsis td.ellipsis {
 	padding:10px
 }
 
-.container .searchBar {
+.container .search-bar {
 	margin: 10px 0 20px
 }
 
@@ -125,21 +125,21 @@ table.ellipsis td.ellipsis {
 	margin-bottom: 0
 }
 
-.footDiv {
+.foot-div {
 	position: absolute;
 	top: 830px
 }
 
-.pageHeader {
+.page-header {
 	margin: 10px 0 20px; 
 	padding-bottom: 5px
 }
 
 
-*:first-child+html .pageHeader {margin-top:0px;} 
+*:first-child+html .page-header {margin-top:0px;} 
 *:first-child+html .table TH {padding-left:2px;padding-right:2px}
 
-.messageDiv {
+.message-div {
     box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
     left: 50%;
     margin-left: -280px;
@@ -155,11 +155,11 @@ table.ellipsis td.ellipsis {
 	display: none
 }
 
-.errorColor {
+.error-color {
 	color: red;
 }
 
-#footDiv hr {
+#foot_div hr {
 	margin: 10px 0
 }
 
@@ -216,4 +216,11 @@ legend.header {
 
 legend a {
 	font-weight: 400
+}
+
+.popover-title {
+	font-weight: bold
+}
+.popover {
+	width:300px
 }

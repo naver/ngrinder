@@ -20,10 +20,10 @@
 		            	<a data-toggle="dropdown" class="dropdown-toggle" href="#">${(currentUser.userName)!}<#if (currentUser.ownerUser)?exists> (${currentUser.ownerUser.userName})<#else></#if><b class="caret"></b></a>
 		            	<ul class="dropdown-menu">
 		            		<#if (currentUser.ownerUser)?exists>
-			            		<li><a href="${req.getContextPath()}/user/switchUser?switchUserId="><@spring.message "common.button.return"/></a></li>
+			            		<li><a href="${req.getContextPath()}/user/switch?to="><@spring.message "common.button.return"/></a></li>
 		            		<#else>
-			                	<li><a id="user_profile_id" href="#"><@spring.message "navigator.dropdown.profile"/></a></li>
-			                	<li><a id="switch_user_id" href="#"><@spring.message "navigator.dropdown.switchUser"/></a></li>
+			                	<li><a id="user_profile_menu" href="javascript:void(0)"><@spring.message "navigator.dropdown.profile"/></a></li>
+			                	<li><a id="switch_user_menu" href="javascript:void(0)"><@spring.message "navigator.dropdown.switchUser"/></a></li>
 		                	</#if>
 		                	 
 			            	<@security.authorize ifAnyGranted="A">
@@ -51,14 +51,14 @@
 		</div>
 	</div>
 </div>
-<div class="container <#if announcement?has_content><#else>hidden</#if>" style="margin:0 auto" id="announcementDiv">
+<div class="container <#if announcement?has_content><#else>hidden</#if>" style="margin:0 auto" id="announcement_container">
 	<div class="alert alert-block" style="padding:5px 20px; margin-bottom:-20px">  
 		<div class="page-header" style="margin:0; padding-bottom:2px">
 			<span><h5 style="margin-top:0px; margin-bottom:0px"><@spring.message "announcement.alert.title"/></h5> <a href="#" id="hide_announcement">
 				<i class="<#if announcement_hide?has_content && announcement_hide == true>icon-plus<#else>icon-minus</#if> pull-right" id="announcement_icon" style="margin-top:-20px"></i>
 			</a></span>
 		</div>
-		<div style="margin:10px 5px 0;<#if announcement_hide?? && announcement_hide>display:none;</#if>" id="announcementContentDiv">
+		<div style="margin:10px 5px 0;<#if announcement_hide?? && announcement_hide>display:none;</#if>" id="announcement_content">
 			<#if announcement?has_content>
 				<#if announcement?index_of('</') gt 0 || announcement?index_of('<br>') gt 0> 
 					${announcement}
@@ -69,18 +69,18 @@
 		</div>
 	</div>
 </div>
-<div class="modal hide fade" id="userProfileModal">
+<div class="modal hide fade" id="user_profile_modal"  tabindex="-1" role="dialog">
 	<div class="modal-header"> 
-		<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
 		<h4><@spring.message "navigator.dropdown.profile.title"/></h4> 
 	</div>
-	<div class="modal-body" id="user_profile_modal" style="max-height:540px; padding-left:45px"> 
+	<div class="modal-body" id="user_profile_modal_content" style="max-height:540px; padding-left:45px"> 
 	</div>	
 </div>
 
-<div class="modal hide fade" id="userSwitchModal">
+<div class="modal hide fade" id="user_switch_modal"  tabindex="-1" role="dialog">
 	<div class="modal-header" style="border: none;">
-		<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
 	</div>
 	<div class="modal-body" style="max-height:60px; height:60px;">
 		<div class="form-horizontal" style="margin-left:20px">
@@ -88,7 +88,7 @@
 				<div class="control-group">
 					<label class="control-label" style="width:100px"><@spring.message "user.switch.title"/></label>
 					<div class="controls" style="margin-left:140px">
-						<select id="switchUserSelect" style="width:300px">
+						<select id="switch_user_select" style="width:300px">
 						</select>
 					</div>
 				</div>
@@ -102,16 +102,16 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		$("#hide_announcement").click( function() {
-			if ($("#announcementContentDiv").is(":hidden")) {
-				$("#announcementContentDiv").show("slow");
+			if ($("#announcement_content").is(":hidden")) {
+				$("#announcement_content").show("slow");
 				$("#announcement_icon").removeClass("icon-plus").addClass("icon-minus");
 				cookie("announcement_hide", "false", 6);
 			} else {
-				$("#announcementContentDiv").slideUp();
+				$("#announcement_content").slideUp();
 				$("#announcement_icon").removeClass("icon-minus").addClass("icon-plus");
 				cookie("announcement_hide", "true", 6);
 			}
-		})
+		});
 	});
 	function init() {
 		$.ajaxSetup({ cache: false });
@@ -123,27 +123,26 @@
 	
 	function myProfile(){
 		var url = "${req.getContextPath()}/user/profile";
-		$("#user_profile_id").click(function() {
-			$("#user_profile_modal").load(url, function(){
-				$('#userProfileModal').modal('show');
+		$("#user_profile_menu").click(function() {
+			$("#user_profile_modal_content").load(url, function(){
+				$('#user_profile_modal').modal('show');
 			});
 		});
 	};
 	
 	function switchUser() {
-		$("#switchUserSelect").change(function() {
-			document.location.href = "${req.getContextPath()}/user/switchUser?switchUser=" + $(this).val();
+		$("#switch_user_select").change(function() {
+			document.location.href = "${req.getContextPath()}/user/switch?to=" + $(this).val();
 		});
-		
 		var url = "${req.getContextPath()}/user/switch_options";
-		$("#switch_user_id").click(function() {
-			$("#switchUserSelect").load(url, function(){
+		$("#switch_user_menu").click(function() {
+			$("#switch_user_select").load(url, function(){
 				$(this).prepend($("<option value=''></option>"));
 				$(this).val("");
 				$(this).select2({
 					placeholder: "<@spring.message "user.switch.select.placeholder"/>"
 				});
-				$('#userSwitchModal').modal('show');
+				$('#user_switch_modal').modal('show');
 			});
 		});
 	}

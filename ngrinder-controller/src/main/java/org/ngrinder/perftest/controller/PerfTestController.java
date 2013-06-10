@@ -433,7 +433,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            comma separated perftest list
 	 * @return json string which contains perftest status
 	 */
-	@RequestMapping(value = "updateStatus")
+	@RequestMapping(value = "update_status")
 	public HttpEntity<String> updateStatuses(User user, @RequestParam("ids") String ids) {
 		return updateStatus(user, ids);
 	}
@@ -447,7 +447,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            comma separated perftest list
 	 * @return json string which contains perftest status
 	 */
-	@RequestMapping(value = "{id}/updateStatus")
+	@RequestMapping(value = "{id}/update_status")
 	public HttpEntity<String> updateStatus(User user, @PathVariable("id") String idString) {
 		String[] numbers = StringUtils.split(idString, ",");
 		Long[] id = new Long[numbers.length];
@@ -493,7 +493,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            id string separating ","
 	 * @return success json if succeeded.
 	 */
-	@RequestMapping(value = "/deleteTests", method = RequestMethod.POST)
+	@RequestMapping(value = "/delete", method = RequestMethod.POST)
 	@ResponseBody
 	public String deletePerfTests(User user, ModelMap model, @RequestParam(defaultValue = "") String ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
@@ -513,7 +513,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            id string separating ","
 	 * @return success json if succeeded.
 	 */
-	@RequestMapping(value = "/stopTests", method = RequestMethod.POST)
+	@RequestMapping(value = "/stop", method = RequestMethod.POST)
 	@ResponseBody
 	public String stopPerfTests(User user, ModelMap model, @RequestParam(value = "ids", defaultValue = "") String ids) {
 		for (String idStr : StringUtils.split(ids, ",")) {
@@ -535,8 +535,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            ownerId
 	 * @return json string representing resources and libs.
 	 */
-	@RequestMapping(value = "/getResourcesOnScriptFolder")
-	public HttpEntity<String> getResourcesOnScriptFolder(User user, @RequestParam String scriptPath,
+	@RequestMapping(value = "/resource")
+	public HttpEntity<String> getResources(User user, @RequestParam String scriptPath,
 					@RequestParam(value = "r", required = false) Long revision,
 					@RequestParam(required = false) String ownerId) {
 		if (user.getRole() == Role.ADMIN && StringUtils.isNotBlank(ownerId)) {
@@ -655,8 +655,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @param id
 	 *            test id
 	 */
-	@RequestMapping(value = "{id}/downloadReportData")
-	public void downloadReportData(User user, HttpServletResponse response, @PathVariable("id") long id) {
+	@RequestMapping(value = "{id}/download_csv")
+	public void downloadCSV(User user, HttpServletResponse response, @PathVariable("id") long id) {
 		PerfTest test = getPerfTestWithPermissionCheck(user, id, false);
 		File targetFile = perfTestService.getReportFile(test);
 		checkState(targetFile.exists(), "File %s doesn't exist!", targetFile.getName());
@@ -673,10 +673,10 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @param id
 	 *            test id
 	 * @param response
-	 *            repsonse
+	 *            response
 	 */
-	@RequestMapping(value = "{id}/downloadLog/**")
-	public void downloadLogData(User user, @RemainedPath String path, @PathVariable("id") long id,
+	@RequestMapping(value = "{id}/download_log/**")
+	public void downloadLog(User user, @RemainedPath String path, @PathVariable("id") long id,
 					HttpServletResponse response) {
 		getPerfTestWithPermissionCheck(user, id, false);
 		File targetFile = perfTestService.getLogFile(id, path);
@@ -695,9 +695,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @param response
 	 *            response
 	 */
-	@RequestMapping(value = "{id}/showLog/**")
-	public void showLogData(User user, @PathVariable("id") long id, @RemainedPath String path,
-					HttpServletResponse response) {
+	@RequestMapping(value = "{id}/show_log/**")
+	public void showLog(User user, @PathVariable("id") long id, @RemainedPath String path, HttpServletResponse response) {
 		getPerfTestWithPermissionCheck(user, id, false);
 		File targetFile = perfTestService.getLogFile(id, path);
 		response.reset();
@@ -789,9 +788,9 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            model
 	 * @param testId
 	 *            test id
-	 * @return "perftest/report"
+	 * @return "perftest/detail_report"
 	 */
-	@RequestMapping(value = "/report")
+	@RequestMapping(value = "/detail_report")
 	public String getReportRaw(ModelMap model, @RequestParam long testId) {
 		return getReport(model, testId);
 	}
@@ -803,12 +802,12 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            model
 	 * @param id
 	 *            test id
-	 * @return "perftest/report"
+	 * @return "perftest/detail_report"
 	 */
-	@RequestMapping(value = "{id}/report")
+	@RequestMapping(value = {"{id}/detail_report", "{id}/report"})
 	public String getReport(ModelMap model, @PathVariable("id") long id) {
 		model.addAttribute("test", perfTestService.getPerfTest(id));
-		return "perftest/report";
+		return "perftest/detail_report";
 	}
 
 	private PerfTest getPerfTestWithPermissionCheck(User user, Long id, boolean withTag) {

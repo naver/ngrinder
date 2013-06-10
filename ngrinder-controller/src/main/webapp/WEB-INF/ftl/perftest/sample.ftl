@@ -44,8 +44,8 @@
 				<#if mKey=='lastSampleStatistics'>
 						<#assign item = resultsub[mKey]>   
 						<#list item as statistics>
-						<tr id="lsTableItem">
-							<td >${statistics.testNumber!'&nbsp;'}</td>
+						<tr id="last_sample_table_item">
+							<td>${statistics.testNumber!'&nbsp;'}</td>
 							<td class="ellipsis">${statistics.testDescription!'&nbsp;'}</td>
 							<td>${statistics.Tests!'&nbsp;'}</td>
 							<td>${statistics.Errors!'&nbsp;'}</td>
@@ -59,9 +59,9 @@
 				<#if mKey=='cumulativeStatistics'>
 						<#assign item = resultsub[mKey]>   
 						<#list item as statistics>
-						<tr id="asTableItem">
-							<td >${statistics.testNumber!'&nbsp;'}</td>
-							<td  class="ellipsis">${statistics.testDescription!'&nbsp;'}</td>
+						<tr id="accumulated_sample_table_item">
+							<td>${statistics.testNumber!'&nbsp;'}</td>
+							<td class="ellipsis">${statistics.testDescription!'&nbsp;'}</td>
 							<td>${statistics.Tests!'&nbsp;'}</td>
 							<td>${statistics.Errors!'&nbsp;'}</td>
 							<td>${(statistics['Mean_Test_Time_(ms)']!0)?string("0.##")}</td>

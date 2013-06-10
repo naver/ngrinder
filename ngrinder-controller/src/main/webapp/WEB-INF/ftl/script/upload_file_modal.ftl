@@ -43,8 +43,6 @@
 				markInput($file, false, "<@spring.message "common.form.validate.empty"/>");
 				return;
 			}
-			
-			$("#path").val($("#upScriptNameInput").val());
 			document.forms.uploadForm.submit();
 		});
 	});

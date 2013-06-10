@@ -103,7 +103,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		FileUtils.deleteQuietly(file);
 		CompressionUtil.unzip(new ClassPathResource("TEST_USER.zip").getFile(), file);
 		repo.setUserRepository(new File(file, getTestUser().getUserId()));
-		controller.getResourcesOnScriptFolder(getTestUser(), "filefilter.txt", null, null);
+		controller.getResources(getTestUser(), "filefilter.txt", null, null);
 	}
 
 	@Test
@@ -334,13 +334,13 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		PerfTest test = createPerfTest(testName, Status.FINISHED, new Date());
 		HttpServletResponse resp = new MockHttpServletResponse();
 		try {
-			controller.downloadReportData(getTestUser(), resp, test.getId());
+			controller.downloadCSV(getTestUser(), resp, test.getId());
 		} catch (IllegalStateException e) {
 			// the report file doesn'r exist
 			assertTrue(true);
 		}
 		resp.reset();
-		controller.downloadLogData(getTestUser(), "", test.getId(), resp);
+		controller.downloadLog(getTestUser(), "", test.getId(), resp);
 	}
 
 	@Test

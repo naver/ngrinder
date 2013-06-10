@@ -58,16 +58,16 @@
 				    </tbody>
 				    </table>
 				    <label><@spring.message "agent.info.refreshInterval"/></label>
-                    <input id="rinterval" type="text" class="span3" placeholder="number" value="1">
+                    <input id="refresh_interval" type="text" class="span3" placeholder="number" value="1">
                 </div>
                 <div class="span9">
-                	<div class="page-header pageHeader">
+                	<div class="page-header page-header">
 			    		<h4><@spring.message "agent.info.systemData"/></h4>
 					</div>
 					<h6>CPU</h6>
-                    <div class="chart" id="cpu_chart"></div>
-					<h6 style="margin-top:20px">Used Memory</h6>
-                    <div class="chart" id="memory_chart"></div>
+                    <div class="chart" id="cpu_usage_chart"></div>
+					<h6 style="margin-top:20px">Memory</h6>
+                    <div class="chart" id="memory_usage_chart"></div>
                 </div>
             </div>
         	<#include "../common/copyright.ftl">
@@ -88,7 +88,7 @@
           
                 getStatus();
                 
-                $("#rinterval").keyup(function() {
+                $("#refresh_interval").keyup(function() {
                     var number = $(this).val();
                     $(this).val(number.replace(/[\D]/g,""))
                 }).blur(function() {
@@ -130,9 +130,9 @@
                         if (res.success) {
                         	getChartData(res);
                     		maxCPU = getMax(maxCPU, cpuUsage.aElement);
-                    		showChart('cpu_chart', cpuUsage.aElement, 0, formatPercentage, maxCPU);
+                    		showChart('cpu_usage_chart', cpuUsage.aElement, 0, formatPercentage, maxCPU);
                     		maxMemory = getMax(maxMemory, memoryUsage.aElement);
-                        	showChart('memory_chart', memoryUsage.aElement, 1, formatMemory, maxMemory);
+                        	showChart('memory_usage_chart', memoryUsage.aElement, 1, formatMemory, maxMemory);
                          
                             return true;
                         } else {
@@ -150,7 +150,7 @@
             function showChart(containerId, data, index, formatYaxis, maxY) {
 				var pt = jqplots[index];
             	if (pt) {
-            		replotChart(pt, data, maxY, $("#rinterval").val());
+            		replotChart(pt, data, maxY, $("#refresh_interval").val());
             	} else {
 	                jqplots[index] = drawChart(containerId, data, formatYaxis);
             	}

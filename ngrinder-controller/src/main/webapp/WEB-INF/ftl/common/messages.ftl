@@ -1,10 +1,10 @@
-<div class="alert messageDiv" id="messageDiv" style="display:none"></div>
-<div class="alert messageDiv alert-error" id="errorMsgDiv" style="display:none">
+<div class="alert message-div" id="message_div" style="display:none"></div>
+<div class="alert message-div alert-error" id="errorMsgDiv" style="display:none">
 	<button class="close" id="errorMsgDivBtn">&times;</button>
 	<h4 class="alert-heading">ERROR</h4>
 	<span style="margin-left:20px"></span>
 </div>
-<div class="progress progress-striped active messageDiv" id="progressBarDiv" style="display:none">
+<div class="progress progress-striped active message-div" id="progressBarDiv" style="display:none">
   <div class="bar" style="width: 100%;"></div>
 </div>
 <script type="text/javascript">
@@ -18,7 +18,7 @@
 	});
 	
 	function showMsg(color, message) {
-		var $msgDiv = $('#messageDiv');
+		var $msgDiv = $('#message_div');
 		$msgDiv.hide();
 		$msgDiv.addClass(color);
 		$msgDiv.html(message);
@@ -31,9 +31,9 @@
 	}
 	
 	function hideMsg() {
-		if ($('#messageDiv:visible')[0]) {
+		if ($('#message_div:visible')[0]) {
 			clearTimeout(msgTimeout);
-			var $msgDiv = $('#messageDiv');
+			var $msgDiv = $('#message_div');
 			$msgDiv.fadeOut(100);
 			$msgDiv.removeClass("alert-success alert-info alert-block");
 		}

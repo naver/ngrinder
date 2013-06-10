@@ -87,7 +87,7 @@
 				return;
 			}
 			if (content.length == 0) {
-				$("#add_host_modal small").addClass("errorColor");
+				$("#add_host_modal small").addClass("error-color");
 				return;
 			}
 
@@ -96,7 +96,7 @@
 			updateHostHiddenValue();
 
 			$("#add_host_modal").modal("hide");
-			$("#add_host_modal small").removeClass("errorColor");
+			$("#add_host_modal small").removeClass("error-color");
 			$("#target_hosts").nextAll("span.help-inline").empty();
 			return false;
 		});

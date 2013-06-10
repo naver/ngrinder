@@ -20,8 +20,8 @@
 				</select>
 			</legend> 
 		</fieldSet>
-		<form id="userListForm" action="${req.getContextPath()}/user" method="POST">
-			<div class="well form-inline searchBar">
+		<form id="user_list_form" action="${req.getContextPath()}/user" method="POST">
+			<div class="well form-inline search-bar">
 			 
 				<input type="text" class="search-query search-query-without-radios" placeholder="Keywords" id="searchText" name="keywords"
 					value="${keywords!}">
@@ -37,8 +37,11 @@
 					</a>
 				</span>
 			</div>
+			<INPUT type="hidden" id="page_number" name="page.page" value="${page.pageNumber + 1}">
+			<INPUT type="hidden" id="page_size" name="page.size" value="${page.pageSize}">
 		</form>
-		<table class="table table-striped table-bordered ellipsis" id="userTable">
+		<table class="table table-striped table-bordered ellipsis" id="user_table">
+			<#assign userList = userPage.content/>
 			<colgroup>
 				<col width="30">
 				<col width="120">
@@ -62,6 +65,7 @@
 				</tr>
 			</thead>
 			<tbody>
+				
 				<#list userList as user>
 				<tr>
 					<td class="center"><input type="checkbox" id="user_info_check"<#if user.userId == "admin">disabled</#if>
@@ -87,13 +91,27 @@
 				</#list>
 			</tbody>
 		</table>
+		<#if userList?has_content>
+			<#include "../common/paging.ftl">
+			<@paging  userPage.totalElements userPage.number+1 userPage.size 10 ""/>
+			<script type="text/javascript">
+				function doSubmit(page) {
+					getList(page);
+				}
+			</script>
+		</#if>
 		<#include "../common/copyright.ftl">
 	</div>
 
 	<script type="text/javascript">
+		function getList(page) {
+			$("#page_number").val(page);
+			document.forms.user_list_form.submit();
+		}
+		
 		$(document).ready(function(){
 			$("#search_user").click(function() {
-				$("#userListForm").submit();
+				$("#user_list_form").submit();
 			});
 			
 			$("#roles").change(function() {
@@ -104,29 +122,8 @@
 				}
 				window.location.href=destUrl;
 			});
-			
-		    <#if userList?has_content>
-			oTable = $("#userTable").dataTable({
-				"bAutoWidth": false,
-				"bFilter": false,
-				"bLengthChange": false,
-				"bInfo": false,
-				"iDisplayLength": 10,
-				"aaSorting": [[1, "asc"]],
-				"aoColumns": [{"asSorting": []}, null, null, null, {"asSorting": []}, null, {"asSorting": []}, {"asSorting": []}],
-				"sPaginationType": "bootstrap",
-				"oLanguage": {
-					"oPaginate": {
-						"sPrevious": "<@spring.message "common.paging.previous"/>",
-						"sNext":     "<@spring.message "common.paging.next"/>"
-					}
-				}
-			});
-			
 			removeClick();
-			
-			enableChkboxSelectAll("userTable");
-			</#if>
+			enableChkboxSelectAll("user_table");
 		});
 	
 		function deleteCheckedUsers() {

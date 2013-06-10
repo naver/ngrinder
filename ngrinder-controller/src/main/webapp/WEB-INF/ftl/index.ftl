@@ -10,7 +10,7 @@
 				height: 160px;
 				padding: 0
 			}    
-			.quickStart {
+			.quick-start {
 				padding-left: 160px;
 				padding-top: 35px
 			}
@@ -18,22 +18,20 @@
 				margin-bottom: 5px
 			} 
 		</style> 
-		<script type="text/javascript">
-				</script>
 	</head>
 	<body>
 	<#include "common/navigator.ftl">
 	<div class="container">
 		<div class="hero-unit"/>	
-			<form class="form-inline" name="quickStart" id="quickStart" action="${req.getContextPath()}/perftest/quickStart" method="POST">
-				<div class="quickStart" data-original-title="<@spring.message "home.tip.url.title"/>" data-content="<@spring.message "home.tip.url.content"/>" data-placement="bottom" rel="popover">
+			<form class="form-inline" name="quickStart" id="quick_start" action="${req.getContextPath()}/perftest/quickStart" method="POST">
+				<div class="quick-start" data-original-title="<@spring.message "home.tip.url.title"/>" data-content="<@spring.message "home.tip.url.content"/>" data-placement="bottom" rel="popover">
 					<input type="text" name="url" id="url" class="span6 url_ex required" placeholder="<@spring.message "home.placeholder.url"/>"/> 
 					<select class="select-item span2" id="scriptType" name="scriptType">
 						<#list handlers as handler>
 							<option value="${handler.key}">${handler.title}</option>
 						</#list>
 					</select>
-					<button id="startTestBtn" class="btn btn-primary" ><@spring.message "home.button.startTest"/></button>
+					<button id="start_test_btn" class="btn btn-primary" ><@spring.message "home.button.startTest"/></button>
 				</div> 
 			</form>
 		</div>
@@ -66,13 +64,9 @@
 				  			<tr>
 				  				<td>
 				  					<img src="${req.getContextPath()}/img/asksupport.gif"/> 
-				  					<a href="${ask_question_url}" target="_blank">
-				  						<@spring.message "home.button.ask"/>
-				  					</a>&nbsp;&nbsp;&nbsp; 
-				  					<img src="${req.getContextPath()}/img/bug_icon.gif"/>
-				  					<a href="http://github.com/nhnopensource/ngrinder/issues/new?labels=bug" target="_blank">
-				  						<@spring.message "home.button.bug"/>
-				  					</a>	
+				  					<a href="${ask_question_url}" target="_blank"><@spring.message "home.button.ask"/></a>
+				  					&nbsp;&nbsp;&nbsp; <img src="${req.getContextPath()}/img/bug_icon.gif"/>
+				  					<a href="http://github.com/nhnopensource/ngrinder/issues/new?labels=bug" target="_blank"><@spring.message "home.button.bug"/></a>	
 				  				</td>
 				  				<td><a href="${see_more_question_url}" target="_blank"><i class="icon-share-alt"></i>&nbsp;<@spring.message "home.button.more"/></a></td>
 				  			</tr>
@@ -124,27 +118,27 @@
 			}, '');
 			
 			
-			$("#startTestBtn").click(function() {
+			$("#start_test_btn").click(function() {
 				if ($("#url").valid()) {
 					var urlValue = $("#url").val();
 					if (!urlValue.match("^(http|ftp)")) {
 						$("#url").val("http://" + urlValue);
 					}
-					$("#quickStart").submit();
+					$("#quick_start").submit();
 					return true;
 				}
 				return false;
 			})
 			
-	        $("#quickStart").validate({
+	        $("#quick_start").validate({
 	            errorPlacement: function(error, element) {
-	            	$("div.quickStart").popover("show");
+	            	$("div.quick-start").popover("show");
 		        }
 		    });
 		   	
 		    $("#url").change(function() {
 		    	if ($(this).valid()) {
-		    		$("div.quickStart").popover("hide");
+		    		$("div.quick-start").popover("hide");
 		    	}
 		    });
 	    });

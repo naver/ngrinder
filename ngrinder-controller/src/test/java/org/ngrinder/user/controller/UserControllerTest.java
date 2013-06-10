@@ -25,6 +25,8 @@ import org.ngrinder.common.controller.NGrinderBaseController;
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.ui.ModelMap;
 
 /**
@@ -45,14 +47,16 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 	 */
 	@Test
 	public void testGetUserList() {
+		Pageable page = new PageRequest(1, 10);
+
 		ModelMap model = new ModelMap();
-		userController.getUserList(model, null, null);
+		userController.getUserList(model, null, page, null);
 
 		model.clear();
-		userController.getUserList(model, "ADMIN", null);
+		userController.getUserList(model, "ADMIN", page, null);
 
 		model.clear();
-		userController.getUserList(model, null, "user");
+		userController.getUserList(model, null, page, "user");
 
 	}
 
@@ -146,8 +150,10 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		saveTestUser("NewUserId2", "NewUserName2");
 		saveTestUser("NewUserId3", "NewUserName3");
 
+		Pageable page = new PageRequest(1, 10);
+
 		// search
-		userController.getUserList(model, null, "NewUserName");
+		userController.getUserList(model, null, page, "NewUserName");
 		List<User> userList = (List<User>) model.get("userList");
 		assertThat(userList.size(), is(3));
 
@@ -155,7 +161,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		model.clear();
 		userController.deleteUser(model, "NewUserId1");
 		model.clear();
-		userController.getUserList(model, "user", "NewUserName");
+		userController.getUserList(model, "user", page, "NewUserName");
 		userList = (List<User>) model.get("userList");
 		assertThat(userList.size(), is(2));
 
@@ -163,7 +169,7 @@ public class UserControllerTest extends AbstractNGrinderTransactionalTest {
 		model.clear();
 		userController.deleteUser(model, "NewUserId2,NewUserId3");
 		model.clear();
-		userController.getUserList(model, "user", "NewUserName");
+		userController.getUserList(model, "user", page, "NewUserName");
 		userList = (List<User>) model.get("userList");
 		assertThat(userList.size(), is(0));
 	}

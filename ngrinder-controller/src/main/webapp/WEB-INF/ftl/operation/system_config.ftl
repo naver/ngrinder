@@ -9,15 +9,15 @@
 	<div class="container">
 		<div class="row">
 			<div class="span12">
-				<form id="sysConfigForm" method="post">
+				<form id="sys_config_form" method="post">
 					<fieldset>
 						<legend class="header">
 							<@spring.message "navigator.dropdown.systemConfig"/>
-							<button id="saveBtn" class="btn btn-success pull-right">
+							<button id="save_btn" class="btn btn-success pull-right">
 								<@spring.message "common.button.save"/>
 							</button>
 						</legend>
-						<textarea id="sysFileContent" name="content">${content!}</textarea>
+						<textarea id="sys_config_editor" name="content">${content!}</textarea>
 					</fieldset>
 				</form>
 			</div>
@@ -28,7 +28,7 @@
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/properties.js"></script>
 	<script>
 		$(document).ready(function() {
-			var editor = CodeMirror.fromTextArea(document.getElementById("sysFileContent"), {
+			var editor = CodeMirror.fromTextArea(document.getElementById("sys_config_editor"), {
 			   mode: "properties",
 			   theme: "eclipse",
 			   lineNumbers: true,
@@ -53,10 +53,10 @@
 			});
 			var hlLine = editor.setLineClass(0, "activeline");
 			
-			$("#saveBtn").click(function() {
-				$('#sysFileContent').text(editor.getValue());
-				document.forms.sysConfigForm.action = "${req.getContextPath()}/operation/system_config/save";
-				document.forms.sysConfigForm.submit();
+			$("#save_btn").click(function() {
+				$('#sys_config_editor').text(editor.getValue());
+				document.forms.sys_config_form.action = "${req.getContextPath()}/operation/system_config/save";
+				document.forms.sys_config_form.submit();
 			});
 			
 			<#if success?exists>

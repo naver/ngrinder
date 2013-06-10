@@ -17,7 +17,6 @@
 					<label class="control-label"><@spring.message "perfTest.testRunning.agents"/></label>
 					<div class="controls">
 						<span>${(test.agentCount)!}</span>
-						<a class="btn btn-mini btn-info hidden" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a>
 					</div>
 				</div>
 				<div class="control-group">
@@ -89,20 +88,20 @@
 				<span class="badge badge-success" style="vertical-align:middle;">
 					<@spring.message "perfTest.testRunning.runTime"/> <span id="running_time"></span>
 				</span>
-				<a id="stopTestButton" class="btn btn-danger pull-right" sid="${(test.id)!}">
+				<a id="stop_test_btn" class="btn btn-danger pull-right" sid="${(test.id)!}">
 					<@spring.message "common.button.stop"/>
 				</a>		
 			</legend> 
 		</fieldSet>
-		<div id="runningTps" class="chart" style="width: 530px; height: 300px"></div>
+		<div id="running_tps_chart" class="chart" style="width: 530px; height: 300px"></div>
 		<div class="tabbable">
-			<ul class="nav nav-pills" style="" id="tableTab">
-				<li><a href="#lsTab" tid="ls"><@spring.message "perfTest.testRunning.latestsample"/></a></li>
-				<li><a href="#asTab" tid="as"><@spring.message "perfTest.testRunning.accumulatedstatistic"/></a></li>
+			<ul class="nav nav-pills" style="" id="sample_tab">
+				<li><a href="#last_sample_tab" tid="ls"><@spring.message "perfTest.testRunning.latestsample"/></a></li>
+				<li><a href="#accumulated_sample_tab" tid="as"><@spring.message "perfTest.testRunning.accumulatedstatistic"/></a></li>
 			</ul>
 			<div class="tab-content">
-				<div class="tab-pane" id="lsTab">
-					<table class="table table-striped table-bordered ellipsis" id="lsTable">
+				<div class="tab-pane" id="last_sample_tab">
+					<table class="table table-striped table-bordered ellipsis" id="last_sample_table">
 						<colgroup>
 							<col width="30px">
 							<col width="85px">
@@ -129,8 +128,8 @@
 						</tbody>
 					</table>
 				</div>
-				<div class="tab-pane" id="asTab">
-					<table class="table table-striped table-bordered ellipsis" id="asTable"> 
+				<div class="tab-pane" id="accumulated_sample_tab">
+					<table class="table table-striped table-bordered ellipsis" id="accumulated_sample_table"> 
 						<colgroup>
 							<col width="30px">
 							<col width="85px">
@@ -181,8 +180,8 @@
 			function() {
 				$("#running_time").text(showRunTime(curRunningTime));
 				if (curStatus == true) {
-					$("#lsTable tbody").html(refreshDiv.find("#lsTableItem"));
-					$("#asTable tbody").html(refreshDiv.find("#asTableItem"));
+					$("#last_sample_table tbody").html(refreshDiv.find("#last_sample_table_item"));
+					$("#accumulated_sample_table tbody").html(refreshDiv.find("#accumulated_sample_table_item"));
 		
 					$("#process_data").text(curRunningProcesses);
 					$("#thread_data").text(curRunningThreads);
@@ -195,7 +194,7 @@
 					}
 					test_tps_data.enQueue(curTps);
 				} else { 
-					if ($('#runningContent_tab:hidden')[0]) {
+					if ($('#running_section_tab:hidden')[0]) {
 						window.clearInterval(objTimer);
 						return;
 					} else {
@@ -207,7 +206,7 @@
 					test_tps_data.deQueue();
 				}
 		
-				showChart('runningTps', test_tps_data.aElement, peakTps, samplingInterval);
+				showChart('running_tps_chart', test_tps_data.aElement, peakTps, samplingInterval);
 			}
 		);
 	}
@@ -250,7 +249,7 @@
 	
 	function stopTests(ids) {
 		$.ajax({
-	  		url: "${req.getContextPath()}/perftest/stopTests",
+	  		url: "${req.getContextPath()}/perftest/stop",
 			type: "POST",
 	  		data: {"ids":ids},
 			dataType:'json',
@@ -268,7 +267,7 @@
 	}
 	
 	$(document).ready(function() {
-		$("#stopTestButton").click(function() {
+		$("#stop_test_btn").click(function() {
 			var id = $(this).attr("sid");
 			bootbox.confirm("<@spring.message "perfTest.table.message.confirm.stop"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
 				if (result) {

@@ -74,10 +74,8 @@
 			<h3><@spring.message "perfTest.report.reportPage"/> ${test.testName}</h3>
 		</div>
 	<div class="container">
-	   <input type="hidden" id="startTime" name="startTime" value="${(test.startTime)!}">
-	   <input type="hidden" id="finishTime" name="finishTime" value="${(test.finishTime)!}">
-	   <form name="downloadForm">
-	       <input type="hidden" id="testId" name="testId" value="${test.id}">
+	   <form name="download_csv_form">
+	       <input type="hidden" id="test_id" name="testId" value="${test.id}">
 	   </form>
 		<div class="row">
 			<div class="span3">
@@ -92,7 +90,7 @@
 			       </tr>
 			       <tr>
                        <th><@spring.message "perfTest.report.agent"/></th>
-                       <td><span>${test.agentCount}</span>&nbsp;&nbsp;<a class="btn btn-mini btn-info hidden" id="agentInfoBtn" href="#agentListModal" data-toggle="modal">Info</a></td>
+                       <td><span>${test.agentCount}</span>
                    </tr>
                    <tr>
                        <th><@spring.message "perfTest.report.process"/></th>
@@ -151,7 +149,7 @@
 			   </table>
 			   <ul class="nav nav-list">
 					<li class="active">
-						<a id="testPerformance" href="javascript:void(0);">
+						<a id="test_btn" href="javascript:void(0);">
 							<i class="icon-tag icon-white"></i> <@spring.message "perfTest.report.performanceReport"/>
 						</a>
 					</li>
@@ -160,7 +158,7 @@
 					<li>
 						<ul class="nav nav-list">
 							<#list test.targetHostIP as targetIp>
-							<li><a class="targetMontor" href="javascript:void(0);" ip="${targetIp}"><i class="icon-chevron-right"></i> ${targetIp}</a></li>
+							<li><a class="target-montor" href="javascript:void(0);" ip="${targetIp}"><i class="icon-chevron-right"></i> ${targetIp}</a></li>
 							</#list>
 						</ul>
 					</li>
@@ -186,102 +184,86 @@
                     	<td colspan="3">${(test.testComment)!?html?replace('\n', '<br>')}</td>
                    </tr>  
                </table>
-			    <div id="performanceDiv">
+			    <div id="test_panel">
 					<legend>
 						Performance
-		                <button id="downloadReportData" class="btn btn-primary pull-right">
+		                <button id="download_csv" class="btn btn-primary pull-right">
 		                	<i class="icon-download-alt icon-white"></i> <@spring.message "perfTest.report.downloadCSV"/>
 		                </button>
 					</legend>
 					<h6>TPS <span rel="popover" data-content='<@spring.message "perfTest.report.tps.help"/>' data-original-title='<@spring.message "perfTest.report.tps"/>' type="toggle"><i class="icon-question-sign" style="vertical-align:middle;"></i></span></h6>
-			    	<div class="bigchart" id="tpsDiv"></div>
+			    	<div class="bigchart" id="tps_chart"></div>
 					<h6><@spring.message "perfTest.report.header.meantime"/>&nbsp;(ms)</h6>
-    				<div class="chart" id="meanTimeDiv"></div>
-    				<h6 id="minTimeFirstByteHeader"><@spring.message "perfTest.report.header.meantimetofirstbyte"/>&nbsp;(ms)</h6>
-    				<div class="chart" id="minTimeFirstByte"></div>
-    				<h6 id="userDefinedChartHeader"><@spring.message "perfTest.report.header.userDefinedChart"/></h6>
-    				<div class="chart" id="userDefinedChart"></div>
+    				<div class="chart" id="mean_time_chart"></div>
+    				<h6 id="min_time_first_byte_header"><@spring.message "perfTest.report.header.meantimetofirstbyte"/>&nbsp;(ms)</h6>
+    				<div class="chart" id="min_time_first_byte_chart"></div>
+    				<h6 id="user_defined_header"><@spring.message "perfTest.report.header.userDefinedChart"/></h6>
+    				<div class="chart" id="user_defined_chart"></div>
 					<h6><@spring.message "perfTest.report.header.errors"/></h6>
-    				<div class="chart" id="errorDiv"></div>
+    				<div class="chart" id="error_chart"></div>
 				</div>
-				<div id="monitorDiv" style="display:none">
-	    			<div class="page-header pageHeader">
+				<div id="monitor_panel" style="display:none">
+	    			<div class="page-header page-header">
 						<h4>System Monitoring</h4> 
 					</div>
 				    <h6>CPU</h6>
-                    <div class="chart" id="cpuDiv"></div>
+                    <div class="chart" id="cpu_usage_chart"></div>
 					<h6>Used Memory</h6>
-                    <div class="chart" id="memoryDiv"></div>
-					<h6 id="receivedDivHeader">Received Per Second</h6>
-                    <div class="chart" id="receivedDiv"></div>
-					<h6 id="sentDivHeader">Sent Per Second</h6>
-                    <div class="chart" id="sentDiv"></div>
-					<h6 id="customMonitorData1Header">Custom Monitor Data 1</h6>
-                    <div class="chart" id="customMonitorData1"></div>
-					<h6 id="customMonitorData2Header">Custom Monitor Data 2</h6>
-                    <div class="chart" id="customMonitorData2"></div>
-					<h6 id="customMonitorData3Header">Custom Monitor Data 3</h6>
-                    <div class="chart" id="customMonitorData3"></div>
-					<h6 id="customMonitorData4Header">Custom Monitor Data 4</h6>
-                    <div class="chart" id="customMonitorData4"></div>
-					<h6 id="customMonitorData5Header">Custom Monitor Data 5</h6>
-                    <div class="chart" id="customMonitorData5"></div>
+                    <div class="chart" id="mem_usage_chart"></div>
+					<h6 id="recevied_byte_per_sec_header">Received Byte Per Second</h6>
+                    <div class="chart" id="recevied_byte_per_sec_chart"></div>
+					<h6 id="sent_byte_per_sec_header">Sent Per Second</h6>
+                    <div class="chart" id="sent_byte_per_sec_chart"></div>
+					<h6 id="custom_monitor_header_1">Custom Monitor Chart 1</h6>
+                    <div class="chart" id="custom_monitor_chart_1"></div>
+					<h6 id="custom_monitor_header_2">Custom Monitor Chart 2</h6>
+                    <div class="chart" id="custom_monitor_chart_2"></div>
+					<h6 id="custom_monitor_header_3">Custom Monitor Chart 3</h6>
+                    <div class="chart" id="custom_monitor_chart_3"></div>
+					<h6 id="custom_monitor_header_4">Custom Monitor Chart 4</h6>
+                    <div class="chart" id="custom_monitor_chart_4"></div>
+					<h6 id="custom_monitor_header_5">Custom Monitor Chart 5</h6>
+                    <div class="chart" id="custom_monitor_chart_5"></div>
                 </div>
 			</div>
 		</div>
 		<#include "../common/copyright.ftl">
 	</div>
-	<div class="modal fade" id="agentListModal">
-		<div class="modal-header">
-			<a class="close" data-dismiss="modal" id="upCloseBtn">&times;</a>
-			<h3>Agent List</h3>
-		</div>
-		<div class="modal-body">
-			Agent List
-		</div>
-	</div>
 	<#include "../common/messages.ftl">
 	
 	<!-- For jqplot legend -->
 	<script src="${req.getContextPath()}/plugins/jqplot/plugins/jqplot.enhancedLegendRenderer.min.js"></script>
-	<script src="${req.getContextPath()}/js/generateImg.js"></script>
+	<script src="${req.getContextPath()}/js/generate-img.js"></script>
 	<script>
 	    var performanceInit = false;
 	    var targetMonitorData = {}; //save monitor data
 	    var imgBtnLabel = "<@spring.message "perfTest.report.exportImg.button"/>";
 	    var imgTitle = "<@spring.message "perfTest.report.exportImg.title"/>"
-
-	    //used to save the plot object. Then for every target, just use the new data to replot.
-    	var plotKeyCpu = "plotcpu";
-    	var plotKeyMem = "plotmem";
-    	var plotKeyReceived = "plotreceived";
-    	var plotKeySent = "plotsent";
     	
 		$(document).ready(function() {
-		    $("#testPerformance").click(function() {
+		    $("#test_btn").click(function() {
 		    	cleanImgElem();
-		        $("#performanceDiv").show();
-		        $("#monitorDiv").hide();
+		        $("#test_panel").show();
+		        $("#monitor_panel").hide();
 		        getPerformanceData();
 		        changActiveLink($(this));
 		    });
 		    
-		    $("a.targetMontor").click(function() {
+		    $("a.target-montor").click(function() {
 		    	cleanImgElem();
-                $("#performanceDiv").hide();
-                $("#monitorDiv").show();
+                $("#test_panel").hide();
+                $("#monitor_panel").show();
                 var $elem = $(this);
                 getMonitorData($elem.attr("ip"), false);
                 changActiveLink($elem);
             });
 
-            $("#downloadReportData").click(function() {
-                document.forms.downloadForm.action = 
-                	"${req.getContextPath()}/perftest/${(test.id)?c}/downloadReportData";
-                document.forms.downloadForm.submit();
+            $("#download_csv").click(function() {
+                document.forms.download_csv_form.action = "${req.getContextPath()}/perftest/${(test.id)?c}/download_csv";
+                document.forms.download_csv_form.submit();
             });
 			
-			$("#testPerformance").click();
+			$("#test_btn").click();
 		});
 		
 		function changActiveLink(obj) {
@@ -301,27 +283,26 @@
                 url: "${req.getContextPath()}/perftest/${(test.id)?c}/graph",
                 dataType:'json',
                 cache: true,
-                data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined',
-                       'imgWidth':700},
+                data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700},
                 success: function(res) {
                     if (res.success) {
-                        drawMultiPlotChart('tpsDiv', res.TPS, res.lables, res.chartInterval).replot();
-                        drawChart('meanTimeDiv', res.Mean_Test_Time_ms, undefined, res.chartInterval).replot();
+                        drawMultiPlotChart('tps_chart', res.TPS, res.lables, res.chartInterval).replot();
+                        drawChart('mean_time_chart', res.Mean_Test_Time_ms, undefined, res.chartInterval).replot();
                         if (res.Mean_time_to_first_byte !== undefined && 
                         		res.Mean_time_to_first_byte !== '[ ]') {
-                        	drawChart('minTimeFirstByte', res.Mean_time_to_first_byte, undefined, res.chartInterval).replot();
+                        	drawChart('min_time_first_byte_chart', res.Mean_time_to_first_byte, undefined, res.chartInterval).replot();
                         } else {
-                        	$("#minTimeFirstByte").hide();	
-                        	$("#minTimeFirstByteHeader").hide();
+                        	$("#min_time_first_byte_chart").hide();	
+                        	$("#min_time_first_byte_header").hide();
                         }
                         if (res.User_defined !== undefined && 
                         		res.User_defined !== '[ ]') {
-                        	drawChart('userDefinedChart', res.User_defined, undefined, res.chartInterval).replot();
+                        	drawChart('user_defined_chart', res.User_defined, undefined, res.chartInterval).replot();
                         } else {
-                        	$("#userDefinedChart").hide();	
-                        	$("#userDefinedChartHeader").hide();
+                        	$("#user_defined_chart").hide();	
+                        	$("#user_defined_header").hide();
                         }
-                        drawChart('errorDiv', res.Errors, undefined, res.chartInterval);
+                        drawChart('error_chart', res.Errors, undefined, res.chartInterval);
                         generateImg(imgBtnLabel, imgTitle); 
                         return true;
                     } else {
@@ -337,51 +318,50 @@
         }
 		
 		function clearPrePlot() {
-			$("#monitorDiv div.jqplot-target").each(function() {
+			$("#monitor_panel div.jqplot-target").each(function() {
 				$(this).removeClass("jqplot-target");
 			});
-			
-        	$("#cpuDiv").empty();
-        	$("#memoryDiv").empty();
-        	$("#receivedDiv").empty();
-        	$("#sentDiv").empty();
-        	$("#customMonitorData1").empty();
-        	$("#customMonitorData2").empty();
-        	$("#customMonitorData3").empty();
-        	$("#customMonitorData4").empty();
-        	$("#customMonitorData5").empty();
+        	$("#cpu_usage_chart").empty();
+        	$("#mem_usage_chart").empty();
+        	$("#recevied_byte_per_sec_chart").empty();
+        	$("#sent_byte_per_sec_chart").empty();
+        	$("#custom_monitor_chart_1").empty();
+        	$("#custom_monitor_chart_2").empty();
+        	$("#custom_monitor_chart_3").empty();
+        	$("#custom_monitor_chart_4").empty();
+        	$("#custom_monitor_chart_5").empty();
 		}
 		
 		function drawPlot(ip) {
 			clearPrePlot();
         	var currMonitorData = targetMonitorData[ip];
-       		drawChart('cpuDiv', currMonitorData.cpu, formatPercentage, currMonitorData.interval).replot();
-       		drawChart('memoryDiv', currMonitorData.memory, formatMemory, currMonitorData.interval).replot();
+       		drawChart('cpu_usage_chart', currMonitorData.cpu, formatPercentage, currMonitorData.interval).replot();
+       		drawChart('mem_usage_chart', currMonitorData.memory, formatMemory, currMonitorData.interval).replot();
        		drawExtMonitorData(currMonitorData);
        		generateImg(imgBtnLabel, imgTitle);
 		}
 		
 		function drawExtMonitorData(systemData) {
-            drawChartForMonitor(systemData.received, "receivedDiv", "receivedDivHeader", systemData.interval, formatNetwork);
-            drawChartForMonitor(systemData.sent, "sentDiv", "sentDivHeader", systemData.interval, formatNetwork);
-            drawChartForMonitor(systemData.customData1, "customMonitorData1", "customMonitorData1Header", systemData.interval, formatNetwork);
-            drawChartForMonitor(systemData.customData2, "customMonitorData2", "customMonitorData2Header", systemData.interval, formatNetwork);
-            drawChartForMonitor(systemData.customData3, "customMonitorData3", "customMonitorData3Header", systemData.interval, formatNetwork);
-            drawChartForMonitor(systemData.customData4, "customMonitorData4", "customMonitorData4Header", systemData.interval, formatNetwork);
-            drawChartForMonitor(systemData.customData5, "customMonitorData5", "customMonitorData5Header", systemData.interval, formatNetwork);
+            drawChartForMonitor(systemData.received, "recevied_byte_per_sec_chart", "recevied_byte_per_sec_header", systemData.interval, formatNetwork);
+            drawChartForMonitor(systemData.sent, "sent_byte_per_sec_chart", "sent_byte_per_sec_header", systemData.interval, formatNetwork);
+            drawChartForMonitor(systemData.customData1, "custom_monitor_chart_1", "custom_monitor_header_1", systemData.interval, formatNetwork);
+            drawChartForMonitor(systemData.customData2, "custom_monitor_chart_2", "custom_monitor_header_2", systemData.interval, formatNetwork);
+            drawChartForMonitor(systemData.customData3, "custom_monitor_chart_3", "custom_monitor_header_3", systemData.interval, formatNetwork);
+            drawChartForMonitor(systemData.customData4, "custom_monitor_chart_4", "custom_monitor_header_4", systemData.interval, formatNetwork);
+            drawChartForMonitor(systemData.customData5, "custom_monitor_chart_5", "custom_monitor_header_5", systemData.interval, formatNetwork);
 		}
 		
 		function drawChartForMonitor(data, area, titleArea, interval, format) {
 			if (data !== '[]') {
             	$("#" + area).show();	
             	$("#" + titleArea).show();
-            	$("#" + area + "ImgBtn").show();
+            	$("#" + area + "_img_btn").show();
             	plot = drawChart(area, data, format, interval);
             	plot.replot();
             } else {
             	$("#" + area).hide();	
             	$("#" + titleArea).hide();
-				$("#" + area + "ImgBtn").hide();
+				$("#" + area + "_img_btn").hide();
             }
 		}
 		
@@ -409,7 +389,7 @@
                     	drawPlot(ip);
                         return true;
                     } else {
-                        showErrorMsg("Get monitor data failed.");
+                        showErrorMsg("Failed to retrieve monitor data.");
                         return false;
                     }
                 },

@@ -35,6 +35,8 @@ import org.ngrinder.user.repository.UserSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.authentication.dao.SaltSource;
@@ -111,6 +113,14 @@ public class UserService implements IUserService {
 			SecuredUser securedUser = new SecuredUser(user, null);
 			String encodePassword = passwordEncoder.encodePassword(user.getPassword(), saltSource.getSalt(securedUser));
 			user.setPassword(encodePassword);
+		}
+	}
+
+	public Page<User> getAllUserByRole(String roleName, Pageable pageable) {
+		if (StringUtils.isBlank(roleName)) {
+			return userRepository.findAll(pageable);
+		} else {
+			return getUserListByRole(getRole(roleName), pageable);
 		}
 	}
 
@@ -249,6 +259,20 @@ public class UserService implements IUserService {
 	 * 
 	 * @param role
 	 *            role
+	 * @param pageable
+	 *            sort
+	 * @return found user list
+	 * @throws Exception
+	 */
+	public Page<User> getUserListByRole(Role role, Pageable pageable) {
+		return userRepository.findAllByRole(role, pageable);
+	}
+
+	/**
+	 * get the user list by the given role.
+	 * 
+	 * @param role
+	 *            role
 	 * @return found user list
 	 * @throws Exception
 	 */
@@ -286,6 +310,10 @@ public class UserService implements IUserService {
 	 */
 	public List<User> getUserListByKeyWord(String name) {
 		return userRepository.findAll(UserSpecification.nameLike(name));
+	}
+
+	public Page<User> getUserListByKeyWord(String name, Pageable pageable) {
+		return userRepository.findAll(UserSpecification.nameLike(name), pageable);
 	}
 
 }

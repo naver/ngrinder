@@ -8,7 +8,6 @@
 <body>
 	<#include "../common/navigator.ftl">
 	<div class="container">
-		<div class="page-header pageHeader">
 		<fieldSet>
 			<legend class="header">
 				<@spring.message "user.detail.header"/>
@@ -18,7 +17,7 @@
 			</legend>
 		</fieldSet>
 		<#include "info.ftl"> 
-		<#include "../common/copyright.ftl">
+		<#include "../common/copyright.ftl">	
 	</div>
 	
 	<script type="text/javascript">

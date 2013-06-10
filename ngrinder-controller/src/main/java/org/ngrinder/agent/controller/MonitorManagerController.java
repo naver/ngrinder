@@ -55,7 +55,7 @@ public class MonitorManagerController extends NGrinderBaseController {
 	 *            model
 	 * @param ip
 	 *            target host IP
-	 * @return agent/systeminfo
+	 * @return agent/system_info
 	 */
 	@RequestMapping("/info")
 	public String getMonitor(ModelMap model, @RequestParam String ip) {
@@ -64,7 +64,7 @@ public class MonitorManagerController extends NGrinderBaseController {
 			ip = addresses[addresses.length - 1];
 		}
 		model.put("monitorIp", ip);
-		return "agent/systeminfo";
+		return "agent/info";
 	}
 
 	/**

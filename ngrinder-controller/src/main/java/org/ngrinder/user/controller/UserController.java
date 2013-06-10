@@ -13,6 +13,7 @@
  */
 package org.ngrinder.user.controller;
 
+import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.Preconditions.checkArgument;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -34,6 +35,12 @@ import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
 import org.ngrinder.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefaults;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -77,21 +84,27 @@ public class UserController extends NGrinderBaseController {
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping({ "", "/" })
 	public String getUserList(ModelMap model, @RequestParam(required = false) String roleName,
+					@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable,
 					@RequestParam(required = false) String keywords) {
 
-		List<User> userList = null;
+		PageRequest pageReq = ((PageRequest) pageable);
+		Sort sort = pageReq == null ? null : pageReq.getSort();
+		if (sort == null && pageReq != null) {
+			sort = new Sort(Direction.ASC, "userName");
+			pageable = new PageRequest(pageReq.getPageNumber(), pageReq.getPageSize(), sort);
+		}
+		Page<User> pagedUser = null;
 		if (StringUtils.isEmpty(keywords)) {
-			userList = userService.getAllUserByRole(roleName);
+			pagedUser = userService.getAllUserByRole(roleName, pageable);
 		} else {
-			userList = userService.getUserListByKeyWord(keywords);
+			pagedUser = userService.getUserListByKeyWord(keywords, pageable);
 			model.put("keywords", keywords);
 		}
-
-		model.addAttribute("userList", userList);
+		model.addAttribute("userPage", pagedUser);
 		EnumSet<Role> roleSet = EnumSet.allOf(Role.class);
 		model.addAttribute("roleSet", roleSet);
 		model.addAttribute("roleName", roleName);
-
+		model.addAttribute("page", pageable);
 		return "user/list";
 	}
 
@@ -268,14 +281,13 @@ public class UserController extends NGrinderBaseController {
 	 * 
 	 * @return redirect:/perftest/list
 	 */
-	@RequestMapping("/switchUser")
-	public String switchUser(User user, ModelMap model,
-					@RequestParam(required = false, defaultValue = "") String switchUser, HttpServletRequest request,
-					HttpServletResponse response) {
-		Cookie cookie = new Cookie("switchUser", switchUser);
+	@RequestMapping("/switch")
+	public String switchUser(User user, ModelMap model, @RequestParam(required = false, defaultValue = "") String to,
+					HttpServletRequest request, HttpServletResponse response) {
+		Cookie cookie = new Cookie("switchUser", to);
 		cookie.setPath("/");
 		// Delete Cookie if empty switchUser
-		if (StringUtils.isEmpty(switchUser)) {
+		if (StringUtils.isEmpty(to)) {
 			cookie.setMaxAge(0);
 		}
 		response.addCookie(cookie);

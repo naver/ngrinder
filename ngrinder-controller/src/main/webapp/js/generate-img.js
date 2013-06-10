@@ -34,9 +34,9 @@ function generateImg(btnLabel, title) {
             outerDiv.hide();
 
             outerDiv = header = div = close = null;
-            if ($("#" + $(this).attr("id") + "ImgBtn")[0] == undefined) {
+            if ($("#" + $(this).attr("id") + "_img_btn")[0] == undefined) {
                 var btn = $("<a href='javascript:void(0)' title='" + btnLabel + "'><i class='icon-download'  style='cursor:pointer;margin-top:-20px;margin-left:680px'></i></a>");
-                btn.attr("id", $(this).attr("id") + "ImgBtn"); 
+                btn.attr("id", $(this).attr("id") + "_img_btn"); 
                 btn.bind('click', {chart: $(this)}, function(evt) {   
                     var imgelem = evt.data.chart.jqplotToImageElem(); 
                     var div = $(this).nextAll('div.jqplot-image-container').first();

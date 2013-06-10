@@ -10,7 +10,7 @@
 			<legend class="header"> <@spring.message "agent.management.title"/> </legend>
 		</fieldSet>
 		<#include "region_selector.ftl">
-		<div class="well searchBar">
+		<div class="well search-bar">
 			<button class="btn" id="stop_agent_button">
 				<i class="icon-stop"></i> <@spring.message "common.button.stop"/>
 			</button>
@@ -151,7 +151,7 @@
 							}).get().join(","));
 					    }
 					});
-					$confirm.children(".modal-body").addClass("errorColor");
+					$confirm.children(".modal-body").addClass("error-color");
 				});
 				
             });

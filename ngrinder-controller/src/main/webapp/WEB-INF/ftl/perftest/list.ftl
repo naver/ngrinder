@@ -24,9 +24,9 @@
 		<div class="container">
 			<img src="${req.getContextPath()}/img/bg_perftest_banner_en.png?${nGrinderVersion}"/>
 			
-			<form id="listForm" class="well form-inline searchBar" action=""${req.getContextPath()}/perftest/list" method="POST">
-				<input type="hidden" id="sortColumn" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
-				<input type="hidden" id="sortDirection" name="page.sort.dir" value="${sortDirection!'desc'}">
+			<form id="test_list_form" class="well form-inline search-bar" action=""${req.getContextPath()}/perftest/list" method="POST">
+				<input type="hidden" id="sort_column" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
+				<input type="hidden" id="sort_direction" name="page.sort.dir" value="${sortDirection!'desc'}">
 		
 				<table style="width:100%">
 					<colspan>
@@ -45,12 +45,12 @@
 							</select> 
 							<input type="text" class="search-query search-query-without-radios span2" placeholder="Keywords" name ="query" id="query" value="${query!}">
 							
-							<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
+							<button type="submit" class="btn" id="search_btn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
 							<label class="checkbox" style="position:relative; margin-left:5px">
-								<input type="checkbox" id="finishedChk" name="queryFilter" <#if queryFilter?? && queryFilter == 'F'>checked</#if> value="F"> <@spring.message "perfTest.formInline.finished"/>
+								<input type="checkbox" id="finished_only_checkbox" name="queryFilter" <#if queryFilter?? && queryFilter == 'F'>checked</#if> value="F"> <@spring.message "perfTest.formInline.finished"/>
 							</label>
 							<label class="checkbox" style="position:relative; margin-left:5px">
-								<input type="checkbox" id="scheduledChk" name="queryFilter" <#if queryFilter?? && queryFilter == 'S'>checked</#if> value="S"> <@spring.message "perfTest.formInline.scheduled"/>
+								<input type="checkbox" id="scheduled_only_checkbox" name="queryFilter" <#if queryFilter?? && queryFilter == 'S'>checked</#if> value="S"> <@spring.message "perfTest.formInline.scheduled"/>
 							</label>
 						</td>
 						<td>
@@ -59,7 +59,7 @@
 									<i class="icon-file icon-white"></i> 
 									<@spring.message "perfTest.formInline.createTest"/>
 								</a>
-								<a class="btn btn-danger" href="javascript:void(0);" id="deleteBtn">
+								<a class="btn btn-danger" href="javascript:void(0);" id="delete_btn">
 									<i class="icon-remove icon-white"></i>
 									<@spring.message "perfTest.formInline.deletetSelectedTest"/>
 								</a>
@@ -67,16 +67,16 @@
 						</td>
 					</tr> 
 				</table>
-				<INPUT type="hidden" id="pageNumber" name="page.page" value="${page.pageNumber + 1}">
-				<INPUT type="hidden" id="pageSize" name="page.size" value="${page.pageSize}">
+				<INPUT type="hidden" id="page_number" name="page.page" value="${page.pageNumber + 1}">
+				<INPUT type="hidden" id="page_size" name="page.size" value="${page.pageSize}">
 			</form>
 			<div class="pull-right"> 
-				<code id="currentRunning" style="width:300px"></code>
+				<code id="current_running_status" style="width:300px"></code>
 			</div>
 			<@security.authorize ifAnyGranted="A, S">
 				<#assign isAdmin = true />
 			</@security.authorize>
-			<table class="table table-striped table-bordered ellipsis" id="testTable" style="width:940px">  
+			<table class="table table-striped table-bordered ellipsis" id="test_table" style="width:940px">  
 				<colgroup>
 					<col width="30">
 					<col width="50">   
@@ -98,16 +98,16 @@
 					<tr>
 						<th class="nothing"><input id="chkboxAll" type="checkbox"  value=""></th>
 						<th class="nothing" style="padding-left:3px"><@spring.message "common.label.status"/></th>
-						<th id="testName"><@spring.message "perfTest.table.testName"/></th>
-						<th id="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
+						<th id="test_name"><@spring.message "perfTest.table.testName"/></th>
+						<th id="script_name"><@spring.message "perfTest.table.scriptName"/></th>
 						<th class="nothing"><#if isAdmin??><@spring.message "perfTest.table.owner"/><#else><@spring.message "perfTest.table.modifier"/></#if></th>
 						<#if clustered>
 						<th id="region"><@spring.message "agent.table.region"/></th>
 						</#if>
-						<th id="startTime"><@spring.message "perfTest.table.startTime"/></th>
+						<th id="start_time"><@spring.message "perfTest.table.startTime"/></th>
 						<th class="nothing"><@spring.message "perfTest.table.threshold"/></th>
 						<th id="tps"><@spring.message "perfTest.table.tps"/></th> 
-						<th id="meanTestTime" title='<@spring.message "perfTest.table.meantime"/>' >MTT</th>
+						<th id="mean_test_time" title='<@spring.message "perfTest.table.meantime"/>' >MTT</th>
 						<th id="errors"><@spring.message "perfTest.table.errors"/></th>
 						<th class="nothing"><@spring.message "perfTest.table.vusers"/></th>
 						<th class="nothing" title="<@spring.message "common.label.actions"/>"></th>
@@ -117,7 +117,7 @@
 					<#assign testList = testListPage.content/>
 					<#if testList?has_content>
 						<#list testList as test>
-							<#assign vuserTotal = (test.vuserPerAgent) * (test.agentCount) />
+							<#assign totalVuser = (test.vuserPerAgent) * (test.agentCount) />
 							<#assign deletable = !(test.status.deletable) />
 							<#assign stoppable = !(test.status.stoppable) />
 							<tr id="tr${test.id}">
@@ -137,7 +137,7 @@
 									<div
 										 rel="popover"
 										 data-html="true" 
-										 data-content="${(test.description!"")?replace('\n', '<br/>')?html} &lt;p&gt;${test.testComment?replace('\n', '<br/>')?html}&lt;/p&gt;  &lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string('yyyy-MM-dd HH:mm')}</#if>&lt;/p&gt;&lt;p&gt;<#if test.tagString?has_content><@spring.message "perfTest.configuration.tags"/> : ${test.tagString}&lt;/p&gt;</#if><@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})&lt;br&gt; <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})"  
+										 data-content='${(test.description!"")?replace("\n", "<br/>")?html} &lt;p&gt;${test.testComment?replace("\n", "<br/>")?html}&lt;/p&gt;  &lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if>&lt;/p&gt;&lt;p&gt;<#if test.tagString?has_content><@spring.message "perfTest.configuration.tags"/> : ${test.tagString}&lt;/p&gt;</#if><@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})&lt;br&gt; <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})'  
 										 data-title="${test.testName}">
 										<a href="${req.getContextPath()}/perftest/${test.id}" target="_self">${test.testName}</a>
 									</div>
@@ -180,7 +180,7 @@
 								<td><#if test.tps??>${(test.tps)?string("0.#")}</#if></td>  
 								<td><#if test.meanTestTime??>${(test.meanTestTime)?string("0.##")}</#if></td>
 								<td><#if test.errors??>${test.errors}</#if></td>
-								<td>${vuserTotal}</td>
+								<td>${totalVuser}</td>
 								<td class="center">
 									<a href="javascript:void(0)" style="<#if deletable>display: none;</#if>"><i title="<@spring.message "common.button.delete"/>"id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>
 									<a href="javascript:void(0)" style="<#if stoppable>display: none;</#if>"><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" class="icon-stop test-stop" sid="${test.id}"></i></a>
@@ -216,15 +216,15 @@
 				placeholder: '<@spring.message "perfTest.table.selectATag"/>',
 				allowClear: true
 			}).change(function() {
-				document.forms.listForm.submit();
+				document.forms.test_list_form.submit();
 			});
 			
 	      	
 			$("#nav_test").addClass("active");
 			
-			enableChkboxSelectAll("testTable");
+			enableChkboxSelectAll("test_table");
 			
-			$("#deleteBtn").click(function() {
+			$("#delete_btn").click(function() {
 				var list = $("td input:checked");
 				if(list.length == 0) {
 					bootbox.alert("<@spring.message "perfTest.table.message.alert.delete"/>", "<@spring.message "common.button.ok"/>");
@@ -268,8 +268,8 @@
 				}
 			});
 			
-			var sortColumn = $("#sortColumn").val();
-			var sortDir = $("#sortDirection").val().toLowerCase();
+			var sortColumn = $("#sort_column").val();
+			var sortDir = $("#sort_direction").val().toLowerCase();
 			
 			$("#" + sortColumn).addClass("sorting_" + sortDir);
 
@@ -280,27 +280,27 @@
 					sortDirection = "DESC";
 				}
 				
-				$("#sortColumn").val($currObj.attr('id'));
-				$("#sortDirection").val(sortDirection);
+				$("#sort_column").val($currObj.attr('id'));
+				$("#sort_direction").val(sortDirection);
 				
 				getList(1);
 			});
 			</#if>
 			
-			$("#currentRunning").click(function() {
-				$("#currentRunningDiv").toggle();
+			$("#current_running_status").click(function() {
+				$("#current_running_status_div").toggle();
 			});
 			
-			$("#finishedChk, #scheduledChk").click(function() {
+			$("#finished_only_checkbox, #scheduled_only_checkbox").click(function() {
 				var $this = $(this);
 				var $temp;
-				if ($this.attr("id") == "finishedChk") {
-					checkboxReject($this, $("#scheduledChk"));
+				if ($this.attr("id") == "finished_only_checkbox") {
+					checkboxReject($this, $("#scheduled_only_checkbox"));
 				} else {
-					checkboxReject($this, $("#finishedChk"));
+					checkboxReject($this, $("#finished_only_checkbox"));
 				}
 				
-				document.forms.listForm.submit();
+				document.forms.test_list_form.submit();
 			});
 		});
 		
@@ -312,7 +312,7 @@
 		
 		function deleteTests(ids) {
 			$.ajax({
-		  		url: "${req.getContextPath()}/perftest/deleteTests",
+		  		url: "${req.getContextPath()}/perftest/delete",
 		  		type: "POST",
 		  		data: {"ids" : ids},
 				dataType:'json',
@@ -334,7 +334,7 @@
 		
 		function stopTests(ids) {
 			$.ajax({
-		  		url: "${req.getContextPath()}/perftest/stopTests",
+		  		url: "${req.getContextPath()}/perftest/stop",
 				type: "POST",
 		  		data: {"ids":ids},
 				dataType:'json',
@@ -356,8 +356,8 @@
 		}
 		
 		function getList(page) {
-			$("#pageNumber").val(page);
-			document.forms.listForm.submit();
+			$("#page_number").val(page);
+			document.forms.test_list_form.submit();
 		}
 		
 		function updateStatus(id, status, icon, stoppable, deletable, message) {
@@ -388,7 +388,7 @@
 					return this.value;
 		  	}).get();
 		    $.ajax({
-			    url: '${req.getContextPath()}/perftest/updateStatus', 
+			    url: '${req.getContextPath()}/perftest/update_status', 
 			    type: 'POST',
 			    cache: false,
 			    data: {"ids": ids.join(",")},
@@ -398,7 +398,7 @@
 			    	var perfTest = perfTestData.perfTestInfo;
 			    	var springMessage = perfTest.length + " <@spring.message "perfTest.currentRunning.summary"/>";
 			    	
-			    	$("#currentRunning").text(springMessage);
+			    	$("#current_running_status").text(springMessage);
 			    	var testStatus;
 			    	for (var i = 0; i < data.length; i++) { 
 			    		testStatus = data[i].status_id;

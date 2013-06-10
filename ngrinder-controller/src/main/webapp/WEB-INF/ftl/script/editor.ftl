@@ -57,14 +57,14 @@
 												<label class="control-label" for="testName"><@spring.message "script.option.name"/></label>
 											</td>
 											<td>
-												<input type="text" id="scriptNameInput" class="span6" name="path" value="${(file.path)!}" readonly/>
+												<input type="text" id="script_name" class="span6" name="path" value="${(file.path)!}" readonly/>
 											</td>
 											<td>
 											<#if scriptHandler.isValidatable()>
-												<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:73px; width:40px;"><@spring.message "common.button.save"/></a>
-												<a class="btn btn-primary" href="javascript:void(0);" id="validateBtn" style="width:90px;"><@spring.message "script.editor.button.validate"/></a>
+												<a class="btn btn-success" href="javascript:void(0);" id="save_btn" style="margin-left:73px; width:40px;"><@spring.message "common.button.save"/></a>
+												<a class="btn btn-primary" href="javascript:void(0);" id="validate_btn" style="width:90px;"><@spring.message "script.editor.button.validate"/></a>
 											<#else>
-												<a class="btn btn-success" href="javascript:void(0);" id="saveBtn" style="margin-left:190px; width:40px;"><@spring.message "common.button.save"/></a>
+												<a class="btn btn-success" href="javascript:void(0);" id="save_btn" style="margin-left:190px; width:40px;"><@spring.message "common.button.save"/></a>
 											</#if>
 											</td>
 										</tr> 
@@ -95,8 +95,8 @@
 							</div>
 						</fieldset>
 					</div>
-					<input type="hidden" id="createLibAndResource" name="createLibAndResource" value="<#if createLibAndResource?? && createLibAndResource==true>true<#else>false</#if>"/>
-					<input type="hidden" id="validatedHd" name="validated" value="${(file.properties.validated)!"0"}">
+					<input type="hidden" id="create_Lib_and_resource" name="createLibAndResource" value="<#if createLibAndResource?? && createLibAndResource==true>true<#else>false</#if>"/>
+					<input type="hidden" id="validated" name="validated" value="${(file.properties.validated)!"0"}">
 					<input type="hidden" id="contentHd" name="content">
 					<@security.authorize ifAnyGranted="A, S">
 						<#if ownerId??>					
@@ -106,8 +106,8 @@
 				</form>
 				
 				
-				<textarea id="codemirrorContent">${(file.content)!}</textarea>
-				<textarea id="oldContent" class="hidden">${(file.content)!}</textarea>
+				<textarea id="codemirror_content">${(file.content)!}</textarea>
+				<textarea id="old_content" class="hidden">${(file.content)!}</textarea>
 				<div class="pull-right" rel="popover" style="position:float;margin-top:-20px;margin-right:-30px" data-original-title="Tip" data-content="
 			      Ctrl-F / Cmd-F : <@spring.message "script.editor.tip.startSearching"/>&lt;br&gt; 
 			      Ctrl-G / Cmd-G : <@spring.message "script.editor.tip.findNext"/>&lt;br&gt;
@@ -120,10 +120,10 @@
 			    ><code>Tip</code></div> 
 			</div>
 		</div>
-		<div id="validationPanel" style="display:none;">
-			<pre style="height:100px; margin:5px 0 10px; " class="prettyprint pre-scrollable" id="validateRsPre">
+		<div id="validation_result_panel" style="display:none;">
+			<pre style="height:100px; margin:5px 0 10px; " class="prettyprint pre-scrollable" id="validation_result_pre_div">
 			</pre>
-			<div class="pull-right" rel="popover" style="position:float;margin-top:-30px;margin-right:-16px;"><a href="javascript:void(0)" id="expandBtn"><code>+</code></a></div>
+			<div class="pull-right" rel="popover" style="position:float;margin-top:-30px;margin-right:-16px;"><a href="javascript:void(0)" id="expand_btn"><code>+</code></a></div>
 		</div>		 
 		<#include "../common/copyright.ftl"> 
 	</div>
@@ -139,7 +139,7 @@
     		}
     	});
     	$(document).ready(function() {
-			var editor = CodeMirror.fromTextArea(document.getElementById("codemirrorContent"), {
+			var editor = CodeMirror.fromTextArea(document.getElementById("codemirror_content"), {
 			   mode: "${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}",
 			   theme: "eclipse",
 			   lineNumbers: true,
@@ -167,10 +167,10 @@
 			});
 			var hlLine = editor.setLineClass(0, "activeline");
 
-			$("#saveBtn").click(function() {
+			$("#save_btn").click(function() {
 				var newContent = editor.getValue();
 				if ($("#oldContent").val() != newContent) {
-					$("#validatedHd").val("0");
+					$("#validated").val("0");
 				}
 				$('#contentHd').val(newContent);
 				changed = false;
@@ -179,14 +179,14 @@
 			});
 
 			var validating = false;
-			$("#validateBtn").click(function() {
+			$("#validate_btn").click(function() {
 				if (validating) {
 					return;
 				}
 				validating = true;
-				var scriptPath = $("#scriptNameInput").val();
-				var hostString = $("#targetHosts").val();
-				$('#validationPanel').hide();
+				var scriptPath = $("#script_name").val();
+				var hostString = $("#target_hosts").val();
+				$('#validation_result_panel').hide();
 				var newContent = editor.getValue();
 				showProgressBar("<@spring.message "script.editor.message.validate"/>");
 				$.ajax({
@@ -195,17 +195,15 @@
 			    	type: "POST",
 					data: {'path':scriptPath, 'content': newContent, 
 						<@security.authorize ifAnyGranted="A, S">
-							<#if ownerId??>	
-				  				'ownerId': "${ownerId}",
-							</#if>
+							<#if ownerId??>'ownerId': "${ownerId}",	</#if>
 						</@security.authorize>
-					'hostString': hostString},
+					'hostString': hostString },
 			    	success: function(res) {
 			    		validating = false;
-						$('#validateRsPre').text(res);
-						$('#validationPanel').show();
-						$('#validatedHd').val("1");//should control the validation success or not later.
-						$("#oldContent").val(newContent);
+						$('#validation_result_pre_div').text(res);
+						$('#validation_result_panel').show();
+						$('#validated').val("1");//should control the validation success or not later.
+						$("#old_content").val(newContent);
 						hideProgressBar();
 			    	},
 			    	error: function() {
@@ -215,12 +213,12 @@
 			  	});
 			});
 			
-			$("#expandBtn").click(function() {
-				var heightStr = $("#validateRsPre").css("height");
+			$("#expand_btn").click(function() {
+				var heightStr = $("#validation_result_pre_div").css("height");
 				if (heightStr == "100px") {
-					$("#validateRsPre").css("height", "300px");
+					$("#validation_result_pre_div").css("height", "300px");
 				} else {
-					$("#validateRsPre").css("height", "100px");
+					$("#validation_result_pre_div").css("height", "100px");
 				}
 			});
 		});

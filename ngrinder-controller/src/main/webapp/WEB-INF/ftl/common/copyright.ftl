@@ -1,4 +1,4 @@
-<div class="row" id="footDiv" >
+<div class="row" id="foot_div" >
 	<div class="span12 center">
 		<hr style="margin-bottom:0px">
 		<footer>

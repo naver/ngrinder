@@ -17,6 +17,8 @@ import java.util.List;
 
 import org.ngrinder.model.Role;
 import org.ngrinder.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -50,16 +52,28 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	 * @return found {@link User} list
 	 */
 	public List<User> findAllByRole(Role role);
-	
+
 	/**
 	 * Find all {@link User}s for the given role.
 	 * 
 	 * @param role
 	 *            role
-	 * @param sort sort
+	 * @param sort
+	 *            sort
 	 * @return found {@link User} list
 	 */
 	public List<User> findAllByRole(Role role, Sort sort);
+
+	/**
+	 * Find all {@link User}s for the given role.
+	 * 
+	 * @param role
+	 *            role
+	 * @param pageable
+	 *            pageable
+	 * @return found {@link User} list
+	 */
+	public Page<User> findAllByRole(Role role, Pageable pageable);
 
 	/**
 	 * Delete user which has the given userId.
@@ -89,5 +103,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	 */
 	public User findOneByUserName(String userName);
 
+	/**
+	 * Find users who are matching to given spec with paging.
+	 * 
+	 * @param spec
+	 *            spec
+	 * @param pageable
+	 *            pageable
+	 * @return user list
+	 */
+	public Page<User> findAll(Specification<User> spec, Pageable pageable);
 
 }

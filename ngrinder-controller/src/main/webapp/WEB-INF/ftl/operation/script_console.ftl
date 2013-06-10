@@ -15,11 +15,11 @@
 	<div class="container">
 		<div class="row">
 			<div class="span12">
-				<form action="${req.getContextPath()}/operation/script_console" name="scriptForm" method="POST">
+				<form action="${req.getContextPath()}/operation/script_console" name="script_form" method="POST">
 					<fieldset>
 						<legend class="header">
 							<@spring.message "navigator.dropdown.scriptConsole"/>
-							<button class="btn btn-success pull-right" id="runBtn">
+							<button class="btn btn-success pull-right" id="run_btn">
 								<@spring.message "script.view.button.runScript"/>
 							</button>
 						</legend> 
@@ -85,9 +85,9 @@ please refer nGrinder javadoc to find out more APIs on the given variables.
 			});
 			var hlLine = editor.setLineClass(0, "activeline");
 			
-			$("#runBtn").click(function() {
+			$("#run_btn").click(function() {
 				$('#script').val(editor.getValue());
-				document.forms.scriptForm.submit();
+				document.forms.script_form.submit();
 			});
 		});
 	 </script>

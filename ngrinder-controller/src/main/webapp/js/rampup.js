@@ -1,36 +1,36 @@
 var plotObj;
 
 $(document).ready(function() {
-	$("#rampupCheckbox").on("click", function() {
+	$("#use_ramp_up").on("click", function() {
 		updateRampupChart();
 	});
 	
-	$("#initProcesses, #initSleepTime, #processIncrement, #processIncrementInterval").on(
+	$("#init_processes, #init_sleep_time, #process_increment, #process_increment_interval").on(
 		"change", function() {
 			updateRampupChart();
 	});
 });
 
 function disableRampup() {
-	$('#initProcesses').val(0);
-	$('#initProcesses').attr("readonly", "readonly");
-	$('#initSleepTime').attr("readonly", "readonly");
-	$('#processIncrement').attr("readonly", "readonly");
-	$('#processIncrementInterval').attr("readonly", "readonly");
+	$('#init_processes').val(0);
+	$('#init_processes').attr("readonly", "readonly");
+	$('#init_sleep_time').attr("readonly", "readonly");
+	$('#process_increment').attr("readonly", "readonly");
+	$('#process_increment_interval').attr("readonly", "readonly");
 }
 
 function enableRampup() {
-	$('#initProcesses').removeAttr("readonly");
-	$('#initSleepTime').removeAttr("readonly");
-	$('#processIncrement').removeAttr("readonly");
-	$('#processIncrementInterval').removeAttr("readonly");
+	$('#init_processes').removeAttr("readonly");
+	$('#init_sleep_time').removeAttr("readonly");
+	$('#process_increment').removeAttr("readonly");
+	$('#process_increment_interval').removeAttr("readonly");
 }
 
 function updateRampupChart() {
 	var $processes = $('#processes');
-	var $processInc = $('#processIncrement');
-	var $initialProcesses = $('#initProcesses');
-	var $internalTime = $('#processIncrementInterval');
+	var $processInc = $('#process_increment');
+	var $initialProcesses = $('#init_processes');
+	var $internalTime = $('#process_increment_interval');
 
 	var processes = parseInt($processes.val(), 10);
 	var processInc = parseInt($processInc.val(), 10);
@@ -50,7 +50,7 @@ function updateRampupChart() {
 	}
 
 	if (modified) {
-		$("#messageDiv").empty();
+		$("#message_div").empty();
 		modified = false;
 	}
 
@@ -59,11 +59,11 @@ function updateRampupChart() {
 		steps = 1;
 	}
 
-	var initialSleepTime = parseInt($('#initSleepTime').val());
+	var initialSleepTime = parseInt($('#init_sleep_time').val());
 	var maxY = parseInt((processes / 5) + 1) * 5;
 	var seriesArray = [];
 	
-	if ($("#rampupCheckbox")[0].checked) {
+	if ($("#use_ramp_up")[0].checked) {
 		enableRampup();
 
 		var curX = initialSleepTime;
@@ -86,7 +86,7 @@ function updateRampupChart() {
 			seriesArray.push([curX, curY]);
 		}
 		
-		$("#rampChart").empty();
+		$("#rampup_chart").empty();
 		drawRampup(seriesArray, internalTime, maxY);
 	} else {
 		disableRampup();
@@ -108,7 +108,7 @@ function updateRampupChart() {
 }
 
 function drawRampup(data, internalTime, maxY) {
-	plotObj = $.jqplot("rampChart", [data], {
+	plotObj = $.jqplot("rampup_chart", [data], {
 		axesDefaults : {
 			tickRenderer : $.jqplot.AxisTickRenderer,
 			tickOptions : {

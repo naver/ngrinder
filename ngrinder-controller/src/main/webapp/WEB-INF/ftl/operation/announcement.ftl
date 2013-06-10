@@ -9,18 +9,18 @@
 	<div class="container">
 		<div class="row">
 			<div class="span12">
-				<form id="annountcementForm" method="POST">
+				<form id="annountcement_form" method="POST">
 					<fieldset>
 						<legend class="header">
 							<@spring.message "navigator.dropdown.announcement"/>&nbsp;&nbsp;<small><@spring.message "announcement.view.message"/></small>
-							<a id="testBtn" class="btn btn-primary pull-right" href="javascript:void(0);">
+							<a id="test_btn" class="btn btn-primary pull-right" href="javascript:void(0);">
 								<@spring.message "common.button.test"/>
 							</a>
-							<button id="saveBtn" class="btn btn-success pull-right" style="margin-right:5px">
+							<button id="save_btn" class="btn btn-success pull-right" style="margin-right:5px">
 								<@spring.message "common.button.save"/>
 							</button>
 						</legend>
-						<textarea id="announcementTT" name="content">${content!}</textarea>
+						<textarea id="announcement_editor" name="content">${content!}</textarea>
 					</fieldset>
 				</form>
 			</div>
@@ -34,7 +34,7 @@
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/htmlmixed.js"></script>
 	<script>
 		$(document).ready(function() {
-			var editor = CodeMirror.fromTextArea(document.getElementById("announcementTT"), {
+			var editor = CodeMirror.fromTextArea(document.getElementById("announcement_editor"), {
 			   mode: "text/html",
 			   theme: "eclipse",
 			   alignCDATA: true,
@@ -60,24 +60,24 @@
 			});
 			var hlLine = editor.setLineClass(0, "activeline");
 			
-			$("#saveBtn").click(function() {
-				$('#annountcementTT').text(editor.getValue());
-				document.forms.annountcementForm.action = "${req.getContextPath()}/operation/announcement/";
-				document.forms.annountcementForm.submit();
+			$("#save_btn").click(function() {
+				$('#announcement_editor').text(editor.getValue());
+				document.forms.annountcement_form.action = "${req.getContextPath()}/operation/announcement/";
+				document.forms.annountcement_form.submit();
 			});
 			
-			$("#testBtn").click(function() {
+			$("#test_btn").click(function() {
 				var content = editor.getValue();
 				if (content == "") {
-					$("#announcementDiv").slideUp();
+					$("#announcement_container").slideUp();
 					return false;
 				}
 				if (content.indexOf("</") < 0 && content.indexOf("<br>") < 0) {
 					content = content.replaceAll("\n", "<br>");
-					content = content.replaceAll('\t', '&nbsp;&nbsp;&nbsp;&nbsp;')
+					content = content.replaceAll('\t', '&nbsp;&nbsp;&nbsp;&nbsp;');
 				}
-				$("#announcementContentDiv").html(content);
-				$("#announcementDiv").slideDown();
+				$("#announcement_content").html(content);
+				$("#announcement_container").slideDown();
 			});
 			String.prototype.replaceAll = function(s1,s2) { 
 			    return this.replace(new RegExp(s1,"gm"),s2); 

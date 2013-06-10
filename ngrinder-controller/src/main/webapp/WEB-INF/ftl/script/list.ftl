@@ -10,7 +10,7 @@
     <#include "../common/navigator.ftl">
 	<div class="container">
 		<img src="${req.getContextPath()}/img/bg_script_banner_en.png?${nGrinderVersion}"/>
-		<div class="well form-inline searchBar">
+		<div class="well form-inline search-bar">
 			<table style="width:100%">
 				<tr>
 					<td>
@@ -22,7 +22,7 @@
 							<tr>
 								<td>
 									<input type="text" class="search-query span3" placeholder="Keywords" id="searchText" value="${query!}">
-									<button type="submit" class="btn" id="searchBtn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
+									<button type="submit" class="btn" id="search_btn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
 								</td>
 								<td>
 								<#if svnUrl?has_content>
@@ -72,7 +72,7 @@
 			</table>	
 		</div>
 		
-		<table class="table table-striped table-bordered ellipsis" id="scriptTable" style="width:940px">
+		<table class="table table-striped table-bordered ellipsis" id="script_list_table" style="width:940px">
 			<colgroup>
 				<col width="30">
 				<col width="32">
@@ -181,18 +181,18 @@
 				});
 			});
 			
-			$("#searchBtn").on('click', function() {
+			$("#search_btn").on('click', function() {
 				searchScriptList();
 			});
 			
-			enableChkboxSelectAll("scriptTable");
+			enableChkboxSelectAll("script_list_table");
 			
 			$("i.script-download").on('click', function() {
 				window.location  = "${req.getContextPath()}/script/download/" + $(this).attr("spath");
 			});
 
 			<#if files?has_content>
-				$("#scriptTable").dataTable({
+				$("#script_list_table").dataTable({
 					"bAutoWidth": false,
 					"bFilter": false,
 					"bLengthChange": false,
