@@ -284,14 +284,14 @@
 				</ul>
 				<div class="tab-content">
 					<div class="tab-pane" id="testContent">
-						<#include "detail_config.ftl">
+						<#include "config.ftl">
 					</div>
 					
 					<div class="tab-pane" id="reportContent">
 					</div>
 					
 					<div class="tab-pane" id="runningContent">
-						<#include "detail_running.ftl">
+						<#include "running.ftl">
 					</div>
 				</div>
 				<!-- end tab content -->
@@ -1068,7 +1068,7 @@ function getOption(cnt) {
 }
 
 function openReportDiv(onFinishHook) {
-	$("#reportContent").load("${req.getContextPath()}/perftest/<#if test??>${(test.id)?c}<#else>0</#if>/detail_report?imgWidth=600",
+	$("#reportContent").load("${req.getContextPath()}/perftest/<#if test??>${(test.id)?c}<#else>0</#if>/basic_report?imgWidth=600",
 		function() {
 			if (onFinishHook !== undefined) {
 				onFinishHook();

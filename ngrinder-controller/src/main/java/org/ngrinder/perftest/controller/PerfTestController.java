@@ -632,9 +632,9 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            test id
 	 * @param imgWidth
 	 *            image width
-	 * @return "perftest/detail_report"
+	 * @return "perftest/basic_report"
 	 */
-	@RequestMapping(value = "{id}/detail_report")
+	@RequestMapping(value = "{id}/basic_report")
 	public String getReportSection(User user, ModelMap model, @PathVariable long id, @RequestParam int imgWidth) {
 		PerfTest test = getPerfTestWithPermissionCheck(user, id, false);
 		int interval = perfTestService.getReportDataInterval(id, "TPS", imgWidth);
@@ -642,7 +642,7 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute(PARAM_TEST_CHART_INTERVAL, interval * test.getSamplingInterval());
 		model.addAttribute(PARAM_TEST, test);
 		model.addAttribute(PARAM_TPS, perfTestService.getReportDataAsString(id, "TPS", interval));
-		return "perftest/detail_report";
+		return "perftest/basic_report";
 	}
 
 	/**

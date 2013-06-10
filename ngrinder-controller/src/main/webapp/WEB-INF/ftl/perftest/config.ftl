@@ -154,7 +154,7 @@
 						<#assign targetHosts = test.targetHosts>
 					<#elseif targetHostString??>
 						<#assign targetHosts = targetHostString> 
-					<#else> C
+					<#else>
 						<#assign targetHosts = "">
 					</#if>
 				<div class="controls">

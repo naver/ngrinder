@@ -65,9 +65,9 @@
 			    		<h4><@spring.message "agent.info.systemData"/></h4>
 					</div>
 					<h6>CPU</h6>
-                    <div class="chart" id="cpuDiv"></div>
+                    <div class="chart" id="cpu_chart"></div>
 					<h6 style="margin-top:20px">Used Memory</h6>
-                    <div class="chart" id="memoryDiv"></div>
+                    <div class="chart" id="memory_chart"></div>
                 </div>
             </div>
         	<#include "../common/copyright.ftl">
@@ -77,8 +77,8 @@
         <script>
             var interval;
             var timer;
-			var sys_totalCpuValue = new Queue();
-			var sys_usedMemory = new Queue();
+			var cpuUsage = new Queue();
+			var memoryUsage = new Queue();
 			var jqplots = [];
 			var maxCPU = 0;
             var maxMemory = 0;
@@ -129,11 +129,11 @@
                     success: function(res) {
                         if (res.success) {
                         	getChartData(res);
-                    		maxCPU = getMax(maxCPU, sys_totalCpuValue.aElement);
-                    		showChart('cpuDiv', sys_totalCpuValue.aElement, 0, formatPercentage, maxCPU);
-                    		maxMemory = getMax(maxMemory, sys_usedMemory.aElement);
-                        	showChart('memoryDiv', sys_usedMemory.aElement, 1, formatMemory, maxMemory);
-                            
+                    		maxCPU = getMax(maxCPU, cpuUsage.aElement);
+                    		showChart('cpu_chart', cpuUsage.aElement, 0, formatPercentage, maxCPU);
+                    		maxMemory = getMax(maxMemory, memoryUsage.aElement);
+                        	showChart('memory_chart', memoryUsage.aElement, 1, formatMemory, maxMemory);
+                         
                             return true;
                         } else {
                             showErrorMsg("Get monitor data failed.");
@@ -158,24 +158,24 @@
             
             function initChartData() {
                 for (var i = 0; i < 60; i++) {
-		        	sys_totalCpuValue.enQueue(0);
-		        	sys_usedMemory.enQueue(0);
+		        	cpuUsage.enQueue(0);
+		        	memoryUsage.enQueue(0);
             	}	
             }
             
-            function getChartData(dataObj) {				
-				sys_totalCpuValue.enQueue(dataObj.systemData.cpuUsedPercentage);
-				sys_usedMemory.enQueue(dataObj.systemData.totalMemory - dataObj.systemData.freeMemory);
+            function getChartData(data) {				
+				cpuUsage.enQueue(data.systemData.cpuUsedPercentage);
+				memoryUsage.enQueue(data.systemData.totalMemory - data.systemData.freeMemory);
 				
-				if (sys_totalCpuValue.getSize() > 60) {
-					sys_totalCpuValue.deQueue();
-					sys_usedMemory.deQueue();
+				if (cpuUsage.getSize() > 60) {
+					cpuUsage.deQueue();
+					memoryUsage.deQueue();
 				}
 			}
 			
 			function cleanChartData() {
-				sys_totalCpuValue.makeEmpty();
-				sys_usedMemory.makeEmpty();
+				cpuUsage.makeEmpty();
+				memoryUsage.makeEmpty();
 				initChartData();
 			}
         </script>
