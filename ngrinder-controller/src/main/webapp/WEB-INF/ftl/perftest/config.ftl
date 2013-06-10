@@ -124,9 +124,6 @@
 						<tr>
 							<td>
 								<select id="script_name" class="required" name="scriptName" style="width: 275px" old_script="${(test.scriptName)!}">
-									<#if test?? && test.scriptName??>
-										<option value="${test.scriptName}" selected></option>
-									</#if>
 								</select>
 							</td>
 							<td>
