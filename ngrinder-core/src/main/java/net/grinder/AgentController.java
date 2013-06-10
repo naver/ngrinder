@@ -260,7 +260,7 @@ public class AgentController implements Agent {
 		File[] logFiles = logFolder.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
-				return (name.endsWith(".log"));
+				return (name.endsWith(".log")) && new File(dir, name).length() != 0;
 			}
 		});
 		if (ArrayUtils.isEmpty(logFiles)) {
