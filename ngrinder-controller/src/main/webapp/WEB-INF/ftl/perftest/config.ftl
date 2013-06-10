@@ -81,13 +81,15 @@
 							</td>
 							<td>
 								<div class="pull-right">
-									<span class="badge badge-info pull-right"><span id="vuserlabel"><@spring.message
-											"perfTest.configuration.availVuser"/></span><span id="total_vuser"></span></span>
+									<span class="badge badge-info pull-right">
+										<span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span id="total_vuser"></span>
+									</span>
 								</div>
 							</td>
 						</tr>
 						<tr id="process_thread_config_panel" style="display: none;">
-							<td colspan="2"><span>
+							<td colspan="2">
+								<span>
 									<div class="input-prepend control-group" style="margin-bottom: 0">
 										<span class="add-on" title='<@spring.message "perfTest.report.process"/>'>
 											<@spring.message "perfTest.report.process"/>
@@ -100,7 +102,8 @@
 										</span>
 										<input class="input span1" type="text" id="threads" name="threads" value="${(test.threads)!1}" />
 									</div>
-							</span></td>
+								</span>
+							</td>
 						</tr>
 						<tr>
 							<td class="vuser_per_agent processes threads"></td>
@@ -124,10 +127,10 @@
 								</select>
 							</td>
 							<td>
-								<input type="hidden" id="scriptRevision" 
+								<input type="hidden" id="script_revision" 
 									name="scriptRevision" 
 									value="${(test.scriptRevision)!-1}"
-									oldRevision="${(test.scriptRevision)!-1}"/>
+									old_revision="${(test.scriptRevision)!-1}"/>
 								<button class="btn btn-mini btn-info pull-right" type="button" 
 									id="show_script_btn"
 									style="margin-top: 3px; &lt;# if !(showScriptVisible??)&gt;display: none;">R <#if test?? &&

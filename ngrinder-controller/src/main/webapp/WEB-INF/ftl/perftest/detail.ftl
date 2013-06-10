@@ -347,7 +347,7 @@ ${processthread_policy_script}
 
 var jqplotObj;
 var objTimer;
-var test_tps_data = new Queue();
+var testTpsData = new Queue();
 var durationMap = [];
 
 $(document).ready(function () {
@@ -436,7 +436,7 @@ function initTags() {
 		query: function(query) {
 			var data = {results:[]};
 			$.ajax({
-				url : "${req.getContextPath()}/perftest/tagSearch",
+				url : "${req.getContextPath()}/perftest/search_tag",
 				dataType : 'json',
 				type : 'POST',
 				cache : true,
@@ -660,9 +660,9 @@ function addValidation() {
 function bindNewScript(target, first) {
 		var $this = target;
 		var $showScript = $("#show_script_btn");
-		var $scriptRevision = $("#scriptRevision");
-		var oldRevision = $scriptRevision.attr("oldRevision");
-		if ($this.val() == $this.attr("oldScript") && oldRevision != -1) {
+		var $scriptRevision = $("#script_revision");
+		var oldRevision = $scriptRevision.attr("old_revision");
+		if ($this.val() == $this.attr("old_script") && oldRevision != -1) {
 			$showScript.text("R " + oldRevision);
 			$scriptRevision.val(oldRevision);
 		} else {
@@ -859,7 +859,7 @@ function bindEvent() {
 					ownerId = "&ownerId=${(test.createdUser.userId)!}";
 				</#if>
 			</@security.authorize>
-			var scriptRevision = $("#scriptRevision").val();
+			var scriptRevision = $("#script_revision").val();
 			var openedWindow = window.open("${req.getContextPath()}/script/detail/" + currentScript + "?r=" + scriptRevision + ownerId, "scriptSource");
 			openedWindow.focus(); 
 		}
@@ -943,7 +943,7 @@ function updateTotalVuser() {
 
 function initChartData(size) {
 	for ( var i = 0; i < size; i++) {
-		test_tps_data.enQueue(0);
+		testTpsData.enQueue(0);
 	}
 }
 
@@ -991,7 +991,7 @@ function updateScriptResources(first) {
 		dataType : 'json',
 		data : {
 			'scriptPath' : scriptName,
-			'r' : $("#scriptRevision").val()
+			'r' : $("#script_revision").val()
 			<@security.authorize ifAnyGranted="A, S">
 			<#if test??>,'ownerId' : '${test.createdUser.userId}'</#if> 
 			</@security.authorize>

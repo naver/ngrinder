@@ -23,7 +23,7 @@
 	<#include "common/navigator.ftl">
 	<div class="container">
 		<div class="hero-unit"/>	
-			<form class="form-inline" name="quickStart" id="quick_start" action="${req.getContextPath()}/perftest/quickStart" method="POST">
+			<form class="form-inline" name="quickStart" id="quick_start" action="${req.getContextPath()}/perftest/quickstart" method="POST">
 				<div class="quick-start" data-original-title="<@spring.message "home.tip.url.title"/>" data-content="<@spring.message "home.tip.url.content"/>" data-placement="bottom" rel="popover">
 					<input type="text" name="url" id="url" class="span6 url_ex required" placeholder="<@spring.message "home.placeholder.url"/>"/> 
 					<select class="select-item span2" id="scriptType" name="scriptType">

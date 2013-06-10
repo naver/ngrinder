@@ -277,7 +277,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            query string
 	 * @return found tag list in json
 	 */
-	@RequestMapping("/tagSearch")
+	@RequestMapping("/search_tag")
 	public HttpEntity<String> searchTag(User user, @RequestParam(required = false) String query) {
 		List<String> allStrings = tagService.getAllTagStrings(user, query);
 		if (StringUtils.isNotBlank(query)) {
@@ -314,7 +314,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            model
 	 * @return "perftest/detail"
 	 */
-	@RequestMapping("/quickStart")
+	@RequestMapping("/quickstart")
 	public String getQuickStart(User user, //
 					@RequestParam(value = "url", required = true) String urlString, // LF
 					@RequestParam(value = "scriptType", required = true) String scriptType, // LF

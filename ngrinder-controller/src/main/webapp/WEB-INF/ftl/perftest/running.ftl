@@ -192,21 +192,21 @@
 					if (curPeakTps < 10) {
 						preakTps = 10;
 					}
-					test_tps_data.enQueue(curTps);
+					testTpsData.enQueue(curTps);
 				} else { 
 					if ($('#running_section_tab:hidden')[0]) {
 						window.clearInterval(objTimer);
 						return;
 					} else {
-						test_tps_data.enQueue(0);
+						testTpsData.enQueue(0);
 					}
 				}
 		
-				if (test_tps_data.getSize() > (60 / samplingInterval)) {
-					test_tps_data.deQueue();
+				if (testTpsData.getSize() > (60 / samplingInterval)) {
+					testTpsData.deQueue();
 				}
 		
-				showChart('running_tps_chart', test_tps_data.aElement, peakTps, samplingInterval);
+				showChart('running_tps_chart', testTpsData.aElement, peakTps, samplingInterval);
 			}
 		);
 	}

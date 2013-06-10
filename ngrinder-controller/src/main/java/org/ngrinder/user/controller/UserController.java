@@ -13,7 +13,6 @@
  */
 package org.ngrinder.user.controller;
 
-import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.Preconditions.checkArgument;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -216,7 +215,7 @@ public class UserController extends NGrinderBaseController {
 	 * @return success json if true.
 	 */
 	@PreAuthorize("hasAnyRole('A')")
-	@RequestMapping("/{userId}/checkUserId")
+	@RequestMapping("/{userId}/duplication_check")
 	@ResponseBody
 	public String checkUserId(ModelMap model, @PathVariable String userId) {
 		User user = userService.getUserById(userId);

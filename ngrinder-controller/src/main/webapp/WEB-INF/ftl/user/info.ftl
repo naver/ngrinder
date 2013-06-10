@@ -148,7 +148,7 @@
 				if(userId != null && userId.length > 0){
 					var result ;
 					$.ajax({
-						  url: "${req.getContextPath()}/user/" + userId + "/checkUserId",
+						  url: "${req.getContextPath()}/user/" + userId + "/duplication_check",
 						  async: false,
 						  cache: false,
 						  type: "GET",
