@@ -1675,18 +1675,19 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return reportData.append("]").toString();
 	}
 
-	/**
-	 * Get test count based on given time region.
-	 * 
-	 * @param start
-	 *            start time.
-	 * @param end
-	 *            end time.
-	 * @return found {@link PerfTest} list
+	/* (non-Javadoc)
+	 * @see org.ngrinder.service.IPerfTestService#getPerfTest(java.util.Date, java.util.Date)
 	 */
 	@Override
-	public List<PerfTest> getPerfTestList(Date start, Date end) {
-		return perfTestRepository.findAllByGivenTimeRegion(start, end);
+	public List<PerfTest> getPerfTest(Date start, Date end) {
+		return perfTestRepository.findAllByCreatedTime(start, end);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.ngrinder.service.IPerfTestService#getPerfTest(java.util.Date, java.util.Date, java.lang.String)
+	 */
+	@Override
+	public List<PerfTest> getPerfTest(Date start, Date end, String region) {
+		return perfTestRepository.findAllByCreatedTimeAndRegion(start, end, region);
+	}
 }

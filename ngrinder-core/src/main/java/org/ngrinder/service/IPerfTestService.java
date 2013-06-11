@@ -28,7 +28,7 @@ import org.ngrinder.model.User;
  * @since 3.0
  */
 public interface IPerfTestService {
-	
+
 	/**
 	 * get test detail.
 	 * 
@@ -41,15 +41,30 @@ public interface IPerfTestService {
 	public abstract PerfTest getPerfTest(User user, Long id);
 
 	/**
-	 * Get test count based on given time region.
+	 * Get {@link PerfTest} list created within the given time frame.
 	 * 
 	 * @param start
 	 *            start time.
 	 * @param end
-	 *            end  time.
-	 * @return perftestList test list started between given times
+	 *            end time.
+	 * 
+	 * @return found {@link PerfTest} list
 	 */
-	public abstract List<PerfTest> getPerfTestList(Date start, Date end);
+	public abstract List<PerfTest> getPerfTest(Date start, Date end);
+
+	/**
+	 * Get {@link PerfTest} list created within the given time frame and region name.
+	 * 
+	 * @param start
+	 *            start time.
+	 * @param end
+	 *            end time.
+	 * @param region
+	 *            region
+	 * 
+	 * @return found {@link PerfTest} list
+	 */
+	public abstract List<PerfTest> getPerfTest(Date start, Date end, String region);
 
 	/**
 	 * Get {@link PerfTest} list of some IDs.

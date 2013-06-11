@@ -78,7 +78,9 @@ public class PeriodicCollectDataToGAService {
 	}
 
 	protected int getUsage(Date start, Date end) {
-		List<PerfTest> list = perfTestService.getPerfTestList(start, end);
+		List<PerfTest> list = config.isCluster() ? //
+		perfTestService.getPerfTest(start, end, config.getRegion())
+						: perfTestService.getPerfTest(start, end);
 		return list.size();
 	}
 

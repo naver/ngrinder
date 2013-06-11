@@ -149,9 +149,23 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	 *            time
 	 * @param end
 	 *            time
+	 * @param region 
+	 * 			  region
+	 * @return {@link PerfTest} list
+	 */
+	@Query("select p from PerfTest  p where p.startTime between ?1 and ?2 and region=?3")
+	List<PerfTest> findAllByCreatedTimeAndRegion(Date start, Date end, String region);
+	
+	/**
+	 * Find all {@link PerfTest} based on given start and end times.
+	 * 
+	 * @param start
+	 *            time
+	 * @param end
+	 *            time
 	 * 
 	 * @return {@link PerfTest} list
 	 */
 	@Query("select p from PerfTest  p where p.startTime between ?1 and ?2")
-	List<PerfTest> findAllByGivenTimeRegion(Date start, Date end);
+	List<PerfTest> findAllByCreatedTime(Date start, Date end);
 }
