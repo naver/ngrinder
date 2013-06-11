@@ -39,6 +39,10 @@
 		vertical-align: middle;
 	}
 	
+	.datepicker {
+		z-index:1151;
+	}
+	
 	div.chart {
 		border: 1px solid #878988;
 		margin-bottom: 12px;
@@ -333,7 +337,7 @@
 			</div>
 		</div>
 		<div class="modal-footer">
-			<a class="btn btn-primary" id="run_now_btn"><@spring.message "perfTest.testRunning.runNow"/></a> <a class="btn btn-primary" id="addScheduleBtn"><@spring.message "perfTest.testRunning.schedule"/></a>
+			<a class="btn btn-primary" id="run_now_btn"><@spring.message "perfTest.testRunning.runNow"/></a> <a class="btn btn-primary" id="add_schedule_btn"><@spring.message "perfTest.testRunning.schedule"/></a>
 		</div>
 	</div>
 
@@ -503,7 +507,7 @@ function initDuration() {
 	}
 	
 	var durationVal = $("#duration").val();
-	$("#hidden_duration_input").attr("data-slider", "#durationSlider");
+	$("#hidden_duration_input").attr("data-slider", "#duration_slider");
 	$("#hidden_duration_input").slider({min:1, max:sliderMax});
 	for ( var i = 0; i <= sliderMax; i++) {
 		if (durationMap[i] * 60000 == durationVal) {
@@ -514,14 +518,14 @@ function initDuration() {
 	
 	var durationHour = parseInt(durationVal / 3600000) + 1;
 	var durationMaxHour = durationHour > ${maxRunHour} ? durationHour : ${maxRunHour};
-	$("#duration_hour").append(getOption(durationMaxHour));
-	$("#duration_hour").change(getDurationMS);
+	$("#select_hour").append(getOption(durationMaxHour));
+	$("#select_hour").change(getDurationMS);
 	
-	$("#duration_min").append(getOption(60));
-	$("#duration_min").change(getDurationMS);
+	$("#select_min").append(getOption(60));
+	$("#select_min").change(getDurationMS);
 	
-	$("#duration_sec").append(getOption(60));
-	$("#duration_sec").change(getDurationMS);
+	$("#select_sec").append(getOption(60));
+	$("#select_sec").change(getDurationMS);
 	
 	setDuration();
 	setDurationHour(durationVal);
@@ -531,75 +535,75 @@ var validationOptions = {};
 function addValidation() {
 	validationOptions = {
 		rules: {
-			test_name: {
+			testName: { 
 			 	required: true
 			},
-			agent_count: {
+			agentCount: {
 				required: true,
 				digits: true,
 				min: 0
 			},
-			vuser_per_agent: {
+			vuserPerAgent: {
 				required: true,
 				digits: true,
 				range: [1, ${(maxVuserPerAgent)}]
 			},
-			script_name: {
+			scriptName: {
 	        	required: true
 	        },
-			duration_hour: {
+			durationHour: {
 				max: ${maxRunHour}
 			},
-			ignore_sample_count: {
+			ignoreSampleCount: {
 				required: false,
 				digits: true,
 				min: 0
 			},
 			<#if securityMode?? && securityMode == true>
-			target_hosts: {
+			targetHosts: {
 				required: true
 			},
 			</#if>
-			init_processes: {
+			initProcesses: {
 				required: true,
 				digits: true
 			},
-			init_sleep_time: {
+			initSleepTime: {
 				required: true,
 				digits: true
 			},
-			process_increment: {
+			processIncrement: {
 				required: true,
 				digits: true,
 				min: 1
 			},
-			process_increment_interval: {
+			processIncrementInterval: {
 				required: true,
 				digits: true,
 				min: 1
 			},				
-			run_count: {
+			runCount: {
 				digits: true,
 				max: ${maxRunCount}
 			}
 		},
 	    messages: { 
-	        test_name: {
+	        testName: {
 	        	required: "<@spring.message "perfTest.warning.testName"/>"
 	        },
-	        agent_count: {
+	        agentCount: {
 	        	required: "<@spring.message "perfTest.warning.agentNumber"/>"
 	        },
-	        vuser_per_agent: {
+	        vuserPerAgent: {
 	        	required: "<@spring.message "perfTest.warning.vuserPerAgent"/>"
 	        },
-	        script_name: {
+	        scriptName: {
 	        	required: "<@spring.message "perfTest.warning.script"/>"
 	        },
-	        duration_hour: {
+	        durationHour: {
 	        	max: "<@spring.message "perfTest.warning.duration.maxHour"/>"
 	        },
-	        run_count: {
+	        runCount: {
 	        	required: "<@spring.message "perfTest.warning.runCount"/>"
 	        },
 	        processes: {
@@ -608,7 +612,7 @@ function addValidation() {
 	        threads: {
 	        	required: "<@spring.message "perfTest.warning.threads"/>"
 	        },
-	        target_hosts: {
+	        targetHosts: {
 	        	required: "<@spring.message "perfTest.warning.hostString"/>"
 	        }
 	    },
@@ -749,13 +753,13 @@ function bindEvent() {
 		document.test_config_form.submit();
 	});
 
-	$("#addScheduleBtn").click(function() {
+	$("#add_schedule_btn").click(function() {
 		if (checkEmptyByID("scheduled_date")) {
 			$("#schedule_modal small").html("<@spring.message "perfTest.detail.message.setScheduleDate"/>");
 			return;
 		}
 	
-		var timeStr = $("#scheduled_date").val() + " " + $("#schduled_hour").val() + ":" + $("#scheduled_min").val() + ":0";
+		var timeStr = $("#scheduled_date").val() + " " + $("#scheduled_hour").val() + ":" + $("#scheduled_min").val() + ":0";
 		var scheduledTime = new Date(timeStr.replace(/-/g, "/"));
 		if (new Date() > scheduledTime) {
 			$("#schedule_modal small").html("<@spring.message "perfTest.detail.message.errScheduleDate"/>");
@@ -845,7 +849,7 @@ function bindEvent() {
 		});
 	});
 	
-	$('#tableTab a').click(function(e) {
+	$('#sample_tab a').click(function(e) {
 		e.preventDefault();
 		$(this).tab('show');
 	});
@@ -870,7 +874,7 @@ function bindEvent() {
 		$("#process_thread_config_panel").toggle();
 	});
 	
-	$("#duration_hour, #duration_min, #duration_sec").change(function() {
+	$("#select_hour, #select_min, #select_sec").change(function() {
 		$("#duration_ratio").click();
 	});
 	
@@ -1053,15 +1057,15 @@ function setDuration() {
 	var durationM = parseInt((durationInSec % 3600) / 60);
 	var durationS = durationInSec % 60;
 
-	$("#duration_hour").val(durationH);
-	$("#duration_min").val(durationM);
-	$("#duration_sec").val(durationS);
+	$("#select_hour").val(durationH);
+	$("#select_min").val(durationM);
+	$("#select_sec").val(durationS);
 }
 
 function getDurationMS() {
-	var durationH = parseInt($("#duration_hour").val());
-	var durationM = parseInt($("#duration_min").val());
-	var durationS = parseInt($("#duration_sec").val());
+	var durationH = parseInt($("#select_hour").val());
+	var durationM = parseInt($("#select_min").val());
+	var durationS = parseInt($("#select_sec").val());
 	var durationMs = (durationS + durationM * 60 + durationH * 3600) * 1000;
 	var $durationObj = $("#duration");
 	$durationObj.val(durationMs);
@@ -1155,7 +1159,7 @@ function displayCfgAndTestReport() {
 
 function initScheduleTime() {
 	var date = new Date();
-	$("#schduled_hour").val(date.getHours());
+	$("#scheduled_hour").val(date.getHours());
 	$("#scheduled_min").val(date.getMinutes());
 }
 

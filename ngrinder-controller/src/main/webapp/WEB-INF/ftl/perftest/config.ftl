@@ -81,7 +81,7 @@
 							</td>
 							<td>
 								<div class="pull-right">
-									<span class="badge badge-info pull-right">
+									<span class="badge badge-info pull-right" style="padding:10px 20px 10px 20px;-webkit-border-radius:20px;border-radius:20px;-moz-border-radius:20px">
 										<span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span id="total_vuser"></span>
 									</span>
 								</div>
@@ -175,13 +175,13 @@
 					<@spring.message "perfTest.configuration.duration"/>
 				</label>
 				<div class="controls docs-input-sizes">
-					<select class="select-item" id="duration_hour"></select> : 
-					<select class="select-item" id="duration_min"></select> : 
-					<select	class="select-item" id="duration_sec"></select> &nbsp;&nbsp;
+					<select class="select-item" id="select_hour"></select> : 
+					<select class="select-item" id="select_min"></select> : 
+					<select	class="select-item" id="select_sec"></select> &nbsp;&nbsp;
 					<code>HH:MM:SS</code>
 					<input type="hidden" id="duration" name="duration" value="${(test.duration)!60000}"/>
 					<input type="hidden" id="duration_hour" name="durationHour" value="0"/>
-					<div id="durationSlider" class="slider" style="margin-left: 0; width: 255px"></div>
+					<div id="duration_slider" class="slider" style="margin-left: 0; width: 255px"></div>
 					<input id="hidden_duration_input" class="hide" data-step="1"/>
 				</div>
 			</div>
@@ -236,12 +236,13 @@
 									</label>
 									<div class="controls">
 										<input type="text" class="input input-mini" 
+											id="ignore_sample_count" name="ignoreSampleCount" 
 											rel='popover'
 											title='<@spring.message "perfTest.configuration.ignoreSampleCount"/>' 
 											data-html='true'
 											data-content='<@spring.message "perfTest.configuration.ignoreSampleCount.help"/>' 
 											data-placement='top'
-											id="ignore_sample_count" name="ignoreSampleCount" value="${(test.ignoreSampleCount)!0}">
+											value="${(test.ignoreSampleCount)!0}">
 									</div>
 								</td>
 							</tr>

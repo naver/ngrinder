@@ -180,7 +180,7 @@
 		
 	    $("#user_form").validate({
 	    	rules: {
-	    		user_id: {
+	    		userId: {
 	    			required: true,
 	    			<#if !(user?has_content)>
 	    			userIdFmt: true,
@@ -188,12 +188,12 @@
 	    			</#if>
 	    			maxlength: 20
 	    		},
-	    		user_name: {
+	    		userName: {
 	    			required: true,
 	    			maxlength: 20
 	    		},
 	    		<#if userSecurity?? && userSecurity==true>
-	    		mobile_phone: {
+	    		mobilePhone: {
 	    			userPhoneNumber: true
 	    		},
 	    		email: {
@@ -207,7 +207,7 @@
 	    			</#if>
 	    			rangelength: [6,15]
 	    		},
-	    		confirm_password: {
+	    		cpwd: {
 	    			<#if !(user?has_content)>
 	    			required: true,
 	    			</#if>
@@ -218,7 +218,7 @@
 	        	user_id: {
 	        		required: "<@spring.message "user.info.warning.userId.required"/>"
 	        	},
-	        	user_name: {
+	        	userName: {
 	            	required: "<@spring.message "user.info.warning.userName"/>"
 	            },
 	            email: {
@@ -228,7 +228,7 @@
 	            password: {
 	                required:"<@spring.message "user.info.warning.pwd.required"/>"
 	            },
-	            confirm_password: {
+	            cpwd: {
 	                required:"<@spring.message "user.info.warning.cpwd.required"/>",
 	                equalTo:"<@spring.message "user.info.warning.cpwd.equalTo"/>"
 	            }
