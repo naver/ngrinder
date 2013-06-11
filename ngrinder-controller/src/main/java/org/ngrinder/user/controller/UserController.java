@@ -77,6 +77,8 @@ public class UserController extends NGrinderBaseController {
 	 *            model
 	 * @param roleName
 	 *            role
+	 * @param pageable
+	 *            page info
 	 * @param keywords
 	 *            search keyword.
 	 * @return user/userList
@@ -277,8 +279,8 @@ public class UserController extends NGrinderBaseController {
 	 *            current user
 	 * @param model
 	 *            model
-	 * @param switchUser
-	 *            the user who will switch
+	 * @param to
+	 *            the user to whom a user will switch
 	 * @param request
 	 *            request
 	 * @param response

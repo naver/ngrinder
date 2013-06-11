@@ -66,6 +66,9 @@ public class MonitorInfoStore {
 		}
 	}
 
+	/**
+	 * Delete unused monitor clients periodically.
+	 */
 	@Scheduled(fixedDelay = 30000)
 	public void deleteUnusedMonitorClient() {
 		for (Entry<String, MonitorClientSerivce> each : monitorInfoMap.entrySet()) {

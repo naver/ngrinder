@@ -116,6 +116,15 @@ public class UserService implements IUserService {
 		}
 	}
 
+	/**
+	 * Get all user by the given role.
+	 * 
+	 * @param roleName
+	 *            role name
+	 * @param pageable
+	 *            pageable
+	 * @return page of user
+	 */
 	public Page<User> getAllUserByRole(String roleName, Pageable pageable) {
 		if (StringUtils.isBlank(roleName)) {
 			return userRepository.findAll(pageable);
@@ -312,8 +321,17 @@ public class UserService implements IUserService {
 		return userRepository.findAll(UserSpecification.nameLike(name));
 	}
 
-	public Page<User> getUserListByKeyWord(String name, Pageable pageable) {
-		return userRepository.findAll(UserSpecification.nameLike(name), pageable);
+	/**
+	 * Get user page by the given keyword.
+	 * 
+	 * @param namelike
+	 *            keyword to be like search.
+	 * @param pageable
+	 *            page
+	 * @return user page
+	 */
+	public Page<User> getUserListByKeyWord(String namelike, Pageable pageable) {
+		return userRepository.findAll(UserSpecification.nameLike(namelike), pageable);
 	}
 
 }

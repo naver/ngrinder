@@ -131,6 +131,9 @@ public class PerfTestController extends NGrinderBaseController {
 
 	private Gson fileEntryGson;
 
+	/**
+	 * Initialize.
+	 */
 	@PostConstruct
 	public void init() {
 		GsonBuilder gsonBuilder = new GsonBuilder();
@@ -244,13 +247,15 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get the all available script list in json format for the given user's factual user.
+	 * Get the all available script list in JSON format for the given user's factual user.
 	 * 
 	 * @param user
 	 *            user
+	 * @param ownerId
+	 *            owner id
 	 * @param model
 	 *            model
-	 * @return json containing script's list.
+	 * @return JSON containing script's list.
 	 */
 	@RequestMapping("/script")
 	public HttpEntity<String> getScripts(User user, @RequestParam(value = "ownerId", required = false) String ownerId,
@@ -698,7 +703,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            response
 	 */
 	@RequestMapping(value = "{id}/show_log/**")
-	public void showLog(User user, @PathVariable("id") long id, @RemainedPath String path, HttpServletResponse response) {
+	public void showLog(User user, @PathVariable("id") long id, //
+					@RemainedPath String path, HttpServletResponse response) {
 		getPerfTestWithPermissionCheck(user, id, false);
 		File targetFile = perfTestService.getLogFile(id, path);
 		response.reset();

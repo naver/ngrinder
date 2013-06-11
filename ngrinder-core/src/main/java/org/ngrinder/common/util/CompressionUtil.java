@@ -354,6 +354,7 @@ public abstract class CompressionUtil {
 	 * @return The {@link List} of {@link File}s with the untared content.
 	 * @throws ArchiveException
 	 */
+	@SuppressWarnings("resource")
 	public static List<File> untar(final File inFile, final File outputDir) {
 		final List<File> untaredFiles = new LinkedList<File>();
 		InputStream is = null;

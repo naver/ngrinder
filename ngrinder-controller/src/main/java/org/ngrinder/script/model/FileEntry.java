@@ -233,6 +233,12 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 		this.properties = properties;
 	}
 
+	/**
+	 * FileEntry to JSON serializer.
+	 * 
+	 * @author JunHo Yoon
+	 * @since 3.2.1
+	 */
 	public static class FileEntrySerializer implements JsonSerializer<FileEntry> {
 		@Override
 		public JsonElement serialize(FileEntry fileEntry, Type typeOfSrc, JsonSerializationContext context) {

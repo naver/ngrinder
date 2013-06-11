@@ -303,6 +303,7 @@ public class PropertyBuilder {
 						.append(properties.getProperty(GrinderProperties.CONSOLE_HOST, "127.0.0.1")).append(" ");
 	}
 
+	@SuppressWarnings("restriction")
 	private StringBuilder addDNSIP(StringBuilder jvmArguments) {
 		List<?> nameservers = sun.net.dns.ResolverConfiguration.open().nameservers();
 		return jvmArguments.append(" -Dngrinder.dns.ip=").append(StringUtils.join(nameservers, ",")).append(" ");
