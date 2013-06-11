@@ -180,13 +180,7 @@ public class PropertyBuilder {
 		long permGen = 32 * 1024 * 1024;
 		try {
 			// Make a free memory room size of reservedMemory.
-			long free = new Sigar().getMem().getFree() - reservedMemory;
-
-			// If there are not much free memory... 
-			if (free <= MIN_FREE_MEM_SIZE) {
-				free = new Sigar().getMem().getActualFree() - reservedMemory;
-			}
-			
+			long free = new Sigar().getMem().getActualFree() - reservedMemory;			
 			long perProcessTotalMemory = Math.max(free / processCount, MIN_PER_PROCESS_MEM_SIZE);
 			desirableXmx = (long) (perProcessTotalMemory * 0.5);
 			permGen = Math.min((long) (perProcessTotalMemory * 0.2), 128 * 1024 * 1024);
