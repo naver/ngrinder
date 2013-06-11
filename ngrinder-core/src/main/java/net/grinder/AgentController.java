@@ -18,6 +18,7 @@ import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -263,6 +264,7 @@ public class AgentController implements Agent {
 				return (name.endsWith(".log"));
 			}
 		});
+		Arrays.sort(logFiles);
 		if (ArrayUtils.isEmpty(logFiles)) {
 			LOGGER.error("No log exists under {}", logFolder.getAbsolutePath());
 			return;
