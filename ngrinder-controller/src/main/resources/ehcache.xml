@@ -8,7 +8,7 @@
 	<cache name="agents" maxElementsInMemory="100" eternal="false" overflowToDisk="false" timeToIdleSeconds="9000"
 		timeToLiveSeconds="1800" />
 	<cache name="file_entry_search_cache" maxElementsInMemory="100" eternal="false" overflowToDisk="false"
-		timeToIdleSeconds="120" timeToLiveSeconds="120" />
+		timeToIdleSeconds="1200" timeToLiveSeconds="1200" />
 	<cache name="right_panel_entries" maxElementsInMemory="2" eternal="false" overflowToDisk="false"
 		timeToIdleSeconds="100000" timeToLiveSeconds="100000" />
 	<cache name="left_panel_entries" maxElementsInMemory="2" eternal="false" overflowToDisk="false"
