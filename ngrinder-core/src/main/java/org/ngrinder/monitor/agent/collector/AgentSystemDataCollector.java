@@ -106,7 +106,7 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 			systemInfo.setIdleCpuValue(cpu.getIdle());
 			Mem mem = sigar.getMem();
 			systemInfo.setTotalMemory(mem.getTotal() / 1024L);
-			systemInfo.setFreeMemory(mem.getFree() / 1024L);
+			systemInfo.setFreeMemory(mem.getActualFree() / 1024L);
 			systemInfo.setSystem(OperatingSystem.IS_WIN32 ? SystemInfo.System.WINDOW : SystemInfo.System.LINUX);
 			systemInfo.setCustomValues(getCustomMonitorData());
 		} catch (Throwable e) {
