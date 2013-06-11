@@ -2,13 +2,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <meta http-equiv="Cache-Control" content="no-cache"/>
 <link rel="shortcut icon" type="image/png" href="${req.getContextPath()}/img/favicon.png" /> 
-<link href="${req.getContextPath()}/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="${req.getContextPath()}/css/bootstrap.min.css?${nGrinderVersion}" rel="stylesheet"/>
 <link href="${req.getContextPath()}/css/ngrinder.css?${nGrinderVersion}" rel="stylesheet"/>
-<script type="text/javascript" src="${req.getContextPath()}/js/jquery-1.7.2.min.js"></script> 
+<script type="text/javascript" src="${req.getContextPath()}/js/jquery-1.7.2.min.js?${nGrinderVersion}"></script> 
 <script type="text/javascript" src="${req.getContextPath()}/js/bootstrap.js?${nGrinderVersion}"></script>
-<script type="text/javascript" src="${req.getContextPath()}/js/bootbox.min.js"></script>
+<script type="text/javascript" src="${req.getContextPath()}/js/bootbox.min.js?${nGrinderVersion}"></script>
 <script type="text/javascript" src="${req.getContextPath()}/js/utils.js?${nGrinderVersion}"></script>
-<script type="text/javascript" src="${req.getContextPath()}/js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="${req.getContextPath()}/js/jquery.validate.min.js?${nGrinderVersion}"></script>
 <#include "select2.ftl"/>
 
 <#import "spring.ftl" as spring/>

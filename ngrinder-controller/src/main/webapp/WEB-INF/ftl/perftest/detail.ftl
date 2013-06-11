@@ -214,7 +214,9 @@
 												rel='popover'
 												data-html='true'
 												data-content='${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}'  
-												title="<@spring.message "${test.status.springMessageKey}"/>"/>
+												title="<@spring.message "${test.status.springMessageKey}"/>"
+												data-placement='bottom'
+												/>
 											</#if>
 										</td>
 										<td>
