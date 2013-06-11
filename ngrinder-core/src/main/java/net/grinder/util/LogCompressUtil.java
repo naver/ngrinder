@@ -171,13 +171,16 @@ public abstract class LogCompressUtil {
 			int count = 0;
 			long total = 0;
 			checkNotNull(zipInputStream.getNextEntry(), "In zip, it should have at least one entry");
-			while ((count = zipInputStream.read(buffer, 0, COMPRESS_BUFFER_SIZE)) != -1) {
-				total += count;
-				if (total >= limit) {
-					break;
+			do {
+				while ((count = zipInputStream.read(buffer, 0, COMPRESS_BUFFER_SIZE)) != -1) {
+					total += count;
+					if (total >= limit) {
+						break;
+					}
+					outputStream.write(buffer, 0, count);
 				}
-				outputStream.write(buffer, 0, count);
-			}
+				outputStream.write("----------------------------------------------------------------------------------------------------------------------------------\n".getBytes()); 
+			} while (zipInputStream.getNextEntry() != null);
 			outputStream.flush();
 		} catch (IOException e) {
 			LOGGER.error("Error occurs while decompressing {}", e.getMessage());
