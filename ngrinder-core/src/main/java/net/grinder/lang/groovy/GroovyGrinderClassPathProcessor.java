@@ -42,6 +42,7 @@ public class GroovyGrinderClassPathProcessor extends AbstractGrinderClassPathPro
 		usefulJarList.add("junit");
 		usefulJarList.add("commons-io");
 		usefulJarList.add("commons-lang");
+		getUselessJarList().remove("ngrinder-groovy");
 	}
 
 }

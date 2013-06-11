@@ -165,6 +165,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 		uselessJarList.add("jython-2.2");
 		uselessJarList.add("ngrinder-core");
 		uselessJarList.add("ngrinder-controller");
+		uselessJarList.add("ngrinder-groovy");
 		uselessJarList.add("spring");
 	}
 
