@@ -164,7 +164,6 @@ public class PropertyBuilder {
 	protected static final long MIN_PER_PROCESS_MEM_SIZE = 50 * 1024 * 1024;
 	protected static final long DEFAULT_XMX_SIZE = 500 * 1024 * 1024;
 	protected static final long DEFAULT_MAX_XMX_SIZE = 1024 * 1024 * 1024;
-	
 
 	protected StringBuilder addMemorySettings(StringBuilder jvmArguments) {
 		String processCountStr = properties.getProperty("grinder.processes", "1");
@@ -180,9 +179,9 @@ public class PropertyBuilder {
 		long permGen = 32 * 1024 * 1024;
 		try {
 			// Make a free memory room size of reservedMemory.
-			long free = new Sigar().getMem().getActualFree() - reservedMemory;			
+			long free = new Sigar().getMem().getActualFree() - reservedMemory;
 			long perProcessTotalMemory = Math.max(free / processCount, MIN_PER_PROCESS_MEM_SIZE);
-			desirableXmx = (long) (perProcessTotalMemory * 0.5);
+			desirableXmx = (long) (perProcessTotalMemory * 0.6);
 			permGen = Math.min((long) (perProcessTotalMemory * 0.2), 128 * 1024 * 1024);
 			if (this.useXmxLimit) {
 				desirableXmx = Math.min(DEFAULT_MAX_XMX_SIZE, desirableXmx);
