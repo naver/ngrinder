@@ -22,7 +22,6 @@ import java.io.IOException;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
 import net.grinder.script.Grinder;
-import net.grinder.script.Statistics;
 import net.grinder.script.Statistics.StatisticsForTest;
 import net.grinder.scriptengine.ScriptEngineService;
 import net.grinder.scriptengine.ScriptEngineService.ScriptEngine;
