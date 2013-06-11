@@ -384,6 +384,9 @@
 				if(!(perTestStatus == "FINISHED" || perTestStatus == "STOP_BY_ERROR"|| perTestStatus == "STOP_ON_ERROR" || perTestStatus == "CANCELED"))
 					return this.value;
 		  	}).get();
+		  	if (ids.length == 0) {
+		  		return;
+		  	}
 		    $.ajax({
 			    url: '${req.getContextPath()}/perftest/update_status', 
 			    type: 'POST',

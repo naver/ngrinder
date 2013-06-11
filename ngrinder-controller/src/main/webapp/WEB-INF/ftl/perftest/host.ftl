@@ -14,7 +14,7 @@
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
 		<h4>
-			<@spring.message "perfTest.configuration.addHost"/>
+			<@spring.message "perfTest.configuration.addHost"/>&nbsp;
 			<small><@spring.message	"perfTest.configuration.pleaseInputOneOptionAtLeast"/></small>
 		</h4>
 	</div>
@@ -22,17 +22,17 @@
 		<div class="form-horizontal">
 			<fieldset>
 				<div class="control-group">
-					<label for="domainInput" style="text-align: right;" class="control-label">
+					<label for="domain_input" style="text-align: right;" class="control-label">
 						<@spring.message "perfTest.configuration.domain"/>
 					</label>
 					<div class="controls">
-						<input type="text" id="domainInput"> <span class="help-inline"></span>
+						<input type="text" id="domain_input"> <span class="help-inline"></span>
 					</div>
 				</div>
 				<div class="control-group">
-					<label for="ipInput" style="text-align: right;" class="control-label">IP</label>
+					<label for="ip_input" style="text-align: right;" class="control-label">IP</label>
 					<div class="controls">
-						<input type="text" id="ipInput"> <span class="help-inline"></span>
+						<input type="text" id="ip_input"> <span class="help-inline"></span>
 					</div>
 				</div>
 			</fieldset>
@@ -55,22 +55,22 @@
 	function validateHost(arr) {
 		var success;
 
-		var $domain = $("#domainInput");
+		var $domain = $("#domain_input");
 		if (!checkEmptyByObj($domain)) {
 			var rule = "^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,3}$";
 			var str = $domain.val();
 			success = checkStringFormat(str, rule);
-			markInput($domain, success, "<@spring.message "perfTest.configuration.addHost.inputTargetDomain"/>");
+			markInput($domain, success, '<@spring.message "perfTest.configuration.addHost.inputTargetDomain"/>');
 			if (!success) {
 				return false;
 			}
 			arr.push(str);
 		}
 
-		var $ip = $("#ipInput");
+		var $ip = $("#ip_input");
 		if (!checkEmptyByObj($ip)) {
 			success = isIPByObj($ip);
-			markInput($ip, success, "<@spring.message "perfTest.configuration.addHost.inputTargetIp"/>");
+			markInput($ip, success, '<@spring.message "perfTest.configuration.addHost.inputTargetIp"/>');
 			if (!success) {
 				return false;
 			}

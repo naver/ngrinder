@@ -959,12 +959,20 @@ function updateScript() {
 		success : function(res) {
 			$scriptSelection = $("#script_name");
 			var selectedScript = $scriptSelection.attr("old_script");
+			var exists = false;
 			for (var i = 0; i < res.length; i++) {
-				$newOption = $("<option value='" + res[i].path + "' revision='" + res[i].revision + "' validated='" + res[i].validated + "'>" + res[i].pathInShort + "</option>")
-				$scriptSelection.append($newOption);	
+				if (selectedScript == res[i].path) {
+					exists = true;
+				}
+				$scriptSelection.append($("<option value='" + res[i].path + "' revision='" + res[i].revision + "' validated='" + res[i].validated + "'>" + res[i].pathInShort + "</option>"));	
 			}
-			$scriptSelection.select2("val", selectedScript);
-			
+			if (exists) {
+				$scriptSelection.select2("val", selectedScript);
+			} else { 
+				$scriptSelection.append($("<option value='' revision='-1' validated='false'>(deleted)" + selectedScript +"</option>"));
+				$scriptSelection.select2("val", ""); 
+			}
+
 			bindNewScript($scriptSelection, true);
 		},
 		error : function() {
