@@ -40,7 +40,6 @@ public abstract class ConsolePropertiesFactory {
 		try {
 			tmpFile = File.createTempFile("ngrinder", "tmp");
 			ConsoleProperties consoleProperties = new ConsoleProperties(SingleConsole.RESOURCE, tmpFile);
-
 			return consoleProperties;
 		} catch (Exception e) {
 			String message = "Exception occurs while creating empty console property";
