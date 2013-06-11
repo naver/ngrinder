@@ -179,7 +179,8 @@ public abstract class LogCompressUtil {
 					}
 					outputStream.write(buffer, 0, count);
 				}
-				outputStream.write("----------------------------------------------------------------------------------------------------------------------------------\n".getBytes()); 
+				outputStream.write(("------------------------------------------------"
+								+ "---------------------------------------------\n").getBytes());
 			} while (zipInputStream.getNextEntry() != null);
 			outputStream.flush();
 		} catch (IOException e) {
