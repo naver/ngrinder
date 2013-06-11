@@ -1137,7 +1137,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		Map<String, Object> totalStatistics = MapUtils.getMap(result, "totalStatistics", MapUtils.EMPTY_MAP);
 		long tests = MapUtils.getDouble(totalStatistics, "Tests", 0D).longValue();
 		long errors = MapUtils.getDouble(totalStatistics, "Errors", 0D).longValue();
-		return ((((double) errors) / (tests + errors)) > 0.2d);
+		return ((((double) errors) / (tests + errors)) > 0.3d);
 	}
 
 	/**
