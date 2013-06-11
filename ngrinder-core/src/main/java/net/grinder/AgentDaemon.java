@@ -120,7 +120,7 @@ public class AgentDaemon implements Agent {
 		if (consolePort > 0) {
 			getGrinderProperties().setInt(GrinderProperties.CONSOLE_PORT, consolePort);
 		}
-		
+
 		thread = new Thread(new AgentThreadRunnable(), "Agent conntected to port : "
 						+ getGrinderProperties().getInt(GrinderProperties.CONSOLE_PORT, 0));
 		thread.setDaemon(true);
@@ -135,7 +135,7 @@ public class AgentDaemon implements Agent {
 	class AgentThreadRunnable implements Runnable {
 		public void run() {
 			try {
-				setAgent(new AgentImplementationEx(m_agentConfig)).run(getGrinderProperties());
+				setAgent(new AgentImplementationEx(LOGGER, m_agentConfig)).run(getGrinderProperties());
 			} catch (Exception e) {
 				LOGGER.error("while running agent thread, error occurs", e);
 			}

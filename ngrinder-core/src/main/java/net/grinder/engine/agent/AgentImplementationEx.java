@@ -48,6 +48,7 @@ import net.grinder.util.Directory;
 import net.grinder.util.NetworkUtil;
 import net.grinder.util.thread.Condition;
 
+import org.apache.commons.io.FileUtils;
 import org.ngrinder.common.util.NoOp;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
@@ -109,16 +110,6 @@ public class AgentImplementationEx implements Agent {
 	 */
 	public AgentImplementationEx(Logger logger, AgentConfig agentConfig) {
 		this(logger, agentConfig, false);
-	}
-
-	/**
-	 * Constructor with connection to console.
-	 * 
-	 * @param agentConfig
-	 *            agent configuration
-	 */
-	public AgentImplementationEx(AgentConfig agentConfig) {
-		this(null, agentConfig, false);
 	}
 
 	/**
@@ -244,6 +235,9 @@ public class AgentImplementationEx implements Agent {
 						properties.setFile(GrinderProperties.LOG_DIRECTORY, new File(m_agentConfig.getHome()
 										.getLogDirectory(), properties.getProperty(GRINDER_PROP_TEST_ID, "default")));
 					}
+					File logFile = new File(properties.getFile(GrinderProperties.LOG_DIRECTORY, new File(".")),
+									m_agentIdentity.getName() + "-" + m_agentIdentity.getNumber() + ".log");
+					m_logger.info("log file : {}" , logFile);
 					AbstractLanguageHandler handler = Lang.getByFileName(script.getFile()).getHandler();
 					final WorkerFactory workerFactory;
 					String jvmArguments = buildTestRunProperties(script, handler, properties);
@@ -255,7 +249,7 @@ public class AgentImplementationEx implements Agent {
 										script.getDirectory());
 
 						m_logger.info("Worker process command line: {}", workerCommandLine);
-
+						FileUtils.writeStringToFile(logFile, workerCommandLine.toString() + "\n\n");
 						workerFactory = new ProcessWorkerFactory(workerCommandLine, m_agentIdentity,
 										m_fanOutStreamSender, consoleCommunication != null, script, properties);
 					} else {
@@ -414,13 +408,13 @@ public class AgentImplementationEx implements Agent {
 	 */
 	private Properties filterSystemClassPath(Properties properties, AbstractLanguageHandler handler, Logger logger) {
 		String property = properties.getProperty("java.class.path", "");
-		logger.debug("Total system class lath in total is " + property);
+		logger.debug("Total system class path in total is " + property);
 
 		String newClassPath = handler.getClassPathProcesssor().filterClassPath(property, logger);
 		Properties returnProperties = new Properties(properties);
 		returnProperties.setProperty("java.class.path", newClassPath);
-		logger.debug("Filtered system class path is " + newClassPath);
-		return properties;
+		logger.debug("Filtered system class path is {}", newClassPath);
+		return returnProperties;
 	}
 
 	public static final String GRINDER_PROP_TEST_ID = "grinder.test.id";
@@ -481,7 +475,6 @@ public class AgentImplementationEx implements Agent {
 				// Really an assertion. Can't use logger because its not
 				// thread-safe.
 				System.err.println("Failed to start processes");
-				e.printStackTrace();
 			}
 		}
 	}
