@@ -22,8 +22,7 @@
 		</fieldSet>
 		<form id="user_list_form" action="${req.getContextPath()}/user" method="POST">
 			<div class="well form-inline search-bar">			 
-				<input type="text" class="search-query search-query-without-radios" placeholder="Keywords" id="searchText" name="keywords"
-					value="${keywords!}">
+				<input type="text" class="search-query search-query-without-radios" placeholder="Keywords" id="search_text" name="keywords" value="${keywords!}">
 				<a class="btn" id="search_user">
 					<i class="icon-search"></i> <@spring.message "common.button.search"/>
 				</a>
@@ -154,23 +153,23 @@
 		function deleteCheckedUsers() {
 			var list = $("input[id='user_info_check']:checked");
 			if(list.length == 0) {
-				bootbox.alert("<@spring.message "user.list.alert.delete"/>", "<@spring.message "common.button.ok"/>");
+				bootbox.alert('<@spring.message "user.list.alert.delete"/>', '<@spring.message "common.button.ok"/>');
 				return;
 			}
-			var checkedUserNm = [];
+			var checkedUserName = [];
 			var checkedUserId = [];
 			var $elem;
 			list.each(function() {
 				$elem = $(this);
-				checkedUserNm.push($elem.attr("uname"));
+				checkedUserName.push($elem.attr("uname"));
 				checkedUserId.push($elem.val());
 			});
 			
-			deleteUsers(checkedUserId.join(","), checkedUserNm.join(", "));	
+			deleteUsers(checkedUserId.join(","), checkedUserName.join(", "));	
 		}
 		
 		function deleteUsers(ids, names) {
-			bootbox.confirm("<@spring.message "user.list.confirm.delete"/> " + names + "?", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
+			bootbox.confirm('<@spring.message "user.list.confirm.delete"/> ' + names + '?', '<@spring.message "common.button.cancel"/>', ''<@spring.message "common.button.ok"/>', function(result) {
 				if (result) {
 					document.location.href="${req.getContextPath()}/user/delete?userIds=" + ids;
 				}
