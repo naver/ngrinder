@@ -162,6 +162,8 @@
 	.monitor_status {
 		line-height:12px \0/IE8+9;
 	}
+	
+	
 	</style>
 </head>
   

@@ -63,7 +63,7 @@
 				} else {
 					errorCount = errorCount + 1;
 					if (errorCount > 3) {
-						showErrorMsg("Get monitor data failed.");
+						showErrorMsg("Failed to get the monitoring data.");
 						result = false;
 						if (timer) {
 							window.clearInterval(timer);
@@ -72,7 +72,7 @@
 				}
 			},
 			error : function() {
-				showErrorMsg("Get monitor data failed.");
+				showErrorMsg("Failed to get the monitoring data.");
 				result = false;
 				if (timer) {
 					window.clearInterval(timer);

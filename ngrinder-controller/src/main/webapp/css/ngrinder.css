@@ -225,6 +225,11 @@ legend a {
 .popover-title {
 	font-weight: bold
 }
+
 .popover {
 	width:300px
 }
+
+.alert-error {
+		z-index:1151;
+}	 

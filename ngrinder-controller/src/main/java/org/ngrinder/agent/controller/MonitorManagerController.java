@@ -64,7 +64,7 @@ public class MonitorManagerController extends NGrinderBaseController {
 			ip = addresses[addresses.length - 1];
 		}
 		model.put("monitorIp", ip);
-		return "agent/info";
+		return "monitor/info";
 	}
 
 	/**
@@ -75,7 +75,8 @@ public class MonitorManagerController extends NGrinderBaseController {
 	 * @param ip
 	 *            target host IP
 	 * @return json message
-	 * @throws Exception exception
+	 * @throws Exception
+	 *             exception
 	 */
 	@RequestMapping("/status")
 	@ResponseBody
@@ -89,10 +90,12 @@ public class MonitorManagerController extends NGrinderBaseController {
 					return monitorInfoStore.getSystemInfo(ip, getConfig().getMonitorPort());
 				}
 			});
-			systemInfoMap.put(
-							"systemData",
-							new SystemDataModel(checkNotNull(submit.get(2, TimeUnit.SECONDS),
-											"Get systemInfo error from [%s]", ip), "UNKNOWN"));
+			SystemInfo systemInfo = submit.get(2, TimeUnit.SECONDS);
+			if (systemInfo == null) {
+				systemInfoMap.put(JSON_SUCCESS, false);
+			} else {
+				systemInfoMap.put("systemData", new SystemDataModel(systemInfo, "UNKNOWN"));
+			}
 		} catch (TimeoutException e) {
 			systemInfoMap.put(JSON_SUCCESS, false);
 		}
