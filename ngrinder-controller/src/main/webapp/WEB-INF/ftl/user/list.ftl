@@ -126,6 +126,12 @@
 			});
 			removeClick();
 			enableChkboxSelectAll("user_table");
+			$("th").each(function() {
+				var $this = $(this);
+				if (!$this.hasClass("nothing")) {
+					$this.addClass("sorting");
+				}
+			});
 			var sortColumn = $("#sort_column").val();
 			var sortDir = $("#sort_direction").val().toLowerCase();
 			
@@ -140,7 +146,6 @@
 				
 				$("#sort_column").val($currObj.attr('name'));
 				$("#sort_direction").val(sortDirection);
-				
 				getList(1);
 			});
 

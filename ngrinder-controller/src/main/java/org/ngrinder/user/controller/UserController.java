@@ -39,6 +39,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.web.PageableDefaults;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -104,6 +105,11 @@ public class UserController extends NGrinderBaseController {
 		model.addAttribute("roleSet", roleSet);
 		model.addAttribute("roleName", roleName);
 		model.addAttribute("page", pageable);
+		if (sort != null) {
+			Order sortProp = (Order) sort.iterator().next();
+			model.addAttribute("sortColumn", sortProp.getProperty());
+			model.addAttribute("sortDirection", sortProp.getDirection());
+		}
 		return "user/list";
 	}
 
