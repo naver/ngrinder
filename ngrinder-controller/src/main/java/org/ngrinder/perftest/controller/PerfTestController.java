@@ -370,7 +370,7 @@ public class PerfTestController extends NGrinderBaseController {
 		MutableInt agentCountObj = agentCountMap.get(clustered() ? test.getRegion() : Config.NONE_REGION);
 		checkNotNull(agentCountObj, "test region should be within current region list");
 		int agentMaxCount = agentCountObj.intValue();
-		checkArgument(test.getAgentCount() <= agentMaxCount, "test agent shoule be within %s", agentMaxCount);
+		checkArgument(test.getAgentCount() <= agentMaxCount, "test agent shoule be equal to or less than %s", agentMaxCount);
 		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
 						"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());
 		if (getConfig().isSecurityEnabled()) {
