@@ -365,7 +365,7 @@ public class PerfTestControllerTest extends AbstractPerfTestTransactionalTest {
 		PerfTest test2 = createPerfTest(testName2, Status.START_AGENTS, new Date());
 
 		String ids = test.getId() + "," + test2.getId();
-		HttpEntity<String> rtnJson = controller.updateStatus(getTestUser(), ids);
+		HttpEntity<String> rtnJson = controller.updateStatuses(getTestUser(), ids);
 		assertThat(rtnJson.getBody(), notNullValue());
 	}
 

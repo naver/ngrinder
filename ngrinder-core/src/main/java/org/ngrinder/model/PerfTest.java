@@ -247,13 +247,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		this.scheduledTime = scheduledTime;
 	}
 
-	/**
-	 * Get the test start time, if null, return current time.
-	 * 
-	 * @return test start time
-	 */
 	public Date getStartTime() {
-		return startTime != null ? startTime : new Date();
+		return startTime;
 	}
 
 	public void setStartTime(Date startTime) {

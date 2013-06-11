@@ -16,6 +16,7 @@ package org.ngrinder.perftest.controller;
 import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.Preconditions.checkArgument;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -28,7 +29,6 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -361,18 +361,19 @@ public class PerfTestController extends NGrinderBaseController {
 		checkArgument(test.getStatus().equals(Status.READY) || test.getStatus().equals(Status.SAVED),
 						"save test only support for SAVE or READY status");
 		checkArgument(test.getRunCount() == null || test.getRunCount() <= agentManager.getMaxRunCount(),
-						"test run count should be within %s", agentManager.getMaxRunCount());
+						"test run count should be equal to or less than %s", agentManager.getMaxRunCount());
 		checkArgument(test.getDuration() == null
 						|| test.getDuration() <= (((long) agentManager.getMaxRunHour()) * 3600000L),
-						"test run duration should be within %s", agentManager.getMaxRunHour());
+						"test run duration should be equal to or less than %s", agentManager.getMaxRunHour());
 
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		MutableInt agentCountObj = agentCountMap.get(clustered() ? test.getRegion() : Config.NONE_REGION);
 		checkNotNull(agentCountObj, "test region should be within current region list");
 		int agentMaxCount = agentCountObj.intValue();
-		checkArgument(test.getAgentCount() <= agentMaxCount, "test agent shoule be equal to or less than %s", agentMaxCount);
+		checkArgument(test.getAgentCount() <= agentMaxCount, "test agent shoule be equal to or less than %s",
+						agentMaxCount);
 		checkArgument(test.getVuserPerAgent() == null || test.getVuserPerAgent() <= agentManager.getMaxVuserPerAgent(),
-						"test vuser shoule be within %s", agentManager.getMaxVuserPerAgent());
+						"test vuser shoule be equal to or less than %s", agentManager.getMaxVuserPerAgent());
 		if (getConfig().isSecurityEnabled()) {
 			checkArgument(StringUtils.isNotEmpty(test.getTargetHosts()),
 							"test taget hosts should be provided when security mode is enabled");
@@ -430,17 +431,52 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get status of perftests.
+	 * Get status of perftests and perftest statistics.
 	 * 
 	 * @param user
 	 *            user
 	 * @param ids
 	 *            comma separated perftest list
-	 * @return json string which contains perftest status
+	 * @return JSON string which contains perftest status
 	 */
 	@RequestMapping(value = "update_status")
 	public HttpEntity<String> updateStatuses(User user, @RequestParam("ids") String ids) {
-		return updateStatus(user, ids);
+		List<PerfTest> perfTests = newArrayList();
+		if (StringUtils.isNotEmpty(ids)) {
+			perfTests = perfTestService.getPerfTest(user, convertString2Long(ids));
+		}
+		return toJsonHttpEntity(buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(), "statusList",
+						getPerfTestStatus(perfTests)));
+	}
+
+	private Long[] convertString2Long(String ids) {
+		String[] numbers = StringUtils.split(ids, ",");
+		Long[] id = new Long[numbers.length];
+		int i = 0;
+		for (String each : numbers) {
+			id[i++] = NumberUtils.toLong(each, 0);
+		}
+		return id;
+	}
+
+	private List<Map<String, Object>> getPerfTestStatus(List<PerfTest> perfTests) {
+		List<Map<String, Object>> statuses = newArrayList();
+		for (PerfTest each : perfTests) {
+			Map<String, Object> result = newHashMap();
+			result.put(PARAM_STATUS_UPDATE_ID, each.getId());
+			result.put(PARAM_STATUS_UPDATE_STATUS_ID, each.getStatus());
+			result.put(PARAM_STATUS_UPDATE_STATUS_TYPE, each.getStatus());
+			String errorMessages = getMessages(each.getStatus().getSpringMessageKey());
+			result.put(PARAM_STATUS_UPDATE_STATUS_NAME, errorMessages);
+			result.put(PARAM_STATUS_UPDATE_STATUS_ICON, each.getStatus().getIconName());
+			result.put(PARAM_STATUS_UPDATE_STATUS_MESSAGE,
+							StringUtils.replace(each.getProgressMessage() + "\n<b>" + each.getLastProgressMessage()
+											+ "</b>\n" + each.getLastModifiedDateToStr(), "\n", "<br/>"));
+			result.put(PARAM_STATUS_UPDATE_DELETABLE, each.getStatus().isDeletable());
+			result.put(PARAM_STATUS_UPDATE_STOPPABLE, each.getStatus().isStoppable());
+			statuses.add(result);
+		}
+		return statuses;
 	}
 
 	/**
@@ -448,43 +484,14 @@ public class PerfTestController extends NGrinderBaseController {
 	 * 
 	 * @param user
 	 *            user
-	 * @param idString
-	 *            comma separated perftest list
-	 * @return json string which contains perftest status
+	 * @param id
+	 *            perftest id
+	 * @return JSON string which contains perftest status
 	 */
 	@RequestMapping(value = "{id}/update_status")
-	public HttpEntity<String> updateStatus(User user, @PathVariable("id") String idString) {
-		String[] numbers = StringUtils.split(idString, ",");
-		Long[] id = new Long[numbers.length];
-		int i = 0;
-		for (String each : numbers) {
-			id[i++] = NumberUtils.toLong(each, 0);
-		}
-
-		List<PerfTest> perfTests = null;
-		if (StringUtils.isNotEmpty(idString)) {
-			perfTests = perfTestService.getPerfTest(user, id);
-		} else {
-			perfTests = Collections.emptyList();
-		}
-		List<Map<String, Object>> statusList = new ArrayList<Map<String, Object>>();
-		for (PerfTest each : perfTests) {
-			Map<String, Object> rtnMap = new HashMap<String, Object>(3);
-			rtnMap.put(PARAM_STATUS_UPDATE_ID, each.getId());
-			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_ID, each.getStatus());
-			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_TYPE, each.getStatus());
-			String errorMessages = getMessages(each.getStatus().getSpringMessageKey());
-			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_NAME, errorMessages);
-			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_ICON, each.getStatus().getIconName());
-			rtnMap.put(PARAM_STATUS_UPDATE_STATUS_MESSAGE,
-							StringUtils.replace(each.getProgressMessage() + "\n<b>" + each.getLastProgressMessage()
-											+ "</b>\n" + each.getLastModifiedDateToStr(), "\n", "<br/>"));
-			rtnMap.put(PARAM_STATUS_UPDATE_DELETABLE, each.getStatus().isDeletable());
-			rtnMap.put(PARAM_STATUS_UPDATE_STOPPABLE, each.getStatus().isStoppable());
-			statusList.add(rtnMap);
-		}
-		return toJsonHttpEntity(buildMap("perfTestInfo", perfTestService.getCurrentPerfTestStatistics(), "statusList",
-						statusList));
+	public HttpEntity<String> updateStatus(User user, @PathVariable("id") Long id) {
+		List<PerfTest> perfTests = perfTestService.getPerfTest(user, new Long[] { id });
+		return toJsonHttpEntity(buildMap("statusList", getPerfTestStatus(perfTests)));
 	}
 
 	/**

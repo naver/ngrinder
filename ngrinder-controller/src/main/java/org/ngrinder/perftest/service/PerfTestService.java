@@ -226,7 +226,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	@Override
 	public List<PerfTest> getPerfTest(User user, Long[] ids) {
-
 		Specifications<PerfTest> spec = Specifications.where(idEmptyPredicate());
 
 		// User can see only his own test
