@@ -77,7 +77,7 @@ public class AgentManager implements NGrinderConstants {
 	 */
 	@PostConstruct
 	public void init() {
-		agentControllerServerDaemon = new AgentControllerServerDaemon(
+		agentControllerServerDaemon = new AgentControllerServerDaemon(config.getCurrentIP(),
 						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		agentControllerServerDaemon.start();
 		agentControllerServerDaemon.addLogArrivedListener(new LogArrivedListener() {
