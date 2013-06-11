@@ -91,10 +91,7 @@
 </div>
 <script>
 	$("#log_comment").popover({trigger: 'hover', container:'body'});
-	var chart = drawChart('tps_chart', ${TPS![]}, null,  ${chartInterval!1});
-	if (chart !== undefined) {
-		chart.replot(); 
-	}
+	drawChart('tps_chart', ${TPS![]}, null,  ${chartInterval!1}).replot();
 	$("#leave_comment_btn").click(function(){
 		var comment = $("#test_comment").val();
 		var tagString = buildTagString();

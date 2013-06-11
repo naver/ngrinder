@@ -69,17 +69,27 @@ function getMaxValue(data) {
 	return ymax;
 }
 
+function DummyChart() {
+	
+}
+
+DummyChart.prototype.replot = function() {
+	// Do nothing
+};
+
+var dummyChart = new DummyChart();
+
 function drawChart(containerId, data, formatYaxis, interval) {
 	//title, containerId and data is necessary.
 	//formatYaxis is the formatter function for y-axis, can be set undefined means don't format.
 	//interval is second amount, interval is optional.
 	if (data == undefined) {
-		return undefined;
+		return dummyChart;
 	}
 	var values = preparedData(data);
 	var dataCnt = values[0].length;
 	if (dataCnt == 0) {
-		return;
+		return dummyChart;
 	}
 	var ymax = getMaxValue(data);
 	if (ymax < 5) {
@@ -157,7 +167,7 @@ function drawChart(containerId, data, formatYaxis, interval) {
 //data is an array object.
 function replotChart(plotObj, data, ymax, interval) {
 	if (data == undefined) {
-		return;
+		return dummyChart;
 	}
 	var cache = [];
 	var dataCnt = data.length;
@@ -223,11 +233,13 @@ function getMultiPlotMaxValue(data) {
 		}
 	}
 	return ymax;
+	
 }
+
 
 function drawMultiPlotChart(containerId, data, labels, interval) {
 	if (data == undefined || !(data instanceof Array) || data.length == 0) {
-		return undefined;
+		return dummyChart;
 	}
 	
 	var values;
@@ -243,7 +255,7 @@ function drawMultiPlotChart(containerId, data, labels, interval) {
 	
 	var dataCnt = values[values.length - 1].length;
 	if (dataCnt == 0) {
-		return;
+		return dummyChart;
 	}
 	
 	var ymax = getMultiPlotMaxValue(values);
