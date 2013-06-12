@@ -13,6 +13,8 @@
  */
 package net.grinder.script;
 
+import java.lang.reflect.Method;
+
 /**
  * {@link Test} extension to be distinguishable from {@link org.junit.Test} in JUnit4 tests.
  * 
@@ -41,4 +43,48 @@ public class GTest extends Test {
 		super(number, description);
 	}
 
+	/**
+	 * Instrument the supplied {@code target} object's method which has the given name. Subsequent
+	 * calls to {@code target}'s given method will be recorded against the statistics for this
+	 * {@code Test}.
+	 * 
+	 * @param target
+	 *            Object to instrument.
+	 * @param methodName
+	 *            method name to instrument
+	 * @throws NonInstrumentableTypeException
+	 *             If {@code target} could not be instrumented.
+	 * @since 3.2.1
+	 */
+	public final void record(Object target, String methodName) throws NonInstrumentableTypeException {
+		record(target, new MethodNameFilter(methodName));
+	}
+
+	/**
+	 * Method name filter.
+	 * 
+	 * @author junoyoon
+	 * @since 3.2.1
+	 */
+	static class MethodNameFilter implements InstrumentationFilter {
+		private String methodName;
+
+		/**
+		 * Constructor.
+		 * 
+		 * @param methodName
+		 *            method name
+		 */
+		public MethodNameFilter(String methodName) {
+			this.methodName = methodName;
+		}
+
+		@Override
+		public boolean matches(Object item) {
+			if (item instanceof Method) {
+				return ((Method) item).getName().equals(methodName);
+			}
+			return false;
+		}
+	}
 }
