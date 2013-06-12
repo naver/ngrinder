@@ -325,15 +325,12 @@ public class PerfTestController extends NGrinderBaseController {
 					@RequestParam(value = "scriptType", required = true) String scriptType, // LF
 					ModelMap model) {
 		URL url = checkValidURL(urlString);
-		List<FileEntry> scripts = newArrayList();
 		FileEntry newEntry = fileEntryService.prepareNewEntryForQuickTest(user, urlString,
 						scriptHandlerFactory.getHandler(scriptType));
-		scripts.add(checkNotNull(newEntry, "Create quick test script ERROR!"));
 		model.addAttribute(PARAM_QUICK_SCRIPT, newEntry.getPath());
 		model.addAttribute(PARAM_QUICK_SCRIPT_REVISION, newEntry.getRevision());
 		model.addAttribute(PARAM_TEST_NAME, "Test for " + url.getHost());
 		model.addAttribute(PARAM_TARGET_HOST, url.getHost());
-		model.addAttribute(PARAM_SCRIPT_LIST, scripts);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentManagerService.getUserAvailableAgentCountMap(user));
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		addDefaultAttributeOnModel(model);

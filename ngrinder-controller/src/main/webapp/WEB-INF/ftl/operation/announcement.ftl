@@ -68,7 +68,7 @@
 			
 			$("#test_btn").click(function() {
 				var content = editor.getValue();
-				if (content == "") {
+				if (!content) {
 					$("#announcement_container").slideUp();
 					return false;
 				}

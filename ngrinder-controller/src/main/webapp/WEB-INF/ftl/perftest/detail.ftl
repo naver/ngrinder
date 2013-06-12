@@ -389,7 +389,7 @@ $(document).ready(function () {
 	</#if>
 	(function refreshContent() {
 		var ids = [];
-		if (testId == "" || finished == true) {
+		if (!testId || finished == true) {
 			return;
 		}
 
@@ -815,7 +815,7 @@ function bindEvent() {
 	});
 	
 	$("#ignore_sample_count, #run_count").blur(function() {
-		if ($.trim($(this).val()) == "") {
+		if (!($.trim($(this).val()))) {
 			$(this).val(0);
 		}
 	});
@@ -860,7 +860,7 @@ function bindEvent() {
 
 	$("#show_script_btn").click(function() {
 		var currentScript = $("#script_name").val();
-		if (currentScript != "") {
+		if (currentScript) {
 			var ownerId = ""; 
 			<@security.authorize ifAnyGranted="A, S">					
 				<#if test??>
@@ -976,8 +976,11 @@ function updateScript() {
 			}
 			if (exists) {
 				$scriptSelection.select2("val", selectedScript);
-			} else { 
+			} else if (selectedScript) {
 				$scriptSelection.append($("<option value='' revision='-1' validated='false'>(deleted)" + selectedScript +"</option>"));
+				$scriptSelection.select2("val", ""); 
+			} else {
+				$scriptSelection.append($("<option value='' revision='-1' validated='false'>" + selectedScript +"</option>"));
 				$scriptSelection.select2("val", ""); 
 			}
 
@@ -992,7 +995,7 @@ function updateScript() {
 
 function updateScriptResources(first) {
 	var scriptName = $("#script_name").val();
-	if (scriptName == "") {
+	if (!scriptName) {
 		return;
 	}
 	

@@ -144,7 +144,7 @@
 		if (newHosts != undefined) {
 			newHosts = $.trim(newHosts);
 			$("#target_hosts").val(newHosts);
-			if (newHosts == "") {
+			if (!newHosts) {
 				$(".div-host").html("");
 				return;
 			}
@@ -155,7 +155,7 @@
 		var hosts = $("#target_hosts").val().split(",");
 		$(".div-host").html($.map(hosts, function(val) {
 			val = $.trim(val);
-			if (val != "") {
+			if (val) {
 				return hostItem(val);
 			}
 		}).join("\n"));

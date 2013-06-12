@@ -123,7 +123,7 @@
 						</colgroup>
 						<tr>
 							<td>
-								<select id="script_name" class="required" name="scriptName" style="width: 275px" old_script="${(test.scriptName)!}">
+								<select id="script_name" class="required" name="scriptName" style="width: 275px" old_script="<#if quickScript??>${quickScript}<#else>${(test.scriptName)!}</#if>">
 								</select>
 							</td>
 							<td>
