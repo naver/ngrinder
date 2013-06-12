@@ -69,15 +69,15 @@ public class ClusterConfigurationVerifier {
 	 */
 	@PostConstruct
 	public void init() throws IOException {
-		systemConfFile = config.getHome().getSubFile("system.conf");
-		cache = cacheManager.getCache("controller_home");
-		config.addSystemConfListener(new PropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				updateSystemConfFingerPrintToCache(systemConfFile);
-			}
-		});
 		if (config.isCluster() && !config.isTestMode()) {
+			systemConfFile = config.getHome().getSubFile("system.conf");
+			cache = cacheManager.getCache("controller_home");
+			config.addSystemConfListener(new PropertyChangeListener() {
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) {
+					updateSystemConfFingerPrintToCache(systemConfFile);
+				}
+			});
 			checkHome();
 			checkDB();
 		}

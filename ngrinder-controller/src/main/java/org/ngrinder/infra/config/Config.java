@@ -88,7 +88,7 @@ public class Config implements IConfig, NGrinderConstants {
 	/**
 	 * Add the system configuration change listener.
 	 * 
-	 * @param listener 
+	 * @param listener
 	 */
 	public void addSystemConfListener(PropertyChangeListener listener) {
 		systemConfListeners.add(listener);
@@ -379,18 +379,23 @@ public class Config implements IConfig, NGrinderConstants {
 		announcementWatchDog.setName("WatchDog - annoucenment.conf");
 		announcementWatchDog.setDelay(2000);
 		announcementWatchDog.start();
-		final File systemConfFile = getHome().getSubFile("system.conf");
-		this.systemConfWatchDog = new FileWatchdog(systemConfFile.getAbsolutePath()) {
+		this.systemConfWatchDog = new FileWatchdog(getHome().getSubFile("system.conf").getAbsolutePath()) {
 			@Override
 			protected void doOnChange() {
 				CoreLogger.LOGGER.info("System conf file changed.");
-				loadSystemProperties();
-				systemConfListeners.apply(new Informer<PropertyChangeListener>() {
-					@Override
-					public void inform(PropertyChangeListener listener) {
-						listener.propertyChange(null);
-					}
-				});
+				try {
+					loadSystemProperties();
+					resolveLocalIp();
+					systemConfListeners.apply(new Informer<PropertyChangeListener>() {
+						@Override
+						public void inform(PropertyChangeListener listener) {
+							listener.propertyChange(null);
+						}
+					});
+				} catch (Exception e) {
+					CoreLogger.LOGGER.error("Error occurs while updating system.conf", e);
+				}
+				CoreLogger.LOGGER.info("System conf file is applied.");
 			}
 		};
 		systemConfWatchDog.setName("WatchDoc - system.conf");
