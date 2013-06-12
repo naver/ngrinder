@@ -377,15 +377,15 @@ $(document).ready(function () {
 	<#if test??>
 		<#assign category = test.status.category>
 		<#if category == "TESTING"> 
-  			displayCfgAndTestRunning(); 
+  			displayConfigAndRunningSection(); 
 		<#elseif category == "FINISHED" || category == "STOP" || category == "ERROR"> 
 			finished = true;
-			displayCfgAndTestReport();
+			displayConfigAndReportSection();
 		<#else>
-			displayCfgOnly(); 
+			displayConfigOnly(); 
 		</#if>
 	<#else>
-		displayCfgOnly();
+		displayConfigOnly();
 	</#if>
 	(function refreshContent() {
 		var ids = [];
@@ -398,7 +398,7 @@ $(document).ready(function () {
 			type : 'GET',
 			success : function(perfTestData) {
 				perfTestData = eval(perfTestData);
-				data = perfTestData.statusList
+				data = perfTestData.statusList;
 				for ( var i = 0; i < data.length; i++) {
 					updateStatus(data[i].id, data[i].status_type, data[i].name, data[i].icon, data[i].deletable, data[i].stoppable, data[i].message);
 				}
@@ -1100,30 +1100,33 @@ function openReportDiv(onFinishHook) {
 }
 
 function updateStatus(id, statusType, statusName, icon, deletable, stoppable, message) {
-	if ($("#test_status_img").attr("data-content") != message) {
-		$("#test_status_img").attr("data-content", message);
+	var $testStatusImg = $("#test_status_img");
+	if ($testStatusImg.attr("data-content") != message) {
+		$testStatusImg.attr("data-content", message);
 	}
-	
-	if ($("#test_status_type").val() == statusType) {
+	var $testStatusType = $("#test_status_type");
+	if ($testStatusType.val() == statusType) {
 		return;
 	}
+	var testStatusImgPopover = $testStatusImg.data('popover');
+	$testStatusImg.attr("data-original-title", statusName);
+	testStatusImgPopover.options.content = message;
 	
-	$("#test_status_img").attr("title", statusName);
-	$("#test_status_type").val(statusType);
 
-	var ballImg = $("#test_status_img");
-	if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
-		ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
+	$testStatusType.val(statusType);
+
+	if ($testStatusImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) {
+		$testStatusImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
 	}
 
 	if (statusType == "TESTING") {
-		displayCfgAndTestRunning();
+		displayConfigAndRunningSection();
 	} else if (statusType == "FINISHED" || statusType == "STOP_BY_ERROR"|| statusType == "STOP_ON_ERROR" || statusType == "CANCELED") {
 		finished = true; 
 		// Wait and run because it takes time to transfer logs.
-		setTimeout('displayCfgAndTestReport()', 3000);
+		setTimeout('displayConfigAndReportSection()', 3000);
 	} else {
-		displayCfgOnly();
+		displayConfigOnly();
 	}
 }
 
@@ -1132,7 +1135,7 @@ var testId = $('#test_id').val();
 // Wrap this function in a closure so we don't pollute the namespace
 
 
-function displayCfgOnly() {
+function displayConfigOnly() {
 	$("#test_config_section_tab a").tab('show');
 	$("#running_section_tab").hide();
 	$("#report_section_tab").hide();
@@ -1140,7 +1143,7 @@ function displayCfgOnly() {
 
 var samplingInterval = 1;
 
-function displayCfgAndTestRunning() {
+function displayConfigAndRunningSection() {
 	$("#running_section_tab").show();
 	$("#running_section_tab a").tab('show');
 	$("#running_section").show();
@@ -1151,7 +1154,7 @@ function displayCfgAndTestRunning() {
 	objTimer = window.setInterval("refreshData()", 1000 * samplingInterval);
 }
 
-function displayCfgAndTestReport() {
+function displayConfigAndReportSection() {
 	$("#foot_div").hide();
 	$("#running_section_tab").hide();
 	$("#report_section_tab").show();

@@ -358,13 +358,15 @@
 		}
 		
 		function updateStatus(id, status, icon, stoppable, deletable, message) {
-			var ballImg = $("#ball_" + id + " img");
-			if (ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) { 
-				ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
+			var $ballImg = $("#ball_" + id + " img");
+			if ($ballImg.attr("src") != "${req.getContextPath()}/img/ball/" + icon) { 
+				$ballImg.attr("src", "${req.getContextPath()}/img/ball/" + icon);
 				$(".icon-remove[sid=" + id + "]").remove();
 			}
-			$("#ball_" + id).attr("data-title", status);
-			$("#ball_" + id).attr("data-content", message);
+			
+			$("#ball_" + id).attr("data-original-title", status);
+			$("#ball_" + id).data('popover').options.content = message;
+			
 			if (stoppable == true) {
 				$("#stop_" + id).parent().show();
 			} else {
@@ -380,7 +382,7 @@
 		// Wrap this function in a closure so we don't pollute the namespace
 		(function updateStatuses() {
 			var ids = $('input.perf_test').map(function() {
-		    	var perTestStatus = $(this).attr("status")
+		    	var perTestStatus = $(this).attr("status");
 				if(!(perTestStatus == "FINISHED" || perTestStatus == "STOP_BY_ERROR"|| perTestStatus == "STOP_ON_ERROR" || perTestStatus == "CANCELED"))
 					return this.value;
 		  	}).get();
@@ -394,7 +396,7 @@
 			    data: {"ids": ids.join(",")},
 			    success: function(perfTestData) {
 			    	perfTestData = eval(perfTestData); 
-			    	data = perfTestData.statusList
+			    	data = perfTestData.statusList;
 			    	var perfTest = perfTestData.perfTestInfo;
 			    	var springMessage = perfTest.length + " <@spring.message "perfTest.currentRunning.summary"/>";
 			    	
