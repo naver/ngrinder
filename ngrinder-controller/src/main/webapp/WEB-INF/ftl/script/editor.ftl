@@ -108,7 +108,10 @@
 				
 				<textarea id="codemirror_content">${(file.content)!}</textarea>
 				<textarea id="old_content" class="hidden">${(file.content)!}</textarea>
-				<div class="pull-right" rel="popover" style="position:float;margin-top:-20px;margin-right:-30px" data-original-title="Tip" data-content="
+				<div class="pull-right" rel="popover" style="position:float;margin-top:-20px;margin-right:-30px" 
+					title="Tip" data-html="ture"
+					data-placement="left"
+				 	data-content="
 			      Ctrl-F / Cmd-F : <@spring.message "script.editor.tip.startSearching"/>&lt;br&gt; 
 			      Ctrl-G / Cmd-G : <@spring.message "script.editor.tip.findNext"/>&lt;br&gt;
 			      Shift-Ctrl-G / Shift-Cmd-G : <@spring.message "script.editor.tip.findPrev"/>&lt;br&gt;
@@ -116,8 +119,7 @@
 			      Shift-Ctrl-R / Shift-Cmd-Option-F : <@spring.message "script.editor.tip.replaceAll"/>&lt;br&gt;
 			      F12 : <@spring.message "script.editor.tip.fullScreen"/>&lt;br&gt;
 			      ESC : <@spring.message "script.editor.tip.back"/>&lt;br&gt;
-			      " placement="left"
-			    ><code>Tip</code></div> 
+			      "><code>Tip</code></div> 
 			</div>
 		</div>
 		<div id="validation_result_panel" style="display:none;">
@@ -130,7 +132,6 @@
 	
 	<#include "../common/codemirror.ftl">
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}.js"></script>
-    <#include "../common/datatables.ftl">
     <script>
     	changed = false;
     	$(window).on('beforeunload', function() {
@@ -217,8 +218,10 @@
 				var heightStr = $("#validation_result_pre_div").css("height");
 				if (heightStr == "100px") {
 					$("#validation_result_pre_div").css("height", "300px");
+					editor.setSize(null, 300);
 				} else {
 					$("#validation_result_pre_div").css("height", "100px");
+					editor.setSize(null, 500);
 				}
 			});
 		});
