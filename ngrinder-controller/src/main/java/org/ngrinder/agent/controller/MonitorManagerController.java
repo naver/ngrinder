@@ -13,8 +13,6 @@
  */
 package org.ngrinder.agent.controller;
 
-import static org.ngrinder.common.util.Preconditions.checkNotNull;
-
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
