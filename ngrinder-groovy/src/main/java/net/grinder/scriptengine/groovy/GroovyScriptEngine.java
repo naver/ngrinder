@@ -41,9 +41,9 @@ import org.junit.runners.model.InitializationError;
  * @author JunHo Yoon (modified by)
  */
 public class GroovyScriptEngine implements ScriptEngine {
-	private GrinderContextExecutor grinderRunner;
 	private AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
-
+	private Class<?> m_groovyClass;
+	private GrinderContextExecutor m_grinderRunner;
 	/**
 	 * Construct a GroovyScriptEngine that will use the supplied ScriptLocation.
 	 * 
@@ -58,10 +58,10 @@ public class GroovyScriptEngine implements ScriptEngine {
 		final ClassLoader parent = getClass().getClassLoader();
 		final GroovyClassLoader loader = new GroovyClassLoader(parent);
 		try {
-			Class<?> m_groovyClass = loader.parseClass(script.getFile());
-			grinderRunner = new GrinderContextExecutor(m_groovyClass);
-			grinderRunner.runBeforeProcess();
-			assert grinderRunner.testCount() > 0;
+			m_groovyClass = loader.parseClass(script.getFile());
+			m_grinderRunner = new GrinderContextExecutor(m_groovyClass);
+			m_grinderRunner.runBeforeProcess();
+			assert m_grinderRunner.testCount() > 0;
 		} catch (IOException io) {
 			throw new EngineException("Unable to parse groovy script at: " + script.getFile().getAbsolutePath(), io);
 		} catch (InitializationError e) {
@@ -76,7 +76,11 @@ public class GroovyScriptEngine implements ScriptEngine {
 	 */
 	@Override
 	public ScriptEngineService.WorkerRunnable createWorkerRunnable() throws EngineException {
-		return new GroovyWorkerRunnable(grinderRunner);
+		try {
+			return new GroovyWorkerRunnable(new GrinderContextExecutor(m_groovyClass));
+		} catch (InitializationError e) {
+			throw new EngineException("Exception occurred during initializing runner", e);
+		}
 	}
 
 	/**
@@ -91,7 +95,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 	 * Wrapper for groovy's testRunner closure.
 	 */
 	public final class GroovyWorkerRunnable implements ScriptEngineService.WorkerRunnable {
-		private final GrinderContextExecutor m_groovyRunner;
+		private final GrinderContextExecutor m_groovyThreadRunner;
 		private RunNotifier notifier = new RunNotifier() {
 			public void fireTestFailure(Failure failure) {
 				if (exceptionProcessor.isGenericShutdown(failure.getException())) {
@@ -106,8 +110,8 @@ public class GroovyScriptEngine implements ScriptEngine {
 		};
 
 		private GroovyWorkerRunnable(GrinderContextExecutor groovyRunner) throws EngineException {
-			this.m_groovyRunner = groovyRunner;
-			this.m_groovyRunner.runBeforeThread();
+			this.m_groovyThreadRunner = groovyRunner;
+			this.m_groovyThreadRunner.runBeforeThread();
 			this.notifier.addListener(new RunListener() {
 				@Override
 				public void testFailure(Failure failure) throws Exception {
@@ -134,7 +138,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 		@Override
 		public void run() throws ScriptExecutionException {
 			try {
-				this.m_groovyRunner.run(notifier);
+				this.m_groovyThreadRunner.run(notifier);
 			} catch (RuntimeException e) {
 				if (exceptionProcessor.isGenericShutdown(e)) {
 					throw new GroovyScriptExecutionException("Shutdown",
@@ -146,7 +150,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 		@Override
 		public void shutdown() throws ScriptExecutionException {
 			notifier.pleaseStop();
-			this.m_groovyRunner.runAfterThread();
+			this.m_groovyThreadRunner.runAfterThread();
 		}
 	}
 
@@ -158,7 +162,7 @@ public class GroovyScriptEngine implements ScriptEngine {
 	 */
 	@Override
 	public void shutdown() throws EngineException {
-		grinderRunner.runAfterProcess();
+		m_grinderRunner.runAfterProcess();
 	}
 
 	/**
