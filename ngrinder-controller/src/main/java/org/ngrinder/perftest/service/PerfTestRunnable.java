@@ -557,7 +557,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED,
 							"Stop requested by user");
 		} catch (Exception e) {
-			LOG.error("Error while canceling {}", perfTest.getTestIdentifier());
+			LOG.error("Error while canceling {} : {}", perfTest.getTestIdentifier(), e.getMessage());
 			LOG.debug("Details : ", e);
 		}
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
@@ -577,7 +577,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
 							"Stoped by error");
 		} catch (Exception e) {
-			LOG.error("Error while terminating {}", perfTest.getTestIdentifier());
+			LOG.error("Error while terminating {} : {}", perfTest.getTestIdentifier(), e.getMessage());
 			LOG.debug("Details : ", e);
 		}
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);
@@ -600,17 +600,17 @@ public class PerfTestRunnable implements NGrinderConstants {
 			// stop target host monitor
 			if (perfTestService.hasTooManError(perfTest)) {
 				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
-								"The test is finished but contains too much errors(over 30% of total runs).");
+								"[WARNING] The test is finished but contains too much errors(over 30% of total runs).");
 			} else if (singleConsoleInUse.hasNoPerformedTest()) {
 				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.STOP_BY_ERROR,
-								"The test is finished but has no TPS.");
+								"[WARNING] The test is finished but has no TPS.");
 			} else {
 				perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, Status.FINISHED,
 								"The test is successfully finished.");
 			}
 		} catch (Exception e) {
 			perfTestService.markStatusAndProgress(perfTest, Status.STOP_BY_ERROR, e.getMessage());
-			LOG.error("Error while finishing {}", perfTest.getTestIdentifier());
+			LOG.error("Error while finishing {} : {}", perfTest.getTestIdentifier(), e.getMessage());
 			LOG.debug("Details : ", e);
 		}
 		consoleManager.returnBackConsole(perfTest.getTestIdentifier(), singleConsoleInUse);

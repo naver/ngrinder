@@ -339,7 +339,7 @@ public class AgentImplementationEx implements Agent {
 				}
 			}
 		} catch (Exception e) {
-			m_logger.error("Exception occurs in the agent message loop", e);
+			m_logger.error("Exception occurred in the agent message loop", e);
 		} finally {
 			if (m_timer != null) {
 				m_timer.cancel();

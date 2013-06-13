@@ -88,7 +88,7 @@ public class AgentControllerServerDaemon {
 			this.agentControllerServer = new AgentControllerServer(RESOURCES, LOGGER, consoleProperties,
 							m_eventSyncCondition);
 		} catch (GrinderException e) {
-			throw new NGrinderRuntimeException("Exception occurs while initiating the agent controller server daemon",
+			throw new NGrinderRuntimeException("Exception occurred while initiating the agent controller server daemon",
 							e);
 		}
 	}
@@ -147,7 +147,7 @@ public class AgentControllerServerDaemon {
 				thread.interrupt();
 			}
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("Exception occurs during AgentControllerServerDaemon shutdown", e);
+			throw new NGrinderRuntimeException("Exception occurred during shutting down the agent controller server daemon", e);
 		} finally {
 			thread = null;
 		}

@@ -42,8 +42,7 @@ public abstract class ConsolePropertiesFactory {
 			ConsoleProperties consoleProperties = new ConsoleProperties(SingleConsole.RESOURCE, tmpFile);
 			return consoleProperties;
 		} catch (Exception e) {
-			String message = "Exception occurs while creating empty console property";
-			throw new NGrinderRuntimeException(message, e);
+			throw new NGrinderRuntimeException("Exception occurred while creating empty console property", e);
 		} finally {
 			FileUtils.deleteQuietly(tmpFile);
 		}

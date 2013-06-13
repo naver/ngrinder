@@ -127,7 +127,7 @@ public abstract class DateUtil {
 	 *            date string
 	 * @return date
 	 * @throws ParseException
-	 *             occurs when given steDate is not {@link #SIMPLE_DATE_FORMAT}
+	 *             thrown when the given strDate is not {@link #SIMPLE_DATE_FORMAT}
 	 */
 	public static Date toSimpleDate(String strDate) throws ParseException {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -142,7 +142,7 @@ public abstract class DateUtil {
 	 * @return date
 	 * 
 	 * @throws ParseException
-	 *             occurs when given steDate is not {@link #FULL_DATE_FORMAT}
+	 *             thrown when the given strDate is not {@link #FULL_DATE_FORMAT}
 	 */
 	public static Date toDate(String strDate) throws ParseException {
 		SimpleDateFormat fullDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());

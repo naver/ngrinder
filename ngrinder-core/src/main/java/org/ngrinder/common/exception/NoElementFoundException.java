@@ -14,7 +14,7 @@
 package org.ngrinder.common.exception;
 
 /**
- * Exception which will occurs there is no elements in sth.
+ * Exception which will occur there is no elements in sth.
  * 
  * @author JunHo Yoon
  * @since 3.0

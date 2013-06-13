@@ -320,7 +320,7 @@
                     }
                 },
                 error: function() {
-                    showErrorMsg("Unknow Error occured!");
+                    showErrorMsg("An unknow Error occurred!");
                     return false;
                 }
             }); 

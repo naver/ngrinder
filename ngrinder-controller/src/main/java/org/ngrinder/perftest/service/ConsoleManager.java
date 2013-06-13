@@ -227,7 +227,7 @@ public class ConsoleManager {
 		try {
 			console.sendStopMessageToAgents();
 		} catch (Exception e) {
-			LOG.error("Exception is occured while shuttdowning console in returnback process for test {}.",
+			LOG.error("Exception is occurred while shuttdowning console in returnback process for test {}.",
 							testIdentifier, e);
 			// But the port is getting back.
 		} finally {

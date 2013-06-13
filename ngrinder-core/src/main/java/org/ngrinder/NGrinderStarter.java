@@ -235,7 +235,7 @@ public class NGrinderStarter {
 
 				fileString.addAll(jnlpLoader.resolveRemoteJars(jnlpLibPath));
 			} catch (Exception e) {
-				staticPrintHelpAndExit("Error occurs while getting Jar file from Service !", e);
+				staticPrintHelpAndExit("Error occurred while getting Jar file from jnlp download service !", e);
 			}
 
 		} else {
@@ -393,7 +393,7 @@ public class NGrinderStarter {
 			}
 			agentConfig.updateAgentPidProperties(mode);
 		} catch (SigarException e) {
-			printHelpAndExit(String.format("Error occurs while terminating %s process."
+			printHelpAndExit(String.format("Error occurred while terminating %s process.\n"
 							+ "It can be already stopped or you may not have the permission.\n"
 							+ "If everything is OK. Please stop it manually.", mode), e);
 		}

@@ -122,7 +122,7 @@ public class AgentSystemDataCollector extends AgentDataCollector {
 	 * 
 	 * @return BandWith
 	 * @throws SigarException
-	 *             occurs when the underlying lib is not linked
+	 *             thrown when the underlying lib is not linked
 	 */
 	public BandWidth getNetworkUsage() throws SigarException {
 		BandWidth bandWidth = new BandWidth(System.currentTimeMillis());

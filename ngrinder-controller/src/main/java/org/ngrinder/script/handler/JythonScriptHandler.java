@@ -56,10 +56,10 @@ public class JythonScriptHandler extends ScriptHandler {
 				if (lineString.length() >= column) {
 					buf.insert(column, "^");
 				}
-				return "Error occured\n" + " - Invalid Syntax Error on line " + line + " / column " + column + "\n"
+				return "Error occurred\n" + " - Invalid Syntax Error on line " + line + " / column " + column + "\n"
 								+ buf.toString();
 			} catch (Exception ex) {
-				return "Error occured while evalation PySyntaxError";
+				return "Error occurred while evalation PySyntaxError";
 			}
 		}
 		return null;

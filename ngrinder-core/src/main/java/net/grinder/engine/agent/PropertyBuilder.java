@@ -181,7 +181,7 @@ public class PropertyBuilder {
 			// Make a free memory room size of reservedMemory.
 			long free = new Sigar().getMem().getActualFree() - reservedMemory;
 			long perProcessTotalMemory = Math.max(free / processCount, MIN_PER_PROCESS_MEM_SIZE);
-			desirableXmx = (long) (perProcessTotalMemory * 0.6);
+			desirableXmx = (long) (perProcessTotalMemory * 0.5);
 			permGen = Math.min((long) (perProcessTotalMemory * 0.2), 128 * 1024 * 1024);
 			if (this.useXmxLimit) {
 				desirableXmx = Math.min(DEFAULT_MAX_XMX_SIZE, desirableXmx);
@@ -190,7 +190,7 @@ public class PropertyBuilder {
 			LOGGER.error("Sigar lib link error: {}", e.getMessage());
 			desirableXmx = DEFAULT_XMX_SIZE;
 		} catch (SigarException e) {
-			LOGGER.error("Error occurs while calculating memory size. {}", e.getMessage());
+			LOGGER.error("Error occurred while calculating memory size : {}", e.getMessage());
 			desirableXmx = DEFAULT_XMX_SIZE;
 		}
 

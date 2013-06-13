@@ -60,7 +60,7 @@ public class AgentLostDetectionListener implements SamplingLifeCycleListener {
 		if (singleConsole.getAllAttachedAgentsCount() == 0) {
 			if (countOfLostAgent++ > 10) {
 				perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING,
-								"All agents are unexpectively lost.");
+								"[ERROR] All agents are unexpectively lost.");
 			}
 		} else {
 			countOfLostAgent = 0;

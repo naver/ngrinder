@@ -71,8 +71,8 @@ public abstract class LogCompressUtil {
 					}
 					zos.closeEntry();
 				} catch (IOException e) {
-					LOGGER.error("Error occurs while compressing {}", each.getAbsolutePath());
-					LOGGER.error("The error detail is ", e);
+					LOGGER.error("Error occurs while compressing {} : {}", each.getAbsolutePath(), e.getMessage());
+					LOGGER.debug("Details ", e);
 				} finally {
 					IOUtils.closeQuietly(fio);
 				}
@@ -82,7 +82,7 @@ public abstract class LogCompressUtil {
 			return out.toByteArray();
 		} catch (IOException e) {
 			LOGGER.error("Error occurs while compressing log : {} ", e.getMessage());
-			LOGGER.error("The error detail is ", e);
+			LOGGER.debug("Details : ", e);
 			return null;
 		} finally {
 			IOUtils.closeQuietly(zos);
@@ -119,8 +119,8 @@ public abstract class LogCompressUtil {
 			zos.flush();
 			return out.toByteArray();
 		} catch (IOException e) {
-			LOGGER.error("Error occurs while compress {}", logFile.getAbsolutePath());
-			LOGGER.error("The error detail is ", e);
+			LOGGER.error("Error occurs while compress {} : {}", logFile.getAbsolutePath(), e.getMessage());
+			LOGGER.debug("Details : ", e);
 			return null;
 		} finally {
 			IOUtils.closeQuietly(zos);
@@ -144,8 +144,8 @@ public abstract class LogCompressUtil {
 			fos = new FileOutputStream(toFile);
 			decompress(bio, fos, Long.MAX_VALUE);
 		} catch (IOException e) {
-			LOGGER.error("Error occurs while uncompress {}", toFile.getAbsolutePath());
-			LOGGER.error("The error detail is ", e);
+			LOGGER.error("Error occurs while uncompress to {} : {} ", toFile.getAbsolutePath(), e.getMessage());
+			LOGGER.debug("Details : ", e);
 			return;
 		} finally {
 			IOUtils.closeQuietly(fos);
@@ -185,7 +185,7 @@ public abstract class LogCompressUtil {
 			outputStream.flush();
 		} catch (IOException e) {
 			LOGGER.error("Error occurs while decompressing {}", e.getMessage());
-			LOGGER.error("The error detail is ", e);
+			LOGGER.debug("Details : ", e);
 			return;
 		} finally {
 			IOUtils.closeQuietly(zipInputStream);
@@ -215,8 +215,8 @@ public abstract class LogCompressUtil {
 			}
 			fos.flush();
 		} catch (IOException e) {
-			LOGGER.error("Error occurs while decompressing {}", toFile.getAbsolutePath());
-			LOGGER.error("The error detail is ", e);
+			LOGGER.error("Error occurs while decompressing to {} : {}", toFile.getAbsolutePath(), e.getMessage());
+			LOGGER.debug("Details : ", e);
 			return;
 		} finally {
 			IOUtils.closeQuietly(fos);

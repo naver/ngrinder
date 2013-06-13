@@ -195,7 +195,7 @@ public final class ConsoleCommunicationImplementationEx implements ConsoleCommun
 		};
 
 		m_acceptorProblemListener.setDaemon(true);
-		// Ignore any exception occurs in acceptor problem listener
+		// Ignore any exception in acceptor problem listener
 		m_acceptorProblemListener.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 			@Override
 			public void uncaughtException(Thread t, Throwable e) {

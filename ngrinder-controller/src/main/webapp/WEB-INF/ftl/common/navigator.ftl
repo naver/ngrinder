@@ -1,7 +1,7 @@
 <#import "spring.ftl" as spring/>
 <#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
 <div class="navbar navbar-inverse navbar-fixed-top">
-	<div class="navbar-inner">
+	<div class="navbar-inner" style="filter:none">
 		<div class="container">
 			<a class="brand" href="${req.getContextPath()}/home"><img src="${req.getContextPath()}/img/logo_ngrinder_a_header_inv.png" alt="nGrinder"/></a>
 			<div>

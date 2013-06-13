@@ -115,7 +115,7 @@ public class BaseEntity<M> implements Serializable {
 			return (M) this;
 		} catch (Exception e) {
 			String displayName = (forError == null) ? "Empty" : forError.getDisplayName();
-			throw new NGrinderRuntimeException(displayName + " - Exception occurs while merging entities from "
+			throw new NGrinderRuntimeException(displayName + " - Exception occurred while merging entities from "
 							+ source + " to " + this, e);
 		}
 	}

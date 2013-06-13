@@ -63,7 +63,7 @@ public class AgentControllerDaemon implements Agent {
 			properties = new GrinderProperties(GrinderProperties.DEFAULT_PROPERTIES);
 			agentController = new AgentController(m_eventSyncCondition, currentIp);
 		} catch (GrinderException e) {
-			throw new NGrinderRuntimeException("Exception occurs while initiating agent controller deamon", e);
+			throw new NGrinderRuntimeException("Exception occurred while initiating the agent controller deamon", e);
 		}
 	}
 

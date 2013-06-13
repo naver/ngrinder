@@ -204,7 +204,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
 
 		} catch (GrinderException e) {
-			throw new NGrinderRuntimeException("Exception occurs while creating SingleConsole", e);
+			throw new NGrinderRuntimeException("Exception occurred while creating SingleConsole", e);
 
 		}
 	}
@@ -282,7 +282,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			}
 
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("Exception occurs while shutting down SingleConsole", e);
+			throw new NGrinderRuntimeException("Exception occurred while shutting down SingleConsole", e);
 		} finally {
 			// close all report file
 			for (BufferedWriter bw : fileWriterMap.values()) {
@@ -370,7 +370,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			directory = new Directory(filePath);
 			properties.setAndSaveDistributionDirectory(directory);
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
+			LOGGER.error("Error occurred during setting distribution directory to {} : {}", filePath, e.getMessage());
 			throw new NGrinderRuntimeException(e.getMessage(), e);
 		}
 	}
@@ -550,7 +550,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	/**
-	 * Wait until runningThread is 0. If it's over 20 seconds, Exception occurs
+	 * Wait until runningThread is 0. If it's over 10 seconds, an NGrinderRuntimeException is thrown.
 	 */
 	public void waitUntilAllAgentDisconnected() {
 		int trial = 1;
@@ -729,7 +729,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			checkTooManyError(cumulativeStatistics);
 			lastSamplingPeriod = lastSamplingPeriod + (interval * gap);
 		} catch (RuntimeException e) {
-			LOGGER.error("Error occurs while update statistics " + e.getMessage(), e);
+			LOGGER.error("Error occurred while updating the statistics : {}", e.getMessage());
+			LOGGER.debug("Details : ", e);
 			throw e;
 		}
 	}
@@ -869,7 +870,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	/**
-	 * Check if too many error occurs. If the half of total transaction is error for 10 sec. It
+	 * Check if too many error occurred. If the half of total transaction is error for 10 sec. It
 	 * notifies the {@link ConsoleShutdownListener}
 	 * 
 	 * @param cumulativeStatistics
@@ -1305,7 +1306,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				try {
 					listener.onSamplingStarted();
 				} catch (Exception e) {
-					LOGGER.error("Error occurs while running sampling start listener", e);
+					LOGGER.error("Error occurred while running sampling start listener", e);
 				}
 			}
 		});
@@ -1315,7 +1316,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				try {
 					listener.onSamplingStarted();
 				} catch (Exception e) {
-					LOGGER.error("Error occurs while running sampling start listener", e);
+					LOGGER.error("Error occurred while running sampling start listener", e);
 				}
 			}
 		});
@@ -1328,7 +1329,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				try {
 					listener.onSamplingEnded();
 				} catch (Exception e) {
-					LOGGER.error("Error occurs while running sampling end listener", e);
+					LOGGER.error("Error occurred while running sampling end listener", e);
 				}
 			}
 		});
@@ -1339,7 +1340,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				try {
 					listener.onSamplingEnded();
 				} catch (Exception e) {
-					LOGGER.error("Error occurs while running sampling end listener", e);
+					LOGGER.error("Error occurred while running sampling end listener", e);
 				}
 			}
 		});

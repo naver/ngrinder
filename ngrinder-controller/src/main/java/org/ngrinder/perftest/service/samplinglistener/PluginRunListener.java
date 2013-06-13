@@ -66,8 +66,8 @@ public class PluginRunListener implements SamplingLifeCycleListener {
 			try {
 				each.startSampling(singleConsole, perfTest, perfTestService);
 			} catch (Exception e) {
-				LOGGER.error("While running plugins, the error occurs.");
-				LOGGER.error("Details : ", e);
+				LOGGER.error("While running plugins, the error occurred : {}", e.getMessage());
+				LOGGER.info("Details : ", e);
 			}
 		}
 	}
@@ -78,8 +78,8 @@ public class PluginRunListener implements SamplingLifeCycleListener {
 			try {
 				each.sampling(singleConsole, perfTest, perfTestService, intervalStatistics, cumulativeStatistics);
 			} catch (Exception e) {
-				LOGGER.error("While running plugin the following error occurs");
-				LOGGER.error("Details : ", e);
+				LOGGER.error("While running plugin the following error occurred : {}", e.getMessage());
+				LOGGER.info("Details : ", e);
 			}
 		}
 
@@ -92,8 +92,8 @@ public class PluginRunListener implements SamplingLifeCycleListener {
 			try {
 				each.endSampling(singleConsole, perfTest, perfTestService);
 			} catch (Exception e) {
-				LOGGER.error("While running plugin the following error occurs.");
-				LOGGER.error("Details : ", e);
+				LOGGER.error("While running plugin the following error occurs : {}", e.getMessage());
+				LOGGER.info("Details : ", e);
 			}
 		}
 

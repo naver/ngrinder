@@ -450,7 +450,7 @@ public abstract class CompressionUtil {
 	 * @param destDir
 	 *            destination directory
 	 * @throws IOException
-	 *             occurs when IO has a problem.
+	 *             thrown when having IO problem.
 	 */
 	public static void unjar(File jarFile, String destDir) throws IOException {
 		File dest = new File(destDir);

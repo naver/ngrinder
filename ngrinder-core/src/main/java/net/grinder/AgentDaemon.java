@@ -55,7 +55,7 @@ public class AgentDaemon implements Agent {
 		try {
 			properties = new GrinderProperties(GrinderProperties.DEFAULT_PROPERTIES);
 		} catch (GrinderException e) {
-			throw new NGrinderRuntimeException("Exception occurs while creating AgentDaemon", e);
+			throw new NGrinderRuntimeException("Exception occurred while creating AgentDaemon", e);
 		}
 	}
 
@@ -137,7 +137,7 @@ public class AgentDaemon implements Agent {
 			try {
 				setAgent(new AgentImplementationEx(LOGGER, m_agentConfig)).run(getGrinderProperties());
 			} catch (Exception e) {
-				LOGGER.error("while running agent thread, error occurs", e);
+				LOGGER.error("while running an agent thread, an error occurred", e);
 			}
 			getListeners().apply(new Informer<AgentShutDownListener>() {
 				public void inform(AgentShutDownListener listener) {
@@ -205,7 +205,7 @@ public class AgentDaemon implements Agent {
 			ThreadUtil.stopQuetly(thread, "Agent Daemon is not stopped. So force to stop");
 			thread = null;
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("Exception occurs while shutting down AgentDaemon", e);
+			throw new NGrinderRuntimeException("Exception occurred while shutting down AgentDaemon", e);
 		}
 	}
 
