@@ -52,7 +52,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	 * Constructor.
 	 */
 	public GroovyMavenProjectScriptHandler() {
-		super("GroovyMaven", "", "Groovy Maven Project", "groovy");
+		super("groovy_maven", "", "Groovy Maven Project", "groovy");
 	}
 
 	private static final String RESOURCES = "/src/main/resources/";

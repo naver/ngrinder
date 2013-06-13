@@ -95,6 +95,7 @@ public class GrinderRunnerTest {
 			} else {
 				grinder.getStatistics().getForLastTest().setSuccess(true);
 			}
+			System.out.println(grinder.getRunNumber());
 		}
 
 		@Test
