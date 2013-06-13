@@ -38,6 +38,7 @@ import org.ngrinder.common.util.EncodingUtil;
 import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.User;
+import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.user.repository.UserRepository;
@@ -294,7 +295,7 @@ public class FileEntryRepository {
 	}
 
 	private void addPropertyValue(ISVNEditor editor, FileEntry fileEntry) throws SVNException {
-		if (fileEntry.getFileType() == FileType.PYTHON_SCRIPT) {
+		if (fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
 			editor.changeFileProperty(fileEntry.getPath(), "targetHosts", SVNPropertyValue.create(""));
 		}
 		for (Entry<String, String> each : fileEntry.getProperties().entrySet()) {

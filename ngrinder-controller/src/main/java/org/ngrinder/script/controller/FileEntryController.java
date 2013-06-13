@@ -381,9 +381,7 @@ public class FileEntryController extends NGrinderBaseController {
 		if (fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
 			Map<String, String> map = Maps.newHashMap();
 			map.put("validated", validated);
-			if (StringUtils.isNotBlank(targetHosts)) {
-				map.put("targetHosts", StringUtils.trim(targetHosts));
-			}
+			map.put("targetHosts", StringUtils.trim(targetHosts));
 			fileEntry.setProperties(map);
 		}
 		fileEntryService.save(user, fileEntry);

@@ -15,18 +15,23 @@ package org.ngrinder.script.handler;
 
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
+import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.cli.MavenCli;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.PathUtil;
 import org.ngrinder.common.util.PropertiesWrapper;
+import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.model.User;
+import org.ngrinder.script.model.FileCategory;
 import org.ngrinder.script.model.FileEntry;
 import org.ngrinder.script.model.FileType;
 import org.ngrinder.script.repository.FileEntryRepository;
@@ -185,6 +190,13 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 				fileEntry.setContent(fileContent);
 				fileEntry.setPath(FilenameUtils.normalize(PathUtil.join(path, subpath), true));
 				fileEntry.setDescription("create groovy maven project");
+				String hostName = UrlUtils.getHost(url);
+				if (StringUtils.isNotEmpty(hostName)
+								&& fileEntry.getFileType().getFileCategory() == FileCategory.SCRIPT) {
+					Map<String, String> properties = newHashMap();
+					properties.put("targetHosts", UrlUtils.getHost(url));
+					fileEntry.setProperties(properties);
+				}
 				getFileEntryRepository().save(user, fileEntry, "UTF8");
 			} catch (IOException e) {
 				throw new NGrinderRuntimeException("Error while saving " + each.getName(), e);
