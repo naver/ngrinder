@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Plugin Sampling LifeCycle listner.
+ * Plugin Sampling LifeCycle listener.
  * 
  * @author JunHo Yoon
  * @since 3.1
