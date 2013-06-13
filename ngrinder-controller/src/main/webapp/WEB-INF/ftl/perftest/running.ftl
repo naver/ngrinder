@@ -95,7 +95,7 @@
 		</fieldSet>
 		<div id="running_tps_chart" class="chart" style="width: 530px; height: 300px"></div>
 		<div class="tabbable">
-			<ul class="nav nav-pills" style="" id="sample_tab">
+			<ul class="nav nav-tabs" style="" id="sample_tab">
 				<li><a href="#last_sample_tab" tid="ls"><@spring.message "perfTest.testRunning.latestsample"/></a></li>
 				<li><a href="#accumulated_sample_tab" tid="as"><@spring.message "perfTest.testRunning.accumulatedstatistic"/></a></li>
 			</ul>

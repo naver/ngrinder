@@ -627,6 +627,12 @@ function addValidation() {
 			var errorPlace = $("td." + element.attr("id"));
 			if (errorPlace[0]) {
 				errorPlace.html(error);
+				return;
+			}
+			errorPlace = $("#err_"+element.attr("id"));
+			if (errorPlace[0]) {
+				errorPlace.html(error);
+				return;
 			} else {
 				var $elem = element.closest(".controls");
 				if ($elem[0]) {

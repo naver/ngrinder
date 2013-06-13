@@ -154,7 +154,8 @@
 	<#include "create_folder_modal.ftl">
 	<#include "upload_file_modal.ftl">
 	</#if>
-	<script>
+	
+	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#nav_script").addClass("active");
 			$("#delete_script_button").click(function() {

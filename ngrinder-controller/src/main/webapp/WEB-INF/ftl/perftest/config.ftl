@@ -202,54 +202,50 @@
 				</div>
 			</div>
 			<div class="control-group">
-				<label for="sampling_interval" class="control-label">
-					<@spring.message "perfTest.configuration.samplingInterval"/>
-				</label>
-				<div class="controls">
-					<table width="100%">
-						<colgroup>
-							<col width="100px">
-							<col>
-						</colgroup>
-						<tbody>
-							<tr>
-								<td>
-									<#assign samplingIntervalArray = [1,2,3,4,5]> 
-									<select class="select-item" id="sampling_interval" name="samplingInterval"> 
-										<#list samplingIntervalArray as eachInterval>
-											<option value="${eachInterval}"
-												<#if test?? && test.samplingInterval != 0> 
-													<#if eachInterval == test.samplingInterval> selected="selected" </#if> 
-												<#else> 
-													<#if eachInterval == 2>
+				<div class="row">
+					<div class="span3">
+						<div class="control-group">
+							<label for="sampling_interval" class="control-label">
+								<@spring.message "perfTest.configuration.samplingInterval"/>
+							</label>
+							<div class="controls">
+								<#assign samplingIntervalArray = [1,2,3,4,5]> 
+								<select class="select-item" id="sampling_interval" name="samplingInterval"> 
+									<#list samplingIntervalArray as eachInterval>
+										<option value="${eachInterval}"
+											<#if test?? && test.samplingInterval != 0> 
+												<#if eachInterval == test.samplingInterval> selected="selected" </#if> 
+											<#else> 
+												<#if eachInterval == 2>
 													selected="selected" 
-													</#if> 
-												</#if> >
-												${eachInterval}
-											</option>
-										</#list>
+												</#if> 
+											</#if> >
+											${eachInterval}
+										</option>
+									</#list>
 								</select>
-								</td>
-								<td>
-									<label for="ignore_sample_count" class="control-label" style="width: 150px">
-										<@spring.message "perfTest.configuration.ignoreSampleCount"/>
-									</label>
-									<div class="controls">
-										<input type="text" class="input input-mini" 
-											id="ignore_sample_count" name="ignoreSampleCount" 
-											rel='popover'
-											title='<@spring.message "perfTest.configuration.ignoreSampleCount"/>' 
-											data-html='true'
-											data-content='<@spring.message "perfTest.configuration.ignoreSampleCount.help"/>' 
-											data-placement='top'
-											value="${(test.ignoreSampleCount)!0}">
-									</div>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-
-
+							</div>
+						</div>
+					</div>
+					<div class="span3">
+						<div class="control-group">
+							<label for="ignore_sample_count" class="control-label" style="width: 150px;margin-left:-20px">
+								<@spring.message "perfTest.configuration.ignoreSampleCount"/>
+							</label>
+							<div class="controls">
+								<input type="text" class="input input-mini" 
+										id="ignore_sample_count" name="ignoreSampleCount" 
+										rel='popover'
+										title='<@spring.message "perfTest.configuration.ignoreSampleCount"/>' 
+										data-html='true'
+										data-content='<@spring.message "perfTest.configuration.ignoreSampleCount.help"/>' 
+										data-placement='top'
+										value="${(test.ignoreSampleCount)!0}">
+							</div>
+							<div id="err_ignore_sample_count">
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="control-group">
@@ -292,6 +288,7 @@
 								<div class="controls">
 									<input type="text" class="input input-mini" id="init_processes" name="initProcesses" value="${(test.initProcesses)!0}" />
 								</div>
+								<div id="err_init_processes" style="margin-bottom: 0px;height: 15px;line-height:15px"></div>
 							</div>
 							<div class="control-group">
 								<label for="process_increment" class="control-label"> 
@@ -301,6 +298,7 @@
 									<input type="text" class="input input-mini" id="process_increment" name="processIncrement"
 										value="${(test.processIncrement)!1}">
 								</div>
+								<div id="err_process_increment" style="margin-bottom: 0px;height: 15px;line-height:15px"></div>							
 							</div>
 						</fieldset>
 					</div>
@@ -316,6 +314,8 @@
 										value="${(test.initSleepTime)!0}">
 									<code>MS</code>
 								</div>
+								<div id="err_init_sleep_time" style="margin-bottom: 0px;height: 15px;line-height:15px">
+								</div>
 							</div>
 							<div class="control-group">
 								<label for="process_increment_interval" class="control-label"> 
@@ -325,6 +325,8 @@
 									<input type="text" class="input input-mini" id="process_increment_interval" name="processIncrementInterval"
 										value="${(test.processIncrementInterval)!1000}">
 									<code>MS</code>
+								</div>
+								<div id="err_process_increment_interval" style="margin-bottom: 0px;height: 15px;line-height:15px">
 								</div>
 							</div>
 						</fieldset>
