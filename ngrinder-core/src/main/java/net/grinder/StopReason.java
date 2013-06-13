@@ -21,17 +21,28 @@ package net.grinder;
  */
 public enum StopReason {
 	/** If tps is too low. */
-	TOO_LOW_TPS,
+	TOO_LOW_TPS("Too low TPS"),
 	/** If too many error happen. */
-	TOO_MANY_ERRORS,
+	TOO_MANY_ERRORS("Too many errors"),
 	/** Error while test preparation. */
-	ERROR_WHILE_PREPARE,
+	ERROR_WHILE_PREPARE("Test preparation error"),
 	/** Error while first execution. */
-	SCRIPT_ERROR,
+	SCRIPT_ERROR("Script error"),
 	/** Error by too much overall traffic on the given region. */
-	TOO_MUCH_TRAFFIC_ON_REGION,
+	TOO_MUCH_TRAFFIC_ON_REGION("Too much traffic error"),
 	/** Normal Stop. */
-	NORMAL,
+	NORMAL("Normal stop"),
 	/** Cancel By User. */
-	CANCEL_BY_USER
+	CANCEL_BY_USER("Cancel by user");
+
+	private final String display;
+
+	StopReason(String display) {
+		this.display = display;
+	}
+
+	public String getDisplay() {
+		return display;
+	}
+
 }
