@@ -13,6 +13,8 @@
  */
 package net.grinder.scriptengine.groovy.junit;
 
+import net.grinder.engine.process.JUnitThreadContextUpdater;
+
 import org.junit.runners.model.Statement;
 
 /**
@@ -28,6 +30,7 @@ public class RepetitionStatment extends Statement {
 
 	private final int repetition;
 	private final Statement statement;
+	private JUnitThreadContextUpdater threadContextUpdater;
 
 	/**
 	 * Constructor.
@@ -42,9 +45,29 @@ public class RepetitionStatment extends Statement {
 		this.repetition = Math.max(repetition, 1);
 	}
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param statement
+	 *            statement to be repeated
+	 * @param repetition
+	 *            the repetition count
+	 * @param threadContextUpdater
+	 *            threadContextUpdater
+	 * @since 3.2.1
+	 */
+	public RepetitionStatment(Statement statement, int repetition, JUnitThreadContextUpdater threadContextUpdater) {
+		this.statement = statement;
+		this.threadContextUpdater = threadContextUpdater;
+		this.repetition = Math.max(repetition, 1);
+	}
+
 	@Override
 	public void evaluate() throws Throwable {
 		for (int i = 0; i < repetition; i++) {
+			if (threadContextUpdater != null) {
+				threadContextUpdater.setRunCount(i);
+			}
 			statement.evaluate();
 		}
 	}

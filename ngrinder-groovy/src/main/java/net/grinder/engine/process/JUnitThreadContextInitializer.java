@@ -143,4 +143,13 @@ public class JUnitThreadContextInitializer {
 			m_threadContexts.threadStarted(null);
 		}
 	}
+
+	/**
+	 * Get thread context updater.
+	 * 
+	 * @return JUnitThreadContextUpdater
+	 */
+	public JUnitThreadContextUpdater getThreadContextUpdater() {
+		return new JUnitThreadContextUpdater(m_threadContexts);
+	}
 }

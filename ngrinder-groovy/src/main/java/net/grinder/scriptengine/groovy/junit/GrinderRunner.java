@@ -17,6 +17,7 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 
 import net.grinder.engine.process.JUnitThreadContextInitializer;
+import net.grinder.engine.process.JUnitThreadContextUpdater;
 import net.grinder.scriptengine.exception.AbstractExceptionProcessor;
 import net.grinder.scriptengine.groovy.GroovyExceptionProcessor;
 import net.grinder.scriptengine.groovy.junit.annotation.AfterProcess;
@@ -77,6 +78,7 @@ import org.junit.runners.model.TestClass;
  */
 public class GrinderRunner extends BlockJUnit4ClassRunner {
 	private JUnitThreadContextInitializer threadContextInitializer;
+	private JUnitThreadContextUpdater threadContextUpdater;
 	private TestObjectFactory testTargetFactory;
 	private PerThreadStatement finalPerThreadStatement;
 	private AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
@@ -109,6 +111,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	protected void initializeGrinderContext() {
 		this.threadContextInitializer = new JUnitThreadContextInitializer();
 		this.threadContextInitializer.initialize();
+		this.threadContextUpdater = threadContextInitializer.getThreadContextUpdater();
 		this.finalPerThreadStatement = new PerThreadStatement() {
 			@Override
 			void before() {
@@ -164,7 +167,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 				repeatation = ((Repeat) each).value();
 			}
 		}
-		return repeatation == 1 ? statement : new RepetitionStatment(statement, repeatation);
+		return repeatation == 1 ? statement : new RepetitionStatment(statement, repeatation, threadContextUpdater);
 	}
 
 	@SuppressWarnings("deprecation")
