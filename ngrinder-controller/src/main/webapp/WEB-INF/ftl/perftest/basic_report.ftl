@@ -10,32 +10,32 @@
 			style="margin-left: 10px">
 			<fieldset>
 				<div class="control-group">
-					<label for="agent_input" class="control-label control-label-1"><@spring.message "perfTest.report.tps"/></label>
+					<label class="control-label non-cursor"><@spring.message "perfTest.report.tps"/></label>
 					<div class="controls">
 						<strong><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></strong>
 					</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label"><@spring.message "perfTest.report.meantime"/></label>
+					<label class="control-label non-cursor"><@spring.message "perfTest.report.meantime"/></label>
 					<div class="controls">
 						${(test.meanTestTime!0)?string("0.##")}
 						<code>MS</code>
 					</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label"><@spring.message "perfTest.report.peakTPS"/></label>
+					<label class="control-label non-cursor"><@spring.message "perfTest.report.peakTPS"/></label>
 					<div class="controls">${test.peakTps!0}</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label"><@spring.message "perfTest.report.finishedTest"/></label>
+					<label class="control-label non-cursor"><@spring.message "perfTest.report.finishedTest"/></label>
 					<div class="controls">${test.tests!0}</div>
 				</div>
 				<div class="control-group">
-					<label  class="control-label"><@spring.message "perfTest.report.errors"/></label>
+					<label  class="control-label non-cursor"><@spring.message "perfTest.report.errors"/></label>
 					<div class="controls">${test.errors!0}</div>
 				</div>
 				<div class="control-group">
-                    <label class="control-label"><@spring.message "perfTest.report.runtime"/></label>
+                    <label class="control-label non-cursor"><@spring.message "perfTest.report.runtime"/></label>
                     <div class="controls">${test.runtimeStr!""}</div>
                 </div>
 			</fieldset>
@@ -59,10 +59,10 @@
 			<legend>
 				<@spring.message "perfTest.report.logs"/>
 				<span style="margin-top:10px;margin-left:10px" 
-				rel="popover"
+					rel="popover"
 					data-html="true" 
 					data-content='<@spring.message "perfTest.report.logs.help"/>' 
-					title='<@spring.message "perfTest.report.logs"/>' type="toggle" id="log_comment"><i class="icon-question-sign"></i></span>
+					title='<@spring.message "perfTest.report.logs"/>' type="toggle" id="log_comment"><i class="icon-question-sign pointer-cursor"></i></span>
 			</legend>
 		</fieldSet>
 		<div style="mgin-left: 10px">

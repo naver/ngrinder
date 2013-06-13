@@ -231,5 +231,20 @@ legend a {
 }
 
 .alert-error {
-		z-index:1151;
-}	 
+	z-index:1151;
+}
+
+.non-cursor {
+	cursor:default;
+}
+
+.pointer-cursor {
+	cursor:pointer;
+}
+
+.small_error_box {
+	height: 15px;
+	line-height: 15px;
+	margin-bottom:-10px;
+	width:300px
+}

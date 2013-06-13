@@ -25,7 +25,7 @@
 					name="userName" value="${(user.userName)!}"
 					id="user_name" rel="popover" 
 					data-content='<@spring.message "user.info.warning.userName"/>'
-					data-placement='top'
+					data-placement='bottom'
 					title='<@spring.message "user.option.name"/>'/>
 			</div>
 		</div>

@@ -6,51 +6,52 @@
 		<div class="form-horizontal form-horizontal-2">
 
 			<div class="control-group">
-				<label for="agent_count" class="control-label">
-					<@spring.message "perfTest.configuration.agent"/>
-				</label>
-				<div class="controls">
-					<table width="100%">
-						<colgroup>
-							<col width="160px">
-							<col>
-						</colgroup>
-						<tbody>
-							<tr>
-								<td>
-									<div class="input-append">
-										<input type="text" class="input input-mini" 
-											rel="popover" id="agent_count" name="agentCount"
-											value="${(test.agentCount)!0}" data-html="true"
-											data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
-											title='<@spring.message "perfTest.configuration.agent"/>'/>
-										<span class="add-on">
-											<@spring.message "perfTest.configuration.max"/>
-											<span id="maxAgentCount"></span>
-										</span>
-									</div>
-								</td>
-								<td>
-									<#if clustered == true>
-										<label for="region" class="region"><@spring.message "perfTest.configuration.region"/>
-											<span rel="popover" data-html="true"
-												data-content='<@spring.message "perfTest.configuration.region.help"/>' 
-												data-placement='top' title='<@spring.message "perfTest.configuration.region"/>' > 
-												<i class="icon-question-sign" style="vertical-align: middle;"></i>
-											</span>
-										</label> 
-										<select id="region" name="region" class="pull-right" style="width: 110px">
-											<#list regionAgentCountMap?keys as eachRegion>
-												<option value="${eachRegion}" <#if (test?? && test.region?? && test.region == eachRegion)>selected</#if> > 
-													<@spring.message "${eachRegion}"/>
-												</option> 
-											</#list>
-										</select> 
-									</#if>
-								</td>
-							</tr>
-						</tbody>
-					</table>
+				
+				<div class="row">
+					<div class="span4">
+						<div class="control-group">
+							<label for="agent_count" class="control-label">
+								<@spring.message "perfTest.configuration.agent"/>
+							</label>
+							<div class="controls">
+								<div class="input-append">
+									<input type="text" class="input input-mini" 
+										rel="popover" id="agent_count" name="agentCount"
+										value="${(test.agentCount)!0}" data-html="true"
+										data-content='<@spring.message "perfTest.configuration.agent.help"/>' 
+										title='<@spring.message "perfTest.configuration.agent"/>'/>
+									<span class="add-on">
+										<@spring.message "perfTest.configuration.max"/>
+										<span id="maxAgentCount"></span>
+									</span>
+								</div>
+							
+							</div>
+							<div id="err_agent_count" class="small_error_box" style="margin-left:120px;">
+							</div>
+						</div>
+					</div>
+					<div class="span2">
+						<#if clustered == true>
+							<label for="region" class="control-label" style="margin-left:-50px;width:80px">
+								<@spring.message "perfTest.configuration.region"/>
+								<span rel="popover" data-html="true"
+									data-content='<@spring.message "perfTest.configuration.region.help"/>' 
+									data-placement='top' title='<@spring.message "perfTest.configuration.region"/>' > 
+									<i class="icon-question-sign" style="vertical-align: middle;"></i>
+								</span>
+							</label> 
+							<select id="region" name="region" class="pull-right" style="width: 110px">
+								<#list regionAgentCountMap?keys as eachRegion>
+									<option value="${eachRegion}" <#if (test?? && test.region?? && test.region == eachRegion)>selected</#if> > 
+										<@spring.message "${eachRegion}"/>
+									</option> 
+								</#list>
+							</select> 
+							<div id="err_aregion">
+							</div>
+						</#if>
+					</div>
 				</div>
 			</div>
 			<div class="control-group">
@@ -81,7 +82,7 @@
 							</td>
 							<td>
 								<div class="pull-right">
-									<span class="badge badge-info pull-right" style="padding:10px 20px 10px 20px;-webkit-border-radius:20px;border-radius:20px;-moz-border-radius:20px">
+									<span class="badge badge-info pull-right" style="padding:7px 20px 7px 20px;-webkit-border-radius:20px;border-radius:20px;-moz-border-radius:20px">
 										<span id="vuserlabel"><@spring.message "perfTest.configuration.availVuser"/></span><span id="total_vuser"></span>
 									</span>
 								</div>
@@ -242,7 +243,7 @@
 										data-placement='top'
 										value="${(test.ignoreSampleCount)!0}">
 							</div>
-							<div id="err_ignore_sample_count">
+							<div id="err_ignore_sample_count" class="small_error_box" style="margin-left:100px">
 							</div>
 						</div>
 					</div>

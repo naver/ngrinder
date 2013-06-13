@@ -124,7 +124,7 @@
 	}
 	
 	.form-horizontal .control-group {
-		margin-bottom:15px;
+		margin-bottom:10px;
 	}
 	
 	.controls .span3 {
@@ -150,13 +150,7 @@
 	}
 
 	label.region {
-		position: absolute;
-		margin-top: 4px;
-		display: inline; 
-		color: #666666; 
-		font-family: Tahoma,applegothic,sans-serif; 
-		font-size: 12px; 
-		font-weight: 700;
+		margin-left:-40px;
 	}
 	
 	.monitor_status {
