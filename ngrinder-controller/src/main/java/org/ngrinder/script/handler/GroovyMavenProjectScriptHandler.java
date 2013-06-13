@@ -211,7 +211,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	@Override
 	public FileEntry getDefaultQuickTestFilePath(String path) {
 		FileEntry fileEntry = new FileEntry();
-		fileEntry.setPath(path + "/src/main/java/Test1.groovy");
+		fileEntry.setPath(path + "/src/main/java/TestRunner.groovy");
 		return fileEntry;
 	}
 

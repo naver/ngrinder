@@ -24,34 +24,34 @@ import HTTPClient.HTTPResponse
  * @author ${userName}
  */
 @RunWith(GrinderRunner)
-class Test1 {
+class TestRunner {
 
-	public static GTest test;
-	public static HTTPRequest request;
+	public static GTest test
+	public static HTTPRequest request
 
 	@BeforeProcess
 	public static void beforeProcess() {
-		HTTPPluginControl.getConnectionDefaults().timeout = 6000;
-		test = new GTest(1, "${name}");
-		request = new HTTPRequest();
-		test.record(request);
-		grinder.logger.info("before process.");
+		HTTPPluginControl.getConnectionDefaults().timeout = 6000
+		test = new GTest(1, "${name}")
+		request = new HTTPRequest()
+		test.record(request)
+		grinder.logger.info("before process.")
 	}
 
 
 	@BeforeThread
 	public void beforeThread() {
-		grinder.statistics.delayReports=true;
-		grinder.logger.info("before thread.");
+		grinder.statistics.delayReports=true
+		grinder.logger.info("before thread.")
 	}
 
 	@Test
 	public void test(){
-		HTTPResponse result = request.GET("${url}");
+		HTTPResponse result = request.GET("${url}")
 		if (result.statusCode == 301 || result.statusCode == 302) {
-			grinder.logger.warn("Warning. The response may not be correct. The response code was {}.", result.statusCode);
+			grinder.logger.warn("Warning. The response may not be correct. The response code was {}.", result.statusCode)
 		} else {
-			assertThat(result.statusCode, is(200));
+			assertThat(result.statusCode, is(200))
 		}
 	}
 }

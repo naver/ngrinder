@@ -23,6 +23,7 @@ import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilationUnit;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.Phases;
+import org.ngrinder.script.model.FileEntry;
 import org.springframework.stereotype.Component;
 
 /**
@@ -82,5 +83,18 @@ public class GroovyScriptHandler extends ScriptHandler {
 	@Override
 	public Integer displayOrder() {
 		return 200;
+	}
+	
+	/**
+	 * Get the default quick test file.
+	 * 
+	 * @param basePath
+	 *            base path
+	 * @return quick test file
+	 */
+	public FileEntry getDefaultQuickTestFilePath(String basePath) {
+		FileEntry fileEntry = new FileEntry();
+		fileEntry.setPath(basePath + "/TestRunner." + getExtension());
+		return fileEntry;
 	}
 }
