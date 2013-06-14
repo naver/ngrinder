@@ -169,7 +169,7 @@
 		}
 		
 		function deleteUsers(ids, names) {
-			bootbox.confirm('<@spring.message "user.list.confirm.delete"/> ' + names + '?', '<@spring.message "common.button.cancel"/>', ''<@spring.message "common.button.ok"/>', function(result) {
+			bootbox.confirm('<@spring.message "user.list.confirm.delete"/> ' + names + '?', '<@spring.message "common.button.cancel"/>', '<@spring.message "common.button.ok"/>', function(result) {
 				if (result) {
 					document.location.href="${req.getContextPath()}/user/delete?userIds=" + ids;
 				}
