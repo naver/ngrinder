@@ -26,6 +26,7 @@ import java.lang.annotation.Target;
  * 
  * In case of there are only one test method, {@link RunRate} will be ignored because it's not
  * meaningful.
+ * 
  * <pre>
  * 
  * &#064;Repeat(100)
@@ -54,5 +55,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface RunRate {
+	/**
+	 * Run rate from 0 to 100.
+	 * 
+	 * @return run rate
+	 */
 	int value();
 }
