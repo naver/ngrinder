@@ -120,7 +120,7 @@
 							<#assign totalVuser = (test.vuserPerAgent) * (test.agentCount) />
 							<#assign deletable = !(test.status.deletable) />
 							<#assign stoppable = !(test.status.stoppable) />
-							<tr id="tr${test.id}">
+							<tr id="tr${test.id}" class='${["odd", ""][test_index%2]}'>
 								<td class="center">
 									<input id="check_${test.id}" type="checkbox" class="perf_test checkbox" value="${test.id}" status="${test.status}" <#if deletable>disabled</#if>>
 								</td>

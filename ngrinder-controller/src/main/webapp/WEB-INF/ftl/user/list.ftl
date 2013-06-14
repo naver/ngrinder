@@ -68,8 +68,8 @@
 			<tbody>
 				
 				<#list userList as user>
-				<tr>
-					<td class="center"><input type="checkbox" id="user_info_check"<#if user.userId == "admin">disabled</#if>
+				<tr class='${["odd", ""][user_index%2]}'>
+					<td class="center"><input type="checkbox" class="checkbox" id="user_info_check"<#if user.userId == "admin">disabled</#if>
 						value="${user.userId}" uname="${user.userName}"/></td>
 					<td class="ellipsis"><a href="${req.getContextPath()}/user/${user.userId}">${user.userName}</a></td>
 					<td title="${user.role.fullName}">${user.role.fullName}</td>

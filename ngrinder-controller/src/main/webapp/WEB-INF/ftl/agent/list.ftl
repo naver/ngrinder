@@ -54,7 +54,7 @@
 				<#if agents?has_content>
 					<#list agents as agent>
 						<tr>
-							<td class="center"><input type="checkbox" value="${agent.id}"></td>
+							<td class="center"><input type="checkbox" class="checkbox" value="${agent.id}"></td>
 							<td><a href="${req.getContextPath()}/agent/${agent.id}" target="_self">${agent.ip}</a></td>
 							<td>${(agent.port)!}</td>
 							<td class="ellipsis" title="${(agent.hostName)!}">${(agent.hostName)!}</td>
