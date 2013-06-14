@@ -875,6 +875,12 @@ function bindEvent() {
 		$("#run_count_radio").click();
 	});
 	
+	$('#message_div').ajaxSend(function(e, xhr, settings) {
+		var url = settings.url;
+		if ((url.indexOf("resource") > 0 || url.indexOf("script") > 0)) {
+			showProgressBar("<@spring.message "perfTest.detail.message.updateResource"/>");
+		}
+	});
 <#if clustered>
 	var $region = $("#region");
 	$region.select2();
@@ -972,8 +978,9 @@ function updateScript() {
 				$scriptSelection.append($("<option value='' revision='-1' validated='false'>" + selectedScript +"</option>"));
 				$scriptSelection.select2("val", ""); 
 			}
-
+		
 			bindNewScript($scriptSelection, true);
+			hideProgressBar();
 		},
 		error : function() {
 			showErrorMsg("<@spring.message "common.error.error"/>");
@@ -987,13 +994,6 @@ function updateScriptResources(first) {
 	if (!scriptName) {
 		return;
 	}
-	
-	$('#message_div').ajaxSend(function(e, xhr, settings) {
-		var url = settings.url;
-		if (url.indexOf("resource") > 0 && first == false) {
-			showProgressBar("<@spring.message "perfTest.detail.message.updateResource"/>");
-		}
-	});
 	
 	$.ajax({
 		url : "${req.getContextPath()}/perftest/resource",
