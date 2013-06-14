@@ -182,7 +182,7 @@ public class PropertyBuilder {
 			long free = new Sigar().getMem().getActualFree() - reservedMemory;
 			long perProcessTotalMemory = Math.max(free / processCount, MIN_PER_PROCESS_MEM_SIZE);
 			desirableXmx = (long) (perProcessTotalMemory * 0.5);
-			permGen = Math.min((long) (perProcessTotalMemory * 0.2), 128 * 1024 * 1024);
+			permGen = Math.min(Math.max((long) (perProcessTotalMemory * 0.2), 50L * 1024 * 1024), 128 * 1024 * 1024);
 			if (this.useXmxLimit) {
 				desirableXmx = Math.min(DEFAULT_MAX_XMX_SIZE, desirableXmx);
 			}
