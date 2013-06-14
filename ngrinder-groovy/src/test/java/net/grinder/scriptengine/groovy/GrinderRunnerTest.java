@@ -31,6 +31,7 @@ import net.grinder.scriptengine.groovy.junit.GrinderRunner;
 import net.grinder.scriptengine.groovy.junit.annotation.AfterThread;
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread;
 import net.grinder.scriptengine.groovy.junit.annotation.Repeat;
+import net.grinder.scriptengine.groovy.junit.annotation.RunRate;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -64,7 +65,7 @@ public class GrinderRunnerTest {
 		});
 	}
 
-	@Repeat(3)
+	@Repeat(100)
 	@RunWith(GrinderRunner.class)
 	public static class TestSample {
 		private static HTTPRequest request = null;
@@ -86,22 +87,20 @@ public class GrinderRunnerTest {
 			grinder.getStatistics().setDelayReports(true);
 		}
 
+		@RunRate(50)
 		@Test
 		public void doTest() throws Exception {
-			HTTPResponse result = request.GET("http://www.google.com");
-
+			HTTPResponse result = request.GET("http://www.naver.com");
 			if (result.getStatusCode() != 200) {
 				grinder.getStatistics().getForLastTest().setSuccess(false);
 			} else {
 				grinder.getStatistics().getForLastTest().setSuccess(true);
 			}
-			System.out.println(grinder.getRunNumber());
 		}
 
 		@Test
 		public void doTest2() throws Exception {
 			grinder.getStatistics().setDelayReports(true);
-			System.out.println("여기");
 			HTTPResponse result = request.GET("http://www.google.co.kr");
 			if (result.getStatusCode() != 200) {
 				grinder.getStatistics().getForLastTest().setSuccess(false);

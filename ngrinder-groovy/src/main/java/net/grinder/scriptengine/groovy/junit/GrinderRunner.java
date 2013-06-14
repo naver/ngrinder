@@ -25,17 +25,20 @@ import net.grinder.scriptengine.groovy.junit.annotation.AfterThread;
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess;
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread;
 import net.grinder.scriptengine.groovy.junit.annotation.Repeat;
+import net.grinder.scriptengine.groovy.junit.annotation.RunRate;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.internal.runners.model.EachTestNotifier;
+import org.junit.internal.runners.model.MultipleFailureException;
 import org.junit.internal.runners.statements.RunAfters;
 import org.junit.internal.runners.statements.RunBefores;
 import org.junit.rules.MethodRule;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
+import org.junit.runner.Runner;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
@@ -82,6 +85,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	private TestObjectFactory testTargetFactory;
 	private PerThreadStatement finalPerThreadStatement;
 	private AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
+	private boolean enableRateRunner = true;
 
 	/**
 	 * Constructor.
@@ -134,7 +138,11 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	@Override
 	public void run(RunNotifier notifier) {
 		registerRunNotifierListener(notifier);
-		EachTestNotifier testNotifier = new EachTestNotifier(notifier, getDescription());
+		Description description = getDescription();
+		if (description.testCount() == 1) {
+			enableRateRunner = false;
+		}
+		EachTestNotifier testNotifier = new EachTestNotifier(notifier, description);
 		try {
 			Statement statement = classBlock(notifier);
 			statement.evaluate();
@@ -179,7 +187,15 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 		statement = withBefores(method, testObject, statement);
 		statement = withAfters(method, testObject, statement);
 		statement = withRules(method, testObject, statement);
+		if (enableRateRunner) {
+			statement = withRunRate(method, testObject, statement);
+		}
 		return statement;
+	}
+
+	protected Statement withRunRate(FrameworkMethod method, Object target, Statement statement) {
+		RunRate runRate = method.getAnnotation(RunRate.class);
+		return runRate == null ? statement : new RunRateStatment(statement, runRate.value());
 	}
 
 	private Statement withRules(FrameworkMethod method, Object target, Statement statement) {
