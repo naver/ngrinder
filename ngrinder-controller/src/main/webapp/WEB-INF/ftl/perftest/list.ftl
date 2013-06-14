@@ -386,9 +386,7 @@
 				if(!(perTestStatus == "FINISHED" || perTestStatus == "STOP_BY_ERROR"|| perTestStatus == "STOP_ON_ERROR" || perTestStatus == "CANCELED"))
 					return this.value;
 		  	}).get();
-		  	if (ids.length == 0) {
-		  		return;
-		  	}
+		  	
 		    $.ajax({
 			    url: '${req.getContextPath()}/perftest/update_status', 
 			    type: 'POST',
@@ -411,6 +409,9 @@
 			    		}
 			    		updateStatus(data[i].id, data[i].name, data[i].icon, data[i].stoppable, data[i].deletable, data[i].message);
 			    	}
+			    	if (ids.length == 0) {
+		  				return;
+		  			}
 			    	setTimeout(updateStatuses, 2000);
 			    }
 		    });

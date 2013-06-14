@@ -1,17 +1,17 @@
 <div class="alert message-div" id="message_div" style="display:none"></div>
-<div class="alert message-div alert-error" id="errorMsgDiv" style="display:none">
-	<button class="close" id="errorMsgDivBtn">&times;</button>
+<div class="alert message-div alert-error" id="error_msg_div" style="display:none">
+	<button class="close" id="error_msg_div_btn">&times;</button>
 	<h4 class="alert-heading">ERROR</h4>
 	<span style="margin-left:20px"></span>
 </div>
-<div class="progress progress-striped active message-div" id="progressBarDiv" style="display:none">
+<div class="progress progress-striped active message-div" id="progress_bar_div" style="display:none">
   <div class="bar" style="width: 100%;"></div>
 </div>
 <script type="text/javascript">
 	var msgTimeout;
 	$(document).ready(function() {
-		$("#errorMsgDivBtn").click(function() {
-			var $div = $("#errorMsgDiv");
+		$("#error_msg_div_btn").click(function() {
+			var $div = $("#error_msg_div");
 			$div.fadeOut(100);
 			$div.children("span").html("");
 		});
@@ -52,19 +52,19 @@
 	}
 	
 	function showErrorMsg(message) {
-		var $div = $("#errorMsgDiv");
+		var $div = $("#error_msg_div");
 		$div.hide();
 		$div.children("span").html(message);
 		$div.fadeIn(100);
 	}
 	
 	function showProgressBar(msg) {
-		$("#progressBarDiv div").text(msg);
-		$("#progressBarDiv").fadeIn(500);
+		$("#progress_bar_div div").text(msg);
+		$("#progress_bar_div").fadeIn(500);
 	}
 	
 	function hideProgressBar() {
-		$("#progressBarDiv").fadeOut(500);
-		$("#progressBarDiv").children("div").text("");
+		$("#progress_bar_div").fadeOut(500);
+		$("#progress_bar_div").children("div").text("");
 	}
 </script>
