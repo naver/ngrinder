@@ -50,7 +50,7 @@
 		</div>
 	</div>
 </div>
-<div class="container <#if announcement?has_content><#else>hidden</#if>" style="margin:0 auto" id="announcement_container">
+<div class="container <#if announcement?has_content><#else>hidden</#if>" style=" margin-bottom:-20px" id="announcement_container">
 	<div class="alert alert-block" style="padding:5px 20px;">  
 		<div class="page-header" style="margin:0; padding-bottom:2px">
 			<span><h5 style="margin-top:0px; margin-bottom:0px"><@spring.message "announcement.alert.title"/></h5> <a href="#" id="hide_announcement">

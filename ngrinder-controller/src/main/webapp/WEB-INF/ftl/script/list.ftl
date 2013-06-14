@@ -10,7 +10,7 @@
     <#include "../common/navigator.ftl">
 	<div class="container">
 		<img src="${req.getContextPath()}/img/bg_script_banner_en.png?${nGrinderVersion}"/>
-		<div class="well form-inline search-bar">
+		<div class="well form-inline search-bar" style="margin-top:0px" > 
 			<table style="width:100%">
 				<tr>
 					<td>

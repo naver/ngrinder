@@ -24,7 +24,7 @@
 		<div class="container">
 			<img src="${req.getContextPath()}/img/bg_perftest_banner_en.png?${nGrinderVersion}"/>
 			
-			<form id="test_list_form" class="well form-inline search-bar" action="${req.getContextPath()}/perftest/list" method="POST">
+			<form id="test_list_form" class="well form-inline search-bar" style="margin-top:0px" action="${req.getContextPath()}/perftest/list" method="POST">
 				<input type="hidden" id="sort_column" name="page.sort" value="${sortColumn!'lastModifiedDate'}">
 				<input type="hidden" id="sort_direction" name="page.sort.dir" value="${sortDirection!'desc'}">
 		
