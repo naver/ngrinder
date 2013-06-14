@@ -6,14 +6,18 @@
 		<div class="control-group">
 			<label class="control-label" for="user_id"><@spring.message "user.info.form.userId"/></label>
 			<div class="controls">
-				<input type="text" class="span4" id="user_id" 
+				<#assign userIdMsg>
+					<@spring.message "user.info.warning.userId.intro"/> <@spring.message "common.form.rule.userId"/> 
+				</#assign>
+				<input type="text" class="span4"  
 					name="userId" value="${(user.userId)!}"
+					id="user_id"
 				    rel="popover" 
-					data-content='<@spring.message "user.info.warning.userId.intro"/> <@spring.message "common.form.rule.userId"/>'
 					data-placement='bottom'
+					data-html="true"
+					data-content="${userIdMsg?html}"
 					title='<@spring.message "user.info.form.userId"/>'
-					<#if user?? && user.userId??>readonly</#if> >
-				<span id="userIdError_span_id" class="help-inline"> </span>
+					<#if user?? && user.userId??>readonly</#if> />
 				<input type="hidden" id="id" name="id" value="${(user.id)!}"/>
 			</div>
 		</div>
