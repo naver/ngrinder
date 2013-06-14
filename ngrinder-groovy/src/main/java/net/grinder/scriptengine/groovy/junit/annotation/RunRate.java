@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  * 
  * 
  * In case of there are only one test method, {@link RunRate} will be ignored because it's not
- * meaningful.
+ * meaningful. In addition, in the nGrinder script validation page, {@link RunRate} is also ignored.
  * 
  * <pre>
  * 

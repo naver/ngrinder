@@ -20,6 +20,7 @@ import java.util.Map;
 
 import net.grinder.engine.process.JUnitThreadContextInitializer;
 import net.grinder.engine.process.JUnitThreadContextUpdater;
+import net.grinder.script.Grinder;
 import net.grinder.scriptengine.exception.AbstractExceptionProcessor;
 import net.grinder.scriptengine.groovy.GroovyExceptionProcessor;
 import net.grinder.scriptengine.groovy.junit.annotation.AfterProcess;
@@ -142,7 +143,8 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	public void run(RunNotifier notifier) {
 		registerRunNotifierListener(notifier);
 		Description description = getDescription();
-		if (description.testCount() == 1) {
+		if (description.testCount() == 1
+						|| Grinder.grinder.getProperties().getBoolean("grinder.script.validation", false)) {
 			enableRateRunner = false;
 		}
 		EachTestNotifier testNotifier = new EachTestNotifier(notifier, description);
