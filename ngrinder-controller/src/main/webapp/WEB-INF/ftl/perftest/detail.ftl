@@ -43,6 +43,7 @@
 		z-index:1151;
 	}
 	
+	
 	div.chart {
 		border: 1px solid #878988;
 		margin-bottom: 12px;
@@ -327,7 +328,7 @@
 			<a class="btn btn-primary" id="run_now_btn"><@spring.message "perfTest.testRunning.runNow"/></a> <a class="btn btn-primary" id="add_schedule_btn"><@spring.message "perfTest.testRunning.schedule"/></a>
 		</div>
 	</div>
-
+    <#include "host_modal.ftl">
 <script src="${req.getContextPath()}/plugins/datepicker/js/bootstrap-datepicker.js"></script>
 <script src="${req.getContextPath()}/js/bootstrap-slider.min.js"></script>
 <script src="${req.getContextPath()}/js/rampup.js?${nGrinderVersion}"></script>

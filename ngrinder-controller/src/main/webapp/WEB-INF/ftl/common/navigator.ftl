@@ -1,5 +1,10 @@
 <#import "spring.ftl" as spring/>
 <#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
+<style>
+	#error_msg_div {
+		z-index:1152;
+	}
+</style>
 <div class="navbar navbar-inverse navbar-fixed-top">
 	<div class="navbar-inner" style="filter:none">
 		<div class="container">

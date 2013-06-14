@@ -7,7 +7,7 @@
 		<form class="form-horizontal form-horizontal-4" method="post" target="_self" id="createFolderForm" action="${req.getContextPath()}/script/create/${currentPath}">
 			<fieldset>
 				<div class="control-group">
-					<label for="folderNameInput" class="control-label">
+					<label for="folder_name_input" class="control-label">
 						<@spring.message "script.list.label.folderName"/>
 					</label>
 					<div class="controls"> 
@@ -15,7 +15,7 @@
 					  	<@spring.message "common.form.rule.sampleName"/>
 					  </#assign>
 					  <input type="hidden" name="type" value="folder"/>
-					  <input type="text" id="folderNameInput" name="folderName"
+					  <input type="text" id="folder_name_input" name="folderName"
 					  		class="span2" 
 					  		rel='create_folder_modal_popover'
 							title='<@spring.message "script.list.label.folderName"/>'
@@ -39,7 +39,7 @@
 	$(document).ready(function() {
 		$("input[rel='create_folder_modal_popover']").popover({trigger: 'focus', container:'#create_folder_modal'});
 		$("#create_folder_button").click(function() {
-			var $name = $("#folderNameInput");
+			var $name = $("#folder_name_input");
 			if (checkEmptyByObj($name)) {
 				markInput($name, false, "<@spring.message "common.form.validate.empty"/>");
 				return;

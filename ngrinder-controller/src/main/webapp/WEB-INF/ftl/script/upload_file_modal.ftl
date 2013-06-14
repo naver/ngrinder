@@ -9,19 +9,19 @@
 			<fieldset>
 				<input type="hidden" id="path" name="path"/>
 				<div class="control-group">
-					<label for="discriptionInput" class="control-label"><@spring.message "script.option.commit"/></label>
+					<label for="descripton_input" class="control-label"><@spring.message "script.option.commit"/></label>
 					<div class="controls">
-					  <input type="text" id="discriptionInput" name="description">
+					  <input type="text" id="descripton_input" name="description">
 					  <span class="help-inline"></span>
 					</div>
 				</div>
 				<div class="control-group">
-					<label for="fileInput" class="control-label"><@spring.message "script.list.label.file"/></label>
+					<label for="file_input" class="control-label"><@spring.message "script.list.label.file"/></label>
 					<div class="controls" rel='upload_file_modal_popover' 
 					  		title='<@spring.message "script.list.popover.upload.title"/>'
 					  		data-html='true'
 					   		data-content='<@spring.message "script.list.popover.upload.content"/>'>
-					  <input type="file" class="input-file" id="fileInput" name="uploadFile"/> 
+					  <input type="file" class="input-file" id="file_input" name="uploadFile"/> 
 					  <span class="help-inline"></span>
 					</div>
 				</div>				

@@ -27,7 +27,7 @@
 								<td>
 								<#if svnUrl?has_content>
 									<div class="input-prepend pull-right" rel="popover" 
-						               		title="Subversion" placement="bottom"
+						               		title="Subversion" data-placement="bottom"
 						               		data-content='<@spring.message "script.list.message.svn"/>'
 						               		data-html="true"> 
 						               <span class="add-on" style="cursor:default">SVN</span><span class="input-xlarge uneditable-input span7" style="cursor:text">${svnUrl}</span>

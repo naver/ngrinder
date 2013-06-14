@@ -161,6 +161,32 @@ public class FileEntryController extends NGrinderBaseController {
 	}
 
 	/**
+	 * Get the Script path BreadCrumbs HTML string.
+	 * 
+	 * @param user
+	 *            user
+	 * @param path
+	 *            path
+	 * @return generated HTML
+	 */
+	public String getScriptPathBreadcrumbs(User user, String path) {
+		String contextPath = fileEntryService.getCurrentContextPathFromUserRequest();
+		String[] parts = StringUtils.split(path, '/');
+		StringBuilder accumulatedPart = new StringBuilder(contextPath).append("/script/list");
+		StringBuilder retrunHtml = new StringBuilder();
+		for (int i = 0; i < parts.length; i++) {
+			String each = parts[i];
+			accumulatedPart.append("/").append(each);
+			if (i != parts.length - 1) {
+				retrunHtml.append("<a target='_path_view' href='").append(accumulatedPart).append("'>").append(each).append("</a>").append("/");
+			} else {
+				retrunHtml.append(each);
+			}
+		}
+		return retrunHtml.toString();
+	}
+
+	/**
 	 * Add a folder on the given path.
 	 * 
 	 * @param user
@@ -246,6 +272,7 @@ public class FileEntryController extends NGrinderBaseController {
 								scriptHandler, createLibAndResources));
 			}
 		}
+		model.addAttribute("breadcombPath", getScriptPathBreadcrumbs(user, PathUtil.join(path, fileName)));
 		model.addAttribute("scriptHandler", scriptHandler);
 		model.addAttribute("createLibAndResource", createLibAndResources);
 		return "script/editor";
@@ -276,6 +303,7 @@ public class FileEntryController extends NGrinderBaseController {
 		model.addAttribute("file", script);
 		model.addAttribute("scriptHandler", fileEntryService.getScriptHandler(script));
 		model.addAttribute("ownerId", user.getUserId());
+		model.addAttribute("breadcombPath", getScriptPathBreadcrumbs(user, path));
 		return "script/editor";
 	}
 

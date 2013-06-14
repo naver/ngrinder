@@ -13,6 +13,7 @@
 						  	<@spring.message "common.form.rule.sampleName"/>
 						</#assign>	
 					  	<input type="text" id="script_name_input" name="fileName"
+					  		class="input-medium" 
 					  		rel="create_script_modal_popover"
 					  		data-html="true"
 					  		data-content="${sample_name_message?html}"
@@ -38,6 +39,7 @@
 					<div class="controls">
 					  <input type="text" id="url_input" class="url" 
 					         placeholder='<@spring.message "home.placeholder.url"/>' 
+					         class="input-medium" 
 					         name="testUrl"
 					         rel="create_script_modal_popover"
 					  		 data-html="true"

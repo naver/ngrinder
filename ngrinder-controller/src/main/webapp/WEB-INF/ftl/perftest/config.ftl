@@ -42,7 +42,7 @@
 								</span>
 							</label> 
 							<select id="region" name="region" class="pull-right" style="width: 110px">
-								<#list regionAgentCountMap?keys as eachRegion>
+								<#list regionList as eachRegion>
 									<option value="${eachRegion}" <#if (test?? && test.region?? && test.region == eachRegion)>selected</#if> > 
 										<@spring.message "${eachRegion}"/>
 									</option> 

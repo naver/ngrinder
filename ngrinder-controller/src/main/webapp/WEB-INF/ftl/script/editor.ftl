@@ -57,7 +57,8 @@
 												<label class="control-label" for="testName"><@spring.message "script.option.name"/></label>
 											</td>
 											<td>
-												<input type="text" id="script_name" class="span6" name="path" value="${(file.path)!}" readonly/>
+												<span class="input-large uneditable-input span6" style="cursor:text">${breadcombPath}</span>
+												<input type="hidden" id="script_name" class="span6" name="path" value="${(file.path)!}" readonly/>
 											</td>
 											<td>
 											<#if scriptHandler.isValidatable()>
@@ -132,6 +133,7 @@
 	
 	<#include "../common/codemirror.ftl">
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}.js"></script>
+    <#include "../perftest/host_modal.ftl">
     <script>
     	var changed = false;
     	$(window).on('beforeunload', function() {
