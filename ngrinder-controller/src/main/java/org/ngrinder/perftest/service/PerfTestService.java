@@ -668,8 +668,10 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			User user = perfTest.getCreatedUser();
 
 			// Get all files in the script path
-			FileEntry userDefinedGrinderProperties = fileEntryService.getFileEntry(user, FilenameUtils.concat(
-							FilenameUtils.getPath(perfTest.getScriptName()), DEFAULT_GRINDER_PROPERTIES_PATH), -1);
+			String scriptName = perfTest.getScriptName();
+			FileEntry userDefinedGrinderProperties = fileEntryService.getFileEntry(user,
+							FilenameUtils.concat(FilenameUtils.getPath(scriptName), DEFAULT_GRINDER_PROPERTIES_PATH),
+							-1);
 			if (!config.isSecurityEnabled() && userDefinedGrinderProperties != null) {
 				// Make the property overridden by user property.
 				GrinderProperties userProperties = new GrinderProperties();
@@ -677,8 +679,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				grinderProperties.putAll(userProperties);
 			}
 			grinderProperties.setAssociatedFile(new File(DEFAULT_GRINDER_PROPERTIES_PATH));
-			grinderProperties.setProperty(GrinderProperties.SCRIPT,
-							FilenameUtils.getName(checkNotEmpty(perfTest.getScriptName())));
+			if (scriptName.contains("/src/main/java")) {
+				grinderProperties.setProperty(GrinderProperties.SCRIPT,
+								StringUtils.substringAfter(checkNotEmpty(scriptName), "/src/main/java/"));
+			} else {
+				grinderProperties.setProperty(GrinderProperties.SCRIPT,
+								FilenameUtils.getName(checkNotEmpty(scriptName)));
+			}
 
 			grinderProperties.setProperty(GRINDER_PROP_TEST_ID, "test_" + perfTest.getId());
 			grinderProperties.setInt(GRINDER_PROP_THREAD, perfTest.getThreads());
@@ -1675,7 +1682,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return reportData.append("]").toString();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.ngrinder.service.IPerfTestService#getPerfTest(java.util.Date, java.util.Date)
 	 */
 	@Override
@@ -1683,8 +1692,11 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		return perfTestRepository.findAllByCreatedTime(start, end);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.ngrinder.service.IPerfTestService#getPerfTest(java.util.Date, java.util.Date, java.lang.String)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.ngrinder.service.IPerfTestService#getPerfTest(java.util.Date, java.util.Date,
+	 * java.lang.String)
 	 */
 	@Override
 	public List<PerfTest> getPerfTest(Date start, Date end, String region) {
