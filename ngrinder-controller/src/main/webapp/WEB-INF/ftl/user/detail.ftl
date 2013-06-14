@@ -16,6 +16,7 @@
 				</button>
 			</legend>
 		</fieldSet>
+		<#assign popover_place='right'/>
 		<#include "info.ftl"> 
 		<#include "../common/copyright.ftl">	
 	</div>

@@ -133,7 +133,7 @@
 	<#include "../common/codemirror.ftl">
 	<script src="${req.getContextPath()}/plugins/codemirror/lang/${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}.js"></script>
     <script>
-    	changed = false;
+    	var changed = false;
     	$(window).on('beforeunload', function() {
     		if (changed == true) {
     			return "<@spring.message "script.editor.message.exitwithoutsave"/>";
@@ -189,7 +189,7 @@
 				var hostString = $("#target_hosts").val();
 				$('#validation_result_panel').hide();
 				var newContent = editor.getValue();
-				showProgressBar("<@spring.message "script.editor.message.validate"/>");
+				showProgressBar("<@spring.message 'script.editor.message.validate'/>");
 				$.ajax({
 			  		url: "${req.getContextPath()}/script/validate",
 			    	async: true,
@@ -209,7 +209,8 @@
 			    	},
 			    	error: function() {
 			    		validating = false;
-			    		showErrorMsg("<@spring.message "script.editor.error.validate"/>");
+						hideProgressBar();
+			    		showErrorMsg("<@spring.message 'script.editor.error.validate'/>");
 			    	}
 			  	});
 			});

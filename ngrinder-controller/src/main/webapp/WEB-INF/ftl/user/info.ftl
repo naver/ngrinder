@@ -2,6 +2,9 @@
 <#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
 <form action="${req.getContextPath()}/user/save"
 	class="form-horizontal form-horizontal-left" id="user_form" method="POST">
+	<#if !(popover_place??)>
+		<#assign popover_place='bottom'/>
+	</#if>
 	<fieldset>
 		<div class="control-group">
 			<label class="control-label" for="user_id"><@spring.message "user.info.form.userId"/></label>
@@ -13,7 +16,7 @@
 					name="userId" value="${(user.userId)!}"
 					id="user_id"
 				    rel="popover" 
-					data-placement='bottom'
+					data-placement='${popover_place}'
 					data-html="true"
 					data-content="${userIdMsg?html}"
 					title='<@spring.message "user.info.form.userId"/>'
@@ -27,7 +30,9 @@
 			<div class="controls">
 				<input type="text" class="span4" 
 					name="userName" value="${(user.userName)!}"
-					id="user_name" rel="popover" 
+					id="user_name" 
+					rel="popover"
+					data-placement="${popover_place}" 
 					data-content='<@spring.message "user.info.warning.userName"/>'
 					data-placement='bottom'
 					title='<@spring.message "user.option.name"/>'/>
@@ -54,7 +59,7 @@
 					name="email" value="${(user.email)!}"
 					rel="popover" 
 					data-content='<@spring.message "user.info.warning.email.required"/>'
-					data-placement='top'
+					data-placement='${popover_place}'
 					title='<@spring.message "user.info.form.email"/>'/>
 			</div>
 		</div>
@@ -75,7 +80,7 @@
 					name="mobilePhone" value="${(user.mobilePhone)!}"
 					id="mobile_phone" rel="popover"
 					data-content='<@spring.message "common.form.rule.phoneNumber"/>'
-					data-placement='top'
+					data-placement='${popover_place}'
 					title="<@spring.message "user.info.form.phone"/>">
 			</div>
 		</div>
@@ -106,7 +111,7 @@
 								name="password" value="${(user.psw)!}"
 								id="password" rel="popover"
 								data-content='<@spring.message "user.info.warning.pwd.rangeLength"/>'
-								data-placement='top'
+								data-placement='${popover_place}'
 								title='<@spring.message "user.info.form.pwd"/>'>
 						</div>
 					</div>
@@ -118,7 +123,7 @@
 								name="cpwd" value="${(user.psw)!}"
 								id="confirm_password" rel="popover"
 								data-content='<@spring.message "user.info.warning.cpwd.equalTo"/>'
-								data-placement='top'
+								data-placement='${popover_place}'
 								title='<@spring.message "user.info.form.cpwd"/>'>
 						</div>
 					</div>
