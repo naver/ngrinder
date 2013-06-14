@@ -14,7 +14,9 @@
 package net.grinder.scriptengine.groovy.junit;
 
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.grinder.engine.process.JUnitThreadContextInitializer;
 import net.grinder.engine.process.JUnitThreadContextUpdater;
@@ -86,6 +88,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	private PerThreadStatement finalPerThreadStatement;
 	private AbstractExceptionProcessor exceptionProcessor = new GroovyExceptionProcessor();
 	private boolean enableRateRunner = true;
+	private Map<FrameworkMethod, Statement> frameworkMethodCache = new HashMap<FrameworkMethod, Statement>();
 
 	/**
 	 * Constructor.
@@ -180,8 +183,12 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 
 	@SuppressWarnings("deprecation")
 	protected Statement methodBlock(FrameworkMethod method) {
+		Statement statement = frameworkMethodCache.get(method);
+		if (statement != null) {
+			return statement;
+		}
 		Object testObject = testTargetFactory.getTestObject();
-		Statement statement = methodInvoker(method, testObject);
+		statement = methodInvoker(method, testObject);
 		statement = possiblyExpectingExceptions(method, testObject, statement);
 		statement = withPotentialTimeout(method, testObject, statement);
 		statement = withBefores(method, testObject, statement);
@@ -190,6 +197,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 		if (enableRateRunner) {
 			statement = withRunRate(method, testObject, statement);
 		}
+		frameworkMethodCache.put(method, statement);
 		return statement;
 	}
 

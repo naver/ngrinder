@@ -35,6 +35,11 @@ abstract class TestObjectFactory {
 	public TestObjectFactory() {
 	}
 
+	/**
+	 * Get current test object
+	 * 
+	 * @return test object.
+	 */
 	public Object getTestObject() {
 		Object testObject = testObjectMap.get(getTestClass());
 		if (testObject == null) {

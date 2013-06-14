@@ -34,4 +34,5 @@ public class JUnitThreadContextUpdater {
 	public void setRunCount(int count) {
 		m_threadContexts.get().setCurrentRunNumber(count);
 	}
+	
 }
