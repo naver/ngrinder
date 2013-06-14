@@ -92,6 +92,7 @@ import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.ngrinder.perftest.model.PerfTestStatistics;
 import org.ngrinder.perftest.model.ProcessAndThread;
 import org.ngrinder.perftest.repository.PerfTestRepository;
+import org.ngrinder.script.handler.NullScriptHandler;
 import org.ngrinder.script.handler.ProcessingResultPrintStream;
 import org.ngrinder.script.handler.ScriptHandler;
 import org.ngrinder.script.handler.ScriptHandlerFactory;
@@ -660,6 +661,18 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return created {@link GrinderProperties} instance
 	 */
 	public GrinderProperties getGrinderProperties(PerfTest perfTest) {
+		return getGrinderProperties(perfTest, new NullScriptHandler());
+	}
+
+	/**
+	 * Create {@link GrinderProperties} based on the passed {@link PerfTest}.
+	 * 
+	 * @param perfTest
+	 *            base data
+	 * @param scriptHandler
+	 * @return created {@link GrinderProperties} instance
+	 */
+	public GrinderProperties getGrinderProperties(PerfTest perfTest, ScriptHandler scriptHandler) {
 		FileWriter fileWriter = null;
 		try {
 			// Use default properties first
@@ -679,13 +692,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 				grinderProperties.putAll(userProperties);
 			}
 			grinderProperties.setAssociatedFile(new File(DEFAULT_GRINDER_PROPERTIES_PATH));
-			if (scriptName.contains("/src/main/java")) {
-				grinderProperties.setProperty(GrinderProperties.SCRIPT,
-								StringUtils.substringAfter(checkNotEmpty(scriptName), "/src/main/java/"));
-			} else {
-				grinderProperties.setProperty(GrinderProperties.SCRIPT,
-								FilenameUtils.getName(checkNotEmpty(scriptName)));
-			}
+			grinderProperties.setProperty(GrinderProperties.SCRIPT, scriptHandler.getScriptExecutePath(scriptName));
 
 			grinderProperties.setProperty(GRINDER_PROP_TEST_ID, "test_" + perfTest.getId());
 			grinderProperties.setInt(GRINDER_PROP_THREAD, perfTest.getThreads());
@@ -735,7 +742,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            perfTest
 	 * @return File location in which the perftest script and resources are distributed.
 	 */
-	public File prepareDistribution(PerfTest perfTest) {
+	public ScriptHandler prepareDistribution(PerfTest perfTest) {
 		File perfTestDistDirectory = getPerfTestDistributionPath(perfTest);
 		perfTestDistDirectory.mkdirs();
 		User user = perfTest.getCreatedUser();
@@ -758,7 +765,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			}
 			throw new NGrinderRuntimeException("Error while file distirbution is prepared.");
 		}
-		return perfTestDistDirectory;
+		return handler;
 	}
 
 	/**

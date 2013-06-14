@@ -264,7 +264,22 @@ public abstract class ScriptHandler {
 	}
 
 	protected String getBasePath(FileEntry script) {
-		return FilenameUtils.getPath(script.getPath());
+		return getBasePath(script.getPath());
+	}
+
+	public String getBasePath(String path) {
+		return FilenameUtils.getPath(path);
+	}
+
+	/**
+	 * Get executable script path
+	 * 
+	 * @param svnPath
+	 *            path in svn
+	 * @return path executable in agent.
+	 */
+	public String getScriptExecutePath(String svnPath) {
+		return FilenameUtils.getName(svnPath);
 	}
 
 	/**

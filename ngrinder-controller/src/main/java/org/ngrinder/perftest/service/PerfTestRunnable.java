@@ -57,6 +57,7 @@ import org.ngrinder.perftest.service.samplinglistener.AgentLostDetectionListener
 import org.ngrinder.perftest.service.samplinglistener.MonitorCollectorListener;
 import org.ngrinder.perftest.service.samplinglistener.PerfTestSamplingCollectorListener;
 import org.ngrinder.perftest.service.samplinglistener.PluginRunListener;
+import org.ngrinder.script.handler.ScriptHandler;
 import org.python.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -233,8 +234,8 @@ public class PerfTestRunnable implements NGrinderConstants {
 		SingleConsole singleConsole = null;
 		try {
 			singleConsole = startConsole(perfTest);
-			perfTestService.prepareDistribution(perfTest);
-			GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest);
+			ScriptHandler prepareDistribution = perfTestService.prepareDistribution(perfTest);
+			GrinderProperties grinderProperties = perfTestService.getGrinderProperties(perfTest, prepareDistribution);
 			startAgentsOn(perfTest, grinderProperties, checkCancellation(singleConsole));
 			distributeFileOn(perfTest, grinderProperties, checkCancellation(singleConsole));
 			singleConsole.setReportPath(perfTestService.getReportFileDirectory(perfTest));

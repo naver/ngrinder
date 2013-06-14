@@ -69,8 +69,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 			return false;
 		}
 
-		return getFileEntryRepository().hasFileEntry(fileEntry.getCreatedUser(),
-						path.substring(0, path.lastIndexOf(JAVA)) + "/pom.xml");
+		return getFileEntryRepository().hasFileEntry(fileEntry.getCreatedUser(), getBasePath(path) + "/pom.xml");
 	}
 
 	@Override
@@ -214,10 +213,19 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 		getFileEntryRepository().save(user, dirEntry, null);
 	}
 
+	
+
+	/* (non-Javadoc)
+	 * @see org.ngrinder.script.handler.ScriptHandler#getBasePath(java.lang.String)
+	 */
 	@Override
-	protected String getBasePath(FileEntry script) {
-		String path = script.getPath();
+	public String getBasePath(String path) {
 		return path.substring(0, path.lastIndexOf(JAVA));
+	}
+
+	@Override
+	public String getScriptExecutePath(String path) {
+		return path.substring(path.lastIndexOf(JAVA) + JAVA.length());
 	}
 
 	@Override
