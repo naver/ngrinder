@@ -36,7 +36,9 @@ function updateRampupChart() {
 	var processInc = parseInt($processInc.val(), 10);
 	var initialProcesses = parseInt($initialProcesses.val(), 10);
 	var internalTime = parseInt($internalTime.val(), 10);
-
+	if (isNaN(initialProcesses) || isNaN(processes) || isNaN(processInc) || isNaN(internalTime)) {
+		return;
+	}
 	var modified = false;
 	if (initialProcesses > processes) {
 		$initialProcesses.val(1);
@@ -60,6 +62,10 @@ function updateRampupChart() {
 	}
 
 	var initialSleepTime = parseInt($('#init_sleep_time').val());
+
+	if (isNaN(initialSleepTime)) {
+		return;
+	}
 	var maxY = parseInt((processes / 5) + 1) * 5;
 	var seriesArray = [];
 	
