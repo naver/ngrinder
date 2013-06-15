@@ -261,7 +261,7 @@
 						data-content='<@spring.message "perfTest.configuration.safeDistribution.help"/>' 
 						title='<@spring.message "perfTest.configuration.safeDistribution"/>'
 						id="dist_comment"> 
-						<i class="icon-question-sign" style="margin-top:5px"></i>
+						<i class="pointer-cursor icon-question-sign" style="margin-top:5px"></i>
 					</span> 
 				</div>
 			</div>
