@@ -242,12 +242,16 @@ public class PerfTestController extends NGrinderBaseController {
 		}
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
-		ArrayList<String> regions = new ArrayList<String>(agentCountMap.keySet());
-		Collections.sort(regions);
-		model.addAttribute(PARAM_REGION_LIST, regions);
+		model.addAttribute(PARAM_REGION_LIST, getRegionList(agentCountMap));
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		addDefaultAttributeOnModel(model);
 		return "perftest/detail";
+	}
+
+	private ArrayList<String> getRegionList(Map<String, MutableInt> agentCountMap) {
+		ArrayList<String> regions = new ArrayList<String>(agentCountMap.keySet());
+		Collections.sort(regions);
+		return regions;
 	}
 
 	/**
@@ -335,7 +339,9 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute(PARAM_QUICK_SCRIPT_REVISION, newEntry.getRevision());
 		model.addAttribute(PARAM_TEST_NAME, "Test for " + url.getHost());
 		model.addAttribute(PARAM_TARGET_HOST, url.getHost());
-		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentManagerService.getUserAvailableAgentCountMap(user));
+		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
+		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
+		model.addAttribute(PARAM_REGION_LIST, getRegionList(agentCountMap));
 		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		addDefaultAttributeOnModel(model);
 		return "perftest/detail";
