@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.grinder.common.GrinderProperties;
 import net.grinder.engine.process.JUnitThreadContextInitializer;
 import net.grinder.engine.process.JUnitThreadContextUpdater;
 import net.grinder.script.Grinder;
