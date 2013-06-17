@@ -178,7 +178,8 @@ public class FileEntryController extends NGrinderBaseController {
 			String each = parts[i];
 			accumulatedPart.append("/").append(each);
 			if (i != parts.length - 1) {
-				retrunHtml.append("<a target='_path_view' href='").append(accumulatedPart).append("'>").append(each).append("</a>").append("/");
+				retrunHtml.append("<a target='_path_view' href='").append(accumulatedPart).append("'>").append(each)
+								.append("</a>").append("/");
 			} else {
 				retrunHtml.append(each);
 			}
@@ -451,9 +452,10 @@ public class FileEntryController extends NGrinderBaseController {
 			fileEntry.setDescription(description);
 			fileEntry.setPath(FilenameUtils.separatorsToUnix(FilenameUtils.concat(path, file.getOriginalFilename())));
 			fileEntryService.save(user, fileEntry);
+			model.clear();
 			return "redirect:/script/list/" + path;
 		} catch (IOException e) {
-			LOG.error("Error while getting file content:" + e.getMessage(), e);
+			LOG.error("Error while getting file content: {}", e.getMessage(), e);
 			throw new NGrinderRuntimeException("Error while getting file content:" + e.getMessage(), e);
 		}
 	}
