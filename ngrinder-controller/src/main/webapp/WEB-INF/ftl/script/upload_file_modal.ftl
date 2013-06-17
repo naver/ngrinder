@@ -38,7 +38,7 @@
 
 		$("div[rel='upload_file_modal_popover']").popover({trigger: 'focus', container:'#upload_file_modal'});
 		$("#upload_file_button").click(function() {
-			var $file = $("#fileInput");
+			var $file = $("#file_input");
 			if (checkEmptyByObj($file)) {
 				markInput($file, false, "<@spring.message "common.form.validate.empty"/>");
 				return;
