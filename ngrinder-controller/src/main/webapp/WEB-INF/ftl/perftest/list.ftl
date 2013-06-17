@@ -100,7 +100,7 @@
 						<th class="nothing" style="padding-left:3px"><@spring.message "common.label.status"/></th>
 						<th id="test_name" name="testName"><@spring.message "perfTest.table.testName"/></th>
 						<th id="script_name" name="scriptName"><@spring.message "perfTest.table.scriptName"/></th>
-						<th class="nothing"><#if isAdmin??><@spring.message "perfTest.table.owner"/><#else><@spring.message "perfTest.table.modifier"/></#if></th>
+						<th class="nothing"><#if isAdmin??><@spring.message "perfTest.table.owner"/><#else><@spring.message "perfTest.table.modifier.oneline"/></#if></th>
 						<#if clustered>
 						<th id="region" name="region"><@spring.message "agent.table.region"/></th>
 						</#if>
@@ -137,7 +137,7 @@
 									<div
 										 rel="popover"
 										 data-html="true" 
-										 data-content='${(test.description!"")?replace("\n", "<br/>")?html} &lt;p&gt;${test.testComment?replace("\n", "<br/>")?html}&lt;/p&gt;  &lt;p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;p&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if>&lt;/p&gt;&lt;p&gt;<#if test.tagString?has_content><@spring.message "perfTest.configuration.tags"/> : ${test.tagString}&lt;/p&gt;</#if><@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})&lt;br&gt; <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})'  
+										 data-content='${(test.description!"")?replace("\n", "<br/>")?html} &lt;p&gt;${test.testComment?replace("\n", "<br/>")?html}&lt;/p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;br/&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if>&lt;br/&gt;<#if test.tagString?has_content><@spring.message "perfTest.configuration.tags"/> : ${test.tagString}&lt;br/&gt;</#if><@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})&lt;br&gt; <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})'  
 										 data-title="${test.testName}">
 										<a href="${req.getContextPath()}/perftest/${test.id}" target="_self">${test.testName}</a>
 									</div>
