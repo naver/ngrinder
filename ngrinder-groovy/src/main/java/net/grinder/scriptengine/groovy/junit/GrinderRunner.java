@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.grinder.common.GrinderProperties;
 import net.grinder.engine.process.JUnitThreadContextInitializer;
 import net.grinder.engine.process.JUnitThreadContextUpdater;
 import net.grinder.script.Grinder;
@@ -143,7 +144,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	public void run(RunNotifier notifier) {
 		registerRunNotifierListener(notifier);
 		Description description = getDescription();
-		if (description.testCount() == 1
+		if (description.testCount() == 1 || Grinder.grinder == null || Grinder.grinder.getProperties() == null
 						|| Grinder.grinder.getProperties().getBoolean("grinder.script.validation", false)) {
 			enableRateRunner = false;
 		}
