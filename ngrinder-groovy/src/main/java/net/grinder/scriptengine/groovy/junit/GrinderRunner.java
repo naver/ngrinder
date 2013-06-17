@@ -144,8 +144,10 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	public void run(RunNotifier notifier) {
 		registerRunNotifierListener(notifier);
 		Description description = getDescription();
-		if (description.testCount() == 1 || Grinder.grinder == null || Grinder.grinder.getProperties() == null
-						|| Grinder.grinder.getProperties().getBoolean("grinder.script.validation", false)) {
+		if (description.testCount() == 1
+						|| Grinder.grinder == null
+						|| (Grinder.grinder.getProperties() != null && Grinder.grinder.getProperties().getBoolean(
+										"grinder.script.validation", false))) {
 			enableRateRunner = false;
 		}
 		EachTestNotifier testNotifier = new EachTestNotifier(notifier, description);
