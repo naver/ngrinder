@@ -15,9 +15,11 @@ package net.grinder.scriptengine.groovy;
 
 import static net.grinder.util.NoOp.noOp;
 import net.grinder.engine.process.NullStatement;
+import net.grinder.script.Grinder;
 import net.grinder.scriptengine.groovy.GroovyScriptEngine.GroovyScriptExecutionException;
 import net.grinder.scriptengine.groovy.junit.GrinderRunner;
 
+import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
@@ -136,6 +138,19 @@ public class GrinderContextExecutor extends GrinderRunner {
 	protected Statement classBlock(RunNotifier notifier) {
 		Statement statement = childrenInvoker(notifier);
 		return statement;
+	}
+
+	protected boolean isRateRunnerEnabled() {
+		Description description = getDescription();
+		return description.testCount() > 1 && !isScriptValidation();
+	}
+
+	private boolean isScriptValidation() {
+		try {
+			return Grinder.grinder.getProperties().getBoolean("grinder.script.validation", false);
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	/**

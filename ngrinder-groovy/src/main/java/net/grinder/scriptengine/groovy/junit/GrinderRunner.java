@@ -20,7 +20,6 @@ import java.util.Map;
 
 import net.grinder.engine.process.JUnitThreadContextInitializer;
 import net.grinder.engine.process.JUnitThreadContextUpdater;
-import net.grinder.script.Grinder;
 import net.grinder.scriptengine.exception.AbstractExceptionProcessor;
 import net.grinder.scriptengine.groovy.GroovyExceptionProcessor;
 import net.grinder.scriptengine.groovy.junit.annotation.AfterProcess;
@@ -143,12 +142,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 	public void run(RunNotifier notifier) {
 		registerRunNotifierListener(notifier);
 		Description description = getDescription();
-		if (description.testCount() == 1
-						|| Grinder.grinder == null
-						|| (Grinder.grinder.getProperties() != null && Grinder.grinder.getProperties().getBoolean(
-										"grinder.script.validation", false))) {
-			enableRateRunner = false;
-		}
+		enableRateRunner = isRateRunnerEnabled();
 		EachTestNotifier testNotifier = new EachTestNotifier(notifier, description);
 		try {
 			Statement statement = classBlock(notifier);
@@ -161,6 +155,27 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 			testNotifier.addFailure(e);
 		}
 
+	}
+
+	/**
+	 * Check if the rate runner should be enabled.
+	 * 
+	 * @return true if enabled;
+	 */
+	protected boolean isRateRunnerEnabled() {
+		Description description = getDescription();
+		return description.testCount() > 1 && isRepeatRunnerEnabled();
+	}
+
+	private boolean isRepeatRunnerEnabled() {
+		Annotation[] annotations = getTestClass().getAnnotations();
+		boolean repeatAnnotation = false;
+		for (Annotation each : annotations) {
+			if (each.annotationType().equals(Repeat.class)) {
+				repeatAnnotation = true;
+			}
+		}
+		return repeatAnnotation;
 	}
 
 	@Override
@@ -182,7 +197,7 @@ public class GrinderRunner extends BlockJUnit4ClassRunner {
 				repeatation = ((Repeat) each).value();
 			}
 		}
-		return repeatation == 1 ? statement : new RepetitionStatment(statement, repeatation, threadContextUpdater);
+		return new RepetitionStatment(statement, repeatation, threadContextUpdater);
 	}
 
 	@SuppressWarnings("deprecation")
