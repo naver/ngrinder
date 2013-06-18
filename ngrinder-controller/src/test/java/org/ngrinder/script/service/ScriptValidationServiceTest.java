@@ -66,18 +66,6 @@ public class ScriptValidationServiceTest extends AbstractNGrinderTransactionalTe
 	@Autowired
 	public ClassPathInit classPathInit;
 
-	private File getLibPath() {
-		String path = this.getClass().getResource("/").getPath();
-		path = path.substring(1, path.length() - 1);
-		String str = "classes";
-		int i = path.indexOf(str);
-		if (i > 0) {
-			path = path.substring(0, i);
-			path += "lib/";
-		}
-		return new File(path).getAbsoluteFile();
-	}
-
 	/**
 	 * Locate dumped user1 repo into tempdir
 	 * 
