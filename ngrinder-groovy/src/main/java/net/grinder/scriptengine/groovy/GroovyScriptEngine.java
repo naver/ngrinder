@@ -29,6 +29,7 @@ import net.grinder.scriptengine.ScriptExecutionException;
 import net.grinder.scriptengine.exception.AbstractExceptionProcessor;
 import net.grinder.scriptengine.groovy.junit.GrinderRunner;
 
+import org.codehaus.groovy.control.CompilerConfiguration;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
@@ -56,7 +57,9 @@ public class GroovyScriptEngine implements ScriptEngine {
 	public GroovyScriptEngine(ScriptLocation script) throws EngineException {
 		// Get groovy to compile the script and access the callable closure
 		final ClassLoader parent = getClass().getClassLoader();
-		final GroovyClassLoader loader = new GroovyClassLoader(parent);
+		CompilerConfiguration configuration = new CompilerConfiguration();
+		configuration.setSourceEncoding("UTF-8");
+		final GroovyClassLoader loader = new GroovyClassLoader(parent, configuration, true);
 		try {
 			m_groovyClass = loader.parseClass(script.getFile());
 			m_grinderRunner = new GrinderContextExecutor(m_groovyClass);
