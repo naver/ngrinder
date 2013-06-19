@@ -31,7 +31,7 @@
 		                	</#if>
 		                	 
 			            	<@security.authorize ifAnyGranted="A">
-			            		<li class="divider"/> 
+			            		<li class="divider"></li> 
 		               			<li><a href="${req.getContextPath()}/user/"><@spring.message "navigator.dropdown.userManagement"/></a></li>
 				                <li><a href="${req.getContextPath()}/agent/"><@spring.message "navigator.dropdown.agentManagement"/></a></li>
 							<#if clustered == false>
@@ -73,7 +73,7 @@
 		</div>
 	</div>
 </div>
-<div class="modal hide fade" id="user_profile_modal"  tabindex="-1" role="dialog">
+<div class="modal hide fade" id="user_profile_modal"  role="dialog">
 	<div class="modal-header"> 
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
 		<h4><@spring.message "navigator.dropdown.profile.title"/></h4> 
@@ -82,11 +82,11 @@
 	</div>	
 </div>
 
-<div class="modal hide fade" id="user_switch_modal"  tabindex="-1" role="dialog">
+<div class="modal hide fade" id="user_switch_modal"  role="dialog">
 	<div class="modal-header" style="border: none;">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
 	</div>
-	<div class="modal-body" style="max-height:60px; height:60px;">
+	<div class="modal-body" > 
 		<div class="form-horizontal" style="margin-left:20px">
 			<fieldset>
 				<div class="control-group">
@@ -105,6 +105,11 @@
 
 <script type="text/javascript">
 	$(document).ready(function() {
+		$.ajaxSetup({ cache: false });
+		myProfile();
+		switchUser();
+		showExceptionMsg();
+		showInitialMsg();
 		$("#hide_announcement").click( function() {
 			if ($("#announcement_content").is(":hidden")) {
 				$("#announcement_content").show("slow");
@@ -116,14 +121,8 @@
 				cookie("announcement_hide", "true", 6);
 			}
 		});
+		
 	});
-	function init() {
-		$.ajaxSetup({ cache: false });
-		myProfile();
-		switchUser();
-		showExceptionMsg();
-		showInitialMsg();
-	}
 	
 	function myProfile(){
 		var url = "${req.getContextPath()}/user/profile";
@@ -143,10 +142,9 @@
 			$("#switch_user_select").load(url, function(){
 				$(this).prepend($("<option value=''></option>"));
 				$(this).val("");
-				$(this).select2({
-					placeholder: "<@spring.message "user.switch.select.placeholder"/>"
-				});
+				$("#switch_user_select").select2();
 				$('#user_switch_modal').modal('show');
+				
 			});
 		});
 	}
@@ -161,15 +159,5 @@
 		<#if message??>
 			showSuccessMsg("${(message)}");
 		</#if>
-	}
-	
-	if(document.loaded) {
-		init();
-	} else {
-	    if (window.addEventListener) {  
-	        window.addEventListener('load', init, false);
-	    } else {
-	        window.attachEvent('onload', init);
-	    }
 	}
 </script>

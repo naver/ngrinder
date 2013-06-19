@@ -130,7 +130,7 @@
             .addClass('in')
             .attr('aria-hidden', false)
 
-          that.enforceFocus()
+          //that.enforceFocus()
 
           transition ?
             that.$element.one($.support.transition.end, function () { that.$element.focus().trigger('shown') }) :
