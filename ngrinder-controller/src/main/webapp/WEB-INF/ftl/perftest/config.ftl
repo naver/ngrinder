@@ -134,7 +134,7 @@
 									old_revision="${(test.scriptRevision)!-1}"/>
 								<button class="btn btn-mini btn-info pull-right" type="button" 
 									id="show_script_btn"
-									style="margin-top: 3px; &lt;# if !(showScriptVisible??)&gt;display: none;">R 
+									style="margin-top: 3px; display: none;">R 
 									<#if test?? && test.scriptRevision != -1> 
 										${test.scriptRevision} 
 									<#else> 

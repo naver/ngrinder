@@ -137,7 +137,7 @@
 									<div
 										 rel="popover"
 										 data-html="true" 
-										 data-content='${(test.description!"")?replace("\n", "<br/>")?html} &lt;p&gt;${test.testComment?replace("\n", "<br/>")?html}&lt;/p&gt;<#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}&lt;br/&gt;</#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if>&lt;br/&gt;<#if test.tagString?has_content><@spring.message "perfTest.configuration.tags"/> : ${test.tagString}&lt;br/&gt;</#if><@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})&lt;br&gt; <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})'  
+										 data-content='${(test.description!"")?replace("\n", "<br/>")?html} <p>${test.testComment?replace("\n", "<br/>")?html}</p><#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}<br/></#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if><br/><#if test.tagString?has_content><@spring.message "perfTest.configuration.tags"/> : ${test.tagString}<br/></#if><@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})<br/> <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})'  
 										 data-title="${test.testName}">
 										<a href="${req.getContextPath()}/perftest/${test.id}" target="_self">${test.testName}</a>
 									</div>
@@ -146,7 +146,7 @@
 									<div class="ellipsis"
 										rel="popover"
 										data-html="true"
-										data-content="${test.scriptName} &lt;br&gt;&lt;br&gt; - <@spring.message "script.list.table.revision"/> : ${(test.scriptRevision)!'HEAD'}" 
+										data-content="${test.scriptName}<br/> - <@spring.message "script.list.table.revision"/> : ${(test.scriptRevision)!'HEAD'}" 
 										title="<@spring.message "perfTest.table.scriptName"/>">			
 										<#if isAdmin??>
 											<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}&ownerId=${(test.createdUser.userId)!}">${test.scriptName}</a>
@@ -160,7 +160,7 @@
 										rel="popover"
 		            					title="<@spring.message "perfTest.table.participants"/>"
 		            					data-html="true" 
-		            					data-content="<@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})&lt;br&gt; <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})">
+		            					data-content="<@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})<br/> <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})">
 		            				<#if isAdmin??>
 		            					${test.lastModifiedUser.userName}
 		            				<#else>

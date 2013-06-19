@@ -113,13 +113,13 @@
 					title="Tip" data-html="ture"
 					data-placement="left"
 				 	data-content="
-			      Ctrl-F / Cmd-F : <@spring.message "script.editor.tip.startSearching"/>&lt;br&gt; 
-			      Ctrl-G / Cmd-G : <@spring.message "script.editor.tip.findNext"/>&lt;br&gt;
-			      Shift-Ctrl-G / Shift-Cmd-G : <@spring.message "script.editor.tip.findPrev"/>&lt;br&gt;
-			      Shift-Ctrl-F / Cmd-Option-F : <@spring.message "script.editor.tip.replace"/>&lt;br&gt;
-			      Shift-Ctrl-R / Shift-Cmd-Option-F : <@spring.message "script.editor.tip.replaceAll"/>&lt;br&gt;
-			      F12 : <@spring.message "script.editor.tip.fullScreen"/>&lt;br&gt;
-			      ESC : <@spring.message "script.editor.tip.back"/>&lt;br&gt;
+			      Ctrl-F / Cmd-F : <@spring.message 'script.editor.tip.startSearching'/><br/> 
+			      Ctrl-G / Cmd-G : <@spring.message 'script.editor.tip.findNext'/><br/>
+			      Shift-Ctrl-G / Shift-Cmd-G : <@spring.message 'script.editor.tip.findPrev'/><br/>
+			      Shift-Ctrl-F / Cmd-Option-F : <@spring.message 'script.editor.tip.replace'/><br/>
+			      Shift-Ctrl-R / Shift-Cmd-Option-F : <@spring.message 'script.editor.tip.replaceAll'/><br/>
+			      F12 : <@spring.message 'script.editor.tip.fullScreen'/><br/>
+			      ESC : <@spring.message 'script.editor.tip.back'/>
 			      "><code>Tip</code></div> 
 			</div>
 		</div>
