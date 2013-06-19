@@ -1,3 +1,49 @@
+3.2.1 (2013.06.10)
+
+nGrinder 3.2.1 is the bug fix and minor enhancement release. 
+We applied nGrinder 3.2 internally for 1 month and found several enhancement point.
+This made this version more concrete and workable in the large deployment.
+
+- New feature and change
+  * Almost all of HTML pages are rewritten to follow the HTML standard. Now it supports IE10 perfectly.
+  * Now you can see the scripting error in the agent log to easily find the scripting problem.
+  * Groovy Engine becomes more concrete. Now each thread use its own JUnit Runner object so that each test is thread safe.
+    In addition, @RunRate annotation for each test method is available to control the run frequency.
+    It loads Groovy script with UTF-8 encoding as well so that a user can write the CJK characters.
+  * The available agent memory is calculated more accurately. Instead of using free memory, now it uses actual free memory.
+  * Each performance test page retrieval becomes speedy even when there are many files in SVN.
+  
+Bug
+[NGRINDER-600] - Fix IE10 compatibility issue
+[NGRINDER-608] - Make the memory setting more concrete for test process
+[NGRINDER-610] - Fix typo errors
+[NGRINDER-612] - Make controller's IP configurable
+[NGRINDER-613] - Make script error transferred from agent
+[NGRINDER-615] - Make startime null when test is scheduled
+[NGRINDER-616] - Make monitoring data failure concrete
+[NGRINDER-617] - Fix wrong classpath filtering in the process execution
+[NGRINDER-618] - Dynamic system configuration update is not working after the first update.
+[NGRINDER-622] - Add host settings for groovy maven project  in quicktest
+[NGRINDER-625] - Make groovy tc thread use diffrent test object
+[NGRINDER-629] - Clean up the url after upload files
+[NGRINDER-630] - Use UTF-8 for groovy class loading
+
+Improvement
+[NGRINDER-609] - Speed up the perf test detail page view
+[NGRINDER-611] - Clean up ftl files
+[NGRINDER-619] - Make the easier method name filtering for record 
+[NGRINDER-620] - Increase the default max vuser to 2000
+[NGRINDER-621] - Elaborate script template
+[NGRINDER-623] - Shrink the script editor when expanding validation result panel
+[NGRINDER-624] - Enable runNumber in groovy script in JUnitContext
+[NGRINDER-627] - Make groovy runner efficient
+[NGRINDER-628] - Enable the package folder structure for groovy maven project
+
+New Feature
+[NGRINDER-626] - Add @RunRate annotation to control the run frequency for each @Test method
+
+
+
 3.2 (2013.05.10)
 
 nGrinder is almost approaching to the ultimate performance testing solution. 
@@ -198,7 +244,7 @@ With some bug fix, the following improvements are for the effective operations o
 
 - New features and changes:
   * Support multiple region. User now can select one of multiple network regions to choose the agents depending on the test target location. 
-    All controllers in regions need to use a directory on network file system for controllers’ home directory.
+    All controllers in regions need to use a directory on network file system for controllers��home directory.
     - See http://www.cubrid.org/wiki_ngrinder/entry/controller-clustering-guide
   * Share user accounts. Now a user can share his permission to other users. Then the other user can start/check test with his rights.
     - http://www.cubrid.org/wiki_ngrinder/entry/user-permission
