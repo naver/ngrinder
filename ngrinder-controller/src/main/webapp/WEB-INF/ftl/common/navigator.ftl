@@ -92,7 +92,7 @@
 				<div class="control-group">
 					<label class="control-label" style="width:100px"><@spring.message "user.switch.title"/></label>
 					<div class="controls" style="margin-left:140px">
-						<select id="switch_user_select" style="width:300px">
+						<select id="switch_user_select" style="width:320px">  
 						</select>
 					</div>
 				</div>
