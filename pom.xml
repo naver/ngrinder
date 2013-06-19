@@ -12,7 +12,21 @@
 		<module>ngrinder-dns</module>
 		<module>ngrinder-groovy</module>
 	</modules>
-
+	<issueManagement>
+		<system>jira</system>
+		<url>http://jira.cubrid.org/</url>
+	</issueManagement>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<organization>
+		<name>nGrinder</name>
+		<url>http://www.nhnopensource.org</url>
+	</organization>
 	<repositories>
 		<repository>
 			<id>springsource-repo</id>
