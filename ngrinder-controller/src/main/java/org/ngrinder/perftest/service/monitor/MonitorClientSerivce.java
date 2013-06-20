@@ -61,6 +61,7 @@ public class MonitorClientSerivce {
 	private FileWriter fileWriter;
 
 	private long lastAccessedTime = 0;
+
 	/**
 	 * default constructor, used to debug the non-singleton of this class.
 	 */
@@ -100,7 +101,7 @@ public class MonitorClientSerivce {
 			LOGGER.error("Init Error while {} and {} {}", new Object[] { ip, port, reportPath }, e);
 		}
 	}
-	
+
 	/**
 	 * Initialize the mbeanClient connection.
 	 * 
@@ -129,7 +130,7 @@ public class MonitorClientSerivce {
 	 */
 	public SystemInfo getMonitorData() {
 		try {
-			
+
 			if (!mbeanClient.isConnected()) {
 				mbeanClient.connect();
 			}
@@ -149,20 +150,22 @@ public class MonitorClientSerivce {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * close the MBClient.
 	 */
 	public void close() {
-		mbeanClient.disconnect();
+		closeMBClient();
 		flushAndClose();
 	}
-	
+
 	/**
 	 * Only close the MBClient.
 	 */
 	public void closeMBClient() {
-		mbeanClient.disconnect();
+		if (mbeanClient != null) {
+			mbeanClient.disconnect();
+		}
 	}
 
 	private void flushAndClose() {
