@@ -146,7 +146,7 @@ public class MonitorClientSerivce {
 			return retData;
 		} catch (Exception e) {
 			LOGGER.error("Error while MonitorExecutorWorker is running. Disconnect this MBean client.", e);
-			mbeanClient.disconnect();
+			closeMBClient();
 			return null;
 		}
 	}
@@ -166,6 +166,7 @@ public class MonitorClientSerivce {
 		if (mbeanClient != null) {
 			mbeanClient.disconnect();
 		}
+		mbeanClient = null;
 	}
 
 	private void flushAndClose() {
