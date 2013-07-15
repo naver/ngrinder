@@ -24,7 +24,7 @@
 		<repository>
 			<id>atlassian.maven.repo</id>
 			<name>atlassian.maven.repo</name>
-			<url>http://repository.atlassian.com/maven2/</url>
+			<url>https://maven.atlassian.com/repository/public</url>
 		</repository>
 		<repository>
 			<id>scm-manager.repo</id>
