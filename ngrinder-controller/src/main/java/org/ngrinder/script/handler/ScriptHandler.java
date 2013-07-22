@@ -39,8 +39,9 @@ import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 
 /**
- * Script per language handler. This is the superclass for all sub {@link ScriptHandler}s which
- * implements the specific processing of each language.
+ * Script per language handler. This is the superclass for all sub
+ * {@link ScriptHandler}s which implements the specific processing of each
+ * language.
  * 
  * @author JunHo Yoon
  * @since 3.2
@@ -139,9 +140,9 @@ public abstract class ScriptHandler {
 	 *            processing result holder.
 	 */
 	public void prepareDist(Long testcaseId,
-					User user, //
-					FileEntry scriptEntry, File distDir, PropertiesWrapper properties,
-					ProcessingResultPrintStream processingResult) {
+			User user, //
+			FileEntry scriptEntry, File distDir, PropertiesWrapper properties,
+			ProcessingResultPrintStream processingResult) {
 		prepareDefaultFile(distDir, properties);
 		List<FileEntry> fileEntries = getLibAndResourceEntries(user, scriptEntry, -1);
 		if (scriptEntry.getRevision() != 0) {
@@ -164,9 +165,11 @@ public abstract class ScriptHandler {
 	}
 
 	/**
-	 * Prepare script creation. This method is subject to be extended by the subclasses.
+	 * Prepare script creation. This method is subject to be extended by the
+	 * subclasses.
 	 * 
-	 * This method is the perfect place if it's necessary to include additional files.
+	 * This method is the perfect place if it's necessary to include additional
+	 * files.
 	 * 
 	 * @param user
 	 *            user
@@ -184,12 +187,13 @@ public abstract class ScriptHandler {
 	 * @return true if process more.
 	 */
 	public boolean prepareScriptEnv(User user, String path, String fileName, String name, String url,
-					boolean createLibAndResources) {
+			boolean createLibAndResources) {
 		return true;
 	}
 
 	/**
-	 * Prepare the distribution more. This method is subject to be extended by the subclass.
+	 * Prepare the distribution more. This method is subject to be extended by
+	 * the subclass.
 	 * 
 	 * @param testcaseId
 	 *            testcase id. This is for the log identification.
@@ -205,7 +209,7 @@ public abstract class ScriptHandler {
 	 *            processing result holder
 	 */
 	protected void prepareDistMore(Long testcaseId, User user, FileEntry script, File distDir,
-					PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
+			PropertiesWrapper properties, ProcessingResultPrintStream processingResult) {
 	}
 
 	/**
@@ -224,7 +228,8 @@ public abstract class ScriptHandler {
 	}
 
 	/**
-	 * Get all resources and lib entries belonging to the given user and scriptEntry.
+	 * Get all resources and lib entries belonging to the given user and
+	 * scriptEntry.
 	 * 
 	 * @param user
 	 *            user
@@ -237,10 +242,10 @@ public abstract class ScriptHandler {
 	public List<FileEntry> getLibAndResourceEntries(User user, FileEntry scriptEntry, long revision) {
 		String path = FilenameUtils.getPath(scriptEntry.getPath());
 		List<FileEntry> fileList = newArrayList();
-		for (FileEntry eachFileEntry : getFileEntryRepository().findAll(user, path + "lib/", revision)) {
+		for (FileEntry eachFileEntry : getFileEntryRepository().findAll(user, path + "lib/", revision, true)) {
 			// Skip jython 2.5... it's already included.
 			if (startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-2.5.")
-							|| startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-standalone-2.5.")) {
+					|| startsWithIgnoreCase(eachFileEntry.getFileName(), "jython-standalone-2.5.")) {
 				continue;
 			}
 			FileType fileType = eachFileEntry.getFileType();
@@ -248,7 +253,7 @@ public abstract class ScriptHandler {
 				fileList.add(eachFileEntry);
 			}
 		}
-		for (FileEntry eachFileEntry : getFileEntryRepository().findAll(user, path + "resources/", revision)) {
+		for (FileEntry eachFileEntry : getFileEntryRepository().findAll(user, path + "resources/", revision, true)) {
 			FileType fileType = eachFileEntry.getFileType();
 			if (fileType.isResourceDistributable()) {
 				fileList.add(eachFileEntry);
