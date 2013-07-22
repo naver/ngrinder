@@ -13,18 +13,17 @@
  */
 package org.ngrinder.monitor.agent.collector;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.agent.AgentMXBeanStorage;
 import org.ngrinder.monitor.agent.mxbean.core.MXBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -40,7 +39,7 @@ public final class AgentDataCollectManager {
 	private ScheduledExecutorService scheduler;
 	private static final AgentDataCollectManager INSTANCE = new AgentDataCollectManager();
 
-	private File agentHome;
+	private AgentConfig agentConfig;
 
 	private AgentDataCollectManager() {
 	}
@@ -58,13 +57,14 @@ public final class AgentDataCollectManager {
 	}
 
 	/**
-	 * Initialize the manager. Need to set the agent home directory for the collector.
+	 * Initialize the manager. Need to set the agent home directory for the
+	 * collector.
 	 * 
-	 * @param agentHome
+	 * @param agentConfig
 	 *            agentHome
 	 */
-	public void init(File agentHome) {
-		this.agentHome = agentHome;
+	public void init(AgentConfig agentConfig) {
+		this.agentConfig = agentConfig;
 	}
 
 	/**
@@ -76,7 +76,7 @@ public final class AgentDataCollectManager {
 		if (!isRunning()) {
 			Collection<MXBean> mxBeans = AgentMXBeanStorage.getInstance().getMXBeans();
 			for (MXBean mxBean : mxBeans) {
-				AgentDataCollector collector = mxBean.gainAgentDataCollector(agentHome);
+				AgentDataCollector collector = mxBean.gainAgentDataCollector(agentConfig.getHome().getDirectory());
 				scheduler.scheduleWithFixedDelay(collector, 0L, getInterval(), TimeUnit.SECONDS);
 				LOG.info("Agent collector: {} started.", collector.getClass().getSimpleName());
 			}

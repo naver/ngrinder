@@ -13,7 +13,6 @@
  */
 package org.ngrinder.monitor.agent;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.rmi.registry.LocateRegistry;
@@ -28,6 +27,7 @@ import javax.management.remote.JMXServiceURL;
 
 import net.grinder.util.NetworkUtil;
 
+import org.ngrinder.infra.AgentConfig;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.MonitorContext;
 import org.ngrinder.monitor.agent.collector.AgentDataCollectManager;
@@ -36,7 +36,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 
- * This class is the agent of monitor server, it will be used to start a JMX server.
+ * This class is the agent of monitor server, it will be used to start a JMX
+ * server.
  * 
  * @author Mavlarn
  * @since 3.0
@@ -49,8 +50,7 @@ public final class AgentMonitorServer {
 	private Registry rmiRegistry = null;
 	private boolean isRunning = false;
 	private int port = MonitorConstants.DEFAULT_MONITOR_PORT;
-
-	private File agentHome;
+	private AgentConfig agentConfig;
 
 	private static final AgentMonitorServer INSTANCE = new AgentMonitorServer();
 
@@ -62,22 +62,22 @@ public final class AgentMonitorServer {
 	}
 
 	/**
-	 * Initialize the monitor server with default port and collector. Default port is 12343, and
-	 * default collector is system data collector.
+	 * Initialize the monitor server with default port and collector. Default
+	 * port is 12343, and default collector is system data collector.
 	 * 
 	 * @param agentHome
 	 *            agentHome
 	 * @throws IOException
 	 *             IO error
 	 */
-	public void init(File agentHome) throws IOException {
-		this.init(MonitorConstants.DEFAULT_MONITOR_PORT, agentHome);
-		AgentDataCollectManager.getInstance().init(agentHome);
+	public void init(AgentConfig agentConfig) throws IOException {
+		this.init(MonitorConstants.DEFAULT_MONITOR_PORT, agentConfig);
+		AgentDataCollectManager.getInstance().init(agentConfig);
 	}
 
 	/**
-	 * Initialize the monitor server with default collector. In 3.0 version, default collector is
-	 * system data collector.
+	 * Initialize the monitor server with default collector. In 3.0 version,
+	 * default collector is system data collector.
 	 * 
 	 * @param port
 	 *            monitor listener port
@@ -86,8 +86,8 @@ public final class AgentMonitorServer {
 	 * @throws IOException
 	 *             IO error
 	 */
-	public void init(final int port, File agentHome) throws IOException {
-		this.init(port, MonitorConstants.DEFAULT_DATA_COLLECTOR, agentHome);
+	public void init(final int port, AgentConfig agentConfig) throws IOException {
+		this.init(port, MonitorConstants.DEFAULT_DATA_COLLECTOR, agentConfig);
 	}
 
 	/**
@@ -102,22 +102,34 @@ public final class AgentMonitorServer {
 	 * @throws IOException
 	 *             IO error
 	 */
-	public void init(final int port, final Set<String> dataCollector, File agentHome) throws IOException {
+	public void init(final int port, final Set<String> dataCollector, AgentConfig agentConfig) throws IOException {
 
 		MonitorContext.getInstance().setDataCollectors(dataCollector);
 
 		this.port = port;
 		this.rmiRegistry = LocateRegistry.createRegistry(port);
 		this.mBeanServer = ManagementFactory.getPlatformMBeanServer();
-		this.agentHome = agentHome;
-
-		final String hostname = NetworkUtil.getLocalHostAddress();
+		this.agentConfig = agentConfig;
+		final String hostname = getCurrentHostName(agentConfig);
 		final String jmxUrlString = "service:jmx:rmi://" + hostname + ":" + port + "/jndi/rmi://" + hostname + ":"
-						+ port + "/jmxrmi";
+				+ port + "/jmxrmi";
 		JMXServiceURL jmxUrl = new JMXServiceURL(jmxUrlString);
 		this.jmxServer = JMXConnectorServerFactory.newJMXConnectorServer(jmxUrl, null, mBeanServer);
 		AgentRegisterMXBean.getInstance().addDefaultMXBean(mBeanServer);
 		LOG.info("Service URL:{} is initiated.", jmxUrl);
+	}
+
+	/**
+	 * Get current host name. If the mintor.host field exists in the agent.conf
+	 * file, it will return this. Otherwise, return automatically resolved host
+	 * name.
+	 * 
+	 * @param agentConfig
+	 *            agent config
+	 * @return current host name
+	 */
+	protected String getCurrentHostName(AgentConfig agentConfig) {
+		return agentConfig.getProperty("monitor.host", NetworkUtil.getLocalHostAddress());
 	}
 
 	/**
@@ -147,7 +159,7 @@ public final class AgentMonitorServer {
 	public void start() throws IOException {
 		if (!isRunning()) {
 			jmxServer.start();
-			AgentDataCollectManager.getInstance().init(agentHome);
+			AgentDataCollectManager.getInstance().init(agentConfig);
 			AgentDataCollectManager.getInstance().start();
 			isRunning = true;
 		}

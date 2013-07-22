@@ -43,16 +43,16 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 /**
- * This class is used as base class for test case,and it will initialize the DB related config, like
- * datasource, and it will start a transaction for every test function, and rollback after the
- * execution.
+ * This class is used as base class for test case,and it will initialize the DB
+ * related config, like datasource, and it will start a transaction for every
+ * test function, and rollback after the execution.
  * 
  * @author Mavlarn
  * 
  */
 @ContextConfiguration({ "classpath:applicationContext.xml" })
 abstract public class AbstractNGrinderTransactionalTest extends AbstractTransactionalJUnit4SpringContextTests implements
-				NGrinderConstants {
+		NGrinderConstants {
 	protected static final Logger LOG = LoggerFactory.getLogger(AbstractNGrinderTransactionalTest.class);
 
 	@Autowired
@@ -71,8 +71,7 @@ abstract public class AbstractNGrinderTransactionalTest extends AbstractTransact
 		LOG.info("* Start nGrinder Monitor *");
 		try {
 			Set<String> collector = MonitorConstants.SYSTEM_DATA_COLLECTOR;
-			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_MONITOR_PORT, collector,
-							agentConfig.getHome().getDirectory());
+			AgentMonitorServer.getInstance().init(MonitorConstants.DEFAULT_MONITOR_PORT, collector, agentConfig);
 			AgentMonitorServer.getInstance().start();
 		} catch (Exception e) {
 			LOG.error("ERROR: {}", e.getMessage());
