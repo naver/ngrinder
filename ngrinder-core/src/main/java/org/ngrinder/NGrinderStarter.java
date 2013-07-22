@@ -101,8 +101,8 @@ public class NGrinderStarter {
 	}
 
 	/*
-	 * get the start mode, "agent" or "monitor". If it is not set in configuration, it will return
-	 * "agent".
+	 * get the start mode, "agent" or "monitor". If it is not set in
+	 * configuration, it will return "agent".
 	 */
 	public String getStartMode() {
 		return agentConfig.getAgentProperties().getProperty("start.mode", "agent");
@@ -133,7 +133,7 @@ public class NGrinderStarter {
 			String localHostAddress = NetworkUtil.getLocalHostAddress();
 			System.setProperty("java.rmi.server.hostname", localHostAddress);
 			int monitorPort = agentConfig.getPropertyInt(AgentConfig.MONITOR_LISTEN_PORT,
-							MonitorConstants.DEFAULT_MONITOR_PORT);
+					MonitorConstants.DEFAULT_MONITOR_PORT);
 			AgentMonitorServer.getInstance().init(monitorPort, agentConfig);
 			AgentMonitorServer.getInstance().start();
 		} catch (Exception e) {
@@ -159,7 +159,7 @@ public class NGrinderStarter {
 		LOG.info("***************************************************");
 		LOG.info(" Start nGrinder Agent ...");
 		String consoleIP = StringUtils.isNotEmpty(controllerIp) ? controllerIp : agentConfig.getAgentProperties()
-						.getProperty("agent.console.ip", "127.0.0.1");
+				.getProperty("agent.console.ip", NetworkUtil.getLocalHostAddress());
 
 		if (!NetworkUtil.isValidIP(consoleIP)) {
 			LOG.error("Hey!! {} does not seems like IP. Try to resolve the ip with {}.", consoleIP, consoleIP);
@@ -178,13 +178,13 @@ public class NGrinderStarter {
 
 		}
 		int consolePort = agentConfig.getAgentProperties().getPropertyInt("agent.console.port",
-						AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		String region = agentConfig.getAgentProperties().getProperty("agent.region", "");
 		LOG.info("with console: {}:{}", consoleIP, consolePort);
 		boolean serverMode = agentConfig.getPropertyBoolean("agent.servermode", false);
 		if (!serverMode) {
 			LOG.info("JVM server mode is disabled. If you turn on ngrinder.servermode in agent.conf."
-							+ " It will provide the better agent performance.");
+					+ " It will provide the better agent performance.");
 		}
 
 		try {
@@ -230,7 +230,7 @@ public class NGrinderStarter {
 				jnlpLoader = ReflectionUtil.newInstanceByName("org.ngrinder.jnlp.impl.JNLPLoaderImpl");
 				if (!jnlpLoader.isWebStartPossible()) {
 					staticPrintHelpAndExit("Sorry, nGrinder agent can not run on your JDK,\n"
-									+ "Please install Oracle JDK! ");
+							+ "Please install Oracle JDK! ");
 				}
 
 				fileString.addAll(jnlpLoader.resolveRemoteJars(jnlpLibPath));
@@ -321,7 +321,7 @@ public class NGrinderStarter {
 			configurator.doConfigure(NGrinderStarter.class.getResource("/logback-agent.xml"));
 		} catch (JoranException e) {
 			staticPrintHelpAndExit("Can not configure logger on " + logDirectory.getAbsolutePath()
-							+ ".\n Please check if it's writable.");
+					+ ".\n Please check if it's writable.");
 		}
 	}
 
@@ -394,8 +394,8 @@ public class NGrinderStarter {
 			agentConfig.updateAgentPidProperties(mode);
 		} catch (SigarException e) {
 			printHelpAndExit(String.format("Error occurred while terminating %s process.\n"
-							+ "It can be already stopped or you may not have the permission.\n"
-							+ "If everything is OK. Please stop it manually.", mode), e);
+					+ "It can be already stopped or you may not have the permission.\n"
+					+ "If everything is OK. Please stop it manually.", mode), e);
 		}
 	}
 
@@ -412,9 +412,9 @@ public class NGrinderStarter {
 			try {
 				ProcState procState = sigar.getProcState(existingPid);
 				if (procState.getState() == ProcState.RUN || procState.getState() == ProcState.IDLE
-								|| procState.getState() == ProcState.SLEEP) {
+						|| procState.getState() == ProcState.SLEEP) {
 					printHelpAndExit("Currently " + startMode + " is running with pid " + existingPid
-									+ ". Please stop it before run");
+							+ ". Please stop it before run");
 				}
 				agentConfig.updateAgentPidProperties(startMode);
 			} catch (SigarException e) {
