@@ -127,7 +127,7 @@
 								<td class="center"  id="row_${test.id}">
 									<div class="ball" id="ball_${test.id}" 
 													data-html="true"
-													data-content='${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}'  
+													data-content="${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}"  
 													title="<@spring.message "${test.status.springMessageKey}"/>" 
 													rel="popover"> 
 										<img class="status" src="${req.getContextPath()}/img/ball/${test.status.iconName}"  /> 
@@ -137,7 +137,7 @@
 									<div
 										 rel="popover"
 										 data-html="true" 
-										 data-content='${(test.description!"")?replace("\n", "<br/>")?html} <p>${test.testComment?replace("\n", "<br/>")?html}</p><#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}<br/></#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if><br/><#if test.tagString?has_content><@spring.message "perfTest.configuration.tags"/> : ${test.tagString}<br/></#if><@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})<br/> <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})'  
+										 data-content="${((test.description!"")?html)?replace("\n", "<br/>")} <p>${test.testComment?js_string?replace("\n", "<br/>")}</p><#if test.scheduledTime?exists><@spring.message "perfTest.table.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}<br/></#if><@spring.message "perfTest.table.modifiedTime"/> : <#if test.lastModifiedDate?exists>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if><br/><#if test.tagString?has_content><@spring.message "perfTest.configuration.tags"/> : ${test.tagString}<br/></#if><@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})<br/> <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})"  
 										 data-title="${test.testName}">
 										<a href="${req.getContextPath()}/perftest/${test.id}" target="_self">${test.testName}</a>
 									</div>
@@ -169,7 +169,7 @@
 		            				</div>
 		            			</td>
 								<#if clustered>
-								<td class="ellipsis" title="<@spring.message "agent.table.region"/>" data-html="true" data-content='<#if test.region?has_content><@spring.message "${test.region}"/></#if>'> <#if test.region?has_content><@spring.message "${test.region}"/></#if> 
+								<td class="ellipsis" title="<@spring.message "agent.table.region"/>" data-html="true" data-content="<#if test.region?has_content><@spring.message "${test.region}"/></#if>"> <#if test.region?has_content><@spring.message "${test.region}"/></#if> 
 								</td>
 								</#if>
 								<td>
