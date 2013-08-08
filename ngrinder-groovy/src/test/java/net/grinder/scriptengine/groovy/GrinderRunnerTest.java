@@ -28,6 +28,7 @@ import net.grinder.script.GTest;
 import net.grinder.script.InvalidContextException;
 import net.grinder.script.NonInstrumentableTypeException;
 import net.grinder.scriptengine.groovy.junit.GrinderRunner;
+import net.grinder.scriptengine.groovy.junit.annotation.AfterProcess;
 import net.grinder.scriptengine.groovy.junit.annotation.AfterThread;
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread;
 import net.grinder.scriptengine.groovy.junit.annotation.Repeat;
@@ -113,6 +114,11 @@ public class GrinderRunnerTest {
 		@AfterThread
 		public void doAfter() {
 			System.out.println("After Thread");
+		}
+		
+		@AfterProcess
+		public static void affterprocess() {
+			System.out.println("After Process");
 		}
 	}
 
