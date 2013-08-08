@@ -90,7 +90,7 @@
 					<col width="80">
 					<col width="65"> 
 					<col width="65">
-					<col width="62">
+					<col width="70">
 					<col width="75">
 					<col width="30">
 				</colgroup>
@@ -108,7 +108,7 @@
 						<th class="nothing"><@spring.message "perfTest.table.threshold"/></th>
 						<th id="tps" name="tps"><@spring.message "perfTest.table.tps"/></th> 
 						<th id="mean_test_time" name="meanTestTime" title='<@spring.message "perfTest.table.meantime"/>' >MTT</th>
-						<th id="errors" name="errors"><@spring.message "perfTest.table.errors"/></th>
+						<th id="errors" class="ellipsis" name="errors"><@spring.message "perfTest.table.errorRate"/></th>
 						<th class="nothing"><@spring.message "perfTest.table.vusers"/></th>
 						<th class="nothing" title="<@spring.message "common.label.actions"/>"></th>
 					</tr>
@@ -179,7 +179,13 @@
 								</td>
 								<td><#if test.tps??>${(test.tps)?string("0.#")}</#if></td>  
 								<td><#if test.meanTestTime??>${(test.meanTestTime)?string("0.##")}</#if></td>
-								<td><#if test.errors??>${test.errors}</#if></td>
+								<td>
+									<div class="ellipsis" 
+										rel="popover"
+		            					data-html="true" 
+		            					data-content="<@spring.message "perfTest.table.tests"/> : ${test.tests!""}<br/><@spring.message "perfTest.table.errors"/> : ${test.errors!""}<br/>">
+		            					<#if test.tests?? && test.tests != 0>${(test.errors/test.tests*100)?string.percent}</#if></td>
+		            				</div>
 								<td>${totalVuser}</td>
 								<td class="center">
 									<a href="javascript:void(0)" style="<#if deletable>display: none;</#if>"><i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>
