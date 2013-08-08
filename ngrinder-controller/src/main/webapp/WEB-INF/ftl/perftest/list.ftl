@@ -47,7 +47,7 @@
 							
 							<button type="submit" class="btn" id="search_btn"><i class="icon-search"></i> <@spring.message "common.button.search"/></button>
 							<label class="checkbox" style="position:relative; margin-left:5px">
-								<input type="checkbox" id="finished_only_checkbox" name="queryFilter" <#if queryFilter?? && queryFilter == 'F'>checked</#if> value="F"> <@spring.message "perfTest.formInline.finished"/>
+								<input type="checkbox" id="running_only_checkbox" name="queryFilter" <#if queryFilter?? && queryFilter == 'R'>checked</#if> value="R"> <@spring.message "perfTest.formInline.running"/>
 							</label>
 							<label class="checkbox" style="position:relative; margin-left:5px">
 								<input type="checkbox" id="scheduled_only_checkbox" name="queryFilter" <#if queryFilter?? && queryFilter == 'S'>checked</#if> value="S"> <@spring.message "perfTest.formInline.scheduled"/>
@@ -294,15 +294,15 @@
 				$("#current_running_status_div").toggle();
 			});
 			
-			$("#finished_only_checkbox, #scheduled_only_checkbox").click(function() {
+			$("#scheduled_only_checkbox, #running_only_checkbox").click(function() {
 				var $this = $(this);
 				var $temp;
-				if ($this.attr("id") == "finished_only_checkbox") {
+				var checkId = $this.attr("id");
+				if (checkId == "scheduled_only_checkbox") {
+					checkboxReject($this, $("#running_only_checkbox"));
+				} else if (checkId == "running_only_checkbox") {
 					checkboxReject($this, $("#scheduled_only_checkbox"));
-				} else {
-					checkboxReject($this, $("#finished_only_checkbox"));
-				}
-				
+				} 
 				document.forms.test_list_form.submit();
 			});
 		});
