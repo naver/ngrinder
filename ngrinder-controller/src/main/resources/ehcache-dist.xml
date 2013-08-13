@@ -46,8 +46,6 @@
 		<bootstrapCacheLoaderFactory
 			class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
 			properties="bootstrapAsynchronously=false" />
-
-
 	</cache>
 
 	<cache name="controller_home" maxElementsInMemory="100"
@@ -58,8 +56,6 @@
 		<bootstrapCacheLoaderFactory
 			class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
 			properties="bootstrapAsynchronously=false" />
-
-
 	</cache>
 
 	<cache name="agent_request" maxElementsInMemory="100"

@@ -103,6 +103,7 @@ public class AgentController implements Agent {
 	public AgentController(Condition eventSyncCondition, String currentIp) throws GrinderException {
 		m_eventSyncCondition = eventSyncCondition;
 		m_agentControllerServerListener = new AgentControllerServerListener(m_eventSynchronisation, LOGGER);
+		// Set it with the default name 
 		m_agentIdentity = new AgentControllerIdentityImplementation(NetworkUtil.getLocalHostName(), currentIp);
 		agentSystemDataCollector = new AgentSystemDataCollector();
 		agentSystemDataCollector.refresh();
