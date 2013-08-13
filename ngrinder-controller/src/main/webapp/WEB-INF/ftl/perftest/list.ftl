@@ -184,7 +184,7 @@
 										rel="popover"
 		            					data-html="true" 
 		            					data-content="<@spring.message "perfTest.table.tests"/> : ${test.tests!""}<br/><@spring.message "perfTest.table.errors"/> : ${test.errors!""}<br/>">
-		            					<#if test.tests?? && test.tests != 0>${(test.errors/test.tests*100)?string.percent}</#if></td>
+		            					<#if test.tests?? && test.tests != 0>${(test.errors/test.tests)?string.percent}</#if></td>
 		            				</div>
 								<td>${totalVuser}</td>
 								<td class="center">

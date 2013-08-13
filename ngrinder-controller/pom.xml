@@ -11,9 +11,9 @@
 	<name>ngrinder-controller</name>
 	<packaging>war</packaging>
 	<properties>
-		<!-- BDS Deploy Path -->
-		<webappdir>${project.basedir}/src/main/webapp</webappdir>
+		<webappdir>${basedir}/src/main/webapp</webappdir>
 		<m2eclipse.wtp.contextRoot>/ngrinder-controller</m2eclipse.wtp.contextRoot>
+		<deploy.dir>${basedir}/../../deploy</deploy.dir>
 	</properties>
 
 	<repositories>
@@ -330,7 +330,7 @@
 			<version>8.4.1.2032</version>
 			<!-- this version is disappeared... little bit hack -->
 			<scope>system</scope>
-			<systemPath>${project.basedir}/patch/cubrid-jdbc-8.4.1.2032.jar</systemPath>
+			<systemPath>${basedir}/patch/cubrid-jdbc-8.4.1.2032.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>grinder</groupId>
@@ -338,14 +338,14 @@
 			<version>3.9.1</version>
 			<!-- this version is disappeared... little bit hack -->
 			<scope>system</scope>
-			<systemPath>${project.basedir}/patch/grinder-3.9.1-patch.jar</systemPath>
+			<systemPath>${basedir}/patch/grinder-3.9.1-patch.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.ngrinder</groupId>
 			<artifactId>universal-analytics-java</artifactId>
 			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/patch/universal-analytics-java-1.0.jar</systemPath>
+			<systemPath>${basedir}/patch/universal-analytics-java-1.0.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>commons-httpclient</groupId>
@@ -410,7 +410,6 @@
 					<include>**/script_template/**/*</include>
 				</includes>
 			</resource>
-
 		</resources>
 		<plugins>
 			<plugin>
@@ -424,6 +423,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
+					<webappDirectory>${deploy.dir}</webappDirectory>
 					<webResources>
 
 						<resource>
@@ -436,7 +436,6 @@
 					</webResources>
 				</configuration>
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-eclipse-plugin</artifactId>
