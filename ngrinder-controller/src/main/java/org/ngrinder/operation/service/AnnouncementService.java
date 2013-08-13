@@ -14,8 +14,10 @@
 package org.ngrinder.operation.service;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.infra.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +45,21 @@ public class AnnouncementService {
 	 */
 	public String getAnnouncement() {
 		return config.getAnnouncement();
+	}
+
+	/**
+	 * Check the announcement is changed after 1 week ago.
+	 * 
+	 * @return true if it's new one
+	 */
+	public boolean getAnnouncementIsNew() {
+		Date announcementDate = config.getAnnouncementDate();
+		if (announcementDate != null) {
+			Date weekago = DateUtils.addDays(new Date(), -7);
+			return announcementDate.after(weekago);
+		} else {
+			return false;
+		}
 	}
 
 	/**

@@ -19,6 +19,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
@@ -50,8 +51,8 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 
 /**
- * Spring component which is responsible to get the nGrinder configurations which is stored
- * ${NGRINDER_HOME}.
+ * Spring component which is responsible to get the nGrinder configurations
+ * which is stored ${NGRINDER_HOME}.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -69,6 +70,7 @@ public class Config implements IConfig, NGrinderConstants {
 	private PropertiesWrapper systemProperties;
 	private PropertiesWrapper databaseProperties;
 	private String announcement;
+	private Date announcementDate;
 	private static String versionString = "";
 	private boolean verbose;
 	private String currentIP;
@@ -95,9 +97,9 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Initialize Config. This method mainly perform NGRINDER_HOME resolution and system properties
-	 * load. In addition, Logger is initialized and default configuration file is copied into
-	 * NGRINDER_HOME if it's the first
+	 * Initialize Config. This method mainly perform NGRINDER_HOME resolution
+	 * and system properties load. In addition, Logger is initialized and
+	 * default configuration file is copied into NGRINDER_HOME if it's the first
 	 */
 	@PostConstruct
 	public void init() {
@@ -124,7 +126,7 @@ public class Config implements IConfig, NGrinderConstants {
 
 	protected void resolveLocalIp() {
 		currentIP = getSystemProperties().getProperty("ngrinder.controller.ipaddress",
-						NetworkUtil.getLocalHostAddress());
+				NetworkUtil.getLocalHostAddress());
 	}
 
 	/**
@@ -194,7 +196,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 */
 	public int getMonitorPort() {
 		return getSystemProperties().getPropertyInt(AgentConfig.MONITOR_LISTEN_PORT,
-						MonitorConstants.DEFAULT_MONITOR_PORT);
+				MonitorConstants.DEFAULT_MONITOR_PORT);
 	}
 
 	/**
@@ -275,7 +277,7 @@ public class Config implements IConfig, NGrinderConstants {
 		}
 		String userHome = StringUtils.defaultIfEmpty(userHomeFromProperty, userHomeFromEnv);
 		File homeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
-						System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
+				System.getProperty("user.home"), NGRINDER_DEFAULT_FOLDER);
 		CoreLogger.LOGGER.info("nGrinder home directory:{}.", userHome);
 
 		return new Home(homeDirectory);
@@ -297,7 +299,7 @@ public class Config implements IConfig, NGrinderConstants {
 		}
 		String userHome = StringUtils.defaultIfEmpty(exHomeFromProperty, exHomeFromEnv);
 		File exHomeDirectory = (StringUtils.isNotEmpty(userHome)) ? new File(userHome) : new File(
-						System.getProperty("user.home"), NGRINDER_EX_FOLDER);
+				System.getProperty("user.home"), NGRINDER_EX_FOLDER);
 		CoreLogger.LOGGER.info("nGrinder ex home directory:{}.", exHomeDirectory);
 
 		return new Home(exHomeDirectory, false);
@@ -355,6 +357,11 @@ public class Config implements IConfig, NGrinderConstants {
 		File sysFile = home.getSubFile("announcement.conf");
 		try {
 			announcement = FileUtils.readFileToString(sysFile, "UTF-8");
+			if (sysFile.exists()) {
+				announcementDate = new Date(sysFile.lastModified());
+			} else {
+				announcementDate = null;
+			}
 			return;
 		} catch (IOException e) {
 			CoreLogger.LOGGER.error("Error while reading announcement file.", e);
@@ -374,8 +381,10 @@ public class Config implements IConfig, NGrinderConstants {
 			protected void doOnChange() {
 				CoreLogger.LOGGER.info("Announcement file changed.");
 				loadAnnouncement();
+
 			}
 		};
+		announcementDate = new Date();
 		announcementWatchDog.setName("WatchDog - annoucenment.conf");
 		announcementWatchDog.setDelay(2000);
 		announcementWatchDog.start();
@@ -392,6 +401,7 @@ public class Config implements IConfig, NGrinderConstants {
 							listener.propertyChange(null);
 						}
 					});
+
 				} catch (Exception e) {
 					CoreLogger.LOGGER.error("Error occurs while updating system.conf", e);
 				}
@@ -462,8 +472,9 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Check if plugin support is enabled. The reason why we need this configuration is that it
-	 * takes time to initialize plugin system in unit test context.
+	 * Check if plugin support is enabled. The reason why we need this
+	 * configuration is that it takes time to initialize plugin system in unit
+	 * test context.
 	 * 
 	 * @return true if plugin is supported.
 	 */
@@ -598,6 +609,10 @@ public class Config implements IConfig, NGrinderConstants {
 		return false;
 	}
 
+	public Date getAnnouncementDate() {
+		return announcementDate;
+	}
+
 	/**
 	 * Get ngrinder help URL.
 	 * 
@@ -605,7 +620,7 @@ public class Config implements IConfig, NGrinderConstants {
 	 */
 	public String getHelpUrl() {
 		return getSystemProperties().getProperty("ngrinder.help.url",
-						"http://www.cubrid.org/wiki_ngrinder/entry/user-guide");
+				"http://www.cubrid.org/wiki_ngrinder/entry/user-guide");
 	}
 
 }

@@ -90,7 +90,8 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Provide current login user as a model attributes. If it's not found, return empty user.
+	 * Provide current login user as a model attributes. If it's not found,
+	 * return empty user.
 	 * 
 	 * @return login user
 	 */
@@ -113,6 +114,16 @@ public class NGrinderBaseController implements NGrinderConstants {
 	@ModelAttribute("announcement")
 	public String announcement() {
 		return announcementService.getAnnouncement();
+	}
+
+	/**
+	 * Provide announcement content as a model attributes.
+	 * 
+	 * @return announcement content
+	 */
+	@ModelAttribute("announcement_new")
+	public boolean announcementNew() {
+		return announcementService.getAnnouncementIsNew();
 	}
 
 	/**
@@ -144,7 +155,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	 */
 	@ModelAttribute("announcement_hide")
 	public boolean announcement(
-					@CookieValue(value = "announcement_hide", defaultValue = "false") boolean annoucnementHide) {
+			@CookieValue(value = "announcement_hide", defaultValue = "false") boolean annoucnementHide) {
 		return annoucnementHide;
 	}
 
@@ -263,7 +274,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 		responseHeaders.setPragma("no-cache");
 		return toHttpEntity(toJson(content), responseHeaders);
 	}
-	
+
 	/**
 	 * Convert the given string into json message.
 	 * 
@@ -277,8 +288,6 @@ public class NGrinderBaseController implements NGrinderConstants {
 		responseHeaders.setPragma("no-cache");
 		return toHttpEntity(content, responseHeaders);
 	}
-
-
 
 	/**
 	 * Convert the given map into json message.
