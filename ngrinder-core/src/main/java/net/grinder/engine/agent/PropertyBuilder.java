@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Class which is responsible to build custom jvm arguments.
  * 
- * This class aware of security. So it produces the appropriate JVM arguments which works at
- * security env.
+ * This class aware of security. So it produces the appropriate JVM arguments
+ * which works at security env.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -52,9 +52,43 @@ public class PropertyBuilder {
 	private final String hostString;
 	private final boolean server;
 	private final boolean useXmxLimit;
+	private final String additionalJavaOpt;
 
 	/**
-	 * Constructor.
+	 * Constructor with null additional java opt value.
+	 * 
+	 * @param properties
+	 *            {@link GrinderProperties}
+	 * @param baseDirectory
+	 *            base directory which the script executes.
+	 * @param securityEnabled
+	 *            true if security enable mode
+	 * @param hostString
+	 *            hostString
+	 * @param hostName
+	 *            current host name
+	 * @param server
+	 *            server mode
+	 * @param useXmxLimit
+	 *            true if 1G limit should be enabled
+	 * @param additionalJavaOpt
+	 *            additional java option to be provided when invoking agent
+	 *            process
+	 */
+	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
+			String hostString, String hostName, boolean server, boolean useXmxLimit, String additionalJavaOpt) {
+		this.properties = checkNotNull(properties);
+		this.baseDirectory = checkNotNull(baseDirectory);
+		this.securityEnabled = securityEnabled;
+		this.hostString = hostString;
+		this.hostName = checkNotEmpty(hostName);
+		this.server = server;
+		this.useXmxLimit = useXmxLimit;
+		this.additionalJavaOpt = additionalJavaOpt;
+	}
+
+	/**
+	 * Constructor with null additional java opt value.
 	 * 
 	 * @param properties
 	 *            {@link GrinderProperties}
@@ -72,14 +106,8 @@ public class PropertyBuilder {
 	 *            true if 1G limit should be enabled
 	 */
 	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
-					String hostString, String hostName, boolean server, boolean useXmxLimit) {
-		this.useXmxLimit = useXmxLimit;
-		this.properties = checkNotNull(properties);
-		this.baseDirectory = checkNotNull(baseDirectory);
-		this.securityEnabled = securityEnabled;
-		this.hostString = hostString;
-		this.hostName = checkNotEmpty(hostName);
-		this.server = server;
+			String hostString, String hostName, boolean server, boolean useXmxLimit) {
+		this(properties, baseDirectory, securityEnabled, hostString, hostName, server, useXmxLimit, null);
 	}
 
 	/**
@@ -99,7 +127,7 @@ public class PropertyBuilder {
 	 *            server mode
 	 */
 	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
-					String hostString, String hostName, boolean server) {
+			String hostString, String hostName, boolean server) {
 		this(properties, baseDirectory, securityEnabled, hostString, hostName, server, true);
 	}
 
@@ -118,7 +146,7 @@ public class PropertyBuilder {
 	 *            current host name
 	 */
 	public PropertyBuilder(GrinderProperties properties, Directory baseDirectory, boolean securityEnabled,
-					String hostString, String hostName) {
+			String hostString, String hostName) {
 		this(properties, baseDirectory, securityEnabled, hostString, hostName, false);
 	}
 
@@ -137,13 +165,14 @@ public class PropertyBuilder {
 	 * @return generated jvm arguments
 	 */
 	public String buildJVMArgumentWithoutMemory() {
-		StringBuilder jvmArguments = new StringBuilder(properties.getProperty("grinder.jvm.arguments", ""));
+		StringBuilder jvmArguments = new StringBuilder();
 		if (securityEnabled) {
 			jvmArguments = addSecurityManager(jvmArguments);
 			jvmArguments = addCurrentAgentPath(jvmArguments);
 			jvmArguments = addConsoleIP(jvmArguments);
 			jvmArguments = addDNSIP(jvmArguments);
 		} else {
+			jvmArguments.append(properties.getProperty("grinder.jvm.arguments", ""));
 			jvmArguments = addNativeLibraryPath(jvmArguments);
 		}
 		jvmArguments = addPythonPathJvmArgument(jvmArguments);
@@ -152,12 +181,19 @@ public class PropertyBuilder {
 		if (server) {
 			jvmArguments = addServerMode(jvmArguments);
 		}
+		if (StringUtils.isNotBlank(additionalJavaOpt)) {
+			jvmArguments = addAdditionalJavaOpt(jvmArguments);
+		}
 		return jvmArguments.toString();
+	}
+
+	private StringBuilder addAdditionalJavaOpt(StringBuilder jvmArguments) {
+		return jvmArguments.append(" ").append(additionalJavaOpt).append(" ");
 	}
 
 	private StringBuilder addNativeLibraryPath(StringBuilder jvmArguments) {
 		return jvmArguments.append(" -Djna.library.path=").append(new File(baseDirectory.getFile(), "/lib"))
-						.append(" ");
+				.append(" ");
 	}
 
 	protected static final long MIN_FREE_MEM_SIZE = 200 * 1024 * 1024;
@@ -196,9 +232,9 @@ public class PropertyBuilder {
 
 		jvmArguments.append(" -Xms" + getMemorySize(desirableXmx) + "m -Xmx" + getMemorySize(desirableXmx) + "m ");
 		jvmArguments.append(" -XX:PermSize=")
-						.append(properties.getInt("grinder.memory.permsize", getMemorySize(permGen))).append("m ");
+				.append(properties.getInt("grinder.memory.permsize", getMemorySize(permGen))).append("m ");
 		jvmArguments.append(" -XX:MaxPermSize=")
-						.append(properties.getInt("grinder.memory.maxpermsize", getMemorySize(permGen))).append("m ");
+				.append(properties.getInt("grinder.memory.maxpermsize", getMemorySize(permGen))).append("m ");
 		return jvmArguments;
 	}
 
@@ -222,7 +258,8 @@ public class PropertyBuilder {
 	 * Build custom class path based on the jar files on given base path.
 	 * 
 	 * @param useAbsolutePath
-	 *            true if the class path entries should be represented as absolute path
+	 *            true if the class path entries should be represented as
+	 *            absolute path
 	 * 
 	 * @return classpath string
 	 */
@@ -238,7 +275,7 @@ public class PropertyBuilder {
 				public boolean accept(File dir, String name) {
 					if (name.endsWith(".jar")) {
 						customClassPath.append(File.pathSeparator)
-										.append(getPath(new File(dir, name), useAbsolutePath));
+								.append(getPath(new File(dir, name), useAbsolutePath));
 					}
 					return true;
 				}
@@ -293,7 +330,7 @@ public class PropertyBuilder {
 
 	private StringBuilder addConsoleIP(StringBuilder jvmArguments) {
 		return jvmArguments.append(" -Dngrinder.console.ip=")
-						.append(properties.getProperty(GrinderProperties.CONSOLE_HOST, "127.0.0.1")).append(" ");
+				.append(properties.getProperty(GrinderProperties.CONSOLE_HOST, "127.0.0.1")).append(" ");
 	}
 
 	@SuppressWarnings("restriction")
@@ -312,7 +349,8 @@ public class PropertyBuilder {
 	}
 
 	/**
-	 * Rebase Host String.. add the missing ip addresses if only host is provided..
+	 * Rebase Host String.. add the missing ip addresses if only host is
+	 * provided..
 	 * 
 	 * @param hostString
 	 *            host string

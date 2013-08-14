@@ -360,7 +360,7 @@ public class AgentImplementationEx implements Agent {
 		PropertyBuilder builder = new PropertyBuilder(properties, script.getDirectory(), properties.getBoolean(
 						"grinder.security", false), properties.getProperty("ngrinder.etc.hosts"),
 						NetworkUtil.getLocalHostName(), m_agentConfig.getPropertyBoolean("agent.servermode", false),
-						m_agentConfig.getPropertyBoolean("agent.useXmxLimit", true));
+						m_agentConfig.getPropertyBoolean("agent.useXmxLimit", true), m_agentConfig.getProperty("agent.javaopt", null));
 		String jvmArguments = builder.buildJVMArgument();
 		String rebaseCustomClassPath = getForeMostClassPath(System.getProperties(), handler, m_logger)
 						+ File.pathSeparator
