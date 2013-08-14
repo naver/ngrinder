@@ -15,6 +15,17 @@
 				background-repeat:no-repeat;
 				background-position:left top;
 			}
+			.popover {
+				width:auto;
+				min-width:300px;
+				max-width:600px;
+			}
+			
+			.popover-content {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
 		</style>
 	</head>
 
