@@ -107,7 +107,7 @@
 				</form>
 				
 				
-				<textarea id="codemirror_content">${(file.content)!}</textarea>
+				<textarea id="codemirror_content">${((file.content)!"")?replace("&para", "&amp;para")}</textarea>
 				<textarea id="old_content" class="hidden">${(file.content)!}</textarea>
 				<div class="pull-right" rel="popover" style="position:float;margin-top:-20px;margin-right:-30px" 
 					title="Tip" data-html="ture"
