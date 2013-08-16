@@ -84,12 +84,12 @@ public class User extends BaseModel<User> {
 	@Transient
 	private User ownerUser;
 
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "owner_id"), // LF
 	inverseJoinColumns = @JoinColumn(name = "follow_id"))
 	private List<User> followers;
 
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "SHARED_USER", joinColumns = @JoinColumn(name = "follow_id"), // LF
 	inverseJoinColumns = @JoinColumn(name = "owner_id"))
 	private List<User> owners;

@@ -146,7 +146,7 @@ public class UserController extends NGrinderBaseController {
 	@PreAuthorize("hasAnyRole('A') or #user.userId == #userId")
 	public String getUserDetail(User user, final ModelMap model, @PathVariable final String userId) {
 		model.addAttribute("roleSet", EnumSet.allOf(Role.class));
-		User userFromDB = userService.getUserByIdWithoutCache(userId);
+		User userFromDB = userService.getUserById(userId);
 		model.addAttribute("user", userFromDB);
 		model.addAttribute("userSecurity", config.isUserSecurityEnabled());
 		getUserShareList(userFromDB, model);
@@ -242,7 +242,7 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping("/profile")
 	public String userProfile(User user, ModelMap model) {
 		checkNotEmpty(user.getUserId(), "UserID should not be NULL!");
-		User currentUser = userService.getUserByIdWithoutCache(user.getUserId());
+		User currentUser = userService.getUserById(user.getUserId());
 		model.addAttribute("user", currentUser);
 		model.addAttribute("demo", config.isDemo());
 		getUserShareList(currentUser, model);
@@ -266,7 +266,7 @@ public class UserController extends NGrinderBaseController {
 			List<User> allUserByRole = userService.getAllUserByRole(Role.USER.getFullName());
 			model.addAttribute("shareUserList", allUserByRole);
 		} else {
-			User currUser = userService.getUserByIdWithoutCache(user.getUserId());
+			User currUser = userService.getUserById(user.getUserId());
 			model.addAttribute("shareUserList", currUser.getOwners());
 		}
 		return "user/switch_options";

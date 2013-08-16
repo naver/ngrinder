@@ -85,7 +85,7 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 		if (currentUser.getUserId().equals(switchUser)) {
 			currentUser.setOwnerUser(null);
 		} else if (StringUtils.isNotEmpty(switchUser)) {
-			User ownerUser = getUserService().getUserByIdWithoutCache(switchUser);
+			User ownerUser = getUserService().getUserById(switchUser);
 			// CurrentUser should remember whose status he used
 			if (currentUser.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)
 							|| (ownerUser.getFollowers() != null && ownerUser.getFollowers().contains(currentUser))) {
