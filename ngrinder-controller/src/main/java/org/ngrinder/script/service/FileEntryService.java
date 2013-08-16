@@ -60,8 +60,8 @@ import org.tmatesoft.svn.core.wc.SVNRevision;
 /**
  * File entry service class.<br/>
  * 
- * This class is responsible for creating user svn repository whenever a user is created and connect
- * the user to the underlying svn.
+ * This class is responsible for creating user svn repository whenever a user is
+ * created and connect the user to the underlying svn.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -71,7 +71,7 @@ public class FileEntryService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileEntryService.class);
 
-	private SVNClientManager svnClientManager = SVNClientManager.newInstance();
+	private SVNClientManager svnClientManager;
 
 	@Autowired
 	private Config config;
@@ -104,7 +104,7 @@ public class FileEntryService {
 				}
 			}
 		});
-
+		svnClientManager = fileEntityRepository.getSVNClientManager();
 	}
 
 	/**
@@ -146,8 +146,8 @@ public class FileEntryService {
 	}
 
 	/**
-	 * Get all {@link FileEntry} for the given user. This method is subject to be cached because it
-	 * takes time.
+	 * Get all {@link FileEntry} for the given user. This method is subject to
+	 * be cached because it takes time.
 	 * 
 	 * @param user
 	 *            user
@@ -327,7 +327,7 @@ public class FileEntryService {
 	 * @return created file entry. main test file if it's the project creation.
 	 */
 	public FileEntry prepareNewEntry(User user, String path, String fileName, String name, String url,
-					ScriptHandler scriptHandler, boolean libAndResource) {
+			ScriptHandler scriptHandler, boolean libAndResource) {
 		if (scriptHandler instanceof ProjectHandler) {
 			scriptHandler.prepareScriptEnv(user, path, fileName, name, url, libAndResource);
 			return null;
@@ -364,7 +364,7 @@ public class FileEntryService {
 			prepareNewEntry(user, pathPart[0], pathPart[1], host, url, scriptHandler, false);
 		} else {
 			FileEntry fileEntry = prepareNewEntry(user, path, quickTestFile.getFileName(), host, url, scriptHandler,
-							false);
+					false);
 			fileEntry.setDescription("Quick test for " + url);
 			save(user, fileEntry);
 		}
@@ -393,8 +393,8 @@ public class FileEntryService {
 	}
 
 	/**
-	 * Get SVN URL for the given user and the given subpath. Base path and the subpath is separated
-	 * by ####.
+	 * Get SVN URL for the given user and the given subpath. Base path and the
+	 * subpath is separated by ####.
 	 * 
 	 * @param user
 	 *            user
@@ -419,7 +419,7 @@ public class FileEntryService {
 	 */
 	public String getCurrentContextPathFromUserRequest() {
 		return config.getSystemProperties().getProperty("http.url",
-						httpContainerContext.getCurrentContextUrlFromUserRequest());
+				httpContainerContext.getCurrentContextUrlFromUserRequest());
 	}
 
 	/**
@@ -437,7 +437,8 @@ public class FileEntryService {
 	}
 
 	/**
-	 * Get the appropriate {@link ScriptHandler} subclass for the given {@link FileEntry}.
+	 * Get the appropriate {@link ScriptHandler} subclass for the given
+	 * {@link FileEntry}.
 	 * 
 	 * @param scriptEntry
 	 *            script entry
@@ -448,7 +449,8 @@ public class FileEntryService {
 	}
 
 	/**
-	 * Get the appropriate {@link ScriptHandler} subclass for the given ScriptHandler key.
+	 * Get the appropriate {@link ScriptHandler} subclass for the given
+	 * ScriptHandler key.
 	 * 
 	 * @param key
 	 *            script entry

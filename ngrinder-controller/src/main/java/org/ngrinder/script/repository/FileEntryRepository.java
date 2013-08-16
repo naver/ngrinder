@@ -54,15 +54,19 @@ import org.tmatesoft.svn.core.SVNProperties;
 import org.tmatesoft.svn.core.SVNProperty;
 import org.tmatesoft.svn.core.SVNPropertyValue;
 import org.tmatesoft.svn.core.SVNURL;
+import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
 import org.tmatesoft.svn.core.internal.io.fs.FSRepositoryFactory;
+import org.tmatesoft.svn.core.internal.wc.DefaultSVNOptions;
 import org.tmatesoft.svn.core.io.ISVNEditor;
 import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.diff.SVNDeltaGenerator;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
 import org.tmatesoft.svn.core.wc.SVNRevision;
+import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 /**
- * SVN FileEntity abstraction. This class save and retrieve {@link FileEntry} from Database.
+ * SVN FileEntity abstraction. This class save and retrieve {@link FileEntry}
+ * from Database.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -77,14 +81,17 @@ public class FileEntryRepository {
 
 	private Home home;
 
+	private File subversionHome;
+
 	/**
-	 * Initialize the {@link FileEntryRepository}. This method should be performed to set up FS
-	 * Repository.
+	 * Initialize the {@link FileEntryRepository}. This method should be
+	 * performed to set up FS Repository.
 	 */
 	@PostConstruct
 	public void init() {
 		FSRepositoryFactory.setup();
 		home = config.getHome();
+		subversionHome = home.getSubFile("subversion");
 	}
 
 	@Autowired
@@ -137,33 +144,32 @@ public class FileEntryRepository {
 			svnRevision = SVNRevision.create(revision);
 		}
 		final List<FileEntry> fileEntries = newArrayList();
-		SVNClientManager svnClientManager = SVNClientManager.newInstance();
+		SVNClientManager svnClientManager = getSVNClientManager();
 		try {
 			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepoDirectory(user)).appendPath(path, true),
-							svnRevision, svnRevision, true, recursive, new ISVNDirEntryHandler() {
-								@Override
-								public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
+					svnRevision, svnRevision, true, recursive, new ISVNDirEntryHandler() {
+						@Override
+						public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
 
-									FileEntry script = new FileEntry();
-									// Exclude base path "/"
-									if (StringUtils.isBlank(dirEntry.getRelativePath())) {
-										return;
-									}
-									script.setPath(FilenameUtils.normalize(path + "/" + dirEntry.getRelativePath(),
-													true));
-									script.setCreatedDate(dirEntry.getDate());
-									script.setLastModifiedDate(dirEntry.getDate());
-									script.setDescription(dirEntry.getCommitMessage());
-									script.setRevision(dirEntry.getRevision());
-									script.setLastModifiedUser(userRepository.findOneByUserId(dirEntry.getAuthor()));
-									if (dirEntry.getKind() == SVNNodeKind.DIR) {
-										script.setFileType(FileType.DIR);
-									} else {
-										script.setFileSize(dirEntry.getSize());
-									}
-									fileEntries.add(script);
-								}
-							});
+							FileEntry script = new FileEntry();
+							// Exclude base path "/"
+							if (StringUtils.isBlank(dirEntry.getRelativePath())) {
+								return;
+							}
+							script.setPath(FilenameUtils.normalize(path + "/" + dirEntry.getRelativePath(), true));
+							script.setCreatedDate(dirEntry.getDate());
+							script.setLastModifiedDate(dirEntry.getDate());
+							script.setDescription(dirEntry.getCommitMessage());
+							script.setRevision(dirEntry.getRevision());
+							script.setLastModifiedUser(userRepository.findOneByUserId(dirEntry.getAuthor()));
+							if (dirEntry.getKind() == SVNNodeKind.DIR) {
+								script.setFileType(FileType.DIR);
+							} else {
+								script.setFileSize(dirEntry.getSize());
+							}
+							fileEntries.add(script);
+						}
+					});
 		} catch (Exception e) {
 			LOG.debug("findAll() to the not existing folder {}", path);
 		} finally {
@@ -173,7 +179,8 @@ public class FileEntryRepository {
 	}
 
 	/**
-	 * Return all {@link FileEntry}s which user have. It excludes {@link FileType#DIR} entries.
+	 * Return all {@link FileEntry}s which user have. It excludes
+	 * {@link FileType#DIR} entries.
 	 * 
 	 * @param user
 	 *            user
@@ -181,49 +188,49 @@ public class FileEntryRepository {
 	 */
 	public List<FileEntry> findAll(final User user) {
 		final List<FileEntry> scripts = new ArrayList<FileEntry>();
-		SVNClientManager svnClientManager = SVNClientManager.newInstance();
+		SVNClientManager svnClientManager = getSVNClientManager();
 		try {
 			svnClientManager.getLogClient().doList(SVNURL.fromFile(getUserRepoDirectory(user)), SVNRevision.HEAD,
-							SVNRevision.HEAD, true, true, new ISVNDirEntryHandler() {
-								@Override
-								public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
-									FileEntry script = new FileEntry();
-									if (dirEntry.getKind() == SVNNodeKind.DIR) {
-										return;
-									}
-									String relativePath = dirEntry.getRelativePath();
-									if (StringUtils.isBlank(relativePath)) {
-										return;
-									}
-									script.setPath(relativePath);
-									script.setDescription(dirEntry.getCommitMessage());
-									long reversion = dirEntry.getRevision();
-									script.setRevision(reversion);
-									script.setFileType(dirEntry.getKind() == SVNNodeKind.DIR ? FileType.DIR : null);
-									script.setFileSize(dirEntry.getSize());
-									if (dirEntry.hasProperties()) {
-										setScriptProperties(user, relativePath, reversion, script.getProperties());
-									}
-									scripts.add(script);
-								}
+					SVNRevision.HEAD, true, true, new ISVNDirEntryHandler() {
+						@Override
+						public void handleDirEntry(SVNDirEntry dirEntry) throws SVNException {
+							FileEntry script = new FileEntry();
+							if (dirEntry.getKind() == SVNNodeKind.DIR) {
+								return;
+							}
+							String relativePath = dirEntry.getRelativePath();
+							if (StringUtils.isBlank(relativePath)) {
+								return;
+							}
+							script.setPath(relativePath);
+							script.setDescription(dirEntry.getCommitMessage());
+							long reversion = dirEntry.getRevision();
+							script.setRevision(reversion);
+							script.setFileType(dirEntry.getKind() == SVNNodeKind.DIR ? FileType.DIR : null);
+							script.setFileSize(dirEntry.getSize());
+							if (dirEntry.hasProperties()) {
+								setScriptProperties(user, relativePath, reversion, script.getProperties());
+							}
+							scripts.add(script);
+						}
 
-								private void setScriptProperties(User user, String path, long revision,
-												Map<String, String> propertiesMap) {
-									SVNClientManager svnClientManager = null;
-									try {
-										svnClientManager = SVNClientManager.newInstance();
-										SVNURL userRepoUrl = SVNURL.fromFile(getUserRepoDirectory(user));
-										SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
-										SVNProperties fileProperty = new SVNProperties();
-										repo.getFile(path, revision, fileProperty, new ByteArrayOutputStream());
-										propertiesMap.put("validated", fileProperty.getStringValue("validated"));
-									} catch (SVNException e) {
-										LOG.error("Error while fetching a file from SVN {} {}", user.getUserId(), path);
-									} finally {
-										closeSVNClientManagerQuietly(svnClientManager);
-									}
-								}
-							});
+						private void setScriptProperties(User user, String path, long revision,
+								Map<String, String> propertiesMap) {
+							SVNClientManager svnClientManager = null;
+							try {
+								svnClientManager = getSVNClientManager();
+								SVNURL userRepoUrl = SVNURL.fromFile(getUserRepoDirectory(user));
+								SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
+								SVNProperties fileProperty = new SVNProperties();
+								repo.getFile(path, revision, fileProperty, new ByteArrayOutputStream());
+								propertiesMap.put("validated", fileProperty.getStringValue("validated"));
+							} catch (SVNException e) {
+								LOG.error("Error while fetching a file from SVN {} {}", user.getUserId(), path);
+							} finally {
+								closeSVNClientManagerQuietly(svnClientManager);
+							}
+						}
+					});
 		} catch (Exception e) {
 			LOG.error("Error while fetching files from SVN for {}", user.getUserId());
 			LOG.debug("Error details :", e);
@@ -252,7 +259,7 @@ public class FileEntryRepository {
 		SVNClientManager svnClientManager = null;
 		ByteArrayOutputStream outputStream = null;
 		try {
-			svnClientManager = SVNClientManager.newInstance();
+			svnClientManager = getSVNClientManager();
 
 			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepoDirectory(user));
 			SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
@@ -311,8 +318,8 @@ public class FileEntryRepository {
 	 * @param fileEntry
 	 *            fileEntry to be saved
 	 * @param encoding
-	 *            file encoding with which fileEntry is saved. It is meaningful only FileEntry is
-	 *            editable.
+	 *            file encoding with which fileEntry is saved. It is meaningful
+	 *            only FileEntry is editable.
 	 * 
 	 */
 	public void save(User user, FileEntry fileEntry, String encoding) {
@@ -321,7 +328,7 @@ public class FileEntryRepository {
 		String checksum = null;
 		InputStream bais = null;
 		try {
-			svnClientManager = SVNClientManager.newInstance();
+			svnClientManager = getSVNClientManager();
 			SVNRepository repo = svnClientManager.createRepository(SVNURL.fromFile(getUserRepoDirectory(user)), true);
 			SVNDirEntry dirEntry = repo.info(fileEntry.getPath(), -1);
 
@@ -333,7 +340,7 @@ public class FileEntryRepository {
 				SVNDirEntry folderStepEntry = repo.info(fullPath, -1);
 				if (folderStepEntry != null && folderStepEntry.getKind() == SVNNodeKind.FILE) {
 					throw new NGrinderRuntimeException("User " + user.getUserId() + " tried to create folder "
-									+ fullPath + ". It's file..");
+							+ fullPath + ". It's file..");
 				}
 			}
 
@@ -366,7 +373,7 @@ public class FileEntryRepository {
 				final SVNDeltaGenerator deltaGenerator = new SVNDeltaGenerator();
 				if (fileEntry.getContentBytes() == null && fileEntry.getFileType().isEditable()) {
 					bais = new ByteArrayInputStream(fileEntry.getContent().getBytes(
-									encoding == null ? "UTF-8" : encoding));
+							encoding == null ? "UTF-8" : encoding));
 				} else {
 					bais = new ByteArrayInputStream(fileEntry.getContentBytes());
 				}
@@ -448,8 +455,8 @@ public class FileEntryRepository {
 	}
 
 	/**
-	 * Delete file entries on given paths. If the one of paths does not exist, all deletion is
-	 * canceled.
+	 * Delete file entries on given paths. If the one of paths does not exist,
+	 * all deletion is canceled.
 	 * 
 	 * @param user
 	 *            user
@@ -460,7 +467,7 @@ public class FileEntryRepository {
 		SVNClientManager svnClientManager = null;
 		ISVNEditor editor = null;
 		try {
-			svnClientManager = SVNClientManager.newInstance();
+			svnClientManager = getSVNClientManager();
 			SVNRepository repo = svnClientManager.createRepository(SVNURL.fromFile(getUserRepoDirectory(user)), true);
 
 			editor = repo.getCommitEditor("delete", null, true, null);
@@ -476,6 +483,17 @@ public class FileEntryRepository {
 			closeSVNEditorQuietly(editor);
 			closeSVNClientManagerQuietly(svnClientManager);
 		}
+	}
+
+	/**
+	 * Get svn client manager with the designated subversionHome.
+	 * 
+	 * @return svn client manager
+	 */
+	public SVNClientManager getSVNClientManager() {
+		DefaultSVNOptions options = SVNWCUtil.createDefaultOptions(subversionHome, true);
+		ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(subversionHome);
+		return SVNClientManager.newInstance(options, authManager);
 	}
 
 	private void closeSVNClientManagerQuietly(SVNClientManager svnClientManager) {
@@ -496,7 +514,7 @@ public class FileEntryRepository {
 	public boolean hasFileEntry(User user, String path) {
 		SVNClientManager svnClientManager = null;
 		try {
-			svnClientManager = SVNClientManager.newInstance();
+			svnClientManager = getSVNClientManager();
 			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepoDirectory(user));
 			SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
 			SVNNodeKind nodeKind = repo.checkPath(path, -1);
@@ -525,7 +543,7 @@ public class FileEntryRepository {
 		SVNClientManager svnClientManager = null;
 		FileOutputStream fileOutputStream = null;
 		try {
-			svnClientManager = SVNClientManager.newInstance();
+			svnClientManager = getSVNClientManager();
 
 			SVNURL userRepoUrl = SVNURL.fromFile(getUserRepoDirectory(user));
 			SVNRepository repo = svnClientManager.createRepository(userRepoUrl, true);
