@@ -70,8 +70,8 @@ public class NGrinderStarter {
 
 	private static final String LOCAL_NATIVE_PATH = "./native_lib";
 
-	private boolean isWebStart = false;
-
+	private static boolean isWebStart = false;
+	private static String startMode = "monitor";
 	private JNLPLoader jnlpLoader;
 
 	/**
@@ -82,17 +82,19 @@ public class NGrinderStarter {
 	}
 
 	protected void init() {// Check agent start mode
-		isWebStart = BooleanUtils.toBoolean(System.getProperty("start.webstart", "false"));
-
 		checkRunningDirectory();
 		agentConfig = new AgentConfig();
 		agentConfig.init();
 		// Configure log.
+		configureLogging();
+		addClassPath();
+		addLibarayPath();
+	}
+
+	private void configureLogging() {
 		Boolean verboseMode = agentConfig.getPropertyBoolean("verbose", false);
 		File logDirectory = agentConfig.getHome().getLogDirectory();
 		configureLogging(verboseMode, logDirectory);
-		addClassPath();
-		addLibarayPath();
 	}
 
 	protected void checkRunningDirectory() {
@@ -249,9 +251,10 @@ public class NGrinderStarter {
 			File libFolder = new File(".", "lib").getAbsoluteFile();
 			if (!libFolder.exists()) {
 				printHelpAndExit("lib path (" + libFolder.getAbsolutePath() + ") does not exist");
+			} else {
+				String[] exts = new String[] { "jar" };
+				fileString.addAll(FileUtils.listFiles(libFolder, exts, false));
 			}
-			String[] exts = new String[] { "jar" };
-			fileString.addAll(FileUtils.listFiles(libFolder, exts, false));
 		}
 
 		return fileString;
@@ -261,7 +264,6 @@ public class NGrinderStarter {
 	 * Add class path.
 	 */
 	protected void addClassPath() {
-
 		ArrayList<String> libString = new ArrayList<String>();
 		Collection<File> libList = getJarFileList();
 		addCustomClassLoader();
@@ -317,9 +319,7 @@ public class NGrinderStarter {
 	}
 
 	private void configureLogging(boolean verbose, File logDirectory) {
-
 		final Context context = (Context) LoggerFactory.getILoggerFactory();
-
 		final JoranConfigurator configurator = new JoranConfigurator();
 		configurator.setContext(context);
 		context.putProperty("LOG_LEVEL", verbose ? "TRACE" : "INFO");
@@ -363,7 +363,8 @@ public class NGrinderStarter {
 	public static void main(String[] args) {
 		NGrinderStarter starter = new NGrinderStarter();
 		checkJavaVersion();
-		String startMode = System.getProperty("start.mode");
+		isWebStart = BooleanUtils.toBoolean(System.getProperty("start.webstart", "false"));
+		startMode = System.getProperty("start.mode");
 		LOG.info("- Passing mode " + startMode);
 		LOG.info("- nGrinder version " + starter.getVersion());
 		if ("stopagent".equalsIgnoreCase(startMode)) {
@@ -375,7 +376,6 @@ public class NGrinderStarter {
 		}
 		startMode = (startMode == null) ? starter.getStartMode() : startMode;
 		starter.checkDuplicatedRun(startMode);
-
 		if (startMode.equalsIgnoreCase("agent")) {
 			String controllerIp = System.getProperty("controller");
 			starter.startAgent(controllerIp);
@@ -450,7 +450,7 @@ public class NGrinderStarter {
 	 * 
 	 * @return true if it's valid
 	 */
-	private boolean isValidCurrentDirectory() {
+	boolean isValidCurrentDirectory() {
 		File currentFolder = new File(System.getProperty("user.dir"));
 		String[] list = currentFolder.list(new FilenameFilter() {
 			@Override
