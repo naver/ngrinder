@@ -33,7 +33,7 @@ public class VersionNumber implements Comparable<VersionNumber> {
 	 *            parameter string
 	 */
 	public VersionNumber(String num) {
-		StringTokenizer tokens = new StringTokenizer(num, ".-");
+		StringTokenizer tokens = new StringTokenizer(num, ".-_");
 		this.digits = new int[tokens.countTokens()];
 		if (this.digits.length < 2) {
 			throw new IllegalArgumentException("Failed to parse " + num + " as version number");

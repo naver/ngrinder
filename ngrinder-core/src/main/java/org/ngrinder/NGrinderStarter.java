@@ -29,6 +29,7 @@ import java.util.Collection;
 import net.grinder.AgentControllerDaemon;
 import net.grinder.communication.AgentControllerCommunicationDefauts;
 import net.grinder.util.NetworkUtil;
+import net.grinder.util.VersionNumber;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -77,13 +78,13 @@ public class NGrinderStarter {
 	 * Constructor.
 	 */
 	public NGrinderStarter() {
+		init();
+	}
 
-		// Check agent start mode
+	protected void init() {// Check agent start mode
 		isWebStart = BooleanUtils.toBoolean(System.getProperty("start.webstart", "false"));
 
-		if (!isValidCurrentDirectory() && !isWebStart) {
-			staticPrintHelpAndExit("nGrinder agent should start in the folder where nGrinder agent binary exists.");
-		}
+		checkRunningDirectory();
 		agentConfig = new AgentConfig();
 		agentConfig.init();
 		// Configure log.
@@ -92,6 +93,12 @@ public class NGrinderStarter {
 		configureLogging(verboseMode, logDirectory);
 		addClassPath();
 		addLibarayPath();
+	}
+
+	protected void checkRunningDirectory() {
+		if (!isValidCurrentDirectory() && !isWebStart) {
+			staticPrintHelpAndExit("nGrinder agent should start in the folder where nGrinder agent binary exists.");
+		}
 	}
 
 	private void addCustomClassLoader() {
@@ -354,8 +361,8 @@ public class NGrinderStarter {
 	 *            arguments
 	 */
 	public static void main(String[] args) {
-
 		NGrinderStarter starter = new NGrinderStarter();
+		checkJavaVersion();
 		String startMode = System.getProperty("start.mode");
 		LOG.info("- Passing mode " + startMode);
 		LOG.info("- nGrinder version " + starter.getVersion());
@@ -376,6 +383,17 @@ public class NGrinderStarter {
 			starter.startMonitor();
 		} else {
 			staticPrintHelpAndExit("Invalid agent.conf, 'start.mode' must be set as 'monitor' or 'agent'.");
+		}
+	}
+
+	static void checkJavaVersion() {
+		String curJavaVersion = System.getProperty("java.version", "1.6");
+		checkJavaVersion(curJavaVersion);
+	}
+
+	static void checkJavaVersion(String curJavaVersion) {
+		if (new VersionNumber(curJavaVersion).compareTo(new VersionNumber("1.6")) < 0) {
+			LOG.info("- Current java version {} is less than 1.6. nGrinder Agent might not work well", curJavaVersion);
 		}
 	}
 

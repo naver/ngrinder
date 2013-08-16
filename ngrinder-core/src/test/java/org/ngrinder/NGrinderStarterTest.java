@@ -13,9 +13,8 @@
  */
 package org.ngrinder;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
-
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -27,6 +26,11 @@ import org.ngrinder.common.util.ThreadUtil;
 public class NGrinderStarterTest {
 
 	private NGrinderStarter starter = new MockNGrinderStarter();
+
+	@Test
+	public void testJavaVersionCheck() {
+		NGrinderStarter.checkJavaVersion("1.6");
+	}
 
 	@Test
 	public void testNGrinderStarterJarResolution() {
@@ -58,7 +62,7 @@ public class NGrinderStarterTest {
 		starter.stopMonitor();
 		starter.stopMonitor();
 	}
-	
+
 	@Test
 	public void testIsValidCurrentDirectory() throws ClassNotFoundException, SecurityException, NoSuchMethodException,
 			IllegalArgumentException, IllegalAccessException, InvocationTargetException {
@@ -72,6 +76,16 @@ public class NGrinderStarterTest {
 }
 
 class MockNGrinderStarter extends NGrinderStarter {
+	@Override
+	protected void init() {
+
+	}
+
+	@Override
+	protected void checkRunningDirectory() {
+
+	}
+
 	@Override
 	protected void printHelpAndExit(String message) {
 	}
