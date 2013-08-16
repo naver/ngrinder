@@ -91,6 +91,7 @@
 		<intercept-url pattern="/monitor**" />
 		<intercept-url pattern="/agent/**" />
 		<intercept-url pattern="/user/**" />
+		<http-basic/>
 		<custom-filter ref="pluggablePreAuthFilter" position="PRE_AUTH_FILTER" />
 		<custom-filter ref="ngrinderUserPasswordAuthenticationFilter" position="FORM_LOGIN_FILTER" />
 		<!-- logout to home, and then it will redirect to login. otherwise, there will be some ajax problem. -->
