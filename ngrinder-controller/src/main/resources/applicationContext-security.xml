@@ -23,7 +23,7 @@
 
 	<http realm="svn" pattern="/svn/**" access-decision-manager-ref="svnAccessDecisionManager">
 		<http-basic entry-point-ref="svnHttpBasicEntryPoint" />
-		<intercept-url pattern="/svn/**" />
+		<intercept-url pattern="/svn/**" access="A S U" />
 	</http>
 
 	<!-- Generic Web -->
