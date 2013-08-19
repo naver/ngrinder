@@ -231,15 +231,19 @@ public class Config implements IConfig, NGrinderConstants {
 		configurator.setContext(context);
 		context.reset();
 		context.putProperty("LOG_LEVEL", verbose ? "DEBUG" : "INFO");
-		if (exHome.exists() && isCluster()) {
-			context.putProperty("LOG_DIRECTORY", exHome.getGlobalLogFile().getAbsolutePath());
-			context.putProperty("SUFFIX", "_" + getRegion());
-		} else {
-			context.putProperty("SUFFIX", "");
-			context.putProperty("LOG_DIRECTORY", home.getGlobalLogFile().getAbsolutePath());
-		}
+		File logbackConf = home.getSubFile("logback.xml");
 		try {
-			configurator.doConfigure(new ClassPathResource("/logback/logback-ngrinder.xml").getFile());
+			if (!logbackConf.exists()) {
+				logbackConf = new ClassPathResource("/logback/logback-ngrinder.xml").getFile();
+				if (exHome.exists() && isCluster()) {
+					context.putProperty("LOG_DIRECTORY", exHome.getGlobalLogFile().getAbsolutePath());
+					context.putProperty("SUFFIX", "_" + getRegion());
+				} else {
+					context.putProperty("SUFFIX", "");
+					context.putProperty("LOG_DIRECTORY", home.getGlobalLogFile().getAbsolutePath());
+				}
+			}
+			configurator.doConfigure(logbackConf);
 		} catch (JoranException e) {
 			CoreLogger.LOGGER.error(e.getMessage(), e);
 		} catch (IOException e) {
