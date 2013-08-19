@@ -1,3 +1,35 @@
+3.2.2 (2013.08.23)
+
+nGrinder 3.2.2 is the bug fix and minor enhancement release. 
+
+- New feature and changes
+  * Since 3.2, the SVN is not protected by ID/PW scheme by mistake. It's very serious security problem so 3.2.2 adds the HTTP Basic protection.
+  * Now Users can use sub folder in the lib and resource folder. They will be transfered to the agents as well.
+  * The admin and User can configure the JAVA options for the agent process by providing agent.javaopt in the agent.conf 
+    and grinder.jvm.arguments in grinder.properties file at the same folder where the script exists respectively.
+  * And Several UI improvements are included.
+  
+Bug
+[NGRINDER-633] - Make agent to connect the real ip first if no agent.controller.ip is provided
+[NGRINDER-634] - Test description including ' breaks the test list layout
+[NGRINDER-640] - &para turns into different symbol in the code editor
+[NGRINDER-641] - Fix the popover width overflow when the script path is long
+[NGRINDER-643] - Use ${NGRINDER_HOME}/subversion folder for subversion auth store
+[NGRINDER-644] - SVN access doesn't block the illegal access
+
+
+Improvement
+[NGRINDER-631] - Make monitor be able to select IP
+[NGRINDER-632] - Make perftest recursively patch the resource / lib folder
+[NGRINDER-635] - Show the test error rate rather than error count
+[NGRINDER-636] - Add running test view filter in the test list
+[NGRINDER-638] - Add the new announcement lable to show announcement change explicitly
+[NGRINDER-639] - Provide the flexible way to customize the java opt when invoking agent process
+[NGRINDER-642] - Check the java version during agent starting
+[NGRINDER-645] - Add ${NGRINDER_HOME}/logback.xml recognized by ngrinder to customize logger
+
+
+
 3.2.1 (2013.06.10)
 
 nGrinder 3.2.1 is the bug fix and minor enhancement release. 
