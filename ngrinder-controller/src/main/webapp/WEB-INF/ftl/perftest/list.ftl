@@ -173,9 +173,9 @@
 		            					data-html="true" 
 		            					data-content="<@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName} (${test.createdUser.userId})<br/> <@spring.message "perfTest.table.modifier.oneline"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})">
 		            				<#if isAdmin??>
-		            					${test.lastModifiedUser.userName}
-		            				<#else>
 		            					${test.createdUser.userName}
+		            				<#else>
+		            					${test.lastModifiedUser.userName}
 		            				</#if>
 		            				</div>
 		            			</td>
