@@ -194,6 +194,7 @@
 									<div class="ellipsis" 
 										rel="popover"
 		            					data-html="true" 
+		            					data-placement="top"
 		            					data-content="<@spring.message "perfTest.table.tests"/> : ${test.tests!""}<br/><@spring.message "perfTest.table.errors"/> : ${test.errors!""}<br/>">
 		            					<#if test.tests?? && test.tests != 0>${(test.errors/test.tests)?string.percent}</#if></td>
 		            				</div>
