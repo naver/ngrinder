@@ -20,7 +20,7 @@ Bug
 
 Improvement
 [NGRINDER-631] - Make monitor be able to select IP
-[NGRINDER-632] - Make perftest recursively patch the resource / lib folder
+[NGRINDER-632] - Make perftest distribute sub folders in the resource / lib folder
 [NGRINDER-635] - Show the test error rate rather than error count
 [NGRINDER-636] - Add running test view filter in the test list
 [NGRINDER-638] - Add the new announcement lable to show announcement change explicitly
