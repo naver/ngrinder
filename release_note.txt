@@ -19,15 +19,15 @@ Bug
 
 
 Improvement
-[NGRINDER-631] - Make monitor be able to select IP
+[NGRINDER-631] - Make monitor be able to select listening IP
 [NGRINDER-632] - Make perftest distribute sub folders in the resource / lib folder
-[NGRINDER-635] - Show the test error rate rather than error count
+[NGRINDER-635] - Show the error rate rather than error count
 [NGRINDER-636] - Add running test view filter in the test list
 [NGRINDER-638] - Add the new announcement lable to show announcement change explicitly
 [NGRINDER-639] - Provide the flexible way to customize the java opt when invoking agent process
 [NGRINDER-642] - Check the java version during agent starting
 [NGRINDER-645] - Add ${NGRINDER_HOME}/logback.xml recognized by ngrinder to customize logger
-
+[NGRINDER-647] - Make ngrinder.controller.ip as well as ngrinder.controller.ipaddress recognizable.
 
 
 3.2.1 (2013.06.10)
