@@ -21,7 +21,7 @@
 						<li class="divider-vertical"></li>
 					</#if>
 					<li class="dropdown">
-		            	<a data-toggle="dropdown" class="dropdown-toggle" href="#">${(currentUser.userName)!}<#if (currentUser.ownerUser)?exists> (${currentUser.ownerUser.userName})<#else></#if><b class="caret"></b></a>
+		            	<a data-toggle="dropdown" class="dropdown-toggle pointer-cursor">${(currentUser.userName)!}<#if (currentUser.ownerUser)?exists> (${currentUser.ownerUser.userName})<#else></#if><b class="caret"></b></a>
 		            	<ul class="dropdown-menu">
 		            		<#if (currentUser.ownerUser)?exists>
 			            		<li><a href="${req.getContextPath()}/user/switch?to="><@spring.message "common.button.return"/></a></li>
@@ -60,7 +60,7 @@
 		<div class="page-header" style="margin:0; padding-bottom:2px">
 			<span>
 				<h5 style="margin-top:0px; margin-bottom:0px"><#if announcement_new?? && announcement_new==true><span class="label label-important">new</span> </#if><@spring.message "announcement.alert.title"/></h5>
-				<a href="#" id="hide_announcement"><i class="<#if announcement_hide?has_content && announcement_hide == true>icon-plus<#else>icon-minus</#if> pull-right" id="announcement_icon" style="margin-top:-20px"></i>
+				<a  class="pointer-cursor" id="hide_announcement"><i class="<#if announcement_hide?has_content && announcement_hide == true>icon-plus<#else>icon-minus</#if> pull-right" id="announcement_icon" style="margin-top:-20px"></i>
 			</a></span> 
 		</div>
 		<div style="margin:10px 5px 0;<#if announcement_hide?? && announcement_hide>display:none;</#if>" id="announcement_content">
