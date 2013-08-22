@@ -1452,7 +1452,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 */
 	public int getSystemMonitorDataInterval(long testId, String monitorIP, int imageWidth) {
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
-				Config.MONITOR_FILE_PREFIX + monitorIP + ".data");
+				NGrinderConstants.MONITOR_FILE_PREFIX + monitorIP + ".data");
 
 		int pointCount = Math.max(imageWidth, MAX_POINT_COUNT);
 		FileInputStream in = null;
@@ -1497,7 +1497,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	public Map<String, String> getSystemMonitorDataAsString(long testId, String monitorIP, int dataInterval) {
 		Map<String, String> returnMap = Maps.newHashMap();
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
-				Config.MONITOR_FILE_PREFIX + monitorIP + ".data");
+				NGrinderConstants.MONITOR_FILE_PREFIX + monitorIP + ".data");
 		BufferedReader br = null;
 		try {
 
@@ -1586,7 +1586,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		LOGGER.debug("Get SystemMonitorData of test:{} ip:{}", testId, monitorIP);
 		List<SystemDataModel> rtnList = Lists.newArrayList();
 		File monitorDataFile = new File(config.getHome().getPerfTestReportDirectory(String.valueOf(testId)),
-				Config.MONITOR_FILE_PREFIX + monitorIP + ".data");
+				NGrinderConstants.MONITOR_FILE_PREFIX + monitorIP + ".data");
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(new FileReader(monitorDataFile));

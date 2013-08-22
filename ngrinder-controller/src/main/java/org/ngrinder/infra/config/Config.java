@@ -61,8 +61,6 @@ import ch.qos.logback.core.joran.spi.JoranException;
 public class Config implements IConfig, NGrinderConstants {
 	private static final String NGRINDER_DEFAULT_FOLDER = ".ngrinder";
 	private static final String NGRINDER_EX_FOLDER = ".ngrinder_ex";
-	public static final String MONITOR_FILE_PREFIX = "monitor_system_";
-
 	private static final Logger LOG = LoggerFactory.getLogger(Config.class);
 	private Home home = null;
 	private Home exHome = null;

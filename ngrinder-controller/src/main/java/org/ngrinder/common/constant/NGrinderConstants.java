@@ -215,4 +215,5 @@ public interface NGrinderConstants {
 	public static final String CACHE_NAME_REGION_LIST = "region_list";
 	public static final String CACHE_NAME_RUNNING_STATISTICS = "running_statistics";
 	public static final String CACHE_NAME_CURRENT_PERFTEST_STATISTICS = "current_perftest_statistics";
+	public static final String MONITOR_FILE_PREFIX = "monitor_system_";
 }

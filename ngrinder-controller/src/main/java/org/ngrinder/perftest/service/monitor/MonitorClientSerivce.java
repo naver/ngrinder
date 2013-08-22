@@ -24,7 +24,7 @@ import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 
 import org.apache.commons.io.IOUtils;
-import org.ngrinder.infra.config.Config;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.controller.domain.MonitorCollectionInfoDomain;
 import org.ngrinder.monitor.share.domain.MBeanClient;
@@ -91,7 +91,7 @@ public class MonitorClientSerivce {
 			ObjectName systemName = new ObjectName(objNameStr);
 			sysInfoMBeanObj = new MonitorCollectionInfoDomain(systemName, "SystemInfo", SystemInfo.class);
 
-			fileWriter = new FileWriter(new File(reportPath, Config.MONITOR_FILE_PREFIX + ip + ".data"), false);
+			fileWriter = new FileWriter(new File(reportPath, NGrinderConstants.MONITOR_FILE_PREFIX + ip + ".data"), false);
 			bw = new BufferedWriter(fileWriter);
 			// write header info
 			bw.write(SystemInfo.HEADER);
