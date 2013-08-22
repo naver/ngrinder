@@ -7,6 +7,7 @@ nGrinder 3.2.2 is the bug fix and minor enhancement release.
   * Now Users can use sub folder in the lib and resource folder. They will be transfered to the agents as well.
   * The admin and User can configure the JAVA options for the agent process by providing agent.javaopt in the agent.conf 
     and grinder.jvm.arguments in grinder.properties file at the same folder where the script exists respectively.
+    This is for the extreme use of ngrinder.
   * And Several UI improvements are included.
   
 Bug
@@ -16,7 +17,7 @@ Bug
 [NGRINDER-641] - Fix the popover width overflow when the script path is long
 [NGRINDER-643] - Use ${NGRINDER_HOME}/subversion folder for subversion auth store
 [NGRINDER-644] - SVN access doesn't block the illegal access
-
+[NGRINDER-648] - User password is changed whenever the user is loggined with login plugin
 
 Improvement
 [NGRINDER-631] - Make monitor be able to select listening IP
