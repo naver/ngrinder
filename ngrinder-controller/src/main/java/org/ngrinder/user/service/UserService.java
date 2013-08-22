@@ -173,11 +173,25 @@ public class UserService implements IUserService {
 	@CacheEvict(value = "users", key = "#user.userId")
 	public User saveUser(User user) {
 		encodePassword(user);
+		return saveUserWithoutPasswordEncoding(user);
+	}
+
+	/**
+	 * create user.
+	 * 
+	 * @param user
+	 *            include id, userID, fullName, role, password.
+	 * 
+	 * @return result
+	 */
+	@Transactional
+	@CacheEvict(value = "users", key = "#user.userId")
+	public User saveUserWithoutPasswordEncoding(User user) {
 		User createdUser = userRepository.save(user);
 		prepareUserEnv(user);
 		return createdUser;
 	}
-
+	
 	private void prepareUserEnv(User user) {
 		scriptService.prepare(user);
 	}

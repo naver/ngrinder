@@ -13,11 +13,8 @@
  */
 package org.ngrinder.security;
 
-import static org.ngrinder.common.util.NoOp.noOp;
-
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
 import org.ngrinder.extension.OnLoginRunnable;
 import org.ngrinder.infra.plugin.PluginManager;
 import org.ngrinder.model.Role;
@@ -43,7 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
- * nGrinder authentication provide. This class is for the plugin system of user authentication.
+ * nGrinder authentication provide. This class is for the plugin system of user
+ * authentication.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -81,7 +79,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 	@SuppressWarnings("deprecation")
 	protected void additionalAuthenticationChecks(UserDetails userDetails,
-					UsernamePasswordAuthenticationToken authentication) {
+			UsernamePasswordAuthenticationToken authentication) {
 
 		Authentication authentication2 = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication2 != null) {
@@ -94,7 +92,7 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		}
 
 		String message = messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials",
-						"Bad credentials");
+				"Bad credentials");
 		if (authentication.getCredentials() == null) {
 			LOG.debug("Authentication failed: no credentials provided");
 
@@ -106,30 +104,16 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		boolean authorized = false;
 
 		for (OnLoginRunnable each : getPluginManager().getEnabledModulesByClass(OnLoginRunnable.class,
-						defaultLoginPlugin)) {
-
-			if (isClassEqual(each.getClass(), defaultLoginPlugin.getClass().getName())) {
-				if (StringUtils.isEmpty(user.getAuthProviderClass())
-								|| isClassEqual(DefaultLoginPlugin.class, user.getUserInfoProviderClass())) {
-					each.validateUser(user.getUsername(), presentedPassword, user.getPassword(), passwordEncoder, salt);
-					authorized = true;
-					break;
-				} else {
-					try {
-						each.validateUser(user.getUsername(), presentedPassword, user.getPassword(), passwordEncoder,
-										salt);
-						authorized = true;
-						break;
-					} catch (Exception e) {
-						noOp();
-					}
-				}
-			} else if (isClassEqual(each.getClass(), user.getAuthProviderClass())) {
+				defaultLoginPlugin)) {
+			try {
 				each.validateUser(user.getUsername(), presentedPassword, user.getPassword(), passwordEncoder, salt);
+				LOG.info("{} is logined by {}", user.getUsername(), each.getClass().getName());
 				authorized = true;
 				break;
+			} catch (BadCredentialsException exception) {
+				LOG.info("{} is not logined by {}", user.getUsername(), each.getClass().getName());
+				authorized = false;
 			}
-
 		}
 
 		if (!authorized) {
@@ -137,24 +121,10 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 		}
 
 		// If It's the first time to login
-		// means.. If the user info provider is not defaultLoginPlugin..
-		if (user.getUserInfoProviderClass() != null
-						&& !isClassEqual(defaultLoginPlugin.getClass(), user.getUserInfoProviderClass())) {
+		if (user.getUser().getId() == null) {
 			addNewUserIntoLocal(user);
+			LOG.info("{} is saved by password {}", user.getUser().getId(), user.getUser().getPassword());
 		}
-	}
-
-	/**
-	 * Check if given clazz has the given clazzName.
-	 * 
-	 * @param clazz
-	 *            class
-	 * @param clazzName
-	 *            classname which is checked aginst
-	 * @return true if same
-	 */
-	private boolean isClassEqual(Class<?> clazz, String clazzName) {
-		return clazz.getName().equals(clazzName);
 	}
 
 	/**
@@ -196,23 +166,24 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 		if (loadedUser == null) {
 			throw new AuthenticationServiceException(
-							"UserDetailsService returned null, which is an interface contract violation");
+					"UserDetailsService returned null, which is an interface contract violation");
 		}
 		return loadedUser;
 	}
 
 	/**
-	 * Sets the PasswordEncoder instance to be used to encode and validate passwords. If not set,
-	 * the password will be compared as plain text.
+	 * Sets the PasswordEncoder instance to be used to encode and validate
+	 * passwords. If not set, the password will be compared as plain text.
 	 * <p>
-	 * For systems which are already using salted password which are encoded with a previous
-	 * release, the encoder should be of type
-	 * {@code org.springframework.security.authentication.encoding.PasswordEncoder} . Otherwise, the
-	 * recommended approach is to use
+	 * For systems which are already using salted password which are encoded
+	 * with a previous release, the encoder should be of type
+	 * {@code org.springframework.security.authentication.encoding.PasswordEncoder}
+	 * . Otherwise, the recommended approach is to use
 	 * {@code org.springframework.security.crypto.password.PasswordEncoder}.
 	 * 
 	 * @param passwordEncoder
-	 *            must be an instance of one of the {@code PasswordEncoder} types.
+	 *            must be an instance of one of the {@code PasswordEncoder}
+	 *            types.
 	 */
 	public void setPasswordEncoder(Object passwordEncoder) {
 		Assert.notNull(passwordEncoder, "passwordEncoder cannot be null");
@@ -256,16 +227,18 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	}
 
 	/**
-	 * The source of salts to use when decoding passwords. <code>null</code> is a valid value,
-	 * meaning the <code>DaoAuthenticationProvider</code> will present <code>null</code> to the
-	 * relevant <code>PasswordEncoder</code>.
+	 * The source of salts to use when decoding passwords. <code>null</code> is
+	 * a valid value, meaning the <code>DaoAuthenticationProvider</code> will
+	 * present <code>null</code> to the relevant <code>PasswordEncoder</code>.
 	 * <p>
-	 * Instead, it is recommended that you use an encoder which uses a random salt and combines it
-	 * with the password field. This is the default approach taken in the
+	 * Instead, it is recommended that you use an encoder which uses a random
+	 * salt and combines it with the password field. This is the default
+	 * approach taken in the
 	 * {@code org.springframework.security.crypto.password} package.
 	 * 
 	 * @param saltSource
-	 *            to use when attempting to decode passwords via the <code>PasswordEncoder</code>
+	 *            to use when attempting to decode passwords via the
+	 *            <code>PasswordEncoder</code>
 	 */
 	public void setSaltSource(SaltSource saltSource) {
 		this.saltSource = saltSource;

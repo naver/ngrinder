@@ -26,7 +26,8 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * nGrinder authentication provide. This class is for the plugin system of user authentication.
+ * nGrinder authentication provide. This class is for the plugin system of user
+ * authentication.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -44,8 +45,8 @@ public class NGrinderAuthenticationPreAuthProvider extends PreAuthenticatedAuthe
 	/**
 	 * Authenticate the given PreAuthenticatedAuthenticationToken.
 	 * <p>
-	 * If the principal contained in the authentication object is null, the request will be ignored
-	 * to allow other providers to authenticate it.
+	 * If the principal contained in the authentication object is null, the
+	 * request will be ignored to allow other providers to authenticate it.
 	 * 
 	 * @param authentication
 	 *            authentication
@@ -55,7 +56,6 @@ public class NGrinderAuthenticationPreAuthProvider extends PreAuthenticatedAuthe
 	@Override
 	public Authentication authenticate(Authentication authentication) {
 		Object details = authentication.getDetails();
-
 		Authentication authenticate = super.authenticate(authentication);
 		SecuredUser securedUser = (SecuredUser) authenticate.getPrincipal();
 		if (details instanceof HashMap) {
@@ -68,26 +68,12 @@ public class NGrinderAuthenticationPreAuthProvider extends PreAuthenticatedAuthe
 		}
 		// If It's the first time to login
 		// means.. If the user info provider is not defaultLoginPlugin..
-		if (securedUser.getUserInfoProviderClass() != null
-						&& !isClassEqual(DefaultLoginPlugin.class, securedUser.getUserInfoProviderClass())) {
-
+		if (securedUser.getUser().getId() == null) {
 			addNewUserIntoLocal(securedUser);
 		}
 		return authenticate;
 	}
 
-	/**
-	 * Check if given clazz has the given clazzName.
-	 * 
-	 * @param clazz
-	 *            class
-	 * @param clazzName
-	 *            classname which is checked aginst
-	 * @return true if same
-	 */
-	private boolean isClassEqual(Class<?> clazz, String clazzName) {
-		return clazz.getName().equals(clazzName);
-	}
 
 	/**
 	 * Add new user into local db.
