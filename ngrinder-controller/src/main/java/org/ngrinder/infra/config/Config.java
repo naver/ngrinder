@@ -389,10 +389,8 @@ public class Config implements IConfig, NGrinderConstants {
 			protected void doOnChange() {
 				CoreLogger.LOGGER.info("Announcement file changed.");
 				loadAnnouncement();
-
 			}
 		};
-		announcementDate = new Date();
 		announcementWatchDog.setName("WatchDog - annoucenment.conf");
 		announcementWatchDog.setDelay(2000);
 		announcementWatchDog.start();
