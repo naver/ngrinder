@@ -57,6 +57,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 
 	private static final String RESOURCES = "/src/main/resources/";
 	private static final String JAVA = "/src/main/java/";
+	private static final String GROOVY = "/src/main/groovy/";
 	private static final String LIB = "/lib/";
 
 	@Override
@@ -65,7 +66,11 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 			return false;
 		}
 		String path = fileEntry.getPath();
-		if (!path.contains(JAVA) || !FilenameUtils.isExtension(path, "groovy")) {
+		if (!FilenameUtils.isExtension(path, "groovy")) {
+			return false;
+			
+		}
+		if (!path.contains(JAVA) && !path.contains(GROOVY)) {
 			return false;
 		}
 
@@ -117,6 +122,8 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 		String calcDistSubPath = super.calcDistSubPath(basePath, each);
 		if (calcDistSubPath.startsWith(JAVA)) {
 			return calcDistSubPath.substring(JAVA.length() - 1);
+		} else if (calcDistSubPath.startsWith(GROOVY)) {
+			return calcDistSubPath.substring(GROOVY.length() - 1);
 		} else if (calcDistSubPath.startsWith(RESOURCES)) {
 			return calcDistSubPath.substring(RESOURCES.length() - 1);
 		}
@@ -222,18 +229,26 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 	 */
 	@Override
 	public String getBasePath(String path) {
-		return path.substring(0, path.lastIndexOf(JAVA));
+		if (path.contains(JAVA)) {
+			return path.substring(0, path.lastIndexOf(JAVA));
+		} else {
+			return path.substring(0, path.lastIndexOf(GROOVY));
+		}
 	}
 
 	@Override
 	public String getScriptExecutePath(String path) {
-		return path.substring(path.lastIndexOf(JAVA) + JAVA.length());
+		if (path.contains(JAVA)) {
+			return path.substring(path.lastIndexOf(JAVA) + JAVA.length());
+		} else {
+			return path.substring(path.lastIndexOf(GROOVY) + GROOVY.length());
+		}
 	}
 
 	@Override
 	public FileEntry getDefaultQuickTestFilePath(String path) {
 		FileEntry fileEntry = new FileEntry();
-		fileEntry.setPath(path + "/src/main/java/TestRunner.groovy");
+		fileEntry.setPath(path + JAVA + "TestRunner.groovy");
 		return fileEntry;
 	}
 
