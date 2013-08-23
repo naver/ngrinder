@@ -29,7 +29,9 @@ Improvement
 [NGRINDER-642] - Check the java version during agent starting
 [NGRINDER-645] - Add ${NGRINDER_HOME}/logback.xml recognized by ngrinder to customize logger
 [NGRINDER-647] - Make ngrinder.controller.ip as well as ngrinder.controller.ipaddress recognizable.
-
+[NGRINDER-649] - Groovy Maven Project should support src/main/groovy directory
+[NGRINDER-651] - Add the test execution hook in javascript to validate the configuration by admin.
+[NGRINDER-652] - Add the way for javascript to determine the current language
 
 3.2.1 (2013.06.10)
 
