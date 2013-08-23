@@ -8,6 +8,7 @@
   <div class="bar" style="width: 100%;"></div>
 </div>
 <script type="text/javascript">
+	var curlang = <#if currentUser?? && currentUser.userLanguage??>"${currentUser.userLanguage}"<#else>"en"</#if>;
 	var msgTimeout;
 	$(document).ready(function() {
 		$("#error_msg_div_btn").click(function() {
