@@ -239,7 +239,7 @@
 												<@spring.message "common.button.save"/>
 											</#if> 
 										</button>
-										<button class="btn btn-primary" style="width:116px" data-toggle="modal" href="#schedule_modal" id="save_schedule_btn" ${disabled!}>
+										<button type="button" class="btn btn-primary" style="width:116px" id="save_schedule_btn" ${disabled!}>
 											<#if isClone><@spring.message "perfTest.detail.clone"/><#else><@spring.message "common.button.save"/></#if>&nbsp;<@spring.message "perfTest.detail.andStart"/>
 										</button>
 									</div>
@@ -671,6 +671,17 @@ function bindNewScript(target, first) {
 		updateScriptResources(first);
 }
 
+function showScheduleModal() {
+	if ($("#script_name option:selected").attr("validated") == "0") {
+		$("small.error-color").text("<@spring.message "perfTest.detail.message.notValidatedScript"/>");
+	} else {
+		$("small.error-color").text("");
+	}
+  	initScheduleTime();
+	$("#tag_string").val(buildTagString());
+	$('#schedule_modal').modal('show');
+}
+
 function bindEvent() {
 	$("#script_name").change(function() {
 		bindNewScript($(this), false);
@@ -691,37 +702,21 @@ function bindEvent() {
 	$("#save_schedule_btn").click(function() {		
 		$("#agent_count").rules("add", {
 			min:1
-		});
-		
+		}); 
 		if (!validateForm()) {
 			return false;
 		}
-
-		var $agentCount = $("#agent_count");
-		if ($agentCount.val() == 0) {
-			var $controlGrp = $agentCount.parents('.control-group');
-			$controlGrp.removeClass('success');
-			$controlGrp.addClass("error");
-			showErrorMsg("<@spring.message "perfTest.warning.agent0"/>");
-			return false;
-		}
-
 		if (typeof(scheduleTestHook) != "undefined") {
-			if (!scheduleTestHook()) {
-				return false;
+			if (scheduleTestHook()) {
+				showScheduleModal();
 			}
-		}
-		
-		if ($("#script_name option:selected").attr("validated") == "0") {
-			$("small.error-color").text("<@spring.message "perfTest.detail.message.notValidatedScript"/>");
+		} else if (typeof(scheduleTestUnBlockingHook) != "undefined") {
+			scheduleTestUnBlockingHook(showScheduleModal);
 		} else {
-			$("small.error-color").text("");
+			showScheduleModal(); 
 		}
-	    
-	   	initScheduleTime();
-		
-		$("#tag_string").val(buildTagString());
 	});
+	
 	
 	$("#save_test_btn").click(function() {
 		$("#agent_count").rules("add", {
