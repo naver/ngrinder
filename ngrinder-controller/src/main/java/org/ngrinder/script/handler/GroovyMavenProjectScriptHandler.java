@@ -106,6 +106,13 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 				fileList.add(eachFileEntry);
 			}
 		}
+		
+		for (FileEntry eachFileEntry : fileEntryRepository.findAll(user, basePath + GROOVY, revision, true)) {
+			FileType fileType = eachFileEntry.getFileType();
+			if (fileType.isLibDistribtable() && !eachFileEntry.getPath().equals(scriptEntry.getPath())) {
+				fileList.add(eachFileEntry);
+			}
+		}
 
 		for (FileEntry eachFileEntry : fileEntryRepository.findAll(user, basePath + LIB, revision, true)) {
 			FileType fileType = eachFileEntry.getFileType();
