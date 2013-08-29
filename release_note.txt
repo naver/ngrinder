@@ -1,14 +1,15 @@
-3.2.2 (2013.08.23)
+3.2.2 (2013.08.29)
 
 nGrinder 3.2.2 is the bug fix and minor enhancement release. 
 
 - New feature and changes
-  * Since 3.2, the SVN is not protected by ID/PW scheme by mistake. It's very serious security problem so 3.2.2 adds the HTTP Basic protection.
-  * Now Users can use sub folder in the lib and resource folder. They will be transfered to the agents as well.
-  * The admin and User can configure the JAVA options for the agent process by providing agent.javaopt in the agent.conf 
+  * Since 3.2, the SVN has not been protected by ID/PW scheme by mistake. It's a very serious security problem. 
+    Therefore 3.2.2 adds the HTTP Basic protection for SVN access.
+  * Now users can user sub folders under the lib and resource folder. They will be transferred to the agents as well.
+  * The admin and normal users can configure the additional JAVA command line options for the agent process by providing agent.javaopt in the agent.conf 
     and grinder.jvm.arguments in grinder.properties file at the same folder where the script exists respectively.
     This is for the extreme use of ngrinder.
-  * And Several UI improvements are included.
+  * And several UI improvements are included.
   
 Bug
 [NGRINDER-633] - Make agent to connect the real ip first if no agent.controller.ip is provided
