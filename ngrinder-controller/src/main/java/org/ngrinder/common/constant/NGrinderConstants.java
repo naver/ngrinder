@@ -158,6 +158,7 @@ public interface NGrinderConstants {
 
 	public static final int AGENT_SERVER_DAEMON_PORT = 1011;
 	// GRINDER_PROPERTY_KEY
+	public static final String GRINDER_PROP_AGENTS = "grinder.agents";
 	public static final String GRINDER_PROP_PROCESSES = "grinder.processes";
 	public static final String GRINDER_PROP_THREAD = "grinder.threads";
 	public static final String GRINDER_PROP_RUNS = "grinder.runs";

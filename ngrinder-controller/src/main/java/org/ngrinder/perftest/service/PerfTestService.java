@@ -705,10 +705,11 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			}
 			grinderProperties.setAssociatedFile(new File(DEFAULT_GRINDER_PROPERTIES_PATH));
 			grinderProperties.setProperty(GrinderProperties.SCRIPT, scriptHandler.getScriptExecutePath(scriptName));
-
+			
 			grinderProperties.setProperty(GRINDER_PROP_TEST_ID, "test_" + perfTest.getId());
-			grinderProperties.setInt(GRINDER_PROP_THREAD, perfTest.getThreads());
+			grinderProperties.setInt(GRINDER_PROP_AGENTS, perfTest.getAgentCount());
 			grinderProperties.setInt(GRINDER_PROP_PROCESSES, perfTest.getProcesses());
+			grinderProperties.setInt(GRINDER_PROP_THREAD, perfTest.getThreads());
 			if (perfTest.isThreshholdDuration()) {
 				grinderProperties.setLong(GRINDER_PROP_DURATION, perfTest.getDuration());
 				grinderProperties.setInt(GRINDER_PROP_RUNS, 0);
