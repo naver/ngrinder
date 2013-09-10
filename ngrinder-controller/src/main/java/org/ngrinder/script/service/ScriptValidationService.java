@@ -28,6 +28,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.IFileEntry;
 import org.ngrinder.model.User;
@@ -106,7 +107,7 @@ public class ScriptValidationService implements IScriptValidationService {
 						StringUtils.defaultIfBlank(scriptEntry.getEncoding(), "UTF-8"));
 			}
 			int timeout = Math.max(
-					config.getSystemProperties().getPropertyInt("ngrinder.validation.timeout",
+					config.getSystemProperties().getPropertyInt(NGrinderConstants.NGRINDER_VALIDATION_TIMEOUT,
 							LocalScriptTestDriveService.DEFAULT_TIMEOUT), 10);
 			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, new Condition(),
 					config.isSecurityEnabled(), hostString, timeout);

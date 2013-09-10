@@ -189,6 +189,7 @@ public interface NGrinderConstants {
 	public static final String NGRINDER_PROP_DIST_SAFE_REGION = "ngrinder.dist.safe.region";
 	public static final String NGRINDER_PROP_ETC_HOSTS = "ngrinder.etc.hosts";
 	public static final String NGRINDER_PROP_CONSOLE_PORT_BASE = "ngrinder.console.portbase";
+	public static final String NGRINDER_VALIDATION_TIMEOUT = "ngrinder.validation.timeout";
 	public static final int NGRINDER_PROP_CONSOLE_PORT_BASE_VALUE = 12000;
 	public static final String NGRINDER_PROP_MAX_CONCURRENT_TEST = "ngrinder.max.concurrenttest";
 	public static final int NGRINDER_PROP_MAX_CONCURRENT_TEST_VALUE = 10;
