@@ -51,6 +51,7 @@ import org.springframework.stereotype.Component;
 public class ScriptValidationService implements IScriptValidationService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ScriptValidationService.class);
+
 	@Autowired
 	private LocalScriptTestDriveService localScriptTestDriveService;
 
@@ -67,8 +68,9 @@ public class ScriptValidationService implements IScriptValidationService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.script.service.IScriptValidationService#validateScript(org.ngrinder.model.User,
-	 * org.ngrinder.model.IFileEntry, boolean, java.lang.String)
+	 * org.ngrinder.script.service.IScriptValidationService#validateScript(org
+	 * .ngrinder.model.User, org.ngrinder.model.IFileEntry, boolean,
+	 * java.lang.String)
 	 */
 	@Override
 	public String validateScript(User user, IFileEntry scriptIEntry, boolean useScriptInSVN, String hostString) {
@@ -101,10 +103,13 @@ public class ScriptValidationService implements IScriptValidationService {
 				fileEntryService.writeContentTo(user, scriptEntry.getPath(), scriptDirectory);
 			} else {
 				FileUtils.writeStringToFile(scriptFile, scriptEntry.getContent(),
-								StringUtils.defaultIfBlank(scriptEntry.getEncoding(), "UTF-8"));
+						StringUtils.defaultIfBlank(scriptEntry.getEncoding(), "UTF-8"));
 			}
+			int timeout = Math.max(
+					config.getSystemProperties().getPropertyInt("ngrinder.validation.timeout",
+							LocalScriptTestDriveService.DEFAULT_TIMEOUT), 10);
 			File doValidate = localScriptTestDriveService.doValidate(scriptDirectory, scriptFile, new Condition(),
-							config.isSecurityEnabled(), hostString);
+					config.isSecurityEnabled(), hostString, timeout);
 			List<String> readLines = FileUtils.readLines(doValidate);
 			StringBuffer output = new StringBuffer();
 			String path = config.getHome().getDirectory().getAbsolutePath();

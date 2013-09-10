@@ -42,17 +42,18 @@ import org.slf4j.LoggerFactory;
 /**
  * Script validation service.
  * 
- * It works on local instead of remote agent. The reason this class is located in ngrinder-core
- * is... some The Grinder core class doesn't have public access..
+ * It works on local instead of remote agent. The reason this class is located
+ * in ngrinder-core is... some The Grinder core class doesn't have public
+ * access..
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
 public class LocalScriptTestDriveService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(LocalScriptTestDriveService.class);
-
+	public static final int DEFAULT_TIMEOUT = 100;
 	/**
-	 * Validate script.
+	 * Validate script with 100 sec timeout.
 	 * 
 	 * @param base
 	 *            working directory
@@ -68,6 +69,27 @@ public class LocalScriptTestDriveService {
 	 */
 	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled,
 					String hostString) {
+		return doValidate(base, script, eventSynchronisation, securityEnabled, hostString, DEFAULT_TIMEOUT);
+	}
+
+	/**
+	 * Validate script.
+	 * 
+	 * @param base
+	 *            working directory
+	 * @param script
+	 *            script file
+	 * @param eventSynchronisation
+	 *            condition for event synchronization
+	 * @param securityEnabled
+	 *            if security is set or not.
+	 * @param hostString
+	 *            hostString
+	 * @param timeout timeout in sec. 
+	 * @return File which stores validation result.
+	 */
+	public File doValidate(File base, File script, Condition eventSynchronisation, boolean securityEnabled,
+			String hostString, final int timeout) {
 		FanOutStreamSender fanOutStreamSender = null;
 		ErrorStreamRedirectWorkerLauncher workerLauncher = null;
 		boolean stopByTooMuchExecution = false;
@@ -82,14 +104,13 @@ public class LocalScriptTestDriveService {
 			AbstractGrinderClassPathProcessor classPathProcessor = handler.getClassPathProcesssor();
 			GrinderProperties properties = new GrinderProperties();
 			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), securityEnabled, hostString,
-							NetworkUtil.getLocalHostName());
+					NetworkUtil.getLocalHostName());
 			properties.setInt("grinder.processes", 1);
 			properties.setInt("grinder.threads", 1);
 			properties.setBoolean("grinder.script.validation", true);
 			String grinderJVMClassPath = classPathProcessor.buildForemostClasspathBasedOnCurrentClassLoader(LOGGER)
-							+ File.pathSeparator
-							+ classPathProcessor.buildPatchClasspathBasedOnCurrentClassLoader(LOGGER)
-							+ File.pathSeparator + builder.buildCustomClassPath(true);
+					+ File.pathSeparator + classPathProcessor.buildPatchClasspathBasedOnCurrentClassLoader(LOGGER)
+					+ File.pathSeparator + builder.buildCustomClassPath(true);
 			properties.setProperty("grinder.jvm.classpath", grinderJVMClassPath);
 			LOGGER.info("grinder.jvm.classpath  : {} ", grinderJVMClassPath);
 			AgentIdentityImplementation agentIdentity = new AgentIdentityImplementation("validation");
@@ -102,29 +123,27 @@ public class LocalScriptTestDriveService {
 			String buildJVMArgumentWithoutMemory = builder.buildJVMArgumentWithoutMemory();
 			LOGGER.info("JVM Args : {} ", buildJVMArgumentWithoutMemory);
 			final WorkerProcessCommandLine workerCommandLine = new WorkerProcessCommandLine(properties,
-							systemProperties, buildJVMArgumentWithoutMemory, workingDirectory);
+					systemProperties, buildJVMArgumentWithoutMemory, workingDirectory);
 
 			ScriptLocation scriptLocation = new ScriptLocation(workingDirectory, script);
 			ProcessWorkerFactory workerFactory = new ProcessWorkerFactory(workerCommandLine, agentIdentity,
-							fanOutStreamSender, false, scriptLocation, properties);
+					fanOutStreamSender, false, scriptLocation, properties);
 
 			workerLauncher = new ErrorStreamRedirectWorkerLauncher(1, workerFactory, eventSynchronisation, LOGGER,
-							byteArrayErrorStream);
+					byteArrayErrorStream);
 
 			// Start
 			workerLauncher.startAllWorkers();
 			// Wait for a termination event.
 			synchronized (eventSynchronisation) {
 				final long sleeptime = 1000;
-				final int maximumWaitingCount = 100;
 				int waitingCount = 0;
 				while (true) {
 					if (workerLauncher.allFinished()) {
 						break;
 					}
-					if (waitingCount++ > maximumWaitingCount) {
-						LOGGER.error("Validation should be performed within {}. Stop it by force", sleeptime
-										* waitingCount);
+					if (waitingCount++ > timeout) {
+						LOGGER.error("Validation should be performed within {} sec. Stop it by force", timeout);
 						workerLauncher.destroyAllWorkers();
 						stopByTooMuchExecution = true;
 						break;
@@ -168,7 +187,7 @@ public class LocalScriptTestDriveService {
 			appendingMessageOn(file, errorValidationResult);
 		}
 		if (stopByTooMuchExecution) {
-			appendingMessageOn(file, "Validation should be performed within 100 sec. Stop it by force");
+			appendingMessageOn(file, "Validation should be performed within " + timeout  + " sec. Stop it by force");
 		}
 		return file;
 	}
