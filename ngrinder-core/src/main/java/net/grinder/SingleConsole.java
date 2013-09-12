@@ -917,7 +917,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	public static final Set<String> INTERESTING_PER_TEST_STATISTICS = Sets.newHashSet("Errors", "TPS",
-			"Mean_time_to_first_byte", "Mean_Test_Time_(ms)");
+			"Mean_time_to_first_byte", "Mean_Test_Time_(ms)", "User_defined");
 
 	public static final Set<String> INTERESTING_STATISTICS = Sets.newHashSet("Tests", "Errors", "TPS",
 			"Response_bytes_per_second", "Mean_time_to_first_byte", "Peak_TPS", "Mean_Test_Time_(ms)", "User_defined");
