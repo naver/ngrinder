@@ -3,7 +3,6 @@
 	<head>
 		<#include "../common/common.ftl">
 		<#include "../common/jqplot.ftl">
-		
 		<title><@spring.message "perfTest.report.title"/></title>
 		
 		<style> 
@@ -69,6 +68,7 @@
 		</style>
 	</head>
 
+	<#setting number_format="number"> 
 	<body>
 		<div class="navbar-inner" style="width:912px; margin-left:auto; margin-right:auto; margin-bottom:0">
 			<h3><@spring.message "perfTest.report.reportPage"/> ${test.testName}</h3>
@@ -139,8 +139,12 @@
                        <td><strong>${test.peakTps!""}</strong></td>
                    </tr>
                    <tr>
-                       <th><@spring.message "perfTest.report.finishedTest"/></th>
-                       <td>${test.tests!""}</td>
+                       <th><@spring.message "perfTest.report.totalTests"/></th>
+                       <td>${(test.tests + test.errors)!""}</td>
+                   </tr>
+                   <tr>
+                       <th><@spring.message "perfTest.report.successfulTests"/></th> 
+                       <td>${(test.tests)!""}</td>
                    </tr>
                    <tr>
                        <th><@spring.message "perfTest.report.errors"/></th>

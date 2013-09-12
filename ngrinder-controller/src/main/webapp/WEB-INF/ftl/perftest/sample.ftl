@@ -50,7 +50,7 @@
 							<td>${statistics.Tests!'&nbsp;'}</td>
 							<td>${statistics.Errors!'&nbsp;'}</td>
 							<td>${(statistics['Mean_Test_Time_(ms)']!0)?string("0.##")}</td>
-							<td>${(statistics.TPS'0)?string("0.##")}</td>
+							<td>${(statistics.TPS!0)?string("0.##")}</td>
 							<td>${bytesFormatter(((statistics['Response_bytes_per_second']!0)?c)?number)}</td>
 							<td>${(statistics['Mean_time_to_first_byte']!0)?string("0.##")}</td>
 						</tr>
