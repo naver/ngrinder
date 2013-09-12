@@ -745,7 +745,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 					grinderProperties.setProperty(GRINDER_PROP_PARAM, StringUtils.trimToEmpty(perfTest.getParam()));
 				} else {
 					String property = grinderProperties.getProperty(GRINDER_PROP_JVM_ARGUMENTS, "");
-					property = property + " -Dparam=\"" + perfTest.getParam().replace("\"", "\\\"");
+					property = property + " -Dparam=\"" + perfTest.getParam().replace("\"", "\\\"") + "\"";
 					grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, property);
 				}
 			}
