@@ -79,7 +79,7 @@
 			</fieldset>
 		</div>
 	</div>
-	<!-- end ruuning content left -->
+	<!-- end running content left -->
 	
 	<div class="span7">
 		<fieldSet>
