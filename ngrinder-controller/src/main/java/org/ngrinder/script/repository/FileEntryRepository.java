@@ -272,7 +272,7 @@ public class FileEntryRepository {
 			// Get File.
 			repo.getFile(path, revision.getNumber(), fileProperty, outputStream);
 			SVNDirEntry lastRevisionedEntry = repo.info(path, -1);
-			long lastRevisionNumber = lastRevisionedEntry.getRevision();
+			long lastRevisionNumber = (lastRevisionedEntry == null) ? -1 : lastRevisionedEntry.getRevision();
 			String revisionStr = fileProperty.getStringValue(SVNProperty.REVISION);
 			long revisionNumber = Long.parseLong(revisionStr);
 			SVNDirEntry info = repo.info(path, revisionNumber);

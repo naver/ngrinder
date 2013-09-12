@@ -183,7 +183,7 @@
 				}
 				$('#contentHd').val(newContent);
 				changed = false;
-				if (curRevision <  lastRevision) {
+				if (curRevision > 0 && lastRevision > 0 && curRevision <  lastRevision) {
 					var $confirm = bootbox.confirm("<@spring.message "script.editor.message.overWriteNewer"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
 					    if (result) {
 							saveScript();
