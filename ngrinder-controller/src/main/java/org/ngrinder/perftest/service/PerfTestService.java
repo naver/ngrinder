@@ -1639,7 +1639,13 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		Pair<ArrayList<String>, ArrayList<String>> resultPair = Pair.of(new ArrayList<String>(),
 				new ArrayList<String>());
 		for (File file : getReportDataFiles(testId, key)) {
-			resultPair.getFirst().add(buildReportName(key, file).replace("_", " "));
+			String buildReportName = buildReportName(key, file);
+			if (key.equals(buildReportName)) {
+				buildReportName = "Total";
+			} else {
+				buildReportName = buildReportName.replace("_", " ");
+			}
+			resultPair.getFirst().add(buildReportName);
 			resultPair.getSecond().add(getFileDataAsJson(file, interval));
 		}
 		return resultPair;
