@@ -36,7 +36,7 @@
 		<#if (bytes / kilo > 1)>
 			<#return (bytes/kilo)?string("0.#")+"KB">
 		</#if>
-		<#return bytes?string.number+"B">
+		<#return bytes?string("0")+"B">
 	</#function>
 	<table >
 		<tbody>	 
