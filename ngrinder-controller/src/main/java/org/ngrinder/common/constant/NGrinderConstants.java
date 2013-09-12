@@ -168,6 +168,7 @@ public interface NGrinderConstants {
 	public static final String GRINDER_PROP_DURATION = "grinder.duration";
 	public static final String GRINDER_PROP_SCRIPT = "grinder.script";
 	public static final String GRINDER_PROP_JVM = "grinder.jvm";
+	public static final String GRINDER_PROP_PARAM = "grinder.param";
 	public static final String GRINDER_PROP_JVM_CLASSPATH = "grinder.jvm.classpath";
 	public static final String GRINDER_PROP_JVM_ARGUMENTS = "grinder.jvm.arguments";
 	public static final String GRINDER_PROP_LOG_DIRECTORY = "grinder.logDirectory";

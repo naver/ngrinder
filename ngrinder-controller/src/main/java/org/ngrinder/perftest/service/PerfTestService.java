@@ -705,7 +705,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			}
 			grinderProperties.setAssociatedFile(new File(DEFAULT_GRINDER_PROPERTIES_PATH));
 			grinderProperties.setProperty(GrinderProperties.SCRIPT, scriptHandler.getScriptExecutePath(scriptName));
-			
+
 			grinderProperties.setProperty(GRINDER_PROP_TEST_ID, "test_" + perfTest.getId());
 			grinderProperties.setInt(GRINDER_PROP_AGENTS, perfTest.getAgentCount());
 			grinderProperties.setInt(GRINDER_PROP_PROCESSES, perfTest.getProcesses());
@@ -733,11 +733,22 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			grinderProperties.setInt(GRINDER_PROP_REPORT_TO_CONSOLE, 500);
 			grinderProperties.setProperty(GRINDER_PROP_USER, perfTest.getCreatedUser().getUserId());
 			grinderProperties.setProperty(GRINDER_PROP_JVM_CLASSPATH, getCustomClassPath(perfTest));
+			grinderProperties.setProperty(GRINDER_PROP_JVM_CLASSPATH, getCustomClassPath(perfTest));
 			grinderProperties.setInt(GRINDER_PROP_IGNORE_SAMPLE_COUNT, perfTest.getIgnoreSampleCount());
 			grinderProperties.setBoolean(GRINDER_PROP_SECURITY, config.isSecurityEnabled());
-			// fileWriter = new FileWriter(userGrinderPropertiesPath);
-			// grinderProperties.store(fileWriter,
-			// perfTest.getTestIdentifier());
+			// For backward agent compatibility.
+			// If the security is not enabled, pass it as jvm argument.
+			// If enabled, pass it to grinder.param. In this case, I drop the
+			// compatibility.
+			if (StringUtils.isNotBlank(perfTest.getParam())) {
+				if (config.isSecurityEnabled()) {
+					grinderProperties.setProperty(GRINDER_PROP_PARAM, StringUtils.trimToEmpty(perfTest.getParam()));
+				} else {
+					String property = grinderProperties.getProperty(GRINDER_PROP_JVM_ARGUMENTS, "");
+					property = property + " -Dparam=\"" + perfTest.getParam().replace("\"", "\\\"");
+					grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, property);
+				}
+			}
 			LOGGER.info("Grinder Properties : {} ", grinderProperties);
 			return grinderProperties;
 		} catch (Exception e) {

@@ -175,9 +175,9 @@ public class PropertyBuilder {
 			jvmArguments.append(properties.getProperty("grinder.jvm.arguments", ""));
 			jvmArguments = addNativeLibraryPath(jvmArguments);
 		}
+		jvmArguments = addParam(jvmArguments, properties.getProperty("grinder.param", ""));
 		jvmArguments = addPythonPathJvmArgument(jvmArguments);
 		jvmArguments = addCustomDns(jvmArguments);
-
 		if (server) {
 			jvmArguments = addServerMode(jvmArguments);
 		}
@@ -185,6 +185,14 @@ public class PropertyBuilder {
 			jvmArguments = addAdditionalJavaOpt(jvmArguments);
 		}
 		return jvmArguments.toString();
+	}
+
+	private StringBuilder addParam(StringBuilder jvmArguments, String param) {
+		if (StringUtils.isEmpty(param)) {
+			return jvmArguments;
+		}
+		param = param.replace("\"", "\\\"");
+		return jvmArguments.append(" -Dparam=\"").append(param).append("\" ");
 	}
 
 	private StringBuilder addAdditionalJavaOpt(StringBuilder jvmArguments) {

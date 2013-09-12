@@ -241,7 +241,7 @@
 										data-html='true'
 										data-content='<@spring.message "perfTest.configuration.ignoreSampleCount.help"/>' 
 										data-placement='top'
-										value="${(test.ignoreSampleCount)!0}">
+										value="${(test.ignoreSampleCount)!0}"/>
 							</div>
 							<div id="err_ignore_sample_count" class="small_error_box" style="margin-left:100px">
 							</div>
@@ -250,19 +250,47 @@
 				</div>
 			</div>
 			<div class="control-group">
-				<label for="safeDistribution" class="control-label"> 
-					<@spring.message "perfTest.configuration.safeDistribution"/>
-				</label>
-				<div class="controls">
-					<input type="checkbox" id="safe_distribution_checkbox" name="safeDistribution"
-					<#if test?? && test.safeDistribution?default(false) == true>checked<#else><#if safeFileDistribution?default(false)==true>checked</#if> </#if> /> 
-					<span style="margin-top: 10px; margin-left: 10px" 
-						rel='popover' data-html='true'
-						data-content='<@spring.message "perfTest.configuration.safeDistribution.help"/>' 
-						title='<@spring.message "perfTest.configuration.safeDistribution"/>'
-						id="dist_comment"> 
-						<i class="pointer-cursor icon-question-sign" style="margin-top:5px"></i>
-					</span> 
+				<div class="row">
+					<div class="span3">
+						<div class="control-group">
+							<label for="safeDistribution" class="control-label"> 
+								<@spring.message "perfTest.configuration.safeDistribution"/>
+							</label>
+							<div class="controls">
+								<input type="checkbox" id="safe_distribution_checkbox" name="safeDistribution"
+								<#if test?? && test.safeDistribution?default(false) == true>checked<#else><#if safeFileDistribution?default(false)==true>checked</#if> </#if> /> 
+								<span style="margin-top: 10px; margin-left: 10px" 
+									rel='popover' data-html='true'
+									data-content='<@spring.message "perfTest.configuration.safeDistribution.help"/>' 
+									title='<@spring.message "perfTest.configuration.safeDistribution"/>'
+									id="dist_comment"> 
+									<i class="pointer-cursor icon-question-sign" style="margin-top:5px"></i>
+								</span> 
+							</div>
+						</div>
+					</div>
+					<div class="span3">
+						<div class="control-group">
+							<label for="param" class="control-label" style="width:70px;margin-left:-20px">
+								<@spring.message "perfTest.configuration.param"/>
+							</label>
+							<div class="controls" style="margin-left:70px">
+								<#assign paramHelp>
+									<@spring.message 'perfTest.configuration.param.help'/>
+								</#assign>
+								<input type="text" class="input" style="width:120px" 
+										id="param" name="param" 
+										rel="popover"
+										title="<@spring.message 'perfTest.configuration.param'/>"
+										data-html="true"
+										data-content="${paramHelp?html}" 
+										data-placement="top"
+										value="${(test.param?html)!""}"/>
+							</div>
+							<div id="err_param" class="small_error_box" style="margin-left:100px">
+							</div>
+						</div>
+					</div>					
 				</div>
 			</div>
 		</div>

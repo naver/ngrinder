@@ -217,6 +217,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "sampling_interval")
 	private Integer samplingInterval;
 
+	@Column(name = "param")
+	private String param;
+
+	
 	public String getTestIdentifier() {
 		return "perftest_" + getId() + "_" + getLastModifiedUser().getUserId();
 	}
@@ -691,6 +695,14 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	public void setSamplingInterval(Integer samplingInterval) {
 		this.samplingInterval = samplingInterval;
+	}
+
+	public String getParam() {
+		return param;
+	}
+
+	public void setParam(String param) {
+		this.param = param;
 	}
 
 }
