@@ -27,7 +27,11 @@
 					<div class="controls">${test.peakTps!0}</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label non-cursor"><@spring.message "perfTest.report.finishedTest"/></label>
+					<label class="control-label non-cursor"><@spring.message "perfTest.report.totalTests"/></label>
+					<div class="controls">${(test.tests + test.errors)!0}</div>
+				</div>
+				<div class="control-group">
+					<label class="control-label non-cursor"><@spring.message "perfTest.report.successfulTests"/></label>
 					<div class="controls">${test.tests!0}</div>
 				</div>
 				<div class="control-group">

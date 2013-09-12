@@ -195,7 +195,7 @@
 										rel="popover"
 		            					data-html="true" 
 		            					data-placement="top"
-		            					data-content="<@spring.message "perfTest.table.tests"/> : ${test.tests!""}<br/><@spring.message "perfTest.table.errors"/> : ${test.errors!""}<br/>">
+		            					data-content="<@spring.message "perfTest.table.totaltests"/> : ${(test.tests + test.errors)!""}<br/><@spring.message "perfTest.table.errors"/> : ${test.errors!""}<br/>">
 		            					<#if test.tests?? && test.tests != 0>${(test.errors/(test.tests + test.errors) * 100)?string("0.##")}%</#if></td>
 		            				</div>
 								<td>${totalVuser}</td>
