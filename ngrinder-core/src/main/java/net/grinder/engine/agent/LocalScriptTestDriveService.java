@@ -105,6 +105,7 @@ public class LocalScriptTestDriveService {
 			GrinderProperties properties = new GrinderProperties();
 			PropertyBuilder builder = new PropertyBuilder(properties, new Directory(base), securityEnabled, hostString,
 					NetworkUtil.getLocalHostName());
+			properties.setInt("grinder.agents", 1);
 			properties.setInt("grinder.processes", 1);
 			properties.setInt("grinder.threads", 1);
 			properties.setBoolean("grinder.script.validation", true);

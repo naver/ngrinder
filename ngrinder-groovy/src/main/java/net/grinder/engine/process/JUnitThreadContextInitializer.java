@@ -110,6 +110,7 @@ public class JUnitThreadContextInitializer {
 		try {
 			if (m_threadContexts.get() == null) {
 				GrinderProperties properties = new GrinderProperties();
+				properties.setInt("grinder.agents", 1);
 				properties.setInt("grinder.processes", 1);
 				properties.setInt("grinder.threads", 1);
 				properties.setBoolean("grinder.logData", false);
