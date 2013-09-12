@@ -37,8 +37,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
 /**
- * Used to get monitor data directly from MBeanClient and save. For every MBClient, one instance
- * will be created. So it is not singleton.
+ * Used to get monitor data directly from MBeanClient and save. For every
+ * MBClient, one instance will be created. So it is not singleton.
  * 
  * @author Mavlarn
  * @since 3.1
@@ -91,7 +91,8 @@ public class MonitorClientSerivce {
 			ObjectName systemName = new ObjectName(objNameStr);
 			sysInfoMBeanObj = new MonitorCollectionInfoDomain(systemName, "SystemInfo", SystemInfo.class);
 
-			fileWriter = new FileWriter(new File(reportPath, NGrinderConstants.MONITOR_FILE_PREFIX + ip + ".data"), false);
+			fileWriter = new FileWriter(new File(reportPath, NGrinderConstants.MONITOR_FILE_PREFIX + ip + ".data"),
+					false);
 			bw = new BufferedWriter(fileWriter);
 			// write header info
 			bw.write(SystemInfo.HEADER);
@@ -135,12 +136,13 @@ public class MonitorClientSerivce {
 				mbeanClient.connect();
 			}
 			if (!mbeanClient.isConnected()) {
-				// if the monitor client can not be connected, just return, to avoid error.
+				// if the monitor client can not be connected, just return, to
+				// avoid error.
 				return null;
 			}
 			SystemInfo retData = new SystemInfo();
 			CompositeData cd = (CompositeData) mbeanClient.getAttribute(sysInfoMBeanObj.getObjectName(),
-							sysInfoMBeanObj.getAttrName());
+					sysInfoMBeanObj.getAttrName());
 			retData.parse(cd);
 			retData.setIp(ip);
 			return retData;
@@ -209,7 +211,7 @@ public class MonitorClientSerivce {
 	public void record(boolean empty) {
 		ValueWrapper valueWrapper = cache.get(ip);
 		SystemInfo systemInfo = (valueWrapper == null || valueWrapper.get() == null) ? new SystemInfo()
-						: (SystemInfo) cast(valueWrapper.get());
+				: (SystemInfo) cast(valueWrapper.get());
 		try {
 			if (empty) {
 				bw.write(systemInfo.toEmptyRecordString());

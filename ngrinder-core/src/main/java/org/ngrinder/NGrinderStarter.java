@@ -81,7 +81,8 @@ public class NGrinderStarter {
 		init();
 	}
 
-	protected void init() {// Check agent start mode
+	protected void init() {
+		// Check agent start mode
 		checkRunningDirectory();
 		agentConfig = new AgentConfig();
 		agentConfig.init();

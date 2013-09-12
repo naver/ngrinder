@@ -88,7 +88,7 @@ public class Config implements IConfig, NGrinderConstants {
 	/**
 	 * Add the system configuration change listener.
 	 * 
-	 * @param listener
+	 * @param listener listener
 	 */
 	public void addSystemConfListener(PropertyChangeListener listener) {
 		systemConfListeners.add(listener);

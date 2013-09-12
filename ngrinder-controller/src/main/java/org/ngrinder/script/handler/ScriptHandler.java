@@ -272,12 +272,19 @@ public abstract class ScriptHandler {
 		return getBasePath(script.getPath());
 	}
 
+	/**
+	 * Get the base path of the given path.
+	 * 
+	 * @param path
+	 *            path
+	 * @return base path
+	 */
 	public String getBasePath(String path) {
 		return FilenameUtils.getPath(path);
 	}
 
 	/**
-	 * Get executable script path
+	 * Get executable script path.
 	 * 
 	 * @param svnPath
 	 *            path in svn

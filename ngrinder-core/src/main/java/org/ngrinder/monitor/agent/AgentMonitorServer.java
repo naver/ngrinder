@@ -65,8 +65,8 @@ public final class AgentMonitorServer {
 	 * Initialize the monitor server with default port and collector. Default
 	 * port is 12343, and default collector is system data collector.
 	 * 
-	 * @param agentHome
-	 *            agentHome
+	 * @param agentConfig
+	 *            agentConfig
 	 * @throws IOException
 	 *             IO error
 	 */
@@ -81,8 +81,8 @@ public final class AgentMonitorServer {
 	 * 
 	 * @param port
 	 *            monitor listener port
-	 * @param agentHome
-	 *            agentHome
+	 * @param agentConfig
+	 *            agentConfig
 	 * @throws IOException
 	 *             IO error
 	 */
@@ -97,8 +97,8 @@ public final class AgentMonitorServer {
 	 *            monitor listener port
 	 * @param dataCollector
 	 *            a list of collector, for java or system data
-	 * @param agentHome
-	 *            agentHome
+	 * @param agentConfig
+	 *            agentConfig
 	 * @throws IOException
 	 *             IO error
 	 */

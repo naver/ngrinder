@@ -683,6 +683,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @param perfTest
 	 *            base data
 	 * @param scriptHandler
+	 *            scriptHandler
 	 * @return created {@link GrinderProperties} instance
 	 */
 	public GrinderProperties getGrinderProperties(PerfTest perfTest, ScriptHandler scriptHandler) {
@@ -1625,14 +1626,14 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Get list that contains test tps report data as a string.
+	 * Get list that contains test report data as a string.
 	 * 
 	 * @param testId
 	 *            test id
+	 * @param key
+	 *            report key
 	 * @param interval
 	 *            interval to collect data
-	 * @param onlyTPS
-	 *            true if only total tps is retrieved
 	 * @return list contained lables list and tps value list
 	 */
 	public Pair<ArrayList<String>, ArrayList<String>> getReportData(long testId, String key, int interval) {
@@ -1669,7 +1670,8 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @param testId
 	 *            test id
 	 * @param key
-	 * @return return file list
+	 *            key
+	 * @return return file
 	 */
 	public File getReportDataFile(long testId, String key) {
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));

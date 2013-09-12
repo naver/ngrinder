@@ -51,7 +51,7 @@ public class AgentControllerServerDaemon {
 	private Thread thread;
 	private AgentControllerServer agentControllerServer;
 	public static final Resources RESOURCES = new ResourcesImplementation(
-					"net.grinder.console.common.resources.Console");
+			"net.grinder.console.common.resources.Console");
 	private Condition m_eventSyncCondition = new Condition();
 
 	public static final Logger LOGGER = LoggerFactory.getLogger(RESOURCES.getString("shortTitle"));
@@ -59,7 +59,8 @@ public class AgentControllerServerDaemon {
 	private static final long AGENT_CONTROLLER_SERVER_EVENT_EXPIRATION_TIMEOUT = 10000;
 
 	/**
-	 * Agent controller daemon constructor with default {@link ConsoleProperties}.
+	 * Agent controller daemon constructor with default
+	 * {@link ConsoleProperties}.
 	 * 
 	 * @param ip
 	 *            IP
@@ -86,10 +87,10 @@ public class AgentControllerServerDaemon {
 			this.consoleProperties.setConsoleHost(ip);
 			this.consoleProperties.setConsolePort(port);
 			this.agentControllerServer = new AgentControllerServer(RESOURCES, LOGGER, consoleProperties,
-							m_eventSyncCondition);
+					m_eventSyncCondition);
 		} catch (GrinderException e) {
-			throw new NGrinderRuntimeException("Exception occurred while initiating the agent controller server daemon",
-							e);
+			throw new NGrinderRuntimeException(
+					"Exception occurred while initiating the agent controller server daemon", e);
 		}
 	}
 
@@ -147,7 +148,8 @@ public class AgentControllerServerDaemon {
 				thread.interrupt();
 			}
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("Exception occurred during shutting down the agent controller server daemon", e);
+			throw new NGrinderRuntimeException(
+					"Exception occurred during shutting down the agent controller server daemon", e);
 		} finally {
 			thread = null;
 		}
@@ -155,7 +157,7 @@ public class AgentControllerServerDaemon {
 
 	public int getAllAttachedAgentsCount() {
 		return ((AgentProcessControl) agentControllerServer.getComponent(AgentProcessControlImplementation.class))
-						.getNumberOfLiveAgents();
+				.getNumberOfLiveAgents();
 	}
 
 	/**
@@ -177,7 +179,7 @@ public class AgentControllerServerDaemon {
 	 */
 	public int getAgentConnectingPort(AgentIdentity agentIdentity) {
 		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgentConnectingPort(
-						agentIdentity);
+				agentIdentity);
 	}
 
 	/**
@@ -201,7 +203,7 @@ public class AgentControllerServerDaemon {
 	 */
 	public AgentControllerState getAgentState(AgentIdentity agentIdentity) {
 		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgentControllerState(
-						agentIdentity);
+				agentIdentity);
 	}
 
 	/**
@@ -211,7 +213,7 @@ public class AgentControllerServerDaemon {
 	 */
 	public Set<AgentIdentity> getAllFreeAgents() {
 		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getAgents(
-						AgentControllerState.READY, 0);
+				AgentControllerState.READY, 0);
 	}
 
 	/**
@@ -223,7 +225,7 @@ public class AgentControllerServerDaemon {
 	 */
 	public SystemDataModel getSystemDataModel(AgentIdentity agentIdentity) {
 		return agentControllerServer.getComponent(AgentProcessControlImplementation.class).getSystemDataModel(
-						agentIdentity);
+				agentIdentity);
 	}
 
 	/**
@@ -259,7 +261,7 @@ public class AgentControllerServerDaemon {
 	public void startAgent(GrinderProperties grinderProperties, AgentIdentity agentIdentity) {
 		LOGGER.info("{} agent is started.", agentIdentity);
 		getComponent(ConsoleCommunication.class).sendToAddressedAgents(new AgentAddress(agentIdentity),
-						new StartGrinderMessage(grinderProperties, agentIdentity.getNumber()));
+				new StartGrinderMessage(grinderProperties, agentIdentity.getNumber()));
 	}
 
 	/**
@@ -271,7 +273,7 @@ public class AgentControllerServerDaemon {
 	public void stopAgent(AgentIdentity agentIdentity) {
 		LOGGER.info("{} agent is stopped.", agentIdentity);
 		getComponent(ConsoleCommunication.class).sendToAddressedAgents(new AgentAddress(agentIdentity),
-						new StopGrinderMessage());
+				new StopGrinderMessage());
 	}
 
 	/**
@@ -288,6 +290,6 @@ public class AgentControllerServerDaemon {
 	 */
 	public void updateAgent(AgentIdentity agentIdentity, String fileName, String version, String url) {
 		getComponent(ConsoleCommunication.class).sendToAddressedAgents(new AgentAddress(agentIdentity),
-						new UpdateAgentGrinderMessage(fileName, version, url));
+				new UpdateAgentGrinderMessage(fileName, version, url));
 	}
 }
