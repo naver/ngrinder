@@ -48,7 +48,8 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	private long fileSize;
 
 	/**
-	 * Test url. This File entity works on.. This field is only for the HTML form.
+	 * Test url. This File entity works on.. This field is only for the HTML
+	 * form.
 	 */
 	private String testURL;
 
@@ -60,8 +61,8 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	private Map<String, String> properties = new HashMap<String, String>();
 
 	/**
-	 * Revisions on this entity. This fields are sometimes empty depending on the
-	 * {@link FileEntryRepository}.
+	 * Revisions on this entity. This fields are sometimes empty depending on
+	 * the {@link FileEntryRepository}.
 	 */
 	private List<Long> revisions;
 
@@ -79,7 +80,8 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	private FileType fileType;
 
 	private long revision;
-
+	
+	private long lastRevision;
 	/**
 	 * Get path of entry.
 	 * 
@@ -162,8 +164,8 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 	}
 
 	/**
-	 * Get file type. If fileType is set, it returns the set fileType. Otherwise, it tries to detect
-	 * the file type by the extension.
+	 * Get file type. If fileType is set, it returns the set fileType.
+	 * Otherwise, it tries to detect the file type by the extension.
 	 * 
 	 * @return file type.
 	 */
@@ -233,6 +235,14 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 		this.properties = properties;
 	}
 
+	public long getLastRevision() {
+		return lastRevision;
+	}
+
+	public void setLastRevision(long lastRevision) {
+		this.lastRevision = lastRevision;
+	}
+
 	/**
 	 * FileEntry to JSON serializer.
 	 * 
@@ -246,8 +256,12 @@ public class FileEntry extends BaseModel<FileEntry> implements IFileEntry {
 			root.addProperty("path", FilenameUtils.separatorsToUnix(fileEntry.getPath()));
 			root.addProperty("pathInShort", FilenameUtils.separatorsToUnix(fileEntry.getPathInShort()));
 			root.addProperty("revision", fileEntry.getRevision());
-			root.addProperty("validated",
-							NumberUtils.createInteger(MapUtils.getString(fileEntry.getProperties(), "validated", "0")));
+			String validateKey = MapUtils.getString(fileEntry.getProperties(), "validated", "0");
+			if (NumberUtils.isNumber(validateKey)) {
+				root.addProperty("validated", NumberUtils.createInteger(validateKey));
+			} else {
+				root.addProperty("validated", 0);
+			}
 			return root;
 		}
 	}

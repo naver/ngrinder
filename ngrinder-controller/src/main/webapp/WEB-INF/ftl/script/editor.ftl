@@ -96,7 +96,7 @@
 							</div>
 						</fieldset>
 					</div>
-					<input type="hidden" id="create_Lib_and_resource" name="createLibAndResource" value="<#if createLibAndResource?? && createLibAndResource==true>true<#else>false</#if>"/>
+					<input type="hidden" id="create_lib_and_resource" name="createLibAndResource" value="<#if createLibAndResource?? && createLibAndResource==true>true<#else>false</#if>"/>
 					<input type="hidden" id="validated" name="validated" value="${(file.properties.validated)!"0"}">
 					<input type="hidden" id="contentHd" name="content">
 					<@security.authorize ifAnyGranted="A, S">
@@ -136,11 +136,17 @@
     <#include "../perftest/host_modal.ftl">
     <script>
     	var changed = false;
+    	var curRevision = ${curRevision!0};
+    	var lastRevision = ${lastRevision!0};
     	$(window).on('beforeunload', function() {
     		if (changed == true) {
     			return "<@spring.message "script.editor.message.exitwithoutsave"/>";
     		}
     	});
+    	function saveScript() {
+			document.forms.contentForm.action = "${req.getContextPath()}/script/save";
+			document.forms.contentForm.submit();					
+    	}
     	$(document).ready(function() {
 			var editor = CodeMirror.fromTextArea(document.getElementById("codemirror_content"), {
 			   mode: "${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}",
@@ -177,8 +183,15 @@
 				}
 				$('#contentHd').val(newContent);
 				changed = false;
-				document.forms.contentForm.action = "${req.getContextPath()}/script/save";
-				document.forms.contentForm.submit();
+				if (curRevision <  lastRevision) {
+					var $confirm = bootbox.confirm("<@spring.message "script.editor.message.overWriteNewer"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
+					    if (result) {
+							saveScript();
+					    }
+					});
+				} else {
+					saveScript();
+				}
 			});
 
 			var validating = false;

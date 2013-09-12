@@ -271,9 +271,11 @@ public class FileEntryRepository {
 			SVNProperties fileProperty = new SVNProperties();
 			// Get File.
 			repo.getFile(path, revision.getNumber(), fileProperty, outputStream);
-			String lastRevisionStr = fileProperty.getStringValue(SVNProperty.REVISION);
-			long lastRevision = Long.parseLong(lastRevisionStr);
-			SVNDirEntry info = repo.info(path, lastRevision);
+			SVNDirEntry lastRevisionedEntry = repo.info(path, -1);
+			long lastRevisionNumber = lastRevisionedEntry.getRevision();
+			String revisionStr = fileProperty.getStringValue(SVNProperty.REVISION);
+			long revisionNumber = Long.parseLong(revisionStr);
+			SVNDirEntry info = repo.info(path, revisionNumber);
 			byte[] byteArray = outputStream.toByteArray();
 			script.setPath(path);
 			for (String name : fileProperty.nameSet()) {
@@ -289,7 +291,8 @@ public class FileEntryRepository {
 				script.setContentBytes(byteArray);
 			}
 			script.setDescription(info.getCommitMessage());
-			script.setRevision(lastRevision);
+			script.setRevision(revisionNumber);
+			script.setLastRevision(lastRevisionNumber);
 			script.setCreatedUser(user);
 		} catch (Exception e) {
 			LOG.error("Error while fetching a file from SVN {}", user.getUserId() + "_" + path, e);
