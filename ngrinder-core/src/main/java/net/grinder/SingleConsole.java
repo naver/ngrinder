@@ -761,11 +761,12 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				for (Entry<Test, StatisticsSet> entry : intervalStatisticMapPerTest.entrySet()) {
 					if (lastCall) {
 						StatisticsSet value = entry.getValue();
-						writeReportData(each.getKey() + "-" + entry.getKey().getDescription().replaceAll("\\s+", "_")
-								+ REPORT_DATA, formatValue(getRealDoubleValue(each.getValue().getDoubleValue(value))));
+						writeReportData(each.getKey() + "-" + entry.getKey().getNumber() + "_"
+								+ entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA,
+								formatValue(getRealDoubleValue(each.getValue().getDoubleValue(value))));
 					} else {
-						writeReportData(each.getKey() + "-" + entry.getKey().getDescription().replaceAll("\\s+", "_")
-								+ REPORT_DATA, "null");
+						writeReportData(each.getKey() + "-" + entry.getKey().getNumber() + "_"
+								+ entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA, "null");
 					}
 
 				}

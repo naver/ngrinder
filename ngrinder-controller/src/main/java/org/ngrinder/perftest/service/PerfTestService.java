@@ -1650,9 +1650,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 		if (key.equals(reportName)) {
 			return reportName;
 		}
-		String[] baseName = StringUtils.split(reportName, "-");
-		if (SingleConsole.INTERESTING_PER_TEST_STATISTICS.contains(baseName[0])) {
-			reportName = reportName.substring(baseName.length);
+		String[] baseName = StringUtils.split(reportName, "-", 2);
+		if (SingleConsole.INTERESTING_PER_TEST_STATISTICS.contains(baseName[0]) && baseName.length >= 2) {
+			reportName = baseName[1];
 		}
 		return reportName;
 	}
