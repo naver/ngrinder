@@ -746,7 +746,8 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	/**
-	 * Writer interval summary data per each test.
+	 * Writer interval summary data per each test. This is activated when there
+	 * are more than 1 test.
 	 * 
 	 * @param intervalStatisticMapPerTest
 	 *            statistics map
@@ -756,19 +757,21 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	 */
 	private void writeIntervalSummaryDataPerTest(Map<Test, StatisticsSet> intervalStatisticMapPerTest, //
 			boolean lastCall) {
-		for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
-			if (INTERESTING_PER_TEST_STATISTICS.contains(each.getKey())) {
-				for (Entry<Test, StatisticsSet> entry : intervalStatisticMapPerTest.entrySet()) {
-					if (lastCall) {
-						StatisticsSet value = entry.getValue();
-						writeReportData(each.getKey() + "-" + entry.getKey().getNumber() + "_"
-								+ entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA,
-								formatValue(getRealDoubleValue(each.getValue().getDoubleValue(value))));
-					} else {
-						writeReportData(each.getKey() + "-" + entry.getKey().getNumber() + "_"
-								+ entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA, "null");
-					}
+		if (intervalStatisticMapPerTest.size() > 1) {
+			for (Entry<String, StatisticExpression> each : getExpressionEntrySet()) {
+				if (INTERESTING_PER_TEST_STATISTICS.contains(each.getKey())) {
+					for (Entry<Test, StatisticsSet> entry : intervalStatisticMapPerTest.entrySet()) {
+						if (lastCall) {
+							StatisticsSet value = entry.getValue();
+							writeReportData(each.getKey() + "-" + entry.getKey().getNumber() + "_"
+									+ entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA,
+									formatValue(getRealDoubleValue(each.getValue().getDoubleValue(value))));
+						} else {
+							writeReportData(each.getKey() + "-" + entry.getKey().getNumber() + "_"
+									+ entry.getKey().getDescription().replaceAll("\\s+", "_") + REPORT_DATA, "null");
+						}
 
+					}
 				}
 			}
 		}
