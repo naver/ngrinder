@@ -1,4 +1,9 @@
 <#import "../common/spring.ftl" as spring/>
+<style>
+	.form-horizontal-3 .control-label-wide {
+		width:170px;
+	}
+</style>
 <div class="row">
 	<div class="span4">
 		<fieldset>
@@ -10,36 +15,36 @@
 			style="margin-left: 10px">
 			<fieldset>
 				<div class="control-group">
-					<label class="control-label non-cursor"><@spring.message "perfTest.report.tps"/></label>
+					<label class="control-label control-label-wide non-cursor"><@spring.message "perfTest.report.tps"/></label>
 					<div class="controls">
 						<strong><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></strong>
 					</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label non-cursor"><@spring.message "perfTest.report.meantime"/></label>
+					<label class="control-label control-label-wide non-cursor"><@spring.message "perfTest.report.meantime"/></label>
 					<div class="controls">
 						${(test.meanTestTime!0)?string("0.##")}
 						<code>MS</code>
 					</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label non-cursor"><@spring.message "perfTest.report.peakTPS"/></label>
+					<label class="control-label control-label-wide non-cursor"><@spring.message "perfTest.report.peakTPS"/></label>
 					<div class="controls">${test.peakTps!0}</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label non-cursor"><@spring.message "perfTest.report.totalTests"/></label>
+					<label class="control-label control-label-wide non-cursor"><@spring.message "perfTest.report.totalTests"/></label>
 					<div class="controls">${(test.tests + test.errors)!0}</div>
 				</div>
 				<div class="control-group">
-					<label class="control-label non-cursor"><@spring.message "perfTest.report.successfulTests"/></label>
+					<label class="control-label control-label-wide non-cursor"><@spring.message "perfTest.report.successfulTests"/></label>
 					<div class="controls">${test.tests!0}</div>
 				</div>
 				<div class="control-group">
-					<label  class="control-label non-cursor"><@spring.message "perfTest.report.errors"/></label>
+					<label  class="control-label control-label-wide non-cursor"><@spring.message "perfTest.report.errors"/></label>
 					<div class="controls">${test.errors!0}</div>
 				</div>
 				<div class="control-group">
-                    <label class="control-label non-cursor"><@spring.message "perfTest.report.runtime"/></label>
+                    <label class="control-label control-label-wide non-cursor"><@spring.message "perfTest.report.runtime"/></label>
                     <div class="controls">${test.runtimeStr!""}</div>
                 </div>
 			</fieldset>
