@@ -871,29 +871,6 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
-	 * Get the test report data as a string. Use interval to control the data
-	 * point count. interval is 1, mean get all data point.
-	 * 
-	 * @param testId
-	 *            test id
-	 * @param dataType
-	 *            data type
-	 * @param interval
-	 *            interval to collect data
-	 * @return report data report data of that type
-	 */
-	public String getReportDataAsString(long testId, String dataType, int interval) {
-		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
-		File targetFile = new File(reportFolder, dataType + DATA_FILE_EXTENSION);
-		if (!targetFile.exists()) {
-			LOGGER.error("Report data for {} in {} does not exist.", dataType, testId);
-			return "[ ]";
-		}
-
-		return getFileDataAsJson(targetFile, interval);
-	}
-
-	/**
 	 * Get report file(csv data) for give test .
 	 * 
 	 * @param perfTest
@@ -1632,6 +1609,22 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	}
 
 	/**
+	 * Get list that contains test report data as a json string.
+	 * 
+	 * @param testId
+	 *            test id
+	 * @param key
+	 *            key
+	 * @param interval
+	 *            interval to collect data
+	 * @return json list
+	 */
+	public String getSingleReportDataAsJson(long testId, String key, int interval) {
+		File reportDataFile = getReportDataFile(testId, key);
+		return getFileDataAsJson(reportDataFile, interval);
+	}
+
+	/**
 	 * Get list that contains test tps report data as a string.
 	 * 
 	 * @param testId
@@ -1642,37 +1635,53 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 *            true if only total tps is retrieved
 	 * @return list contained lables list and tps value list
 	 */
-	public Pair<ArrayList<String>, ArrayList<String>> getTPSReportDataAsString(long testId, int interval,
-			boolean onlyTPS) {
+	public Pair<ArrayList<String>, ArrayList<String>> getReportData(long testId, String key, int interval) {
 		Pair<ArrayList<String>, ArrayList<String>> resultPair = Pair.of(new ArrayList<String>(),
 				new ArrayList<String>());
-		for (File file : getTPSDataFiles(testId, onlyTPS)) {
-			resultPair.getFirst().add(buildReportName(file));
+		for (File file : getReportDataFiles(testId, key)) {
+			resultPair.getFirst().add(buildReportName(key, file).replace("_", " "));
 			resultPair.getSecond().add(getFileDataAsJson(file, interval));
 		}
 		return resultPair;
 	}
 
-	private String buildReportName(File file) {
+	private String buildReportName(String key, File file) {
 		String reportName = FilenameUtils.removeExtension(file.getName());
-		if (reportName.startsWith("TPS-")) {
-			reportName = reportName.substring(4);
+		if (key.equals(reportName)) {
+			return reportName;
+		}
+		String[] baseName = StringUtils.split(reportName, "-");
+		if (SingleConsole.INTERESTING_PER_TEST_STATISTICS.contains(baseName[0])) {
+			reportName = reportName.substring(baseName.length);
 		}
 		return reportName;
 	}
 
 	/**
-	 * Get TPS files respectively if there are multiple tests.
+	 * Get a single file for the given report key.
 	 * 
 	 * @param testId
 	 *            test id
-	 * @param onlyTPS
-	 *            true if only total tps is retrieved
+	 * @param key
 	 * @return return file list
 	 */
-	public List<File> getTPSDataFiles(long testId, boolean onlyTPS) {
+	public File getReportDataFile(long testId, String key) {
 		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
-		FileFilter fileFilter = onlyTPS ? new WildcardFileFilter("TPS.data") : new WildcardFileFilter("TPS*.data");
+		return new File(reportFolder, key + ".data");
+	}
+
+	/**
+	 * Get files respectively if there are multiple tests.
+	 * 
+	 * @param testId
+	 *            test id
+	 * @param key
+	 *            report key
+	 * @return return file list
+	 */
+	public List<File> getReportDataFiles(long testId, String key) {
+		File reportFolder = config.getHome().getPerfTestReportDirectory(String.valueOf(testId));
+		FileFilter fileFilter = new WildcardFileFilter(key + "*.data");
 		File[] files = reportFolder.listFiles(fileFilter);
 		Arrays.sort(files, new Comparator<File>() {
 			@Override
@@ -1693,6 +1702,9 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 	 * @return json string
 	 */
 	private String getFileDataAsJson(File targetFile, int interval) {
+		if (!targetFile.exists()) {
+			return "[]";
+		}
 		StringBuilder reportData = new StringBuilder("[");
 		FileReader reader = null;
 		BufferedReader br = null;
