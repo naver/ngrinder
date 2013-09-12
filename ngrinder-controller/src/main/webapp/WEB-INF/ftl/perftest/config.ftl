@@ -210,7 +210,7 @@
 								<@spring.message "perfTest.configuration.samplingInterval"/>
 							</label>
 							<div class="controls">
-								<#assign samplingIntervalArray = [1,2,3,4,5]> 
+								<#assign samplingIntervalArray = [1,2,3,4,5,10,30,60]> 
 								<select class="select-item" id="sampling_interval" name="samplingInterval"> 
 									<#list samplingIntervalArray as eachInterval>
 										<option value="${eachInterval}"
