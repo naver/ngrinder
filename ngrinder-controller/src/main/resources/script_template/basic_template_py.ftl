@@ -11,7 +11,6 @@ from net.grinder.script import Test
 from net.grinder.plugin.http import HTTPRequest
 from net.grinder.plugin.http import HTTPPluginControl
 
-
 control = HTTPPluginControl.getConnectionDefaults()
 # if you don't want that HTTPRequest follows the redirection, please modify the following option 0.
 # control.followRedirects = 1

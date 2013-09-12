@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. 
  */
-package net.grinder.util;
+package org.ngrinder.util;
 
 import java.util.List;
 import java.util.Random;
@@ -19,8 +19,6 @@ import java.util.Random;
 import net.grinder.common.GrinderProperties;
 import net.grinder.script.Grinder;
 import net.grinder.script.InternalScriptContext;
-
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 
 /**
  * Convenient NGrinder utilities.
@@ -50,7 +48,7 @@ public abstract class GrinderUtil {
 	private static InternalScriptContext getGrinderInstance() {
 		InternalScriptContext grinder = Grinder.grinder;
 		if (grinder == null || grinder.getThreadNumber() == -1) {
-			throw new NGrinderRuntimeException("This method should be called in the worker thread context.");
+			throw new RuntimeException("This method should be called in the worker thread context.");
 		}
 		return grinder;
 	}

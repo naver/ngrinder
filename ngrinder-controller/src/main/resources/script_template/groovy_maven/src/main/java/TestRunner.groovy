@@ -8,6 +8,7 @@ import net.grinder.script.Grinder
 import net.grinder.scriptengine.groovy.junit.GrinderRunner
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeThread
 import net.grinder.scriptengine.groovy.junit.annotation.BeforeProcess
+import static net.grinder.util.GrinderUtil.*
 
 import org.junit.BeforeClass
 import org.junit.Test
