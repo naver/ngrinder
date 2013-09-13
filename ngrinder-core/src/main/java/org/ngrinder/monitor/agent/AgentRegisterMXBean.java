@@ -20,7 +20,6 @@ import java.util.Set;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.monitor.MonitorConstants;
 import org.ngrinder.monitor.MonitorContext;
 import org.ngrinder.monitor.agent.mxbean.SystemMonitoringData;

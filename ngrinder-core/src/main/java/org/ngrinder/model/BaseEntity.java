@@ -30,7 +30,6 @@ import javax.persistence.MappedSuperclass;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 
 import com.google.gson.annotations.Expose;
 
@@ -112,26 +111,27 @@ public class BaseEntity<M> implements Serializable {
 					continue;
 				}
 
-				if (writeMethod.getAnnotation(ForceMergable.class) != null || isNotBlankStringOrNotString(defaultValue)) {
+				ForceMergable annotation = writeMethod.getAnnotation(ForceMergable.class);
+				if (annotation != null || isNotBlankStringOrNotString(defaultValue)) {
 					writeMethod.invoke(this, defaultValue);
 				}
 			}
 			return (M) this;
 		} catch (Exception e) {
 			String displayName = (forError == null) ? "Empty" : forError.getDisplayName();
-			throw processException(displayName + " - Exception occurred while merging entity from "
-					+ source + " to " + this, e);
+			throw processException(displayName + " - Exception occurred while merging entity from " + source + " to "
+					+ this, e);
 		}
 	}
 
 	/**
-	 * Clone current entity
+	 * Clone current entity.
 	 * 
 	 * Only not null value is merged.
 	 * 
-	 * @param source
-	 *            merge source
-	 * @return merged entity
+	 * @param createdInstance
+	 *            instance to which the value is copied.
+	 * @return cloned entity
 	 */
 	public M clone(M createdInstance) {
 		PropertyDescriptor forError = null;
