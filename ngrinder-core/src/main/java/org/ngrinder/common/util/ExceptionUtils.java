@@ -23,8 +23,20 @@ public abstract class ExceptionUtils {
 		if (t instanceof NGrinderRuntimeException) {
 			throw (NGrinderRuntimeException) sanitize(t);
 		} else {
-			throw new NGrinderRuntimeException(sanitize(t));
+			throw new NGrinderRuntimeException(sanitize(t), true);
 		}
+	}
+
+	/**
+	 * Check if the exception {@link NGrinderRuntimeException}. If so, throw. If
+	 * not, wrap the given exception.
+	 * 
+	 * @param message
+	 *            message
+	 * @return exception
+	 */
+	public static NGrinderRuntimeException processException(String message) {
+		throw processException(new NGrinderRuntimeException(message));
 	}
 
 	/**
@@ -41,7 +53,7 @@ public abstract class ExceptionUtils {
 		if (t instanceof NGrinderRuntimeException) {
 			throw (NGrinderRuntimeException) sanitize(t);
 		} else {
-			throw new NGrinderRuntimeException(message, sanitize(t));
+			throw new NGrinderRuntimeException(message, sanitize(t), true);
 		}
 	}
 
@@ -53,6 +65,11 @@ public abstract class ExceptionUtils {
 	 * @return {@link Throwable} instance with interested stacktrace elements.
 	 */
 	public static Throwable sanitize(Throwable throwable) {
+		if (throwable instanceof NGrinderRuntimeException) {
+			if (((NGrinderRuntimeException) throwable).isSanitized()) {
+				return throwable;
+			}
+		}
 		Throwable t = throwable;
 		while (t != null) {
 			// Note that this getBoolean access may well be synced...
@@ -67,6 +84,9 @@ public abstract class ExceptionUtils {
 			newTrace.toArray(clean);
 			t.setStackTrace(clean);
 			t = t.getCause();
+		}
+		if (throwable instanceof NGrinderRuntimeException) {
+			((NGrinderRuntimeException) throwable).setSanitized(true);
 		}
 		return throwable;
 	}

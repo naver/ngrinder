@@ -33,7 +33,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.model.Home;
 import org.ngrinder.common.util.EncodingUtil;
 import org.ngrinder.infra.annotation.RuntimeOnlyComponent;
@@ -343,7 +342,7 @@ public class FileEntryRepository {
 				fullPath = fullPath + "/" + each;
 				SVNDirEntry folderStepEntry = repo.info(fullPath, -1);
 				if (folderStepEntry != null && folderStepEntry.getKind() == SVNNodeKind.FILE) {
-					throw new NGrinderRuntimeException("User " + user.getUserId() + " tried to create folder "
+					throw processException("User " + user.getUserId() + " tried to create folder "
 							+ fullPath + ". It's file..");
 				}
 			}
@@ -554,7 +553,7 @@ public class FileEntryRepository {
 			SVNNodeKind nodeKind = repo.checkPath(path, -1);
 			// If it's DIR, it does not work.
 			if (nodeKind == SVNNodeKind.NONE || nodeKind == SVNNodeKind.DIR) {
-				throw new NGrinderRuntimeException("It's not possible to write directory. nodeKind is " + nodeKind);
+				throw processException("It's not possible to write directory. nodeKind is " + nodeKind);
 			}
 			toPathDir.mkdirs();
 			File destFile = new File(toPathDir, FilenameUtils.getName(path));

@@ -27,7 +27,6 @@ import java.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,26 +51,26 @@ public class AgentHome {
 	public AgentHome(File directory) {
 		checkNotNull(directory, "The directory should not be null.");
 		if (StringUtils.contains(directory.getAbsolutePath().trim(), " ")) {
-			throw new NGrinderRuntimeException(String.format(
+			throw processException(String.format(
 					"nGrinder agent home directory \"%s\" should not contain space."
 							+ "Please set NGRINDER_AGENT_HOME env var in the different location",
 					directory.getAbsolutePath()));
 		}
 
 		if (!directory.exists() && !directory.mkdirs()) {
-			throw new NGrinderRuntimeException(String.format(
+			throw processException(String.format(
 					"nGrinder agent home directory %s is not created. Please check the permission",
 					directory.getAbsolutePath()));
 		}
 
 		if (!directory.isDirectory()) {
-			throw new NGrinderRuntimeException(String.format(
+			throw processException(String.format(
 					"nGrinder home directory %s is not directory. Please delete this file in advance",
 					directory.getAbsolutePath()));
 		}
 
 		if (!directory.canWrite()) {
-			throw new NGrinderRuntimeException(String.format(
+			throw processException(String.format(
 					"nGrinder home directory %s is not writable. Please adjust permission on this folder", directory));
 		}
 

@@ -33,7 +33,6 @@ import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
-import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -96,7 +95,8 @@ public abstract class CompressionUtil {
 	}
 
 	/**
-	 * Unzip the given zipped file into destination directory with the given character set.
+	 * Unzip the given zipped file into destination directory with the given
+	 * character set.
 	 * 
 	 * @param zippedFile
 	 *            zipped file
@@ -114,7 +114,8 @@ public abstract class CompressionUtil {
 	}
 
 	/**
-	 * Unzip the given input stream into destination directory with the default character set.
+	 * Unzip the given input stream into destination directory with the default
+	 * character set.
 	 * 
 	 * @param is
 	 *            input stream
@@ -126,7 +127,8 @@ public abstract class CompressionUtil {
 	}
 
 	/**
-	 * Unzip the given input stream into destination directory with the given character set.
+	 * Unzip the given input stream into destination directory with the given
+	 * character set.
 	 * 
 	 * @param is
 	 *            input stream
@@ -168,7 +170,8 @@ public abstract class CompressionUtil {
 	}
 
 	/**
-	 * Compresses the given file(or dir) and creates new file under the same directory.
+	 * Compresses the given file(or dir) and creates new file under the same
+	 * directory.
 	 * 
 	 * @param src
 	 *            file or directory
@@ -185,8 +188,8 @@ public abstract class CompressionUtil {
 	 * @param src
 	 *            file or directory to compress
 	 * @param includeSrc
-	 *            if true and src is directory, then src is not included in the compression. if
-	 *            false, src is included.
+	 *            if true and src is directory, then src is not included in the
+	 *            compression. if false, src is included.
 	 * @throws IOException
 	 *             IOException
 	 */
@@ -211,8 +214,8 @@ public abstract class CompressionUtil {
 	}
 
 	/**
-	 * Compresses the given src file(or directory) and writes to the given output stream with sub
-	 * directory.
+	 * Compresses the given src file(or directory) and writes to the given
+	 * output stream with sub directory.
 	 * 
 	 * @param src
 	 *            src
@@ -227,8 +230,8 @@ public abstract class CompressionUtil {
 	}
 
 	/**
-	 * Compresses the given src file(or directory) and create the compressed file under the given
-	 * destDir.
+	 * Compresses the given src file(or directory) and create the compressed
+	 * file under the given destDir.
 	 * 
 	 * @param src
 	 *            src to be zipped.
@@ -343,8 +346,8 @@ public abstract class CompressionUtil {
 	/**
 	 * Untar an input file into an output file.
 	 * 
-	 * The output file is created in the output folder, having the same name as the input file,
-	 * minus the '.tar' extension.
+	 * The output file is created in the output folder, having the same name as
+	 * the input file, minus the '.tar' extension.
 	 * 
 	 * @param inFile
 	 *            the input .tar file
@@ -354,7 +357,6 @@ public abstract class CompressionUtil {
 	 * @throws FileNotFoundException
 	 * 
 	 * @return The {@link List} of {@link File}s with the untared content.
-	 * @throws ArchiveException
 	 */
 	@SuppressWarnings("resource")
 	public static List<File> untar(final File inFile, final File outputDir) {
@@ -363,8 +365,7 @@ public abstract class CompressionUtil {
 		TarArchiveInputStream debInputStream = null;
 		try {
 			is = new FileInputStream(inFile);
-			debInputStream = (TarArchiveInputStream) new ArchiveStreamFactory()
-							.createArchiveInputStream("tar", is);
+			debInputStream = (TarArchiveInputStream) new ArchiveStreamFactory().createArchiveInputStream("tar", is);
 			TarArchiveEntry entry = null;
 			while ((entry = (TarArchiveEntry) debInputStream.getNextEntry()) != null) {
 				final File outputFile = new File(outputDir, entry.getName());
@@ -372,7 +373,7 @@ public abstract class CompressionUtil {
 					if (!outputFile.exists()) {
 						if (!outputFile.mkdirs()) {
 							throw new IllegalStateException(String.format("Couldn't create directory %s.",
-											outputFile.getAbsolutePath()));
+									outputFile.getAbsolutePath()));
 						}
 					}
 				} else {

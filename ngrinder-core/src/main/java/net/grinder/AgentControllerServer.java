@@ -13,6 +13,7 @@
  */
 package net.grinder;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
 
 import java.util.Timer;
@@ -27,7 +28,6 @@ import net.grinder.engine.console.ErrorHandlerImplementation;
 import net.grinder.util.StandardTimeAuthority;
 import net.grinder.util.thread.Condition;
 
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.behaviors.Caching;
 import org.slf4j.Logger;
@@ -81,7 +81,7 @@ public class AgentControllerServer {
 	 */
 	public void run() {
 		if (m_shutdown) {
-			throw new NGrinderRuntimeException("The console can not be run because it's already shutdowned");
+			throw processException("The console can not be run because it's already shutdowned");
 		}
 		m_container.start();
 		m_container.getComponent(AgentProcessControlImplementation.class);

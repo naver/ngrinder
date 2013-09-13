@@ -26,7 +26,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +84,7 @@ public class AgentConfig {
 		checkNotNull(home);
 		InputStream agentConfIO = loadFromClassPath("agent.conf");
 		if (agentConfIO == null) {
-			throw new NGrinderRuntimeException("Error while loading agent.conf file");
+			throw processException("Error while loading agent.conf file");
 		}
 		home.copyFileTo(agentConfIO, new File("agent.conf"), false);
 		IOUtils.closeQuietly(agentConfIO);
@@ -198,7 +197,7 @@ public class AgentConfig {
 		try {
 			homeDirectory.mkdirs();
 			if (!homeDirectory.canWrite()) {
-				throw new NGrinderRuntimeException("home directory " + userHome + " is not writable.");
+				throw processException("home directory " + userHome + " is not writable.");
 			}
 		} catch (Exception e) {
 			throw processException("Error while resolve the home directory.", e);

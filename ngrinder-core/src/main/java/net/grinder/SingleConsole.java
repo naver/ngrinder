@@ -76,7 +76,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.mutable.MutableBoolean;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.ReflectionUtil;
 import org.ngrinder.common.util.ThreadUtil;
@@ -514,7 +513,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 					checkSafetyWithCacheState(fileDistribution, cacheStateCondition, 1);
 				}
 			} catch (FileContents.FileContentsException e) {
-				throw new NGrinderRuntimeException("Error while distribute files for " + getConsolePort());
+				throw processException("Error while distribute files for " + getConsolePort());
 			}
 		}
 		if (mutableBoolean.isFalse()) {
@@ -554,7 +553,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				return;
 			}
 		}
-		throw new NGrinderRuntimeException("Connection is not completed until 10 sec");
+		throw processException("Connection is not completed until 10 sec");
 	}
 
 	/**
@@ -578,7 +577,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 				return;
 			}
 		}
-		throw new NGrinderRuntimeException("Connection is not completed until 10 sec");
+		throw processException("Connection is not completed until 10 sec");
 	}
 
 	/**

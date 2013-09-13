@@ -13,6 +13,7 @@
  */
 package net.grinder.console;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
 
 import java.util.Timer;
@@ -44,7 +45,6 @@ import net.grinder.util.StandardTimeAuthority;
 import net.grinder.util.thread.Condition;
 
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.Parameter;
@@ -158,7 +158,7 @@ public class ConsoleFoundationEx {
 	 */
 	public void run() {
 		if (m_shutdown) {
-			throw new NGrinderRuntimeException("console can not run because it's shutdowned");
+			throw processException("console can not run because it's shutdowned");
 		}
 		m_container.start();
 		ConsoleCommunication communication = m_container.getComponent(ConsoleCommunication.class);

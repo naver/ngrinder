@@ -23,6 +23,7 @@ package org.ngrinder.common.exception;
 public class NGrinderRuntimeException extends RuntimeException {
 
 	private static final long serialVersionUID = 8662535812004958944L;
+	private boolean sanitized = false;
 
 	/**
 	 * Constructor.
@@ -43,7 +44,22 @@ public class NGrinderRuntimeException extends RuntimeException {
 	 *            root cause
 	 */
 	public NGrinderRuntimeException(String message, Throwable t) {
+		this(message, t, false);
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param message
+	 *            message
+	 * @param t
+	 *            root cause
+	 * @param sanitized
+	 *            sanitized
+	 */
+	public NGrinderRuntimeException(String message, Throwable t, boolean sanitized) {
 		super(message, t);
+		this.sanitized = sanitized;
 	}
 
 	/**
@@ -54,5 +70,26 @@ public class NGrinderRuntimeException extends RuntimeException {
 	 */
 	public NGrinderRuntimeException(Throwable t) {
 		super(t);
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param t
+	 *            root cause
+	 * @param sanitized
+	 *            sanitized
+	 */
+	public NGrinderRuntimeException(Throwable t, boolean sanitized) {
+		super(t);
+		this.sanitized = sanitized;
+	}
+
+	public boolean isSanitized() {
+		return sanitized;
+	}
+
+	public void setSanitized(boolean sanitized) {
+		this.sanitized = sanitized;
 	}
 }

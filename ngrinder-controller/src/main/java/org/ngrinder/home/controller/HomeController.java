@@ -13,6 +13,7 @@
  */
 package org.ngrinder.home.controller;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.IOException;
@@ -32,7 +33,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.controller.NGrinderBaseController;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.home.service.HomeService;
@@ -324,7 +324,7 @@ public class HomeController extends NGrinderBaseController {
 	public String second(User user, ModelMap model, HttpServletResponse response, HttpServletRequest request) {
 		String parameter = request.getParameter("type");
 		if ("404".equals(parameter)) {
-			model.addAttribute("exception", new NGrinderRuntimeException("Requested URL does not exist"));
+			model.addAttribute("exception", processException("Requested URL does not exist"));
 		}
 		return home(user, null, null, model, response, request);
 	}

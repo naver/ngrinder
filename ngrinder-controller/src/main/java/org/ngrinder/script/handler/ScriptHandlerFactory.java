@@ -1,6 +1,7 @@
 package org.ngrinder.script.handler;
 
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,7 +10,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.script.model.FileEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -81,7 +81,7 @@ public class ScriptHandlerFactory {
 			}
 		}
 		// Actually nothing is reach here.
-		throw new NGrinderRuntimeException("no matching handler for " + fileEntry.getPath());
+		throw processException("no matching handler for " + fileEntry.getPath());
 	}
 
 	/**
@@ -98,7 +98,7 @@ public class ScriptHandlerFactory {
 			}
 		}
 		// Actually nothing is reach here.
-		throw new NGrinderRuntimeException("no matching handler for " + key);
+		throw processException("no matching handler for " + key);
 	}
 
 }

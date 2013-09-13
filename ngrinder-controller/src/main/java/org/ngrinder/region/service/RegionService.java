@@ -13,6 +13,8 @@
  */
 package org.ngrinder.region.service;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+
 import java.io.File;
 import java.util.HashSet;
 import java.util.Map;
@@ -26,7 +28,6 @@ import net.sf.ehcache.Ehcache;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.schedule.ScheduledTask;
 import org.ngrinder.perftest.service.AgentManager;
@@ -89,7 +90,7 @@ public class RegionService {
 		String localRegion = getCurrentRegion();
 		RegionInfo regionInfo = regions.get(localRegion);
 		if (regionInfo != null && !StringUtils.equals(regionInfo.getIp(), config.getCurrentIP())) {
-			throw new NGrinderRuntimeException("The region name, " + localRegion
+			throw processException("The region name, " + localRegion
 							+ ", is already used by other controller " + regionInfo.getIp()
 							+ ". Please set the different region name in this controller.");
 		}

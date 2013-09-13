@@ -81,7 +81,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.hibernate.Hibernate;
 import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Permission;
@@ -791,7 +790,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			} catch (IOException e) {
 				noOp();
 			}
-			throw new NGrinderRuntimeException("Error while file distirbution is prepared.");
+			throw processException("Error while file distirbution is prepared.");
 		}
 		return handler;
 	}

@@ -14,6 +14,7 @@
 package org.ngrinder.perftest.service;
 
 import static org.ngrinder.common.constant.NGrinderConstants.NGRINDER_PROP_CONSOLE_MAX_WAITING_MILLISECONDS;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
 
 import java.io.IOException;
@@ -140,7 +141,7 @@ public class ConsoleManager {
 				return scanStartPort;
 			}
 			if (scanStartPort++ > MAX_PORT_NUMBER) {
-				throw new NGrinderRuntimeException("no port for console is available");
+				throw processException("no port for console is available");
 			}
 		}
 	}
@@ -191,7 +192,7 @@ public class ConsoleManager {
 		try {
 			consoleEntry = consoleQueue.poll(getMaxWaitingMiliSecond(), TimeUnit.MILLISECONDS);
 			if (consoleEntry == null) {
-				throw new NGrinderRuntimeException("no console entry available");
+				throw processException("no console entry available");
 			}
 			synchronized (this) {
 				// FIXME : It might fail here
@@ -203,7 +204,7 @@ public class ConsoleManager {
 			if (consoleEntry != null) {
 				consoleQueue.add(consoleEntry);
 			}
-			throw new NGrinderRuntimeException("no console entry available");
+			throw processException("no console entry available");
 		}
 	}
 

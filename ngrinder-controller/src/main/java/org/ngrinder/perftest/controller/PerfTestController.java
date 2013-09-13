@@ -17,6 +17,7 @@ import static org.apache.commons.lang.StringUtils.trimToEmpty;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkArgument;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -432,7 +433,7 @@ public class PerfTestController extends NGrinderBaseController {
 	public HttpEntity<String> detail(User user, @PathVariable("id") Long id) {
 		PerfTest test = getPerfTestWithPermissionCheck(user, id, false);
 		if (test == null) {
-			throw new NGrinderRuntimeException("PerfTest " + id + " does not exists");
+			throw processException("PerfTest " + id + " does not exists");
 		}
 		return toJsonHttpEntity(test);
 	}
@@ -888,7 +889,7 @@ public class PerfTestController extends NGrinderBaseController {
 			return perfTest;
 		}
 		if (perfTest != null && !user.equals(perfTest.getCreatedUser())) {
-			throw new NGrinderRuntimeException("User " + user.getUserId() + " has no right on PerfTest ");
+			throw processException("User " + user.getUserId() + " has no right on PerfTest ");
 		}
 		return perfTest;
 	}
