@@ -20,6 +20,9 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.script.Grinder;
 import net.grinder.script.InternalScriptContext;
 
+import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.math.NumberUtils;
+
 /**
  * Convenient NGrinder utilities.
  * 
@@ -98,18 +101,57 @@ public abstract class GrinderUtil {
 	 * @since 3.2.3
 	 */
 	public static String getParam(String defaultValue) {
-		return System.getProperty("param", "");
+		return System.getProperty("param", defaultValue);
 	}
 
 	/**
 	 * Get the parameter passed by controller. When it's executed in the
-	 * validation mode, always returns the given default value.
+	 * validation mode, always returns the given default value 0.
 	 * 
-	 * @return param. default value string if the param was not provided.
 	 * @since 3.2.3
 	 */
-	public static String getAgentCount(String defaultValue) {
-		return System.getProperty("param", "");
+	public static int getParamInt() {
+		return NumberUtils.toInt(getParam("0"), 0);
+	}
+
+	/**
+	 * Get the parameter passed by controller. When it's executed in the
+	 * validation mode, always returns the given default value 0.
+	 * 
+	 * @since 3.2.3
+	 */
+	public static long getParamLong() {
+		return NumberUtils.toLong(getParam("0"), 0);
+	}
+
+	/**
+	 * Get the parameter passed by controller. When it's executed in the
+	 * validation mode, always returns the given default value 0.
+	 * 
+	 * @since 3.2.3
+	 */
+	public static float getParamFloat() {
+		return NumberUtils.toFloat(getParam("0"), 0f);
+	}
+
+	/**
+	 * Get the parameter passed by controller. When it's executed in the
+	 * validation mode, always returns the given default value 0.
+	 * 
+	 * @since 3.2.3
+	 */
+	public static double getParamDouble() {
+		return NumberUtils.toDouble(getParam("0"), 0);
+	}
+
+	/**
+	 * Get the parameter passed by controller. When it's executed in the
+	 * validation mode, always returns the given default value(false).
+	 * 
+	 * @since 3.2.3
+	 */
+	public static boolean getParamBoolean() {
+		return BooleanUtils.toBoolean(getParam("false"));
 	}
 
 	/**
