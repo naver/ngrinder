@@ -40,12 +40,9 @@ class TestRunner:
 		# else :
 		#	 grinder.statistics.forLastTest.success = 0
 			
-		# if you want to print out log.. 
-		# Don't use print keyword. 
-		# instead use following.
+		# if you want to print out log.. Don't use print keyword. Instead, use following.
 		# grinder.logger.info("Hello World")
 		
-
 		if result.getStatusCode() == 200 :
 			grinder.statistics.forLastTest.success = 1
 		elif result.getStatusCode() in (301, 302) :
