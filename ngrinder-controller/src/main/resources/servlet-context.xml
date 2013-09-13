@@ -23,13 +23,15 @@
 			<bean class="org.ngrinder.infra.spring.RemainedPathMethodArgumentResolver" />
 			<bean class="org.springframework.data.web.PageableArgumentResolver" />
 		</mvc:argument-resolvers>
-
 	</mvc:annotation-driven>
-	
-	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver">
-		<property name="order" value="0" />
+
+	<bean class="org.ngrinder.infra.spring.ApiExceptionHandlerResolver">
+		<property name="order" value="-1" />
 	</bean>
-	
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver">
+		<property name="order" value="1" />
+	</bean>
+
 	<!-- customization to search RequestMapping in the parent context -->
 	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
 		<property name="detectHandlerMethodsInAncestorContexts" value="true" />
@@ -70,7 +72,7 @@
 
 	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
 		<property name="defaultLocale" value="en" />
-		<property name="cookieName" value="ngrinder_lang"/>
+		<property name="cookieName" value="ngrinder_lang" />
 	</bean>
 
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">

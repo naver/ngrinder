@@ -57,6 +57,7 @@ import org.apache.commons.lang.time.DateUtils;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.controller.NGrinderBaseController;
+import org.ngrinder.common.controller.RestAPI;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.FileDownloadUtil;
@@ -417,12 +418,37 @@ public class PerfTestController extends NGrinderBaseController {
 		return "redirect:/perftest/list";
 	}
 
+	/**
+	 * Get perftest detail in the form of json.
+	 * 
+	 * @param user
+	 *            user
+	 * @param id
+	 *            perftest id
+	 * @return json string
+	 */
+	@RestAPI
 	@RequestMapping(value = "/api/{id}")
 	public HttpEntity<String> detail(User user, @PathVariable("id") Long id) {
 		PerfTest test = getPerfTestWithPermissionCheck(user, id, false);
+		if (test == null) {
+			throw new NGrinderRuntimeException("PerfTest " + id + " does not exists");
+		}
 		return toJsonHttpEntity(test);
 	}
 
+	/**
+	 * Clone and start the given perftest .
+	 * 
+	 * @param user
+	 *            user
+	 * @param id
+	 *            perftest id to be cloned
+	 * @param option
+	 *            option to override while cloning.
+	 * @return json string
+	 */
+	@RestAPI
 	@RequestMapping(value = "/api/{id}/cloneAndStart")
 	public HttpEntity<String> cloneAndStart(User user, @PathVariable("id") Long id,
 			@RequestParam(required = false, value = "option") PerfTest option) {
