@@ -86,7 +86,9 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 				}
 			}
 		}
-
+		// Let this can be done with parameter as well.
+		switchUser = StringUtils.defaultIfBlank(webRequest.getParameter("switchUser"), switchUser);
+		
 		if (currentUser.getUserId().equals(switchUser)) {
 			currentUser.setOwnerUser(null);
 		} else if (StringUtils.isNotEmpty(switchUser)) {
