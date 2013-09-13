@@ -13,6 +13,7 @@
  */
 package org.ngrinder.infra;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
@@ -200,7 +201,7 @@ public class AgentConfig {
 				throw new NGrinderRuntimeException("home directory " + userHome + " is not writable.");
 			}
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("Error while resolve the home directory.", e);
+			throw processException("Error while resolve the home directory.", e);
 		}
 		return new AgentHome(homeDirectory);
 	}

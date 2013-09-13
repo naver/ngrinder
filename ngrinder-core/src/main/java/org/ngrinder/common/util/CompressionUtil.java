@@ -13,6 +13,8 @@
  */
 package org.ngrinder.common.util;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -31,6 +33,7 @@ import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -40,7 +43,6 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,7 +91,7 @@ public abstract class CompressionUtil {
 		try {
 			unzip(new FileInputStream(zippedFile), destDir, Charset.defaultCharset().name());
 		} catch (FileNotFoundException e) {
-			throw new NGrinderRuntimeException(e.getMessage(), e);
+			throw processException(e);
 		}
 	}
 
@@ -107,7 +109,7 @@ public abstract class CompressionUtil {
 		try {
 			unzip(new FileInputStream(zippedFile), destDir, charsetName);
 		} catch (FileNotFoundException e) {
-			throw new NGrinderRuntimeException(e.getMessage(), e);
+			throw processException(e);
 		}
 	}
 
@@ -158,7 +160,7 @@ public abstract class CompressionUtil {
 				}
 			}
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException(e.getMessage(), e);
+			throw processException(e);
 		} finally {
 			IOUtils.closeQuietly(is);
 			IOUtils.closeQuietly(zis);
@@ -394,7 +396,7 @@ public abstract class CompressionUtil {
 		} catch (Exception e) {
 			LOGGER.error("Error while untar {} file by {}", inFile, e.getMessage());
 			LOGGER.debug("Trace is : ", e);
-			throw new NGrinderRuntimeException("Error while untar file", e);
+			throw processException("Error while untar file", e);
 		} finally {
 			IOUtils.closeQuietly(is);
 			IOUtils.closeQuietly(debInputStream);
@@ -432,7 +434,7 @@ public abstract class CompressionUtil {
 		} catch (Exception e) {
 			LOGGER.error("Error while ungzip {} file by {}", inFile, e.getMessage());
 			LOGGER.debug("Trace is : ", e);
-			throw new NGrinderRuntimeException("Error while ungzip file", e);
+			throw processException("Error while ungzip file", e);
 		} finally {
 			IOUtils.closeQuietly(fin);
 			IOUtils.closeQuietly(in);

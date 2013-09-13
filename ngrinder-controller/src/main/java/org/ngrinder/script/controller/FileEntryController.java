@@ -13,6 +13,8 @@
  */
 package org.ngrinder.script.controller;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -32,7 +34,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.PathUtil;
 import org.ngrinder.common.util.UrlUtils;
 import org.ngrinder.infra.spring.RemainedPath;
@@ -347,7 +348,7 @@ public class FileEntryController extends NGrinderBaseController {
 				toClient.write(buffer, 0, readLength);
 			}
 		} catch (IOException e) {
-			throw new NGrinderRuntimeException("error while download file", e);
+			throw processException("error while download file", e);
 		} finally {
 			IOUtils.closeQuietly(fis);
 			IOUtils.closeQuietly(toClient);
@@ -455,7 +456,7 @@ public class FileEntryController extends NGrinderBaseController {
 			return "redirect:/script/list/" + path;
 		} catch (IOException e) {
 			LOG.error("Error while getting file content: {}", e.getMessage(), e);
-			throw new NGrinderRuntimeException("Error while getting file content:" + e.getMessage(), e);
+			throw processException("Error while getting file content:" + e.getMessage(), e);
 		}
 	}
 

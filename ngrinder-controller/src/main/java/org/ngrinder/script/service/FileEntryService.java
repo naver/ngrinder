@@ -15,6 +15,7 @@ package org.ngrinder.script.service;
 
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
@@ -29,7 +30,6 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.HttpContainerContext;
 import org.ngrinder.common.util.PathUtil;
 import org.ngrinder.common.util.UrlUtils;
@@ -294,7 +294,7 @@ public class FileEntryService {
 			String urlPath = "/".equals(url.getPath()) ? "" : url.getPath();
 			return (url.getHost() + urlPath).replaceAll("[\\&\\?\\%\\-]", "_");
 		} catch (MalformedURLException e) {
-			throw new NGrinderRuntimeException("Error while translating " + urlString, e);
+			throw processException("Error while translating " + urlString, e);
 		}
 	}
 

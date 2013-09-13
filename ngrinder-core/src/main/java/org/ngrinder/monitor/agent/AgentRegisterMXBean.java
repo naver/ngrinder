@@ -13,6 +13,8 @@
  */
 package org.ngrinder.monitor.agent;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+
 import java.util.Set;
 
 import javax.management.MBeanServer;
@@ -64,7 +66,7 @@ public final class AgentRegisterMXBean {
 		} catch (Exception e) {
 			// Not to check these exception, if there is any JMX related exception, just make it
 			// error.
-			throw new NGrinderRuntimeException(e.getMessage(), e);
+			throw processException(e.getMessage(), e);
 		}
 
 		AgentMXBeanStorage.getInstance().addMXBean(subDomainName, bean);

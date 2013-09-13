@@ -13,6 +13,8 @@
  */
 package net.grinder.util;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -33,7 +35,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.IOUtils;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -230,7 +231,7 @@ public abstract class NetworkUtil {
 			}
 		} catch (Exception e) {
 			LOGGER.error("download file from {} was failed", urlString, e);
-			throw new NGrinderRuntimeException("Error while download " + urlString, e);
+			throw processException("Error while download " + urlString, e);
 		} finally {
 			((HttpURLConnection) connection).disconnect();
 			IOUtils.closeQuietly(os);

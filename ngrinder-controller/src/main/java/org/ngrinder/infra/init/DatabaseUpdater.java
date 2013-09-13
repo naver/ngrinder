@@ -13,6 +13,8 @@
  */
 package org.ngrinder.infra.init;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
@@ -27,7 +29,6 @@ import liquibase.sqlgenerator.SqlGeneratorFactory;
 import liquibase.sqlgenerator.core.ModifyDataTypeGenerator;
 import liquibase.sqlgenerator.core.RenameColumnGenerator;
 
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.context.annotation.DependsOn;
@@ -61,7 +62,7 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 							new JdbcConnection(dataSource.getConnection()));
 			return databaseImplementation;
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("Error getting database", e);
+			throw processException("Error getting database", e);
 		}
 	}
 
@@ -93,7 +94,7 @@ public class DatabaseUpdater implements ResourceLoaderAware {
 		try {
 			liquibase.update(contexts);
 		} catch (LiquibaseException e) {
-			throw new NGrinderRuntimeException("Exception occurs while Liquibase update DB", e);
+			throw processException("Exception occurs while Liquibase update DB", e);
 		}
 	}
 

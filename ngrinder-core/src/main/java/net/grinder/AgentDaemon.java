@@ -13,6 +13,7 @@
  */
 package net.grinder;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
 import net.grinder.communication.CommunicationDefaults;
@@ -22,7 +23,6 @@ import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 
 import org.apache.commons.lang.StringUtils;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
@@ -55,7 +55,7 @@ public class AgentDaemon implements Agent {
 		try {
 			properties = new GrinderProperties(GrinderProperties.DEFAULT_PROPERTIES);
 		} catch (GrinderException e) {
-			throw new NGrinderRuntimeException("Exception occurred while creating AgentDaemon", e);
+			throw processException("Exception occurred while creating AgentDaemon", e);
 		}
 	}
 
@@ -104,8 +104,8 @@ public class AgentDaemon implements Agent {
 	 * if consoleHost is null it will use localhost or use console host set in
 	 * {@link GrinderProperties}
 	 * 
-	 * if port number is 0, it will use default consolePort or use console port set in
-	 * {@link GrinderProperties}
+	 * if port number is 0, it will use default consolePort or use console port
+	 * set in {@link GrinderProperties}
 	 * 
 	 * @param consoleHost
 	 *            host name
@@ -122,7 +122,7 @@ public class AgentDaemon implements Agent {
 		}
 
 		thread = new Thread(new AgentThreadRunnable(), "Agent conntected to port : "
-						+ getGrinderProperties().getInt(GrinderProperties.CONSOLE_PORT, 0));
+				+ getGrinderProperties().getInt(GrinderProperties.CONSOLE_PORT, 0));
 		thread.setDaemon(true);
 		thread.start();
 		LOGGER.info("Agent Daemon {} is started.", thread.getName());
@@ -205,7 +205,7 @@ public class AgentDaemon implements Agent {
 			ThreadUtil.stopQuetly(thread, "Agent Daemon is not stopped. So force to stop");
 			thread = null;
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("Exception occurred while shutting down AgentDaemon", e);
+			throw processException("Exception occurred while shutting down AgentDaemon", e);
 		}
 	}
 

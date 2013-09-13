@@ -13,6 +13,7 @@
  */
 package org.ngrinder.common.model;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.io.File;
@@ -23,7 +24,6 @@ import java.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.common.exception.ConfigurationException;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.EncodingUtil;
 import org.ngrinder.common.util.NoOp;
 import org.ngrinder.model.PerfTest;
@@ -99,7 +99,7 @@ public class Home implements NGrinderConstants {
 				}
 			}
 		} catch (IOException e) {
-			throw new NGrinderRuntimeException("Fail to copy files from " + from.getAbsolutePath(), e);
+			throw processException("Fail to copy files from " + from.getAbsolutePath(), e);
 		}
 	}
 
@@ -138,7 +138,7 @@ public class Home implements NGrinderConstants {
 			}
 
 		} catch (IOException e) {
-			throw new NGrinderRuntimeException("Fail to load property file " + confFileName, e);
+			throw processException("Fail to load property file " + confFileName, e);
 		}
 	}
 

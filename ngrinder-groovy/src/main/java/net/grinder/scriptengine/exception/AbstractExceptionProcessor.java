@@ -125,7 +125,7 @@ public abstract class AbstractExceptionProcessor {
 	 * 
 	 * @return interesting packages
 	 */
-	protected abstract String[] getInnterestingPackages();
+	protected abstract String[] getInterestingPackages();
 	/**
 	 * Get interesting packages.
 	 * 

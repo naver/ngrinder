@@ -13,6 +13,8 @@
  */
 package net.grinder;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+
 import java.util.Set;
 
 import net.grinder.common.GrinderException;
@@ -34,7 +36,6 @@ import net.grinder.messages.console.AgentAddress;
 import net.grinder.util.ConsolePropertiesFactory;
 import net.grinder.util.thread.Condition;
 
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 import org.python.google.common.base.Predicate;
 import org.slf4j.Logger;
@@ -89,8 +90,7 @@ public class AgentControllerServerDaemon {
 			this.agentControllerServer = new AgentControllerServer(RESOURCES, LOGGER, consoleProperties,
 					m_eventSyncCondition);
 		} catch (GrinderException e) {
-			throw new NGrinderRuntimeException(
-					"Exception occurred while initiating the agent controller server daemon", e);
+			throw processException("Exception occurred while initiating the agent controller server daemon", e);
 		}
 	}
 
@@ -148,8 +148,7 @@ public class AgentControllerServerDaemon {
 				thread.interrupt();
 			}
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException(
-					"Exception occurred during shutting down the agent controller server daemon", e);
+			throw processException("Exception occurred during shutting down the agent controller server daemon", e);
 		} finally {
 			thread = null;
 		}

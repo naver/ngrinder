@@ -13,13 +13,14 @@
  */
 package net.grinder.util;
 
-import java.io.File;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 
-import org.apache.commons.io.FileUtils;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
+import java.io.File;
 
 import net.grinder.SingleConsole;
 import net.grinder.console.model.ConsoleProperties;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  * Convenient class for {@link ConsoleProperties} creation.
@@ -42,7 +43,7 @@ public abstract class ConsolePropertiesFactory {
 			ConsoleProperties consoleProperties = new ConsoleProperties(SingleConsole.RESOURCE, tmpFile);
 			return consoleProperties;
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("Exception occurred while creating empty console property", e);
+			throw processException("Exception occurred while creating empty console property", e);
 		} finally {
 			FileUtils.deleteQuietly(tmpFile);
 		}

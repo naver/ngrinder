@@ -15,6 +15,7 @@ package org.ngrinder.script.handler;
 
 import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 import java.io.File;
 import java.io.StringWriter;
@@ -22,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.FileUtil;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.model.User;
@@ -323,7 +323,7 @@ public abstract class ScriptHandler {
 			template.process(values, writer);
 			return writer.toString();
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("Error while fetching the script template.", e);
+			throw processException("Error while fetching the script template.", e);
 		}
 	}
 

@@ -16,6 +16,7 @@ package org.ngrinder.script.handler;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +27,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.cli.MavenCli;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.PathUtil;
 import org.ngrinder.common.util.PropertiesWrapper;
 import org.ngrinder.common.util.UrlUtils;
@@ -177,7 +177,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 				createLibraryDirectory(user, path);
 			}
 		} catch (IOException e) {
-			throw new NGrinderRuntimeException("Error while patching script_template", e);
+			throw processException("Error while patching script_template", e);
 		}
 		return false;
 	}
@@ -213,7 +213,7 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 				}
 				getFileEntryRepository().save(user, fileEntry, "UTF8");
 			} catch (IOException e) {
-				throw new NGrinderRuntimeException("Error while saving " + each.getName(), e);
+				throw processException("Error while saving " + each.getName(), e);
 			}
 		}
 	}

@@ -35,7 +35,7 @@ public class GroovyExceptionProcessor extends AbstractExceptionProcessor {
 	}
 
 	@Override
-	protected String[] getInnterestingPackages() {
+	protected String[] getInterestingPackages() {
 		return new String[] {};
 	}
 

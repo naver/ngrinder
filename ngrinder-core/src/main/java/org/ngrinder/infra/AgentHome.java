@@ -13,6 +13,7 @@
  */
 package org.ngrinder.infra;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
@@ -52,27 +53,26 @@ public class AgentHome {
 		checkNotNull(directory, "The directory should not be null.");
 		if (StringUtils.contains(directory.getAbsolutePath().trim(), " ")) {
 			throw new NGrinderRuntimeException(String.format(
-							"nGrinder agent home directory \"%s\" should not contain space."
-											+ "Please set NGRINDER_AGENT_HOME env var in the different location",
-							directory.getAbsolutePath()));
+					"nGrinder agent home directory \"%s\" should not contain space."
+							+ "Please set NGRINDER_AGENT_HOME env var in the different location",
+					directory.getAbsolutePath()));
 		}
 
 		if (!directory.exists() && !directory.mkdirs()) {
 			throw new NGrinderRuntimeException(String.format(
-							"nGrinder agent home directory %s is not created. Please check the permission",
-							directory.getAbsolutePath()));
+					"nGrinder agent home directory %s is not created. Please check the permission",
+					directory.getAbsolutePath()));
 		}
 
 		if (!directory.isDirectory()) {
 			throw new NGrinderRuntimeException(String.format(
-							"nGrinder home directory %s is not directory. Please delete this file in advance",
-							directory.getAbsolutePath()));
+					"nGrinder home directory %s is not directory. Please delete this file in advance",
+					directory.getAbsolutePath()));
 		}
 
 		if (!directory.canWrite()) {
 			throw new NGrinderRuntimeException(String.format(
-							"nGrinder home directory %s is not writable. Please adjust permission on this folder",
-							directory));
+					"nGrinder home directory %s is not writable. Please adjust permission on this folder", directory));
 		}
 
 		this.directory = directory;
@@ -105,8 +105,7 @@ public class AgentHome {
 				FileUtils.writeByteArrayToFile(target, IOUtils.toByteArray(io));
 			}
 		} catch (IOException e) {
-			String message = "Failed to write a file to " + target.getAbsolutePath();
-			throw new NGrinderRuntimeException(message, e);
+			throw processException("Failed to write a file to " + target.getAbsolutePath(), e);
 		}
 	}
 
@@ -115,7 +114,8 @@ public class AgentHome {
 	 * 
 	 * @param path
 	 *            property file path
-	 * @return {@link Properties} instance. return empty property if it has problem.
+	 * @return {@link Properties} instance. return empty property if it has
+	 *         problem.
 	 */
 	public Properties getProperties(String path) {
 		Properties properties = new Properties();

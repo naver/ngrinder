@@ -14,6 +14,7 @@
 package org.ngrinder.script.repository;
 
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
 
 import java.io.ByteArrayInputStream;
@@ -394,7 +395,7 @@ public class FileEntryRepository {
 				}
 			}
 			LOG.error("Error while saving file to SVN", e);
-			throw new NGrinderRuntimeException("Error while saving file to SVN", e);
+			throw processException("Error while saving file to SVN", e);
 		} finally {
 			closeSVNEditorQuietly(editor);
 			closeSVNClientManagerQuietly(svnClientManager);
@@ -481,7 +482,7 @@ public class FileEntryRepository {
 		} catch (Exception e) {
 			abortSVNEditorQuietly(editor);
 			LOG.error("Error while deleting file from SVN", e);
-			throw new NGrinderRuntimeException("Error while deleting files from SVN", e);
+			throw processException("Error while deleting files from SVN", e);
 		} finally {
 			closeSVNEditorQuietly(editor);
 			closeSVNClientManagerQuietly(svnClientManager);
@@ -524,7 +525,7 @@ public class FileEntryRepository {
 			return (nodeKind != SVNNodeKind.NONE);
 		} catch (Exception e) {
 			LOG.error("Error while fetching files from SVN", e);
-			throw new NGrinderRuntimeException("Error while checking file existence from SVN", e);
+			throw processException("Error while checking file existence from SVN", e);
 		} finally {
 			closeSVNClientManagerQuietly(svnClientManager);
 		}
@@ -564,7 +565,7 @@ public class FileEntryRepository {
 			repo.getFile(path, -1L, fileProperty, fileOutputStream);
 		} catch (Exception e) {
 			LOG.error("Error while fetching files from SVN", e);
-			throw new NGrinderRuntimeException("Error while fetching files from SVN", e);
+			throw processException("Error while fetching files from SVN", e);
 		} finally {
 			closeSVNClientManagerQuietly(svnClientManager);
 			IOUtils.closeQuietly(fileOutputStream);

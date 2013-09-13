@@ -13,6 +13,8 @@
  */
 package org.ngrinder.model;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
+
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -117,7 +119,7 @@ public class BaseEntity<M> implements Serializable {
 			return (M) this;
 		} catch (Exception e) {
 			String displayName = (forError == null) ? "Empty" : forError.getDisplayName();
-			throw new NGrinderRuntimeException(displayName + " - Exception occurred while merging entity from "
+			throw processException(displayName + " - Exception occurred while merging entity from "
 					+ source + " to " + this, e);
 		}
 	}
@@ -157,8 +159,8 @@ public class BaseEntity<M> implements Serializable {
 			return createdInstance;
 		} catch (Exception e) {
 			String displayName = (forError == null) ? "Empty" : forError.getDisplayName();
-			throw new NGrinderRuntimeException(displayName + " - Exception occurred while clonning an entity from "
-					+ this + " to " + createdInstance, e);
+			throw processException(displayName + " - Exception occurred while clonning an entity from " + this + " to "
+					+ createdInstance, e);
 		}
 	}
 

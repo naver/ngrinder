@@ -15,6 +15,7 @@ package org.ngrinder.perftest.service;
 
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.CollectionUtils.newHashSet;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.NoOp.noOp;
 import static org.ngrinder.common.util.Preconditions.checkNotEmpty;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
@@ -753,7 +754,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			LOGGER.info("Grinder Properties : {} ", grinderProperties);
 			return grinderProperties;
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("error while prepare grinder property for " + perfTest.getTestName(), e);
+			throw processException("error while prepare grinder property for " + perfTest.getTestName(), e);
 		} finally {
 			IOUtils.closeQuietly(fileWriter);
 		}
@@ -1135,7 +1136,7 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			consoleProperties.setIgnoreSampleCount(perfTest.getIgnoreSampleCount());
 			consoleProperties.setSampleInterval(1000 * perfTest.getSamplingInterval());
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("Error while setting console properties", e);
+			throw processException("Error while setting console properties", e);
 		}
 		return consoleProperties;
 	}

@@ -16,6 +16,7 @@ package net.grinder;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.CollectionUtils.newLinkedHashMap;
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.beans.PropertyChangeEvent;
@@ -204,7 +205,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			getConsoleComponent(ProcessControl.class).addProcessStatusListener(this);
 
 		} catch (GrinderException e) {
-			throw new NGrinderRuntimeException("Exception occurred while creating SingleConsole", e);
+			throw processException("Exception occurred while creating SingleConsole", e);
 
 		}
 	}
@@ -285,7 +286,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			}
 
 		} catch (Exception e) {
-			throw new NGrinderRuntimeException("Exception occurred while shutting down SingleConsole", e);
+			throw processException("Exception occurred while shutting down SingleConsole", e);
 		} finally {
 			// close all report file
 			for (BufferedWriter bw : fileWriterMap.values()) {
@@ -376,7 +377,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			properties.setAndSaveDistributionDirectory(directory);
 		} catch (Exception e) {
 			LOGGER.error("Error occurred during setting distribution directory to {} : {}", filePath, e.getMessage());
-			throw new NGrinderRuntimeException(e.getMessage(), e);
+			throw processException(e.getMessage(), e);
 		}
 	}
 
@@ -1201,7 +1202,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			bw.flush();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			throw new NGrinderRuntimeException(e.getMessage(), e);
+			throw processException(e);
 		}
 	}
 

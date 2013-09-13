@@ -13,6 +13,7 @@
  */
 package net.grinder;
 
+import static org.ngrinder.common.util.ExceptionUtils.processException;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 import net.grinder.common.GrinderException;
 import net.grinder.common.GrinderProperties;
@@ -23,7 +24,6 @@ import net.grinder.util.ListenerSupport;
 import net.grinder.util.ListenerSupport.Informer;
 import net.grinder.util.thread.Condition;
 
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.common.util.ThreadUtil;
 import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
@@ -63,7 +63,7 @@ public class AgentControllerDaemon implements Agent {
 			properties = new GrinderProperties(GrinderProperties.DEFAULT_PROPERTIES);
 			agentController = new AgentController(m_eventSyncCondition, currentIp);
 		} catch (GrinderException e) {
-			throw new NGrinderRuntimeException("Exception occurred while initiating the agent controller deamon", e);
+			throw processException("Exception occurred while initiating the agent controller deamon", e);
 		}
 	}
 
@@ -86,8 +86,8 @@ public class AgentControllerDaemon implements Agent {
 	}
 
 	/**
-	 * Run agent controller with the given agent controller host and the agent controller server
-	 * port.
+	 * Run agent controller with the given agent controller host and the agent
+	 * controller server port.
 	 * 
 	 * @param agentControllerServerHost
 	 *            agent controller server host
@@ -107,8 +107,8 @@ public class AgentControllerDaemon implements Agent {
 	private long count = 0;
 
 	/**
-	 * Run agent controller with given {@link GrinderProperties}. server host and port will be
-	 * gained from {@link GrinderProperties}
+	 * Run agent controller with given {@link GrinderProperties}. server host
+	 * and port will be gained from {@link GrinderProperties}
 	 * 
 	 * @param grinderProperties
 	 *            {@link GrinderProperties}
@@ -123,8 +123,8 @@ public class AgentControllerDaemon implements Agent {
 							LOGGER.info("The agent controller daemon is started.");
 						}
 						getAgentController().setAgentConfig(
-										checkNotNull(agentConfig, "the agent config should be provided "
-														+ "before the controller is started"));
+								checkNotNull(agentConfig, "the agent config should be provided "
+										+ "before the controller is started"));
 						getAgentController().run(grinderProperties, count);
 
 						getListeners().apply(new Informer<AgentControllerShutDownListener>() {
