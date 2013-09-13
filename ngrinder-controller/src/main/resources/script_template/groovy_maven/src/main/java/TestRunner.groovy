@@ -15,6 +15,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import HTTPClient.HTTPResponse
+import HTTPClient.NVPair
 
 /**
  * A simple example using the HTTP plugin that shows the retrieval of a
