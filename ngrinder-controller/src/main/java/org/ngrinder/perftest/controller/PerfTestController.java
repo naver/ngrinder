@@ -420,6 +420,21 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
+	 * Get last perftest detail in the form of json.
+	 * 
+	 * @param user
+	 *            user
+	 * @return json string
+	 */
+	@RestAPI
+	@RequestMapping(value = "/api/last")
+	public HttpEntity<String> last(User user, @RequestParam(value = "size", defaultValue = "1") int size) {
+		PageRequest pageRequest = new PageRequest(1, size, new Sort(Direction.DESC, "id"));
+		Page<PerfTest> testList = perfTestService.getPerfTestList(user, null, null, null, pageRequest);
+		return toJsonHttpEntity(testList.getContent());
+	}
+
+	/**
 	 * Get perftest detail in the form of json.
 	 * 
 	 * @param user
@@ -451,16 +466,17 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RestAPI
 	@RequestMapping(value = "/api/{id}/cloneAndStart")
-	public HttpEntity<String> cloneAndStart(User user, @PathVariable("id") Long id,
-			@RequestParam(required = false, value = "option") PerfTest option) {
-
+	public HttpEntity<String> cloneAndStart(User user, @PathVariable("id") Long id, PerfTest perftest) {
 		PerfTest test = getPerfTestWithPermissionCheck(user, id, false);
+		if (test == null) {
+			throw processException("No clonnable test(" + id + ") exists");
+		}
 		PerfTest newOne = test.clone(new PerfTest());
 		newOne.setStatus(Status.READY);
-		if (option != null) {
-			newOne.setScheduledTime(option.getScheduledTime());
-			newOne.setScriptRevision(option.getScriptRevision());
-			newOne.setAgentCount(option.getAgentCount());
+		if (perftest != null) {
+			newOne.setScheduledTime(perftest.getScheduledTime());
+			newOne.setScriptRevision(perftest.getScriptRevision());
+			newOne.setAgentCount(perftest.getAgentCount());
 		}
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		MutableInt agentCountObj = agentCountMap.get(clustered() ? test.getRegion() : Config.NONE_REGION);
