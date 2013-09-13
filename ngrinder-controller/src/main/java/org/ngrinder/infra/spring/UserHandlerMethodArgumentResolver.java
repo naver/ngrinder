@@ -46,7 +46,8 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.web.method.support.HandlerMethodArgumentResolver#
+	 * @see
+	 * org.springframework.web.method.support.HandlerMethodArgumentResolver#
 	 * supportsParameter(org .springframework.core.MethodParameter)
 	 */
 	@Override
@@ -57,7 +58,8 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.web.method.support.HandlerMethodArgumentResolver#
+	 * @see
+	 * org.springframework.web.method.support.HandlerMethodArgumentResolver#
 	 * resolveArgument(org. springframework.core.MethodParameter,
 	 * org.springframework.web.method.support.ModelAndViewContainer,
 	 * org.springframework.web.context.request.NativeWebRequest,
@@ -65,7 +67,7 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 	 */
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-					NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 		User currentUser = getUserContext().getCurrentUser();
 
 		String userParam = webRequest.getParameter("ownerId");
@@ -76,9 +78,12 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 		// User want to do something through other User status and this
 		// switchUser is other user Id
 		String switchUser = null;
-		for (Cookie cookie : getCookies(webRequest)) {
-			if ("switchUser".equals(cookie.getName()) && cookie.getMaxAge() != 0) {
-				switchUser = cookie.getValue();
+		Cookie[] cookies = getCookies(webRequest);
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if ("switchUser".equals(cookie.getName()) && cookie.getMaxAge() != 0) {
+					switchUser = cookie.getValue();
+				}
 			}
 		}
 
@@ -88,7 +93,7 @@ public class UserHandlerMethodArgumentResolver implements HandlerMethodArgumentR
 			User ownerUser = getUserService().getUserById(switchUser);
 			// CurrentUser should remember whose status he used
 			if (currentUser.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)
-							|| (ownerUser.getFollowers() != null && ownerUser.getFollowers().contains(currentUser))) {
+					|| (ownerUser.getFollowers() != null && ownerUser.getFollowers().contains(currentUser))) {
 				currentUser.setOwnerUser(ownerUser);
 				return ownerUser;
 			}

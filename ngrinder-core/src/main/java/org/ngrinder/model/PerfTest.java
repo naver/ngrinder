@@ -41,6 +41,8 @@ import org.hibernate.annotations.Type;
 import org.ngrinder.common.util.DateUtil;
 import org.ngrinder.common.util.PathUtil;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Performance Test Entity. <br/>
  * 
@@ -57,103 +59,133 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	private static final int MAX_STRING_SIZE = 2048;
 
+	@Expose
 	@Column(name = "name")
 	private String testName;
 
+	@Expose
 	@Column(name = "tag_string")
 	private String tagString;
 
+	@Expose
 	@Column(length = MAX_LONG_STRING_SIZE)
 	private String description;
 
+	@Expose
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
 	private Status status = Status.READY;
 
+	@Expose
 	/** ignoreSampleCount value, default to 0. */
 	@Column(name = "ignore_sample_count")
 	private Integer ignoreSampleCount = 0;
 
+	@Expose
 	/** the scheduled time of this test. */
 	@Column(name = "scheduled_time")
 	@Index(name = "scheduled_time_index")
 	private Date scheduledTime;
 
+	@Expose
 	/** the start time of this test. */
 	@Column(name = "start_time")
 	private Date startTime;
 
+	@Expose
 	/** the finish time of this test. */
 	@Column(name = "finish_time")
 	private Date finishTime;
 
 	/** the target host to test. */
+	@Expose
 	@Column(name = "target_hosts")
 	private String targetHosts;
 
 	/** The send mail code. */
+	@Expose
 	@Column(name = "send_mail", columnDefinition = "char(1)")
 	@Type(type = "true_false")
 	private Boolean sendMail;
 
+	
 	/** Use rampup or not. */
+	@Expose
 	@Column(name = "use_rampup", columnDefinition = "char(1)")
 	@Type(type = "true_false")
 	private Boolean useRampUp = false;
 
 	/** The threshold code, R for run count; D for duration. */
+	@Expose
 	@Column(name = "threshold")
 	private String threshold;
 
+	@Expose
 	@Column(name = "script_name")
 	private String scriptName;
 
+	@Expose
 	@Column(name = "duration")
 	private Long duration;
 
+	@Expose
 	@Column(name = "run_count")
 	private Integer runCount;
 
+	@Expose
 	@Column(name = "agent_count")
 	private Integer agentCount;
 
+	@Expose
 	@Column(name = "vuser_per_agent")
 	private Integer vuserPerAgent;
 
+	@Expose
 	@Column(name = "processes")
 	private Integer processes;
 
+	@Expose
 	@Column(name = "init_processes")
 	private Integer initProcesses;
 
+	@Expose
 	@Column(name = "init_sleep_time")
 	private Integer initSleepTime;
-
+	
+	@Expose
 	@Column(name = "process_increment")
 	private Integer processIncrement;
 
+	@Expose
 	@Column(name = "process_increment_interval")
 	private Integer processIncrementInterval;
 
+	@Expose
 	@Column(name = "threads")
 	private Integer threads;
 
 	// followings are test result members
+	@Expose
 	@Column(name = "tests")
 	private Long tests;
 
+	@Expose
 	@Column(name = "errors")
 	private Long errors;
 
+	@Expose
 	@Column(name = "mean_test_time")
 	private Double meanTestTime;
 
+	@Expose
 	@Column(name = "test_time_standard_deviation")
 	private Double testTimeStandardDeviation;
 
+	@Expose
 	@Column(name = "tps")
 	private Double tps;
 
+	@Expose
 	@Column(name = "peak_tps")
 	private Double peakTps;
 
@@ -161,6 +193,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "port")
 	private Integer port = 0;
 
+	@Expose
 	@Column(name = "test_error_cause")
 	@Enumerated(EnumType.STRING)
 	private Status testErrorCause = Status.UNKNOWN;
@@ -169,15 +202,18 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/** The path used for file distribution */
 	private String distributionPath;
 
+	@Expose
 	@Column(name = "progress_message", length = MAX_STRING_SIZE)
 	private String progressMessage = "";
 
 	@Column(name = "last_progress_message", length = MAX_STRING_SIZE)
 	private String lastProgressMessage = "";
 
+	@Expose
 	@Column(name = "test_comment", length = MAX_STRING_SIZE)
 	private String testComment = "";
 
+	@Expose
 	@Column(name = "script_revision")
 	private Long scriptRevision = -1L;
 
@@ -185,6 +221,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Type(type = "true_false")
 	private Boolean stopRequest;
 
+	@Expose
 	@Column(name = "region")
 	private String region;
 
@@ -214,9 +251,11 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "monitor_stat", length = 2000)
 	private String monitorStatus;
 
+	@Expose
 	@Column(name = "sampling_interval")
 	private Integer samplingInterval;
 
+	@Expose
 	@Column(name = "param")
 	private String param;
 
@@ -226,10 +265,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 	}
 
 	/**
-	 * Get total required run count. This is calculated by multiplying agentcount, threads,
-	 * processes, runcount.
+	 * Get total required run count. This is calculated by multiplying agent count, threads,
+	 * processes, run count.
 	 * 
-	 * @return runcount
+	 * @return run count
 	 */
 	public long getTotalRunCount() {
 		return getAgentCount() * getThreads() * getProcesses() * (long) getRunCount();
@@ -239,6 +278,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return testName;
 	}
 
+	@Cloneable
 	public void setTestName(String testName) {
 		this.testName = testName;
 	}
@@ -271,6 +311,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return runCount;
 	}
 
+	@Cloneable
 	public void setRunCount(Integer runCount) {
 		this.runCount = runCount;
 	}
@@ -279,6 +320,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return duration;
 	}
 
+	@Cloneable
 	public void setDuration(Long duration) {
 		this.duration = duration;
 	}
@@ -287,6 +329,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return scriptName;
 	}
 
+	@Cloneable
 	public void setScriptName(String scriptName) {
 		this.scriptName = scriptName;
 	}
@@ -295,6 +338,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return ignoreSampleCount;
 	}
 
+	@Cloneable
 	public void setIgnoreSampleCount(Integer ignoreSampleCount) {
 		this.ignoreSampleCount = ignoreSampleCount;
 	}
@@ -311,6 +355,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return DateUtil.dateToString(getLastModifiedDate());
 	}
 
+	@Cloneable
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -339,6 +384,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return targetIPList;
 	}
 
+	@Cloneable
 	@ForceMergable
 	public void setTargetHosts(String theTarget) {
 		this.targetHosts = theTarget;
@@ -356,6 +402,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return "R".equals(getThreshold());
 	}
 
+
+	@Cloneable
 	public void setThreshold(String threshold) {
 		this.threshold = threshold;
 	}
@@ -372,6 +420,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return status;
 	}
 
+
 	public void setStatus(Status status) {
 		this.status = status;
 	}
@@ -380,6 +429,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return agentCount;
 	}
 
+
+	@Cloneable
 	public void setAgentCount(Integer agentCount) {
 		this.agentCount = agentCount;
 	}
@@ -388,6 +439,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return vuserPerAgent;
 	}
 
+
+	@Cloneable
 	public void setVuserPerAgent(Integer vuserPerAgent) {
 		this.vuserPerAgent = vuserPerAgent;
 	}
@@ -396,6 +449,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return processes;
 	}
 
+
+	@Cloneable
 	public void setProcesses(Integer processes) {
 		this.processes = processes;
 	}
@@ -404,6 +459,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return initProcesses;
 	}
 
+
+	@Cloneable
 	public void setInitProcesses(Integer initProcesses) {
 		this.initProcesses = initProcesses;
 	}
@@ -412,6 +469,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return initSleepTime;
 	}
 
+
+	@Cloneable
 	public void setInitSleepTime(Integer initSleepTime) {
 		this.initSleepTime = initSleepTime;
 	}
@@ -420,6 +479,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return processIncrement;
 	}
 
+
+	@Cloneable
 	public void setProcessIncrement(Integer processIncrement) {
 		this.processIncrement = processIncrement;
 	}
@@ -428,6 +489,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return processIncrementInterval;
 	}
 
+
+	@Cloneable
 	public void setProcessIncrementInterval(Integer processIncrementInterval) {
 		this.processIncrementInterval = processIncrementInterval;
 	}
@@ -436,6 +499,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return threads;
 	}
 
+
+	@Cloneable
 	public void setThreads(Integer threads) {
 		this.threads = threads;
 	}
@@ -593,6 +658,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return scriptRevision;
 	}
 
+	
 	public void setScriptRevision(Long scriptRevision) {
 		this.scriptRevision = scriptRevision;
 	}
@@ -617,6 +683,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return useRampUp;
 	}
 
+
+	@Cloneable
 	public void setUseRampUp(Boolean useRampUp) {
 		this.useRampUp = useRampUp;
 	}
@@ -625,6 +693,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return sendMail;
 	}
 
+
+	@Cloneable
 	public void setSendMail(Boolean sendMail) {
 		this.sendMail = sendMail;
 	}
@@ -633,6 +703,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return tagString;
 	}
 
+
+	@Cloneable
 	@ForceMergable
 	public void setTagString(String tagString) {
 		this.tagString = tagString;
@@ -650,6 +722,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return region;
 	}
 
+
+	@Cloneable
 	public void setRegion(String region) {
 		this.region = region;
 	}
@@ -658,6 +732,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return safeDistribution == null ? false : safeDistribution;
 	}
 
+
+	@Cloneable
 	public void setSafeDistribution(Boolean safeDistribution) {
 		this.safeDistribution = safeDistribution;
 	}
@@ -665,6 +741,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public String getRunningSample() {
 		return runningSample;
 	}
+
 
 	@ForceMergable
 	public void setRunningSample(String runningSample) {
@@ -693,6 +770,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return samplingInterval;
 	}
 
+
+	@Cloneable
 	public void setSamplingInterval(Integer samplingInterval) {
 		this.samplingInterval = samplingInterval;
 	}
@@ -701,8 +780,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return param;
 	}
 
+	@Cloneable
 	public void setParam(String param) {
 		this.param = param;
 	}
+	
 
 }

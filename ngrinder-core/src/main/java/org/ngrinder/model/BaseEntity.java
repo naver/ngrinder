@@ -30,6 +30,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.ngrinder.common.exception.NGrinderRuntimeException;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Base Entity. This has a long type ID field
  * 
@@ -45,6 +47,7 @@ public class BaseEntity<M> implements Serializable {
 
 	private static final long serialVersionUID = 8571113820348514692L;
 
+	@Expose
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = false, insertable = true, updatable = false)
@@ -64,9 +67,9 @@ public class BaseEntity<M> implements Serializable {
 	}
 
 	/**
-	 * This function is used to check whether the entity id exist. It is not used to check the
-	 * entity existence in DB. It can be used to check the entity in controller, which is passed
-	 * from page.
+	 * This function is used to check whether the entity id exist. It is not
+	 * used to check the entity existence in DB. It can be used to check the
+	 * entity in controller, which is passed from page.
 	 * 
 	 * @return true if exists
 	 */
@@ -107,16 +110,55 @@ public class BaseEntity<M> implements Serializable {
 					continue;
 				}
 
-				if (writeMethod.getAnnotation(ForceMergable.class) != null 
-						|| isNotBlankStringOrNotString(defaultValue)) {
+				if (writeMethod.getAnnotation(ForceMergable.class) != null || isNotBlankStringOrNotString(defaultValue)) {
 					writeMethod.invoke(this, defaultValue);
 				}
 			}
 			return (M) this;
 		} catch (Exception e) {
 			String displayName = (forError == null) ? "Empty" : forError.getDisplayName();
-			throw new NGrinderRuntimeException(displayName + " - Exception occurred while merging entities from "
-							+ source + " to " + this, e);
+			throw new NGrinderRuntimeException(displayName + " - Exception occurred while merging entity from "
+					+ source + " to " + this, e);
+		}
+	}
+
+	/**
+	 * Clone current entity
+	 * 
+	 * Only not null value is merged.
+	 * 
+	 * @param source
+	 *            merge source
+	 * @return merged entity
+	 */
+	public M clone(M createdInstance) {
+		PropertyDescriptor forError = null;
+		try {
+			BeanInfo beanInfo = Introspector.getBeanInfo(getClass());
+			// Iterate over all the attributes
+			for (PropertyDescriptor descriptor : beanInfo.getPropertyDescriptors()) {
+				forError = descriptor;
+				// Only copy writable attributes
+				Method writeMethod = descriptor.getWriteMethod();
+				if (writeMethod == null) {
+					continue;
+				}
+				// Only copy values values where the source values is not null
+				Method readMethod = descriptor.getReadMethod();
+				if (readMethod == null) {
+					continue;
+				}
+
+				if (writeMethod.getAnnotation(Cloneable.class) != null) {
+					writeMethod.invoke(createdInstance, readMethod.invoke(this));
+				}
+
+			}
+			return createdInstance;
+		} catch (Exception e) {
+			String displayName = (forError == null) ? "Empty" : forError.getDisplayName();
+			throw new NGrinderRuntimeException(displayName + " - Exception occurred while clonning an entity from "
+					+ this + " to " + createdInstance, e);
 		}
 	}
 

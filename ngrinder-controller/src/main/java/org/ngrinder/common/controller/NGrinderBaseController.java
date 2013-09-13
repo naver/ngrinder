@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
@@ -57,7 +58,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 
 	private static String errorJson;
 
-	private static Gson gson = new Gson();
+	private static Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
 
 	@Autowired
 	private MessageSource messageSource;

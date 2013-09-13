@@ -82,7 +82,17 @@
 	<http pattern="/agent/download/**" security="none" />
 	<http pattern="/jnlp/**" security="none" />
 
-	<http entry-point-ref="authenticationProcessingFilterEntryPoint" access-decision-manager-ref="accessDecisionManager">
+
+	<beans:bean id="basicProcessingFilter" class="org.springframework.security.web.authentication.www.BasicAuthenticationFilter">
+		<beans:property name="authenticationManager" ref="authenticationManager" />
+		<beans:property name="authenticationEntryPoint" ref="httpBasicAuthenticationEntryPoint" />
+	</beans:bean>
+
+	<beans:bean id="httpBasicAuthenticationEntryPoint" class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
+		<beans:property name="realmName" value="ngrinider" />
+	</beans:bean>
+
+	<http entry-point-ref="delegatingAuthenticationEntryPoint" access-decision-manager-ref="accessDecisionManager">
 		<intercept-url pattern="/" />
 		<intercept-url pattern="/home" />
 		<intercept-url pattern="/perftest/**" />
@@ -91,7 +101,7 @@
 		<intercept-url pattern="/monitor**" />
 		<intercept-url pattern="/agent/**" />
 		<intercept-url pattern="/user/**" />
-		<http-basic/>
+		<custom-filter ref="basicProcessingFilter" position="BASIC_AUTH_FILTER" />
 		<custom-filter ref="pluggablePreAuthFilter" position="PRE_AUTH_FILTER" />
 		<custom-filter ref="ngrinderUserPasswordAuthenticationFilter" position="FORM_LOGIN_FILTER" />
 		<!-- logout to home, and then it will redirect to login. otherwise, there will be some ajax problem. -->
@@ -100,6 +110,17 @@
 
 		<remember-me key="ngrinder" />
 	</http>
+
+
+	<beans:bean id="delegatingAuthenticationEntryPoint" class="org.springframework.security.web.authentication.DelegatingAuthenticationEntryPoint">
+		<beans:constructor-arg>
+			<beans:map>
+				<beans:entry key="hasHeader('WWW-Authenticate','Basic')" value-ref="httpBasicAuthenticationEntryPoint" />
+			</beans:map>
+		</beans:constructor-arg>
+		<beans:property name="defaultEntryPoint" ref="authenticationProcessingFilterEntryPoint" />
+	</beans:bean>
+
 
 	<beans:bean id="rememberMeServices" class="org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices">
 		<beans:property name="userDetailsService" ref="ngrinderUserDetailsService" />

@@ -21,6 +21,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
+import com.google.gson.annotations.Expose;
 
 /**
  * Base Model which has following attribute.
@@ -42,20 +46,24 @@ public class BaseModel<M> extends BaseEntity<M> {
 
 	private static final long serialVersionUID = -3876339828833595694L;
 
+	@Expose
 	@Column(name = "created_date", insertable = true, updatable = false)
 	private Date createdDate;
 
 	@ManyToOne
 	@JoinColumn(name = "created_user", insertable = true, updatable = false)
 	@Index(name = "created_user_index")
+	@NotFound(action = NotFoundAction.IGNORE)
 	private User createdUser;
 
+	@Expose
 	@Column(name = "last_modified_date", insertable = true, updatable = true)
 	private Date lastModifiedDate;
 
 	@ManyToOne
 	@JoinColumn(name = "last_modified_user", insertable = true, updatable = true)
 	@Index(name = "last_modified_user_index")
+	@NotFound(action = NotFoundAction.IGNORE)
 	private User lastModifiedUser;
 
 	public Date getCreatedDate() {
