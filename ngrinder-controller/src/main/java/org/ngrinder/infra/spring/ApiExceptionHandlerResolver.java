@@ -86,7 +86,7 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 		ex.printStackTrace(printWriter);
 		object.addProperty(JSON_STACKTRACE, out.toString());
 		IOUtils.closeQuietly(printWriter);
-		String jsonMessage = gson.toJson(gson);
+		String jsonMessage = gson.toJson(object);
 		try {
 			response.setStatus(500);
 			response.setContentType("application/json; charset=UTF-8");

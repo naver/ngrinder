@@ -452,12 +452,15 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = "/api/{id}/cloneAndStart")
 	public HttpEntity<String> cloneAndStart(User user, @PathVariable("id") Long id,
 			@RequestParam(required = false, value = "option") PerfTest option) {
+
 		PerfTest test = getPerfTestWithPermissionCheck(user, id, false);
 		PerfTest newOne = test.clone(new PerfTest());
 		newOne.setStatus(Status.READY);
-		newOne.setScheduledTime(option.getScheduledTime());
-		newOne.setScriptRevision(option.getScriptRevision());
-		newOne.setAgentCount(option.getAgentCount());
+		if (option != null) {
+			newOne.setScheduledTime(option.getScheduledTime());
+			newOne.setScriptRevision(option.getScriptRevision());
+			newOne.setAgentCount(option.getAgentCount());
+		}
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		MutableInt agentCountObj = agentCountMap.get(clustered() ? test.getRegion() : Config.NONE_REGION);
 		checkNotNull(agentCountObj, "test region should be within current region list");
@@ -465,6 +468,7 @@ public class PerfTestController extends NGrinderBaseController {
 		checkArgument(newOne.getAgentCount() <= agentMaxCount, "test agent shoule be equal to or less than %s",
 				agentMaxCount);
 		PerfTest savePerfTest = perfTestService.savePerfTest(user, newOne);
+		CoreLogger.LOGGER.info("test {} is created through web api by {}", savePerfTest.getId(), user.getUserId());
 		return toJsonHttpEntity(savePerfTest);
 	}
 
