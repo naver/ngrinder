@@ -69,7 +69,7 @@ public class NGrinderRuntimeException extends RuntimeException {
 	 *            root cause
 	 */
 	public NGrinderRuntimeException(Throwable t) {
-		super(t);
+		super(t.getMessage(), t);
 	}
 
 	/**
@@ -81,7 +81,7 @@ public class NGrinderRuntimeException extends RuntimeException {
 	 *            sanitized
 	 */
 	public NGrinderRuntimeException(Throwable t, boolean sanitized) {
-		super(t);
+		super(t.getMessage(), t);
 		this.sanitized = sanitized;
 	}
 

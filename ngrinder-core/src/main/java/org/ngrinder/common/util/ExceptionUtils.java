@@ -107,8 +107,9 @@ public abstract class ExceptionUtils {
 		return true;
 	}
 
-	private static final String[] NON_NGRINDER_PACKAGE = ("org.springframework.," + "javax.," + "sun.," + "net.sf.,"
-			+ "java.," + "org.ngrinder.common.exception.NGrinderRuntimeException,"
+	private static final String[] NON_NGRINDER_PACKAGE = ("org.springframework.," + "javax.," + "org.apache.catalina.,"
+			+ "sun.," + "net.sf.," + "java.," + "org.ngrinder.common.exception.NGrinderRuntimeException,"
+			+ "com.springsource.," + "org.apache.coyote.," + "org.apache.tomact.,"
 			+ "org.ngrinder.common.util.ExceptionUtils.").split("(\\s|,)+");
 
 	/**
