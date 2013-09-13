@@ -112,7 +112,7 @@ public abstract class AbstractExceptionProcessor {
 	 * @return true if application class
 	 */
 	protected boolean isApplicationClass(String className) {
-		for (String groovyPackage : getInterestingPackages()) {
+		for (String groovyPackage : getUninterestingPackages()) {
 			if (className.startsWith(groovyPackage)) {
 				return false;
 			}
@@ -125,6 +125,12 @@ public abstract class AbstractExceptionProcessor {
 	 * 
 	 * @return interesting packages
 	 */
-	protected abstract String[] getInterestingPackages();
+	protected abstract String[] getInnterestingPackages();
+	/**
+	 * Get interesting packages.
+	 * 
+	 * @return interesting packages
+	 */
+	protected abstract String[] getUninterestingPackages();
 
 }

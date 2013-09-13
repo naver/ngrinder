@@ -30,8 +30,13 @@ public class GroovyExceptionProcessor extends AbstractExceptionProcessor {
 					.split("(\\s|,)+");
 
 	@Override
-	protected String[] getInterestingPackages() {
+	protected String[] getUninterestingPackages() {
 		return NGRINDER_GROOVY_PACKAGE;
+	}
+
+	@Override
+	protected String[] getInnterestingPackages() {
+		return new String[] {};
 	}
 
 }
