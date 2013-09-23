@@ -31,7 +31,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -314,6 +313,14 @@ public class PerfTestController extends NGrinderBaseController {
 		model.addAttribute(PARAM_MAX_RUN_HOUR, agentManager.getMaxRunHour());
 		model.addAttribute(PARAM_SAFE_FILE_DISTRIBUTION,
 				getConfig().getSystemProperties().getPropertyBoolean(NGRINDER_PROP_DIST_SAFE, false));
+		String timeZone = getCurrentUser().getTimeZone();
+		int offset = 0;
+		if (StringUtils.isNotBlank(timeZone)) {
+			offset = TimeZone.getTimeZone(timeZone).getOffset(System.currentTimeMillis());
+		} else {
+			offset = TimeZone.getDefault().getOffset(System.currentTimeMillis());
+		}
+		model.addAttribute(PARAM_TIMEZONE_OFFSET, offset);
 	}
 
 	/**
@@ -344,8 +351,8 @@ public class PerfTestController extends NGrinderBaseController {
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		model.addAttribute(PARAM_REGION_AGENT_COUNT_MAP, agentCountMap);
 		model.addAttribute(PARAM_REGION_LIST, getRegionList(agentCountMap));
-		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		addDefaultAttributeOnModel(model);
+		model.addAttribute(PARAM_PROCESSTHREAD_POLICY_SCRIPT, perfTestService.getProcessAndThreadPolicyScript());
 		return "perftest/detail";
 	}
 
@@ -365,6 +372,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public String savePerfTest(User user, ModelMap model, PerfTest test,
 			@RequestParam(value = "isClone", required = false, defaultValue = "false") boolean isClone) {
+
 		test.setTestName(StringUtils.trimToEmpty(test.getTestName()));
 		checkNotEmpty(test.getTestName(), "test name should be provided");
 		checkArgument(test.getStatus().equals(Status.READY) || test.getStatus().equals(Status.SAVED),
@@ -374,7 +382,6 @@ public class PerfTestController extends NGrinderBaseController {
 		checkArgument(test.getDuration() == null
 				|| test.getDuration() <= (((long) agentManager.getMaxRunHour()) * 3600000L),
 				"test run duration should be equal to or less than %s", agentManager.getMaxRunHour());
-
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		MutableInt agentCountObj = agentCountMap.get(clustered() ? test.getRegion() : Config.NONE_REGION);
 		checkNotNull(agentCountObj, "test region should be within current region list");
@@ -391,11 +398,6 @@ public class PerfTestController extends NGrinderBaseController {
 		checkArgument(test.getThreads() != null && 0 != test.getThreads(), "test thread should not be 0");
 		// Point to the head revision
 		test.setScriptRevision(-1L);
-		// deal with different time zone between user Local and Server
-		Date scheduleDate = test.getScheduledTime();
-		if (scheduleDate != null) {
-			test.setScheduledTime(DateUtil.convertToServerDate(user.getTimeZone(), scheduleDate));
-		}
 		// NGRINDER-236 hehe
 		if (isClone) {
 			test.setId(null);

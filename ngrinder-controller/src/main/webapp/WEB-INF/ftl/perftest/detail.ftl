@@ -451,7 +451,7 @@ function initTags() {
 }
 
 function initScheduleDate() {
-	var date = new Date();
+	var date = getBrowserTimeApplyingTimezone();
 	var year = date.getFullYear();
 	var month = date.getMonth() + 1;
 	var day = date.getDate();
@@ -682,6 +682,20 @@ function showScheduleModal() {
 	$('#schedule_modal').modal('show');
 }
 
+
+function getBrowserTimeApplyingTimezone(time) {
+	var resultDate;
+	if (time === undefined) {
+		var date = new Date();
+		return new Date(date.getTime() + (date.getTimezoneOffset() * 60 * 1000) + ${timezone_offset});
+	} else {
+		resultDate = new Date(time - ${timezone_offset});
+		// Now it's browser time reflecting the timezone difference.
+		return new Date(Date.UTC(resultDate.getFullYear(), resultDate.getMonth(), resultDate.getDate(), resultDate.getHours(), resultDate.getMinutes())); 
+	}
+}	
+	
+	
 function bindEvent() {
 	$("#script_name").change(function() {
 		bindNewScript($(this), false);
@@ -742,6 +756,8 @@ function bindEvent() {
 		document.test_config_form.submit();
 	});
 
+	
+	
 	$("#add_schedule_btn").click(function() {
 		if (checkEmptyByID("scheduled_date")) {
 			$("#schedule_modal small").html("<@spring.message "perfTest.detail.message.setScheduleDate"/>");
@@ -749,7 +765,9 @@ function bindEvent() {
 		}
 	
 		var timeStr = $("#scheduled_date").val() + " " + $("#scheduled_hour").val() + ":" + $("#scheduled_min").val() + ":0";
+		// User input date time.
 		var scheduledTime = new Date(timeStr.replace(/-/g, "/"));
+		scheduledTime = getBrowserTimeApplyingTimezone(scheduledTime.getTime());
 		if (new Date() > scheduledTime) {
 			$("#schedule_modal small").html("<@spring.message "perfTest.detail.message.errScheduleDate"/>");
 			return;
@@ -1153,7 +1171,7 @@ function displayConfigAndReportSection() {
 }
 
 function initScheduleTime() {
-	var date = new Date();
+	var date = getBrowserTimeApplyingTimezone();
 	$("#scheduled_hour").val(date.getHours());
 	$("#scheduled_min").val(date.getMinutes());
 }
