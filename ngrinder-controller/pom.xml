@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.ngrinder</groupId>
 		<artifactId>ngrinder</artifactId>
-		<version>3.2.3-SNAPSHOT</version>
+		<version>3.2.3</version>
 	</parent>
 	<artifactId>ngrinder-controller</artifactId>
 	<name>ngrinder-controller</name>
@@ -328,9 +328,6 @@
 			<groupId>cubrid</groupId>
 			<artifactId>cubrid-jdbc</artifactId>
 			<version>8.4.1.2032</version>
-			<!-- this version is disappeared... little bit hack -->
-			<scope>system</scope>
-			<systemPath>${basedir}/patch/cubrid-jdbc-8.4.1.2032.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>grinder</groupId>
