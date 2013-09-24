@@ -191,8 +191,8 @@ public class PropertyBuilder {
 		if (StringUtils.isEmpty(param)) {
 			return jvmArguments;
 		}
-		param = param.replace("\"", "\\\"");
-		return jvmArguments.append(" -Dparam=\"").append(param).append("\" ");
+		param = param.replace("\"", "\\\"").replace(" ", "\\ ");
+		return jvmArguments.append(" -Dparam=").append(param).append(" ");
 	}
 
 	private StringBuilder addAdditionalJavaOpt(StringBuilder jvmArguments) {
