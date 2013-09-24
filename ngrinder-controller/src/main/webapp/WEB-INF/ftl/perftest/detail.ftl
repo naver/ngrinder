@@ -521,6 +521,12 @@ function initDuration() {
 
 var validationOptions = {};
 function addValidation() {
+	$.validator.addMethod("paramFmt", function(param, element) {
+		var pattern = /^[a-zA-Z0-9_]{0,30}$/;
+		var rule = new RegExp(pattern);
+		return rule.test($.trim(param));
+	});
+	
 	validationOptions = {
 		rules: {
 			testName: { 
@@ -573,36 +579,44 @@ function addValidation() {
 			runCount: {
 				digits: true,
 				max: ${maxRunCount}
+			},
+			param : {
+				required:false,
+				paramFmt:true
 			}
 		},
 	    messages: { 
 	        testName: {
-	        	required: "<@spring.message "perfTest.warning.testName"/>"
+	        	required: "<@spring.message 'perfTest.warning.testName'/>"
 	        },
 	        agentCount: {
-	        	required: "<@spring.message "perfTest.warning.agentNumber"/>"
+	        	required: "<@spring.message 'perfTest.warning.agentNumber'/>"
 	        },
 	        vuserPerAgent: {
-	        	required: "<@spring.message "perfTest.warning.vuserPerAgent"/>"
+	        	required: "<@spring.message 'perfTest.warning.vuserPerAgent'/>"
 	        },
 	        scriptName: {
-	        	required: "<@spring.message "perfTest.warning.script"/>"
+	        	required: "<@spring.message 'perfTest.warning.script'/>"
 	        },
 	        durationHour: {
-	        	max: "<@spring.message "perfTest.warning.duration.maxHour"/>"
+	        	max: "<@spring.message 'perfTest.warning.duration.maxHour'/>"
 	        },
 	        runCount: {
-	        	required: "<@spring.message "perfTest.warning.runCount"/>"
+	        	required: "<@spring.message 'perfTest.warning.runCount'/>"
 	        },
 	        processes: {
-	        	required: "<@spring.message "perfTest.warning.processes"/>"
+	        	required: "<@spring.message 'perfTest.warning.processes'/>"
 	        },
 	        threads: {
-	        	required: "<@spring.message "perfTest.warning.threads"/>"
+	        	required: "<@spring.message 'perfTest.warning.threads'/>"
 	        },
 	        targetHosts: {
-	        	required: "<@spring.message "perfTest.warning.hostString"/>"
+	        	required: "<@spring.message 'perfTest.warning.hostString'/>"
+	        },
+	        param : {
+	        	paramFmt: "<@spring.message 'perfTest.warning.param'/>"
 	        }
+	        
 	    },
 		ignore : "", // make the validation on hidden input work
 		errorClass : "help-inline",

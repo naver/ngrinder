@@ -251,7 +251,7 @@
 			</div>
 			<div class="control-group">
 				<div class="row">
-					<div class="span3">
+					<div class="span3"> 
 						<div class="control-group">
 							<label for="safeDistribution" class="control-label"> 
 								<@spring.message "perfTest.configuration.safeDistribution"/>
@@ -287,7 +287,7 @@
 										data-placement="top"
 										value="${(test.param?html)!""}"/>
 							</div>
-							<div id="err_param" class="small_error_box" style="margin-left:100px">
+							<div id="err_param" class="small_error_box" style="margin-left:-25px">
 							</div>
 						</div>
 					</div>					

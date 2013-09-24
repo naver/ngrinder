@@ -191,7 +191,6 @@ public class PropertyBuilder {
 		if (StringUtils.isEmpty(param)) {
 			return jvmArguments;
 		}
-		param = param.replace("\"", "\\\"").replace(" ", "\\ ");
 		return jvmArguments.append(" -Dparam=").append(param).append(" ");
 	}
 

@@ -31,6 +31,8 @@
 		maxlength: $.validator.format("<@spring.message "common.message.validate.maxlength"/>"),
 		rangelength: $.validator.format("<@spring.message "common.message.validate.rangelength"/>")
 	});
+	
+	
 
 </script>  
 <input type="hidden" id="contextPath" value="${req.getContextPath()}"/>

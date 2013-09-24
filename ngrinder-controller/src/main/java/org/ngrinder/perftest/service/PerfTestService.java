@@ -742,11 +742,12 @@ public class PerfTestService implements NGrinderConstants, IPerfTestService {
 			// If enabled, pass it to grinder.param. In this case, I drop the
 			// compatibility.
 			if (StringUtils.isNotBlank(perfTest.getParam())) {
+				String param = perfTest.getParam().replace("'", "\\'").replace(" ", "");
 				if (config.isSecurityEnabled()) {
-					grinderProperties.setProperty(GRINDER_PROP_PARAM, StringUtils.trimToEmpty(perfTest.getParam()));
+					grinderProperties.setProperty(GRINDER_PROP_PARAM, StringUtils.trimToEmpty(param));
 				} else {
 					String property = grinderProperties.getProperty(GRINDER_PROP_JVM_ARGUMENTS, "");
-					property = property + " -Dparam=\"" + perfTest.getParam().replace("\"", "\\\"") + "\"";
+					property = property + " -Dparam=" + param + " ";
 					grinderProperties.setProperty(GRINDER_PROP_JVM_ARGUMENTS, property);
 				}
 			}
