@@ -14,6 +14,8 @@
 package net.grinder.util;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import net.grinder.common.GrinderProperties;
@@ -22,6 +24,8 @@ import net.grinder.script.InternalScriptContext;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.math.NumberUtils;
+
+import HTTPClient.NVPair;
 
 /**
  * Convenient NGrinder utilities.
@@ -59,7 +63,39 @@ public abstract class GrinderUtil {
 	private static Random random = new Random();
 
 	/**
+	 * Convert nvpair map to array. With this user can create NVPair array using
+	 * following code.
+	 * 
+	 * 
+	 * <code>
+	 * import static net.ngrinder.util.GrinderUtil.*
+	 * ...
+	 * request1.POST("http://www.google.com", nvs(["key1":"value1", "key2":"value2"]))
+	 * </code>
+	 * 
+	 * @param nvpairMap
+	 *            map of the
+	 * @return converted array
+	 */
+	public static NVPair[] nvs(Map<Object, Object> nvpairMap) {
+		NVPair[] result = new NVPair[nvpairMap.size()];
+		int i = 0;
+		for (Entry<Object, Object> each : nvpairMap.entrySet()) {
+			result[i++] = new NVPair(each.getKey().toString(), each.getValue().toString());
+		}
+		return result;
+	}
+
+	/**
 	 * Get the any element from list.
+	 * 
+	 * 
+	 * <code>
+	 * import static net.ngrinder.util.GrinderUtil.*
+	 * ...
+	 * def values = [1,2,3,4,5]
+	 * def selected = any(values)
+	 * </code>
 	 * 
 	 * @param from
 	 *            list
