@@ -188,14 +188,14 @@
 								</td>
 								<td	<#if test.threshold == "D">	>${(test.durationStr)!}<#else> title="<@spring.message "perfTest.configuration.runCount"/>" >${test.runCount}</#if>
 								</td>
-								<td><#if test.tps??>${(test.tps)?string("0.#")}</#if></td>  
+								<td><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></td>  
 								<td><#if test.meanTestTime??>${(test.meanTestTime)?string("0.##")}</#if></td>
 								<td>
 									<div class="ellipsis" 
 										rel="popover"
 		            					data-html="true" 
 		            					data-placement="top"
-		            					data-content="<@spring.message "perfTest.table.totaltests"/> : ${(test.tests + test.errors)!""}<br/><@spring.message "perfTest.table.successfultests"/> : ${(test.tests)!""}<br/><@spring.message "perfTest.table.errors"/> : ${test.errors!""}<br/>">
+		            					data-content="<@spring.message "perfTest.table.totaltests"/> : ${((test.tests + test.errors)?string(",##0"))!""}<br/><@spring.message "perfTest.table.successfultests"/> : ${(test.tests?string(",##0"))!""}<br/><@spring.message "perfTest.table.errors"/> : ${(test.errors?string(",##0"))!""}<br/>">
 		            					<#if test.tests?? && test.tests != 0>${(test.errors/(test.tests + test.errors) * 100)?string("0.##")}%</#if></td>
 		            				</div>
 								<td>${totalVuser}</td>
