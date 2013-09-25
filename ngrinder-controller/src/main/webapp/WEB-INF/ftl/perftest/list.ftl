@@ -198,7 +198,15 @@
 		            					data-content="<@spring.message "perfTest.table.totaltests"/> : ${((test.tests + test.errors)?string(",##0"))!""}<br/><@spring.message "perfTest.table.successfultests"/> : ${(test.tests?string(",##0"))!""}<br/><@spring.message "perfTest.table.errors"/> : ${(test.errors?string(",##0"))!""}<br/>">
 		            					<#if test.tests?? && test.tests != 0>${(test.errors/(test.tests + test.errors) * 100)?string("0.##")}%</#if></td>
 		            				</div>
-								<td>${totalVuser}</td>
+								<td>
+									<div class="ellipsis" 
+										rel="popover"
+		            					data-html="true" 
+		            					data-placement="left" 
+		            					data-content="<@spring.message "perfTest.report.agent"/> : ${test.agentCount!"0"}<br/><@spring.message "perfTest.report.process"/>  : ${test.processes!"0"}<br/><@spring.message "perfTest.report.thread"/> : ${test.threads!"0"}">
+		            				${totalVuser}
+		            				<div>
+		            			</td>
 								<td class="center">
 									<a href="javascript:void(0)" style="<#if deletable>display: none;</#if>"><i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>
 									<a href="javascript:void(0)" style="<#if stoppable>display: none;</#if>"><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" class="icon-stop test-stop" sid="${test.id}"></i></a>
