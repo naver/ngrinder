@@ -33,7 +33,7 @@ import HTTPClient.NVPair;
  * @author JunHo Yoon
  * @since 3.2.3
  */
-public abstract class GrinderUtil {
+public abstract class GrinderUtils {
 	/**
 	 * Get this thread uniq id among all threads in the all agents.
 	 * 

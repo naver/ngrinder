@@ -20,7 +20,7 @@ public class GrinderUtilTest {
 			if (i > 10000) {
 				fail();
 			}
-			String any = GrinderUtil.any(array);
+			String any = GrinderUtils.any(array);
 			System.out.println(any);
 			if (asList.contains(any)) {
 				asList.remove(any);
@@ -35,7 +35,7 @@ public class GrinderUtilTest {
 			if (i > 10000) {
 				fail();
 			}
-			String any = GrinderUtil.any(asList);
+			String any = GrinderUtils.any(asList);
 			System.out.println(any);
 			if (asList.contains(any)) {
 				asList.remove(any);
