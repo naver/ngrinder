@@ -256,8 +256,14 @@
 				</div>
 			</div>
 			<!-- end well -->
-			
-			<div class="tabbable" style="margin-top: 20px">
+			<@security.authorize ifAnyGranted="A, S">
+				<#if test?? && test.createdUser??>
+					<div class="pull-right">
+						<@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName!""} (${test.createdUser.userId!""})		
+					</div>
+				</#if>
+			</@security.authorize >
+			<div class="tabbable" style="margin-top: 0px"> 
 				<ul class="nav nav-tabs" id="homeTab" style="margin-bottom: 5px">
 					<li id="test_config_section_tab">
 						<a href="#test_config_section" data-toggle="tab">
