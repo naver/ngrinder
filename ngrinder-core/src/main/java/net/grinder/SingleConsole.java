@@ -296,7 +296,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	/**
-	 * Get all attached agents count.
+	 * Get the count of all attached agents.
 	 * 
 	 * @return count of agents
 	 */
@@ -306,7 +306,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	/**
-	 * Get all attached agent list on this console.
+	 * Get the all attached agent list on this console.
 	 * 
 	 * @return agent list
 	 */
@@ -326,7 +326,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	/**
-	 * Get the console Component.
+	 * Get the console component having the given type.
 	 * 
 	 * @param <T>
 	 *            componentType component type
@@ -349,7 +349,7 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	/**
-	 * Start test with given {@link GrinderProperties}.
+	 * Start a test with the given {@link GrinderProperties}.
 	 * 
 	 * @param properties
 	 *            {@link GrinderProperties}
@@ -860,14 +860,14 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 	}
 
 	/**
-	 * Check if the TPS is too low. the TPS is lower than 0.001 for 2 minutes,
-	 * It notifies a shutdown event to the {@link ConsoleShutdownListener}
+	 * Check if the TPS is too low. the TPS is lower than 0.001 for 1 minutes,
+	 * It emits a shutdown event to the {@link ConsoleShutdownListener}
 	 * 
 	 * @param tps
 	 *            current TPS
 	 */
 	private void checkTooLowTps(double tps) {
-		// If the tps is low that it's can be the agents or scripts goes wrong.
+		// If the tps is too low, which means the agents or scripts went wrong.
 		if (tps < 0.001) {
 			if (momentWhenTpsBeganToHaveVerySmall == 0) {
 				momentWhenTpsBeganToHaveVerySmall = System.currentTimeMillis();
@@ -884,7 +884,6 @@ public class SingleConsole implements Listener, SampleListener, ISingleConsole {
 			}
 		} else {
 			momentWhenTpsBeganToHaveVerySmall = 0;
-			// only if tps value is not too small ,It should be displayed
 		}
 	}
 
