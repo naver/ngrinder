@@ -66,6 +66,7 @@ public class AgentManagerService implements IAgentManagerService {
 
 	@Autowired
 	private Config config;
+
 	/**
 	 * Run a scheduled task to check the agent status periodically.
 	 * 
@@ -143,8 +144,8 @@ public class AgentManagerService implements IAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.agent.service.IAgentManagerService#getUserAvailableAgentCountMap(org.ngrinder
-	 * .model.User)
+	 * org.ngrinder.agent.service.IAgentManagerService#getUserAvailableAgentCountMap
+	 * (org.ngrinder .model.User)
 	 */
 	@Override
 	public Map<String, MutableInt> getUserAvailableAgentCountMap(User user) {
@@ -152,23 +153,20 @@ public class AgentManagerService implements IAgentManagerService {
 		int availableUserOwnAgent = 0;
 		String myAgentSuffix = "owned_" + user.getUserId();
 		for (AgentInfo agentInfo : getAllActiveAgentInfoFromDB()) {
-			// Skip the all agents which doesn't approved, is inactive or
-			// doesn't have region
-			// prefix.
+			// Skip all agents which are disapproved, inactive or
+			// have no region prefix.
 			if (!agentInfo.isApproved()) {
 				continue;
 			}
 			String fullRegion = agentInfo.getRegion();
 
-			// It's my own agent
+			// It's this controller's agent
 			if (fullRegion.endsWith(myAgentSuffix)) {
-				// availableShareAgents++;
 				availableUserOwnAgent++;
 			} else if (fullRegion.contains("owned_")) {
-				// If it's the others agent.. skip..
+				// If it's the other controller's agent.. skip..
 				continue;
 			} else {
-				// availableUserOwnAgent++;
 				availableShareAgents++;
 			}
 		}
@@ -216,8 +214,8 @@ public class AgentManagerService implements IAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.agent.service.IAgentManagerService#createAgentKey(org.ngrinder.agent.model.AgentInfo
-	 * )
+	 * org.ngrinder.agent.service.IAgentManagerService#createAgentKey(org.ngrinder
+	 * .agent.model.AgentInfo )
 	 */
 	@Override
 	public String createAgentKey(AgentInfo agentInfo) {
@@ -228,8 +226,8 @@ public class AgentManagerService implements IAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.agent.service.IAgentManagerService#createAgentKey(net.grinder.engine.controller
-	 * .AgentControllerIdentityImplementation)
+	 * org.ngrinder.agent.service.IAgentManagerService#createAgentKey(net.grinder
+	 * .engine.controller .AgentControllerIdentityImplementation)
 	 */
 	@Override
 	public String createAgentKey(AgentControllerIdentityImplementation agentIdentity) {
@@ -243,9 +241,8 @@ public class AgentManagerService implements IAgentManagerService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.ngrinder.agent.service.IAgentManagerService#getLocalAgentIdentityByIpAndName(java.lang
-	 * .String, java.lang.String)
+	 * @see org.ngrinder.agent.service.IAgentManagerService#
+	 * getLocalAgentIdentityByIpAndName(java.lang .String, java.lang.String)
 	 */
 	@Override
 	public AgentControllerIdentityImplementation getLocalAgentIdentityByIpAndName(String ip, String name) {
@@ -262,7 +259,8 @@ public class AgentManagerService implements IAgentManagerService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.agent.service.IAgentManagerService#getLocalAgentListFromDB()
+	 * @see
+	 * org.ngrinder.agent.service.IAgentManagerService#getLocalAgentListFromDB()
 	 */
 	@Override
 	public List<AgentInfo> getLocalAgentListFromDB() {
@@ -272,7 +270,9 @@ public class AgentManagerService implements IAgentManagerService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.agent.service.IAgentManagerService#getAllActiveAgentInfoFromDB()
+	 * @see
+	 * org.ngrinder.agent.service.IAgentManagerService#getAllActiveAgentInfoFromDB
+	 * ()
 	 */
 	@Override
 	public List<AgentInfo> getAllActiveAgentInfoFromDB() {
@@ -282,7 +282,9 @@ public class AgentManagerService implements IAgentManagerService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.agent.service.IAgentManagerService#getAllVisibleAgentInfoFromDB()
+	 * @see
+	 * org.ngrinder.agent.service.IAgentManagerService#getAllVisibleAgentInfoFromDB
+	 * ()
 	 */
 	@Override
 	public List<AgentInfo> getAllVisibleAgentInfoFromDB() {
@@ -290,7 +292,7 @@ public class AgentManagerService implements IAgentManagerService {
 	}
 
 	private AgentInfo creatAgentInfo(AgentControllerIdentityImplementation agentIdentity,
-					Map<String, AgentInfo> agentInfoMap) {
+			Map<String, AgentInfo> agentInfoMap) {
 		AgentInfo agentInfo = agentInfoMap.get(createAgentKey(agentIdentity));
 		if (agentInfo == null) {
 			agentInfo = new AgentInfo();
@@ -314,7 +316,8 @@ public class AgentManagerService implements IAgentManagerService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.ngrinder.agent.service.IAgentManagerService#getAgent(long, boolean)
+	 * @see org.ngrinder.agent.service.IAgentManagerService#getAgent(long,
+	 * boolean)
 	 */
 	@Override
 	public AgentInfo getAgent(long id, boolean includeAgentIndentity) {
@@ -324,7 +327,7 @@ public class AgentManagerService implements IAgentManagerService {
 		}
 		if (includeAgentIndentity) {
 			AgentControllerIdentityImplementation agentIdentityByIp = getLocalAgentIdentityByIpAndName(findOne.getIp(),
-							findOne.getName());
+					findOne.getName());
 			return fillUp(findOne, agentIdentityByIp);
 		} else {
 			return findOne;
@@ -371,8 +374,8 @@ public class AgentManagerService implements IAgentManagerService {
 	}
 
 	/**
-	 * Stop agent. If it's in cluster mode, it queue to agentRequestCache. ohterwise, it send stop
-	 * message to the agent.
+	 * Stop agent. If it's in cluster mode, it queue to agentRequestCache.
+	 * ohterwise, it send stop message to the agent.
 	 * 
 	 * @param id
 	 *            identity of agent to stop.
@@ -400,8 +403,8 @@ public class AgentManagerService implements IAgentManagerService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * org.ngrinder.agent.service.IAgentManagerService#getAgentSystemDataModel(java.lang.String,
-	 * java.lang.String)
+	 * org.ngrinder.agent.service.IAgentManagerService#getAgentSystemDataModel
+	 * (java.lang.String, java.lang.String)
 	 */
 	@Override
 	public SystemDataModel getAgentSystemDataModel(String ip, String name) {

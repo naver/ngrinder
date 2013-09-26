@@ -24,7 +24,7 @@ import liquibase.snapshot.DatabaseSnapshot;
 import liquibase.snapshot.jvm.JdbcDatabaseSnapshotGenerator;
 
 /**
- * this is just made its support CUBRID DB.
+ * Snapshot generator for CUBRID.
  * 
  * @author Matt
  * @author JunHo Yoon
@@ -36,7 +36,8 @@ public class CUBRIDDatabaseSnapshotGenerator extends JdbcDatabaseSnapshotGenerat
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * liquibase.snapshot.jvm.JdbcDatabaseSnapshotGenerator#fillForeignKeyInfo(java.sql.ResultSet)
+	 * liquibase.snapshot.jvm.JdbcDatabaseSnapshotGenerator#fillForeignKeyInfo
+	 * (java.sql.ResultSet)
 	 */
 	@Override
 	protected ForeignKeyInfo fillForeignKeyInfo(ResultSet rs) throws DatabaseException, SQLException {
@@ -50,7 +51,9 @@ public class CUBRIDDatabaseSnapshotGenerator extends JdbcDatabaseSnapshotGenerat
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see liquibase.snapshot.DatabaseSnapshotGenerator#supports(liquibase.database.Database)
+	 * @see
+	 * liquibase.snapshot.DatabaseSnapshotGenerator#supports(liquibase.database
+	 * .Database)
 	 */
 	@Override
 	public boolean supports(Database database) {
@@ -60,7 +63,9 @@ public class CUBRIDDatabaseSnapshotGenerator extends JdbcDatabaseSnapshotGenerat
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see liquibase.snapshot.DatabaseSnapshotGenerator#getPriority(liquibase.database.Database)
+	 * @see
+	 * liquibase.snapshot.DatabaseSnapshotGenerator#getPriority(liquibase.database
+	 * .Database)
 	 */
 	@Override
 	public int getPriority(Database database) {
@@ -70,11 +75,12 @@ public class CUBRIDDatabaseSnapshotGenerator extends JdbcDatabaseSnapshotGenerat
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see liquibase.snapshot.jvm.JdbcDatabaseSnapshotGenerator#readSequences(liquibase.snapshot.
-	 * DatabaseSnapshot, java.lang.String, java.sql.DatabaseMetaData)
+	 * @see
+	 * liquibase.snapshot.jvm.JdbcDatabaseSnapshotGenerator#readSequences(liquibase
+	 * .snapshot. DatabaseSnapshot, java.lang.String, java.sql.DatabaseMetaData)
 	 */
 	@Override
 	protected void readSequences(DatabaseSnapshot snapshot, String schema, DatabaseMetaData databaseMetaData)
-					throws DatabaseException {
+			throws DatabaseException {
 	}
 }

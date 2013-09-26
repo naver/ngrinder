@@ -16,8 +16,9 @@ package org.hibernate.dialect;
 import java.sql.Types;
 
 /**
- * Customized H2 dialect. it's necessary to be added because the original H2 dialect treats all
- * float into float. So.. the Hibernate validation is failed with that version.
+ * Customized H2 dialect. it's necessary to be added because the original H2
+ * dialect treats all float into float. So.. the Hibernate validation is failed
+ * with that version.
  * 
  * @author JunHo Yoon
  * @since 3.0

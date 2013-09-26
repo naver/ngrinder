@@ -28,8 +28,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Agent periodic check service.<br/>
- * It's separated from AgentManagerService to get rid of cyclic injection.
+ * Agent periodic check service.
+ * 
+ * This class runs the plugins implementing
+ * {@link OnPeriodicWorkingAgentCheckRunnable}.
+ * 
+ * It's separated from {@link AgentManagerService} to get rid of cyclic
+ * injection.
  * 
  * @author JunHo Yoon
  * @since 3.1.2
@@ -43,8 +48,8 @@ public class PeriodicWorkingAgentCheckService {
 	private AgentManager agentManager;
 
 	/**
-	 * Run a scheduled task to check the agent network usage.<br/>
-	 * If it goes up beyond the given limit, this method will make all tests in the region stop.
+	 * Run scheduled tasks checking the agent status on the currently working
+	 * agents.
 	 * 
 	 * @since 3.1.2
 	 */
@@ -52,14 +57,14 @@ public class PeriodicWorkingAgentCheckService {
 	@Transactional
 	public void checkWorkingAgents() {
 		Set<AgentStatus> workingAgents = agentManager
-						.getAgentStatusSet(new Predicate<AgentProcessControlImplementation.AgentStatus>() {
-							@Override
-							public boolean apply(AgentStatus agentStatus) {
-								return agentStatus.getConnectingPort() != 0;
-							}
-						});
+				.getAgentStatusSet(new Predicate<AgentProcessControlImplementation.AgentStatus>() {
+					@Override
+					public boolean apply(AgentStatus agentStatus) {
+						return agentStatus.getConnectingPort() != 0;
+					}
+				});
 		for (OnPeriodicWorkingAgentCheckRunnable runnable : pluginManager
-						.getEnabledModulesByClass(OnPeriodicWorkingAgentCheckRunnable.class)) {
+				.getEnabledModulesByClass(OnPeriodicWorkingAgentCheckRunnable.class)) {
 			runnable.checkWorkingAgent(workingAgents);
 		}
 

@@ -255,8 +255,8 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get the all available script list in JSON format for the given user's
-	 * factual user.
+	 * Get all available script list in JSON format for the given user's factual
+	 * user.
 	 * 
 	 * @param user
 	 *            user

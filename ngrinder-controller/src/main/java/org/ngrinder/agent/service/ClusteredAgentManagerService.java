@@ -92,17 +92,17 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 				@Override
 				public void interruptibleRun() {
 					List<String> keysWithExpiryCheck = cast(((Ehcache) agentRequestCache.getNativeCache())
-									.getKeysWithExpiryCheck());
+							.getKeysWithExpiryCheck());
 					String region = getConfig().getRegion() + "|";
 					for (String each : keysWithExpiryCheck) {
 						try {
 							if (each.startsWith(region) && agentRequestCache.get(each) != null) {
 								ClustedAgentRequest agentRequest = cast(agentRequestCache.get(each).get());
 								AgentControllerIdentityImplementation agentIdentity = getLocalAgentIdentityByIpAndName(
-												agentRequest.getAgentIp(), agentRequest.getAgentName());
+										agentRequest.getAgentIp(), agentRequest.getAgentName());
 								if (agentIdentity != null) {
 									agentRequest.getRequestType().process(ClusteredAgentManagerService.this,
-													agentIdentity);
+											agentIdentity);
 								}
 							}
 
@@ -134,7 +134,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 
 		List<AgentInfo> agentsInDB = getAgentRepository().findAll(startWithRegion(curRegion));
 		Map<String, AgentInfo> agentsInDBMap = Maps.newHashMap();
-		// step1. check all agents in DB, whether they are attached to controller.
+		// step1. check all agents in DB, whether they are attached to
+		// controller.
 		for (AgentInfo eachAgentInDB : agentsInDB) {
 			String keyOfAgentInDB = createAgentKey(eachAgentInDB);
 			agentsInDBMap.put(keyOfAgentInDB, eachAgentInDB);
@@ -161,10 +162,11 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			}
 		}
 
-		// step2. check all attached agents, whether they are new, and not saved in DB.
+		// step2. check all attached agents, whether they are new, and not saved
+		// in DB.
 		for (AgentControllerIdentityImplementation agentIdentity : attachedAgentMap.values()) {
 			AgentInfo agentInfo = getAgentRepository().findByIpAndHostName(agentIdentity.getIp(),
-							agentIdentity.getName());
+					agentIdentity.getName());
 			if (agentInfo == null) {
 				agentInfo = new AgentInfo();
 			}
@@ -191,13 +193,13 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		}
 		AgentManager agentManager = getAgentManager();
 		return agentInfo.getPort() == agentManager.getAgentConnectingPort(agentIdentity)
-						&& agentInfo.getStatus() == agentManager.getAgentState(agentIdentity);
+				&& agentInfo.getStatus() == agentManager.getAgentState(agentIdentity);
 	}
 
 	private Gson gson = new Gson();
 
 	/**
-	 * Collect agent system data every second.
+	 * Collect the agent system info every second.
 	 * 
 	 */
 	@Scheduled(fixedDelay = 1000)
@@ -214,7 +216,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			AgentControllerIdentityImplementation agentIdentity = cast(value.get());
 			if (value != null && agentIdentity != null) {
 				AgentInfo found = agentManagerRepository.findByIpAndHostName(agentIdentity.getIp(),
-								agentIdentity.getName());
+						agentIdentity.getName());
 				found.setSystemStat(gson.toJson(getSystemDataModel(agentIdentity)));
 				agentInfos.add(found);
 			}
@@ -244,8 +246,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	}
 
 	/**
-	 * get the available agent count map in all regions of the user, including the free agents and
-	 * user specified agents.
+	 * Get the available agent count map in all regions of the user, including
+	 * the free agents and user specified agents.
 	 * 
 	 * @param user
 	 *            current user
@@ -264,9 +266,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 		String myAgentSuffix = "_owned_" + user.getUserId();
 
 		for (AgentInfo agentInfo : getAllActiveAgentInfoFromDB()) {
-			// Skip the all agents which doesn't approved, is inactive or
-			// doesn't have region
-			// prefix.
+			// Skip all agents which are disapproved, inactive or
+			// have no region prefix.
 			if (!agentInfo.isApproved()) {
 				continue;
 			}
@@ -320,8 +321,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	/**
 	 * Get all agents attached of this region from DB.
 	 * 
-	 * This method is cluster aware. If it's cluster mode it return all agents attached in this
-	 * region.
+	 * This method is cluster aware. If it's cluster mode it return all agents
+	 * attached in this region.
 	 * 
 	 * @return agent list
 	 */
@@ -331,7 +332,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	}
 
 	/**
-	 * Stop agent. In cluster mode, it queues the agent stop request to agentRequestCache.
+	 * Stop agent. In cluster mode, it queues the agent stop request to
+	 * agentRequestCache.
 	 * 
 	 * @param id
 	 *            agent id in db
@@ -344,7 +346,7 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			return;
 		}
 		agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "|" + createAgentKey(agent),
-						new ClustedAgentRequest(agent.getIp(), agent.getName(), STOP_AGENT));
+				new ClustedAgentRequest(agent.getIp(), agent.getName(), STOP_AGENT));
 	}
 
 	/**
@@ -360,11 +362,12 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 			return;
 		}
 		agentRequestCache.put(extractRegionFromAgentRegion(agent.getRegion()) + "|" + createAgentKey(agent),
-						new ClustedAgentRequest(agent.getIp(), agent.getName(), SHARE_AGENT_SYSTEM_DATA_MODEL));
+				new ClustedAgentRequest(agent.getIp(), agent.getName(), SHARE_AGENT_SYSTEM_DATA_MODEL));
 	}
 
 	/**
-	 * Get agent system data model for the given IP. This method is cluster aware.
+	 * Get the agent system data model for the given IP. This method is cluster
+	 * aware.
 	 * 
 	 * @param ip
 	 *            agent ip
@@ -382,8 +385,8 @@ public class ClusteredAgentManagerService extends AgentManagerService {
 	}
 
 	/**
-	 * Register agent monitoring target. This method should be called in the controller in which the
-	 * given agent exists.
+	 * Register agent monitoring target. This method should be called in the
+	 * controller in which the given agent exists.
 	 * 
 	 * @param agentIdentity
 	 *            agent identity

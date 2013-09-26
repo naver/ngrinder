@@ -46,7 +46,8 @@ public class AgentInfo extends BaseEntity<AgentInfo> {
 	private String ip;
 
 	/**
-	 * agent application port. It's only available when the connection is re-established.
+	 * agent application port. It's only available when the connection is
+	 * re-established.
 	 */
 	private Integer port;
 

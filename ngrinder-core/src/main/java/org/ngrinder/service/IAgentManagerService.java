@@ -24,8 +24,8 @@ import org.ngrinder.model.User;
 import org.ngrinder.monitor.controller.model.SystemDataModel;
 
 /**
- * Agent manager service interface which is used to retrieve the agent infos from current
- * controller.
+ * Agent manager service interface which is used to retrieve the agent info
+ * attaching the current controller.
  * 
  * @author JunHo Yoon
  * @since 3.1.2
@@ -33,8 +33,8 @@ import org.ngrinder.monitor.controller.model.SystemDataModel;
 public interface IAgentManagerService {
 
 	/**
-	 * get the available agent count map in all regions of the user, including the free agents and
-	 * user specified agents.
+	 * Get the available agent count map across all users including the free
+	 * agents and user's private agents.
 	 * 
 	 * @param user
 	 *            current user
@@ -43,16 +43,17 @@ public interface IAgentManagerService {
 	public abstract Map<String, MutableInt> getUserAvailableAgentCountMap(User user);
 
 	/**
-	 * Get all agent agents. agent list is obtained from DB and {@link AgentManager}
+	 * Get all agent agents. The agent list is obtained combining the data from
+	 * DB and {@link AgentManager}
 	 * 
-	 * This includes not persisted agent as well.
+	 * This includes not-yet-saved agents as well.
 	 * 
 	 * @return agent list
 	 */
 	public abstract List<AgentInfo> getLocalAgents();
 
 	/**
-	 * Create agent key.
+	 * Create the agent key from the given agent info.
 	 * 
 	 * @param agentInfo
 	 *            agent information
@@ -62,7 +63,7 @@ public interface IAgentManagerService {
 	public abstract String createAgentKey(AgentInfo agentInfo);
 
 	/**
-	 * Create agent key.
+	 * Create the agent key from the given agent identity.
 	 * 
 	 * @param agentIdentity
 	 *            agent identity
@@ -72,21 +73,21 @@ public interface IAgentManagerService {
 	public abstract String createAgentKey(AgentControllerIdentityImplementation agentIdentity);
 
 	/**
-	 * Get agent identity by ip and name.
+	 * Get the agent identity by IP and host name.
 	 * 
 	 * @param ip
 	 *            ip
 	 * @param name
-	 *            name
+	 *            host name
 	 * @return {@link AgentControllerIdentityImplementation} instance.
 	 */
 	public abstract AgentControllerIdentityImplementation getLocalAgentIdentityByIpAndName(String ip, String name);
 
 	/**
-	 * Get all agents attached of this region from DB.
+	 * Get all agents attached to the current controller's region from DB.
 	 * 
-	 * This method is cluster aware. If it's cluster mode it return all agents attached in this
-	 * region.
+	 * This method is cluster aware. If it's cluster mode it return all agents
+	 * attached.
 	 * 
 	 * @return agent list
 	 */
@@ -107,8 +108,8 @@ public interface IAgentManagerService {
 	public abstract List<AgentInfo> getAllVisibleAgentInfoFromDB();
 
 	/**
-	 * Get a agent on given id. If it's called from the other controller, only limited info
-	 * available in db will be return.
+	 * Get a agent on given id. If it's called from the other controller, only
+	 * limited info available in db will be return.
 	 * 
 	 * @param id
 	 *            agent id
@@ -119,7 +120,8 @@ public interface IAgentManagerService {
 	public abstract AgentInfo getAgent(long id, boolean includeAgentIndentity);
 
 	/**
-	 * Get agent system data model for the given ip. This method is cluster aware.
+	 * Get agent system data model for the given ip. This method is cluster
+	 * aware.
 	 * 
 	 * @param ip
 	 *            agent ip.

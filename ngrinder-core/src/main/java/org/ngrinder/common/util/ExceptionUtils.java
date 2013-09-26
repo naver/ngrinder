@@ -12,8 +12,8 @@ import org.ngrinder.common.exception.NGrinderRuntimeException;
  */
 public abstract class ExceptionUtils {
 	/**
-	 * Check if the exception {@link NGrinderRuntimeException}. If so, throw. If
-	 * not, wrap the given exception.
+	 * Check if the exception is {@link NGrinderRuntimeException}. If so, throw it. If
+	 * not, wrap the given exception and throw it.
 	 * 
 	 * @param t
 	 *            Throwable
@@ -40,8 +40,8 @@ public abstract class ExceptionUtils {
 	}
 
 	/**
-	 * Check if the exception {@link NGrinderRuntimeException}. If so, throw. If
-	 * not, wrap the given exception.
+	 * Check if the exception is {@link NGrinderRuntimeException}. If so, throw.
+	 * If not, wrap the given exception.
 	 * 
 	 * @param message
 	 *            message
@@ -58,7 +58,7 @@ public abstract class ExceptionUtils {
 	}
 
 	/**
-	 * Reorganize the stacktrace elements with only interested one.
+	 * Filter the stacktrace elements with only interesting one.
 	 * 
 	 * @param throwable
 	 *            throwable
@@ -92,7 +92,7 @@ public abstract class ExceptionUtils {
 	}
 
 	/**
-	 * Check if the given class name is application class or not.
+	 * Check if the given class name is the application class or not.
 	 * 
 	 * @param className
 	 *            class name including package name

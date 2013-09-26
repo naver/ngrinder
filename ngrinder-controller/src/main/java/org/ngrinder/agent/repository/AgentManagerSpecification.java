@@ -34,10 +34,10 @@ import org.springframework.data.jpa.domain.Specification;
 public abstract class AgentManagerSpecification {
 
 	/**
-	 * Query specification which the region column start the specified region.
+	 * Query specification to query the agent existing in the specified region.
 	 * 
 	 * @param region
-	 *            specified region to query
+	 *            region to query
 	 * @return Specification of this query
 	 */
 	public static Specification<AgentInfo> startWithRegion(final String region) {
@@ -51,7 +51,7 @@ public abstract class AgentManagerSpecification {
 	}
 
 	/**
-	 * Query specification which the status is active.
+	 * Query specification to query the active agents.
 	 * 
 	 * @return Specification of this query
 	 */
@@ -61,15 +61,15 @@ public abstract class AgentManagerSpecification {
 			public Predicate toPredicate(Root<AgentInfo> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				Expression<AgentControllerState> status = root.get("status").as(AgentControllerState.class);
 				return cb.and(cb.notEqual(status, AgentControllerState.INACTIVE),
-								cb.notEqual(status, AgentControllerState.UNKNOWN),
-								cb.notEqual(status, AgentControllerState.WRONG_REGION));
+						cb.notEqual(status, AgentControllerState.UNKNOWN),
+						cb.notEqual(status, AgentControllerState.WRONG_REGION));
 			}
 		};
 	}
 
 	/**
-	 * Query specification which the status is visible. visible means.. it's visible in the agent
-	 * monitor.
+	 * Query specification to query the visible agents. "visible" means.. it's
+	 * visible by the agent monitor.
 	 * 
 	 * @return Specification of this query
 	 */

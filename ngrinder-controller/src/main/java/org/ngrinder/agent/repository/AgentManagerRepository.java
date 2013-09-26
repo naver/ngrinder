@@ -24,8 +24,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 /**
- * Agent Repository. This is necessary due to lack of agent info in the Grinder. We need to keep the
- * additional info for each agent in the DB not memory.
+ * Agent Repository. This is necessary due to lack of agent info in the Grinder.
+ * We need to keep the additional info for each agent in the DB not memory.
  * 
  * @author Tobi
  * @author JunHo Yoon
@@ -64,7 +64,8 @@ public interface AgentManagerRepository extends JpaRepository<AgentInfo, Long>, 
 	List<AgentInfo> findAllByIp(String ip);
 
 	/**
-	 * Find all agents which matches with the given the status and are approved .
+	 * Find all agents which matches with the given the status and are approved
+	 * .
 	 * 
 	 * @param status
 	 *            AgentControllerState

@@ -18,7 +18,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.controller.NGrinderBaseController;
@@ -35,7 +34,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.common.collect.Maps;
 
 /**
- * Controller which get target host system information.
+ * Controller which gets the target host system information.
  * 
  * @since 3.2
  */
@@ -47,7 +46,7 @@ public class MonitorManagerController extends NGrinderBaseController {
 	private MonitorInfoStore monitorInfoStore;
 
 	/**
-	 * Get a monitor info for the given ip.
+	 * Get the target's monitor info page for the given IP.
 	 * 
 	 * @param model
 	 *            model
@@ -66,19 +65,19 @@ public class MonitorManagerController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get the current system performance info by the given ip.
+	 * Get the target's monitored data by the given IP.
 	 * 
 	 * @param model
 	 *            model
 	 * @param ip
 	 *            target host IP
-	 * @return json message
+	 * @return json message containing the target's monitoring data.
 	 * @throws Exception
 	 *             exception
 	 */
 	@RequestMapping("/status")
 	@ResponseBody
-	public String getRealTimeMonitorData(ModelMap model, @RequestParam final String ip) throws Exception {
+	public String getRealTimeMonitorData(ModelMap model, @RequestParam final String ip) {
 		final Map<String, Object> systemInfoMap = Maps.newHashMap();
 		systemInfoMap.put(JSON_SUCCESS, true);
 		try {
@@ -94,14 +93,14 @@ public class MonitorManagerController extends NGrinderBaseController {
 			} else {
 				systemInfoMap.put("systemData", new SystemDataModel(systemInfo, "UNKNOWN"));
 			}
-		} catch (TimeoutException e) {
+		} catch (Exception e) {
 			systemInfoMap.put(JSON_SUCCESS, false);
 		}
 		return toJson(systemInfoMap);
 	}
 
 	/**
-	 * Used to close monitor JXM connect and remove from monitorInfoStore.
+	 * Close the monitor JXM connection to the given target.
 	 * 
 	 * @param model
 	 *            model

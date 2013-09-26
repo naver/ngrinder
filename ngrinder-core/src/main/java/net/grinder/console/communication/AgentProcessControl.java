@@ -72,7 +72,7 @@ public interface AgentProcessControl {
 	public Set<AgentIdentity> getAgents(AgentControllerState state, int count);
 
 	/**
-	 * Get the all available agents.
+	 * Get all available agents.
 	 * 
 	 * @return agent list
 	 */

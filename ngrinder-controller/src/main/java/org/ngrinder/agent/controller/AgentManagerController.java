@@ -41,7 +41,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
 /**
- * Controller which enable Admin manage agents.
+ * Agent management controller.
  * 
  * @author JunHo Yoon
  * @since 3.1
@@ -64,13 +64,14 @@ public class AgentManagerController extends NGrinderBaseController {
 	private RegionService regionService;
 
 	/**
-	 * Get agent list.
+	 * Get the agent list.
 	 * 
 	 * @param region
-	 *            the region to search
+	 *            the region to search. If null, it returns all the attached
+	 *            agents.
 	 * @param model
 	 *            model
-	 * @return viewName
+	 * @return agent/list
 	 */
 	@RequestMapping({ "", "/", "/list" })
 	public String getAgentList(@RequestParam(value = "region", required = false) final String region, ModelMap model) {
@@ -98,7 +99,7 @@ public class AgentManagerController extends NGrinderBaseController {
 			public boolean accept(File dir, String name) {
 				if (name.startsWith("ngrinder")) {
 					StringBuilder url = new StringBuilder(config.getSystemProperties().getProperty("http.url",
-									contextPath));
+							contextPath));
 					url.append("/agent/download/" + name);
 					downloads.add(url.toString());
 				}
@@ -110,10 +111,11 @@ public class AgentManagerController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Approve or Unapprove agents, so that it can be assigned when a test is executed..
+	 * Approve or disapprove agents, so that it can be assigned when a test is
+	 * executed.
 	 * 
 	 * @param id
-	 *            agent id to be approved
+	 *            agent id to be processed
 	 * @param approve
 	 *            approve or not
 	 * @param region
@@ -124,8 +126,8 @@ public class AgentManagerController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/{id}/approve", method = RequestMethod.POST)
 	public String approveAgent(@PathVariable("id") Long id,
-					@RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve,
-					@RequestParam(value = "region", required = false) final String region, ModelMap model) {
+			@RequestParam(value = "approve", defaultValue = "true", required = false) boolean approve,
+			@RequestParam(value = "region", required = false) final String region, ModelMap model) {
 		agentManagerService.approve(id, approve);
 		model.addAttribute("region", region);
 		model.addAttribute("regions", regionService.getRegions().keySet());
@@ -133,10 +135,10 @@ public class AgentManagerController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Stop agent.
+	 * Stop the given agent.
 	 * 
 	 * @param ids
-	 *            comma separated id list
+	 *            comma separated agent id list
 	 * @return agent/agentList
 	 */
 	@RequestMapping(value = "stop", method = RequestMethod.POST)
@@ -150,7 +152,7 @@ public class AgentManagerController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get a agent detail info for the given agent id.
+	 * Get the agent detail info for the given agent id.
 	 * 
 	 * @param model
 	 *            model
@@ -165,14 +167,14 @@ public class AgentManagerController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get the current system performance info by the given agent ip.
+	 * Get the current performance of the given agent.
 	 * 
 	 * @param model
 	 *            model
 	 * @param id
 	 *            agent id
 	 * @param ip
-	 *            ip
+	 *            agent ip
 	 * @param name
 	 *            agent name
 	 * @return json message
@@ -180,9 +182,9 @@ public class AgentManagerController extends NGrinderBaseController {
 	@RequestMapping("/{id}/status")
 	@ResponseBody
 	public String getCurrentMonitorData(@PathVariable Long id, @RequestParam String ip, @RequestParam String name,
-					ModelMap model) {
+			ModelMap model) {
 		agentManagerService.requestShareAgentSystemDataModel(id);
 		return toJson(buildMap(JSON_SUCCESS, true, //
-						"systemData", agentManagerService.getAgentSystemDataModel(ip, name)));
+				"systemData", agentManagerService.getAgentSystemDataModel(ip, name)));
 	}
 }

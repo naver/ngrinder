@@ -38,14 +38,14 @@ public abstract class AbstractExceptionProcessor {
 	}
 
 	/**
-	 * Get root cause of the given throwable.
+	 * Get the root cause of the given {@link Throwable} instance.
 	 * 
-	 * It stop finding the root cause until it meets the null root cause or
+	 * It stops finding the root cause until it meets the null root cause or
 	 * net.grinder.engine.process.ShutdownException.
 	 * 
 	 * @param throwable
 	 *            throwable
-	 * @return root cause of the given throwsable
+	 * @return root cause of the given {@link Throwable} instance.
 	 */
 	public Throwable getRootCause(Throwable throwable) {
 		Throwable t = throwable;
@@ -61,7 +61,8 @@ public abstract class AbstractExceptionProcessor {
 	}
 
 	/**
-	 * Return true if the given {@link Throwable} is by the generic grinder shutdown event.
+	 * Return true if the given {@link Throwable} is by the generic grinder
+	 * shutdown event.
 	 * 
 	 * @param cause
 	 *            cause
@@ -70,7 +71,7 @@ public abstract class AbstractExceptionProcessor {
 	public boolean isGenericShutdown(Throwable cause) {
 		while (cause != null) {
 			if ((cause.getClass().getName().equals("net.grinder.engine.process.ShutdownException"))
-							|| (cause instanceof Sleeper.ShutdownException)) {
+					|| (cause instanceof Sleeper.ShutdownException)) {
 				return true;
 			}
 			cause = cause.getCause();
@@ -79,7 +80,7 @@ public abstract class AbstractExceptionProcessor {
 	}
 
 	/**
-	 * Reorganize the stacktrace elements with only interested one.
+	 * Filter the stacktrace elements with only interesting one.
 	 * 
 	 * @param throwable
 	 *            throwable
@@ -105,7 +106,7 @@ public abstract class AbstractExceptionProcessor {
 	}
 
 	/**
-	 * Check if the given class name is application class or not.
+	 * Check if the given class name is the application class or not.
 	 * 
 	 * @param className
 	 *            class name including package name
@@ -126,6 +127,7 @@ public abstract class AbstractExceptionProcessor {
 	 * @return interesting packages
 	 */
 	protected abstract String[] getInterestingPackages();
+
 	/**
 	 * Get interesting packages.
 	 * 

@@ -20,7 +20,7 @@ import liquibase.database.DatabaseConnection;
 import liquibase.exception.DatabaseException;
 
 /**
- * Liquibase Cubrid Database Support.
+ * Liquibase Cubrid Database driver.
  * 
  * @author Matt
  * @author JunHo Yoon
@@ -60,8 +60,8 @@ public class CUBRIDDatabase extends AbstractDatabase {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * liquibase.database.Database#isCorrectDatabaseImplementation(liquibase.database.DatabaseConnection
-	 * )
+	 * liquibase.database.Database#isCorrectDatabaseImplementation(liquibase
+	 * .database.DatabaseConnection )
 	 */
 	@Override
 	public boolean isCorrectDatabaseImplementation(DatabaseConnection conn) throws DatabaseException {
@@ -125,7 +125,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see liquibase.database.AbstractDatabase#generateAutoIncrementBy(java.math.BigInteger)
+	 * @see
+	 * liquibase.database.AbstractDatabase#generateAutoIncrementBy(java.math
+	 * .BigInteger)
 	 */
 	@Override
 	protected boolean generateAutoIncrementBy(BigInteger incrementBy) {
@@ -155,7 +157,8 @@ public class CUBRIDDatabase extends AbstractDatabase {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see liquibase.database.AbstractDatabase#getAutoIncrementStartWithClause()
+	 * @see
+	 * liquibase.database.AbstractDatabase#getAutoIncrementStartWithClause()
 	 */
 	@Override
 	protected String getAutoIncrementStartWithClause() {
@@ -201,7 +204,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see liquibase.database.AbstractDatabase#convertRequestedSchemaToSchema(java.lang.String)
+	 * @see
+	 * liquibase.database.AbstractDatabase#convertRequestedSchemaToSchema(java
+	 * .lang.String)
 	 */
 	@Override
 	public String convertRequestedSchemaToSchema(String requestedSchema) throws DatabaseException {
@@ -214,7 +219,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see liquibase.database.AbstractDatabase#convertRequestedSchemaToCatalog(java.lang.String)
+	 * @see
+	 * liquibase.database.AbstractDatabase#convertRequestedSchemaToCatalog(java
+	 * .lang.String)
 	 */
 	@Override
 	public String convertRequestedSchemaToCatalog(String requestedSchema) throws DatabaseException {
@@ -224,7 +231,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see liquibase.database.AbstractDatabase#escapeDatabaseObject(java.lang.String)
+	 * @see
+	 * liquibase.database.AbstractDatabase#escapeDatabaseObject(java.lang.String
+	 * )
 	 */
 	@Override
 	public String escapeDatabaseObject(String objectName) {
@@ -234,7 +243,9 @@ public class CUBRIDDatabase extends AbstractDatabase {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see liquibase.database.AbstractDatabase#escapeIndexName(java.lang.String, java.lang.String)
+	 * @see
+	 * liquibase.database.AbstractDatabase#escapeIndexName(java.lang.String,
+	 * java.lang.String)
 	 */
 	@Override
 	public String escapeIndexName(String schemaName, String indexName) {
