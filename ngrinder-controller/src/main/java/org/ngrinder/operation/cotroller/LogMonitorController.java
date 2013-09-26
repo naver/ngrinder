@@ -33,9 +33,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * Log monitor controller.
  * 
- * This class runs with {@link Tailer} implementation. Whenever the underlying log file is changed.
- * this class gets the changes. and keep them(max 10000 byte) in the memory. Whenever user requests
- * the log, it returns latest changes with the index of the log.
+ * This class runs with {@link Tailer} implementation. Whenever the underlying log file is changed. this class gets the
+ * changes. and keep them(max 10000 byte) in the memory. Whenever user requests the log, it returns latest changes with
+ * the index of the log.
  * 
  * This is only available in the non-clustered instance.
  * 
@@ -50,7 +50,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	private static final int LOGGER_BUFFER_SIZE = 10000;
 
 	/**
-	 * Latest log.
+	 * Buffer to store the latest log.
 	 */
 	private volatile StringBuffer stringBuffer = new StringBuffer(LOGGER_BUFFER_SIZE);
 
@@ -60,7 +60,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	private long modification = 0;
 
 	/**
-	 * Initialize the {@link Tailer}.
+	 * Initialize.
 	 */
 	@PostConstruct
 	public void init() {
@@ -70,7 +70,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Initialize tailer.
+	 * Initialize the {@link Tailer}.
 	 */
 	private synchronized void initTailer() {
 		File logFile = getLogFile();
@@ -102,13 +102,12 @@ public class LogMonitorController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get log file.
+	 * Get the log file.
 	 * 
 	 * @return log file
 	 */
 	File getLogFile() {
 		String logFileName = "ngrinder.log";
-
 		return new File(getConfig().getHome().getGlobalLogFile(), logFileName);
 	}
 
@@ -123,11 +122,11 @@ public class LogMonitorController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Logger first page.
+	 * Return the logger first page.
 	 * 
 	 * @param model
 	 *            model
-	 * @return "operation/logger"
+	 * @return operation/logger
 	 */
 	@RequestMapping("")
 	public String getLog(Model model) {
@@ -136,7 +135,7 @@ public class LogMonitorController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get the last log.
+	 * Get the last log in the form of json.
 	 * 
 	 * @return log json
 	 */

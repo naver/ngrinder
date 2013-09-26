@@ -65,7 +65,7 @@ public class PropertiesWrapper {
 	}
 
 	/**
-	 * Get property.
+	 * Get the property for the given property key.
 	 * 
 	 * @param key
 	 *            property key
@@ -75,6 +75,26 @@ public class PropertiesWrapper {
 	 */
 	public String getProperty(String key, String defaultValue) {
 		return StringUtils.trim(getProperty(key, defaultValue, DEFAULT_ERROR_MESSGAE));
+	}
+
+	/**
+	 * Get the property for the given property key considering with backward
+	 * compatibility.
+	 * 
+	 * @param key
+	 *            property key
+	 * @param oldKey
+	 *            old property key.
+	 * @param defaultValue
+	 *            default value when data is not available
+	 * @return property value
+	 */
+	public String getPropertyWithBackwardCompatibility(String key, String oldKey, String defaultValue) {
+		String property = getProperty(key, "", DEFAULT_ERROR_MESSGAE);
+		if (StringUtils.isEmpty(property)) {
+			property = getProperty(oldKey, defaultValue, DEFAULT_ERROR_MESSGAE);
+		}
+		return StringUtils.trim(property);
 	}
 
 	/**

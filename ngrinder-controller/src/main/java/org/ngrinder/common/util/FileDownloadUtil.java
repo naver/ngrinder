@@ -40,36 +40,42 @@ public abstract class FileDownloadUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileDownloadUtil.class);
 
 	/**
-	 * Provide file download from the given file path.
-	 * @param response {@link HttpServletResponse}
-	 * @param desFilePath file path
+	 * Download the given file to the given {@link HttpServletResponse}.
+	 * 
+	 * @param response
+	 *            {@link HttpServletResponse}
+	 * @param fileName
+	 *            file path
 	 * @return true if succeeded
 	 */
-	public static boolean downloadFile(HttpServletResponse response, String desFilePath) {
-		File desFile = new File(desFilePath);
-		return downloadFile(response, desFile);
+	public static boolean downloadFile(HttpServletResponse response, String fileName) {
+		File file = new File(fileName);
+		return downloadFile(response, file);
 	}
 
 	/**
-	 * Provide file download from the given file path.
-	 * @param response {@link HttpServletResponse}
-	 * @param desFile file path
+	 * Download the given file to the given {@link HttpServletResponse}.
+	 * 
+	 * @param response
+	 *            {@link HttpServletResponse}
+	 * @param file
+	 *            file path
 	 * @return true if succeeded
 	 */
-	public static boolean downloadFile(HttpServletResponse response, File desFile) {
-		if (desFile == null || !desFile.exists()) {
+	public static boolean downloadFile(HttpServletResponse response, File file) {
+		if (file == null || !file.exists()) {
 			return false;
 		}
 		boolean result = true;
 		response.reset();
-		response.addHeader("Content-Disposition", "attachment;filename=" + desFile.getName());
+		response.addHeader("Content-Disposition", "attachment;filename=" + file.getName());
 		response.setContentType("application/octet-stream");
-		response.addHeader("Content-Length", "" + desFile.length());
+		response.addHeader("Content-Length", "" + file.length());
 		InputStream fis = null;
 		byte[] buffer = new byte[FILE_DOWNLOAD_BUFFER_SIZE];
 		OutputStream toClient = null;
 		try {
-			fis = new BufferedInputStream(new FileInputStream(desFile));
+			fis = new BufferedInputStream(new FileInputStream(file));
 			toClient = new BufferedOutputStream(response.getOutputStream());
 			int readLength;
 			while (((readLength = fis.read(buffer)) != -1)) {
@@ -77,10 +83,10 @@ public abstract class FileDownloadUtil {
 			}
 			toClient.flush();
 		} catch (FileNotFoundException e) {
-			LOGGER.error("file not found:" + desFile.getAbsolutePath(), e);
+			LOGGER.error("file not found:" + file.getAbsolutePath(), e);
 			result = false;
 		} catch (IOException e) {
-			LOGGER.error("read file error:" + desFile.getAbsolutePath(), e);
+			LOGGER.error("read file error:" + file.getAbsolutePath(), e);
 			result = false;
 		} finally {
 			IOUtils.closeQuietly(fis);

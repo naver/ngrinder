@@ -26,8 +26,9 @@ import org.slf4j.LoggerFactory;
 import cubrid.jdbc.driver.CUBRIDDriver;
 
 /**
- * Various Database handler for supported databases.<br/>
- * You can easily add the more databases in {@link Database} enum.
+ * Database handler for supported databases.
+ * 
+ * You can easily add the more database type into {@link Database} enum.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -38,9 +39,9 @@ public enum Database {
 	cubrid(CUBRIDDriver.class, CUBRIDExDialect.class, "jdbc:CUBRID:%s:::?charset=utf-8%s") {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
-			dataSource.setUrl(String.format(getUrlTemplate(), databaseProperties.getProperty("database_url",
-							"localhost:33000:ngrinder", " is not defined"), 
-							databaseProperties.getProperty("database_url_option", "")));
+			dataSource.setUrl(String.format(getUrlTemplate(),
+					databaseProperties.getProperty("database_url", "localhost:33000:ngrinder", " is not defined"),
+					databaseProperties.getProperty("database_url_option", "")));
 			dataSource.setUsername(databaseProperties.getProperty("database_username", "ngrinder"));
 			dataSource.setPassword(databaseProperties.getProperty("database_password", "ngrinder"));
 		}
@@ -51,7 +52,7 @@ public enum Database {
 		@Override
 		protected void setupVariants(BasicDataSource dataSource, PropertiesWrapper databaseProperties) {
 			String format = String.format(getUrlTemplate(), databaseProperties.getProperty("NGRINDER_HOME", "."),
-							" is not defined");
+					" is not defined");
 			dataSource.setUrl(format);
 			dataSource.setUsername(databaseProperties.getProperty("database_username", "ngrinder"));
 			dataSource.setPassword(databaseProperties.getProperty("database_password", "ngrinder"));
@@ -80,8 +81,7 @@ public enum Database {
 	 * @param dialect
 	 *            the dialect to be used
 	 * @param urlTemplate
-	 *            database url template. This will be used to be combined with database_url property
-	 *            in database.conf
+	 *            database url template. This will be used to be combined with database_url property in database.conf
 	 */
 	Database(Class<? extends Driver> jdbcDriver, Class<? extends Dialect> dialect, String urlTemplate) {
 		this(jdbcDriver, dialect, urlTemplate, true);
@@ -95,14 +95,13 @@ public enum Database {
 	 * @param dialect
 	 *            the dialect to be used
 	 * @param urlTemplate
-	 *            database url template. This will be used to be combined with database_url property
-	 *            in database.conf
+	 *            database url template. This will be used to be combined with database_url property in database.conf
 	 * @param clusterSupport
 	 *            true if cluster mode is supported.
 	 * @since 3.1
 	 */
 	Database(Class<? extends Driver> jdbcDriver, Class<? extends Dialect> dialect, String urlTemplate,
-					boolean clusterSupport) {
+			boolean clusterSupport) {
 		this.clusterSupport = clusterSupport;
 		this.dialect = dialect.getCanonicalName();
 		this.jdbcDriverName = jdbcDriver.getCanonicalName();
@@ -142,7 +141,7 @@ public enum Database {
 			}
 		}
 		LOG.error("[FATAL] Database type {} is not supported. " + "Please check the ${NFORGE_HOME}/database.conf. "
-						+ "This time, Use H2 istead.", type);
+				+ "This time, Use H2 istead.", type);
 		return H2;
 	}
 
@@ -161,8 +160,7 @@ public enum Database {
 	}
 
 	/**
-	 * Setup the database specific features. Each {@link Database} enums should inherits this
-	 * method.
+	 * Setup the database specific features. Each {@link Database} enums should inherits this method.
 	 * 
 	 * @param dataSource
 	 *            dataSource

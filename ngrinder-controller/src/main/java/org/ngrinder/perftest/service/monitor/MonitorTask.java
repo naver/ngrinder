@@ -55,7 +55,7 @@ public class MonitorTask extends TimerTask {
 	private Long perfTestId;
 
 	/**
-	 * Add MBean Monitors on given monitorTargets.
+	 * Add MBean monitors on the given monitorTargets.
 	 * 
 	 * @param monitorTargets
 	 *            a set of monitor targets
@@ -74,7 +74,7 @@ public class MonitorTask extends TimerTask {
 	}
 
 	/**
-	 * Delete All MBean Monitors.
+	 * Delete All MBean monitors.
 	 */
 	public void destroy() {
 		for (Entry<String, MonitorClientSerivce> target : monitorClientsMap.entrySet()) {

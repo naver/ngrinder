@@ -25,16 +25,15 @@ import org.ngrinder.model.User;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
- * {@link PerfTest} Specification for more elaborated search.
+ * {@link PerfTest} Specification for the more elaborated search.
  * 
  * @author JunHo Yoon
  * @since 3.0
  */
 public abstract class PerfTestSpecification {
-	
 
 	/**
-	 * Get the Specification checking the {@link PerfTest} has one of given {@link Status}.
+	 * Get the{@link Specification} checking if the {@link PerfTest} has one of given {@link Status}.
 	 * 
 	 * @param statuses
 	 *            status set
@@ -50,7 +49,7 @@ public abstract class PerfTestSpecification {
 	}
 
 	/**
-	 * Get the Specification checking if the {@link PerfTest#getTags()} has the given tagValue.
+	 * Get the {@link Specification} checking if the {@link PerfTest#getTags()} has the given tagValue.
 	 * 
 	 * @param tagValue
 	 *            tagValue
@@ -65,9 +64,9 @@ public abstract class PerfTestSpecification {
 			}
 		};
 	}
-	
+
 	/**
-	 * Get the Specification checking if the {@link PerfTest} has one of the given IDs.
+	 * Get the {@link Specification} checking if the {@link PerfTest} has one of the given IDs.
 	 * 
 	 * @param ids
 	 *            id list
@@ -83,10 +82,10 @@ public abstract class PerfTestSpecification {
 	}
 
 	/**
-	 * Get the Specification checking if the {@link PerfTest} has the given ID.
+	 * Get the {@link Specification} checking if the {@link PerfTest} has the given ID.
 	 * 
 	 * @param id
-	 *            perftest id
+	 *            perf test id
 	 * @return {@link Specification}
 	 */
 	public static Specification<PerfTest> idEqual(final Long id) {
@@ -99,11 +98,11 @@ public abstract class PerfTestSpecification {
 	}
 
 	/**
-	 * Get the Specification checking if the {@link PerfTest} has the given region.
+	 * Get the {@link Specification} checking if the {@link PerfTest} has the given region.
 	 * 
 	 * @since 3.1
 	 * @param region
-	 *            region of perftest
+	 *            region of perf test
 	 * @return {@link Specification}
 	 */
 	public static Specification<PerfTest> idRegionEqual(final String region) {
@@ -116,8 +115,9 @@ public abstract class PerfTestSpecification {
 	}
 
 	/**
-	 * Get the Specification which provide empty predicate for id. This is for the base element for
-	 * "and" or "or" combination.
+	 * Get the {@link Specification} whichs provide empty predicate.
+	 * 
+	 * This is for the base element for "and" or "or" combination.
 	 * 
 	 * @return {@link Specification}
 	 */
@@ -129,10 +129,10 @@ public abstract class PerfTestSpecification {
 			}
 		};
 	}
-	
+
 	/**
-	 * Get the Specification which provide empty predicate for schedule time. This is for the base element for
-	 * "and" or "or" combination.
+	 * Get the Specification which provide empty predicate for schedule time. This is for the base element for "and" or
+	 * "or" combination.
 	 * 
 	 * @return {@link Specification}
 	 */
@@ -146,7 +146,7 @@ public abstract class PerfTestSpecification {
 	}
 
 	/**
-	 * Get the search {@link Specification} for testName and description fields.
+	 * Get the search {@link Specification} for test name and description fields.
 	 * 
 	 * @param queryString
 	 *            query String
@@ -164,7 +164,7 @@ public abstract class PerfTestSpecification {
 	}
 
 	/**
-	 * Get createBy specification to get the {@link PerfTest} whose creator is the given user.
+	 * Get createBy {@link Specification} to get the {@link PerfTest}s whose creator is the given user.
 	 * 
 	 * @param user
 	 *            user

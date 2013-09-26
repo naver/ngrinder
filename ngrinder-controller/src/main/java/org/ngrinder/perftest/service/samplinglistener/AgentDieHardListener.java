@@ -27,7 +27,7 @@ import org.ngrinder.perftest.service.AgentManager;
 import org.ngrinder.perftest.service.PerfTestService;
 
 /**
- * Agent Crash Preventer. .
+ * Agent crash preventer.
  * 
  * @author JunHo Yoon
  * @since 3.1.2
@@ -51,7 +51,7 @@ public class AgentDieHardListener implements SamplingLifeCycleListener {
 	 *            agent manager
 	 */
 	public AgentDieHardListener(SingleConsole singleConsole, PerfTest perfTest, PerfTestService perfTestService,
-					AgentManager agentManager) {
+			AgentManager agentManager) {
 		this.singleConsole = singleConsole;
 		this.perfTest = perfTest;
 		this.perfTestService = perfTestService;
@@ -70,11 +70,9 @@ public class AgentDieHardListener implements SamplingLifeCycleListener {
 			double freeMemoryRatio = ((double) systemDataModel.getFreeMemory()) / systemDataModel.getTotalMemory();
 			if (freeMemoryRatio < 0.02) {
 				perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING, //
-								String.format("[ERROR] %s agent is about to die due to lack of free memory.\n"
-												+ "Shutdown PerfTest %s by force for safety\n"
-												+ "Please decrease the vuser count.", //
-												agentStates.getAgentName(),
-												perfTest.getId()));
+						String.format("[ERROR] %s agent is about to die due to lack of free memory.\n"
+								+ "Shutdown PerfTest %s by force for safety\n" + "Please decrease the vuser count.", //
+								agentStates.getAgentName(), perfTest.getId()));
 			}
 		}
 

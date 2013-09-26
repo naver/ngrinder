@@ -20,7 +20,7 @@ import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 
 /**
- * Encoding detection utility from byte array.
+ * Automatic encoding detection utility.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -31,10 +31,14 @@ public abstract class EncodingUtil {
 
 	/**
 	 * Decode the byte array with auto encoding detection feature.
-	 * @param data byte array
-	 * @param defaultEncoding the default encoding if no encoding is sure.
+	 * 
+	 * @param data
+	 *            byte array
+	 * @param defaultEncoding
+	 *            the default encoding if no encoding is sure.
 	 * @return decoded string
-	 * @throws IOException occurs when the decoding is failed.
+	 * @throws IOException
+	 *             occurs when the decoding is failed.
 	 */
 	public static String getAutoDecodedString(byte[] data, String defaultEncoding) throws IOException {
 		return new String(data, detectEncoding(data, defaultEncoding));
@@ -42,10 +46,14 @@ public abstract class EncodingUtil {
 
 	/**
 	 * Detect encoding of given data.
-	 * @param data byte array
-	 * @param defaultEncoding the default encoding if no encoding is sure.
+	 * 
+	 * @param data
+	 *            byte array
+	 * @param defaultEncoding
+	 *            the default encoding if no encoding is sure.
 	 * @return encoding name detected encoding name
-	 * @throws IOException  occurs when the detection is failed.
+	 * @throws IOException
+	 *             occurs when the detection is failed.
 	 */
 	public static String detectEncoding(byte[] data, String defaultEncoding) throws IOException {
 		CharsetDetector detector = new CharsetDetector();

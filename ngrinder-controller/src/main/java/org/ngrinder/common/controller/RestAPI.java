@@ -19,7 +19,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation which marks json rest api in the controller.
+ * Annotation which marks json rest api in the controller. If it's marked on the
+ * controller methods, any exception occured in the method translated to json
+ * failure message.
  * 
  * @author junoyoon
  * @since 3.2.3

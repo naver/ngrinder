@@ -17,7 +17,7 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 
 /**
- * Current running statistics model of {@link PerfTest} per user.
+ * Current running perf test info of {@link PerfTest} per user.
  * 
  * @author JunHo Yoon
  * @since 3.0

@@ -50,9 +50,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 /**
  * Script Runner for maintenance.
  * 
- * This class has the jython instance and put the most important class instances as variable in the
- * jython. Admin and super user can run any jython code to print out or modify the internal ngrinder
- * status.
+ * This class has the jython instance and put the most important class instances as variables in the jython. Admin and
+ * super user can run any jython code to print out or modify the internal ngrinder states.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -98,7 +97,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	private PythonInterpreter interp;
 
 	/**
-	 * Initialize Jython and puts several managers and services into jython context.
+	 * Initialize Jython and put several managers and services into the jython context.
 	 */
 	@PostConstruct
 	public void init() {
@@ -166,20 +165,20 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	}
 
 	/**
-	 * Run script. The run result is stored in "result" of the given model.
+	 * Run the given script. The run result is stored in "result" of the given model.
 	 * 
 	 * @param script
 	 *            script
 	 * @param model
 	 *            model
-	 * @return "operation/script_console"
+	 * @return operation/script_console
 	 */
 	@RequestMapping("")
 	public String runScript(@RequestParam(value = "script", required = false) String script, Model model) {
 		if (interp == null) {
 			model.addAttribute("script", script);
 			model.addAttribute("result", "Scrpt Console is disabled due to memory config."
-							+ " Please set up Perm Gen memory more than 200M");
+					+ " Please set up Perm Gen memory more than 200M");
 		} else if (StringUtils.isNotBlank(script)) {
 			String result = processPython(script);
 			model.addAttribute("script", script);
@@ -189,7 +188,7 @@ public class ScriptConsoleController extends NGrinderBaseController implements A
 	}
 
 	/**
-	 * Run python script.
+	 * Run the jython script.
 	 * 
 	 * @param script
 	 *            script

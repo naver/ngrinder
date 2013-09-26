@@ -25,7 +25,7 @@ import org.ngrinder.infra.logger.CoreLogger;
 import org.ngrinder.perftest.service.PerfTestService;
 
 /**
- * PerfTest Sampling collection class.
+ * Perf Test Sampling collection class.
  * 
  * @author JunHo Yoon
  * @since 3.1.1
@@ -33,7 +33,7 @@ import org.ngrinder.perftest.service.PerfTestService;
 public class PerfTestSamplingCollectorListener implements SamplingLifeCycleListener {
 	private final PerfTestService perfTestService;
 	private ExecutorService newSingleThreadExecutor;
-	private PerfTestCollectionRunnable perfTestCollectionRunnable;
+	private PerfTestStatisticCollectionRunnable perfTestStatisticCollectionRunnable;
 
 	/**
 	 * Constructor.
@@ -46,17 +46,17 @@ public class PerfTestSamplingCollectorListener implements SamplingLifeCycleListe
 	 *            service
 	 */
 	public PerfTestSamplingCollectorListener(SingleConsole singleConsole, Long perfTestId,
-					PerfTestService perfTestService) {
+			PerfTestService perfTestService) {
 		this.perfTestService = perfTestService;
 		this.newSingleThreadExecutor = Executors.newSingleThreadExecutor();
-		this.perfTestCollectionRunnable = new PerfTestCollectionRunnable(singleConsole, perfTestId);
+		this.perfTestStatisticCollectionRunnable = new PerfTestStatisticCollectionRunnable(singleConsole, perfTestId);
 	}
 
-	class PerfTestCollectionRunnable implements Runnable {
+	class PerfTestStatisticCollectionRunnable implements Runnable {
 		private final SingleConsole singleConsole;
 		private final Long perfTestId;
 
-		PerfTestCollectionRunnable(SingleConsole singleConsole, Long perfTestId) {
+		PerfTestStatisticCollectionRunnable(SingleConsole singleConsole, Long perfTestId) {
 			this.singleConsole = singleConsole;
 			this.perfTestId = perfTestId;
 		}
@@ -75,7 +75,7 @@ public class PerfTestSamplingCollectorListener implements SamplingLifeCycleListe
 	@Override
 	public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics) {
 		CoreLogger.LOGGER.debug("Sampling is performed");
-		newSingleThreadExecutor.execute(this.perfTestCollectionRunnable);
+		newSingleThreadExecutor.execute(this.perfTestStatisticCollectionRunnable);
 	}
 
 	@Override

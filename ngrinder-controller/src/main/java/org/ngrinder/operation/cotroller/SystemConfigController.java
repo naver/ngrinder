@@ -37,10 +37,10 @@ public class SystemConfigController extends NGrinderBaseController {
 	private SystemConfigService systemConfigService;
 
 	/**
-	 * open system configuration editor.
+	 * Open the system configuration editor.
 	 * 
 	 * @param model
-	 *            model.
+	 *            model
 	 * @return operation/system_config
 	 */
 	@RequestMapping("")
@@ -50,12 +50,12 @@ public class SystemConfigController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Save system configuration.
+	 * Save the system configuration.
 	 * 
 	 * @param model
-	 *            model.
+	 *            model
 	 * @param content
-	 *            file content.
+	 *            system configuration content to be saved
 	 * @return operation/system_config
 	 */
 	@RequestMapping("/save")

@@ -22,7 +22,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 
 /**
- * Application lifecycle listner.
+ * Application life-cycle event listener.
+ * 
+ * This class is used to clean up the several locks.
  * 
  * @author JunHo Yoon
  * @since 3.1
@@ -36,8 +38,7 @@ public class ApplicationListenerBean implements ApplicationListener<ContextRefre
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.context.ApplicationListener#onApplicationEvent(org.springframework.context
+	 * @see org.springframework.context.ApplicationListener#onApplicationEvent(org.springframework.context
 	 * .ApplicationEvent)
 	 */
 	@Override

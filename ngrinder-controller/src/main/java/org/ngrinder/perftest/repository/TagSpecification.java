@@ -34,7 +34,8 @@ import org.springframework.data.jpa.domain.Specification;
 public abstract class TagSpecification {
 
 	/**
-	 * Get the Specification which provides empty predicate.<br/>
+	 * Get the {@link Specification} which provides the empty predicate.
+	 * 
 	 * This is for the base element for "and" or "or" combination.
 	 * 
 	 * @return {@link Specification}
@@ -49,7 +50,7 @@ public abstract class TagSpecification {
 	}
 
 	/**
-	 * Get the Specification which checks the {@link Tag#getTagValue()} has one of given value.
+	 * Get the {@link Specification} which checks if the {@link Tag#getTagValue()} has one of given value.
 	 * 
 	 * @param values
 	 *            tag lists
@@ -65,8 +66,8 @@ public abstract class TagSpecification {
 	}
 
 	/**
-	 * Get lastModifiedUser and createBy specification to get the {@link Tag} whose creator or last
-	 * modifier is the given user.
+	 * Get lastModifiedUser and createBy {@link Specification} to get the {@link Tag} whose creator or last modifier is
+	 * the given user.
 	 * 
 	 * @param user
 	 *            user
@@ -82,7 +83,7 @@ public abstract class TagSpecification {
 	}
 
 	/**
-	 * Get the Specification which checks the tag has corresponding perfTest.
+	 * Get the {@link Specification} which checks if the tag has corresponding perfTests.
 	 * 
 	 * @return {@link Specification}
 	 */
@@ -98,8 +99,7 @@ public abstract class TagSpecification {
 	}
 
 	/**
-	 * Get query specification to get the {@link Tag} whose value starts with
-	 * given query.
+	 * Get the {@link Specification} to get the {@link Tag} whose value starts with given query.
 	 * 
 	 * @param queryString
 	 *            matching tag value
@@ -111,7 +111,7 @@ public abstract class TagSpecification {
 			public Predicate toPredicate(Root<Tag> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 				String replacedQueryString = StringUtils.replace(queryString, "%", "\\%");
 				return cb.like(cb.lower(root.get("tagValue").as(String.class)),
-								StringUtils.lowerCase(replacedQueryString) + "%");
+						StringUtils.lowerCase(replacedQueryString) + "%");
 			}
 		};
 	}

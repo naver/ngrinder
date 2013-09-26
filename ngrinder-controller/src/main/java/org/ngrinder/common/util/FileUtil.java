@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
 /**
- * File utilities.
+ * Convenient File utilities.
  * 
  * @author JunHo Yoon
  * @since 3.1
@@ -39,10 +39,10 @@ public abstract class FileUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileUtil.class);
 
 	/**
-	 * Write object into file.
+	 * Write the given object into the given file.
 	 * 
 	 * @param file
-	 *            file
+	 *            file to write
 	 * @param obj
 	 *            obj to be written.
 	 */
@@ -78,7 +78,7 @@ public abstract class FileUtil {
 	}
 
 	/**
-	 * Read object from file.
+	 * Read object from the given file.
 	 * 
 	 * @param file
 	 *            file
@@ -132,19 +132,19 @@ public abstract class FileUtil {
 	 * 
 	 * @param resourcePath
 	 *            resource path
-	 * @param to
-	 *            destination file
+	 * @param file
+	 *            file to write
 	 * @since 3.2
 	 */
-	public static void copyResourceToFile(String resourcePath, File to) {
+	public static void copyResourceToFile(String resourcePath, File file) {
 		InputStream io = null;
 		FileOutputStream fos = null;
 		try {
-			io = new ClassPathResource("/logback/logback-worker.xml").getInputStream();
-			fos = new FileOutputStream(to);
+			io = new ClassPathResource(resourcePath).getInputStream();
+			fos = new FileOutputStream(file);
 			IOUtils.copy(io, fos);
 		} catch (IOException e) {
-			LOGGER.error("error while writing logback-worker", e);
+			LOGGER.error("error while writing {}", resourcePath, e);
 		} finally {
 			IOUtils.closeQuietly(io);
 			IOUtils.closeQuietly(fos);

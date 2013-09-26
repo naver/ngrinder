@@ -26,8 +26,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /**
- * Used to save JMX connect for every request that want to observe monitor real-time system
- * information.
+ * Used to save JMX connect for every request that want to observe monitor real-time system information.
  */
 @Service
 @Scope(value = "singleton")
@@ -37,10 +36,10 @@ public class MonitorInfoStore {
 	private ApplicationContext applicationContext;
 
 	private Map<String, MonitorClientSerivce> monitorInfoMap = Collections
-					.synchronizedMap(new HashMap<String, MonitorClientSerivce>());
+			.synchronizedMap(new HashMap<String, MonitorClientSerivce>());
 
 	/**
-	 * Get monitor data from MBClient.
+	 * Get monitor data from mbean client.
 	 * 
 	 * @param ip
 	 *            ip
@@ -67,7 +66,7 @@ public class MonitorInfoStore {
 	}
 
 	/**
-	 * Delete unused monitor clients periodically.
+	 * Delete the unused monitor clients periodically.
 	 */
 	@Scheduled(fixedDelay = 30000)
 	public void deleteUnusedMonitorClient() {
@@ -79,7 +78,7 @@ public class MonitorInfoStore {
 	}
 
 	/**
-	 * Used to close MBClient connect.
+	 * Close mbean client connected to the given ip.
 	 * 
 	 * @param ip
 	 *            ip
@@ -90,7 +89,7 @@ public class MonitorInfoStore {
 			if (monitorClient == null) {
 				return;
 			}
-			monitorClient.closeMBClient();
+			monitorClient.closeMbeanClient();
 			monitorInfoMap.remove(ip);
 		}
 	}

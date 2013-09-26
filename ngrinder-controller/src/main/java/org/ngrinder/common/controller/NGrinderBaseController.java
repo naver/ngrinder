@@ -43,7 +43,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
- * Controller base which is reused widely.
+ * Controller base containning widely used methods.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -82,7 +82,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Get current user.
+	 * Get the current user.
 	 * 
 	 * @return current user
 	 */
@@ -91,8 +91,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Provide current login user as a model attributes. If it's not found,
-	 * return empty user.
+	 * Provide the current login user as a model attribute. If it's not found, return empty user.
 	 * 
 	 * @return login user
 	 */
@@ -108,7 +107,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Provide announcement content as a model attributes.
+	 * Provide the announcement content as a model attribute.
 	 * 
 	 * @return announcement content
 	 */
@@ -118,7 +117,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Provide announcement content as a model attributes.
+	 * Provide the announcement content as a model attribute.
 	 * 
 	 * @return announcement content
 	 */
@@ -128,7 +127,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Provide clustered mark as a model attributes.
+	 * Provide the boolean value representing that it's clustered or not as a model attributes.
 	 * 
 	 * @return clustered mark
 	 */
@@ -138,7 +137,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Provide help URL as a model attributes.
+	 * Provide the help URL as a model attribute.
 	 * 
 	 * @return help URL
 	 */
@@ -148,7 +147,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Provide announcement hide cookie as a model attributes.
+	 * Provide the announcement hide cookie value as a model attribute.
 	 * 
 	 * @param annoucnementHide
 	 *            true if hidden.
@@ -161,11 +160,11 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Get message from messageSource by key.
+	 * Get the message from messageSource by the given key.
 	 * 
 	 * @param key
 	 *            key of message
-	 * @return found message. If not found, error message will return.
+	 * @return the found message. If not found, the error message will return.
 	 */
 	protected String getMessages(String key) {
 		Locale locale = null;
@@ -180,7 +179,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Return success json message.
+	 * Return the success json message.
 	 * 
 	 * @param message
 	 *            message
@@ -194,7 +193,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Return error json message.
+	 * Return the error json message.
 	 * 
 	 * @param message
 	 *            message
@@ -208,7 +207,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Return raw success json message.
+	 * Return the raw success json message.
 	 * 
 	 * @return json message
 	 */
@@ -217,7 +216,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Return raw error json message.
+	 * Return the raw error json message.
 	 * 
 	 * @return json message
 	 */
@@ -226,7 +225,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Convert the given list into json message.
+	 * Convert the given list into a json message.
 	 * 
 	 * @param list
 	 *            list
@@ -237,7 +236,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Convert the given object into json message.
+	 * Convert the given object into a json message.
 	 * 
 	 * @param obj
 	 *            object
@@ -248,7 +247,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Convert the given object into json message.
+	 * Convert the given object into a json message.
 	 * 
 	 * @param <T>
 	 *            content type
@@ -263,11 +262,11 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Convert the given object into json message.
+	 * Convert the given object into a {@link HttpEntity} containing the converted json message.
 	 * 
 	 * @param content
 	 *            content
-	 * @return json message
+	 * @return {@link HttpEntity} class containing the converted json message
 	 */
 	public HttpEntity<String> toJsonHttpEntity(Object content) {
 		HttpHeaders responseHeaders = new HttpHeaders();
@@ -277,7 +276,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Convert the given string into json message.
+	 * Convert the given string into {@link HttpEntity} containing the converted json message.
 	 * 
 	 * @param content
 	 *            content
@@ -291,7 +290,7 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Convert the given map into json message.
+	 * Convert the given map into the json message.
 	 * 
 	 * @param map
 	 *            map
@@ -302,12 +301,11 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Handle exception.
+	 * Exception handler to forward to front page showing the error message box.
 	 * 
 	 * @param e
-	 *            exception
-	 * 
-	 * @return modal and view
+	 *            occurred exception
+	 * @return modal and view having the exception message
 	 */
 	@ExceptionHandler({ NGrinderRuntimeException.class })
 	public ModelAndView handleException(NGrinderRuntimeException e) {
@@ -317,9 +315,9 @@ public class NGrinderBaseController implements NGrinderConstants {
 	}
 
 	/**
-	 * Get nGrinder Config Object.
+	 * Get {@link Config} object.
 	 * 
-	 * @return Config
+	 * @return config
 	 */
 	public Config getConfig() {
 		return config;

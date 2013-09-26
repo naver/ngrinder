@@ -76,20 +76,17 @@ public class HomeController extends NGrinderBaseController {
 
 	@Autowired
 	private Config config;
-	
+
 	@Autowired
 	private ScriptHandlerFactory scriptHandlerFactory;
 
 	private static final String TIMEZONE_ID_PREFIXES = "^(Africa|America|Asia|Atlantic|"
-					+ "Australia|Europe|Indian|Pacific)/.*";
+			+ "Australia|Europe|Indian|Pacific)/.*";
 
 	private List<TimeZone> timeZones = null;
 
 	/**
 	 * Initialize {@link HomeController}.
-	 * <ul>
-	 * <li>Get all timezones.</li>
-	 * </ul>
 	 */
 	@PostConstruct
 	public void init() {
@@ -108,14 +105,14 @@ public class HomeController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Provide nGrinder home.
+	 * Return nGrinder index page.
 	 * 
 	 * @param user
 	 *            user
 	 * @param exception
-	 *            exception if it's redirection from exception handling
+	 *            exception if it's redirected from exception handler
 	 * @param region
-	 *            region
+	 *            region. it's optional
 	 * @param model
 	 *            model
 	 * @param response
@@ -126,8 +123,8 @@ public class HomeController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = { "/home", "/" })
 	public String home(User user, @RequestParam(value = "exception", defaultValue = "") String exception,
-					@RequestParam(value = "region", defaultValue = "") String region, ModelMap model,
-					HttpServletResponse response, HttpServletRequest request) {
+			@RequestParam(value = "region", defaultValue = "") String region, ModelMap model,
+			HttpServletResponse response, HttpServletRequest request) {
 		try {
 			Role role = null;
 			try {
@@ -146,17 +143,17 @@ public class HomeController extends NGrinderBaseController {
 			model.addAttribute("left_panel_entries", homeService.getLeftPanelEntries());
 
 			model.addAttribute(
-							"ask_question_url",
-							config.getSystemProperties().getProperty("ngrinder.ask.question.url",
-											getMessages("home.qa.question.url")));
+					"ask_question_url",
+					config.getSystemProperties().getProperty("ngrinder.ask.question.url",
+							getMessages("home.qa.question.url")));
 			model.addAttribute(
-							"see_more_question_url",
-							config.getSystemProperties().getProperty("ngrinder.more.question.url",
-											getMessages("home.qa.rss.all")));
+					"see_more_question_url",
+					config.getSystemProperties().getProperty("ngrinder.more.question.url",
+							getMessages("home.qa.rss.all")));
 			model.addAttribute("handlers", scriptHandlerFactory.getVisibleHandlers());
 
 			if (StringUtils.isNotBlank(exception)) {
-				model.addAttribute("exception", exception); 
+				model.addAttribute("exception", exception);
 			}
 			if (role == Role.ADMIN || role == Role.SUPER_USER || role == Role.USER) {
 				return "index";
@@ -178,8 +175,8 @@ public class HomeController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Return health check message. If there are shutdown lock, it returns 503, otherwise return
-	 * region lists.
+	 * Return the health check message. If there is shutdown lock, it returns
+	 * 503. Otherwise it returns region lists.
 	 * 
 	 * @param response
 	 *            response
@@ -203,8 +200,8 @@ public class HomeController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Return health check message with 1 sec delay. If there are shutdown lock, it returns 503,
-	 * otherwise return region lists.
+	 * Return health check message with 1 sec delay. If there is shutdown lock,
+	 * it returns 503. Otherwise, it returns region lists.
 	 * 
 	 * @param sleep
 	 *            in milliseconds.
@@ -215,23 +212,23 @@ public class HomeController extends NGrinderBaseController {
 	@ResponseBody
 	@RequestMapping("/check/healthcheck_slow")
 	public String healthcheckSlowly(@RequestParam(value = "delay", defaultValue = "1000") int sleep,
-					HttpServletResponse response) {
+			HttpServletResponse response) {
 		ThreadUtil.sleep(sleep);
 		return healthcheck(response);
 	}
 
 	private void setLanguage(String lan, HttpServletResponse response, HttpServletRequest request) {
 		LocaleResolver localeResolver = checkNotNull(RequestContextUtils.getLocaleResolver(request),
-						"No LocaleResolver found!");
+				"No LocaleResolver found!");
 		LocaleEditor localeEditor = new LocaleEditor();
 		String language = StringUtils.defaultIfBlank(lan,
-						config.getSystemProperties().getProperty(NGRINDER_PROP_DEFAULT_LANGUAGE, "en"));
+				config.getSystemProperties().getProperty(NGRINDER_PROP_DEFAULT_LANGUAGE, "en"));
 		localeEditor.setAsText(language);
 		localeResolver.setLocale(request, response, (Locale) localeEditor.getValue());
 	}
 
 	/**
-	 * Provide help URL as a model attributes.
+	 * Provide help URL as a model attribute.
 	 * 
 	 * @return help URL
 	 */
@@ -241,7 +238,7 @@ public class HomeController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Provide login page.
+	 * Return the login page.
 	 * 
 	 * @param model
 	 *            model
@@ -267,7 +264,7 @@ public class HomeController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Change time zone.
+	 * Change the current user's time zone.
 	 * 
 	 * @param user
 	 *            user
@@ -283,7 +280,7 @@ public class HomeController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get all timezones.
+	 * Get all time zones.
 	 * 
 	 * @param model
 	 *            model
@@ -308,7 +305,7 @@ public class HomeController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Error redirection for second phase.
+	 * Error redirection as a second phase.
 	 * 
 	 * @param user
 	 *            user

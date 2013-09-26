@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * System configuration file operating service.
+ * System configuration operation service.
  * 
  * @author Alex Qin
  * @since 3.1
@@ -32,7 +32,6 @@ import org.springframework.stereotype.Service;
 public class SystemConfigService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SystemConfigService.class);
-
 	@Autowired
 	private Config config;
 

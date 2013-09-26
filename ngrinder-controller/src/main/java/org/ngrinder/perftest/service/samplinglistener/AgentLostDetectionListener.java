@@ -24,7 +24,7 @@ import org.ngrinder.model.Status;
 import org.ngrinder.perftest.service.PerfTestService;
 
 /**
- * Agent lost Detector.
+ * Agent Lost Detector.
  * 
  * @author JunHo Yoon
  * @since 3.1.2
@@ -60,7 +60,7 @@ public class AgentLostDetectionListener implements SamplingLifeCycleListener {
 		if (singleConsole.getAllAttachedAgentsCount() == 0) {
 			if (countOfLostAgent++ > 10) {
 				perfTestService.markStatusAndProgress(perfTest, Status.ABNORMAL_TESTING,
-								"[ERROR] All agents are unexpectively lost.");
+						"[ERROR] All agents are unexpectively lost.");
 			}
 		} else {
 			countOfLostAgent = 0;

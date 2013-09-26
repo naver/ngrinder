@@ -23,8 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Check every now and then that a certain file has not changed. If it has, then call the
- * {@link #doOnChange} method.
+ * Check every now and then that a certain file has not changed. If it has, then
+ * call the {@link #doOnChange} method.
  * 
  * @author JunHo Yoon
  * @since 3.1.1
@@ -32,7 +32,8 @@ import org.slf4j.LoggerFactory;
 public abstract class FileWatchdog extends Thread {
 	private static final Logger LOGGER = LoggerFactory.getLogger(FileWatchdog.class);
 	/**
-	 * The default delay between every file modification check, set to 60 seconds.
+	 * The default delay between every file modification check, set to 60
+	 * seconds.
 	 */
 	public static final long DEFAULT_DELAY = 60000;
 	/**
@@ -41,7 +42,8 @@ public abstract class FileWatchdog extends Thread {
 	private String filename;
 
 	/**
-	 * The delay to observe between every check. By default set {@link #DEFAULT_DELAY}.
+	 * The delay to observe between every check. By default set
+	 * {@link #DEFAULT_DELAY}.
 	 */
 	private long delay = DEFAULT_DELAY;
 
@@ -83,7 +85,8 @@ public abstract class FileWatchdog extends Thread {
 		}
 
 		if (fileExists) {
-			long l = file.lastModified(); // this can also throw a SecurityException
+			long l = file.lastModified(); // this can also throw a
+											// SecurityException
 			if (l > lastModif) { // however, if we reached this point this
 				lastModif = l; // is very unlikely.
 				doOnChange();

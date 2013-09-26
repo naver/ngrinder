@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Model aspect.
+ * Aspect to inject the created/modified user and date to the model.
  * 
  * @author Liu Zhifei
  * @author JunHo Yoon
@@ -48,10 +48,9 @@ public class ModelAspect {
 	@Autowired
 	private UserRepository userRepository;
 
-
 	/**
-	 * Save current user to modified date or created date. It's only workable when it's from servlet
-	 * context.
+	 * Inject the created/modified user and date to the model. It's only applied
+	 * in the servlet context.
 	 * 
 	 * @param joinPoint
 	 *            joint point
@@ -59,11 +58,11 @@ public class ModelAspect {
 	@Before(EXECUTION_SAVE)
 	public void beforeSave(JoinPoint joinPoint) {
 		for (Object object : joinPoint.getArgs()) {
-			// If the object is base model and it's on request of servlet
-			// It's not executed on Task scheduling.
+			// If the object is base model and it's on the servlet
+			// context, It's not executed by task scheduling.
 			SpringContext springContext = getSpringContext();
 			if (object instanceof BaseModel
-							&& (springContext.isServletRequestContext() || springContext.isUnitTestContext())) {
+					&& (springContext.isServletRequestContext() || springContext.isUnitTestContext())) {
 				BaseModel<?> model = (BaseModel<?>) object;
 				Date lastModifiedDate = new Date();
 				model.setLastModifiedDate(lastModifiedDate);

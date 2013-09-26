@@ -51,8 +51,7 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 
 /**
- * Spring component which is responsible to get the nGrinder configurations
- * which is stored ${NGRINDER_HOME}.
+ * Spring component which is responsible to get the nGrinder configurations which is stored ${NGRINDER_HOME}.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -88,16 +87,18 @@ public class Config implements IConfig, NGrinderConstants {
 	/**
 	 * Add the system configuration change listener.
 	 * 
-	 * @param listener listener
+	 * @param listener
+	 *            listener
 	 */
 	public void addSystemConfListener(PropertyChangeListener listener) {
 		systemConfListeners.add(listener);
 	}
 
 	/**
-	 * Initialize Config. This method mainly perform NGRINDER_HOME resolution
-	 * and system properties load. In addition, Logger is initialized and
-	 * default configuration file is copied into NGRINDER_HOME if it's the first
+	 * Initialize the {@link Config} object.
+	 * 
+	 * This method mainly resolves ${NGRINDER_HOME} and loads system properties. In addition, the logger is initialized
+	 * and the default configuration files are copied into ${NGRINDER_HOME} if they do not exists.
 	 */
 	@PostConstruct
 	public void init() {
@@ -123,12 +124,8 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	protected void resolveLocalIp() {
-		currentIP = getSystemProperties().getProperty("ngrinder.controller.ip", "");
-		// For historical reason. Support both.
-		if (StringUtils.isEmpty(currentIP)) {
-			currentIP = getSystemProperties().getProperty("ngrinder.controller.ipaddress",
-					NetworkUtil.getLocalHostAddress());
-		}
+		currentIP = getSystemProperties().getPropertyWithBackwardCompatibility("ngrinder.controller.ip",
+				"ngrinder.controller.ipaddress", NetworkUtil.getLocalHostAddress());
 	}
 
 	/**
@@ -136,13 +133,14 @@ public class Config implements IConfig, NGrinderConstants {
 	 */
 	@PreDestroy
 	public void destroy() {
+		// Stop all the non-daemon thread.
 		announcementWatchDog.interrupt();
 		systemConfWatchDog.interrupt();
 		policyJsWatchDog.interrupt();
 	}
 
 	/**
-	 * Set rmi server host name.
+	 * Set the RMI server host name.
 	 * 
 	 * @since 3.1
 	 */
@@ -152,10 +150,8 @@ public class Config implements IConfig, NGrinderConstants {
 				LOG.error("Region is not set in cluster mode. Please set ngrinder.region properly.");
 			} else {
 				CoreLogger.LOGGER.info("Cache cluster URIs:{}", getClusterURIs());
-				// set rmi server host for remote serving. Otherwise, maybe it
-				// will use 127.0.0.1 to
-				// serve.
-				// then the remote client can not connect.
+				// Set RMI server host for remote serving. Otherwise, maybe it
+				// will use 127.0.0.1 as the RMI server name and the remote client can not connect.
 				CoreLogger.LOGGER.info("Set current IP:{} for RMI server.", getCurrentIP());
 				System.setProperty("java.rmi.server.hostname", getCurrentIP());
 			}
@@ -163,9 +159,9 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Check whether the cache cluster is set.
+	 * Get if the cluster mode is enable or not.
 	 * 
-	 * @return true is cache cluster set
+	 * @return true if the cluster mode is enabled.
 	 * @since 3.1
 	 */
 	public boolean isCluster() {
@@ -173,9 +169,9 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Get the cluster URIs in configuration.
+	 * Get the ngrinder instance IPs consisting of the current cluster from the configuration.
 	 * 
-	 * @return cluster uri strings
+	 * @return ngrinder instance IPs
 	 */
 	public String[] getClusterURIs() {
 		String clusterUri = getSystemProperties().getProperty(NGRINDER_PROP_CLUSTER_URIS, "");
@@ -183,16 +179,16 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Get the region in configuration.
+	 * Get the current region from the configuration.
 	 * 
-	 * @return region
+	 * @return region. If it's not clustered mode, return "NONE"
 	 */
 	public String getRegion() {
 		return isCluster() ? getSystemProperties().getProperty(NGRINDER_PROP_REGION, NONE_REGION) : NONE_REGION;
 	}
 
 	/**
-	 * Get the monitor listener port in configuration.
+	 * Get the monitor listener port from the configuration.
 	 * 
 	 * @return monitor port
 	 */
@@ -202,7 +198,7 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Check if using usage report functions.
+	 * Check if the periodic usage report is enabled.
 	 * 
 	 * @return true if enabled.
 	 */
@@ -214,14 +210,14 @@ public class Config implements IConfig, NGrinderConstants {
 	 * Initialize Logger.
 	 * 
 	 * @param forceToVerbose
-	 *            force to verbose logging.
+	 *            true to force verbose logging.
 	 */
 	public synchronized void initLogger(boolean forceToVerbose) {
 		setupLogger((forceToVerbose) ? true : getSystemProperties().getPropertyBoolean("verbose", false));
 	}
 
 	/**
-	 * Set up logger.
+	 * Set up the logger.
 	 * 
 	 * @param verbose
 	 *            verbose mode?
@@ -254,7 +250,7 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Copy default files.
+	 * Copy the default files and create default directories to ${NGRINDER_HOME}.
 	 * 
 	 * @throws IOException
 	 *             occurs when there is no such a files.
@@ -331,7 +327,6 @@ public class Config implements IConfig, NGrinderConstants {
 
 	/**
 	 * Load database related properties. (database.conf)
-	 * 
 	 */
 	protected void loadDatabaseProperties() {
 		checkNotNull(home);
@@ -356,7 +351,7 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Load announcement content.
+	 * Load the announcement content.
 	 */
 	public synchronized void loadAnnouncement() {
 		checkNotNull(home);
@@ -375,7 +370,7 @@ public class Config implements IConfig, NGrinderConstants {
 		}
 	}
 
-	/** Configuration watch docs. */
+	/** watch docs. */
 	private FileWatchdog announcementWatchDog;
 	private FileWatchdog systemConfWatchDog;
 	private FileWatchdog policyJsWatchDog;
@@ -385,7 +380,7 @@ public class Config implements IConfig, NGrinderConstants {
 		this.announcementWatchDog = new FileWatchdog(getHome().getSubFile("announcement.conf").getAbsolutePath()) {
 			@Override
 			protected void doOnChange() {
-				CoreLogger.LOGGER.info("Announcement file changed.");
+				CoreLogger.LOGGER.info("Announcement file is changed.");
 				loadAnnouncement();
 			}
 		};
@@ -395,8 +390,8 @@ public class Config implements IConfig, NGrinderConstants {
 		this.systemConfWatchDog = new FileWatchdog(getHome().getSubFile("system.conf").getAbsolutePath()) {
 			@Override
 			protected void doOnChange() {
-				CoreLogger.LOGGER.info("System conf file changed.");
 				try {
+					CoreLogger.LOGGER.info("System configuration(system.conf) is changed.");
 					loadSystemProperties();
 					resolveLocalIp();
 					systemConfListeners.apply(new Informer<PropertyChangeListener>() {
@@ -405,11 +400,11 @@ public class Config implements IConfig, NGrinderConstants {
 							listener.propertyChange(null);
 						}
 					});
-
+					CoreLogger.LOGGER.info("New system configuration is applied.");
 				} catch (Exception e) {
-					CoreLogger.LOGGER.error("Error occurs while updating system.conf", e);
+					CoreLogger.LOGGER.error("Error occurs while applying new system configuration", e);
 				}
-				CoreLogger.LOGGER.info("System conf file is applied.");
+
 			}
 		};
 		systemConfWatchDog.setName("WatchDoc - system.conf");
@@ -420,7 +415,7 @@ public class Config implements IConfig, NGrinderConstants {
 		this.policyJsWatchDog = new FileWatchdog(processThreadPolicyPath) {
 			@Override
 			protected void doOnChange() {
-				CoreLogger.LOGGER.info("process_and_thread_policy file changed.");
+				CoreLogger.LOGGER.info("process_and_thread_policy file is changed.");
 				policyScript = "";
 			}
 		};
@@ -449,7 +444,7 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Check if it's the user security enabled mode.
+	 * Check if the user security is enabled.
 	 * 
 	 * @return true if user security is enabled.
 	 */
@@ -467,7 +462,7 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Check if it is demo mode.
+	 * Check if it is the demo mode.
 	 * 
 	 * @return true if demo mode is enabled.
 	 */
@@ -476,11 +471,11 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Check if plugin support is enabled. The reason why we need this
-	 * configuration is that it takes time to initialize plugin system in unit
-	 * test context.
+	 * Check if the plugin support is enabled.
 	 * 
-	 * @return true if plugin is supported.
+	 * The reason why we need this configuration is that it takes time to initialize plugin system in unit test context.
+	 * 
+	 * @return true if the plugin is supported.
 	 */
 	public boolean isPluginSupported() {
 		return !isTestMode() && (getSystemProperties().getPropertyBoolean("pluginsupport", true));
@@ -515,7 +510,7 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Get announcement content.
+	 * Get the announcement content.
 	 * 
 	 * @return loaded from announcement.conf.
 	 */
@@ -524,7 +519,7 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Get nGrinder version number.
+	 * Get the nGrinder version number.
 	 * 
 	 * @return nGrinder version number. If not set, return "0.0.1"
 	 */
@@ -533,14 +528,14 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Policy file which determine the process and thread.
+	 * Policy file which is used to determine the count of processes and threads.
 	 */
 	private String policyScript = "";
 
 	/**
 	 * Get the content of "process_and_thread_policy.js" file.
 	 * 
-	 * @return file content.
+	 * @return loaded file content.
 	 */
 	public String getProcessAndThreadPolicyScript() {
 		if (StringUtils.isEmpty(policyScript)) {
@@ -581,16 +576,26 @@ public class Config implements IConfig, NGrinderConstants {
 		return verbose;
 	}
 
+	/**
+	 * Get the currently configured controller IP.
+	 * 
+	 * @return current IP.
+	 */
 	public String getCurrentIP() {
 		return currentIP;
 	}
 
+	/**
+	 * Check if the current ngrinder instance is hidden instance from the cluster.
+	 * 
+	 * @return true if hidden.
+	 */
 	public boolean isInvisibleRegion() {
 		return getSystemProperties().getPropertyBoolean(NGRINDER_PROP_REGION_HIDE, false);
 	}
 
 	/**
-	 * Check the no more test lock to block further test execution.
+	 * Check if no_more_test.lock to block further test executions exists.
 	 * 
 	 * @return true if it exists
 	 */
@@ -602,7 +607,7 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 
 	/**
-	 * Check the shutdown lock to exclude this machine from somewhere(maybe L4).
+	 * Check if shutdown.lock exists.
 	 * 
 	 * @return true if it exists
 	 */
@@ -613,6 +618,11 @@ public class Config implements IConfig, NGrinderConstants {
 		return false;
 	}
 
+	/**
+	 * Get the date of the recent announcement modification.
+	 * 
+	 * @return the date of the recent announcement modification.
+	 */
 	public Date getAnnouncementDate() {
 		return announcementDate;
 	}

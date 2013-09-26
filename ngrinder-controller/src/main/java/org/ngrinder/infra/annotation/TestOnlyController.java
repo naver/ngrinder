@@ -22,9 +22,9 @@ import java.lang.annotation.Target;
 import org.springframework.stereotype.Controller;
 
 /**
- * Spring component annotation to mark this component is only necessary to
- * be created in unit test context. This annotation is mainly used to block the controller
- * creation in runtime.
+ * Spring component annotation to mark this component is only necessary to be created in unit test context.
+ * 
+ * This annotation is mainly used to block the controller creation in runtime.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -36,7 +36,7 @@ import org.springframework.stereotype.Controller;
 public @interface TestOnlyController {
 
 	/**
-	 * Get spring component id.
+	 * Spring component id.
 	 */
 	String value() default "";
 }

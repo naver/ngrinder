@@ -72,8 +72,6 @@ public class MonitorManagerController extends NGrinderBaseController {
 	 * @param ip
 	 *            target host IP
 	 * @return json message containing the target's monitoring data.
-	 * @throws Exception
-	 *             exception
 	 */
 	@RequestMapping("/status")
 	@ResponseBody

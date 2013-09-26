@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
- * Announcement controller.
+ * Announcement message management controller.
  * 
  * @author Alex Qin
  * @since 3.1
@@ -38,10 +38,10 @@ public class AnnouncementController extends NGrinderBaseController {
 	private AnnouncementService announcementService;
 
 	/**
-	 * open announcement editor.
+	 * Open the announcement editor.
 	 * 
 	 * @param model
-	 *            model.
+	 *            model
 	 * @return operation/announcement
 	 */
 	@RequestMapping(value = "", method = RequestMethod.GET)
@@ -53,12 +53,12 @@ public class AnnouncementController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Save announcement.
+	 * Save the announcement.
 	 * 
 	 * @param model
-	 *            model.
+	 *            model
 	 * @param content
-	 *            file content.
+	 *            new announcement content
 	 * @return operation/announcement
 	 */
 	@RequestMapping(value = "", method = RequestMethod.POST)

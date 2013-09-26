@@ -30,7 +30,8 @@ import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.User;
 
 /**
- * Home class which enable you to easily access resources in Home directory.
+ * Home class which enables the easy resource access in ${NGRINDER_HOME}
+ * directory.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -53,7 +54,7 @@ public class Home implements NGrinderConstants {
 	 * Constructor.
 	 * 
 	 * @param directory
-	 *            home directory
+	 *            home directory ${NGRINDER_HOME}
 	 * @param create
 	 *            create the directory if not exists
 	 */
@@ -64,13 +65,13 @@ public class Home implements NGrinderConstants {
 		}
 		if (directory.exists() && !directory.canWrite()) {
 			throw new ConfigurationException(String.format(" ngrinder home directory %s is not writable.", directory),
-							null);
+					null);
 		}
 		this.directory = directory;
 	}
 
 	/**
-	 * Get home directory.
+	 * Get the home directory.
 	 * 
 	 * @return home directory
 	 */
@@ -79,7 +80,7 @@ public class Home implements NGrinderConstants {
 	}
 
 	/**
-	 * Copy file from given location.
+	 * Copy the given file from given location.
 	 * 
 	 * @param from
 	 *            file location
@@ -104,10 +105,10 @@ public class Home implements NGrinderConstants {
 	}
 
 	/**
-	 * Make sub directory on home directory.
+	 * Make a sub directory on the home directory.
 	 * 
 	 * @param subPathName
-	 *            subpath name
+	 *            sub-path name
 	 */
 	public void makeSubPath(String subPathName) {
 		File subFile = new File(directory, subPathName);
@@ -117,7 +118,7 @@ public class Home implements NGrinderConstants {
 	}
 
 	/**
-	 * Get the {@link Properties} named the given configuration file name.
+	 * Get the {@link Properties} from the the given configuration file.
 	 * 
 	 * @param confFileName
 	 *            configuration file name
@@ -143,7 +144,7 @@ public class Home implements NGrinderConstants {
 	}
 
 	/**
-	 * Get sub {@link File} instance under home directory.
+	 * Get the sub {@link File} instance under the home directory.
 	 * 
 	 * @param subPathName
 	 *            subpath name
@@ -223,7 +224,7 @@ public class Home implements NGrinderConstants {
 	}
 
 	/**
-	 * Get the sub directory for given perftest.
+	 * Get the sub directory for the given perftest.
 	 * 
 	 * @param perfTest
 	 *            perfTest
@@ -238,7 +239,7 @@ public class Home implements NGrinderConstants {
 	}
 
 	/**
-	 * Get the sub directory for given perftest id.
+	 * Get the sub directory of the given perftest's base directory.
 	 * 
 	 * @param id
 	 *            perfTest id
@@ -253,10 +254,10 @@ public class Home implements NGrinderConstants {
 	}
 
 	/**
-	 * Get the sub directory directory for base perftest directory.
+	 * Get the perftest base directory for the given perftest id.
 	 * 
 	 * @param id
-	 *            id
+	 *            perftest id
 	 * @return {@link PerfTest} sub directory.
 	 */
 	public File getPerfTestDirectory(String id) {
@@ -360,7 +361,7 @@ public class Home implements NGrinderConstants {
 	}
 
 	/**
-	 * Get default grinder properties file.
+	 * Get the default grinder properties file.
 	 * 
 	 * @return grinder properties file
 	 */
@@ -369,7 +370,7 @@ public class Home implements NGrinderConstants {
 	}
 
 	/**
-	 * Get download directory.
+	 * Get the download directory.
 	 * 
 	 * @return download directory
 	 */
@@ -378,9 +379,10 @@ public class Home implements NGrinderConstants {
 	}
 
 	/**
-	 * Get controller share directory.
+	 * Get the controller share directory.
 	 * 
 	 * @return controller share directory
+	 * @deprecated
 	 */
 	public File getControllerShareDirectory() {
 		File subFile = getSubFile(SHARE_PATH);
@@ -400,7 +402,7 @@ public class Home implements NGrinderConstants {
 	}
 
 	/**
-	 * Check the this home exists.
+	 * Check if this home exists.
 	 * 
 	 * @return true if exists.
 	 */
@@ -408,6 +410,11 @@ public class Home implements NGrinderConstants {
 		return directory.exists();
 	}
 
+	/**
+	 * Get the user defined messages directory.
+	 * 
+	 * @return the user defined messages directory
+	 */
 	public File getMessagesDirectory() {
 		return getSubFile("messages");
 	}

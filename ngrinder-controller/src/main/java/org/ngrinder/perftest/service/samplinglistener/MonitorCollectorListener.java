@@ -49,14 +49,14 @@ public class MonitorCollectorListener implements SamplingLifeCycleFollowUpListen
 	 * @param applicationContext
 	 *            application context
 	 * @param perfTestId
-	 *            perftest id
+	 *            perf test id
 	 * @param agents
 	 *            set of monitors to be collected
 	 * @param reportPath
 	 *            where does it report.
 	 */
 	public MonitorCollectorListener(ApplicationContext applicationContext, Long perfTestId, Set<AgentInfo> agents,
-					File reportPath) {
+			File reportPath) {
 		this.applicationContext = applicationContext;
 		this.perfTestId = checkNotNull(perfTestId);
 		this.agents = agents;
@@ -77,7 +77,7 @@ public class MonitorCollectorListener implements SamplingLifeCycleFollowUpListen
 
 	@Override
 	public void onSampling(File file, StatisticsSet intervalStatistics, StatisticsSet cumulativeStatistics,
-					boolean lastCall) {
+			boolean lastCall) {
 		if (monitorTask != null) {
 			if (lastCall) {
 				monitorTask.saveData();

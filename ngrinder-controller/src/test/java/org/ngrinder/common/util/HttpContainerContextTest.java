@@ -29,18 +29,18 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * Class description.
- *
+ * 
  * @author Mavlarn
  * @since
  */
 public class HttpContainerContextTest extends AbstractNGrinderTransactionalTest {
-	
+
 	@Autowired
 	private HttpContainerContext httpContainerContext;
 
 	@Autowired
 	private Config config;
-	
+
 	@Before
 	public void setMockContext() {
 		MockHttpServletRequest req = new MockHttpServletRequest();
@@ -53,7 +53,6 @@ public class HttpContainerContextTest extends AbstractNGrinderTransactionalTest 
 	public void resetContext() {
 		RequestContextHolder.resetRequestAttributes();
 	}
-	
 
 	@Test
 	public void testGetCurrentRequestUrlFromUserRequest() {
@@ -69,12 +68,13 @@ public class HttpContainerContextTest extends AbstractNGrinderTransactionalTest 
 		requestUrl = httpContainerContext.getCurrentContextUrlFromUserRequest();
 		assertTrue(requestUrl.startsWith("http://"));
 
-		//reset the system properties.
+		// reset the system properties.
 		config.getSystemProperties().addProperty("http.url", requestUrl);
 	}
 
 	/**
-	 * Test method for {@link org.ngrinder.common.util.HttpContainerContext#isUnixUser()}.
+	 * Test method for
+	 * {@link org.ngrinder.common.util.HttpContainerContext#isUnixUser()}.
 	 */
 	@Test
 	public void testIsUnixUser() {

@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Plugin Sampling LifeCycle listener.
+ * Sampling LifeCycle listener to run the pluings implementing {@link OnTestSamplingRunnable}.
  * 
  * @author JunHo Yoon
  * @since 3.1
@@ -53,7 +53,7 @@ public class PluginRunListener implements SamplingLifeCycleListener {
 	 *            perfTestService
 	 */
 	public PluginRunListener(List<OnTestSamplingRunnable> plugins, SingleConsole singleConsole, PerfTest perfTest,
-					PerfTestService perfTestService) {
+			PerfTestService perfTestService) {
 		this.plugins = plugins;
 		this.singleConsole = singleConsole;
 		this.perfTest = perfTest;

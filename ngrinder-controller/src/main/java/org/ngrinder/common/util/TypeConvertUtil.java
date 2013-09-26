@@ -14,16 +14,15 @@
 package org.ngrinder.common.util;
 
 /**
- * Convenient class for type conversion.
+ * Convenient type conversion utility.
  * 
  * @author JunHo Yoon
  * @since 3.1
  */
 public abstract class TypeConvertUtil {
-	
 
 	/**
-	 * Convert object to return type.
+	 * Convert the given object to the inferred return type.
 	 * 
 	 * @param object
 	 *            object to be converted.

@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /**
- * Utility Component which provides various Http Container values.
+ * Utility component which provides various Http Container values.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -37,16 +37,18 @@ public class HttpContainerContext {
 	/**
 	 * Get current container nGrinder context base path.
 	 * 
-	 * E.g) if user requests http://hostname:port/context_path/realurl, This will return
-	 * http://hostname:port/context_path
+	 * E.g) if user requests http://hostname:port/context_path/realurl, This
+	 * will return http://hostname:port/context_path
 	 * 
-	 * In case of providing "http.url" property in system.properties file, this method will return
-	 * pre-set value.
+	 * In case of providing "http.url" property in system.properties file, this
+	 * method will return pre-set value.
 	 * 
 	 * @return ngrinder context base path on http request.
 	 */
 	public String getCurrentContextUrlFromUserRequest() {
-		String httpUrl = config.getSystemProperties().getProperty("http.url", "");
+
+		String httpUrl = config.getSystemProperties().getPropertyWithBackwardCompatibility("http.url",
+				"ngrinder.http.url", "");
 		// if provided
 		if (StringUtils.isNotBlank(httpUrl)) {
 			return httpUrl;
@@ -54,14 +56,14 @@ public class HttpContainerContext {
 
 		// if empty
 		SecurityContextHolderAwareRequestWrapper request = cast(RequestContextHolder.currentRequestAttributes()
-						.resolveReference("request"));
+				.resolveReference("request"));
 		int serverPort = request.getServerPort();
 		// If it's http default port it will ignore the port part.
 		// However, if ngrinder is provided in HTTPS.. it can be a problem.
 		// FIXME : Later fix above.
 		String portString = (serverPort == DEFAULT_WEB_PORT) ? StringUtils.EMPTY : ":" + serverPort;
 		return new StringBuilder(httpUrl).append(request.getScheme()).append("://").append(request.getServerName())
-						.append(portString).append(request.getContextPath()).toString();
+				.append(portString).append(request.getContextPath()).toString();
 	}
 
 	/**
@@ -71,7 +73,7 @@ public class HttpContainerContext {
 	 */
 	public boolean isUnixUser() {
 		SecurityContextHolderAwareRequestWrapper request = cast(RequestContextHolder.currentRequestAttributes()
-						.resolveReference("request"));
+				.resolveReference("request"));
 		return !StringUtils.containsIgnoreCase(request.getHeader("User-Agent"), "Win");
 	}
 }

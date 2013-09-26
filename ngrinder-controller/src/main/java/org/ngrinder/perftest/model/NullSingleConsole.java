@@ -20,9 +20,9 @@ import java.util.Map;
 import net.grinder.SingleConsole;
 
 /**
- * Null Object for {@link SingleConsole}.<br/>
+ * Null Object for {@link SingleConsole}.
  * 
- * This class is for invalidating default {@link SingleConsole} behavior.
+ * This class is to ignore the default {@link SingleConsole} behavior.
  * 
  * @author JunHo Yoon
  * @since 3.0

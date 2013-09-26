@@ -39,7 +39,7 @@ import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 
 /**
- * nGrinder index page data service.
+ * nGrinder index page data retrieval service.
  * 
  * @author JunHo Yoon
  * @since 3.1
@@ -61,7 +61,8 @@ public class HomeService {
 	private Config config;
 
 	/**
-	 * Get let panel entries. which has ngrinder nabble contents as defaults.
+	 * Get the let panel entries. if not configured, ngrinder nabble contents
+	 * will be returned as defaults.
 	 * 
 	 * @return the list of {@link PanelEntry}
 	 */
@@ -73,16 +74,16 @@ public class HomeService {
 		try {
 			List<PanelEntry> panelEntries = new ArrayList<PanelEntry>();
 			URL url = new URL(config.getSystemProperties().getProperty(NGrinderConstants.NGRINDER_PROP_FRONT_PAGE_RSS,
-							NGrinderConstants.NGRINDER_NEWS_RSS_URL));
+					NGrinderConstants.NGRINDER_NEWS_RSS_URL));
 			reader = new XmlReader(url);
 			SyndFeed feed = input.build(reader);
 			List<SyndEntryImpl> entries = (List<SyndEntryImpl>) (feed.getEntries().subList(0,
-							Math.min(feed.getEntries().size(), PANEL_ENTRY_SIZE)));
+					Math.min(feed.getEntries().size(), PANEL_ENTRY_SIZE)));
 			for (SyndEntryImpl each : entries) {
 				PanelEntry entry = new PanelEntry();
 				entry.setAuthor(each.getAuthor());
 				entry.setLastUpdatedDate(each.getUpdatedDate() == null ? each.getPublishedDate() : each
-								.getUpdatedDate());
+						.getUpdatedDate());
 				entry.setTitle(each.getTitle());
 				entry.setLink(each.getLink());
 				panelEntries.add(entry);
@@ -99,19 +100,20 @@ public class HomeService {
 	}
 
 	/**
-	 * Get right panel entries. which has the nabble contents as defaults.
+	 * Get the right panel entries containing the entries from the given RSS
+	 * url.
 	 * 
-	 * @param urlString
+	 * @param rssURL
 	 *            rss url message
 	 * @return {@link PanelEntry} list
 	 */
 	@Cacheable(value = "right_panel_entries")
-	public List<PanelEntry> getRightPanelEntries(String urlString) {
+	public List<PanelEntry> getRightPanelEntries(String rssURL) {
 		SyndFeedInput input = new SyndFeedInput();
 		XmlReader reader = null;
 		try {
 			List<PanelEntry> panelEntries = new ArrayList<PanelEntry>();
-			URL url = new URL(urlString);
+			URL url = new URL(rssURL);
 			reader = new XmlReader(url);
 			SyndFeed feed = input.build(reader);
 			int count = 0;
@@ -124,7 +126,7 @@ public class HomeService {
 					PanelEntry entry = new PanelEntry();
 					entry.setAuthor(each.getAuthor());
 					entry.setLastUpdatedDate(each.getUpdatedDate() == null ? each.getPublishedDate() : each
-									.getUpdatedDate());
+							.getUpdatedDate());
 					entry.setTitle(each.getTitle());
 					entry.setLink(each.getLink());
 

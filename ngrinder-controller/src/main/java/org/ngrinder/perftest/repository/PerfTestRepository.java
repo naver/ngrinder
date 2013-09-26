@@ -35,7 +35,7 @@ import org.springframework.data.jpa.repository.Query;
  */
 public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSpecificationExecutor<PerfTest> {
 	/**
-	 * Find all {@link PerfTest} based on spec.
+	 * Find the paged {@link PerfTest}s based on the given spec.
 	 * 
 	 * @param spec
 	 *            {@link Specification} of {@link PerfTest} query
@@ -47,7 +47,7 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	Page<PerfTest> findAll(Specification<PerfTest> spec, Pageable pageable);
 
 	/**
-	 * Find all {@link PerfTest} based on user.
+	 * Find the paged {@link PerfTest}s having the given created user.
 	 * 
 	 * @param user
 	 *            user
@@ -59,7 +59,7 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	Page<PerfTest> findAllByCreatedUserOrderByCreatedDateAsc(User user, Pageable pageable);
 
 	/**
-	 * Find all {@link PerfTest} based on {@link Status} ordered by CreatedDate.
+	 * Find all {@link PerfTest}s having the given {@link Status} ordered by createdDate.
 	 * 
 	 * @param status
 	 *            status
@@ -69,8 +69,7 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	List<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status);
 
 	/**
-	 * Find all {@link PerfTest} based on {@PerfTest#status} ordered by
-	 * CreatedDate.
+	 * Find the paged {@link PerfTest}s having the given {@PerfTest#status} ordered by createdDate.
 	 * 
 	 * @param status
 	 *            status
@@ -81,8 +80,8 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	Page<PerfTest> findAllByStatusOrderByCreatedDateAsc(Status status, Pageable pageable);
 
 	/**
-	 * Find all {@link PerfTest} based on {@PerfTest#status} ordered by
-	 * scheduledTime ascending.
+	 * Find the paged {@link PerfTest}s having the given {@PerfTest#status} ordered by scheduledTime
+	 * ascending.
 	 * 
 	 * @param status
 	 *            status
@@ -93,8 +92,8 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	Page<PerfTest> findAllByStatusOrderByScheduledTimeAsc(Status status, Pageable pageable);
 
 	/**
-	 * Find all {@link PerfTest} based on {@PerfTest#status} ordered by
-	 * scheduledTime ascending.
+	 * Find all {@link PerfTest}s having the given {@PerfTest#status} ordered by scheduledTime
+	 * ascending.
 	 * 
 	 * @param status
 	 *            status
@@ -103,8 +102,17 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	List<PerfTest> findAllByStatusOrderByScheduledTimeAsc(Status status);
 
 	/**
-	 * Find all {@link PerfTest} based on {@PerfTest#status} and
-	 * {@PerfTest#region} ordered by scheduledTime ascending.
+	 * Find all {@link PerfTest}s having the given {@PerfTest#status} and {@PerfTest#region
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * } ordered by scheduledTime ascending.
 	 * 
 	 * @param status
 	 *            perf test status to search
@@ -115,14 +123,14 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	List<PerfTest> findAllByStatusAndRegionOrderByScheduledTimeAsc(Status status, String region);
 
 	/**
-	 * Update the runtime statistics on the given {@link PerfTest} id.
+	 * Update the runtime statistics on the perf test having the given {@link PerfTest} id.
 	 * 
 	 * @param id
 	 *            {@link PerfTest} id
 	 * @param runningSample
-	 *            runningSample json string
+	 *            running sample json string
 	 * @param agentStatus
-	 *            agentStatus json string
+	 *            agent status json string
 	 * @return the count of updated row
 	 */
 	@Modifying
@@ -130,7 +138,7 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	int updateRuntimeStatistics(Long id, String runningSample, String agentStatus);
 
 	/**
-	 * Update the monitor statistics on the given {@link PerfTest} id.
+	 * Update the monitor statistics on the perf test having the given {@link PerfTest} id.
 	 * 
 	 * @param id
 	 *            {@link PerfTest} id
@@ -143,21 +151,21 @@ public interface PerfTestRepository extends JpaRepository<PerfTest, Long>, JpaSp
 	int updatetMonitorStatus(Long id, String monitorStatus);
 
 	/**
-	 * Find all {@link PerfTest} based on given start and end times.
+	 * Find all {@link PerfTest}s created between the given start and end date and having the the given region.
 	 * 
 	 * @param start
 	 *            time
 	 * @param end
 	 *            time
-	 * @param region 
-	 * 			  region
+	 * @param region
+	 *            region
 	 * @return {@link PerfTest} list
 	 */
 	@Query("select p from PerfTest  p where p.startTime between ?1 and ?2 and region=?3")
 	List<PerfTest> findAllByCreatedTimeAndRegion(Date start, Date end, String region);
-	
+
 	/**
-	 * Find all {@link PerfTest} based on given start and end times.
+	 * Find all {@link PerfTest} created between the given start and end dates.
 	 * 
 	 * @param start
 	 *            time

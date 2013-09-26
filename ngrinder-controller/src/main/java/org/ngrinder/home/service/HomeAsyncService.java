@@ -22,7 +22,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 /**
- * Wrapper for aync-call to HomeService.
+ * Wrapper for all aync-calls used in HomeService.
  * 
  * This is used for pre-fetching home news entries.
  * 
@@ -38,17 +38,16 @@ public class HomeAsyncService {
 	private MessageSource messageSource;
 
 	/**
-	 * Get the right panel entries with async way.
+	 * Get the right panel entries in async way.
 	 */
 	@Async
 	public void getRightPanelEntries() {
-		String message = messageSource.getMessage(NGrinderConstants.NGRINDER_QNA_RSS_URL_KEY, null,
-						new Locale("en"));
+		String message = messageSource.getMessage(NGrinderConstants.NGRINDER_QNA_RSS_URL_KEY, null, new Locale("en"));
 		homeService.getRightPanelEntries(message);
 	}
 
 	/**
-	 * Get the left panel entries with async way.
+	 * Get the left panel entries in async way.
 	 */
 	@Async
 	public void getLeftPanelEntries() {

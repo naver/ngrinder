@@ -142,7 +142,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get Performance test lists.
+	 * Get the perf test lists.
 	 * 
 	 * @param user
 	 *            user
@@ -153,8 +153,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 * @param tag
 	 *            tag
 	 * @param queryFilter
-	 *            "F" means get only finished, "S" means get only scheduled
-	 *            tests.
+	 *            "F" means get only finished, "S" means get only scheduled tests.
 	 * @param pageable
 	 *            page
 	 * @return perftest/list
@@ -203,7 +202,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get perftest creation form.
+	 * Open the new perf test creation form.
 	 * 
 	 * @param user
 	 *            user
@@ -217,15 +216,15 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get performance test detail on give perf test id.
+	 * Get the perf test detail on the given perf test id.
 	 * 
 	 * @param user
 	 *            user
 	 * @param model
 	 *            model
 	 * @param id
-	 *            performance test id
-	 * @return "perftest/detail"
+	 *            perf test id
+	 * @return perftest/detail
 	 */
 	@RequestMapping("/{id}")
 	public String getPerfTestDetail(User user, @PathVariable("id") Long id, ModelMap model) {
@@ -255,8 +254,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get all available script list in JSON format for the given user's factual
-	 * user.
+	 * Get all available scripts in JSON format for the current factual user.
 	 * 
 	 * @param user
 	 *            user
@@ -283,7 +281,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Search tag based on the given query.
+	 * Search tags based on the given query.
 	 * 
 	 * @param user
 	 *            user to search
@@ -304,7 +302,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 * Add the various default configuration values on the model.
 	 * 
 	 * @param model
-	 *            model which will contains that value.
+	 *            model to which put the default values
 	 */
 	public void addDefaultAttributeOnModel(ModelMap model) {
 		model.addAttribute(PARAM_MAX_VUSER_PER_AGENT, agentManager.getMaxVuserPerAgent());
@@ -324,17 +322,17 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * get details view for quickStart.
+	 * Get the perf test creation form for quickStart.
 	 * 
 	 * @param user
 	 *            user
 	 * @param urlString
-	 *            url string to be tested.
+	 *            URL string to be tested.
 	 * @param scriptType
 	 *            scriptType
 	 * @param model
 	 *            model
-	 * @return "perftest/detail"
+	 * @return perftest/detail
 	 */
 	@RequestMapping("/quickstart")
 	public String getQuickStart(User user, //
@@ -411,7 +409,7 @@ public class PerfTestController extends NGrinderBaseController {
 		if (StringUtils.isBlank(test.getRegion())) {
 			test.setRegion(Config.NONE_REGION);
 		}
-		// In case of run count scheme, Sampling ignore count is not applied.
+		// In case that run count is used, sampling ignore count should not be applied.
 		if (test.isThreshholdRunCount()) {
 			test.setIgnoreSampleCount(0);
 		}
@@ -421,10 +419,12 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get last perftest detail in the form of json.
+	 * Get the last perf test details in the form of json.
 	 * 
 	 * @param user
 	 *            user
+	 * @param size
+	 *            size of retrieved perf test
 	 * @return json string
 	 */
 	@RestAPI
@@ -436,7 +436,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get perftest detail in the form of json.
+	 * Get the perf test detail in the form of json.
 	 * 
 	 * @param user
 	 *            user
@@ -455,13 +455,13 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Clone and start the given perftest .
+	 * Clone and start the given perf test.
 	 * 
 	 * @param user
 	 *            user
 	 * @param id
-	 *            perftest id to be cloned
-	 * @param option
+	 *            perf test id to be cloned
+	 * @param perftest
 	 *            option to override while cloning.
 	 * @return json string
 	 */
@@ -491,7 +491,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Leave comment on the perftest.
+	 * Leave the comment on the perf test.
 	 * 
 	 * @param id
 	 *            testId
@@ -512,13 +512,13 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get status of perftests and perftest statistics.
+	 * Get the count of currently running perf test and the detailed progress info for the given perf test IDs.
 	 * 
 	 * @param user
 	 *            user
 	 * @param ids
-	 *            comma separated perftest list
-	 * @return JSON string which contains perftest status
+	 *            comma separated perf test list
+	 * @return JSON message containing perf test status
 	 */
 	@RequestMapping(value = "update_status")
 	public HttpEntity<String> updateStatuses(User user, @RequestParam("ids") String ids) {
@@ -562,13 +562,13 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get status of perftest.
+	 * Get the status of the given perf test.
 	 * 
 	 * @param user
 	 *            user
 	 * @param id
 	 *            perftest id
-	 * @return JSON string which contains perftest status
+	 * @return JSON message containing perf test status
 	 */
 	@RequestMapping(value = "{id}/update_status")
 	public HttpEntity<String> updateStatus(User user, @PathVariable("id") Long id) {
@@ -577,15 +577,15 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Delete the perftest having given ids.
+	 * Delete the perf tests having given IDs.
 	 * 
 	 * @param user
 	 *            user
 	 * @param model
 	 *            model
 	 * @param ids
-	 *            id string separating ","
-	 * @return success json if succeeded.
+	 *            comma operated IDs
+	 * @return success json messages if succeeded.
 	 */
 	@RequestMapping(value = "/delete", method = RequestMethod.POST)
 	@ResponseBody
@@ -597,14 +597,14 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Request to stop tests having given ids.
+	 * Stop the perf tests having given IDs.
 	 * 
 	 * @param user
 	 *            user
 	 * @param model
 	 *            model
 	 * @param ids
-	 *            id string separating ","
+	 *            comma separated perf test IDs
 	 * @return success json if succeeded.
 	 */
 	@RequestMapping(value = "/stop", method = RequestMethod.POST)
@@ -617,8 +617,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get resources and lib files on the same folder with the given script
-	 * path.
+	 * Get resources and lib file list from the same folder with the given script path.
 	 * 
 	 * @param user
 	 *            user
@@ -632,7 +631,8 @@ public class PerfTestController extends NGrinderBaseController {
 	 */
 	@RequestMapping(value = "/resource")
 	public HttpEntity<String> getResources(User user, @RequestParam String scriptPath,
-			@RequestParam(value = "r", required = false) Long revision, @RequestParam(required = false) String ownerId) {
+			@RequestParam(value = "r", required = false) Long revision, // LF
+			@RequestParam(required = false) String ownerId) {
 		if (user.getRole() == Role.ADMIN && StringUtils.isNotBlank(ownerId)) {
 			user = userService.getUserById(ownerId);
 		}
@@ -669,7 +669,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get the detailed report graph data for the given perftest id.<br/>
+	 * Get the detailed report graph data for the given perf test id.<br/>
 	 * This method returns the appropriate points based on the given imgWidth.
 	 * 
 	 * @param model
@@ -710,7 +710,8 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get the basic report content in perftest configuration page.<br/>
+	 * Get the basic report content in perftest configuration page.
+	 * 
 	 * This method returns the appropriate points based on the given imgWidth.
 	 * 
 	 * @param user
@@ -721,7 +722,7 @@ public class PerfTestController extends NGrinderBaseController {
 	 *            test id
 	 * @param imgWidth
 	 *            image width
-	 * @return "perftest/basic_report"
+	 * @return perftest/basic_report
 	 */
 	@RequestMapping(value = "{id}/basic_report")
 	public String getReportSection(User user, ModelMap model, @PathVariable long id, @RequestParam int imgWidth) {
@@ -735,7 +736,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Download csv report for the given perf test id.
+	 * Download the CSV report for the given perf test id.
 	 * 
 	 * @param user
 	 *            user
@@ -753,7 +754,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Download logs for the given id.
+	 * Download logs for the perf test having the given id.
 	 * 
 	 * @param user
 	 *            user
@@ -773,7 +774,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Download logs for the given id.
+	 * Show the given log for the perf test having the given id.
 	 * 
 	 * @param user
 	 *            user
@@ -811,7 +812,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get the real time test running info for the given test id.
+	 * Get the running perf test info having the given id.
 	 * 
 	 * @param user
 	 *            user
@@ -872,13 +873,14 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get perftest report. This is kept for the compatibility.
+	 * Get the detailed perf test report. This is kept for the compatibility.
 	 * 
 	 * @param model
 	 *            model
 	 * @param testId
-	 *            test id
-	 * @return "perftest/detail_report"
+	 *            perf test id
+	 * @return perftest/detail_report
+	 * @deprecated
 	 */
 	@RequestMapping(value = "/detail_report")
 	public String getReportRaw(ModelMap model, @RequestParam long testId) {
@@ -886,13 +888,13 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get perftest report.
+	 * Get the detailed perf test report.
 	 * 
 	 * @param model
 	 *            model
 	 * @param id
 	 *            test id
-	 * @return "perftest/detail_report"
+	 * @return perftest/detail_report
 	 */
 	@RequestMapping(value = { "{id}/detail_report", "{id}/report" })
 	public String getReport(ModelMap model, @PathVariable("id") long id) {
@@ -912,7 +914,7 @@ public class PerfTestController extends NGrinderBaseController {
 	}
 
 	/**
-	 * Get monitor data of agents.
+	 * Get the monitor data of the target having the given IP.
 	 * 
 	 * @param model
 	 *            model
