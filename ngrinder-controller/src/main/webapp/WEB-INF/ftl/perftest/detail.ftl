@@ -257,7 +257,7 @@
 			</div>
 			<!-- end well -->
 			<@security.authorize ifAnyGranted="A, S">
-				<#if test?? && test.createdUser??>
+				<#if test?? && test.createdUser?? && currentUser.userId != test.createdUser.userId>
 					<div class="pull-right">
 						<@spring.message "perfTest.table.owner"/> : ${test.createdUser.userName!""} (${test.createdUser.userId!""})		
 					</div>
