@@ -40,8 +40,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 /**
- * nGrinder authentication provide. This class is for the plugin system of user
- * authentication.
+ * nGrinder UserDetailsAuthenticationProvider.
+ * 
+ * This class validates the user provided ID / Password from login page. Internally it uses the plugins implementing
+ * {@link OnLoginRunnable}. If you want to extend user authentification, please create the plugin implementing
+ * {@link OnLoginRunnable} interface.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -172,18 +175,15 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	}
 
 	/**
-	 * Sets the PasswordEncoder instance to be used to encode and validate
-	 * passwords. If not set, the password will be compared as plain text.
+	 * Sets the PasswordEncoder instance to be used to encode and validate passwords. If not set, the password will be
+	 * compared as plain text.
 	 * <p>
-	 * For systems which are already using salted password which are encoded
-	 * with a previous release, the encoder should be of type
-	 * {@code org.springframework.security.authentication.encoding.PasswordEncoder}
-	 * . Otherwise, the recommended approach is to use
-	 * {@code org.springframework.security.crypto.password.PasswordEncoder}.
+	 * For systems which are already using salted password which are encoded with a previous release, the encoder should
+	 * be of type {@code org.springframework.security.authentication.encoding.PasswordEncoder} . Otherwise, the
+	 * recommended approach is to use {@code org.springframework.security.crypto.password.PasswordEncoder}.
 	 * 
 	 * @param passwordEncoder
-	 *            must be an instance of one of the {@code PasswordEncoder}
-	 *            types.
+	 *            must be an instance of one of the {@code PasswordEncoder} types.
 	 */
 	public void setPasswordEncoder(Object passwordEncoder) {
 		Assert.notNull(passwordEncoder, "passwordEncoder cannot be null");
@@ -227,18 +227,15 @@ public class NGrinderAuthenticationProvider extends AbstractUserDetailsAuthentic
 	}
 
 	/**
-	 * The source of salts to use when decoding passwords. <code>null</code> is
-	 * a valid value, meaning the <code>DaoAuthenticationProvider</code> will
-	 * present <code>null</code> to the relevant <code>PasswordEncoder</code>.
+	 * The source of salts to use when decoding passwords. <code>null</code> is a valid value, meaning the
+	 * <code>DaoAuthenticationProvider</code> will present <code>null</code> to the relevant
+	 * <code>PasswordEncoder</code>.
 	 * <p>
-	 * Instead, it is recommended that you use an encoder which uses a random
-	 * salt and combines it with the password field. This is the default
-	 * approach taken in the
-	 * {@code org.springframework.security.crypto.password} package.
+	 * Instead, it is recommended that you use an encoder which uses a random salt and combines it with the password
+	 * field. This is the default approach taken in the {@code org.springframework.security.crypto.password} package.
 	 * 
 	 * @param saltSource
-	 *            to use when attempting to decode passwords via the
-	 *            <code>PasswordEncoder</code>
+	 *            to use when attempting to decode passwords via the <code>PasswordEncoder</code>
 	 */
 	public void setSaltSource(SaltSource saltSource) {
 		this.saltSource = saltSource;

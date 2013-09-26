@@ -26,9 +26,12 @@ import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.stereotype.Service;
 
 /**
- * This is default Plugin.
- * @author nhn
- *
+ * The default login plugin.
+ * 
+ * This retrieves the user
+ * 
+ * @author JunHo Yoon
+ * 
  */
 @Service
 public class DefaultLoginPlugin implements OnLoginRunnable {

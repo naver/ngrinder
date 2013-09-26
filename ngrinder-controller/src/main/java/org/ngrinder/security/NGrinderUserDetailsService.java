@@ -27,9 +27,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
- * NGrinder customized {@link UserDetailsService}.
+ * NGrinder {@link UserDetailsService}.
  * 
- * This resolve user
+ * This resolves user info using plugins implementing {@link OnLoginRunnable}.
  * 
  * @author JunHo Yoon
  * 

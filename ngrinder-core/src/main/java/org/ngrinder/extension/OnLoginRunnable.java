@@ -25,6 +25,12 @@ public interface OnLoginRunnable {
 	/**
 	 * Load user by userId.
 	 * 
+	 * When the user having the given userId exists in the local DB, this method is not called by the nGrinder user
+	 * management system. However there are no user in local DB, nGrinder user management calls this to get to know who
+	 * it is. If you have LDAP or other system which can returns user id, email, cellphone number, please create the
+	 * {@link User} instance in this method using these info so that nGrinder save the user account into DB
+	 * automatically after {@link #validateUser(String, String, String, Object, Object)} is passed.
+	 * 
 	 * @param userId
 	 *            user id
 	 * @return User instance
@@ -34,17 +40,17 @@ public interface OnLoginRunnable {
 	/**
 	 * Validate user by userId and password.
 	 * 
-	 * Against password can be provided by plugin. In such case encPass, encoder, salt might be
-	 * null.
+	 * encPass / encoder / salt is only for the local DB stored password only. When you implement this with remote
+	 * password validation system, you may only need userId and password which is provided in the nGrinder login page.
 	 * 
 	 * @param userId
 	 *            user providing id
 	 * @param password
 	 *            user providing password
 	 * @param encPass
-	 *            encrypted password
+	 *            encrypted password stored in the DB
 	 * @param encoder
-	 *            encoder which encrypts password
+	 *            encoder which encrypts password in the DB.
 	 * @param salt
 	 *            salt of encoding
 	 * @return true is validated
@@ -52,12 +58,11 @@ public interface OnLoginRunnable {
 	public boolean validateUser(String userId, String password, String encPass, Object encoder, Object salt);
 
 	/**
-	 * Save user in plugin.<br/>
-	 * This method is only necessary to implement if there is need to save the user in the plugin.
-	 * Generally dummy implementation is enough.
+	 * Save the given user. Usually dummy implementation is enough
 	 * 
 	 * @param user
 	 *            user to be saved.
+	 * @deprecated
 	 */
 	public void saveUser(User user);
 }

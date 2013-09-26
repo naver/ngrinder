@@ -26,8 +26,17 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * nGrinder authentication provide. This class is for the plugin system of user
- * authentication.
+ * nGrinder {@link PreAuthenticatedAuthenticationProvider}.
+ * 
+ * Some SSO system like SiteMinder doesn't need nGrinder login page. If the user info is resolved by plugins
+ * implementing {@link javax.servlet.Filter} which stores the {@link Authentication} by following code,
+ * 
+ * <code>
+ * SecurityContextHolder.getContext().setAuthentication(authenticate);
+ * </code>
+ * 
+ * {@link NGrinderAuthenticationPreAuthProvider} will take this Authentication Object and handles user language and
+ * timezone settings and user save
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -44,9 +53,9 @@ public class NGrinderAuthenticationPreAuthProvider extends PreAuthenticatedAuthe
 
 	/**
 	 * Authenticate the given PreAuthenticatedAuthenticationToken.
-	 * <p>
-	 * If the principal contained in the authentication object is null, the
-	 * request will be ignored to allow other providers to authenticate it.
+	 * 
+	 * If the principal contained in the authentication object is null, the request will be ignored to allow other
+	 * providers to authenticate it.
 	 * 
 	 * @param authentication
 	 *            authentication
@@ -73,7 +82,6 @@ public class NGrinderAuthenticationPreAuthProvider extends PreAuthenticatedAuthe
 		}
 		return authenticate;
 	}
-
 
 	/**
 	 * Add new user into local db.
