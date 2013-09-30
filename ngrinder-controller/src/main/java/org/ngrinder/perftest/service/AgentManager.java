@@ -55,8 +55,7 @@ import org.springframework.stereotype.Component;
 /**
  * Agent manager.
  * 
- * This class has {@link AgentControllerServerDaemon} internally and manage to
- * the agent connection.
+ * This class has {@link AgentControllerServerDaemon} internally and manage to the agent connection.
  * 
  * @author JunHo Yoon
  * @since 3.0
@@ -78,8 +77,9 @@ public class AgentManager implements NGrinderConstants {
 	 */
 	@PostConstruct
 	public void init() {
-		agentControllerServerDaemon = new AgentControllerServerDaemon(config.getCurrentIP(),
+		int port = config.getSystemProperties().getPropertyInt(NGRINDER_PROP_AGENT_CONTROL_PORT,
 				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
+		agentControllerServerDaemon = new AgentControllerServerDaemon(config.getCurrentIP(), port);
 		agentControllerServerDaemon.start();
 		agentControllerServerDaemon.addLogArrivedListener(new LogArrivedListener() {
 			@Override
@@ -224,8 +224,7 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Convert {@link AgentIdentity} to
-	 * {@link AgentControllerIdentityImplementation} type.
+	 * Convert {@link AgentIdentity} to {@link AgentControllerIdentityImplementation} type.
 	 * 
 	 * @param identity
 	 *            identity
@@ -418,8 +417,7 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Select agent. This method return agent set which is belong to the given
-	 * user first and then share agent set.
+	 * Select agent. This method return agent set which is belong to the given user first and then share agent set.
 	 * 
 	 * @param user
 	 *            user
@@ -514,8 +512,7 @@ public class AgentManager implements NGrinderConstants {
 	}
 
 	/**
-	 * Get the set of {@link AgentStatus} from agents belong to the given single
-	 * console port.
+	 * Get the set of {@link AgentStatus} from agents belong to the given single console port.
 	 * 
 	 * @param singleConsolePort
 	 *            port
