@@ -1,3 +1,35 @@
+3.2.3 (2013.10.04)
+
+nGrinder 3.2.3 is the bug fix and minor enhancement release. 
+
+- New feature and changes
+  * Basic web API is supported. A user can call the APIs to clone and start the test using HTTP client such as curl. This is protected by HTTP Basic Auth.
+  * Parameterized test is supported. Each test can get a paremeter in the test configuration page and scripts can refer it to control its actions. 
+  * Per-Test statistics are enabled for mean test time and errors as well.
+  * And several UI improvements are included.
+  
+Bug
+[NGRINDER-657] - Error rate wrong in the test list page
+[NGRINDER-659] - Fix typo errors
+[NGRINDER-668] - Fix wrongly calculated test schedule when browser timezone and user specified timezone are different
+
+Improvement
+[NGRINDER-654] - Make total agent count referable in the script
+[NGRINDER-655] - Make validation timeout configurable
+[NGRINDER-656] - Provide more sampling intervals
+[NGRINDER-658] - Add more clear test / errors
+[NGRINDER-662] - Add more per-test statistics
+[NGRINDER-663] - Show the warning message when a user overwrites the more recent script
+[NGRINDER-666] - Sanitize logs
+[NGRINDER-667] - Import NVPair in the template as default
+[NGRINDER-670] - Show the pertest owner in the perftest detail page
+[NGRINDER-671] - Elaborate javadoc
+
+New Feature
+[NGRINDER-660] - Enable parameterized test
+[NGRINDER-661] - Provide a convenient utility class to retrieve the test execution info
+[NGRINDER-665] - Add basic web api support
+
 3.2.2 (2013.08.29)
 
 nGrinder 3.2.2 is the bug fix and minor enhancement release. 
