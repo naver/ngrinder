@@ -111,8 +111,7 @@ public class NGrinderStarter {
 	}
 
 	/*
-	 * get the start mode, "agent" or "monitor". If it is not set in
-	 * configuration, it will return "agent".
+	 * get the start mode, "agent" or "monitor". If it is not set in configuration, it will return "agent".
 	 */
 	public String getStartMode() {
 		return agentConfig.getAgentProperties().getProperty("start.mode", "agent");
@@ -187,6 +186,13 @@ public class NGrinderStarter {
 			}
 
 		}
+
+		if (StringUtils.isEmpty(System.getenv("JAVA_HOME"))) {
+			LOG.error("Hey!! JAVA_HOME env var was not provided. "
+					+ "Please provide JAVA_HOME env var before running agent."
+					+ "Otherwise you can not execute the agent in the security mode.");
+		}
+
 		int consolePort = agentConfig.getAgentProperties().getPropertyInt("agent.console.port",
 				AgentControllerCommunicationDefauts.DEFAULT_AGENT_CONTROLLER_SERVER_PORT);
 		String region = agentConfig.getAgentProperties().getProperty("agent.region", "");

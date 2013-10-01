@@ -59,15 +59,18 @@ public class NGrinderSecurityManager extends SecurityManager {
 		if (workDirectory != null && !workDirectory.isEmpty()) {
 			logDirectory = workDirectory.substring(0, workDirectory.lastIndexOf(File.separator));
 			logDirectory = logDirectory.substring(0, workDirectory.lastIndexOf(File.separator)) + File.separator
-							+ "log";
+					+ "log";
 		} else {
 			logDirectory = "log";
 		}
 		agentExecDirectory = normalize(new File(agentExecDirectory).getAbsolutePath(), null);
+		if (javaHomeDirectory == null) {
+			System.out.println("env var JAVA_HOME should be provided.");
+		}
 		javaHomeDirectory = normalize(new File(javaHomeDirectory).getAbsolutePath(), null);
 		if (javaHomeDirectory != null && !javaHomeDirectory.isEmpty()) {
 			jreHomeDirectory = javaHomeDirectory.substring(0, javaHomeDirectory.lastIndexOf(File.separator))
-							+ File.separator + "jre";
+					+ File.separator + "jre";
 		} else {
 			jreHomeDirectory = "JAVA";
 		}
@@ -107,9 +110,11 @@ public class NGrinderSecurityManager extends SecurityManager {
 		writeAllowedDirectory.add(getTempDirectoryPath());
 		deleteAllowedDirectory.add(workDirectory);
 	}
+
 	private static boolean isNotEmpty(String str) {
 		return str != null && str.length() != 0;
 	}
+
 	// -----------------------------------------------------------------------
 	/**
 	 * Returns the path to the system temporary directory.
@@ -300,7 +305,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 			return;
 		}
 		throw new SecurityException("NetWork access on " + host + " is not allowed. Please add " + host
-						+ " on the target host setting.");
+				+ " on the target host setting.");
 	}
 
 	/**
@@ -406,7 +411,7 @@ public class NGrinderSecurityManager extends SecurityManager {
 		// double dot slash
 		outer: for (int i = prefix + 2; i < size; i++) {
 			if (array[i] == separator && array[i - 1] == '.' && array[i - 2] == '.'
-							&& (i == prefix + 2 || array[i - 3] == separator)) {
+					&& (i == prefix + 2 || array[i - 3] == separator)) {
 				if (i == prefix + 2) {
 					return null;
 				}
@@ -448,8 +453,8 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * <p>
 	 * This method will handle a file in either Unix or Windows format.
 	 * <p>
-	 * The prefix length includes the first slash in the full filename if applicable. Thus, it is
-	 * possible that the length returned is greater than the length of the input string.
+	 * The prefix length includes the first slash in the full filename if applicable. Thus, it is possible that the
+	 * length returned is greater than the length of the input string.
 	 * 
 	 * <pre>
 	 * Windows:
@@ -468,8 +473,8 @@ public class NGrinderSecurityManager extends SecurityManager {
 	 * ~user               --> "~user/"    --> named user (slash added)
 	 * </pre>
 	 * <p>
-	 * The output will be the same irrespective of the machine that the code is running on. ie. both
-	 * Unix and Windows prefixes are matched regardless.
+	 * The output will be the same irrespective of the machine that the code is running on. ie. both Unix and Windows
+	 * prefixes are matched regardless.
 	 * 
 	 * @param filename
 	 *            the filename to find the prefix in, null returns -1
