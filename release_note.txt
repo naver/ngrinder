@@ -6,6 +6,7 @@ nGrinder 3.2.3 is the bug fix and minor enhancement release.
   * Basic web API is supported. A user can call the APIs to clone and start the test using HTTP client such as curl. This is protected by HTTP Basic Auth.
   * Parameterized test is supported. Each test can get a paremeter in the test configuration page and scripts can refer it to control its actions. 
   * Per-Test statistics are enabled for mean test time and errors as well.
+  * Console port is now configurable so that you can use the opened ports if the network firewall doesn't block them.  
   * And several UI improvements are included.
   
 Bug
@@ -24,6 +25,9 @@ Improvement
 [NGRINDER-667] - Import NVPair in the template as default
 [NGRINDER-670] - Show the pertest owner in the perftest detail page
 [NGRINDER-671] - Elaborate javadoc
+[NGRINDER-672] - Make the agent control server port configurable in the controller
+[NGRINDER-673] - Make user id allow . (dot) in the middle of id. 
+[NGRINDER-674] - Show JAVA_HOME env var absent message when running agent as security mode 
 
 New Feature
 [NGRINDER-660] - Enable parameterized test
