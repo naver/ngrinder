@@ -144,7 +144,7 @@
 		<#if !(user?has_content)>
 
 			$.validator.addMethod("userIdFmt", function(userId, element ) {
-				var patrn = /^[a-zA-Z]{1}[a-zA-Z0-9_\.]{3,19}$/;
+				var patrn = /^[a-zA-Z]{1}[a-zA-Z0-9_\.]{3,20}$/;
 				var rule = new RegExp(patrn);
 				if (!rule.test($.trim(userId))) {
 					removeSuccess(element);
