@@ -528,7 +528,7 @@ function initDuration() {
 var validationOptions = {};
 function addValidation() {
 	$.validator.addMethod("paramFmt", function(param, element) {
-		var pattern = /^[a-zA-Z0-9_]{0,30}$/;
+		var pattern = /^[a-zA-Z0-9_\,\|]{0,30}$/;
 		var rule = new RegExp(pattern);
 		return rule.test($.trim(param));
 	});
