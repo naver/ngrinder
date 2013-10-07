@@ -475,15 +475,26 @@ public class PerfTestController extends NGrinderBaseController {
 		PerfTest newOne = test.clone(new PerfTest());
 		newOne.setStatus(Status.READY);
 		if (perftest != null) {
-			newOne.setScheduledTime(perftest.getScheduledTime());
-			newOne.setScriptRevision(perftest.getScriptRevision());
-			newOne.setAgentCount(perftest.getAgentCount());
+			if (perftest.getScheduledTime() != null) {
+				newOne.setScheduledTime(perftest.getScheduledTime());
+			}
+			if (perftest.getScriptRevision() != null) {
+				newOne.setScriptRevision(perftest.getScriptRevision());
+			}
+
+			if (perftest.getAgentCount() != null) {
+				newOne.setAgentCount(perftest.getAgentCount());
+			}
+		}
+		if (newOne.getAgentCount() == null) {
+			newOne.setAgentCount(0);
 		}
 		Map<String, MutableInt> agentCountMap = agentManagerService.getUserAvailableAgentCountMap(user);
 		MutableInt agentCountObj = agentCountMap.get(clustered() ? test.getRegion() : Config.NONE_REGION);
 		checkNotNull(agentCountObj, "test region should be within current region list");
 		int agentMaxCount = agentCountObj.intValue();
-		checkArgument(newOne.getAgentCount() <= agentMaxCount, "test agent shoule be equal to or less than %s",
+		checkArgument(newOne.getAgentCount() != 0, "test agent should not be %s", agentMaxCount);
+		checkArgument(newOne.getAgentCount() <= agentMaxCount, "test agent should be equal to or less than %s",
 				agentMaxCount);
 		PerfTest savePerfTest = perfTestService.savePerfTest(user, newOne);
 		CoreLogger.LOGGER.info("test {} is created through web api by {}", savePerfTest.getId(), user.getUserId());
