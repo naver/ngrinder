@@ -430,7 +430,7 @@ public class PerfTestController extends NGrinderBaseController {
 	@RestAPI
 	@RequestMapping(value = "/api/last")
 	public HttpEntity<String> last(User user, @RequestParam(value = "size", defaultValue = "1") int size) {
-		PageRequest pageRequest = new PageRequest(1, size, new Sort(Direction.DESC, "id"));
+		PageRequest pageRequest = new PageRequest(0, size, new Sort(Direction.DESC, "id"));
 		Page<PerfTest> testList = perfTestService.getPerfTestList(user, null, null, null, pageRequest);
 		return toJsonHttpEntity(testList.getContent());
 	}
