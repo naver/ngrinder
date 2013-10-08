@@ -1,7 +1,8 @@
 3.2.3 (2013.10.04)
 
 nGrinder 3.2.3 is the bug fix and minor enhancement release. 
-
+Special Thanks to Karel Piwko and Egoing. 
+ 
 - New feature and changes
   * Basic web API is supported. A user can call the APIs to clone and start the test using HTTP client such as curl. This is protected by HTTP Basic Auth.
     http://www.cubrid.org/wiki_ngrinder/entry/controller-api
@@ -12,12 +13,11 @@ nGrinder 3.2.3 is the bug fix and minor enhancement release.
   * And several UI improvements are included.
   
 Bug
-[NGRINDER-657] - Error rate wrong in the test list page
 [NGRINDER-659] - Fix typo errors
-[NGRINDER-668] - Fix wrongly calculated test schedule when browser timezone and user specified timezone are different
+[NGRINDER-668] - Fix wrong test schedule calculation when browser timezone and user specified timezone are different
 
 Improvement
-[NGRINDER-654] - Make total agent count referable in the script
+[NGRINDER-654] - Make total agent count accessible from the script
 [NGRINDER-655] - Make validation timeout configurable
 [NGRINDER-656] - Provide more sampling intervals
 [NGRINDER-658] - Add more clear test / errors
