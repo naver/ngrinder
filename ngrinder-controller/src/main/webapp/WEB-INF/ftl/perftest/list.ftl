@@ -3,6 +3,7 @@
 	<head>
 		<#include "../common/common.ftl">
 		<#include "../common/datatables.ftl">	
+		<#include "../common/jqplot.ftl">
 		<title><@spring.message "perfTest.table.title"/></title>
 		<style>
 			td.today {
@@ -20,11 +21,15 @@
 				min-width:300px;
 				max-width:600px;
 			}
-			
 			.popover-content {
 				white-space: nowrap;
 				overflow: hidden;
 				text-overflow: ellipsis;
+			}
+			div.smallChart {
+				border: 1px solid #878988; 
+				height: 150px; 
+				min-width: 290px; 
 			}
 		</style>
 	</head>
@@ -102,8 +107,8 @@
 					<col width="65"> 
 					<col width="65">
 					<col width="70">
-					<col width="75">
-					<col width="30">
+					<col width="60">
+					<col width="50">
 				</colgroup>
 				<thead>
 					<tr>
@@ -208,6 +213,7 @@
 		            				<div>
 		            			</td>
 								<td class="center">
+									<a href="javascript:void(0)" style="<#if test.status != 'FINISHED'>display: none;</#if>"><i class="icon-download img-dispaly" sid="${test.id}"></i></a>
 									<a href="javascript:void(0)" style="<#if deletable>display: none;</#if>"><i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}" class="icon-remove test-remove" sid="${test.id}"></i></a>
 									<a href="javascript:void(0)" style="<#if stoppable>display: none;</#if>"><i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}" class="icon-stop test-stop" sid="${test.id}"></i></a>
 								</td>  
@@ -272,6 +278,49 @@
 				    	deleteTests(id);
 				    }
 				});
+			});
+			
+			$("i.img-dispaly").click(function() {
+				
+				var id = $(this).attr("sid");
+				var img_table_id = "test_" + id;
+				var tps_id = "tps_chart" + id;
+				var mean_time_chart_id = "mean_time_chart" + id;
+				var error_chart_id = "error_chart" + id;
+				
+				if(!$(this).closest('tr').next("table").length){
+					imgDisplay = $("<table id='"+ img_table_id +"' class='odd' style='width:940px'><tr><td><div class='smallChart' id="+ tps_id +"></div></td> <td><div class='smallChart' id="+ mean_time_chart_id +"></div></td> <td><div class='smallChart' id="+ error_chart_id +"></div></td> </tr></table><table id='"+ img_table_id +"2'></table>");	
+					imgDisplay.hide();
+					$(this).closest('tr').after(imgDisplay);
+					$.ajax({
+		                url: "${req.getContextPath()}/perftest/"+ id +"/graph",
+		                dataType:'json',
+		                cache: false,
+		                data: {'dataType':'TPS,Errors,Mean_Test_Time_(ms),Mean_time_to_first_byte,User_defined','imgWidth':700},
+		                success: function(res) {
+		                    if (res.success) {
+		                        drawListPlotChart(tps_id, res.TPS.data , ["Tps"], res.chartInterval);
+		                        drawListPlotChart(mean_time_chart_id , res.Mean_Test_Time_ms.data, ["Mean Test Time"], res.chartInterval);
+		                        drawListPlotChart(error_chart_id , res.Errors.data, ["Errors"], res.chartInterval);
+		                        return true;
+		                    } else {
+		                        showErrorMsg("Get statistics data failed.");
+		                        return false;
+		                    }
+		                },
+		                error: function() {
+		                    showErrorMsg("An unknow Error occurred!");
+		                    return false;
+		                }
+		            }); 
+				
+					imgDisplay.show("slow");
+				}else{
+					$("#"+img_table_id).hide("slow");
+					$("#"+img_table_id).remove();
+					$("#"+img_table_id+"2").remove();
+				}
+				
 			});
 			
 			$("i.test-stop").click(function() {

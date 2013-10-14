@@ -335,3 +335,103 @@ function drawMultiPlotChart(containerId, data, labels, interval) {
 
 	return plotObj;
 }
+
+
+function drawListPlotChart(containerId, data, labels, interval) {
+	if (data == undefined || !(data instanceof Array) || data.length == 0) {
+		return dummyChart;
+	}
+	
+	var values;
+	if (data[0] instanceof Array) {
+		values = data;
+	} else {
+		var temp = [];
+		for (var i = 0; i < data.length; i++) {
+			temp.push(eval(data[i]));
+		}
+		values = temp;
+	}
+	
+	var dataCnt = values[values.length - 1].length;
+	if (dataCnt == 0) {
+		return dummyChart;
+	}
+	
+	var ymax = getMultiPlotMaxValue(values);
+	if (ymax < 5) {
+		ymax = 5;
+	}
+	ymax = parseInt((ymax / 5) + 1) * 6;
+
+	if (interval == undefined || interval == 0 || !$.isNumeric(interval)) {
+		interval = 1;
+	}
+	
+	var plotObj = $.jqplot(containerId, values, {
+
+        gridPadding : {top:15, right:10, bottom:30, left:40}, 
+		seriesDefaults : {
+			markerRenderer : $.jqplot.MarkerRenderer,
+			markerOptions : {
+				size : 2.0,
+				color : '#555555'
+			},
+			lineWidth : 1.0
+		}, 
+		axes : {
+			xaxis : {
+				min : 1,
+				max : dataCnt,
+				pad : 0,
+				numberTicks : 10,
+				tickOptions : {
+					show : true,
+					formatter : function(format, value) {
+						return formatTimeForXaxis(parseInt((value-1) * interval));
+					}
+				}
+			},
+			yaxis : {
+				labelOptions : {
+					fontFamily : 'Helvetica',
+					fontSize : '10pt'
+				}, 
+				tickOptions : {
+					formatter : function(format, value) {
+						return value.toFixed(0);
+					}
+				},
+				max : ymax,
+				min : 0,
+				numberTicks : 7,
+				pad : 3,
+				show : true
+			}
+		},
+		highlighter : {
+			show : true,
+			sizeAdjust : 3,
+			tooltipAxes: 'y',
+			formatString: '<table class="jqplot-highlighter"><tr><td>%s</td></tr></table>'
+		},
+		cursor : {
+			showTooltip : false,
+			show : true,
+			zoom : true
+		},
+		legend:{
+			renderer: $.jqplot.EnhancedLegendRenderer,
+			show: true,
+			placement: "outsideGrid",
+			labels: labels,
+			location: "ne",
+			rendererOptions: {
+				seriesToggle: 'normal'
+			}
+		}
+	});
+
+	return plotObj;
+}
+
