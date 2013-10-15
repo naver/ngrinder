@@ -26,7 +26,7 @@ import com.atlassian.plugin.module.ContainerManagedPlugin;
  */
 @PluginDescriptor("on-working-agent-check")
 @SuppressWarnings("deprecation")
-public class OnPeridocWorkingAgentCheckRunnableDescriptor extends
+public class OnPeridocWorkingAgentCheckModuleDescriptor extends
 				AbstractModuleDescriptor<OnPeriodicWorkingAgentCheckRunnable> {
 	public OnPeriodicWorkingAgentCheckRunnable getModule() {
 		return ((ContainerManagedPlugin) getPlugin()).getContainerAccessor().createBean(getModuleClass());
