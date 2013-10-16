@@ -212,10 +212,6 @@
 								<descriptor>src/assembly/ngrinder.xml</descriptor>
 							</descriptors>
 							<outputDirectory>${project.build.directory}</outputDirectory>
-							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>false</overWriteSnapshots>
-							<overWriteIfNewer>true</overWriteIfNewer>
-		
 							<archive>
 								<manifest>
 									<addClasspath>true</addClasspath>
