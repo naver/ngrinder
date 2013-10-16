@@ -20,10 +20,7 @@ import org.ngrinder.model.Status;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * {@link PerfTest} Service Class.
- * 
- * This class contains various method which mainly get the {@link PerfTest} matching specific
- * conditions from DB.
+ * {@link PerfTest} Service Class for cluster mode.
  * 
  * @author JunHo Yoon
  * @author Mavlarn
@@ -31,14 +28,14 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class ClusteredPerfTestService extends PerfTestService {
 	/**
-	 * Get next runnable PerfTest list.
+	 * Get next runnable {@link PerfTest}.
 	 * 
 	 * @return found {@link PerfTest} which is ready to run, null otherwise
 	 */
 	@Transactional
-	public PerfTest getPerfTestCandiate() {
+	public PerfTest getNextRunnablePerfTestPerfTestCandiate() {
 		List<PerfTest> readyPerfTests = getPerfTestRepository().findAllByStatusAndRegionOrderByScheduledTimeAsc(
-						Status.READY, getConfig().getRegion());
+				Status.READY, getConfig().getRegion());
 		List<PerfTest> usersFirstPerfTests = filterCurrentlyRunningTestUsersTest(readyPerfTests);
 		return usersFirstPerfTests.isEmpty() ? null : readyPerfTests.get(0);
 	}

@@ -75,7 +75,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		createPerfTest("new Test1", Status.TESTING, new Date());
 		createPerfTest("new Test2", Status.FINISHED, new Date());
 
-		PerfTest candiate = testService.getPerfTestCandiate();
+		PerfTest candiate = testService.getNextRunnablePerfTestPerfTestCandiate();
 		assertThat(candiate, nullValue());
 
 		Pageable pageable = new PageRequest(0, 10);
@@ -158,13 +158,12 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		assertThat(consoleProperties, not(nullValue()));
 
 	}
-	
 
 	@Test
 	public void testGetReportDataWithExistData() throws IOException {
-		long testId = 123456L; //there is sample monitor data in test resources.
+		long testId = 123456L; // there is sample monitor data in test resources.
 
-		//test resource dir
+		// test resource dir
 		File testHomeDir = new ClassPathResource("").getFile();
 		Home mockHome = new Home(testHomeDir);
 		LOG.debug("mock home dir is:{}", mockHome.getDirectory());
@@ -172,8 +171,8 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		when(mockConfig.getHome()).thenReturn(mockHome);
 		PerfTestService mockService = spy(testService);
 		mockService.setConfig(mockConfig);
-		
-		//TPS,Errors,Mean_Test_Time_(ms)
+
+		// TPS,Errors,Mean_Test_Time_(ms)
 		int interval = mockService.getReportDataInterval(testId, "TPS", 700);
 		String reportDataCPU = mockService.getSingleReportDataAsJson(testId, "TPS", interval);
 		String reportDataMsT = mockService.getSingleReportDataAsJson(testId, "Mean_Test_Time_(ms)", interval);
@@ -184,9 +183,9 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 
 	@Test
 	public void testGetMonitorDataWithExistData() throws IOException {
-		long testId = 123456L; //there is sample monitor data in test resources.
+		long testId = 123456L; // there is sample monitor data in test resources.
 
-		//test resource dir
+		// test resource dir
 		File testHomeDir = new ClassPathResource("").getFile();
 		Home mockHome = new Home(testHomeDir);
 		LOG.debug("mock home dir is:{}", mockHome.getDirectory());
@@ -194,7 +193,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		when(mockConfig.getHome()).thenReturn(mockHome);
 		PerfTestService mockService = spy(testService);
 		mockService.setConfig(mockConfig);
-		
+
 		int interval = mockService.getSystemMonitorDataInterval(testId, "127.0.0.1", 700);
 		Map<String, String> reportDataMap = mockService.getSystemMonitorDataAsString(testId, "127.0.0.1", interval);
 		String cpuStr = reportDataMap.get("cpu");
@@ -204,7 +203,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		assertTrue(reportDataMap.get("received").length() > 300);
 		assertTrue(reportDataMap.get("sent").length() > 300);
 	}
-	
+
 	@Test
 	public void testGetProperSizedStatusString() {
 		File tempRepo = new File(System.getProperty("java.io.tmpdir"), "test-repo");
@@ -212,7 +211,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		tempRepo.deleteOnExit();
 		MonitorClientSerivce client = new MonitorClientSerivce();
 		client.init("127.0.0.1", 13243, tempRepo, null);
-		
+
 		Map<String, SystemDataModel> rtnMap = new HashMap<String, SystemDataModel>();
 
 		Random random = new Random();
@@ -230,7 +229,7 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		System.out.println("Status string size is:" + statusString.length());
 		assertTrue(statusString.length() < 9950);
 	}
-	
+
 	@Test
 	public void testCleanUpRuntimeOnlyData() {
 
@@ -239,15 +238,15 @@ public class PerfTestServiceTest extends AbstractPerfTestTransactionalTest {
 		test.setMonitorStatus("{\"127.0.0.1\":{\"freeMemory\":1091352,\"totalMemory\":4042436,\"cpuUsedPercentage\":0.24937657,\"recievedPerSec\":102718,\"sentPerSec\":135072}}");
 		test.setRunningSample("{\"process\":1,\"peakTpsForGraph\":2192.0,\"lastSampleStatistics\":[{\"Peak_TPS\":0.0,\"Tests\":2145.0,\"Mean_time_to_first_byte\":0.3142191142191142,\"testDescription\":\"Test1\",\"Response_bytes_per_second\":62205.0,\"Errors\":0.0,\"TPS\":2145.0,\"testNumber\":1,\"Mean_Test_Time_(ms)\":0.4205128205128205}],\"thread\":1,\"cumulativeStatistics\":[{\"Peak_TPS\":2192.0,\"Tests\":197185.0,\"Mean_time_to_first_byte\":0.3229910997286812,\"testDescription\":\"Test1\",\"Response_bytes_per_second\":57481.98148390145,\"Errors\":0.0,\"TPS\":1982.1372925483258,\"testNumber\":1,\"Mean_Test_Time_(ms)\":0.4425539468012273}],\"tpsChartData\":2145.0,\"success\":true,\"totalStatistics\":{\"Peak_TPS\":2192.0,\"Tests\":197185.0,\"Mean_time_to_first_byte\":0.3229910997286812,\"Response_bytes_per_second\":57481.98148390145,\"Errors\":0.0,\"TPS\":1982.1372925483258,\"Mean_Test_Time_(ms)\":0.4425539468012273},\"test_time\":105}");
 		perfTestService.savePerfTest(test);
-		
+
 		PerfTest testInDB = perfTestService.getPerfTest(test.getId());
-		assertTrue(testInDB.getAgentStatus().length()>0 && testInDB.getMonitorStatus().length() > 0);
+		assertTrue(testInDB.getAgentStatus().length() > 0 && testInDB.getMonitorStatus().length() > 0);
 		test.setAgentStatus(null);
 		test.setMonitorStatus(null);
 		test.setRunningSample(null);
 		perfTestService.savePerfTest(test);
 		testInDB = perfTestService.getPerfTest(test.getId());
 		assertTrue(testInDB.getAgentStatus() == null && testInDB.getMonitorStatus() == null);
-		
+
 	}
 }

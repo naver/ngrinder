@@ -99,7 +99,7 @@ public class UserController extends NGrinderBaseController {
 		if (StringUtils.isEmpty(keywords)) {
 			pagedUser = userService.getAllUsersByRole(roleName, pageable);
 		} else {
-			pagedUser = userService.getUserListByKeyWord(keywords, pageable);
+			pagedUser = userService.getUsersByKeyWord(keywords, pageable);
 			model.put("keywords", keywords);
 		}
 		model.addAttribute("userPage", pagedUser);
