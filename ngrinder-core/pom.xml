@@ -9,6 +9,11 @@
 	<artifactId>ngrinder-core</artifactId>
 	<name>ngrinder-core</name>
 	<packaging>jar</packaging>
+	
+	<properties>
+		<outputfilename>${project.version}.jar</outputfilename>
+	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -183,35 +188,92 @@
 				</configuration>
 			</plugin>
 
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>assembly</id>
-						<phase>package</phase>
-						<goals>
-							<goal>assembly</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<descriptors>
-						<descriptor>src/assembly/ngrinder.xml</descriptor>
-					</descriptors>
-					<outputDirectory>${project.build.directory}</outputDirectory>
-					<overWriteReleases>false</overWriteReleases>
-					<overWriteSnapshots>false</overWriteSnapshots>
-					<overWriteIfNewer>true</overWriteIfNewer>
-
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>org.ngrinder.NGrinderStarter</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
+	
+	<profiles>
+		<profile>
+			<id>assembly</id>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>assembly</id>
+								<phase>package</phase>
+								<goals>
+									<goal>assembly</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<descriptors>
+								<descriptor>src/assembly/ngrinder.xml</descriptor>
+							</descriptors>
+							<outputDirectory>${project.build.directory}</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+		
+							<archive>
+								<manifest>
+									<addClasspath>true</addClasspath>
+									<classpathPrefix>lib/</classpathPrefix>
+									<mainClass>org.ngrinder.NGrinderStarter</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+		<profile>
+			<id>webstart</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>webstart-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>jnlp</goal> <!-- use jnlp, jnlp-inline or jnlp-single as appropriate -->
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<libPath>lib</libPath>
+							<verbose>false</verbose>
+							<resourcesDirectory>${project.basedir}/src/main/jnlp/resources</resourcesDirectory>
+							<dependencies>
+							</dependencies>
+							<!-- JNLP generation -->
+							<jnlp>
+								<inputTemplateResourcePath>${basedir}/src/main/jnlp/</inputTemplateResourcePath>
+								<inputTemplate>template.vm</inputTemplate>
+								<outputFile>ngrinder_agent.jnlp</outputFile> <!-- defaults to launch.jnlp -->
+								<mainClass>org.ngrinder.NGrinderStarter</mainClass>
+							</jnlp>
+		
+							<!-- SIGNING -->
+							<sign>
+								<keystore>${basedir}/keystore/agent.keystore</keystore>
+		                        <keypass></keypass>  
+		                        <storepass></storepass> 
+		                        <alias></alias>
+		                        <validity>true</validity>
+							</sign>
+							<unsignAlreadySignedJars>false</unsignAlreadySignedJars>
+							<gzip>true</gzip>
+							<outputJarVersions>true</outputJarVersions>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
+	</profiles>
+	
 </project>
