@@ -27,7 +27,7 @@ public interface IScriptValidationService {
 	/**
 	 * Validate Script.
 	 * 
-	 * It's quite complex.. to validate script, we need write jar files and script. Furthermore, to
+	 * It's quite complex.. to validate script, we need to write jar files and script. Furthermore, to
 	 * make a small log.. We have to copy optimized logback_worker.xml
 	 * 
 	 * Finally this method returns the path of validating result file.

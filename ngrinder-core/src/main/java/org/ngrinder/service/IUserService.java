@@ -33,7 +33,30 @@ public interface IUserService {
 	public abstract void encodePassword(User user);
 
 	/**
-	 * create user.
+	 * Get user by user id.
+	 * 
+	 * @param userId
+	 *            user id
+	 * @return user
+	 * @since 3.3
+	 */
+	public abstract User getUserById(String userId);
+	
+
+	/**
+	 * Save user without password encoding step.
+	 * 
+	 * @param user
+	 *            include id, userID, fullName, role, password.
+	 * 
+	 * @return result
+	 * @since 3.3
+	 */
+	public User saveUserWithoutPasswordEncoding(User user);
+	
+	
+	/**
+	 * Save user.
 	 * 
 	 * @param user
 	 *            include id, userID, fullName, role, password.
@@ -43,7 +66,7 @@ public interface IUserService {
 	public abstract User saveUser(User user);
 
 	/**
-	 * Add user.
+	 * Save user.
 	 * 
 	 * @param user
 	 *            user

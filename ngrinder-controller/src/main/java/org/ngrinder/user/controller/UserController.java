@@ -86,8 +86,8 @@ public class UserController extends NGrinderBaseController {
 	@PreAuthorize("hasAnyRole('A')")
 	@RequestMapping({ "", "/" })
 	public String getUserList(ModelMap model, @RequestParam(required = false) String roleName,
-					@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable,
-					@RequestParam(required = false) String keywords) {
+			@PageableDefaults(pageNumber = 0, value = 10) Pageable pageable,
+			@RequestParam(required = false) String keywords) {
 
 		PageRequest pageReq = ((PageRequest) pageable);
 		Sort sort = pageReq == null ? null : pageReq.getSort();
@@ -97,7 +97,7 @@ public class UserController extends NGrinderBaseController {
 		}
 		Page<User> pagedUser = null;
 		if (StringUtils.isEmpty(keywords)) {
-			pagedUser = userService.getAllUserByRole(roleName, pageable);
+			pagedUser = userService.getAllUsersByRole(roleName, pageable);
 		} else {
 			pagedUser = userService.getUserListByKeyWord(keywords, pageable);
 			model.put("keywords", keywords);
@@ -169,7 +169,7 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping("/save")
 	@PreAuthorize("hasAnyRole('A') or #user.id == #updatedUser.id")
 	public String saveOrUpdateUserDetail(User user, ModelMap model, @ModelAttribute("user") User updatedUser,
-					@RequestParam(required = false) String followersStr) {
+			@RequestParam(required = false) String followersStr) {
 		checkArgument(updatedUser.validate());
 		if (user.getRole() == Role.USER) {
 			// General user can not change their role.
@@ -179,7 +179,7 @@ public class UserController extends NGrinderBaseController {
 
 			// prevent user to modify with other user id
 			checkArgument(updatedUserInDb.getId().equals(updatedUser.getId()), "Illegal request to update user:%s",
-							updatedUser);
+					updatedUser);
 		}
 		if (updatedUser.exist()) {
 			userService.modifyUser(updatedUser, followersStr);
@@ -263,7 +263,7 @@ public class UserController extends NGrinderBaseController {
 	@RequestMapping("/switch_options")
 	public String switchOptions(User user, ModelMap model) {
 		if (user.getRole().hasPermission(Permission.SWITCH_TO_ANYONE)) {
-			List<User> allUserByRole = userService.getAllUserByRole(Role.USER.getFullName());
+			List<User> allUserByRole = userService.getAllUsersByRole(Role.USER.getFullName());
 			model.addAttribute("shareUserList", allUserByRole);
 		} else {
 			User currUser = userService.getUserById(user.getUserId());
@@ -290,7 +290,7 @@ public class UserController extends NGrinderBaseController {
 	 */
 	@RequestMapping("/switch")
 	public String switchUser(User user, ModelMap model, @RequestParam(required = false, defaultValue = "") String to,
-					HttpServletRequest request, HttpServletResponse response) {
+			HttpServletRequest request, HttpServletResponse response) {
 		Cookie cookie = new Cookie("switchUser", to);
 		cookie.setPath("/");
 		// Delete Cookie if empty switchUser
@@ -320,7 +320,7 @@ public class UserController extends NGrinderBaseController {
 
 		List<User> users = Lists.newArrayList();
 		String userId = user.getUserId();
-		for (User u : userService.getAllUserByRole(Role.USER.getFullName())) {
+		for (User u : userService.getAllUsersByRole(Role.USER.getFullName())) {
 			if (u.getUserId().equals(userId)) {
 				continue;
 			}

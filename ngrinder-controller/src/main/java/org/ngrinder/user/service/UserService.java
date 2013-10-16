@@ -72,7 +72,7 @@ public class UserService implements IUserService {
 	private Config config;
 
 	/**
-	 * get user by user id.
+	 * Get user by user id.
 	 * 
 	 * @param userId
 	 *            user id
@@ -80,12 +80,13 @@ public class UserService implements IUserService {
 	 */
 	@Transactional
 	@Cacheable("users")
+	@Override
 	public User getUserById(String userId) {
 		return userRepository.findOneByUserId(userId);
 	}
 
 	/**
-	 * get user by user id without using Cache. The user in cache has no followers and owners
+	 * Get user by user id without using Cache. The user in cache has no followers and owners
 	 * initialized.
 	 * 
 	 * @param userId
@@ -125,7 +126,7 @@ public class UserService implements IUserService {
 	 *            pageable
 	 * @return page of user
 	 */
-	public Page<User> getAllUserByRole(String roleName, Pageable pageable) {
+	public Page<User> getAllUsersByRole(String roleName, Pageable pageable) {
 		if (StringUtils.isBlank(roleName)) {
 			return userRepository.findAll(pageable);
 		} else {
@@ -140,12 +141,12 @@ public class UserService implements IUserService {
 	 *            role name
 	 * @return found user list
 	 */
-	public List<User> getAllUserByRole(String roleName) {
-		return getAllUserByRole(roleName, new Sort(Direction.ASC, "userName"));
+	public List<User> getAllUsersByRole(String roleName) {
+		return getAllUsersByRole(roleName, new Sort(Direction.ASC, "userName"));
 	}
 
 	/**
-	 * get all users by role.
+	 * Get all users by role.
 	 * 
 	 * @param roleName
 	 *            role name
@@ -153,7 +154,7 @@ public class UserService implements IUserService {
 	 *            sort method
 	 * @return found user list
 	 */
-	public List<User> getAllUserByRole(String roleName, Sort sort) {
+	public List<User> getAllUsersByRole(String roleName, Sort sort) {
 		if (StringUtils.isBlank(roleName)) {
 			return userRepository.findAll(sort);
 		} else {
@@ -162,7 +163,7 @@ public class UserService implements IUserService {
 	}
 
 	/**
-	 * create user.
+	 * Save user.
 	 * 
 	 * @param user
 	 *            include id, userID, fullName, role, password.
@@ -171,6 +172,7 @@ public class UserService implements IUserService {
 	 */
 	@Transactional
 	@CacheEvict(value = "users", key = "#user.userId")
+	@Override
 	public User saveUser(User user) {
 		encodePassword(user);
 		return saveUserWithoutPasswordEncoding(user);
@@ -186,6 +188,7 @@ public class UserService implements IUserService {
 	 */
 	@Transactional
 	@CacheEvict(value = "users", key = "#user.userId")
+	@Override
 	public User saveUserWithoutPasswordEncoding(User user) {
 		User createdUser = userRepository.save(user);
 		prepareUserEnv(user);
