@@ -35,7 +35,6 @@ import org.ngrinder.script.service.ScriptValidationService;
 import org.ngrinder.service.IAgentManagerService;
 import org.ngrinder.service.IConfig;
 import org.ngrinder.service.IPerfTestService;
-import org.ngrinder.service.IScriptValidationService;
 import org.ngrinder.service.IUserService;
 import org.ngrinder.user.service.UserService;
 import org.reflections.Reflections;
