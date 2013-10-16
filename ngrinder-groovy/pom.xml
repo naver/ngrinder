@@ -10,7 +10,9 @@
 	</parent>
 	<artifactId>ngrinder-groovy</artifactId>
 	<name>ngrinder-groovy</name>
-	<packaging>jar</packaging>
+    <version>3.3-SNAPSHOT</version>
+
+    <packaging>jar</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>org.json</groupId>

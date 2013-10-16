@@ -16,7 +16,7 @@ import org.junit.runner.RunWith
 import HTTPClient.HTTPResponse
 
 @RunWith(GrinderRunner)
-class MyTest {
+class TestRunnerExample {
 
 	public static GTest test;
 	public static HTTPRequest request;

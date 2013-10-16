@@ -71,7 +71,6 @@ public class GrinderRunnerTest {
 	public static class TestSample {
 		private static HTTPRequest request = null;
 		private static GTest test = new GTest(1, "Hello");
-		public String scopeInThread = "scopeInThread";
 
 		@BeforeClass
 		public static void beforeProcess() {
@@ -117,7 +116,7 @@ public class GrinderRunnerTest {
 		}
 		
 		@AfterProcess
-		public static void affterprocess() {
+		public static void afterProcess() {
 			System.out.println("After Process");
 		}
 	}

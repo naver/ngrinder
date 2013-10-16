@@ -9,7 +9,8 @@
 	</parent>
 	<artifactId>ngrinder-dns</artifactId>
 	<name>ngrinder-dns</name>
-	<packaging>jar</packaging>
+    <version>3.3-SNAPSHOT</version>
+    <packaging>jar</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>dnsjava</groupId>

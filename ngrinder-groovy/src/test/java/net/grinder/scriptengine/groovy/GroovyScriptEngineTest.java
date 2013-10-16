@@ -34,7 +34,6 @@ import org.junit.Test;
  * Class description.
  * 
  * @author Mavlarn
- * @since
  */
 public class GroovyScriptEngineTest {
 
@@ -43,7 +42,7 @@ public class GroovyScriptEngineTest {
 		JUnitThreadContextInitializer init = new JUnitThreadContextInitializer();
 		init.initialize();
 		// for test, used to get groovy source file.
-		File scriptFile = new File("src/test/java/org/ngrinder/MyTest.groovy");
+		File scriptFile = new File("src/test/java/org/ngrinder/TestRunner.groovy");
 		GroovyScriptEngine engine = new GroovyScriptEngine(new ScriptLocation(scriptFile));
 		init.attachWorkerThreadContext();
 		GroovyScriptEngine.GroovyWorkerRunnable worker = (GroovyScriptEngine.GroovyWorkerRunnable) engine

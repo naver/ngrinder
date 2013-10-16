@@ -60,6 +60,7 @@ public class DefaultLoginPlugin implements OnLoginRunnable {
 		return true;
 	}
 
+    @Deprecated
 	@Override
 	public void saveUser(User user) {
 		// Do nothing for default plugin

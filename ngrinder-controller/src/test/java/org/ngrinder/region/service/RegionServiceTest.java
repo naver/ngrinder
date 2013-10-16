@@ -35,7 +35,7 @@ import org.springframework.test.util.ReflectionTestUtils;
  * Region Service Test class.
  * 
  * @author mavlarn
- * @Since 3.1
+ * @since 3.1
  */
 public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 
@@ -49,7 +49,8 @@ public class RegionServiceTest extends AbstractNGrinderTransactionalTest {
 	
 	@Before
 	public void before() {
-		FileUtils.deleteQuietly(config.getHome().getControllerShareDirectory());
+        //noinspection deprecation
+        FileUtils.deleteQuietly(config.getHome().getControllerShareDirectory());
 	}
 
 	@Test

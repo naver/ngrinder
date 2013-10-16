@@ -18,4 +18,4 @@ target/
 /deploy-core.bat
 /complexity_result.html
 /loc_result.html
-/zoopiter_build.xml
+/resources/perftest*
