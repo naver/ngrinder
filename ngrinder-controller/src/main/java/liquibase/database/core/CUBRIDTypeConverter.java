@@ -20,11 +20,10 @@ import liquibase.database.structure.type.DataType;
 import liquibase.database.structure.type.DateTimeType;
 import liquibase.database.structure.type.DoubleType;
 import liquibase.database.structure.type.TinyIntType;
-import liquibase.database.typeconversion.TypeConverter;
 import liquibase.database.typeconversion.core.AbstractTypeConverter;
 
 /**
- * {@link TypeConverter} for CUBRID.
+ * {@link liquibase.database.typeconversion.TypeConverter} for CUBRID.
  * 
  * @author Matt
  * @author JunHo Yoon

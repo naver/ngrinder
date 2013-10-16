@@ -15,11 +15,10 @@ package liquibase.database.core;
 
 import liquibase.database.structure.type.BooleanType;
 import liquibase.database.structure.type.FloatType;
-import liquibase.database.typeconversion.TypeConverter;
 import liquibase.database.typeconversion.core.H2TypeConverter;
 
 /**
- * {@link TypeConverter} for H2.
+ * {@link liquibase.database.typeconversion.TypeConverter} for H2.
  * 
  * @author JunHo Yoon
  * @since 3.0

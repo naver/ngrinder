@@ -31,7 +31,6 @@ import net.grinder.SingleConsole;
 import net.grinder.console.model.ConsoleProperties;
 
 import org.ngrinder.common.constant.NGrinderConstants;
-import org.ngrinder.common.exception.NGrinderRuntimeException;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.perftest.model.NullSingleConsole;
 import org.slf4j.Logger;
@@ -174,8 +173,8 @@ public class ConsoleManager {
 	 * Get a available console.<br/>
 	 * 
 	 * If there is no available console, it waits until available console is returned back. If the specific time is
-	 * elapsed, the timeout error occurs and throws {@link NGrinderRuntimeException} . The timeout can be adjusted by
-	 * overriding {@link #getMaxWaitingMiliSecond()}.
+	 * elapsed, the timeout error occurs and throws {@link org.ngrinder.common.exception.NGrinderRuntimeException} . The
+	 * timeout can be adjusted by overriding {@link #getMaxWaitingMiliSecond()}.
 	 * 
 	 * @param testIdentifier
 	 *            test identifier

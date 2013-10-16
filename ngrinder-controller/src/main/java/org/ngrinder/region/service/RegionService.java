@@ -115,6 +115,7 @@ public class RegionService {
 	@PreDestroy
 	public void destroy() {
 		if (config.isCluster()) {
+			@SuppressWarnings("deprecation")
 			File file = new File(config.getHome().getControllerShareDirectory(), config.getRegion());
 			FileUtils.deleteQuietly(file);
 		}
