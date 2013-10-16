@@ -248,13 +248,12 @@
 							<verbose>false</verbose>
 							<resourcesDirectory>${project.basedir}/src/main/jnlp/resources</resourcesDirectory>
 							<dependencies>
-							
 							</dependencies>
 							<!-- JNLP generation -->
 							<jnlp>
 								<inputTemplateResourcePath>${basedir}/src/main/jnlp/</inputTemplateResourcePath>
 								<inputTemplate>template.vm</inputTemplate>
-								<outputFile>nGrinder_Agent.jnlp</outputFile> <!-- defaults to launch.jnlp -->
+								<outputFile>ngrinder_agent.jnlp</outputFile> <!-- defaults to launch.jnlp -->
 								<mainClass>org.ngrinder.NGrinderStarter</mainClass>
 							</jnlp>
 		
