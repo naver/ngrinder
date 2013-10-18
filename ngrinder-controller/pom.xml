@@ -9,7 +9,8 @@
 	</parent>
 	<artifactId>ngrinder-controller</artifactId>
 	<name>ngrinder-controller</name>
-	<packaging>war</packaging>
+    <version>3.3-SNAPSHOT</version>
+    <packaging>war</packaging>
 	<properties>
 		<webappdir>${basedir}/src/main/webapp</webappdir>
 		<m2eclipse.wtp.contextRoot>/ngrinder-controller</m2eclipse.wtp.contextRoot>
@@ -33,6 +34,22 @@
 		</repository>
 	</repositories>
 
+    <profiles>
+        <profile>
+            <id>internal</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <configuration>
+                            <webappDirectory>${deploy.dir}</webappDirectory>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 	<dependencies>
 		<dependency>
 			<groupId>rome</groupId>
@@ -87,8 +104,9 @@
 		<dependency>
 			<groupId>org.ngrinder</groupId>
 			<artifactId>ngrinder-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+            <version>3.3-SNAPSHOT</version>
+
+        </dependency>
 
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -333,7 +351,6 @@
 			<groupId>grinder</groupId>
 			<artifactId>grinder-patch</artifactId>
 			<version>3.9.1</version>
-			<!-- this version is disappeared... little bit hack -->
 			<scope>system</scope>
 			<systemPath>${basedir}/patch/grinder-3.9.1-patch.jar</systemPath>
 		</dependency>
@@ -420,9 +437,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
-					<webappDirectory>${deploy.dir}</webappDirectory>
-					<webResources>
-
+                    <webResources>
 						<resource>
 							<directory>patch</directory>
 							<targetPath>WEB-INF/lib</targetPath>

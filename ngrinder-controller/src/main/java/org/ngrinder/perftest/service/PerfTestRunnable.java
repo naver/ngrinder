@@ -157,7 +157,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 			return;
 		}
 		// Find out next ready perftest
-		PerfTest runCandidate = perfTestService.getPerfTestCandiate();
+		PerfTest runCandidate = perfTestService.getNextRunnablePerfTestPerfTestCandiate();
 		if (runCandidate == null) {
 			return;
 		}

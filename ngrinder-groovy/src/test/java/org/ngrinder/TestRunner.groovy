@@ -2,7 +2,6 @@ package org.ngrinder;
 
 import static net.grinder.script.Grinder.grinder
 import static org.junit.Assert.*
-import net.grinder.engine.process.ShutdownException
 import net.grinder.plugin.http.HTTPRequest
 import net.grinder.script.GTest
 import net.grinder.script.Grinder
@@ -18,7 +17,8 @@ import org.junit.runner.RunWith
 import HTTPClient.HTTPResponse
 
 @RunWith(GrinderRunner)
-class MyTest {
+class TestRunner
+{
 
 	public static GTest test;
 	public static HTTPRequest request;

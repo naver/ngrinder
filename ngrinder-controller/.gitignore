@@ -11,3 +11,4 @@ src/main/webapp/WEB-INF/classes
 src/main/webapp/WEB-INF/lib
 /grinder_logs
 /.freemarker-ide.xml
+resources/perftest/

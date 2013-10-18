@@ -51,7 +51,7 @@ public class ClusteredPerfTestServiceTest extends AbstractNGrinderTransactionalT
 
 		PerfTestService clusteredPerfTest = perfTestConfig.perfTestService();
 
-		PerfTest test = clusteredPerfTest.getPerfTestCandiate();
+		PerfTest test = clusteredPerfTest.getNextRunnablePerfTestPerfTestCandiate();
 
 		assertThat(test, nullValue());
 	}

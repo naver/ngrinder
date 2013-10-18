@@ -130,7 +130,7 @@ public class UserService implements IUserService {
 		if (StringUtils.isBlank(roleName)) {
 			return userRepository.findAll(pageable);
 		} else {
-			return getUserListByRole(getRole(roleName), pageable);
+			return getUsersByRole(getRole(roleName), pageable);
 		}
 	}
 
@@ -158,7 +158,7 @@ public class UserService implements IUserService {
 		if (StringUtils.isBlank(roleName)) {
 			return userRepository.findAll(sort);
 		} else {
-			return getUserListByRole(getRole(roleName), sort);
+			return getUsersByRole(getRole(roleName), sort);
 		}
 	}
 
@@ -276,7 +276,7 @@ public class UserService implements IUserService {
 	 * @return found user list
 	 * @throws Exception
 	 */
-	public List<User> getUserListByRole(Role role, Sort sort) {
+	public List<User> getUsersByRole(Role role, Sort sort) {
 		return userRepository.findAllByRole(role, sort);
 	}
 
@@ -290,7 +290,7 @@ public class UserService implements IUserService {
 	 * @return found user list
 	 * @throws Exception
 	 */
-	public Page<User> getUserListByRole(Role role, Pageable pageable) {
+	public Page<User> getUsersByRole(Role role, Pageable pageable) {
 		return userRepository.findAllByRole(role, pageable);
 	}
 
@@ -302,8 +302,8 @@ public class UserService implements IUserService {
 	 * @return found user list
 	 * @throws Exception
 	 */
-	public List<User> getUserListByRole(Role role) {
-		return getUserListByRole(role, new Sort(Direction.ASC, "userName"));
+	public List<User> getUsersByRole(Role role) {
+		return getUsersByRole(role, new Sort(Direction.ASC, "userName"));
 	}
 
 	/**
@@ -334,7 +334,7 @@ public class UserService implements IUserService {
 	 *            name of user
 	 * @return found user list
 	 */
-	public List<User> getUserListByKeyWord(String name) {
+	public List<User> getUsersByKeyWord(String name) {
 		return userRepository.findAll(UserSpecification.nameLike(name));
 	}
 
@@ -347,7 +347,7 @@ public class UserService implements IUserService {
 	 *            page
 	 * @return user page
 	 */
-	public Page<User> getUserListByKeyWord(String namelike, Pageable pageable) {
+	public Page<User> getUsersByKeyWord(String namelike, Pageable pageable) {
 		return userRepository.findAll(UserSpecification.nameLike(namelike), pageable);
 	}
 

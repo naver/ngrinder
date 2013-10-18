@@ -28,6 +28,7 @@ public class MockLoginPlugin implements OnLoginRunnable {
 		return false;
 	}
 
+    @Deprecated
 	@Override
 	public void saveUser(User user) {
 		// Do nothing
