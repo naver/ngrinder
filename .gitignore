@@ -7,6 +7,7 @@
 .project
 .checkstyle
 .clover
+.idea
 target/
 ~$*
 /Servers
@@ -19,3 +20,4 @@ target/
 /complexity_result.html
 /loc_result.html
 /resources/perftest*
+
