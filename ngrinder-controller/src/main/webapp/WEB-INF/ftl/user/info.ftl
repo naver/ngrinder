@@ -1,7 +1,6 @@
 <#import "../common/spring.ftl" as spring/>
 <#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
-<form action="${req.getContextPath()}/user/save"
-	class="form-horizontal form-horizontal-left" id="user_form" method="POST">
+<form class="form-horizontal form-horizontal-left" id="user_form" method="POST">
 	<#if !(popover_place??)>
 		<#assign popover_place='bottom'/>
 	</#if>
@@ -96,12 +95,14 @@
 		</#if>
 		<#if !(demo!false)>
   		<div class="control-group">
-             <div class="accordion-heading"> 
-               	<a id="change_password_btn" href="javascript:void(0);" style="padding: 8px 0"> 
-                 	<@spring.message "user.info.form.button.changePwd"/>
-               	</a> 
-             </div> 
-             
+  			<#if !(isRegistrationBySelf?? && isRegistrationBySelf)>
+				<div class="accordion-heading"> 
+	               	<a id="change_password_btn" href="javascript:void(0);" style="padding: 8px 0"> 
+	                 	<@spring.message "user.info.form.button.changePwd"/>
+	               	</a> 
+             	</div> 
+			</#if>
+			
              <div id="user_password_section" style='display:none'> 
 	            <div class="accordion-inner" style="padding:9px 0" > 
 	           		<div class="control-group" >
@@ -133,7 +134,7 @@
 		</#if>
 		<div class="control-group">
 			<label class="control-label pull-right">
-				<button type="submit" class="btn btn-success"><@spring.message "user.info.form.button.saveUser"/></button>
+				<a class="btn btn-success" id="update_or_create_user_btn"><@spring.message "user.info.form.button.saveUser"/></a>
 			</label>
 		</div>
 	</fieldset>
@@ -155,9 +156,14 @@
 	
 			$.validator.addMethod("userIdExist", function(userId, element) {
 				if(userId != null && userId.length > 0){
+					<#if isRegistrationBySelf?? && isRegistrationBySelf>
+						url = "${req.getContextPath()}/registration/" + userId + "/duplication_check";
+					<#else>
+						url = "${req.getContextPath()}/user/" + userId + "/duplication_check";
+					</#if>
 					var result ;
 					$.ajax({
-						  url: "${req.getContextPath()}/user/" + userId + "/duplication_check",
+						  url: url,
 						  async: false,
 						  cache: false,
 						  type: "GET",
@@ -275,6 +281,18 @@
 	    	</#list>
 	    </#if>
 	    $("#user_switch_select").val(switchedUsers).select2();
+	    
+	    $("#update_or_create_user_btn").click(function() {
+			<#if isRegistrationBySelf?? && isRegistrationBySelf>
+				url = "${req.getContextPath()}/registration/save";
+			<#else>
+				url = "${req.getContextPath()}/user/save";
+			</#if>	
+			document.forms.user_form.action = url;
+			if($("#user_form").valid())
+				document.forms.user_form.submit();
+		});
+	    
 	});
 	
 	function showPassword() {
