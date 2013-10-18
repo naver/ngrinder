@@ -780,6 +780,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return param;
 	}
 
+	@ForceMergable
 	@Cloneable
 	public void setParam(String param) {
 		this.param = param;
