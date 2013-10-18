@@ -56,6 +56,13 @@
 					      </#list>
 						</select> 
 					</div> 
+					
+					<#if isRegistrationBySelf?? && isRegistrationBySelf>
+						<div class="prompt">
+						 	<a id="user_sign_up" href="javascript:void(0)">New User Registration</a>
+						</div> 
+					</#if>	
+					
 				</fieldset>
 			</form>
 				<div class="row" id="foot_div" >
@@ -68,7 +75,7 @@
 				</div>
 		</div> 
 	</div>
-
+	<div id="user_sign_up_modal_container"></div>
 	<script language="javascript">
 		$(document).ready(function() {
 			$('input[placeholder]').placeholder();
@@ -89,6 +96,13 @@
 			
 			var timezone = jstz.determine();
 			$("#user_timezone").select2("val", timezone.name());
+			
+			$("#user_sign_up").click(function() {
+				var url = "${req.getContextPath()}/registration/sign_up";
+				$("#user_sign_up_modal_container").load(url, function(){
+					$(this).find("#user_sign_up_modal").modal('show');
+				});
+			});
 		});
 	</script>
 </body>

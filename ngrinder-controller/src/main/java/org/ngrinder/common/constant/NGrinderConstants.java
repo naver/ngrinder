@@ -158,6 +158,10 @@ public interface NGrinderConstants {
 	public static final String PARAM_AGENTS = "agents";
 
 	public static final int AGENT_SERVER_DAEMON_PORT = 1011;
+	
+	//GRINDER INITIAL ADMIN USER ID
+	public static final String GRINDER_INITAIL_ADMIN_USERID = "admin";
+	
 	// GRINDER_PROPERTY_KEY
 	public static final String GRINDER_PROP_AGENTS = "grinder.agents";
 	public static final String GRINDER_PROP_PROCESSES = "grinder.processes";
@@ -199,7 +203,8 @@ public interface NGrinderConstants {
 	public static final int MAX_STACKTRACE_STRING_SIZE = 2048;
 	public static final String NGRINDER_PROP_DEFAULT_LANGUAGE = "ngrinder.langauge.default";
 	public static final String NGRINDER_PROP_FRONT_PAGE_RSS = "ngrinder.frontpage.rss";
-	public static final String NGRINER_PROP_USAGE_REPORT = "usage.report";
+	public static final String NGRINDER_PROP_USAGE_REPORT = "usage.report";
+	public static final String NGRINDER_USER_SELF_REGISTRATION = "ngrinder.user.self.registration";
 
 	public static final String NGRINDER_NEWS_RSS_URL = "http://www.cubrid.org/wiki_ngrinder/rss";
 	public static final String NGRINDER_PROP_QNA_PAGE_RSS = "ngrinder.frontpage.qna.rss";

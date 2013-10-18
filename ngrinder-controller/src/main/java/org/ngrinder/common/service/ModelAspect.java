@@ -18,12 +18,15 @@ import java.util.Date;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.ngrinder.common.constant.NGrinderConstants;
+import org.ngrinder.infra.config.Config;
 import org.ngrinder.infra.spring.SpringContext;
 import org.ngrinder.model.BaseModel;
 import org.ngrinder.model.User;
 import org.ngrinder.user.repository.UserRepository;
 import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -47,6 +50,9 @@ public class ModelAspect {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private Config config;
 
 	/**
 	 * Inject the created/modified user and date to the model. It's only applied
@@ -66,7 +72,19 @@ public class ModelAspect {
 				BaseModel<?> model = (BaseModel<?>) object;
 				Date lastModifiedDate = new Date();
 				model.setLastModifiedDate(lastModifiedDate);
-				User currentUser = userContext.getCurrentUser();
+
+				// getCurrentUser() will return null when user created by self
+				// from login page,so return admin user for the moment
+				User currentUser = null;
+				try {
+					currentUser = userContext.getCurrentUser();
+				} catch (AuthenticationCredentialsNotFoundException authenEx) {
+					if (config.isUserRegistrationBySelf())
+						currentUser = userRepository.findOneByUserId(NGrinderConstants.GRINDER_INITAIL_ADMIN_USERID);
+					else
+						throw authenEx;
+				}
+
 				model.setLastModifiedUser(userRepository.findOne(currentUser.getId()));
 
 				if (!model.exist() || model.getCreatedUser() == null) {

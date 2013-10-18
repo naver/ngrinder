@@ -203,7 +203,16 @@ public class Config implements IConfig, NGrinderConstants {
 	 * @return true if enabled.
 	 */
 	public boolean isUsageReportEnabled() {
-		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINER_PROP_USAGE_REPORT, true);
+		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_PROP_USAGE_REPORT, true);
+	}
+	
+	/**
+	 * Check if enable user can created by himself.
+	 * 
+	 * @return true if enabled.
+	 */
+	public boolean isUserRegistrationBySelf() {
+		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_USER_SELF_REGISTRATION, false);
 	}
 
 	/**

@@ -247,6 +247,7 @@ public class HomeController extends NGrinderBaseController {
 	@RequestMapping(value = "/login")
 	public String login(ModelMap model) {
 		setLoginPageDate(model);
+		model.addAttribute("isRegistrationBySelf", config.isUserRegistrationBySelf());
 		try {
 			getCurrentUser();
 		} catch (Exception e) {
