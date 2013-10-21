@@ -20,4 +20,5 @@ target/
 /complexity_result.html
 /loc_result.html
 /resources/perftest*
-
+*.iml
+/atlassian-ide-plugin.xml
