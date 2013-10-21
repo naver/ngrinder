@@ -44,8 +44,7 @@ import org.ngrinder.common.util.PathUtil;
 import com.google.gson.annotations.Expose;
 
 /**
- * Performance Test Entity. <br/>
- * 
+ * Performance Test Entity.
  */
 @Entity
 @Table(name = "PERF_TEST")
@@ -97,25 +96,33 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "finish_time")
 	private Date finishTime;
 
-	/** the target host to test. */
+	/**
+	 * the target host to test.
+	 */
 	@Expose
 	@Column(name = "target_hosts")
 	private String targetHosts;
 
-	/** The send mail code. */
+	/**
+	 * The send mail code.
+	 */
 	@Expose
 	@Column(name = "send_mail", columnDefinition = "char(1)")
 	@Type(type = "true_false")
 	private Boolean sendMail;
 
-	
-	/** Use rampup or not. */
+
+	/**
+	 * Use rampup or not.
+	 */
 	@Expose
 	@Column(name = "use_rampup", columnDefinition = "char(1)")
 	@Type(type = "true_false")
 	private Boolean useRampUp = false;
 
-	/** The threshold code, R for run count; D for duration. */
+	/**
+	 * The threshold code, R for run count; D for duration.
+	 */
 	@Expose
 	@Column(name = "threshold")
 	private String threshold;
@@ -151,7 +158,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Expose
 	@Column(name = "init_sleep_time")
 	private Integer initSleepTime;
-	
+
 	@Expose
 	@Column(name = "process_increment")
 	private Integer processIncrement;
@@ -189,7 +196,9 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "peak_tps")
 	private Double peakTps;
 
-	/** Console port for this test. This is the identifier for console */
+	/**
+	 * Console port for this test. This is the identifier for console
+	 */
 	@Column(name = "port")
 	private Integer port = 0;
 
@@ -235,10 +244,10 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Transient
 	private GrinderProperties grinderProperties;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
 	@JoinTable(name = "PERF_TEST_TAG", /** join column */
-	joinColumns = @JoinColumn(name = "perf_test_id"), /** inverse join column */
-	inverseJoinColumns = @JoinColumn(name = "tag_id"))
+			joinColumns = @JoinColumn(name = "perf_test_id"), /** inverse join column */
+			inverseJoinColumns = @JoinColumn(name = "tag_id"))
 	@Sort(comparator = Tag.class, type = SortType.COMPARATOR)
 	private SortedSet<Tag> tags;
 
@@ -259,7 +268,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	@Column(name = "param")
 	private String param;
 
-	
+
 	public String getTestIdentifier() {
 		return "perftest_" + getId() + "_" + getLastModifiedUser().getUserId();
 	}
@@ -267,7 +276,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/**
 	 * Get total required run count. This is calculated by multiplying agent count, threads,
 	 * processes, run count.
-	 * 
+	 *
 	 * @return run count
 	 */
 	public long getTotalRunCount() {
@@ -367,7 +376,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 	/**
 	 * Get ip address of target hosts. if target hosts 'a.com:1.1.1.1' add ip: '1.1.1.1' if target
 	 * hosts ':1.1.1.1' add ip: '1.1.1.1' if target hosts '1.1.1.1' add ip: '1.1.1.1'
-	 * 
+	 *
 	 * @return host ip list
 	 */
 	public List<String> getTargetHostIP() {
@@ -579,7 +588,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	/**
 	 * Get Duration time in HH:MM:SS style.
-	 * 
+	 *
 	 * @return formatted duration string
 	 */
 	public String getDurationStr() {
@@ -589,12 +598,12 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	/**
 	 * Get Running time in HH:MM:SS style.
-	 * 
+	 *
 	 * @return formatted runtime string
 	 */
 	public String getRuntimeStr() {
 		long ms = (this.finishTime == null || this.startTime == null) ? 0 : this.finishTime.getTime()
-						- this.startTime.getTime();
+				- this.startTime.getTime();
 		return DateUtil.ms2Time(ms);
 	}
 
@@ -632,9 +641,8 @@ public class PerfTest extends BaseModel<PerfTest> {
 
 	/**
 	 * Set the last progress message.
-	 * 
-	 * @param lastProgressMessage
-	 *            message
+	 *
+	 * @param lastProgressMessage message
 	 */
 	public void setLastProgressMessage(String lastProgressMessage) {
 		if (StringUtils.isEmpty(lastProgressMessage)) {
@@ -658,7 +666,7 @@ public class PerfTest extends BaseModel<PerfTest> {
 		return scriptRevision;
 	}
 
-	
+
 	public void setScriptRevision(Long scriptRevision) {
 		this.scriptRevision = scriptRevision;
 	}
@@ -785,6 +793,6 @@ public class PerfTest extends BaseModel<PerfTest> {
 	public void setParam(String param) {
 		this.param = param;
 	}
-	
+
 
 }

@@ -130,7 +130,10 @@ public class MonitorClientSerivce {
 	 * @return {@link SystemInfo}
 	 */
 	public SystemInfo getMonitorData() {
-		try {
+		if (mbeanClient == null) {
+			return null;
+		}
+		try { 
 
 			if (!mbeanClient.isConnected()) {
 				mbeanClient.connect();
