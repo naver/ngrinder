@@ -475,7 +475,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	@Scheduled(fixedDelay = PERFTEST_TERMINATION_FREQUENCY_MILLISECONDS)
 	public void finishTest() {
 		for (PerfTest each : perfTestService.getAbnoramlTestingPerfTest()) {
-			LOG.error("Terminate {}", each.getId());
+			LOG.info("Terminate {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			doTerminate(each, consoleUsingPort);
 			cleanUp(each);
@@ -483,7 +483,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 		}
 
 		for (PerfTest each : perfTestService.getStopRequestedPerfTest()) {
-			LOG.error("Stop test {}", each.getId());
+			LOG.info("Stop test {}", each.getId());
 			SingleConsole consoleUsingPort = consoleManager.getConsoleUsingPort(each.getPort());
 			doCancel(each, consoleUsingPort);
 			cleanUp(each);
