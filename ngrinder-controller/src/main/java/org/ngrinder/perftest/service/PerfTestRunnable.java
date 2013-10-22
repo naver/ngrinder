@@ -556,7 +556,7 @@ public class PerfTestRunnable implements NGrinderConstants {
 	 *            {@link PerfTest}
 	 */
 	public void doCancel(PerfTest perfTest, SingleConsole singleConsoleInUse) {
-		LOG.error("Cancel {} by user request.", perfTest.getTestIdentifier());
+		LOG.info("Cancel {} by user request.", perfTest.getTestIdentifier());
 		singleConsoleInUse.unregisterSampling();
 		try {
 			perfTestService.markProgressAndStatusAndFinishTimeAndStatistics(perfTest, CANCELED,
