@@ -159,8 +159,8 @@ public interface NGrinderConstants {
 
 	public static final int AGENT_SERVER_DAEMON_PORT = 1011;
 	
-	//GRINDER INITIAL ADMIN USER ID
-	public static final String GRINDER_INITAIL_ADMIN_USERID = "admin";
+	//NGRINDER INITIAL ADMIN USER ID
+	public static final String NGRINDER_INITIAL_ADMIN_USERID = "admin";
 	
 	// GRINDER_PROPERTY_KEY
 	public static final String GRINDER_PROP_AGENTS = "grinder.agents";

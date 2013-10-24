@@ -16,12 +16,14 @@ package org.ngrinder.user.service;
 import static org.ngrinder.common.util.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
+import org.ngrinder.common.constant.NGrinderConstants;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.PerfTest;
 import org.ngrinder.model.Role;
@@ -349,6 +351,28 @@ public class UserService implements IUserService {
 	 */
 	public Page<User> getUsersByKeyWord(String namelike, Pageable pageable) {
 		return userRepository.findAll(UserSpecification.nameLike(namelike), pageable);
+	}
+	
+	/**
+	 * Create user.
+	 * 
+	 * @param user
+	 *            include id, userID, fullName, role, password.
+	 * 
+	 * @return result
+	 */
+	@Transactional
+	@CacheEvict(value = "users", key = "#user.userId")
+	@Override
+	public User createUser(User user) {
+		encodePassword(user);
+		Date createdDate = new Date();
+		user.setCreatedDate(createdDate);
+		user.setLastModifiedDate(createdDate);
+		User createdUser = userRepository.findOneByUserId(NGrinderConstants.NGRINDER_INITIAL_ADMIN_USERID);
+		user.setCreatedUser(createdUser);
+		user.setLastModifiedUser(createdUser);
+		return saveUserWithoutPasswordEncoding(user);
 	}
 
 }

@@ -74,5 +74,15 @@ public interface IUserService {
 	 *            role
 	 */
 	public abstract void saveUser(User user, Role role);
+	
+	/**
+	 * Create user.
+	 * 
+	 * @param user
+	 *            include id, userID, fullName, role, password.
+	 * 
+	 * @return result
+	 */
+	public abstract User createUser(User user);
 
 }

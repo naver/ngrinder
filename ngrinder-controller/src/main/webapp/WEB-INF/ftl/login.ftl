@@ -57,9 +57,9 @@
 						</select> 
 					</div> 
 					
-					<#if isRegistrationBySelf?? && isRegistrationBySelf>
+					<#if isSelfRegistration?? && isSelfRegistration>
 						<div class="prompt">
-						 	<a id="user_sign_up" href="javascript:void(0)">New User Registration</a>
+						 	<a id="user_sign_up" class="pointer-cursor" style="margin-left:200px;">Sign Up</a>
 						</div> 
 					</#if>	
 					

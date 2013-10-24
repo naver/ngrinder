@@ -79,7 +79,7 @@
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
 		<h4><@spring.message "navigator.dropdown.profile.title"/></h4> 
 	</div>
-	<div class="modal-body" id="user_profile_modal_content" style="max-height:540px; padding-left:45px"> 
+	<div class="modal-body" id="user_profile_modal_content" style="max-height:640px; padding-left:45px"> 
 	</div>	
 </div>
 

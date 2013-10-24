@@ -207,11 +207,11 @@ public class Config implements IConfig, NGrinderConstants {
 	}
 	
 	/**
-	 * Check if enable user can created by himself.
+	 * Check if user self-registration is enabled.
 	 * 
 	 * @return true if enabled.
 	 */
-	public boolean isUserRegistrationBySelf() {
+	public boolean isSelfUserRegistration() {
 		return getSystemProperties().getPropertyBoolean(NGrinderConstants.NGRINDER_USER_SELF_REGISTRATION, false);
 	}
 

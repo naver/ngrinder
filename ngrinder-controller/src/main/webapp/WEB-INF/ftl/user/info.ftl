@@ -95,9 +95,9 @@
 		</#if>
 		<#if !(demo!false)>
   		<div class="control-group">
-  			<#if !(isRegistrationBySelf?? && isRegistrationBySelf)>
+  			<#if !(isSelfRegistration?? && isSelfRegistration)>
 				<div class="accordion-heading"> 
-	               	<a id="change_password_btn" href="javascript:void(0);" style="padding: 8px 0"> 
+	               	<a id="change_password_btn" class="pointer-cursor"> 
 	                 	<@spring.message "user.info.form.button.changePwd"/>
 	               	</a> 
              	</div> 
@@ -156,7 +156,7 @@
 	
 			$.validator.addMethod("userIdExist", function(userId, element) {
 				if(userId != null && userId.length > 0){
-					<#if isRegistrationBySelf?? && isRegistrationBySelf>
+					<#if isSelfRegistration?? && isSelfRegistration>
 						url = "${req.getContextPath()}/registration/" + userId + "/duplication_check";
 					<#else>
 						url = "${req.getContextPath()}/user/" + userId + "/duplication_check";
@@ -283,7 +283,7 @@
 	    $("#user_switch_select").val(switchedUsers).select2();
 	    
 	    $("#update_or_create_user_btn").click(function() {
-			<#if isRegistrationBySelf?? && isRegistrationBySelf>
+			<#if isSelfRegistration?? && isSelfRegistration>
 				url = "${req.getContextPath()}/registration/save";
 			<#else>
 				url = "${req.getContextPath()}/user/save";
