@@ -1,5 +1,6 @@
 @ECHO OFF
 SET basedir=%~dp0
+SET NGRINDER_AGENT_HOME=%~dp0
 CD %basedir%
 
 :RUN
