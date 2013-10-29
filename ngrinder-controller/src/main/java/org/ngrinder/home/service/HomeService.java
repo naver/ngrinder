@@ -92,7 +92,7 @@ public class HomeService {
 			return panelEntries;
 
 		} catch (Exception e) {
-			LOG.error("Error while patching ngriner rss", e);
+			LOG.error("Error while patching the rss for the home's left panel.", e);
 		} finally {
 			IOUtils.closeQuietly(reader);
 		}
@@ -137,7 +137,7 @@ public class HomeService {
 			return panelEntries;
 
 		} catch (Exception e) {
-			LOG.error("Error while patching ngriner rss", e);
+			LOG.error("Error while patching the rss for the home's right panel.", e);
 		} finally {
 			IOUtils.closeQuietly(reader);
 		}
