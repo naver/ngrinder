@@ -52,11 +52,9 @@ public class UserRegistrationController extends NGrinderBaseController {
 	/**
 	 * New user sign up form login page.
 	 * 
-	 * @param user
-	 *            current user
 	 * @param model
 	 *            mode
-	 * @return "user/userDetail"
+	 * @return "user/user_sign_up_modal"
 	 */
 	@RequestMapping("/sign_up")
 	public String getUserForm(ModelMap model) {
@@ -88,8 +86,7 @@ public class UserRegistrationController extends NGrinderBaseController {
 	 *            model
 	 * @param newUser
 	 *            user to be created.
-	 * @return "redirect:/user/list" if current user change his info, otheriwise
-	 *         return "redirect:/"
+	 * @return "redirect:/home"
 	 */
 	@RequestMapping("/save")
 	public String saveOrUpdateUserDetail(ModelMap model, @ModelAttribute("user") User newUser) {
