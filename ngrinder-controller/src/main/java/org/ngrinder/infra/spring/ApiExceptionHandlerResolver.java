@@ -32,6 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 
 /**
  * Api exception handler which emits the exception message in the form of json.
@@ -95,7 +96,7 @@ public class ApiExceptionHandlerResolver implements HandlerExceptionResolver, Or
 			writer.write(jsonMessage);
 			response.flushBuffer();
 		} catch (IOException e) {
-			LOGGER.error("Exception occured while processing api exception.", e);
+			LOGGER.error("Exception was occurred while processing api exception.", e);
 		}
 		return new ModelAndView();
 	}
